@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{E711B298-D141-4EC5-9BFD-84962B264F90}</ProjectGuid>
+    <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Eto.Platform.iOS</RootNamespace>
+    <AssemblyName>Eto.Platform.iOS</AssemblyName>
+    <MtouchMinimumOS>3.0</MtouchMinimumOS>
+    <ReleaseVersion>3.0.8</ReleaseVersion>
+    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;IOS</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchDebug>False</MtouchDebug>
+    <MtouchUseSGen>false</MtouchUseSGen>
+    <ConsolePause>false</ConsolePause>
+    <MtouchUseLlvm>false</MtouchUseLlvm>
+    <MtouchUseThumb>false</MtouchUseThumb>
+    <MtouchArch>ARMv6</MtouchArch>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <MtouchUseSGen>false</MtouchUseSGen>
+    <MtouchDebug>False</MtouchDebug>
+    <ConsolePause>false</ConsolePause>
+    <MtouchUseLlvm>false</MtouchUseLlvm>
+    <MtouchUseThumb>false</MtouchUseThumb>
+    <MtouchArch>ARMv6</MtouchArch>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>IOS</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="monotouch" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Drawing\" />
+    <Folder Include="Forms\" />
+    <Folder Include="Forms\Controls\" />
+    <Folder Include="Threading\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.iOS.csproj">
+      <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
+      <Name>Eto.iOS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Generator.cs" />
+    <Compile Include="Drawing\BitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\FontHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\GraphicsHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IconHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\ImageHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IndexedBitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\ScreenBitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AppDelegate.cs" />
+    <Compile Include="Forms\ApplicationHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\FormHandler.cs" />
+    <Compile Include="Forms\iosWindow.cs" />
+    <Compile Include="Forms\Controls\iosControl.cs" />
+    <Compile Include="InvokeHelper.cs" />
+    <Compile Include="Forms\iosView.cs" />
+    <Compile Include="Forms\DialogHandler.cs" />
+    <Compile Include="Forms\DockLayoutHandler.cs" />
+    <Compile Include="Forms\PixelLayoutHandler.cs" />
+    <Compile Include="Forms\TableLayoutHandler.cs" />
+    <Compile Include="Forms\iosLayout.cs" />
+    <Compile Include="Forms\iosObject.cs" />
+    <Compile Include="Extensions.cs" />
+    <Compile Include="Forms\Controls\ButtonHandler.cs" />
+    <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
+    <Compile Include="Forms\Controls\DrawableHandler.cs" />
+    <Compile Include="Forms\Controls\iosButton.cs" />
+    <Compile Include="Forms\Controls\ListBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SplitterHandler.cs" />
+    <Compile Include="EtoEnvironmentHandler.cs" />
+    <Compile Include="Forms\Controls\NavigationHandler.cs" />
+    <Compile Include="Forms\iosContainer.cs" />
+    <Compile Include="Forms\Controls\ScrollableHandler.cs" />
+    <Compile Include="Threading\ThreadHandler.cs" />
+  </ItemGroup>
+</Project>

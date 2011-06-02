@@ -1,0 +1,434 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>Eto</AssemblyName>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>
+    </AppDesignerFolder>
+    <RootNamespace>Eto</RootNamespace>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
+    <ReleaseVersion>3.0.8</ReleaseVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <FileAlignment>4096</FileAlignment>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <RemoveIntegerChecks>False</RemoveIntegerChecks>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>none</DebugType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <BaseAddress>285212672</BaseAddress>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <RemoveIntegerChecks>False</RemoveIntegerChecks>
+    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.Xml</Name>
+    </Reference>
+    <Reference Include="System.Core" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CancelEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EtoEnvironment.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EtoException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Generator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="InstanceWidget.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Resources.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WeakEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Widget.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="WidgetHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collections\BaseList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collections\ListItemEventHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Collections\LookupList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Bitmap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Color.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Font.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Graphics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Icon.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Image.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IndexedBitmap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Padding.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Palette.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Point.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\PointF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Rectangle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\RectangleF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\ScreenBitmap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Size.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\SizeF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Application.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Container.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Dialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\DockLayout.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\FileDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Form.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\GenerateActionArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Key.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Layout.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\MessageBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\OpenFileDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\PixelLayout.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\SaveFileDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\SelectFolderDialog.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\TableLayout.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\TreeNode.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\UITimer.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Window.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Window.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItem.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItemCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\BaseAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\BaseAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ButtonAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ButtonAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\CheckAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\CheckAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\RadioAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\RadioAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Button.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\CheckBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\ComboBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Control.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Drawable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\GroupBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\ImageView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\KeyPressEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Label.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\ListBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\ListControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\MouseEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Navigation.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\NumericUpDown.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Panel.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\RadioButton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Scrollable.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Splitter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TabControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TabPage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TextArea.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TextBox.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TextControl.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TreeView.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\CheckMenuItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\ImageMenuItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\Menu.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\MenuActionItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\MenuBar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\MenuItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\RadioMenuItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\SeparatorMenuItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ToolBar\CheckToolBarButton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ToolBar\SeparatorToolBarItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ToolBar\ToolBar.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarButton.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarInteractionItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ToolBar\ToolBarItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\DiskDirectoryInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\DiskFileInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\EtoDirectoryInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\EtoDriveInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\EtoFileInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\EtoSystemObjectInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\SystemIcons.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\VirtualDirectoryInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\VirtualDirectoryType.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\VirtualFileEntry.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IO\VirtualFileInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Misc\ArrayExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Misc\Platform.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Misc\Url.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Misc\XmlExtensions.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Platform\IPlatformHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Platform\PlatformHandlerCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Threading\Thread.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+</Project>

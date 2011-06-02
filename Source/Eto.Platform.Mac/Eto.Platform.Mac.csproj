@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Eto.Platform.Mac</RootNamespace>
+    <AssemblyName>Eto.Platform.Mac</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ReleaseVersion>3.0.8</ReleaseVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Core" />
+    <Reference Include="MonoMac, Version=0.0.0.0, Culture=neutral" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Generator.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\ApplicationHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\FormHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\MacContainer.cs" />
+    <Compile Include="AppDelegate.cs" />
+    <Compile Include="Drawing\BitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\FontHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\GraphicsHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IconHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\ImageHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IndexedBitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\ScreenBitmapHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\DialogHandler.cs" />
+    <Compile Include="Forms\DockLayoutHandler.cs" />
+    <Compile Include="Forms\MessageBoxHandler.cs" />
+    <Compile Include="Forms\OpenFileDialog.cs" />
+    <Compile Include="Forms\PixelLayoutHandler.cs" />
+    <Compile Include="Forms\SaveFileDialog.cs" />
+    <Compile Include="Forms\TableLayoutHandler.cs" />
+    <Compile Include="Forms\MacLayout.cs" />
+    <Compile Include="Forms\MacView.cs" />
+    <Compile Include="Forms\MacObject.cs" />
+    <Compile Include="Forms\MacWindow.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="KeyMap.cs" />
+    <Compile Include="Forms\MacFileDialog.cs" />
+    <Compile Include="InvokeHelper.cs" />
+    <Compile Include="IO\SystemIconsHandler.cs" />
+    <Compile Include="Forms\Controls\ButtonHandler.cs" />
+    <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ImageViewHandler.cs" />
+    <Compile Include="Forms\Controls\LabelHandler.cs" />
+    <Compile Include="Forms\Controls\ListBoxHandler.cs" />
+    <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="Forms\Controls\RadioButton.cs" />
+    <Compile Include="Forms\Controls\ScrollableHandler.cs" />
+    <Compile Include="Forms\Controls\SplitterHandler.cs" />
+    <Compile Include="Forms\Controls\TabControlHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
+    <Compile Include="Forms\Controls\TabPageHandler.cs" />
+    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
+    <Compile Include="Forms\Controls\PanelHandler.cs" />
+    <Compile Include="EtoEnvironmentHandler.cs" />
+    <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
+    <Compile Include="Forms\Menu\ImageMenuItemHandler.cs" />
+    <Compile Include="Forms\Menu\MenuBarHandler.cs" />
+    <Compile Include="Forms\Menu\MenuHandler.cs" />
+    <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
+    <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
+    <Compile Include="Forms\Controls\MacControl.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs" />
+    <Compile Include="Forms\Controls\MacText.cs" />
+    <Compile Include="Forms\Controls\DrawableHandler.cs" />
+    <Compile Include="Forms\Controls\MacButton.cs" />
+    <Compile Include="Forms\SelectFolderDialogHandler.cs" />
+    <Compile Include="Forms\Actions\MacButtonAction.cs" />
+    <Compile Include="Forms\UITimerHandler.cs" />
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="Forms\" />
+    <Folder Include="IO\" />
+    <Folder Include="Forms\Menu\" />
+    <Folder Include="Forms\ToolBar\" />
+    <Folder Include="Forms\Actions\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj">
+      <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
+      <Name>Eto</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
