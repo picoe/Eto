@@ -1,4 +1,4 @@
-Eto -- A cross platform desktop and mobile user interface framework
+Eto - A cross platform desktop and mobile user interface framework
 ===================================================================
 
 ## DESCRIPTION
