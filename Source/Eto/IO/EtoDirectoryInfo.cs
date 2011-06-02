@@ -53,21 +53,6 @@ namespace Eto.IO
 			get { return virtualDirectoryTypes.Values; }
 		}
 		
-		static EtoDirectoryInfo()
-		{
-/*#if !MOBILE
-			AddVirtualDirectoryType<RarDirectoryInfo>(".rar");
-			AddVirtualDirectoryType<ZipDirectoryInfo>(".zip");
-#endif*/
-			AddVirtualDirectoryType<SharpCompressDirectoryInfo>(".zip");
-			AddVirtualDirectoryType<SharpCompressDirectoryInfo>(".rar");
-			/* doesn't actually work...
-			AddVirtualDirectoryType<SharpCompressDirectoryInfo>(".gz");
-			AddVirtualDirectoryType<SharpCompressDirectoryInfo>(".tar");
-			AddVirtualDirectoryType<SharpCompressDirectoryInfo>(".bz2");
-			*/
-		}
-		
 		public EtoDirectoryInfo()
 		{
 		}

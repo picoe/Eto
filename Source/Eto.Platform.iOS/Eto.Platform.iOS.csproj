@@ -59,12 +59,6 @@
     <Folder Include="Threading\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.iOS.csproj">
-      <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
-      <Name>Eto.iOS</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Generator.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
       <SubType>Code</SubType>
@@ -114,5 +108,11 @@
     <Compile Include="Forms\iosContainer.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.iOS.csproj">
+      <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
+      <Name>Eto.iOS</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

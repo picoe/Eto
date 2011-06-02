@@ -31,7 +31,7 @@ namespace Eto.Platform.Mac
 				//Console.WriteLine("\t\tkeymap.Add({2}, Key.{0}({1})); {3}", theEvent.Characters, (int)keyChar, theEvent.KeyCode, theEvent.ModifierFlags);
 				//Console.WriteLine("\t\t{0} {1} {2}", key & Key.ModifierMask, key & Key.KeyMask, (NSKey)keyChar);
 				if (key != Key.None) {
-					if ((int)keyChar < 127 && (int)keyChar >= 32 && ((modifiers & ~Key.Shift) == 0))
+					if ((int)keyChar < 127 && (int)keyChar >= 32 && ((modifiers & ~(Key.Shift | Key.Alt)) == 0))
 						kpea = new KeyPressEventArgs (key, keyChar);
 					else
 						kpea = new KeyPressEventArgs (key);
