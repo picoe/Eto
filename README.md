@@ -47,9 +47,9 @@ For example, a simple hello-world application might look like:
 Namespaces
 ----------
 
-* Eto.Forms - User interface 
-* Eto.Drawing - Drawing/graphical routines
-* Eto.IO - Disk/Virtual directory abstraction
+* [Eto.Forms](https://github.com/picoe/Eto/tree/master/Source/Eto/Forms) - User interface 
+* [Eto.Drawing](https://github.com/picoe/Eto/tree/master/Source/Eto/Drawing) - Drawing/graphical routines
+* [Eto.IO](https://github.com/picoe/Eto/tree/master/Source/Eto/IO) - Disk/Virtual directory abstraction
 * Eto.Platform.[Platform] - platform implementations
 
 Currently supported targets
