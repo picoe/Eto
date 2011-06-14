@@ -6,6 +6,14 @@ namespace Eto.Forms
 {
 	public partial class ActionItemCollection : List<IActionItem>
 	{
+		
+		public MenuBar GenerateMenuBar()
+		{
+			var menu = new MenuBar(Generator);
+			Generate (menu);
+			return menu;
+		}
+		
 		public void Generate(Menu menu)
 		{
 			var list = new List<IActionItem>(this);

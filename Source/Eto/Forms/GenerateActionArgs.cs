@@ -47,9 +47,19 @@ namespace Eto.Forms
 		}
 		
 		#endregion
+
+		public GenerateActionArgs()
+		: this(Generator.Current)
+		{
+		}
+		
+		public GenerateActionArgs(Generator generator)
+		: this(generator, null)
+		{
+		}
 		
 		public GenerateActionArgs(Control control)
-		: this(Generator.Current, control)
+		: this(control.Generator, control)
 		{
 		}
 		

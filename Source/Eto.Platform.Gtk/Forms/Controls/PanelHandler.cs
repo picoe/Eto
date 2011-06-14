@@ -3,26 +3,31 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class PanelHandler : GtkContainer<Gtk.VBox, Panel>, IPanel
+	public class PanelHandler : GtkContainer<Gtk.EventBox, Panel>, IPanel
 	{
+		Gtk.VBox box;
 		
 		public PanelHandler()
 		{
-			Control = new Gtk.VBox();
+			Control = new Gtk.EventBox();
+			box = new Gtk.VBox();
+			Control.Add (box);
 		}
 
 		public override object ContainerObject
 		{
-			get { return Control; }
+			get { return box; }
 		}
 		
 		public override void SetLayout(Layout inner)
 		{
-			if (Control.Children.Length > 0)
-				foreach (Gtk.Widget child in Control.Children)
-					Control.Remove(child);
+			if (box.Children.Length > 0)
+				foreach (Gtk.Widget child in box.Children)
+					box.Remove(child);
 			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			Control.Add((Gtk.Widget)gtklayout.ContainerObject);
+			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
+			box.Add(containerWidget);
+			containerWidget.ShowAll ();
 		}
 		
 

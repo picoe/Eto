@@ -17,7 +17,6 @@ namespace Eto.Platform.Mac
 		
 		public ApplicationHandler()
 		{
-			//AppDelegate = new AppDelegate();
 			NSApplication.Init();
 		}
 

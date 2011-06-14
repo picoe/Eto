@@ -60,7 +60,9 @@ namespace Eto.Platform.GtkSharp
 				if (Control.Child1 != null) Control.Remove(Control.Child1);
 				if (panel1 != null)
 				{
-					Control.Add1((Gtk.Widget)panel1.ControlObject);
+					var widget = (Gtk.Widget)panel1.ControlObject;
+					Control.Add1(widget);
+					widget.ShowAll ();
 				}
 			}
 		}
@@ -74,7 +76,9 @@ namespace Eto.Platform.GtkSharp
 				if (Control.Child2 != null) Control.Remove(Control.Child2);
 				if (panel2 != null)
 				{
-					Control.Add2((Gtk.Widget)panel2.ControlObject);
+					var widget = (Gtk.Widget)panel2.ControlObject;
+					Control.Add2(widget);
+					widget.ShowAll ();
 				}
 			}
 		}

@@ -8,7 +8,7 @@ using Eto.Forms;
 namespace Eto.Platform.Windows
 {
 	public abstract class WindowHandler<T, W> : WindowsContainer<T, W>, IWindow
-		where T: SWF.Form
+		where T: System.Windows.Forms.Form
 		where W: Window
 	{
 		MenuBar menu;
@@ -17,75 +17,79 @@ namespace Eto.Platform.Windows
 		System.Windows.Forms.Panel top;
 		SWF.Panel toolbarHolder;
 		
-		public override void Initialize()
+		public override void Initialize ()
 		{
 			base.Initialize ();
 			Control.Closed += Control_Closed;
-			Control.Closing += new CancelEventHandler(Control_Closing);
+			Control.Closing += new CancelEventHandler (Control_Closing);
 			
-			toolbarHolder = new SWF.Panel();
+			toolbarHolder = new SWF.Panel ();
 			toolbarHolder.Dock = System.Windows.Forms.DockStyle.Top;
 			toolbarHolder.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			toolbarHolder.AutoSize = true;
-			Control.Controls.Add(toolbarHolder);
+			Control.Controls.Add (toolbarHolder);
 			
-			top = new SWF.Panel();
+			top = new SWF.Panel ();
 			top.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			top.AutoSize = true;
 			top.Dock = SWF.DockStyle.Top;
-			Control.Controls.Add(top);
+			Control.Controls.Add (top);
 		}
 		
-		private void Control_Closing(object sender, CancelEventArgs e)
+		private void Control_Closing (object sender, CancelEventArgs e)
 		{
-			Widget.OnClosing(e);
+			Widget.OnClosing (e);
+		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Window.ShownEvent:
+				Control.Shown += delegate {
+					Widget.OnShown (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 
-
-		public MenuBar Menu
-		{
-			get
-			{
+		public MenuBar Menu {
+			get {
 				return menu;
 			}
-			set
-			{
-				this.Control.SuspendLayout();
-				if (menu != null) top.Controls.Remove((SWF.MenuStrip)menu.ControlObject);
+			set {
+				this.Control.SuspendLayout ();
+				if (menu != null)
+					top.Controls.Remove ((SWF.MenuStrip)menu.ControlObject);
 				
-				if (value == null)
-				{
+				if (value == null) {
 					Control.MainMenuStrip = null;
-				}
-				else
-				{
+				} else {
 					var c = (SWF.MenuStrip)value.ControlObject;
 					c.Dock = SWF.DockStyle.Top;
-					top.Controls.Add(c);
+					top.Controls.Add (c);
 					Control.MainMenuStrip = c;
 				}
-				this.Control.ResumeLayout();
+				this.Control.ResumeLayout ();
 				top.PerformLayout ();
 				top.Update ();
 				menu = value;
 			}
 		}
 		
-		public bool Resizable
-		{
-			get
-			{
-				if (Control.FormBorderStyle == SWF.FormBorderStyle.Sizable) return true;
-				else return false;
-			}
-			set
-			{
-				if (value)
-				{
-					Control.FormBorderStyle = SWF.FormBorderStyle.Sizable;
-				}
+		public bool Resizable {
+			get {
+				if (Control.FormBorderStyle == SWF.FormBorderStyle.Sizable)
+					return true;
 				else
-				{
+					return false;
+			}
+			set {
+				if (value) {
+					Control.FormBorderStyle = SWF.FormBorderStyle.Sizable;
+				} else {
 					Control.FormBorderStyle = SWF.FormBorderStyle.FixedDialog;
 				}
 			}
@@ -96,50 +100,48 @@ namespace Eto.Platform.Windows
 				return this.toolBar;
 			}
 			set {
-				this.Control.SuspendLayout();
+				this.Control.SuspendLayout ();
 				//toolbarHolder.SuspendLayout();
-				if (toolBar != null) toolbarHolder.Controls.Remove((SWF.Control)toolBar.ControlObject);
+				if (toolBar != null)
+					toolbarHolder.Controls.Remove ((SWF.Control)toolBar.ControlObject);
 				toolBar = value;
-				if (toolBar != null) 
-				{
+				if (toolBar != null) {
 					var c = ((SWF.Control)toolBar.ControlObject);
 					c.Dock = SWF.DockStyle.Top;
-					toolbarHolder.Controls.Add(c);
+					toolbarHolder.Controls.Add (c);
 				}
 				//toolbarHolder.ResumeLayout();
-				this.Control.ResumeLayout();
+				this.Control.ResumeLayout ();
 				toolbarHolder.Update ();
 			}
 		}
 		
-		public void AddToolbar(ToolBar toolBar)
+		public void AddToolbar (ToolBar toolBar)
 		{
-			Control.Controls.Add((SWF.Control)toolBar.ControlObject);
+			Control.Controls.Add ((SWF.Control)toolBar.ControlObject);
 		}
 
-		public void RemoveToolbar(ToolBar toolBar)
+		public void RemoveToolbar (ToolBar toolBar)
 		{
-			Control.Controls.Remove((SWF.Control)toolBar.ControlObject);
+			Control.Controls.Remove ((SWF.Control)toolBar.ControlObject);
 		}
 
-		public void ClearToolbars()
+		public void ClearToolbars ()
 		{
-			foreach (SWF.Control c in Control.Controls)
-			{
-				if (c is SWF.ToolBar) Control.Controls.Remove(c);
+			foreach (SWF.Control c in Control.Controls) {
+				if (c is SWF.ToolBar)
+					Control.Controls.Remove (c);
 			}
 		}
 
-		public void Close()
+		public void Close ()
 		{
-			Control.Close();
+			Control.Close ();
 		}
 
-		public Icon Icon
-		{
+		public Icon Icon {
 			get { return icon; }
-			set
-			{
+			set {
 				icon = value;
 				Control.Icon = (SD.Icon)icon.ControlObject;
 			}
@@ -150,9 +152,9 @@ namespace Eto.Platform.Windows
 			Control.WindowState = System.Windows.Forms.FormWindowState.Minimized;
 		}
 
-		private void Control_Closed(object sender, EventArgs e)
+		private void Control_Closed (object sender, EventArgs e)
 		{
-			Widget.OnClosed(e);
+			Widget.OnClosed (e);
 		}
 
 

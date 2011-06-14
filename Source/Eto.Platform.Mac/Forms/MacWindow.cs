@@ -91,6 +91,21 @@ namespace Eto.Platform.Mac
 				Control.SetFrame(Generator.ConvertF(Control.Frame, value), false);
 			}
 		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler)
+			{
+			case Window.ShownEvent:
+				Control.DidBecomeKey += delegate {
+					Widget.OnShown (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 
 		public virtual void SetLayout(Layout layout)
 		{

@@ -29,7 +29,7 @@ namespace Eto.Platform.GtkSharp
 			if (Control.Child != null) Control.Remove(Control.Child);
 			var widget = (Gtk.Widget)child.ControlObject;
 			Control.Add(widget);
-			widget.ShowAll();
+			widget.ShowAll ();
 		}
 
 		public void Remove(Control child)

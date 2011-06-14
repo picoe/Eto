@@ -11,6 +11,12 @@ namespace Eto.Forms
 	public class MenuBar : Menu
 	{
 		//IMenuBar inner;
+		
+		public MenuBar()
+			: this(Generator.Current)
+		{
+			
+		}
 
 		public MenuBar(Generator g) : base(g, typeof(IMenuBar))
 		{

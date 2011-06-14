@@ -12,6 +12,11 @@ namespace Eto.Forms
 	public class ImageMenuItem : MenuActionItem
 	{
 		IImageMenuItem inner;
+		
+		public ImageMenuItem()
+			: this(Generator.Current)
+		{
+		}
 
 		public ImageMenuItem(Generator g) : base(g, typeof(IImageMenuItem))
 		{

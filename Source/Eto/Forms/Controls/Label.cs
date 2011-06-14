@@ -31,6 +31,7 @@ namespace Eto.Forms
 		VerticalAlign VerticalAlign { get; set; }
 		Font Font { get; set; }
 		WrapMode Wrap { get; set; }
+		Color TextColor { get; set; }
 	}
 	
 	public class Label : TextControl
@@ -54,6 +55,12 @@ namespace Eto.Forms
 		{
 			get { return inner.Wrap; }
 			set { inner.Wrap = value; }
+		}
+		
+		public Color TextColor
+		{
+			get { return inner.TextColor; }
+			set { inner.TextColor = value; }
 		}
 		
 		public HorizontalAlign HorizontalAlign

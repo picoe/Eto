@@ -7,6 +7,12 @@ namespace Eto.Forms
 	public partial class ActionItemCollection : List<IActionItem>
 	{
 		ActionCollection actions;
+		
+		public Generator Generator
+		{
+			get { return actions.Generator; }
+		}
+			
 
 		public ActionItemCollection(ActionCollection actions)
 		{
@@ -117,6 +123,13 @@ namespace Eto.Forms
 				sectiony = this.IndexOf(y);
 			}
 			return sectionx.CompareTo(sectiony);
+		}
+		
+		public ToolBar GenerateToolBar()
+		{
+			var toolBar = new ToolBar(Generator);
+			Generate (toolBar);
+			return toolBar;
 		}
 
 		public void Generate(ToolBar toolBar)

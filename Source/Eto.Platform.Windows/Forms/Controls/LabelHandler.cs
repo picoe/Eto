@@ -123,6 +123,15 @@ namespace Eto.Platform.Windows
 			Control.AutoSize = true;
 		}
 		
+		public Color TextColor {
+			get {
+				return Generator.Convert (Control.ForeColor);
+			}
+			set {
+				Control.ForeColor = Generator.Convert (value);
+			}
+		}
+		
 		public HorizontalAlign HorizontalAlign {
 			get {
 				return Control.HorizontalAlign;

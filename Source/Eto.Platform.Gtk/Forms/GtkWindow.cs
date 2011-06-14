@@ -77,6 +77,21 @@ namespace Eto.Platform.GtkSharp
 			
 		}
 		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler)
+			{
+			case Window.ShownEvent:
+				Control.Shown += delegate {
+					Widget.OnShown(EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+
 		public MenuBar Menu
 		{
 			get
@@ -121,7 +136,9 @@ namespace Eto.Platform.GtkSharp
 			if (containerBox.Children.Length > 0)
 				foreach (Gtk.Widget child in containerBox.Children)
 					containerBox.Remove(child);
-			containerBox.PackStart((Gtk.Widget)gtklayout.ContainerObject, true, true, 0);
+			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
+			containerBox.PackStart(containerWidget, true, true, 0);
+			containerWidget.ShowAll ();
 		}
 
 		public override string Text

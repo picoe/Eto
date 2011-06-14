@@ -73,6 +73,15 @@ namespace Eto.Platform.Mac
 			}
 		}*/
 		
+		public Color TextColor {
+			get {
+				return Generator.Convert(Control.TextColor);
+			}
+			set {
+				Control.TextColor = Generator.ConvertNS(value);
+			}
+		}
+		
 		public WrapMode Wrap {
 			get {
 				if (Control.Cell.UsesSingleLineMode)

@@ -9,9 +9,19 @@ namespace Eto.Forms
 	{
 		Generator generator;
 
-		public ActionCollection(Generator g, Control control)
+		public ActionCollection()
+			: this(Generator.Current)
 		{
-			this.generator = g;
+		}
+		
+		public ActionCollection(Generator generator)
+			: this(generator, null)
+		{
+		}
+		
+		public ActionCollection(Generator generator, Control control)
+		{
+			this.generator = generator;
 			if (control != null) control.KeyDown += control_KeyDown;
 		}
 

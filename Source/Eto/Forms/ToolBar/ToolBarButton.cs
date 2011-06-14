@@ -12,6 +12,12 @@ namespace Eto.Forms
 
 		public event EventHandler<EventArgs> Click;
 		
+		public ToolBarButton()
+			: this(Generator.Current)
+		{
+			
+		}
+		
 		public ToolBarButton(Generator g) : base(g, typeof(IToolBarButton))
 		{
 		}

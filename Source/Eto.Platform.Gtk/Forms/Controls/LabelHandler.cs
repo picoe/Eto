@@ -54,6 +54,11 @@ namespace Eto.Platform.GtkSharp
 				}
 			}
 		}
+		
+		public virtual Color TextColor {
+			get { return Generator.Convert (Control.Style.Foreground (Gtk.StateType.Normal)); }
+			set { Control.ModifyFg (Gtk.StateType.Normal, Generator.Convert (value)); }
+		}
 
 		public override string Text {
 			get { return MnuemonicToString (Control.Text); }

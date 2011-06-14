@@ -9,11 +9,10 @@ namespace Eto.Platform.GtkSharp
 	{
 		Gtk.TreeView tree;
 		Gtk.TreeStore store;
-
-
+		
 		public ListBoxHandler()
 		{
-			store = new Gtk.TreeStore(typeof(string));
+			store = new Gtk.TreeStore(typeof(string), typeof(object));
 
 			Control = new Gtk.ScrolledWindow();
 			Control.ShadowType = Gtk.ShadowType.In;
@@ -22,8 +21,8 @@ namespace Eto.Platform.GtkSharp
 
 			tree.AppendColumn("Data", new Gtk.CellRendererText(), "text", 0);
 			tree.HeadersVisible = false;
-			tree.Selection.Changed += Selection_Changed;
-			tree.RowActivated += new Gtk.RowActivatedHandler(tree_RowActivated);
+			tree.Selection.Changed += selection_Changed;
+			tree.RowActivated += tree_RowActivated;
 		}
 
 		public override void Focus()
@@ -41,7 +40,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public void AddItem(object item)
 		{
-			store.AppendValues(item);
+			store.AppendValues(Convert.ToString (item), item);
 		}
 
 		public void RemoveItem(object item)
@@ -61,7 +60,7 @@ namespace Eto.Platform.GtkSharp
 				
 				if (tree.Selection != null && tree.Selection.GetSelected(out iter))
 				{
-					object val = store.GetValue(iter, 0);
+					object val = store.GetValue(iter, 1);
 					if (val != null)
 					{
 						return ((ListBox)Widget).Items.IndexOf(val);
@@ -91,7 +90,7 @@ namespace Eto.Platform.GtkSharp
 
 		#endregion
 
-		private void Selection_Changed(object sender, EventArgs e)
+		private void selection_Changed(object sender, EventArgs e)
 		{
 			Widget.OnSelectedIndexChanged(EventArgs.Empty);
 		}
