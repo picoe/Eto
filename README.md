@@ -1,7 +1,8 @@
-Eto - A cross platform desktop and mobile user interface framework
-===================================================================
+Eto - Cross platform desktop and mobile user interface framework
+================================================================
 
-## DESCRIPTION
+Description
+-----------
 
 This framework is built so that you can target multiple platforms with one set of code.
 
@@ -18,7 +19,7 @@ framework for portions of your app.
 
 Note that it is planned to have some different controls for Mobile platforms vs. Desktop.
 
-This framework was built so that using it in .NET is natural.  
+This framework was built so that using it in .NET is natural.
 For example, a simple hello-world application might look like:
 
 	public class MyForm : Form {
@@ -43,28 +44,35 @@ For example, a simple hello-world application might look like:
 	}
 
 
-Namespaces:
+Namespaces
+----------
 
 * Eto.Forms - User interface 
 * Eto.Drawing - Drawing/graphical routines
 * Eto.IO - Disk/Virtual directory abstraction
 * Eto.Platform.[Platform] - platform implementations
 
-Currently supported targets:
+Currently supported targets
+---------------------------
 
 * Mac OS X using MonoMac
 * Linux using GTK#
 * Windows using Windows Forms
 	
-Under development:
+Under development
+-----------------
 
 * iOS using MonoTouch
 	
-Future plans:
+Future plans
+------------
 
 * Android using Mono for Android (or equivalent)
 
-Not Working (nor planning on working on):
+Not Working
+-----------
+
+These were built a LONG time ago with an older version of the core framework, and would need substantial updates to get working again.
 
 * Web using ASP.NET
 * WXWidgets
