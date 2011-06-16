@@ -23,7 +23,7 @@ namespace Eto.Platform.Windows
 			Control = new SWF.TableLayoutPanel();
 			Control.Margin = SWF.Padding.Empty;
 			Control.Dock = SWF.DockStyle.Fill;
-			//Control.AutoSize = true;
+			Control.AutoSize = true;
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
 		}

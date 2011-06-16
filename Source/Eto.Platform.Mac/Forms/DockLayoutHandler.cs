@@ -29,6 +29,25 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
+		public override void SizeToFit ()
+		{
+			var container = child as Container;
+			if (container != null)
+			{
+				var layout = container.Layout as IMacLayout;
+				if (layout != null) layout.SizeToFit ();
+				Control.Frame = ((NSView)container.ControlObject).Frame;
+			}
+			else if (child != null)
+			{
+				var c = child.ControlObject as NSControl;
+				if (c != null) {
+					c.SizeToFit ();
+					Control.Frame = c.Frame;
+				}
+			}
+		}
+		
 		void SetChildFrame()
 		{
 			if (child == null) return;

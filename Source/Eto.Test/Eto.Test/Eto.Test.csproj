@@ -10,6 +10,7 @@
     <RootNamespace>Eto.Test</RootNamespace>
     <AssemblyName>Eto.Test</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ApplicationIcon>..\Eto.Test.Interface\TestIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -34,14 +35,6 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Platform.Gtk\Eto.Platform.Gtk.csproj">
-      <Project>{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}</Project>
-      <Name>Eto.Platform.Gtk</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
-      <Project>{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}</Project>
-      <Name>Eto.Platform.Windows</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
@@ -49,6 +42,14 @@
     <ProjectReference Include="..\Eto.Test.Interface\Eto.Test.Interface.csproj">
       <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
       <Name>Eto.Test.Interface</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Platform.Gtk\Eto.Platform.Gtk.csproj">
+      <Project>{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}</Project>
+      <Name>Eto.Platform.Gtk</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
+      <Project>{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}</Project>
+      <Name>Eto.Platform.Windows</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -33,8 +33,12 @@ namespace Eto.Test.Interface.Controls
 		{
 			this.contentContainer = contentContainer;
 			
+			// add some items
 			Items.Add (new Section<LabelSection> { Text = "Label Control" });
 			Items.Add (new Section<ButtonSection> { Text = "Button Control" });
+			Items.Add (new Section<ScrollableSection> { Text = "Scrollable Control" });
+			
+			this.SelectedIndex = 1; // select the first item
 		}
 		
 		public override void OnSelectedIndexChanged (EventArgs e)

@@ -20,7 +20,9 @@ namespace Eto.Forms
 		IWindow inner;
 		//ToolBarCollection toolBars;
 		
-
+		
+		#region Events
+		
 		public event EventHandler<EventArgs> Closed;
 
 		public virtual void OnClosed (EventArgs e)
@@ -54,6 +56,45 @@ namespace Eto.Forms
 			if (shown != null)
 				shown (this, e);
 		}
+		
+		public const string MinimizedEvent = "Window.Minimized";
+		
+		event EventHandler<EventArgs> minimized;
+		
+		public event EventHandler<EventArgs> Minimized {
+			add {
+				HandleEvent (MinimizedEvent);
+				minimized += value;
+			}
+			remove { minimized -= value; }
+		}
+		
+		public virtual void OnMinimized (EventArgs e)
+		{
+			if (minimized != null)
+				minimized (this, e);
+		}
+
+		public const string MaximizedEvent = "Window.Maximized";
+		
+		event EventHandler<EventArgs> maximized;
+		
+		public event EventHandler<EventArgs> Maximized {
+			add {
+				HandleEvent (MaximizedEvent);
+				maximized += value;
+			}
+			remove { maximized -= value; }
+		}
+		
+		public virtual void OnMaximized (EventArgs e)
+		{
+			if (maximized != null)
+				maximized (this, e);
+		}
+		
+		#endregion
+		
 
 		protected Window (Generator g, Type type) : base(g, type, false)
 		{

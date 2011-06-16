@@ -77,28 +77,57 @@ namespace Eto.Platform.Mac
 			});
 		}
 		
+		public override void SizeToFit ()
+		{
+			if (views == null) return;
+			var heights = new float[views.GetLength(0)];
+			var widths = new float[views.GetLength(1)];
+			var controlFrame = Control.Frame;
+			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
+			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
+			var requiredx = totalxpadding;
+			var requiredy = totalypadding;
+			var numx = 0;
+			var numy = 0;
+			
+			for (int y=0; y<heights.Length; y++) { heights[y] = 0; if (yscaling[y]) numy++; }
+			for (int x=0; x<widths.Length; x++) { widths[x] = 0; if (xscaling[x]) numx++; }
+			
+			for (int y=0; y<heights.Length; y++)
+			for (int x=0; x<widths.Length; x++) {
+				var view = views[y, x];
+				if (view != null && view.Visible) {
+					AutoSize(view);
+					if (!xscaling[x] && widths[x] < view.Size.Width) { 
+						requiredx += view.Size.Width - widths[x];
+						widths[x] = view.Size.Width; 
+					}
+					if (!yscaling[y] && heights[y] < view.Size.Height) { 
+						requiredy += view.Size.Height - heights[y];
+						heights[y] = view.Size.Height; 
+					}
+				}
+			}
+			controlFrame.Width = requiredx;
+			controlFrame.Height = requiredy;
+			Control.Frame = controlFrame;
+		}
+		
+		
 		void AutoSize(Control view)
 		{
 			var c = view.ControlObject as NSControl;
 			var mh = view.Handler as IMacView;
 			if (mh != null && !mh.AutoSize) return;
-			if (c != null) c.SizeToFit();
-			else {
-				/*var frame = view.Frame;
-				if (frame.Height == 0 || frame.Width == 0) {
-					foreach (NSView subview in view.Subviews) {
-						AutoSize(subview);
-						if (frame.Height < subview.Frame.Bottom) {
-							//frame.Y += subview.Frame.Bottom - frame.Height;
-							frame.Height = subview.Frame.Bottom;
-						}
-						if (frame.Width < subview.Frame.Right) {
-							frame.Width = subview.Frame.Right;
-						}
-					}
-					view.Frame = frame;
-				}*/
+
+			var container = view as Container;
+			if (container != null && container.Layout != null)
+			{
+				var layout = container.Layout.Handler as IMacLayout;
+				if (layout != null) layout.SizeToFit();
 			}
+
+			if (c != null) c.SizeToFit();
 		}
 		
 		void Layout()
@@ -125,9 +154,11 @@ namespace Eto.Platform.Mac
 				if (view != null && view.Visible) {
 					AutoSize(view);
 					if (!xscaling[x] && widths[x] < view.Size.Width) { 
+						
 						widths[x] = view.Size.Width; requiredx += view.Size.Width - widths[x];
 					}
 					if (!yscaling[y] && heights[y] < view.Size.Height) { 
+						
 						heights[y] = view.Size.Height; requiredy += view.Size.Height - heights[y];
 					}
 				}
@@ -144,12 +175,16 @@ namespace Eto.Platform.Mac
 			
 			if (numy > 0) { for (int y=0; y<heights.Length; y++) if (!yscaling[y]) totaly -= heights[y]; }
 			else {
-				for (int y=0; y<heights.Length-1; y++) totaly -= heights[y];
+				if (heights.Length > 1) {
+					for (int y=0; y<heights.Length-1; y++) totaly -= heights[y];
+				}
 				heights[heights.Length-1] = totaly;
 			}
 			if (numx > 0) { for (int x=0; x<widths.Length; x++) if (!xscaling[x]) totalx -= widths[x]; }
 			else { 
-				for (int x=0; x<widths.Length-1; x++) totalx -= widths[x];
+				if (widths.Length > 1) {
+					for (int x=0; x<widths.Length-1; x++) totalx -= widths[x];
+				}
 				widths[widths.Length-1] = totalx;
 			}
 			if (numx > 0) totalx = Math.Max(totalx, 0) / numx;

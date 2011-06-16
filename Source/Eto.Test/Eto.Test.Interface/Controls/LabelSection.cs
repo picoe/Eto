@@ -12,7 +12,6 @@ namespace Eto.Test.Interface.Controls
 			layout.Spacing = Size.Empty; // inbetween cells
 			layout.Padding = Padding.Empty; // around edges
 			
-			
 			layout.Add (NormalLabel(), 0, 0, true, true);
 			layout.Add (FontLabel(), 0, 1, true, true);
 			layout.Add (CenterLabel(), 0, 2, true, true);

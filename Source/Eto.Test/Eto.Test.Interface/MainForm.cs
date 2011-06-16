@@ -14,6 +14,8 @@ namespace Eto.Test.Interface
 			this.Icon = new Icon (null, "TestIcon.ico");
 			this.Size = new Size (800, 600);
 			
+			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent);
+			
 			/* Option 1: use actions to generate menu and toolbar (recommended)
 			 */
 			GenerateMenuToolBarActions ();
@@ -26,8 +28,6 @@ namespace Eto.Test.Interface
 			GenerateToolBar();
 			/*
 			 */
-			 
-			
 			GenerateContent();
 		}
 		
@@ -45,6 +45,7 @@ namespace Eto.Test.Interface
 			
 			this.AddDockedControl (splitter);
 			
+			// set focus when the form is shown
 			this.Shown += delegate {
 				sectionList.Focus ();
 			};
@@ -143,6 +144,18 @@ namespace Eto.Test.Interface
 		}
 		*/
 		#endregion
+		
+		public override void OnMaximized (EventArgs e)
+		{
+			base.OnMaximized (e);
+			Console.WriteLine ("Maximized");
+		}
+		
+		public override void OnMinimized (EventArgs e)
+		{
+			base.OnMinimized (e);
+			Console.WriteLine ("Minimized");
+		}
 	}
 }
 

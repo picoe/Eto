@@ -6,7 +6,8 @@ using MonoMac.Foundation;
 namespace Eto.Platform.Mac
 {
 	public interface IMacLayout {
-		object LayoutObject { get; }		
+		object LayoutObject { get; }
+		void SizeToFit();
 	}
 	
 	public abstract class MacLayout<T, W> : MacObject<T, W>, ILayout, IMacLayout
@@ -17,6 +18,8 @@ namespace Eto.Platform.Mac
 		{
 			get { return null; }
 		}
+		
+		public abstract void SizeToFit();
 
 	}
 }

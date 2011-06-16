@@ -49,6 +49,20 @@ namespace Eto.Platform.Windows
 					Widget.OnShown (EventArgs.Empty);
 				};
 				break;
+			case Window.MaximizedEvent:
+				Control.Resize += delegate {
+					if (Control.WindowState == SWF.FormWindowState.Maximized) {
+						Widget.OnMaximized (EventArgs.Empty);
+					}
+				};
+				break;
+			case Window.MinimizedEvent:
+				Control.Resize += delegate {
+					if (Control.WindowState == SWF.FormWindowState.Minimized) {
+						Widget.OnMaximized (EventArgs.Empty);
+					}
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

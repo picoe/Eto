@@ -5,7 +5,6 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 namespace Eto.Platform.Mac
 {
-	
 	public abstract class MacContainer<T, W> : MacView<T, W>, IContainer
 		where T: NSView
 		where W: Container

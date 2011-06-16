@@ -43,6 +43,7 @@
     <Compile Include="Controls\SectionList.cs" />
     <Compile Include="Controls\LabelSection.cs" />
     <Compile Include="Controls\ButtonSection.cs" />
+    <Compile Include="Controls\ScrollableSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

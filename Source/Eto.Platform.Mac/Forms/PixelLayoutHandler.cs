@@ -18,6 +18,10 @@ namespace Eto.Platform.Mac
 		}
 
 		
+		public override void SizeToFit ()
+		{
+		}
+		
 		public void Add(Control child, int x, int y)
 		{
 			var parent = ControlObject as NSView;

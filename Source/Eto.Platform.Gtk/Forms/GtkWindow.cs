@@ -86,6 +86,26 @@ namespace Eto.Platform.GtkSharp
 					Widget.OnShown(EventArgs.Empty);
 				};
 				break;
+			case Window.MaximizedEvent:
+				Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
+					if ((args.Event.ChangedMask & (Gdk.WindowState.Maximized | Gdk.WindowState.Fullscreen)) != 0 
+						&&
+						(args.Event.NewWindowState & (Gdk.WindowState.Maximized | Gdk.WindowState.Fullscreen)) != 0)
+					{
+						Widget.OnMaximized(EventArgs.Empty);
+					}
+				};
+				break;
+			case Window.MinimizedEvent:
+				Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
+					if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 
+						&&
+						(args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0)
+					{
+						Widget.OnMinimized(EventArgs.Empty);
+					}
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

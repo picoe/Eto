@@ -42,23 +42,34 @@ namespace Eto.Test.Interface.Dialogs
 				HorizontalAlign = HorizontalAlign.Center
 			}, 0, 3);
 			
+			layout.Add (Buttons (), 0, 4);
+		}
+		
+		Control Buttons ()
+		{
 			var buttons = new TableLayout (new Panel{
 				Size = new Size(90, 26)
 			}, 3, 1);
+			
 			buttons.Padding = Padding.Empty;
 			buttons.SetColumnScale (0);
 			buttons.SetColumnScale (2);
 				
-			var b = new Button{ 
-					Text = "Close",
-					Size = new Size(90, 26)
-				};
-			b.Click += delegate {
+			buttons.Add (CloseButton(), 1, 0);
+			
+			return buttons.Container;
+		}
+		
+		Control CloseButton()
+		{
+			var button = new Button{ 
+				Text = "Close",
+				Size = new Size(90, 26)
+			};
+			button.Click += delegate {
 				Close ();
 			};
-			buttons.Add (b, 1, 0);
-				
-			layout.Add (buttons.Container, 0, 4);
+			return button;
 		}
 		
 	}

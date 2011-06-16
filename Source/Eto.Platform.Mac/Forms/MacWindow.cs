@@ -101,6 +101,17 @@ namespace Eto.Platform.Mac
 					Widget.OnShown (EventArgs.Empty);
 				};
 				break;
+			case Window.MaximizedEvent:
+				Control.ShouldZoom = (window, newFrame) => {
+					if (!window.IsZoomed) Widget.OnMaximized(EventArgs.Empty);
+					return true;
+				};
+				break;
+			case Window.MinimizedEvent:
+				Control.WillMiniaturize += delegate {
+					Widget.OnMinimized(EventArgs.Empty);
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

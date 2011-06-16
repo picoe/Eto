@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test.Interface.Actions
 {
@@ -12,6 +13,7 @@ namespace Eto.Test.Interface.Actions
 			this.ID = ActionID;
 			this.MenuText = "About Test Application";
 			this.ToolBarText = "About";
+			this.Icon = new Icon(null, "TestIcon.ico");
 		}
 		
 		protected override void OnActivated (EventArgs e)

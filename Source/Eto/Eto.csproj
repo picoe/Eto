@@ -20,7 +20,6 @@
     <RootNamespace>Eto</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <ReleaseVersion>3.0.8</ReleaseVersion>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

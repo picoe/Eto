@@ -6,8 +6,8 @@ namespace Eto.Platform.Mac
 {
 	public class SplitterHandler : MacView<NSSplitView, Splitter>, ISplitter
 	{
-		Control panel1 = null;
-		Control panel2 = null;
+		Control panel1;
+		Control panel2;
 		NSSplitView control;
 		int? position;
 		

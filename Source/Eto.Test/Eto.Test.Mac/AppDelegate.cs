@@ -8,7 +8,7 @@ namespace Eto.Test.Mac
 	public partial class AppDelegate : Eto.Platform.Mac.AppDelegate
 	{
 		
-		// do any OS X - specific file open/launch handling here
+		// do any OS X - specific file/application open/launch handling here
 		
 		public override bool ApplicationShouldHandleReopen (NSApplication sender, bool hasVisibleWindows)
 		{
