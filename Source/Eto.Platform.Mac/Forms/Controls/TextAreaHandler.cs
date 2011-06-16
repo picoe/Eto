@@ -4,21 +4,47 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac
 {
-	public class TextAreaHandler : MacText<NSTextField, TextArea>, ITextArea
+	public class TextAreaHandler : MacView<NSScrollView, TextArea>, ITextArea
 	{
+		NSTextView text;
+		
 		public TextAreaHandler()
 		{
-			Control = new NSTextField();
-			Control.Editable = true;
-			Control.Selectable = true;
+			Control = new NSScrollView();
+			Control.AutoresizesSubviews = true;
+			Control.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+			Control.HasVerticalScroller = true;
+			Control.HasHorizontalScroller = true;
+			Control.AutohidesScrollers = true;
+			Control.BorderType = NSBorderType.BezelBorder;
+			
+			text = new NSTextView();
+			//text.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+			//text.TextContainer.ContainerSize = new System.Drawing.SizeF(1.0e7f, 1.0e7f);
+			//text.TextContainer.WidthTracksTextView = false;
+			text.HorizontallyResizable = true;
+			text.VerticallyResizable = true;
+			text.Editable = true;
+			text.Selectable = true;
+			
+			Control.DocumentView = text;
 		}
 		
 		#region ITextArea Members
 		
 		public bool ReadOnly
 		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
+			get { return text.Editable; }
+			set { text.Editable = value; }
+		}
+		
+		public string Text {
+			get {
+				return text.Value;
+			}
+			set {
+				text.Value = value;
+			}
 		}
 		
 		#endregion
