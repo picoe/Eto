@@ -43,6 +43,10 @@ For example, a simple hello-world application might look like:
 		}
 	}
 
+Applications
+------------
+* [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
+
 
 Namespaces
 ----------
