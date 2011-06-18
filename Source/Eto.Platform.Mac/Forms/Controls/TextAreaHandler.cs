@@ -26,6 +26,9 @@ namespace Eto.Platform.Mac
 			text.VerticallyResizable = true;
 			text.Editable = true;
 			text.Selectable = true;
+			text.TextDidChange += delegate {
+				Widget.OnTextChanged (EventArgs.Empty);
+			};
 			
 			Control.DocumentView = text;
 		}
