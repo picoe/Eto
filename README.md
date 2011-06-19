@@ -46,6 +46,7 @@ For example, a simple hello-world application might look like:
 Applications
 ------------
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
+* [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
 
 
 Namespaces
