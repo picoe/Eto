@@ -47,7 +47,7 @@ For example, a simple hello-world application might look like:
 Applications
 ------------
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
-* [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
+* [Notedown by Mod Monkeys](https://github.com/modmonkeys/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
 
 
