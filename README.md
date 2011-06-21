@@ -4,7 +4,7 @@ Eto - Cross platform desktop and mobile user interface framework
 Description
 -----------
 
-This framework is built so that you can target multiple platforms with one set of code.
+This framework is built so that you can target multiple platforms with one set of UI code.
 
 The goal of this framework is NOT to expose all functionality of each platform, but to expose
 the common set to build functional applications that can be run on all platforms.
@@ -36,8 +36,9 @@ For example, a simple hello-world application might look like:
 		public static void Main() {
 		
 			// run application!	
-			var app = new Application{
-				MainForm = new MyForm()
+			var app = new Application();
+			app.Initialized += delegate {
+				app.MainForm = new MyForm();
 			};
 			app.Run();
 		}
@@ -47,6 +48,7 @@ Applications
 ------------
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
 * [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
+* [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
 
 
 Namespaces
