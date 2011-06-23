@@ -25,19 +25,19 @@ namespace Eto.Platform.Mac
 			Control.Editable = false;*/
 		}
 		
-		public void AddRange (IEnumerable<object> collection)
+		public void AddRange (IEnumerable<IListItem> collection)
 		{
-			Control.AddItems (collection.Select (r => Convert.ToString (r)).ToArray ());
+			Control.AddItems (collection.Select (r => r.Text).ToArray ());
 		}
 
-		public void AddItem (object item)
+		public void AddItem (IListItem item)
 		{
-			Control.AddItem (Convert.ToString (item));
+			Control.AddItem (item.Text);
 		}
 
-		public void RemoveItem (object item)
+		public void RemoveItem (IListItem item)
 		{
-			Control.RemoveItem (Convert.ToString (item));
+			Control.RemoveItem (item.Text);
 		}
 
 		public int SelectedIndex {

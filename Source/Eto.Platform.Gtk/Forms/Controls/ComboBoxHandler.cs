@@ -10,7 +10,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		Gtk.ListStore store;
 		public ComboBoxHandler ()
 		{
-			store = new Gtk.ListStore(typeof(string));
+			store = new Gtk.ListStore(typeof(string), typeof(IListItem));
 			Control = new Gtk.ComboBox(store);
 			var text = new Gtk.CellRendererText();
 			Control.PackStart(text, false);
@@ -20,19 +20,24 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			};
 		}
 
-		public void AddRange (IEnumerable<object> collection)
+		public void AddRange (IEnumerable<IListItem> collection)
 		{
-			store.AppendValues(collection.ToArray());
+			foreach (var o in collection)
+				AddItem(o);
 		}
 		
-		public void AddItem (object item)
+		public void AddItem (IListItem item)
 		{
-			store.AppendValues(Convert.ToString(item));
+			store.AppendValues(item.Text, item);
 		}
 
-		public void RemoveItem (object item)
+		public void RemoveItem (IListItem item)
 		{
-			//store.AppendValues(Convert.ToString(item));
+			Gtk.TreePath path = new Gtk.TreePath();
+			path.AppendIndex(Widget.Items.IndexOf(item));
+			Gtk.TreeIter iter;
+			store.GetIter(out iter, path);
+			store.Remove(ref iter);
 		}
 
 		public void RemoveAll ()

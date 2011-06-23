@@ -12,7 +12,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public ListBoxHandler()
 		{
-			store = new Gtk.TreeStore(typeof(string), typeof(object));
+			store = new Gtk.TreeStore(typeof(string), typeof(IListItem));
 
 			Control = new Gtk.ScrolledWindow();
 			Control.ShadowType = Gtk.ShadowType.In;
@@ -32,18 +32,18 @@ namespace Eto.Platform.GtkSharp
 
 		#region IListControl Members
 
-		public void AddRange (IEnumerable<object> collection)
+		public void AddRange (IEnumerable<IListItem> collection)
 		{
-			foreach (object o in collection)
+			foreach (var o in collection)
 				AddItem(o);
 		}
 		
-		public void AddItem(object item)
+		public void AddItem(IListItem item)
 		{
 			store.AppendValues(Convert.ToString (item), item);
 		}
 
-		public void RemoveItem(object item)
+		public void RemoveItem(IListItem item)
 		{
 			Gtk.TreePath path = new Gtk.TreePath();
 			path.AppendIndex(((ListBox)Widget).Items.IndexOf(item));
@@ -60,7 +60,7 @@ namespace Eto.Platform.GtkSharp
 				
 				if (tree.Selection != null && tree.Selection.GetSelected(out iter))
 				{
-					object val = store.GetValue(iter, 1);
+					IListItem val = (IListItem)store.GetValue(iter, 1);
 					if (val != null)
 					{
 						return ((ListBox)Widget).Items.IndexOf(val);

@@ -14,6 +14,8 @@ namespace Eto.Platform.Windows
 		public ListBoxHandler()
 		{
 			Control = new SWF.ListBox();
+			this.Control.ValueMember = "Key";
+			this.Control.DisplayMember = "Text";
 			Control.SelectedIndexChanged += control_SelectedIndexChanged;
 			Control.IntegralHeight = false;
 			Control.DoubleClick += control_DoubleClick;
@@ -22,19 +24,19 @@ namespace Eto.Platform.Windows
 
 		#region IListControl Members
 
-		public void AddRange (IEnumerable<object> collection)
+		public void AddRange (IEnumerable<IListItem> collection)
 		{
 			this.Control.SuspendLayout();
 			this.Control.Items.AddRange(collection.ToArray());
 			this.Control.ResumeLayout();
 		}
 
-		public void AddItem(object item)
+		public void AddItem(IListItem item)
 		{
 			Control.Items.Add(item);
 		}
 
-		public void RemoveItem(object item)
+		public void RemoveItem(IListItem item)
 		{
 			Control.Items.Remove(item);
 		}

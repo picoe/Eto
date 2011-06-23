@@ -12,7 +12,7 @@ namespace Eto.Platform.Mac
 	{
 		NSTableView control;
 		NSScrollView scroll;
-		List<object> data = new List<object>();
+		List<IListItem> data = new List<IListItem>();
 		
 		class DataSource : NSTableViewDataSource
 		{
@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac
 			
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				return new NSString(Convert.ToString(Handler.data[row]));
+				return new NSString(Handler.data[row].Text);
 			}
 			public override int GetRowCount (NSTableView tableView)
 			{
@@ -90,19 +90,19 @@ namespace Eto.Platform.Mac
 
 		#region IListControl Members
 		
-		public void AddRange (IEnumerable<object> collection)
+		public void AddRange (IEnumerable<IListItem> collection)
 		{
 			data.AddRange(collection);
 			control.ReloadData();
 		}
 		
-		public void AddItem (object item)
+		public void AddItem (IListItem item)
 		{
 			data.Add(item);
 			control.ReloadData();
 		}
 
-		public void RemoveItem (object item)
+		public void RemoveItem (IListItem item)
 		{
 			data.Remove(item);
 			control.ReloadData();

@@ -15,6 +15,8 @@ namespace Eto.Platform.Windows
 		{
 			Control = new SWF.ComboBox();
 			this.Control.DropDownStyle = SWF.ComboBoxStyle.DropDownList;
+			this.Control.ValueMember = "Key";
+			this.Control.DisplayMember = "Text";
 			Control.SelectedIndexChanged += delegate {
 				Widget.OnSelectedIndexChanged(EventArgs.Empty);
 			};
@@ -23,7 +25,7 @@ namespace Eto.Platform.Windows
 
 		#region IListControl Members
 		
-		public void AddRange (IEnumerable<object> collection)
+		public void AddRange (IEnumerable<IListItem> collection)
 		{
 			this.Control.SuspendLayout();
 			this.Control.Items.AddRange(collection.ToArray());
@@ -31,12 +33,12 @@ namespace Eto.Platform.Windows
 		}
 		
 
-		public void AddItem(object item)
+		public void AddItem(IListItem item)
 		{
 			Control.Items.Add(item);
 		}
 
-		public void RemoveItem(object item)
+		public void RemoveItem(IListItem item)
 		{
 			Control.Items.Remove(item);
 		}
