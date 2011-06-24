@@ -8,10 +8,15 @@ namespace Eto.Test.Interface.Controls
 		Control GenerateControl();
 	}
 	
-	public class Section<T> : ISectionGenerator
+	public class Section<T> : ISectionGenerator, IListItem
 		where T: Control, new()
 	{
 		public string Text { get; set; }
+		
+		public string Key
+		{
+			get { return Text; }
+		}
 		
 		public Control GenerateControl()
 		{
@@ -37,6 +42,7 @@ namespace Eto.Test.Interface.Controls
 			Items.Add (new Section<LabelSection> { Text = "Label Control" });
 			Items.Add (new Section<ButtonSection> { Text = "Button Control" });
 			Items.Add (new Section<ScrollableSection> { Text = "Scrollable Control" });
+			Items.Add (new Section<WebViewSection> { Text = "Web View" });
 			
 			this.SelectedIndex = 1; // select the first item
 		}

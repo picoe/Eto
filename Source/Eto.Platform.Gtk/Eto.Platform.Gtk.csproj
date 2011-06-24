@@ -69,6 +69,7 @@
     <Reference Include="atk-sharp" />
     <Reference Include="pango-sharp" />
     <Reference Include="System.Core" />
+    <Reference Include="Mono.WebBrowser" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">

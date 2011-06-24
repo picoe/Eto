@@ -20,7 +20,6 @@ namespace Eto.Test.Interface.Controls
 			layout.Add (BottomLabel(), 0, 5, true, true);
 			layout.Add (ColorLabel(), 0, 6, true, true);
 			layout.Add (NoWrapLabel(), 0, 7, true, true);
-			
 		}
 		
 		Control NormalLabel()

@@ -40,7 +40,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public void AddItem(IListItem item)
 		{
-			store.AppendValues(Convert.ToString (item), item);
+			store.AppendValues(item.Text, item);
 		}
 
 		public void RemoveItem(IListItem item)
