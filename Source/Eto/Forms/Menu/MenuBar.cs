@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace Eto.Forms
 {
-	public interface IMenuBar
+	public interface IMenuBar : IMenu
 	{
 
 	}

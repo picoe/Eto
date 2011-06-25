@@ -1,0 +1,57 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Interface", "Eto.Test.Interface\Eto.Test.Interface.csproj", "{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - VS", "Eto.Test\Eto.Test - VS.csproj", "{8154650F-296A-4089-AA18-1CB67EA6142F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "..\Eto\Eto.csproj", "{16289D2F-044C-49EF-83E9-9391AFF8FD2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Gtk", "..\Eto.Platform.Gtk\Eto.Platform.Gtk.csproj", "{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Windows", "..\Eto.Platform.Windows\Eto.Platform.Windows.csproj", "{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Wpf", "..\Eto.Platform.Wpf\Eto.Platform.Wpf.csproj", "{E3524178-5A24-47C0-B155-92314FE4B2B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8154650F-296A-4089-AA18-1CB67EA6142F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8154650F-296A-4089-AA18-1CB67EA6142F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8154650F-296A-4089-AA18-1CB67EA6142F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8154650F-296A-4089-AA18-1CB67EA6142F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Eto.Test\Eto.Test.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$1.ResourceNamePolicy = MSBuild
+	EndGlobalSection
+EndGlobal
