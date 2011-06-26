@@ -69,7 +69,11 @@
     <Reference Include="atk-sharp" />
     <Reference Include="pango-sharp" />
     <Reference Include="System.Core" />
-    <Reference Include="Mono.WebBrowser" />
+    <Reference Include="webkit-sharp, Version=1.1.15.0, Culture=neutral, PublicKeyToken=eaa1d335d2e19745">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Libraries\webkit-sharp\webkit-sharp.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
@@ -214,6 +218,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\WebViewHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
