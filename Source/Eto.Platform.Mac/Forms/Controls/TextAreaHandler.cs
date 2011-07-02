@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac
 			Control.BorderType = NSBorderType.BezelBorder;
 			
 			text = new NSTextView();
-			//text.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+			text.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 			//text.TextContainer.ContainerSize = new System.Drawing.SizeF(1.0e7f, 1.0e7f);
 			//text.TextContainer.WidthTracksTextView = false;
 			//text.SetFrameSize(new System.Drawing.SizeF(100, 100));
