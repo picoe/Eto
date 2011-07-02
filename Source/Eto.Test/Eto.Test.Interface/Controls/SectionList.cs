@@ -42,6 +42,7 @@ namespace Eto.Test.Interface.Controls
 			Items.Add (new Section<LabelSection> { Text = "Label Control" });
 			Items.Add (new Section<ButtonSection> { Text = "Button Control" });
 			Items.Add (new Section<ScrollableSection> { Text = "Scrollable Control" });
+			Items.Add (new Section<TextAreaSection> { Text = "Text Area" });
 			Items.Add (new Section<WebViewSection> { Text = "Web View" });
 			
 			this.SelectedIndex = 1; // select the first item

@@ -45,6 +45,7 @@
     <Compile Include="Controls\ButtonSection.cs" />
     <Compile Include="Controls\ScrollableSection.cs" />
     <Compile Include="Controls\WebViewSection.cs" />
+    <Compile Include="Controls\TextAreaSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
