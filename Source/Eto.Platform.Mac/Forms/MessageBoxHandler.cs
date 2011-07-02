@@ -21,7 +21,7 @@ namespace Eto.Platform.Mac
                 var window = parent.ControlObject as NSWindow;
                 if (window == null && parent.ControlObject is NSView)
                     window = ((NSView)parent.ControlObject).Window;
-                if (window == null)
+                if (window == null || !view.RespondsToSelector(new Selector("beginSheetModalForWindow:modalDelegate:didEndSelector:contextInfo:")))
                     ret = view.RunModal ();
                 else {
                     view.BeginSheet (window, new MacModalDelegate (), new Selector ("alertDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
@@ -39,7 +39,7 @@ namespace Eto.Platform.Mac
                 var window = parent.ControlObject as NSWindow;
                 if (window == null && parent.ControlObject is NSView)
                     window = ((NSView)parent.ControlObject).Window;
-                if (window == null)
+                if (window == null || !view.RespondsToSelector(new Selector("beginSheetModalForWindow:completionHandler:")))
                     ret = view.RunModal ();
                 else {
                     view.BeginSheet (window, delegate(int returnCode) { NSApplication.SharedApplication.StopModalWithCode (returnCode); });

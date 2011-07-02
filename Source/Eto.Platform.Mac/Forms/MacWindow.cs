@@ -5,6 +5,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
@@ -78,8 +79,13 @@ namespace Eto.Platform.Mac
 			get { return (Control.StyleMask & NSWindowStyle.Resizable) != 0; }
 			set
 			{
-				if (value) Control.StyleMask |= NSWindowStyle.Resizable;
-				else Control.StyleMask &= ~NSWindowStyle.Resizable;
+				if (Control.RespondsToSelector (new Selector("setStyleMask:"))) {
+					if (value) Control.StyleMask |= NSWindowStyle.Resizable;
+					else Control.StyleMask &= ~NSWindowStyle.Resizable;
+				}
+				else {
+					// 10.5, what do we do?!
+				}
 			}
 		}
 		

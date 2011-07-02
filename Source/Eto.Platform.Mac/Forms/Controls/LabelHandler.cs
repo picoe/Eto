@@ -6,12 +6,14 @@ using Eto.Drawing;
 using MonoMac.AppKit;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.Foundation;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
 	public class LabelHandler : MacView<NSTextField, Label>, ILabel
 	{
 		Font font;
+		bool is106;
 		
 		class MyTextFieldCell : NSTextFieldCell
 		{
@@ -59,7 +61,8 @@ namespace Eto.Platform.Mac
 			Control.Editable = false;
 			Control.Selectable = false;
 			Control.Alignment = NSTextAlignment.Left;
-			Control.Cell.UsesSingleLineMode = false;
+			is106 = Control.Cell.RespondsToSelector(new Selector("setUsesSingleLineMode:"));
+			if (is106) Control.Cell.UsesSingleLineMode = false;
 			Control.Cell.LineBreakMode = NSLineBreakMode.ByWordWrapping;
 			//var ps = new NSMutableParagraphStyle();
 			//ps.SetLineBreakMode(NSLineBreakMode.ByWordWrapping);
@@ -94,15 +97,15 @@ namespace Eto.Platform.Mac
 			set {
 				switch (value) {
 				case WrapMode.None:
-					Control.Cell.UsesSingleLineMode = true;
+					if (is106) Control.Cell.UsesSingleLineMode = true;
 					Control.Cell.LineBreakMode = NSLineBreakMode.Clipping;
 					break;
 				case WrapMode.Word:
-					Control.Cell.UsesSingleLineMode = false;
+					if (is106) Control.Cell.UsesSingleLineMode = false;
 					Control.Cell.LineBreakMode = NSLineBreakMode.ByWordWrapping;
 					break;
 				case WrapMode.Character:
-					Control.Cell.UsesSingleLineMode = false;
+					if (is106) Control.Cell.UsesSingleLineMode = false;
 					Control.Cell.LineBreakMode = NSLineBreakMode.CharWrapping;
 					break;
 				default:
