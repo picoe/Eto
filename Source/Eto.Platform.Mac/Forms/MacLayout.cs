@@ -9,6 +9,7 @@ namespace Eto.Platform.Mac
 	public interface IMacLayout {
 		object LayoutObject { get; }
 		void SizeToFit();
+		void SetContainerSize(SD.SizeF size);
 	}
 	
 	public abstract class MacLayout<T, W> : MacObject<T, W>, ILayout, IMacLayout
@@ -29,7 +30,7 @@ namespace Eto.Platform.Mac
 			Loaded = true;
 		}
 		
-		protected void SetContainerSize(SD.SizeF size)
+		public void SetContainerSize(SD.SizeF size)
 		{
 			var container = Widget.Container.Handler as IMacContainer;
 			if (container != null) container.SetContentSize (size);

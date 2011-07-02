@@ -34,6 +34,11 @@ namespace Eto.Platform.Mac
 				splitView.Subviews[1].Frame = rightRect;
 			} 
 			
+			public override void DidResizeSubviews (MonoMac.Foundation.NSNotification notification)
+			{
+				var subview = Handler.control.Subviews[0];
+				if (subview != null) Handler.position = (int)subview.Frame.Width;
+			}
 		}
 		
 		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
@@ -63,11 +68,6 @@ namespace Eto.Platform.Mac
 					base.MouseUp(theEvent);
 			}
 		}
-		
-		void SetPosition(int? pos = null)
-		{
-		}
-		
 		
 		public SplitterHandler()
 		{

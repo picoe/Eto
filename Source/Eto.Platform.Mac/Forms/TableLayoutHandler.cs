@@ -110,6 +110,8 @@ namespace Eto.Platform.Mac
 					}
 				}
 			}
+			//controlFrame.Width = Math.Min (controlFrame.Width, requiredx);
+			//controlFrame.Height = Math.Min (controlFrame.Height, requiredy);
 			controlFrame.Width = requiredx;
 			controlFrame.Height = requiredy;
 			SetContainerSize (controlFrame.Size);

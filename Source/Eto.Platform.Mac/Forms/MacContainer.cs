@@ -55,7 +55,14 @@ namespace Eto.Platform.Mac
 		#region IMacContainer implementation
 		public virtual void SetContentSize (SD.SizeF contentSize)
 		{
-			Control.SetFrameSize (contentSize);
+			if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable))
+			{
+				if (Widget.ParentLayout != null) {
+					var layout = Widget.ParentLayout.Handler as IMacLayout;
+					if (layout != null) layout.SetContainerSize (contentSize);
+				}
+			}
+			else Control.SetFrameSize (contentSize);
 		}
 		#endregion
 	}
