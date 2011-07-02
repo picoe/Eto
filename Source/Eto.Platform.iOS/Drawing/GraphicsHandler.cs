@@ -61,6 +61,18 @@ namespace Eto.Platform.iOS.Drawing
 		public GraphicsHandler()
 		{
 		}
+		
+		bool antialias = true;
+		
+		public bool Antialias {
+			get {
+				return antialias;
+			}
+			set {
+				antialias = value;
+				context.SetShouldAntialias (antialias);
+			}
+		}
 
 		public GraphicsHandler(UIView view)
 		{
@@ -149,7 +161,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			UIGraphics.PushContext(this.context);
 			context.SetStrokeColorWithColor(Generator.Convert(color));
-			context.SetShouldAntialias(false);
+			//context.SetShouldAntialias(false);
 			context.SetLineCap(CGLineCap.Square);
 			context.SetLineWidth(1.0F);
 			context.StrokeLineSegments(new SD.PointF[] { TranslateView(new SD.PointF(startx, starty)), TranslateView(new SD.PointF(endx, endy)) });
@@ -161,7 +173,7 @@ namespace Eto.Platform.iOS.Drawing
 			UIGraphics.PushContext(this.context);
 			var rect = new System.Drawing.RectangleF(x, y, width, height);
 			context.SetStrokeColorWithColor(Generator.Convert(color));
-			context.SetShouldAntialias(false);
+			//context.SetShouldAntialias(false);
 			context.SetLineWidth(1.0F);
 			context.StrokeRect(TranslateView(rect));
 			UIGraphics.PopContext();
@@ -182,7 +194,7 @@ namespace Eto.Platform.iOS.Drawing
 			//this.context.SetStrokeColorSpace(CGColorSpace.CreateDeviceCMYK());
 			//this.context.SetAlpha(1.0F);
 			context.SetFillColorWithColor(Generator.Convert(color));
-			context.SetShouldAntialias(false);
+			//context.SetShouldAntialias(false);
 			context.FillRect(TranslateView(new SD.RectangleF(x, y, width, height)));
 			UIGraphics.PopContext();
 		}
@@ -241,7 +253,7 @@ namespace Eto.Platform.iOS.Drawing
 			var str = new NSString(text);
 			var fontHandler = font.Handler as FontHandler;
 			var size = str.StringSize(fontHandler.GetFont());
-			context.SetShouldAntialias(true);
+			//context.SetShouldAntialias(true);
 			str.DrawString(new SD.PointF(x, height - y - size.Height), fontHandler.GetFont());
 			UIGraphics.PopContext();
 		}

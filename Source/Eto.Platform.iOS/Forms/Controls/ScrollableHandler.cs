@@ -9,6 +9,10 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		UIView Child { get; set; }
 		
+		public BorderType Border {
+			get; set;
+		}
+		
 		class Delegate : UIScrollViewDelegate
 		{
 			public ScrollableHandler Handler { get; set; }

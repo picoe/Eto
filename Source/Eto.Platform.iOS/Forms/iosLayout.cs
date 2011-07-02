@@ -18,6 +18,10 @@ namespace Eto.Platform.iOS.Forms
 		{
 			get { return null; }
 		}
+		
+		public virtual void OnLoad()
+		{
+		}
 
 	}
 }

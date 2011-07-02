@@ -10,7 +10,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class ListBoxHandler : iosView<UITableView, ListBox>, IListBox
 	{
-		List<object> data = new List<object> ();
+		List<IListItem> data = new List<IListItem> ();
 		
 		class DataSource : UITableViewDataSource
 		{
@@ -32,7 +32,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				if (cell == null) {
 					cell = new UITableViewCell(UITableViewCellStyle.Default, "cell");
 				}
-				cell.TextLabel.Text = Convert.ToString(Handler.data[indexPath.Row]);
+				cell.TextLabel.Text = Handler.data[indexPath.Row].Text;
 				return cell;
 			}
 		}
@@ -55,19 +55,19 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.Delegate = new Delegate { Handler = this };
 		}
 		
-		public void AddRange (IEnumerable<object> collection)
+		public void AddRange (IEnumerable<IListItem> collection)
 		{
 			data.AddRange(collection);
 			Control.ReloadData();
 		}
 
-		public void AddItem (object item)
+		public void AddItem (IListItem item)
 		{
 			data.Add (item);
 			Control.ReloadData ();
 		}
 
-		public void RemoveItem (object item)
+		public void RemoveItem (IListItem item)
 		{
 			data.Remove (item);
 			Control.ReloadData ();
