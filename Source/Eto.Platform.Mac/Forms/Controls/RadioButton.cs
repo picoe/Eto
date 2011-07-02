@@ -25,6 +25,9 @@ namespace Eto.Platform.Mac
 			if (Activated != null) Activated(this, e);
 			Widget.OnClick(EventArgs.Empty);
 			Widget.OnCheckedChanged(EventArgs.Empty);
+			
+			if (Control.AcceptsFirstResponder () && Control.Window != null) 
+				Control.Window.MakeFirstResponder (Control);
 		}
 
 		public void Create(RadioButton controller)

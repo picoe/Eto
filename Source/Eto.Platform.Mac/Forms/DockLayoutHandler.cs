@@ -36,14 +36,15 @@ namespace Eto.Platform.Mac
 			{
 				var layout = container.Layout as IMacLayout;
 				if (layout != null) layout.SizeToFit ();
-				Control.Frame = ((NSView)container.ControlObject).Frame;
+				var size = ((NSView)container.ControlObject).Frame;
+				SetContainerSize (size.Size);
 			}
 			else if (child != null)
 			{
-				var c = child.ControlObject as NSControl;
+				AutoSize (child);
+				var c = child.ControlObject as NSView;
 				if (c != null) {
-					c.SizeToFit ();
-					Control.Frame = c.Frame;
+					SetContainerSize (c.Frame.Size);
 				}
 			}
 		}

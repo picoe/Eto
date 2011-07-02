@@ -48,7 +48,18 @@ namespace Eto.Platform.Windows.Drawing
 			Control.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
 			//this.Control.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
 			//this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+			this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
 			Control.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear; //.NearestNeighbor;
+		}
+		
+		public bool Antialias {
+			get {
+				return (this.Control.SmoothingMode == System.Drawing.Drawing2D.SmoothingMode.AntiAlias);
+			}
+			set {
+				if (value) this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+				else this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+			}
 		}
 
 		public void CreateFromImage (Bitmap image)

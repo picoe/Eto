@@ -12,6 +12,7 @@ namespace Eto.Platform.Windows
 		public CheckBoxHandler()
 		{
 			Control = new SWF.CheckBox();
+			Control.AutoSize = true;
 			Control.CheckedChanged += delegate {
 				Widget.OnCheckedChanged(EventArgs.Empty);
 			};

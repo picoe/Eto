@@ -8,24 +8,56 @@ namespace Eto.Test.Interface.Controls
 	{
 		public ScrollableSection ()
 		{
-			var layout = new TableLayout(this, 1, 10);
+			var layout = new TableLayout(this, 4, 2);
 			
-			var scrollable = new Scrollable{ Size = new Size(100, 200) };
-			var playout = new TableLayout(scrollable, 3, 1);
-			playout.SetColumnScale (0);
-			playout.SetColumnScale (2);
-			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 1, 0);
-			layout.Add (scrollable, 0, 0);
-			scrollable.UpdateScrollSizes ();
+			layout.SetColumnScale (1);
+			layout.SetColumnScale (3);
+			layout.SetRowScale (0);
+			layout.SetRowScale (1);
+			
+			layout.Add (new Label{ Text = "Default" }, 0, 0);
+			layout.Add (DefaultScrollable(), 1, 0);
+			
+			layout.Add (new Label{ Text = "No Border" }, 2, 0);
+			layout.Add (NoBorderScrollable (), 3, 0);
+			
+			layout.Add (new Label{ Text = "Bezeled" }, 0, 1);
+			layout.Add (BezelScrollable (), 1, 1);
+			
+			layout.Add (new Label{ Text = "Line" }, 2, 1);
+			layout.Add (LineScrollable (), 3, 1);
 		}
 		
-		Control FormControl()
+		Control DefaultScrollable()
 		{
+			var scrollable = new Scrollable{ Size = new Size(100, 200) };
+			var playout = new PixelLayout(scrollable);
+			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
+			return playout.Container;
+		}
 		
-			var layout = new TableLayout(new Panel(), 2, 10);
+		Control NoBorderScrollable()
+		{
+			var scrollable = new Scrollable{ Size = new Size(100, 200), Border = BorderType.None };
+			var playout = new PixelLayout(scrollable);
+			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
+			return playout.Container;
+		}
 
-			
-			return layout.Container;
+		Control BezelScrollable()
+		{
+			var scrollable = new Scrollable{ Size = new Size(100, 200), Border = BorderType.Bezel };
+			var playout = new PixelLayout(scrollable);
+			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
+			return playout.Container;
+		}
+		
+		Control LineScrollable()
+		{
+			var scrollable = new Scrollable{ Size = new Size(100, 200), Border = BorderType.Line };
+			var playout = new PixelLayout(scrollable);
+			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
+			return playout.Container;
 		}
 	}
 }

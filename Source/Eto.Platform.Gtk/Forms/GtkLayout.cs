@@ -24,5 +24,8 @@ namespace Eto.Platform.GtkSharp
 			get { return Control; }
 		}
 		
+		public virtual void OnLoad()
+		{
+		}
 	}
 }

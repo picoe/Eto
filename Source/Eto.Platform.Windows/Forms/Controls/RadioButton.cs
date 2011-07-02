@@ -4,17 +4,21 @@ using System.Reflection;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Windows
 {
 	public class RadioButtonHandler : WindowsControl<SWF.RadioButton, RadioButton>, IRadioButton
 	{
-		ArrayList group;
+		List<RadioButton> group;
 		
 		public RadioButtonHandler()
 		{
 			Control = new SWF.RadioButton();
-			Control.Click += control_Click;
+			Control.AutoSize = true;
+			Control.Click += delegate {
+				Widget.OnClick (EventArgs.Empty);	
+			};
 			Control.CheckedChanged += control_CheckedChanged;
 		}
 
@@ -26,7 +30,7 @@ namespace Eto.Platform.Windows
 				RadioButtonHandler controllerInner = (RadioButtonHandler)controller.Handler;
 				if (controllerInner.group == null)
 				{
-					controllerInner.group = new ArrayList();
+					controllerInner.group = new List<RadioButton>();
 					controllerInner.group.Add(controller);
 					controllerInner.Control.Click += controllerInner.control_RadioSwitch;
 				}
@@ -36,7 +40,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		private void control_CheckedChanged(object sender, EventArgs e)
+		void control_CheckedChanged(object sender, EventArgs e)
 		{
 			Widget.OnCheckedChanged(e);
 		}
@@ -56,11 +60,6 @@ namespace Eto.Platform.Windows
 		{
 			get { return Control.Checked; }
 			set { Control.Checked = value; }
-		}
-		
-		private void control_Click(object sender, EventArgs e)
-		{
-			Widget.OnClick(e);
 		}
 	}
 }

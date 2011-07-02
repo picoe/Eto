@@ -9,10 +9,40 @@ namespace Eto.Platform.GtkSharp
 		Font font;
 		HorizontalAlign horizontalAlign = HorizontalAlign.Left;
 		VerticalAlign verticalAlign = VerticalAlign.Top;
+		
+		class WrapLabel : Gtk.Label
+		{
+			int wrapWidth = 0;
+			
+			protected override void OnSizeRequested (ref Gtk.Requisition requisition)
+			{
+				//base.OnSizeRequested (ref requisition);
+				int width, height;
+				this.Layout.GetPixelSize(out width, out height);
+				requisition.Width = width;
+				requisition.Height = height;
+			}
+			
+			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
+			{
+				base.OnSizeAllocated (allocation);
+				SetWrapWidth(allocation.Width);
+			}
+			
+			void SetWrapWidth(int width)
+			{
+				if (width == 0) return;
+				Layout.Width = (int)(width * Pango.Scale.PangoScale);
+				if (wrapWidth != width) {
+					wrapWidth = width;
+					QueueResize ();
+				}
+			}
+		}
 
 		public LabelHandler ()
 		{
-			Control = new Gtk.Label ();
+			Control = new WrapLabel();
 			Control.SingleLineMode = false;
 			Control.LineWrap = true;
 			Control.LineWrapMode = Pango.WrapMode.Word;

@@ -39,7 +39,7 @@ namespace Eto.Platform.Mac
 
 		public void Quit()
 		{
-			NSApplication.SharedApplication.Terminate((NSObject)NSApplication.SharedApplication.KeyWindow ?? AppDelegate);
+			NSApplication.SharedApplication.Terminate(AppDelegate);
 		}
 		
 		public void Open (string url)

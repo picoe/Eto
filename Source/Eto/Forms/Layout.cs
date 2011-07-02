@@ -4,6 +4,7 @@ namespace Eto.Forms
 {
 	public interface ILayout : IInstanceWidget
 	{
+		void OnLoad();
 	}
 
 	public interface IPositionalLayout : ILayout
@@ -15,6 +16,16 @@ namespace Eto.Forms
 	
 	public abstract class Layout : InstanceWidget
 	{
+		public bool Loaded { get; private set; }
+		
+		public event EventHandler<EventArgs> Load;
+
+		public virtual void OnLoad(EventArgs e)
+		{
+			if (Load != null) Load(this, e);
+			((ILayout)Handler).OnLoad();
+			Loaded = true;
+		}
 		
 		public Layout(Generator g, Container container, Type type, bool initialize = true)
 			: base(g, type, false)
@@ -30,6 +41,8 @@ namespace Eto.Forms
 		{
 			get; private set;
 		}
+		
+		
 		
 	}
 }

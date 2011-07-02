@@ -98,37 +98,24 @@ namespace Eto.Platform.Mac
 				var view = views[y, x];
 				if (view != null && view.Visible) {
 					AutoSize(view);
-					if (!xscaling[x] && widths[x] < view.Size.Width) { 
-						requiredx += view.Size.Width - widths[x];
-						widths[x] = view.Size.Width; 
+					//Console.WriteLine ("CALC: x:{2} y:{3} view: {0} size: {1}", view, view.Size, x, y);
+					var size = view.Size;
+					if (/*!xscaling[x] &&*/ widths[x] < size.Width) { 
+						requiredx += size.Width - widths[x];
+						widths[x] = size.Width; 
 					}
-					if (!yscaling[y] && heights[y] < view.Size.Height) { 
-						requiredy += view.Size.Height - heights[y];
-						heights[y] = view.Size.Height; 
+					if (/*!yscaling[y] &&*/ heights[y] < size.Height) { 
+						requiredy += size.Height - heights[y];
+						heights[y] = size.Height; 
 					}
 				}
 			}
 			controlFrame.Width = requiredx;
 			controlFrame.Height = requiredy;
-			Control.Frame = controlFrame;
+			SetContainerSize (controlFrame.Size);
 		}
 		
 		
-		void AutoSize(Control view)
-		{
-			var c = view.ControlObject as NSControl;
-			var mh = view.Handler as IMacView;
-			if (mh != null && !mh.AutoSize) return;
-
-			var container = view as Container;
-			if (container != null && container.Layout != null)
-			{
-				var layout = container.Layout.Handler as IMacLayout;
-				if (layout != null) layout.SizeToFit();
-			}
-
-			if (c != null) c.SizeToFit();
-		}
 		
 		void Layout()
 		{
@@ -153,6 +140,7 @@ namespace Eto.Platform.Mac
 				var view = views[y, x];
 				if (view != null && view.Visible) {
 					AutoSize(view);
+					//Console.WriteLine ("x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					if (!xscaling[x] && widths[x] < view.Size.Width) { 
 						
 						widths[x] = view.Size.Width; requiredx += view.Size.Width - widths[x];
@@ -206,6 +194,7 @@ namespace Eto.Platform.Mac
 						frame.X = startx;
 						frame.Y = starty; //Control.Frame.Height - starty - frame.Height;
 						nsview.Frame = frame;
+						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					}
 					startx += widths[x] + Spacing.Width;
 				}
@@ -228,7 +217,7 @@ namespace Eto.Platform.Mac
 			}
 			var view = (NSView)child.ControlObject;
 			views[y, x] = child;
-			Layout();
+			if (Loaded) Layout();
 			Control.AddSubview(view);
 		}
 		public void Move(Control child, int x, int y)
@@ -240,7 +229,7 @@ namespace Eto.Platform.Mac
 			}
 
 			views[y, x] = child;
-			Layout();
+			if (Loaded) Layout();
 		}
 		
 		public void Remove (Control child)
@@ -252,7 +241,13 @@ namespace Eto.Platform.Mac
 			{
 				if (views[y,x] == child) views[y,x] = null;
 			}
-			Layout();
+			if (Loaded) Layout();
+		}
+		
+		public override void OnLoad ()
+		{
+			base.OnLoad ();
+			Layout ();
 		}
 
 		public void CreateControl(int cols, int rows)

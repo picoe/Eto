@@ -19,6 +19,9 @@ namespace Eto.Platform.Windows
 			get { return null; }
 		}
 		
+		public virtual void OnLoad()
+		{
+		}
 		
 	}
 }

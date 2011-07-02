@@ -232,8 +232,9 @@ namespace Eto.Platform.GtkSharp
 			MouseButtons buttons = GetButtonModifiers (args.Event.State);
 			if (Control.CanFocus && !Control.HasFocus)
 				Control.GrabFocus ();
-			
-			Widget.OnMouseDown (new MouseEventArgs (buttons, modifiers, p));
+			if (args.Event.Type == Gdk.EventType.ButtonPress) {
+				Widget.OnMouseDown (new MouseEventArgs (buttons, modifiers, p));
+			}
 		}
 
 		private void GtkControlObject_SizeAllocated (object o, Gtk.SizeAllocatedArgs args)

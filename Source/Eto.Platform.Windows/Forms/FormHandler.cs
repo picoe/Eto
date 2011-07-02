@@ -14,13 +14,16 @@ namespace Eto.Platform.Windows
 		public FormHandler()
 		{
 			control = new SWF.Form();
-			control.AutoSize = true;
+			this.control.Size = SD.Size.Empty;
+			this.control.MinimumSize = SD.Size.Empty;
+			this.control.AutoSize = true;
+			//this.control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 
 			main = new SWF.Panel();
 			main.AutoSize = true;
+			//this.main.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			main.Dock = SWF.DockStyle.Fill;
 			control.Controls.Add(main);
-			control.Closed += control_Closed;
 			Control = control;
 		}
 
@@ -32,17 +35,15 @@ namespace Eto.Platform.Windows
 		public override Size Size
 		{
 			get	{ return Generator.Convert(control.Size); }
-			set { control.Size = Generator.Convert(value); }
+			set { 
+				control.Size = Generator.Convert(value);
+				control.AutoSize = false;
+			}
 		}
 
 		public void Show()
 		{
 			control.Show();
-		}
-
-		private void control_Closed(object sender, EventArgs e)
-		{
-			Widget.OnClosed(EventArgs.Empty);
 		}
 	}
 }

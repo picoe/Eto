@@ -29,11 +29,15 @@ namespace Eto.Forms
 		
 		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoad(e);
+			
 			foreach (Control control in controls)
 			{
 				control.OnLoad(e);
 			}
+			
+			base.OnLoad(e);
+			
+			if (Layout != null) Layout.OnLoad (e);
 		}
 
 		protected Container(Generator g, Type type, bool initialize = true) : base(g, type, initialize)

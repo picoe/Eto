@@ -57,6 +57,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			deletegc = false;
 		}
 
+		// TODO: use Cairo?!
+		public bool Antialias { get; set; }
+
 		public Gdk.GC GC {
 			get { return gc; }
 		}

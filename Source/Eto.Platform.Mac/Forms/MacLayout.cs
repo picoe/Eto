@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using SD = System.Drawing;
 using MonoMac.Foundation;
+using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac
 {
@@ -14,12 +15,47 @@ namespace Eto.Platform.Mac
 		where T: NSObject
 		where W: Layout
 	{
+		public bool Loaded { get; private set; }
+		
 		public virtual object LayoutObject
 		{
 			get { return null; }
 		}
 		
 		public abstract void SizeToFit();
+		
+		public virtual void OnLoad()
+		{
+			Loaded = true;
+		}
+		
+		protected void SetContainerSize(SD.SizeF size)
+		{
+			var container = Widget.Container.Handler as IMacContainer;
+			if (container != null) container.SetContentSize (size);
+			else {
+				var view = Widget.Container.ContainerObject as NSView;
+				if (view != null) view.SetFrameSize (size);
+			}
+		}
 
+		protected void AutoSize(Control view)
+		{
+			var c = view.ControlObject as NSControl;
+			var mh = view.Handler as IMacView;
+			if (mh != null && !mh.AutoSize) return;
+			//Console.WriteLine ("OLD view: {0} size: {1}", view, view.Size);
+
+			var container = view as Container;
+			if (container != null && container.Layout != null)
+			{
+				var layout = container.Layout.Handler as IMacLayout;
+				if (layout != null) layout.SizeToFit();
+			}
+
+			if (c != null) c.SizeToFit();
+			//Console.WriteLine ("view: {0} size: {1}", view, view.Size);
+		}
+		
 	}
 }

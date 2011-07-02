@@ -16,6 +16,8 @@ namespace Eto.Platform.Mac
 		public ScrollableHandler ()
 		{
 			control = new NSScrollView ();
+			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
+			control.BorderType = NSBorderType.BezelBorder;
 			control.HasVerticalScroller = true;
 			control.HasHorizontalScroller = true;
 			control.AutohidesScrollers = true;
@@ -24,9 +26,47 @@ namespace Eto.Platform.Mac
 			control.DocumentView = view;
 			Control = control;
 		}
+		
+		public BorderType Border {
+			get {
+				switch (control.BorderType)
+				{
+				case NSBorderType.BezelBorder:
+					return BorderType.Bezel;
+				case NSBorderType.LineBorder:
+					return BorderType.Line;
+				case NSBorderType.NoBorder:
+					return BorderType.None;
+				default:
+					throw new NotSupportedException();
+				}
+			}
+			set {
+				switch (value)
+				{
+				case BorderType.Bezel:
+					control.BorderType = NSBorderType.BezelBorder;
+					break;
+				case BorderType.Line:
+					control.BorderType = NSBorderType.LineBorder;
+					break;
+				case BorderType.None:
+					control.BorderType = NSBorderType.NoBorder;
+					break;
+				default:
+					throw new NotSupportedException();
+				}
+			}
+		}
 
 		public override object ContainerObject {
 			get { return view; }
+		}
+		
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			UpdateScrollSizes ();
 		}
 
 		public void UpdateScrollSizes ()
@@ -117,6 +157,14 @@ namespace Eto.Platform.Mac
 		public bool AutoScrollToControl {
 			get { return false; }
 			set {  }
+		}
+		
+		public override void SetContentSize (SD.SizeF contentSize)
+		{
+			//base.SetContentSize (contentSize);
+			contentSize.Width += 2;
+			contentSize.Height += 2;
+			Control.SetFrameSize (contentSize);
 		}
 	}
 }

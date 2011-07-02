@@ -89,6 +89,17 @@ namespace Eto.Platform.Mac.Drawing
 			//context.ScaleCTM(1, -1);
 			context.SetAllowsSubpixelPositioning(false);
 		}
+		
+		bool antialias;
+		public bool Antialias {
+			get {
+				return antialias;
+			}
+			set {
+				antialias = value;
+				context.SetShouldAntialias(value);
+			}
+		}
 
 
 		public void CreateFromImage(Bitmap image)
@@ -128,10 +139,10 @@ namespace Eto.Platform.Mac.Drawing
 			}
 			if (view != null) 
 			{
-				if (adjust) point.Y = view.Bounds.Height - point.Y - 1;
+				if (adjust) point.Y = view.Bounds.Height - point.Y;
 				point = view.ConvertPointToBase(point);
 			}
-			else if (adjust) point.Y = this.height - point.Y - 1;
+			else if (adjust) point.Y = this.height - point.Y;
 			return point;
 		}
 		
@@ -162,20 +173,24 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			NSGraphicsContext.CurrentContext = this.Control;
 			context.SetStrokeColorWithColor(Generator.Convert(color));
-			context.SetShouldAntialias(false);
 			context.SetLineCap(CGLineCap.Square);
 			context.SetLineWidth(1.0F);
-			context.StrokeLineSegments(new SD.PointF[] { TranslateView(new SD.PointF(startx, starty)), TranslateView(new SD.PointF(endx, endy)) });
+			context.StrokeLineSegments(new SD.PointF[] { TranslateView(new SD.PointF(startx, starty), true), TranslateView(new SD.PointF(endx, endy), true) });
 		}
 
 		public void DrawRectangle(Color color, int x, int y, int width, int height)
 		{
 			NSGraphicsContext.CurrentContext = this.Control;
-			var rect = new System.Drawing.RectangleF(x, y, width, height);
+			var rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true);
 			context.SetStrokeColorWithColor(Generator.Convert(color));
-			context.SetShouldAntialias(false);
+			context.SetLineCap(CGLineCap.Square);
 			context.SetLineWidth(1.0F);
-			context.StrokeRect(TranslateView(rect));
+			rect.Width -= 0.5F;
+			rect.Height -= 0.5F;
+			rect.Y += 0.5F;
+			//rect.Height -= 1;
+			//Console.WriteLine ("size: {0}, {1}", rect, );
+			context.StrokeRect(rect);
 		}
 
 		public void FillRectangle(Color color, int x, int y, int width, int height)
@@ -188,7 +203,6 @@ namespace Eto.Platform.Mac.Drawing
 			
 			NSGraphicsContext.CurrentContext = this.Control;
 			context.SetFillColorWithColor(Generator.Convert(color));
-			context.SetShouldAntialias(false);
 			context.FillRect(TranslateView(new SD.RectangleF(x, y, width, height)));
 		}
 
@@ -245,8 +259,9 @@ namespace Eto.Platform.Mac.Drawing
 			dic.Add(NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS(color));
 			dic.Add(NSAttributedString.FontAttributeName, fontHandler.GetFont());
 			var size = str.StringSize(dic);
-			context.SetShouldAntialias(true);
+			//context.SetShouldAntialias(true);
 			str.DrawString(new SD.PointF(x, height - y - size.Height), dic);
+			//context.SetShouldAntialias(antialias);
 		}
 
 		public SizeF MeasureString(Font font, string text)

@@ -8,7 +8,7 @@ namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
-		public class CustomScrollable : System.Windows.Forms.ScrollableControl
+		public class CustomScrollable : System.Windows.Forms.Panel
 		{
 			public ScrollableHandler Handler { get; set; }
 			
@@ -26,6 +26,12 @@ namespace Eto.Platform.Windows
 				
 			}
 			
+			protected override void OnCreateControl ()
+			{
+				base.OnCreateControl ();
+				AutoSize = false;
+			}
+			
 			protected override SD.Point ScrollToControl(SWF.Control activeControl)
 			{
 				/*if (autoScrollToControl) return base.ScrollToControl(activeControl);
@@ -33,11 +39,50 @@ namespace Eto.Platform.Windows
 				return this.AutoScrollPosition;
 			}
 		}
+		
+		public BorderType Border {
+			get {
+				switch (Control.BorderStyle)
+				{
+				case SWF.BorderStyle.FixedSingle:
+					return BorderType.Line;
+				case SWF.BorderStyle.None:
+					return BorderType.None;
+				case SWF.BorderStyle.Fixed3D:
+					return BorderType.Bezel;
+				default:
+					throw new NotSupportedException();
+				}
+			}
+			set {
+				switch (value)
+				{
+				case BorderType.Bezel:
+					Control.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+					break;
+				case BorderType.Line:
+					Control.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+					break;
+				case BorderType.None:
+					Control.BorderStyle = System.Windows.Forms.BorderStyle.None;
+					break;
+				default:
+					throw new NotSupportedException();
+				}
+			}
+		}
 
 		public ScrollableHandler ()
 		{
 			Control = new CustomScrollable{ Handler = this };
+			this.Control.Size = SD.Size.Empty;
+			this.Control.MinimumSize = SD.Size.Empty;
+			
+			Control.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 			Control.AutoScroll = true;
+			
+			Control.AutoSize = true;
+			//Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			Control.VerticalScroll.SmallChange = 5;
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;

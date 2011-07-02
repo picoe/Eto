@@ -8,6 +8,7 @@ namespace Eto.Forms
 		void UpdateScrollSizes();
 		Point ScrollPosition { get; set; }
 		Size ScrollSize { get; set; }
+		BorderType Border { get; set; }
 	}
 	
 	public class ScrollEventArgs : EventArgs
@@ -18,6 +19,13 @@ namespace Eto.Forms
 		{
 			this.ScrollPosition = scrollPosition;
 		}
+	}
+	
+	public enum BorderType
+	{
+		Bezel,
+		Line,
+		None
 	}
 	
 	public class Scrollable : Container
@@ -53,6 +61,12 @@ namespace Eto.Forms
 		{
 			get { return inner.ScrollSize; }
 			set { inner.ScrollSize = value; }
+		}
+		
+		public BorderType Border
+		{
+			get { return inner.Border; }
+			set { inner.Border = value; }
 		}
 
 	}

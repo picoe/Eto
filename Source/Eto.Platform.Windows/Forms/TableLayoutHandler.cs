@@ -23,7 +23,10 @@ namespace Eto.Platform.Windows
 			Control = new SWF.TableLayoutPanel();
 			Control.Margin = SWF.Padding.Empty;
 			Control.Dock = SWF.DockStyle.Fill;
-			Control.AutoSize = true;
+			this.Control.Size = SD.Size.Empty;
+			this.Control.MinimumSize = SD.Size.Empty;
+			this.Control.AutoSize = true;
+			//this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
 		}
@@ -83,17 +86,20 @@ namespace Eto.Platform.Windows
 		
 		void SetMinSize()
 		{
+			//return;
+			/* What was this for?  doesn't seem to be needed anymore..*/
 			var widths = this.Control.GetColumnWidths();
 			var colstyles = this.Control.ColumnStyles;
-			int minwidth = widths.Length * spacing.Width;
+			int minwidth = 0;//(widths.Length-1) * spacing.Width;
 			for (int i = 0; i < widths.Length; i++) if (colstyles[i].SizeType != SWF.SizeType.Percent) minwidth += widths[i];
 			
 			var heights = this.Control.GetRowHeights();
 			var rowstyles = this.Control.RowStyles;
-			int minheight = heights.Length * spacing.Height;
+			int minheight = 0; //(heights.Length-1) * spacing.Height;
 			for (int i = 0; i < heights.Length; i++) if (rowstyles[i].SizeType != SWF.SizeType.Percent) minheight += heights[i];
 			
 			this.Control.MinimumSize = new System.Drawing.Size(minwidth, minheight);
+			/**/
 		}
 		
 		public void Move(Control child, int x, int y)
@@ -120,13 +126,15 @@ namespace Eto.Platform.Windows
 			views = new Control[cols, rows];
 			Control.RowCount = rows;
 			Control.ColumnCount = cols;
+			Control.ColumnStyles.Clear();
+			Control.RowStyles.Clear();
 			for (int i = 0; i < cols; i++)
 			{
-				Control.ColumnStyles.Add(new SWF.ColumnStyle());
+				Control.ColumnStyles.Add(new SWF.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
 			}
 			for (int i = 0; i < rows; i++)
 			{
-				Control.RowStyles.Add(new SWF.RowStyle());
+				Control.RowStyles.Add(new SWF.RowStyle(System.Windows.Forms.SizeType.AutoSize));
 			}
 			if (cols == 1) Control.ColumnStyles[0] = new SWF.ColumnStyle(System.Windows.Forms.SizeType.Percent, 1F); 
 			if (rows == 1) Control.RowStyles[0] = new SWF.RowStyle(System.Windows.Forms.SizeType.Percent, 1F); 

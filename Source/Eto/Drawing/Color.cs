@@ -11,6 +11,7 @@ namespace Eto.Drawing
 		public static readonly Color Red = Color.FromArgb (0xFF, 0, 0);
 		public static readonly Color Green = Color.FromArgb (0, 0xFF, 0);
 		public static readonly Color Blue = Color.FromArgb (0, 0, 0xFF);
+		public static readonly Color Transparent = Color.FromArgb (0, 0, 0, 0);
 
 		public static Color FromArgb (uint argb)
 		{

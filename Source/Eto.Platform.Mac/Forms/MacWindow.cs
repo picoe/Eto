@@ -40,7 +40,7 @@ namespace Eto.Platform.Mac
 		
 	}
 	
-	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow
+	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer
 		where T: NSWindow
 		where W: Eto.Forms.Window
 	{
@@ -49,12 +49,13 @@ namespace Eto.Platform.Mac
 		ToolBar toolBar;
 		NSWindowController controller;
 		
+		public bool AutoSize { get; private set; }
 		
 
 		public MacWindow(NSWindowStyle style)
 		{
 			var rect = new SD.Rectangle(0, 0, 200, 200);
-			
+			AutoSize = true;
 			controller = new NSWindowController(new MyWindow(rect, style, NSBackingStore.Buffered, false));
 			Control = (T)controller.Window;
 			Control.ContentView = new FlippedView();
@@ -95,6 +96,7 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				Control.SetFrame(Generator.ConvertF(Control.Frame, value), false);
+				AutoSize = false;
 			}
 		}
 		
@@ -223,7 +225,10 @@ namespace Eto.Platform.Mac
 		public Size ClientSize
 		{
 			get { return Generator.ConvertF(Control.ContentView.Frame.Size); }
-			set { Control.SetContentSize(Generator.ConvertF(value)); }
+			set { 
+				Control.SetContentSize(Generator.ConvertF(value));
+				AutoSize = false;
+			}
 		}
 
 		public bool Enabled { get; set; }
@@ -256,6 +261,10 @@ namespace Eto.Platform.Mac
 		
 		public virtual void OnLoad (EventArgs e)
 		{
+			if (this.AutoSize && Widget.Layout != null) {
+				var layout = Widget.Layout.Handler as IMacLayout;
+				if (layout != null) layout.SizeToFit ();
+			}
 		}
 
 		#region ISynchronizeInvoke implementation
@@ -288,5 +297,11 @@ namespace Eto.Platform.Mac
 		
 		#endregion
 
+		#region IMacContainer implementation
+		public void SetContentSize (SD.SizeF contentSize)
+		{
+			Control.SetContentSize (contentSize);
+		}
+		#endregion
 	}
 }

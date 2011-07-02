@@ -7,10 +7,38 @@ namespace Eto.Platform.GtkSharp
 	public class ScrollableHandler : GtkContainer<Gtk.ScrolledWindow, Scrollable>, IScrollable
 	{
 		Gtk.Viewport vp;
+		BorderType border;
+		
+		bool autoSize = true;
 		
 		public override object ContainerObject {
 			get {
 				return Control;
+			}
+		}
+		
+		public BorderType Border {
+			get {
+				return border;
+			}
+			set {
+				border = value;
+				switch (border) {
+				case BorderType.Bezel:
+					vp.ShadowType = Gtk.ShadowType.In;
+					//vp.BorderWidth = 2;
+					break;
+				case BorderType.Line:
+					vp.ShadowType = Gtk.ShadowType.In;
+					//vp.BorderWidth = 2;
+					break;
+				case BorderType.None:
+					vp.ShadowType = Gtk.ShadowType.None;
+					//vp.BorderWidth = 0;
+					break;
+				default:
+					throw new NotSupportedException();
+				}
 			}
 		}
 
@@ -18,10 +46,28 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control = new Gtk.ScrolledWindow();
 			vp = new Gtk.Viewport();
+			vp.Shown += delegate {
+				if (autoSize) {
+					var size = vp.SizeRequest ();
+					Control.SetSizeRequest (size.Width, size.Height);
+				}
+			};
+			Border = BorderType.Bezel;
 			Control.VScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			Control.HScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			//vp.ShadowType = Gtk.ShadowType.None;
 			Control.Add(vp);
+			border = BorderType.Bezel;
+		}
+		
+		public override Size Size {
+			get {
+				return base.Size;
+			}
+			set {
+				base.Size = value;
+				autoSize = false;
+			}
 		}
 		
 		void scrollBar_VisibilityChanged(object sender, EventArgs e)

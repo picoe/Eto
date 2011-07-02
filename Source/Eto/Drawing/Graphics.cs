@@ -17,6 +17,8 @@ namespace Eto.Drawing
 		SizeF MeasureString(Font font, string text);
 		Region ClipRegion { get; set; }
 		void Flush();
+		
+		bool Antialias { get; set; }
 	}
 
 	public abstract class Region
@@ -139,6 +141,11 @@ namespace Eto.Drawing
 			return inner.MeasureString(font, text);
 		}
 
+		public bool Antialias
+		{
+			get { return inner.Antialias; }
+			set { inner.Antialias = value; }
+		}
 
 		public Region ClipRegion
 		{

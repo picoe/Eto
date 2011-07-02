@@ -12,19 +12,25 @@ namespace Eto.Platform.Windows
 		SWF.Panel main;
 		Button button;
 
+		
 		public DialogHandler()
 		{
 			control = new SWF.Form();
 			control.FormBorderStyle = SWF.FormBorderStyle.FixedDialog;
+			this.control.Size = SD.Size.Empty;
+			this.control.MinimumSize = SD.Size.Empty;
 			control.AutoSize = true;
+			//control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			control.ShowInTaskbar = false;
 			control.ShowIcon = false;
 			control.MaximizeBox = false;
 			control.MinimizeBox = false;
 			control.StartPosition = SWF.FormStartPosition.CenterParent;
 			main = new SWF.Panel();
+		
 			main.Dock = SWF.DockStyle.Fill;
 			main.AutoSize = true;
+			//main.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			control.Controls.Add(main);
 			control.Load += control_Load;
 			this.Control = control;
@@ -60,7 +66,10 @@ namespace Eto.Platform.Windows
 		public override Size Size
 		{
 			get { return Generator.Convert(control.Size); }
-			set { control.Size = Generator.Convert(value); }
+			set { 
+				control.Size = Generator.Convert(value);
+				control.AutoSize = false;
+			}
 		}
 
 		public DialogResult ShowDialog(Control parent)

@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 using Eto.Drawing;
+using SD = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -20,7 +21,25 @@ namespace Eto.Platform.Mac
 		
 		public override void SizeToFit ()
 		{
+			foreach (var c in Widget.Container.Controls)
+			{
+				AutoSize (c);
+			}
+			
+			SD.SizeF size = new SD.SizeF (0, 0);
+			foreach (var c in Control.Subviews) {
+				var frame = c.Frame;
+				if (size.Width < frame.Right)
+					size.Width = frame.Right;
+				if (size.Height < frame.Bottom)
+					size.Height = frame.Bottom;
+			}
+			
+			if (size != Control.Frame.Size) {
+				SetContainerSize(size);
+			}
 		}
+			
 		
 		public void Add(Control child, int x, int y)
 		{

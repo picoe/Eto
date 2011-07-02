@@ -10,10 +10,10 @@ namespace Eto.Platform.Windows
 		public PanelHandler()
 		{
 			Control = new SWF.Panel();
-			Control.Size = SD.Size.Empty;
-			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			Control.AutoSize = true;
+			this.Control.Size = SD.Size.Empty;
 			this.Control.MinimumSize = SD.Size.Empty;
+			this.Control.AutoSize = true;
+			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			//this.Control.Margin = new SWF.Padding(0);
 		}
 	}
