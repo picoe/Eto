@@ -12,6 +12,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new System.Windows.Controls.ListBox ();
 			Control.DisplayMemberPath = "Text";
+			Control.SelectionChanged += delegate {
+				Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			};
 			
 		}
 

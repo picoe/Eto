@@ -18,7 +18,6 @@ namespace Eto.Platform.Windows
 
 		public string Text { get; set; }
 
-		public string Caption { get; set; }
 
 		public DialogResult ShowDialog(Control parent)
 		{
