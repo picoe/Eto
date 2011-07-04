@@ -70,6 +70,8 @@ Under development
 -----------------
 
 * iOS using MonoTouch
+* WPF to replace Windows Forms platform, and to be basis for Silverlight
+
 	
 Future plans
 ------------
