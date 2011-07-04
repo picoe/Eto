@@ -28,6 +28,14 @@ namespace Eto.Platform.Windows.Drawing
 
 	public class BitmapHandler : WidgetHandler<SD.Bitmap, Bitmap>, IBitmap
 	{
+		public BitmapHandler()
+		{
+		}
+		
+		public BitmapHandler(SD.Bitmap image)
+		{
+			Control = image;
+		}
 
 		public void Create(string fileName)
 		{

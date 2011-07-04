@@ -15,7 +15,7 @@ namespace Eto.Drawing
 			inner = (IImage)Handler;
 		}
 
-		public Image(Generator g, IImage inner) : base(g, inner)
+		public Image(Generator g, IImage handler) : base(g, handler)
 		{
 			inner = (IImage)Handler;
 		}

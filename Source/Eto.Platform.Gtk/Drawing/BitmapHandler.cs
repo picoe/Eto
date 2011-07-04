@@ -31,6 +31,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public BitmapHandler()
 		{
 		}
+		public BitmapHandler(Gdk.Pixbuf pixbuf)
+		{
+			this.Control = pixbuf;
+		}
 		
 		public void Create(string fileName)
 		{

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto
 {
-	public abstract class WidgetHandler<T, W> : IWidget, IDisposable
+	public abstract class WidgetHandler<W> : IWidget, IDisposable
 		where W: IWidget
 	{
 		HashSet<string> eventHooks; 
@@ -16,18 +16,8 @@ namespace Eto
 		
 		public WidgetHandler()
 		{
-			DisposeControl = true;
 		}
 		
-		protected bool DisposeControl { get; set; }
-		
-		public virtual T Control { get; protected set; }
-		
-		public object ControlObject {
-			get {
-				return this.Control;
-			}
-		}
 		
 		public W Widget { get; private set; }
 		
@@ -69,15 +59,40 @@ namespace Eto
 		
 	    protected virtual void Dispose(bool disposing)
 	    {
+	    }		
+	}
+
+	public abstract class WidgetHandler<T, W> : WidgetHandler<W>, IInstanceWidget
+		where W: IWidget
+	{
+		public WidgetHandler()
+		{
+			DisposeControl = true;
+		}
+		
+		protected bool DisposeControl { get; set; }
+
+		public virtual T Control { get; protected set; }
+		
+		public object ControlObject {
+			get {
+				return this.Control;
+			}
+		}
+		
+		protected override void Dispose (bool disposing)
+		{
 			if (disposing && DisposeControl) {
 				var control = this.Control as IDisposable;
 		        if (control != null) control.Dispose();
 			}
 			this.Control = default(T);
-	    }		
+			base.Dispose (disposing);
+		}
+
 	}
 	
-	public abstract class WidgetHandler : WidgetHandler<object, IWidget>
+	public abstract class WidgetHandler : WidgetHandler<IWidget>
 	{
 
 

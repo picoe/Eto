@@ -6,7 +6,7 @@ using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
-	public class ApplicationHandler : WidgetHandler, IApplication
+	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
 	{
 		
 		public void RunIteration()

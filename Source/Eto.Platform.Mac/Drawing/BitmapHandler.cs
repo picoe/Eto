@@ -36,6 +36,15 @@ namespace Eto.Platform.Mac.Drawing
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, IBitmap
 	{
 		NSBitmapImageRep rep;
+		
+		public BitmapHandler()
+		{
+		}
+		
+		public BitmapHandler(NSImage image)
+		{
+			Control = image;
+		}
 
 		public void Create (string fileName)
 		{

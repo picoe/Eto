@@ -423,6 +423,8 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\WebView.cs" />
+    <Compile Include="Forms\Clipboard.cs" />
+    <Compile Include="Drawing\BitmapData.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
