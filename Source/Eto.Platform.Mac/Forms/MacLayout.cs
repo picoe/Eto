@@ -16,7 +16,7 @@ namespace Eto.Platform.Mac
 		where T: NSObject
 		where W: Layout
 	{
-		public bool Loaded { get; private set; }
+		
 		
 		public virtual object LayoutObject
 		{
@@ -27,7 +27,8 @@ namespace Eto.Platform.Mac
 		
 		public virtual void OnLoad()
 		{
-			Loaded = true;
+			//Widget.OnLoad (EventArgs.E)	
+			
 		}
 		
 		public void SetContainerSize(SD.SizeF size)
@@ -46,13 +47,14 @@ namespace Eto.Platform.Mac
 			var mh = view.Handler as IMacView;
 			if (mh != null && !mh.AutoSize) return;
 			//Console.WriteLine ("OLD view: {0} size: {1}", view, view.Size);
-
+			
+			/* taken care of by MacContainer.OnLoad
 			var container = view as Container;
 			if (container != null && container.Layout != null)
 			{
 				var layout = container.Layout.Handler as IMacLayout;
 				if (layout != null) layout.SizeToFit();
-			}
+			}*/
 
 			if (c != null) c.SizeToFit();
 			//Console.WriteLine ("view: {0} size: {1}", view, view.Size);

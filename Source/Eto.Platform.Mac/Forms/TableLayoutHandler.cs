@@ -25,7 +25,7 @@ namespace Eto.Platform.Mac
 			set
 			{
 				spacing = value;
-				Layout();
+				if (Widget.Loaded) Layout();
 			}
 		}
 		
@@ -35,7 +35,7 @@ namespace Eto.Platform.Mac
 			set
 			{
 				padding = value;
-				Layout();
+				if (Widget.Loaded) Layout();
 			}
 		}
 		
@@ -219,7 +219,7 @@ namespace Eto.Platform.Mac
 			}
 			var view = (NSView)child.ControlObject;
 			views[y, x] = child;
-			if (Loaded) Layout();
+			if (Widget.Loaded) Layout();
 			Control.AddSubview(view);
 		}
 		public void Move(Control child, int x, int y)
@@ -231,7 +231,7 @@ namespace Eto.Platform.Mac
 			}
 
 			views[y, x] = child;
-			if (Loaded) Layout();
+			if (Widget.Loaded) Layout();
 		}
 		
 		public void Remove (Control child)
@@ -243,7 +243,7 @@ namespace Eto.Platform.Mac
 			{
 				if (views[y,x] == child) views[y,x] = null;
 			}
-			if (Loaded) Layout();
+			if (Widget.Loaded) Layout();
 		}
 		
 		public override void OnLoad ()
