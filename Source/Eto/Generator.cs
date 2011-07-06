@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto
 {
@@ -9,146 +10,145 @@ namespace Eto
 	{
 		Dictionary<Type, ConstructorInfo> constructorMap;
 		Hashtable attributes;
+		List<Type> types;
 		
-		public abstract string ID
-		{
+		public abstract string ID {
 			get;
 		}
 
-		public IDictionary Attributes
-		{
-			get { if (attributes == null) attributes = new Hashtable(); return attributes; }
+		public IDictionary Attributes {
+			get {
+				if (attributes == null)
+					attributes = new Hashtable ();
+				return attributes;
+			}
 		}
 		
-		protected Generator()
+		protected Generator ()
 		{
-			constructorMap = new Dictionary<Type, ConstructorInfo>();
+			constructorMap = new Dictionary<Type, ConstructorInfo> ();
 		}
 		
-		public virtual bool Supports<T>()
+		public virtual bool Supports<T> ()
 			where T: IWidget
 		{
-			return Find<T>() != null;
+			return Find<T> () != null;
 		}
 
 		private static Generator current;
 		
-		public static Generator Current
-		{
-			get
-			{
-				if (current == null) throw new ApplicationException("Generator has not been initialized");
+		public static Generator Current {
+			get {
+				if (current == null)
+					throw new ApplicationException ("Generator has not been initialized");
 				return current;
 			}
 		}
 		
-		public static void Initialize(Generator generator)
+		public static void Initialize (Generator generator)
 		{
 			current = generator;
 		}
 		
-		public static Generator GetGenerator(string generatorType)
+		public static Generator GetGenerator (string generatorType)
 		{
-			Type type = Type.GetType(generatorType);
-			if (type.IsSubclassOf(typeof(Generator)))
-			{
-				return (Generator)Activator.CreateInstance(type);
+			Type type = Type.GetType (generatorType);
+			if (type.IsSubclassOf (typeof(Generator))) {
+				return (Generator)Activator.CreateInstance (type);
 			}
 			return null;
 			
 		}
 
-		public ConstructorInfo Add<T>(Type handlerType)
+		public ConstructorInfo Add<T> (Type handlerType)
 			where T: IWidget
 		{
-			ConstructorInfo constructor = handlerType.GetConstructor(new Type[] { });
+			ConstructorInfo constructor = handlerType.GetConstructor (new Type[] { });
 			if (constructor == null) 
-				throw new ArgumentException(string.Format("the default constructor for class {0} cannot be found", handlerType.FullName));
+				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
 
-			constructorMap.Add(typeof(T), constructor);
+			constructorMap.Add (typeof(T), constructor);
 			return constructor;
 		}
 
-		protected ConstructorInfo Find<T>()
+		protected ConstructorInfo Find<T> ()
 			where T: IWidget
 		{
 			var type = typeof(T);
-			if (constructorMap.ContainsKey(type)) return constructorMap[type];
-			
-			var types = this.GetType().Assembly.GetExportedTypes();
-			foreach (Type foundType in types)
-			{
-				if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom(foundType))
-				{
-					return Add<T>(foundType);
-				}
-			}
-			return null;
+			return Find (type);
 		}
 		
-		public T CreateControl<T>()
+		public T CreateControl<T> ()
 			where T: IWidget
 		{
-			var constructor = Find<T>();
-			if (constructor == null) throw new ApplicationException(string.Format("the type {0} cannot be found in this generator", typeof(T).FullName));
+			var constructor = Find<T> ();
+			if (constructor == null)
+				throw new ApplicationException (string.Format ("the type {0} cannot be found in this generator", typeof(T).FullName));
 
-			return (T)constructor.Invoke(new object[] { });
+			return (T)constructor.Invoke (new object[] { });
 		}
 		
-		public ConstructorInfo Add(Type type, Type handlerType)
+		public ConstructorInfo Add (Type type, Type handlerType)
 		{
-			ConstructorInfo constructor = handlerType.GetConstructor(new Type[] { });
+			ConstructorInfo constructor = handlerType.GetConstructor (new Type[] { });
 			if (constructor == null) 
-				throw new ArgumentException(string.Format("the default constructor for class {0} cannot be found", handlerType.FullName));
+				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
 
-			constructorMap.Add(type, constructor);
+			constructorMap.Add (type, constructor);
 			return constructor;
 		}
 		
-		protected ConstructorInfo Find(Type type)
+		protected ConstructorInfo Find (Type type)
 		{
-			lock (this)
-			{
-			if (constructorMap.ContainsKey(type)) return constructorMap[type];
-			
+			lock (this) {
+				if (constructorMap.ContainsKey (type))
+					return constructorMap [type];
+
+				List<Type> removalTypes = null;
+				if (types == null)
+					types = new List<Type> (this.GetType ().Assembly.GetExportedTypes ());
 				
-			var types = this.GetType().Assembly.GetExportedTypes();
-			foreach (Type foundType in types)
-			{
-				if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom(foundType))
-				{
-					return Add(type, foundType);
+				foreach (Type foundType in types) {
+					try {
+						if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom (foundType)) {
+							if (removalTypes != null) foreach (var t in removalTypes) types.Remove (t);
+							return Add (type, foundType);
+						}
+					} catch {
+						if (removalTypes == null) removalTypes = new List<Type>();
+						removalTypes.Add (foundType);
+					}
 				}
+				if (removalTypes != null) foreach (var t in removalTypes) types.Remove (t);
+				return null;
 			}
-			return null;
-			}
 		}
 		
-		
-		public object CreateControl(Type type)
+		public object CreateControl (Type type)
 		{
-			var constructor = Find(type);
-			if (constructor == null) throw new ApplicationException(string.Format("the type {0} cannot be found in this generator", type.FullName));
+			var constructor = Find (type);
+			if (constructor == null)
+				throw new ApplicationException (string.Format ("the type {0} cannot be found in this generator", type.FullName));
 
-			return constructor.Invoke(new object[] { });
+			return constructor.Invoke (new object[] { });
 		}
 
-		public static MethodInfo GetEventMethod(Type type, string methodName)
+		public static MethodInfo GetEventMethod (Type type, string methodName)
 		{
-			return GetEventMethod(type, methodName, typeof(EventArgs));
+			return GetEventMethod (type, methodName, typeof(EventArgs));
 		}
 
-		public static MethodInfo GetEventMethod(Type type, string methodName, params Type[] parameters)
+		public static MethodInfo GetEventMethod (Type type, string methodName, params Type[] parameters)
 		{
-			return type.GetMethod(methodName, BindingFlags.Instance | BindingFlags.NonPublic, null, parameters, null);
+			return type.GetMethod (methodName, BindingFlags.Instance | BindingFlags.NonPublic, null, parameters, null);
 		}
 		
-		public virtual void ExecuteOnMainThread(System.Action action)
+		public virtual void ExecuteOnMainThread (System.Action action)
 		{
-			action();
+			action ();
 		}
 		
-		public virtual IDisposable ThreadStart()
+		public virtual IDisposable ThreadStart ()
 		{
 			return null;
 		}
