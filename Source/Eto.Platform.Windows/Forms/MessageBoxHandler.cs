@@ -18,18 +18,20 @@ namespace Eto.Platform.Windows
 
 		public string Text { get; set; }
 
+		public string Caption { get; set; }
+
 
 		public DialogResult ShowDialog(Control parent)
 		{
 			SWF.Control c = (parent == null) ? null : (SWF.Control)parent.ControlObject;
-			SWF.DialogResult result = SWF.MessageBox.Show(c, Text);
+			SWF.DialogResult result = SWF.MessageBox.Show(c, Text, Caption);
 			return Generator.Convert(result);
 		}
 
 		public DialogResult ShowDialog(Control parent, MessageBoxButtons buttons)
 		{
 			SWF.Control c = (parent == null) ? null : (SWF.Control)parent.ControlObject;
-			SWF.DialogResult result = SWF.MessageBox.Show(c, Text, string.Empty, Convert(buttons));
+			SWF.DialogResult result = SWF.MessageBox.Show(c, Text, Caption, Convert(buttons));
 			return Generator.Convert(result);
 		}
 		

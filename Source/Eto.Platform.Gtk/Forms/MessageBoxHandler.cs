@@ -25,6 +25,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			control = new Gtk.MessageDialog((Gtk.Window)c, Gtk.DialogFlags.Modal, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, false, Text);
 			control.TypeHint = Gdk.WindowTypeHint.Dialog;
+			if (!string.IsNullOrEmpty(Caption)) control.Title = Caption;
 			int ret = control.Run();
 			control.Destroy();
 			return Generator.Convert((Gtk.ResponseType)ret);
@@ -39,6 +40,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			control = new Gtk.MessageDialog((Gtk.Window)c, Gtk.DialogFlags.Modal, Gtk.MessageType.Info, Convert(buttons), false, Text);
 			control.TypeHint = Gdk.WindowTypeHint.Dialog;
+			if (!string.IsNullOrEmpty (Caption)) control.Title = Caption;
 			if (buttons == MessageBoxButtons.YesNoCancel)
 			{
 				// must add cancel manually
