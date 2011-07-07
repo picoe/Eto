@@ -4,8 +4,9 @@ namespace Eto.Forms
 {
 	public interface IApplication : IInstanceWidget
 	{
-		void RunIteration();
-		void Run();
+		void Restart ();
+		void RunIteration ();
+		void Run ();
 		void Quit();
 		
 		void GetSystemActions(GenerateActionArgs args);
@@ -41,10 +42,15 @@ namespace Eto.Forms
 		{
 			if (Initialized != null) Initialized(this, e);
 		}
-		
-		public void RunIteration()
+
+		public void RunIteration ()
 		{
-			inner.RunIteration();
+			inner.RunIteration ();
+		}
+
+		public void Restart ()
+		{
+			inner.Restart ();
 		}
 
 		public void Run()

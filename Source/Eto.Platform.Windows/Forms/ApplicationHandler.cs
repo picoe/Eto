@@ -13,6 +13,11 @@ namespace Eto.Platform.Windows
 		{
 			SWF.Application.DoEvents();
 		}
+
+		public void Restart ()
+		{
+			SWF.Application.Restart ();
+		}
 		
 		public ApplicationHandler()
 		{

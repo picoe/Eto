@@ -14,6 +14,13 @@ namespace Eto.Platform.GtkSharp
 		{
 			Gtk.Application.RunIteration();
 		}
+
+		public void Restart ()
+		{
+			Gtk.Application.Quit();
+
+			// TODO: restart!
+		}
 		
 		public void Run()
 		{
