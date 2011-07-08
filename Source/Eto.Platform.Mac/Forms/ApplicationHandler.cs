@@ -19,6 +19,27 @@ namespace Eto.Platform.Mac
 		{
 			NSApplication.Init();
 		}
+		
+		static void restart_WillTerminate(object sender, EventArgs e)
+		{
+			// re-open after we terminate
+			var args = new string[] {
+				"-c",
+				"open \"$1\"", 
+				string.Empty,
+				NSBundle.MainBundle.BundlePath
+			};
+			NSTask.LaunchFromPath("/bin/sh", args);
+		}
+		
+		public void Restart ()
+		{
+			NSApplication.SharedApplication.WillTerminate += restart_WillTerminate;
+			NSApplication.SharedApplication.Terminate (AppDelegate);
+
+			// only get here if cancelled, remove event to restart
+			NSApplication.SharedApplication.WillTerminate -= restart_WillTerminate;
+		}
 
 		public void RunIteration()
 		{
