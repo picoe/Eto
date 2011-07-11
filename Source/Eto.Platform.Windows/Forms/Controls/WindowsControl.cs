@@ -17,7 +17,7 @@ namespace Eto.Platform.Windows
 	}
 
 	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, ISynchronizeInvoke, IWindowsControl
-		where T: SWF.Control
+		where T: System.Windows.Forms.Control
 		where W: Control
 	{
 		bool internalVisible = true;
@@ -131,12 +131,12 @@ namespace Eto.Platform.Windows
 
 		public void Invalidate ()
 		{
-			Control.Invalidate ();
+			Control.Invalidate (true);
 		}
 
 		public void Invalidate (Rectangle rect)
 		{
-			Control.Invalidate (Generator.Convert (rect));
+			Control.Invalidate (Generator.Convert (rect), true);
 		}
 
 		public Color BackgroundColor {

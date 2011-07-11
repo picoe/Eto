@@ -35,7 +35,7 @@ namespace Eto.Platform.Windows.Drawing
 		}
 	}
 
-	public class GraphicsHandler : WidgetHandler<SD.Graphics, Graphics>, IGraphics
+	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
 		
 		public GraphicsHandler ()
@@ -114,27 +114,36 @@ namespace Eto.Platform.Windows.Drawing
 		public void DrawText (Font font, Color color, int x, int y, string text)
 		{
 			SD.Brush brush = new SD.SolidBrush (Generator.Convert (color));
-			Control.DrawString (text, (SD.Font)font.ControlObject, brush, x, y);
+			var format = new SD.StringFormat (SD.StringFormat.GenericTypographic);
+			format.FormatFlags = SD.StringFormatFlags.MeasureTrailingSpaces | SD.StringFormatFlags.NoWrap;
+			Control.DrawString (text, (SD.Font)font.ControlObject, brush, x, y, format);
 			brush.Dispose ();
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			// BAD: return Generator.Convert(this.Control.MeasureString(text, (SD.Font)font.ControlObject));
+			/* BAD (but not really!?)
+			 */
+			var format = new SD.StringFormat (SD.StringFormat.GenericTypographic);
+			format.FormatFlags = SD.StringFormatFlags.MeasureTrailingSpaces | SD.StringFormatFlags.NoWrap; 
+			return Generator.Convert(this.Control.MeasureString(text, (SD.Font)font.ControlObject, SD.PointF.Empty, format));
+			/**
 			if (string.IsNullOrEmpty(text)) return Size.Empty;
 			
-			var format = new SD.StringFormat ();
+			var format = new SD.StringFormat (SD.StringFormat.GenericTypographic);
 			SD.CharacterRange[] ranges = { new SD.CharacterRange (0, text.Length) };
 		
-			format.FormatFlags = SD.StringFormatFlags.MeasureTrailingSpaces | SD.StringFormatFlags.NoWrap;
+			format.FormatFlags = SD.StringFormatFlags.MeasureTrailingSpaces | SD.StringFormatFlags.NoWrap; 
 			format.SetMeasurableCharacterRanges (ranges);
 		
 			var sdfont = (SD.Font)font.ControlObject;
-			var rect = new SD.RectangleF(0, 0, 10000, 1000);
-			var regions = this.Control.MeasureCharacterRanges (text, sdfont, rect, format);
-			rect = regions [0].GetBounds (this.Control);
+			var regions = this.Control.MeasureCharacterRanges (text, sdfont, SD.Rectangle.Empty, format);
+			var rect = regions [0].GetBounds (this.Control);
 			
 			return Generator.Convert (rect.Size);
+			//s.Width += 4;
+			//return s;
+			/**/
 		}
 
 		public void Flush ()

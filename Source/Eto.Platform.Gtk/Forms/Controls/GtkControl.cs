@@ -176,6 +176,9 @@ namespace Eto.Platform.GtkSharp
 				Control.AddEvents((int)Gdk.EventMask.FocusChangeMask);
 				Control.FocusOutEvent += delegate { Widget.OnLostFocus(EventArgs.Empty); };
 				break;
+			default:
+				base.AttachEvent(handler);
+				return;
 			}
 		}
 
@@ -189,6 +192,18 @@ namespace Eto.Platform.GtkSharp
 			if ((state & Gdk.ModifierType.Mod1Mask) != 0)
 				modifiers |= Key.Alt;
 			return modifiers;
+		}
+		
+		MouseButtons GetButtons (Gdk.EventButton ev)
+		{
+			switch (ev.Button)
+			{
+			case 1: return MouseButtons.Primary;
+			case 2: return MouseButtons.Middle;
+			case 3: return MouseButtons.Alternate;
+			default:
+				return MouseButtons.None;
+			}
 		}
 
 		private MouseButtons GetButtonModifiers (Gdk.ModifierType state)
@@ -220,7 +235,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
 			Key modifiers = GetKeyModifiers (args.Event.State);
-			MouseButtons buttons = GetButtonModifiers (args.Event.State);
+			MouseButtons buttons = GetButtons (args.Event);
 			
 			Widget.OnMouseUp (new MouseEventArgs (buttons, modifiers, p));
 		}
@@ -229,7 +244,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
 			Key modifiers = GetKeyModifiers (args.Event.State);
-			MouseButtons buttons = GetButtonModifiers (args.Event.State);
+			MouseButtons buttons = GetButtons (args.Event);
 			if (Control.CanFocus && !Control.HasFocus)
 				Control.GrabFocus ();
 			if (args.Event.Type == Gdk.EventType.ButtonPress) {

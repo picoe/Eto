@@ -10,6 +10,7 @@
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
