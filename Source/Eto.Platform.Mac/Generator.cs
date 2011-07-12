@@ -50,6 +50,16 @@ namespace Eto.Platform.Mac
 			return new Size(size.Width, size.Height);
 		}
 
+		public static System.Drawing.Point Convert(Point point)
+		{
+			return new System.Drawing.Point(point.X, point.Y);
+		}
+
+		public static Point Convert(System.Drawing.Point point)
+		{
+			return new Point(point.X, point.Y);
+		}
+
 		public static System.Drawing.SizeF ConvertF(Size size)
 		{
 			return new System.Drawing.SizeF(size.Width, size.Height);

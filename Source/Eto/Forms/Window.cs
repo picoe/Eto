@@ -9,6 +9,8 @@ namespace Eto.Forms
 		ToolBar ToolBar { get; set; }
 		
 		void Close ();
+		
+		Point Location { get; set; }
 
 		//void AddToolbar(ToolBar toolBar);
 		//void RemoveToolbar(ToolBar toolBar);
@@ -57,41 +59,6 @@ namespace Eto.Forms
 				shown (this, e);
 		}
 		
-		public const string MinimizedEvent = "Window.Minimized";
-		
-		event EventHandler<EventArgs> minimized;
-		
-		public event EventHandler<EventArgs> Minimized {
-			add {
-				HandleEvent (MinimizedEvent);
-				minimized += value;
-			}
-			remove { minimized -= value; }
-		}
-		
-		public virtual void OnMinimized (EventArgs e)
-		{
-			if (minimized != null)
-				minimized (this, e);
-		}
-
-		public const string MaximizedEvent = "Window.Maximized";
-		
-		event EventHandler<EventArgs> maximized;
-		
-		public event EventHandler<EventArgs> Maximized {
-			add {
-				HandleEvent (MaximizedEvent);
-				maximized += value;
-			}
-			remove { maximized -= value; }
-		}
-		
-		public virtual void OnMaximized (EventArgs e)
-		{
-			if (maximized != null)
-				maximized (this, e);
-		}
 		
 		#endregion
 		
@@ -106,6 +73,16 @@ namespace Eto.Forms
 		public string Text {
 			get { return inner.Text; }
 			set { inner.Text = value; }
+		}
+		
+		public Point Location {
+			get { return inner.Location; }
+			set { inner.Location = value; }
+		}
+		
+		public Rectangle Bounds {
+			get { return new Rectangle(inner.Location, inner.Size); }
+			set { inner.Location = value.Location; inner.Size = value.Size; }
 		}
 		
 		public ToolBar ToolBar {

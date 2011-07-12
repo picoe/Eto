@@ -9,7 +9,8 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
-	class FlippedView : NSView {
+	class FlippedView : NSView
+	{
 		
 		public override bool IsFlipped {
 			get {
@@ -17,10 +18,13 @@ namespace Eto.Platform.Mac
 			}
 		}
 	}
+
 	public class MyWindow : NSWindow
 	{
+		SD.RectangleF oldFrame;
+		bool zoom;
 		
-		public MyWindow(SD.Rectangle rect, NSWindowStyle style, NSBackingStore store, bool flag)
+		public MyWindow (SD.Rectangle rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
 		{
 		}
@@ -28,14 +32,26 @@ namespace Eto.Platform.Mac
 		public override void Center ()
 		{
 			// implement centering to parent if there is a parent window for this one..
-			if (this.ParentWindow != null)
-			{
+			if (this.ParentWindow != null) {
 				var parentFrame = this.ParentWindow.Frame;
 				var frame = this.Frame;
-				SD.PointF location = new SD.PointF((parentFrame.Width - frame.Width) / 2 + parentFrame.X, (parentFrame.Height - frame.Height) / 2 + parentFrame.Y);
+				SD.PointF location = new SD.PointF ((parentFrame.Width - frame.Width) / 2 + parentFrame.X, (parentFrame.Height - frame.Height) / 2 + parentFrame.Y);
 				this.SetFrameOrigin (location);
+			} else
+				base.Center ();
+		}
+		
+		public override void Zoom (NSObject sender)
+		{
+			if (zoom) {
+				this.SetFrame (oldFrame, true);
+				zoom = false;
 			}
-			else base.Center ();
+			else {
+				oldFrame = this.Frame;
+				base.Zoom(sender);
+				zoom = true;
+			}
 		}
 		
 	}
@@ -48,43 +64,46 @@ namespace Eto.Platform.Mac
 		Icon icon;
 		ToolBar toolBar;
 		NSWindowController controller;
+		Rectangle? restoreBounds;
+		bool sizePositionSet;
 		
 		public bool AutoSize { get; private set; }
-		
 
-		public MacWindow(NSWindowStyle style)
+		public MacWindow (NSWindowStyle style)
 		{
-			var rect = new SD.Rectangle(0, 0, 200, 200);
+			var rect = new SD.Rectangle (0, 0, 200, 200);
 			AutoSize = true;
-			controller = new NSWindowController(new MyWindow(rect, style, NSBackingStore.Buffered, false));
+			controller = new NSWindowController (new MyWindow (rect, style, NSBackingStore.Buffered, false));
 			Control = (T)controller.Window;
-			Control.ContentView = new FlippedView();
+			Control.ContentView = new FlippedView ();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true; //(style & NSWindowStyle.Resizable) != 0;
+			
+			Control.WillMiniaturize += delegate {
+				restoreBounds = Widget.Frame;
+			};
+			HandleEvent (Window.MaximizedEvent);
 		}
 		
 		public NSWindowController Controller { get { return controller; } }
 		
-		public virtual object ContainerObject
-		{
+		public virtual object ContainerObject {
 			get { return Control.ContentView; }
 		}
 		
-		
 		public virtual string Text { get { return Control.Title; } set { Control.Title = value; } }
 
-		public bool Resizable
-		{
+		public bool Resizable {
 			get { return (Control.StyleMask & NSWindowStyle.Resizable) != 0; }
-			set
-			{
-				if (Control.RespondsToSelector (new Selector("setStyleMask:"))) {
-					if (value) Control.StyleMask |= NSWindowStyle.Resizable;
-					else Control.StyleMask &= ~NSWindowStyle.Resizable;
-				}
-				else {
+			set {
+				if (Control.RespondsToSelector (new Selector ("setStyleMask:"))) {
+					if (value)
+						Control.StyleMask |= NSWindowStyle.Resizable;
+					else
+						Control.StyleMask &= ~NSWindowStyle.Resizable;
+				} else {
 					// 10.5, what do we do?!
 				}
 			}
@@ -92,18 +111,18 @@ namespace Eto.Platform.Mac
 		
 		public virtual Size Size {
 			get {
-				return Generator.ConvertF(Control.Frame.Size);
+				return Generator.ConvertF (Control.Frame.Size);
 			}
 			set {
-				Control.SetFrame(Generator.ConvertF(Control.Frame, value), false);
+				Control.SetFrame (Generator.ConvertF (Control.Frame, value), true);
+				sizePositionSet = true;
 				AutoSize = false;
 			}
 		}
 		
 		public override void AttachEvent (string handler)
 		{
-			switch (handler)
-			{
+			switch (handler) {
 			case Window.ShownEvent:
 				Control.DidBecomeKey += delegate {
 					Widget.OnShown (EventArgs.Empty);
@@ -111,13 +130,16 @@ namespace Eto.Platform.Mac
 				break;
 			case Window.MaximizedEvent:
 				Control.ShouldZoom = (window, newFrame) => {
-					if (!window.IsZoomed) Widget.OnMaximized(EventArgs.Empty);
+					if (!window.IsZoomed) {
+						restoreBounds = Widget.Frame;
+						Widget.OnMaximized (EventArgs.Empty);
+					}
 					return true;
 				};
 				break;
 			case Window.MinimizedEvent:
 				Control.WillMiniaturize += delegate {
-					Widget.OnMinimized(EventArgs.Empty);
+					Widget.OnMinimized (EventArgs.Empty);
 				};
 				break;
 			default:
@@ -126,17 +148,17 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public virtual void SetLayout(Layout layout)
+		public virtual void SetLayout (Layout layout)
 		{
 			var maclayout = layout.Handler as IMacLayout;
-			if (maclayout == null) return;
+			if (maclayout == null)
+				return;
 			var control = maclayout.LayoutObject as NSView;
-			if (control != null)
-			{
+			if (control != null) {
 				var view = ContainerObject as NSView;
-				control.SetFrameSize(view.Frame.Size);
+				control.SetFrameSize (view.Frame.Size);
 				control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-				view.AddSubview(control);
+				view.AddSubview (control);
 			}
 		}
 		
@@ -148,16 +170,13 @@ namespace Eto.Platform.Mac
 		{
 		}
 
-		public MenuBar Menu
-		{
-			get
-			{
+		public MenuBar Menu {
+			get {
 				return menuBar;
 			}
-			set
-			{
+			set {
 				this.menuBar = value;
-				NSApplication.SharedApplication.SetMainMenu((NSMenu)value.ControlObject);
+				NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
 				//if (menuBar != null) menuBox.Remove((Gtk.Widget)menuBar.ControlObject);
 				//menuBar = value;
 				//menuBox.PackStart((Gtk.Widget)value.ControlObject); //, false, false, 0);
@@ -165,9 +184,9 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public void Close()
+		public void Close ()
 		{
-			Control.PerformClose(Control);
+			Control.PerformClose (Control);
 		}
 
 		public ToolBar ToolBar {
@@ -180,11 +199,9 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public Icon Icon
-		{
+		public Icon Icon {
 			get { return icon; }
-			set
-			{
+			set {
 				icon = value;
 				// don't really do anything here..  no where to put it
 			}
@@ -197,7 +214,7 @@ namespace Eto.Platform.Mac
 
 		void IControl.Invalidate (Rectangle rect)
 		{
-			Control.ContentView.SetNeedsDisplayInRect(Generator.ConvertF(rect));
+			Control.ContentView.SetNeedsDisplayInRect (Generator.ConvertF (rect));
 		}
 
 		public Graphics CreateGraphics ()
@@ -215,55 +232,96 @@ namespace Eto.Platform.Mac
 
 		public void Focus ()
 		{
-			Control.BecomeFirstResponder();
+			Control.BecomeFirstResponder ();
 		}
 
 		public Color BackgroundColor { get; set; }
 
 		public string Id { get; set; }
 
-		public Size ClientSize
-		{
-			get { return Generator.ConvertF(Control.ContentView.Frame.Size); }
+		public Size ClientSize {
+			get { return Generator.ConvertF (Control.ContentView.Frame.Size); }
 			set { 
-				Control.SetContentSize(Generator.ConvertF(value));
+				Control.SetContentSize (Generator.ConvertF (value));
 				AutoSize = false;
 			}
 		}
 
 		public bool Enabled { get; set; }
 
-		public bool HasFocus
-		{
+		public bool HasFocus {
 			get { return Control.IsKeyWindow; }
-			set
-			{
-				if (value) Control.MakeKeyWindow();
-				else Control.ResignKeyWindow();
+			set {
+				if (value)
+					Control.MakeKeyWindow ();
+				else
+					Control.ResignKeyWindow ();
 			}
 		}
 
-		public bool Visible
-		{
+		public bool Visible {
 			get { return Control.IsVisible; }
-			set
-			{
-				if (value && !Control.IsVisible) Control.MakeKeyAndOrderFront(NSApplication.SharedApplication);
-				if (!value && Control.IsVisible) Control.PerformClose(NSApplication.SharedApplication);
+			set {
+				if (value && !Control.IsVisible)
+					Control.MakeKeyAndOrderFront (NSApplication.SharedApplication);
+				if (!value && Control.IsVisible)
+					Control.PerformClose (NSApplication.SharedApplication);
 				// huh?
 			}
 		}
 		
-		public void Minimize ()
-		{
-			Control.Miniaturize(Control);
+		public virtual Point Location {
+			get {
+				var height = Control.Screen.Frame.Height;
+				var frame = Control.Frame;
+				return new Point ((int)frame.X, (int)(height - frame.Y - frame.Height));
+			}
+			set {
+				var height = Control.Screen.Frame.Height;
+				var frame = Control.Frame;
+				Control.SetFrameOrigin (new SD.PointF (value.X, height - value.Y - frame.Height));
+			}
+		}
+		
+		public WindowState State {
+			get {
+				if (Control.IsMiniaturized)
+					return WindowState.Minimized;
+				else if (Control.IsZoomed)
+					return WindowState.Maximized;
+				else
+					return WindowState.Normal;
+			}
+			set {
+				switch (value) {
+				case WindowState.Maximized: 
+					if (!Control.IsZoomed)
+						Control.Zoom (Control);
+					break;
+				case WindowState.Minimized:
+					if (!Control.IsMiniaturized)
+						Control.Miniaturize (Control);
+					break;
+				case WindowState.Normal: 
+					if (Control.IsMiniaturized)
+						Control.Deminiaturize (Control);
+					else if (Control.IsZoomed)
+						Control.Zoom (Control);
+					break;
+				}
+			}
+		}
+		
+		public Rectangle? RestoreBounds {
+			get { return State == WindowState.Normal ? null : restoreBounds; }
 		}
 		
 		public virtual void OnLoad (EventArgs e)
 		{
 			if (this.AutoSize && Widget.Layout != null) {
 				var layout = Widget.Layout.Handler as IMacLayout;
-				if (layout != null) layout.SizeToFit ();
+				if (layout != null)
+					layout.SizeToFit ();
 			}
 		}
 
@@ -272,7 +330,7 @@ namespace Eto.Platform.Mac
 		public IAsyncResult BeginInvoke (Delegate method, object[] args)
 		{
 			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.BeginInvokeOnMainThread(helper.Action);
+			Control.BeginInvokeOnMainThread (helper.Action);
 			return null;
 		}
 
@@ -280,12 +338,11 @@ namespace Eto.Platform.Mac
 		{
 			return null;
 		}
-		
 
 		public object Invoke (Delegate method, object[] args)
 		{
 			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.InvokeOnMainThread(helper.Action);
+			Control.InvokeOnMainThread (helper.Action);
 			return null;
 		}
 

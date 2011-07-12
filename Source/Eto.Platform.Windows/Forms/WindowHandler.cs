@@ -161,9 +161,50 @@ namespace Eto.Platform.Windows
 			}
 		}
 		
-		public void Minimize ()
-		{
-			Control.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+		public Point Location {
+			get {
+				return Generator.Convert (Control.Location);
+			}
+			set {
+				Control.Location = Generator.Convert (value);
+			}
+		}
+		
+		public WindowState State {
+			get {
+				switch (Control.WindowState) {
+				case SWF.FormWindowState.Maximized:
+					return WindowState.Maximized;
+				case SWF.FormWindowState.Minimized:
+					return WindowState.Minimized;
+				case SWF.FormWindowState.Normal:
+					return WindowState.Normal;
+				default:
+					throw new NotSupportedException ();
+				}
+			}
+			set {
+				switch (value) {
+				case WindowState.Maximized:
+					Control.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+					break;
+				case WindowState.Minimized:
+					Control.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+					break;
+				case WindowState.Normal:
+					Control.WindowState = System.Windows.Forms.FormWindowState.Normal;
+					break;
+				default:
+					throw new NotSupportedException ();
+				}
+			}
+		}
+		
+		public Rectangle? RestoreBounds {
+			get {
+				if (Control.RestoreBounds.IsEmpty) return null;
+				else return Generator.Convert (Control.RestoreBounds);
+			}
 		}
 
 		private void Control_Closed (object sender, EventArgs e)

@@ -13,7 +13,14 @@ namespace Eto.Platform.Mac
 			: base(NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled)
 		{
 		}
-
+		
+		public override Point Location {
+			get { return base.Location; }
+			set {
+				base.Location = value;
+				centered = true;
+			}
+		}
 
 		public void Show()
 		{

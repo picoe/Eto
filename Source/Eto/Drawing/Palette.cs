@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Collections.Generic;
 
 namespace Eto.Drawing
 {
@@ -7,20 +8,31 @@ namespace Eto.Drawing
 	{
 		public static readonly int[] EGAColors = new int[] {0,1,2,3,4,5,20,7,56,57,58,59,60,61,62,63};
 
-		private Color[] paletteList;
-		private uint[] argb;
+		List<Color> paletteList;
+		List<uint> argb;
 
 		public event EventHandler<EventArgs> Changed;
+		
+		protected virtual void OnChanged(EventArgs e)
+		{
+			if (Changed != null) Changed(this, EventArgs.Empty);
+		}
 
 		public Palette()
+			: this(16)
 		{
-			paletteList = new Color[16];
-			argb = new uint[16];
 		}
 		public Palette(int size)
 		{
-			paletteList = new Color[size];
-			argb = new uint[size];
+			paletteList = new List<Color>(size);
+			argb = new List<uint>(size);
+			var col = Color.Black;
+			var argbcol = col.ToArgb ();
+			for (int i=0; i<size; i++)
+			{
+				paletteList.Add (col);
+				argb.Add (argbcol);
+			}
 		}
 
 		public static Palette GetEgaPalette()
@@ -145,26 +157,23 @@ namespace Eto.Drawing
 		
 		public void Load(BinaryReader br, int size, int shift)
 		{
-			paletteList = new Color[size];
+			paletteList = new List<Color>(size);
+			argb = new List<uint>(size);
 			for (int i=0; i<size; i++)
 			{
 				int red = (br.ReadByte() << shift) & 0xff;
 				int green = (br.ReadByte() << shift) & 0xff;
 				int blue = (br.ReadByte() << shift) & 0xff;
 				Color c = Color.FromArgb(red, green, blue);
-				paletteList[i] = c;
-				argb[i] = c.ToArgb();
+				paletteList.Add (c);
+				argb.Add (c.ToArgb());
 			}
 			if (Changed != null) Changed(this, EventArgs.Empty);
 		}
 
 		public int Size
 		{
-			get { return paletteList.Length; }
-			set 
-			{
-				paletteList = new Color[value];
-			}
+			get { return paletteList.Count; }
 		}
 
 		public static UInt32 GenerateRGBColor(Color c)
@@ -172,29 +181,42 @@ namespace Eto.Drawing
 			return (UInt32)((c.A << 24) + (c.R << 16) + (c.G << 8) + c.B);
 		}
 
-		public int Find(int col)
+		public int Find(uint argb)
 		{
 			for (int i=0; i<Size; i++)
 			{
-				if (argb[i] == col) return i;
+				if (this.argb[i] == argb) return i;
 			}
 			return -1;
 		}
 
-		public uint GetRGBColor(int color)
+		public uint GetRGBColor(int index)
 		{
-			return argb[color];
+			return argb[index];
 		}
 
-		public Color this[int color]
+		public Color this[int index]
 		{
-			get { return paletteList[color]; }
+			get { return paletteList[index]; }
 			set 
 			{
-				paletteList[color] = value;
-				argb[color] = value.ToArgb();
-				if (Changed != null) Changed(this, EventArgs.Empty);
+				paletteList[index] = value;
+				argb[index] = value.ToArgb();
+				OnChanged(EventArgs.Empty);
 			}
+		}
+		
+		public int FindAddColour(Color colour)
+		{
+			var argbcol = colour.ToArgb();
+			for (int i=0; i<this.Size; i++) {
+				if (argb[i] == argbcol) return i;
+			}
+			
+			paletteList.Add (colour);
+			argb.Add (argbcol);
+			OnChanged(EventArgs.Empty);
+			return paletteList.Count - 1;
 		}
 		
 		public override int GetHashCode ()

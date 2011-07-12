@@ -25,6 +25,15 @@ namespace Eto
 			if (!string.IsNullOrWhiteSpace(attr) && bool.TryParse(attr, out result)) return result;
 			return null;
 		}
+		
+		public static T? GetEnumAttribute<T>(this XmlElement element, string name, bool ignoreCase = true)
+			where T: struct
+		{
+			string val = element.GetAttribute(name);
+			T result;
+			if (!string.IsNullOrEmpty(val) && Enum.TryParse<T>(val, ignoreCase, out result)) return result;
+			return null;
+		}
 
 		public static int? GetIntAttribute(this XmlElement element, string name)
 		{
