@@ -75,11 +75,11 @@ namespace Eto.Platform.GtkSharp
 			Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
 				if (this.State == WindowState.Normal) {
 					if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Maximized) != 0) {
-						restoreBounds = Widget.Frame;
+						restoreBounds = Widget.Bounds;
 					} else if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0) {
-						restoreBounds = Widget.Frame;
+						restoreBounds = Widget.Bounds;
 					} else if ((args.Event.ChangedMask & Gdk.WindowState.Fullscreen) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Fullscreen) != 0) {
-						restoreBounds = Widget.Frame;
+						restoreBounds = Widget.Bounds;
 					}
 				}
 			};

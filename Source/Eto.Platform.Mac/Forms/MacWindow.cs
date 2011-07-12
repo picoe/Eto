@@ -82,7 +82,7 @@ namespace Eto.Platform.Mac
 			Control.ShowsResizeIndicator = true; //(style & NSWindowStyle.Resizable) != 0;
 			
 			Control.WillMiniaturize += delegate {
-				restoreBounds = Widget.Frame;
+				restoreBounds = Widget.Bounds;
 			};
 			HandleEvent (Window.MaximizedEvent);
 		}
@@ -131,7 +131,7 @@ namespace Eto.Platform.Mac
 			case Window.MaximizedEvent:
 				Control.ShouldZoom = (window, newFrame) => {
 					if (!window.IsZoomed) {
-						restoreBounds = Widget.Frame;
+						restoreBounds = Widget.Bounds;
 						Widget.OnMaximized (EventArgs.Empty);
 					}
 					return true;
