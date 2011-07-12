@@ -2,10 +2,8 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IApplication : IInstanceWidget
+	public partial interface IApplication : IInstanceWidget
 	{
-		void Restart ();
-		void RunIteration ();
 		void Run ();
 		void Quit();
 		
@@ -41,16 +39,6 @@ namespace Eto.Forms
 		public virtual void OnInitialized(EventArgs e)
 		{
 			if (Initialized != null) Initialized(this, e);
-		}
-
-		public void RunIteration ()
-		{
-			inner.RunIteration ();
-		}
-
-		public void Restart ()
-		{
-			inner.Restart ();
 		}
 
 		public void Run()

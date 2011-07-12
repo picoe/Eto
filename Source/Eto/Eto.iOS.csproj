@@ -12,7 +12,8 @@
     <AssemblyName>Eto</AssemblyName>
     <MtouchMinimumOS>3.0</MtouchMinimumOS>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
-    <ReleaseVersion>3.0.8</ReleaseVersion>
+    <ReleaseVersion>
+    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -150,6 +151,9 @@
     <Compile Include="Threading\Thread.cs" />
     <Compile Include="Forms\Actions\ActionCollection.cs" />
     <Compile Include="Misc\XmlExtensions.cs" />
+    <Compile Include="Drawing\BitmapData.cs" />
+    <Compile Include="Forms\UITimer.cs" />
+    <Compile Include="Forms\Clipboard.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

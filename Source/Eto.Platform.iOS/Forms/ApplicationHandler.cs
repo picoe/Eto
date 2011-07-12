@@ -22,12 +22,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 			DelegateClassName = "EtoAppDelegate";
 		}
-		
-		public void RunIteration()
-		{
-			//UIApplication.SharedApplication.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
-		}
-		 
+				
 		public void Run()
 		{
 			UIApplication.Main(new string[] {}, null, DelegateClassName);

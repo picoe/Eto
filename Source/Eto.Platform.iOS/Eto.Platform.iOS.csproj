@@ -11,7 +11,8 @@
     <RootNamespace>Eto.Platform.iOS</RootNamespace>
     <AssemblyName>Eto.Platform.iOS</AssemblyName>
     <MtouchMinimumOS>3.0</MtouchMinimumOS>
-    <ReleaseVersion>3.0.8</ReleaseVersion>
+    <ReleaseVersion>
+    </ReleaseVersion>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

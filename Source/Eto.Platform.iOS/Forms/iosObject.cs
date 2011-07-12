@@ -15,6 +15,12 @@ namespace Eto.Platform.iOS.Forms
 			if (notifications == null) notifications = new List<NSObject>();
 			notifications.Add(NSNotificationCenter.DefaultCenter.AddObserver(key, notification, Control));
 		}
+
+		protected void AddObserver(NSObject obj, NSString key, Action<NSNotification> notification)
+		{
+			if (notifications == null) notifications = new List<NSObject>();
+			notifications.Add(NSNotificationCenter.DefaultCenter.AddObserver(key, notification, obj));
+		}
 		
 		protected override void Dispose (bool disposing)
 		{

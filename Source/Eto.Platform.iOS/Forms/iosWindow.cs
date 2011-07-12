@@ -2,6 +2,7 @@ using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
 using Eto.Platform.iOS.Forms.Controls;
+using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -12,6 +13,17 @@ namespace Eto.Platform.iOS.Forms
 
 		public iosWindow ()
 		{
+		}
+		
+		public Point Location {
+			get {
+				return Generator.ConvertF(this.Control.Frame.Location);
+			}
+			set {
+				var frame = this.Control.Frame;
+				frame.Location = Generator.ConvertF (value);
+				this.Control.Frame = frame;
+			}
 		}
 		
 		#region IWindow implementation

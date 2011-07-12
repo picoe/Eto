@@ -79,12 +79,13 @@ namespace Eto.Platform.iOS.Forms
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
-				this.AddObserver(UIDevice.OrientationDidChangeNotification, delegate { 
+				this.AddObserver(null, UIDevice.OrientationDidChangeNotification, delegate { 
 					Widget.OnSizeChanged (EventArgs.Empty);
 				});
-				/*Control.PostsFrameChangedNotifications = true;
+				/*Control.Window.PostsFrameChangedNotifications = true;
 				this.AddObserver (UIView.UIViewFrameDidChangeNotification, delegate {
-					Widget.OnSizeChanged (EventArgs.Empty); });*/
+					Widget.OnSizeChanged (EventArgs.Empty); 
+				});*/
 				break;
 			}
 		}
