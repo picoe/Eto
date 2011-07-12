@@ -92,6 +92,15 @@ namespace Eto.Platform.Mac
             set {  }
         }
 		
+		public Uri Directory {
+			get {
+				return new Uri(Control.DirectoryUrl.AbsoluteString);
+			}
+			set {
+				Control.DirectoryUrl = new NSUrl(value.AbsoluteUri);
+			}
+		}
+		
 		public string GetDefaultExtension ()
 		{
 			if (CurrentFilterIndex >= 0)

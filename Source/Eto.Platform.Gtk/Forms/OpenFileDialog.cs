@@ -9,7 +9,7 @@ namespace Eto.Platform.GtkSharp
 		public OpenFileDialogHandler()
 		{
 			Control = new Gtk.FileChooserDialog(string.Empty, null, Gtk.FileChooserAction.Open);
-			Control.SetCurrentFolder(Directory.GetCurrentDirectory());
+			Control.SetCurrentFolder(System.IO.Directory.GetCurrentDirectory());
 			
 			Control.AddButton(Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 			Control.AddButton(Gtk.Stock.Open, Gtk.ResponseType.Ok);

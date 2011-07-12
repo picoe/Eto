@@ -32,15 +32,6 @@ namespace Eto.Platform.Windows
 			get { return main; }
 		}
 
-		public override Size Size
-		{
-			get	{ return Generator.Convert(control.Size); }
-			set { 
-				control.Size = Generator.Convert(value);
-				control.AutoSize = false;
-			}
-		}
-
 		public void Show()
 		{
 			control.Show();

@@ -34,14 +34,6 @@ namespace Eto.Platform.Mac
 		{
 		}
 		
-		class HandlerDelegate: NSWindowDelegate
-		{
-			public override void WillClose (NSNotification notification)
-			{
-				NSApplication.SharedApplication.StopModal();
-			}
-		}
-		
 		public DialogResult ShowDialog (Control parent)
 		{
 			if (parent != null) {
@@ -50,7 +42,9 @@ namespace Eto.Platform.Mac
 			}
 			//Control.MakeKeyAndOrderFront (ApplicationHandler.Instance.AppDelegate);
 			
-			Control.Delegate = new HandlerDelegate();
+			Control.WillClose += delegate {
+				NSApplication.SharedApplication.StopModal();
+			};
 			NSApplication.SharedApplication.RunModalForWindow(Control);
 			return Widget.DialogResult;
 		}

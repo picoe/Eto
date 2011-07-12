@@ -80,6 +80,19 @@ namespace Eto.Forms
 			add { HandleEvent(MouseMoveEvent); mouseMove += value; }
 			remove { mouseMove -= value; }
 		}
+		
+		public const string MouseDoubleClickEvent = "Control.MouseDoubleClick";
+		event EventHandler<MouseEventArgs> mouseDoubleClick;
+		public event EventHandler<MouseEventArgs> MouseDoubleClick
+		{
+			add { HandleEvent(MouseDoubleClickEvent); mouseDoubleClick += value; }
+			remove { mouseDoubleClick -= value; }
+		}
+		public virtual void OnMouseDoubleClick(MouseEventArgs e)
+		{
+			if (mouseDoubleClick != null) mouseDoubleClick(this, e);
+		}
+		
 
 		public const string GotFocusEvent = "Control.GotFocus";
 		event EventHandler<EventArgs> gotFocus;

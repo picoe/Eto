@@ -427,6 +427,7 @@
     <Compile Include="Forms\Clipboard.cs" />
     <Compile Include="Drawing\BitmapData.cs" />
     <Compile Include="Forms\Application.desktop.cs" />
+    <Compile Include="Drawing\XmlExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

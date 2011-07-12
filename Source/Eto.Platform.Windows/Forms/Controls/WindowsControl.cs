@@ -48,6 +48,9 @@ namespace Eto.Platform.Windows
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.SizeChanged += Control_SizeChanged;
 				break;
+			case Eto.Forms.Control.MouseDoubleClickEvent:
+				Control.MouseDoubleClick += Control_DoubleClick;
+				break;
 			case Eto.Forms.Control.MouseDownEvent:
 				Control.MouseDown += Control_MouseDown;
 				break;
@@ -68,6 +71,11 @@ namespace Eto.Platform.Windows
 				};
 				break;
 			}
+		}
+
+		void Control_DoubleClick (object sender, System.Windows.Forms.MouseEventArgs e)
+		{
+			Widget.OnMouseDoubleClick (GetMouseEvent(e));
 		}
 
 		MouseEventArgs GetMouseEvent (SWF.MouseEventArgs e)

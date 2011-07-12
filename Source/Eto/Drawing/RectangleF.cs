@@ -299,6 +299,16 @@ namespace Eto.Drawing
 			Bottom = Bottom + yofs - (Bottom % yofs);
 		}		
 		
+		public static RectangleF operator *(RectangleF rect, float multiply)
+		{
+			var rect2 = rect;
+			rect2.X *= multiply;
+			rect2.Y *= multiply;
+			rect2.Width *= multiply;
+			rect2.Height *= multiply;
+			return rect2;
+		}
+
 		public static RectangleF operator *(RectangleF rect, SizeF size)
 		{
 			var rect2 = rect;

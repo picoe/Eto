@@ -304,6 +304,16 @@ namespace Eto.Drawing
 			Right = Right + xofs - (Right % xofs);
 			Bottom = Bottom + yofs - (Bottom % yofs);
 		}		
+
+		public static Rectangle operator *(Rectangle rect, int multiply)
+		{
+			var rect2 = rect;
+			rect2.X *= multiply;
+			rect2.Y *= multiply;
+			rect2.Width *= multiply;
+			rect2.Height *= multiply;
+			return rect2;
+		}
 		
 		public static Rectangle operator *(Rectangle rect, Size size)
 		{

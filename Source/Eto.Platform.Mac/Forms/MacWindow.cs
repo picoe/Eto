@@ -81,6 +81,14 @@ namespace Eto.Platform.Mac
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true; //(style & NSWindowStyle.Resizable) != 0;
 			
+			Control.WindowShouldClose = delegate {
+				var args = new CancelEventArgs();
+				Widget.OnClosing (args);
+				return !args.Cancel;
+			};
+			Control.WillClose += delegate {
+				Widget.OnClosed (EventArgs.Empty);
+			};
 			Control.WillMiniaturize += delegate {
 				restoreBounds = Widget.Bounds;
 			};

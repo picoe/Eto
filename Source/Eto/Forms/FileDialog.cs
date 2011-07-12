@@ -10,6 +10,7 @@ namespace Eto.Forms
 		int CurrentFilterIndex { get; set; }
 		bool CheckFileExists { get; set; }
 		string Title { get; set; }
+		Uri Directory { get; set; }
 		DialogResult ShowDialog(Window parent);
 	}
 	
@@ -49,6 +50,12 @@ namespace Eto.Forms
 		{
 			get { return inner.Title; }
 			set { inner.Title = value; }
+		}
+		
+		public Uri Directory
+		{
+			get { return inner.Directory; }
+			set { inner.Directory = value; }
 		}
 
 		public DialogResult ShowDialog(Window parent)

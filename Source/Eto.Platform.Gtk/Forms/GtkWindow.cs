@@ -66,7 +66,7 @@ namespace Eto.Platform.GtkSharp
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			Control.DeleteEvent += new Gtk.DeleteEventHandler (GtkWindow_DeleteEvent);
+			Control.DeleteEvent += GtkWindow_DeleteEvent;
 			vbox.PackStart (menuBox, false, false, 0);
 			vbox.PackStart (topToolbarBox, false, false, 0);
 			vbox.PackStart (containerBox, true, true, 0);
@@ -170,8 +170,8 @@ namespace Eto.Platform.GtkSharp
 
 		public void Close ()
 		{
+			Widget.OnClosed(EventArgs.Empty);
 			Control.Destroy ();
-			Widget.OnClosed (EventArgs.Empty);
 		}
 
 		protected override void Dispose (bool disposing)

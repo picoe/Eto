@@ -23,6 +23,15 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
+		public Uri Directory {
+			get {
+				return new Uri(Control.CurrentFolderUri);
+			}
+			set {
+				Control.SetCurrentFolderUri(value.AbsoluteUri);
+			}
+		}
+		
 		
 		public string[] Filters
 		{
@@ -87,7 +96,7 @@ namespace Eto.Platform.GtkSharp
 			Control.HideAll();
 
 			DialogResult response = Generator.Convert((Gtk.ResponseType)result);
-			if (response == DialogResult.Ok) Directory.SetCurrentDirectory(Control.CurrentFolder);
+			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
 			
 			return response;
 		}

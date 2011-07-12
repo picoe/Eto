@@ -19,9 +19,10 @@ namespace Eto.Platform.GtkSharp
 		where T: Gtk.Widget
 		where W: Control
 	{
-		private Size size;
-		private Point location;
-		private Thread thread;
+		Size size;
+		Point location;
+		Thread thread;
+		bool mouseDownHandled;
 
 		public GtkControl ()
 		{
@@ -153,10 +154,14 @@ namespace Eto.Platform.GtkSharp
 				Control.AddEvents((int)Gdk.EventMask.StructureMask);
 				Control.SizeAllocated += GtkControlObject_SizeAllocated;
 				break;
+			case Eto.Forms.Control.MouseDoubleClickEvent:
 			case Eto.Forms.Control.MouseDownEvent:
-				Control.AddEvents((int)Gdk.EventMask.ButtonPressMask);
-				Control.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
-				Control.ButtonPressEvent += GtkControlObject_ButtonPressEvent;
+				if (!mouseDownHandled) {
+					Control.AddEvents((int)Gdk.EventMask.ButtonPressMask);
+					Control.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
+					Control.ButtonPressEvent += GtkControlObject_ButtonPressEvent;
+					mouseDownHandled = true;
+				}
 				break;
 			case Eto.Forms.Control.MouseUpEvent:
 				Control.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
@@ -249,6 +254,9 @@ namespace Eto.Platform.GtkSharp
 				Control.GrabFocus ();
 			if (args.Event.Type == Gdk.EventType.ButtonPress) {
 				Widget.OnMouseDown (new MouseEventArgs (buttons, modifiers, p));
+			}
+			else if (args.Event.Type == Gdk.EventType.TwoButtonPress) {
+				Widget.OnMouseDoubleClick (new MouseEventArgs (buttons, modifiers, p));
 			}
 		}
 

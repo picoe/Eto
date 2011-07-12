@@ -20,6 +20,7 @@ namespace Eto.Platform.Windows
 		public override void Initialize ()
 		{
 			base.Initialize ();
+			Control.StartPosition = SWF.FormStartPosition.WindowsDefaultLocation;
 			Control.Closed += Control_Closed;
 			Control.Closing += new CancelEventHandler (Control_Closing);
 			
@@ -167,6 +168,7 @@ namespace Eto.Platform.Windows
 			}
 			set {
 				Control.Location = Generator.Convert (value);
+				Control.StartPosition = SWF.FormStartPosition.Manual;
 			}
 		}
 		
@@ -202,7 +204,7 @@ namespace Eto.Platform.Windows
 		
 		public Rectangle? RestoreBounds {
 			get {
-				if (Control.RestoreBounds.IsEmpty) return null;
+				if (this.State == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
 				else return Generator.Convert (Control.RestoreBounds);
 			}
 		}

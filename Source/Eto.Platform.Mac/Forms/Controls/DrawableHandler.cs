@@ -70,7 +70,11 @@ namespace Eto.Platform.Mac
 			public override void MouseDown (NSEvent theEvent)
 			{
 				var args = CreateMouseArgs (theEvent);
-				Handler.Widget.OnMouseDown (args);
+				if (theEvent.ClickCount >= 2)
+					Handler.Widget.OnMouseDoubleClick (args);
+				else
+					Handler.Widget.OnMouseDown (args);
+				
 				if (!args.Handled)
 					base.MouseDown (theEvent);
 			}

@@ -6,7 +6,7 @@ using Eto.Forms;
 namespace Eto.Platform.Windows
 {
 	public abstract class WindowsFileDialog<T, W> : WidgetHandler<T, W>, IFileDialog
-		where T: SWF.FileDialog
+		where T: System.Windows.Forms.FileDialog
 		where W: FileDialog
 	{
 
@@ -16,6 +16,15 @@ namespace Eto.Platform.Windows
 		{
 			get { return Control.FileName; }
 			set { Control.FileName = value; }
+		}
+		
+		public Uri Directory {
+			get {
+				return new Uri(this.Control.InitialDirectory);
+			}
+			set {
+				this.Control.InitialDirectory = value.AbsoluteUri;
+			}
 		}
 
 		public string[] Filters
