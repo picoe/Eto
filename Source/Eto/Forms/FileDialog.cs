@@ -43,7 +43,7 @@ namespace Eto.Forms
 	public abstract class FileDialog : CommonDialog
 	{
 		IFileDialog inner;
-		IFileDialogFilter[] filters;
+
 		protected FileDialog(Generator g, Type type) : base(g, type)
 		{
 			inner = (IFileDialog)Handler;
