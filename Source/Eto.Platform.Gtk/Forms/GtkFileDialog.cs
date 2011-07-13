@@ -2,6 +2,8 @@ using System;
 using System.Collections;
 using System.IO;
 using Eto.Forms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -9,7 +11,7 @@ namespace Eto.Platform.GtkSharp
 		where T: Gtk.FileChooserDialog
 		where W: FileDialog
 	{
-		string[] filters = new string[0];
+		IFileDialogFilter[] filters;
 
 
 
@@ -33,26 +35,25 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		
-		public string[] Filters
+		public IEnumerable<IFileDialogFilter> Filters
 		{
 			get { return filters; }
 			set
 			{
-				ArrayList list = new ArrayList(this.Control.Filters);
+				var list = this.Control.Filters.ToArray ();
 				foreach (Gtk.FileFilter filter in list)
 				{
 					this.Control.RemoveFilter(filter);
 				}
 				
-				foreach (string val in value)
+				filters = value.ToArray ();
+				foreach (var val in filters)
 				{
 					Gtk.FileFilter filter = new Gtk.FileFilter();
-					filter.Name = val.Substring(0, val.IndexOf('|'));
-					string[] patterns = val.Substring(val.IndexOf('|')+1).Split(';'); 
-					foreach (string pattern in patterns) filter.AddPattern(pattern);
+					filter.Name = val.Name;
+					foreach (string pattern in val.Extensions) filter.AddPattern("*" + pattern);
 					this.Control.AddFilter(filter);
 				}
-				filters = value;
 			}
 		}
 		

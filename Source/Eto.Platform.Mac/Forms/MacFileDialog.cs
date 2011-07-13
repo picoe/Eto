@@ -11,7 +11,7 @@ namespace Eto.Platform.Mac.Forms
     interface IMacFileDialog
     {
     	List<string> MacFilters { get; }
-        string[] Filters { get; }
+        IEnumerable<IFileDialogFilter> Filters { get; }
 		string GetDefaultExtension();
 		int CurrentFilterIndex { get; }
     }
@@ -22,8 +22,6 @@ namespace Eto.Platform.Mac.Forms
      
         public override bool ShouldEnableUrl (NSSavePanel panel, NSUrl url)
         {
-            if (Handler.Filters == null)
-                return true;
             if (Directory.Exists (url.Path))
                 return true;
 
@@ -40,7 +38,7 @@ namespace Eto.Platform.Mac.Forms
      where T: NSSavePanel
      where W: FileDialog
     {
-        string[] filters;
+        IFileDialogFilter[] filters;
 		List<string> macfilters;
 		NSPopUpButton fileTypes;
 		List<string> titles;
@@ -106,9 +104,7 @@ namespace Eto.Platform.Mac.Forms
 			if (CurrentFilterIndex >= 0)
 			{
 				var filter = filters[CurrentFilterIndex];
-	            string[] filtervals = filter.Split ('|');
-	            string[] filterexts = filtervals [1].Split (';');
-				string ext = filterexts.FirstOrDefault();
+				string ext = filter.Extensions.FirstOrDefault();
 				if (!string.IsNullOrEmpty(ext))
 				{
 					return ext.TrimStart('*', '.');
@@ -122,9 +118,7 @@ namespace Eto.Platform.Mac.Forms
             macfilters = new List<string> ();
 			var filter = filters[this.CurrentFilterIndex];
             //foreach (var filter in filters) {
-                string[] filtervals = filter.Split ('|');
-                string[] filterexts = filtervals [1].Split (';');
-                foreach (var filterext in filterexts) {
+                foreach (var filterext in filter.Extensions) {
                     macfilters.Add (filterext.TrimStart ('*', '.'));
                 }
             //}
@@ -136,15 +130,14 @@ namespace Eto.Platform.Mac.Forms
 			get { return macfilters; }
 		}
 
-        public string[] Filters {
+        public IEnumerable<IFileDialogFilter> Filters {
             get { return filters; }
             set { 
-                filters = value;
+                filters = value.ToArray ();
              	titles = new List<string>();
 				fileTypes.RemoveAllItems();
                 foreach (var filter in filters) {
-                string[] filtervals = filter.Split ('|');
-					titles.Add(filtervals[0]);
+					titles.Add(filter.Name);
                 }
 				fileTypes.AddItems(titles.ToArray());
 				
@@ -158,7 +151,7 @@ namespace Eto.Platform.Mac.Forms
                 return titles.IndexOf(title);
 			}
             set { 
-				fileTypes.SelectItem(filters[value]);
+				fileTypes.SelectItem(filters[value].Name);
 			}
         }
 

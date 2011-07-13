@@ -1,12 +1,39 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
+	public interface IFileDialogFilter
+	{
+		/// <summary>
+		/// Gets the name of the filter
+		/// </summary>
+		string Name { get; }
+		
+		/// <summary>
+		/// Gets the extensions
+		/// </summary>
+		/// <remarks>
+		/// Each extension should include the period.  e.g. ".jpeg", ".png", etc.
+		/// </remarks>
+		string[] Extensions { get; }
+	}
+	
+	public class FileDialogFilter : IFileDialogFilter
+	{
+		public string Name {
+			get; set;
+		}
+		
+		public string[] Extensions {
+			get; set;
+		}
+	}
 	
 	public interface IFileDialog : ICommonDialog
 	{
 		string FileName { get; set; }
-		string[] Filters { get; set; }
+		IEnumerable<IFileDialogFilter> Filters { get; set; }
 		int CurrentFilterIndex { get; set; }
 		bool CheckFileExists { get; set; }
 		string Title { get; set; }
@@ -16,6 +43,7 @@ namespace Eto.Forms
 	public abstract class FileDialog : CommonDialog
 	{
 		IFileDialog inner;
+		IFileDialogFilter[] filters;
 		protected FileDialog(Generator g, Type type) : base(g, type)
 		{
 			inner = (IFileDialog)Handler;
@@ -27,7 +55,7 @@ namespace Eto.Forms
 			set { inner.FileName = value; }
 		}
 
-		public string[] Filters
+		public IEnumerable<IFileDialogFilter> Filters
 		{
 			get { return inner.Filters; }
 			set { inner.Filters = value; }

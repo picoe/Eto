@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Windows
 {
@@ -9,54 +11,63 @@ namespace Eto.Platform.Windows
 		where T: System.Windows.Forms.FileDialog
 		where W: FileDialog
 	{
+		IFileDialogFilter[] filters;
 
 		#region IFileDialog Members
 
-		public string FileName
-		{
+		public string FileName {
 			get { return Control.FileName; }
 			set { Control.FileName = value; }
 		}
 		
 		public Uri Directory {
 			get {
-				return new Uri(this.Control.InitialDirectory);
+				return new Uri (this.Control.InitialDirectory);
 			}
 			set {
 				this.Control.InitialDirectory = value.AbsoluteUri;
 			}
 		}
-
-		public string[] Filters
-		{
-			get { return Control.Filter.Split('|'); }
-			set { Control.Filter = String.Join("|", value); }
+		
+		public IEnumerable<IFileDialogFilter> Filters {
+			get { return filters; }
+			set { 
+				filters = value.ToArray ();
+				var filterValues = from f in filters 
+					select string.Format ("{0}|{1}", 
+						f.Name, 
+						string.Join (";", 
+							from ex in f.Extensions 
+							select "*" + ex
+						)
+					);
+				Control.Filter = string.Join ("|", filterValues);
+			}
 		}
 
-		public int CurrentFilterIndex
-		{
-			get { return (Control.FilterIndex > 0) ? Control.FilterIndex-1 : 0; }
-			set { Control.FilterIndex = value+1; }
+		public int CurrentFilterIndex {
+			get { return (Control.FilterIndex > 0) ? Control.FilterIndex - 1 : 0; }
+			set { Control.FilterIndex = value + 1; }
 		}
 
-		public bool CheckFileExists
-		{
+		public bool CheckFileExists {
 			get { return Control.CheckFileExists; }
 			set { Control.CheckFileExists = value; }
 		}
 
-		public string Title
-		{
+		public string Title {
 			get { return Control.Title; }
 			set { Control.Title = value; }
 		}
 
-		public Eto.Forms.DialogResult ShowDialog(Window parent)
+		public Eto.Forms.DialogResult ShowDialog (Window parent)
 		{
 			SWF.DialogResult dr;
-			if (parent != null) dr = Control.ShowDialog((SWF.Control)parent.ControlObject);
-			else dr = Control.ShowDialog();
-			return Generator.Convert(dr);
+			if (parent != null)
+				dr = Control.ShowDialog ((SWF.Control)parent.ControlObject);
+			else
+				dr = Control.ShowDialog ();
+			return Generator.Convert (dr);
 		}
 
 		#endregion
