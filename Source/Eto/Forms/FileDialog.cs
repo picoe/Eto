@@ -3,7 +3,7 @@ using System;
 namespace Eto.Forms
 {
 	
-	public interface IFileDialog : IWidget
+	public interface IFileDialog : ICommonDialog
 	{
 		string FileName { get; set; }
 		string[] Filters { get; set; }
@@ -11,10 +11,9 @@ namespace Eto.Forms
 		bool CheckFileExists { get; set; }
 		string Title { get; set; }
 		Uri Directory { get; set; }
-		DialogResult ShowDialog(Window parent);
 	}
 	
-	public abstract class FileDialog : Widget
+	public abstract class FileDialog : CommonDialog
 	{
 		IFileDialog inner;
 		protected FileDialog(Generator g, Type type) : base(g, type)
@@ -56,11 +55,6 @@ namespace Eto.Forms
 		{
 			get { return inner.Directory; }
 			set { inner.Directory = value; }
-		}
-
-		public DialogResult ShowDialog(Window parent)
-		{
-			return inner.ShowDialog(parent);
 		}
 	}
 }

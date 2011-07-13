@@ -5,7 +5,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	[Register("MySavePanel")]
 	class MySavePanel : NSSavePanel

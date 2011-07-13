@@ -36,12 +36,12 @@ namespace Eto.Platform.GtkSharp
 
 		public static Gdk.Color Convert(Color color)
 		{
-			return new Gdk.Color(color.R, color.G, color.B);
+			return new Gdk.Color((byte)(color.R * ushort.MaxValue / byte.MaxValue), (byte)(color.G * ushort.MaxValue / byte.MaxValue), (byte)(color.B * ushort.MaxValue / byte.MaxValue));
 		}
 
 		public static Color Convert(Gdk.Color color)
 		{
-			return new Color((byte)color.Red, (byte)color.Green, (byte)color.Blue);
+			return new Color((byte)((int)color.Red * byte.MaxValue / ushort.MaxValue), (byte)((int)color.Green * byte.MaxValue / ushort.MaxValue), (byte)((int)color.Blue * byte.MaxValue / ushort.MaxValue));
 		}
 
 		public static Gdk.Size Convert(Size size)

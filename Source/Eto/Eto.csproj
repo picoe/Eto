@@ -428,6 +428,8 @@
     <Compile Include="Drawing\BitmapData.cs" />
     <Compile Include="Forms\Application.desktop.cs" />
     <Compile Include="Drawing\XmlExtensions.cs" />
+    <Compile Include="Forms\CommonDialog.cs" />
+    <Compile Include="Forms\ColorDialog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -436,4 +438,7 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
+  <ItemGroup>
+    <Folder Include="Forms\Controls\" />
+  </ItemGroup>
 </Project>

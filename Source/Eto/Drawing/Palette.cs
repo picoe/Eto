@@ -168,7 +168,7 @@ namespace Eto.Drawing
 				paletteList.Add (c);
 				argb.Add (c.ToArgb());
 			}
-			if (Changed != null) Changed(this, EventArgs.Empty);
+			OnChanged(EventArgs.Empty);
 		}
 
 		public int Size

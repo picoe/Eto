@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
     interface IMacFileDialog
     {
@@ -179,7 +179,7 @@ namespace Eto.Platform.Mac
 			CreateControl();
 
 			
-            int ret = MacModalDelegate.Run(Control, parent);
+            int ret = MacModal.Run(Control, parent);
             
             return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
         }
