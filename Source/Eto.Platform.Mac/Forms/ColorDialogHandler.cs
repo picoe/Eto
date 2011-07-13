@@ -11,9 +11,10 @@ namespace Eto.Platform.Mac.Forms
 	{
 		Color Color { get; set; }
 		ColorDialog Widget { get; }
+		NSColorPanel Control { get; }
 	}
 	
-	class ColorHandler : NSObject
+	class ColorHandler : NSWindowDelegate
 	{
 		public static ColorHandler Instance { get; set; }
 		public IColorDialogHandler Handler { get; set; }
@@ -21,8 +22,15 @@ namespace Eto.Platform.Mac.Forms
 		[Export("selected:")]
 		public void selected(NSColorPanel panel)
 		{
-			Handler.Color = Generator.Convert(panel.Color);
+			Handler.Color = Generator.Convert(panel.Color.UsingColorSpace (NSColorSpace.CalibratedRGB));
 			Handler.Widget.OnColorChanged(EventArgs.Empty);
+		}
+		
+		public override void WillClose (NSNotification notification)
+		{
+			Handler.Control.SetTarget (null);
+			Handler.Control.SetAction (null);
+			ColorHandler.Instance = null;
 		}
 	}
 	
@@ -43,6 +51,7 @@ namespace Eto.Platform.Mac.Forms
 			if (ColorHandler.Instance == null) ColorHandler.Instance = new ColorHandler();
 			ColorHandler.Instance.Handler = this;
 			Control.Color = Generator.ConvertNS (this.Color);
+			Control.Delegate = ColorHandler.Instance;
 			
 			Control.SetTarget (ColorHandler.Instance);
 			Control.SetAction (new Selector("selected:"));
@@ -50,7 +59,7 @@ namespace Eto.Platform.Mac.Forms
 			NSApplication.SharedApplication.OrderFrontColorPanel (ColorHandler.Instance);
 			
 			
-			return DialogResult.None;
+			return DialogResult.None; // signal that we are returning right away!
 		}
 		
 		#endregion

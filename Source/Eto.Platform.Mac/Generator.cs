@@ -118,6 +118,7 @@ namespace Eto.Platform.Mac
 		}
 		public static Color Convert(NSColor color)
 		{
+			if (color == null) return Color.Black;
 			float red, green, blue, alpha;
 			color.GetRgba(out red, out green, out blue, out alpha);
 			return new Color((byte)(red * 255), (byte)(green * 255), (byte)(blue * 255), (byte)(alpha * 255));
