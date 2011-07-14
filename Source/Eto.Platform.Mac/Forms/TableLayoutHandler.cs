@@ -14,7 +14,7 @@ namespace Eto.Platform.Mac
 		Size spacing;
 		Padding padding;
 		
-		public void Update ()
+		public override void Update ()
 		{
 			Layout();
 		}
@@ -72,8 +72,9 @@ namespace Eto.Platform.Mac
 			this.Padding = TableLayout.DefaultPadding;
 
 			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate { 
-				Layout();
+			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
+				var handler = e.Widget.Handler as TableLayoutHandler;
+				handler.Layout();
 			});
 		}
 		
@@ -195,7 +196,8 @@ namespace Eto.Platform.Mac
 						frame.Height = heights[y];
 						frame.X = startx;
 						frame.Y = starty; //Control.Frame.Height - starty - frame.Height;
-						nsview.Frame = frame;
+						if (frame != nsview.Frame)
+							nsview.Frame = frame;
 						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					}
 					startx += widths[x] + Spacing.Width;

@@ -23,5 +23,8 @@ namespace Eto.Platform.Windows
 		{
 		}
 		
+		public virtual void Update()
+		{
+		}
 	}
 }

@@ -4,9 +4,6 @@ using Eto.Drawing;
 
 namespace Eto.IO
 {
-	/// <summary>
-	/// Summary description for SystemObjectInfo.
-	/// </summary>
 	public abstract class EtoSystemObjectInfo
 	{
 		public EtoSystemObjectInfo()

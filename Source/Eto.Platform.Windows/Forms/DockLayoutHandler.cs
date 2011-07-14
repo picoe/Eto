@@ -42,13 +42,18 @@ namespace Eto.Platform.Windows
 
 		public void Add(Control child)
 		{
+			var oldchild = this.child;
 			SWF.Control parent = (SWF.Control)Widget.Container.ContainerObject;
 			parent.SuspendLayout();
-			parent.Controls.Clear();
 			SWF.Control childControl = (SWF.Control)child.ControlObject;
 			childControl.Dock = SWF.DockStyle.Fill;
 			childControl.Margin = Generator.Convert(padding);
 			parent.Controls.Add(childControl);
+			
+			if (oldchild != null) {
+				childControl = (SWF.Control)child.ControlObject;
+				parent.Controls.Remove (childControl);
+			}
 			this.child = child;
 			parent.ResumeLayout();
 		}

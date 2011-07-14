@@ -5,6 +5,7 @@ namespace Eto.Forms
 	public interface ILayout : IInstanceWidget
 	{
 		void OnLoad();
+		void Update();
 	}
 
 	public interface IPositionalLayout : ILayout
@@ -16,6 +17,8 @@ namespace Eto.Forms
 	
 	public abstract class Layout : InstanceWidget
 	{
+		ILayout inner;
+		
 		public bool Loaded { get; private set; }
 		
 		public event EventHandler<EventArgs> Load;
@@ -23,7 +26,7 @@ namespace Eto.Forms
 		public virtual void OnLoad(EventArgs e)
 		{
 			if (Load != null) Load(this, e);
-			((ILayout)Handler).OnLoad();
+			inner.OnLoad();
 			Loaded = true;
 		}
 		
@@ -31,6 +34,7 @@ namespace Eto.Forms
 			: base(g, type, false)
 		{
 			this.Container = container;
+			inner = (ILayout)Handler;
 			if (initialize) {
 				Initialize();
 				this.Container.SetLayout(this);
@@ -42,6 +46,10 @@ namespace Eto.Forms
 			get; private set;
 		}
 		
+		public void Update()
+		{
+			inner.Update();
+		}
 		
 		
 	}

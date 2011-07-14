@@ -99,7 +99,6 @@ namespace Eto.Platform.Mac
 		
 		public override void AttachEvent (string handler)
 		{
-			base.AttachEvent (handler);
 			switch (handler) {
 			case Eto.Forms.Control.MouseMoveEvent:
 				mouseMove = true;
@@ -107,9 +106,14 @@ namespace Eto.Platform.Mac
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
-				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate {
-					Widget.OnSizeChanged (EventArgs.Empty); });
+				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) {
+					e.Widget.OnSizeChanged (EventArgs.Empty);
+				} );
 				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+
 			}
 		}
 		

@@ -243,7 +243,7 @@ namespace Eto.Forms
 			return inner.CreateGraphics();
 		}
 		
-		public void Focus()
+		public virtual void Focus()
 		{
 			inner.Focus();
 		}

@@ -2,13 +2,13 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICommonDialog : IWidget
+	public interface ICommonDialog : IInstanceWidget
 	{
 		DialogResult ShowDialog(Window parent);
 
 	}
 	
-	public abstract class CommonDialog : Widget
+	public abstract class CommonDialog : InstanceWidget
 	{
 		ICommonDialog inner;
 		

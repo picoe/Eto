@@ -67,10 +67,13 @@ namespace Eto.Platform.Mac.Drawing
 			this.context = this.Control.GraphicsPort;
 			context.SaveState();
 			context.ClipToRect(view.ConvertRectToBase(view.Bounds));
-			AddObserver(NSView.NSViewFrameDidChangeNotification, delegate { 
-				context.RestoreState();
-				context.ClipToRect(view.ConvertRectToBase(view.Bounds));
-				context.SaveState();
+			AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
+				var handler = e.Widget.Handler as GraphicsHandler;
+				var innerview = handler.view;
+				var innercontext = handler.Control.GraphicsPort;
+				innercontext.RestoreState();
+				innercontext.ClipToRect(innerview.ConvertRectToBase(innerview.Bounds));
+				innercontext.SaveState();
 			}, view);
 			this.adjust = !view.IsFlipped;
 			this.Flipped = this.adjust;

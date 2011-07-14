@@ -12,13 +12,11 @@ namespace Eto.Platform.Mac
 		{
 			Control = new NSButton ();
 			Control.SetButtonType (NSButtonType.OnOff);
-			//control.CheckedChanged += control_CheckedChanged;
+			Control.Activated += delegate {
+				Widget.OnCheckedChanged(EventArgs.Empty);
+			};
 		}
 
-		private void control_CheckedChanged (object sender, EventArgs e)
-		{
-			this.Widget.OnCheckedChanged (e);
-		}
 		
 		#region ICheckBox Members
 

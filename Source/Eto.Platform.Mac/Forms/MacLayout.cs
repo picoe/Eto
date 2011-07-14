@@ -60,5 +60,8 @@ namespace Eto.Platform.Mac
 			//Console.WriteLine ("view: {0} size: {1}", view, view.Size);
 		}
 		
+		public virtual void Update()
+		{
+		}
 	}
 }

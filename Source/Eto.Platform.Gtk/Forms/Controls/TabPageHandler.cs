@@ -12,7 +12,6 @@ namespace Eto.Platform.GtkSharp
 			vbox = new Gtk.VBox();
 			Control = new Gtk.Label();
 			Control.ButtonPressEvent += new Gtk.ButtonPressEventHandler(label_ButtonPressEvent);
-			//control.Click += control_Click;
 		}
 
 

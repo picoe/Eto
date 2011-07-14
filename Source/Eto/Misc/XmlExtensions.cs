@@ -43,6 +43,15 @@ namespace Eto
 			if (!string.IsNullOrWhiteSpace(attr) && int.TryParse(attr, out result)) return result;
 			return null;
 		}
+
+		public static float? GetFloatAttribute(this XmlElement element, string name)
+		{
+			//return XmlExtensions.GetAttribute<float>(element, name, float.TryParse);
+			string attr = element.GetAttribute(name);
+			float result;
+			if (!string.IsNullOrWhiteSpace(attr) && float.TryParse(attr, out result)) return result;
+			return null;
+		}
 		
 		public static T? GetAttribute<T>(this XmlElement element, string name, XmlToValue<T> translate)
 			where T: struct

@@ -27,5 +27,9 @@ namespace Eto.Platform.GtkSharp
 		public virtual void OnLoad()
 		{
 		}
+		
+		public virtual void Update()
+		{
+		}
 	}
 }

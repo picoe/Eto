@@ -15,6 +15,7 @@ namespace Eto
 		
 		~Widget()
 		{
+			//Console.WriteLine ("GC: {0}", this.GetType ().FullName);
 			Dispose(false);
 		}
 		

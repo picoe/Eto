@@ -10,7 +10,6 @@ namespace Eto.Forms
 		void SetRowScale(int row, bool scale);
 		Size Spacing { get; set; }
 		Padding Padding { get; set; }
-		void Update();
 	}
 	
 	public class TableLayout : Layout
@@ -80,12 +79,5 @@ namespace Eto.Forms
 			get { return inner.Padding; }
 			set { inner.Padding = value; }
 		}
-		
-		public void Update()
-		{
-			inner.Update();
-		}
-		
-		
 	}
 }

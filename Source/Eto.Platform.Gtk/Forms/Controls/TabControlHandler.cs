@@ -10,7 +10,6 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control = new Gtk.Notebook();
 			Control.ChangeCurrentPage += new Gtk.ChangeCurrentPageHandler(control_ChangeCurrentPage);
-			//control.SelectedIndexChanged += control_SelectedIndexChanged;
 		}
 
 		public int SelectedIndex

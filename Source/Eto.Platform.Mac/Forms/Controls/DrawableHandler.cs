@@ -13,16 +13,24 @@ namespace Eto.Platform.Mac
 	{
 		public class MyView : NSView
 		{
-			public DrawableHandler Handler { get; set; }
-
+			WeakReference handler;
+			
+			public DrawableHandler Handler
+			{
+				get { return handler.Target as DrawableHandler; }
+				set { handler = new WeakReference(value); }
+			}
+			
 			public override void DrawRect (System.Drawing.RectangleF dirtyRect)
 			{
+				if (Handler == null) return;
 				dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
 				Handler.Update (Generator.ConvertF (dirtyRect));
 			}
 
 			public override void KeyDown (NSEvent theEvent)
 			{
+				if (Handler == null) return;
 				char keyChar = !string.IsNullOrEmpty (theEvent.Characters) ? theEvent.Characters [0] : '\0';
 				Key key = KeyMap.MapKey (theEvent.KeyCode);
 				KeyPressEventArgs kpea;
@@ -53,6 +61,7 @@ namespace Eto.Platform.Mac
 			
 			public override void MouseDragged (NSEvent theEvent)
 			{
+				if (Handler == null) return;
 				var args = CreateMouseArgs (theEvent);
 				Handler.Widget.OnMouseMove (args);
 				if (!args.Handled)
@@ -61,6 +70,7 @@ namespace Eto.Platform.Mac
 			
 			public override void MouseUp (NSEvent theEvent)
 			{
+				if (Handler == null) return;
 				var args = CreateMouseArgs (theEvent);
 				Handler.Widget.OnMouseUp (args);
 				if (!args.Handled)
@@ -69,6 +79,7 @@ namespace Eto.Platform.Mac
 
 			public override void MouseDown (NSEvent theEvent)
 			{
+				if (Handler == null) return;
 				var args = CreateMouseArgs (theEvent);
 				if (theEvent.ClickCount >= 2)
 					Handler.Widget.OnMouseDoubleClick (args);
@@ -81,6 +92,7 @@ namespace Eto.Platform.Mac
 			
 			public override void RightMouseDown (NSEvent theEvent)
 			{
+				if (Handler == null) return;
 				var args = CreateMouseArgs (theEvent);
 				Handler.Widget.OnMouseDown (args);
 				if (!args.Handled)
@@ -89,6 +101,7 @@ namespace Eto.Platform.Mac
 			
 			public override void RightMouseUp (NSEvent theEvent)
 			{
+				if (Handler == null) return;
 				var args = CreateMouseArgs (theEvent);
 				Handler.Widget.OnMouseUp (args);
 				if (!args.Handled)
@@ -97,6 +110,7 @@ namespace Eto.Platform.Mac
 			
 			public override void RightMouseDragged (NSEvent theEvent)
 			{
+				if (Handler == null) return;
 				var args = CreateMouseArgs (theEvent);
 				Handler.Widget.OnMouseMove (args);
 				if (!args.Handled)
@@ -117,16 +131,17 @@ namespace Eto.Platform.Mac
 			
 			public override bool BecomeFirstResponder ()
 			{
-				Handler.Widget.OnGotFocus (EventArgs.Empty);
+				if (Handler != null) 
+					Handler.Widget.OnGotFocus (EventArgs.Empty);
 				return base.BecomeFirstResponder ();
 			}
 			
 			public override bool ResignFirstResponder ()
 			{
-				Handler.Widget.OnLostFocus (EventArgs.Empty);
+				if (Handler != null)
+					Handler.Widget.OnLostFocus (EventArgs.Empty);
 				return base.ResignFirstResponder ();
 			}
-			
 			
 		}
 
