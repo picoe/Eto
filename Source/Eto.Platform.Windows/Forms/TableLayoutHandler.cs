@@ -31,7 +31,7 @@ namespace Eto.Platform.Windows
 			this.Padding = TableLayout.DefaultPadding;
 		}
 		
-		public void Update ()
+		public override void Update ()
 		{
 			this.Control.Update();
 		}
