@@ -14,6 +14,7 @@ namespace Eto.Platform.Windows
 		public FormHandler()
 		{
 			control = new SWF.Form();
+			control.StartPosition = SWF.FormStartPosition.CenterParent;
 			this.control.Size = SD.Size.Empty;
 			this.control.MinimumSize = SD.Size.Empty;
 			this.control.AutoSize = true;

@@ -19,7 +19,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public void Update ()
+		public override void Update ()
 		{
 			this.Control.ResizeChildren();
 		}

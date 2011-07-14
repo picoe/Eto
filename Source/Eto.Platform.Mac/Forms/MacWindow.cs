@@ -65,7 +65,6 @@ namespace Eto.Platform.Mac
 		ToolBar toolBar;
 		NSWindowController controller;
 		Rectangle? restoreBounds;
-		bool sizePositionSet;
 		
 		public bool AutoSize { get; private set; }
 
@@ -123,7 +122,6 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				Control.SetFrame (Generator.ConvertF (Control.Frame, value), true);
-				sizePositionSet = true;
 				AutoSize = false;
 			}
 		}

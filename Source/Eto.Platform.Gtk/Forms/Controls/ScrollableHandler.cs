@@ -109,8 +109,8 @@ namespace Eto.Platform.GtkSharp
 
 		public void UpdateScrollSizes()
 		{
-			Control.CheckResize();
-			vp.CheckResize();
+			//Control.CheckResize();
+			//vp.CheckResize();
 		}
 		
 		public Point ScrollPosition

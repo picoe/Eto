@@ -20,6 +20,7 @@ namespace Eto.Platform.GtkSharp
 		where W: Control
 	{
 		Size size;
+		Size asize;
 		Point location;
 		Thread thread;
 		bool mouseDownHandled;
@@ -53,8 +54,10 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual Size Size {
 			get { 
-				if (Control.Visible) return Generator.Convert(Control.Allocation.Size);
-				else return size; 
+				if (Control.Visible) 
+					return Generator.Convert(Control.Allocation.Size);
+				else
+					return size; 
 			}
 			set {
 				if (size != value) {
@@ -259,14 +262,15 @@ namespace Eto.Platform.GtkSharp
 				Widget.OnMouseDoubleClick (new MouseEventArgs (buttons, modifiers, p));
 			}
 		}
-
+		
+		
 		private void GtkControlObject_SizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
-			//if (size != Generator.Convert (args.Allocation.Size)) {
+			if (asize != Generator.Convert (args.Allocation.Size)) {
 				// only call when the size has actually changed, gtk likes to call anyway!!  grr.
-				//this.size = Generator.Convert (args.Allocation.Size);
+				this.asize = Generator.Convert (args.Allocation.Size);
 				Widget.OnSizeChanged (EventArgs.Empty);
-			//}
+			}
 		}
 
 		private void GtkControlObject_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)

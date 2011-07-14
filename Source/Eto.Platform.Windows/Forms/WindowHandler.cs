@@ -20,7 +20,6 @@ namespace Eto.Platform.Windows
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			Control.StartPosition = SWF.FormStartPosition.WindowsDefaultLocation;
 			Control.Closed += Control_Closed;
 			Control.Closing += new CancelEventHandler (Control_Closing);
 			

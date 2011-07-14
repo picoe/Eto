@@ -17,6 +17,7 @@ namespace Eto.Platform.Windows
 		{
 			control = new SWF.Form();
 			control.FormBorderStyle = SWF.FormBorderStyle.FixedDialog;
+			control.StartPosition = SWF.FormStartPosition.CenterParent;
 			this.control.Size = SD.Size.Empty;
 			this.control.MinimumSize = SD.Size.Empty;
 			control.AutoSize = true;
