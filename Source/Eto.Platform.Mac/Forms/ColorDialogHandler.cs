@@ -19,10 +19,10 @@ namespace Eto.Platform.Mac.Forms
 		public static ColorHandler Instance { get; set; }
 		public IColorDialogHandler Handler { get; set; }
 		
-		[Export("selected:")]
-		public void selected(NSColorPanel panel)
+		[Export("changeColor:")]
+		public void changeColor(NSColorPanel panel)
 		{
-			Handler.Color = Generator.Convert(panel.Color.UsingColorSpace (NSColorSpace.CalibratedRGB));
+			Handler.Color = Generator.Convert(panel.Color.UsingColorSpace (NSColorSpace.DeviceRGB));
 			Handler.Widget.OnColorChanged(EventArgs.Empty);
 		}
 		
@@ -48,15 +48,24 @@ namespace Eto.Platform.Mac.Forms
 		
 		public DialogResult ShowDialog (Window parent)
 		{
+			NSWindow parentWindow;
+			if (parent != null) {
+				if (parent.ControlObject is NSWindow) parentWindow = (NSWindow)parent.ControlObject;
+				else if (parent.ControlObject is NSView) parentWindow = ((NSView)parent.ControlObject).Window;
+				else parentWindow = NSApplication.SharedApplication.KeyWindow;
+			}
+			else parentWindow = NSApplication.SharedApplication.KeyWindow;
+			
 			if (ColorHandler.Instance == null) ColorHandler.Instance = new ColorHandler();
 			ColorHandler.Instance.Handler = this;
 			Control.Color = Generator.ConvertNS (this.Color);
+			//Control.Continuous = false;
 			Control.Delegate = ColorHandler.Instance;
 			
 			Control.SetTarget (ColorHandler.Instance);
-			Control.SetAction (new Selector("selected:"));
+			Control.SetAction (new Selector("changeColor:"));
 			
-			NSApplication.SharedApplication.OrderFrontColorPanel (ColorHandler.Instance);
+			NSApplication.SharedApplication.OrderFrontColorPanel (parentWindow);
 			
 			
 			return DialogResult.None; // signal that we are returning right away!

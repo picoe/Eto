@@ -22,6 +22,10 @@ namespace Eto.Platform.iOS.Forms
 		public virtual void OnLoad()
 		{
 		}
+		
+		public virtual void Update()
+		{
+		}
 
 	}
 }

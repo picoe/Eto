@@ -66,13 +66,13 @@ namespace Eto.Platform.Mac.Drawing
 			this.Control = NSGraphicsContext.FromWindow(view.Window);
 			this.context = this.Control.GraphicsPort;
 			context.SaveState();
-			context.ClipToRect(view.ConvertRectToBase(view.Bounds));
+			context.ClipToRect(view.ConvertRectToBase(view.VisibleRect ()));
 			AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as GraphicsHandler;
 				var innerview = handler.view;
 				var innercontext = handler.Control.GraphicsPort;
 				innercontext.RestoreState();
-				innercontext.ClipToRect(innerview.ConvertRectToBase(innerview.Bounds));
+				innercontext.ClipToRect(innerview.ConvertRectToBase(innerview.VisibleRect ()));
 				innercontext.SaveState();
 			}, view);
 			this.adjust = !view.IsFlipped;
@@ -132,6 +132,15 @@ namespace Eto.Platform.Mac.Drawing
 		public void Flush()
 		{
 			Control.FlushGraphics();
+		}
+		
+		float ViewHeight
+		{
+			get
+			{
+				if (view != null) return view.Bounds.Height;
+				else return this.height;
+			}
 		}
 
 		public SD.PointF TranslateView(SD.PointF point, bool halfers = false)
@@ -208,7 +217,31 @@ namespace Eto.Platform.Mac.Drawing
 			context.SetFillColorWithColor(Generator.Convert(color));
 			context.FillRect(TranslateView(new SD.RectangleF(x, y, width, height)));
 		}
+		
+		public void FillPath (Color color, GraphicsPath path)
+		{
+			NSGraphicsContext.CurrentContext = this.Control;
 
+			if (adjust) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
+			context.BeginPath ();
+			context.AddPath (path.ControlObject as CGPath);
+			context.ClosePath ();
+			context.SetFillColorWithColor(Generator.Convert(color));
+			context.FillPath ();
+		}
+
+		public void DrawPath (Color color, GraphicsPath path)
+		{
+			NSGraphicsContext.CurrentContext = this.Control;
+			
+			if (adjust) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
+			context.BeginPath ();
+			context.AddPath (path.ControlObject as CGPath);
+			context.ClosePath ();
+			context.SetFillColorWithColor(Generator.Convert(color));
+			context.StrokePath ();
+		}
+		
 		public void DrawImage(IImage image, int x, int y)
 		{
 			NSGraphicsContext.CurrentContext = this.Control;
@@ -240,7 +273,7 @@ namespace Eto.Platform.Mac.Drawing
 			var nsimage = icon.ControlObject as NSImage;
 			var sourceRect = Translate(new SD.RectangleF(0, 0, nsimage.Size.Width, nsimage.Size.Height), nsimage.Size.Height);
 			var destRect = TranslateView(new SD.RectangleF(x, y, width, height), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
 		public Region ClipRegion

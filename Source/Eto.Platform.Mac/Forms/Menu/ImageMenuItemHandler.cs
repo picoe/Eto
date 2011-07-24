@@ -13,33 +13,31 @@ namespace Eto.Platform.Mac
 	{
 		Icon icon;
 
-		public ImageMenuItemHandler()
+		public ImageMenuItemHandler ()
 		{
-			Control = new NSMenuItem();
+			Control = new NSMenuItem ();
 			Control.Enabled = true;
 			Control.Activated += control_Click;
 		}
 
-		private void control_Click(object sender, EventArgs e)
+		private void control_Click (object sender, EventArgs e)
 		{
-			Widget.OnClick(e);
+			Widget.OnClick (e);
 		}
 
 		#region IMenuItem Members
 
-		public bool Enabled
-		{
+		public bool Enabled {
 			get { return Control.Enabled; }
 			set { Control.Enabled = value; }
 		}
 
-		public string Text
-		{
+		public string Text {
 			get	{ return Control.Title; }
-			set 
-			{ 
-				Control.SetTitleWithMnemonic(value);
-				if (Control.HasSubmenu) Control.Submenu.Title = Control.Title;
+			set { 
+				Control.SetTitleWithMnemonic (value);
+				if (Control.HasSubmenu)
+					Control.Submenu.Title = Control.Title;
 			}
 		}
 		
@@ -52,20 +50,17 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public Key Shortcut
-		{
-			get { return KeyMap.Convert(Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
+		public Key Shortcut {
+			get { return KeyMap.Convert (Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
 			set { 
-				this.Control.KeyEquivalent = KeyMap.KeyEquivalent(value);
-				this.Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask(value);
+				this.Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
+				this.Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
 			}
 		}
 
-		public Icon Icon
-		{
+		public Icon Icon {
 			get { return icon; }
-			set
-			{
+			set {
 				icon = value;
 				/*if (icon != null) Control.Image = ((NSImage)icon.ControlObject);
 				else Control.Image = null;*/

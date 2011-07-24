@@ -59,7 +59,6 @@ namespace Eto.Forms
 				shown (this, e);
 		}
 		
-		
 		#endregion
 		
 
@@ -81,8 +80,9 @@ namespace Eto.Forms
 		}
 		
 		public Rectangle Bounds {
-			get { return new Rectangle(inner.Location, inner.Size); }
-			set { inner.Location = value.Location; inner.Size = value.Size; }
+			get { return new Rectangle (inner.Location, inner.Size); }
+			set { inner.Location = value.Location;
+				inner.Size = value.Size; }
 		}
 		
 		public ToolBar ToolBar {
@@ -94,5 +94,6 @@ namespace Eto.Forms
 		{
 			inner.Close ();
 		}
+		
 	}
 }

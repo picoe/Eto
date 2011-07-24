@@ -36,7 +36,12 @@ namespace Eto.Drawing
 		{
 			return new PointF(point1.x - point2.x, point1.y - point2.y);
 		}
-
+		
+		public static PointF operator + (PointF point1, PointF point2)
+		{
+			return new PointF(point1.x + point2.x, point1.y + point2.y);
+		}
+		
 		public static PointF operator + (PointF point, Size size)
 		{
 			return new PointF(point.x + size.Width, point.y + size.Height);

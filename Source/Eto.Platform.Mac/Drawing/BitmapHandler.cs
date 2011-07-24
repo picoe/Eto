@@ -184,7 +184,7 @@ namespace Eto.Platform.Mac.Drawing
 			var nsimage = this.Control;
 			var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
 			var destRect = graphics.TranslateView(Generator.ConvertF(destination), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
 	}

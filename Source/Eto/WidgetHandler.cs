@@ -5,7 +5,7 @@ using System.Collections.Generic;
 namespace Eto
 {
 	public abstract class WidgetHandler<W> : IWidget, IDisposable
-		where W: IWidget
+		where W: Widget
 	{
 		HashSet<string> eventHooks; 
 		
@@ -63,7 +63,7 @@ namespace Eto
 	}
 
 	public abstract class WidgetHandler<T, W> : WidgetHandler<W>, IInstanceWidget
-		where W: IWidget
+		where W: Widget
 	{
 		public WidgetHandler()
 		{
@@ -92,7 +92,7 @@ namespace Eto
 
 	}
 	
-	public abstract class WidgetHandler : WidgetHandler<IWidget>
+	public abstract class WidgetHandler : WidgetHandler<Widget>
 	{
 
 

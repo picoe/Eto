@@ -26,27 +26,20 @@ namespace Eto.Platform.Mac
 			
 			public ButtonHandler Handler { get; set; }
 			
-			public override System.Drawing.RectangleF Frame {
-				get {
-					var value = base.Frame;
-					if (Handler.AutoSize)
-					{
-						var defaultSize = Button.DefaultSize;
-						if (value.Width < defaultSize.Width) value.Width = defaultSize.Width;
-						if (value.Height < defaultSize.Height) value.Height = defaultSize.Height;
-					}
-					return value;
-				}
-				set {
-					if (Handler.AutoSize)
-					{
-						var defaultSize = Button.DefaultSize;
-						if (value.Width < defaultSize.Width) value.Width = defaultSize.Width;
-						if (value.Height < defaultSize.Height) value.Height = defaultSize.Height;
-					}
-					base.Frame = value;
+			public override void SizeToFit ()
+			{
+				base.SizeToFit ();
+				
+				if (Handler.AutoSize)
+				{
+					var frame = this.Frame;
+					var defaultSize = Button.DefaultSize;
+					if (frame.Width < defaultSize.Width) frame.Width = defaultSize.Width;
+					if (frame.Height < defaultSize.Height) frame.Height = defaultSize.Height;
+					this.Frame = frame;
 				}
 			}
+			
 		}
 		
 		

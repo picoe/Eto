@@ -131,6 +131,8 @@
     <Compile Include="Forms\ClipboardHandler.cs" />
     <Compile Include="Forms\MacModal.cs" />
     <Compile Include="Forms\ColorDialogHandler.cs" />
+    <Compile Include="Forms\Controls\MacEventView.cs" />
+    <Compile Include="Drawing\GraphicsPathHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

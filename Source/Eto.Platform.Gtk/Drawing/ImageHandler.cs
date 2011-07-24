@@ -17,7 +17,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	}
 	
 	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
-		where W: IImage
+		where W: Image
 	{
 
 		#region IImage Members

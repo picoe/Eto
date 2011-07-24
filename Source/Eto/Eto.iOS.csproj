@@ -154,6 +154,8 @@
     <Compile Include="Drawing\BitmapData.cs" />
     <Compile Include="Forms\UITimer.cs" />
     <Compile Include="Forms\Clipboard.cs" />
+    <Compile Include="Forms\CommonDialog.cs" />
+    <Compile Include="Drawing\GraphicsPath.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

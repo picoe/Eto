@@ -5,12 +5,11 @@ using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-
 	public class DrawableHandler : GtkControl<Gtk.DrawingArea, Drawable>, IDrawable
 	{
-		public DrawableHandler()
+		public DrawableHandler ()
 		{
-			Control = new Gtk.DrawingArea();
+			Control = new Gtk.DrawingArea ();
 			Control.ExposeEvent += control_ExposeEvent;
 			Control.Events |= Gdk.EventMask.ExposureMask;
 			//Control.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(0, 0, 0));
@@ -28,19 +27,19 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		void control_ExposeEvent(object o, Gtk.ExposeEventArgs args)
+		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
-			Graphics graphics = new Graphics(Widget.Generator, new GraphicsHandler(Control, ev.Window, Control.Style.BlackGC));
-			Rectangle rect = Generator.Convert(ev.Region.Clipbox);
-			Widget.OnPaint(new PaintEventArgs(graphics, rect));
+			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BlackGC));
+			Rectangle rect = Generator.Convert (ev.Region.Clipbox);
+			Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			graphics.Dispose();
 		}
 
-		public void Update(Rectangle rect)
+		public void Update (Rectangle rect)
 		{
-			Graphics graphics = new Graphics(Widget.Generator, new GraphicsHandler(Control, Control.GdkWindow, Control.Style.BlackGC));
-			Widget.OnPaint(new PaintEventArgs(graphics, rect));
+			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC));
+			Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			graphics.Dispose();
 		}
 	}

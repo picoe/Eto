@@ -430,6 +430,7 @@
     <Compile Include="Drawing\XmlExtensions.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
     <Compile Include="Forms\ColorDialog.cs" />
+    <Compile Include="Drawing\GraphicsPath.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

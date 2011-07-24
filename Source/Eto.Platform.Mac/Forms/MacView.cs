@@ -44,6 +44,8 @@ namespace Eto.Platform.Mac
 	public interface IMacView
 	{
 		Size PositionOffset { get; }
+		
+		Control Widget { get; }
 
 		bool AutoSize { get; }
 	}
@@ -81,9 +83,10 @@ namespace Eto.Platform.Mac
 				return;
 			if (tracking != null)
 				Control.RemoveTrackingArea (tracking);
+			//Console.WriteLine ("Adding mouse tracking {0} for area {1}", this.Widget.GetType ().FullName, Control.Frame.Size);
 			mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = Control };
 			tracking = new NSTrackingArea (new SD.RectangleF (new SD.PointF (0, 0), Control.Frame.Size), 
-				NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.MouseMoved | NSTrackingAreaOptions.EnabledDuringMouseDrag, 
+				NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.MouseMoved | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect, 
 			    mouseDelegate, 
 				new NSDictionary ());
 			Control.AddTrackingArea (tracking);
@@ -108,7 +111,7 @@ namespace Eto.Platform.Mac
 				Control.PostsFrameChangedNotifications = true;
 				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) {
 					e.Widget.OnSizeChanged (EventArgs.Empty);
-				} );
+				});
 				break;
 			default:
 				base.AttachEvent (handler);
@@ -214,8 +217,18 @@ namespace Eto.Platform.Mac
 				return !NSThread.Current.IsMainThread;
 			}
 		}
+
 		#endregion
 		
+		#region IMacView implementation
+
+		Control IMacView.Widget {
+			get {
+				return this.Widget;
+			}
+		}
+		
+		#endregion
 	}
 }
 

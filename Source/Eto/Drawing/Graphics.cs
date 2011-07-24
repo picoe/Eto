@@ -9,6 +9,10 @@ namespace Eto.Drawing
 		void DrawRectangle(Color color, int x, int y, int width, int height);
 		void DrawLine(Color color, int startx, int starty, int endx, int endy);
 		void FillRectangle(Color color, int x, int y, int width, int height);
+		
+		void FillPath(Color color, GraphicsPath path);
+		void DrawPath(Color color, GraphicsPath path);
+		
 		void DrawImage(IImage image, int x, int y);
 		void DrawImage(IImage image, int x, int y, int width, int height);
 		void DrawImage(IImage image, Rectangle source, Rectangle destination);
@@ -90,7 +94,31 @@ namespace Eto.Drawing
 				inner.FillRectangle(color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 			}
 		}
+		
+		public void FillPolygon(Color color, IEnumerable<Point> points)
+		{
+			var path = new GraphicsPath(Generator);
+			path.AddLines (points);
+			FillPath (color, path);
+		}
 
+		public void DrawPolygon(Color color, IEnumerable<Point> points)
+		{
+			var path = new GraphicsPath(Generator);
+			path.AddLines (points);
+			DrawPath (color, path);
+		}
+		
+		public void FillPath(Color color, GraphicsPath path)
+		{
+			inner.FillPath(color, path);
+		}
+
+		public void DrawPath(Color color, GraphicsPath path)
+		{
+			inner.DrawPath(color, path);
+		}
+		
 		public void DrawImage(IImage image, Point point)
 		{
 			inner.DrawImage(image, point.X, point.Y);

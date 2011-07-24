@@ -46,12 +46,21 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control = new Gtk.ScrolledWindow();
 			vp = new Gtk.Viewport();
-			vp.Shown += delegate {
+			
+			// autosize the scrolled window to the size of the content
+			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
 				if (autoSize) {
-					var size = vp.SizeRequest ();
-					Control.SetSizeRequest (size.Width, size.Height);
+					args.Requisition = vp.SizeRequest ();
 				}
 			};
+			vp.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
+				if (autoSize) {
+					var size = vp.SizeRequest ();
+					//Console.WriteLine ("Autosizing to {0}x{1}", size.Width, size.Height);
+					args.Requisition = size;
+				}
+			};
+
 			Border = BorderType.Bezel;
 			Control.VScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			Control.HScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
@@ -109,8 +118,8 @@ namespace Eto.Platform.GtkSharp
 
 		public void UpdateScrollSizes()
 		{
-			//Control.CheckResize();
-			//vp.CheckResize();
+			Control.CheckResize();
+			vp.CheckResize();
 		}
 		
 		public Point ScrollPosition

@@ -173,7 +173,7 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnClosed(EventArgs.Empty);
 			Control.Destroy ();
 		}
-
+		
 		protected override void Dispose (bool disposing)
 		{
 			base.Dispose (disposing);

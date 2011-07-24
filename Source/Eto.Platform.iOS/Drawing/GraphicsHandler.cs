@@ -198,6 +198,16 @@ namespace Eto.Platform.iOS.Drawing
 			context.FillRect(TranslateView(new SD.RectangleF(x, y, width, height)));
 			UIGraphics.PopContext();
 		}
+		
+		public void FillPath (Color color, GraphicsPath path)
+		{
+			throw new NotImplementedException ();
+		}
+		
+		public void DrawPath (Color color, GraphicsPath path)
+		{
+			throw new NotImplementedException ();
+		}
 
 		public void DrawImage(IImage image, int x, int y)
 		{

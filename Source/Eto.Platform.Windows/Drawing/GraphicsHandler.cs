@@ -85,6 +85,17 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), x, y, width, height);
 		}
+		
+		public void FillPath (Color color, GraphicsPath path)
+		{
+			Control.FillPath (new SD.SolidBrush (Generator.Convert (color)), path.ControlObject as SD.Drawing2D.GraphicsPath);
+		}
+		
+		public void DrawPath (Color color, GraphicsPath path)
+		{
+			Control.DrawPath (new SD.Pen(Generator.Convert (color)), path.ControlObject as SD.Drawing2D.GraphicsPath);
+		}
+		
 
 		public void DrawImage (IImage image, int x, int y)
 		{

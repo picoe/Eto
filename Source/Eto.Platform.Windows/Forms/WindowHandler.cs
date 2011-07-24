@@ -152,7 +152,7 @@ namespace Eto.Platform.Windows
 		{
 			Control.Close ();
 		}
-
+		
 		public Icon Icon {
 			get { return icon; }
 			set {

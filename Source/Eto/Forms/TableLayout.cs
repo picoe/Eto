@@ -18,6 +18,11 @@ namespace Eto.Forms
 		
 		public static Size DefaultSpacing = new Size(5, 5);
 		public static Padding DefaultPadding = new Padding(5);
+		
+		public TableLayout(Container container, Size size)
+			: this(container, size.Width, size.Height)
+		{
+		}
 
 		public TableLayout(Container container, int cols, int rows)
 			: base(container.Generator, container, typeof(ITableLayout), false)

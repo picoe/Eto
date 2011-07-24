@@ -72,6 +72,11 @@ namespace Eto.Drawing
 			return new Point(point1.x - point2.x, point1.y - point2.y);
 		}
 
+		public static Point operator + (Point point1, Point point2)
+		{
+			return new Point(point1.x + point2.x, point1.y + point2.y);
+		}
+
 		public static Point operator + (Point point, Size size)
 		{
 			return new Point(point.x + size.Width, point.y + size.Height);

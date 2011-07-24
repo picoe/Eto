@@ -16,7 +16,7 @@ namespace Eto.Platform.iOS.Drawing
 
 	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
 		where T: class
-		where W: IImage
+		where W: Image
 	{
 
 		#region IImage Members

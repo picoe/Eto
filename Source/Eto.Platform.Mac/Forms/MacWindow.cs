@@ -9,7 +9,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
-	class FlippedView : NSView
+	public class FlippedView : NSView
 	{
 		
 		public override bool IsFlipped {

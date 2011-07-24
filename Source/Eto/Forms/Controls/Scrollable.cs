@@ -68,6 +68,14 @@ namespace Eto.Forms
 			get { return inner.Border; }
 			set { inner.Border = value; }
 		}
+		
+		public Rectangle VisibleRect
+		{
+			get {
+				Size size = new Size(Math.Min (ClientSize.Width, ScrollSize.Width), Math.Min(ClientSize.Height, ScrollSize.Height));
+				return new Rectangle(ScrollPosition, size);
+			}
+		}
 
 	}
 }

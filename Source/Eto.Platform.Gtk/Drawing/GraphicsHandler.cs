@@ -41,27 +41,39 @@ namespace Eto.Platform.GtkSharp.Drawing
 	{
 		Gtk.Widget widget;
 		Gdk.GC gc;
+		Cairo.Context context;
 		bool deletegc = true;
 		IImage image;
 
 		public GraphicsHandler ()
 		{
 		}
-
+		
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable, Gdk.GC gc)
 		{
 			this.widget = widget;
 			this.Control = drawable;
 			this.DisposeControl = false;
 			this.gc = gc;
+			this.context = Gdk.CairoHelper.Create (drawable);
 			deletegc = false;
 		}
 
-		// TODO: use Cairo?!
-		public bool Antialias { get; set; }
+		public bool Antialias
+		{
+			get { return context.Antialias != Cairo.Antialias.None; }
+			set {
+				if (value) context.Antialias = Cairo.Antialias.Default;
+				else context.Antialias = Cairo.Antialias.None;
+			}
+		}
 
 		public Gdk.GC GC {
 			get { return gc; }
+		}
+		
+		public Cairo.Context Context {
+			get { return context; }
 		}
 
 		public void CreateFromImage (Bitmap image)
@@ -72,6 +84,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			if (Control.Colormap == null) 
 				Control.Colormap = new Gdk.Colormap (Gdk.Visual.System, true);
 			gc = new Gdk.GC (Control);
+			this.context = Gdk.CairoHelper.Create (Control);
 		}
 
 		public void Flush ()
@@ -80,28 +93,89 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
 				pb.GetFromDrawable (Control, Control.Colormap, 0, 0, 0, 0, image.Size.Width, image.Size.Height);
 			}
+			//context.Paint ();
 			//GdkHandler.Global.Flush ();
 		}
 
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
+#if CAIRO
+			context.Save ();
+			context.Color = Generator.ConvertC(color);
+			if (startx != endx || starty != endy) {
+				// to draw a line, it must move..
+				context.MoveTo (startx+0.5, starty+0.5);
+				context.LineTo (endx+0.5, endy+0.5);
+				context.LineCap = Cairo.LineCap.Square;
+				context.LineWidth = 1.0;
+				context.Stroke ();
+			}
+			else {
+				// to draw one pixel, we must fill it
+				context.Rectangle (startx, starty, 1, 1);
+				context.Fill();
+			}
+			context.Restore ();
+#else
 			gc.RgbFgColor = Generator.Convert (color);
 			Control.DrawLine (gc, startx, starty, endx, endy);
+#endif
 		}
 
 		public void DrawRectangle (Color color, int x, int y, int width, int height)
 		{
+#if CAIRO
+			context.Save ();
+			context.Color = Generator.ConvertC(color);
+			context.Rectangle (x+0.5, y+0.5, width-1, height-1);
+			context.LineWidth = 1.0;
+			context.Stroke ();
+			context.Restore ();
+#else
 			gc.RgbFgColor = Generator.Convert (color);
 			Control.DrawRectangle (gc, false, x, y, width + 1, height + 1);
+#endif
 		}
 
 		public void FillRectangle (Color color, int x, int y, int width, int height)
 		{
+#if CAIRO
+			context.Save ();
+			context.Color = Generator.ConvertC(color);
+			context.Rectangle (x, y, width, height);
+			context.Fill ();
+			context.Restore ();
+#else
 			gc.RgbBgColor = Generator.Convert (color);
 			gc.RgbFgColor = Generator.Convert (color);
 			Control.DrawRectangle (gc, true, x, y, width, height);
+#endif
+		}
+		
+		public void FillPath (Color color, GraphicsPath path)
+		{
+#if CAIRO
+			context.Save ();
+			context.Color = Generator.ConvertC(color);
+			var pathHandler = path.Handler as GraphicsPathHandler;
+			pathHandler.Apply (this);
+			context.Fill ();
+			context.Restore ();
+#endif
 		}
 
+		public void DrawPath (Color color, GraphicsPath path)
+		{
+#if CAIRO
+			context.Save ();
+			context.Color = Generator.ConvertC(color);
+			var pathHandler = path.Handler as GraphicsPathHandler;
+			pathHandler.Apply (this);
+			context.Stroke ();
+			context.Restore ();
+#endif
+		}
+		
 		public void DrawImage (IImage image, int x, int y)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y);
@@ -160,14 +234,18 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			if (image != null) Flush();
 
-			base.Dispose (disposing);
-
 			if (disposing) {
 				if (gc != null && deletegc) {
 					gc.Dispose ();
 					gc = null;
 				}
+				if (context != null) {
+					((IDisposable) context).Dispose();
+					context = null;
+				}
 			}
+			
+			base.Dispose (disposing);
 		}
 	}
 }
