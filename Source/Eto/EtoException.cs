@@ -4,6 +4,11 @@ namespace Eto
 {
 	public class EtoException : Exception
 	{
+		public EtoException()
+			: base()
+		{
+		}
+		
 		public EtoException(string message)
 			: base(message)
 		{

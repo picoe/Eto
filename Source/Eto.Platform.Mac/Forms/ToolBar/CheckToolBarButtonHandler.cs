@@ -10,24 +10,18 @@ namespace Eto.Platform.Mac
 	public class CheckToolBarButtonHandler : ToolBarItemHandler<NSToolbarItem, CheckToolBarButton>, ICheckToolBarButton
 	{
 		bool isChecked;
-		public CheckToolBarButtonHandler()
-		{
-		}
-
-		#region ICheckToolBarButton Members
-
+		ToolBarHandler toolbarHandler;
 
 		public bool Checked
 		{
 			get { return isChecked; }
 			set { 
 				isChecked = value;
-				if (isChecked && Control != null && Control.Toolbar != null) Control.Toolbar.SelectedItemIdentifier = Widget.ID;
+				if (isChecked && Control != null && toolbarHandler != null && toolbarHandler.Control != null) 
+					toolbarHandler.Control.SelectedItemIdentifier = Widget.ID;
 			}
 		}
 
-		#endregion
-		
 		public override void CreateControl ()
 		{
 			base.CreateControl ();
@@ -37,6 +31,7 @@ namespace Eto.Platform.Mac
 		public override void ControlAdded (ToolBarHandler toolbar)
 		{
 			base.ControlAdded (toolbar);
+			this.toolbarHandler = toolbar;
 			if (isChecked) toolbar.Control.SelectedItemIdentifier = Widget.ID;
 		}
 		

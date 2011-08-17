@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.IO
 {
@@ -86,9 +87,8 @@ namespace Eto.IO
 			}
 		}
 
-		public override IEnumerable<EtoFileInfo> GetFiles(string searchPattern)
+		public override IEnumerable<EtoFileInfo> GetFiles(IEnumerable<string> patterns)
 		{
-			string[] patterns = searchPattern.Split(';');
 			foreach (string pattern in patterns)
 			{
 				var diskFiles = info.EnumerateFiles(pattern);

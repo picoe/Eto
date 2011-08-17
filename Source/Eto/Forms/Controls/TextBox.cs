@@ -6,6 +6,7 @@ namespace Eto.Forms
 	public interface ITextBox : ITextControl
 	{
 		bool ReadOnly { get; set; }
+		int MaxLength { get; set; }
 	}
 	
 	public class TextBox : TextControl
@@ -23,6 +24,12 @@ namespace Eto.Forms
 		{
 			get { return inner.ReadOnly; }
 			set { inner.ReadOnly = value; }
+		}
+		
+		public virtual int MaxLength
+		{
+			get { return inner.MaxLength; }
+			set { inner.MaxLength = value; }
 		}
 	}
 }

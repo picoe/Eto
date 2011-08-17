@@ -5,6 +5,7 @@ using System;
 using System.IO;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
@@ -87,16 +88,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get
 			{
 				Palette pal = new Palette(colors.Length);
-				for (int i=0; i<pal.Size; i++)
-				{
-					pal[i] = Color.FromArgb((uint)colors[i]);
-				}
+				pal.AddRange (colors.Select(r => Color.FromArgb ((uint)r)));
 				return pal;
 			}
 			set
 			{
-				if (value.Size != colors.Length) throw new ArgumentException("Input palette must have the same colors as the output");
-				for (int i=0; i<value.Size; i++)
+				if (value.Count != colors.Length) throw new ArgumentException("Input palette must have the same colors as the output");
+				for (int i=0; i<value.Count; i++)
 				{
 					colors[i] = value[i].ToArgb();
 				}

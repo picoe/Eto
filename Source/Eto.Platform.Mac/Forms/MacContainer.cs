@@ -9,6 +9,7 @@ namespace Eto.Platform.Mac
 {
 	public interface IMacContainer
 	{
+		bool AutoSize { get; }
 		void SetContentSize(SD.SizeF contentSize);
 	}
 	
@@ -45,12 +46,14 @@ namespace Eto.Platform.Mac
 		{
 			base.OnLoad (e);
 			
-			if (this.AutoSize && Widget.Layout != null) {
-				var layout = Widget.Layout.Handler as IMacLayout;
-				if (layout != null) layout.SizeToFit ();
+			if (this.AutoSize) {
+				if (Widget.Layout != null) {
+					var layout = Widget.Layout.Handler as IMacLayout;
+					if (layout != null) layout.SizeToFit ();
+				}
+				else SetContentSize (SD.SizeF.Empty);
 			}
 		}
-		
 		
 		#region IMacContainer implementation
 		public virtual void SetContentSize (SD.SizeF contentSize)

@@ -3,6 +3,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Actions;
+using System.ComponentModel;
 
 namespace Eto.Platform.Mac
 {
@@ -46,9 +47,9 @@ namespace Eto.Platform.Mac
 			NSApplication.SharedApplication.NextEvent(NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
 		}
 		
-		public void Run()
+		public void Run(string[] args)
 		{
-			NSApplication.Main(new string[] {});
+			NSApplication.Main(args);
 		}
 		
 		public void Initialize(NSApplicationDelegate appdelegate)

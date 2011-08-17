@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using MonoMac.AppKit;
+using SD = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -10,7 +11,7 @@ namespace Eto.Platform.Mac
 		{
 			Control = new NSBox ();
 			Control.Title = string.Empty;
-			Control.ContentView = new FlippedView();
+			Control.ContentView = new FlippedView ();
 		}
 
 		public override object ContainerObject {
@@ -32,6 +33,11 @@ namespace Eto.Platform.Mac
 		public virtual string Text {
 			get { return Control.Title; }
 			set { Control.Title = value; }
+		}
+		
+		public override void SetContentSize (SD.SizeF contentSize)
+		{
+			base.SetContentSize (contentSize + new SD.SizeF (10, 42));
 		}
 	}
 }

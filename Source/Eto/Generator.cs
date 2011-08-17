@@ -8,7 +8,7 @@ namespace Eto
 {
 	public abstract class Generator
 	{
-		Dictionary<Type, ConstructorInfo> constructorMap;
+		Dictionary<string, ConstructorInfo> constructorMap;
 		Hashtable attributes;
 		List<Type> types;
 		
@@ -26,7 +26,7 @@ namespace Eto
 		
 		protected Generator ()
 		{
-			constructorMap = new Dictionary<Type, ConstructorInfo> ();
+			constructorMap = new Dictionary<string, ConstructorInfo> ();
 		}
 		
 		public virtual bool Supports<T> ()
@@ -67,7 +67,7 @@ namespace Eto
 			if (constructor == null) 
 				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
 
-			constructorMap.Add (typeof(T), constructor);
+			constructorMap.Add (typeof(T).Name, constructor);
 			return constructor;
 		}
 
@@ -94,15 +94,16 @@ namespace Eto
 			if (constructor == null) 
 				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
 
-			constructorMap.Add (type, constructor);
+			constructorMap.Add (type.Name, constructor);
 			return constructor;
 		}
 		
 		protected ConstructorInfo Find (Type type)
 		{
 			lock (this) {
-				if (constructorMap.ContainsKey (type))
-					return constructorMap [type];
+				ConstructorInfo info;
+				if (constructorMap.TryGetValue (type.Name, out info))
+					return info;
 
 				List<Type> removalTypes = null;
 				if (types == null)

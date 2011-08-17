@@ -5,6 +5,7 @@ using Eto.Drawing;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using System.Linq;
 
 namespace Eto.Platform.Mac.Drawing
 {
@@ -92,19 +93,16 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			get
 			{
-				Palette pal = new Palette(colors.Length);
-				for (int i=0; i<pal.Size; i++)
-				{
-					pal[i] = Color.FromArgb(colors[i]);
-				}
+				var pal = new Palette(colors.Length);
+				pal.AddRange (colors.Select(r => Color.FromArgb(BitmapDataHandler.DataToArgb (r))));
 				return pal;
 			}
 			set
 			{
-				if (value.Size != colors.Length) throw new ArgumentException("Input palette must have the same colors as the output");
-				for (int i=0; i<value.Size; i++)
+				if (value.Count != colors.Length) throw new ArgumentException("Input palette must have the same colors as the output");
+				for (int i=0; i<value.Count; i++)
 				{
-					colors[i] = value[i].ToArgb();
+					colors[i] = BitmapDataHandler.ArgbToData (value[i].ToArgb());
 				}
 			}
 		}
@@ -114,7 +112,7 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			var bd = bmp.Lock();
 			if (source.Top < 0 || source.Left < 0 || source.Right >= size.Width || source.Bottom >= size.Height)
-				throw new Exception(string.Format("out of bounds you donut! {0}", source));
+				throw new Exception("Source rectangle exceeds image size");
 			
 			// we have to draw to a temporary bitmap pixel by pixel
 			unsafe {
@@ -135,16 +133,16 @@ namespace Eto.Platform.Mac.Drawing
 					src += source.Top * scany;
 					src += source.Left;
 
-					
-					for (int y=source.Top; y <= source.Bottom; y++)
+					int bottom = source.Bottom;
+					int right = source.Right;
+					int left = source.Left;
+					for (int y=source.Top; y <= bottom; y++)
 					{
 						var srcrow = src;
 						var destrow = (uint*)dest;
-						for (int x=source.Left; x <= source.Right; x++)
+						for (int x=left; x <= right; x++)
 						{
-							var palindex = *srcrow;
-							var color = colors[palindex];
-							*destrow = bd.TranslateArgbToData(color);
+							*destrow = colors[*srcrow];
 							destrow++;
 							srcrow++;
 						}

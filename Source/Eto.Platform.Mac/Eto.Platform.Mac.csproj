@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -133,6 +132,7 @@
     <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\MacEventView.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
+    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

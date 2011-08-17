@@ -4,6 +4,7 @@ using System.Collections;
 using System.IO;
 using SI = System.IO;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.IO
 {
@@ -169,14 +170,13 @@ namespace Eto.IO
 			}
 		}
 
-		public override IEnumerable<EtoFileInfo> GetFiles(string searchPattern)
+		public override IEnumerable<EtoFileInfo> GetFiles(IEnumerable<string> searchPattern)
 		{
 			ReadEntries();
 			// convert search pattern to regular expression!
-			string filter = searchPattern;
+			string filter = string.Join("|", searchPattern.ToArray());
 			filter = filter.Replace(".", "\\.");
 			filter = filter.Replace("*", ".+");
-			filter = filter.Replace(";", "|");
 
 			Regex reg = new Regex(filter, RegexOptions.IgnoreCase 
 #if !MOBILE

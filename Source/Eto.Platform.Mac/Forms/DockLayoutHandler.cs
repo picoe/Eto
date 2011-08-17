@@ -7,6 +7,8 @@ using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
+	
+	
 	public class DockLayoutHandler : MacLayout<NSView, DockLayout>, IDockLayout
 	{
 		Control child;
@@ -31,7 +33,7 @@ namespace Eto.Platform.Mac
 		
 		public override void SizeToFit ()
 		{
-			var container = child as Container;
+			/*var container = child as Container;
 			if (container != null)
 			{
 				var layout = container.Layout as IMacLayout;
@@ -39,7 +41,7 @@ namespace Eto.Platform.Mac
 				var size = ((NSView)container.ControlObject).Frame;
 				SetContainerSize (size.Size);
 			}
-			else if (child != null)
+			else*/ if (child != null)
 			{
 				AutoSize (child);
 				var c = child.ControlObject as NSView;
@@ -58,10 +60,13 @@ namespace Eto.Platform.Mac
 			NSView childControl = (NSView)child.ControlObject;
 			var frame = parent.Frame;
 			
-			frame.Y = padding.Top;
-			frame.X = padding.Left;
-			frame.Width -= padding.Horizontal;
-			frame.Height -= padding.Vertical;
+			if (frame.Width > padding.Horizontal && frame.Height > padding.Vertical)
+			{
+				frame.X = padding.Left;
+				frame.Width -= padding.Horizontal;
+				frame.Y = padding.Top;
+				frame.Height -= padding.Vertical;
+			}
 			
 			childControl.Frame = frame;
 		}
@@ -87,6 +92,12 @@ namespace Eto.Platform.Mac
 			NSView childControl = (NSView)child.ControlObject;
 			childControl.RemoveFromSuperview();
 			this.child = null;
+		}
+
+		public override void SetContainerSize (SD.SizeF size)
+		{
+			base.SetContainerSize (size);
+			SetChildFrame();
 		}
 	}
 }

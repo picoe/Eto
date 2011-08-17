@@ -70,12 +70,13 @@ namespace Eto.Platform.Mac
 			
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
-
+			
 			Control.PostsFrameChangedNotifications = true;
 			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as TableLayoutHandler;
 				handler.Layout();
 			});
+
 		}
 		
 		public override void SizeToFit ()

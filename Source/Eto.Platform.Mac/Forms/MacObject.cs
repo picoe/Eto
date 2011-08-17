@@ -32,7 +32,13 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		protected void AddObserver(NSString key, Action<ObserverActionArgs> action, NSObject control = null)
+		protected void RemoveObserver(NSObject observer)
+		{
+			NSNotificationCenter.DefaultCenter.RemoveObserver(observer);
+			notifications.Remove (observer);
+		}
+		
+		protected NSObject AddObserver(NSString key, Action<ObserverActionArgs> action, NSObject control = null)
 		{
 			if (notifications == null) notifications = new List<NSObject>();
 			if (control == null) control = Control;
@@ -40,7 +46,9 @@ namespace Eto.Platform.Mac
 			//NSNotificationCenter.DefaultCenter.AddObserver(key, action, control);
 			
 			var wrap = new ObserverWrapper{ Action = new WeakReference(action), Widget = new WeakReference(this.Widget) };
-			notifications.Add(NSNotificationCenter.DefaultCenter.AddObserver(key, wrap.Run, control));
+			var observer = NSNotificationCenter.DefaultCenter.AddObserver(key, wrap.Run, control);
+			notifications.Add(observer);
+			return observer;
 		}
 		
 		protected override void Dispose (bool disposing)

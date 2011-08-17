@@ -9,7 +9,6 @@ namespace Eto.Platform.Mac
 {
 	public class SeparatorMenuItemHandler : MenuHandler<NSMenuItem, SeparatorMenuItem>, ISeparatorMenuItem
 	{
-		
 		public SeparatorMenuItemHandler ()
 		{
 			Control = NSMenuItem.SeparatorItem;
@@ -29,6 +28,5 @@ namespace Eto.Platform.Mac
 			get { return Key.None; }
 			set { throw new NotSupportedException (); }
 		}
-
 	}
 }

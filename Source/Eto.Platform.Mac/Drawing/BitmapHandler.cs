@@ -11,17 +11,27 @@ namespace Eto.Platform.Mac.Drawing
 {
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data,int scanWidth,object controlObject)
+		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
 			: base(data, scanWidth, controlObject)
 		{
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public static uint ArgbToData (uint argb)
+		{
+			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
+		}
+		
+		public static uint DataToArgb (uint bitmapData)
+		{
+			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
+		}
+		
+		public override uint TranslateArgbToData (uint argb)
 		{
 			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override uint TranslateDataToArgb (uint bitmapData)
 		{
 			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
 		}
@@ -37,11 +47,11 @@ namespace Eto.Platform.Mac.Drawing
 	{
 		NSBitmapImageRep rep;
 		
-		public BitmapHandler()
+		public BitmapHandler ()
 		{
 		}
 		
-		public BitmapHandler(NSImage image)
+		public BitmapHandler (NSImage image)
 		{
 			Control = image;
 		}
@@ -66,10 +76,10 @@ namespace Eto.Platform.Mac.Drawing
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
-				
-					rep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
-					Control = new NSImage();
-					Control.AddRepresentation(rep);
+
+					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					Control = new NSImage ();
+					Control.AddRepresentation (rep);
 				
 					//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
 					//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
@@ -85,9 +95,9 @@ namespace Eto.Platform.Mac.Drawing
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
 				
-					rep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
-					Control = new NSImage();
-					Control.AddRepresentation(rep);
+					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					Control = new NSImage ();
+					Control.AddRepresentation (rep);
 
 					//var provider = new CGDataProvider (data.ClassHandle);
 					//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
@@ -141,19 +151,22 @@ namespace Eto.Platform.Mac.Drawing
 			default:
 				throw new NotSupportedException ();
 			}
-			var reps = Control.Representations();
-			if (reps == null) throw new InvalidDataException();
-			var newrep = reps.OfType<NSBitmapImageRep>().FirstOrDefault();
+			var reps = Control.Representations ();
+			if (reps == null)
+				throw new InvalidDataException ();
+			var newrep = reps.OfType<NSBitmapImageRep> ().FirstOrDefault ();
 			if (newrep == null) {
 				NSData tiff;
-				if (this.rep != null) tiff = this.rep.TiffRepresentation;
-				else tiff = Control.AsTiff();
-				newrep = new NSBitmapImageRep(tiff);
+				if (this.rep != null)
+					tiff = this.rep.TiffRepresentation;
+				else
+					tiff = Control.AsTiff ();
+				newrep = new NSBitmapImageRep (tiff);
 			}
-			var data = newrep.RepresentationUsingTypeProperties (type, new NSDictionary());
+			var data = newrep.RepresentationUsingTypeProperties (type, new NSDictionary ());
 			var datastream = data.AsStream ();
 			datastream.CopyTo (stream);
-			stream.Flush();
+			stream.Flush ();
 			datastream.Dispose ();
 		}
 
@@ -182,9 +195,9 @@ namespace Eto.Platform.Mac.Drawing
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
 			var nsimage = this.Control;
-			var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
-			var destRect = graphics.TranslateView(Generator.ConvertF(destination), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1);
+			var sourceRect = graphics.Translate (Generator.ConvertF (source), nsimage.Size.Height);
+			var destRect = graphics.TranslateView (Generator.ConvertF (destination), false);
+			nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
 	}

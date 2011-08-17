@@ -28,7 +28,7 @@ namespace Eto.Platform.GtkSharp
 		public GtkControl ()
 		{
 			this.thread = Thread.CurrentThread;
-			size = new Size (0, 0);
+			size = Size.Empty;
 			notify = new Gtk.ThreadNotify (new Gtk.ReadyEvent (Ready));
 		}
 
@@ -46,7 +46,7 @@ namespace Eto.Platform.GtkSharp
 			return label;
 		}
 
-		public Point Location {
+		public virtual Point Location {
 			get { return location; }
 			set { location = value; }
 		}

@@ -31,7 +31,7 @@ namespace Eto.Platform.Mac
 			
 		}
 		
-		public void SetContainerSize(SD.SizeF size)
+		public virtual void SetContainerSize(SD.SizeF size)
 		{
 			var container = Widget.Container.Handler as IMacContainer;
 			if (container != null) container.SetContentSize (size);

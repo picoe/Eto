@@ -154,18 +154,15 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public bool AutoScrollToControl {
-			get { return false; }
-			set {  }
-		}
-		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{
 			//base.SetContentSize (contentSize);
 			view.SetFrameSize (contentSize);
-			contentSize.Width += 2;
-			contentSize.Height += 2;
-			Control.SetFrameSize (contentSize);
+			if (this.AutoSize) {
+				contentSize.Width += 2;
+				contentSize.Height += 2;
+				Control.SetFrameSize (contentSize);
+			}
 		}
 	}
 }

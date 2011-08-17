@@ -32,9 +32,16 @@ namespace Eto.Platform.Mac.Forms
 			Handler.Control.SetAction (null);
 			ColorHandler.Instance = null;
 		}
+		
+		[Export("modalClosed:")]
+		public void modalClosed(NSNotification notification)
+		{
+			NSColorPanel.SharedColorPanel.PerformClose (this);
+			NSNotificationCenter.DefaultCenter.RemoveObserver (this);
+		}
 	}
 	
-	public class ColorDialogHandler : WidgetHandler<NSColorPanel, ColorDialog>, IColorDialog, IColorDialogHandler
+	public class ColorDialogHandler : MacObject<NSColorPanel, ColorDialog>, IColorDialog, IColorDialogHandler
 	{
 		
 		public ColorDialogHandler()
@@ -48,7 +55,9 @@ namespace Eto.Platform.Mac.Forms
 		
 		public DialogResult ShowDialog (Window parent)
 		{
+			//Control = new NSColorPanel();
 			NSWindow parentWindow;
+			//Console.WriteLine ("Parent: {0}. {1}, {2}", parent, parent.ControlObject, NSApplication.SharedApplication.ModalWindow);
 			if (parent != null) {
 				if (parent.ControlObject is NSWindow) parentWindow = (NSWindow)parent.ControlObject;
 				else if (parent.ControlObject is NSView) parentWindow = ((NSView)parent.ControlObject).Window;
@@ -56,16 +65,31 @@ namespace Eto.Platform.Mac.Forms
 			}
 			else parentWindow = NSApplication.SharedApplication.KeyWindow;
 			
-			if (ColorHandler.Instance == null) ColorHandler.Instance = new ColorHandler();
-			ColorHandler.Instance.Handler = this;
+			ColorHandler.Instance = new ColorHandler{ Handler = this };
 			Control.Color = Generator.ConvertNS (this.Color);
 			//Control.Continuous = false;
 			Control.Delegate = ColorHandler.Instance;
-			
+			bool isModal = false;
+			if (parentWindow != null) {
+				if (parentWindow == NSApplication.SharedApplication.ModalWindow)
+				{
+					//Control.WorksWhenModal = true;
+					//Control.ParentWindow = parentWindow;
+					NSNotificationCenter.DefaultCenter.AddObserver(ColorHandler.Instance, new Selector("modalClosed:"), new NSString("NSWindowWillCloseNotification"), parentWindow);
+					isModal = true;
+				}
+			}
 			Control.SetTarget (ColorHandler.Instance);
 			Control.SetAction (new Selector("changeColor:"));
 			
+			
+			// work around for modal dialogs wanting to show the color panel.. only works when the panel is key
+			
+			//if (isModal) Control.MakeKeyAndOrderFront (parentWindow);
+			//else Control.OrderFront (parentWindow);
 			NSApplication.SharedApplication.OrderFrontColorPanel (parentWindow);
+			if (isModal) Control.MakeKeyWindow();
+			//Control.OrderFront (parentWindow);
 			
 			
 			return DialogResult.None; // signal that we are returning right away!

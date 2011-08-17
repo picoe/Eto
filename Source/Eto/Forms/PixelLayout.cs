@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -38,6 +39,12 @@ namespace Eto.Forms
 		public void Move(Control child, Point p)
 		{
 			Move(child, p.X, p.Y);
+		}
+		
+		public void Remove(IEnumerable<Control> controls)
+		{
+			foreach (var control in controls)
+				Remove (control);
 		}
 		
 		public void Remove(Control child)

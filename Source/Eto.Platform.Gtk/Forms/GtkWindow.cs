@@ -215,7 +215,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public Point Location {
+		public override Point Location {
 			get {
 				int x, y;
 				Control.GetPosition (out x, out y);

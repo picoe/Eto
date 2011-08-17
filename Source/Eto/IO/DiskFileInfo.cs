@@ -16,6 +16,11 @@ namespace Eto.IO
 		{
 			info = new FileInfo(fileName);
 		}
+		
+		public override bool ReadOnly
+		{
+			get { return (info.Attributes & FileAttributes.ReadOnly) != 0; }
+		}
 
 		public override string FullName 
 		{
@@ -37,6 +42,11 @@ namespace Eto.IO
 		public override Stream OpenRead()
 		{
 			return info.OpenRead();
+		}
+		
+		public override void Delete ()
+		{
+			info.Delete ();
 		}
 		
 		public override EtoDirectoryInfo Directory 

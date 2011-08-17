@@ -23,6 +23,11 @@ namespace Eto.Collections
 		{
 			get { return false; }
 		}
+		
+		protected IList<T> InnerList
+		{
+			get { return list; }
+		}
 
 		#endregion
 		
@@ -55,6 +60,11 @@ namespace Eto.Collections
 		{
 			list = new List<T>();
 		}
+
+		public BaseList(int capacity)
+		{
+			list = new List<T>(capacity);
+		}
 		
 		IEnumerator IEnumerable.GetEnumerator()
 		{
@@ -74,6 +84,12 @@ namespace Eto.Collections
 		public int IndexOf(T item)
 		{
 			return list.IndexOf(item);
+		}
+		
+		public int Capacity
+		{
+			get { return list.Capacity; }
+			set { list.Capacity = value; }
 		}
 		
 		public virtual void Clear()
@@ -101,22 +117,26 @@ namespace Eto.Collections
 		public virtual void Add(T item)
 		{
 			list.Add(item);
-			OnAdded(new ListEventArgs<T>(item));
+			OnAdded(new ListEventArgs<T>(item, -1));
 			OnChanged(EventArgs.Empty);
 		}
 		
 		public virtual bool Remove(T item)
 		{
-			bool ret = list.Remove(item);
-			OnRemoved(new ListEventArgs<T>(item));
-			OnChanged(EventArgs.Empty);
-			return ret;
+			int index = list.IndexOf(item);
+			if (index >= 0) {
+				list.RemoveAt (index);
+				OnRemoved(new ListEventArgs<T>(item, index));
+				OnChanged(EventArgs.Empty);
+				return true;
+			}
+			return false;
 		}
 		
 		public virtual void RemoveAt(int index)
 		{
 			T item = this[index];
-			OnRemoved(new ListEventArgs<T>(item));
+			OnRemoved(new ListEventArgs<T>(item, index));
 			OnChanged(EventArgs.Empty);
 			list.RemoveAt(index);
 		}
@@ -124,19 +144,19 @@ namespace Eto.Collections
 		public virtual void Insert(int index, T item)
 		{
 			list.Insert(index, item);
-			OnAdded(new ListEventArgs<T>(item));
+			OnAdded(new ListEventArgs<T>(item, index));
 			OnChanged(EventArgs.Empty);
 		}
 		
-		public T this[int index]
+		public virtual T this[int index]
 		{
 			get { return list[index]; }
 			set
 			{
 				T item = list[index];
-				OnRemoved(new ListEventArgs<T>(item));
+				OnRemoved(new ListEventArgs<T>(item, index));
 				list[index] = value;
-				OnAdded(new ListEventArgs<T>(value));
+				OnAdded(new ListEventArgs<T>(value, index));
 				OnChanged(EventArgs.Empty);
 			}
 		}

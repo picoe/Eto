@@ -7,19 +7,19 @@ namespace Eto.Platform.Windows
 {
 	public class TextBoxHandler : WindowsControl<SWF.TextBox, TextBox>, ITextBox
 	{
-		public TextBoxHandler()
+		public TextBoxHandler ()
 		{
-			Control = new SWF.TextBox();
+			Control = new SWF.TextBox ();
 		}
 
-		#region ITextBox Members
-
-		public bool ReadOnly
-		{
+		public bool ReadOnly {
 			get { return Control.ReadOnly; }
 			set { Control.ReadOnly = value; }
 		}
-
-		#endregion
+		
+		public int MaxLength {
+			get { return this.Control.MaxLength; }
+			set { this.Control.MaxLength = value; }
+		}
 	}
 }

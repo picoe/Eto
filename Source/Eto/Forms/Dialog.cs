@@ -19,6 +19,7 @@ namespace Eto.Forms
 	{
 		DialogResult ShowDialog (Control parent);
 		Button DefaultButton { get; set; }
+		Button AbortButton { get; set; }
 	}
 
 	public class Dialog : Window
@@ -41,6 +42,12 @@ namespace Eto.Forms
 		}
 
 		public DialogResult DialogResult { get; set; }
+		
+		public Button AbortButton
+		{
+			get { return inner.AbortButton; }
+			set { inner.AbortButton = value; }
+		}
 		
 		public Button DefaultButton
 		{

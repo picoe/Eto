@@ -49,7 +49,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public static Cairo.Color ConvertC (Color color)
 		{
-			return new Cairo.Color ((double)color.R / byte.MaxValue, (double)color.G / byte.MaxValue, (double)color.B / byte.MaxValue);
+			return new Cairo.Color ((double)color.R / byte.MaxValue, (double)color.G / byte.MaxValue, (double)color.B / byte.MaxValue, (double)color.A / byte.MaxValue);
 		}
 
 		public static Color Convert (Gdk.Color color)

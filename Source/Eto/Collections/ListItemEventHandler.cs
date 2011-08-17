@@ -6,16 +6,15 @@ namespace Eto.Collections
 	
 	public class ListEventArgs<T> : EventArgs
 	{
-		T item;
 		
-		public T Item
-		{
-			get { return item; }
-		}
+		public T Item { get; private set; }
 		
-		public ListEventArgs(T item)
+		public int Index { get; private set; }
+		
+		public ListEventArgs(T item, int index)
 		{
-			this.item = item;
+			this.Item = item;
+			this.Index = index;
 		}
 	}
 }

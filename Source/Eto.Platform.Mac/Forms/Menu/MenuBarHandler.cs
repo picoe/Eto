@@ -10,7 +10,7 @@ namespace Eto.Platform.Mac
 		public MenuBarHandler ()
 		{
 			Control = new NSMenu ();
-			Control.AutoEnablesItems = true;
+			Control.AutoEnablesItems = false;
 			Control.ShowsStateColumn = true;
 		}
 

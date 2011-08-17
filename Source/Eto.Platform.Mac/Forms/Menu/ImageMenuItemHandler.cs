@@ -3,12 +3,10 @@ using System.Reflection;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem
 	{
 		Icon icon;
@@ -17,12 +15,9 @@ namespace Eto.Platform.Mac
 		{
 			Control = new NSMenuItem ();
 			Control.Enabled = true;
-			Control.Activated += control_Click;
-		}
-
-		private void control_Click (object sender, EventArgs e)
-		{
-			Widget.OnClick (e);
+			Control.Activated += delegate {
+				Widget.OnClick (EventArgs.Empty);	
+			};
 		}
 
 		#region IMenuItem Members
@@ -62,8 +57,16 @@ namespace Eto.Platform.Mac
 			get { return icon; }
 			set {
 				icon = value;
-				/*if (icon != null) Control.Image = ((NSImage)icon.ControlObject);
-				else Control.Image = null;*/
+				/*
+				if (icon != null) {
+					var image = ((NSImage)icon.ControlObject);
+					var rep = image.BestRepresentation (new System.Drawing.RectangleF(0, 0, 16, 16), null, new NSDictionary());
+					var image2 = new NSImage();
+					image2.AddRepresentation (rep);
+					Control.Image = image2;
+				}
+				else Control.Image = null;
+				*/
 			}
 		}
 

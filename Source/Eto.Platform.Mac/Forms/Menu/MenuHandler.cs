@@ -20,7 +20,6 @@ namespace Eto.Platform.Mac
 			if (!Control.HasSubmenu)
 				Control.Submenu = new NSMenu{ AutoEnablesItems = false, ShowsStateColumn = true, Title = Control.Title };
 			Control.Submenu.InsertItematIndex ((NSMenuItem)item.ControlObject, index);
-			//control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
 		}
 
 		public virtual void RemoveMenu (MenuItem item)
@@ -33,7 +32,6 @@ namespace Eto.Platform.Mac
 		public virtual void Clear ()
 		{
 			Control.Submenu = null;
-			//control.DropDownItems.Clear();
 		}
 
 		#endregion

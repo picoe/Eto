@@ -49,6 +49,7 @@ namespace Eto.Platform.Mac.Drawing
 		NSView view;
 		float height;
 		bool adjust;
+		bool needsLock;
 		
 		public bool Flipped
 		{
@@ -63,6 +64,7 @@ namespace Eto.Platform.Mac.Drawing
 		public GraphicsHandler(NSView view)
 		{
 			this.view = view;
+			this.needsLock = true;
 			this.Control = NSGraphicsContext.FromWindow(view.Window);
 			this.context = this.Control.GraphicsPort;
 			context.SaveState();
@@ -131,6 +133,11 @@ namespace Eto.Platform.Mac.Drawing
 		
 		public void Flush()
 		{
+			if (view != null && !needsLock)
+			{
+				//view.UnlockFocus ();
+				needsLock = true;
+			}
 			Control.FlushGraphics();
 		}
 		
@@ -180,11 +187,21 @@ namespace Eto.Platform.Mac.Drawing
 			rect.Y = height - rect.Y - rect.Height;
 			return rect;
 		}
+		void Lock()
+		{
+			if (needsLock && view != null)
+			{
+				//view.LockFocus();
+				needsLock = false;
+			}
+		}
+		
 		
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
-			context.SetStrokeColorWithColor(Generator.Convert(color));
+			context.SetStrokeColor(Generator.Convert(color));
 			context.SetLineCap(CGLineCap.Square);
 			context.SetLineWidth(1.0F);
 			context.StrokeLineSegments(new SD.PointF[] { TranslateView(new SD.PointF(startx, starty), true), TranslateView(new SD.PointF(endx, endy), true) });
@@ -192,9 +209,10 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void DrawRectangle(Color color, int x, int y, int width, int height)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 			var rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true);
-			context.SetStrokeColorWithColor(Generator.Convert(color));
+			context.SetStrokeColor(Generator.Convert(color));
 			context.SetLineCap(CGLineCap.Square);
 			context.SetLineWidth(1.0F);
 			rect.Width -= 0.5F;
@@ -207,6 +225,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void FillRectangle(Color color, int x, int y, int width, int height)
 		{
+			Lock ();
 		/*	if (width == 1 || height == 1)
 			{
 				DrawLine(color, x, y, x+width-1, y+height-1);
@@ -214,36 +233,39 @@ namespace Eto.Platform.Mac.Drawing
 			}*/
 			
 			NSGraphicsContext.CurrentContext = this.Control;
-			context.SetFillColorWithColor(Generator.Convert(color));
+			context.SetFillColor(Generator.Convert(color));
 			context.FillRect(TranslateView(new SD.RectangleF(x, y, width, height)));
 		}
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 
 			if (adjust) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 			context.BeginPath ();
 			context.AddPath (path.ControlObject as CGPath);
 			context.ClosePath ();
-			context.SetFillColorWithColor(Generator.Convert(color));
+			context.SetFillColor(Generator.Convert(color));
 			context.FillPath ();
 		}
 
 		public void DrawPath (Color color, GraphicsPath path)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 			
 			if (adjust) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 			context.BeginPath ();
 			context.AddPath (path.ControlObject as CGPath);
 			context.ClosePath ();
-			context.SetFillColorWithColor(Generator.Convert(color));
+			context.SetFillColor(Generator.Convert(color));
 			context.StrokePath ();
 		}
 		
 		public void DrawImage(IImage image, int x, int y)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 
 			var handler = image.Handler as IImageHandler;
@@ -252,6 +274,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void DrawImage(IImage image, int x, int y, int width, int height)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 
 			var handler = image.Handler as IImageHandler;
@@ -260,6 +283,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void DrawImage(IImage image, Rectangle source, Rectangle destination)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 
 			var handler = image.Handler as IImageHandler;
@@ -268,6 +292,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void DrawIcon(Icon icon, int x, int y, int width, int height)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 
 			var nsimage = icon.ControlObject as NSImage;
@@ -287,6 +312,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void DrawText(Font font, Color color, int x, int y, string text)
 		{
+			Lock ();
 			NSGraphicsContext.CurrentContext = Control;
 			
 			var str = new NSString(text);

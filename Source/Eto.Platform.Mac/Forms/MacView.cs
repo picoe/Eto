@@ -155,16 +155,14 @@ namespace Eto.Platform.Mac
 
 		public virtual Color BackgroundColor {
 			get { 
-				if (Control.Layer == null) {
+				if (!Control.WantsLayer) {
 					Control.WantsLayer = true;
-					Control.Layer = Control.MakeBackingLayer ();
 				}
 				return Generator.Convert (Control.Layer.BackgroundColor);
 			}
 			set {
-				if (Control.Layer == null) {
+				if (!Control.WantsLayer) {
 					Control.WantsLayer = true;
-					Control.Layer = Control.MakeBackingLayer ();
 				}
 				Control.Layer.BackgroundColor = Generator.Convert (value);
 			}

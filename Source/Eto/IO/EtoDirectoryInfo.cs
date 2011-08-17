@@ -7,7 +7,7 @@ using System.Text.RegularExpressions;
 
 namespace Eto.IO
 {
-	public abstract class EtoDirectoryInfo : EtoSystemObjectInfo
+	public abstract class EtoDirectoryInfo : EtoSystemObjectInfo, IComparable<EtoDirectoryInfo>
 	{
 		// TODO: should be a concurrent dictionary, but not supported on MonoTouch..
 		static Dictionary<string, VirtualDirectoryType> virtualDirectoryTypes = new Dictionary<string, VirtualDirectoryType>(StringComparer.InvariantCultureIgnoreCase);
@@ -88,7 +88,7 @@ namespace Eto.IO
 		{
 			foreach (var type in EtoDirectoryInfo.VirtualDirectoryTypes)
 			{
-				foreach (var fileInfo in this.GetFiles(type.FileMask))
+				foreach (var fileInfo in this.GetFiles(new string[] { type.FileMask }))
 				{
 					yield return type.Create(fileInfo);
 				}
@@ -99,13 +99,12 @@ namespace Eto.IO
 
 		public abstract IEnumerable<EtoFileInfo> GetFiles();
 		
-		public virtual IEnumerable<EtoFileInfo> GetFiles(string searchPattern)
+		public virtual IEnumerable<EtoFileInfo> GetFiles(IEnumerable<string> patterns)
 		{
 			// convert search pattern to regular expression!
-			string filter = searchPattern;
+			string filter = string.Join ("|", patterns.ToArray ());
 			filter = filter.Replace(".", "\\.");
 			filter = filter.Replace("*", ".+");
-			filter = filter.Replace(";", "|");
 
 			Regex reg = new Regex(filter, RegexOptions.IgnoreCase
 #if !MOBILE
@@ -133,5 +132,35 @@ namespace Eto.IO
 		{
 			return icons.GetStaticIcon(StaticIconType.CloseDirectory, iconSize);
 		}
+		
+		public override int GetHashCode ()
+		{
+			return FullName.GetHashCode ();
+		}
+		
+		public override bool Equals (object obj)
+		{
+			var dir = obj as EtoDirectoryInfo;
+			if ((object)dir == null) return false;
+			else return this.FullName.Equals (dir.FullName, StringComparison.InvariantCultureIgnoreCase);
+		}
+
+		public static bool operator == (EtoDirectoryInfo dir1, EtoDirectoryInfo dir2)
+		{
+			if (ReferenceEquals(dir1, null)) return ReferenceEquals(dir2, null);
+			return dir1.Equals (dir2);
+		}
+		
+		public static bool operator != (EtoDirectoryInfo dir1, EtoDirectoryInfo dir2)
+		{
+			return !(dir1 == dir2);
+		}
+		
+		#region IComparable[EtoDirectoryInfo] implementation
+		public virtual int CompareTo (EtoDirectoryInfo other)
+		{
+			return this.FullName.CompareTo (other.FullName);
+		}
+		#endregion
 	}
 }

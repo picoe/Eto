@@ -11,6 +11,7 @@ namespace Eto.Platform.Windows
 		SWF.Form control;
 		SWF.Panel main;
 		Button button;
+		Button abortButton;
 
 		
 		public DialogHandler()
@@ -35,6 +36,21 @@ namespace Eto.Platform.Windows
 			control.Controls.Add(main);
 			control.Load += control_Load;
 			this.Control = control;
+		}
+		
+		public Button AbortButton {
+			get {
+				return abortButton;
+			}
+			set {
+				abortButton = value;
+				if (button != null) {
+					var b = abortButton.ControlObject as SWF.IButtonControl;
+					this.Control.CancelButton = b;
+				}
+				else
+					this.Control.CancelButton = null;
+			}
 		}
 		
 		public Button DefaultButton

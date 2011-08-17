@@ -27,7 +27,11 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.IsEditable; }
 			set { Control.IsEditable = value; }
 		}
-
+		
+		public int MaxLength {
+			get { return Control.MaxLength; }
+			set { Control.MaxLength = value; }
+		}
 
 
 		private void control_Changed(object sender, EventArgs e)

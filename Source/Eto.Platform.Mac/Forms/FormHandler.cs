@@ -2,6 +2,7 @@ using System;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
+using SD = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -10,8 +11,11 @@ namespace Eto.Platform.Mac
 		bool centered;
 
 		public FormHandler()
-			: base(NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled)
 		{
+			Control = new MyWindow(new SD.Rectangle(0,0,200,200), 
+				NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled, 
+				NSBackingStore.Buffered, false);
+			ConfigureWindow ();
 		}
 		
 		public override Point Location {

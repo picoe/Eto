@@ -5,12 +5,14 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class TextAreaHandler : WindowsControl<SWF.TextBox, TextArea>, ITextArea
+	public class TextAreaHandler : WindowsControl<System.Windows.Forms.TextBox, TextArea>, ITextArea
 	{
 		public TextAreaHandler()
 		{
 			Control = new SWF.TextBox();
 			Control.Multiline = true;
+			Control.AcceptsReturn = true;
+			Control.AcceptsTab = true;
 		}
 		
 		#region ITextArea Members

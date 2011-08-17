@@ -28,11 +28,21 @@ namespace Eto.Drawing
 			return new Color (r, g, b);
 		}
 
-		public static Color FromArgb (byte r, byte g, byte b, byte a)
+		public static Color FromArgb (byte r, byte g, byte b, byte alpha)
 		{
-			return new Color (r, g, b, a);
+			return new Color (r, g, b, alpha);
 		}
 
+		public static Color FromGrayscale (byte val, byte alpha)
+		{
+			return new Color (val, val, val, alpha);
+		}
+
+		public static Color FromGrayscale (byte val)
+		{
+			return new Color (val, val, val);
+		}
+		
 		public Color (byte r, byte g, byte b)
 			: this()
 		{

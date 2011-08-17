@@ -156,6 +156,26 @@
     <Compile Include="Forms\Clipboard.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
     <Compile Include="Drawing\GraphicsPath.cs" />
+    <Compile Include="Drawing\XmlExtensions.cs" />
+    <Compile Include="Forms\ColorDialog.cs" />
+    <Compile Include="Forms\Actions\ActionItem.desktop.cs" />
+    <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs" />
+    <Compile Include="Forms\Actions\BaseAction.desktop.cs" />
+    <Compile Include="Forms\Actions\ButtonAction.desktop.cs" />
+    <Compile Include="Forms\Actions\CheckAction.desktop.cs" />
+    <Compile Include="Forms\Actions\RadioAction.desktop.cs" />
+    <Compile Include="Forms\Controls\DateTimePicker.cs" />
+    <Compile Include="Forms\Controls\WebView.cs" />
+    <Compile Include="Forms\Menu\CheckMenuItem.cs" />
+    <Compile Include="Forms\Menu\ImageMenuItem.cs" />
+    <Compile Include="Forms\Menu\Menu.cs" />
+    <Compile Include="Forms\Menu\MenuActionItem.cs" />
+    <Compile Include="Forms\Menu\MenuBar.cs" />
+    <Compile Include="Forms\Menu\MenuItem.cs" />
+    <Compile Include="Forms\Menu\RadioMenuItem.cs" />
+    <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
+    <Compile Include="Platform\IPlatformHandler.cs" />
+    <Compile Include="Platform\PlatformHandlerCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

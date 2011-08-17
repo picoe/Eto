@@ -23,7 +23,7 @@ namespace Eto.Platform.Windows
 		{
 		}
 
-		public void Run()
+		public void Run(string[] args)
 		{
 			SWF.Application.EnableVisualStyles();
 			if (!Eto.Misc.Platform.IsMono)

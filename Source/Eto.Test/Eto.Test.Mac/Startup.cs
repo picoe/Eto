@@ -4,6 +4,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 using Eto.Test.Interface;
+using Eto.Forms;
 
 namespace Eto.Test.Mac
 {

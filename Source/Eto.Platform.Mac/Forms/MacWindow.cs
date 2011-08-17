@@ -11,7 +11,6 @@ namespace Eto.Platform.Mac
 {
 	public class FlippedView : NSView
 	{
-		
 		public override bool IsFlipped {
 			get {
 				return true;
@@ -46,55 +45,84 @@ namespace Eto.Platform.Mac
 			if (zoom) {
 				this.SetFrame (oldFrame, true);
 				zoom = false;
-			}
-			else {
+			} else {
 				oldFrame = this.Frame;
-				base.Zoom(sender);
+				base.Zoom (sender);
 				zoom = true;
 			}
 		}
-		
 	}
 	
-	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer
+	interface IMacWindow
+	{
+		Rectangle? RestoreBounds { get; set; }
+		Window Widget { get; }
+	}
+	
+	class MacWindowDelegate : NSWindowDelegate
+	{
+		public IMacWindow Handler { get; set; }
+		
+		public override bool WindowShouldClose (NSObject sender)
+		{
+			var args = new CancelEventArgs ();
+			Handler.Widget.OnClosing (args);
+			return !args.Cancel;
+		}
+		
+		public override void WillClose (NSNotification notification)
+		{
+			Handler.Widget.OnClosed (EventArgs.Empty);
+		}
+		
+		public override void WillMiniaturize (NSNotification notification)
+		{
+			Handler.RestoreBounds = Handler.Widget.Bounds;
+			Handler.Widget.OnMinimized (EventArgs.Empty);
+		}
+
+		public override void DidBecomeKey (NSNotification notification)
+		{
+			Handler.Widget.OnShown (EventArgs.Empty);
+		}
+		
+		public override bool ShouldZoom (NSWindow window, System.Drawing.RectangleF newFrame)
+		{
+			if (!window.IsZoomed) {
+				Handler.RestoreBounds = Handler.Widget.Bounds;
+				Handler.Widget.OnMaximized (EventArgs.Empty);
+			}
+			return true;
+		}
+	}
+	
+	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer, IMacWindow
 		where T: NSWindow
 		where W: Eto.Forms.Window
 	{
 		MenuBar menuBar;
 		Icon icon;
 		ToolBar toolBar;
-		NSWindowController controller;
 		Rectangle? restoreBounds;
 		
 		public bool AutoSize { get; private set; }
+		
 
-		public MacWindow (NSWindowStyle style)
+		public MacWindow ()
 		{
-			var rect = new SD.Rectangle (0, 0, 200, 200);
 			AutoSize = true;
-			controller = new NSWindowController (new MyWindow (rect, style, NSBackingStore.Buffered, false));
-			Control = (T)controller.Window;
+		}
+		
+		protected void ConfigureWindow ()
+		{
 			Control.ContentView = new FlippedView ();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+			Control.ReleasedWhenClosed = false;
 			Control.HasShadow = true;
-			Control.ShowsResizeIndicator = true; //(style & NSWindowStyle.Resizable) != 0;
-			
-			Control.WindowShouldClose = delegate {
-				var args = new CancelEventArgs();
-				Widget.OnClosing (args);
-				return !args.Cancel;
-			};
-			Control.WillClose += delegate {
-				Widget.OnClosed (EventArgs.Empty);
-			};
-			Control.WillMiniaturize += delegate {
-				restoreBounds = Widget.Bounds;
-			};
-			HandleEvent (Window.MaximizedEvent);
+			Control.ShowsResizeIndicator = true;
+			Control.Delegate = new MacWindowDelegate{ Handler = this };
 		}
-		
-		public NSWindowController Controller { get { return controller; } }
 		
 		public virtual object ContainerObject {
 			get { return Control.ContentView; }
@@ -129,25 +157,6 @@ namespace Eto.Platform.Mac
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-			case Window.ShownEvent:
-				Control.DidBecomeKey += delegate {
-					Widget.OnShown (EventArgs.Empty);
-				};
-				break;
-			case Window.MaximizedEvent:
-				Control.ShouldZoom = (window, newFrame) => {
-					if (!window.IsZoomed) {
-						restoreBounds = Widget.Bounds;
-						Widget.OnMaximized (EventArgs.Empty);
-					}
-					return true;
-				};
-				break;
-			case Window.MinimizedEvent:
-				Control.WillMiniaturize += delegate {
-					Widget.OnMinimized (EventArgs.Empty);
-				};
-				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -183,10 +192,6 @@ namespace Eto.Platform.Mac
 			set {
 				this.menuBar = value;
 				NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
-				//if (menuBar != null) menuBox.Remove((Gtk.Widget)menuBar.ControlObject);
-				//menuBar = value;
-				//menuBox.PackStart((Gtk.Widget)value.ControlObject); //, false, false, 0);
-				//((Gtk.Widget)value.ControlObject).ShowAll();
 			}
 		}
 
@@ -320,6 +325,7 @@ namespace Eto.Platform.Mac
 		
 		public Rectangle? RestoreBounds {
 			get { return State == WindowState.Normal ? null : restoreBounds; }
+			set { restoreBounds = value; }
 		}
 		
 		public virtual void OnLoad (EventArgs e)
@@ -364,6 +370,23 @@ namespace Eto.Platform.Mac
 		public void SetContentSize (SD.SizeF contentSize)
 		{
 			Control.SetContentSize (contentSize);
+		}
+		#endregion
+
+		#region IMacWindow implementation
+		Rectangle? IMacWindow.RestoreBounds {
+			get {
+				return restoreBounds;
+			}
+			set {
+				restoreBounds = value;
+			}
+		}
+
+		Eto.Forms.Window IMacWindow.Widget {
+			get {
+				return this.Widget;
+			}
 		}
 		#endregion
 	}

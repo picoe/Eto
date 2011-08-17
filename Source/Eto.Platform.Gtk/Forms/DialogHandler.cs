@@ -6,8 +6,6 @@ namespace Eto.Platform.GtkSharp
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog>, IDialog
 	{
-		Button button;
-		
 		public DialogHandler()
 		{
 			Control = new Gtk.Dialog();
@@ -19,13 +17,12 @@ namespace Eto.Platform.GtkSharp
 			//control.Resizable = true;
 		}
 		
+		public Button AbortButton {
+			get; set;
+		}
+		
 		public Button DefaultButton {
-			get {
-				return button;	
-			}
-			set {
-				button = value;
-			}
+			get; set;
 		}
 		
 		
@@ -51,12 +48,14 @@ namespace Eto.Platform.GtkSharp
 			Control.ShowAll();
 			Widget.OnLoad(EventArgs.Empty);
 
-			if (button != null)
+			if (DefaultButton != null)
 			{
-				var widget = button.ControlObject as Gtk.Widget;
+				var widget = DefaultButton.ControlObject as Gtk.Widget;
 				widget.SetFlag (Gtk.WidgetFlags.CanDefault);
 				Control.Default = widget;
 			}
+			// TODO: implement cancel button somehow?
+			
 			Control.Run();
 			Control.HideAll();
 									

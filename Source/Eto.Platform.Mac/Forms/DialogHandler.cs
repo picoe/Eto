@@ -10,6 +10,28 @@ namespace Eto.Platform.Mac
 	public class DialogHandler : MacWindow<NSWindow, Dialog>, IDialog
 	{
 		Button button;
+		
+		class DialogWindow : MyWindow {
+			public DialogHandler Handler { get; set; }
+			
+			public DialogWindow()
+				: base(new SD.Rectangle(0,0,200,200), NSWindowStyle.Closable | NSWindowStyle.Titled, NSBackingStore.Buffered, false)
+			{
+			}
+			
+			[Export("cancelOperation:")]
+			public void CancelOperation(IntPtr sender)
+			{
+				if (Handler.AbortButton != null)
+					Handler.AbortButton.OnClick (EventArgs.Empty);
+			}
+		}
+		
+		public Button AbortButton
+		{
+			get; set;
+		}
+		
 		public Button DefaultButton
 		{
 			get { return button; }
@@ -30,8 +52,11 @@ namespace Eto.Platform.Mac
 		}
 
 		public DialogHandler ()
-			: base(NSWindowStyle.Closable | NSWindowStyle.Titled)
 		{
+			var dlg = new DialogWindow();
+			dlg.Handler = this;
+			Control = dlg;
+			ConfigureWindow ();
 		}
 		
 		public DialogResult ShowDialog (Control parent)
@@ -42,7 +67,7 @@ namespace Eto.Platform.Mac
 			}
 			//Control.MakeKeyAndOrderFront (ApplicationHandler.Instance.AppDelegate);
 			
-			Control.WillClose += delegate {
+			Widget.Closed += delegate {
 				NSApplication.SharedApplication.StopModal();
 			};
 			NSApplication.SharedApplication.RunModalForWindow(Control);

@@ -20,7 +20,6 @@
     <RootNamespace>Eto.Platform.GtkSharp</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -70,12 +69,11 @@
     <Reference Include="atk-sharp" />
     <Reference Include="pango-sharp" />
     <Reference Include="System.Core" />
-    <Reference Include="webkit-sharp, Version=1.1.15.0, Culture=neutral, PublicKeyToken=eaa1d335d2e19745">
-      <SpecificVersion>False</SpecificVersion>
+    <Reference Include="Mono.Cairo" />
+    <Reference Include="webkit-sharp">
       <HintPath>..\..\Libraries\webkit-sharp\webkit-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Mono.Cairo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
@@ -224,6 +222,13 @@
     <Compile Include="Forms\ClipboardHandler.cs" />
     <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
+    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
+    <Compile Include="CustomControls\BaseComboBox.cs" />
+    <Compile Include="CustomControls\DateComboBox.cs" />
+    <Compile Include="CustomControls\DateComboBoxDialog.cs" />
+    <Compile Include="CustomControls\AnalogClock.cs" />
+    <Compile Include="CustomControls\SizableBin.cs" />
+    <Compile Include="CustomControls\WindowExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -233,4 +238,7 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="CustomControls\" />
+  </ItemGroup>
 </Project>

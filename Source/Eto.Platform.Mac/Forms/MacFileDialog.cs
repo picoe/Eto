@@ -57,30 +57,34 @@ namespace Eto.Platform.Mac.Forms
 			
 			int padding = 15;
 			
-			var label = new NSTextField();
-			label.StringValue = "Format";
-			label.DrawsBackground = false;
-			label.Bordered = false;
-			label.Bezeled = false;
-			label.Editable = false;
-			label.Selectable = false;
-			label.SizeToFit();
-			fileTypeView.AddSubview(label);
-			
-			fileTypes.SizeToFit();
-			fileTypes.Activated += (sender, e) => {
-				SetFilters ();
-				Control.ValidateVisibleColumns ();// SetFilters ();
-				Control.Update ();
-			};
-			fileTypeView.AddSubview(fileTypes);
-			fileTypes.SetFrameOrigin(new System.Drawing.PointF(label.Frame.Width + 10, padding));
-
-			label.SetFrameOrigin(new System.Drawing.PointF(0, padding + (fileTypes.Frame.Height - label.Frame.Height) / 2));
-			
-			fileTypeView.Frame = new System.Drawing.RectangleF(0, 0, fileTypes.Frame.Width + label.Frame.Width + 10, fileTypes.Frame.Height + padding*2);
-			
-			Control.AccessoryView = fileTypeView;
+			if (macfilters != null && macfilters.Count > 0) {
+				var label = new NSTextField();
+				label.StringValue = "Format";
+				label.DrawsBackground = false;
+				label.Bordered = false;
+				label.Bezeled = false;
+				label.Editable = false;
+				label.Selectable = false;
+				label.SizeToFit();
+				fileTypeView.AddSubview(label);
+				
+				fileTypes.SizeToFit();
+				fileTypes.Activated += (sender, e) => {
+					SetFilters ();
+					Control.ValidateVisibleColumns ();// SetFilters ();
+					Control.Update ();
+				};
+				fileTypeView.AddSubview(fileTypes);
+				fileTypes.SetFrameOrigin(new System.Drawing.PointF(label.Frame.Width + 10, padding));
+	
+				label.SetFrameOrigin(new System.Drawing.PointF(0, padding + (fileTypes.Frame.Height - label.Frame.Height) / 2));
+				
+				fileTypeView.Frame = new System.Drawing.RectangleF(0, 0, fileTypes.Frame.Width + label.Frame.Width + 10, fileTypes.Frame.Height + padding*2);
+				
+				Control.AccessoryView = fileTypeView;
+			}
+			else
+				Control.AccessoryView = null;
 		}
      
         public virtual string FileName {

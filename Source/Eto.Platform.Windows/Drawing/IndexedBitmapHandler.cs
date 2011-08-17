@@ -3,6 +3,7 @@ using System.IO;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
+using System.Linq;
 
 namespace Eto.Platform.Windows.Drawing
 {
@@ -32,8 +33,6 @@ namespace Eto.Platform.Windows.Drawing
 		{
 		}
 
-
-		#region IIndexedBitmap Members
 
 		public void Create(int width, int height, int bitsPerPixel)
 		{
@@ -81,26 +80,22 @@ namespace Eto.Platform.Windows.Drawing
 			get
 			{
 				SD.Imaging.ColorPalette cp = Control.Palette;
-				Palette pal = new Palette(cp.Entries.Length);
-				for (int i=0; i<pal.Size; i++)
-				{
-					pal[i] = Generator.Convert(cp.Entries[i]);
-				}
+				var pal = new Palette(cp.Entries.Length);
+				pal.AddRange (cp.Entries.Select(r => Generator.Convert (r)));
+				
 				return pal;
 			}
 			set
 			{
 				SD.Imaging.ColorPalette cp = Control.Palette;
-				if (value.Size != cp.Entries.Length) throw new ArgumentException("Input palette must have the same colors as the output");
-				for (int i=0; i<value.Size; i++)
+				if (value.Count != cp.Entries.Length) throw new ArgumentException("Input palette must have the same colors as the output");
+				for (int i=0; i<value.Count; i++)
 				{
 					cp.Entries[i] = Generator.Convert(value[i]);
 				}
 				Control.Palette = cp;
 			}
 		}
-
-		#endregion
 
 	}
 }

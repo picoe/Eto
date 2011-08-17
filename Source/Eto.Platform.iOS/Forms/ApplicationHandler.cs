@@ -23,9 +23,9 @@ namespace Eto.Platform.iOS.Forms
 			DelegateClassName = "EtoAppDelegate";
 		}
 				
-		public void Run()
+		public void Run(string[] args)
 		{
-			UIApplication.Main(new string[] {}, null, DelegateClassName);
+			UIApplication.Main(args, null, DelegateClassName);
 		}
 		
 		public void Initialize(UIApplicationDelegate appdelegate)

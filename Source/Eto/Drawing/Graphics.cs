@@ -163,7 +163,7 @@ namespace Eto.Drawing
 		{
 			inner.DrawText(font, color, x, y, text);
 		}
-
+		
 		public SizeF MeasureString(Font font, string text)
 		{
 			return inner.MeasureString(font, text);

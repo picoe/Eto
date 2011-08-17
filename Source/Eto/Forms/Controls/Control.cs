@@ -192,19 +192,19 @@ namespace Eto.Forms
 			set { inner.Id = value; }
 		}
 		
-		public Size Size
+		public virtual Size Size
 		{
 			get { return inner.Size; }
 			set { inner.Size = value; }
 		}
 
-		public bool Enabled
+		public virtual bool Enabled
 		{
 			get { return inner.Enabled; }
 			set { inner.Enabled = value; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
 			get { return inner.Visible; }
 			set { inner.Visible = value; }
@@ -248,12 +248,12 @@ namespace Eto.Forms
 			inner.Focus();
 		}
 		
-		public void SuspendLayout()
+		public virtual void SuspendLayout()
 		{
 			inner.SuspendLayout();
 		}
 
-		public void ResumeLayout()
+		public virtual void ResumeLayout()
 		{
 			inner.ResumeLayout();
 		}

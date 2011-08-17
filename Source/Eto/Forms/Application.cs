@@ -1,10 +1,11 @@
 using System;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
 	public partial interface IApplication : IInstanceWidget
 	{
-		void Run ();
+		void Run (string[] args);
 		void Quit();
 		
 		void GetSystemActions(GenerateActionArgs args);
@@ -19,8 +20,19 @@ namespace Eto.Forms
 	public partial class Application : InstanceWidget, IApplication
 	{
 		public static Application Instance { get; private set; }
-
+		
 		public event EventHandler<EventArgs> Initialized;
+		public virtual void OnInitialized(EventArgs e)
+		{
+			if (Initialized != null) Initialized(this, e);
+		}
+
+		public event EventHandler<CancelEventArgs> Terminating;
+		public virtual void OnTerminating(CancelEventArgs e)
+		{
+			if (Terminating != null) Terminating(this, e);
+		}
+		
 		IApplication inner;
 
 		public Form MainForm { get; set; }
@@ -36,14 +48,9 @@ namespace Eto.Forms
 			Generator.Initialize(g); // make everything use this by default
 		}
 
-		public virtual void OnInitialized(EventArgs e)
+		public void Run(params string[] args)
 		{
-			if (Initialized != null) Initialized(this, e);
-		}
-
-		public void Run()
-		{
-			inner.Run();
+			inner.Run(args);
 		}
 
 		public void Quit()

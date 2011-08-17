@@ -5,6 +5,8 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.CoreImage;
 using MonoMac.CoreGraphics;
+using MonoMac.ObjCRuntime;
+using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
@@ -16,7 +18,7 @@ namespace Eto.Platform.Mac
 			{
 				var context = NSGraphicsContext.CurrentContext;
 				var graphics = context.GraphicsPort;
-				graphics.SetFillColorWithColor(Color);
+				graphics.SetFillColor(Color);
 				cellFrame.Inflate(-1, -1);
 				graphics.FillRect(cellFrame);
 			}

@@ -13,6 +13,12 @@ namespace Eto.IO
 			this.parent = parent;
 			this.file = file;
 		}
+		
+		public override bool ReadOnly {
+			get {
+				return true;
+			}
+		}
 
 		public override string FullName 
 		{
@@ -22,6 +28,11 @@ namespace Eto.IO
 		public override Stream Open(FileMode fileMode, FileAccess fileAccess, FileShare fileShare)
 		{
 			return parent.OpenRead(file);
+		}
+		
+		public override void Delete ()
+		{
+			throw new NotImplementedException ();
 		}
 		
 		public override EtoDirectoryInfo Directory {

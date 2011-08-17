@@ -109,6 +109,7 @@
     <Compile Include="Forms\iosContainer.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
+    <Compile Include="Forms\Controls\PanelHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">
