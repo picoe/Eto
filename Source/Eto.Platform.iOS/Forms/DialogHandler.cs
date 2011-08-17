@@ -25,7 +25,7 @@ namespace Eto.Platform.iOS.Forms
 			Control = Controller.View;
 		}
 		
-		public Button CancelButton { get; set; }
+		public Button AbortButton { get; set; }
 		
 		public Button DefaultButton {
 			get {
