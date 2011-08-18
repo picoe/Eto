@@ -19,6 +19,7 @@ namespace Eto.Platform.Mac
 		public ApplicationHandler()
 		{
 			NSApplication.Init();
+			Control = NSApplication.SharedApplication;
 		}
 		
 		static void restart_WillTerminate(object sender, EventArgs e)

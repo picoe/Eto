@@ -14,8 +14,10 @@ namespace Eto.Platform.GtkSharp
 		public void Add(Control child, int x, int y)
 		{
 			IGtkControl ctl = ((IGtkControl)child.Handler);
-			Control.Put((Gtk.Widget)child.ControlObject, x, y);
+			var gtkcontrol = (Gtk.Widget)child.ControlObject;
+			Control.Put(gtkcontrol, x, y);
 			ctl.Location = new Point(x, y);
+			gtkcontrol.ShowAll();
 		}
 
 		public void Move(Control child, int x, int y)

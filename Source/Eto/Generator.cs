@@ -6,11 +6,29 @@ using System.Linq;
 
 namespace Eto
 {
+	public class WidgetCreatedArgs : EventArgs
+	{
+		public IWidget Instance { get; private set; }
+		
+		public WidgetCreatedArgs (IWidget instance)
+		{
+			this.Instance = instance;
+		}
+	}
+	
 	public abstract class Generator
 	{
 		Dictionary<string, ConstructorInfo> constructorMap;
 		Hashtable attributes;
 		List<Type> types;
+		
+		public event EventHandler<WidgetCreatedArgs> WidgetCreated;
+		
+		protected virtual void OnWidgetCreated (WidgetCreatedArgs e)
+		{
+			if (WidgetCreated != null)
+				WidgetCreated (this, e);
+		}
 		
 		public abstract string ID {
 			get;
@@ -28,6 +46,7 @@ namespace Eto
 		{
 			constructorMap = new Dictionary<string, ConstructorInfo> ();
 		}
+		
 		
 		public virtual bool Supports<T> ()
 			where T: IWidget
@@ -57,7 +76,6 @@ namespace Eto
 				return (Generator)Activator.CreateInstance (type);
 			}
 			return null;
-			
 		}
 
 		public ConstructorInfo Add<T> (Type handlerType)
@@ -78,14 +96,17 @@ namespace Eto
 			return Find (type);
 		}
 		
-		public T CreateControl<T> ()
+		public T CreateControl<T> (Widget widget = null)
 			where T: IWidget
 		{
 			var constructor = Find<T> ();
 			if (constructor == null)
 				throw new ApplicationException (string.Format ("the type {0} cannot be found in this generator", typeof(T).FullName));
 
-			return (T)constructor.Invoke (new object[] { });
+			T val = (T)constructor.Invoke (new object[] { });
+			if (widget != null) widget.Handler = val;
+			OnWidgetCreated (new WidgetCreatedArgs (val as IWidget));
+			return val;
 		}
 		
 		public ConstructorInfo Add (Type type, Type handlerType)
@@ -105,33 +126,44 @@ namespace Eto
 				if (constructorMap.TryGetValue (type.Name, out info))
 					return info;
 
-				List<Type> removalTypes = null;
+				List<Type > removalTypes = null;
 				if (types == null)
 					types = new List<Type> (this.GetType ().Assembly.GetExportedTypes ());
 				
 				foreach (Type foundType in types) {
 					try {
 						if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom (foundType)) {
-							if (removalTypes != null) foreach (var t in removalTypes) types.Remove (t);
+							if (removalTypes != null)
+								foreach (var t in removalTypes)
+									types.Remove (t);
 							return Add (type, foundType);
 						}
 					} catch {
-						if (removalTypes == null) removalTypes = new List<Type>();
+						if (removalTypes == null)
+							removalTypes = new List<Type> ();
 						removalTypes.Add (foundType);
 					}
 				}
-				if (removalTypes != null) foreach (var t in removalTypes) types.Remove (t);
+				if (removalTypes != null)
+					foreach (var t in removalTypes)
+						types.Remove (t);
 				return null;
 			}
 		}
 		
-		public object CreateControl (Type type)
+		public IWidget CreateControl (Type type, Widget widget)
 		{
 			var constructor = Find (type);
 			if (constructor == null)
 				throw new ApplicationException (string.Format ("the type {0} cannot be found in this generator", type.FullName));
 
-			return constructor.Invoke (new object[] { });
+			var val = constructor.Invoke (new object[] { }) as IWidget;
+			if (widget != null) {
+				widget.Handler = val;
+				val.Handler = widget;
+			}
+			OnWidgetCreated (new WidgetCreatedArgs (val));
+			return val;
 		}
 
 		public static MethodInfo GetEventMethod (Type type, string methodName)

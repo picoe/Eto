@@ -1,22 +1,26 @@
 using System;
+
 namespace Eto
 {
 	public interface IWidget
 	{
 		IWidget Handler { get; set; }
-		void Initialize();
+
+		void Initialize ();
 	}
 	
 	public abstract class Widget : IWidget, IDisposable
 	{
 		public Generator Generator { get; private set; }
+
 		public object Tag { get; set; }
+
 		public IWidget Handler { get; set; }
-		
-		~Widget()
+
+		~Widget ()
 		{
 			//Console.WriteLine ("GC: {0}", this.GetType ().FullName);
-			Dispose(false);
+			Dispose (false);
 		}
 		
 		protected Widget (Generator generator, IWidget handler, bool initialize = true)
@@ -24,41 +28,42 @@ namespace Eto
 			this.Generator = generator;
 			this.Handler = handler;
 			this.Handler.Handler = this; // tell the handler who we are
-			if (initialize) Initialize();
+			if (initialize)
+				Initialize ();
 		}
 
 		protected Widget (Generator generator, Type type, bool initialize = true)
 		{
 			this.Generator = generator;
-			this.Handler = (IWidget)generator.CreateControl(type);
-			this.Handler.Handler = this; // tell the handler who we are
-			if (initialize) Initialize();
+			this.Handler = generator.CreateControl (type, this);
+			if (initialize)
+				Initialize ();
 		}
 		
-		public void Initialize()
+		public void Initialize ()
 		{
-			Handler.Initialize();
+			Handler.Initialize ();
 		}
 		
 		#region IDisposable Members
 
-		public void Dispose()
+		public void Dispose ()
 		{
-			Dispose(true);
-			GC.SuppressFinalize(this);
+			Dispose (true);
+			GC.SuppressFinalize (this);
 		}
 		
 		#endregion
 		
-	    protected virtual void Dispose(bool disposing)
-	    {
-			if (disposing)
-			{
+		protected virtual void Dispose (bool disposing)
+		{
+			if (disposing) {
 				var handler = this.Handler as IDisposable;
-		        if (handler != null) handler.Dispose();
+				if (handler != null)
+					handler.Dispose ();
 				Handler = null;
 			}
-	    }		
+		}		
 		
 	}
 }

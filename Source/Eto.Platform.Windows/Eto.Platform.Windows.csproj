@@ -21,6 +21,7 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <ReleaseVersion />
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>

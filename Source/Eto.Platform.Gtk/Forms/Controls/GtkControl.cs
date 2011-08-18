@@ -68,12 +68,10 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public virtual bool Enabled {
-			get { return (Control.State & Gtk.StateType.Insensitive) == 0; }
+			get { return Control.Sensitive; }
 			set {
-				if (!value)
-					Control.State |= Gtk.StateType.Insensitive;
-				else
-					Control.State &= ~Gtk.StateType.Insensitive;
+				Control.Sensitive = value;
+					
 			}
 		}
 

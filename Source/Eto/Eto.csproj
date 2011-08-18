@@ -21,6 +21,7 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <ReleaseVersion />
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
@@ -431,6 +432,7 @@
     <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Drawing\GraphicsPath.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
+    <Compile Include="Style.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

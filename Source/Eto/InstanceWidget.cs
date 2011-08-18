@@ -9,21 +9,28 @@ namespace Eto
 
 		void HandleEvent (string handler);
 	}
-
+	
 	public abstract class InstanceWidget : Widget, IWidget
 	{
 		IInstanceWidget inner;
+		
+		public virtual string Style
+		{
+			get { return null; }
+		}
 		
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 			inner = (IInstanceWidget)Handler;
+			Eto.Style.OnStyleWidget(this);
 		}
 
 		protected InstanceWidget (Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
 			inner = (IInstanceWidget)Handler;
+			Eto.Style.OnStyleWidget(this);
 		}
 		
 		public object ControlObject {

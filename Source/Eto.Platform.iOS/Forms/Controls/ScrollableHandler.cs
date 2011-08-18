@@ -10,7 +10,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 		UIView Child { get; set; }
 		
 		public BorderType Border {
-			get; set;
+			get;
+			set;
 		}
 		
 		class Delegate : UIScrollViewDelegate
@@ -24,11 +25,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 			
 			public override void DidZoom (UIScrollView scrollView)
 			{
-				Handler.Adjust();
+				Handler.Adjust ();
 			}
 		}
 		
-		void Adjust()
+		void Adjust ()
 		{
 			var scrollView = Control;
 			var imageView = Child;
@@ -43,16 +44,14 @@ namespace Eto.Platform.iOS.Forms.Controls
 			   // scrollView.ContentOffset = new SD.PointF(tempx, tempy);
 			}*/
 			
-			var anEdgeInset = new UIEdgeInsets(0, 0, 0, 0);
-			if ( scrollerBounds.Size.Width > innerFrame.Size.Width )
-			{
-			    anEdgeInset.Left = (scrollerBounds.Size.Width - innerFrame.Size.Width) / 2;
-			    anEdgeInset.Right = -anEdgeInset.Left;  // I don't know why this needs to be negative, but that's what works
+			var anEdgeInset = new UIEdgeInsets (0, 0, 0, 0);
+			if (scrollerBounds.Size.Width > innerFrame.Size.Width) {
+				anEdgeInset.Left = (scrollerBounds.Size.Width - innerFrame.Size.Width) / 2;
+				anEdgeInset.Right = -anEdgeInset.Left;  // I don't know why this needs to be negative, but that's what works
 			}
-			if ( scrollerBounds.Size.Height > innerFrame.Size.Height )
-			{
-			    anEdgeInset.Top = (scrollerBounds.Size.Height - innerFrame.Size.Height) / 2;
-			    anEdgeInset.Bottom = -anEdgeInset.Top;  // I don't know why this needs to be negative, but that's what works
+			if (scrollerBounds.Size.Height > innerFrame.Size.Height) {
+				anEdgeInset.Top = (scrollerBounds.Size.Height - innerFrame.Size.Height) / 2;
+				anEdgeInset.Bottom = -anEdgeInset.Top;  // I don't know why this needs to be negative, but that's what works
 			}
 			scrollView.ContentInset = anEdgeInset;				
 			//Console.WriteLine("Content inset: {0}", anEdgeInset);
@@ -66,57 +65,63 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public ScrollableHandler ()
 		{
-			Child = new UIView();
+			Child = new UIView ();
 
-			Control = new UIScrollView();
+			Control = new UIScrollView ();
 			//Control.ZoomScale = 0.5F;
 			Control.ContentMode = UIViewContentMode.Center;
 			Control.ScrollEnabled = true;
 			Control.MinimumZoomScale = 0.25F;
 			Control.MaximumZoomScale = 3.0F;
 			Control.Delegate = new Delegate { Handler = this };
-			Control.AddSubview(Child);
+			Control.AddSubview (Child);
 		}
 
 		public void UpdateScrollSizes ()
 		{
-			SD.SizeF size = new SD.SizeF(0, 0);
+			SD.SizeF size = SD.SizeF.Empty;
 			Control.ContentOffset = SD.PointF.Empty;
-			foreach (var c in Widget.Controls)
-			{
+			foreach (var c in Widget.Controls) {
 				var view = c.ControlObject as UIView;
-				if (view != null)
-				{
+				if (view != null) {
 					var frame = view.Frame;
-					if (size.Width < frame.Right) size.Width = frame.Right;
-					if (size.Height < frame.Bottom) size.Height = frame.Bottom;
+					if (size.Width < frame.Right)
+						size.Width = frame.Right;
+					if (size.Height < frame.Bottom)
+						size.Height = frame.Bottom;
 				}
 			}
-			size = new System.Drawing.SizeF(size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
-			Child.SetFrameSize(size);
+			size = new System.Drawing.SizeF (size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
+			Child.SetFrameSize (size);
 			Control.ContentSize = size;
-			Adjust();
+			Adjust ();
 		}
 
 		public Eto.Drawing.Point ScrollPosition {
 			get {
-				return Generator.ConvertF(Control.ContentOffset);
+				return Generator.ConvertF (Control.ContentOffset);
 			}
 			set {
-				Control.SetContentOffset(Generator.ConvertF(value), false);
+				Control.SetContentOffset (Generator.ConvertF (value), false);
 			}
+		}
+		
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			UpdateScrollSizes ();
 		}
 
 		public Eto.Drawing.Size ScrollSize {
 			get {
-				return Generator.ConvertF(Control.ContentSize);
+				return Generator.ConvertF (Control.ContentSize);
 			}
 			set {
-				var size = Generator.ConvertF(value);
-				size = new System.Drawing.SizeF(size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
-				Child.SetFrameSize(size);
+				var size = Generator.ConvertF (value);
+				size = new System.Drawing.SizeF (size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
+				Child.SetFrameSize (size);
 				Control.ContentSize = size;//new System.Drawing.SizeF(size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
-				Adjust();
+				Adjust ();
 			}
 		}
 
