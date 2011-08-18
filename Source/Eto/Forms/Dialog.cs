@@ -57,7 +57,12 @@ namespace Eto.Forms
 
 		public DialogResult ShowDialog (Control parent)
 		{
-			OnLoad (EventArgs.Empty);
+			var loaded = Loaded;
+			if (!loaded) {
+				OnLoad (EventArgs.Empty);
+				OnLoadComplete (EventArgs.Empty);
+			}
+			
 			this.DialogResult = inner.ShowDialog (parent);
 			return DialogResult;
 		}

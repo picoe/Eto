@@ -23,7 +23,10 @@ namespace Eto.Forms
 			control.SetParentLayout(this);
 			inner.Add(control, x, y);
 			Container.InnerControls.Add(control);
-			if (Loaded) control.OnLoad (EventArgs.Empty);
+			if (Loaded) {
+				control.OnLoad (EventArgs.Empty);
+				control.OnLoadComplete (EventArgs.Empty);
+			}
 		}
 
 		public void Add(Control child, Point p)

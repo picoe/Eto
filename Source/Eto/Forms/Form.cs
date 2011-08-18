@@ -11,6 +11,7 @@ namespace Eto.Forms
 	public class Form : Window
 	{
 		IForm inner;
+		bool loaded;
 
 		public Form () : this(Generator.Current)
 		{
@@ -23,8 +24,14 @@ namespace Eto.Forms
 
 		public void Show ()
 		{ 
-			OnLoad (EventArgs.Empty);
+			var loaded = Loaded;
+			if (!loaded)
+				OnLoad (EventArgs.Empty);
+			
 			inner.Show ();
+
+			if (!loaded)
+				OnLoadComplete (EventArgs.Empty);
 		}
 	}
 }

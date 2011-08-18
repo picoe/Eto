@@ -22,6 +22,7 @@ namespace Eto.Forms
 		bool Visible { get; set; }
 
 		void OnLoad(EventArgs e);
+		void OnLoadComplete(EventArgs e);
 		void SetParent(Control parent);
 		void SetParentLayout(Layout layout);
 	}
@@ -30,6 +31,8 @@ namespace Eto.Forms
 	public abstract class Control : InstanceWidget, ISynchronizeInvoke, IControl
 	{
 		IControl inner;
+		
+		public bool Loaded { get; private set; }
 		
 		#region Events
 		
@@ -111,6 +114,8 @@ namespace Eto.Forms
 		}
 		
 		public event EventHandler<EventArgs> Load;
+
+		public event EventHandler<EventArgs> LoadComplete;
 		
 		#endregion
 		
@@ -118,8 +123,15 @@ namespace Eto.Forms
 		{
 			if (Load != null) Load(this, e);
 			inner.OnLoad(e);
+			Loaded = true;
 		}
 
+		public virtual void OnLoadComplete(EventArgs e)
+		{
+			if (LoadComplete != null) LoadComplete(this, e);
+			inner.OnLoadComplete(e);
+		}
+		
 		public Control() : this(Generator.Current)
 		{
 		}

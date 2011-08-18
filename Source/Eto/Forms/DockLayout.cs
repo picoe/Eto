@@ -40,7 +40,10 @@ namespace Eto.Forms
 			control.SetParentLayout(this);
 			inner.Add(control);
 			Container.InnerControls.Add(control);
-			if (Loaded) control.OnLoad (EventArgs.Empty);
+			if (Loaded) {
+				control.OnLoad (EventArgs.Empty);
+				control.OnLoadComplete (EventArgs.Empty);
+			}
 		}
 		
 		public void Remove(Control control)

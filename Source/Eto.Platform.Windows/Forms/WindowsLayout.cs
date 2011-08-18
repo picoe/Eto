@@ -22,6 +22,10 @@ namespace Eto.Platform.Windows
 		public virtual void OnLoad()
 		{
 		}
+
+		public virtual void OnLoadComplete()
+		{
+		}
 		
 		public virtual void Update()
 		{

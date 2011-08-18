@@ -336,6 +336,10 @@ namespace Eto.Platform.Mac
 					layout.SizeToFit ();
 			}
 		}
+		
+		public virtual void OnLoadComplete (EventArgs e)
+		{
+		}
 
 		#region ISynchronizeInvoke implementation
 		

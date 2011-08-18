@@ -5,6 +5,7 @@ namespace Eto.Forms
 	public interface ILayout : IInstanceWidget
 	{
 		void OnLoad();
+		void OnLoadComplete();
 		void Update();
 	}
 
@@ -28,6 +29,14 @@ namespace Eto.Forms
 			if (Load != null) Load(this, e);
 			inner.OnLoad();
 			Loaded = true;
+		}
+
+		public event EventHandler<EventArgs> LoadComplete;
+
+		public virtual void OnLoadComplete(EventArgs e)
+		{
+			if (LoadComplete != null) LoadComplete(this, e);
+			inner.OnLoadComplete();
 		}
 		
 		public Layout(Generator g, Container container, Type type, bool initialize = true)

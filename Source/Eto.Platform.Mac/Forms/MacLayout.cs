@@ -27,8 +27,10 @@ namespace Eto.Platform.Mac
 		
 		public virtual void OnLoad()
 		{
-			//Widget.OnLoad (EventArgs.E)	
-			
+		}
+
+		public virtual void OnLoadComplete()
+		{
 		}
 		
 		public virtual void SetContainerSize(SD.SizeF size)

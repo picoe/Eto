@@ -144,6 +144,10 @@ namespace Eto.Platform.GtkSharp
 		{
 		}
 
+		public virtual void OnLoadComplete (EventArgs e)
+		{
+		}
+		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {

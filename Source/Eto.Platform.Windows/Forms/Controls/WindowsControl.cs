@@ -13,6 +13,7 @@ namespace Eto.Platform.Windows
 	public interface IWindowsControl
 	{
 		bool InternalVisible { get; }
+
 		SWF.DockStyle DockStyle { get; }
 	}
 
@@ -75,7 +76,7 @@ namespace Eto.Platform.Windows
 
 		void Control_DoubleClick (object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			Widget.OnMouseDoubleClick (GetMouseEvent(e));
+			Widget.OnMouseDoubleClick (GetMouseEvent (e));
 		}
 
 		MouseEventArgs GetMouseEvent (SWF.MouseEventArgs e)
@@ -211,6 +212,10 @@ namespace Eto.Platform.Windows
 		{
 		}
 
+		public virtual void OnLoadComplete (EventArgs e)
+		{
+		}
+		
 		Key key;
 		bool handled;
 		char keyChar;

@@ -40,6 +40,19 @@ namespace Eto.Forms
 			if (Layout != null) Layout.OnLoad (e);
 		}
 
+		public override void OnLoadComplete(EventArgs e)
+		{
+			
+			foreach (Control control in controls)
+			{
+				control.OnLoadComplete(e);
+			}
+			
+			base.OnLoadComplete(e);
+			
+			if (Layout != null) Layout.OnLoadComplete (e);
+		}
+		
 		protected Container(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
 		{
 			inner = (IContainer)base.Handler;

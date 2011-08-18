@@ -45,6 +45,10 @@ namespace Eto.Platform.Mac
 		public virtual void OnLoad (EventArgs e)
 		{
 		}
+
+		public virtual void OnLoadComplete (EventArgs e)
+		{
+		}
 		
 		#region ITabPage implementation
 
