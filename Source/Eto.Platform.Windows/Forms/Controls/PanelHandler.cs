@@ -10,11 +10,18 @@ namespace Eto.Platform.Windows
 		public PanelHandler()
 		{
 			Control = new SWF.Panel();
+			this.Control.SuspendLayout ();
 			this.Control.Size = SD.Size.Empty;
 			this.Control.MinimumSize = SD.Size.Empty;
 			this.Control.AutoSize = true;
 			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			//this.Control.Margin = new SWF.Padding(0);
+		}
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			Control.ResumeLayout ();
 		}
 	}
 }

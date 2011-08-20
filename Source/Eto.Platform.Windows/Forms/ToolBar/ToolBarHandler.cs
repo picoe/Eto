@@ -6,13 +6,14 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class ToolBarHandler : WindowsControl<SWF.ToolStrip, ToolBar>, IToolBar
+	public class ToolBarHandler : WidgetHandler<SWF.ToolStrip, ToolBar>, IToolBar
 	{
 		ToolBarDock dock = ToolBarDock.Top;
 
 		public ToolBarHandler()
 		{
 			Control = new SWF.ToolStrip();
+			Control.SuspendLayout ();
 			Control.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.StackWithOverflow;
 			Control.AutoSize = true;
 		}

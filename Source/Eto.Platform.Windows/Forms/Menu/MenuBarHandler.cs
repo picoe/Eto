@@ -12,6 +12,7 @@ namespace Eto.Platform.Windows
 		public MenuBarHandler()
 		{
 			Control = new SWF.MenuStrip();
+			Control.SuspendLayout ();
 		}
 
 		#region IMenu Members

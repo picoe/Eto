@@ -16,7 +16,7 @@ namespace Eto.Forms
 		Bottom
 	}
 	
-	public interface IToolBar : IControl
+	public interface IToolBar : IInstanceWidget
 	{
 		void AddButton(ToolBarItem button);
 		void RemoveButton(ToolBarItem button);
@@ -28,7 +28,7 @@ namespace Eto.Forms
 	/// <summary>
 	/// Summary description for ToolBar.
 	/// </summary>
-	public class ToolBar : Control
+	public class ToolBar : InstanceWidget
 	{
 		IToolBar inner;
 		ToolbarItemCollection items;

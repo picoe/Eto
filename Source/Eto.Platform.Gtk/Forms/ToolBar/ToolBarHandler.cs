@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class ToolBarHandler : GtkControl<Gtk.Toolbar, ToolBar>, IToolBar
+	public class ToolBarHandler : WidgetHandler<Gtk.Toolbar, ToolBar>, IToolBar
 	{
 		ToolBarDock dock = ToolBarDock.Top;
 		

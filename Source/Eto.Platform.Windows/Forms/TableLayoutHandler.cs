@@ -21,14 +21,21 @@ namespace Eto.Platform.Windows
 		public TableLayoutHandler()
 		{
 			Control = new SWF.TableLayoutPanel();
-			Control.Margin = SWF.Padding.Empty;
-			Control.Dock = SWF.DockStyle.Fill;
+			this.Control.SuspendLayout ();
+			this.Control.Margin = SWF.Padding.Empty;
+			this.Control.Dock = SWF.DockStyle.Fill;
 			this.Control.Size = SD.Size.Empty;
 			this.Control.MinimumSize = SD.Size.Empty;
 			this.Control.AutoSize = true;
-			//this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
+		}
+
+		public override void OnLoad ()
+		{
+			base.OnLoad ();
+			this.Control.ResumeLayout ();
 		}
 		
 		public override void Update ()

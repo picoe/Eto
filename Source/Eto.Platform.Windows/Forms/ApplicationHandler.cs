@@ -8,6 +8,7 @@ namespace Eto.Platform.Windows
 {
 	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
 	{
+		public static bool EnableScrollingUnderMouse = true;
 		
 		public void RunIteration()
 		{
@@ -19,10 +20,6 @@ namespace Eto.Platform.Windows
 			SWF.Application.Restart ();
 		}
 		
-		public ApplicationHandler()
-		{
-		}
-
 		public void Run(string[] args)
 		{
 			SWF.Application.EnableVisualStyles();
@@ -31,6 +28,9 @@ namespace Eto.Platform.Windows
 			
 			Application app = ((Application)Widget);
 			app.OnInitialized(EventArgs.Empty);
+
+			if (EnableScrollingUnderMouse)
+				SWF.Application.AddMessageFilter (new ScrollMessageFilter ());
 			
 			//SWF.Application.AddMessageFilter(new KeyFilter());
 			if (app.MainForm != null) SWF.Application.Run((SWF.Form)app.MainForm.ControlObject);

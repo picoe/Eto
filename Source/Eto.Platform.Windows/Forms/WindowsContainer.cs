@@ -12,6 +12,7 @@ namespace Eto.Platform.Windows
 		where W: Container
 	{
 
+
 		public SWF.Control ContainerControl
 		{
 			get { return (SWF.Control)this.ContainerObject; }

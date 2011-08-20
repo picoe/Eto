@@ -76,6 +76,10 @@ namespace Eto.Forms
 		{
 			this.Layout = layout;
 			inner.SetLayout(layout);
+			if (Loaded) {
+				layout.OnLoad (EventArgs.Empty);
+				layout.OnLoadComplete (EventArgs.Empty);
+			}
 		}
 	}
 }

@@ -17,27 +17,35 @@ namespace Eto.Platform.Windows
 		public DialogHandler()
 		{
 			control = new SWF.Form();
+			control.SuspendLayout ();
 			control.FormBorderStyle = SWF.FormBorderStyle.FixedDialog;
 			control.StartPosition = SWF.FormStartPosition.CenterParent;
 			this.control.Size = SD.Size.Empty;
 			this.control.MinimumSize = SD.Size.Empty;
+			this.control.MaximumSize = SD.Size.Empty;
 			control.AutoSize = true;
-			//control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			control.ShowInTaskbar = false;
 			control.ShowIcon = false;
 			control.MaximizeBox = false;
 			control.MinimizeBox = false;
 			control.StartPosition = SWF.FormStartPosition.CenterParent;
 			main = new SWF.Panel();
+			main.SuspendLayout ();
 		
 			main.Dock = SWF.DockStyle.Fill;
 			main.AutoSize = true;
-			//main.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			main.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			control.Controls.Add(main);
-			control.Load += control_Load;
+			control.ResumeLayout ();
 			this.Control = control;
 		}
-		
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			main.ResumeLayout ();
+		}
+
 		public Button AbortButton {
 			get {
 				return abortButton;
@@ -69,12 +77,6 @@ namespace Eto.Platform.Windows
 			}
 		}
 		
-		
-		private void control_Load(Object sender, EventArgs e)
-		{
-			Widget.OnLoad(e);
-		}
-
 		public override object ContainerObject
 		{
 			get { return main; }

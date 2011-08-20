@@ -73,7 +73,11 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
-			this.Control.DrawLine (new SD.Pen (Generator.Convert (color)), startx, starty, endx, endy);
+			if (startx == endx && starty == endy) {
+				this.Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), startx, starty, 1, 1);
+			}
+			else 
+				this.Control.DrawLine (new SD.Pen (Generator.Convert (color)), startx, starty, endx, endy);
 		}
 
 		public void DrawRectangle (Color color, int x, int y, int width, int height)

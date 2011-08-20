@@ -37,6 +37,7 @@ namespace Eto.Forms
 		
 		public void Add(Control control)
 		{
+			base.Container.InnerControls.Clear ();
 			control.SetParentLayout(this);
 			inner.Add(control);
 			Container.InnerControls.Add(control);
@@ -48,7 +49,8 @@ namespace Eto.Forms
 		
 		public void Remove(Control control)
 		{
-			inner.Remove(control);
+			base.Container.InnerControls.Remove (control);
+			inner.Remove (control);
 			control.SetParentLayout(null);
 			Container.InnerControls.Remove(control);
 		}

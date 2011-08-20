@@ -76,6 +76,13 @@ namespace Eto.Forms
 			if (Panel1 != null) Panel1.OnLoad(e);
 			if (Panel2 != null) Panel2.OnLoad(e);
 		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			if (Panel1 != null) Panel1.OnLoadComplete (e);
+			if (Panel2 != null) Panel2.OnLoadComplete (e);
+		}
 		
 	}
 }

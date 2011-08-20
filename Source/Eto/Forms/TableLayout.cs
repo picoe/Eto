@@ -15,6 +15,7 @@ namespace Eto.Forms
 	public class TableLayout : Layout
 	{
 		ITableLayout inner;
+		Control[,] controls;
 		
 		public static Size DefaultSpacing = new Size(5, 5);
 		public static Padding DefaultPadding = new Padding(5);
@@ -28,6 +29,7 @@ namespace Eto.Forms
 			: base(container.Generator, container, typeof(ITableLayout), false)
 		{
 			inner = (ITableLayout)Handler;
+			controls = new Control[cols, rows];
 			inner.CreateControl(cols, rows);
 			Initialize();
 			this.Container.SetLayout(this);
@@ -45,6 +47,11 @@ namespace Eto.Forms
 		
 		public void Add(Control control, int x, int y)
 		{
+			var old = controls[x, y];
+			if (old != null) {
+				Container.InnerControls.Remove (old);
+			}
+			controls[x, y] = control;
 			control.SetParentLayout(this);
 			inner.Add(control, x, y);
 			Container.InnerControls.Add(control);

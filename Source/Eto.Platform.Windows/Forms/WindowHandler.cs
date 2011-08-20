@@ -85,6 +85,7 @@ namespace Eto.Platform.Windows
 			}
 			set {
 				this.Control.SuspendLayout ();
+				top.SuspendLayout ();
 				if (menu != null)
 					top.Controls.Remove ((SWF.MenuStrip)menu.ControlObject);
 				
@@ -93,11 +94,12 @@ namespace Eto.Platform.Windows
 				} else {
 					var c = (SWF.MenuStrip)value.ControlObject;
 					c.Dock = SWF.DockStyle.Top;
+					c.ResumeLayout ();
 					top.Controls.Add (c);
 					Control.MainMenuStrip = c;
 				}
 				this.Control.ResumeLayout ();
-				top.PerformLayout ();
+				top.ResumeLayout ();
 				top.Update ();
 				menu = value;
 			}
@@ -125,16 +127,17 @@ namespace Eto.Platform.Windows
 			}
 			set {
 				this.Control.SuspendLayout ();
-				//toolbarHolder.SuspendLayout();
+				toolbarHolder.SuspendLayout();
 				if (toolBar != null)
 					toolbarHolder.Controls.Remove ((SWF.Control)toolBar.ControlObject);
 				toolBar = value;
 				if (toolBar != null) {
 					var c = ((SWF.Control)toolBar.ControlObject);
 					c.Dock = SWF.DockStyle.Top;
+					c.ResumeLayout ();
 					toolbarHolder.Controls.Add (c);
 				}
-				//toolbarHolder.ResumeLayout();
+				toolbarHolder.ResumeLayout();
 				this.Control.ResumeLayout ();
 				toolbarHolder.Update ();
 			}
