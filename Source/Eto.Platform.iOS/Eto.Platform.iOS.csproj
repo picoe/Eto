@@ -6,11 +6,10 @@
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{E711B298-D141-4EC5-9BFD-84962B264F90}</ProjectGuid>
-    <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.iOS</RootNamespace>
     <AssemblyName>Eto.Platform.iOS</AssemblyName>
-    <MtouchMinimumOS>3.0</MtouchMinimumOS>
     <ReleaseVersion>
     </ReleaseVersion>
     <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
@@ -116,5 +115,8 @@
       <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
       <Name>Eto.iOS</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
   </ItemGroup>
 </Project>

@@ -31,30 +31,20 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		void Adjust ()
 		{
-			var scrollView = Control;
-			var imageView = Child;
-			var innerFrame = imageView.Frame;
-			var scrollerBounds = scrollView.Bounds;
+			var innerView = Child;
+			var innerFrame = innerView.Frame;
+			var scrollerBounds = Control.Bounds;
 			
-			/*
-			if ( ( innerFrame.Size.Width < scrollerBounds.Size.Width ) || ( innerFrame.Size.Height < scrollerBounds.Size.Height ) )
-			{
-			    var tempx = imageView.Center.X - ( scrollerBounds.Size.Width / 2 );
-			    var tempy = imageView.Center.Y - ( scrollerBounds.Size.Height / 2 );
-			   // scrollView.ContentOffset = new SD.PointF(tempx, tempy);
-			}*/
-			
-			var anEdgeInset = new UIEdgeInsets (0, 0, 0, 0);
+			var inset = new UIEdgeInsets (0, 0, 0, 0);
 			if (scrollerBounds.Size.Width > innerFrame.Size.Width) {
-				anEdgeInset.Left = (scrollerBounds.Size.Width - innerFrame.Size.Width) / 2;
-				anEdgeInset.Right = -anEdgeInset.Left;  // I don't know why this needs to be negative, but that's what works
+				inset.Left = (scrollerBounds.Size.Width - innerFrame.Size.Width) / 2;
+				inset.Right = -inset.Left;  // I don't know why this needs to be negative, but that's what works
 			}
 			if (scrollerBounds.Size.Height > innerFrame.Size.Height) {
-				anEdgeInset.Top = (scrollerBounds.Size.Height - innerFrame.Size.Height) / 2;
-				anEdgeInset.Bottom = -anEdgeInset.Top;  // I don't know why this needs to be negative, but that's what works
+				inset.Top = (scrollerBounds.Size.Height - innerFrame.Size.Height) / 2;
+				inset.Bottom = -inset.Top;  // I don't know why this needs to be negative, but that's what works
 			}
-			scrollView.ContentInset = anEdgeInset;				
-			//Console.WriteLine("Content inset: {0}", anEdgeInset);
+			Control.ContentInset = inset;				
 		}
 		
 		public override object ContainerObject {
@@ -63,16 +53,40 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 		
+		public override bool Enabled {
+			get {
+				return Control.ScrollEnabled;
+			}
+			set {
+				Control.ScrollEnabled = value;;
+			}
+		}
+		
+		public float MinimumZoom {
+			get {
+				return Control.MinimumZoomScale;
+			}
+			set {
+				Control.MinimumZoomScale = value;
+			}
+		}
+		
+		public float MaximumZoom {
+			get {
+				return Control.MaximumZoomScale;
+			}
+			set {
+				Control.MaximumZoomScale = value;
+			}
+		}
+		
 		public ScrollableHandler ()
 		{
 			Child = new UIView ();
 
 			Control = new UIScrollView ();
-			//Control.ZoomScale = 0.5F;
 			Control.ContentMode = UIViewContentMode.Center;
 			Control.ScrollEnabled = true;
-			Control.MinimumZoomScale = 0.25F;
-			Control.MaximumZoomScale = 3.0F;
 			Control.Delegate = new Delegate { Handler = this };
 			Control.AddSubview (Child);
 		}
@@ -80,7 +94,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public void UpdateScrollSizes ()
 		{
 			SD.SizeF size = SD.SizeF.Empty;
-			Control.ContentOffset = SD.PointF.Empty;
 			foreach (var c in Widget.Controls) {
 				var view = c.ControlObject as UIView;
 				if (view != null) {
@@ -92,8 +105,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 				}
 			}
 			size = new System.Drawing.SizeF (size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
-			Child.SetFrameSize (size);
 			Control.ContentSize = size;
+			Child.SetFrameSize (size);
 			Adjust ();
 		}
 

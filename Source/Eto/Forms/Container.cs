@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -15,22 +16,19 @@ namespace Eto.Forms
 	public class Container : Control
 	{
 		IContainer inner;
-		ControlCollection controls = new ControlCollection();
 
 		public IEnumerable<Control> Controls
 		{
-			get { return controls; }
-		}
-		
-		internal ControlCollection InnerControls
-		{
-			get { return controls; }
+			get { 
+				if (Layout != null) return Layout.Controls;
+				else return Enumerable.Empty<Control>();
+			}
 		}
 		
 		public override void OnLoad(EventArgs e)
 		{
 			
-			foreach (Control control in controls)
+			foreach (Control control in Controls)
 			{
 				control.OnLoad(e);
 			}
@@ -43,7 +41,7 @@ namespace Eto.Forms
 		public override void OnLoadComplete(EventArgs e)
 		{
 			
-			foreach (Control control in controls)
+			foreach (Control control in Controls)
 			{
 				control.OnLoadComplete(e);
 			}

@@ -11,6 +11,13 @@ namespace Eto.Forms
 	public class PixelLayout : Layout
 	{
 		IPixelLayout inner;
+		List<Control> controls = new List<Control>();
+		
+		public override IEnumerable<Control> Controls {
+			get {
+				return controls;
+			}
+		}
 
 		public PixelLayout(Container container)
 			: base(container.Generator, container, typeof(IPixelLayout))
@@ -22,7 +29,7 @@ namespace Eto.Forms
 		{
 			control.SetParentLayout(this);
 			inner.Add(control, x, y);
-			Container.InnerControls.Add(control);
+			controls.Add(control);
 			if (Loaded) {
 				control.OnLoad (EventArgs.Empty);
 				control.OnLoadComplete (EventArgs.Empty);
@@ -52,7 +59,7 @@ namespace Eto.Forms
 		
 		public void Remove(Control child)
 		{
-			if (Container.InnerControls.Remove(child))
+			if (controls.Remove(child))
 				inner.Remove(child);
 		}
 	}

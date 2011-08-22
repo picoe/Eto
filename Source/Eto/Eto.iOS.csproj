@@ -6,12 +6,10 @@
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</ProjectGuid>
-    <ProjectTypeGuids>{E613F3A2-FE9C-494F-B74E-F63BCB86FEA6};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto</RootNamespace>
     <AssemblyName>Eto</AssemblyName>
-    <MtouchMinimumOS>3.0</MtouchMinimumOS>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
     <ReleaseVersion>
     </ReleaseVersion>
   </PropertyGroup>
@@ -23,12 +21,7 @@
     <DefineConstants>DEBUG;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <MtouchDebug>False</MtouchDebug>
-    <MtouchUseSGen>false</MtouchUseSGen>
     <ConsolePause>false</ConsolePause>
-    <MtouchUseLlvm>false</MtouchUseLlvm>
-    <MtouchUseThumb>false</MtouchUseThumb>
-    <MtouchArch>ARMv6</MtouchArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -36,12 +29,7 @@
     <OutputPath>bin\iOS\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <MtouchUseSGen>false</MtouchUseSGen>
-    <MtouchDebug>False</MtouchDebug>
     <ConsolePause>false</ConsolePause>
-    <MtouchUseLlvm>false</MtouchUseLlvm>
-    <MtouchUseThumb>false</MtouchUseThumb>
-    <MtouchArch>ARMv6</MtouchArch>
     <DefineConstants>MOBILE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -176,9 +164,14 @@
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
     <Compile Include="Platform\IPlatformHandler.cs" />
     <Compile Include="Platform\PlatformHandlerCollection.cs" />
+    <Compile Include="Style.cs" />
+    <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
     <Folder Include="Threading\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Info.plist" />
   </ItemGroup>
 </Project>

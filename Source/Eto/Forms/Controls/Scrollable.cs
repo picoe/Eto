@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IScrollable : IContainer
+	public partial interface IScrollable : IContainer
 	{
 		void UpdateScrollSizes();
 		Point ScrollPosition { get; set; }
@@ -28,7 +28,7 @@ namespace Eto.Forms
 		None
 	}
 	
-	public class Scrollable : Container
+	public partial class Scrollable : Container
 	{
 		IScrollable inner;
 		

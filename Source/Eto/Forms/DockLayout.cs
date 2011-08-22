@@ -1,5 +1,7 @@
 using System;
 using Eto.Drawing;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -26,8 +28,18 @@ namespace Eto.Forms
 	public class DockLayout : Layout
 	{
 		IDockLayout inner;
+		Control control;
 		
-		public static Padding DefaultPadding = new Padding(0);
+		public static Padding DefaultPadding = Padding.Empty;
+		
+		public override IEnumerable<Control> Controls {
+			get {
+				if (control != null)
+					yield return control;
+				else
+					yield break;
+			}
+		}
 
 		public DockLayout(Container container)
 			: base(container.Generator, container, typeof(IDockLayout))
@@ -37,10 +49,9 @@ namespace Eto.Forms
 		
 		public void Add(Control control)
 		{
-			base.Container.InnerControls.Clear ();
+			this.control = control;
 			control.SetParentLayout(this);
 			inner.Add(control);
-			Container.InnerControls.Add(control);
 			if (Loaded) {
 				control.OnLoad (EventArgs.Empty);
 				control.OnLoadComplete (EventArgs.Empty);
@@ -49,10 +60,9 @@ namespace Eto.Forms
 		
 		public void Remove(Control control)
 		{
-			base.Container.InnerControls.Remove (control);
+			this.control = null;
 			inner.Remove (control);
 			control.SetParentLayout(null);
-			Container.InnerControls.Remove(control);
 		}
 		
 		public Padding Padding

@@ -11,7 +11,6 @@ namespace Eto.Forms
 	public class Form : Window
 	{
 		IForm inner;
-		bool loaded;
 
 		public Form () : this(Generator.Current)
 		{

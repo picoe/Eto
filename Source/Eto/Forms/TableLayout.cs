@@ -1,5 +1,7 @@
 using System;
 using Eto.Drawing;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -19,6 +21,12 @@ namespace Eto.Forms
 		
 		public static Size DefaultSpacing = new Size(5, 5);
 		public static Padding DefaultPadding = new Padding(5);
+		
+		public override IEnumerable<Control> Controls {
+			get {
+				return controls.OfType<Control>();
+			}
+		}
 		
 		public TableLayout(Container container, Size size)
 			: this(container, size.Width, size.Height)
@@ -47,14 +55,10 @@ namespace Eto.Forms
 		
 		public void Add(Control control, int x, int y)
 		{
-			var old = controls[x, y];
-			if (old != null) {
-				Container.InnerControls.Remove (old);
-			}
+			//var old = controls[x, y];
 			controls[x, y] = control;
 			control.SetParentLayout(this);
 			inner.Add(control, x, y);
-			Container.InnerControls.Add(control);
 			if (Loaded) {
 				control.OnLoad (EventArgs.Empty);
 				control.OnLoadComplete (EventArgs.Empty);

@@ -149,6 +149,10 @@ namespace Eto.Platform.iOS.Forms
 		public virtual void OnLoad (EventArgs e)
 		{
 		}
+		
+		public virtual void OnLoadComplete (EventArgs e)
+		{
+		}
 
 		#endregion
 

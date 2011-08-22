@@ -13,12 +13,7 @@ namespace Eto.Platform.iOS.Forms
 		bool[] yscaling;
 		Size spacing;
 		Padding padding;
-		
-		public void Update ()
-		{
-			Layout();
-		}
-		
+
 		public Eto.Drawing.Size Spacing
 		{
 			get { return spacing; }
@@ -63,6 +58,12 @@ namespace Eto.Platform.iOS.Forms
 			CW: this.AddObserver(UIView.NSViewFrameDidChangeNotification, delegate { 
 				Layout();
 			});*/
+		}
+		
+		public override void Update ()
+		{
+			base.Update ();
+			Layout();
 		}
 		
 		void AutoSize(Control view)

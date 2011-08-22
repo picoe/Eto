@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -21,6 +22,12 @@ namespace Eto.Forms
 		ILayout inner;
 		
 		public bool Loaded { get; private set; }
+		
+		public abstract IEnumerable<Control> Controls
+		{
+			get;
+		}
+		
 		
 		public event EventHandler<EventArgs> Load;
 
