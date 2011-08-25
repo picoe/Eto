@@ -28,6 +28,42 @@ namespace Eto.Platform.Windows
 		{
 			get	{ return ControlObject; }
 		}
+		
+		public override void SuspendLayout ()
+		{
+			base.SuspendLayout ();
+			if (Widget.Layout != null)
+			{
+				var layout = Widget.Layout.Handler as IWindowsLayout;
+				if (layout != null)
+				{
+					var control = layout.LayoutObject as SWF.Control;
+					if (control != null)
+					{
+						control.SuspendLayout ();
+					}
+				}
+				
+			}
+		}
+		
+		public override void ResumeLayout ()
+		{
+			base.ResumeLayout ();
+			if (Widget.Layout != null)
+			{
+				var layout = Widget.Layout.Handler as IWindowsLayout;
+				if (layout != null)
+				{
+					var control = layout.LayoutObject as SWF.Control;
+					if (control != null)
+					{
+						control.ResumeLayout ();
+					}
+				}
+				
+			}
+		}
 
 		public override void SetLayout (Layout layout)
 		{

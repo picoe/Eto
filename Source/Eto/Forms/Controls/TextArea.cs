@@ -6,6 +6,8 @@ namespace Eto.Forms
 	public interface ITextArea : ITextControl
 	{
 		bool ReadOnly { get; set; }
+		
+		void Append(string text, bool scrollToCursor);
 	}
 	
 	public class TextArea : TextControl
@@ -26,6 +28,11 @@ namespace Eto.Forms
 		{
 			get { return inner.ReadOnly; }
 			set { inner.ReadOnly = value; }
+		}
+		
+		public void Append(string text, bool scrollToCursor = false)
+		{
+			inner.Append (text, scrollToCursor);
 		}
 	}
 }

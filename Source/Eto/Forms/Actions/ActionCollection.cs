@@ -67,6 +67,7 @@ namespace Eto.Forms
 			//Console.WriteLine("key: {0}, sender: {1}", e.KeyData.ToString(), sender.GetType().ToString());
 			foreach (var action in this)
 			{
+				if (!action.Enabled) continue;
 				if (action.Accelerators == null) continue;
 				foreach (Key key in action.Accelerators)
 				{

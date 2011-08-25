@@ -101,7 +101,8 @@ namespace Eto.Platform.Mac
 				if (view != null && view.Visible) {
 					AutoSize(view);
 					//Console.WriteLine ("CALC: x:{2} y:{3} view: {0} size: {1}", view, view.Size, x, y);
-					var size = view.Size;
+					var macview = view.Handler as IMacView;
+					var size = macview != null ? macview.PreferredSize ?? view.Size : view.Size;
 					if (/*!xscaling[x] &&*/ widths[x] < size.Width) { 
 						requiredx += size.Width - widths[x];
 						widths[x] = size.Width; 
@@ -144,14 +145,16 @@ namespace Eto.Platform.Mac
 				var view = views[y, x];
 				if (view != null && view.Visible) {
 					AutoSize(view);
+					var macview = view.Handler as IMacView;
+					var size = macview != null ? macview.PreferredSize ?? view.Size : view.Size;
 					//Console.WriteLine ("x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
-					if (!xscaling[x] && widths[x] < view.Size.Width) { 
+					if (!xscaling[x] && widths[x] < size.Width) { 
 						
-						widths[x] = view.Size.Width; requiredx += view.Size.Width - widths[x];
+						widths[x] = size.Width; requiredx += size.Width - widths[x];
 					}
-					if (!yscaling[y] && heights[y] < view.Size.Height) { 
+					if (!yscaling[y] && heights[y] < size.Height) { 
 						
-						heights[y] = view.Size.Height; requiredy += view.Size.Height - heights[y];
+						heights[y] = size.Height; requiredy += size.Height - heights[y];
 					}
 				}
 			}

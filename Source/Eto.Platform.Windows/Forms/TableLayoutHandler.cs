@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Eto.Platform.Windows
 {
-	public class TableLayoutHandler : WindowsLayout<SWF.TableLayoutPanel, TableLayout>, ITableLayout
+	public class TableLayoutHandler : WindowsLayout<System.Windows.Forms.TableLayoutPanel, TableLayout>, ITableLayout
 	{
 		Size spacing;
 		Control[,] views;
@@ -17,6 +17,15 @@ namespace Eto.Platform.Windows
 		{
 			get	{ return Control; }
 		}
+		
+		/*
+		class MyTableLayoutPanel : System.Windows.Forms.TableLayoutPanel
+		{
+			public MyTableLayoutPanel()
+			{
+				base.DoubleBuffered = true;
+			}
+		}*/
 
 		public TableLayoutHandler()
 		{

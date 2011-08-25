@@ -27,8 +27,15 @@ namespace Eto.Platform.GtkSharp
 		
 		public bool ReadOnly
 		{
-			get { return textView.Editable; }
-			set { textView.Editable = value; }
+			get { return !textView.Editable; }
+			set { textView.Editable = !value; }
+		}
+		
+		public void Append (string text, bool scrollToCursor)
+		{
+			var end = textView.Buffer.EndIter;
+			textView.Buffer.Insert (ref end, text);
+			if (scrollToCursor) textView.ScrollToIter (end, 0, false, 0, 0);
 		}
 		
 		

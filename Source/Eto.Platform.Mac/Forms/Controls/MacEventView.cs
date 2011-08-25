@@ -18,9 +18,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Handler != null ? Handler.Widget : null; }
 		}
 		
-		public override void KeyDown (NSEvent theEvent)
+		public static bool KeyDown(Control control, NSEvent theEvent)
 		{
-			if (Widget != null) {
+			if (control != null) {
 				char keyChar = !string.IsNullOrEmpty (theEvent.Characters) ? theEvent.Characters [0] : '\0';
 				Key key = KeyMap.MapKey (theEvent.KeyCode);
 				KeyPressEventArgs kpea;
@@ -36,11 +36,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 				} else {
 					kpea = new KeyPressEventArgs (key, keyChar);
 				}
-				Widget.OnKeyDown (kpea);
-				if (!kpea.Handled)
-					base.KeyDown (theEvent);
+				control.OnKeyDown (kpea);
+				return kpea.Handled;
 			}
-			else
+			return false;
+		}
+		
+		public override void KeyDown (NSEvent theEvent)
+		{
+			if (!KeyDown (Widget, theEvent))
 				base.KeyDown (theEvent);
 		}
 			

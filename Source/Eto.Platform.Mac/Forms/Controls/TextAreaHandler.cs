@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
@@ -8,9 +9,9 @@ namespace Eto.Platform.Mac
 	{
 		NSTextView text;
 		
-		public TextAreaHandler()
+		public TextAreaHandler ()
 		{
-			Control = new NSScrollView();
+			Control = new NSScrollView ();
 			Control.AutoresizesSubviews = true;
 			//Control.SetFrameSize (new System.Drawing.SizeF(120, 80));
 			//Control.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
@@ -19,7 +20,7 @@ namespace Eto.Platform.Mac
 			Control.AutohidesScrollers = true;
 			Control.BorderType = NSBorderType.BezelBorder;
 			
-			text = new NSTextView();
+			text = new NSTextView ();
 			text.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 			//text.TextContainer.ContainerSize = new System.Drawing.SizeF(1.0e7f, 1.0e7f);
 			//text.TextContainer.WidthTracksTextView = false;
@@ -37,8 +38,7 @@ namespace Eto.Platform.Mac
 		
 		#region ITextArea Members
 		
-		public bool ReadOnly
-		{
+		public bool ReadOnly {
 			get { return !text.Editable; }
 			set { text.Editable = !value; }
 		}
@@ -49,7 +49,19 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				text.Value = value;
+				this.text.DisplayIfNeeded ();
 			}
+		}
+		
+		public void Append (string text, bool scrollToCursor)
+		{
+			var range = new NSRange (this.text.Value.Length, 0);
+			this.text.Replace (range, text);
+			range = new NSRange (this.text.Value.Length, 0);
+			this.text.SelectedRange = range;
+			if (scrollToCursor)
+				this.text.ScrollRangeToVisible (range);
+			this.text.DisplayIfNeeded ();
 		}
 		
 		#endregion

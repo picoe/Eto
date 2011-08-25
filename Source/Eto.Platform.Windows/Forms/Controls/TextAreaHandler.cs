@@ -15,14 +15,19 @@ namespace Eto.Platform.Windows
 			Control.AcceptsTab = true;
 		}
 		
-		#region ITextArea Members
-		
 		public bool ReadOnly
 		{
 			get { return Control.ReadOnly; }
 			set { Control.ReadOnly = value; }
 		}
 		
-		#endregion
+		public void Append (string text, bool scrollToCursor)
+		{
+			Control.AppendText (text);
+			if (scrollToCursor) {
+				Control.SelectionStart = Control.Text.Length;
+				Control.ScrollToCaret ();
+			}
+		}
 	}
 }

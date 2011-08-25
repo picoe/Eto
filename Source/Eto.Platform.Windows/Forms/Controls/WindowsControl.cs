@@ -158,12 +158,12 @@ namespace Eto.Platform.Windows
 			return new Graphics (Widget.Generator, new GraphicsHandler (Control.CreateGraphics ()));
 		}
 
-		public void SuspendLayout ()
+		public virtual void SuspendLayout ()
 		{
 			Control.SuspendLayout ();
 		}
 
-		public void ResumeLayout ()
+		public virtual void ResumeLayout ()
 		{
 			Control.ResumeLayout ();
 		}

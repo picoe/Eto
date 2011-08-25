@@ -57,11 +57,19 @@ namespace Eto.Platform.Mac
 	{
 		Rectangle? RestoreBounds { get; set; }
 		Window Widget { get; }
+		NSMenu MenuBar { get; }
+		NSObject FieldEditorObject { get; set; }
 	}
 	
 	class MacWindowDelegate : NSWindowDelegate
 	{
 		public IMacWindow Handler { get; set; }
+		
+		public override NSObject WillReturnFieldEditor (NSWindow sender, NSObject client)
+		{
+			Handler.FieldEditorObject = client;
+			return null;
+		}
 		
 		public override bool WindowShouldClose (NSObject sender)
 		{
@@ -83,6 +91,8 @@ namespace Eto.Platform.Mac
 
 		public override void DidBecomeKey (NSNotification notification)
 		{
+			if (Handler.MenuBar != null) 
+				NSApplication.SharedApplication.SetMainMenu (Handler.MenuBar);
 			Handler.Widget.OnShown (EventArgs.Empty);
 		}
 		
@@ -105,7 +115,14 @@ namespace Eto.Platform.Mac
 		ToolBar toolBar;
 		Rectangle? restoreBounds;
 		
+		public NSObject FieldEditorObject { get; set; }
+		
 		public bool AutoSize { get; private set; }
+		
+		public NSMenu MenuBar
+		{
+			get { return menuBar != null ? menuBar.ControlObject as NSMenu : null; }
+		}
 		
 
 		public MacWindow ()
@@ -191,7 +208,8 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				this.menuBar = value;
-				NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
+				if (Control.IsKeyWindow)
+					NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
 			}
 		}
 

@@ -2,6 +2,8 @@ using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using Eto.Platform.Mac.Forms.Controls;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
@@ -55,11 +57,36 @@ namespace Eto.Platform.Mac
 			{
 				Handler.Widget.OnTextChanged(EventArgs.Empty);
 			}
+			
+		}
+		
+		class MyTextField : NSTextField
+		{
+			public TextBoxHandler Handler { get; set; }
+			
+			public override bool PerformKeyEquivalent (NSEvent theEvent)
+			{
+				if (Handler.Widget.HasFocus) {
+					MacEventView.KeyDown(Handler.Widget, theEvent);
+					return false;
+					/*return base.PerformKeyEquivalent (theEvent);
+					else
+						return false;*/
+				}
+				else return false;
+			}
+			
+		}
+		
+		public override bool HasFocus {
+			get {
+				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
+			}
 		}
 		
 		public TextBoxHandler()
 		{
-			Control = new NSTextField();
+			Control = new MyTextField{ Handler = this };
 			Control.Bezeled = true;
 			Control.Editable = true;
 			Control.Delegate = new MyDelegate{ Handler = this };

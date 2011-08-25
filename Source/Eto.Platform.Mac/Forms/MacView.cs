@@ -45,6 +45,8 @@ namespace Eto.Platform.Mac
 	{
 		Size PositionOffset { get; }
 		
+		Size? PreferredSize { get; }
+		
 		Control Widget { get; }
 
 		bool AutoSize { get; }
@@ -61,13 +63,19 @@ namespace Eto.Platform.Mac
 
 		public virtual bool AutoSize { get; protected set; }
 
-		public virtual Size Size {
+		public Size Size {
 			get { return Generator.ConvertF (Control.Frame.Size); }
 			set { 
+				this.PreferredSize = value;
 				Control.SetFrameSize (Generator.ConvertF (value));
 				this.AutoSize = false;
 				CreateTracking ();
 			}
+		}
+		
+		public Size? PreferredSize
+		{
+			get; set;
 		}
 		
 		public MacView ()
@@ -172,7 +180,7 @@ namespace Eto.Platform.Mac
 
 		public virtual bool Enabled { get; set; }
 
-		public bool HasFocus {
+		public virtual bool HasFocus {
 			get {
 				return Control.Window.FirstResponder == ControlObject;
 			}
