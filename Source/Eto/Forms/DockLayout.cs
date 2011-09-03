@@ -8,28 +8,28 @@ namespace Eto.Forms
 	public interface IDockLayout : ILayout
 	{
 		Padding Padding { get; set; }
-		void Add(Control control);
-		void Remove(Control control);
+
+		Control Content { get; set; }
 	}
 	
 	public static class DockLayoutExtensions
 	{
-		public static DockLayout AddDockedControl(this Container container, Control control, Padding? padding = null)
+		public static DockLayout AddDockedControl (this Container container, Control control, Padding? padding = null)
 		{
 			var layout = container.Layout as DockLayout;
-			if (layout == null) layout = new DockLayout(container);
-			if (padding != null) layout.Padding = padding.Value;
-			layout.Add(control);
+			if (layout == null)
+				layout = new DockLayout (container);
+			if (padding != null)
+				layout.Padding = padding.Value;
+			layout.Content = control;
 			return layout;
 		}
 	}
-		
 	
 	public class DockLayout : Layout
 	{
 		IDockLayout inner;
 		Control control;
-		
 		public static Padding DefaultPadding = Padding.Empty;
 		
 		public override IEnumerable<Control> Controls {
@@ -41,32 +41,42 @@ namespace Eto.Forms
 			}
 		}
 
-		public DockLayout(Container container)
+		public DockLayout (Container container)
 			: base(container.Generator, container, typeof(IDockLayout))
 		{
 			inner = (IDockLayout)Handler;
 		}
 		
-		public void Add(Control control)
+		[Obsolete]
+		public void Add (Control control)
 		{
-			this.control = control;
-			control.SetParentLayout(this);
-			inner.Add(control);
-			if (Loaded) {
-				control.OnLoad (EventArgs.Empty);
-				control.OnLoadComplete (EventArgs.Empty);
+			Content = control;
+		}
+		
+		[Obsolete]
+		public void Remove (Control control)
+		{
+			Content = null;
+		}
+		
+		public Control Content {
+			get { return inner.Content; }
+			set {
+				control = value;
+				if (control != null) {
+					control.SetParentLayout (this);
+					inner.Content = control;
+					if (Loaded && !control.Loaded) {
+						control.OnLoad (EventArgs.Empty);
+						control.OnLoadComplete (EventArgs.Empty);
+					}
+				}
+				else
+					inner.Content = control;
 			}
 		}
 		
-		public void Remove(Control control)
-		{
-			this.control = null;
-			inner.Remove (control);
-			control.SetParentLayout(null);
-		}
-		
-		public Padding Padding
-		{
+		public Padding Padding {
 			get { return inner.Padding; }
 			set { inner.Padding = value; }
 		}

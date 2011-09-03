@@ -37,10 +37,15 @@ namespace Eto.Drawing
 	public class Graphics : Widget
 	{
 		IGraphics inner;
-
+		
 		public Graphics(Generator g, IGraphics inner) : base(g, inner)
 		{
 			this.inner = inner;
+		}
+
+		public Graphics(Bitmap image)
+			: this(image.Generator, image)
+		{
 		}
 
 		public Graphics(Generator g, Bitmap image) : base(g, typeof(IGraphics))

@@ -14,11 +14,11 @@ namespace Eto.Platform.Windows
 		{
 		}
 		
-		#region IMessageBox Members
-
 		public string Text { get; set; }
 
 		public string Caption { get; set; }
+		
+		public MessageBoxType Type { get; set; }
 
 
 		public DialogResult ShowDialog(Control parent)
@@ -47,6 +47,17 @@ namespace Eto.Platform.Windows
 			}
 		}
 		
-		#endregion
+		public static SWF.MessageBoxIcon Convert(MessageBoxType type)
+		{
+			switch (type)
+			{
+			case MessageBoxType.Error: return SWF.MessageBoxIcon.Error;
+			case MessageBoxType.Warning: return SWF.MessageBoxIcon.Warning;
+			case MessageBoxType.Information: return SWF.MessageBoxIcon.Information;
+			case MessageBoxType.Question: return SWF.MessageBoxIcon.Question;
+			default:
+				throw new NotSupportedException();
+			}
+		}
 	}
 }

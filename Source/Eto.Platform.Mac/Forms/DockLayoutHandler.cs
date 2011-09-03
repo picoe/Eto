@@ -31,17 +31,20 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
+		public override void Initialize ()
+		{
+			base.Initialize ();
+
+			Control.PostsFrameChangedNotifications = true;
+			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
+				var handler = e.Widget.Handler as DockLayoutHandler;
+				handler.SetChildFrame();
+			});
+		}
+		
 		public override void SizeToFit ()
 		{
-			/*var container = child as Container;
-			if (container != null)
-			{
-				var layout = container.Layout as IMacLayout;
-				if (layout != null) layout.SizeToFit ();
-				var size = ((NSView)container.ControlObject).Frame;
-				SetContainerSize (size.Size);
-			}
-			else*/ if (child != null)
+			if (child != null)
 			{
 				AutoSize (child);
 				var c = child.ControlObject as NSView;
@@ -49,6 +52,7 @@ namespace Eto.Platform.Mac
 					SetContainerSize (c.Frame.Size);
 				}
 			}
+			else SetContainerSize (SD.SizeF.Empty);
 		}
 		
 		void SetChildFrame()
@@ -67,35 +71,44 @@ namespace Eto.Platform.Mac
 				frame.Y = padding.Top;
 				frame.Height -= padding.Vertical;
 			}
+			else {
+				frame.X = 0;
+				frame.Y = 0;
+			}
 			
 			childControl.Frame = frame;
 		}
 				
-		public void Add(Control child)
-		{
-			if (this.child != null) { 
-				((NSView)this.child.ControlObject).RemoveFromSuperview(); this.child = null; 
+		public Control Content {
+			get {
+				return this.child;
 			}
-			if (child != null)
-			{
-				NSView childControl = (NSView)child.ControlObject;
-				childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-				this.child = child;
-				SetChildFrame();
-				NSView parent = (NSView)ControlObject;
-				parent.AddSubview(childControl);
+			set {
+				if (this.child != null) { 
+					((NSView)this.child.ControlObject).RemoveFromSuperview(); 
+				}
+				if (value != null)
+				{
+					this.child = value;
+					NSView childControl = (NSView)child.ControlObject;
+					childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
+					SetChildFrame();
+					NSView parent = (NSView)ControlObject;
+					parent.AddSubview(childControl);
+				}
+				else this.child = null;
 			}
 		}
-
-		public void Remove(Control child)
+		
+		public override void OnLoad ()
 		{
-			NSView childControl = (NSView)child.ControlObject;
-			childControl.RemoveFromSuperview();
-			this.child = null;
+			base.OnLoad ();
+			SetChildFrame ();
 		}
 
 		public override void SetContainerSize (SD.SizeF size)
 		{
+			size += Generator.ConvertF (Padding.Size);
 			base.SetContainerSize (size);
 			SetChildFrame();
 		}

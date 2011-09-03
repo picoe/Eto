@@ -42,22 +42,24 @@ namespace Eto.Platform.Mac
 				if (view != null) view.SetFrameSize (size);
 			}
 		}
-
+		
 		protected void AutoSize(Control view)
 		{
-			var c = view.ControlObject as NSControl;
 			var mh = view.Handler as IMacView;
 			if (mh != null && !mh.AutoSize) return;
-			//Console.WriteLine ("OLD view: {0} size: {1}", view, view.Size);
 			
-			/* taken care of by MacContainer.OnLoad
-			var container = view as Container;
-			if (container != null && container.Layout != null)
+			//Console.WriteLine ("OLD view: {0} size: {1}", view, view.Size);
+			/*var container = view as Container;
+			if (container != null)
 			{
-				var layout = container.Layout.Handler as IMacLayout;
-				if (layout != null) layout.SizeToFit();
+				if (container.Layout != null) {
+					var layout = container.Layout.Handler as IMacLayout;
+					if (layout != null) layout.SizeToFit();
+				}
+				else ((IMacContainer)container.Handler).SetContentSize (SD.SizeF.Empty);
 			}*/
 
+			var c = view.ControlObject as NSControl;
 			if (c != null) c.SizeToFit();
 			//Console.WriteLine ("view: {0} size: {1}", view, view.Size);
 		}

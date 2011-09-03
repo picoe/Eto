@@ -156,7 +156,6 @@ namespace Eto.Platform.Mac
 		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{
-			//base.SetContentSize (contentSize);
 			view.SetFrameSize (contentSize);
 			if (this.AutoSize) {
 				contentSize.Width += 2;

@@ -20,7 +20,7 @@ namespace Eto.Platform.GtkSharp
 		ToolBar toolBar;
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
-
+		
 		public GtkWindow ()
 		{
 			vbox = new Gtk.VBox ();
@@ -170,14 +170,14 @@ namespace Eto.Platform.GtkSharp
 
 		public void Close ()
 		{
-			Widget.OnClosed(EventArgs.Empty);
-			Control.Destroy ();
+			Widget.OnClosed (EventArgs.Empty);
+			Control.Hide ();
 		}
 		
 		protected override void Dispose (bool disposing)
 		{
-			base.Dispose (disposing);
 			if (disposing) {
+				Control.Destroy ();
 				if (menuBox != null) {
 					menuBox.Dispose ();
 					menuBox = null;
@@ -191,6 +191,7 @@ namespace Eto.Platform.GtkSharp
 					containerBox = null;
 				}
 			}
+			base.Dispose (disposing);
 		}
 
 		public ToolBar ToolBar {
@@ -269,7 +270,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		private void GtkWindow_DeleteEvent (object o, Gtk.DeleteEventArgs args)
+		void GtkWindow_DeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
 			CancelEventArgs cancelArgs = new CancelEventArgs ();
 			Widget.OnClosing (cancelArgs);

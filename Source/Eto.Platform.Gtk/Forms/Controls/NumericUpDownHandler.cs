@@ -23,8 +23,8 @@ namespace Eto.Platform.GtkSharp
 		
 		public bool ReadOnly
 		{
-			get { return Control.IsEditable; }
-			set { Control.IsEditable = value; }
+			get { return !Control.IsEditable; }
+			set { Control.IsEditable = !value; }
 		}
 		
 		public decimal Value

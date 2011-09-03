@@ -65,7 +65,8 @@ namespace Eto.Platform.Mac
 					if (layout != null) layout.SetContainerSize (contentSize);
 				}
 			}
-			else Control.SetFrameSize (contentSize);
+			else
+				Control.SetFrameSize (contentSize);
 		}
 		#endregion
 	}

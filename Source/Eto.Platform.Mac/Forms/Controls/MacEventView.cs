@@ -8,8 +8,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		WeakReference handler;
 		
-		public IMacView Handler
-		{
+		public IMacView Handler {
 			get { return handler.Target as IMacView; }
 			set { handler = new WeakReference (value); }
 		}
@@ -18,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Handler != null ? Handler.Widget : null; }
 		}
 		
-		public static bool KeyDown(Control control, NSEvent theEvent)
+		public static bool KeyDown (Control control, NSEvent theEvent)
 		{
 			if (control != null) {
 				char keyChar = !string.IsNullOrEmpty (theEvent.Characters) ? theEvent.Characters [0] : '\0';
@@ -84,20 +83,27 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var args = CreateMouseArgs (theEvent);
 				if (theEvent.ClickCount >= 2)
 					Widget.OnMouseDoubleClick (args);
-				else
+				
+				if (!args.Handled) {
 					Widget.OnMouseDown (args);
+				}
 					
 				if (!args.Handled)
 					base.MouseDown (theEvent);
 			} else
 				base.MouseDown (theEvent);
 		}
-			
+		
 		public override void RightMouseDown (NSEvent theEvent)
 		{
 			if (Widget != null) {
 				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseDown (args);
+				if (theEvent.ClickCount >= 2)
+					Widget.OnMouseDoubleClick (args);
+				
+				if (!args.Handled) {
+					Widget.OnMouseDown (args);
+				}
 				if (!args.Handled)
 					base.RightMouseDown (theEvent);
 			} else

@@ -6,7 +6,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public class DockLayoutHandler : GtkLayout<Gtk.Alignment, DockLayout>, IDockLayout
 	{
-		
+		Control content;
 		public DockLayoutHandler()
 		{
 			Control = new Gtk.Alignment(0, 0, 1, 1);
@@ -23,19 +23,21 @@ namespace Eto.Platform.GtkSharp
 				Control.SetPadding((uint)value.Top, (uint)value.Bottom, (uint)value.Left, (uint)value.Right);
 			}
 		}
-
-		public void Add(Control child)
-		{
-			if (Control.Child != null) Control.Remove(Control.Child);
-			var widget = (Gtk.Widget)child.ControlObject;
-			Control.Add(widget);
-			widget.ShowAll ();
+		
+		public Control Content {
+			get { return content; }
+			set {
+				if (content == value) return;
+				if (Control.Child != null) Control.Remove(Control.Child);
+				
+				content = value;
+				if (content != null) {
+					var widget = (Gtk.Widget)content.ControlObject;
+					Control.Add(widget);
+					widget.ShowAll ();
+				}
+				
+			}
 		}
-
-		public void Remove(Control child)
-		{
-			Control.Remove((Gtk.Widget)child.ControlObject);
-		}
-
 	}
 }

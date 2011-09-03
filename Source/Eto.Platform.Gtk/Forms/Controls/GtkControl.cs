@@ -7,6 +7,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
 using System.Collections.Generic;
+using GLib;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -22,12 +23,12 @@ namespace Eto.Platform.GtkSharp
 		Size size;
 		Size asize;
 		Point location;
-		Thread thread;
+		System.Threading.Thread thread;
 		bool mouseDownHandled;
 
 		public GtkControl ()
 		{
-			this.thread = Thread.CurrentThread;
+			this.thread = System.Threading.Thread.CurrentThread;
 			size = Size.Empty;
 			notify = new Gtk.ThreadNotify (new Gtk.ReadyEvent (Ready));
 		}
@@ -241,7 +242,7 @@ namespace Eto.Platform.GtkSharp
 			p = new Point(x, y);*/
 		}
 
-		private void GtkControlObject_ButtonReleaseEvent (Object o, Gtk.ButtonReleaseEventArgs args)
+		private void GtkControlObject_ButtonReleaseEvent (object o, Gtk.ButtonReleaseEventArgs args)
 		{
 			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
 			Key modifiers = GetKeyModifiers (args.Event.State);
@@ -274,8 +275,9 @@ namespace Eto.Platform.GtkSharp
 				Widget.OnSizeChanged (EventArgs.Empty);
 			}
 		}
-
-		private void GtkControlObject_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		
+		[ConnectBefore]
+		void GtkControlObject_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
 		{
 			Key key = Key.None;
 			key |= KeyMap.Convert (args.Event.Key);
@@ -397,7 +399,7 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public bool InvokeRequired {
-			get	{ return Thread.CurrentThread != thread; }
+			get	{ return System.Threading.Thread.CurrentThread != thread; }
 		}
 
 		public IAsyncResult BeginInvoke (Delegate method, object[] args)

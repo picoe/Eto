@@ -89,11 +89,9 @@ namespace Eto.Platform.Mac
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
 			var requiredx = totalxpadding;
 			var requiredy = totalypadding;
-			var numx = 0;
-			var numy = 0;
 			
-			for (int y=0; y<heights.Length; y++) { heights[y] = 0; if (yscaling[y]) numy++; }
-			for (int x=0; x<widths.Length; x++) { widths[x] = 0; if (xscaling[x]) numx++; }
+			for (int y=0; y<heights.Length; y++) { heights[y] = 0; }
+			for (int x=0; x<widths.Length; x++) { widths[x] = 0; }
 			
 			for (int y=0; y<heights.Length; y++)
 			for (int x=0; x<widths.Length; x++) {

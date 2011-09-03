@@ -37,7 +37,9 @@ namespace Eto.Platform.Mac
 		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{
-			base.SetContentSize (contentSize + new SD.SizeF (10, 42));
+			var height = 22; //22;
+			//if (!string.IsNullOrEmpty (Text)) height += 20;
+			base.SetContentSize (contentSize + new SD.SizeF (10, height));
 		}
 	}
 }

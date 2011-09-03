@@ -10,6 +10,7 @@ namespace Eto.Platform.GtkSharp
 		public string Text { get; set; }
 		public string Caption { get; set; }
 		public IWidget Handler { get; set; }
+		public MessageBoxType Type { get; set; }
 		
 		public void Initialize()
 		{
@@ -23,7 +24,7 @@ namespace Eto.Platform.GtkSharp
 			{
 				c = c.Parent;
 			}
-			control = new Gtk.MessageDialog((Gtk.Window)c, Gtk.DialogFlags.Modal, Gtk.MessageType.Info, Gtk.ButtonsType.Ok, false, Text);
+			control = new Gtk.MessageDialog((Gtk.Window)c, Gtk.DialogFlags.Modal, Convert (Type), Gtk.ButtonsType.Ok, false, Text);
 			control.TypeHint = Gdk.WindowTypeHint.Dialog;
 			if (!string.IsNullOrEmpty(Caption)) control.Title = Caption;
 			int ret = control.Run();
@@ -38,7 +39,7 @@ namespace Eto.Platform.GtkSharp
 			{
 				c = c.Parent;
 			}
-			control = new Gtk.MessageDialog((Gtk.Window)c, Gtk.DialogFlags.Modal, Gtk.MessageType.Info, Convert(buttons), false, Text);
+			control = new Gtk.MessageDialog((Gtk.Window)c, Gtk.DialogFlags.Modal, Convert (Type), Convert(buttons), false, Text);
 			control.TypeHint = Gdk.WindowTypeHint.Dialog;
 			if (!string.IsNullOrEmpty (Caption)) control.Title = Caption;
 			if (buttons == MessageBoxButtons.YesNoCancel)
@@ -64,6 +65,17 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
+		public static Gtk.MessageType Convert(MessageBoxType type)
+		{
+			switch (type)
+			{
+				default:
+				case MessageBoxType.Information: return Gtk.MessageType.Info;
+				case MessageBoxType.Error: return Gtk.MessageType.Error;
+				case MessageBoxType.Warning: return Gtk.MessageType.Warning;
+				case MessageBoxType.Question: return Gtk.MessageType.Question;
+			}
+		}
 
 	}
 

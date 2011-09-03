@@ -1,19 +1,19 @@
 using System;
 using Eto.Forms;
+using System.Runtime.InteropServices;
+using GLib;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox>, ITextBox
 	{
-		//private Gtk.ScrolledWindow scroll;
-
 		public TextBoxHandler()
 		{
 			Control = new Gtk.Entry();
-			//control.WrapMode = Gtk.WrapMode.None;
-			Control.Changed += control_Changed;
+			Control.Changed += delegate {
+				Widget.OnTextChanged (EventArgs.Empty);
+			};
 			Control.ActivatesDefault = true;
-			//scroll.Add(control);
 		}
 
 		public override string Text
@@ -24,8 +24,8 @@ namespace Eto.Platform.GtkSharp
 
 		public bool ReadOnly
 		{
-			get { return Control.IsEditable; }
-			set { Control.IsEditable = value; }
+			get { return !Control.IsEditable; }
+			set { Control.IsEditable = !value; }
 		}
 		
 		public int MaxLength {
@@ -33,10 +33,5 @@ namespace Eto.Platform.GtkSharp
 			set { Control.MaxLength = value; }
 		}
 
-
-		private void control_Changed(object sender, EventArgs e)
-		{
-			Widget.OnTextChanged(e);
-		}
 	}
 }

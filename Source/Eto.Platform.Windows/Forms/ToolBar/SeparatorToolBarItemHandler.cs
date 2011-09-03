@@ -10,7 +10,6 @@ namespace Eto.Platform.Windows
 {
 	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolBarItem>, ISeparatorToolBarItem, IToolBarItemHandler
 	{
-		SeparatorToolBarItemType type;
 		public SeparatorToolBarItemHandler()
 		{
 			Control = new SWF.ToolStripSeparator();
@@ -20,10 +19,19 @@ namespace Eto.Platform.Windows
 	
 		public SeparatorToolBarItemType Type {
 			get {
-				return type;
+				if (this.Control.AutoSize) return SeparatorToolBarItemType.FlexibleSpace;
+				else return SeparatorToolBarItemType.Divider;
 			}
 			set {
-				type = value;
+				switch (value)
+				{
+					case SeparatorToolBarItemType.FlexibleSpace:
+						this.Control.AutoSize = true;
+						break;
+				default:
+					this.Control.AutoSize = false;
+					break;
+				}
 			}
 		}
 		

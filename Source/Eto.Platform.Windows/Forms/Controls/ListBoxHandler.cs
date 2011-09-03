@@ -15,11 +15,15 @@ namespace Eto.Platform.Windows
 		{
 			Control = new SWF.ListBox();
 			this.Control.ValueMember = "Key";
-			this.Control.DisplayMember = "Text";
+			this.Control.FormattingEnabled = true;
+			this.Control.Format += delegate(object sender, SWF.ListControlConvertEventArgs e) {
+				var item = e.ListItem as IListItem;
+				e.Value = item.Text;
+			};
 			Control.SelectedIndexChanged += control_SelectedIndexChanged;
 			Control.IntegralHeight = false;
 			Control.DoubleClick += control_DoubleClick;
-			Control.KeyDown += new System.Windows.Forms.KeyEventHandler(control_KeyDown);
+			Control.KeyDown += control_KeyDown;
 		}
 
 		#region IListControl Members

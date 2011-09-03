@@ -4,6 +4,7 @@ using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.Platform.Windows
 {
@@ -41,7 +42,7 @@ namespace Eto.Platform.Windows
 			var args = new CancelEventArgs(e.Cancel);
 			Widget.OnClosing (args);
 			
-			if (!e.Cancel && SWF.Application.OpenForms.Count == 1 
+			if (!e.Cancel && SWF.Application.OpenForms.Count <= 1 
 				|| e.CloseReason == SWF.CloseReason.ApplicationExitCall
 				|| e.CloseReason == SWF.CloseReason.WindowsShutDown)
 			{
