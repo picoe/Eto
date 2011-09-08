@@ -319,7 +319,7 @@ namespace Eto.Platform.Mac.Drawing
 			var fontHandler = font.Handler as FontHandler;
 			var dic = new NSMutableDictionary();
 			dic.Add(NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS(color));
-			dic.Add(NSAttributedString.FontAttributeName, fontHandler.GetFont());
+			dic.Add(NSAttributedString.FontAttributeName, fontHandler.Control);
 			var size = str.StringSize(dic);
 			//context.SetShouldAntialias(true);
 			str.DrawString(new SD.PointF(x, height - y - size.Height), dic);
@@ -331,7 +331,7 @@ namespace Eto.Platform.Mac.Drawing
 			NSGraphicsContext.CurrentContext = Control;
 			var fontHandler = font.Handler as FontHandler;
 			var dic = new NSMutableDictionary();
-			dic.Add(NSAttributedString.FontAttributeName, fontHandler.GetFont());
+			dic.Add(NSAttributedString.FontAttributeName, fontHandler.Control);
 			var str = new NSString(text);
 			var size = str.StringSize(dic);
 			return new SizeF(size.Width, size.Height);

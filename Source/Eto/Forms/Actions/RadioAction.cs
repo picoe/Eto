@@ -62,7 +62,7 @@ namespace Eto.Forms
 			action.Checked = true;
 		}
 
-		public override void Generate(ActionItem actionItem, ToolBar toolBar)
+		public override ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar)
 		{
 			throw new NotImplementedException("cannot put radio buttons on the toolbar just yet");
 		}

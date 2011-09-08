@@ -7,7 +7,7 @@ namespace Eto.Forms
 	{
 		RadioMenuItem menuItem;
 		
-		public override void Generate(ActionItem actionItem, Menu menu)
+		public override MenuItem Generate(ActionItem actionItem, ISubMenuWidget menu)
 		{
 			RadioMenuItem mi = new RadioMenuItem(menu.Generator, (Controller != null) ? Controller.menuItem : null);
 			mi.Text = MenuText;
@@ -15,9 +15,8 @@ namespace Eto.Forms
 			
 			new MenuConnector(this, mi);
 			mi.Checked = Checked;
-			menu.MenuItems.Add(mi);
 			menuItem = mi;
-			
+			return mi;
 		}
 
 		class MenuConnector

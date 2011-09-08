@@ -8,7 +8,7 @@ namespace Eto.Forms
 	
 	public partial class ButtonAction : BaseAction
 	{
-		protected virtual MenuItem GenerateMenu(ActionItem actionItem, Menu menu)
+		public override MenuItem Generate(ActionItem actionItem, ISubMenuWidget menu)
 		{
 			ImageMenuItem mi = new ImageMenuItem(menu.Generator);
 			mi.Text = MenuText;
@@ -19,12 +19,6 @@ namespace Eto.Forms
 			this.EnabledChanged += new EventHandler<EventArgs>(delegate { mi.Enabled = this.Enabled; }).MakeWeak((e) => this.EnabledChanged -= e);
 			//new MenuConnector(this, mi);
 			return mi;
-		}
-		
-		public override void Generate(ActionItem actionItem, Menu menu)
-		{
-			var mi = GenerateMenu(actionItem, menu);
-			menu.MenuItems.Add(mi);
 		}
 		
 		protected class MenuConnector

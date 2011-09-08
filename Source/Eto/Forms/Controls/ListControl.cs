@@ -140,7 +140,10 @@ namespace Eto.Forms
 		public string SelectedKey
 		{
 			get { return (SelectedIndex >= 0) ? Items[SelectedIndex].Key : null; }
-			set { SelectedIndex = Items.IndexOf(Items.First(r => r.Key == value)); }
+			set { 
+				var val = Items.FirstOrDefault(r => r.Key == value);
+				if (val != null) SelectedIndex = Items.IndexOf(val);
+			}
 		}
 		
 	}

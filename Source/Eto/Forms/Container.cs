@@ -11,6 +11,7 @@ namespace Eto.Forms
 		Size ClientSize { get; set; }
 		object ContainerObject { get; }
 		void SetLayout(Layout layout);
+		Size? MinimumSize { get; set; }
 	}
 	
 	public class Container : Control
@@ -67,6 +68,12 @@ namespace Eto.Forms
 		{
 			get { return inner.ClientSize; }
 			set { inner.ClientSize = value; }
+		}
+		
+		public Size? MinimumSize
+		{
+			get { return inner.MinimumSize; }
+			set { inner.MinimumSize = value; }
 		}
 
 		

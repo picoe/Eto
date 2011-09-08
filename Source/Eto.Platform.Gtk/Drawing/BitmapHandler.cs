@@ -25,7 +25,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 
 
-	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap
+	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
 		
 		public BitmapHandler()
@@ -156,5 +156,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 			 */
 			if (pb != Control) pb.Dispose();
 		}
+
+		#region IGtkPixbuf implementation
+		public Gdk.Pixbuf Pixbuf {
+			get {
+				return Control;
+			}
+		}
+		#endregion
 	}
 }

@@ -4,6 +4,10 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
+	public interface IGtkPixbuf {
+		Gdk.Pixbuf Pixbuf { get; }
+	}
+	
 	public interface IImageHandler
 	{
 		void DrawImage(GraphicsHandler graphics, int x, int y);

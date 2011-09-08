@@ -46,7 +46,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (!KeyDown (Widget, theEvent))
 				base.KeyDown (theEvent);
 		}
-			
+		
+		/*
+		public override bool PerformKeyEquivalent (NSEvent theEvent)
+		{
+			return false;
+		}*/
+
 		MouseEventArgs CreateMouseArgs (NSEvent theEvent)
 		{
 			var pt = Generator.GetLocation (this, theEvent);

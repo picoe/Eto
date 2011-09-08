@@ -4,17 +4,17 @@ namespace Eto.Forms
 {
 	public partial interface IActionItem
 	{
-		void Generate(Menu menu);
+		void Generate(ISubMenuWidget menu);
 	}
 	
 	public abstract partial class ActionItemBase
 	{
-		public abstract void Generate(Menu menu);
+		public abstract void Generate(ISubMenuWidget menu);
 	}
 	
 	public partial class ActionItemSeparator : ActionItemBase
 	{
-		public override void Generate(Menu menu)
+		public override void Generate(ISubMenuWidget menu)
 		{
 			menu.MenuItems.Add(new SeparatorMenuItem(menu.Generator));
 		}
@@ -23,7 +23,7 @@ namespace Eto.Forms
 	
 	public partial class ActionItemSubMenu : ActionItemBase
 	{
-		public override void Generate(Menu menu)
+		public override void Generate(ISubMenuWidget menu)
 		{
 			if (actions.Count > 0)
 			{
@@ -37,11 +37,11 @@ namespace Eto.Forms
 	
 	public partial class ActionItem : ActionItemBase
 	{
-		//public BaseAction Action { get; set; }
-		
-		public override void Generate(Menu menu)
+		public override void Generate(ISubMenuWidget menu)
 		{
-			this.Action.Generate(this, menu);
+			var item = this.Action.Generate(this, menu);
+			if (item != null)
+				menu.MenuItems.Add (item);
 		}
 	}
 	

@@ -7,65 +7,73 @@ using SWF = System.Windows.Forms;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public class FontHandler : WidgetHandler<SD.Font, Font>, IFont
+	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, IFont
 	{
-		FontFamily family;
-		bool bold;
-		bool italic;
-		float size;
 
-		public override SD.Font Control {
-			get {
-				if (base.Control == null) 
-				{
-					SD.FontStyle style = SD.FontStyle.Regular;
-					if (bold) style |= SD.FontStyle.Bold;
-					if (italic) style |= SD.FontStyle.Italic;
-					Control = new SD.Font(Generator.Convert(family), size, style);
-				}
-				return base.Control;
-			}
-			protected set {
-				base.Control = value;
+		public void Create (FontFamily family, float size, FontStyle style)
+		{
+			Control = new SD.Font(Generator.Convert(family), size, Convert(style));
+		}
+		
+		public void Create (SystemFont systemFont, float? size)
+		{
+			switch (systemFont) {
+			case SystemFont.Default:
+				Control = SD.SystemFonts.DefaultFont;
+				break;
+			case SystemFont.Bold:
+				Control = new SD.Font(SD.SystemFonts.DefaultFont, SD.FontStyle.Bold);
+				break;
+			case SystemFont.TitleBar:
+				Control = SD.SystemFonts.CaptionFont;
+				break;
+			case SystemFont.ToolTip:
+				Control = SD.SystemFonts.DefaultFont;
+				break;
+			case SystemFont.Label:
+				Control = SD.SystemFonts.DialogFont;
+				break;
+			case SystemFont.MenuBar:
+				Control = SD.SystemFonts.MenuFont;
+				break;
+			case SystemFont.Menu:
+				Control = SD.SystemFonts.MenuFont;
+				break;
+			case SystemFont.Message:
+				Control = SD.SystemFonts.MessageBoxFont;
+				break;
+			case SystemFont.Palette:
+				Control = SD.SystemFonts.DialogFont;
+				break;
+			case SystemFont.StatusBar:
+				Control = SD.SystemFonts.StatusFont;
+				break;
+			default:
+				throw new NotImplementedException();
 			}
 		}
 		
-		#region IFont Members
-
-		public void Create(FontFamily family)
+		System.Drawing.FontStyle Convert(FontStyle style)
 		{
-			this.family = family;
+			SD.FontStyle ret = SD.FontStyle.Regular;
+			if ((style & FontStyle.Bold) != 0) ret |= SD.FontStyle.Bold;
+			if ((style & FontStyle.Italic) != 0) ret |= SD.FontStyle.Italic;
+			return ret;
 		}
 
 		public float Size
 		{
-			get { return size; }
-			set { size = value; Reset(); }
+			get { return this.Control.Size; }
 		}
 
 		public bool Bold
 		{
-			get { return bold; }
-			set { bold = value; Reset(); }
-		}
-
-		private void Reset()
-		{
-			if (Control != null)
-			{
-				Control.Dispose();
-				Control = null;
-			}
+			get { return this.Control.Bold; }
 		}
 
 		public bool Italic
 		{
-			get { return italic; }
-			set { italic = value; Reset(); }
+			get { return this.Control.Italic; }
 		}
-
-		#endregion
-
-
 	}
 }

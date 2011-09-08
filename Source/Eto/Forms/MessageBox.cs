@@ -29,12 +29,22 @@ namespace Eto.Forms
 	
 	public static class MessageBox
 	{
-		public static DialogResult Show (string text, string caption = null, MessageBoxType type = MessageBoxType.Information)
+		public static DialogResult Show (string text, MessageBoxType type = MessageBoxType.Information)
+		{
+			return Show (null, text, null, type);
+		}
+		
+		public static DialogResult Show (string text, string caption, MessageBoxType type = MessageBoxType.Information)
 		{
 			return Show (null, text, caption, type);
 		}
 
-		public static DialogResult Show(Control parent, string text, string caption = null, MessageBoxType type = MessageBoxType.Information)
+		public static DialogResult Show(Control parent, string text, MessageBoxType type = MessageBoxType.Information)
+		{
+			return Show(parent != null ? parent.Generator : Generator.Current, parent, text, null, type);
+		}
+		
+		public static DialogResult Show(Control parent, string text, string caption, MessageBoxType type = MessageBoxType.Information)
 		{
 			return Show(parent != null ? parent.Generator : Generator.Current, parent, text, caption, type);
 		}

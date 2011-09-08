@@ -158,7 +158,7 @@ namespace Eto.Forms
 
 		public virtual void OnKeyDown(KeyPressEventArgs e)
 		{
-			//MessageBox.Show(this.Generator, (Control)this, String.Format("{0} ({1})", e.KeyData.ToString(), this.ToString()));
+			//Console.WriteLine("{0} ({1})", e.KeyData, this);
 			if (keyDown != null) keyDown(this, e);
 			if (!e.Handled && Parent != null) Parent.OnKeyDown(e);
 		}
@@ -245,7 +245,7 @@ namespace Eto.Forms
 			set { inner.BackgroundColor = value; }
 		}
 		
-		public bool HasFocus
+		public virtual bool HasFocus
 		{
 			get { return inner.HasFocus; }
 		}

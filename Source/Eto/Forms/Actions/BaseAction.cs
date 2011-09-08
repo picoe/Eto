@@ -30,7 +30,7 @@ namespace Eto.Forms
 		
 		#region Properties
 		
-		public bool Enabled
+		public virtual bool Enabled
 		{
 			get { return enabled; }
 			set
@@ -151,7 +151,7 @@ namespace Eto.Forms
 			OnActivated(EventArgs.Empty);
 		}
 		
-		public abstract void Generate(ActionItem actionItem, ToolBar toolBar);
+		public abstract ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar);
 	}
 
 }

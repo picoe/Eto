@@ -1,29 +1,122 @@
 using System;
 using Eto.Forms;
+using MonoMac.Foundation;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class WebViewHandler : MacView<MonoMac.WebKit.WebView, WebView>, IWebView
 	{
+		class MyUIDelegate : MonoMac.WebKit.WebUIDelegate
+		{
+			public WebViewHandler Handler { get; set; }
+			
+			public override bool UIRunJavaScriptConfirmPanel (MonoMac.WebKit.WebView sender, string message)
+			{
+				return MessageBox.Show (Handler.Widget, message, MessageBoxButtons.YesNo) == DialogResult.Yes;
+			}
+			
+			public override void UIRunJavaScriptAlertPanel (MonoMac.WebKit.WebView sender, string message)
+			{
+				MessageBox.Show (Handler.Widget, message);
+			}
+			
+		}
+		
 		public WebViewHandler ()
 		{
 			Control = new MonoMac.WebKit.WebView ();
+			Control.UIDelegate = new MyUIDelegate{ Handler = this };
 		}
-
-		#region IWebView implementation
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case WebView.DocumentLoadedEvent:
+				this.Control.FinishedLoad += delegate(object sender, MonoMac.WebKit.WebFrameEventArgs e) {
+					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (this.Url));
+				};
+				break;
+			case WebView.DocumentLoadingEvent:
+				this.Control.DecidePolicyForNavigation += delegate(object sender, MonoMac.WebKit.WebNavigatioPolicyEventArgs e) {
+					var args = new WebViewLoadingEventArgs (new Uri (e.Request.Url.AbsoluteString));
+					Widget.OnDocumentLoading (args);
+					if (args.Cancel)
+						e.DecisionToken.PerformSelector (new Selector ("ignore"), null, 0);
+					else
+						e.DecisionToken.PerformSelector (new Selector ("use"), null, 0);
+				};
+				break;
+			case WebView.DocumentTitleChangedEvent:
+				this.Control.ReceivedTitle += delegate(object sender, MonoMac.WebKit.WebFrameTitleEventArgs e) {
+					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (e.Title));
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 		
 		public Uri Url {
 			get { 
-				return new Uri(Control.MainFrameUrl);
+				return new Uri (Control.MainFrameUrl);
 			}
 			set { 
-				if (value != null) Control.MainFrameUrl = value.AbsoluteUri;
-				else Control.MainFrameUrl = null;
+				if (value != null)
+					Control.MainFrameUrl = value.AbsoluteUri;
+				else
+					Control.MainFrameUrl = null;
 			}
 		}
 		
-		#endregion
+		public string DocumentTitle {
+			get {
+				return Control.MainFrameTitle;
+			}
+		}
+		
+		public void ExecuteScript (string script)
+		{
+			Control.StringByEvaluatingJavaScriptFromString (script);
+		}
 
+		public void SetHtml (string html, string baseUrl)
+		{
+			Control.MainFrame.LoadHtmlString (html, string.IsNullOrEmpty (baseUrl) ? null : new NSUrl (baseUrl));
+		}
+		
+		public void Stop ()
+		{
+			Control.MainFrame.StopLoading ();
+		}
+		
+		public void Reload ()
+		{
+			Control.Reload (Control);
+		}
+
+		public void GoBack ()
+		{
+			Control.GoBack ();
+		}
+
+		public void GoForward ()
+		{
+			Control.GoForward ();
+		}
+
+		public bool CanGoBack {
+			get {
+				return Control.CanGoBack ();
+			}
+		}
+
+		public bool CanGoForward {
+			get {
+				return Control.CanGoForward ();
+			}
+		}
 	}
 }
 

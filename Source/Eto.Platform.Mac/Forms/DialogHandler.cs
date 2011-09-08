@@ -7,12 +7,16 @@ using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
-	public class DialogHandler : MacWindow<NSWindow, Dialog>, IDialog
+	public class DialogHandler : MacWindow<MyWindow, Dialog>, IDialog
 	{
 		Button button;
 		
 		class DialogWindow : MyWindow {
-			public DialogHandler Handler { get; set; }
+			public new DialogHandler Handler
+			{
+				get { return base.Handler as DialogHandler; }
+				set { base.Handler = value; }
+			}
 			
 			public DialogWindow()
 				: base(new SD.Rectangle(0,0,200,200), NSWindowStyle.Closable | NSWindowStyle.Titled, NSBackingStore.Buffered, false)

@@ -14,7 +14,7 @@ namespace Eto.Forms
 			return menu;
 		}
 		
-		public void Generate(Menu menu)
+		public void Generate(ISubMenuWidget menu)
 		{
 			var list = new List<IActionItem>(this);
 			list.Sort(Compare);

@@ -33,7 +33,7 @@ namespace Eto.Test.Interface.Controls
 		{
 			return new Label{
 				Text = "Font Label",
-				Font = new Font(FontFamily.Sans, 12){ Bold = true },
+				Font = new Font(FontFamily.Sans, 12, FontStyle.Bold),
 			};
 		}
 		

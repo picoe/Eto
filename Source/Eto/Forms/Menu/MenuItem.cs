@@ -20,36 +20,35 @@ namespace Eto.Forms
 
 	public class MenuItemCollection : BaseList<MenuItem>
 	{
-		Menu parent;
-		internal protected MenuItemCollection(Menu parent)
+		ISubMenu subMenu;
+		
+		public ISubMenuWidget Parent
 		{
-			this.parent = parent;
+			get; private set;
+		}
+		
+		public MenuItemCollection(ISubMenuWidget parent, ISubMenu parentMenu)
+		{
+			this.Parent = parent;
+			this.subMenu = parentMenu;
 		}
 
 		protected override void OnAdded (ListEventArgs<MenuItem> e)
 		{
 			base.OnAdded (e);
-			parent.AddMenu(IndexOf(e.Item), e.Item);
+			subMenu.AddMenu(IndexOf(e.Item), e.Item);
 		}
 		
 		protected override void OnRemoved (ListEventArgs<MenuItem> e)
 		{
 			base.OnRemoved (e);
-			parent.RemoveMenu(e.Item);
+			subMenu.RemoveMenu(e.Item);
 		}
 		
 		public override void Clear()
 		{
 			base.Clear ();
-			parent.Clear();
-		}
-
-		public MenuItem Add(string text)
-		{
-			var item = new ImageMenuItem(parent.Generator);
-			item.Text = text;
-			Add(item);
-			return item;
+			subMenu.Clear();
 		}
 	}
 }

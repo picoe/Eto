@@ -11,10 +11,9 @@ namespace Eto
 			return GetResource(filename, Assembly.GetCallingAssembly());
 		}
 
-		public static Stream GetResource(string filename, Assembly asm)
+		public static Stream GetResource(string resourceName, Assembly asm)
 		{
 			if (asm == null) asm = Assembly.GetCallingAssembly();
-			string resourceName = asm.GetName().Name + "." + filename;
 			return asm.GetManifestResourceStream(resourceName);
 		}
 

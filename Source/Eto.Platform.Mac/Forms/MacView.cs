@@ -47,6 +47,8 @@ namespace Eto.Platform.Mac
 		
 		Size? PreferredSize { get; }
 		
+		Size? MinimumSize { get; set; }
+		
 		Control Widget { get; }
 
 		bool AutoSize { get; }
@@ -71,6 +73,12 @@ namespace Eto.Platform.Mac
 				this.AutoSize = false;
 				CreateTracking ();
 			}
+		}
+		
+		public virtual Size? MinimumSize
+		{
+			get { return null; }
+			set { }
 		}
 		
 		public Size? PreferredSize
@@ -118,6 +126,7 @@ namespace Eto.Platform.Mac
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
 				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) {
+					((MacView<T, W>)(e.Widget.Handler)). OnSizeChanged (EventArgs.Empty);
 					e.Widget.OnSizeChanged (EventArgs.Empty);
 				});
 				break;
@@ -126,6 +135,10 @@ namespace Eto.Platform.Mac
 				break;
 
 			}
+		}
+		
+		protected virtual void OnSizeChanged (EventArgs e)
+		{
 		}
 		
 		public void Invalidate ()

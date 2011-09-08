@@ -19,14 +19,14 @@ namespace Eto.Test.Interface.Dialogs
 			layout.Padding = new Padding (0, 10);
 			
 			layout.Add (new ImageView{
-				Image = new Icon(null, "TestIcon.ico"),
+				Image = new Icon(null, "Eto.Test.Interface.TestIcon.ico"),
 				Size = new Size(128, 128)
 			}, 0, 0, true, true);
 			
 			layout.Add (new Label{
 				Text = "Test Application",
 				Size = new Size(240, 24),
-				Font = new Font(FontFamily.Sans, 16){ Bold = true },
+				Font = new Font(FontFamily.Sans, 16, FontStyle.Bold),
 				HorizontalAlign = HorizontalAlign.Center
 			}, 0, 1);
 

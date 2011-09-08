@@ -433,6 +433,9 @@
     <Compile Include="Drawing\GraphicsPath.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
+    <Compile Include="Forms\Controls\EnumComboBox.cs" />
+    <Compile Include="Forms\Menu\ContextMenu.cs" />
+    <Compile Include="Forms\Menu\SubMenu.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

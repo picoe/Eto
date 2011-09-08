@@ -20,8 +20,6 @@
     <RootNamespace>Eto.Platform.GtkSharp</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <ReleaseVersion />
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
@@ -230,6 +228,9 @@
     <Compile Include="CustomControls\AnalogClock.cs" />
     <Compile Include="CustomControls\SizableBin.cs" />
     <Compile Include="CustomControls\WindowExtensions.cs" />
+    <Compile Include="Forms\Menu\ContextMenuHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

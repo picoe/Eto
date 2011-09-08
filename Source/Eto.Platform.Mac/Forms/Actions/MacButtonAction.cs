@@ -14,9 +14,9 @@ namespace Eto.Platform.Mac.Forms.Actions
 			this.Selector = selector;
 		}
 
-		protected override MenuItem GenerateMenu (ActionItem actionItem, Menu menu)
+		public override MenuItem Generate (ActionItem actionItem, ISubMenuWidget menu)
 		{
-			var item = base.GenerateMenu (actionItem, menu) as ImageMenuItem;
+			var item = base.Generate (actionItem, menu) as ImageMenuItem;
 			var menuItem = (NSMenuItem)item.ControlObject;
 			menuItem.Target = null;
 			menuItem.Action = new MonoMac.ObjCRuntime.Selector(Selector);
@@ -24,9 +24,9 @@ namespace Eto.Platform.Mac.Forms.Actions
 			return item;
 		}
 		
-		public override ToolBarItem GenerateToolBar (ActionItem actionItem, ToolBar toolBar)
+		public override ToolBarItem Generate (ActionItem actionItem, ToolBar toolBar)
 		{
-			var item = base.GenerateToolBar (actionItem, toolBar);
+			var item = base.Generate (actionItem, toolBar);
 			var tb = (NSToolbarItem)item.ControlObject;
 			tb.Target = null;
 			tb.Action = new MonoMac.ObjCRuntime.Selector(Selector);

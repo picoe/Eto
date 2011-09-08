@@ -137,7 +137,10 @@ namespace Eto.Platform.Windows
 				return Control.HorizontalAlign;
 			}
 			set {
-				Control.HorizontalAlign = value;
+				if (Control.HorizontalAlign != value) {
+					Control.HorizontalAlign = value;
+					Control.Invalidate ();
+				}
 			}
 		}
 		
@@ -146,7 +149,10 @@ namespace Eto.Platform.Windows
 				return Control.Wrap;
 			}
 			set {
-				Control.Wrap = value;
+				if (value != Control.Wrap) {
+					Control.Wrap = value;
+					Control.Invalidate ();
+				}
 			}
 		}
 		
@@ -168,7 +174,10 @@ namespace Eto.Platform.Windows
 				return Control.VerticalAlign;
 			}
 			set {
-				Control.VerticalAlign = value;
+				if (Control.VerticalAlign != value) {
+					Control.VerticalAlign = value;
+					Control.Invalidate ();
+				}
 			}
 		}
 

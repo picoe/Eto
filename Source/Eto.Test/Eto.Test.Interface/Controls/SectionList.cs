@@ -46,6 +46,7 @@ namespace Eto.Test.Interface.Controls
 			Items.Add (new Section<WebViewSection> { Text = "Web View" });
 			Items.Add (new Section<FileDialogSection> { Text = "File Dialog" });
 			Items.Add (new Section<DrawableSection> { Text = "Drawable" });
+			Items.Add (new Section<ListBoxSection> { Text = "List Box" });
 			
 			this.SelectedIndex = 5; // select the first item
 		}

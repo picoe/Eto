@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Test.Interface</RootNamespace>
     <AssemblyName>Eto.Test.Interface</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -47,6 +48,7 @@
     <Compile Include="Controls\TextAreaSection.cs" />
     <Compile Include="Controls\FileDialogSection.cs" />
     <Compile Include="Controls\DrawableSection.cs" />
+    <Compile Include="Controls\ListBoxSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

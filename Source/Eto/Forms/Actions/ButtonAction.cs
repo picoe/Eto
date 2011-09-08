@@ -83,7 +83,7 @@ namespace Eto.Forms
 		{
 		}
 		
-		public virtual ToolBarItem GenerateToolBar(ActionItem actionItem, ToolBar toolBar)
+		public override ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar)
 		{
 			ToolBarButton tbb = new ToolBarButton(toolBar.Generator);
 			tbb.ID = this.ID;
@@ -93,12 +93,6 @@ namespace Eto.Forms
 			if (Icon != null) tbb.Icon = Icon;
 			new ToolBarConnector(this, tbb);
 			return tbb;
-		}
-		
-		public override void Generate(ActionItem actionItem, ToolBar toolBar)
-		{
-			var tbb = GenerateToolBar(actionItem, toolBar);
-			toolBar.Items.Add(tbb);
 		}
 		
 		protected class ToolBarConnector

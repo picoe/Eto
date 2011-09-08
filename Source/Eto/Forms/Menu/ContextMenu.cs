@@ -1,32 +1,30 @@
 using System;
-using System.Collections;
 
 namespace Eto.Forms
 {
-	public interface IMenuBar : IMenu, ISubMenu
+	
+	public interface IContextMenu : ISubMenu
 	{
-
+		
 	}
 	
-	public class MenuBar : Menu, ISubMenuWidget
+	public class ContextMenu : Menu, ISubMenuWidget
 	{
-		IMenuBar inner;
+		IContextMenu inner;
 		MenuItemCollection menuItems;
 		
-		public MenuBar()
+		public ContextMenu()
 			: this(Generator.Current)
 		{
-			
 		}
 
-		public MenuBar(Generator g) : base(g, typeof(IMenuBar))
+		public ContextMenu(Generator g) : base(g, typeof(IContextMenu))
 		{
-			//BindingContext = new BindingContext();
-			inner = (IMenuBar)base.Handler;
+			inner = (IContextMenu)this.Handler;
 			menuItems = new MenuItemCollection(this, inner);
 		}
 
-		public MenuBar(Generator g, ActionItemCollection actionItems) : this(g)
+		public ContextMenu(Generator g, ActionItemCollection actionItems) : this(g)
 		{
 			GenerateActions(actionItems);
 		}
@@ -45,5 +43,6 @@ namespace Eto.Forms
 			get { return menuItems; }
 		}
 		#endregion
-	}
 }
+}
+

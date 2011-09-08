@@ -16,6 +16,9 @@ namespace Eto.Platform.Mac
 		}
 
 
+		public Eto.Drawing.Size? MinimumSize {
+			get; set;
+		}
 		
 		public virtual object ContainerObject {
 			get {

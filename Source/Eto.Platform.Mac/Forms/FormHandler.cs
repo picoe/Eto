@@ -6,7 +6,7 @@ using SD = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
-	public class FormHandler : MacWindow<NSWindow, Form>, IDisposable, IForm
+	public class FormHandler : MacWindow<MyWindow, Form>, IDisposable, IForm
 	{
 		bool centered;
 

@@ -9,7 +9,7 @@ namespace Eto.Forms
 {
 	public abstract partial class BaseAction
 	{
-		public abstract void Generate(ActionItem actionItem, Menu menu);
+		public abstract MenuItem Generate(ActionItem actionItem, ISubMenuWidget menu);
 	}
 
 }

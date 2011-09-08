@@ -11,7 +11,7 @@ namespace Eto.Platform.Mac
 		public CheckBoxHandler ()
 		{
 			Control = new NSButton ();
-			Control.SetButtonType (NSButtonType.OnOff);
+			Control.SetButtonType (NSButtonType.Switch);
 			Control.Activated += delegate {
 				Widget.OnCheckedChanged(EventArgs.Empty);
 			};

@@ -12,7 +12,8 @@ namespace Eto.Platform.Mac
 	{
 		NSTableView control;
 		NSScrollView scroll;
-		List<IListItem> data = new List<IListItem>();
+		NSTableColumn imgcol;
+		List<IListItem> data = new List<IListItem> ();
 		
 		class DataSource : NSTableViewDataSource
 		{
@@ -20,8 +21,19 @@ namespace Eto.Platform.Mac
 			
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				return new NSString(Handler.data[row].Text);
+				switch (tableColumn.Identifier as NSString) {
+				case "text":
+					return new NSString (Handler.data [row].Text);
+				case "img":
+					var imgsrc = Handler.data [row] as IImageListItem;
+					if (imgsrc != null) {
+						return imgsrc.Image.ControlObject as NSImage;
+					}
+					break;
+				}
+				return null;
 			}
+
 			public override int GetRowCount (NSTableView tableView)
 			{
 				return Handler.data.Count;
@@ -39,35 +51,67 @@ namespace Eto.Platform.Mac
 			
 			public override void SelectionDidChange (NSNotification notification)
 			{
-				Handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Handler.Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			}
 			
 		}
 		
 		class MyTableView : NSTableView
 		{
-			public ListBoxHandler Handler { get; set; }
 			
+			public override NSMenu MenuForEvent (NSEvent theEvent)
+			{
+				if (Handler.ContextMenu != null)
+					return Handler.ContextMenu.ControlObject as NSMenu;
+				else
+					return base.MenuForEvent (theEvent);
+			}
+			public ListBoxHandler Handler { get; set; }
 			
 			public override void KeyDown (NSEvent theEvent)
 			{
-				if (theEvent.KeyCode == (ushort)NSKey.Return)
-				{
-					Handler.Widget.OnActivated(EventArgs.Empty);
-				}
-				else
+				if (theEvent.KeyCode == (ushort)NSKey.Return) {
+					Handler.Widget.OnActivated (EventArgs.Empty);
+				} else
 					base.KeyDown (theEvent);
 			}
+			public override void ReloadData ()
+			{
+				if (Handler.Widget.Items.Any(r => r is IImageListItem))
+					Handler.imgcol.Width = 16;
+				else 
+					Handler.imgcol.Width = 0;
+				Handler.control.SizeLastColumnToFit ();
+				base.ReloadData ();
+			}
 			
+		}
+		
+		public ContextMenu ContextMenu {
+			get; set;
 		}
 		
 		public ListBoxHandler ()
 		{
 			control = new MyTableView{ Handler = this };
+			
+			imgcol = new NSTableColumn ();
+			imgcol.ResizingMask = NSTableColumnResizingMask.None;
+			imgcol.Identifier = new NSString ("img");
+			imgcol.Editable = false;
+			imgcol.MinWidth = 0;
+			imgcol.Width = 0;
+			imgcol.Hidden = false;
+			imgcol.DataCell = new NSImageCell ();
+			control.AddColumn (imgcol);
+			
 			var col = new NSTableColumn ();
+			col.Identifier = new NSString ("text");
 			col.ResizingMask = NSTableColumnResizingMask.Autoresizing;
 			col.Editable = false;
 			control.AddColumn (col);
+			
+			
 			control.DataSource = new DataSource{ Handler = this };
 			control.HeaderView = null;
 			control.DoubleClick += delegate {
@@ -76,7 +120,7 @@ namespace Eto.Platform.Mac
 			control.Delegate = new Delegate { Handler = this };
 			
 
-			scroll = new NSScrollView();
+			scroll = new NSScrollView ();
 			scroll.AutoresizesSubviews = true;
 			scroll.DocumentView = control;
 			scroll.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
@@ -87,39 +131,40 @@ namespace Eto.Platform.Mac
 			Control = scroll;
 		}
 
-
 		#region IListControl Members
 		
 		public void AddRange (IEnumerable<IListItem> collection)
 		{
-			data.AddRange(collection);
-			control.ReloadData();
+			data.AddRange (collection);
+			control.ReloadData ();
 		}
 		
 		public void AddItem (IListItem item)
 		{
-			data.Add(item);
-			control.ReloadData();
+			data.Add (item);
+			control.ReloadData ();
 		}
 
 		public void RemoveItem (IListItem item)
 		{
-			data.Remove(item);
-			control.ReloadData();
+			data.Remove (item);
+			control.ReloadData ();
 		}
 
 		public int SelectedIndex {
 			get	{ return control.SelectedRow; }
 			set {
-				if (value == -1) control.DeselectAll (control);
-				else control.SelectRow (value, false);
+				if (value == -1)
+					control.DeselectAll (control);
+				else
+					control.SelectRow (value, false);
 			}
 		}
 
 		public void RemoveAll ()
 		{
-			data.Clear();
-			control.ReloadData();
+			data.Clear ();
+			control.ReloadData ();
 		}
 
 		#endregion

@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace Eto.Drawing
 {
@@ -51,6 +52,19 @@ namespace Eto.Drawing
 		public Bitmap (int width, int height, PixelFormat pixelFormat) : this(Generator.Current, width, height, pixelFormat)
 		{
 		}
+		
+		public Bitmap(Assembly asm, string resourceName) : this(Generator.Current)
+		{
+			if (asm == null) asm = Assembly.GetCallingAssembly();
+			Stream stream = Resources.GetResource(resourceName, asm);
+			if (stream == null) Console.WriteLine("Resource not found: {0} - {1}", asm.FullName, resourceName);	
+			else
+			{
+				inner.Create(stream);
+				stream.Close();
+			}
+		}
+		
 		
 		public Bitmap (Generator g, string fileName) : this(g)
 		{

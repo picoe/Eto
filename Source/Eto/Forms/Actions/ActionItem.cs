@@ -94,7 +94,9 @@ namespace Eto.Forms
 		
 		public override void Generate(ToolBar toolBar)
 		{
-			Action.Generate(this, toolBar);
+			var item = Action.Generate(this, toolBar);
+			if (item != null)
+				toolBar.Items.Add (item);
 		}
 
 	}

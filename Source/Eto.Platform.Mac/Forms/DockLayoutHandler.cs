@@ -109,6 +109,7 @@ namespace Eto.Platform.Mac
 		public override void SetContainerSize (SD.SizeF size)
 		{
 			size += Generator.ConvertF (Padding.Size);
+			
 			base.SetContainerSize (size);
 			SetChildFrame();
 		}

@@ -40,11 +40,26 @@ namespace Eto.Platform.GtkSharp
 
 		public bool Resizable {
 			get {
-				return Control.AllowGrow && Control.AllowShrink;
+				return Control.AllowGrow/* && Control.AllowShrink*/;
 			}
 			set {
 				Control.AllowGrow = value;
-				Control.AllowShrink = value;
+				//Control.AllowShrink = value;
+			}
+		}
+		
+		public override Size Size {
+			get {
+				if (Control.Visible)
+					return Generator.Convert (Control.Allocation.Size);
+				else
+					return Generator.Convert (Control.DefaultSize);
+			}
+			set {
+				if (Control.Visible)
+					Control.Allocation = new Gdk.Rectangle (Control.Allocation.Location, Generator.Convert (value));
+				else
+					Control.SetDefaultSize (value.Width, value.Height);
 			}
 		}
 
@@ -137,7 +152,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		void SetAccelerators (Menu item)
+		void SetAccelerators (ISubMenuWidget item)
 		{
 			if (item != null && item.MenuItems != null)
 				foreach (var child in item.MenuItems) {
@@ -147,7 +162,7 @@ namespace Eto.Platform.GtkSharp
 						var key = new Gtk.AccelKey (KeyMap.ConvertToKey (actionItem.Shortcut), KeyMap.ConvertToModifier (actionItem.Shortcut), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator ("activate", accelGroup, key);
 					}
-					SetAccelerators (child);
+					SetAccelerators (child as ISubMenuWidget);
 				}
 			
 		}

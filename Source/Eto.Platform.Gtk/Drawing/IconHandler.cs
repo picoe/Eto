@@ -5,7 +5,7 @@ using Eto.Drawing;
 namespace Eto.Platform.GtkSharp.Drawing
 {
 
-	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, IIcon
+	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, IIcon, IGtkPixbuf
 	{
 		
 		public Gdk.Pixbuf Pixbuf { get; set; }

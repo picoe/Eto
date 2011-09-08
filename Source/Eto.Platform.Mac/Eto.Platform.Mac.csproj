@@ -134,6 +134,7 @@
     <Compile Include="Forms\Controls\MacEventView.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
+    <Compile Include="Forms\Menu\ContextMenuHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -82,7 +82,7 @@ namespace Eto.Forms
 			action.Checked = !action.Checked;
 		}
 
-		public override void Generate(ActionItem actionItem, ToolBar toolBar)
+		public override ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar)
 		{
 			CheckToolBarButton tbb = new CheckToolBarButton(toolBar.Generator);
 			tbb.ID = this.ID;
@@ -90,8 +90,8 @@ namespace Eto.Forms
 			tbb.Enabled = this.Enabled;
 			if (ShowLabel || actionItem.ShowLabel || toolBar.TextAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			if (Icon != null) tbb.Icon = Icon;
-			toolBar.Items.Add(tbb);
 			new ToolBarConnector(this, tbb);
+			return tbb;
 		}
 
 		private class ToolBarConnector

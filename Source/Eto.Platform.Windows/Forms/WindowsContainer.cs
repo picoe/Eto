@@ -8,9 +8,24 @@ namespace Eto.Platform.Windows
 {
 	
 	public abstract class WindowsContainer<T, W> : WindowsControl<T, W>, IContainer
-		where T: SWF.Control
+		where T: System.Windows.Forms.Control
 		where W: Container
 	{
+		
+		public Size? MinimumSize {
+			get {
+				if (this.Control.MinimumSize == SD.Size.Empty)
+					return null;
+				else
+					return Generator.Convert(this.Control.MinimumSize);
+			}
+			set {
+				if (value != null)
+					this.Control.MinimumSize = Generator.Convert (value.Value);
+				else
+					this.Control.MinimumSize = System.Drawing.Size.Empty;
+			}
+		}
 
 
 		public SWF.Control ContainerControl

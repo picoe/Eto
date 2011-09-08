@@ -10,7 +10,8 @@ namespace Eto.Platform.Windows
 {
 	public class ListBoxHandler : WindowsControl<SWF.ListBox, ListBox>, IListBox
 	{
-
+		ContextMenu contextMenu;
+		
 		public ListBoxHandler()
 		{
 			Control = new SWF.ListBox();
@@ -26,7 +27,18 @@ namespace Eto.Platform.Windows
 			Control.KeyDown += control_KeyDown;
 		}
 
-		#region IListControl Members
+		public ContextMenu ContextMenu {
+			get {
+				return contextMenu;
+			}
+			set {
+				contextMenu = value;
+				if (contextMenu != null)
+					this.Control.ContextMenuStrip = contextMenu.ControlObject as SWF.ContextMenuStrip;
+				else
+					this.Control.ContextMenuStrip = null;
+			}
+		}
 
 		public void AddRange (IEnumerable<IListItem> collection)
 		{
@@ -55,8 +67,6 @@ namespace Eto.Platform.Windows
 		{
 			Control.Items.Clear();
 		}
-
-		#endregion
 
 		private void control_SelectedIndexChanged(object sender, EventArgs e)
 		{

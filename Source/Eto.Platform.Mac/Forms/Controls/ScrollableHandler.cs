@@ -156,6 +156,10 @@ namespace Eto.Platform.Mac
 		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{
+			if (MinimumSize != null) {
+				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
+				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
+			}
 			view.SetFrameSize (contentSize);
 			if (this.AutoSize) {
 				contentSize.Width += 2;

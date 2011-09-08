@@ -13,6 +13,7 @@ namespace Eto.Platform.GtkSharp
 			Control.Changed += delegate {
 				Widget.OnTextChanged (EventArgs.Empty);
 			};
+			Control.SetSizeRequest (20, -1);
 			Control.ActivatesDefault = true;
 		}
 

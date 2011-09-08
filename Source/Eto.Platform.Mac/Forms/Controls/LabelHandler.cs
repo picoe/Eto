@@ -157,7 +157,7 @@ namespace Eto.Platform.Mac
 			set {
 				font = value;
 				if (font != null)
-					Control.Font = ((FontHandler)font.Handler).GetFont ();
+					Control.Font = ((FontHandler)font.Handler).Control;
 				else
 					Control.Font = NSFont.LabelFontOfSize (NSFont.LabelFontSize);
 			}

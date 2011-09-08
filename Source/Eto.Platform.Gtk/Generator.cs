@@ -67,6 +67,11 @@ namespace Eto.Platform.GtkSharp
 			return new Size (size.Width, size.Height);
 		}
 
+		public static Size Convert (Gtk.Requisition req)
+		{
+			return new Size (req.Width, req.Height);
+		}
+
 		public static Gdk.Point Convert (Point point)
 		{
 			return new Gdk.Point (point.X, point.Y);

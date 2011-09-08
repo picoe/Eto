@@ -23,6 +23,8 @@ namespace Eto.Platform.Mac
 		SD.RectangleF oldFrame;
 		bool zoom;
 		
+		public IMacWindow Handler { get; set; } 
+		
 		public MyWindow (SD.Rectangle rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
 		{
@@ -51,14 +53,24 @@ namespace Eto.Platform.Mac
 				zoom = true;
 			}
 		}
+
+		public override void SetFrame (System.Drawing.RectangleF frameRect, bool display)
+		{
+			if (Handler.MinimumSize != null) {
+				frameRect.Width = Math.Max(frameRect.Width, Handler.MinimumSize.Value.Width);
+				frameRect.Height = Math.Max(frameRect.Height, Handler.MinimumSize.Value.Height);
+			}
+			base.SetFrame (frameRect, display);
+		}
 	}
 	
-	interface IMacWindow
+	public interface IMacWindow
 	{
 		Rectangle? RestoreBounds { get; set; }
 		Window Widget { get; }
 		NSMenu MenuBar { get; }
 		NSObject FieldEditorObject { get; set; }
+		Size? MinimumSize { get; }
 	}
 	
 	class MacWindowDelegate : NSWindowDelegate
@@ -107,7 +119,7 @@ namespace Eto.Platform.Mac
 	}
 	
 	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer, IMacWindow
-		where T: NSWindow
+		where T: MyWindow
 		where W: Eto.Forms.Window
 	{
 		MenuBar menuBar;
@@ -118,6 +130,10 @@ namespace Eto.Platform.Mac
 		public NSObject FieldEditorObject { get; set; }
 		
 		public bool AutoSize { get; private set; }
+		
+		public Size? MinimumSize {
+			get; set;
+		}
 		
 		public NSMenu MenuBar
 		{
@@ -132,6 +148,7 @@ namespace Eto.Platform.Mac
 		
 		protected void ConfigureWindow ()
 		{
+			Control.Handler = this;
 			Control.ContentView = new FlippedView ();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
@@ -171,15 +188,17 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public override void AttachEvent (string handler)
+		protected virtual void OnSizeChanged (EventArgs e)
 		{
-			switch (handler) {
-			default:
-				base.AttachEvent (handler);
-				break;
+			if (MinimumSize != null) {
+				var size = this.Size;
+				size.Width = Math.Max (size.Width, MinimumSize.Value.Width);
+				size.Height = Math.Max (size.Height, MinimumSize.Value.Height);
+				if (size != this.Size)
+					this.Size = size;
 			}
 		}
-
+		
 		public virtual void SetLayout (Layout layout)
 		{
 			var maclayout = layout.Handler as IMacLayout;
@@ -391,6 +410,10 @@ namespace Eto.Platform.Mac
 		#region IMacContainer implementation
 		public void SetContentSize (SD.SizeF contentSize)
 		{
+			if (MinimumSize != null) {
+				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
+				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
+			}
 			Control.SetContentSize (contentSize);
 		}
 		#endregion

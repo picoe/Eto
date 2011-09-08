@@ -63,6 +63,9 @@ namespace Eto.Platform.GtkSharp
 			set {
 				if (size != value) {
 					size = value;
+					var alloc = Control.Allocation;
+					alloc.Size = Generator.Convert (value);
+					//Control.Allocation = alloc;
 					Control.SetSizeRequest (size.Width, size.Height);
 				}
 			}

@@ -9,47 +9,78 @@ namespace Eto.Drawing
 		Serif
 	}
 	
+	public enum SystemFont
+	{
+		Default,
+		Bold,
+		TitleBar,
+		ToolTip,
+		Label,
+		MenuBar,
+		Menu,
+		Message,
+		Palette,
+		StatusBar
+	}
+	
+	[Flags]
+	public enum FontStyle
+	{
+		Normal = 0,
+		Bold = 1 << 0,
+		Italic = 1 << 1
+	}
+	
 	public interface IFont : IInstanceWidget
 	{
-		void Create(FontFamily family);
-		bool Bold { get; set; }
-		bool Italic { get; set; }
-		float Size { get; set; }
+		void Create(FontFamily family, float size, FontStyle style);
+		void Create(SystemFont systemFont, float? size);
+		bool Bold { get; }
+		bool Italic { get; }
+		float Size { get; }
 	}
 	
 	public class Font : InstanceWidget
 	{
 		IFont inner;
 
-		public Font(FontFamily family, float size)
-			: this(Generator.Current, family, size)
+		public Font(FontFamily family, float size, FontStyle style = FontStyle.Normal)
+			: this(Generator.Current, family, size, style)
 		{
 		}
 
-		public Font(Generator g, FontFamily family, float size)
+		public Font(Generator g, FontFamily family, float size, FontStyle style = FontStyle.Normal)
 			: base(g, typeof(IFont))
 		{
 			inner = (IFont)Handler;
-			inner.Create(family);
-			inner.Size = size;
+			inner.Create(family, size, style);
 		}
 
+		public Font(SystemFont systemFont, float? size = null)
+			: this(Generator.Current, systemFont, size)
+		{
+		}
+
+		public Font(Generator g, SystemFont systemFont, float? size = null)
+			: base(g, typeof(IFont))
+		{
+			inner = (IFont)Handler;
+			inner.Create(systemFont, size);
+		}
+		
 		public float Size
 		{
 			get { return inner.Size; }
-			set { inner.Size = value; }
 		}
 
 		public bool Bold
 		{
 			get { return inner.Bold; }
-			set { inner.Bold = value; }
 		}
 
 		public bool Italic
 		{
 			get { return inner.Italic; }
-			set { inner.Italic = value; }
 		}
 	}
 }

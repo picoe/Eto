@@ -106,6 +106,11 @@ namespace Eto.Drawing
 			return (x >= Left && x <= Right && y >= Top && y <= Bottom);
 		}
 		
+		public bool Intersects(Rectangle rect)
+		{
+			return Right >= rect.Left && Left <= rect.Right && Bottom >= rect.Top && Top <= rect.Bottom;
+		}
+
 		public static Rectangle Union(Rectangle rect1, Rectangle rect2)
 		{
 			Rectangle rect = rect1;
@@ -115,7 +120,7 @@ namespace Eto.Drawing
 			if (rect2.Bottom > rect.Bottom) rect.Bottom = rect2.Bottom;
 			return rect;
 		}
-
+		
 		public bool IsEmpty
 		{
 			get { return (width==0 && height==0); }
