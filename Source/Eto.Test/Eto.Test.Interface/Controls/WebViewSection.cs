@@ -133,7 +133,7 @@ namespace Eto.Test.Interface.Controls
 				Text = "Load HTML"
 			};
 			control.Click += delegate {
-				webView.SetHtml ("<html><head><title>Hello!</title></head><body><h1>Some custom html</h1></body></html>", string.Empty);
+				webView.LoadHtml ("<html><head><title>Hello!</title></head><body><h1>Some custom html</h1></body></html>");
 			};
 			return control;
 		}

@@ -94,10 +94,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 		
-		public void SetHtml (string html, string baseUrl)
+		public void LoadHtml (string html)
 		{
-			// what do we do with base url?  can we support it?
-			
 			this.Control.DocumentText = html;
 		}
 

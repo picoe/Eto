@@ -6,7 +6,7 @@ namespace Eto.Forms
 	{
 		Uri Url { get; set; }
 
-		void SetHtml (string html, string baseUrl);
+		void LoadHtml (string html);
 		
 		void GoBack ();
 		
@@ -166,9 +166,9 @@ namespace Eto.Forms
 			get { return inner.DocumentTitle; }
 		}
 		
-		public void SetHtml (string html, string baseUrl)
+		public void LoadHtml (string html)
 		{
-			inner.SetHtml (html, baseUrl);
+			inner.LoadHtml (html);
 		}
 	}
 }

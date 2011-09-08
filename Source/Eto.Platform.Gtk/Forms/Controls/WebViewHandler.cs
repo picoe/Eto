@@ -67,9 +67,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			webView.ExecuteScript(script);
 		}
 
-		public void SetHtml (string html, string baseUrl)
+		public void LoadHtml (string html)
 		{
-			webView.LoadHtmlString (html, string.IsNullOrEmpty (baseUrl) ? null : baseUrl);
+			webView.LoadHtmlString (html, null);
 		}
 		
 		public void Stop ()
