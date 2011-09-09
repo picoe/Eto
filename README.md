@@ -1,5 +1,7 @@
-Eto - Cross platform desktop and mobile user interface framework
-================================================================
+Eto.Forms
+=========
+### A cross platform desktop and mobile user interface framework
+
 
 Description
 -----------
@@ -13,9 +15,12 @@ A great use of this is to build smaller portions of the UI that is needed from c
 such as plugins, etc, and to use the platform-specific UI to wrap around that.
 
 This library will suffer from "Lowest Common Denominator" and is no replacement for each
-platform's framework.  Ideally, one would create the user interface for each platform to take 
+platform's framework. Ideally, one would create the user interface for each platform to take 
 full advantage of its capabilities, but may take much more time to create than to use this 
-framework for portions of your app.
+framework for portions of your app. However, one could take advantages of each platform
+by creating custom controls that wrap around platform-specific functionality.  This does involve
+writing specific code for each platform, but would allow you to create any sort of control
+you may need.
 
 Note that it is planned to have some different controls for Mobile platforms vs. Desktop.
 
