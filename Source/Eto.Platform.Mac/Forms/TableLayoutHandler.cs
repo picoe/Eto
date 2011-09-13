@@ -213,7 +213,7 @@ namespace Eto.Platform.Mac
 						frame.Width = widths[x];
 						frame.Height = heights[y];
 						frame.X = startx;
-						frame.Y = starty; //Control.Frame.Height - starty - frame.Height;
+						frame.Y = Control.Frame.Height - starty - frame.Height;
 						if (frame != nsview.Frame)
 							nsview.Frame = frame;
 						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
@@ -221,11 +221,6 @@ namespace Eto.Platform.Mac
 					startx += widths[x] + Spacing.Width;
 				}
 				starty += heights[y] + Spacing.Height;
-			}
-			if (controlFrame != Control.Frame) 
-			{
-				//Control.Frame = controlFrame; // no need as it is a container that will be handled separately!
-				//Console.WriteLine("Setting frame to {0}", controlFrame);
 			}
 		}
 

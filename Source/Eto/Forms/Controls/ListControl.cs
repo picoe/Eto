@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Collections;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -31,6 +32,11 @@ namespace Eto.Forms
 			get { return key ?? Text; }
 			set { key = value; }
 		}
+	}
+	
+	public class ImageListItem : ListItem, IImageListItem
+	{
+		public Image Image { get; set; }
 	}
 	
 	public class ObjectListItem : IListItem

@@ -11,7 +11,7 @@ namespace Eto.Platform.Mac
 		{
 			Control = new NSBox ();
 			Control.Title = string.Empty;
-			Control.ContentView = new FlippedView ();
+			Control.ContentView = new NSView ();
 		}
 
 		public override object ContainerObject {

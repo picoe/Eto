@@ -13,18 +13,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		public class MyView : MacEventView
 		{
-			/*
-			public override bool PreservesContentDuringLiveResize {
-				get {
-					return true;
-				}
-			}*/
-			
-			public override bool IsFlipped {
-				get {
-					return false;
-				}
-			}
 			Drawable Drawable
 			{
 				get { return Widget as Drawable; }

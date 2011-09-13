@@ -9,15 +9,6 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
-	public class FlippedView : NSView
-	{
-		public override bool IsFlipped {
-			get {
-				return true;
-			}
-		}
-	}
-
 	public class MyWindow : NSWindow
 	{
 		SD.RectangleF oldFrame;
@@ -149,7 +140,7 @@ namespace Eto.Platform.Mac
 		protected void ConfigureWindow ()
 		{
 			Control.Handler = this;
-			Control.ContentView = new FlippedView ();
+			Control.ContentView = new NSView();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			Control.ReleasedWhenClosed = false;

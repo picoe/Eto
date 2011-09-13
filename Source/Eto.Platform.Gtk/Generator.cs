@@ -30,15 +30,14 @@ namespace Eto.Platform.GtkSharp
 			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
 				action ();
 			else {
-				//var ev = new ManualResetEvent (false);
+				var resetEvent = new ManualResetEvent (false);
 
-				Gtk.Application.Invoke (delegate
-				{
+				Gtk.Application.Invoke (delegate {
 					action ();
-					//ev.Set ();
+					resetEvent.Set ();
 				});
 
-				//ev.WaitOne ();
+				resetEvent.WaitOne ();
 			}
 		}
 

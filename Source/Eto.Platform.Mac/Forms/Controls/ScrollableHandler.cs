@@ -15,22 +15,20 @@ namespace Eto.Platform.Mac
 		
 		public ScrollableHandler ()
 		{
-			control = new NSScrollView ();
+			control = new NSScrollView();
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
 			control.HasVerticalScroller = true;
 			control.HasHorizontalScroller = true;
-			control.AutohidesScrollers = true;
-			//control.AutoresizingMask = NSViewResizingMask.NotSizable;
-			view = new FlippedView ();
+			control.AutohidesScrollers = false;
+			view = new NSView ();
 			control.DocumentView = view;
 			Control = control;
 		}
 		
 		public BorderType Border {
 			get {
-				switch (control.BorderType)
-				{
+				switch (control.BorderType) {
 				case NSBorderType.BezelBorder:
 					return BorderType.Bezel;
 				case NSBorderType.LineBorder:
@@ -38,12 +36,11 @@ namespace Eto.Platform.Mac
 				case NSBorderType.NoBorder:
 					return BorderType.None;
 				default:
-					throw new NotSupportedException();
+					throw new NotSupportedException ();
 				}
 			}
 			set {
-				switch (value)
-				{
+				switch (value) {
 				case BorderType.Bezel:
 					control.BorderType = NSBorderType.BezelBorder;
 					break;
@@ -54,7 +51,7 @@ namespace Eto.Platform.Mac
 					control.BorderType = NSBorderType.NoBorder;
 					break;
 				default:
-					throw new NotSupportedException();
+					throw new NotSupportedException ();
 				}
 			}
 		}
@@ -63,32 +60,36 @@ namespace Eto.Platform.Mac
 			get { return view; }
 		}
 		
-		public override void OnLoad (EventArgs e)
+		public override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoad (e);
+			base.OnLoadComplete (e);
 			UpdateScrollSizes ();
 		}
 
+		void InternalSetFrameSize (SD.SizeF size)
+		{
+			if (size != view.Frame.Size) {
+				var oldpos = ScrollPosition;
+				view.SetFrameSize (size);
+				ScrollPosition = oldpos;
+			}
+		}
+		
 		public void UpdateScrollSizes ()
 		{
-			//Control.UpdateTrackingAreas();
-			//control.PerformLayout();
 			Control.Tile ();
-			SD.SizeF size = new SD.SizeF (0, 0);
-			foreach (var c in view.Subviews) {
-				var frame = c.Frame;
-				if (size.Width < frame.Right)
-					size.Width = frame.Right;
-				if (size.Height < frame.Bottom)
-					size.Height = frame.Bottom;
+			SD.SizeF size = SD.SizeF.Empty;
+			var layout = Widget.Layout.Handler as IMacLayout;
+			if (layout != null) {
+				foreach (var c in Widget.Controls) {
+					var frame = layout.GetPosition (c);
+					if (size.Width < frame.Right)
+						size.Width = frame.Right;
+					if (size.Height < frame.Bottom)
+						size.Height = frame.Bottom;
+				}
 			}
-			if (size != view.Frame.Size) {
-				//Console.WriteLine ("***Size {0}", size);
-				view.SetFrameSize (size);
-			}
-			//Control.ReflectScrolledClipView (Control.ContentView);
-			//Control.UpdateTrackingAreas ();
-			//view.ScrollPoint (SD.PointF.Empty);
+			InternalSetFrameSize (size);
 		}
 		
 		public override Color BackgroundColor {
@@ -102,46 +103,19 @@ namespace Eto.Platform.Mac
 		
 		public Point ScrollPosition {
 			get { 
-				//var newpt = view.ConvertPointToView (Control.DocumentVisibleRect.Location, Control.ContentView); //..ConvertPointFromView (Control.DocumentVisibleRect.Location, view);
-				//Console.WriteLine (" - Pos: {0}, {1}, {2}, {3}", Control.VerticalScroller.FloatValue * (view.Frame.Height - Control.Bounds.Height), Control.DocumentVisibleRect.Location, view.VisibleRect (), Control.ContentView.Bounds);
-				
-				return Generator.ConvertF (Control.ContentView.Bounds.Location);
-				//return Generator.ConvertF (Control.DocumentVisibleRect.Location);
+				var loc = Control.ContentView.Bounds.Location;
+				return new Point ((int)loc.X, (int)Math.Max (0, (view.Frame.Height - Control.ContentView.Frame.Height - loc.Y)));
 			}
 			set { 
-				//Control.ScrollsDynamically = false;
-				/*CATransaction.Begin ();
-				CATransaction.DisableActions = true;
-				CATransaction.AnimationDuration = 0;
-				*/
-				//NSAnimationContext.CurrentContext.Duration = 0;
-				//if (value.X == 0 && value.Y == 0)
-				{
-					Control.ContentView.ScrollToPoint (Generator.ConvertF (value));
-					Control.ReflectScrolledClipView (Control.ContentView);
-				}
-				//else view.ScrollPoint (Generator.ConvertF (value));
-				//var pt = Control.ConvertPointToView (Generator.ConvertF (value), view);
-				//var pt = view.ConvertPointToView (Generator.ConvertF (value), Control.ContentView);
-				//var pt = Generator.ConvertF (value);
-				//Control.ContentView.ScrollToPoint (pt);
-				//CATransaction.Commit ();
-				//Control.ReflectScrolledClipView (Control.ContentView);
-				
-				//Console.WriteLine ("Set To: {0}, {1}. {2}", value, view.Frame, Control.Frame.Size);
-				
-				//Control.ScrollsDynamically = true;
-
-				//Control.ReflectScrolledClipView (Control.ContentView);
-				//Control.UpdateTrackingAreas ();
+				Control.ContentView.ScrollToPoint (new SD.PointF (value.X, Math.Max (0, view.Frame.Height - Control.ContentView.Frame.Height - value.Y)));
+				Control.ReflectScrolledClipView (Control.ContentView);
 			}
 		}
 
 		public Size ScrollSize {			
 			get { return Generator.ConvertF (view.Frame.Size); }
 			set { 
-				view.SetFrameSize (Generator.ConvertF (value)); 
-				Control.Tile (); 
+				InternalSetFrameSize (Generator.ConvertF (value));
 			}
 		}
 		
@@ -160,11 +134,13 @@ namespace Eto.Platform.Mac
 				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
 				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
 			}
-			view.SetFrameSize (contentSize);
+			InternalSetFrameSize (contentSize);
 			if (this.AutoSize) {
 				contentSize.Width += 2;
 				contentSize.Height += 2;
-				Control.SetFrameSize (contentSize);
+				if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == 0) {
+					Control.SetFrameSize (contentSize);
+				}
 			}
 		}
 	}

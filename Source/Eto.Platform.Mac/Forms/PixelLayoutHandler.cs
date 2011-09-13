@@ -3,12 +3,15 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using SD = System.Drawing;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.Mac
 {
 	public class PixelLayoutHandler : MacLayout<NSView, PixelLayout>, IPixelLayout
 	{
-
+		Dictionary<Control, Point> points = new Dictionary<Control, Point> ();
+		
 		public override NSView Control {
 			get {
 				return (NSView)Widget.Container.ContainerObject;
@@ -17,51 +20,116 @@ namespace Eto.Platform.Mac
 				base.Control = value;
 			}
 		}
-
+		
+		public override SD.RectangleF GetPosition (Control control)
+		{
+			Point point;
+			if (points.TryGetValue (control, out point))
+			{
+				var frameSize = ((NSView)control.ControlObject).Frame.Size;
+				return new SD.RectangleF(Generator.ConvertF(point), frameSize);
+			}
+			return base.GetPosition (control);
+		}
 		
 		public override void SizeToFit ()
 		{
-			foreach (var c in Widget.Container.Controls)
-			{
-				AutoSize (c);
-			}
-			
-			SD.SizeF size = new SD.SizeF (0, 0);
-			foreach (var c in Control.Subviews) {
-				var frame = c.Frame;
-				if (size.Width < frame.Right)
-					size.Width = frame.Right;
-				if (size.Height < frame.Bottom)
-					size.Height = frame.Bottom;
+			SD.SizeF size = SD.SizeF.Empty;
+			foreach (var item in points) {
+				AutoSize (item.Key);
+				var frameSize = ((NSView)item.Key.ControlObject).Frame.Size;
+				if (size.Width < frameSize.Width + item.Value.X)
+					size.Width = frameSize.Width + item.Value.X;
+				if (size.Height < frameSize.Height + item.Value.Y)
+					size.Height = frameSize.Height + item.Value.Y;
 			}
 			
 			if (size != Control.Frame.Size) {
-				SetContainerSize(size);
+				SetContainerSize (size);
 			}
 		}
-			
 		
-		public void Add(Control child, int x, int y)
+		public override void Initialize ()
 		{
-			var parent = ControlObject as NSView;
+			base.Initialize ();
+			Control.PostsFrameChangedNotifications = true;
+			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
+				var handler = e.Widget.Handler as PixelLayoutHandler;
+				handler.Layout ();
+			});
+
+		}
+		
+		public override void OnLoad ()
+		{
+			base.OnLoad ();
+			Layout ();
+		}
+		
+		void SetPosition (Control control, Point point, float frameHeight)
+		{
+			var offset = ((IMacView)control.Handler).PositionOffset;
+			var childView = control.ControlObject as NSView;
+			var requiredHeight = childView.Frame.Height + point.Y + offset.Height;
+			/*if (frameHeight < requiredHeight) {
+				frameHeight = requiredHeight;
+				Control.SetFrameSize (new SD.SizeF(Control.Frame.Width, frameHeight));
+			}*/
+			//frameHeight = Math.Max (frameHeight, point.Y + offset.Height + childView.Frame.Height);
+			var origin = new System.Drawing.PointF (point.X + offset.Width, frameHeight - (requiredHeight));
+			//origin.Y = Math.Max (0, origin.Y);
+			//Console.WriteLine ("Setting {0} to {1}, translated: {2}", control, point, origin);
+			childView.SetFrameOrigin (origin);
+		}
+		
+		void Layout ()
+		{
+			var controlPoints = points.ToArray ();
+			/*var size = SD.SizeF.Empty;
+			foreach (var item in controlPoints) {
+				var childView = item.Key.ControlObject as NSView;
+				var point = item.Value;
+				var frameSize = childView.Frame.Size;
+				point.X += (int)frameSize.Width;
+				point.Y += (int)frameSize.Height;
+				if (size.Width < point.X) size.Width = point.X;
+				if (size.Height < point.Y) size.Height = point.Y;
+			}
+			Control.SetFrameSize (size);*/
+//			var frameHeight = Widget.Container.Size.Height; // Control.Frame.Height;
+			var frameHeight = Math.Max (Widget.Container.Size.Height, Control.Frame.Height);
+			foreach (var item in controlPoints) {
+				SetPosition (item.Key, item.Value, frameHeight);
+			}
+		}
+		
+		public void Add (Control child, int x, int y)
+		{
+			var location = new Point (x, y);
+			points [child] = location;
 			var childView = child.ControlObject as NSView;
-			var offset = ((IMacView)child.Handler).PositionOffset;
-			childView.SetFrameOrigin(new System.Drawing.PointF(x + offset.Width, y + offset.Height));
-			parent.AddSubview(childView);
+			childView.AutoresizingMask = NSViewResizingMask.MinXMargin | NSViewResizingMask.MinYMargin;
+			if (Widget.Loaded) {
+				SetPosition (child, location, Control.Frame.Height);
+			}
+			Control.AddSubview (childView);
 		}
 
-		public void Move(Control child, int x, int y)
+		public void Move (Control child, int x, int y)
 		{
-			var childView = child.ControlObject as NSView;
-			var offset = ((IMacView)child.Handler).PositionOffset;
-			childView.SetFrameOrigin(new System.Drawing.PointF(x + offset.Width, y + offset.Height));
+			var location = new Point (x, y);
+			points [child] = location;
+			if (Widget.Loaded) {
+				var frameHeight = Math.Max (Widget.Container.Size.Height, Control.Frame.Height);
+				SetPosition (child, location, frameHeight);
+			}
 		}
 		
 		public void Remove (Control child)
 		{
 			var childView = child.ControlObject as NSView;
-			childView.RemoveFromSuperview();
-			
+			points.Remove (child);
+			childView.RemoveFromSuperview ();
 		}
 	}
 }

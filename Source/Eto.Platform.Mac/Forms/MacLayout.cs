@@ -10,6 +10,7 @@ namespace Eto.Platform.Mac
 		object LayoutObject { get; }
 		void SizeToFit();
 		void SetContainerSize(SD.SizeF size);
+		SD.RectangleF GetPosition(Control control);
 	}
 	
 	public abstract class MacLayout<T, W> : MacObject<T, W>, ILayout, IMacLayout
@@ -31,6 +32,11 @@ namespace Eto.Platform.Mac
 
 		public virtual void OnLoadComplete()
 		{
+		}
+		
+		public virtual SD.RectangleF GetPosition(Control control)
+		{
+			return ((NSView)control.ControlObject).Frame;
 		}
 		
 		public virtual void SetContainerSize(SD.SizeF size)

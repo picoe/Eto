@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class MacEventView : FlippedView
+	public class MacEventView : NSView
 	{
 		WeakReference handler;
 		

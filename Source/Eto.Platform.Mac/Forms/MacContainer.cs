@@ -42,6 +42,7 @@ namespace Eto.Platform.Mac
 			var control = maclayout.LayoutObject as NSView;
 			if (control != null) {
 				var container = ContainerObject as NSView;
+				control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 				control.SetFrameSize (container.Frame.Size);
 				container.AddSubview (control);
 			}
@@ -63,19 +64,6 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		/*
-		protected override void OnSizeChanged (EventArgs e)
-		{
-			base.OnSizeChanged (e);
-			if (MinimumSize != null) {
-				var size = this.Size;
-				size.Width = Math.Max (size.Width, MinimumSize.Value.Width);
-				size.Height = Math.Max (size.Height, MinimumSize.Value.Height);
-				if (size != this.Size)
-					this.Size = size;
-			}
-		}*/
-		
 		public virtual void SetContentSize (SD.SizeF contentSize)
 		{
 			if (MinimumSize != null) {

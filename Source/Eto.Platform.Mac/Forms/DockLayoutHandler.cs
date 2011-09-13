@@ -68,7 +68,7 @@ namespace Eto.Platform.Mac
 			{
 				frame.X = padding.Left;
 				frame.Width -= padding.Horizontal;
-				frame.Y = padding.Top;
+				frame.Y = padding.Bottom;
 				frame.Height -= padding.Vertical;
 			}
 			else {
@@ -93,6 +93,7 @@ namespace Eto.Platform.Mac
 					NSView childControl = (NSView)child.ControlObject;
 					childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 					SetChildFrame();
+					
 					NSView parent = (NSView)ControlObject;
 					parent.AddSubview(childControl);
 				}

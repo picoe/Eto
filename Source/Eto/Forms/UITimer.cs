@@ -33,6 +33,9 @@ namespace Eto.Forms
 			inner = (IUITimer)Handler;
 		}
 		
+		/// <summary>
+		/// Gets or sets the interval, in seconds
+		/// </summary>
 		public double Interval
 		{
 			get { return inner.Interval; }

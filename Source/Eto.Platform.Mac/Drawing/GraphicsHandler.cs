@@ -87,7 +87,7 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			this.height = height;
 			this.adjust = true;
-			this.Flipped = true;
+			this.Flipped = false;
 			this.Control = gc;
 			this.context = gc.GraphicsPort;
 			context.InterpolationQuality = CGInterpolationQuality.High;

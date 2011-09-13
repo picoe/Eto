@@ -35,9 +35,7 @@ namespace Eto.Platform.GtkSharp
 		[GLib.ConnectBefore]
 		void HandleTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
 		{
-			Console.WriteLine ("Button Pressed");
 			if (contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress) {
-			Console.WriteLine ("Showing menu?!");
 				var menu = contextMenu.ControlObject as Gtk.Menu;
 				menu.Popup ();
 				menu.ShowAll ();

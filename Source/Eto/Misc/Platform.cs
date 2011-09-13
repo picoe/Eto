@@ -15,7 +15,7 @@ namespace Eto.Misc
 		[DllImport( "libc" )]
 		static extern int uname (IntPtr buf);
 		
-		private static string GetUnixType ()
+		static string GetUnixType ()
 		{
 			IntPtr buf = IntPtr.Zero;
 			string osName = "";			
