@@ -123,6 +123,7 @@ namespace Eto.Platform.Mac
 			//controlFrame.Height = Math.Min (controlFrame.Height, requiredy);
 			controlFrame.Width = requiredx;
 			controlFrame.Height = requiredy;
+			//Console.WriteLine("TableLayout container size: {0}", controlFrame.Size);
 			SetContainerSize (controlFrame.Size);
 		}
 		
@@ -199,6 +200,7 @@ namespace Eto.Platform.Mac
 			if (numx > 0) totalx = Math.Max(totalx, 0) / numx;
 			if (numy > 0) totaly = Math.Max(totaly, 0) / numy;
 			
+			bool flipped = Control.IsFlipped;
 			float starty = Padding.Top;
 			for (int y=0; y<heights.Length; y++) {
 				if (yscaling[y]) heights[y] = totaly;
@@ -213,7 +215,7 @@ namespace Eto.Platform.Mac
 						frame.Width = widths[x];
 						frame.Height = heights[y];
 						frame.X = startx;
-						frame.Y = Control.Frame.Height - starty - frame.Height;
+						frame.Y = flipped ? starty : Control.Frame.Height - starty - frame.Height;
 						if (frame != nsview.Frame)
 							nsview.Frame = frame;
 						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);

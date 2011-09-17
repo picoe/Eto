@@ -66,17 +66,21 @@ namespace Eto.Platform.Mac
 			Layout ();
 		}
 		
-		void SetPosition (Control control, Point point, float frameHeight)
+		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
 		{
 			var offset = ((IMacView)control.Handler).PositionOffset;
 			var childView = control.ControlObject as NSView;
-			var requiredHeight = childView.Frame.Height + point.Y + offset.Height;
 			/*if (frameHeight < requiredHeight) {
 				frameHeight = requiredHeight;
 				Control.SetFrameSize (new SD.SizeF(Control.Frame.Width, frameHeight));
 			}*/
 			//frameHeight = Math.Max (frameHeight, point.Y + offset.Height + childView.Frame.Height);
-			var origin = new System.Drawing.PointF (point.X + offset.Width, frameHeight - (requiredHeight));
+			
+			SD.PointF origin;
+			if (flipped) origin = new System.Drawing.PointF (point.X + offset.Width, point.Y + offset.Height);
+			else origin = new System.Drawing.PointF (point.X + offset.Width, frameHeight - (childView.Frame.Height + point.Y + offset.Height));
+			//var origin = new System.Drawing.PointF (point.X + offset.Width, point.Y + offset.Height);
+			
 			//origin.Y = Math.Max (0, origin.Y);
 			//Console.WriteLine ("Setting {0} to {1}, translated: {2}", control, point, origin);
 			childView.SetFrameOrigin (origin);
@@ -96,10 +100,11 @@ namespace Eto.Platform.Mac
 				if (size.Height < point.Y) size.Height = point.Y;
 			}
 			Control.SetFrameSize (size);*/
-//			var frameHeight = Widget.Container.Size.Height; // Control.Frame.Height;
-			var frameHeight = Math.Max (Widget.Container.Size.Height, Control.Frame.Height);
+			var frameHeight = Control.Frame.Height;
+			//var frameHeight = Math.Max (Widget.Container.Size.Height, Control.Frame.Height);
+			var flipped = Control.IsFlipped;
 			foreach (var item in controlPoints) {
-				SetPosition (item.Key, item.Value, frameHeight);
+				SetPosition (item.Key, item.Value, frameHeight, flipped);
 			}
 		}
 		
@@ -108,9 +113,11 @@ namespace Eto.Platform.Mac
 			var location = new Point (x, y);
 			points [child] = location;
 			var childView = child.ControlObject as NSView;
-			childView.AutoresizingMask = NSViewResizingMask.MinXMargin | NSViewResizingMask.MinYMargin;
+			//childView.AutoresizingMask = NSViewResizingMask.MinYMargin;
 			if (Widget.Loaded) {
-				SetPosition (child, location, Control.Frame.Height);
+				var frameHeight = Control.Frame.Height;
+				//var frameHeight = Math.Max (Widget.Container.Size.Height, Control.Frame.Height);
+				SetPosition (child, location, frameHeight, Control.IsFlipped);
 			}
 			Control.AddSubview (childView);
 		}
@@ -120,8 +127,9 @@ namespace Eto.Platform.Mac
 			var location = new Point (x, y);
 			points [child] = location;
 			if (Widget.Loaded) {
-				var frameHeight = Math.Max (Widget.Container.Size.Height, Control.Frame.Height);
-				SetPosition (child, location, frameHeight);
+				var frameHeight = Control.Frame.Height;
+				//var frameHeight = Math.Max (Widget.Container.Size.Height, Control.Frame.Height);
+				SetPosition (child, location, frameHeight, Control.IsFlipped);
 			}
 		}
 		

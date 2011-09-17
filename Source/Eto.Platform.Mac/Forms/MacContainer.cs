@@ -42,7 +42,7 @@ namespace Eto.Platform.Mac
 			var control = maclayout.LayoutObject as NSView;
 			if (control != null) {
 				var container = ContainerObject as NSView;
-				control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+				//control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 				control.SetFrameSize (container.Frame.Size);
 				container.AddSubview (control);
 			}
@@ -66,6 +66,7 @@ namespace Eto.Platform.Mac
 
 		public virtual void SetContentSize (SD.SizeF contentSize)
 		{
+			//Console.WriteLine ("Set Content Size: {0}", contentSize);
 			if (MinimumSize != null) {
 				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
 				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);

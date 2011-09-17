@@ -11,9 +11,15 @@ namespace Eto.Drawing
 
 		public static Rectangle Round(RectangleF rectangle)
 		{
-			return new Rectangle((int)Math.Round(rectangle.X), (int)Math.Round(rectangle.Y), (int)Math.Round(rectangle.Width), (int)Math.Round(rectangle.Height));
+			return new Rectangle((int)Math.Truncate(rectangle.X), (int)Math.Truncate(rectangle.Y), (int)Math.Round(rectangle.Width), (int)Math.Round(rectangle.Height));
 		}
 
+		public static Rectangle RoundOut(RectangleF rectangle)
+		{
+			return new Rectangle((int)Math.Truncate(rectangle.X), (int)Math.Truncate(rectangle.Y), (int)Math.Round(rectangle.Width + 0.5), (int)Math.Round(rectangle.Height + 0.5));
+		}
+
+		
 		public static Rectangle Truncate(RectangleF rectangle)
 		{
 			return new Rectangle((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);

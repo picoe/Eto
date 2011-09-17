@@ -15,8 +15,6 @@ namespace Eto.Platform.Mac.Forms
 			Control = NSPasteboard.GeneralPasteboard;
 		}
 
-		#region IClipboard implementation
-		
 		public void SetData (byte[] value, string type)
 		{
 			Control.SetDataForType (NSData.FromArray (value), type);
@@ -84,8 +82,6 @@ namespace Eto.Platform.Mac.Forms
 			Control.ClearContents ();
 		}
 		
-		#endregion
-
 	}
 }
 

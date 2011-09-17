@@ -13,15 +13,22 @@ namespace Eto.Platform.Mac
 		NSScrollView control;
 		NSView view;
 		
+		class FlippedView : NSView
+		{
+			public override bool IsFlipped {
+				get { return true; }
+			}
+		}
+
 		public ScrollableHandler ()
 		{
-			control = new NSScrollView();
+			control = new NSScrollView ();
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
 			control.HasVerticalScroller = true;
 			control.HasHorizontalScroller = true;
-			control.AutohidesScrollers = false;
-			view = new NSView ();
+			control.AutohidesScrollers = true;
+			view = new FlippedView ();
 			control.DocumentView = view;
 			Control = control;
 		}
@@ -60,18 +67,16 @@ namespace Eto.Platform.Mac
 			get { return view; }
 		}
 		
-		public override void OnLoadComplete (EventArgs e)
+		public override void OnLoad (EventArgs e)
 		{
-			base.OnLoadComplete (e);
+			base.OnLoad (e);
 			UpdateScrollSizes ();
 		}
-
+		
 		void InternalSetFrameSize (SD.SizeF size)
 		{
 			if (size != view.Frame.Size) {
-				var oldpos = ScrollPosition;
 				view.SetFrameSize (size);
-				ScrollPosition = oldpos;
 			}
 		}
 		
@@ -104,10 +109,12 @@ namespace Eto.Platform.Mac
 		public Point ScrollPosition {
 			get { 
 				var loc = Control.ContentView.Bounds.Location;
-				return new Point ((int)loc.X, (int)Math.Max (0, (view.Frame.Height - Control.ContentView.Frame.Height - loc.Y)));
+				if (view.IsFlipped) return Generator.ConvertF (loc);
+				else return new Point((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
 			}
 			set { 
-				Control.ContentView.ScrollToPoint (new SD.PointF (value.X, Math.Max (0, view.Frame.Height - Control.ContentView.Frame.Height - value.Y)));
+				if (view.IsFlipped) Control.ContentView.ScrollToPoint (Generator.ConvertF (value));
+				else Control.ContentView.ScrollToPoint (new SD.PointF(value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
 				Control.ReflectScrolledClipView (Control.ContentView);
 			}
 		}
@@ -138,9 +145,15 @@ namespace Eto.Platform.Mac
 			if (this.AutoSize) {
 				contentSize.Width += 2;
 				contentSize.Height += 2;
-				if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == 0) {
+				
+				if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) {
+					if (Widget.ParentLayout != null) {
+						var layout = Widget.ParentLayout.Handler as IMacLayout;
+						if (layout != null)
+							layout.SetContainerSize (contentSize);
+					}
+				} else
 					Control.SetFrameSize (contentSize);
-				}
 			}
 		}
 	}
