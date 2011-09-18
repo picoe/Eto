@@ -14,6 +14,8 @@ namespace Eto.Platform.Windows
 		
 		public class MyLabel : System.Windows.Forms.Label
 		{
+			public LabelHandler Handler { get; set; }
+
 			public WrapMode Wrap { get; set; }
 			
 			public HorizontalAlign HorizontalAlign { get; set; }
@@ -24,14 +26,30 @@ namespace Eto.Platform.Windows
 			{
 				Wrap = WrapMode.Word;
 			}
-			
-			protected override void OnPaint (System.Windows.Forms.PaintEventArgs e)
+
+			public override SD.Size GetPreferredSize (SD.Size proposedSize)
 			{
-				using (var format = new SD.StringFormat ()) 
-				using (var b = new SD.SolidBrush (this.ForeColor))
-				{
-					format.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
-					switch (this.Wrap) {
+				using (var format = CreateStringFormat())
+				using (var g = SD.Graphics.FromHwnd (this.Handle)) {
+					var bordersAndPadding = this.Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
+					proposedSize -= bordersAndPadding;
+					proposedSize.Width = Math.Max (0, proposedSize.Width);
+					proposedSize.Height = Math.Max (0, proposedSize.Height);
+					bool isDocked = (Handler.Widget.ParentLayout is DockLayout);
+					var proposedWidth = proposedSize.Width > 1 ? proposedSize.Width : isDocked ? Parent.Width : 0;
+					var size = g.MeasureString (this.Text, this.Font, proposedWidth, format);
+					if (isDocked)
+						size.Width = proposedWidth;
+					size += bordersAndPadding;
+					return SD.Size.Ceiling (size);
+				}
+			}
+
+			SD.StringFormat CreateStringFormat ()
+			{
+				var format = new SD.StringFormat ();
+				format.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
+				switch (this.Wrap) {
 					case WrapMode.None:
 						format.Trimming = System.Drawing.StringTrimming.None;
 						format.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
@@ -44,7 +62,15 @@ namespace Eto.Platform.Windows
 						format.Trimming = System.Drawing.StringTrimming.Character;
 						format.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
 						break;
-					}
+				}
+				return format;
+			}
+
+			protected override void OnPaint (System.Windows.Forms.PaintEventArgs e)
+			{
+				using (var format = CreateStringFormat()) 
+				using (var b = new SD.SolidBrush (this.ForeColor))
+				{
 					
 					if (this.Wrap == WrapMode.Character)
 					{
@@ -68,19 +94,19 @@ namespace Eto.Platform.Windows
 					}
 					else
 					{
-						var size = e.Graphics.MeasureString (this.Text, this.Font, this.Bounds.Width, format);
-						var rect = new SD.RectangleF (0, 0, this.Bounds.Width, this.Bounds.Height);
+						var rect = new SD.RectangleF (Margin.Left, Margin.Top, this.Bounds.Width - Margin.Horizontal, this.Bounds.Height - Margin.Vertical);
+						var size = e.Graphics.MeasureString (this.Text, this.Font, (int)rect.Width, format);
 						
 						if (size.Height < rect.Height)
 						{
 							switch (this.VerticalAlign)
 							{
 							case VerticalAlign.Bottom:
-								rect.Y = rect.Height - size.Height;
+								rect.Y += rect.Height - size.Height;
 								rect.Height = size.Height;
 								break;
 							case VerticalAlign.Middle:
-								rect.Y = (rect.Height - size.Height) / 2;
+								rect.Y += (rect.Height - size.Height) / 2;
 								rect.Height = size.Height;
 								break;
 							}
@@ -91,11 +117,11 @@ namespace Eto.Platform.Windows
 							switch (this.HorizontalAlign)
 							{
 							case HorizontalAlign.Right:
-								rect.X = rect.Width - size.Width;
+								rect.X = rect.Width - size.Width - Margin.Top;
 								rect.Width = size.Width;
 								break;
 							case HorizontalAlign.Center:
-								rect.X = (rect.Width - size.Width) / 2;
+								rect.X = (rect.Width - size.Width) / 2 - Margin.Top;
 								rect.Width = size.Width;
 								break;
 							}
@@ -119,7 +145,7 @@ namespace Eto.Platform.Windows
 		
 		public LabelHandler ()
 		{
-			Control = new MyLabel ();
+			Control = new MyLabel { Handler = this };
 			Control.AutoSize = true;
 		}
 		
@@ -131,6 +157,18 @@ namespace Eto.Platform.Windows
 				Control.ForeColor = Generator.Convert (value);
 			}
 		}
+
+		/*public override SWF.DockStyle DockStyle
+		{
+			get
+			{
+				switch (HorizontalAlign) {
+					case Eto.Forms.HorizontalAlign.Right:
+						return SWF.DockStyle.Right;
+				}
+				return base.DockStyle;
+			}
+		}*/
 		
 		public HorizontalAlign HorizontalAlign {
 			get {
@@ -141,6 +179,9 @@ namespace Eto.Platform.Windows
 					Control.HorizontalAlign = value;
 					Control.Invalidate ();
 				}
+				/*if (Control.Dock != SWF.DockStyle.None) {
+					Control.Dock = DockStyle;
+				}*/
 			}
 		}
 		

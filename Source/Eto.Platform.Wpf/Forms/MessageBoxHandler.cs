@@ -18,6 +18,18 @@ namespace Eto.Platform.Wpf.Forms
 			get; set; 
 		}
 
+		public string Caption
+		{
+			get;
+			set;
+		}
+
+		public MessageBoxType Type
+		{
+			get;
+			set;
+		}
+
 		public void Initialize ()
 		{
 		}
@@ -27,8 +39,9 @@ namespace Eto.Platform.Wpf.Forms
 			var element = parent.ControlObject as System.Windows.FrameworkElement;
 			var window = element.GetParent<System.Windows.Window>();
 			System.Windows.MessageBoxResult result;
-			if (window != null) result = System.Windows.MessageBox.Show (window, Text);
-			else result = System.Windows.MessageBox.Show (Text);
+			var icon = Convert (Type);
+			if (window != null) result = System.Windows.MessageBox.Show (window, Text, Caption, System.Windows.MessageBoxButton.OK, icon);
+			else result = System.Windows.MessageBox.Show (Text, string.Empty, System.Windows.MessageBoxButton.OK, icon);
 			
 			return Convert(result);
 		}
@@ -39,9 +52,25 @@ namespace Eto.Platform.Wpf.Forms
 			var window = element.GetParent<System.Windows.Window> ();
 			System.Windows.MessageBoxResult result;
 			var wpfbuttons = Convert(buttons);
-			if (window != null) result = System.Windows.MessageBox.Show (window, Text, string.Empty, wpfbuttons);
-			else result = System.Windows.MessageBox.Show (Text, string.Empty, wpfbuttons);
+			var icon = Convert(Type);
+			if (window != null) result = System.Windows.MessageBox.Show (window, Text, Caption, wpfbuttons, icon);
+			else result = System.Windows.MessageBox.Show (Text, string.Empty, wpfbuttons, icon);
 			return Convert (result);
+		}
+
+		System.Windows.MessageBoxImage Convert (MessageBoxType type)
+		{
+			switch (type) {
+				default:
+				case MessageBoxType.Information:
+					return System.Windows.MessageBoxImage.Information;
+				case MessageBoxType.Error:
+					return System.Windows.MessageBoxImage.Error;
+				case MessageBoxType.Question:
+					return System.Windows.MessageBoxImage.Question;
+				case MessageBoxType.Warning:
+					return System.Windows.MessageBoxImage.Warning;
+			}
 		}
 
 		DialogResult Convert (System.Windows.MessageBoxResult result)

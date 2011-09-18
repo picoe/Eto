@@ -7,24 +7,30 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfFrameworkElement<T,W> : WidgetHandler<T,W>, IControl
+	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl
 		where T : System.Windows.FrameworkElement
-		where W: Control
+		where W : Control
 	{
 		public abstract Color BackgroundColor
 		{
-			get; set;
+			get;
+			set;
 		}
 
 		public string Id
 		{
-			get; set; 
+			get;
+			set;
 		}
 
-		public Size Size
+		public virtual Size Size
 		{
-			get { return new Size((int)Control.Width, (int)Control.Height); }
-			set { Control.Width = value.Width; Control.Height = value.Height; }
+			get {
+				return new Size ((int)Control.Width, (int)Control.Height);
+			}
+			set {
+				Control.Width = value.Width; Control.Height = value.Height;
+			}
 		}
 
 		public bool Enabled
@@ -33,34 +39,34 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.IsEnabled = value; }
 		}
 
-		public void Invalidate()
+		public void Invalidate ()
 		{
-			Control.InvalidateVisual();
+			Control.InvalidateVisual ();
 		}
 
-		public void Invalidate(Rectangle rect)
+		public void Invalidate (Rectangle rect)
 		{
-			Control.InvalidateVisual();
+			Control.InvalidateVisual ();
 		}
 
-		public Graphics CreateGraphics()
+		public Graphics CreateGraphics ()
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException ();
 		}
 
-		public void SuspendLayout()
+		public void SuspendLayout ()
 		{
-			
+
 		}
 
-		public void ResumeLayout()
+		public void ResumeLayout ()
 		{
-			Control.UpdateLayout();
+			Control.UpdateLayout ();
 		}
 
-		public void Focus()
+		public void Focus ()
 		{
-			Control.Focus();
+			Control.Focus ();
 		}
 
 		public bool HasFocus
@@ -73,40 +79,44 @@ namespace Eto.Platform.Wpf.Forms
 			get { return Control.IsVisible; }
 			set
 			{
-				throw new NotImplementedException();
+				Control.Visibility = (value) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
 			}
 		}
 
-		public virtual void OnLoad(EventArgs e)
+		public virtual void OnLoad (EventArgs e)
 		{
 		}
 
-		public virtual void SetParent(Control parent)
+		public virtual void OnLoadComplete (EventArgs e)
 		{
 		}
 
-		public virtual void SetParentLayout(Layout layout)
+		public virtual void SetParent (Control parent)
 		{
 		}
 
-		public IAsyncResult BeginInvoke(Delegate method, object[] args)
+		public virtual void SetParentLayout (Layout layout)
 		{
-			throw new NotImplementedException();
 		}
 
-		public object EndInvoke(IAsyncResult result)
+		public IAsyncResult BeginInvoke (Delegate method, object[] args)
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException ();
 		}
 
-		public object Invoke(Delegate method, object[] args)
+		public object EndInvoke (IAsyncResult result)
 		{
-			throw new NotImplementedException();
+			throw new NotImplementedException ();
+		}
+
+		public object Invoke (Delegate method, object[] args)
+		{
+			throw new NotImplementedException ();
 		}
 
 		public bool InvokeRequired
 		{
-			get { throw new NotImplementedException(); }
+			get { throw new NotImplementedException (); }
 		}
 	}
 }

@@ -11,20 +11,78 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class LabelHandler : WpfControl<System.Windows.Controls.Label, Label>, ILabel
 	{
 		Font font;
+		System.Windows.Controls.TextBlock text;
 
 		public LabelHandler ()
 		{
 			Control = new System.Windows.Controls.Label ();
+			text = new System.Windows.Controls.TextBlock ();
+			Control.Content = text;
 		}
 
 		public HorizontalAlign HorizontalAlign
 		{
-			get; set; 
+			get { 
+				switch (Control.HorizontalContentAlignment) {
+					case System.Windows.HorizontalAlignment.Left:
+						return Eto.Forms.HorizontalAlign.Left;
+					case System.Windows.HorizontalAlignment.Right:
+						return Eto.Forms.HorizontalAlign.Right;
+					case System.Windows.HorizontalAlignment.Center:
+						return Eto.Forms.HorizontalAlign.Center;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
+			set
+			{
+				switch (value) {
+					case Eto.Forms.HorizontalAlign.Center:
+						Control.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Center;
+						break;
+					case Eto.Forms.HorizontalAlign.Left:
+						Control.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Left;
+						break;
+					case Eto.Forms.HorizontalAlign.Right:
+						Control.HorizontalContentAlignment = System.Windows.HorizontalAlignment.Right;
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+			}
 		}
 
 		public VerticalAlign VerticalAlign
 		{
-			get; set; 
+			get
+			{
+				switch (Control.VerticalContentAlignment) {
+					case System.Windows.VerticalAlignment.Top:
+						return Eto.Forms.VerticalAlign.Top;
+					case System.Windows.VerticalAlignment.Bottom:
+						return Eto.Forms.VerticalAlign.Bottom;
+					case System.Windows.VerticalAlignment.Center:
+						return Eto.Forms.VerticalAlign.Middle;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
+			set
+			{
+				switch (value) {
+					case Eto.Forms.VerticalAlign.Top:
+						Control.VerticalContentAlignment = System.Windows.VerticalAlignment.Top;
+						break;
+					case Eto.Forms.VerticalAlign.Bottom:
+						Control.VerticalContentAlignment = System.Windows.VerticalAlignment.Bottom;
+						break;
+					case Eto.Forms.VerticalAlign.Middle:
+						Control.VerticalContentAlignment = System.Windows.VerticalAlignment.Center;
+						break;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
 		}
 
 		public Font Font
@@ -42,18 +100,51 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public WrapMode Wrap
 		{
-			get; set; 
+			get
+			{
+				switch (text.TextWrapping) {
+					case System.Windows.TextWrapping.NoWrap:
+						return WrapMode.None;
+					case System.Windows.TextWrapping.Wrap:
+						return WrapMode.Word;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
+			set
+			{
+				switch (value) {
+					case WrapMode.Word:
+						text.TextWrapping = System.Windows.TextWrapping.Wrap;
+						break;
+					case WrapMode.Character:
+						throw new NotSupportedException ();
+					case WrapMode.None:
+						text.TextWrapping = System.Windows.TextWrapping.NoWrap;
+						break;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
 		}
 
 		public Color TextColor
 		{
-			get; set; 
+			get
+			{
+				var b = (System.Windows.Media.SolidColorBrush)text.Foreground;
+				return Generator.Convert (b.Color);
+			}
+			set
+			{
+				text.Foreground = new System.Windows.Media.SolidColorBrush (Generator.Convert (value));
+			}
 		}
 
 		public string Text
 		{
-			get { return Control.Content as string; }
-			set { Control.Content = value; }
+			get { return text.Text; }
+			set { text.Text = value; }
 		}
 	}
 }

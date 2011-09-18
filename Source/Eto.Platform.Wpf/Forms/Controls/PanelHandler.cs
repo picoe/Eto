@@ -12,6 +12,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public PanelHandler ()
 		{
 			Control = new System.Windows.Controls.Border ();
+			Control.Background = System.Windows.SystemColors.ControlBrush;
 		}
 
 		public Size ClientSize
@@ -44,5 +45,26 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		public Size? MinimumSize
+		{
+			get
+			{
+				if (Control.MinWidth > 0 && Control.MinHeight > 0)
+					return new Size ((int)Control.MinWidth, (int)Control.MinHeight);
+				else
+					return null;
+			}
+			set
+			{
+				if (value != null) {
+					Control.MinWidth = value.Value.Width;
+					Control.MinHeight = value.Value.Height;
+				}
+				else {
+					Control.MinHeight = 0;
+					Control.MinWidth = 0;
+				}
+			}
+		}
 	}
 }

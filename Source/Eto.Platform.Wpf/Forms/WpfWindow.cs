@@ -12,6 +12,7 @@ namespace Eto.Platform.Wpf.Forms
 		where W: Window
 	{
 		Icon icon;
+		MenuBar menu;
 		System.Windows.Controls.DockPanel main;
 		System.Windows.Controls.DockPanel content;
 
@@ -43,10 +44,10 @@ namespace Eto.Platform.Wpf.Forms
 		public MenuBar Menu
 		{
 			get {
-				throw new NotImplementedException ();
+				return menu;
 			}
 			set {
-				throw new NotImplementedException ();
+				menu = value;
 			}
 		}
 
@@ -99,6 +100,81 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get { return Control.Title; }
 			set { Control.Title = value; }
+		}
+
+
+		public Point Location
+		{
+			get
+			{
+				return new Point ((int)Control.Left, (int)Control.Top);
+			}
+			set
+			{
+				Control.Left = value.X;
+				Control.Top = value.Y;
+			}
+		}
+
+		public WindowState State
+		{
+			get
+			{
+				switch (Control.WindowState) {
+					case System.Windows.WindowState.Maximized:
+						return WindowState.Maximized;
+					case System.Windows.WindowState.Minimized:
+						return WindowState.Minimized;
+					case System.Windows.WindowState.Normal:
+						return WindowState.Normal;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
+			set
+			{
+				switch (value) {
+					case WindowState.Maximized:
+						Control.WindowState = System.Windows.WindowState.Maximized;
+						break;
+					case WindowState.Minimized:
+						Control.WindowState = System.Windows.WindowState.Minimized;
+						break;
+					case WindowState.Normal:
+						Control.WindowState = System.Windows.WindowState.Normal;
+						break;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
+		}
+
+		public Rectangle? RestoreBounds
+		{
+			get { return Generator.Convert(Control.RestoreBounds); }
+		}
+
+
+		public Size? MinimumSize
+		{
+			get
+			{
+				if (Control.MinWidth > 0 && Control.MinHeight > 0)
+					return new Size ((int)Control.MinWidth, (int)Control.MinHeight);
+				else
+					return null;
+			}
+			set
+			{
+				if (value != null) {
+					Control.MinWidth = value.Value.Width;
+					Control.MinHeight = value.Value.Height;
+				}
+				else {
+					Control.MinHeight = 0;
+					Control.MinWidth = 0;
+				}
+			}
 		}
 	}
 }

@@ -11,14 +11,10 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Apply (System.Windows.Controls.Control control)
 		{
-			control.FontFamily = new System.Windows.Media.FontFamily (Convert (Family));
+			control.FontFamily = Family;
 
-			if (Bold) control.FontWeight = System.Windows.FontWeights.Bold;
-			else control.FontWeight = System.Windows.FontWeights.Normal;
-
-			if (Italic) control.FontStyle = System.Windows.FontStyles.Italic;
-			else control.FontStyle = System.Windows.FontStyles.Normal;
-
+			control.FontStyle = FontStyle;
+			control.FontWeight = FontWeight;
 			control.FontSize = Size;
 		}
 
@@ -36,29 +32,92 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
-		public void Create (FontFamily family)
-		{
-			this.Family = family;
-		}
-
-		public FontFamily Family
+		public System.Windows.Media.FontFamily Family
 		{
 			get; set;
 		}
+
+		public System.Windows.FontStyle FontStyle
+		{
+			get; set;
+		}
+
+		public System.Windows.FontWeight FontWeight
+		{
+			get;
+			set;
+		}
+
+		public double Size
+		{
+			get; set; 
+		}
+
+		public void Create (FontFamily family, float size, FontStyle style)
+		{
+			this.Family = new System.Windows.Media.FontFamily (Convert (family));
+			this.Size = size;
+			if ((style & Eto.Drawing.FontStyle.Bold) != 0) this.FontWeight = System.Windows.FontWeights.Bold;
+			else this.FontWeight = System.Windows.FontWeights.Normal;
+
+			if ((style & Eto.Drawing.FontStyle.Italic) != 0) this.FontStyle = System.Windows.FontStyles.Italic;
+			else this.FontStyle = System.Windows.FontStyles.Normal;
+		}
+
+		public void Create (SystemFont systemFont, float? size)
+		{
+			
+			switch (systemFont) {
+				case SystemFont.Label:
+				case SystemFont.Default:
+				case SystemFont.Message:
+				case SystemFont.Palette:
+				case SystemFont.TitleBar:
+				case SystemFont.ToolTip:
+					Family = System.Windows.SystemFonts.MessageFontFamily;
+					FontStyle = System.Windows.SystemFonts.MessageFontStyle;
+					FontWeight = System.Windows.SystemFonts.MessageFontWeight;
+					Size = System.Windows.SystemFonts.MessageFontSize;
+					break;
+				case SystemFont.Bold:
+					Family = System.Windows.SystemFonts.MessageFontFamily;
+					FontStyle = System.Windows.SystemFonts.MessageFontStyle;
+					FontWeight = System.Windows.FontWeights.Bold;
+					Size = System.Windows.SystemFonts.MessageFontSize;
+					break;
+				case SystemFont.MenuBar:
+				case SystemFont.Menu:
+					Family = System.Windows.SystemFonts.MenuFontFamily;
+					FontStyle = System.Windows.SystemFonts.MenuFontStyle;
+					FontWeight = System.Windows.SystemFonts.MenuFontWeight;
+					Size = System.Windows.SystemFonts.MenuFontSize;
+					break;
+				case SystemFont.StatusBar:
+					Family = System.Windows.SystemFonts.StatusFontFamily;
+					FontStyle = System.Windows.SystemFonts.StatusFontStyle;
+					FontWeight = System.Windows.SystemFonts.StatusFontWeight;
+					Size = System.Windows.SystemFonts.StatusFontSize;
+					break;
+				default:
+					throw new NotSupportedException ();
+			}
+			if (size != null) Size = size.Value;
+		}
+
 
 		public bool Bold
 		{
-			get; set;
+			get { return this.FontWeight == System.Windows.FontWeights.Bold; }
 		}
 
 		public bool Italic
 		{
-			get; set; 
+			get { return this.FontStyle == System.Windows.FontStyles.Italic; }
 		}
 
-		public float Size
+		float IFont.Size
 		{
-			get; set; 
+			get { return (float)this.Size; }
 		}
 	}
 }

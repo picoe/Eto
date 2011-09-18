@@ -6,11 +6,15 @@ using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class DockLayoutHandler : WidgetHandler<System.Windows.Controls.DockPanel, DockLayout>, IDockLayout
+	public class DockLayoutHandler : WpfLayout<System.Windows.Controls.DockPanel, DockLayout>, IDockLayout
 	{
+		Control content;
+
 		public DockLayoutHandler ()
 		{
-			Control = new System.Windows.Controls.DockPanel ();
+			Control = new System.Windows.Controls.DockPanel { 
+				LastChildFill = true
+			};
 		}
 
 		public Eto.Drawing.Padding Padding
@@ -19,15 +23,19 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.Margin = Generator.Convert (value); }
 		}
 
-		public void Add (Control control)
+		public Control Content
 		{
-			Control.Children.Clear ();
-			Control.Children.Add((System.Windows.UIElement)control.ControlObject);
-		}
-
-		public void Remove (Control control)
-		{
-			Control.Children.Clear ();
+			get { return content; }
+			set
+			{
+				Control.Children.Clear ();
+				content = value;
+				if (content != null) {
+					var element = (System.Windows.UIElement)content.ControlObject;
+					System.Windows.Controls.DockPanel.SetDock (element, System.Windows.Controls.Dock.Top);
+					Control.Children.Add (element);
+				}
+			}
 		}
 	}
 }

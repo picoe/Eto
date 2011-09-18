@@ -7,6 +7,11 @@ using ImageManipulation;
 
 namespace Eto.Platform.Windows.Drawing
 {
+	public interface IWindowsImage
+	{
+		SD.Image GetImageWithSize (int? size);
+	}
+
 
 	public class BitmapDataHandler : BitmapData
 	{
@@ -26,7 +31,7 @@ namespace Eto.Platform.Windows.Drawing
 		}
 	}
 
-	public class BitmapHandler : WidgetHandler<SD.Bitmap, Bitmap>, IBitmap
+	public class BitmapHandler : WidgetHandler<SD.Bitmap, Bitmap>, IBitmap, IWindowsImage
 	{
 		public BitmapHandler()
 		{
@@ -99,5 +104,10 @@ namespace Eto.Platform.Windows.Drawing
 			else  Control.Save(stream, Generator.Convert(format));
 		}
 
+
+		public SD.Image GetImageWithSize (int? size)
+		{
+			return Control;
+		}
 	}
 }

@@ -52,7 +52,7 @@ namespace Eto.Platform.Windows
 			}
 			set {
 				abortButton = value;
-				if (button != null) {
+				if (abortButton != null) {
 					var b = abortButton.ControlObject as SWF.IButtonControl;
 					this.Control.CancelButton = b;
 				}

@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public class IconHandler : WidgetHandler<SD.Icon, Icon>, IIcon
+	public class IconHandler : WidgetHandler<SD.Icon, Icon>, IIcon, IWindowsImage
 	{
 		SD.Icon[] icons;
 		
@@ -130,6 +130,15 @@ namespace Eto.Platform.Windows.Drawing
 					icons = null;
 				}
 			}
+		}
+
+		public SD.Image GetImageWithSize (int? size)
+		{
+			if (size != null) {
+				var icon = GetIconClosestToSize (size.Value);
+				return icon.ToBitmap ();
+			}
+			else return Control.ToBitmap ();
 		}
 	}
 }

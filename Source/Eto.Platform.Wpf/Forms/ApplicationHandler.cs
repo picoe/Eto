@@ -18,15 +18,6 @@ namespace Eto.Platform.Wpf.Forms
 		{
 		}
 
-		public void Run()
-		{
-			Widget.OnInitialized (EventArgs.Empty);
-			if (Widget.MainForm != null)
-				Control.Run((System.Windows.Window)Widget.MainForm.ControlObject);
-			else
-				Control.Run();
-		}
-
 		public void Quit()
 		{
 			Control.Shutdown();
@@ -50,6 +41,21 @@ namespace Eto.Platform.Wpf.Forms
 		public void Open(string url)
 		{
 			Process.Start(url);	
+		}
+
+		public void Run (string[] args)
+		{
+			Widget.OnInitialized (EventArgs.Empty);
+			if (Widget.MainForm != null)
+				Control.Run ((System.Windows.Window)Widget.MainForm.ControlObject);
+			else
+				Control.Run ();
+		}
+
+		public void Restart ()
+		{
+			System.Diagnostics.Process.Start (System.Windows.Application.ResourceAssembly.Location);
+			System.Windows.Application.Current.Shutdown ();
 		}
 	}
 }

@@ -8,6 +8,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ListBoxHandler : WpfControl<System.Windows.Controls.ListBox, ListBox>, IListBox
 	{
+		ContextMenu contextMenu;
+
 		public ListBoxHandler ()
 		{
 			Control = new System.Windows.Controls.ListBox ();
@@ -48,6 +50,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get { return Control.SelectedIndex; }
 			set { Control.SelectedIndex = value; }
+		}
+
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				if (contextMenu != null)
+					Control.ContextMenu = contextMenu.ControlObject as System.Windows.Controls.ContextMenu;
+				else
+					Control.ContextMenu = null;
+			}
 		}
 	}
 }

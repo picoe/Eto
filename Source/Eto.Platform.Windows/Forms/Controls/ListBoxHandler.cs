@@ -5,22 +5,52 @@ using SD = System.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
 	public class ListBoxHandler : WindowsControl<SWF.ListBox, ListBox>, IListBox
 	{
 		ContextMenu contextMenu;
+
+		class MyListBox : SWF.ListBox
+		{
+			public MyListBox ()
+			{
+				DrawMode = SWF.DrawMode.OwnerDrawFixed;
+			}
+
+			protected override void OnDrawItem (SWF.DrawItemEventArgs e)
+			{
+				e.DrawBackground ();
+				e.DrawFocusRectangle ();
+
+				if (e.Index == -1) return;
+				using (var foreBrush = new SD.SolidBrush (e.ForeColor)) {
+					var bounds = e.Bounds;
+					var imageitem = Items[e.Index] as IImageListItem;
+					if (imageitem != null) {
+						int offset = bounds.Left;
+						if (imageitem.Image != null) {
+							var img = imageitem.Image.Handler as IWindowsImage;
+							if (img != null)
+								e.Graphics.DrawImage (img.GetImageWithSize(bounds.Height), bounds.Left, bounds.Top, bounds.Height, bounds.Height);
+							offset += bounds.Height + 2;
+						}
+						e.Graphics.DrawString (imageitem.Text, e.Font, foreBrush, offset, bounds.Top);
+					}
+					else {
+						var item = Items[e.Index] as IListItem;
+						e.Graphics.DrawString (item.Text, e.Font, foreBrush, bounds.Left, bounds.Top);
+					}
+				}
+				base.OnDrawItem (e);
+			}
+		}
 		
 		public ListBoxHandler()
 		{
-			Control = new SWF.ListBox();
-			this.Control.ValueMember = "Key";
-			this.Control.FormattingEnabled = true;
-			this.Control.Format += delegate(object sender, SWF.ListControlConvertEventArgs e) {
-				var item = e.ListItem as IListItem;
-				e.Value = item.Text;
-			};
+			Control = new MyListBox ();
 			Control.SelectedIndexChanged += control_SelectedIndexChanged;
 			Control.IntegralHeight = false;
 			Control.DoubleClick += control_DoubleClick;

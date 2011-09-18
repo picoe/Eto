@@ -42,5 +42,20 @@ namespace Eto.Platform.Wpf
 		{
 			return new System.Windows.Thickness (value.Left, value.Top, value.Right, value.Bottom);
 		}
+
+		public static Rectangle Convert (System.Windows.Rect rect)
+		{
+			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
+
+		public static Size Convert (System.Windows.Size size)
+		{
+			return new Size ((int)size.Width, (int)size.Height);
+		}
+
+		public static System.Windows.Size Convert (Size value)
+		{
+			return new System.Windows.Size (value.Width, value.Height);
+		}
 	}
 }
