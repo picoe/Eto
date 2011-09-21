@@ -8,18 +8,18 @@ namespace Eto.Test.Interface.Controls
 	{
 		public LabelSection ()
 		{
-			var layout = new TableLayout(this, 1, 10);
-			layout.Spacing = Size.Empty; // inbetween cells
-			layout.Padding = Padding.Empty; // around edges
+			var layout = new DynamicLayout (this);
+			layout.DefaultSpacing = Size.Empty; // inbetween cells
+			layout.DefaultPadding = Padding.Empty; // around edges
 			
-			layout.Add (NormalLabel(), 0, 0, true, true);
-			layout.Add (FontLabel(), 0, 1, true, true);
-			layout.Add (CenterLabel(), 0, 2, true, true);
-			layout.Add (RightLabel(), 0, 3, true, true);
-			layout.Add (MiddleLabel(), 0, 4, true, true);
-			layout.Add (BottomLabel(), 0, 5, true, true);
-			layout.Add (ColorLabel(), 0, 6, true, true);
-			layout.Add (NoWrapLabel(), 0, 7, true, true);
+			layout.Add (NormalLabel(), true, true);
+			layout.Add (FontLabel(), true, true);
+			layout.Add (CenterLabel(), true, true);
+			layout.Add (RightLabel(), true, true);
+			layout.Add (MiddleLabel(), true, true);
+			layout.Add (BottomLabel(), true, true);
+			layout.Add (ColorLabel(), true, true);
+			layout.Add (NoWrapLabel(), true, true);
 		}
 		
 		Control NormalLabel()

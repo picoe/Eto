@@ -436,6 +436,7 @@
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
     <Compile Include="Forms\Menu\SubMenu.cs" />
+    <Compile Include="Forms\DynamicLayout.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

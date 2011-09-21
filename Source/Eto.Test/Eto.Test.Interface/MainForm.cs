@@ -17,7 +17,7 @@ namespace Eto.Test.Interface
 			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent);
 			
 			/* Option 1: use actions to generate menu and toolbar (recommended)
-			 *
+			 */
 			GenerateMenuToolBarActions ();
 			
 			
