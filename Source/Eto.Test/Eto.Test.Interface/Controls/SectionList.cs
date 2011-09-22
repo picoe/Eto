@@ -37,6 +37,7 @@ namespace Eto.Test.Interface.Controls
 		public SectionList (Container contentContainer)
 		{
 			this.contentContainer = contentContainer;
+			this.Style = "sectionList";
 			
 			// add some items
 			Items.Add (new Section<LabelSection> { Text = "Label Control" });

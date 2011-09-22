@@ -13,24 +13,38 @@ namespace Eto
 	public abstract class InstanceWidget : Widget, IWidget
 	{
 		IInstanceWidget inner;
+		string style;
 		
-		public virtual string Style
+		public string Style
 		{
-			get { return null; }
+			get { return style; }
+			set
+			{
+				if (style != value) {
+					style = value;
+					OnStyleChanged(EventArgs.Empty);
+				}
+			}
+		}
+		
+		public event EventHandler<EventArgs> StyleChanged;
+		
+		protected virtual void OnStyleChanged(EventArgs e)
+		{
+			Eto.Style.OnStyleWidget(this);
+			if (StyleChanged != null) StyleChanged(this, e);
 		}
 		
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 			inner = (IInstanceWidget)Handler;
-			Eto.Style.OnStyleWidget(this);
 		}
 
 		protected InstanceWidget (Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
 			inner = (IInstanceWidget)Handler;
-			Eto.Style.OnStyleWidget(this);
 		}
 		
 		public object ControlObject {

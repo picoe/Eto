@@ -9,11 +9,11 @@ namespace Eto.Forms
 
 	public abstract class Menu : InstanceWidget
 	{
-		IMenu inner;
+		//IMenu inner;
 
 		protected Menu(Generator g, Type type) : base(g, type)
 		{
-			inner = (IMenu)base.Handler;
+			//inner = (IMenu)base.Handler;
 		}
 
 	}

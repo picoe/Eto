@@ -10,7 +10,7 @@ namespace Eto.Test.Interface
 		public MainForm ()
 		{
 			this.Text = "Test Application";
-			
+			this.Style = "main";
 			this.Icon = new Icon (null, "TestIcon.ico");
 			this.Size = new Size (800, 600);
 			

@@ -12,11 +12,34 @@ namespace Eto.Test.Mac
 	{
 		static void Main (string [] args)
 		{
-			var generator = new Eto.Platform.Mac.Generator();
+			AddStyles ();
 			
-			var app = new TestApplication(generator);
+			var generator = new Eto.Platform.Mac.Generator ();
+			
+			var app = new TestApplication (generator);
 			app.Run ();
 			
+		}
+		
+		static void AddStyles ()
+		{
+			// support full screen mode!
+			Style.Add<Window, NSWindow> ("main", (widget, control) => {
+				//control.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary; // not in monomac/master yet..
+			});
+			
+			Style.Add<Application, NSApplication> ("application", (widget, control) => {
+				if (control.RespondsToSelector (new Selector ("presentationOptions:"))) {
+					control.PresentationOptions |= NSApplicationPresentationOptions.FullScreen;
+				}
+			});
+
+			// other styles
+			Style.Add<ListBox, NSScrollView> ("sectionList", (widget, control) => {
+				control.BorderType = NSBorderType.NoBorder;
+				var table = control.DocumentView as NSTableView;
+				table.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
+			});
 		}
 	}
 }	

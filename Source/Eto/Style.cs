@@ -4,10 +4,13 @@ using System.Collections.Generic;
 namespace Eto
 {
 	public delegate void StyleWidgetHandler (InstanceWidget widget);
+	
+	public delegate void StyleWidgetHandler<W> (W widget)
+		where W: InstanceWidget;
 
-	public delegate void StyleWidgetHandler<T> (T widget)
-		where T: InstanceWidget;
-
+	public delegate void StyleWidgetControlHandler<W,C> (W widget,C control)
+		where W: InstanceWidget;
+	
 	public static class Style
 	{
 		static Dictionary<string, StyleWidgetHandler> styleMap;
@@ -25,7 +28,8 @@ namespace Eto
 			if (widget != null && !string.IsNullOrEmpty (widget.Style) && styleMap.TryGetValue (widget.Style, out style)) {
 				style (widget);
 			}
-			if (StyleWidget != null) StyleWidget(widget);
+			if (StyleWidget != null)
+				StyleWidget (widget);
 		}
 		
 		public static void Add (string style, StyleWidgetHandler handler)
@@ -40,6 +44,16 @@ namespace Eto
 				var control = widget as T;
 				if (control != null)
 					handler (control);
+			};
+		}
+
+		public static void Add<W, C> (string style, StyleWidgetControlHandler<W, C> handler)
+			where W: InstanceWidget
+		{
+			styleMap [style] = delegate(InstanceWidget widget){
+				var control = widget as W;
+				if (control != null)
+					handler (control, (C)control.ControlObject);
 			};
 		}
 		

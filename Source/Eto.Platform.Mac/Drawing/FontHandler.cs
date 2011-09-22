@@ -16,11 +16,14 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			var size = fontSize;
 			if (fontSize != null) size = size.Value * FONT_SIZE_FACTOR;
+			bold = false;
+			italic = false;
 			switch (systemFont) {
 			case SystemFont.Default:
 				Control = NSFont.SystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			case SystemFont.Bold:
+				bold = true;
 				Control = NSFont.BoldSystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			case SystemFont.TitleBar:
@@ -62,8 +65,10 @@ namespace Eto.Platform.Mac.Drawing
 			case FontFamily.Sans: familyString = "Helvetica"; break; 
 			case FontFamily.Serif: familyString = "Times"; break; 
 			}
-			NSFontTraitMask traits = ((style & FontStyle.Bold) != 0) ? NSFontTraitMask.Bold : NSFontTraitMask.Unbold;
-			traits |= ((style & FontStyle.Italic) != 0) ? NSFontTraitMask.Italic : NSFontTraitMask.Unitalic;
+			bold = (style & FontStyle.Bold) != 0;
+			NSFontTraitMask traits = (bold) ? NSFontTraitMask.Bold : NSFontTraitMask.Unbold;
+			italic = (style & FontStyle.Italic) != 0;
+			traits |= (italic) ? NSFontTraitMask.Italic : NSFontTraitMask.Unitalic;
 			var font = NSFontManager.SharedFontManager.FontWithFamily(familyString, traits, 3, size * FONT_SIZE_FACTOR);
 			if (font == null || font.Handle == IntPtr.Zero) throw new Exception(string.Format("Could not allocate font with family {0}, traits {1}, size {2}", familyString, traits, size));
 			Control = font;
