@@ -8,9 +8,7 @@ namespace Eto.Test.Interface.Controls
 	{
 		public LabelSection ()
 		{
-			var layout = new DynamicLayout (this);
-			layout.DefaultSpacing = Size.Empty; // inbetween cells
-			layout.DefaultPadding = Padding.Empty; // around edges
+			var layout = new DynamicLayout (this, Padding.Empty, Size.Empty);
 			
 			layout.Add (NormalLabel(), true, true);
 			layout.Add (FontLabel(), true, true);

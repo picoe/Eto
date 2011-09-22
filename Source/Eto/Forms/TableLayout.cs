@@ -55,7 +55,6 @@ namespace Eto.Forms
 		
 		public void Add(Control control, int x, int y)
 		{
-			//var old = controls[x, y];
 			controls[x, y] = control;
 			control.SetParentLayout(this);
 			inner.Add(control, x, y);
