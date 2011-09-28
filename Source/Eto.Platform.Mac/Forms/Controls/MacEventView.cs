@@ -1,11 +1,67 @@
 using System;
+using SD = System.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
+using MonoMac.Foundation;
+using MonoMac.CoreImage;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class MacEventView : NSView
 	{
+		static NSString CIInputImage = new NSString ("inputImage");
+		static NSString CIInputTransform = new NSString ("inputTransform");
+		static NSString CIInputSaturation = new NSString ("inputSaturation");
+		static NSString CIOutputImage = new NSString ("outputImage");
+		static NSString CIInputRVector = new NSString ("inputRVector");
+		static NSString CIInputGVector = new NSString ("inputGVector");
+		static NSString CIInputBVector = new NSString ("inputBVector");
+
+		public static void Colourize (NSView control, Color color, Action drawAction)
+		{
+			var size = control.Frame.Size;
+			var image = new NSImage (size);
+			
+			image.LockFocusFlipped (control.IsFlipped);
+			drawAction ();
+			image.UnlockFocus ();
+			
+			var ciImage = CIImage.FromData (image.AsTiff ());
+			
+			if (control.IsFlipped) {
+				var affineTransform = new NSAffineTransform ();
+				affineTransform.Translate (0, size.Height);
+				affineTransform.Scale (1, -1);
+				var filter1 = CIFilter.FromName ("CIAffineTransform");
+				filter1.SetValueForKey (ciImage, CIInputImage);
+				filter1.SetValueForKey (affineTransform, CIInputTransform);
+				ciImage = filter1.ValueForKey (CIOutputImage) as CIImage;
+			}
+			
+			var filter2 = CIFilter.FromName ("CIColorControls");
+			filter2.SetDefaults ();
+			filter2.SetValueForKey (ciImage, CIInputImage);
+			filter2.SetValueForKey (new NSNumber (0.0f), CIInputSaturation);
+			ciImage = filter2.ValueForKey (CIOutputImage) as CIImage;
+			
+			var filter3 = CIFilter.FromName ("CIColorMatrix");
+			filter3.SetDefaults ();
+			filter3.SetValueForKey (ciImage, CIInputImage);
+			filter3.SetValueForKey (new CIVector (0, color.R / 255f, 0), CIInputRVector);
+			filter3.SetValueForKey (new CIVector (color.G / 255f, 0, 0), CIInputGVector);
+			filter3.SetValueForKey (new CIVector (0, 0, color.B / 255f), CIInputBVector);
+			ciImage = filter3.ValueForKey (CIOutputImage) as CIImage;
+			
+			image = new NSImage (size);
+			var rep = NSCIImageRep.FromCIImage (ciImage);
+			image.AddRepresentation (rep);
+			image.Draw (SD.PointF.Empty, new SD.RectangleF (SD.PointF.Empty, size), NSCompositingOperation.SourceOver, 1);
+			/* Use this when implemented in maccore:
+			ciImage.Draw (SD.PointF.Empty, new SD.RectangleF (SD.PointF.Empty, size), NSCompositingOperation.SourceOver, 1);
+			 */
+		}
+
 		WeakReference handler;
 		
 		public IMacView Handler {

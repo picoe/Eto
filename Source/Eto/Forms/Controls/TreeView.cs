@@ -1,21 +1,62 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
 	public interface ITreeView : IControl
 	{
+		ITreeItem TopNode { get; set; }
+		ITreeItem SelectedItem { get; set; }
+	}
+	
+	public class TreeViewItemEventArgs : EventArgs
+	{
+		public ITreeItem Item { get; private set; }
+		
+		public TreeViewItemEventArgs (ITreeItem item)
+		{
+			this.Item = item;
+		}
 	}
 
-	/// <summary>
-	/// Summary description for TreeView.
-	/// </summary>
 	public class TreeView : Control
 	{
-		//private ITreeView inner;
+		ITreeView inner;
+		
+		public event EventHandler<TreeViewItemEventArgs> Activated;
 
-		public TreeView(Generator g) : base(g, typeof(ITreeView))
+		public virtual void OnActivated (TreeViewItemEventArgs e)
 		{
-			//inner = (ITreeView)InnerControl;
+			if (Activated != null)
+				Activated (this, e);
+		}
+		
+		public event EventHandler<EventArgs> SelectionChanged;
+		
+		public virtual void OnSelectionChanged (EventArgs e)
+		{
+			if (SelectionChanged != null)
+				SelectionChanged (this, e);
+		}
+		
+		public TreeView ()
+			: this (Generator.Current)
+		{
+		}
+
+		public TreeView (Generator g) : base(g, typeof(ITreeView))
+		{
+			inner = (ITreeView)Handler;
+		}
+		
+		public ITreeItem SelectedItem {
+			get { return inner.SelectedItem; }
+			set { inner.SelectedItem = value; }
+		}
+		
+		public ITreeItem TopNode {
+			get { return inner.TopNode; }
+			set { inner.TopNode = value; }
 		}
 	}
 }

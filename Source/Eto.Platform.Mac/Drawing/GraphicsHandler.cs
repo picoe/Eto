@@ -48,13 +48,12 @@ namespace Eto.Platform.Mac.Drawing
 		CGContext context;
 		NSView view;
 		float height;
-		bool adjust;
 		bool needsLock;
 		
-		public bool Flipped
+		bool Flipped
 		{
 			get;
-			private set;
+			set;
 		}
 
 		public GraphicsHandler()
@@ -77,8 +76,7 @@ namespace Eto.Platform.Mac.Drawing
 				innercontext.ClipToRect(innerview.ConvertRectToBase(innerview.VisibleRect ()));
 				innercontext.SaveState();
 			}, view);
-			this.adjust = !view.IsFlipped;
-			this.Flipped = this.adjust;
+			this.Flipped = view.IsFlipped;
 			context.InterpolationQuality = CGInterpolationQuality.High;
 			context.SetAllowsSubpixelPositioning(false);
 		}
@@ -86,12 +84,10 @@ namespace Eto.Platform.Mac.Drawing
 		public GraphicsHandler(NSGraphicsContext gc, float height)
 		{
 			this.height = height;
-			this.adjust = true;
 			this.Flipped = false;
 			this.Control = gc;
 			this.context = gc.GraphicsPort;
 			context.InterpolationQuality = CGInterpolationQuality.High;
-			//context.ScaleCTM(1, -1);
 			context.SetAllowsSubpixelPositioning(false);
 		}
 		
@@ -114,6 +110,8 @@ namespace Eto.Platform.Mac.Drawing
 			var rep = nsimage.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
 			Control = NSGraphicsContext.FromBitmap(rep);
 			context = Control.GraphicsPort;
+			this.Flipped = false;
+			this.height = image.Size.Height;
 			context.InterpolationQuality = CGInterpolationQuality.High;
 			context.SetAllowsSubpixelPositioning(false);
 		}
@@ -158,10 +156,10 @@ namespace Eto.Platform.Mac.Drawing
 			}
 			if (view != null) 
 			{
-				if (adjust) point.Y = view.Bounds.Height - point.Y;
+				if (!Flipped) point.Y = view.Bounds.Height - point.Y;
 				point = view.ConvertPointToBase(point);
 			}
-			else if (adjust) point.Y = this.height - point.Y;
+			else if (!Flipped) point.Y = this.height - point.Y;
 			return point;
 		}
 		
@@ -175,10 +173,10 @@ namespace Eto.Platform.Mac.Drawing
 			}
 
 			if (view != null) {
-				if (adjust) rect.Y = view.Bounds.Height - rect.Y - rect.Height;
+				if (!Flipped) rect.Y = view.Bounds.Height - rect.Y - rect.Height;
 				rect = view.ConvertRectToBase(rect);	
 			}
-			else if (adjust) rect.Y = this.height - rect.Y - rect.Height;
+			else if (!Flipped) rect.Y = this.height - rect.Y - rect.Height;
 			return rect;
 		}
 
@@ -242,7 +240,7 @@ namespace Eto.Platform.Mac.Drawing
 			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 
-			if (adjust) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
+			if (!Flipped) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 			context.BeginPath ();
 			context.AddPath (path.ControlObject as CGPath);
 			context.ClosePath ();
@@ -255,7 +253,7 @@ namespace Eto.Platform.Mac.Drawing
 			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
 			
-			if (adjust) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
+			if (!Flipped) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 			context.BeginPath ();
 			context.AddPath (path.ControlObject as CGPath);
 			context.ClosePath ();

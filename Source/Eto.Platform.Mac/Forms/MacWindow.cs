@@ -358,45 +358,16 @@ namespace Eto.Platform.Mac
 		
 		public virtual void OnLoad (EventArgs e)
 		{
+		}
+		
+		public virtual void OnLoadComplete (EventArgs e)
+		{
 			if (this.AutoSize && Widget.Layout != null) {
 				var layout = Widget.Layout.Handler as IMacLayout;
 				if (layout != null)
 					layout.SizeToFit ();
 			}
 		}
-		
-		public virtual void OnLoadComplete (EventArgs e)
-		{
-		}
-
-		#region ISynchronizeInvoke implementation
-		
-		public IAsyncResult BeginInvoke (Delegate method, object[] args)
-		{
-			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.BeginInvokeOnMainThread (helper.Action);
-			return null;
-		}
-
-		public object EndInvoke (IAsyncResult result)
-		{
-			return null;
-		}
-
-		public object Invoke (Delegate method, object[] args)
-		{
-			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.InvokeOnMainThread (helper.Action);
-			return null;
-		}
-
-		public bool InvokeRequired {
-			get { 
-				return !NSThread.Current.IsMainThread;
-			}
-		}
-		
-		#endregion
 
 		#region IMacContainer implementation
 		public void SetContentSize (SD.SizeF contentSize)

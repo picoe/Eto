@@ -24,13 +24,12 @@ namespace Eto.Forms
 		public void Show ()
 		{ 
 			var loaded = Loaded;
-			if (!loaded)
+			if (!loaded) {
 				OnLoad (EventArgs.Empty);
+				OnLoadComplete (EventArgs.Empty);
+			}
 			
 			inner.Show ();
-
-			if (!loaded)
-				OnLoadComplete (EventArgs.Empty);
 		}
 	}
 }

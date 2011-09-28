@@ -15,7 +15,6 @@ namespace Eto.Platform.Windows
 			this.Control.MinimumSize = SD.Size.Empty;
 			this.Control.AutoSize = true;
 			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			//this.Control.Margin = new SWF.Padding(0);
 		}
 
 		public override void OnLoad (EventArgs e)

@@ -29,11 +29,11 @@ namespace Eto.Forms
 		{
 			control.SetParentLayout(this);
 			inner.Add(control, x, y);
-			controls.Add(control);
 			if (Loaded) {
 				control.OnLoad (EventArgs.Empty);
 				control.OnLoadComplete (EventArgs.Empty);
 			}
+			controls.Add(control);
 		}
 
 		public void Add(Control child, Point p)

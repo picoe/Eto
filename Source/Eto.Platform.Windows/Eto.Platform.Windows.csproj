@@ -269,6 +269,8 @@
     <Compile Include="Forms\Menu\ContextMenuHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
+    <Compile Include="Forms\Extensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

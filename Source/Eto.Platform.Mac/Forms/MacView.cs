@@ -214,35 +214,6 @@ namespace Eto.Platform.Mac
 				Control.Window.MakeFirstResponder (Control);
 		}
 		
-		#region ISynchronizeInvoke implementation
-		
-		public IAsyncResult BeginInvoke (Delegate method, object[] args)
-		{
-			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.BeginInvokeOnMainThread (helper.Action);
-			return null;
-		}
-
-		public object EndInvoke (IAsyncResult result)
-		{
-			return null;
-		}
-
-		public object Invoke (Delegate method, object[] args)
-		{
-			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.InvokeOnMainThread (helper.Action);
-			return null;
-		}
-
-		public bool InvokeRequired {
-			get { 
-				return !NSThread.Current.IsMainThread;
-			}
-		}
-
-		#endregion
-		
 		#region IMacView implementation
 
 		Control IMacView.Widget {

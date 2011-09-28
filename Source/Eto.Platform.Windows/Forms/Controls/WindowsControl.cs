@@ -17,7 +17,7 @@ namespace Eto.Platform.Windows
 		SWF.DockStyle DockStyle { get; }
 	}
 
-	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, ISynchronizeInvoke, IWindowsControl
+	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
 		where T: System.Windows.Forms.Control
 		where W: Control
 	{
@@ -148,7 +148,7 @@ namespace Eto.Platform.Windows
 			Control.Invalidate (Generator.Convert (rect), true);
 		}
 
-		public Color BackgroundColor {
+		public virtual Color BackgroundColor {
 			get { return Generator.Convert (Control.BackColor); }
 			set { Control.BackColor = Generator.Convert (value); }
 		}
@@ -261,30 +261,5 @@ namespace Eto.Platform.Windows
 		{
 			Widget.OnTextChanged (e);
 		}
-
-		#region ISynchronizeInvoke Members
-
-		public object EndInvoke (IAsyncResult result)
-		{
-			return Control.EndInvoke (result);
-		}
-
-		public object Invoke (Delegate method, object[] args)
-		{
-			IAsyncResult result = BeginInvoke (method, args);
-			return EndInvoke (result);
-		}
-
-		public bool InvokeRequired {
-			get	{ return Control.InvokeRequired; }
-		}
-
-		public IAsyncResult BeginInvoke (Delegate method, object[] args)
-		{
-			return Control.BeginInvoke (method, args);
-		}
-
-		#endregion
-
 	}
 }

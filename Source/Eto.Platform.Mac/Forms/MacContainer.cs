@@ -48,10 +48,9 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public override void OnLoad (EventArgs e)
+		public override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoad (e);
-			
+			base.OnLoadComplete (e);
 			Widget.HandleEvent (Container.SizeChangedEvent);
 			
 			if (this.AutoSize) {

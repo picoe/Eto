@@ -1,40 +1,100 @@
 using System;
 using Eto.Forms;
 using MonoMac.AppKit;
+using SD = System.Drawing;
+using MonoMac.Foundation;
+using Eto.Drawing;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
-	public class TabPageHandler : WidgetHandler<NSTabViewItem, TabPage>, ITabPage
+	public class TabPageHandler : WidgetHandler<NSTabViewItem, TabPage>, ITabPage, IMacContainer
 	{
-		NSTabViewItem control;
-
-		public TabPageHandler()
+		const int ICON_PADDING = 2;
+		Image image;
+		bool focus;
+		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+		
+		class MyTabViewItem : NSTabViewItem
 		{
-			control = new NSTabViewItem();
-			Control = control;
-			//control.Click += control_Click;
+			public TabPageHandler Handler { get; set; }
+			
+			public override void DrawLabel (bool shouldTruncateLabel, SD.RectangleF labelRect)
+			{
+				if (Handler.image != null) {
+					var nsimage = Handler.image.ControlObject as NSImage;
+
+					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
+						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
+					else {
+						#pragma warning disable 618
+						nsimage.Flipped = this.View.IsFlipped;
+						#pragma warning restore 618
+						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
+					}
+					
+					labelRect.X += labelRect.Height + ICON_PADDING;
+					labelRect.Width -= labelRect.Height + ICON_PADDING;
+					base.DrawLabel (shouldTruncateLabel, labelRect);
+				}
+				base.DrawLabel (shouldTruncateLabel, labelRect);
+			}
+			
+			public override SD.SizeF SizeOfLabel (bool computeMin)
+			{
+				var size = base.SizeOfLabel (computeMin);
+				if (Handler.image != null) {
+					size.Width += size.Height + ICON_PADDING;
+				}
+				return size;
+			}
+		}
+		
+		public TabPageHandler ()
+		{
+			Control = new MyTabViewItem{ Handler = this };
+			Control.Identifier = new NSString (Guid.NewGuid ().ToString ());
+			//Control.View = new NSView();
+			Control.Color = NSColor.Blue;
+		}
+		
+		public string Text {
+			get { return Control.Label; }
+			set { Control.Label = value; }
+		}
+		
+		public Image Image {
+			get { return image; }
+			set {
+				image = value;
+				if (image != null) {
+				}
+			}
 		}
 
-
-		public Eto.Drawing.Size? MinimumSize {
-			get; set;
+		public Size? MinimumSize {
+			get;
+			set;
 		}
 		
 		public virtual object ContainerObject {
 			get {
-				return control;
+				return Control.View;
 			}
 		}
 
-		/*
-		private void control_Click(object sender, EventArgs e)
-		{
-			//base.OnClick(e);
-		}
-		 */
-		
 		public virtual void SetLayout (Layout layout)
 		{
+			var maclayout = layout.Handler as IMacLayout;
+			if (maclayout == null)
+				return;
+			var control = maclayout.LayoutObject as NSView;
+			if (control != null) {
+				var container = ContainerObject as NSView;
+				control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+				control.SetFrameSize (container.Frame.Size);
+				container.AddSubview (control);
+			}
 		}
 		
 		public virtual void SetParentLayout (Layout layout)
@@ -51,25 +111,27 @@ namespace Eto.Platform.Mac
 
 		public virtual void OnLoadComplete (EventArgs e)
 		{
+			if (focus) 
+				Focus ();
+			if (this.AutoSize) {
+				if (Widget.Layout != null) {
+					var layout = Widget.Layout.Handler as IMacLayout;
+					if (layout != null)
+						layout.SizeToFit ();
+				} else
+					SetContentSize (SD.SizeF.Empty);
+			}
 		}
 		
-		#region ITabPage implementation
-
-		#endregion
-
-		#region IContainer implementation
-
-		#endregion
-
 		#region IControl implementation
 		public void Invalidate ()
 		{
-			throw new NotImplementedException ();
+			Control.View.NeedsDisplay = true;
 		}
 
 		void IControl.Invalidate (Eto.Drawing.Rectangle rect)
 		{
-			throw new NotImplementedException ();
+			Control.View.SetNeedsDisplayInRect (Generator.ConvertF (rect));
 		}
 
 		public Eto.Drawing.Graphics CreateGraphics ()
@@ -79,35 +141,38 @@ namespace Eto.Platform.Mac
 
 		public void SuspendLayout ()
 		{
-			throw new NotImplementedException ();
 		}
 
 		public void ResumeLayout ()
 		{
-			throw new NotImplementedException ();
 		}
 
 		public void Focus ()
 		{
-			throw new NotImplementedException ();
+			if (Control.View.Window != null)
+				Control.View.Window.MakeFirstResponder (Control.View);
+			else
+				focus = true;
 		}
 
-		public Eto.Drawing.Color BackgroundColor {
-			get {
-				throw new NotImplementedException ();
+		public virtual Color BackgroundColor {
+			get { 
+				if (!Control.View.WantsLayer) {
+					Control.View.WantsLayer = true;
+				}
+				return Generator.Convert (Control.View.Layer.BackgroundColor);
 			}
 			set {
-				throw new NotImplementedException ();
+				if (!Control.View.WantsLayer) {
+					Control.View.WantsLayer = true;
+				}
+				Control.View.Layer.BackgroundColor = Generator.Convert (value);
 			}
 		}
 
 		public string Id {
-			get {
-				throw new NotImplementedException ();
-			}
-			set {
-				throw new NotImplementedException ();
-			}
+			get;
+			set;
 		}
 
 		public Eto.Drawing.Size Size {
@@ -130,7 +195,7 @@ namespace Eto.Platform.Mac
 
 		public bool Enabled {
 			get {
-				throw new NotImplementedException ();
+				return false;
 			}
 			set {
 				throw new NotImplementedException ();
@@ -139,7 +204,7 @@ namespace Eto.Platform.Mac
 
 		public bool HasFocus {
 			get {
-				throw new NotImplementedException ();
+				return false;
 			}
 		}
 
@@ -153,28 +218,16 @@ namespace Eto.Platform.Mac
 		}
 		#endregion
 
-		#region ISynchronizeInvoke implementation
-		public IAsyncResult BeginInvoke (Delegate method, object[] args)
+		#region IMacContainer implementation
+		public void SetContentSize (SD.SizeF contentSize)
 		{
-			throw new NotImplementedException ();
+			
 		}
 
-		public object EndInvoke (IAsyncResult result)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public object Invoke (Delegate method, object[] args)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public bool InvokeRequired {
-			get {
-				throw new NotImplementedException ();
-			}
+		public bool AutoSize {
+			get;
+			set;
 		}
 		#endregion
-
 	}
 }

@@ -65,11 +65,11 @@ namespace Eto.Forms
 				control = value;
 				if (control != null) {
 					control.SetParentLayout (this);
-					inner.Content = control;
 					if (Loaded && !control.Loaded) {
 						control.OnLoad (EventArgs.Empty);
 						control.OnLoadComplete (EventArgs.Empty);
 					}
+					inner.Content = control;
 				}
 				else
 					inner.Content = control;

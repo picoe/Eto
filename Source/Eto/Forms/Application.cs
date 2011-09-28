@@ -48,7 +48,7 @@ namespace Eto.Forms
 			Generator.Initialize(g); // make everything use this by default
 		}
 
-		public void Run(params string[] args)
+		public virtual void Run(params string[] args)
 		{
 			inner.Run(args);
 		}

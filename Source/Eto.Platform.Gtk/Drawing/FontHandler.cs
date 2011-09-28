@@ -42,7 +42,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control = Gtk.Statusbar.DefaultStyle.FontDescription;
 				break;
 			default:
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 			if (size != null) {
 				var old = Control;

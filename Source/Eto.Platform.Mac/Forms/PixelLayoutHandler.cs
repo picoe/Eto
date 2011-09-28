@@ -60,9 +60,9 @@ namespace Eto.Platform.Mac
 
 		}
 		
-		public override void OnLoad ()
+		public override void OnLoadComplete ()
 		{
-			base.OnLoad ();
+			base.OnLoadComplete ();
 			Layout ();
 		}
 		

@@ -3,6 +3,7 @@ using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using Eto.Platform.GtkSharp.Drawing;
+using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -12,6 +13,8 @@ namespace Eto.Platform.GtkSharp
 		Gtk.TreeStore store;
 		ContextMenu contextMenu;
 		
+		public static Size MaxImageSize = new Size(16, 16);
+		
 		public ListBoxHandler()
 		{
 			store = new Gtk.TreeStore(typeof(IListItem), typeof(string), typeof(Gdk.Pixbuf));
@@ -19,6 +22,7 @@ namespace Eto.Platform.GtkSharp
 			Control = new Gtk.ScrolledWindow();
 			Control.ShadowType = Gtk.ShadowType.In;
 			tree = new Gtk.TreeView(store);
+			//tree.FixedHeightMode = true;
 			tree.ShowExpanders = false;
 			Control.Add(tree);
 			
@@ -49,8 +53,10 @@ namespace Eto.Platform.GtkSharp
 
 		public void AddRange (IEnumerable<IListItem> collection)
 		{
+			tree.Model = null;
 			foreach (var o in collection)
 				AddItem(o);
+			tree.Model = store;
 		}
 		
 		public void AddItem(IListItem item)
@@ -59,7 +65,7 @@ namespace Eto.Platform.GtkSharp
 			if (imgitem != null) {
 				var imgsrc = imgitem.Image.Handler as IGtkPixbuf;
 				if (imgsrc != null) {
-					store.AppendValues(item, item.Text, imgsrc.Pixbuf);
+					store.AppendValues(item, item.Text, imgsrc.GetPixbuf (MaxImageSize));
 					return;
 				}
 			}

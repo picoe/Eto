@@ -197,17 +197,27 @@ namespace Eto.Platform.Mac
 				}
 				widths[widths.Length-1] = totalx;
 			}
-			if (numx > 0) totalx = Math.Max(totalx, 0) / numx;
-			if (numy > 0) totaly = Math.Max(totaly, 0) / numy;
+			
+			var chunkx = (numx > 0) ? (float)Math.Truncate (Math.Max(totalx, 0) / numx) : totalx;
+			var chunky = (numy > 0) ? (float)Math.Truncate (Math.Max(totaly, 0) / numy) : totaly;
 			
 			bool flipped = Control.IsFlipped;
 			float starty = Padding.Top;
+			for (int x=0; x<widths.Length; x++) {
+				if (xscaling[x]) {
+					widths[x] = Math.Min (chunkx, totalx);
+					totalx -= chunkx;
+				}
+			}
+			
 			for (int y=0; y<heights.Length; y++) {
-				if (yscaling[y]) heights[y] = totaly;
+				if (yscaling[y]) {
+					heights[y] = Math.Min (chunky, totaly);
+					totaly -= chunky;
+				}
 				float startx = Padding.Left;
 				for (int x=0; x<widths.Length; x++)
 				{
-					if (xscaling[x]) widths[x] = totalx;
 					var view = views[y, x];
 					if (view != null && view.Visible) {
 						var nsview = view.ControlObject as NSView;
@@ -263,9 +273,9 @@ namespace Eto.Platform.Mac
 			if (Widget.Loaded) Layout();
 		}
 		
-		public override void OnLoad ()
+		public override void OnLoadComplete ()
 		{
-			base.OnLoad ();
+			base.OnLoadComplete ();
 			Layout ();
 		}
 

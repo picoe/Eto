@@ -66,7 +66,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void Resize(int width, int height)
 		{
-			throw new NotImplementedException("Cannot resize an indexed image");
+			throw new NotSupportedException("Cannot resize an indexed image");
 		}
 
 		public BitmapData Lock()

@@ -11,7 +11,7 @@ namespace Eto.Test.Interface
 		{
 			this.Text = "Test Application";
 			this.Style = "main";
-			this.Icon = new Icon (null, "TestIcon.ico");
+			this.Icon = new Icon (null, "Eto.Test.Interface.TestIcon.ico");
 			this.Size = new Size (800, 600);
 			
 			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent);

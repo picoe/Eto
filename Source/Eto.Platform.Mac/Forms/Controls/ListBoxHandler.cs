@@ -5,6 +5,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Platform.Mac.Forms.Controls;
 
 namespace Eto.Platform.Mac
 {
@@ -12,7 +13,6 @@ namespace Eto.Platform.Mac
 	{
 		NSTableView control;
 		NSScrollView scroll;
-		NSTableColumn imgcol;
 		List<IListItem> data = new List<IListItem> ();
 		
 		class DataSource : NSTableViewDataSource
@@ -21,17 +21,7 @@ namespace Eto.Platform.Mac
 			
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				switch (tableColumn.Identifier as NSString) {
-				case "text":
-					return new NSString (Handler.data [row].Text);
-				case "img":
-					var imgsrc = Handler.data [row] as IImageListItem;
-					if (imgsrc != null) {
-						return imgsrc.Image.ControlObject as NSImage;
-					}
-					break;
-				}
-				return null;
+				return new MacImageData(Handler.data [row]);
 			}
 
 			public override int GetRowCount (NSTableView tableView)
@@ -58,7 +48,6 @@ namespace Eto.Platform.Mac
 		
 		class MyTableView : NSTableView
 		{
-			
 			public override NSMenu MenuForEvent (NSEvent theEvent)
 			{
 				if (Handler.ContextMenu != null)
@@ -66,6 +55,7 @@ namespace Eto.Platform.Mac
 				else
 					return base.MenuForEvent (theEvent);
 			}
+
 			public ListBoxHandler Handler { get; set; }
 			
 			public override void KeyDown (NSEvent theEvent)
@@ -75,40 +65,21 @@ namespace Eto.Platform.Mac
 				} else
 					base.KeyDown (theEvent);
 			}
-			public override void ReloadData ()
-			{
-				if (Handler.Widget.Items.Any(r => r is IImageListItem))
-					Handler.imgcol.Width = 16;
-				else 
-					Handler.imgcol.Width = 0;
-				Handler.control.SizeLastColumnToFit ();
-				base.ReloadData ();
-			}
-			
 		}
 		
 		public ContextMenu ContextMenu {
-			get; set;
+			get;
+			set;
 		}
 		
 		public ListBoxHandler ()
 		{
 			control = new MyTableView{ Handler = this };
 			
-			imgcol = new NSTableColumn ();
-			imgcol.ResizingMask = NSTableColumnResizingMask.None;
-			imgcol.Identifier = new NSString ("img");
-			imgcol.Editable = false;
-			imgcol.MinWidth = 0;
-			imgcol.Width = 0;
-			imgcol.Hidden = false;
-			imgcol.DataCell = new NSImageCell ();
-			control.AddColumn (imgcol);
-			
 			var col = new NSTableColumn ();
-			col.Identifier = new NSString ("text");
 			col.ResizingMask = NSTableColumnResizingMask.Autoresizing;
 			col.Editable = false;
+			col.DataCell = new MacImageListItemCell ();
 			control.AddColumn (col);
 			
 			
@@ -123,7 +94,6 @@ namespace Eto.Platform.Mac
 			scroll = new NSScrollView ();
 			scroll.AutoresizesSubviews = true;
 			scroll.DocumentView = control;
-			scroll.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 			scroll.HasVerticalScroller = true;
 			scroll.HasHorizontalScroller = true;
 			scroll.AutohidesScrollers = true;

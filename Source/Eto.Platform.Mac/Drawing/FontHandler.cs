@@ -51,7 +51,7 @@ namespace Eto.Platform.Mac.Drawing
 				Control = NSFont.SystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			default:
-				throw new NotImplementedException();
+				throw new NotSupportedException();
 			}
 		}
 		

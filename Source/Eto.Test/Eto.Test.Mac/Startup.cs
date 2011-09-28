@@ -17,7 +17,7 @@ namespace Eto.Test.Mac
 			var generator = new Eto.Platform.Mac.Generator ();
 			
 			var app = new TestApplication (generator);
-			app.Run ();
+			app.Run (args);
 			
 		}
 		

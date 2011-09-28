@@ -8,7 +8,6 @@ namespace Eto.Forms
 	{
 		Image Image { get; }
 	}
-		
 	
 	public interface IListBox : IListControl
 	{
@@ -17,30 +16,30 @@ namespace Eto.Forms
 	
 	public class ListBox : ListControl
 	{
-		public event EventHandler<EventArgs> Activated;
-		
-		private IListBox inner;
+		IListBox inner;
 
-		public ListBox() : this(Generator.Current)
+		public event EventHandler<EventArgs> Activated;
+
+		public virtual void OnActivated (EventArgs e)
 		{
-			
+			if (Activated != null)
+				Activated (this, e);
+		}
+
+		public ListBox () : this(Generator.Current)
+		{
 		}
 		
-		public ListBox(Generator g) : base(g, typeof(IListBox))
+		public ListBox (Generator g) : base(g, typeof(IListBox))
 		{
 			inner = (IListBox)Handler;
 		}
 		
-		public ContextMenu ContextMenu
-		{
+		public ContextMenu ContextMenu {
 			get { return inner.ContextMenu; }
 			set { inner.ContextMenu = value; }
 		}
 
-		public virtual void OnActivated(EventArgs e)
-		{
-			if (Activated != null) Activated(this, e);
-		}
 	}
 
 }

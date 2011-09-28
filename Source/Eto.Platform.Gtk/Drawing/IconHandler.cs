@@ -1,12 +1,14 @@
 using System;
 using System.IO;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
 
 	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, IIcon, IGtkPixbuf
 	{
+		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 		
 		public Gdk.Pixbuf Pixbuf { get; set; }
 
@@ -48,6 +50,19 @@ namespace Eto.Platform.GtkSharp.Drawing
 			if (disposing) {
 				if (Pixbuf != null) { Pixbuf.Dispose(); Pixbuf = null; }
 			}
+		}
+		
+		public Gdk.Pixbuf GetPixbuf (Size maxSize)
+		{
+			Gdk.Pixbuf pixbuf = Pixbuf;
+			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height) {
+				if (!sizes.TryGetValue (maxSize, out pixbuf)) {
+					pixbuf = Pixbuf.ScaleSimple (maxSize.Width, maxSize.Height, Gdk.InterpType.Bilinear);
+					sizes[maxSize] = pixbuf;
+				}
+			}
+			
+			return pixbuf;
 		}
 	}
 }

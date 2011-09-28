@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IControl : IInstanceWidget, ISynchronizeInvoke
+	public interface IControl : IInstanceWidget
 	{
 		Color BackgroundColor { get; set; }
 		string Id { get; set; }
@@ -28,7 +28,7 @@ namespace Eto.Forms
 	}
 	
 	
-	public abstract class Control : InstanceWidget, ISynchronizeInvoke, IControl
+	public abstract class Control : InstanceWidget, IControl
 	{
 		IControl inner;
 		
@@ -361,35 +361,6 @@ namespace Eto.Forms
 			base.PullData();
 		}
 #endif
-
-		public object Invoke(Delegate method)
-		{
-			return Invoke(method, null);
-		}
-
-		#region ISynchronizeInvoke Members
-
-		public object EndInvoke(IAsyncResult result)
-		{
-			return inner.EndInvoke(result);
-		}
-
-		public object Invoke(Delegate method, params object[] args)
-		{
-			return inner.Invoke(method, args);
-		}
-
-		public bool InvokeRequired
-		{
-			get { return inner.InvokeRequired; }
-		}
-
-		public IAsyncResult BeginInvoke(Delegate method, object[] args)
-		{
-			return inner.BeginInvoke(method, args);
-		}
-
-		#endregion
 	}
 	
 	public class ControlCollection : List<Control>

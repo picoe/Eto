@@ -57,11 +57,11 @@ namespace Eto.Forms
 		{
 			controls[x, y] = control;
 			control.SetParentLayout(this);
-			inner.Add(control, x, y);
 			if (Loaded) {
 				control.OnLoad (EventArgs.Empty);
 				control.OnLoadComplete (EventArgs.Empty);
 			}
+			inner.Add(control, x, y);
 		}
 
 		public void Add(Control child, int x, int y, bool xscale, bool yscale)

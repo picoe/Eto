@@ -1,10 +1,12 @@
 using System;
 using Eto.Forms;
+using System.Collections.Generic;
 
 namespace Eto.Test.Interface.Controls
 {
 	public interface ISectionGenerator
 	{
+		string Text { get; }
 		Control GenerateControl();
 	}
 	
@@ -40,16 +42,22 @@ namespace Eto.Test.Interface.Controls
 			this.Style = "sectionList";
 			
 			// add some items
-			Items.Add (new Section<LabelSection> { Text = "Label Control" });
-			Items.Add (new Section<ButtonSection> { Text = "Button Control" });
-			Items.Add (new Section<ScrollableSection> { Text = "Scrollable Control" });
-			Items.Add (new Section<TextAreaSection> { Text = "Text Area" });
-			Items.Add (new Section<WebViewSection> { Text = "Web View" });
-			Items.Add (new Section<FileDialogSection> { Text = "File Dialog" });
-			Items.Add (new Section<DrawableSection> { Text = "Drawable" });
-			Items.Add (new Section<ListBoxSection> { Text = "List Box" });
+			var items = new List<ISectionGenerator>();
 			
-			this.SelectedIndex = 5; // select the first item
+			items.Add (new Section<LabelSection> { Text = "Label Control" });
+			items.Add (new Section<ButtonSection> { Text = "Button Control" });
+			items.Add (new Section<ScrollableSection> { Text = "Scrollable Control" });
+			items.Add (new Section<TextAreaSection> { Text = "Text Area" });
+			items.Add (new Section<WebViewSection> { Text = "Web View" });
+			items.Add (new Section<FileDialogSection> { Text = "File Dialog" });
+			items.Add (new Section<DrawableSection> { Text = "Drawable" });
+			items.Add (new Section<ListBoxSection> { Text = "List Box" });
+			items.Add (new Section<TabControlSection> { Text = "Tab Control" });
+			items.Add (new Section<TreeViewSection> { Text = "Tree View" });
+			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			Items.AddRange (items);
+			
+			this.SelectedIndex = 0;
 		}
 		
 		public override void OnSelectedIndexChanged (EventArgs e)

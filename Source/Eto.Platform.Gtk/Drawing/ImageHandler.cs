@@ -4,19 +4,22 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
-	public interface IGtkPixbuf {
+	public interface IGtkPixbuf
+	{
 		Gdk.Pixbuf Pixbuf { get; }
+
+		Gdk.Pixbuf GetPixbuf (Size maxSize);
 	}
 	
 	public interface IImageHandler
 	{
-		void DrawImage(GraphicsHandler graphics, int x, int y);
+		void DrawImage (GraphicsHandler graphics, int x, int y);
 
-		void DrawImage(GraphicsHandler graphics, int x, int y, int width, int height);
+		void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height);
 
-		void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination);
+		void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination);
 		
-		void SetImage(Gtk.Image imageView);
+		void SetImage (Gtk.Image imageView);
 		
 	}
 	
@@ -28,22 +31,22 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public abstract Size Size { get; }
 		
-		public abstract void SetImage(Gtk.Image imageView);
+		public abstract void SetImage (Gtk.Image imageView);
 
 		#endregion
 
 
-		public virtual void DrawImage(GraphicsHandler graphics, int x, int y)
+		public virtual void DrawImage (GraphicsHandler graphics, int x, int y)
 		{
-			DrawImage(graphics, x, y, Size.Width, Size.Height);
+			DrawImage (graphics, x, y, Size.Width, Size.Height);
 		}
 
-		public virtual void DrawImage(GraphicsHandler graphics, int x, int y, int width, int height)
+		public virtual void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height)
 		{
-			DrawImage(graphics, new Rectangle(new Point(0, 0), Size), new Rectangle(x, y, width, height));
+			DrawImage (graphics, new Rectangle (new Point (0, 0), Size), new Rectangle (x, y, width, height));
 		}
 
-		public abstract void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination);
+		public abstract void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination);
 
 	}
 }

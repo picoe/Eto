@@ -10,6 +10,7 @@ namespace Eto.Forms
 		TableItem topTable;
 		TableItem currentItem;
 		bool? yscale;
+
 		public bool Generated { get; private set; }
 		
 		public Padding? DefaultPadding { get; set; }
@@ -184,7 +185,8 @@ namespace Eto.Forms
 		
 		public void BeginVertical (Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
-			if (Generated) throw new AlreadyGeneratedException();
+			if (Generated)
+				throw new AlreadyGeneratedException ();
 			var newItem = new TableItem{ 
 				Parent = currentItem ?? topTable, 
 				Padding = padding, 
@@ -198,20 +200,23 @@ namespace Eto.Forms
 		
 		public void EndVertical ()
 		{
-			if (Generated) throw new AlreadyGeneratedException();
+			if (Generated)
+				throw new AlreadyGeneratedException ();
 			currentItem = currentItem.Parent ?? topTable;
 		}
 		
 		public void BeginHorizontal (bool? yscale = null)
 		{
-			if (Generated) throw new AlreadyGeneratedException();
+			if (Generated)
+				throw new AlreadyGeneratedException ();
 			currentItem.AddRow (currentItem.CurrentRow = new List<LayoutItem> ());
 			this.yscale = yscale;
 		}
 		
 		public void EndHorizontal ()
 		{
-			if (Generated) throw new AlreadyGeneratedException();
+			if (Generated)
+				throw new AlreadyGeneratedException ();
 			if (currentItem.CurrentRow == null)
 				EndVertical ();
 			else 
@@ -220,13 +225,15 @@ namespace Eto.Forms
 		
 		public void Add (Control control, bool? xscale = null, bool? yscale = null)
 		{
-			if (Generated) throw new AlreadyGeneratedException();
+			if (Generated)
+				throw new AlreadyGeneratedException ();
 			currentItem.Add (new ControlItem{ Control = control, XScale = xscale, YScale = yscale ?? this.yscale});
 		}
 		
 		public void AddRow (params Control[] controls)
 		{
-			if (Generated) throw new AlreadyGeneratedException();
+			if (Generated)
+				throw new AlreadyGeneratedException ();
 			var row = new List<LayoutItem> (controls.Select (r => new ControlItem{ Control = r, YScale = yscale }));
 			currentItem.AddRow (row);
 			currentItem.CurrentRow = null;
@@ -249,11 +256,11 @@ namespace Eto.Forms
 
 		public void AddCentered (Control control, bool horizontalCenter = true, bool verticalCenter = true, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
-			this.BeginVertical(padding, spacing, xscale, yscale);
+			this.BeginVertical (padding, spacing, xscale, yscale);
 			if (verticalCenter)
 				this.Add (null, null, true);
 			
-			this.BeginHorizontal();
+			this.BeginHorizontal ();
 			if (horizontalCenter)
 				this.Add (null, true, null);
 			
@@ -287,7 +294,8 @@ namespace Eto.Forms
 		/// <exception cref="AlreadyGeneratedException">specifies that the control was already generated</exception>
 		public void Generate ()
 		{
-			if (Generated) throw new AlreadyGeneratedException();
+			if (Generated)
+				throw new AlreadyGeneratedException ();
 			topTable.Generate (this);
 			Generated = true;
 		}

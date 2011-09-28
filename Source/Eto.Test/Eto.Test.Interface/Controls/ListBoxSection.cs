@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Test.Interface.Controls
 {
@@ -42,9 +43,12 @@ namespace Eto.Test.Interface.Controls
 			};
 			
 			var image = new Icon(null, "Eto.Test.Interface.TestIcon.ico");
-			for (int i = 0; i < 10; i++) {
-				control.Items.Add (new ImageListItem{ Text = "Item " + i, Image = image });
+			var items = new List<IListItem>();
+			for (int i = 0; i < 1000; i++) {
+				 items.Add(new ImageListItem{ Text = "Item " + i, Image = image });
 			}
+			// use addrange for speed!
+			control.Items.AddRange (items);
 			return control;
 		}
 

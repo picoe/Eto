@@ -201,9 +201,6 @@
     <Compile Include="Forms\TableLayout.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\TreeNode.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\UITimer.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -437,6 +434,8 @@
     <Compile Include="Forms\Menu\ContextMenu.cs" />
     <Compile Include="Forms\Menu\SubMenu.cs" />
     <Compile Include="Forms\DynamicLayout.cs" />
+    <Compile Include="Forms\ListItem.cs" />
+    <Compile Include="Forms\TreeItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

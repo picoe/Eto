@@ -1,53 +1,81 @@
 using System;
 using System.Collections;
+using System.Linq;
 
 namespace Eto.Forms
 {
 	public interface ITabControl : IControl
 	{
 		int SelectedIndex { get; set; }
-		void AddTab(TabPage page);
-		void RemoveTab(TabPage page);
+
+		void AddTab (TabPage page);
+
+		void RemoveTab (TabPage page);
 	}
 	
 	public class TabControl : Control
 	{
-		private TabPageCollection tabPages;
-		private ITabControl inner;
+		TabPageCollection pages;
+		ITabControl inner;
 		
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
-		public virtual void OnSelectedIndexChanged(EventArgs e)
+		public virtual void OnSelectedIndexChanged (EventArgs e)
 		{
-			if (SelectedIndexChanged != null) SelectedIndexChanged(this, e);
+			if (SelectedIndexChanged != null)
+				SelectedIndexChanged (this, e);
+		}
+		
+		public TabControl ()
+			: this(Generator.Current)
+		{
 		}
 
-		public TabControl(Generator g) : base(g, typeof(ITabControl))
+		public TabControl (Generator g) : base(g, typeof(ITabControl))
 		{
-			tabPages = new TabPageCollection(this);
+			pages = new TabPageCollection (this);
 			inner = (ITabControl)base.Handler;
 		}
 
-		public int SelectedIndex
-		{
+		public int SelectedIndex {
 			get { return inner.SelectedIndex; }
 			set { inner.SelectedIndex = value; }
 		}
 
-
-		public TabPageCollection TabPages
-		{
-			get { return tabPages; }
+		public TabPageCollection TabPages {
+			get { return pages; }
 		}
 
-		protected internal void AddTab(TabPage page)
+		protected internal void AddTab (TabPage page)
 		{
-			inner.AddTab(page);
+			if (Loaded) {
+				page.OnLoad (EventArgs.Empty);
+				page.OnLoadComplete (EventArgs.Empty);
+			}
+			page.SetParent (this);
+			inner.AddTab (page);
 		}
 
-		protected internal void RemoveTab(TabPage page)
+		protected internal void RemoveTab (TabPage page)
 		{
-			inner.RemoveTab(page);
+			page.SetParent (null);
+			inner.RemoveTab (page);
+		}
+		
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			foreach (var page in pages) {
+				page.OnLoad (e);
+			}
+		}
+		
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			foreach (var page in pages) {
+				page.OnLoadComplete (e);
+			}
 		}
 
 	}

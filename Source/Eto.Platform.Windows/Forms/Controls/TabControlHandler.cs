@@ -4,15 +4,15 @@ using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 
-namespace Eto.Platform.Windows
+namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class TabControlHandler : WindowsControl<SWF.TabControl, TabControl>, ITabControl
 	{
 		public TabControlHandler()
 		{
-			Control = new SWF.TabControl();
-			Control.SelectedIndexChanged += control_SelectedIndexChanged;
-			//control.B
+			this.Control = new SWF.TabControl();
+			this.Control.ImageList = new SWF.ImageList{ ColorDepth = SWF.ColorDepth.Depth32Bit };
+			this.Control.SelectedIndexChanged += control_SelectedIndexChanged;
 		}
 
 		private void control_SelectedIndexChanged(object sender, EventArgs e)

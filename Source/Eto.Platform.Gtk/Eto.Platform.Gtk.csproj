@@ -232,6 +232,7 @@
     <Compile Include="Forms\Menu\ContextMenuHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

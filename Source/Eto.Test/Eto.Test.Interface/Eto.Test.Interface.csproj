@@ -49,6 +49,8 @@
     <Compile Include="Controls\FileDialogSection.cs" />
     <Compile Include="Controls\DrawableSection.cs" />
     <Compile Include="Controls\ListBoxSection.cs" />
+    <Compile Include="Controls\TabControlSection.cs" />
+    <Compile Include="Controls\TreeViewSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

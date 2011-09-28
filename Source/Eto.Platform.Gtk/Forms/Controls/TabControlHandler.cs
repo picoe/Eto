@@ -20,12 +20,12 @@ namespace Eto.Platform.GtkSharp
 
 		public void AddTab(TabPage page)
 		{
-			Control.AppendPage((Gtk.Widget)((TabPageHandler)page.Handler).ContainerObject, (Gtk.Widget)page.ControlObject);
+			Control.AppendPage((Gtk.Widget)page.ContainerObject, (Gtk.Widget)((TabPageHandler)page.Handler).LabelControl);
 		}
 
 		public void RemoveTab(TabPage page)
 		{
-			Control.RemovePage(Control.PageNum((Gtk.Widget)((TabPageHandler)page.Handler).ContainerObject));
+			Control.RemovePage(Control.PageNum((Gtk.Widget)page.ContainerObject));
 		}
 
 		private void control_ChangeCurrentPage(object o, Gtk.ChangeCurrentPageArgs args)

@@ -16,7 +16,7 @@ namespace Eto.Platform.GtkSharp
 		Point Location { get; set; }
 	}
 
-	public abstract class GtkControl<T, W> : WidgetHandler<T, W>, IControl, ISynchronizeInvoke, IGtkControl
+	public abstract class GtkControl<T, W> : WidgetHandler<T, W>, IControl, IGtkControl
 		where T: Gtk.Widget
 		where W: Control
 	{
@@ -30,7 +30,6 @@ namespace Eto.Platform.GtkSharp
 		{
 			this.thread = System.Threading.Thread.CurrentThread;
 			size = Size.Empty;
-			notify = new Gtk.ThreadNotify (new Gtk.ReadyEvent (Ready));
 		}
 
 		public static string StringToMnuemonic (string label)
@@ -307,135 +306,5 @@ namespace Eto.Platform.GtkSharp
 					args.RetVal = true;
 			}
 		}
-
-		Gtk.ThreadNotify notify;
-		private class GtkAsync : IAsyncResult
-		{
-			private Delegate method;
-			private object[] args = null;
-			private object result = null;
-			private ManualResetEvent asyncWaitHandle = new ManualResetEvent (false);
-			private bool completedSynchronously = false;
-			private bool isCompleted = false;
-
-			public GtkAsync (Delegate method, object[] args)
-			{
-				this.method = method;
-				this.args = args;
-			}
-
-			public Delegate Method {
-				get { return method; }
-			}
-
-			public object[] Arguments {
-				get { return args; }
-			}
-
-			public object Result {
-				get { return result; }
-			}
-
-			public void Invoke ()
-			{
-				try {
-					object result = method.DynamicInvoke (args);
-					lock (this) {
-						isCompleted = true;
-						this.result = result;
-					}
-				} finally {
-					asyncWaitHandle.Set ();
-				}
-			}
-
-			#region IAsyncResult Members
-
-			public object AsyncState {
-				get {
-					if (args != null && args.Length != 0)
-						return args [args.Length - 1];
-
-					return null;
-				}
-			}
-
-			public bool CompletedSynchronously {
-				get { return completedSynchronously; }
-			}
-
-			public System.Threading.WaitHandle AsyncWaitHandle {
-				get { return asyncWaitHandle; }
-			}
-
-			public bool IsCompleted {
-				get	{ return isCompleted; }
-			}
-
-			#endregion
-		}
-
-
-
-		Queue queue = new Queue ();
-
-		#region ISynchronizeInvoke Members
-
-		public object EndInvoke (IAsyncResult result)
-		{
-			GtkAsync async = result as GtkAsync;
-			object methodResult = null;
-			if (async != null) {
-				
-				if (!async.CompletedSynchronously)
-					async.AsyncWaitHandle.WaitOne ();
-				methodResult = async.Result;
-			}
-
-			return methodResult;
-		}
-
-		public object Invoke (Delegate method, object[] args)
-		{
-			IAsyncResult result = BeginInvoke (method, args);
-			return EndInvoke (result);
-		}
-
-		public bool InvokeRequired {
-			get	{ return System.Threading.Thread.CurrentThread != thread; }
-		}
-
-		public IAsyncResult BeginInvoke (Delegate method, object[] args)
-		{
-			GtkAsync async = new GtkAsync (method, args);
-			lock (this) {
-				lock (queue.SyncRoot)
-					queue.Enqueue (async);
-				if (notify == null)
-					notify = new Gtk.ThreadNotify (new Gtk.ReadyEvent (Ready));
-			}
-			Gdk.Threads.Enter ();
-			notify.WakeupMain ();
-			//GdkHandler.Global.Flush();
-			Gdk.Threads.Leave ();
-			return async;
-		}
-
-		private void Ready ()
-		{
-			lock (this) {
-				GtkAsync async = null;
-				lock (queue.SyncRoot) {
-					if (queue.Count > 0)
-						async = (GtkAsync)queue.Dequeue ();
-				}
-
-				if (async != null)
-					async.Invoke ();
-			}
-		}
-
-		#endregion
-
 	}
 }

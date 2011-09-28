@@ -18,16 +18,16 @@ namespace Eto.Platform.Mac
 		class MyTextFieldCell : NSTextFieldCell
 		{
 			public LabelHandler Handler { get; set; }
+			
+			public MyTextFieldCell ()
+			{
+			}
 
 			public override SD.RectangleF TitleRectForBounds (SD.RectangleF theRect)
 			{
 				SD.RectangleF titleFrame = base.TitleRectForBounds (theRect);
 				var titleSize = this.CellSizeForBounds (theRect);
-				//var titleSize = this.AttributedStringValue.BoundingRect(theRect.Size, (NSStringDrawingOptions)0).Size;
-				//NSString str = new NSString(this.AttributedStringValue.Value);
-				//var attributes = new NSMutableDictionary();
-				//dic.Add();
-				//SD.SizeF titleSize = str.BoundingRectWithSize(theRect.Size, (NSStringDrawingOptions)0, attributes);
+
 				switch (Handler.VerticalAlign) {
 				case VerticalAlign.Middle:
 					titleFrame.Y = theRect.Y + (theRect.Height - titleSize.Height) / 2.0F;
@@ -53,35 +53,24 @@ namespace Eto.Platform.Mac
 		{
 			Control = new NSTextField ();
 			Control.Cell = new MyTextFieldCell{ Handler = this };
-			//Control.Cell.Wraps = true;
-			//Control.SetFrameSize(new SD.SizeF(0, 0));
 			Control.DrawsBackground = false;
 			Control.Bordered = false;
 			Control.Bezeled = false;
 			Control.Editable = false;
 			Control.Selectable = false;
 			Control.Alignment = NSTextAlignment.Left;
-			is106 = Control.Cell.RespondsToSelector(new Selector("setUsesSingleLineMode:"));
-			if (is106) Control.Cell.UsesSingleLineMode = false;
+			is106 = Control.Cell.RespondsToSelector (new Selector ("setUsesSingleLineMode:"));
+			if (is106)
+				Control.Cell.UsesSingleLineMode = false;
 			Control.Cell.LineBreakMode = NSLineBreakMode.ByWordWrapping;
-			//var ps = new NSMutableParagraphStyle();
-			//ps.SetLineBreakMode(NSLineBreakMode.ByWordWrapping);
-			//Control.DefaultParagraphStyle = ps;
-			//Control.VerticallyResizable = true;
 		}
-		/*
-		public override Size PositionOffset {
-			get {
-				return LabelPositionOffset;
-			}
-		}*/
 		
 		public Color TextColor {
 			get {
-				return Generator.Convert(Control.TextColor);
+				return Generator.Convert (Control.TextColor);
 			}
 			set {
-				Control.TextColor = Generator.ConvertNS(value);
+				Control.TextColor = Generator.ConvertNS (value);
 			}
 		}
 		
@@ -97,15 +86,18 @@ namespace Eto.Platform.Mac
 			set {
 				switch (value) {
 				case WrapMode.None:
-					if (is106) Control.Cell.UsesSingleLineMode = true;
+					if (is106)
+						Control.Cell.UsesSingleLineMode = true;
 					Control.Cell.LineBreakMode = NSLineBreakMode.Clipping;
 					break;
 				case WrapMode.Word:
-					if (is106) Control.Cell.UsesSingleLineMode = false;
+					if (is106)
+						Control.Cell.UsesSingleLineMode = false;
 					Control.Cell.LineBreakMode = NSLineBreakMode.ByWordWrapping;
 					break;
 				case WrapMode.Character:
-					if (is106) Control.Cell.UsesSingleLineMode = false;
+					if (is106)
+						Control.Cell.UsesSingleLineMode = false;
 					Control.Cell.LineBreakMode = NSLineBreakMode.CharWrapping;
 					break;
 				default:
