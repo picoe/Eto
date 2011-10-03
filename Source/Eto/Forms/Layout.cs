@@ -33,9 +33,9 @@ namespace Eto.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			Loaded = true;
 			if (Load != null) Load(this, e);
 			inner.OnLoad();
-			Loaded = true;
 		}
 
 		public event EventHandler<EventArgs> LoadComplete;

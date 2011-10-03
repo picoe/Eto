@@ -3,6 +3,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
+using System.Diagnostics;
 
 namespace Eto.Platform.Mac
 {
@@ -13,29 +14,28 @@ namespace Eto.Platform.Mac
 		bool[] yscaling;
 		Size spacing;
 		Padding padding;
+		bool loaded;
 		
 		public override void Update ()
 		{
-			Layout();
+			Layout ();
 		}
 		
-		public Eto.Drawing.Size Spacing
-		{
+		public Eto.Drawing.Size Spacing {
 			get { return spacing; }
-			set
-			{
+			set {
 				spacing = value;
-				if (Widget.Loaded) Layout();
+				if (Widget.Loaded)
+					Layout ();
 			}
 		}
 		
-		public Padding Padding
-		{
+		public Padding Padding {
 			get { return padding; }
-			set
-			{
+			set {
 				padding = value;
-				if (Widget.Loaded) Layout();
+				if (Widget.Loaded)
+					Layout ();
 			}
 		}
 		
@@ -54,7 +54,7 @@ namespace Eto.Platform.Mac
 			get	{ return Control; }
 		}*/
 
-		public TableLayoutHandler()
+		public TableLayoutHandler ()
 		{
 			/*Control = new NSView();
 			Control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
@@ -70,70 +70,65 @@ namespace Eto.Platform.Mac
 			
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
-			
-			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
-				var handler = e.Widget.Handler as TableLayoutHandler;
-				handler.Layout();
-			});
-
 		}
 		
 		public override void SizeToFit ()
 		{
-			if (views == null) return;
-			var heights = new float[views.GetLength(0)];
-			var widths = new float[views.GetLength(1)];
+			if (views == null)
+				return;
+			var heights = new float[views.GetLength (0)];
+			var widths = new float[views.GetLength (1)];
 			var controlFrame = Control.Frame;
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
 			var requiredx = totalxpadding;
 			var requiredy = totalypadding;
 			
-			for (int y=0; y<heights.Length; y++) { heights[y] = 0; }
-			for (int x=0; x<widths.Length; x++) { widths[x] = 0; }
+			for (int y=0; y<heights.Length; y++) {
+				heights [y] = 0;
+			}
+			for (int x=0; x<widths.Length; x++) {
+				widths [x] = 0;
+			}
 			
 			for (int y=0; y<heights.Length; y++)
-			for (int x=0; x<widths.Length; x++) {
-				var view = views[y, x];
-				if (view != null && view.Visible) {
-					AutoSize(view);
-					//Console.WriteLine ("CALC: x:{2} y:{3} view: {0} size: {1}", view, view.Size, x, y);
-					var macview = view.Handler as IMacView;
-					var size = view.Size;
-					if (macview != null) {
-						size = macview.PreferredSize ?? view.Size;
-						var minsize = macview.MinimumSize;
-						if (minsize != null) {
-							size.Width = Math.Max (size.Width, minsize.Value.Width);
-							size.Height = Math.Max (size.Height, minsize.Value.Height);
+				for (int x=0; x<widths.Length; x++) {
+					var view = views [y, x];
+					if (view != null && view.Visible) {
+						AutoSize (view);
+						//Console.WriteLine ("CALC: x:{2} y:{3} view: {0} size: {1}", view, view.Size, x, y);
+						var macview = view.Handler as IMacView;
+						var size = view.Size;
+						if (macview != null) {
+							size = macview.PreferredSize ?? size;
+							var minsize = macview.MinimumSize;
+							if (minsize != null) {
+								size.Width = Math.Max (size.Width, minsize.Value.Width);
+								size.Height = Math.Max (size.Height, minsize.Value.Height);
+							}
+						}
+						if (size.Width > widths [x]) { 
+							requiredx += size.Width - widths [x];
+							widths [x] = size.Width;
+						}
+						if (size.Height > heights [y]) { 
+							requiredy += size.Height - heights [y];
+							heights [y] = size.Height;
 						}
 					}
-					if (/*!xscaling[x] &&*/ widths[x] < size.Width) { 
-						requiredx += size.Width - widths[x];
-						widths[x] = size.Width; 
-					}
-					if (/*!yscaling[y] &&*/ heights[y] < size.Height) { 
-						requiredy += size.Height - heights[y];
-						heights[y] = size.Height; 
-					}
 				}
-			}
-			//controlFrame.Width = Math.Min (controlFrame.Width, requiredx);
-			//controlFrame.Height = Math.Min (controlFrame.Height, requiredy);
 			controlFrame.Width = requiredx;
 			controlFrame.Height = requiredy;
 			//Console.WriteLine("TableLayout container size: {0}", controlFrame.Size);
 			SetContainerSize (controlFrame.Size);
 		}
 		
-		
-		
-		void Layout()
+		void Layout ()
 		{
-			if (views == null) return;
-			var heights = new float[views.GetLength(0)];
-			var widths = new float[views.GetLength(1)];
+			if (views == null)
+				return;
+			var heights = new float[views.GetLength (0)];
+			var widths = new float[views.GetLength (1)];
 			var controlFrame = Control.Frame;
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
@@ -144,35 +139,45 @@ namespace Eto.Platform.Mac
 			var numx = 0;
 			var numy = 0;
 			
-			for (int y=0; y<heights.Length; y++) { heights[y] = 0; if (yscaling[y]) numy++; }
-			for (int x=0; x<widths.Length; x++) { widths[x] = 0; if (xscaling[x]) numx++; }
+			for (int y=0; y<heights.Length; y++) {
+				heights [y] = 0;
+				if (yscaling [y])
+					numy++;
+			}
+			for (int x=0; x<widths.Length; x++) {
+				widths [x] = 0;
+				if (xscaling [x])
+					numx++;
+			}
 			
 			for (int y=0; y<heights.Length; y++)
-			for (int x=0; x<widths.Length; x++) {
-				var view = views[y, x];
-				if (view != null && view.Visible) {
-					AutoSize(view);
-					var macview = view.Handler as IMacView;
-					var size = view.Size;
-					if (macview != null) {
-						size = macview.PreferredSize ?? view.Size;
-						var minsize = macview.MinimumSize;
-						if (minsize != null) {
-							size.Width = Math.Max (size.Width, minsize.Value.Width);
-							size.Height = Math.Max (size.Height, minsize.Value.Height);
+				for (int x=0; x<widths.Length; x++) {
+					var view = views [y, x];
+					if (view != null && view.Visible) {
+						AutoSize (view);
+						var macview = view.Handler as IMacView;
+						var size = view.Size;
+						if (macview != null) {
+							size = macview.PreferredSize ?? view.Size;
+							var minsize = macview.MinimumSize;
+							if (minsize != null) {
+								size.Width = Math.Max (size.Width, minsize.Value.Width);
+								size.Height = Math.Max (size.Height, minsize.Value.Height);
+							}
+						}
+						//Console.WriteLine ("x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
+						if (!xscaling [x] && widths [x] < size.Width) { 
+						
+							widths [x] = size.Width;
+							requiredx += size.Width - widths [x];
+						}
+						if (!yscaling [y] && heights [y] < size.Height) { 
+						
+							heights [y] = size.Height;
+							requiredy += size.Height - heights [y];
 						}
 					}
-					//Console.WriteLine ("x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
-					if (!xscaling[x] && widths[x] < size.Width) { 
-						
-						widths[x] = size.Width; requiredx += size.Width - widths[x];
-					}
-					if (!yscaling[y] && heights[y] < size.Height) { 
-						
-						heights[y] = size.Height; requiredy += size.Height - heights[y];
-					}
 				}
-			}
 			if (controlFrame.Width < requiredx) {
 				totalx = requiredx - totalxpadding;
 				controlFrame.Width = requiredx;
@@ -183,117 +188,136 @@ namespace Eto.Platform.Mac
 				controlFrame.Height = requiredy;
 			}
 			
-			if (numy > 0) { for (int y=0; y<heights.Length; y++) if (!yscaling[y]) totaly -= heights[y]; }
-			else {
+			if (numy > 0) {
+				for (int y=0; y<heights.Length; y++)
+					if (!yscaling [y])
+						totaly -= heights [y];
+			} else {
 				if (heights.Length > 1) {
-					for (int y=0; y<heights.Length-1; y++) totaly -= heights[y];
+					for (int y=0; y<heights.Length-1; y++)
+						totaly -= heights [y];
 				}
-				heights[heights.Length-1] = totaly;
+				heights [heights.Length - 1] = totaly;
 			}
-			if (numx > 0) { for (int x=0; x<widths.Length; x++) if (!xscaling[x]) totalx -= widths[x]; }
-			else { 
+			if (numx > 0) {
+				for (int x=0; x<widths.Length; x++)
+					if (!xscaling [x])
+						totalx -= widths [x];
+			} else { 
 				if (widths.Length > 1) {
-					for (int x=0; x<widths.Length-1; x++) totalx -= widths[x];
+					for (int x=0; x<widths.Length-1; x++)
+						totalx -= widths [x];
 				}
-				widths[widths.Length-1] = totalx;
+				widths [widths.Length - 1] = totalx;
 			}
 			
-			var chunkx = (numx > 0) ? (float)Math.Truncate (Math.Max(totalx, 0) / numx) : totalx;
-			var chunky = (numy > 0) ? (float)Math.Truncate (Math.Max(totaly, 0) / numy) : totaly;
+			var chunkx = (numx > 0) ? (float)Math.Truncate (Math.Max (totalx, 0) / numx) : totalx;
+			var chunky = (numy > 0) ? (float)Math.Truncate (Math.Max (totaly, 0) / numy) : totaly;
 			
 			bool flipped = Control.IsFlipped;
 			float starty = Padding.Top;
 			for (int x=0; x<widths.Length; x++) {
-				if (xscaling[x]) {
-					widths[x] = Math.Min (chunkx, totalx);
+				if (xscaling [x]) {
+					widths [x] = Math.Min (chunkx, totalx);
 					totalx -= chunkx;
 				}
 			}
 			
 			for (int y=0; y<heights.Length; y++) {
-				if (yscaling[y]) {
-					heights[y] = Math.Min (chunky, totaly);
+				if (yscaling [y]) {
+					heights [y] = Math.Min (chunky, totaly);
 					totaly -= chunky;
 				}
 				float startx = Padding.Left;
-				for (int x=0; x<widths.Length; x++)
-				{
-					var view = views[y, x];
+				for (int x=0; x<widths.Length; x++) {
+					var view = views [y, x];
 					if (view != null && view.Visible) {
 						var nsview = view.ControlObject as NSView;
 						var frame = nsview.Frame;
-						frame.Width = widths[x];
-						frame.Height = heights[y];
+						frame.Width = widths [x];
+						frame.Height = heights [y];
 						frame.X = startx;
 						frame.Y = flipped ? starty : Control.Frame.Height - starty - frame.Height;
 						if (frame != nsview.Frame)
 							nsview.Frame = frame;
 						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					}
-					startx += widths[x] + Spacing.Width;
+					startx += widths [x] + Spacing.Width;
 				}
-				starty += heights[y] + Spacing.Height;
+				starty += heights [y] + Spacing.Height;
 			}
 		}
 
-
-		public void Add(Control child, int x, int y)
+		public void Add (Control child, int x, int y)
 		{
-			var current = views[y,x];
+			var current = views [y, x];
 			if (current != null) {
 				var currentView = (NSView)current.ControlObject;
-				if (currentView != null) currentView.RemoveFromSuperview();	
+				if (currentView != null)
+					currentView.RemoveFromSuperview ();	
 			}
 			var view = (NSView)child.ControlObject;
-			views[y, x] = child;
-			if (Widget.Loaded) Layout();
-			Control.AddSubview(view);
+			views [y, x] = child;
+			if (loaded)
+				Layout ();
+			Control.AddSubview (view);
 		}
-		public void Move(Control child, int x, int y)
+
+		public void Move (Control child, int x, int y)
 		{
-			var current = views[y,x];
+			var current = views [y, x];
 			if (current != null) {
 				var currentView = (NSView)current.ControlObject;
-				if (currentView != null) currentView.RemoveFromSuperview();	
+				if (currentView != null)
+					currentView.RemoveFromSuperview ();	
 			}
 
-			views[y, x] = child;
-			if (Widget.Loaded) Layout();
+			views [y, x] = child;
+			if (loaded)
+				Layout ();
 		}
 		
 		public void Remove (Control child)
 		{
 			var view = (NSView)child.ControlObject;
-			view.RemoveFromSuperview();
+			view.RemoveFromSuperview ();
 			for (int y=0; y<views.GetLength(0); y++)
-			for (int x=0; x<views.GetLength(1); x++)
-			{
-				if (views[y,x] == child) views[y,x] = null;
-			}
-			if (Widget.Loaded) Layout();
+				for (int x=0; x<views.GetLength(1); x++) {
+					if (views [y, x] == child)
+						views [y, x] = null;
+				}
+			if (loaded)
+				Layout ();
 		}
 		
 		public override void OnLoadComplete ()
 		{
 			base.OnLoadComplete ();
 			Layout ();
+			
+			Control.PostsFrameChangedNotifications = true;
+			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
+				var handler = e.Widget.Handler as TableLayoutHandler;
+				handler.Layout ();
+			});
+			loaded = true;
 		}
-
-		public void CreateControl(int cols, int rows)
+		
+		public void CreateControl (int cols, int rows)
 		{
-			views = new Control[rows,cols];
+			views = new Control[rows, cols];
 			xscaling = new bool[cols];
 			yscaling = new bool[rows];
 		}
 
-		public void SetColumnScale(int column, bool scale)
+		public void SetColumnScale (int column, bool scale)
 		{
-			xscaling[column] = scale;
+			xscaling [column] = scale;
 		}
 		
-		public void SetRowScale(int row, bool scale)
+		public void SetRowScale (int row, bool scale)
 		{
-			yscaling[row] = scale;
+			yscaling [row] = scale;
 		}
 	}
 }

@@ -121,9 +121,9 @@ namespace Eto.Forms
 		
 		public virtual void OnLoad(EventArgs e)
 		{
+			Loaded = true;
 			if (Load != null) Load(this, e);
 			inner.OnLoad(e);
-			Loaded = true;
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)

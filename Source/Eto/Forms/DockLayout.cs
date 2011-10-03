@@ -47,13 +47,13 @@ namespace Eto.Forms
 			inner = (IDockLayout)Handler;
 		}
 		
-		[Obsolete]
+		[Obsolete ("Use Content property instead")]
 		public void Add (Control control)
 		{
 			Content = control;
 		}
 		
-		[Obsolete]
+		[Obsolete ("Use Content property instead")]
 		public void Remove (Control control)
 		{
 			Content = null;
@@ -65,11 +65,12 @@ namespace Eto.Forms
 				control = value;
 				if (control != null) {
 					control.SetParentLayout (this);
-					if (Loaded && !control.Loaded) {
+					var load = Loaded && !control.Loaded;
+					if (load)
 						control.OnLoad (EventArgs.Empty);
-						control.OnLoadComplete (EventArgs.Empty);
-					}
 					inner.Content = control;
+					if (load)
+						control.OnLoadComplete (EventArgs.Empty);
 				}
 				else
 					inner.Content = control;

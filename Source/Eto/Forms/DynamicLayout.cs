@@ -164,10 +164,10 @@ namespace Eto.Forms
 				Spacing = spacing
 			};
 			currentItem = topTable;
-			container.LoadComplete += HandleContainerLoadComplete;
+			container.Load += HandleContainerLoad;
 		}
 
-		void HandleContainerLoadComplete (object sender, EventArgs e)
+		void HandleContainerLoad (object sender, EventArgs e)
 		{
 			if (!Generated)
 				this.Generate ();

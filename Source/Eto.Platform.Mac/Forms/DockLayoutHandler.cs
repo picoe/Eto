@@ -31,17 +31,6 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public override void Initialize ()
-		{
-			base.Initialize ();
-
-			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
-				var handler = e.Widget.Handler as DockLayoutHandler;
-				handler.SetChildFrame();
-			});
-		}
-		
 		public override void SizeToFit ()
 		{
 			if (child != null)
@@ -92,7 +81,7 @@ namespace Eto.Platform.Mac
 					this.child = value;
 					NSView childControl = (NSView)child.ControlObject;
 					childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-					SetChildFrame();
+					if (Widget.Container.Loaded) SetChildFrame();
 					
 					NSView parent = (NSView)ControlObject;
 					parent.AddSubview(childControl);
@@ -105,6 +94,12 @@ namespace Eto.Platform.Mac
 		{
 			base.OnLoadComplete ();
 			SetChildFrame ();
+			
+			Control.PostsFrameChangedNotifications = true;
+			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
+				var handler = e.Widget.Handler as DockLayoutHandler;
+				handler.SetChildFrame();
+			});
 		}
 
 		public override void SetContainerSize (SD.SizeF size)

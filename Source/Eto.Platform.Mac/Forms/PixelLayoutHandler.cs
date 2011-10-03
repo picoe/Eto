@@ -49,21 +49,15 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public override void Initialize ()
+		public override void OnLoadComplete ()
 		{
-			base.Initialize ();
+			base.OnLoadComplete ();
+			Layout ();
 			Control.PostsFrameChangedNotifications = true;
 			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as PixelLayoutHandler;
 				handler.Layout ();
 			});
-
-		}
-		
-		public override void OnLoadComplete ()
-		{
-			base.OnLoadComplete ();
-			Layout ();
 		}
 		
 		void SetPosition (Control control, Point point, float frameHeight, bool flipped)

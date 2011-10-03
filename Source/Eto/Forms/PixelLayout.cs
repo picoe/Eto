@@ -20,7 +20,7 @@ namespace Eto.Forms
 		}
 
 		public PixelLayout(Container container)
-			: base(container.Generator, container, typeof(IPixelLayout))
+			: base(container.Generator, container, typeof(IPixelLayout), true)
 		{
 			inner = (IPixelLayout)Handler;
 		}
@@ -28,11 +28,12 @@ namespace Eto.Forms
 		public void Add(Control control, int x, int y)
 		{
 			control.SetParentLayout(this);
-			inner.Add(control, x, y);
-			if (Loaded) {
+			var load = Loaded && !control.Loaded;
+			if (load)
 				control.OnLoad (EventArgs.Empty);
+			inner.Add(control, x, y);
+			if (load)
 				control.OnLoadComplete (EventArgs.Empty);
-			}
 			controls.Add(control);
 		}
 

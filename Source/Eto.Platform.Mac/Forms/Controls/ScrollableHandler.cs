@@ -67,9 +67,9 @@ namespace Eto.Platform.Mac
 			get { return view; }
 		}
 		
-		public override void OnLoad (EventArgs e)
+		public override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoad (e);
+			base.OnLoadComplete (e);
 			UpdateScrollSizes ();
 		}
 		
@@ -84,14 +84,16 @@ namespace Eto.Platform.Mac
 		{
 			Control.Tile ();
 			SD.SizeF size = SD.SizeF.Empty;
-			var layout = Widget.Layout.Handler as IMacLayout;
-			if (layout != null) {
-				foreach (var c in Widget.Controls) {
-					var frame = layout.GetPosition (c);
-					if (size.Width < frame.Right)
-						size.Width = frame.Right;
-					if (size.Height < frame.Bottom)
-						size.Height = frame.Bottom;
+			if (Widget.Layout != null) {
+				var layout = Widget.Layout.Handler as IMacLayout;
+				if (layout != null) {
+					foreach (var c in Widget.Controls) {
+						var frame = layout.GetPosition (c);
+						if (size.Width < frame.Right)
+							size.Width = frame.Right;
+						if (size.Height < frame.Bottom)
+							size.Height = frame.Bottom;
+					}
 				}
 			}
 			InternalSetFrameSize (size);
