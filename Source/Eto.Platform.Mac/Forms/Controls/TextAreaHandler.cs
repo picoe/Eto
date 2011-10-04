@@ -61,7 +61,6 @@ namespace Eto.Platform.Mac
 			this.text.SelectedRange = range;
 			if (scrollToCursor)
 				this.text.ScrollRangeToVisible (range);
-			this.text.DisplayIfNeeded ();
 		}
 		
 		#endregion
