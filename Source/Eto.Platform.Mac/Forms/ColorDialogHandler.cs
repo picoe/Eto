@@ -66,9 +66,15 @@ namespace Eto.Platform.Mac.Forms
 			else parentWindow = NSApplication.SharedApplication.KeyWindow;
 			
 			ColorHandler.Instance = new ColorHandler{ Handler = this };
-			Control.Color = Generator.ConvertNS (this.Color);
-			//Control.Continuous = false;
 			Control.Delegate = ColorHandler.Instance;
+			Control.SetTarget (null);
+			Control.SetAction (null);
+			Control.Color = Generator.ConvertNS (this.Color);
+			
+			Control.SetTarget (ColorHandler.Instance);
+			Control.SetAction (new Selector("changeColor:"));
+
+			//Control.Continuous = false;
 			bool isModal = false;
 			if (parentWindow != null) {
 				if (parentWindow == NSApplication.SharedApplication.ModalWindow)
@@ -79,8 +85,6 @@ namespace Eto.Platform.Mac.Forms
 					isModal = true;
 				}
 			}
-			Control.SetTarget (ColorHandler.Instance);
-			Control.SetAction (new Selector("changeColor:"));
 			
 			
 			// work around for modal dialogs wanting to show the color panel.. only works when the panel is key
