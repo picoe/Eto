@@ -126,7 +126,7 @@ namespace Eto.Drawing
 			return output;
 		}
 
-		public void Save(BinaryWriter bw, int shift = 2)
+		public void Save(BinaryWriter bw, int shift = 0)
 		{
 			for (int i=0; i<this.Count; i++)
 			{
@@ -137,13 +137,7 @@ namespace Eto.Drawing
 			}
 		}
 
-		public void Load(BinaryReader br, int size)
-		{
-			Load(br, size, 2);
-		
-		}
-		
-		public void Load(BinaryReader br, int size, int shift)
+		public void Load(BinaryReader br, int size, int shift = 0)
 		{
 			Clear ();
 			this.Capacity = size;
