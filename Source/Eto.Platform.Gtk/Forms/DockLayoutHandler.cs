@@ -28,12 +28,14 @@ namespace Eto.Platform.GtkSharp
 			get { return content; }
 			set {
 				if (content == value) return;
-				if (Control.Child != null) Control.Remove(Control.Child);
+				if (Control.Child != null) {
+					Control.Remove (Control.Child);
+				}
 				
 				content = value;
 				if (content != null) {
 					var widget = (Gtk.Widget)content.ControlObject;
-					Control.Add(widget);
+					Control.Child = widget;
 					widget.ShowAll ();
 				}
 				

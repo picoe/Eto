@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.ComponentModel;
 using System.Collections;
 using Eto.Forms;
@@ -23,12 +22,10 @@ namespace Eto.Platform.GtkSharp
 		Size size;
 		Size asize;
 		Point location;
-		System.Threading.Thread thread;
 		bool mouseDownHandled;
 
 		public GtkControl ()
 		{
-			this.thread = System.Threading.Thread.CurrentThread;
 			size = Size.Empty;
 		}
 
