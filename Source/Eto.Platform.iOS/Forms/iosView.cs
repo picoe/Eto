@@ -11,7 +11,8 @@ namespace Eto.Platform.iOS.Forms
 	public interface IiosView
 	{
 		Size PositionOffset { get; }
-
+		Size? PreferredSize { get; }
+		Size? MinimumSize { get; }
 		bool AutoSize { get; }
 	}
 	
@@ -26,13 +27,19 @@ namespace Eto.Platform.iOS.Forms
 	{
 
 		public virtual bool AutoSize { get; protected set; }
+		
+		public virtual Size? PreferredSize { get; set; }
+		public virtual Size? MinimumSize { get; set; }
 
 		public virtual Size Size {
 			get { return Generator.ConvertF (Control.Frame.Size); }
 			set { 
-				Control.SetFrameSize (Generator.ConvertF (value));
-				this.AutoSize = false;
-				CreateTracking ();
+				if (value != this.Size) {
+					Control.SetFrameSize (Generator.ConvertF (value));
+					Widget.OnSizeChanged (EventArgs.Empty);
+					this.AutoSize = false;
+					CreateTracking ();
+				}
 			}
 		}
 
@@ -100,7 +107,6 @@ namespace Eto.Platform.iOS.Forms
 		public virtual void Invalidate (Rectangle rect)
 		{
 			var region = Generator.ConvertF (rect);
-			//region.Y = Control.Frame.Height - region.Y - region.Height;
 			Control.SetNeedsDisplayInRect (region);
 		}
 
@@ -156,34 +162,6 @@ namespace Eto.Platform.iOS.Forms
 
 		#endregion
 
-		#region ISynchronizeInvoke implementation
-		
-		public IAsyncResult BeginInvoke (Delegate method, object[] args)
-		{
-			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.BeginInvokeOnMainThread (helper.Action);
-			return null;
-		}
-
-		public object EndInvoke (IAsyncResult result)
-		{
-			return null;
-		}
-
-		public object Invoke (Delegate method, object[] args)
-		{
-			var helper = new InvokeHelper{ Delegate = method, Args = args };
-			Control.InvokeOnMainThread (helper.Action);
-			return null;
-		}
-
-		public bool InvokeRequired {
-			get { 
-				return !NSThread.Current.IsMainThread;
-			}
-		}
-		#endregion
-		
 	}
 }
 

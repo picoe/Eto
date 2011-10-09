@@ -19,6 +19,10 @@ namespace Eto.Platform.iOS.Forms
 			get { return null; }
 		}
 		
+		public virtual void SizeToFit()
+		{
+		}
+		
 		public virtual void OnLoad()
 		{
 		}
@@ -30,6 +34,26 @@ namespace Eto.Platform.iOS.Forms
 		public virtual void Update()
 		{
 		}
+		
+		public virtual void SetContainerSize(SD.SizeF size)
+		{
+			var container = Widget.Container.Handler as IiosContainer;
+			if (container != null) container.SetContentSize (size);
+			else {
+				/*var view = Widget.Container.ContainerObject as NSView;
+				if (view != null) view.SetFrameSize (size);*/
+			}
+		}
+		
+		protected void AutoSize(Control view)
+		{
+			var mh = view.Handler as IiosView;
+			if (mh != null && !mh.AutoSize) return;
+			
+			var c = view.ControlObject as UIControl;
+			if (c != null) c.SizeToFit ();
+		}
+		
 
 	}
 }

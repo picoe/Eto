@@ -5,6 +5,7 @@ namespace Eto.Forms
 	{
 		float MinimumZoom { get; set; }
 		float MaximumZoom { get; set; }
+		float Zoom { get; set; }
 	}
 	
 	public partial class Scrollable
@@ -20,6 +21,12 @@ namespace Eto.Forms
 		{
 			get { return inner.MaximumZoom; }
 			set { inner.MaximumZoom = value; }
+		}
+		
+		public float Zoom
+		{
+			get { return inner.Zoom; }
+			set { inner.Zoom = value; }
 		}
 	}
 }

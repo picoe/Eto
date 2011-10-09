@@ -1,9 +1,20 @@
 using System;
 using Eto.Drawing;
+using System.Text;
+#if IOS
+
+using MonoTouch.UIKit;
+using NSFont = MonoTouch.UIKit.UIFont;
+
+namespace Eto.Platform.iOS.Drawing
+
+#elif OSX
+	
 using MonoMac.AppKit;
-using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Drawing
+	
+#endif
 {
 	public class FontHandler : WidgetHandler<NSFont, Font>, IFont, IDisposable
 	{
@@ -26,14 +37,19 @@ namespace Eto.Platform.Mac.Drawing
 				bold = true;
 				Control = NSFont.BoldSystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
+			case SystemFont.Label:
+#if IOS
+				Control = NSFont.SystemFontOfSize(size ?? NSFont.LabelFontSize);
+#elif OSX
+				Control = NSFont.LabelFontOfSize(size ?? NSFont.LabelFontSize);
+#endif
+				break;
+#if DESKTOP
 			case SystemFont.TitleBar:
 				Control = NSFont.TitleBarFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			case SystemFont.ToolTip:
 				Control = NSFont.ToolTipsFontOfSize(size ?? NSFont.SystemFontSize);
-				break;
-			case SystemFont.Label:
-				Control = NSFont.LabelFontOfSize(size ?? NSFont.LabelFontSize);
 				break;
 			case SystemFont.MenuBar:
 				Control = NSFont.MenuBarFontOfSize(size ?? NSFont.SystemFontSize);
@@ -50,6 +66,7 @@ namespace Eto.Platform.Mac.Drawing
 			case SystemFont.StatusBar:
 				Control = NSFont.SystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
+#endif
 			default:
 				throw new NotSupportedException();
 			}
@@ -57,6 +74,8 @@ namespace Eto.Platform.Mac.Drawing
 		
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
+			
+#if OSX
 			string familyString;
 			switch (family)
 			{
@@ -66,11 +85,33 @@ namespace Eto.Platform.Mac.Drawing
 			case FontFamily.Serif: familyString = "Times"; break; 
 			}
 			bold = (style & FontStyle.Bold) != 0;
+
 			NSFontTraitMask traits = (bold) ? NSFontTraitMask.Bold : NSFontTraitMask.Unbold;
 			italic = (style & FontStyle.Italic) != 0;
 			traits |= (italic) ? NSFontTraitMask.Italic : NSFontTraitMask.Unitalic;
 			var font = NSFontManager.SharedFontManager.FontWithFamily(familyString, traits, 3, size * FONT_SIZE_FACTOR);
 			if (font == null || font.Handle == IntPtr.Zero) throw new Exception(string.Format("Could not allocate font with family {0}, traits {1}, size {2}", familyString, traits, size));
+#elif IOS
+			string suffix = string.Empty;
+			string italicString = "Italic";
+			var familyString = new StringBuilder();
+			switch (family)
+			{
+			case FontFamily.Monospace: familyString.Append ("CourierNewPS"); suffix = "MT"; break; 
+			default:
+			case FontFamily.Sans: familyString.Append ("Helvetica"); italicString = "Oblique"; break; 
+			case FontFamily.Serif: familyString.Append ("TimesNewRomanPS"); suffix = "MT"; break; 
+			}
+			bold = (style & FontStyle.Bold) != 0;
+			italic = (style & FontStyle.Italic) != 0;
+			
+			if (bold || italic) familyString.Append ("-");
+			if (bold) familyString.Append ("Bold");
+			if (italic) familyString.Append (italicString);
+			
+			familyString.Append (suffix);
+			var font = UIFont.FromName (familyString.ToString (), size);
+#endif
 			Control = font;
 		}
 

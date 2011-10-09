@@ -234,7 +234,8 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
-			var row = new List<LayoutItem> (controls.Select (r => new ControlItem{ Control = r, YScale = yscale }));
+			var items = controls.Select (r => new ControlItem{ Control = r, YScale = yscale });
+			var row = new List<LayoutItem> (items.Cast<LayoutItem>());
 			currentItem.AddRow (row);
 			currentItem.CurrentRow = null;
 		}

@@ -12,22 +12,16 @@
     <AssemblyName>Eto.Platform.iOS</AssemblyName>
     <ReleaseVersion>
     </ReleaseVersion>
-    <TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;IOS</DefineConstants>
+    <DefineConstants>DEBUG;IOS;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <MtouchDebug>False</MtouchDebug>
-    <MtouchUseSGen>false</MtouchUseSGen>
     <ConsolePause>false</ConsolePause>
-    <MtouchUseLlvm>false</MtouchUseLlvm>
-    <MtouchUseThumb>false</MtouchUseThumb>
-    <MtouchArch>ARMv6</MtouchArch>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -36,14 +30,9 @@
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <MtouchUseSGen>false</MtouchUseSGen>
-    <MtouchDebug>False</MtouchDebug>
     <ConsolePause>false</ConsolePause>
-    <MtouchUseLlvm>false</MtouchUseLlvm>
-    <MtouchUseThumb>false</MtouchUseThumb>
-    <MtouchArch>ARMv6</MtouchArch>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>IOS</DefineConstants>
+    <DefineConstants>IOS;MOBILE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -61,9 +50,6 @@
   <ItemGroup>
     <Compile Include="Generator.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\FontHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\GraphicsHandler.cs">
@@ -93,7 +79,6 @@
     <Compile Include="Forms\DialogHandler.cs" />
     <Compile Include="Forms\DockLayoutHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
-    <Compile Include="Forms\TableLayoutHandler.cs" />
     <Compile Include="Forms\iosLayout.cs" />
     <Compile Include="Forms\iosObject.cs" />
     <Compile Include="Extensions.cs" />
@@ -109,14 +94,17 @@
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="Forms\Controls\PanelHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\FontHandler.cs">
+      <Link>Drawing\FontHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Forms\TableLayoutHandler.cs">
+      <Link>Forms\TableLayoutHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">
       <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
       <Name>Eto.iOS</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Info.plist" />
   </ItemGroup>
 </Project>

@@ -1,13 +1,26 @@
 using System;
 using Eto.Forms;
-using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
 using System.Diagnostics;
 
+#if IOS
+using MonoTouch.UIKit;
+using NSView = MonoTouch.UIKit.UIView;
+using IMacView = Eto.Platform.iOS.Forms.IiosView;
+namespace Eto.Platform.iOS.Forms
+
+#elif OSX
+using MonoMac.AppKit;
 namespace Eto.Platform.Mac
+#endif
 {
-	public class TableLayoutHandler : MacLayout<NSView, TableLayout>, ITableLayout
+	public class TableLayoutHandler : 
+#if IOS
+		iosLayout<NSView, TableLayout>, ITableLayout
+#elif OSX
+		MacLayout<NSView, TableLayout>, ITableLayout
+#endif
 	{
 		Control[,] views;
 		bool[] xscaling;
@@ -214,7 +227,11 @@ namespace Eto.Platform.Mac
 			var chunkx = (numx > 0) ? (float)Math.Truncate (Math.Max (totalx, 0) / numx) : totalx;
 			var chunky = (numy > 0) ? (float)Math.Truncate (Math.Max (totaly, 0) / numy) : totaly;
 			
+#if OSX			
 			bool flipped = Control.IsFlipped;
+#elif IOS
+			bool flipped = Control.Layer.GeometryFlipped;
+#endif
 			float starty = Padding.Top;
 			for (int x=0; x<widths.Length; x++) {
 				if (xscaling [x]) {
@@ -295,11 +312,18 @@ namespace Eto.Platform.Mac
 			base.OnLoadComplete ();
 			Layout ();
 			
+#if OSX
 			Control.PostsFrameChangedNotifications = true;
 			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as TableLayoutHandler;
 				handler.Layout ();
 			});
+#elif IOS
+			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
+				Console.WriteLine ("Layout!");
+				Layout();
+			};
+#endif
 			loaded = true;
 		}
 		

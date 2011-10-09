@@ -13,14 +13,17 @@ namespace Eto.Drawing
 	{
 		Default,
 		Bold,
+		Label
+#if DESKTOP		
+		,
 		TitleBar,
 		ToolTip,
-		Label,
 		MenuBar,
 		Menu,
 		Message,
 		Palette,
 		StatusBar
+#endif
 	}
 	
 	[Flags]

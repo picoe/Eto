@@ -209,15 +209,13 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			Lock ();
 			NSGraphicsContext.CurrentContext = this.Control;
-			var rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true);
+			System.Drawing.RectangleF rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height));
+			rect.Offset (0.5f, 0.5f);
+			rect.Width -= 1f;
+			rect.Height -= 1f;
 			context.SetStrokeColor(Generator.Convert(color));
 			context.SetLineCap(CGLineCap.Square);
 			context.SetLineWidth(1.0F);
-			rect.Width -= 0.5F;
-			rect.Height -= 0.5F;
-			rect.Y += 0.5F;
-			//rect.Height -= 1;
-			//Console.WriteLine ("size: {0}, {1}", rect, );
 			context.StrokeRect(rect);
 		}
 

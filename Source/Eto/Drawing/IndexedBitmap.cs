@@ -19,6 +19,11 @@ namespace Eto.Drawing
 	{
 		IIndexedBitmap inner;
 		
+		public IndexedBitmap(int width, int height, int bitsPerPixel)
+			: this(Generator.Current, width, height, bitsPerPixel)
+		{
+		}
+		
 		public IndexedBitmap(Generator g, int width, int height, int bitsPerPixel) : base(g, typeof(IIndexedBitmap))
 		{
 			inner = (IIndexedBitmap)Handler;

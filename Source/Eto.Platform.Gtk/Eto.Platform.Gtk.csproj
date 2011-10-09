@@ -20,7 +20,7 @@
     <RootNamespace>Eto.Platform.GtkSharp</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
@@ -140,15 +140,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\TableLayoutHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="GdkHandler\Global.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="GdkHandler\Win32\Global.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="GdkHandler\x11\Global.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IO\SystemIcons.cs">

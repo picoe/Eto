@@ -80,6 +80,15 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 		
+		public float Zoom {
+			get {
+				return Control.ZoomScale;
+			}
+			set {
+				Control.SetZoomScale (value, false);
+			}
+		}
+		
 		public ScrollableHandler ()
 		{
 			Child = new UIView ();
@@ -112,7 +121,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public Eto.Drawing.Point ScrollPosition {
 			get {
-				return Generator.ConvertF (Control.ContentOffset);
+				var inset = Control.ContentInset;
+				var offset = Control.ContentOffset;
+				return new Eto.Drawing.Point((int)Math.Round(offset.X + inset.Left), (int)Math.Round (offset.Y + inset.Top));
 			}
 			set {
 				Control.SetContentOffset (Generator.ConvertF (value), false);

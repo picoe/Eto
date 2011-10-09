@@ -5,12 +5,22 @@ using Eto.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public class iosContainer<T, W> : iosControl<T, W>, IContainer
+	public interface IiosContainer
+	{
+		void SetContentSize (System.Drawing.SizeF size);
+	}
+	
+	public class iosContainer<T, W> : iosControl<T, W>, IContainer, IiosContainer
 		where T: UIView
 		where W: Container
 	{
 		public iosContainer ()
 		{
+		}
+		
+		public virtual void SetContentSize (System.Drawing.SizeF size)
+		{
+			
 		}
 
 		#region IContainer implementation

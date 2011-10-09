@@ -21,13 +21,12 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
     <ReleaseVersion />
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;DESKTOP</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <FileAlignment>4096</FileAlignment>
@@ -42,7 +41,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DESKTOP</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
@@ -408,12 +407,6 @@
     <Compile Include="Misc\XmlExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Platform\IPlatformHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Platform\PlatformHandlerCollection.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Threading\Thread.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -436,6 +429,8 @@
     <Compile Include="Forms\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
     <Compile Include="Forms\TreeItem.cs" />
+    <Compile Include="Forms\Container.desktop.cs" />
+    <Compile Include="Forms\Controls\ListBox.desktop.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

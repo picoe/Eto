@@ -44,28 +44,26 @@ namespace Eto.Platform.iOS.Forms
 			
 			childControl.Frame = frame;
 		}
+		
+		public Control Content {
+			get {
+				return child;
+			}
+			set {
+				if (child != null) { 
+					((UIView)child.ControlObject).RemoveFromSuperview(); child = null; 
+				}
+				if (value != null)
+				{
+					child = value;
+					var childControl = (UIView)child.ControlObject;
+					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+					SetChildFrame();
+					UIView parent = (UIView)ControlObject;
+					parent.AddSubview(childControl);
+				}
 				
-		public void Add(Control child)
-		{
-			if (this.child != null) { 
-				((UIView)this.child.ControlObject).RemoveFromSuperview(); this.child = null; 
 			}
-			if (child != null)
-			{
-				UIView childControl = (UIView)child.ControlObject;
-				this.child = child;
-				childControl.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-				SetChildFrame();
-				UIView parent = (UIView)ControlObject;
-				parent.AddSubview(childControl);
-			}
-		}
-
-		public void Remove(Control child)
-		{
-			UIView childControl = (UIView)child.ControlObject;
-			childControl.RemoveFromSuperview();
-			this.child = null;
 		}
 	}
 }

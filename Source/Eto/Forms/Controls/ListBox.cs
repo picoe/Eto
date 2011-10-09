@@ -9,12 +9,11 @@ namespace Eto.Forms
 		Image Image { get; }
 	}
 	
-	public interface IListBox : IListControl
+	public partial interface IListBox : IListControl
 	{
-		ContextMenu ContextMenu { get; set; }
 	}
 	
-	public class ListBox : ListControl
+	public partial class ListBox : ListControl
 	{
 		IListBox inner;
 
@@ -33,11 +32,6 @@ namespace Eto.Forms
 		public ListBox (Generator g) : base(g, typeof(IListBox))
 		{
 			inner = (IListBox)Handler;
-		}
-		
-		public ContextMenu ContextMenu {
-			get { return inner.ContextMenu; }
-			set { inner.ContextMenu = value; }
 		}
 
 	}

@@ -6,15 +6,14 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public interface IContainer : IControl
+	public partial interface IContainer : IControl
 	{
 		Size ClientSize { get; set; }
 		object ContainerObject { get; }
 		void SetLayout(Layout layout);
-		Size? MinimumSize { get; set; }
 	}
 	
-	public class Container : Control
+	public partial class Container : Control
 	{
 		IContainer inner;
 
@@ -69,13 +68,6 @@ namespace Eto.Forms
 			get { return inner.ClientSize; }
 			set { inner.ClientSize = value; }
 		}
-		
-		public Size? MinimumSize
-		{
-			get { return inner.MinimumSize; }
-			set { inner.MinimumSize = value; }
-		}
-
 		
 		public void SetLayout (Layout layout)
 		{
