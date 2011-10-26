@@ -93,6 +93,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
 				pb.GetFromDrawable (Control, Control.Colormap, 0, 0, 0, 0, image.Size.Width, image.Size.Height);
 			}
+			if (context != null && Control != null)
+			{
+				((IDisposable)context).Dispose();
+				this.context = Gdk.CairoHelper.Create (Control);
+			}
 			//context.Paint ();
 			//GdkHandler.Global.Flush ();
 		}

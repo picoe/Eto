@@ -10,6 +10,7 @@ namespace Eto.Platform.Mac
 		where T: NSControl
 		where W: Control
 	{
+		Font font;
 		
 		public override bool Enabled {
 			get {
@@ -20,6 +21,18 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
+		public Font Font {
+			get {
+				return font;
+			}
+			set {
+				font = value;
+				if (font != null)
+					Control.Font = font.ControlObject as NSFont;
+				else
+					Control.Font = null;
+			}
+		}
 	}
 }
 

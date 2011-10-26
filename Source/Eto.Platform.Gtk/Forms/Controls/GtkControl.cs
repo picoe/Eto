@@ -19,6 +19,7 @@ namespace Eto.Platform.GtkSharp
 		where T: Gtk.Widget
 		where W: Control
 	{
+		Font font;
 		Size size;
 		Size asize;
 		Point location;
@@ -140,6 +141,10 @@ namespace Eto.Platform.GtkSharp
 		{
 		}
 
+		public virtual void OnPreLoad (EventArgs e)
+		{
+		}
+		
 		public virtual void OnLoad (EventArgs e)
 		{
 		}
@@ -172,6 +177,14 @@ namespace Eto.Platform.GtkSharp
 				Control.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
 				Control.ButtonReleaseEvent += GtkControlObject_ButtonReleaseEvent;
 				break;
+			case Eto.Forms.Control.MouseEnterEvent:
+				Control.AddEvents((int)Gdk.EventMask.EnterNotifyMask);
+				Control.EnterNotifyEvent += HandleControlEnterNotifyEvent;
+				break;
+			case Eto.Forms.Control.MouseLeaveEvent:
+				Control.AddEvents((int)Gdk.EventMask.LeaveNotifyMask);
+				Control.LeaveNotifyEvent += HandleControlLeaveNotifyEvent;
+				break;
 			case Eto.Forms.Control.MouseMoveEvent:
 				Control.AddEvents((int)Gdk.EventMask.ButtonMotionMask);
 				Control.AddEvents((int)Gdk.EventMask.PointerMotionMask);
@@ -190,6 +203,24 @@ namespace Eto.Platform.GtkSharp
 				base.AttachEvent(handler);
 				return;
 			}
+		}
+		
+		void HandleControlLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
+		{
+			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
+			Key modifiers = GetKeyModifiers (args.Event.State);
+			MouseButtons buttons = MouseButtons.None;
+			
+			Widget.OnMouseLeave (new MouseEventArgs (buttons, modifiers, p));
+		}
+
+		void HandleControlEnterNotifyEvent (object o, Gtk.EnterNotifyEventArgs args)
+		{
+			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
+			Key modifiers = GetKeyModifiers (args.Event.State);
+			MouseButtons buttons = MouseButtons.None;
+			
+			Widget.OnMouseEnter (new MouseEventArgs (buttons, modifiers, p));
 		}
 
 		private Key GetKeyModifiers (Gdk.ModifierType state)
@@ -303,5 +334,19 @@ namespace Eto.Platform.GtkSharp
 					args.RetVal = true;
 			}
 		}
+		
+		public Font Font {
+			get {
+				return font;
+			}
+			set {
+				font = value;
+				if (font != null)
+					Control.ModifyFont (font.ControlObject as Pango.FontDescription);
+				else
+					Control.ModifyFont (null);
+			}
+		}
+		
 	}
 }

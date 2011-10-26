@@ -6,9 +6,9 @@ namespace Eto.Platform.GtkSharp
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog>, IDialog
 	{
-		public DialogHandler()
+		public DialogHandler ()
 		{
-			Control = new Gtk.Dialog();
+			Control = new Gtk.Dialog ();
 			Control.AllowShrink = false;
 			Control.AllowGrow = false;
 			//control.SetSizeRequest(100,100);
@@ -18,11 +18,13 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		public Button AbortButton {
-			get; set;
+			get;
+			set;
 		}
 		
 		public Button DefaultButton {
-			get; set;
+			get;
+			set;
 		}
 		
 		
@@ -38,26 +40,26 @@ namespace Eto.Platform.GtkSharp
 		}
 		 */
 
-		public DialogResult ShowDialog(Control parent)
+		public DialogResult ShowDialog (Control parent)
 		{
-			if (parent != null)
-			{
+			Widget.OnPreLoad (EventArgs.Empty);
+			
+			if (parent != null) {
 				Control.TransientFor = ((Gtk.Window)(parent.ParentWindow).ControlObject); //FindParentWindow((Gtk.Widget)parent.ControlObject);
 				Control.Modal = true;
 			}
-			Control.ShowAll();
-			Widget.OnLoad(EventArgs.Empty);
+			Control.ShowAll ();
+			Widget.OnLoad (EventArgs.Empty);
 
-			if (DefaultButton != null)
-			{
+			if (DefaultButton != null) {
 				var widget = DefaultButton.ControlObject as Gtk.Widget;
 				widget.SetFlag (Gtk.WidgetFlags.CanDefault);
 				Control.Default = widget;
 			}
 			// TODO: implement cancel button somehow?
 			
-			Control.Run();
-			Control.HideAll();
+			Control.Run ();
+			Control.HideAll ();
 									
 			return Widget.DialogResult; // Generator.Convert((Gtk.ResponseType)result);
 		}

@@ -19,15 +19,13 @@ namespace Eto.Platform.Mac
 		[Export("mouseMoved:")]
 		public void MouseMoved (NSEvent theEvent)
 		{
-			var pt = Generator.GetLocation (View, theEvent);
-			Key modifiers = KeyMap.GetModifiers (theEvent);
-			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
-			Widget.OnMouseMove (new MouseEventArgs (buttons, modifiers, pt));
+			Widget.OnMouseMove (Generator.GetMouseEvent(View, theEvent));
 		}
 		
 		[Export("mouseEntered:")]
 		public void MouseEntered (NSEvent theEvent)
 		{
+			Widget.OnMouseEnter (Generator.GetMouseEvent(View, theEvent));
 		}
 
 		[Export("cursorUpdate::")]
@@ -38,6 +36,7 @@ namespace Eto.Platform.Mac
 		[Export("mouseExited:")]
 		public void MouseExited (NSEvent theEvent)
 		{
+			Widget.OnMouseLeave (Generator.GetMouseEvent(View, theEvent));
 		}
 	}
 
@@ -61,6 +60,7 @@ namespace Eto.Platform.Mac
 		bool focus;
 		NSTrackingArea tracking;
 		bool mouseMove;
+		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
 
 		public virtual bool AutoSize { get; protected set; }
@@ -102,7 +102,7 @@ namespace Eto.Platform.Mac
 			//Console.WriteLine ("Adding mouse tracking {0} for area {1}", this.Widget.GetType ().FullName, Control.Frame.Size);
 			mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = Control };
 			tracking = new NSTrackingArea (new SD.RectangleF (new SD.PointF (0, 0), Control.Frame.Size), 
-				NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.MouseMoved | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect, 
+				NSTrackingAreaOptions.ActiveAlways | mouseOptions | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect, 
 			    mouseDelegate, 
 				new NSDictionary ());
 			Control.AddTrackingArea (tracking);
@@ -119,7 +119,14 @@ namespace Eto.Platform.Mac
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case Eto.Forms.Control.MouseEnterEvent:
+			case Eto.Forms.Control.MouseLeaveEvent:
+				mouseOptions |= NSTrackingAreaOptions.MouseEnteredAndExited;
+				mouseMove = true;
+				CreateTracking ();
+				break;
 			case Eto.Forms.Control.MouseMoveEvent:
+				mouseOptions |= NSTrackingAreaOptions.MouseMoved;
 				mouseMove = true;
 				CreateTracking ();
 				break;
@@ -202,6 +209,10 @@ namespace Eto.Platform.Mac
 		public bool Visible {
 			get { return !Control.Hidden; }
 			set { Control.Hidden = !value; }
+		}
+		
+		public virtual void OnPreLoad (EventArgs e)
+		{
 		}
 		
 		public virtual void OnLoad (EventArgs e)

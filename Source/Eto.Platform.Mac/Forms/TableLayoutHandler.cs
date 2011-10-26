@@ -8,6 +8,7 @@ using System.Diagnostics;
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
 using IMacView = Eto.Platform.iOS.Forms.IiosView;
+using MacLayout = Eto.Platform.iOS.Forms.iosLayout;
 namespace Eto.Platform.iOS.Forms
 
 #elif OSX
@@ -16,11 +17,7 @@ namespace Eto.Platform.Mac
 #endif
 {
 	public class TableLayoutHandler : 
-#if IOS
-		iosLayout<NSView, TableLayout>, ITableLayout
-#elif OSX
 		MacLayout<NSView, TableLayout>, ITableLayout
-#endif
 	{
 		Control[,] views;
 		bool[] xscaling;
@@ -254,7 +251,7 @@ namespace Eto.Platform.Mac
 						frame.Width = widths [x];
 						frame.Height = heights [y];
 						frame.X = startx;
-						frame.Y = flipped ? starty : Control.Frame.Height - starty - frame.Height;
+						frame.Y = flipped ? starty : controlFrame.Height - starty - frame.Height;
 						if (frame != nsview.Frame)
 							nsview.Frame = frame;
 						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
@@ -320,7 +317,7 @@ namespace Eto.Platform.Mac
 			});
 #elif IOS
 			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
-				Console.WriteLine ("Layout!");
+				//Console.WriteLine ("Layout!");
 				Layout();
 			};
 #endif

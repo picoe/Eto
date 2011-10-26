@@ -72,6 +72,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}
+		
 
 	}
 }

@@ -22,6 +22,7 @@ namespace Eto.Platform.Windows
 		where W: Control
 	{
 		bool internalVisible = true;
+		Font font;
 
 		public override void Initialize ()
 		{
@@ -52,6 +53,12 @@ namespace Eto.Platform.Windows
 			case Eto.Forms.Control.MouseDoubleClickEvent:
 				Control.MouseDoubleClick += Control_DoubleClick;
 				break;
+			case Eto.Forms.Control.MouseEnterEvent:
+				Control.MouseEnter += HandleControlMouseEnter;
+				break;
+			case Eto.Forms.Control.MouseLeaveEvent:
+				Control.MouseLeave += HandleControlMouseLeave;
+				break;
 			case Eto.Forms.Control.MouseDownEvent:
 				Control.MouseDown += Control_MouseDown;
 				break;
@@ -74,12 +81,22 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+		void HandleControlMouseLeave (object sender, EventArgs e)
+		{
+			Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
+		}
+
+		void HandleControlMouseEnter (object sender, EventArgs e)
+		{
+			Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
+		}
+
 		void Control_DoubleClick (object sender, System.Windows.Forms.MouseEventArgs e)
 		{
 			Widget.OnMouseDoubleClick (GetMouseEvent (e));
 		}
 
-		MouseEventArgs GetMouseEvent (SWF.MouseEventArgs e)
+		MouseEventArgs GetMouseEvent (System.Windows.Forms.MouseEventArgs e)
 		{
 			Point point = new Point (e.X, e.Y);
 			MouseButtons buttons = MouseButtons.None;
@@ -89,8 +106,7 @@ namespace Eto.Platform.Windows
 				buttons |= MouseButtons.Alternate;
 			if ((e.Button & SWF.MouseButtons.Middle) != 0)
 				buttons |= MouseButtons.Middle;
-			Key modifiers = Key.None;
-			// TODO: get shift/control/alt state
+			Key modifiers = KeyMap.Convert (SWF.Control.ModifierKeys);
 			
 			return new MouseEventArgs (buttons, modifiers, point);
 		}
@@ -208,6 +224,10 @@ namespace Eto.Platform.Windows
 			Widget.OnSizeChanged (e);
 		}
 
+		public virtual void OnPreLoad (EventArgs e)
+		{
+		}
+		
 		public virtual void OnLoad (EventArgs e)
 		{
 		}
@@ -260,6 +280,17 @@ namespace Eto.Platform.Windows
 		void Control_TextChanged (object sender, EventArgs e)
 		{
 			Widget.OnTextChanged (e);
+		}
+		
+		public Font Font {
+			get { return font; }
+			set {
+				font = value;
+				if (font != null)
+					this.Control.Font = font.ControlObject as System.Drawing.Font;
+				else
+					this.Control.Font = null;
+			}
 		}
 	}
 }

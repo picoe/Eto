@@ -49,6 +49,7 @@ namespace Eto.Forms
 		protected internal void AddTab (TabPage page)
 		{
 			if (Loaded) {
+				page.OnPreLoad (EventArgs.Empty);
 				page.OnLoad (EventArgs.Empty);
 				page.OnLoadComplete (EventArgs.Empty);
 			}
@@ -60,6 +61,14 @@ namespace Eto.Forms
 		{
 			page.SetParent (null);
 			inner.RemoveTab (page);
+		}
+
+		public override void OnPreLoad (EventArgs e)
+		{
+			base.OnPreLoad (e);
+			foreach (var page in pages) {
+				page.OnPreLoad (e);
+			}
 		}
 		
 		public override void OnLoad (EventArgs e)

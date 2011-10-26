@@ -356,6 +356,10 @@ namespace Eto.Platform.Mac
 			set { restoreBounds = value; }
 		}
 		
+		public virtual void OnPreLoad (EventArgs e)
+		{
+		}
+		
 		public virtual void OnLoad (EventArgs e)
 		{
 		}

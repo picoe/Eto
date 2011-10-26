@@ -9,62 +9,88 @@ namespace Eto.Forms
 	public partial interface IContainer : IControl
 	{
 		Size ClientSize { get; set; }
+
 		object ContainerObject { get; }
-		void SetLayout(Layout layout);
+
+		void SetLayout (Layout layout);
 	}
 	
 	public partial class Container : Control
 	{
 		IContainer inner;
 
-		public IEnumerable<Control> Controls
-		{
+		public IEnumerable<Control> Controls {
 			get { 
-				if (Layout != null) return Layout.Controls;
-				else return Enumerable.Empty<Control>();
+				if (Layout != null)
+					return Layout.Controls;
+				else
+					return Enumerable.Empty<Control> ();
 			}
 		}
 		
-		public override void OnLoad(EventArgs e)
-		{
-			
-			foreach (Control control in Controls)
-			{
-				control.OnLoad(e);
+		public IEnumerable<Control> Children {
+			get {
+				if (Layout != null) {
+					foreach (var control in Layout.Controls) {
+						yield return control;
+						var container = control as Container;
+						if (container != null) {
+							foreach (var child in container.Children)
+								yield return child;
+						}
+					}
+				}
 			}
-			
-			base.OnLoad(e);
-			
-			if (Layout != null) Layout.OnLoad (e);
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnPreLoad (EventArgs e)
 		{
+			base.OnPreLoad (e);
 			
-			foreach (Control control in Controls)
-			{
-				control.OnLoadComplete(e);
+			if (Layout != null)
+				Layout.OnPreLoad (e);
+			
+			foreach (Control control in Controls) {
+				control.OnPreLoad (e);
 			}
-			
-			base.OnLoadComplete(e);
-			
-			if (Layout != null) Layout.OnLoadComplete (e);
 		}
 		
-		protected Container(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
+		public override void OnLoad (EventArgs e)
+		{
+			foreach (Control control in Controls) {
+				control.OnLoad (e);
+			}
+			
+			base.OnLoad (e);
+			
+			if (Layout != null)
+				Layout.OnLoad (e);
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			foreach (Control control in Controls) {
+				control.OnLoadComplete (e);
+			}
+			
+			base.OnLoadComplete (e);
+			
+			if (Layout != null)
+				Layout.OnLoadComplete (e);
+		}
+		
+		protected Container (Generator g, Type type, bool initialize = true) : base(g, type, initialize)
 		{
 			inner = (IContainer)base.Handler;
 		}
 		
-		public object ContainerObject
-		{
+		public object ContainerObject {
 			get { return inner.ContainerObject; }
 		}
 		
 		public Layout Layout { get; private set; }
 		
-		public Size ClientSize
-		{
+		public Size ClientSize {
 			get { return inner.ClientSize; }
 			set { inner.ClientSize = value; }
 		}
@@ -72,8 +98,9 @@ namespace Eto.Forms
 		public void SetLayout (Layout layout)
 		{
 			this.Layout = layout;
-			inner.SetLayout(layout);
+			inner.SetLayout (layout);
 			if (Loaded) {
+				layout.OnPreLoad (EventArgs.Empty);
 				layout.OnLoad (EventArgs.Empty);
 				layout.OnLoadComplete (EventArgs.Empty);
 			}

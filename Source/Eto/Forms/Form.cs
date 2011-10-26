@@ -25,6 +25,7 @@ namespace Eto.Forms
 		{ 
 			var loaded = Loaded;
 			if (!loaded) {
+				OnPreLoad (EventArgs.Empty);
 				OnLoad (EventArgs.Empty);
 				OnLoadComplete (EventArgs.Empty);
 			}

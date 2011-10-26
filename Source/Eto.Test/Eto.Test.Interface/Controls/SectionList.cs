@@ -54,6 +54,8 @@ namespace Eto.Test.Interface.Controls
 			items.Add (new Section<ListBoxSection> { Text = "List Box" });
 			items.Add (new Section<TabControlSection> { Text = "Tab Control" });
 			items.Add (new Section<TreeViewSection> { Text = "Tree View" });
+			items.Add (new Section<NumericUpDownSection> { Text = "Numeric Up/Down" });
+			items.Add (new Section<DateTimePickerSection> { Text = "Date / Time" });
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			Items.AddRange (items);
 			

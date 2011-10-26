@@ -6,7 +6,6 @@ namespace Eto.Platform.GtkSharp
 {
 	public class LabelHandler : GtkControl<Gtk.Label, Label>, ILabel
 	{
-		Font font;
 		HorizontalAlign horizontalAlign = HorizontalAlign.Left;
 		VerticalAlign verticalAlign = VerticalAlign.Top;
 		
@@ -100,17 +99,6 @@ namespace Eto.Platform.GtkSharp
 			set {
 				horizontalAlign = value;
 				SetAlignment ();
-			}
-		}
-
-		public Font Font {
-			get { return font; }
-			set {
-				font = value;
-				if (font != null)
-					Control.ModifyFont ((Pango.FontDescription)font.ControlObject);
-				else
-					Control.ModifyFont (null);
 			}
 		}
 

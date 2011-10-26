@@ -84,7 +84,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				//Console.WriteLine("\t\tkeymap.Add({2}, Key.{0}({1})); {3}", theEvent.Characters, (int)keyChar, theEvent.KeyCode, theEvent.ModifierFlags);
 				//Console.WriteLine("\t\t{0} {1} {2}", key & Key.ModifierMask, key & Key.KeyMask, (NSKey)keyChar);
 				if (key != Key.None) {
-					if ((int)keyChar < 127 && (int)keyChar >= 32 && ((modifiers & ~(Key.Shift | Key.Alt)) == 0))
+					if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
 						kpea = new KeyPressEventArgs (key, keyChar);
 					else
 						kpea = new KeyPressEventArgs (key);
@@ -96,19 +96,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			return false;
 		}
-		
+
 		public override void KeyDown (NSEvent theEvent)
 		{
+			//base.InterpretKeyEvents (new NSEvent [] { theEvent });
 			if (!KeyDown (Widget, theEvent))
 				base.KeyDown (theEvent);
 		}
 		
-		/*
-		public override bool PerformKeyEquivalent (NSEvent theEvent)
-		{
-			return false;
-		}*/
-
 		MouseEventArgs CreateMouseArgs (NSEvent theEvent)
 		{
 			var pt = Generator.GetLocation (this, theEvent);

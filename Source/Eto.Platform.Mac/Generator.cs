@@ -124,5 +124,13 @@ namespace Eto.Platform.Mac
 			return new Color((byte)(red * 255), (byte)(green * 255), (byte)(blue * 255), (byte)(alpha * 255));
 		}
 		
+		
+		public static MouseEventArgs GetMouseEvent(NSView view, NSEvent theEvent)
+		{
+			var pt = Generator.GetLocation (view, theEvent);
+			Key modifiers = KeyMap.GetModifiers (theEvent);
+			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
+			return new MouseEventArgs (buttons, modifiers, pt);
+		}
 	}
 }

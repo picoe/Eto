@@ -164,7 +164,7 @@ namespace Eto.Forms
 				Spacing = spacing
 			};
 			currentItem = topTable;
-			container.Load += HandleContainerLoad;
+			container.PreLoad += HandleContainerLoad;
 		}
 
 		void HandleContainerLoad (object sender, EventArgs e)
@@ -205,6 +205,12 @@ namespace Eto.Forms
 			currentItem = currentItem.Parent ?? topTable;
 		}
 		
+		public void EndBeginHorizontal (bool? yscale = null)
+		{
+			EndHorizontal ();
+			BeginHorizontal (yscale);
+		}
+		
 		public void BeginHorizontal (bool? yscale = null)
 		{
 			if (Generated)
@@ -222,7 +228,7 @@ namespace Eto.Forms
 			else 
 				currentItem.CurrentRow = null;
 		}
-		
+
 		public void Add (Control control, bool? xscale = null, bool? yscale = null)
 		{
 			if (Generated)
@@ -234,12 +240,13 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
-			var items = controls.Select (r => new ControlItem{ Control = r, YScale = yscale });
+			var items = controls.Select (r => new ControlItem{ Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
 			var row = new List<LayoutItem> (items.Cast<LayoutItem>());
 			currentItem.AddRow (row);
 			currentItem.CurrentRow = null;
 		}
 
+		[Obsolete("Please use one of the other overloads to AddCentered, the parameters of this method conflict with the other overrides")]
 		public void AddCentered (Control control, bool xscale, bool? yscale = null)
 		{
 			AddCentered (control, true, true, null, null, xscale, yscale);

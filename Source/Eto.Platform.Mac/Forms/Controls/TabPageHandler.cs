@@ -105,6 +105,10 @@ namespace Eto.Platform.Mac
 		{
 		}
 
+		public virtual void OnPreLoad (EventArgs e)
+		{
+		}
+		
 		public virtual void OnLoad (EventArgs e)
 		{
 		}

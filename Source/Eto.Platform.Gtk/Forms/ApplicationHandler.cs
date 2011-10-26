@@ -30,10 +30,19 @@ namespace Eto.Platform.GtkSharp
 			
 			Widget.OnInitialized (EventArgs.Empty);
 			if (Widget.MainForm != null) {
-				((Gtk.Widget)Widget.MainForm.ControlObject).Destroyed += ApplicationHandler_Destroyed;
+				((Gtk.Widget)Widget.MainForm.ControlObject).DeleteEvent += HandleDeleteEvent;
 			}
 			Gtk.Application.Run ();
 			Gdk.Threads.Leave ();
+		}
+
+		void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
+		{
+			if (CanQuit ()) {
+				Gtk.Application.Quit ();
+			}
+			else
+				args.RetVal = true; // cancel!
 		}
 
 		public void Quit ()
@@ -69,12 +78,6 @@ namespace Eto.Platform.GtkSharp
 			var args = new CancelEventArgs ();
 			Widget.OnTerminating (args);
 			return !args.Cancel;
-		}
-
-		void ApplicationHandler_Destroyed (object sender, EventArgs e)
-		{
-			if (CanQuit ())
-				Gtk.Application.Quit ();
 		}
 	}
 }

@@ -431,6 +431,8 @@
     <Compile Include="Forms\TreeItem.cs" />
     <Compile Include="Forms\Container.desktop.cs" />
     <Compile Include="Forms\Controls\ListBox.desktop.cs" />
+    <Compile Include="Forms\Controls\CommonControl.cs" />
+    <Compile Include="Forms\Controls\Slider.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

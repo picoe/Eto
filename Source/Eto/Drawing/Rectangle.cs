@@ -259,6 +259,15 @@ namespace Eto.Drawing
 				else { width += x-value; x = value; }
 			}
 		}
+		
+		public Point Center
+		{
+			get { return new Point(MiddleX, MiddleY); }
+			set { 
+				MiddleX = value.X;
+				MiddleY = value.Y;
+			}
+		}
 
 		public int MiddleX
 		{

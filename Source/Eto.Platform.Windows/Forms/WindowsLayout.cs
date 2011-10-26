@@ -14,20 +14,23 @@ namespace Eto.Platform.Windows
 		where W: Layout
 	{
 
-		public virtual object LayoutObject
-		{
+		public virtual object LayoutObject {
 			get { return null; }
 		}
 		
-		public virtual void OnLoad()
+		public virtual void OnPreLoad ()
 		{
 		}
 
-		public virtual void OnLoadComplete()
+		public virtual void OnLoad ()
+		{
+		}
+
+		public virtual void OnLoadComplete ()
 		{
 		}
 		
-		public virtual void Update()
+		public virtual void Update ()
 		{
 		}
 	}

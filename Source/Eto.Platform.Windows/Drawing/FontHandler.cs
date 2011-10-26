@@ -51,6 +51,9 @@ namespace Eto.Platform.Windows.Drawing
 			default:
 				throw new NotImplementedException();
 			}
+			if (size != null) {
+				Control = new SD.Font(Control.FontFamily, size.Value, Control.Style, SD.GraphicsUnit.Point);
+			}
 		}
 		
 		System.Drawing.FontStyle Convert(FontStyle style)

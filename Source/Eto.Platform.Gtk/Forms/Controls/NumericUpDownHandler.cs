@@ -1,42 +1,45 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class NumericUpDownHandler : GtkControl<Gtk.SpinButton, NumericUpDown>, INumericUpDown
 	{
-		//private Gtk.ScrolledWindow scroll;
-		
-		public NumericUpDownHandler()
+		public NumericUpDownHandler ()
 		{
-			Control = new Gtk.SpinButton(0, 100, 1);
-			//control.WrapMode = Gtk.WrapMode.None;
-			Control.Changed += control_Changed;
-			//scroll.Add(control);
+			Control = new Gtk.SpinButton (0, 100, 1);
+			Control.WidthRequest = 20;
+			Control.Wrap = true;
+			Control.ValueChanged += delegate {
+				Widget.OnValueChanged (EventArgs.Empty);
+			};
 		}
 		
-		public override string Text
-		{
+		public override string Text {
 			get { return Control.Text; }
 			set { Control.Text = value; }
 		}
 		
-		public bool ReadOnly
-		{
+		public bool ReadOnly {
 			get { return !Control.IsEditable; }
 			set { Control.IsEditable = !value; }
 		}
 		
-		public decimal Value
-		{
-			get { return (decimal)Control.Value; }
-			set { Control.Value = (double)value; }
+		public double Value {
+			get { return Control.Value; }
+			set { Control.Value = value; }
 		}
 		
+		public double MaxValue {
+			get { return Control.Adjustment.Upper; }
+			set { Control.Adjustment.Upper = value; }
+		}
 		
-		private void control_Changed(object sender, EventArgs e)
-		{
-			Widget.OnTextChanged(e);
+		public double MinValue {
+			get { return Control.Adjustment.Lower; }
+			set { Control.Adjustment.Lower = value; }
 		}
 	}
 }

@@ -157,6 +157,7 @@ namespace Eto.Platform.Mac
 			keymap.Add(27, Key.Minus);
 			keymap.Add(24, Key.Equal);
 			keymap.Add(42, Key.Backslash);
+			keymap.Add(49, Key.Space);
 			//keymap.Add(30, Key.]);
 			//keymap.Add(33, Key.[);
 			keymap.Add(39, Key.Quote);

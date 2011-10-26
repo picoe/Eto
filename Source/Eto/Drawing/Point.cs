@@ -9,6 +9,11 @@ namespace Eto.Drawing
 		
 		public static readonly Point Empty  = new Point(0, 0);
 		
+		public static double Distance(Point point1, Point point2)
+		{
+			return Math.Sqrt(Math.Abs(point1.X - point2.X) + Math.Abs (point1.Y - point2.Y));
+		}
+		
 		public static Point Truncate(PointF point)
 		{
 			return new Point((int)point.X, (int)point.Y);
@@ -22,6 +27,16 @@ namespace Eto.Drawing
 		public static Point Add(Point point, Size size)
 		{
 			return new Point(point.X + size.Width, point.Y + size.Height);
+		}
+		
+		public static Point Min (Point point1, Point point2)
+		{
+			return new Point(Math.Min (point1.X, point2.X), Math.Min (point1.Y, point2.Y));
+		}
+
+		public static Point Max (Point point1, Point point2)
+		{
+			return new Point(Math.Max (point1.X, point2.X), Math.Max (point1.Y, point2.Y));
 		}
 		
 		public Point(int x, int y)
@@ -82,6 +97,11 @@ namespace Eto.Drawing
 			return new Point(point.x + size.Width, point.y + size.Height);
 		}
 
+		public static Point operator - (Point point, Size size)
+		{
+			return new Point(point.x - size.Width, point.y - size.Height);
+		}
+		
 		public static bool operator==(Point p1, Point p2)
 		{
 			return p1.x == p2.x && p1.y == p2.y;

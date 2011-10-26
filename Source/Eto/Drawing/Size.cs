@@ -26,7 +26,13 @@ namespace Eto.Drawing
 			Width = width;
 			Height = height;
 		}
-
+		
+		public Size(Point point)
+			: this()
+		{
+			Width = point.X;
+			Height = point.Y;
+		}
 
 		public static Size operator *(Size size1, Size size2)
 		{

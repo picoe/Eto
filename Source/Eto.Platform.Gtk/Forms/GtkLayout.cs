@@ -22,6 +22,10 @@ namespace Eto.Platform.GtkSharp
 		public virtual object ContainerObject {
 			get { return Control; }
 		}
+
+		public virtual void OnPreLoad ()
+		{
+		}
 		
 		public virtual void OnLoad ()
 		{

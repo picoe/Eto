@@ -55,6 +55,7 @@ namespace Eto.Forms
 				if (value != null) {
 					value.SetParent (this);
 					if (Loaded) {
+						value.OnPreLoad (EventArgs.Empty);
 						value.OnLoad (EventArgs.Empty);
 						value.OnLoadComplete (EventArgs.Empty);
 					}
@@ -71,12 +72,22 @@ namespace Eto.Forms
 				if (value != null) {
 					value.SetParent (this);
 					if (Loaded) {
+						value.OnPreLoad (EventArgs.Empty);
 						value.OnLoad (EventArgs.Empty);
 						value.OnLoadComplete (EventArgs.Empty);
 					}
 				}
 				inner.Panel2 = value; 
 			}
+		}
+		
+		public override void OnPreLoad (EventArgs e)
+		{
+			if (Panel1 != null)
+				Panel1.OnPreLoad (e);
+			if (Panel2 != null)
+				Panel2.OnPreLoad (e);
+			base.OnPreLoad (e);
 		}
 
 		public override void OnLoad (EventArgs e)

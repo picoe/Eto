@@ -6,11 +6,15 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac
 {
-	public interface IMacLayout {
+	public interface IMacLayout
+	{
 		object LayoutObject { get; }
-		void SizeToFit();
-		void SetContainerSize(SD.SizeF size);
-		SD.RectangleF GetPosition(Control control);
+
+		void SizeToFit ();
+
+		void SetContainerSize (SD.SizeF size);
+
+		SD.RectangleF GetPosition (Control control);
 	}
 	
 	public abstract class MacLayout<T, W> : MacObject<T, W>, ILayout, IMacLayout
@@ -19,40 +23,46 @@ namespace Eto.Platform.Mac
 	{
 		
 		
-		public virtual object LayoutObject
-		{
+		public virtual object LayoutObject {
 			get { return null; }
 		}
 		
-		public abstract void SizeToFit();
+		public abstract void SizeToFit ();
 		
-		public virtual void OnLoad()
+		public virtual void OnPreLoad ()
 		{
 		}
 
-		public virtual void OnLoadComplete()
+		public virtual void OnLoad ()
+		{
+		}
+
+		public virtual void OnLoadComplete ()
 		{
 		}
 		
-		public virtual SD.RectangleF GetPosition(Control control)
+		public virtual SD.RectangleF GetPosition (Control control)
 		{
 			return ((NSView)control.ControlObject).Frame;
 		}
 		
-		public virtual void SetContainerSize(SD.SizeF size)
+		public virtual void SetContainerSize (SD.SizeF size)
 		{
 			var container = Widget.Container.Handler as IMacContainer;
-			if (container != null) container.SetContentSize (size);
+			if (container != null)
+				container.SetContentSize (size);
 			else {
 				var view = Widget.Container.ContainerObject as NSView;
-				if (view != null) view.SetFrameSize (size);
+				if (view != null)
+					view.SetFrameSize (size);
 			}
 		}
 		
-		protected void AutoSize(Control view)
+		protected void AutoSize (Control view)
 		{
 			var mh = view.Handler as IMacView;
-			if (mh != null && !mh.AutoSize) return;
+			if (mh != null && !mh.AutoSize)
+				return;
 			
 			//Console.WriteLine ("OLD view: {0} size: {1}", view, view.Size);
 			/*var container = view as Container;
@@ -66,11 +76,12 @@ namespace Eto.Platform.Mac
 			}*/
 
 			var c = view.ControlObject as NSControl;
-			if (c != null) c.SizeToFit();
+			if (c != null)
+				c.SizeToFit ();
 			//Console.WriteLine ("view: {0} size: {1}", view, view.Size);
 		}
 		
-		public virtual void Update()
+		public virtual void Update ()
 		{
 		}
 	}
