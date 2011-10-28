@@ -5,36 +5,46 @@ namespace Eto.Drawing
 	public struct Size
 	{
 		public int Width { get; set; }
+
 		public int Height { get; set; }
 		
-		public static readonly Size Empty = new Size(0, 0);
-		
+		public static readonly Size Empty = new Size (0, 0);
 
-		public static Size Round(SizeF size)
+		public static Size Round (SizeF size)
 		{
-			return new Size((int)Math.Round(size.Width), (int)Math.Round(size.Height));
+			return new Size ((int)Math.Round (size.Width), (int)Math.Round (size.Height));
 		}
 
-		public static Size Truncate(SizeF size)
+		public static Size Truncate (SizeF size)
 		{
-			return new Size((int)size.Width, (int)size.Height);
+			return new Size ((int)size.Width, (int)size.Height);
 		}
 		
-		public Size(int width, int height)
+		public static Size Min (Size size1, Size size2)
+		{
+			return new Size (Math.Min (size1.Width, size2.Width), Math.Min (size1.Height, size2.Height));
+		}
+
+		public static Size Max (Size size1, Size size2)
+		{
+			return new Size (Math.Max (size1.Width, size2.Width), Math.Max (size1.Height, size2.Height));
+		}
+		
+		public Size (int width, int height)
 			: this()
 		{
 			Width = width;
 			Height = height;
 		}
 		
-		public Size(Point point)
+		public Size (Point point)
 			: this()
 		{
 			Width = point.X;
 			Height = point.Y;
 		}
 
-		public static Size operator *(Size size1, Size size2)
+		public static Size operator * (Size size1, Size size2)
 		{
 			Size result = size1;
 			result.Width = size1.Width * size2.Width;
@@ -42,7 +52,7 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		public static Size operator *(Size size1, int multiplier)
+		public static Size operator * (Size size1, int multiplier)
 		{
 			Size result = size1;
 			result.Width = size1.Width * multiplier;
@@ -50,7 +60,7 @@ namespace Eto.Drawing
 			return result;
 		}
 		
-		public static Size operator /(Size size1, Size size2)
+		public static Size operator / (Size size1, Size size2)
 		{
 			Size result = size1;
 			result.Width = size1.Width / size2.Width;
@@ -58,7 +68,7 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		public static Size operator /(Size size1, int divider)
+		public static Size operator / (Size size1, int divider)
 		{
 			Size result = size1;
 			result.Width = size1.Width / divider;
@@ -66,7 +76,7 @@ namespace Eto.Drawing
 			return result;
 		}
 		
-		public static Size operator +(Size size1, Size size2)
+		public static Size operator + (Size size1, Size size2)
 		{
 			Size result = size1;
 			result.Width = size1.Width + size2.Width;
@@ -74,7 +84,15 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		public static Size operator +(Size size1, int adder)
+		public static Size operator - (Size size1, Size size2)
+		{
+			Size result = size1;
+			result.Width = size1.Width - size2.Width;
+			result.Height = size1.Height - size2.Height;
+			return result;
+		}
+		
+		public static Size operator + (Size size1, int adder)
 		{
 			Size result = size1;
 			result.Width = size1.Width + adder;
@@ -82,31 +100,32 @@ namespace Eto.Drawing
 			return result;
 		}
 		
-		public static bool operator ==(Size size1, Size size2)
+		public static bool operator == (Size size1, Size size2)
 		{
 			return (size1.Width == size2.Width && size1.Height == size2.Height);
 		}
 
-		public static bool operator !=(Size size1, Size size2)
+		public static bool operator != (Size size1, Size size2)
 		{
 			return (size1.Width != size2.Width || size1.Height != size2.Height);
 		}
 
-		public override bool Equals(object obj)
+		public override bool Equals (object obj)
 		{
-			if (!(obj is Size)) return false;
+			if (!(obj is Size))
+				return false;
 			Size size = (Size)obj;
 			return (Width == size.Width && Height == size.Height);
 		}
 
-		public override int GetHashCode()
+		public override int GetHashCode ()
 		{
 			return Width ^ Height;
 		}
 
-		public override string ToString()
+		public override string ToString ()
 		{
-			return String.Format("Width={0} Height={1}", Width, Height);
+			return String.Format ("Width={0} Height={1}", Width, Height);
 		}
 
 

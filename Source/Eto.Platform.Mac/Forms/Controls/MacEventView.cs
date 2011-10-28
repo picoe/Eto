@@ -96,6 +96,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			return false;
 		}
+		
+		public override void ResetCursorRects ()
+		{
+			var cursor = Handler.Cursor;
+			if (cursor != null) {
+				this.AddCursorRectcursor (new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+			}
+		}
 
 		public override void KeyDown (NSEvent theEvent)
 		{

@@ -433,6 +433,7 @@
     <Compile Include="Forms\Controls\ListBox.desktop.cs" />
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\Slider.cs" />
+    <Compile Include="Forms\Cursor.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

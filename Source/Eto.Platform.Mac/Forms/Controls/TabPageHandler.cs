@@ -57,6 +57,11 @@ namespace Eto.Platform.Mac
 			//Control.View = new NSView();
 			Control.Color = NSColor.Blue;
 		}
+
+		// TODO: implement this, or remove from base?
+		public Cursor Cursor {
+			get; set;
+		}
 		
 		public string Text {
 			get { return Control.Label; }

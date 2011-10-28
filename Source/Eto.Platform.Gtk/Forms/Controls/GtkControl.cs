@@ -24,6 +24,7 @@ namespace Eto.Platform.GtkSharp
 		Size asize;
 		Point location;
 		bool mouseDownHandled;
+		Cursor cursor;
 
 		public GtkControl ()
 		{
@@ -49,11 +50,10 @@ namespace Eto.Platform.GtkSharp
 			set { location = value; }
 		}
 
-
 		public virtual Size Size {
 			get { 
 				if (Control.Visible) 
-					return Generator.Convert(Control.Allocation.Size);
+					return Generator.Convert (Control.Allocation.Size);
 				else
 					return size; 
 			}
@@ -151,56 +151,68 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual void OnLoadComplete (EventArgs e)
 		{
+			if (cursor != null) {
+				Control.Realized += HandleControlRealized;
+			}
+		}
+
+		void HandleControlRealized (object sender, EventArgs e)
+		{
+			if (cursor != null)
+				Control.GdkWindow.Cursor = cursor.ControlObject as Gdk.Cursor;
+			Control.Realized -= HandleControlRealized;
 		}
 		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
 			case Eto.Forms.Control.KeyDownEvent:
-				Control.AddEvents((int)Gdk.EventMask.KeyPressMask);
+				Control.AddEvents ((int)Gdk.EventMask.KeyPressMask);
 				Control.KeyPressEvent += GtkControlObject_KeyPressEvent;
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
-				Control.AddEvents((int)Gdk.EventMask.StructureMask);
+				Control.AddEvents ((int)Gdk.EventMask.StructureMask);
 				Control.SizeAllocated += GtkControlObject_SizeAllocated;
 				break;
 			case Eto.Forms.Control.MouseDoubleClickEvent:
 			case Eto.Forms.Control.MouseDownEvent:
 				if (!mouseDownHandled) {
-					Control.AddEvents((int)Gdk.EventMask.ButtonPressMask);
-					Control.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
+					Control.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
+					Control.AddEvents ((int)Gdk.EventMask.ButtonReleaseMask);
 					Control.ButtonPressEvent += GtkControlObject_ButtonPressEvent;
 					mouseDownHandled = true;
 				}
 				break;
 			case Eto.Forms.Control.MouseUpEvent:
-				Control.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
+				Control.AddEvents ((int)Gdk.EventMask.ButtonReleaseMask);
 				Control.ButtonReleaseEvent += GtkControlObject_ButtonReleaseEvent;
 				break;
 			case Eto.Forms.Control.MouseEnterEvent:
-				Control.AddEvents((int)Gdk.EventMask.EnterNotifyMask);
+				Control.AddEvents ((int)Gdk.EventMask.EnterNotifyMask);
 				Control.EnterNotifyEvent += HandleControlEnterNotifyEvent;
 				break;
 			case Eto.Forms.Control.MouseLeaveEvent:
-				Control.AddEvents((int)Gdk.EventMask.LeaveNotifyMask);
+				Control.AddEvents ((int)Gdk.EventMask.LeaveNotifyMask);
 				Control.LeaveNotifyEvent += HandleControlLeaveNotifyEvent;
 				break;
 			case Eto.Forms.Control.MouseMoveEvent:
-				Control.AddEvents((int)Gdk.EventMask.ButtonMotionMask);
-				Control.AddEvents((int)Gdk.EventMask.PointerMotionMask);
+				Control.AddEvents ((int)Gdk.EventMask.ButtonMotionMask);
+				Control.AddEvents ((int)Gdk.EventMask.PointerMotionMask);
 					//GtkControlObject.Events |= Gdk.EventMask.PointerMotionHintMask;
 				Control.MotionNotifyEvent += GtkControlObject_MotionNotifyEvent;
 				break;
 			case Eto.Forms.Control.GotFocusEvent:
-				Control.AddEvents((int)Gdk.EventMask.FocusChangeMask);
-				Control.FocusInEvent += delegate { Widget.OnGotFocus(EventArgs.Empty); };
+				Control.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
+				Control.FocusInEvent += delegate {
+					Widget.OnGotFocus (EventArgs.Empty); };
 				break;
 			case Eto.Forms.Control.LostFocusEvent:
-				Control.AddEvents((int)Gdk.EventMask.FocusChangeMask);
-				Control.FocusOutEvent += delegate { Widget.OnLostFocus(EventArgs.Empty); };
+				Control.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
+				Control.FocusOutEvent += delegate {
+					Widget.OnLostFocus (EventArgs.Empty); };
 				break;
 			default:
-				base.AttachEvent(handler);
+				base.AttachEvent (handler);
 				return;
 			}
 		}
@@ -237,11 +249,13 @@ namespace Eto.Platform.GtkSharp
 		
 		MouseButtons GetButtons (Gdk.EventButton ev)
 		{
-			switch (ev.Button)
-			{
-			case 1: return MouseButtons.Primary;
-			case 2: return MouseButtons.Middle;
-			case 3: return MouseButtons.Alternate;
+			switch (ev.Button) {
+			case 1:
+				return MouseButtons.Primary;
+			case 2:
+				return MouseButtons.Middle;
+			case 3:
+				return MouseButtons.Alternate;
 			default:
 				return MouseButtons.None;
 			}
@@ -290,12 +304,10 @@ namespace Eto.Platform.GtkSharp
 				Control.GrabFocus ();
 			if (args.Event.Type == Gdk.EventType.ButtonPress) {
 				Widget.OnMouseDown (new MouseEventArgs (buttons, modifiers, p));
-			}
-			else if (args.Event.Type == Gdk.EventType.TwoButtonPress) {
+			} else if (args.Event.Type == Gdk.EventType.TwoButtonPress) {
 				Widget.OnMouseDoubleClick (new MouseEventArgs (buttons, modifiers, p));
 			}
 		}
-		
 		
 		private void GtkControlObject_SizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
@@ -345,6 +357,19 @@ namespace Eto.Platform.GtkSharp
 					Control.ModifyFont (font.ControlObject as Pango.FontDescription);
 				else
 					Control.ModifyFont (null);
+			}
+		}
+				
+		public Cursor Cursor {
+			get { return cursor; }
+			set {
+				cursor = value;
+				if (Control.GdkWindow != null) {
+					if (cursor != null)
+						Control.GdkWindow.Cursor = cursor.ControlObject as Gdk.Cursor;
+					else
+						Control.GdkWindow.Cursor = null;
+				}
 			}
 		}
 		

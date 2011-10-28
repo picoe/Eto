@@ -23,6 +23,7 @@ namespace Eto.Platform.Windows
 	{
 		bool internalVisible = true;
 		Font font;
+		Cursor cursor;
 
 		public override void Initialize ()
 		{
@@ -152,6 +153,17 @@ namespace Eto.Platform.Windows
 		public bool Enabled {
 			get { return Control.Enabled; }
 			set { Control.Enabled = value; }
+		}
+		
+		public Cursor Cursor {
+			get { return cursor; }
+			set {
+				cursor = value;
+				if (cursor != null)
+					this.Control.Cursor = cursor.ControlObject as SWF.Cursor;
+				else
+					this.Control.Cursor = null;
+			}
 		}
 
 		public void Invalidate ()

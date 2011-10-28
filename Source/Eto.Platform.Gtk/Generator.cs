@@ -131,5 +131,21 @@ namespace Eto.Platform.GtkSharp
 				throw new Exception ("Invalid format specified");
 			}
 		}
+		
+		public static Gdk.CursorType Convert(CursorType cursor)
+		{
+			switch (cursor) {
+			case CursorType.Arrow: return Gdk.CursorType.Arrow;
+			case CursorType.Crosshair: return Gdk.CursorType.Crosshair;
+			case CursorType.Default: return Gdk.CursorType.Arrow;
+			case CursorType.HorizontalSplit: return Gdk.CursorType.SbHDoubleArrow;
+			case CursorType.VerticalSplit: return Gdk.CursorType.SbVDoubleArrow;
+			case CursorType.IBeam: return Gdk.CursorType.Xterm;
+			case CursorType.Move: return Gdk.CursorType.Fleur;
+			case CursorType.Pointer: return Gdk.CursorType.Hand2;
+			default:
+				throw new NotSupportedException();
+			}
+		}
 	}
 }

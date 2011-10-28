@@ -117,6 +117,7 @@ namespace Eto.Platform.Mac
 		Icon icon;
 		ToolBar toolBar;
 		Rectangle? restoreBounds;
+		Cursor cursor;
 		
 		public NSObject FieldEditorObject { get; set; }
 		
@@ -135,6 +136,16 @@ namespace Eto.Platform.Mac
 		public MacWindow ()
 		{
 			AutoSize = true;
+		}
+		
+		void CreateCursorRect()
+		{
+			if (cursor != null) {
+				this.Control.ContentView.DiscardCursorRects ();
+				this.Control.ContentView.AddCursorRectcursor (new SD.RectangleF(SD.PointF.Empty, this.Control.Frame.Size), cursor.ControlObject as NSCursor);
+			}
+			else
+				this.Control.ContentView.DiscardCursorRects ();
 		}
 		
 		protected void ConfigureWindow ()
@@ -306,6 +317,14 @@ namespace Eto.Platform.Mac
 				if (!value && Control.IsVisible)
 					Control.PerformClose (NSApplication.SharedApplication);
 				// huh?
+			}
+		}
+		
+		public Cursor Cursor {
+			get { return cursor; }
+			set {
+				cursor = value;
+				CreateCursorRect ();
 			}
 		}
 		

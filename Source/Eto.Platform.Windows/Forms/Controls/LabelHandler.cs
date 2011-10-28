@@ -10,8 +10,6 @@ namespace Eto.Platform.Windows
 {
 	public class LabelHandler : WindowsControl<LabelHandler.MyLabel, Label>, ILabel
 	{
-		Font font;
-		
 		public class MyLabel : System.Windows.Forms.Label
 		{
 			public LabelHandler Handler { get; set; }
@@ -194,19 +192,6 @@ namespace Eto.Platform.Windows
 					Control.Wrap = value;
 					Control.Invalidate ();
 				}
-			}
-		}
-		
-		public Font Font {
-			get {
-				return font;
-			}
-			set {
-				font = value;
-				if (font != null)
-					Control.Font = (SD.Font)font.ControlObject;
-				else
-					Control.Font = null;
 			}
 		}
 		

@@ -15,6 +15,8 @@ namespace Eto.Forms
 		Size Size { get; set; }
 
 		bool Enabled { get; set; }
+		
+		Cursor Cursor { get; set; }
 
 		void Invalidate ();
 
@@ -314,6 +316,11 @@ namespace Eto.Forms
 		public virtual bool Visible {
 			get { return inner.Visible; }
 			set { inner.Visible = value; }
+		}
+		
+		public virtual Cursor Cursor {
+			get { return inner.Cursor; }
+			set { inner.Cursor = value; }
 		}
 		
 		public Layout ParentLayout { get; private set; }

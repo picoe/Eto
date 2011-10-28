@@ -82,7 +82,6 @@ namespace Eto.Platform.Mac
 			col.DataCell = new MacImageListItemCell ();
 			control.AddColumn (col);
 			
-			
 			control.DataSource = new DataSource{ Handler = this };
 			control.HeaderView = null;
 			control.DoubleClick += delegate {
@@ -100,7 +99,7 @@ namespace Eto.Platform.Mac
 			scroll.BorderType = NSBorderType.BezelBorder;
 			Control = scroll;
 		}
-
+		
 		#region IListControl Members
 		
 		public void AddRange (IEnumerable<IListItem> collection)
@@ -126,8 +125,10 @@ namespace Eto.Platform.Mac
 			set {
 				if (value == -1)
 					control.DeselectAll (control);
-				else
+				else {
 					control.SelectRow (value, false);
+					control.ScrollRowToVisible (value);
+				}
 			}
 		}
 

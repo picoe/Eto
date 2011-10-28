@@ -14,7 +14,7 @@ namespace Eto.Forms
 	
 	public static class DockLayoutExtensions
 	{
-		public static DockLayout AddDockedControl (this Container container, Control control, Padding? padding = null)
+		public static Container AddDockedControl (this Container container, Control control, Padding? padding = null)
 		{
 			var layout = container.Layout as DockLayout;
 			if (layout == null)
@@ -22,7 +22,7 @@ namespace Eto.Forms
 			if (padding != null)
 				layout.Padding = padding.Value;
 			layout.Content = control;
-			return layout;
+			return container;
 		}
 	}
 	

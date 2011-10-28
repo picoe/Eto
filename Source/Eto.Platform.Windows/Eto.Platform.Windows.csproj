@@ -272,6 +272,7 @@
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\Extensions.cs" />
     <Compile Include="Forms\Controls\SliderHandler.cs" />
+    <Compile Include="Forms\CursorHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

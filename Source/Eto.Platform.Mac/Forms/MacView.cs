@@ -49,6 +49,8 @@ namespace Eto.Platform.Mac
 		Size? MinimumSize { get; set; }
 		
 		Control Widget { get; }
+		
+		Cursor Cursor { get; set; }
 
 		bool AutoSize { get; }
 	}
@@ -62,6 +64,7 @@ namespace Eto.Platform.Mac
 		bool mouseMove;
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
+		Cursor cursor;
 
 		public virtual bool AutoSize { get; protected set; }
 
@@ -107,6 +110,7 @@ namespace Eto.Platform.Mac
 				new NSDictionary ());
 			Control.AddTrackingArea (tracking);
 		}
+		
 
 		public virtual void SetParentLayout (Layout layout)
 		{
@@ -121,13 +125,16 @@ namespace Eto.Platform.Mac
 			switch (handler) {
 			case Eto.Forms.Control.MouseEnterEvent:
 			case Eto.Forms.Control.MouseLeaveEvent:
+				HandleEvent (Eto.Forms.Control.SizeChangedEvent);
 				mouseOptions |= NSTrackingAreaOptions.MouseEnteredAndExited;
 				mouseMove = true;
+				HandleEvent (Eto.Forms.Control.SizeChangedEvent);
 				CreateTracking ();
 				break;
 			case Eto.Forms.Control.MouseMoveEvent:
 				mouseOptions |= NSTrackingAreaOptions.MouseMoved;
 				mouseMove = true;
+				HandleEvent (Eto.Forms.Control.SizeChangedEvent);
 				CreateTracking ();
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
@@ -146,6 +153,7 @@ namespace Eto.Platform.Mac
 		
 		protected virtual void OnSizeChanged (EventArgs e)
 		{
+			CreateTracking ();
 		}
 		
 		public void Invalidate ()
@@ -209,6 +217,11 @@ namespace Eto.Platform.Mac
 		public bool Visible {
 			get { return !Control.Hidden; }
 			set { Control.Hidden = !value; }
+		}
+		
+		public Cursor Cursor {
+			get { return cursor; }
+			set { cursor = value; }
 		}
 		
 		public virtual void OnPreLoad (EventArgs e)

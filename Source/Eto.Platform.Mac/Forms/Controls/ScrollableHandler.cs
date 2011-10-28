@@ -13,6 +13,18 @@ namespace Eto.Platform.Mac
 		NSScrollView control;
 		NSView view;
 		
+		class MyScrollView : NSScrollView
+		{
+			public ScrollableHandler Handler { get; set; }
+			
+			public override void ResetCursorRects ()
+			{
+				var cursor = Handler.Cursor;
+				if (cursor != null)
+					this.AddCursorRectcursor (new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+			}
+		}
+		
 		class FlippedView : NSView
 		{
 			public override bool IsFlipped {
@@ -22,7 +34,7 @@ namespace Eto.Platform.Mac
 
 		public ScrollableHandler ()
 		{
-			control = new NSScrollView ();
+			control = new MyScrollView { Handler = this };
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
 			control.HasVerticalScroller = true;
