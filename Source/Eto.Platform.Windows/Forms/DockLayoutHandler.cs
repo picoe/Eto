@@ -31,10 +31,14 @@ namespace Eto.Platform.Windows
 			}
 			set {
 				padding = value;
-				if (child != null) {
+				SWF.Control parent = (SWF.Control)Widget.Container.ContainerObject;
+				if (parent != null) {
+					parent.Padding = Generator.Convert (padding);
+				}
+				/*if (child != null) {
 					SWF.Control c = (SWF.Control)child.ControlObject;
 					c.Margin = Generator.Convert (padding);
-				}
+				}*/
 			}
 		}
 		
@@ -49,7 +53,10 @@ namespace Eto.Platform.Windows
 				if (value != null) {
 					childControl = (SWF.Control)value.ControlObject;
 					childControl.Dock = SWF.DockStyle.Fill;
-					childControl.Margin = Generator.Convert (padding);
+					//childControl.Margin = Generator.Convert (padding);
+					parent.Padding = Generator.Convert (padding);
+					if (!childControl.AutoSize)
+						parent.MinimumSize = childControl.Size;
 					parent.Controls.Add (childControl);
 				}
 	

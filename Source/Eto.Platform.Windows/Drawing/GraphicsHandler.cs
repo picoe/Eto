@@ -48,7 +48,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
 			//this.Control.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
 			//this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
-			this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+			this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 			Control.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear; //.NearestNeighbor;
 		}
 		
@@ -87,7 +87,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void FillRectangle (Color color, int x, int y, int width, int height)
 		{
-			Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), x, y, width, height);
+			Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), x - 0.5f, y - 0.5f, width, height);
 		}
 		
 		public void FillPath (Color color, GraphicsPath path)

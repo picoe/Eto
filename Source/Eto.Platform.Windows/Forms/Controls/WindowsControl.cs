@@ -255,11 +255,9 @@ namespace Eto.Platform.Windows
 
 		void Control_KeyDown (object sender, System.Windows.Forms.KeyEventArgs e)
 		{
-			key = Key.None;
 			charPressed = false;
 			handled = true;
-			key |= KeyMap.Convert (e.KeyCode);
-			key |= KeyMap.Convert (e.Modifiers);
+			key = KeyMap.Convert (e.KeyCode) | KeyMap.Convert (e.Modifiers);
 
 			if (key != Key.None) {
 				KeyPressEventArgs kpea = new KeyPressEventArgs (key);
