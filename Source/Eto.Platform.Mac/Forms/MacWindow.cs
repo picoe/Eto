@@ -327,6 +327,11 @@ namespace Eto.Platform.Mac
 				CreateCursorRect ();
 			}
 		}
+
+		public string ToolTip {
+			get { return this.Control.ContentView.ToolTip; }
+			set { Control.ContentView.ToolTip = value; }
+		}
 		
 		public virtual Point Location {
 			get {

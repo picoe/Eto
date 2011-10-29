@@ -24,6 +24,7 @@ namespace Eto.Platform.Windows
 		bool internalVisible = true;
 		Font font;
 		Cursor cursor;
+		string tooltip;
 
 		public override void Initialize ()
 		{
@@ -84,12 +85,12 @@ namespace Eto.Platform.Windows
 
 		void HandleControlMouseLeave (object sender, EventArgs e)
 		{
-			Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
+			Widget.OnMouseLeave (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
 		}
 
 		void HandleControlMouseEnter (object sender, EventArgs e)
 		{
-			Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
+			Widget.OnMouseEnter (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
 		}
 
 		void Control_DoubleClick (object sender, System.Windows.Forms.MouseEventArgs e)
@@ -163,6 +164,14 @@ namespace Eto.Platform.Windows
 					this.Control.Cursor = cursor.ControlObject as SWF.Cursor;
 				else
 					this.Control.Cursor = null;
+			}
+		}
+		
+		public string ToolTip {
+			get { return tooltip; }
+			set {
+				tooltip = value;
+				SetToolTip ();
 			}
 		}
 
@@ -246,6 +255,16 @@ namespace Eto.Platform.Windows
 
 		public virtual void OnLoadComplete (EventArgs e)
 		{
+			SetToolTip ();
+		}
+		
+		void SetToolTip ()
+		{
+			if (this.Widget.ParentWindow != null) {
+				var parent = this.Widget.ParentWindow.Handler as IWindowHandler;
+				if (parent != null)
+					parent.ToolTips.SetToolTip (Control, tooltip);
+			}
 		}
 		
 		Key key;

@@ -63,6 +63,10 @@ namespace Eto.Platform.Mac
 			get; set;
 		}
 		
+		public string ToolTip {
+			get; set; 
+		}
+		
 		public string Text {
 			get { return Control.Label; }
 			set { Control.Label = value; }

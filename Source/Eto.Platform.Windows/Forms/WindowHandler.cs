@@ -8,7 +8,12 @@ using System.Linq;
 
 namespace Eto.Platform.Windows
 {
-	public abstract class WindowHandler<T, W> : WindowsContainer<T, W>, IWindow
+	public interface IWindowHandler
+	{
+		SWF.ToolTip ToolTips { get; }
+	}
+	
+	public abstract class WindowHandler<T, W> : WindowsContainer<T, W>, IWindow, IWindowHandler
 		where T: System.Windows.Forms.Form
 		where W: Window
 	{
@@ -17,6 +22,12 @@ namespace Eto.Platform.Windows
 		ToolBar toolBar;
 		System.Windows.Forms.Panel top;
 		SWF.Panel toolbarHolder;
+		SWF.ToolTip tooltips = new SWF.ToolTip();
+		
+		public SWF.ToolTip ToolTips
+		{
+			get { return tooltips; }
+		}
 		
 		public override void Initialize ()
 		{

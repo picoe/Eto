@@ -373,5 +373,10 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
+		public string ToolTip {
+			get { return Control.TooltipText; }
+			set { Control.TooltipText = value; }
+		}
+		
 	}
 }

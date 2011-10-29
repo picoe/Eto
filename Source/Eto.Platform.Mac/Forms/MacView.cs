@@ -224,6 +224,11 @@ namespace Eto.Platform.Mac
 			set { cursor = value; }
 		}
 		
+		public string ToolTip {
+			get { return Control.ToolTip; }
+			set { Control.ToolTip = value; }
+		}
+		
 		public virtual void OnPreLoad (EventArgs e)
 		{
 		}

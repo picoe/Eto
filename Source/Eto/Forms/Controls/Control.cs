@@ -17,6 +17,8 @@ namespace Eto.Forms
 		bool Enabled { get; set; }
 		
 		Cursor Cursor { get; set; }
+		
+		string ToolTip { get; set; }
 
 		void Invalidate ();
 
@@ -321,6 +323,11 @@ namespace Eto.Forms
 		public virtual Cursor Cursor {
 			get { return inner.Cursor; }
 			set { inner.Cursor = value; }
+		}
+		
+		public virtual string ToolTip {
+			get { return inner.ToolTip; }
+			set { inner.ToolTip = value; }
 		}
 		
 		public Layout ParentLayout { get; private set; }
