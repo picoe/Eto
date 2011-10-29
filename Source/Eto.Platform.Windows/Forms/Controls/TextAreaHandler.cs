@@ -11,20 +11,24 @@ namespace Eto.Platform.Windows
 		{
 			private void CheckForScrollbars ()
 			{
-				bool scroll = false;
-				int lineCount = this.Lines.Length;
-				if (lineCount > 1) {
-					int pos0 = this.GetPositionFromCharIndex (this.GetFirstCharIndexFromLine (0)).Y;
-					if (pos0 >= 32768)
-						pos0 -= 65536;
-					int pos1 = this.GetPositionFromCharIndex (this.GetFirstCharIndexFromLine (1)).Y;
-					if (pos1 >= 32768)
-						pos1 -= 65536;
-					int h = pos1 - pos0;
-					scroll = lineCount * h > (this.ClientSize.Height - 6);  // 6 = padding
+				try {
+					bool scroll = false;
+					int lineCount = this.Lines.Length;
+					if (lineCount > 1) {
+						int pos0 = this.GetPositionFromCharIndex (this.GetFirstCharIndexFromLine (0)).Y;
+						if (pos0 >= 32768)
+							pos0 -= 65536;
+						int pos1 = this.GetPositionFromCharIndex (this.GetFirstCharIndexFromLine (1)).Y;
+						if (pos1 >= 32768)
+							pos1 -= 65536;
+						int h = pos1 - pos0;
+						scroll = lineCount * h > (this.ClientSize.Height - 6);  // 6 = padding
+					}
+					if (scroll != (this.ScrollBars == SWF.ScrollBars.Vertical)) {
+						this.ScrollBars = scroll ? SWF.ScrollBars.Vertical : SWF.ScrollBars.None;
+					}
 				}
-				if (scroll != (this.ScrollBars == SWF.ScrollBars.Vertical)) {
-					this.ScrollBars = scroll ? SWF.ScrollBars.Vertical : SWF.ScrollBars.None;
+				catch {
 				}
 			}
 

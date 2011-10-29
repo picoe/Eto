@@ -21,7 +21,9 @@ namespace Eto.Platform.Windows
 
 		public override void ExecuteOnMainThread(Action action)
 		{
-			var window = SWF.Form.ActiveForm;
+			SWF.Control window = window = Application.Instance.MainForm.ControlObject as SWF.Control;
+			if (window == null) window = SWF.Form.ActiveForm;
+
 			if (window != null && window.InvokeRequired)
 			{
 				window.Invoke(action);
