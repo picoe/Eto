@@ -21,7 +21,7 @@ namespace Eto.Platform.Windows
 
 		public override void ExecuteOnMainThread(Action action)
 		{
-			SWF.Control window = window = Application.Instance.MainForm.ControlObject as SWF.Control;
+			SWF.Control window = Application.Instance.MainForm.ControlObject as SWF.Control;
 			if (window == null) window = SWF.Form.ActiveForm;
 
 			if (window != null && window.InvokeRequired)
@@ -43,12 +43,12 @@ namespace Eto.Platform.Windows
 
 		public static Color Convert(SD.Color color)
 		{
-			return new Color(color.R, color.G, color.B);
+			return new Color(color.R / 255f, color.G / 255f, color.B / 255f);
 		}
 
 		public static SD.Color Convert(Color color)
 		{
-			return SD.Color.FromArgb(color.R, color.G, color.B);
+			return SD.Color.FromArgb((byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
 		}
 
 		public static Size Convert(SD.Size size)

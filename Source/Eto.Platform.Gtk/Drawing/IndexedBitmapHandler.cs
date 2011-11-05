@@ -149,7 +149,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			using (var drawable = new Gdk.Pixmap(graphics.Control, source.Right+1, source.Bottom+1))
 			using (var gc = new Gdk.GC(drawable))
 			{
-				drawable.Colormap = new Gdk.Colormap(Gdk.Visual.System, true);
+				if (drawable.Colormap == null) 
+					drawable.Colormap = graphics.Control.Colormap;
 				drawable.DrawIndexedImage(gc, 0, 0, source.Right+1, source.Bottom+1, Gdk.RgbDither.None, Control, this.rowStride, GetPmap());
 				if (source.Width != destination.Width || source.Height != destination.Height)
 				{
@@ -165,7 +166,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 	
 					graphics.Control.DrawPixbuf(graphics.GC, pbDest, 0, 0, destination.X, destination.Y, destination.Width, destination.Height, Gdk.RgbDither.None, 0, 0);
 					pbDest.Dispose();
-					
 				}
 				else
 				{

@@ -434,6 +434,9 @@
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\Slider.cs" />
     <Compile Include="Forms\Cursor.cs" />
+    <Compile Include="Drawing\ColorHSB.cs" />
+    <Compile Include="Drawing\ColorHSL.cs" />
+    <Compile Include="Drawing\ColorCMYK.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

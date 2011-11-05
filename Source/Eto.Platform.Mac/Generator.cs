@@ -20,112 +20,120 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		
-		public static Point GetLocation(NSView view, NSEvent theEvent)
+		public static Point GetLocation (NSView view, NSEvent theEvent)
 		{
-			var loc = view.ConvertPointFromBase(theEvent.LocationInWindow);
-			if (!view.IsFlipped) loc.Y = view.Frame.Height - loc.Y;
-			return Generator.ConvertF(loc);
+			var loc = view.ConvertPointFromBase (theEvent.LocationInWindow);
+			if (!view.IsFlipped)
+				loc.Y = view.Frame.Height - loc.Y;
+			return Generator.ConvertF (loc);
 		}
 		
 		public override void ExecuteOnMainThread (System.Action action)
 		{
 			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread) action();
-			else NSApplication.SharedApplication.InvokeOnMainThread(delegate { action(); });
+			if (thread != null && thread.IsMainThread)
+				action ();
+			else
+				NSApplication.SharedApplication.InvokeOnMainThread (delegate {
+					action (); });
 		}
 		
 		public override IDisposable ThreadStart ()
 		{
-			return new NSAutoreleasePool();
+			return new NSAutoreleasePool ();
 		}
 		
-		public static System.Drawing.Size Convert(Size size)
+		public static System.Drawing.Size Convert (Size size)
 		{
-			return new System.Drawing.Size(size.Width, size.Height);
+			return new System.Drawing.Size (size.Width, size.Height);
 		}
 
-		public static Size Convert(System.Drawing.Size size)
+		public static Size Convert (System.Drawing.Size size)
 		{
-			return new Size(size.Width, size.Height);
+			return new Size (size.Width, size.Height);
 		}
 
-		public static System.Drawing.Point Convert(Point point)
+		public static System.Drawing.Point Convert (Point point)
 		{
-			return new System.Drawing.Point(point.X, point.Y);
+			return new System.Drawing.Point (point.X, point.Y);
 		}
 
-		public static Point Convert(System.Drawing.Point point)
+		public static Point Convert (System.Drawing.Point point)
 		{
-			return new Point(point.X, point.Y);
+			return new Point (point.X, point.Y);
 		}
 
-		public static System.Drawing.SizeF ConvertF(Size size)
+		public static System.Drawing.SizeF ConvertF (Size size)
 		{
-			return new System.Drawing.SizeF(size.Width, size.Height);
+			return new System.Drawing.SizeF (size.Width, size.Height);
 		}
 
-		public static Size ConvertF(System.Drawing.SizeF size)
+		public static Size ConvertF (System.Drawing.SizeF size)
 		{
-			return new Size((int)size.Width, (int)size.Height);
+			return new Size ((int)size.Width, (int)size.Height);
 		}
 		
-		public static System.Drawing.RectangleF ConvertF(System.Drawing.RectangleF frame, Size size)
+		public static System.Drawing.RectangleF ConvertF (System.Drawing.RectangleF frame, Size size)
 		{
-			frame.Size = ConvertF(size);
+			frame.Size = ConvertF (size);
 			return frame;
 		}
 
-		public static Rectangle ConvertF(System.Drawing.RectangleF rect)
+		public static Rectangle ConvertF (System.Drawing.RectangleF rect)
 		{
-			return new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 		}
 
-		public static System.Drawing.RectangleF ConvertF(Rectangle rect)
+		public static System.Drawing.RectangleF ConvertF (Rectangle rect)
 		{
-			return new System.Drawing.RectangleF((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+			return new System.Drawing.RectangleF ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 		}
 		
-		public static Point ConvertF(System.Drawing.PointF point)
+		public static Point ConvertF (System.Drawing.PointF point)
 		{
-			return new Point((int)point.X, (int)point.Y);
+			return new Point ((int)point.X, (int)point.Y);
 		}
-		public static System.Drawing.PointF ConvertF(Point point)
+
+		public static System.Drawing.PointF ConvertF (Point point)
 		{
-			return new System.Drawing.PointF((int)point.X, (int)point.Y);
+			return new System.Drawing.PointF ((int)point.X, (int)point.Y);
 		}
 		
 		static CGColorSpace deviceRGB;
-		static CGColorSpace CreateDeviceRGB()
+
+		static CGColorSpace CreateDeviceRGB ()
 		{
-			if (deviceRGB != null) return deviceRGB;
-			deviceRGB = CGColorSpace.CreateDeviceRGB();
+			if (deviceRGB != null)
+				return deviceRGB;
+			deviceRGB = CGColorSpace.CreateDeviceRGB ();
 			return deviceRGB;
 		}
 		
-		public static CGColor Convert(Color color)
+		public static CGColor Convert (Color color)
 		{
-			return new CGColor(CreateDeviceRGB(), new float[] { color.R / 255.0F, color.G / 255.0F, color.B / 255.0F, color.A / 255.0F });
-		}
-		public static Color Convert(CGColor color)
-		{
-			return new Color((byte)(color.Components[0] * 255), (byte)(color.Components[1] * 255), (byte)(color.Components[2] * 255), (byte)(color.Alpha * 255));
+			return new CGColor (CreateDeviceRGB (), new float[] { color.R, color.G, color.B, color.A });
 		}
 
-		public static NSColor ConvertNS(Color color)
+		public static Color Convert (CGColor color)
 		{
-			return NSColor.FromDeviceRgba(color.R / 255.0F, color.G / 255.0F, color.B / 255.0F, color.A / 255.0F);
+			return new Color (color.Components [0], color.Components [1], color.Components [2], color.Alpha);
 		}
-		public static Color Convert(NSColor color)
+
+		public static NSColor ConvertNS (Color color)
 		{
-			if (color == null) return Color.Black;
+			return NSColor.FromDeviceRgba (color.R, color.G, color.B, color.A);
+		}
+
+		public static Color Convert (NSColor color)
+		{
+			if (color == null)
+				return Color.Black;
 			float red, green, blue, alpha;
-			color.GetRgba(out red, out green, out blue, out alpha);
-			return new Color((byte)(red * 255), (byte)(green * 255), (byte)(blue * 255), (byte)(alpha * 255));
+			color.GetRgba (out red, out green, out blue, out alpha);
+			return new Color (red, green, blue, alpha);
 		}
 		
-		
-		public static MouseEventArgs GetMouseEvent(NSView view, NSEvent theEvent)
+		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent)
 		{
 			var pt = Generator.GetLocation (view, theEvent);
 			Key modifiers = KeyMap.GetModifiers (theEvent);

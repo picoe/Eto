@@ -43,17 +43,17 @@ namespace Eto.Platform.GtkSharp
 
 		public static Gdk.Color Convert (Color color)
 		{
-			return new Gdk.Color ((byte)(color.R * ushort.MaxValue / byte.MaxValue), (byte)(color.G * ushort.MaxValue / byte.MaxValue), (byte)(color.B * ushort.MaxValue / byte.MaxValue));
+			return new Gdk.Color ((byte)(color.R * ushort.MaxValue), (byte)(color.G * ushort.MaxValue), (byte)(color.B * ushort.MaxValue));
 		}
 		
 		public static Cairo.Color ConvertC (Color color)
 		{
-			return new Cairo.Color ((double)color.R / byte.MaxValue, (double)color.G / byte.MaxValue, (double)color.B / byte.MaxValue, (double)color.A / byte.MaxValue);
+			return new Cairo.Color ((double)color.R, (double)color.G, (double)color.B, (double)color.A);
 		}
 
 		public static Color Convert (Gdk.Color color)
 		{
-			return new Color ((byte)((int)color.Red * byte.MaxValue / ushort.MaxValue), (byte)((int)color.Green * byte.MaxValue / ushort.MaxValue), (byte)((int)color.Blue * byte.MaxValue / ushort.MaxValue));
+			return new Color ((byte)((int)color.Red / ushort.MaxValue), (byte)((int)color.Green / ushort.MaxValue), (byte)((int)color.Blue / ushort.MaxValue));
 		}
 
 		public static Gdk.Size Convert (Size size)
