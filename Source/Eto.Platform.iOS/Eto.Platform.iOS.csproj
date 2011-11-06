@@ -100,6 +100,7 @@
     <Compile Include="..\Eto.Platform.Mac\Forms\TableLayoutHandler.cs">
       <Link>Forms\TableLayoutHandler.cs</Link>
     </Compile>
+    <Compile Include="Forms\MessageBoxHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

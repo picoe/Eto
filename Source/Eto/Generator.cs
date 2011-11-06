@@ -180,7 +180,7 @@ namespace Eto
 		{
 			action ();
 		}
-		
+
 		public virtual IDisposable ThreadStart ()
 		{
 			return null;

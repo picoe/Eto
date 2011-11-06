@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IControl : IInstanceWidget
+	public partial interface IControl : IInstanceWidget
 	{
 		Color BackgroundColor { get; set; }
 
@@ -16,10 +16,6 @@ namespace Eto.Forms
 
 		bool Enabled { get; set; }
 		
-		Cursor Cursor { get; set; }
-		
-		string ToolTip { get; set; }
-
 		void Invalidate ();
 
 		void Invalidate (Rectangle rect);
@@ -47,7 +43,7 @@ namespace Eto.Forms
 		void SetParentLayout (Layout layout);
 	}
 	
-	public abstract class Control : InstanceWidget, IControl
+	public abstract partial class Control : InstanceWidget, IControl
 	{
 		IControl inner;
 		
@@ -318,16 +314,6 @@ namespace Eto.Forms
 		public virtual bool Visible {
 			get { return inner.Visible; }
 			set { inner.Visible = value; }
-		}
-		
-		public virtual Cursor Cursor {
-			get { return inner.Cursor; }
-			set { inner.Cursor = value; }
-		}
-		
-		public virtual string ToolTip {
-			get { return inner.ToolTip; }
-			set { inner.ToolTip = value; }
 		}
 		
 		public Layout ParentLayout { get; private set; }

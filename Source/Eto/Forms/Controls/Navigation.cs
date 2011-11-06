@@ -4,8 +4,9 @@ namespace Eto.Forms
 {
 	public interface INavigation : IControl
 	{
-		void Push(Control control);
-		void Pop();
+		void Push (INavigationItem item);
+
+		void Pop ();
 	}
 	
 	public class Navigation : Control
@@ -23,20 +24,31 @@ namespace Eto.Forms
 			inner = (INavigation)Handler;
 		}
 		
-		public Navigation(Control control)
+		public Navigation (Control content, string title = null)
 			: this()
 		{
-			Push(control);
+			Push (content, title);
 		}
 		
-		public virtual void Push(Control control)
+		public Navigation (NavigationItem item)
+			: this()
 		{
-			inner.Push(control);
+			Push (item);
 		}
 		
-		public virtual void Pop()
+		public virtual void Push (Control content, string title = null)
 		{
-			inner.Pop();
+			Push (new NavigationItem { Content = content, Text = title });
+		}
+		
+		public virtual void Push (INavigationItem item)
+		{
+			inner.Push (item);
+		}
+		
+		public virtual void Pop ()
+		{
+			inner.Pop ();
 		}
 	}
 }

@@ -31,10 +31,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		#region INavigation implementation
 		
-		public void Push (Control control)
+		public void Push (INavigationItem item)
 		{
-			var view = control.GetViewController();
-			//view.NavigationItem.Title = title;
+			var view = item.Content.GetViewController ();
+			if (item.Text != null)
+				view.NavigationItem.Title = item.Text;
 			Navigation.PushViewController(view, true);
 		}
 

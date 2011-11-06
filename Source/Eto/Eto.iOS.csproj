@@ -153,6 +153,11 @@
     <Compile Include="Forms\ListItem.cs" />
     <Compile Include="Forms\TreeItem.cs" />
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
+    <Compile Include="Drawing\ColorCMYK.cs" />
+    <Compile Include="Drawing\ColorHSB.cs" />
+    <Compile Include="Drawing\ColorHSL.cs" />
+    <Compile Include="Forms\Controls\Slider.cs" />
+    <Compile Include="Forms\Controls\NavigationItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

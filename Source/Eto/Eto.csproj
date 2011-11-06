@@ -437,6 +437,7 @@
     <Compile Include="Drawing\ColorHSB.cs" />
     <Compile Include="Drawing\ColorHSL.cs" />
     <Compile Include="Drawing\ColorCMYK.cs" />
+    <Compile Include="Forms\Controls\Control.desktop.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

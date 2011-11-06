@@ -81,7 +81,7 @@ namespace Eto.Platform.iOS.Drawing
 			context.SetAllowsSubpixelPositioning (false);
 		}
 
-		public GraphicsHandler (object gc, float height, bool flipped = true)
+		public GraphicsHandler (object gc, float height, bool flipped)
 		{
 			this.height = height;
 			if (height > 0) {

@@ -25,9 +25,9 @@ namespace Eto.IO
 			get { return Path.GetFileName(FullName); }
 		}
 
-		public string Extension
+		public virtual string Extension
 		{
-			get { return Path.GetExtension(FullName); }
+			get { return Path.GetExtension(Name); }
 		}
 
 		public override Icon GetIcon(SystemIcons icons, IconSize iconSize)

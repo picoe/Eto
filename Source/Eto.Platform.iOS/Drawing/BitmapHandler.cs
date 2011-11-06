@@ -11,17 +11,17 @@ namespace Eto.Platform.iOS.Drawing
 {
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data,int scanWidth,object controlObject)
+		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
 			: base(data, scanWidth, controlObject)
 		{
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public override uint TranslateArgbToData (uint argb)
 		{
 			return argb; //(argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override uint TranslateDataToArgb (uint bitmapData)
 		{
 			return bitmapData; //(bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
 		}
@@ -61,11 +61,11 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
 					bytesPerRow = bytesPerPixel * width;
-					Data = new NSMutableData((uint)(bytesPerRow*height));
+					Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
 					provider = new CGDataProvider (Data.MutableBytes, (int)Data.Length, false);
 					cgimage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-					Control = UIImage.FromImage(cgimage);
+					Control = UIImage.FromImage (cgimage);
 				
 					break;
 				}
@@ -76,11 +76,11 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
 					bytesPerRow = bytesPerPixel * width;
-					Data = new NSMutableData((uint)(bytesPerRow*height));
+					Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
 					provider = new CGDataProvider (Data.MutableBytes, (int)Data.Length, false);
 					cgimage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-					Control = UIImage.FromImage(cgimage);
+					Control = UIImage.FromImage (cgimage);
 					break;
 				}
 			/*case PixelFormat.Format16bppRgb555:
@@ -111,10 +111,10 @@ namespace Eto.Platform.iOS.Drawing
 			NSData data = null;
 			switch (format) {
 			case ImageFormat.Jpeg:
-				data = Control.AsJPEG();
+				data = Control.AsJPEG ();
 				break;
 			case ImageFormat.Png:
-				data = Control.AsPNG();
+				data = Control.AsPNG ();
 				break;
 			case ImageFormat.Bitmap:
 			case ImageFormat.Gif:
@@ -122,8 +122,8 @@ namespace Eto.Platform.iOS.Drawing
 			default:
 				throw new NotSupportedException ();
 			}
-			data.AsStream().CopyTo(stream);
-			data.Dispose();
+			data.AsStream ().CopyTo (stream);
+			data.Dispose ();
 		}
 
 		public override Size Size {
@@ -133,8 +133,8 @@ namespace Eto.Platform.iOS.Drawing
 		public override void DrawImage (GraphicsHandler graphics, int x, int y)
 		{
 			var nsimage = this.Control;
-			var destRect = graphics.TranslateView(Generator.ConvertF(new Rectangle(x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height)), false);
-			nsimage.Draw(destRect, CGBlendMode.Normal, 1);
+			var destRect = graphics.TranslateView (Generator.ConvertF (new Rectangle (x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height)), false);
+			nsimage.Draw (destRect, CGBlendMode.Normal, 1);
 		}
 
 		/*
@@ -150,19 +150,22 @@ namespace Eto.Platform.iOS.Drawing
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
 			var nsimage = this.Control;
-			var sourceRect = Generator.ConvertF(source); 
+			var sourceRect = Generator.ConvertF (source); 
 			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
-			SD.RectangleF destRect = graphics.TranslateView(Generator.ConvertF(destination), false);
-			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size)
-			{
-				graphics.Context.SaveState();
+			SD.RectangleF destRect = graphics.TranslateView (Generator.ConvertF (destination), false);
+			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {
+				graphics.Context.SaveState ();
 				//graphics.Context.ClipToRect(destRect);
-				graphics.Context.TranslateCTM(0, nsimage.Size.Height);
-				graphics.Context.ScaleCTM(nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
-				graphics.Context.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), nsimage.CGImage);
+				if (!graphics.Flipped) {
+					graphics.Context.TranslateCTM (0, nsimage.Size.Height);
+					graphics.Context.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
+				} else {
+					graphics.Context.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
+				}
+				graphics.Context.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
 				//nsimage.CGImage(destRect, CGBlendMode.Normal, 1);
 
-				graphics.Context.RestoreState();
+				graphics.Context.RestoreState ();
 				
 				//var imgportion = nsimage..CGImage.WithImageInRect(sourceRect);
 				/*graphics.Context.SaveState();
@@ -180,23 +183,19 @@ namespace Eto.Platform.iOS.Drawing
 				//imgportion.Dispose();
 				//nsimage.Dispose();
 				//graphics.Context.RestoreState();
-			}
-			else 
-			{
+			} else {
 				//graphics.Context.DrawImage(destRect, nsimage.CGImage);
 				//Console.WriteLine("drawing full image");	
-				nsimage.Draw(destRect, CGBlendMode.Normal, 1);
+				nsimage.Draw (destRect, CGBlendMode.Normal, 1);
 			}
 		}
 		
 		protected override void Dispose (bool disposing)
 		{
 			base.Dispose (disposing);
-			if (disposing)
-			{
-				if (Data != null)
-				{
-					Data.Dispose();
+			if (disposing) {
+				if (Data != null) {
+					Data.Dispose ();
 					Data = null;
 				}
 			}

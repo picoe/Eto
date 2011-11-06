@@ -35,7 +35,8 @@ namespace Eto.Platform.Mac
 				action ();
 			else
 				NSApplication.SharedApplication.InvokeOnMainThread (delegate {
-					action (); });
+					action (); 
+				});
 		}
 		
 		public override IDisposable ThreadStart ()

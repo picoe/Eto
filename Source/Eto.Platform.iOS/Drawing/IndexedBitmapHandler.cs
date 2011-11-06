@@ -115,7 +115,7 @@ namespace Eto.Platform.iOS.Drawing
 					var dest = (byte*)bd.Data;
 					var src = pSrc;
 					var scany = rowStride;
-					if (true)
+					if (graphics.Flipped)
 					{
 						src += Control.Length - scany;
 						scany = -scany;

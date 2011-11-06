@@ -89,7 +89,6 @@ namespace Eto.Platform.Mac
 			};
 			control.Delegate = new Delegate { Handler = this };
 			
-
 			scroll = new NSScrollView ();
 			scroll.AutoresizesSubviews = true;
 			scroll.DocumentView = control;

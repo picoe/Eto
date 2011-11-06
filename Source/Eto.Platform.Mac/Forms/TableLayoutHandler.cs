@@ -8,7 +8,6 @@ using System.Diagnostics;
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
 using IMacView = Eto.Platform.iOS.Forms.IiosView;
-using MacLayout = Eto.Platform.iOS.Forms.iosLayout;
 namespace Eto.Platform.iOS.Forms
 
 #elif OSX
@@ -17,7 +16,12 @@ namespace Eto.Platform.Mac
 #endif
 {
 	public class TableLayoutHandler : 
-		MacLayout<NSView, TableLayout>, ITableLayout
+#if IOS
+		iosLayout<NSView, TableLayout>, 
+#elif OSX
+		MacLayout<NSView, TableLayout>, 
+#endif
+		ITableLayout
 	{
 		Control[,] views;
 		bool[] xscaling;

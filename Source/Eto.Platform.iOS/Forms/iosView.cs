@@ -151,7 +151,11 @@ namespace Eto.Platform.iOS.Forms
 			get { return !Control.Hidden; }
 			set { Control.Hidden = !value; }
 		}
-
+		
+		public virtual void OnPreLoad (EventArgs e)
+		{
+		}
+		
 		public virtual void OnLoad (EventArgs e)
 		{
 		}
