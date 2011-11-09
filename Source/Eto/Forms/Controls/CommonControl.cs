@@ -1,7 +1,7 @@
 using System;
 using Eto.Drawing;
 
-namespace Eto.Forms.Controls
+namespace Eto.Forms
 {
 	public interface ICommonControl : IControl 
 	{

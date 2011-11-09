@@ -91,7 +91,7 @@ namespace Eto.Platform.Mac.Forms
             get { 
                 return Control.Url.Path;
             }
-            set {  }
+            set { }
         }
 		
 		public Uri Directory {
@@ -155,7 +155,7 @@ namespace Eto.Platform.Mac.Forms
                 return titles.IndexOf(title);
 			}
             set { 
-				fileTypes.SelectItem(filters[value].Name);
+				fileTypes.SelectItem (filters[value].Name);
 			}
         }
 

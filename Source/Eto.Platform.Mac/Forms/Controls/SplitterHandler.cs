@@ -73,7 +73,7 @@ namespace Eto.Platform.Mac
 		{
 			
 			control = new MySplitView();
-			control.DividerStyle = NSSplitViewDividerStyle.PaneSplitter;
+			control.DividerStyle = NSSplitViewDividerStyle.Thin;
 			control.AddSubview(new NSView{ AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
 			control.AddSubview(new NSView{ AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
 			control.IsVertical = true;

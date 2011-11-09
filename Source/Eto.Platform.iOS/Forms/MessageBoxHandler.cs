@@ -8,14 +8,14 @@ namespace Eto.Platform.iOS.Forms
 	{
 		public DialogResult ShowDialog (Control parent)
 		{
-			var alert = new UIAlertView(Caption, Text, null, null);
+			var alert = new UIAlertView(Caption ?? string.Empty, Text ?? string.Empty, null, "Ok");
 			alert.Show ();
 			return DialogResult.Ok;
 		}
 
 		public DialogResult ShowDialog (Control parent, MessageBoxButtons buttons)
 		{
-			var alert = new UIAlertView(Caption, Text, null, null);
+			var alert = new UIAlertView(Caption ?? string.Empty, Text ?? string.Empty, null, "Ok");
 			alert.Show ();
 			return DialogResult.Ok;
 		}

@@ -1,6 +1,6 @@
 using System;
 
-namespace Eto.Forms.Controls
+namespace Eto.Forms
 {
 	public partial interface IControl
 	{

@@ -7,11 +7,23 @@ using MonoTouch.UIKit;
 using MonoTouch.CoreAnimation;
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
+using MonoTouch.OpenGLES;
+using MonoTouch.GLKit;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class DrawableHandler : iosView<DrawableHandler.MyView, Drawable>, IDrawable
 	{
+		/*
+		[Register("FastLayer")]
+		public class FastLayer : CATiledLayer
+		{
+			[Export("fadeDuration")]
+			public static float fadeDuration {
+				get { return 0.0f; }
+			}
+		}*/
+		
 		public class MyView : UIView
 		{
 			[Export ("layerClass")]
@@ -20,9 +32,34 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return new Class (typeof(CATiledLayer));
 			}
 			
-			public MyView()
+			public override void TouchesBegan (NSSet touches, UIEvent evt)
+			{
+				var args = Generator.ConvertMouse (this, touches, evt);
+				Handler.Widget.OnMouseDown (args);
+				if (!args.Handled)
+					base.TouchesBegan (touches, evt);
+			}
+			
+			public override void TouchesEnded (NSSet touches, UIEvent evt)
+			{
+				var args = Generator.ConvertMouse (this, touches, evt);
+				Handler.Widget.OnMouseUp (args);
+				if (!args.Handled)
+					base.TouchesEnded (touches, evt);
+			}
+			
+			public override void TouchesMoved (NSSet touches, UIEvent evt)
+			{
+				var args = Generator.ConvertMouse (this, touches, evt);
+				Handler.Widget.OnMouseMove (args);
+				if (!args.Handled)
+					base.TouchesMoved (touches, evt);
+			}
+			
+			public MyView ()
 			{
 				//var tiledLayer = this.Layer as CATiledLayer;
+				this.BackgroundColor = UIColor.Clear;
 			}
 
 			public DrawableHandler Handler { get; set; }
@@ -35,9 +72,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			public bool CanFocus { get; set; }
 
 			public override bool CanBecomeFirstResponder {
-				get {
-					return CanFocus;
-				}
+				get { return CanFocus; }
 			}
 
 			public override bool BecomeFirstResponder ()
@@ -51,14 +86,29 @@ namespace Eto.Platform.iOS.Forms.Controls
 				Handler.Widget.OnLostFocus (EventArgs.Empty);
 				return base.ResignFirstResponder ();
 			}
-			
 		}
-
+		
+		public override Eto.Drawing.Size Size {
+			get {
+				return base.Size;
+			}
+			set {
+				base.Size = value;
+			}
+		}
+		
 		public DrawableHandler ()
 		{
 			Control = new MyView{ Handler = this };
-			var tiledLayer = (CATiledLayer)Control.Layer;
-			tiledLayer.LevelsOfDetail = 4;
+		}
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			var tiledLayer = Control.Layer as CATiledLayer;
+			if (tiledLayer != null) {
+				tiledLayer.LevelsOfDetail = 4;
+			}
 		}
 		
 		public bool CanFocus {

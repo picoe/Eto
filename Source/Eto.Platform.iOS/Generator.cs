@@ -121,7 +121,17 @@ namespace Eto.Platform.iOS
 			color.GetRGBA(out red, out green, out blue, out alpha);
 			return new Color((byte)(red * 255), (byte)(green * 255), (byte)(blue * 255), (byte)(alpha * 255));
 		}
-				
+			
+		
+		public static MouseEventArgs ConvertMouse(UIView view, NSSet touches, UIEvent evt)
+		{
+			if (touches.Count > 0) {
+				UITouch touch = touches.ToArray<UITouch>()[0];
+				var location = touch.LocationInView (view);
+				return new MouseEventArgs(MouseButtons.Primary, Key.None, ConvertF (location));
+			}
+			return new MouseEventArgs(MouseButtons.Primary, Key.None, Point.Empty);
+		}
 	}
 }
 

@@ -43,7 +43,7 @@ namespace Eto.Platform.GtkSharp
 
 		public static Gdk.Color Convert (Color color)
 		{
-			return new Gdk.Color ((byte)(color.R * ushort.MaxValue), (byte)(color.G * ushort.MaxValue), (byte)(color.B * ushort.MaxValue));
+			return new Gdk.Color ((byte)(color.R * byte.MaxValue), (byte)(color.G * byte.MaxValue), (byte)(color.B * byte.MaxValue));
 		}
 		
 		public static Cairo.Color ConvertC (Color color)
@@ -53,7 +53,7 @@ namespace Eto.Platform.GtkSharp
 
 		public static Color Convert (Gdk.Color color)
 		{
-			return new Color ((byte)((int)color.Red / ushort.MaxValue), (byte)((int)color.Green / ushort.MaxValue), (byte)((int)color.Blue / ushort.MaxValue));
+			return new Color ((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue);
 		}
 
 		public static Gdk.Size Convert (Size size)

@@ -284,9 +284,6 @@
     <Compile Include="Forms\Controls\MouseEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\Navigation.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Controls\NumericUpDown.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -27,7 +27,7 @@ namespace Eto.Platform.Mac
 				return Control.StringValue;
 			}
 			set {
-				Control.StringValue = value;
+				Control.StringValue = value ?? string.Empty;
 			}
 		}
 		
