@@ -145,6 +145,10 @@ namespace Eto.Platform.GtkSharp
 				vp.Hadjustment.Upper = value.Width; vp.Vadjustment.Upper = value.Height;
 			}
 		}
+		
+		public Rectangle VisibleRect {
+			get { return new Rectangle(ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+		}
 
 	}
 }

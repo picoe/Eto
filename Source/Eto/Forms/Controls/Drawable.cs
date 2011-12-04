@@ -3,8 +3,10 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IDrawable : IControl
+	public partial interface IDrawable : IControl
 	{
+		void Create ();
+		
 		void Update (Rectangle rect);
 
 		bool CanFocus { get; set; }
@@ -33,7 +35,7 @@ namespace Eto.Forms
 
 	public delegate void PaintEventHandler (object sender, PaintEventArgs pe);
 
-	public class Drawable : Control, IDrawable
+	public partial class Drawable : Control
 	{
 		IDrawable inner;
 
@@ -41,12 +43,13 @@ namespace Eto.Forms
 
 		public Drawable () : this(Generator.Current)
 		{
-			
 		}
 
-		public Drawable (Generator g) : base(g, typeof(IDrawable))
+		public Drawable (Generator g) : base(g, typeof(IDrawable), false)
 		{
 			inner = (IDrawable)Handler;
+			inner.Create ();
+			Initialize ();
 		}
 
 		public virtual void OnPaint (PaintEventArgs pe)

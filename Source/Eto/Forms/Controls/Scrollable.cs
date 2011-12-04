@@ -9,6 +9,7 @@ namespace Eto.Forms
 		Point ScrollPosition { get; set; }
 		Size ScrollSize { get; set; }
 		BorderType Border { get; set; }
+		Rectangle VisibleRect { get; }
 	}
 	
 	public class ScrollEventArgs : EventArgs
@@ -71,10 +72,7 @@ namespace Eto.Forms
 		
 		public Rectangle VisibleRect
 		{
-			get {
-				Size size = new Size(Math.Min (ClientSize.Width, ScrollSize.Width), Math.Min(ClientSize.Height, ScrollSize.Height));
-				return new Rectangle(ScrollPosition, size);
-			}
+			get { return inner.VisibleRect; }
 		}
 
 	}

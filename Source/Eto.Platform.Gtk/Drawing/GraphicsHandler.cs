@@ -91,7 +91,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			if (image != null) {
 				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
-				pb.GetFromDrawable (Control, Control.Colormap, 0, 0, 0, 0, image.Size.Width, image.Size.Height);
+				pb.GetFromDrawable (Control, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.System, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
 			}
 			if (context != null && Control != null)
 			{

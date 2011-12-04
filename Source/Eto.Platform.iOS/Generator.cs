@@ -16,121 +16,133 @@ namespace Eto.Platform.iOS
 			get { return GeneratorID; }
 		}
 		
-		public override bool Supports<T>()
+		public override bool Supports<T> ()
 		{
 			var type = typeof(T);
-			if (UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad)
-			{
+			if (UIDevice.CurrentDevice.UserInterfaceIdiom != UIUserInterfaceIdiom.Pad) {
 				// all iPad-only stuff is not supported on other idioms..
-				if (type == typeof(ISplitter)) return false;
+				if (type == typeof(ISplitter))
+					return false;
 				
 			}
-			return base.Supports<T>();
+			return base.Supports<T> ();
 		}
 		
-		public static Point GetLocation(UIView view, UIEvent theEvent)
+		public static Point GetLocation (UIView view, UIEvent theEvent)
 		{
-			var touches = theEvent.TouchesForView(view);
-			var touch = touches.ToArray<UITouch>().FirstOrDefault();
-			var loc = touch.LocationInView(view);
+			var touches = theEvent.TouchesForView (view);
+			var touch = touches.ToArray<UITouch> ().FirstOrDefault ();
+			var loc = touch.LocationInView (view);
 			loc.Y = view.Frame.Height - loc.Y;
-			return Generator.ConvertF(loc);
+			return Generator.ConvertF (loc);
 		}
 		
 		public override void ExecuteOnMainThread (System.Action action)
 		{
 			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread) action();
-			else UIApplication.SharedApplication.BeginInvokeOnMainThread(delegate { action(); });
+			if (thread != null && thread.IsMainThread)
+				action ();
+			else
+				UIApplication.SharedApplication.BeginInvokeOnMainThread (delegate {
+					action (); });
 		}
 		
 		public override IDisposable ThreadStart ()
 		{
-			return new NSAutoreleasePool();
+			return new NSAutoreleasePool ();
 		}
 		
-		public static System.Drawing.Size Convert(Size size)
+		public static System.Drawing.Size Convert (Size size)
 		{
-			return new System.Drawing.Size(size.Width, size.Height);
+			return new System.Drawing.Size (size.Width, size.Height);
 		}
 
-		public static Size Convert(System.Drawing.Size size)
+		public static Size Convert (System.Drawing.Size size)
 		{
-			return new Size(size.Width, size.Height);
+			return new Size (size.Width, size.Height);
 		}
 
-		public static System.Drawing.SizeF ConvertF(Size size)
+		public static System.Drawing.SizeF ConvertF (Size size)
 		{
-			return new System.Drawing.SizeF(size.Width, size.Height);
+			return new System.Drawing.SizeF (size.Width, size.Height);
 		}
 
-		public static Size ConvertF(System.Drawing.SizeF size)
+		public static Size ConvertF (System.Drawing.SizeF size)
 		{
-			return new Size((int)size.Width, (int)size.Height);
+			return new Size ((int)size.Width, (int)size.Height);
 		}
 		
-		public static System.Drawing.RectangleF ConvertF(System.Drawing.RectangleF frame, Size size)
+		public static System.Drawing.RectangleF ConvertF (System.Drawing.RectangleF frame, Size size)
 		{
-			frame.Size = ConvertF(size);
+			frame.Size = ConvertF (size);
 			return frame;
 		}
 
-		public static Rectangle ConvertF(System.Drawing.RectangleF rect)
+		public static Rectangle ConvertF (System.Drawing.RectangleF rect)
 		{
-			return new Rectangle((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 		}
 
-		public static System.Drawing.RectangleF ConvertF(Rectangle rect)
+		public static System.Drawing.RectangleF ConvertF (Rectangle rect)
 		{
-			return new System.Drawing.RectangleF((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+			return new System.Drawing.RectangleF ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 		}
 		
-		public static Point ConvertF(System.Drawing.PointF point)
+		public static Point ConvertF (System.Drawing.PointF point)
 		{
-			return new Point((int)point.X, (int)point.Y);
+			return new Point ((int)point.X, (int)point.Y);
 		}
-		public static System.Drawing.PointF ConvertF(Point point)
+
+		public static System.Drawing.PointF ConvertF (Point point)
 		{
-			return new System.Drawing.PointF((int)point.X, (int)point.Y);
+			return new System.Drawing.PointF ((int)point.X, (int)point.Y);
+		}
+
+		public static System.Drawing.PointF ConvertF (PointF point)
+		{
+			return new System.Drawing.PointF (point.X, point.Y);
 		}
 		
 		static CGColorSpace deviceRGB;
-		static CGColorSpace CreateDeviceRGB()
+
+		static CGColorSpace CreateDeviceRGB ()
 		{
-			if (deviceRGB != null) return deviceRGB;
-			deviceRGB = CGColorSpace.CreateDeviceRGB();
+			if (deviceRGB != null)
+				return deviceRGB;
+			deviceRGB = CGColorSpace.CreateDeviceRGB ();
 			return deviceRGB;
 		}
 		
-		public static CGColor Convert(Color color)
+		public static CGColor Convert (Color color)
 		{
-			return new CGColor(CreateDeviceRGB(), new float[] { color.R / 255.0F, color.G / 255.0F, color.B / 255.0F, color.A / 255.0F });
-		}
-		public static Color Convert(CGColor color)
-		{
-			return new Color((byte)(color.Components[0] * 255), (byte)(color.Components[1] * 255), (byte)(color.Components[2] * 255), (byte)(color.Alpha * 255));
+			return new CGColor (CreateDeviceRGB (), new float[] { color.R, color.G, color.B, color.A });
 		}
 
-		public static UIColor ConvertUI(Color color)
+		public static Color Convert (CGColor color)
 		{
-			return UIColor.FromRGBA(color.R / 255.0F, color.G / 255.0F, color.B / 255.0F, color.A / 255.0F);
+			return new Color (color.Components [0], color.Components [1], color.Components [2], color.Alpha);
 		}
-		public static Color Convert(UIColor color)
+
+		public static UIColor ConvertUI (Color color)
+		{
+			return UIColor.FromRGBA (color.R, color.G, color.B, color.A);
+		}
+
+		public static Color Convert (UIColor color)
 		{
 			float red, green, blue, alpha;
-			color.GetRGBA(out red, out green, out blue, out alpha);
-			return new Color((byte)(red * 255), (byte)(green * 255), (byte)(blue * 255), (byte)(alpha * 255));
+			color.GetRGBA (out red, out green, out blue, out alpha);
+			return new Color (red, green, blue, alpha);
 		}
-			
 		
-		public static MouseEventArgs ConvertMouse(UIView view, NSSet touches, UIEvent evt)
+		public static MouseEventArgs ConvertMouse (UIView view, NSSet touches, UIEvent evt)
 		{
 			if (touches.Count > 0) {
-				UITouch touch = touches.ToArray<UITouch>()[0];
+				UITouch touch = touches.ToArray<UITouch> () [0];
 				var location = touch.LocationInView (view);
-				return new MouseEventArgs(MouseButtons.Primary, Key.None, ConvertF (location));
+				return new MouseEventArgs (MouseButtons.Primary, Key.None, ConvertF (location));
 			}
-			return new MouseEventArgs(MouseButtons.Primary, Key.None, Point.Empty);
+			return new MouseEventArgs (MouseButtons.Primary, Key.None, Point.Empty);
 		}
 	}
 }

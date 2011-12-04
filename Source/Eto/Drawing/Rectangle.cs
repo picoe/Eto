@@ -34,6 +34,11 @@ namespace Eto.Drawing
 			Restrict(new Rectangle(point, size));
 		}
 
+		public void Restrict(Size size)
+		{
+			Restrict(new Rectangle(size));
+		}
+		
 		public void Restrict(Rectangle rectangle)
 		{
 			if (Left < rectangle.Left) Left = rectangle.Left;

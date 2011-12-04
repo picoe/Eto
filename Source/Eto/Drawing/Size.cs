@@ -43,6 +43,17 @@ namespace Eto.Drawing
 			Width = point.X;
 			Height = point.Y;
 		}
+		
+		public bool Contains(Point point)
+		{
+			return Contains(point.X, point.Y);
+		}
+		
+		public bool Contains(int x, int y)
+		{
+			if (Width == 0 || Height == 0) return false;
+			return (x >= 0 && x <= Width && y >= 0 && y <= Height);
+		}
 
 		public static Size operator * (Size size1, Size size2)
 		{

@@ -114,7 +114,7 @@ namespace Eto.Drawing
 
 		public static Point operator *(Point point, Size size)
 		{
-			Point result = point;
+			var result = point;
 			result.x *= size.Width;
 			result.y *= size.Height;
 			return result;
@@ -122,12 +122,28 @@ namespace Eto.Drawing
 
 		public static Point operator /(Point point, Size size)
 		{
-			Point result = point;
+			var result = point;
 			result.x /= size.Width;
 			result.y /= size.Height;
 			return result;
 		}
 
+		public static Point operator *(Point point, int size)
+		{
+			var result = point;
+			result.x *= size;
+			result.y *= size;
+			return result;
+		}
+
+		public static Point operator /(Point point, int size)
+		{
+			var result = point;
+			result.x /= size;
+			result.y /= size;
+			return result;
+		}
+		
 		public override bool Equals(object obj)
 		{
 			if (!(obj is Point)) return false;

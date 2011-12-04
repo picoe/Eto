@@ -85,8 +85,8 @@ namespace Eto.Platform.Windows
 			}
 
 		}
-
-		public DrawableHandler()
+		
+		public void Create ()
 		{
 			Control = new DrawableInternal(this);
 			Control.TabStop = true;

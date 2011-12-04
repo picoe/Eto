@@ -2,6 +2,8 @@ using System;
 using Eto.Forms;
 using MonoTouch.UIKit;
 using SD = System.Drawing;
+using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -58,7 +60,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return Control.ScrollEnabled;
 			}
 			set {
-				Control.ScrollEnabled = value;;
+				Control.ScrollEnabled = value;
+				;
 			}
 		}
 		
@@ -98,6 +101,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.ScrollEnabled = true;
 			Control.Delegate = new Delegate { Handler = this };
 			Control.AddSubview (Child);
+			
+			foreach (var gestureRecognizer in Control.GestureRecognizers.OfType<UIPanGestureRecognizer>()) {
+				gestureRecognizer.MinimumNumberOfTouches = 2;
+				gestureRecognizer.MaximumNumberOfTouches = 2;
+			}			
 		}
 
 		public void UpdateScrollSizes ()
@@ -123,10 +131,10 @@ namespace Eto.Platform.iOS.Forms.Controls
 			get {
 				var inset = Control.ContentInset;
 				var offset = Control.ContentOffset;
-				return new Eto.Drawing.Point((int)Math.Round(offset.X + inset.Left), (int)Math.Round (offset.Y + inset.Top));
+				return new Eto.Drawing.Point ((int)Math.Round ((offset.X + inset.Left) / Control.ZoomScale), (int)Math.Round ((offset.Y + inset.Top) / Control.ZoomScale));
 			}
 			set {
-				Control.SetContentOffset (Generator.ConvertF (value), false);
+				Control.SetContentOffset (Generator.ConvertF ((PointF)value * Control.ZoomScale), false);
 			}
 		}
 		
@@ -138,7 +146,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public Eto.Drawing.Size ScrollSize {
 			get {
-				return Generator.ConvertF (Control.ContentSize);
+				return new Eto.Drawing.Size((int)Math.Round (Control.ContentSize.Width / Control.ZoomScale), (int)Math.Round (Control.ContentSize.Height / Control.ZoomScale));
 			}
 			set {
 				var size = Generator.ConvertF (value);
@@ -146,6 +154,13 @@ namespace Eto.Platform.iOS.Forms.Controls
 				Child.SetFrameSize (size);
 				Control.ContentSize = size;//new System.Drawing.SizeF(size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
 				Adjust ();
+			}
+		}
+		
+		public Rectangle VisibleRect {
+			get {
+				Size size = new Size((int)Math.Min (ClientSize.Width / Control.ZoomScale, ScrollSize.Width), (int)Math.Min(ClientSize.Height / Control.ZoomScale, ScrollSize.Height));
+				return new Rectangle(ScrollPosition, size);
 			}
 		}
 

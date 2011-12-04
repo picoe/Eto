@@ -189,6 +189,31 @@ namespace Eto.Forms
 			remove { lostFocus -= value; }
 		}
 		
+		public const string ShownEvent = "Control.Shown";
+
+		event EventHandler<EventArgs> shown;
+
+		public event EventHandler<EventArgs> Shown {
+			add {
+				HandleEvent (ShownEvent);
+				shown += value;
+			}
+			remove { shown -= value; }
+		}
+
+		public const string HiddenEvent = "Control.Hidden";
+
+		event EventHandler<EventArgs> hidden;
+
+		public event EventHandler<EventArgs> Hidden {
+			add {
+				HandleEvent (HiddenEvent);
+				hidden += value;
+			}
+			remove { hidden -= value; }
+		}
+		
+		
 		public event EventHandler<EventArgs> PreLoad;
 		public event EventHandler<EventArgs> Load;
 		public event EventHandler<EventArgs> LoadComplete;

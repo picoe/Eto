@@ -12,6 +12,14 @@ namespace Eto.Forms
 	public class Navigation : Control
 	{
 		INavigation inner;
+		
+		public event EventHandler<EventArgs> ItemShown;
+		
+		public virtual void OnItemShown (EventArgs e)
+		{
+			if (ItemShown != null)
+				ItemShown (this, e);
+		}
 
 		public Navigation ()
 			: this(Generator.Current)

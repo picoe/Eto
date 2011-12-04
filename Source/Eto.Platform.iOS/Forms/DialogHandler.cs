@@ -6,18 +6,31 @@ using Eto.Forms;
 namespace Eto.Platform.iOS.Forms
 {
 	internal class RotatableViewController : UIViewController
+	{
+		public object Control { get; set; }
+		
+		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
 		{
-			public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
-			{
-				return true;
+			return true;
+		}
+		
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			Console.WriteLine ("view disposing");
+			var c = Control as IDisposable;
+			if (c != null) {
+				c.Dispose ();
+				c = null;
 			}
 		}
+	}
 
 	public class DialogHandler : iosWindow<UIView, Dialog>, IDialog, IiosViewController
 	{
 		Button button;
+
 		public UIViewController Controller { get; set; }
-		
 
 		public DialogHandler ()
 		{
@@ -44,21 +57,19 @@ namespace Eto.Platform.iOS.Forms
 
 		public override void Close ()
 		{
-			var viewControllers = Controller.NavigationController.ViewControllers.ToList();
-			int index = viewControllers.IndexOf(Controller);
-			if (index > 1) Controller.NavigationController.PopToViewController(viewControllers[index-1], true);
+			var viewControllers = Controller.NavigationController.ViewControllers.ToList ();
+			int index = viewControllers.IndexOf (Controller);
+			if (index > 1)
+				Controller.NavigationController.PopToViewController (viewControllers [index - 1], true);
 		}
-		
 		
 		public DialogResult ShowDialog (Control parent)
 		{
 			var controller = parent.Handler as IiosViewController;
-			if (controller != null)
-			{
+			if (controller != null) {
 				var nav = controller.Controller.NavigationController;
-				if (nav != null)
-				{
-					nav.PushViewController(Controller, true);
+				if (nav != null) {
+					nav.PushViewController (Controller, true);
 				}
 			}
 			return Widget.DialogResult;

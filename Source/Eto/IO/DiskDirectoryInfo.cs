@@ -91,7 +91,7 @@ namespace Eto.IO
 		{
 			foreach (string pattern in patterns)
 			{
-				var diskFiles = info.EnumerateFiles(pattern);
+				var diskFiles = info.GetFiles (pattern); //.EnumerateFiles(pattern); // enumerate doesn't show readonly!!
 				foreach (var diskFile in diskFiles)
 				{
 					yield return new DiskFileInfo(diskFile);

@@ -19,6 +19,7 @@ namespace Eto.Forms
 			this.Modifiers = modifiers;
 			this.Buttons = buttons;
 			this.Location = location;
+			this.Pressure = 1.0f;
 		}
 		
 		public Key Modifiers { get; private set; }
@@ -28,6 +29,8 @@ namespace Eto.Forms
 		public Point Location { get; private set; }
 		
 		public bool Handled { get; set; }
+		
+		public float Pressure { get; set; }
 		
 	}
 }

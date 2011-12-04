@@ -24,14 +24,23 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}*/
 		
-		public class MyView : UIView
-		{
+		public class MyTiledView : MyView {
+			
 			[Export ("layerClass")]
 			public static Class LayerClass ()
 			{
 				return new Class (typeof(CATiledLayer));
 			}
 			
+			public MyTiledView()
+			{
+				var tiledLayer = (CATiledLayer)this.Layer;
+				tiledLayer.LevelsOfDetail = 4;
+			}
+		}
+		
+		public class MyView : UIView
+		{
 			public override void TouchesBegan (NSSet touches, UIEvent evt)
 			{
 				var args = Generator.ConvertMouse (this, touches, evt);
@@ -66,6 +75,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 			public override void Draw (System.Drawing.RectangleF rect)
 			{
+				//Console.WriteLine ("Drawing {0}, {1}", rect, new System.Diagnostics.StackTrace ());
 				Handler.Update (Generator.ConvertF (rect));
 			}
 
@@ -97,19 +107,20 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 		
-		public DrawableHandler ()
+		public void Create ()
 		{
-			Control = new MyView{ Handler = this };
+			Control = new MyTiledView{ Handler = this };
 		}
-
-		public override void OnLoad (EventArgs e)
+		
+		public void Create (bool largeCanvas)
 		{
-			base.OnLoad (e);
-			var tiledLayer = Control.Layer as CATiledLayer;
-			if (tiledLayer != null) {
-				tiledLayer.LevelsOfDetail = 4;
-			}
+			Console.WriteLine ("Creating large canvas:{0}", largeCanvas);
+			if (largeCanvas)
+				Control = new MyTiledView{ Handler = this };
+			else
+				Control = new MyView{ Handler = this };
 		}
+		
 		
 		public bool CanFocus {
 			get { return Control.CanFocus; }

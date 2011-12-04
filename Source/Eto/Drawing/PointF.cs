@@ -78,6 +78,22 @@ namespace Eto.Drawing
 			return result;
 		}
 		
+		public static PointF operator *(PointF point, float size)
+		{
+			var result = point;
+			result.x *= size;
+			result.y *= size;
+			return result;
+		}
+
+		public static PointF operator /(PointF point, float size)
+		{
+			var result = point;
+			result.x /= size;
+			result.y /= size;
+			return result;
+		}
+		
 		public static implicit operator PointF(Point point)
 		{
 			return new PointF(point.X, point.Y);

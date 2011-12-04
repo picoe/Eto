@@ -8,33 +8,35 @@ namespace Eto.Platform.iOS
 {
 	public static class Extensions
 	{
-		public static void SetFrameSize(this UIView view, SizeF size)
+		public static void SetFrameSize (this UIView view, SizeF size)
 		{
 			var frame = view.Frame;
 			frame.Size = size;
 			view.Frame = frame;
 		}
-		public static void SetFrameOrigin(this UIView view, PointF location)
+
+		public static void SetFrameOrigin (this UIView view, PointF location)
 		{
 			var frame = view.Frame;
 			frame.Location = location;
 			view.Frame = frame;
 		}
 		
-		public static UIViewController GetViewController(this Control control)
+		public static UIViewController GetViewController (this Control control)
 		{
-			if (control == null) return null;
+			if (control == null)
+				return null;
 			
 			var controller = control.Handler as IiosViewController;
-			if (controller != null)
-			{
+			if (controller != null) {
 				return controller.Controller;
 			}
-			UIView view = control.ControlObject as UIView;
-			if (view != null)
-			{
-				var viewcontroller = new RotatableViewController();
-				viewcontroller.View = view;
+			var view = control.ControlObject as UIView;
+			if (view != null) {
+				var viewcontroller = new RotatableViewController {
+					Control = control, 
+					View = view
+				};
 				return viewcontroller;
 			}
 			return null;

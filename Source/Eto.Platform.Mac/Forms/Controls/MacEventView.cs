@@ -117,7 +117,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var pt = Generator.GetLocation (this, theEvent);
 			Key modifiers = KeyMap.GetModifiers (theEvent);
 			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
-			return new MouseEventArgs (buttons, modifiers, pt);
+			return new MouseEventArgs (buttons, modifiers, pt) { Pressure = theEvent.Pressure };
 		}
 			
 		public override void MouseDragged (NSEvent theEvent)

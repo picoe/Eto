@@ -110,5 +110,8 @@ namespace Eto.Platform.Windows
 			set { Control.AutoScrollMinSize = Generator.Convert (value); }
 		}
 
+		public Rectangle VisibleRect {
+			get { return new Rectangle(ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+		}
 	}
 }

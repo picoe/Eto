@@ -24,7 +24,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
 				Drawable.Update (Generator.ConvertF (dirtyRect));
 			}
-
 			
 			public bool CanFocus { get; set; }
 
@@ -53,8 +52,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			
 		}
-
-		public DrawableHandler ()
+		
+		public void Create ()
 		{
 			Control = new MyView{ Handler = this };
 		}

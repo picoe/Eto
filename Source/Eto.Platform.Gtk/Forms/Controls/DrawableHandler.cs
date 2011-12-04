@@ -7,7 +7,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public class DrawableHandler : GtkControl<Gtk.DrawingArea, Drawable>, IDrawable
 	{
-		public DrawableHandler ()
+		public void Create ()
 		{
 			Control = new Gtk.DrawingArea ();
 			Control.ExposeEvent += control_ExposeEvent;

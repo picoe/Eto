@@ -170,5 +170,9 @@ namespace Eto.Platform.Mac
 					Control.SetFrameSize (contentSize);
 			}
 		}
+		
+		public Rectangle VisibleRect {
+			get { return new Rectangle(ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+		}
 	}
 }
