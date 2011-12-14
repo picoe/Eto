@@ -1,5 +1,6 @@
 using System;
 using System.Xml;
+using System.Collections.Generic;
 
 namespace Eto
 {
@@ -100,6 +101,50 @@ namespace Eto
 			var childElement = element.SelectSingleNode(childElementName) as XmlElement;
 			
 			if (childElement != null) child.ReadXml(childElement);
+		}
+		
+		
+		public static void WriteChildListXml<T>(this XmlElement element, IEnumerable<T> list, string childElement, string listElement = null)
+			where T: IXmlReadable
+		{
+			XmlElement listNode = (!string.IsNullOrEmpty (listElement)) ? element.OwnerDocument.CreateElement (listElement) : element;
+			
+			foreach (T child in list) {
+				var childNode = element.OwnerDocument.CreateElement(childElement);
+				child.WriteXml(childNode);
+				listNode.AppendChild (childNode);
+			}
+
+			if (listNode != element && !listNode.IsEmpty) {
+				element.AppendChild (listNode);
+			}
+		}
+		
+		public static void ReadChildListXml<T>(this XmlElement element, IList<T> list, CreateFromXml<T> create, string childElement, string listElement = null)
+			where T: IXmlReadable
+		{
+			XmlNodeList childNodes = null;
+			if (listElement != null) {
+				var listNode = element.SelectSingleNode (listElement);
+				if (listNode != null)
+					childNodes = listNode.SelectNodes (childElement);
+			}
+			else 
+				childNodes = element.SelectNodes (childElement);
+			
+			if (childNodes != null) {
+				foreach (XmlElement childNode in childNodes) {
+					var item = create(childNode);
+					item.ReadXml(childNode);
+					list.Add (item);
+				}
+			}
+		}
+		
+		public static void ReadChildListXml<T>(this XmlElement element, IList<T> list, string childElement, string listElement = null)
+			where T: IXmlReadable, new()
+		{
+			ReadChildListXml<T>(element, list, delegate { return new T(); }, childElement, listElement);
 		}
 	}
 }
