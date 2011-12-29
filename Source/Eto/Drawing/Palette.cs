@@ -150,9 +150,7 @@ namespace Eto.Drawing
 				int red = (br.ReadByte () << shift) & 0xff;
 				int green = (br.ReadByte () << shift) & 0xff;
 				int blue = (br.ReadByte () << shift) & 0xff;
-				var c = new Color (red, green, blue);
-				InnerList.Add (c);
-				argb.Add (c.ToArgb ());
+				Add (new Color (red, green, blue));
 			}
 			OnChanged (EventArgs.Empty);
 		}

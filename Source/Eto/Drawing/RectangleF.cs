@@ -111,9 +111,14 @@ namespace Eto.Drawing
 			return rect;
 		}
 
+		public bool IsZero
+		{
+			get { return x == 0 && y == 0 && width==0 && height==0; }
+		}
+		
 		public bool IsEmpty
 		{
-			get { return (width==0 && height==0); }
+			get { return width==0 || height==0; }
 		}
 
 		public PointF Location

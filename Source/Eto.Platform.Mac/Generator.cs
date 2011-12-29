@@ -22,7 +22,7 @@ namespace Eto.Platform.Mac
 		
 		public static Point GetLocation (NSView view, NSEvent theEvent)
 		{
-			var loc = view.ConvertPointFromBase (theEvent.LocationInWindow);
+			var loc = view.ConvertPointFromView (theEvent.LocationInWindow, null);
 			if (!view.IsFlipped)
 				loc.Y = view.Frame.Height - loc.Y;
 			return Generator.ConvertF (loc);
