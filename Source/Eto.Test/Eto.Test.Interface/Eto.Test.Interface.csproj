@@ -52,6 +52,7 @@
     <Compile Include="Controls\TreeViewSection.cs" />
     <Compile Include="Controls\NumericUpDownSection.cs" />
     <Compile Include="Controls\DateTimePickerSection.cs" />
+    <Compile Include="Controls\XamlSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
@@ -61,10 +62,12 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
+    <EmbeddedResource Include="Xaml\test.xaml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Dialogs\" />
     <Folder Include="Actions\" />
     <Folder Include="Controls\" />
+    <Folder Include="Xaml\" />
   </ItemGroup>
 </Project>

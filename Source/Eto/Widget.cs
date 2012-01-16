@@ -1,4 +1,6 @@
 using System;
+using System.Xaml;
+using System.Collections.Generic;
 
 namespace Eto
 {
@@ -9,8 +11,39 @@ namespace Eto
 		void Initialize ();
 	}
 	
-	public abstract class Widget : IWidget, IDisposable
+	public abstract class Widget : IWidget, IDisposable //, IAttachedPropertyStore
 	{
+
+		/*
+  		#region IAttachedPropertyStore Members
+		
+		IDictionary<AttachableMemberIdentifier, object> attachedProperties = new Dictionary<AttachableMemberIdentifier, object> ();
+ 
+		public void CopyPropertiesTo (KeyValuePair<AttachableMemberIdentifier, object>[] array, int index)
+		{
+			attachedProperties.CopyTo (array, index);
+		}
+ 
+		public int PropertyCount { get { return attachedProperties.Count; } }
+ 
+		public bool RemoveProperty (AttachableMemberIdentifier member)
+		{
+			return attachedProperties.Remove (member);
+		}
+		
+		public void SetProperty (AttachableMemberIdentifier member, object value)
+		{
+			attachedProperties [member] = value;
+		}
+ 
+		public bool TryGetProperty (AttachableMemberIdentifier member, out object value)
+		{
+			return attachedProperties.TryGetValue (member, out value);
+		}
+		
+		#endregion
+		*/
+
 		public Generator Generator { get; private set; }
 
 		public object Tag { get; set; }

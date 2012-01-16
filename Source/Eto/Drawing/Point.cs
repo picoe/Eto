@@ -1,7 +1,9 @@
 using System;
+using System.ComponentModel;
 
 namespace Eto.Drawing
 {
+	[TypeConverter(typeof(PointConverter))]
 	public struct Point
 	{
 		int x;

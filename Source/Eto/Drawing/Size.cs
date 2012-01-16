@@ -1,7 +1,9 @@
 using System;
+using System.ComponentModel;
 
 namespace Eto.Drawing
 {
+	[TypeConverter(typeof(SizeConverter))]
 	public struct Size
 	{
 		public int Width { get; set; }
@@ -38,21 +40,24 @@ namespace Eto.Drawing
 		}
 		
 		public Size (Point point)
-			: this()
+			: this(point.X, point.Y)
 		{
-			Width = point.X;
-			Height = point.Y;
 		}
 		
-		public bool Contains(Point point)
+		public bool Contains (Point point)
 		{
-			return Contains(point.X, point.Y);
+			return Contains (point.X, point.Y);
 		}
 		
-		public bool Contains(int x, int y)
+		public bool Contains (int x, int y)
 		{
-			if (Width == 0 || Height == 0) return false;
+			if (Width == 0 || Height == 0)
+				return false;
 			return (x >= 0 && x <= Width && y >= 0 && y <= Height);
+		}
+		
+		public bool IsEmpty {
+			get { return Width == 0 || Height == 0; }
 		}
 
 		public static Size operator * (Size size1, Size size2)

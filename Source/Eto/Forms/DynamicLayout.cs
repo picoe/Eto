@@ -10,6 +10,7 @@ namespace Eto.Forms
 		TableItem topTable;
 		TableItem currentItem;
 		bool? yscale;
+		Container container;
 
 		public bool Generated { get; private set; }
 		
@@ -17,7 +18,19 @@ namespace Eto.Forms
 		
 		public Size? DefaultSpacing { get; set; }
 		
-		public Container Container { get; private set; }
+		public Container Container
+		{
+			get { return container; }
+			set {
+				
+				if (container != null)
+					container.PreLoad -= HandleContainerLoad;
+
+				this.container = value;
+				if (container != null)
+					container.PreLoad += HandleContainerLoad;
+			}
+		}
 
 		#region Exceptions
 		
@@ -154,6 +167,11 @@ namespace Eto.Forms
 		}
 		
 		#endregion
+
+		public DynamicLayout (Padding? padding = null, Size? spacing = null)
+			: this(null, padding, spacing)
+		{
+		}
 		
 		public DynamicLayout (Container container, Padding? padding = null, Size? spacing = null)
 		{
@@ -164,7 +182,6 @@ namespace Eto.Forms
 				Spacing = spacing
 			};
 			currentItem = topTable;
-			container.PreLoad += HandleContainerLoad;
 		}
 
 		void HandleContainerLoad (object sender, EventArgs e)

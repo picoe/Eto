@@ -20,7 +20,6 @@
     <RootNamespace>Eto</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
@@ -64,6 +63,7 @@
       <Name>System.Xml</Name>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
   </ItemGroup>
@@ -105,54 +105,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\LookupList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Bitmap.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Color.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Font.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Graphics.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Icon.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Image.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\IndexedBitmap.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Padding.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Palette.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Point.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\PointF.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Rectangle.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\RectangleF.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\ScreenBitmap.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\Size.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\SizeF.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Application.cs">
@@ -412,12 +364,9 @@
     </Compile>
     <Compile Include="Forms\Controls\WebView.cs" />
     <Compile Include="Forms\Clipboard.cs" />
-    <Compile Include="Drawing\BitmapData.cs" />
     <Compile Include="Forms\Application.desktop.cs" />
-    <Compile Include="Drawing\XmlExtensions.cs" />
     <Compile Include="Forms\CommonDialog.cs" />
     <Compile Include="Forms\ColorDialog.cs" />
-    <Compile Include="Drawing\GraphicsPath.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
@@ -431,10 +380,70 @@
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\Slider.cs" />
     <Compile Include="Forms\Cursor.cs" />
+    <Compile Include="Forms\Controls\Control.desktop.cs" />
+    <Compile Include="XamlReader.cs" />
+    <Compile Include="Drawing\Bitmap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Color.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Font.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Graphics.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Icon.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Image.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\IndexedBitmap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Padding.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Palette.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Point.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\PointF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Rectangle.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\RectangleF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\ScreenBitmap.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\Size.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\SizeF.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Drawing\BitmapData.cs" />
+    <Compile Include="Drawing\XmlExtensions.cs" />
+    <Compile Include="Drawing\GraphicsPath.cs" />
     <Compile Include="Drawing\ColorHSB.cs" />
     <Compile Include="Drawing\ColorHSL.cs" />
     <Compile Include="Drawing\ColorCMYK.cs" />
-    <Compile Include="Forms\Controls\Control.desktop.cs" />
+    <Compile Include="Drawing\ColorConverter.cs" />
+    <Compile Include="Drawing\SizeConverter.cs" />
+    <Compile Include="Drawing\SizeFConverter.cs" />
+    <Compile Include="Drawing\RectangleConverter.cs" />
+    <Compile Include="Drawing\RectangleFConverter.cs" />
+    <Compile Include="Drawing\PointConverter.cs" />
+    <Compile Include="Drawing\PointFConverter.cs" />
+    <Compile Include="Drawing\PaddingConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

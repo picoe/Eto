@@ -56,6 +56,7 @@ namespace Eto.Test.Interface.Controls
 			items.Add (new Section<TreeViewSection> { Text = "Tree View" });
 			items.Add (new Section<NumericUpDownSection> { Text = "Numeric Up/Down" });
 			items.Add (new Section<DateTimePickerSection> { Text = "Date / Time" });
+			items.Add (new Section<XamlSection> { Text = "Xaml" });
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			Items.AddRange (items);
 			

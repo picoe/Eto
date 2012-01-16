@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Panel xmlns="http://schema.picoe.ca/eto.forms" BackgroundColor="#0000FF" Size="32,32">
+	<TableLayout Size="10,10">
+		<Button Text="Click me you fool!" TableLayout.Position="1,1">
+		</Button>
+	</TableLayout>	
+</Panel>

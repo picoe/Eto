@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.Collections
 {
-	public class BaseList<T> : IList<T>, ICollection<T>
+	public class BaseList<T> : IList<T>, ICollection<T>, IList
 	{
 		#region Members
 		
@@ -160,6 +160,68 @@ namespace Eto.Collections
 				OnChanged(EventArgs.Empty);
 			}
 		}
+
+		#region IList implementation
+		int IList.Add (object value)
+		{
+			this.Add ((T)value);
+			return this.Count - 1;
+		}
+
+		bool IList.Contains (object value)
+		{
+			return this.Contains ((T)value);
+		}
+
+		int IList.IndexOf (object value)
+		{
+			return this.IndexOf ((T)value);
+		}
+
+		void IList.Insert (int index, object value)
+		{
+			this.Insert (index, (T)value);
+		}
+
+		void IList.Remove (object value)
+		{
+			this.Remove ((T)value);
+		}
+
+		bool IList.IsFixedSize {
+			get { return false; }
+		}
+
+		bool IList.IsReadOnly {
+			get { return false; }
+		}
+		
+		object IList.this[int index] {
+			get { return list[index]; }
+			set { this[index] = (T)value; }
+		}
+		#endregion
+
+
+
+		#region ICollection implementation
+		void ICollection.CopyTo (Array array, int index)
+		{
+			((ICollection)list).CopyTo (array, index);
+		}
+
+		int ICollection.Count {
+			get { return this.Count; }
+		}
+
+		bool ICollection.IsSynchronized {
+			get { return ((ICollection)list).IsSynchronized; }
+		}
+
+		object ICollection.SyncRoot {
+			get { return ((ICollection)list).SyncRoot; }
+		}
+		#endregion
 	}
 }
 

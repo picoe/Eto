@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
 using System.Linq;
+using System.Windows.Markup;
 
 namespace Eto.Forms
 {
@@ -15,9 +16,11 @@ namespace Eto.Forms
 		void SetLayout (Layout layout);
 	}
 	
+	[ContentProperty("Layout")]
 	public partial class Container : Control
 	{
 		IContainer inner;
+		Layout layout;
 
 		public IEnumerable<Control> Controls {
 			get { 
@@ -88,22 +91,24 @@ namespace Eto.Forms
 			get { return inner.ContainerObject; }
 		}
 		
-		public Layout Layout { get; private set; }
+		public Layout Layout 
+		{
+			get { return layout; }
+			set {
+				layout = value;
+				layout.Container = this;
+				inner.SetLayout (layout);
+				if (Loaded) {
+					layout.OnPreLoad (EventArgs.Empty);
+					layout.OnLoad (EventArgs.Empty);
+					layout.OnLoadComplete (EventArgs.Empty);
+				}
+			}
+		}
 		
 		public Size ClientSize {
 			get { return inner.ClientSize; }
 			set { inner.ClientSize = value; }
-		}
-		
-		public void SetLayout (Layout layout)
-		{
-			this.Layout = layout;
-			inner.SetLayout (layout);
-			if (Loaded) {
-				layout.OnPreLoad (EventArgs.Empty);
-				layout.OnLoad (EventArgs.Empty);
-				layout.OnLoadComplete (EventArgs.Empty);
-			}
 		}
 	}
 }

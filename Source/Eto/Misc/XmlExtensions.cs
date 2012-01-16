@@ -133,6 +133,7 @@ namespace Eto
 				childNodes = element.SelectNodes (childElement);
 			
 			if (childNodes != null) {
+				list.Clear ();
 				foreach (XmlElement childNode in childNodes) {
 					var item = create(childNode);
 					item.ReadXml(childNode);

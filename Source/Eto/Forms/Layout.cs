@@ -70,13 +70,14 @@ namespace Eto.Forms
 			inner = (ILayout)Handler;
 			if (initialize) {
 				Initialize ();
-				this.Container.SetLayout (this);
+				if (this.Container != null)
+					this.Container.Layout = this;
 			}
 		}
 		
 		public Container Container {
 			get;
-			private set;
+			internal set;
 		}
 		
 		public void Update ()

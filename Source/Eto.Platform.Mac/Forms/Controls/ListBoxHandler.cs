@@ -77,7 +77,7 @@ namespace Eto.Platform.Mac
 			control = new MyTableView{ Handler = this };
 			
 			var col = new NSTableColumn ();
-			col.ResizingMask = NSTableColumnResizingMask.Autoresizing;
+			col.ResizingMask = NSTableColumnResizing.Autoresizing;
 			col.Editable = false;
 			col.DataCell = new MacImageListItemCell ();
 			control.AddColumn (col);

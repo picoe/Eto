@@ -1,7 +1,9 @@
 using System;
+using System.ComponentModel;
 
 namespace Eto.Drawing
 {
+	[TypeConverter(typeof(ColorConverter))]
 	public struct Color
 	{
 		public static readonly Color Black = new Color (0, 0, 0);
@@ -12,7 +14,7 @@ namespace Eto.Drawing
 		public static readonly Color Green = new Color (0, 1f, 0);
 		public static readonly Color Blue = new Color (0, 0, 1f);
 		public static readonly Color Transparent = new Color (0, 0, 0, 0);
-		public static readonly Color Empty = new Color ();
+		public static readonly Color Empty = new Color { IsEmpty = true };
 
 		public static Color FromArgb (uint argb)
 		{
@@ -199,6 +201,11 @@ namespace Eto.Drawing
 		public static bool operator != (Color x, Color y)
 		{
 			return !(x == y);
+		}
+		
+		public bool IsEmpty
+		{
+			get; private set;
 		}
 
 		public void Invert ()
