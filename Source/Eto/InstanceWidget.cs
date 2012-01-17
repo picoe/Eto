@@ -1,19 +1,28 @@
 using System;
 using System.ComponentModel;
+using System.Windows.Markup;
 
 namespace Eto
 {
 	public interface IInstanceWidget : IWidget
 	{
+		string ID { get; set; }
 		object ControlObject { get; }
 
 		void HandleEvent (string handler);
 	}
 	
+	[RuntimeNameProperty("ID")]
 	public abstract class InstanceWidget : Widget, IWidget
 	{
 		IInstanceWidget inner;
 		string style;
+
+		public string ID
+		{
+			get { return inner.ID; }
+			set { inner.ID = value; }
+		}
 		
 		public string Style
 		{

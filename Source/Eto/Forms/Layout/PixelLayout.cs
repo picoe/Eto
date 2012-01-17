@@ -1,16 +1,22 @@
 using System;
 using Eto.Drawing;
 using System.Collections.Generic;
+using System.Windows.Markup;
+using System.Collections;
+using Eto.Collections;
+using System.Xaml;
 
 namespace Eto.Forms
 {
 	public interface IPixelLayout : IPositionalLayout
 	{
 	}
-	
+
+	[ContentProperty ("Children")]
 	public class PixelLayout : Layout
 	{
 		IPixelLayout inner;
+		BaseList<Control> children;
 		List<Control> controls = new List<Control> ();
 		
 		public override IEnumerable<Control> Controls {
@@ -18,16 +24,42 @@ namespace Eto.Forms
 				return controls;
 			}
 		}
-		
+
+		public BaseList<Control> Children
+		{
+			get
+			{
+				if (children == null) {
+					children = new BaseList<Control> ();
+				}
+				return children;
+			}
+		}
+
 		public PixelLayout ()
 			: this(null)
 		{
 		}
 
 		public PixelLayout (Container container)
-			: base(container.Generator, container, typeof(IPixelLayout), true)
+			: base (container != null ? container.Generator : Generator.Current, container, typeof (IPixelLayout), true)
 		{
 			inner = (IPixelLayout)Handler;
+		}
+
+		static AttachableMemberIdentifier LocationProperty = new AttachableMemberIdentifier (typeof (PixelLayout), "Location");
+
+		public static Point GetLocation (Control control)
+		{
+			return control.Properties.Get<Point> (LocationProperty, Point.Empty);
+		}
+
+		public static void SetLocation (Control control, Point value)
+		{
+			control.Properties.Set (LocationProperty, value);
+			var layout = control.ParentLayout as TableLayout;
+			if (layout != null)
+				layout.Move (control, value);
 		}
 
 		public void Add (Control control, int x, int y)
@@ -69,6 +101,14 @@ namespace Eto.Forms
 		{
 			if (controls.Remove (child))
 				inner.Remove (child);
+		}
+
+		public override void EndInit ()
+		{
+			base.EndInit ();
+			foreach (var control in children) {
+				Add (control, GetLocation (control));
+			}
 		}
 	}
 }

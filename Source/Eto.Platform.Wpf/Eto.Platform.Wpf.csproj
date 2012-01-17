@@ -48,6 +48,7 @@
     <Compile Include="Drawing\IconHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
+    <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
     <Compile Include="Forms\Controls\PanelHandler.cs" />
@@ -59,6 +60,9 @@
     <Compile Include="Forms\MessageBoxHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs" />
     <Compile Include="Forms\WpfFrameworkElement.cs" />
     <Compile Include="Forms\DockLayoutHandler.cs" />
     <Compile Include="Forms\WpfLayout.cs" />
@@ -77,9 +81,7 @@
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Forms\ToolBar\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <COMReference Include="MSHTML">
       <Guid>{3050F1C5-98B5-11CF-BB82-00AA00BDCE0B}</Guid>

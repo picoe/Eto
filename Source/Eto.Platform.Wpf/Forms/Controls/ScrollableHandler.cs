@@ -119,6 +119,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		public Eto.Drawing.Rectangle VisibleRect
+		{
+			get { return new Eto.Drawing.Rectangle (ScrollPosition, ScrollSize); }
+		}
+
 		public object ContainerObject
 		{
 			get { return Control; }

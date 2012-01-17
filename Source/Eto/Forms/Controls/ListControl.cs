@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Collections;
 using Eto.Drawing;
+using System.Windows.Markup;
 
 namespace Eto.Forms
 {
@@ -15,58 +16,61 @@ namespace Eto.Forms
 		void RemoveAll();
 		int SelectedIndex { get; set; }
 	}
-	
+
+	public class ListItemCollection : BaseList<IListItem>
+	{
+		internal ListControl Handler { get; set; }
+
+		public override void AddRange (IEnumerable<IListItem> collection)
+		{
+			base.AddRange (collection);
+			Handler.inner.AddRange (collection);
+		}
+
+		public void AddRange (IEnumerable<object> collection)
+		{
+			var list = (from r in collection
+						select
+							(r is IListItem ? (IListItem)r : new ObjectListItem { Item = r })
+			).ToArray ();
+			base.AddRange (list);
+			Handler.inner.AddRange (list);
+		}
+
+		public void Add (object value)
+		{
+			var item = value as IListItem;
+			if (item != null) base.Add (item);
+			else base.Add (new ObjectListItem { Item = value });
+		}
+
+		protected override void OnAdded (ListEventArgs<IListItem> e)
+		{
+			base.OnAdded (e);
+			Handler.inner.AddItem (e.Item);
+		}
+
+		protected override void OnRemoved (ListEventArgs<IListItem> e)
+		{
+			base.OnRemoved (e);
+			Handler.inner.RemoveItem (e.Item);
+		}
+
+		public override void Clear ()
+		{
+			base.Clear ();
+			Handler.inner.RemoveAll ();
+		}
+	}
+
+	[ContentProperty("Items")]
 	public class ListControl : Control
 	{
 		public event EventHandler<EventArgs> SelectedIndexChanged;
-		ItemCollection items;
+		ListItemCollection items;
 		
-		private IListControl inner;
+		internal IListControl inner;
 
-		public class ItemCollection : BaseList<IListItem>
-		{
-			internal ListControl Handler { get; set; }
-			
-			public override void AddRange (IEnumerable<IListItem> collection)
-			{
-				base.AddRange (collection);
-				Handler.inner.AddRange(collection);
-			}
-
-			public void AddRange (IEnumerable<object> collection)
-			{
-				var list = (from r in collection select 
-					(r is IListItem ? (IListItem)r : new ObjectListItem{ Item = r })
-				).ToArray ();
-				base.AddRange (list);
-				Handler.inner.AddRange(list);
-			}
-
-			public void Add (object value)
-			{
-				var item = value as IListItem;
-				if (item != null) base.Add (item);
-				else base.Add (new ObjectListItem { Item = value });
-			}
-			
-			protected override void OnAdded (ListEventArgs<IListItem> e)
-			{
-				base.OnAdded (e);
-				Handler.inner.AddItem(e.Item);
-			}
-
-			protected override void OnRemoved (ListEventArgs<IListItem> e)
-			{
-				base.OnRemoved (e);
-				Handler.inner.RemoveItem(e.Item);
-			}
-			
-			public override void Clear ()
-			{
-				base.Clear ();
-				Handler.inner.RemoveAll();
-			}
-		}
 
 		public virtual void OnSelectedIndexChanged(EventArgs e)
 		{
@@ -76,10 +80,10 @@ namespace Eto.Forms
 		protected ListControl(Generator g, Type type) : base(g, type)
 		{
 			inner = (IListControl)base.Handler;
-			items = new ItemCollection{ Handler = this };
+			items = new ListItemCollection{ Handler = this };
 		}
 
-		public ItemCollection Items
+		public ListItemCollection Items
 		{
 			get { return items; }
 		}

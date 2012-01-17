@@ -128,8 +128,6 @@ namespace Eto.Platform.Windows
 			Widget.OnMouseDown (GetMouseEvent (e));
 		}
 
-		public string Id { get; set; }
-
 		public virtual string Text {
 			get { return Control.Text; }
 			set { Control.Text = value; }

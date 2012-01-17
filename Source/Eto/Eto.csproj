@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -80,6 +80,9 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Layout\DynamicControl.cs" />
+    <Compile Include="Forms\Layout\DynamicItem.cs" />
+    <Compile Include="Forms\Layout\DynamicTable.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -116,7 +119,7 @@
     <Compile Include="Forms\Dialog.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\DockLayout.cs">
+    <Compile Include="Forms\Layout\DockLayout.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\FileDialog.cs">
@@ -140,7 +143,7 @@
     <Compile Include="Forms\OpenFileDialog.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\PixelLayout.cs">
+    <Compile Include="Forms\Layout\PixelLayout.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\SaveFileDialog.cs">
@@ -149,7 +152,7 @@
     <Compile Include="Forms\SelectFolderDialog.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\TableLayout.cs">
+    <Compile Include="Forms\Layout\TableLayout.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\UITimer.cs">
@@ -372,7 +375,7 @@
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
     <Compile Include="Forms\Menu\SubMenu.cs" />
-    <Compile Include="Forms\DynamicLayout.cs" />
+    <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
     <Compile Include="Forms\TreeItem.cs" />
     <Compile Include="Forms\Container.desktop.cs" />
@@ -452,7 +455,5 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Forms\Controls\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

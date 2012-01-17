@@ -1,7 +1,75 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<Panel xmlns="http://schema.picoe.ca/eto.forms" BackgroundColor="#0000FF" Size="32,32">
-	<TableLayout Size="10,10">
-		<Button Text="Click me you fool!" TableLayout.Position="1,1">
-		</Button>
-	</TableLayout>	
+<Panel x:Class="Eto.Test.Interface.Xaml.Test"
+       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+       xmlns="http://schema.picoe.ca/eto.forms"
+       Size="32,32">
+  <TableLayout Size="10,10">
+    <Panel TableLayout.Location="0,1">
+      <TableLayout Size="2,4">
+        <Button TableLayout.Location="1,0" Click="HandleButtonClick">Click Me</Button>
+        <CheckBox TableLayout.Location="1,1" ID="someOption">Some Option</CheckBox>
+      </TableLayout>
+    </Panel>
+    <Panel TableLayout.Location="1,0" Size="100,100">
+      <PixelLayout>
+        <Label Text="Some label" PixelLayout.Location="10,10"></Label>
+      </PixelLayout>
+    </Panel>
+    <GroupBox Text="My Group" Size="400,200" TableLayout.Location="0,0">
+      <DockLayout>
+        <TabControl>
+          <TabPage Text="Tab 1">
+            <DockLayout Padding="10">
+              <TextArea ID="someTextArea"></TextArea>
+            </DockLayout>
+          </TabPage>
+          <TabPage Text="Tab 2">
+            <TableLayout Size="10,10" Padding="10">
+              <ComboBox TableLayout.Location="0,0">
+                <ListItem>Item 1</ListItem>
+                <ListItem>Item 2</ListItem>
+                <ListItem>Item 3</ListItem>
+                <ListItem>Item 4</ListItem>
+              </ComboBox>
+
+            </TableLayout>
+          </TabPage>
+          <TabPage Text="Tab 3">
+            <DynamicLayout>
+              <DynamicRow>
+                <DynamicTable>
+                  <DynamicRow>
+                    <DynamicControl XScale="True"></DynamicControl>
+                    <DynamicControl>
+                      <Button></Button>
+                    </DynamicControl>
+                    <DynamicControl XScale="True"></DynamicControl>
+                    <DynamicControl>
+                      <Button></Button>
+                    </DynamicControl>
+                    <DynamicControl XScale="True"></DynamicControl>
+                  </DynamicRow>
+
+                </DynamicTable>
+              </DynamicRow>
+              <DynamicRow>
+                <DynamicTable>
+                  <DynamicRow>
+                    <DynamicControl XScale="True">
+                      <Button Text="Some Button"></Button>
+                    </DynamicControl>
+                    <DynamicControl XScale="True">
+                      <Button Text="Some Other Button"></Button>
+                    </DynamicControl>
+                  </DynamicRow>
+                </DynamicTable>
+              </DynamicRow>
+            </DynamicLayout>
+          </TabPage>
+        </TabControl>
+
+      </DockLayout>
+    </GroupBox>
+
+  </TableLayout>
 </Panel>

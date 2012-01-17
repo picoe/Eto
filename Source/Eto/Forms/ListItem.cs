@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.Windows.Markup;
 
 namespace Eto.Forms
 {
@@ -10,6 +11,7 @@ namespace Eto.Forms
 		string Key { get; }
 	}
 	
+	[ContentProperty("Text")]
 	public class ListItem : IListItem
 	{
 		string key;
@@ -27,6 +29,7 @@ namespace Eto.Forms
 		public Image Image { get; set; }
 	}
 	
+	[ContentProperty("Item")]
 	public class ObjectListItem : IListItem
 	{
 		public object Item { get; set; }

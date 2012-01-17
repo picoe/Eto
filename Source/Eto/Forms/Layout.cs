@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -23,12 +24,19 @@ namespace Eto.Forms
 
 		void Remove (Control child);
 	}
-	
-	public abstract class Layout : InstanceWidget
+
+	public abstract class Layout : InstanceWidget, ISupportInitialize
 	{
 		ILayout inner;
+
+		public bool Initializing { get; private set; }
 		
 		public bool Loaded { get; private set; }
+
+		public virtual Layout InnerLayout
+		{
+			get { return this; }
+		}
 		
 		public abstract IEnumerable<Control> Controls {
 			get;
@@ -62,8 +70,8 @@ namespace Eto.Forms
 				LoadComplete (this, e);
 			inner.OnLoadComplete ();
 		}
-		
-		public Layout (Generator g, Container container, Type type, bool initialize = true)
+
+		protected Layout (Generator g, Container container, Type type, bool initialize = true)
 			: base(g, type, false)
 		{
 			this.Container = container;
@@ -74,13 +82,25 @@ namespace Eto.Forms
 					this.Container.Layout = this;
 			}
 		}
-		
-		public Container Container {
-			get;
-			internal set;
+
+		protected Layout (Generator g, Container container, ILayout handler, bool initialize = true)
+			: base (g, handler, false)
+		{
+			this.Container = container;
+			inner = (ILayout)Handler;
+			if (initialize) {
+				Initialize ();
+				if (this.Container != null)
+					this.Container.Layout = this;
+			}
 		}
 		
-		public void Update ()
+		public virtual Container Container {
+			get;
+			protected internal set;
+		}
+		
+		public virtual void Update ()
 		{
 			UpdateContainers (this.Container);
 			inner.Update ();
@@ -95,7 +115,17 @@ namespace Eto.Forms
 				}
 			}
 		}
-		
-		
+
+
+
+		public virtual void BeginInit ()
+		{
+			Initializing = true;
+		}
+
+		public virtual void EndInit ()
+		{
+			Initializing = false;
+		}
 	}
 }

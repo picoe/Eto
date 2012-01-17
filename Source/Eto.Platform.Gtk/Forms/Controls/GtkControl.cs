@@ -76,8 +76,6 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public string Id { get; set; }
-
 		public virtual string Text {
 			get { return Control.Name; }
 			set { Control.Name = value; }

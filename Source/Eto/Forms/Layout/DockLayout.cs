@@ -2,6 +2,7 @@ using System;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+using System.Windows.Markup;
 
 namespace Eto.Forms
 {
@@ -26,10 +27,13 @@ namespace Eto.Forms
 		}
 	}
 	
+	[ContentProperty("Content")]
 	public class DockLayout : Layout
 	{
 		IDockLayout inner;
 		Control control;
+		Padding? padding;
+
 		public static Padding DefaultPadding = Padding.Empty;
 		
 		public override IEnumerable<Control> Controls {
@@ -41,8 +45,13 @@ namespace Eto.Forms
 			}
 		}
 
+		public DockLayout ()
+			: this(null)
+		{
+		}
+
 		public DockLayout (Container container)
-			: base(container.Generator, container, typeof(IDockLayout))
+			: base (container != null ? container.Generator : Generator.Current, container, typeof (IDockLayout))
 		{
 			inner = (IDockLayout)Handler;
 		}
@@ -63,25 +72,37 @@ namespace Eto.Forms
 			get { return inner.Content; }
 			set {
 				control = value;
-				if (control != null) {
-					control.SetParentLayout (this);
-					var load = Loaded && !control.Loaded;
-					if (load) {
-						control.OnPreLoad (EventArgs.Empty);
-						control.OnLoad (EventArgs.Empty);
+				if (!Initializing) {
+					if (control != null) {
+						control.SetParentLayout (this);
+						var load = Loaded && !control.Loaded;
+						if (load) {
+							control.OnPreLoad (EventArgs.Empty);
+							control.OnLoad (EventArgs.Empty);
+						}
+						inner.Content = control;
+						if (load)
+							control.OnLoadComplete (EventArgs.Empty);
 					}
-					inner.Content = control;
-					if (load)
-						control.OnLoadComplete (EventArgs.Empty);
+					else
+						inner.Content = control;
 				}
-				else
-					inner.Content = control;
 			}
 		}
 		
 		public Padding Padding {
 			get { return inner.Padding; }
-			set { inner.Padding = value; }
+			set {
+				if (Initializing) padding = value;
+				else inner.Padding = value;
+			}
+		}
+
+		public override void EndInit ()
+		{
+			base.EndInit ();
+			this.Content = control;
+			if (padding != null) this.Padding = padding.Value;
 		}
 	}
 }

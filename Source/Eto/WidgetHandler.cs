@@ -69,6 +69,7 @@ namespace Eto
 		{
 			DisposeControl = true;
 		}
+		public virtual string ID { get; set; }
 		
 		protected bool DisposeControl { get; set; }
 

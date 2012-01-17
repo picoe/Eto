@@ -97,11 +97,24 @@ namespace Eto.Forms
 			set {
 				layout = value;
 				layout.Container = this;
-				inner.SetLayout (layout);
+				SetInnerLayout ();
 				if (Loaded) {
 					layout.OnPreLoad (EventArgs.Empty);
 					layout.OnLoad (EventArgs.Empty);
 					layout.OnLoadComplete (EventArgs.Empty);
+				}
+			}
+		}
+
+		public void SetInnerLayout ()
+		{
+			var innerLayout = layout.InnerLayout;
+			if (innerLayout != null) {
+				inner.SetLayout (innerLayout);
+				if (Loaded) {
+					innerLayout.OnPreLoad (EventArgs.Empty);
+					innerLayout.OnLoad (EventArgs.Empty);
+					innerLayout.OnLoadComplete (EventArgs.Empty);
 				}
 			}
 		}

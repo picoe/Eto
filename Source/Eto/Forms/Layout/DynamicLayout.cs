@@ -2,33 +2,66 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
+using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-	public class DynamicLayout
+	[ContentProperty("Rows")]
+	public class DynamicLayout : Layout
 	{
-		TableItem topTable;
-		TableItem currentItem;
+		DynamicTable topTable;
+		DynamicTable currentItem;
 		bool? yscale;
-		Container container;
+
+		public List<DynamicRow> Rows
+		{
+			get { return topTable.Rows; }
+		}
 
 		public bool Generated { get; private set; }
+
+		public Padding? Padding
+		{
+			get { return topTable.Padding; }
+			set { topTable.Padding = value; }
+		}
+
+		public Size? Spacing
+		{
+			get { return topTable.Spacing; }
+			set { topTable.Spacing = value; }
+		}
 		
 		public Padding? DefaultPadding { get; set; }
 		
 		public Size? DefaultSpacing { get; set; }
 		
-		public Container Container
+		public override Container Container
 		{
-			get { return container; }
-			set {
-				
-				if (container != null)
-					container.PreLoad -= HandleContainerLoad;
+			get { return base.Container; }
+			protected internal set {
 
-				this.container = value;
-				if (container != null)
-					container.PreLoad += HandleContainerLoad;
+				if (base.Container != null)
+					base.Container.PreLoad -= HandleContainerLoad;
+
+				base.Container = value;
+				if (topTable != null)
+					topTable.Container = value;
+				if (base.Container != null)
+					base.Container.PreLoad += HandleContainerLoad;
+			}
+		}
+
+		public override Layout InnerLayout
+		{
+			get { return topTable.Layout; }
+		}
+
+		public override IEnumerable<Control> Controls
+		{
+			get {
+				if (topTable.Layout != null) return topTable.Layout.Controls;
+				return Enumerable.Empty<Control> ();
 			}
 		}
 
@@ -37,35 +70,18 @@ namespace Eto.Forms
 		[Serializable]
 		public class AlreadyGeneratedException : Exception
 		{
-			/// <summary>
-			/// Initializes a new instance of the <see cref="T:AlreadyGeneratedException"/> class
-			/// </summary>
 			public AlreadyGeneratedException ()
 			{
 			}
 			
-			/// <summary>
-			/// Initializes a new instance of the <see cref="T:AlreadyGeneratedException"/> class
-			/// </summary>
-			/// <param name="message">A <see cref="T:System.String"/> that describes the exception. </param>
 			public AlreadyGeneratedException (string message) : base (message)
 			{
 			}
 			
-			/// <summary>
-			/// Initializes a new instance of the <see cref="T:AlreadyGeneratedException"/> class
-			/// </summary>
-			/// <param name="message">A <see cref="T:System.String"/> that describes the exception. </param>
-			/// <param name="inner">The exception that is the cause of the current exception. </param>
 			public AlreadyGeneratedException (string message, Exception inner) : base (message, inner)
 			{
 			}
 			
-			/// <summary>
-			/// Initializes a new instance of the <see cref="T:AlreadyGeneratedException"/> class
-			/// </summary>
-			/// <param name="context">The contextual information about the source or destination.</param>
-			/// <param name="info">The object that holds the serialized object data.</param>
 			protected AlreadyGeneratedException (System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base (info, context)
 			{
 			}
@@ -75,113 +91,81 @@ namespace Eto.Forms
 		
 		#region Dynamic Layout Items
 		
-		abstract class LayoutItem
-		{
-			public bool? XScale { get; set; }
-
-			public bool? YScale { get; set; }
-
-			public abstract Control Generate (DynamicLayout layout);
-			
-			public virtual void Generate (DynamicLayout layout, TableLayout parent, int x, int y)
-			{
-				var c = Generate (layout);
-				if (c != null)
-					parent.Add (c, x, y);
-				if (XScale != null)
-					parent.SetColumnScale (x, XScale.Value);
-				if (YScale != null)
-					parent.SetRowScale (y, YScale.Value);
-			}
-		}
 		
-		class TableItem : LayoutItem
-		{
-			List<List<LayoutItem>> rows = new List<List<LayoutItem>> ();
-			
-			public TableItem Parent { get; set; }
-			
-			public Padding? Padding { get; set; }
-			
-			public Size? Spacing { get; set; }
-			
-			public List<LayoutItem> CurrentRow { get; set; }
-			
-			public Container Container { get; set; }
-			
-			public void Add (LayoutItem item)
-			{
-				if (CurrentRow != null)
-					CurrentRow.Add (item);
-				else
-					AddRow (item);
-			}
-			
-			public void AddRow (LayoutItem item)
-			{
-				var row = new List<LayoutItem> ();
-				row.Add (item);
-				rows.Add (row);
-			}
-			
-			public void AddRow (List<LayoutItem> row)
-			{
-				rows.Add (row);
-			}
-			
-			public override Control Generate (DynamicLayout layout)
-			{
-				if (rows.Count == 0)
-					return null;
-				int cols = rows.Max (r => r.Count);
-				if (Container == null)
-					Container = new Panel ();
-				var tableLayout = new TableLayout (Container, cols, rows.Count);
-				var padding = this.Padding ?? layout.DefaultPadding;
-				if (padding != null)
-					tableLayout.Padding = padding.Value;
-				
-				var spacing = this.Spacing ?? layout.DefaultSpacing;
-				if (spacing != null)
-					tableLayout.Spacing = spacing.Value;
-				
-				for (int cy=0; cy<rows.Count; cy++) {
-					var row = rows [cy];
-					for (int cx=0; cx<row.Count; cx++) {
-						var item = row [cx];
-						item.Generate (layout, tableLayout, cx, cy);
-					}
-				}
-				return Container;
-			}
-		}
 		
-		class ControlItem : LayoutItem
-		{
-			public override Control Generate (DynamicLayout layout)
-			{
-				return Control;
-			}
-			
-			public Control Control { get; set; }
-		}
 		
 		#endregion
 
-		public DynamicLayout (Padding? padding = null, Size? spacing = null)
+		class InternalHandler : WidgetHandler<object, Layout>, ILayout 
+		{
+			public void OnPreLoad ()
+			{
+			}
+
+			public void OnLoad ()
+			{
+			}
+
+			public void OnLoadComplete ()
+			{
+			}
+
+			public void Update ()
+			{
+			}
+		}
+
+		public override void OnPreLoad (EventArgs e)
+		{
+			base.OnPreLoad (e);
+			if (InnerLayout != null)
+				InnerLayout.OnPreLoad (e);
+		}
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			if (InnerLayout != null)
+				InnerLayout.OnLoad (e);
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			if (InnerLayout != null)
+				InnerLayout.OnLoadComplete (e);
+		}
+
+		public override void Update ()
+		{
+			base.Update ();
+			if (InnerLayout != null)
+				InnerLayout.Update ();
+		}
+
+		public DynamicLayout ()
+			: this(null, null, null)
+		{
+		}
+
+		public DynamicLayout (Padding? padding, Size? spacing = null)
 			: this(null, padding, spacing)
 		{
 		}
 		
 		public DynamicLayout (Container container, Padding? padding = null, Size? spacing = null)
+			: base (container != null ? container.Generator : Generator.Current, container, new InternalHandler (), false)
 		{
-			this.Container = container;
-			topTable = new TableItem{ 
+			topTable = new DynamicTable { 
 				Container = container, 
 				Padding = padding, 
 				Spacing = spacing
 			};
+			this.Container = container;
 			currentItem = topTable;
+			Initialize ();
+			if (this.Container != null)
+				this.Container.Layout = this;
 		}
 
 		void HandleContainerLoad (object sender, EventArgs e)
@@ -204,7 +188,7 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
-			var newItem = new TableItem{ 
+			var newItem = new DynamicTable { 
 				Parent = currentItem ?? topTable, 
 				Padding = padding, 
 				Spacing = spacing,
@@ -232,7 +216,7 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
-			currentItem.AddRow (currentItem.CurrentRow = new List<LayoutItem> ());
+			currentItem.AddRow (currentItem.CurrentRow = new DynamicRow ());
 			this.yscale = yscale;
 		}
 		
@@ -250,15 +234,15 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
-			currentItem.Add (new ControlItem{ Control = control, XScale = xscale, YScale = yscale ?? this.yscale});
+			currentItem.Add (new DynamicControl{ Control = control, XScale = xscale, YScale = yscale ?? this.yscale});
 		}
 		
 		public void AddRow (params Control[] controls)
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
-			var items = controls.Select (r => new ControlItem{ Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
-			var row = new List<LayoutItem> (items.Cast<LayoutItem>());
+			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
+			var row = new DynamicRow (items.Cast<DynamicItem>());
 			currentItem.AddRow (row);
 			currentItem.CurrentRow = null;
 		}

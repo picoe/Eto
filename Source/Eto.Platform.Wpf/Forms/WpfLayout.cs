@@ -31,5 +31,9 @@ namespace Eto.Platform.Wpf.Forms
 		public virtual void Update ()
 		{
 		}
+
+		public virtual void OnPreLoad ()
+		{
+		}
 	}
 }

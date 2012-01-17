@@ -10,39 +10,75 @@ namespace Eto
 
 		void Initialize ();
 	}
-	
-	public abstract class Widget : IWidget, IDisposable //, IAttachedPropertyStore
-	{
 
-		/*
-  		#region IAttachedPropertyStore Members
-		
+	public class PropertyStore : IAttachedPropertyStore
+	{
 		IDictionary<AttachableMemberIdentifier, object> attachedProperties = new Dictionary<AttachableMemberIdentifier, object> ();
- 
-		public void CopyPropertiesTo (KeyValuePair<AttachableMemberIdentifier, object>[] array, int index)
+
+		public T Get<T> (AttachableMemberIdentifier member, T defaultValue)
 		{
-			attachedProperties.CopyTo (array, index);
+			object value;
+			if (attachedProperties.TryGetValue (member, out value))
+				return (T)value;
+			else
+				return defaultValue;
 		}
- 
-		public int PropertyCount { get { return attachedProperties.Count; } }
- 
-		public bool RemoveProperty (AttachableMemberIdentifier member)
+
+		public T Get<T> (AttachableMemberIdentifier member)
+		{
+			object value;
+			if (attachedProperties.TryGetValue (member, out value))
+				return (T)value;
+			else
+				return default(T);
+		}
+
+		public void Set (AttachableMemberIdentifier member, object value)
+		{
+			attachedProperties[member] = value;
+		}
+
+		public bool Remove (AttachableMemberIdentifier member)
 		{
 			return attachedProperties.Remove (member);
 		}
-		
-		public void SetProperty (AttachableMemberIdentifier member, object value)
+
+
+		void IAttachedPropertyStore.CopyPropertiesTo (KeyValuePair<AttachableMemberIdentifier, object>[] array, int index)
 		{
-			attachedProperties [member] = value;
+			attachedProperties.CopyTo (array, index);
 		}
- 
-		public bool TryGetProperty (AttachableMemberIdentifier member, out object value)
+
+		int IAttachedPropertyStore.PropertyCount { get { return attachedProperties.Count; } }
+
+		bool IAttachedPropertyStore.RemoveProperty (AttachableMemberIdentifier member)
+		{
+			return attachedProperties.Remove (member);
+		}
+
+		void IAttachedPropertyStore.SetProperty (AttachableMemberIdentifier member, object value)
+		{
+			attachedProperties[member] = value;
+		}
+
+		bool IAttachedPropertyStore.TryGetProperty (AttachableMemberIdentifier member, out object value)
 		{
 			return attachedProperties.TryGetValue (member, out value);
 		}
-		
-		#endregion
-		*/
+	}
+	
+	public abstract class Widget : IWidget, IDisposable
+	{
+		PropertyStore properties;
+
+		public PropertyStore Properties
+		{
+			get
+			{
+				if (properties == null) properties = new PropertyStore ();
+				return properties;
+			}
+		}
 
 		public Generator Generator { get; private set; }
 

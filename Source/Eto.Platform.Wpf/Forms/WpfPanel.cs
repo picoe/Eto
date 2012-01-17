@@ -25,5 +25,18 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		public Cursor Cursor
+		{
+			get;
+			set;
+		}
+
+		public string ToolTip
+		{
+			get { return Control.ToolTip as string; }
+			set { Control.ToolTip = value; }
+		}
+
+
 	}
 }

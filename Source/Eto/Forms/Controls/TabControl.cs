@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Windows.Markup;
 
 namespace Eto.Forms
 {
@@ -13,6 +14,7 @@ namespace Eto.Forms
 		void RemoveTab (TabPage page);
 	}
 	
+	[ContentProperty("TabPages")]
 	public class TabControl : Control
 	{
 		TabPageCollection pages;

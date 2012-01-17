@@ -13,6 +13,7 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		Icon icon;
 		MenuBar menu;
+		ToolBar toolBar;
 		System.Windows.Controls.DockPanel main;
 		System.Windows.Controls.DockPanel content;
 
@@ -26,13 +27,9 @@ namespace Eto.Platform.Wpf.Forms
 
 		public ToolBar ToolBar
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
+			get { return toolBar; }
+			set {
+				toolBar = value;
 			}
 		}
 

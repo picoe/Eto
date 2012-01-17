@@ -10,8 +10,6 @@ namespace Eto.Forms
 	{
 		Color BackgroundColor { get; set; }
 
-		string Id { get; set; }
-
 		Size Size { get; set; }
 
 		bool Enabled { get; set; }
@@ -321,11 +319,6 @@ namespace Eto.Forms
 			inner.Invalidate (rect);
 		}
 
-		public string Id {
-			get { return inner.Id; }
-			set { inner.Id = value; }
-		}
-		
 		public virtual Size Size {
 			get { return inner.Size; }
 			set { inner.Size = value; }

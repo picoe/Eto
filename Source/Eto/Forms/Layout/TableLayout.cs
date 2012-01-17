@@ -38,12 +38,12 @@ namespace Eto.Forms
 			}
 		}
 		
-		public IList Children {
+		public BaseList<Control> Children {
 			get { 
 				if (children == null) {
 					children = new BaseList<Control> ();
 					children.Added += delegate(object sender, ListEventArgs<Control> e) {
-						e.Item.SetParentLayout (this);
+						this.Add (e.Item, GetLocation (e.Item));
 					};
 				}
 				return children; 
@@ -60,26 +60,20 @@ namespace Eto.Forms
 				}
 			}
 		}
+
+		static AttachableMemberIdentifier LocationProperty = new AttachableMemberIdentifier (typeof (TableLayout), "Location");
 		
-		public static Point GetPosition (Control control)
+		public static Point GetLocation (Control control)
 		{
-			var layout = control.ParentLayout as TableLayout;
-			if (layout != null) {
-				var controls = layout.controls;
-				for (int y=0; y<controls.GetLength (1); y++)
-					for (int x=0; x<controls.GetLength (0); x++) {
-						if (controls [x, y] == control)
-							return new Point (x, y);
-					}
-			}
-			return Point.Empty;
+			return control.Properties.Get<Point> (LocationProperty, Point.Empty);
 		}
 		
-		public static void SetPosition (Control control, Point value)
+		public static void SetLocation (Control control, Point value)
 		{
+			control.Properties.Set (LocationProperty, value);
 			var layout = control.ParentLayout as TableLayout;
-			if (layout != null) 
-				layout.Add (control, value);
+			if (layout != null)
+				layout.Move (control, value);
 		}
 		
 		public TableLayout ()
@@ -160,7 +154,9 @@ namespace Eto.Forms
 		
 		public Padding Padding {
 			get { return inner.Padding; }
-			set { inner.Padding = value; }
+			set { 
+				inner.Padding = value;
+			}
 		}
 	}
 }

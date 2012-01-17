@@ -9,9 +9,7 @@ namespace Eto.Test.Interface.Controls
 			
 			var layout = new DynamicLayout(this);
 			
-			var obj = XamlReader.Load<Control>(Resources.GetResource ("Eto.Test.Interface.Xaml.test.xaml"));
-			
-			layout.Add (obj);
+			layout.Add (new Xaml.Test());
 		}
 	}
 }

@@ -25,12 +25,12 @@ namespace Eto.Platform.Wpf
 
 		public static System.Windows.Media.Color Convert(Color value)
 		{
-			return new System.Windows.Media.Color { A = value.A, R = value.R, G = value.G, B = value.B };
+			return System.Windows.Media.Color.FromScRgb(value.A, value.R, value.G, value.B);
 		}
 
 		public static Color Convert(System.Windows.Media.Color value)
 		{
-			return new Color { A = value.A, R = value.R, G = value.G, B = value.B };
+			return new Color { A = value.ScA, R = value.ScR, G = value.ScG, B = value.ScB };
 		}
 
 		public static Padding Convert (System.Windows.Thickness thickness)

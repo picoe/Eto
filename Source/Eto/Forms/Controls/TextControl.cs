@@ -1,4 +1,5 @@
 using System;
+using System.Windows.Markup;
 
 namespace Eto.Forms
 {
@@ -7,6 +8,7 @@ namespace Eto.Forms
 		string Text { get; set; }
 	}
 	
+	[ContentProperty("Text")]
 	public class TextControl : Control
 	{
 		ITextControl inner;

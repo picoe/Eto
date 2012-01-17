@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -53,6 +53,7 @@
     <Compile Include="Controls\NumericUpDownSection.cs" />
     <Compile Include="Controls\DateTimePickerSection.cs" />
     <Compile Include="Controls\XamlSection.cs" />
+    <Compile Include="Xaml\Test.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
@@ -62,12 +63,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
-    <EmbeddedResource Include="Xaml\test.xaml" />
+    <EmbeddedResource Include="Xaml\Test.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Dialogs\" />
-    <Folder Include="Actions\" />
-    <Folder Include="Controls\" />
-    <Folder Include="Xaml\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

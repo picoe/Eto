@@ -17,12 +17,6 @@ namespace Eto.Platform.Wpf.Forms
 			set;
 		}
 
-		public string Id
-		{
-			get;
-			set;
-		}
-
 		public virtual Size Size
 		{
 			get {
@@ -37,6 +31,18 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get { return Control.IsEnabled; }
 			set { Control.IsEnabled = value; }
+		}
+
+		public Cursor Cursor
+		{
+			get;
+			set;
+		}
+
+		public string ToolTip
+		{
+			get { return Control.ToolTip as string; }
+			set { Control.ToolTip = value; }
 		}
 
 		public void Invalidate ()
@@ -84,6 +90,10 @@ namespace Eto.Platform.Wpf.Forms
 		}
 
 		public virtual void OnLoad (EventArgs e)
+		{
+		}
+
+		public virtual void OnPreLoad (EventArgs e)
 		{
 		}
 
