@@ -72,7 +72,7 @@ namespace Eto.Forms
 			get { return inner.Content; }
 			set {
 				control = value;
-				if (!Initializing) {
+				if (!Initializing && this.Container != null) {
 					if (control != null) {
 						control.SetParentLayout (this);
 						var load = Loaded && !control.Loaded;

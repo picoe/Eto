@@ -1,9 +1,9 @@
 using System;
 
-namespace Eto.Forms.Controls
+namespace Eto.Forms
 {
 	public class EnumComboBox<T> : ComboBox
-		where T: IConvertible
+		where T: struct, IConvertible
 	{
 		class EnumValue : IListItem
 		{

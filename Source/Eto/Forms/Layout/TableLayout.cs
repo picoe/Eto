@@ -6,6 +6,7 @@ using System.Windows.Markup;
 using System.Collections;
 using Eto.Collections;
 using System.Xaml;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -42,9 +43,6 @@ namespace Eto.Forms
 			get { 
 				if (children == null) {
 					children = new BaseList<Control> ();
-					children.Added += delegate(object sender, ListEventArgs<Control> e) {
-						this.Add (e.Item, GetLocation (e.Item));
-					};
 				}
 				return children; 
 			}
@@ -158,5 +156,14 @@ namespace Eto.Forms
 				inner.Padding = value;
 			}
 		}
+		
+		public override void EndInit ()
+		{
+			base.EndInit ();
+			foreach (var child in children) {
+				this.Add (child, GetLocation (child));
+			}
+		}
+
 	}
 }

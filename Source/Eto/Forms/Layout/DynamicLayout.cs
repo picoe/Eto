@@ -89,13 +89,6 @@ namespace Eto.Forms
 		
 		#endregion
 		
-		#region Dynamic Layout Items
-		
-		
-		
-		
-		#endregion
-
 		class InternalHandler : WidgetHandler<object, Layout>, ILayout 
 		{
 			public void OnPreLoad ()
@@ -157,7 +150,6 @@ namespace Eto.Forms
 			: base (container != null ? container.Generator : Generator.Current, container, new InternalHandler (), false)
 		{
 			topTable = new DynamicTable { 
-				Container = container, 
 				Padding = padding, 
 				Spacing = spacing
 			};

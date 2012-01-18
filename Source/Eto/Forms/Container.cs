@@ -98,11 +98,6 @@ namespace Eto.Forms
 				layout = value;
 				layout.Container = this;
 				SetInnerLayout ();
-				if (Loaded) {
-					layout.OnPreLoad (EventArgs.Empty);
-					layout.OnLoad (EventArgs.Empty);
-					layout.OnLoadComplete (EventArgs.Empty);
-				}
 			}
 		}
 
@@ -110,11 +105,12 @@ namespace Eto.Forms
 		{
 			var innerLayout = layout.InnerLayout;
 			if (innerLayout != null) {
+				innerLayout.Container = this;
 				inner.SetLayout (innerLayout);
 				if (Loaded) {
-					innerLayout.OnPreLoad (EventArgs.Empty);
-					innerLayout.OnLoad (EventArgs.Empty);
-					innerLayout.OnLoadComplete (EventArgs.Empty);
+					layout.OnPreLoad (EventArgs.Empty);
+					layout.OnLoad (EventArgs.Empty);
+					layout.OnLoadComplete (EventArgs.Empty);
 				}
 			}
 		}

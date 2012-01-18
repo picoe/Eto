@@ -54,8 +54,8 @@ namespace Eto.Platform.Mac
 			Widget.HandleEvent (Container.SizeChangedEvent);
 			
 			if (this.AutoSize) {
-				if (Widget.Layout != null) {
-					var layout = Widget.Layout.Handler as IMacLayout;
+				if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
+					var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 					if (layout != null)
 						layout.SizeToFit ();
 				} else

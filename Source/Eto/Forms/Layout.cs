@@ -116,8 +116,6 @@ namespace Eto.Forms
 			}
 		}
 
-
-
 		public virtual void BeginInit ()
 		{
 			Initializing = true;
