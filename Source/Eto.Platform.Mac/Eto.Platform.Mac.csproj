@@ -156,4 +156,10 @@
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\..\Libraries\MonoMac\MonoMac-License.txt">
+      <Link>MonoMac-License.txt</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
 </Project>
