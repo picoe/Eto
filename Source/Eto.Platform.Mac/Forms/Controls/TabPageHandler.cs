@@ -128,7 +128,7 @@ namespace Eto.Platform.Mac
 				Focus ();
 			if (this.AutoSize) {
 				if (Widget.Layout != null) {
-					var layout = Widget.Layout.Handler as IMacLayout;
+					var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 					if (layout != null)
 						layout.SizeToFit ();
 				} else
