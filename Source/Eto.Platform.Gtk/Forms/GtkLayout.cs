@@ -11,12 +11,18 @@ namespace Eto.Platform.GtkSharp
 	public abstract class GtkLayout<T, W> : WidgetHandler<T, W>, ILayout, IGtkLayout
 		where W: Layout
 	{
+		bool setlayout;
+		
 		public override void Initialize ()
 		{
 			base.Initialize ();
-
-			IGtkContainer container = Widget.Container.Handler as IGtkContainer;
-			container.SetLayout (Widget);
+			
+			if (Widget.Container != null) {
+				IGtkContainer container = Widget.Container.Handler as IGtkContainer;
+				container.SetLayout (Widget);
+			}
+			else
+				setlayout = true;
 		}
 		
 		public virtual object ContainerObject {
@@ -33,6 +39,10 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual void OnLoadComplete ()
 		{
+			if (setlayout && Widget.Container != null) {
+				IGtkContainer container = Widget.Container.Handler as IGtkContainer;
+				container.SetLayout (Widget);
+			}
 		}
 
 		public virtual void Update ()

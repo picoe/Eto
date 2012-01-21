@@ -97,7 +97,7 @@ namespace Eto.Platform.Mac
 			Control.Tile ();
 			SD.SizeF size = SD.SizeF.Empty;
 			if (Widget.Layout != null) {
-				var layout = Widget.Layout.Handler as IMacLayout;
+				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null) {
 					foreach (var c in Widget.Controls) {
 						var frame = layout.GetPosition (c);

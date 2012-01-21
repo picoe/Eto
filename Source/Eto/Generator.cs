@@ -72,6 +72,9 @@ namespace Eto
 		public static Generator GetGenerator (string generatorType)
 		{
 			Type type = Type.GetType (generatorType);
+			if (type == null) {
+				throw new EtoException("Generator not found. Are you missing the platform assembly?");
+			}
 			if (type.IsSubclassOf (typeof(Generator))) {
 				return (Generator)Activator.CreateInstance (type);
 			}

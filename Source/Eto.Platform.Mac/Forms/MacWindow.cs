@@ -391,7 +391,7 @@ namespace Eto.Platform.Mac
 		public virtual void OnLoadComplete (EventArgs e)
 		{
 			if (this.AutoSize && Widget.Layout != null) {
-				var layout = Widget.Layout.Handler as IMacLayout;
+				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
 					layout.SizeToFit ();
 			}
