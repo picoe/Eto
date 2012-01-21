@@ -33,14 +33,14 @@ For example, a simple hello-world application might look like:
 		{
 			Text = "My Cross-Platform App";
 			Size = new Size (200, 200);
-			var label = new Label{
+			var label = new Label {
 				Text = "Hello World!"
 			};
 			this.AddDockedControl (label);
 		}
 		
 		[STAThread]
-		static void Main() {
+		static void Main () {
 			Generator generator;
 
 			if (Eto.Misc.Platform.IsWindows) {
@@ -58,7 +58,7 @@ For example, a simple hello-world application might look like:
 
 			var app = new Application(generator);
 			app.Initialized += delegate {
-				app.MainForm = new MainForm();
+				app.MainForm = new MyForm ();
 				app.MainForm.Show ();
 			};
 			app.Run ();
