@@ -84,7 +84,7 @@ namespace Eto.Platform.Mac
 			var handler = item.Handler as IToolBarBaseItemHandler;
 			if (handler != null)
 				handler.CreateControl ();
-			Control.InsertItem (item.ID, items.Count > 0 ? items.Count - 1 : 0);
+			Control.InsertItem (item.ID ?? string.Empty, items.Count > 0 ? items.Count - 1 : 0);
 			if (handler != null)
 				handler.ControlAdded (this);
 			//Control.ValidateVisibleItems();
