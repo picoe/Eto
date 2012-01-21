@@ -38,16 +38,30 @@ For example, a simple hello-world application might look like:
 			this.AddDockedControl(label);
 		}
 		
-		public static void Main() {
-		
-			// run application!	
-			var app = new Application();
-			app.Initialized += delegate {
-				app.MainForm = new MyForm();
-			};
-			app.Run();
-		}
-	}
+    [STAThread]
+    static void Main() {
+      Generator generator;
+
+      if (Eto.Misc.Platform.IsWindows) {
+      // use WindowsForms
+        generator = Generator.GetGenerator("Eto.Platform.Windows.Generator, Eto.Platform.Windows");
+      }
+      else if (Eto.Misc.Platform.IsMac) {
+      // use MonoMac
+        generator = Generator.GetGenerator("Eto.Platform.Mac.Generator, Eto.Platform.Mac");
+      }
+      else {
+      // use Gtk#
+        generator = Generator.GetGenerator("Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk");
+      }
+
+      var app = new Application(generator);
+      app.Initialized += delegate {
+        app.MainForm = new MainForm();
+      };
+      app.Run();
+    }
+  }
 
 Applications
 ------------
