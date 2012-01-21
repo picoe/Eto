@@ -10,7 +10,6 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <AssemblyName>Eto.Test.Mac</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -37,6 +36,7 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="MonoMac">
+      <HintPath>..\..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
