@@ -27,27 +27,32 @@ Note that it is planned to have some different controls for Mobile platforms vs.
 This framework was built so that using it in .NET is natural.
 For example, a simple hello-world application might look like:
 
-	public class MyForm : Form {
-	
-		public MyForm() {
-			Title = "My Cross-Platform App";
-			Size = new Size(200, 200);
+	public class MyForm : Form
+	{
+		public MyForm ()
+		{
+			Text = "My Cross-Platform App";
+			Size = new Size (200, 200);
 			var label = new Label{
 				Text = "Hello World!"
 			};
-			this.AddDockedControl(label);
+			this.AddDockedControl (label);
 		}
 		
-		public static void Main() {
-		
-			// run application!	
-			var app = new Application();
+		public static void Main ()
+		{
+			// use Gtk
+			var generator = Generator.GetGenerator ("Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk");
+			
+			// run application! 
+			var app = new Application (generator);
 			app.Initialized += delegate {
-				app.MainForm = new MyForm();
+				app.MainForm = new MyForm ();
+				app.MainForm.Show ();
 			};
-			app.Run();
+			app.Run ();
 		}
-	}
+	}	
 
 Applications
 ------------
