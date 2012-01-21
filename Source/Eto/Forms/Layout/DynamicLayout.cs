@@ -41,14 +41,17 @@ namespace Eto.Forms
 			get { return base.Container; }
 			protected internal set {
 
-				if (base.Container != null)
+				if (base.Container != null) {
 					base.Container.PreLoad -= HandleContainerLoad;
+					base.Container.Load -= HandleContainerLoad;
+				}
 
 				base.Container = value;
 				if (topTable != null)
 					topTable.Container = value;
 				if (base.Container != null)
 					base.Container.PreLoad += HandleContainerLoad;
+					base.Container.Load += HandleContainerLoad;
 			}
 		}
 
