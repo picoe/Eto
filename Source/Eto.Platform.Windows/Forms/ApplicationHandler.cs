@@ -10,9 +10,9 @@ namespace Eto.Platform.Windows
 	{
 		public static bool EnableScrollingUnderMouse = true;
 		
-		public void RunIteration()
+		public void RunIteration ()
 		{
-			SWF.Application.DoEvents();
+			SWF.Application.DoEvents ();
 		}
 
 		public void Restart ()
@@ -20,32 +20,34 @@ namespace Eto.Platform.Windows
 			SWF.Application.Restart ();
 		}
 		
-		public void Run(string[] args)
+		public void Run (string[] args)
 		{
-			SWF.Application.EnableVisualStyles();
+			SWF.Application.EnableVisualStyles ();
 			if (!Eto.Misc.Platform.IsMono)
-				SWF.Application.DoEvents();
+				SWF.Application.DoEvents ();
 			
 			Application app = ((Application)Widget);
-			app.OnInitialized(EventArgs.Empty);
+			app.OnInitialized (EventArgs.Empty);
 
 			if (EnableScrollingUnderMouse)
 				SWF.Application.AddMessageFilter (new ScrollMessageFilter ());
 			
 			//SWF.Application.AddMessageFilter(new KeyFilter());
-			if (app.MainForm != null) SWF.Application.Run((SWF.Form)app.MainForm.ControlObject);
-			else SWF.Application.Run();
+			if (app.MainForm != null && app.MainForm.Loaded) 
+				SWF.Application.Run ((SWF.Form)app.MainForm.ControlObject);
+			else 
+				SWF.Application.Run ();
 		}
 
-		public void Quit()
+		public void Quit ()
 		{
-			SWF.Application.Exit();
+			SWF.Application.Exit ();
 		}
 		
 		public void Open (string url)
 		{
-			var info = new ProcessStartInfo(url);
-			Process.Start(info);
+			var info = new ProcessStartInfo (url);
+			Process.Start (info);
 		}
 		
 		public void GetSystemActions (GenerateActionArgs args)
