@@ -5,7 +5,7 @@ using Eto.Forms;
 using System.ComponentModel;
 namespace Eto.Platform.Mac
 {
-	//[MonoMac.Foundation.Register("AppDelegate")]
+	[MonoMac.Foundation.Register("EtoAppDelegate")]
 	public class AppDelegate : NSApplicationDelegate
 	{
 		
