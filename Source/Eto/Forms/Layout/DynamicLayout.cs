@@ -49,9 +49,10 @@ namespace Eto.Forms
 				base.Container = value;
 				if (topTable != null)
 					topTable.Container = value;
-				if (base.Container != null)
+				if (base.Container != null) {
 					base.Container.PreLoad += HandleContainerLoad;
 					base.Container.Load += HandleContainerLoad;
+				}
 			}
 		}
 
