@@ -48,9 +48,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var filter3 = CIFilter.FromName ("CIColorMatrix");
 			filter3.SetDefaults ();
 			filter3.SetValueForKey (ciImage, CIInputImage);
-			filter3.SetValueForKey (new CIVector (0, color.R / 255f, 0), CIInputRVector);
-			filter3.SetValueForKey (new CIVector (color.G / 255f, 0, 0), CIInputGVector);
-			filter3.SetValueForKey (new CIVector (0, 0, color.B / 255f), CIInputBVector);
+			filter3.SetValueForKey (new CIVector (0, color.R, 0), CIInputRVector);
+			filter3.SetValueForKey (new CIVector (color.G, 0, 0), CIInputGVector);
+			filter3.SetValueForKey (new CIVector (0, 0, color.B), CIInputBVector);
 			ciImage = filter3.ValueForKey (CIOutputImage) as CIImage;
 			
 			image = new NSImage (size);
