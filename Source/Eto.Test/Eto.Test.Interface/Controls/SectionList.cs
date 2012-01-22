@@ -7,7 +7,8 @@ namespace Eto.Test.Interface.Controls
 	public interface ISectionGenerator
 	{
 		string Text { get; }
-		Control GenerateControl();
+
+		Control GenerateControl ();
 	}
 	
 	public class Section<T> : ISectionGenerator, IListItem
@@ -15,14 +16,13 @@ namespace Eto.Test.Interface.Controls
 	{
 		public string Text { get; set; }
 		
-		public string Key
-		{
+		public string Key {
 			get { return Text; }
 		}
 		
-		public Control GenerateControl()
+		public Control GenerateControl ()
 		{
-			return new T();
+			return new T ();
 		}
 		
 		public override string ToString ()
@@ -30,7 +30,6 @@ namespace Eto.Test.Interface.Controls
 			return Text;
 		}
 	}
-
 		
 	public class SectionList : ListBox
 	{
@@ -42,10 +41,11 @@ namespace Eto.Test.Interface.Controls
 			this.Style = "sectionList";
 			
 			// add some items
-			var items = new List<ISectionGenerator>();
+			var items = new List<ISectionGenerator> ();
 			
 			items.Add (new Section<LabelSection> { Text = "Label Control" });
 			items.Add (new Section<ButtonSection> { Text = "Button Control" });
+			items.Add (new Section<CheckBoxSection> { Text = "Check Box" });
 			items.Add (new Section<ScrollableSection> { Text = "Scrollable Control" });
 			items.Add (new Section<TextAreaSection> { Text = "Text Area" });
 			items.Add (new Section<WebViewSection> { Text = "Web View" });
@@ -56,6 +56,7 @@ namespace Eto.Test.Interface.Controls
 			items.Add (new Section<TreeViewSection> { Text = "Tree View" });
 			items.Add (new Section<NumericUpDownSection> { Text = "Numeric Up/Down" });
 			items.Add (new Section<DateTimePickerSection> { Text = "Date / Time" });
+			items.Add (new Section<ComboBoxSection> { Text = "Combo Box" });
 			items.Add (new Section<XamlSection> { Text = "Xaml" });
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			Items.AddRange (items);
@@ -70,7 +71,7 @@ namespace Eto.Test.Interface.Controls
 			var sectionGenerator = this.SelectedValue as ISectionGenerator;
 			
 			if (sectionGenerator != null) {
-				var control = sectionGenerator.GenerateControl();
+				var control = sectionGenerator.GenerateControl ();
 				contentContainer.AddDockedControl (control);
 			}
 		}
