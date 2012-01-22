@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public PanelHandler ()
 		{
 			Control = new System.Windows.Controls.Border ();
-			Control.Background = System.Windows.SystemColors.ControlBrush;
+			//Control.Background = System.Windows.SystemColors.ControlBrush;
 		}
 
 		public Size ClientSize

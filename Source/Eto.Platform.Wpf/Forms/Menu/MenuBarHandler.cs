@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
@@ -10,19 +11,17 @@ namespace Eto.Platform.Wpf.Forms.Menu
 	{
 		public MenuBarHandler ()
 		{
-			Control = new System.Windows.Controls.Menu ();
-
+			Control = new swc.Menu ();
 		}
 
 		public void AddMenu (int index, MenuItem item)
 		{
-			
+			Control.Items.Add ((swc.MenuItem)item.ControlObject);
 		}
 
 		public void RemoveMenu (MenuItem item)
 		{
-
-			
+			Control.Items.Remove ((swc.MenuItem)item.ControlObject);
 		}
 
 		public void Clear ()

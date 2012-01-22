@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using System.IO;
+using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -11,7 +12,7 @@ namespace Eto.Platform.Wpf.Drawing
 	{
 		public void Create(System.IO.Stream stream)
 		{
-			Control = System.Windows.Media.Imaging.BitmapFrame.Create(stream);
+			Control = swm.Imaging.BitmapFrame.Create(stream);
 		}
 
 		public void Create(string fileName)

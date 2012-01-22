@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ListBoxHandler : WpfControl<System.Windows.Controls.ListBox, ListBox>, IListBox
+	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox>, IListBox
 	{
 		ContextMenu contextMenu;
 
 		public ListBoxHandler ()
 		{
-			Control = new System.Windows.Controls.ListBox ();
+			Control = new swc.ListBox ();
 			Control.DisplayMemberPath = "Text";
 			Control.SelectionChanged += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);

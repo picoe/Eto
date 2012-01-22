@@ -3,17 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
+using swi = System.Windows.Input;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
 	public class ImageMenuItemHandler : WidgetHandler<System.Windows.Controls.MenuItem, ImageMenuItem>, IImageMenuItem
 	{
-		Key shortcut;
 		Eto.Drawing.Icon icon;
+		swi.RoutedCommand command = new swi.RoutedCommand();
 
 		public ImageMenuItemHandler ()
 		{
-			Control = new System.Windows.Controls.MenuItem();
+			Control = new swc.MenuItem();
+			Control.Click += delegate {
+				Widget.OnClick (EventArgs.Empty);
+			};
 		}
 
 		public Eto.Drawing.Icon Icon
@@ -23,7 +29,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			{
 				icon = value;
 				if (icon != null)
-					Control.Icon = icon.ControlObject;
+					Control.Icon = new swc.Image { Source = (swm.ImageSource)icon.ControlObject, MaxWidth = 16, MaxHeight = 16 };
 				else
 					Control.Icon = null;
 			}
@@ -31,8 +37,8 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public string Text
 		{
-			get { return Control.Header as string; }
-			set { Control.Header = value; }
+			get { return Generator.ConvertMneumonicFromWPF(Control.Header); }
+			set { Control.Header = Generator.ConvertMneumonicToWPF(value); }
 		}
 
 		public string ToolTip
@@ -43,8 +49,23 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public Key Shortcut
 		{
-			get { return shortcut; }
-			set { shortcut = value; }
+			get { 
+				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding>().FirstOrDefault();
+				if (keyBinding != null)
+					return KeyMap.Convert(keyBinding.Key, keyBinding.Modifiers);
+				return Key.None;
+			}
+			set {
+				Control.InputBindings.Clear ();
+				if (value != Key.None) {
+					var key = KeyMap.ConvertKey (value);
+					var modifier = KeyMap.ConvertModifier (value);
+					Control.InputBindings.Add (new swi.KeyBinding { Key = key, Modifiers = modifier });
+					Control.InputGestureText = KeyMap.KeyToString (value);
+				}
+				else 
+					Control.InputGestureText = null;
+			}
 		}
 
 		public bool Enabled

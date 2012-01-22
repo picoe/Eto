@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
+using sw = System.Windows;
+using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -19,8 +21,9 @@ namespace Eto.Platform.Wpf.Forms
 
 		protected void Setup ()
 		{
-			main = new System.Windows.Controls.DockPanel ();
-			content = new System.Windows.Controls.DockPanel ();
+			main = new swc.DockPanel ();
+			content = new swc.DockPanel ();
+			content.Background = System.Windows.SystemColors.ControlBrush;
 			main.Children.Add (content);
 			Control.Content = main;
 		}
@@ -44,7 +47,14 @@ namespace Eto.Platform.Wpf.Forms
 				return menu;
 			}
 			set {
+				if (menu != null)
+					main.Children.Remove ((sw.UIElement)menu.ControlObject);
 				menu = value;
+				if (menu != null) {
+					var element = (sw.UIElement)menu.ControlObject;
+					swc.DockPanel.SetDock (element, swc.Dock.Top);
+					main.Children.Insert (0, element);
+				}
 			}
 		}
 

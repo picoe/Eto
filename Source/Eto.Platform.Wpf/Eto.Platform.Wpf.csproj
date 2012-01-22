@@ -54,8 +54,11 @@
     <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
+    <Compile Include="Forms\Controls\TabControlHandler.cs" />
+    <Compile Include="Forms\Controls\TabPageHandler.cs" />
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\Menu\ContextMenuHandler.cs" />
     <Compile Include="Forms\Menu\ImageMenuItemHandler.cs" />
     <Compile Include="Forms\MessageBoxHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
@@ -72,6 +75,7 @@
     <Compile Include="Forms\WpfControl.cs" />
     <Compile Include="Forms\WpfWindow.cs" />
     <Compile Include="Generator.cs" />
+    <Compile Include="KeyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="WpfExtensions.cs" />
   </ItemGroup>

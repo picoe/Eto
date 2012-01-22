@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
+using System.Text.RegularExpressions;
 
 namespace Eto.Platform.Wpf
 {
@@ -57,5 +58,19 @@ namespace Eto.Platform.Wpf
 		{
 			return new System.Windows.Size (value.Width, value.Height);
 		}
+
+		public static string ConvertMneumonicToWPF (string value)
+		{
+			if (value == null) return null;
+			return value.Replace ("_", "__").Replace ("&", "_");
+		}
+
+		public static string ConvertMneumonicFromWPF (object obj)
+		{
+			var value = obj as string;
+			if (value == null) return null;
+			return Regex.Replace (value, "(?<![_])[_]", (match) => { if (match.Value == "__") return "_"; else return "&"; });
+		}
+
 	}
 }
