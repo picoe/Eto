@@ -20,6 +20,7 @@ namespace Eto.Platform.GtkSharp
 		ToolBar toolBar;
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
+		WindowState state;
 		
 		public GtkWindow ()
 		{
@@ -244,6 +245,9 @@ namespace Eto.Platform.GtkSharp
 		
 		public WindowState State {
 			get {
+				if (Control.GdkWindow == null)
+					return state;	
+
 				switch (Control.GdkWindow.State & (Gdk.WindowState.Maximized | Gdk.WindowState.Iconified | Gdk.WindowState.Fullscreen)) {
 				case Gdk.WindowState.Maximized:
 				case Gdk.WindowState.Fullscreen:
@@ -255,26 +259,32 @@ namespace Eto.Platform.GtkSharp
 				}
 			}
 			set {
-				switch (value) {
-				case WindowState.Maximized:
-					Control.Maximize ();
-					break;
-				case WindowState.Minimized:
-					Control.Iconify ();
-					break;
-				case WindowState.Normal:
-					switch (Control.GdkWindow.State & (Gdk.WindowState.Maximized | Gdk.WindowState.Iconified | Gdk.WindowState.Fullscreen)) {
-					case Gdk.WindowState.Maximized:
-						Control.Unmaximize ();
+				if (state != value) {
+					state = value;
+				
+					switch (value) {
+					case WindowState.Maximized:
+						Control.Maximize ();
 						break;
-					case Gdk.WindowState.Fullscreen:
-						Control.Unfullscreen ();
+					case WindowState.Minimized:
+						Control.Iconify ();
 						break;
-					case Gdk.WindowState.Iconified:
-						Control.Deiconify ();
+					case WindowState.Normal:
+						if (Control.GdkWindow != null) {
+							switch (Control.GdkWindow.State & (Gdk.WindowState.Maximized | Gdk.WindowState.Iconified | Gdk.WindowState.Fullscreen)) {
+							case Gdk.WindowState.Maximized:
+								Control.Unmaximize ();
+								break;
+							case Gdk.WindowState.Fullscreen:
+								Control.Unfullscreen ();
+								break;
+							case Gdk.WindowState.Iconified:
+								Control.Deiconify ();
+								break;
+							}
+						}
 						break;
 					}
-					break;
 				}
 			}
 		}
