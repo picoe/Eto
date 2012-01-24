@@ -1,9 +1,10 @@
 using System;
 using Eto.Forms;
+using Eto.Test.Interface.Controls;
 
-namespace Eto.Test.Interface.Controls
+namespace Eto.Test.Interface.Sections.Controls
 {
-	public class ComboBoxSection : Panel
+	public class ComboBoxSection : SectionBase
 	{
 		public ComboBoxSection ()
 		{
@@ -24,12 +25,15 @@ namespace Eto.Test.Interface.Controls
 		
 		Control Default ()
 		{
-			return new ComboBox ();
+			var control = new ComboBox ();
+			LogEvents (control);
+			return control;
 		}
 		
 		ComboBox Items ()
 		{
 			var control = new ComboBox ();
+			LogEvents (control);
 			for (int i = 0; i < 20; i++) {
 				control.Items.Add (new ListItem{ Text = "Item " + i});
 			}
@@ -47,18 +51,24 @@ namespace Eto.Test.Interface.Controls
 		{
 			var control = Items ();
 			control.SelectedKey = "Item 8";
-			control.SelectedIndexChanged += delegate {
-				MessageBox.Show (this, string.Format ("Combo Box changed to {0}", control.SelectedValue.Text));
-			};
 			return control;
 		}
 		
 		Control EnumCombo ()
 		{
 			var control = new EnumComboBox<Key> ();
+			LogEvents (control);
 			control.SelectedKey = ((int)Key.E).ToString ();
 			return control;
 		}
+		
+		void LogEvents (ComboBox control)
+		{
+			control.SelectedIndexChanged += delegate {
+				Log (control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
+			};
+		}
+		
 	}
 }
 

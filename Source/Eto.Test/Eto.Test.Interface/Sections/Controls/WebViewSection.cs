@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.Test.Interface.Controls
+namespace Eto.Test.Interface.Sections.Controls
 {
 	public class WebViewSection : Panel
 	{

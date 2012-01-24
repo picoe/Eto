@@ -44,7 +44,14 @@ namespace Eto.Forms
 					yield break;
 			}
 		}
-
+		
+		public static Panel CreatePanel (Control control, Padding? padding = null)
+		{
+			var panel = new Panel ();
+			panel.AddDockedControl (control, padding);
+			return panel;
+		}
+		
 		public DockLayout ()
 			: this(null)
 		{

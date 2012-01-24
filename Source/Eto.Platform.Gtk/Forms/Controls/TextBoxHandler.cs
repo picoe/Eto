@@ -7,9 +7,9 @@ namespace Eto.Platform.GtkSharp
 {
 	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox>, ITextBox
 	{
-		public TextBoxHandler()
+		public TextBoxHandler ()
 		{
-			Control = new Gtk.Entry();
+			Control = new Gtk.Entry ();
 			Control.Changed += delegate {
 				Widget.OnTextChanged (EventArgs.Empty);
 			};
@@ -17,14 +17,12 @@ namespace Eto.Platform.GtkSharp
 			Control.ActivatesDefault = true;
 		}
 
-		public override string Text
-		{
+		public override string Text {
 			get { return Control.Text; }
 			set { Control.Text = value; }
 		}
 
-		public bool ReadOnly
-		{
+		public bool ReadOnly {
 			get { return !Control.IsEditable; }
 			set { Control.IsEditable = !value; }
 		}

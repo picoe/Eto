@@ -8,10 +8,19 @@ namespace Eto.Forms
 		Horizontal,
 		Vertical
 	}
+	
+	public enum SplitterFixedPanel
+	{
+		Panel1,
+		Panel2,
+		None
+	}
 
 	public interface ISplitter : IControl
 	{
 		SplitterOrientation Orientation { get; set; }
+		
+		SplitterFixedPanel FixedPanel { get; set; }
 
 		int Position { get; set; }
 
@@ -40,6 +49,11 @@ namespace Eto.Forms
 		public SplitterOrientation Orientation {
 			get { return inner.Orientation; }
 			set { inner.Orientation = value; }
+		}
+		
+		public SplitterFixedPanel FixedPanel {
+			get { return inner.FixedPanel; }
+			set { inner.FixedPanel = value; }
 		}
 		
 		public int Position {

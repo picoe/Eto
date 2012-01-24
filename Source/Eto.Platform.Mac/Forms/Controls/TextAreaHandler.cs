@@ -53,6 +53,21 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
+		public bool Wrap {
+			get {
+				return text.TextContainer.WidthTracksTextView;
+			}
+			set {
+				if (value) {
+					text.TextContainer.WidthTracksTextView = true;
+				}
+				else {
+					text.TextContainer.WidthTracksTextView = false;
+					text.TextContainer.ContainerSize = new System.Drawing.SizeF(float.MaxValue, float.MaxValue);
+				}
+			}
+		}
+		
 		public void Append (string text, bool scrollToCursor)
 		{
 			var range = new NSRange (this.text.Value.Length, 0);

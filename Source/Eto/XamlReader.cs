@@ -36,7 +36,7 @@ namespace Eto
 			Dictionary<Type, XamlType> _masterTypeTable = new Dictionary<Type, XamlType> ();
 			object _syncObject = new object ();
 			
-			public EtoXamlSchemaContext(IEnumerable<Assembly> assemblies)
+			public EtoXamlSchemaContext (IEnumerable<Assembly> assemblies)
 				: base(assemblies)
 			{
 			}
@@ -57,18 +57,34 @@ namespace Eto
 			}
 
 		}
+
+		public static T Load<T> ()
+			where T: InstanceWidget, new()
+		{
+			var type = typeof(T);
+			var stream = Resources.GetResource (type.FullName + ".xaml", type.Assembly);
+			return Load<T> (stream, null);
+		}
 		
 		public static T Load<T> (Stream stream)
 			where T: InstanceWidget, new()
 		{
-			return Load<T> (stream, new T ());
+			return Load<T> (stream, null);
+		}
+		
+		public static T Load<T> (T instance)
+			where T: InstanceWidget
+		{
+			var type = typeof(T);
+			var stream = Resources.GetResource (type.FullName + ".xaml", type.Assembly);
+			return Load<T> (stream, instance);
 		}
 
 		public static T Load<T> (Stream stream, T instance)
 			where T : InstanceWidget
 		{
-			var type = typeof (T);
-			var context = new XamlSchemaContext (new Assembly[] { typeof (XamlReader).Assembly });
+			var type = typeof(T);
+			var context = new XamlSchemaContext (new Assembly[] { typeof(XamlReader).Assembly });
 			var reader = new XamlXmlReader (stream, context);
 			var writerSettings = new XamlObjectWriterSettings {
 				RootObjectInstance = instance
@@ -76,8 +92,9 @@ namespace Eto
 			writerSettings.AfterPropertiesHandler += delegate (object sender, XamlObjectEventArgs e) {
 				var obj = e.Instance as InstanceWidget;
 				if (obj != null && !string.IsNullOrEmpty (obj.ID)) {
-					var field = type.GetField(obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-					if (field != null) field.SetValue (instance, obj);
+					var field = type.GetField (obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+					if (field != null)
+						field.SetValue (instance, obj);
 				}
 			};
 

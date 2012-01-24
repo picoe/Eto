@@ -32,7 +32,7 @@ namespace Eto.Platform.Windows
 				AutoSize = false;
 			}
 			
-			protected override SD.Point ScrollToControl(SWF.Control activeControl)
+			protected override SD.Point ScrollToControl (SWF.Control activeControl)
 			{
 				/*if (autoScrollToControl) return base.ScrollToControl(activeControl);
 				else return this.AutoScrollPosition;*/
@@ -42,8 +42,7 @@ namespace Eto.Platform.Windows
 		
 		public BorderType Border {
 			get {
-				switch (Control.BorderStyle)
-				{
+				switch (Control.BorderStyle) {
 				case SWF.BorderStyle.FixedSingle:
 					return BorderType.Line;
 				case SWF.BorderStyle.None:
@@ -51,12 +50,11 @@ namespace Eto.Platform.Windows
 				case SWF.BorderStyle.Fixed3D:
 					return BorderType.Bezel;
 				default:
-					throw new NotSupportedException();
+					throw new NotSupportedException ();
 				}
 			}
 			set {
-				switch (value)
-				{
+				switch (value) {
 				case BorderType.Bezel:
 					Control.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
 					break;
@@ -67,7 +65,7 @@ namespace Eto.Platform.Windows
 					Control.BorderStyle = System.Windows.Forms.BorderStyle.None;
 					break;
 				default:
-					throw new NotSupportedException();
+					throw new NotSupportedException ();
 				}
 			}
 		}
@@ -92,6 +90,20 @@ namespace Eto.Platform.Windows
 			//control.DisplayRectangle = new System.Drawing.Rectangle(0,0,500,1000);
 			//control.BackColor = System.Drawing.Color.Black;
 		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Scrollable.ScrollEvent:
+				Control.Scroll += delegate(object sender, System.Windows.Forms.ScrollEventArgs e) {
+					this.Widget.OnScroll (new ScrollEventArgs (this.ScrollPosition));
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 
 		public void UpdateScrollSizes ()
 		{
@@ -111,7 +123,7 @@ namespace Eto.Platform.Windows
 		}
 
 		public Rectangle VisibleRect {
-			get { return new Rectangle(ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 	}
 }

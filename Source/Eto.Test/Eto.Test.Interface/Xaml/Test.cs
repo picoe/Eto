@@ -13,8 +13,10 @@ namespace Eto.Test.Interface.Xaml
 
 		public Test ()
 		{
-			XamlReader.Load (Resources.GetResource ("Eto.Test.Interface.Xaml.Test.xaml"), this);
-
+			// NOTE: this only works on MS.NET at the moment
+			// mono does not have a full implementation of Xaml as of yet
+			XamlReader.Load (this);
+			
 			someOption.Checked = true;
 			someTextArea.Text = "This form was created via xaml!";
 		}

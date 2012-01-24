@@ -33,6 +33,13 @@ namespace Eto.Platform.GtkSharp.Forms
 			tree = new Gtk.TreeView (model);
 			tree.HeadersVisible = false;
 			
+			tree.Selection.Changed += delegate {
+				this.Widget.OnSelectionChanged (EventArgs.Empty);
+			};
+			tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
+				this.Widget.OnActivated (new TreeViewItemEventArgs(GetTreeItem(args.Path)));
+			};
+			
 			var col = new Gtk.TreeViewColumn();
 			var pbcell = new Gtk.CellRendererPixbuf ();
 			col.PackStart (pbcell, false);
@@ -83,15 +90,31 @@ namespace Eto.Platform.GtkSharp.Forms
 					parentIter = model.AppendValues (child, child.Text, pixbuf);
 				if (child.Expandable && child.Expanded) {
 					Populate (parentIter, child);
+					if (parentIter != null)
+						tree.ExpandRow (model.GetPath (parentIter.Value), false);
 				}
 			}
 		}
+		
+		ITreeItem GetTreeItem (Gtk.TreeIter iter)
+		{
+			return model.GetValue (iter, 0) as ITreeItem;
+		}
 
+		ITreeItem GetTreeItem (Gtk.TreePath path)
+		{
+			Gtk.TreeIter iter;
+			if (model.GetIter (out iter, path))
+				return model.GetValue (iter, 0) as ITreeItem;
+			else
+				return null;
+		}
+		
 		public ITreeItem SelectedItem {
 			get {
 				Gtk.TreeIter iter;
 				if (tree.Selection.GetSelected (out iter)) {
-					return model.GetValue (iter, 0) as ITreeItem;
+					return GetTreeItem (iter);
 				}
 				return null;
 			}

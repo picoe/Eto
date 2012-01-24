@@ -1,10 +1,11 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Test.Interface.Controls;
 
-namespace Eto.Test.Interface.Controls
+namespace Eto.Test.Interface.Sections.Controls
 {
-	public class LabelSection : Panel
+	public class LabelSection : SectionBase
 	{
 		public LabelSection ()
 		{

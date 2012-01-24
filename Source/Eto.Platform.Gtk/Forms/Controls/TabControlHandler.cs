@@ -9,7 +9,11 @@ namespace Eto.Platform.GtkSharp
 		public TabControlHandler()
 		{
 			Control = new Gtk.Notebook();
-			Control.ChangeCurrentPage += new Gtk.ChangeCurrentPageHandler(control_ChangeCurrentPage);
+			Control.SwitchPage += delegate {
+				Widget.OnSelectedIndexChanged (EventArgs.Empty);
+				if (SelectedIndex >= 0)
+					Widget.TabPages[SelectedIndex].OnClick (EventArgs.Empty);
+			};
 		}
 
 		public int SelectedIndex
@@ -26,11 +30,6 @@ namespace Eto.Platform.GtkSharp
 		public void RemoveTab(TabPage page)
 		{
 			Control.RemovePage(Control.PageNum((Gtk.Widget)page.ContainerObject));
-		}
-
-		private void control_ChangeCurrentPage(object o, Gtk.ChangeCurrentPageArgs args)
-		{
-			Widget.OnSelectedIndexChanged(EventArgs.Empty);
 		}
 	}
 }

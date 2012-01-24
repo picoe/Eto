@@ -15,16 +15,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 				
 				Widget.OnValueChanged (EventArgs.Empty);
 			};
+			MinValue = 0;
+			MaxValue = 100;
 		}
 
 		public int MaxValue {
 			get { return (int)Control.MaxValue; }
-			set { Control.MaxValue = value; }
+			set { 
+				var old = TickFrequency;
+				Control.MaxValue = value;
+				TickFrequency = old;
+			}
 		}
 
 		public int MinValue {
 			get { return (int)Control.MinValue; }
-			set { Control.MinValue = value; }
+			set {
+				var old = TickFrequency;
+				Control.MinValue = value;
+				TickFrequency = old;
+			}
 		}
 
 		public int Value {
@@ -33,11 +43,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		public int TickFrequency {
-			get { return (int)((MaxValue - MinValue + 1) / Control.TickMarksCount); }
+			get { 
+				if (Control.TickMarksCount > 1)
+					return (int)((MaxValue - MinValue) / (Control.TickMarksCount - 1));
+				else
+					return MaxValue - MinValue;
+			}
 			set { 
-				Control.TickMarksCount = (int)((MaxValue - MinValue + 1) / value);
+				Control.TickMarksCount = (int)((MaxValue - MinValue) / value) + 1;
 				if (value > 1) Control.AllowsTickMarkValuesOnly = true;
 			}
+		}
+		
+		public override bool Enabled {
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
 
 		public SliderOrientation Orientation {

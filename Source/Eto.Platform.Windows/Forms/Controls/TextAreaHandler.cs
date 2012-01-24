@@ -58,6 +58,11 @@ namespace Eto.Platform.Windows
 			set { Control.ReadOnly = value; }
 		}
 		
+		public bool Wrap {
+			get { return Control.WordWrap; }
+			set { Control.WordWrap = value; }
+		}
+		
 		public void Append (string text, bool scrollToCursor)
 		{
 			Control.AppendText (text);

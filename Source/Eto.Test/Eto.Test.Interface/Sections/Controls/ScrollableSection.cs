@@ -1,10 +1,11 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Test.Interface.Controls;
 
-namespace Eto.Test.Interface.Controls
+namespace Eto.Test.Interface.Sections.Controls
 {
-	public class ScrollableSection : Panel
+	public class ScrollableSection : SectionBase
 	{
 		public ScrollableSection ()
 		{
@@ -31,6 +32,7 @@ namespace Eto.Test.Interface.Controls
 		Control DefaultScrollable()
 		{
 			var scrollable = new Scrollable{ Size = new Size(100, 200) };
+			LogEvents (scrollable);
 			var playout = new PixelLayout(scrollable);
 			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
 			return playout.Container;
@@ -39,6 +41,7 @@ namespace Eto.Test.Interface.Controls
 		Control NoBorderScrollable()
 		{
 			var scrollable = new Scrollable{ Size = new Size(100, 200), Border = BorderType.None };
+			LogEvents (scrollable);
 			var playout = new PixelLayout(scrollable);
 			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
 			return playout.Container;
@@ -47,6 +50,7 @@ namespace Eto.Test.Interface.Controls
 		Control BezelScrollable()
 		{
 			var scrollable = new Scrollable{ Size = new Size(100, 200), Border = BorderType.Bezel };
+			LogEvents (scrollable);
 			var playout = new PixelLayout(scrollable);
 			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
 			return playout.Container;
@@ -55,9 +59,17 @@ namespace Eto.Test.Interface.Controls
 		Control LineScrollable()
 		{
 			var scrollable = new Scrollable{ Size = new Size(100, 200), Border = BorderType.Line };
+			LogEvents (scrollable);
 			var playout = new PixelLayout(scrollable);
 			playout.Add (new LabelSection{ Size = new Size(400, 400)}, 0, 0);
 			return playout.Container;
+		}
+		
+		void LogEvents (Scrollable control)
+		{
+			control.Scroll += delegate(object sender, ScrollEventArgs e) {
+				Log (control, "Scroll, ScrollPosition: {0}", e.ScrollPosition);
+			};
 		}
 	}
 }

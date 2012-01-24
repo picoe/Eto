@@ -6,6 +6,30 @@ namespace Eto.Test.Interface
 {
 	public class MainForm : Form
 	{
+		TextArea eventLog;
+		Panel contentContainer;
+		
+		public TextArea EventLog {
+			get {
+				if (eventLog == null) {
+					eventLog = new TextArea{
+						Size = new Size (100, 100),
+						ReadOnly = true,
+						Wrap = false
+					};
+				}
+				return eventLog;
+			}
+		}
+		
+		Panel ContentContainer {
+			get {
+				if (contentContainer == null) {
+					contentContainer = new Panel ();
+				}
+				return contentContainer;
+			}
+		}
 		
 		public MainForm ()
 		{
@@ -28,27 +52,41 @@ namespace Eto.Test.Interface
 			GenerateToolBar();
 			/*
 			 */
-			GenerateContent();
+			
+			this.AddDockedControl (MainContent ());
 		}
 		
-		void GenerateContent()
+		Control MainContent ()
 		{
-			var splitter = new Splitter();
+			var splitter = new Splitter ();
 			
-			var contentContainer = new Panel();
-			var sectionList = new Controls.SectionList(contentContainer);
-			
-			splitter.Panel1 = sectionList;
-			splitter.Panel2 = contentContainer;
-
-			splitter.Position = 200;
-			
-			this.AddDockedControl (splitter);
-			
+			var sectionList = new Controls.SectionList (this.ContentContainer, this.EventLog);
 			// set focus when the form is shown
 			this.Shown += delegate {
 				sectionList.Focus ();
 			};
+			
+			splitter.Panel1 = sectionList;
+			splitter.Panel2 = RightPane ();
+
+			splitter.Position = 200;
+			
+			return splitter;
+		}
+		
+		Control RightPane ()
+		{
+			var splitter = new Splitter{ 
+				Orientation = SplitterOrientation.Vertical,
+				Position = 400,
+				FixedPanel = SplitterFixedPanel.Panel2
+			};
+			
+			splitter.Panel1 = this.ContentContainer;
+			splitter.Panel2 = DockLayout.CreatePanel (this.EventLog, new Padding(5));
+			
+			
+			return splitter;
 		}
 		
 		void GenerateMenuToolBarActions ()
@@ -65,13 +103,13 @@ namespace Eto.Test.Interface
 			
 			
 			// generate and set the menu
-			GenerateMenu(args);
+			GenerateMenu (args);
 
 			// generate and set the toolbar
-			GenerateToolBar(args);
+			GenerateToolBar (args);
 		}
 		
-		void GenerateMenu(GenerateActionArgs args)
+		void GenerateMenu (GenerateActionArgs args)
 		{
 			var file = args.Menu.FindAddSubMenu ("&File", 100);
 			var window = args.Menu.FindAddSubMenu ("&Window", 900);
@@ -103,7 +141,7 @@ namespace Eto.Test.Interface
 			this.Menu = args.Menu.GenerateMenuBar ();
 		}
 		
-		void GenerateToolBar(GenerateActionArgs args)
+		void GenerateToolBar (GenerateActionArgs args)
 		{
 			args.ToolBar.Add (Actions.Quit.ActionID);
 			args.ToolBar.Add (Actions.About.ActionID);

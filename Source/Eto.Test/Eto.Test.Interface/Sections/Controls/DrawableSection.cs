@@ -1,10 +1,11 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Test.Interface.Controls;
 
-namespace Eto.Test.Interface.Controls
+namespace Eto.Test.Interface.Sections.Controls
 {
-	public class DrawableSection : Panel
+	public class DrawableSection : SectionBase
 	{
 		public DrawableSection ()
 		{
@@ -22,6 +23,7 @@ namespace Eto.Test.Interface.Controls
 			control.Paint += delegate(object sender, PaintEventArgs pe) {
 				pe.Graphics.FillRectangle (Color.Black, pe.ClipRectangle);
 				pe.Graphics.DrawLine (Color.White, 0, 0, 99, 99);
+				Log (control, "Paint, ClipRectangle: {0}", pe.ClipRectangle);
 			};
 			
 			return control;

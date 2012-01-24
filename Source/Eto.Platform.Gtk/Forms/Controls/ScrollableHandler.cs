@@ -8,7 +8,6 @@ namespace Eto.Platform.GtkSharp
 	{
 		Gtk.Viewport vp;
 		BorderType border;
-		
 		bool autoSize = true;
 		
 		public override object ContainerObject {
@@ -37,15 +36,15 @@ namespace Eto.Platform.GtkSharp
 					//vp.BorderWidth = 0;
 					break;
 				default:
-					throw new NotSupportedException();
+					throw new NotSupportedException ();
 				}
 			}
 		}
 
-		public ScrollableHandler()
+		public ScrollableHandler ()
 		{
-			Control = new Gtk.ScrolledWindow();
-			vp = new Gtk.Viewport();
+			Control = new Gtk.ScrolledWindow ();
+			vp = new Gtk.Viewport ();
 			
 			// autosize the scrolled window to the size of the content
 			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
@@ -65,8 +64,24 @@ namespace Eto.Platform.GtkSharp
 			Control.VScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			Control.HScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			//vp.ShadowType = Gtk.ShadowType.None;
-			Control.Add(vp);
+			Control.Add (vp);
 			border = BorderType.Bezel;
+		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Scrollable.ScrollEvent:
+				Control.Events |= Gdk.EventMask.ScrollMask;
+				Control.ScrollEvent += delegate(object o, Gtk.ScrollEventArgs args) {
+					var pos = new Point ((int)args.Event.X, (int)args.Event.Y);
+					this.Widget.OnScroll (new ScrollEventArgs (pos));
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 		
 		public override Size Size {
@@ -79,75 +94,69 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		void scrollBar_VisibilityChanged(object sender, EventArgs e)
+		void scrollBar_VisibilityChanged (object sender, EventArgs e)
 		{
-			Widget.OnSizeChanged(EventArgs.Empty);
+			Widget.OnSizeChanged (EventArgs.Empty);
 		}
 		
-		public override void SetLayout(Layout inner)
+		public override void SetLayout (Layout inner)
 		{
 			if (vp.Children.Length > 0)
 				foreach (Gtk.Widget child in vp.Children)
-					vp.Remove(child);
+					vp.Remove (child);
 			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			vp.Add((Gtk.Widget)gtklayout.ContainerObject);
+			vp.Add ((Gtk.Widget)gtklayout.ContainerObject);
 			//control.Add((Gtk.Widget)layout.ControlObject);
 
 		}
 
-		public override Color BackgroundColor
-		{
-			get { return Generator.Convert(vp.Style.Background(Gtk.StateType.Normal)); }
-			set { vp.ModifyBg(Gtk.StateType.Normal, Generator.Convert(value)); }
+		public override Color BackgroundColor {
+			get { return Generator.Convert (vp.Style.Background (Gtk.StateType.Normal)); }
+			set { vp.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value)); }
 		}
 
-		public override Size ClientSize
-		{
-			get
-			{
+		public override Size ClientSize {
+			get {
 				Gdk.Rectangle rect = vp.Allocation;
-				int spacing = Convert.ToInt32(Control.StyleGetProperty("scrollbar-spacing")) + 1;
-				return new Size(rect.Width - spacing, rect.Height - spacing);
+				int spacing = Convert.ToInt32 (Control.StyleGetProperty ("scrollbar-spacing")) + 1;
+				return new Size (rect.Width - spacing, rect.Height - spacing);
 			}
-			set
-			{
-				int spacing = Convert.ToInt32(Control.StyleGetProperty("scrollbar-spacing")) + 1;
-				vp.SetSizeRequest(value.Width + spacing, value.Height + spacing);
+			set {
+				int spacing = Convert.ToInt32 (Control.StyleGetProperty ("scrollbar-spacing")) + 1;
+				vp.SetSizeRequest (value.Width + spacing, value.Height + spacing);
 			}
 		}
 
-		public void UpdateScrollSizes()
+		public void UpdateScrollSizes ()
 		{
-			Control.CheckResize();
-			vp.CheckResize();
+			Control.CheckResize ();
+			vp.CheckResize ();
 		}
 		
-		public Point ScrollPosition
-		{
-			get { return new Point((int)vp.Hadjustment.Value, (int)vp.Vadjustment.Value); }
-			set
-			{
+		public Point ScrollPosition {
+			get { return new Point ((int)vp.Hadjustment.Value, (int)vp.Vadjustment.Value); }
+			set {
 				Size clientSize = ClientSize;
 				Size scrollSize = ScrollSize;
-				vp.Hadjustment.Value = Math.Min(value.X, scrollSize.Width - clientSize.Width);
-				vp.Vadjustment.Value = Math.Min(value.Y, scrollSize.Height - clientSize.Height);
+				vp.Hadjustment.Value = Math.Min (value.X, scrollSize.Width - clientSize.Width);
+				vp.Vadjustment.Value = Math.Min (value.Y, scrollSize.Height - clientSize.Height);
 			}
 		}
 
-		public Size ScrollSize
-		{
+		public Size ScrollSize {
 			get {
 				//return scrollSize;
-				return new Size((int)(vp.Hadjustment.Upper), (int)(vp.Vadjustment.Upper));
+				return new Size ((int)(vp.Hadjustment.Upper), (int)(vp.Vadjustment.Upper));
 			}
 			set {
 				//scrollSize = value;
-				vp.Hadjustment.Upper = value.Width; vp.Vadjustment.Upper = value.Height;
+				vp.Hadjustment.Upper = value.Width;
+				vp.Vadjustment.Upper = value.Height;
 			}
 		}
 		
 		public Rectangle VisibleRect {
-			get { return new Rectangle(ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 
 	}

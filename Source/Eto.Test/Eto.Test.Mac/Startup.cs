@@ -35,7 +35,7 @@ namespace Eto.Test.Mac
 			});
 
 			// other styles
-			Style.Add<ListBox, NSScrollView> ("sectionList", (widget, control) => {
+			Style.Add<TreeView, NSScrollView> ("sectionList", (widget, control) => {
 				control.BorderType = NSBorderType.NoBorder;
 				var table = control.DocumentView as NSTableView;
 				table.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;

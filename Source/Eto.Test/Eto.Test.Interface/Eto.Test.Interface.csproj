@@ -30,6 +30,7 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
+    <Reference Include="System.Core" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
@@ -40,22 +41,27 @@
     <Compile Include="Actions\Quit.cs" />
     <Compile Include="Actions\Close.cs" />
     <Compile Include="Controls\SectionList.cs" />
-    <Compile Include="Controls\LabelSection.cs" />
-    <Compile Include="Controls\ButtonSection.cs" />
-    <Compile Include="Controls\ScrollableSection.cs" />
-    <Compile Include="Controls\WebViewSection.cs" />
-    <Compile Include="Controls\TextAreaSection.cs" />
-    <Compile Include="Controls\FileDialogSection.cs" />
-    <Compile Include="Controls\DrawableSection.cs" />
-    <Compile Include="Controls\ListBoxSection.cs" />
-    <Compile Include="Controls\TabControlSection.cs" />
-    <Compile Include="Controls\TreeViewSection.cs" />
-    <Compile Include="Controls\NumericUpDownSection.cs" />
-    <Compile Include="Controls\DateTimePickerSection.cs" />
-    <Compile Include="Controls\XamlSection.cs" />
     <Compile Include="Xaml\Test.cs" />
-    <Compile Include="Controls\CheckBoxSection.cs" />
-    <Compile Include="Controls\ComboBoxSection.cs" />
+    <Compile Include="Controls\SectionBase.cs" />
+    <Compile Include="Sections\Controls\ButtonSection.cs" />
+    <Compile Include="Sections\Controls\CheckBoxSection.cs" />
+    <Compile Include="Sections\Controls\ComboBoxSection.cs" />
+    <Compile Include="Sections\Controls\DateTimePickerSection.cs" />
+    <Compile Include="Sections\Controls\DrawableSection.cs" />
+    <Compile Include="Sections\Controls\FileDialogSection.cs" />
+    <Compile Include="Sections\Controls\GroupBoxSection.cs" />
+    <Compile Include="Sections\Controls\LabelSection.cs" />
+    <Compile Include="Sections\Controls\ListBoxSection.cs" />
+    <Compile Include="Sections\Controls\NumericUpDownSection.cs" />
+    <Compile Include="Sections\Controls\RadioButtonSection.cs" />
+    <Compile Include="Sections\Controls\ScrollableSection.cs" />
+    <Compile Include="Sections\Controls\SliderSection.cs" />
+    <Compile Include="Sections\Controls\TabControlSection.cs" />
+    <Compile Include="Sections\Controls\TextAreaSection.cs" />
+    <Compile Include="Sections\Controls\TreeViewSection.cs" />
+    <Compile Include="Sections\Controls\WebViewSection.cs" />
+    <Compile Include="Sections\Controls\XamlSection.cs" />
+    <Compile Include="Sections\Controls\TextBoxSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
@@ -70,4 +76,8 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Sections\" />
+    <Folder Include="Sections\Controls\" />
+  </ItemGroup>
 </Project>

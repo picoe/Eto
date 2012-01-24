@@ -5,10 +5,14 @@ namespace Eto.Forms
 {
 	public partial interface IScrollable : IContainer
 	{
-		void UpdateScrollSizes();
+		void UpdateScrollSizes ();
+
 		Point ScrollPosition { get; set; }
+
 		Size ScrollSize { get; set; }
+
 		BorderType Border { get; set; }
+
 		Rectangle VisibleRect { get; }
 	}
 	
@@ -16,7 +20,7 @@ namespace Eto.Forms
 	{
 		public Point ScrollPosition { get; private set; }
 		
-		public ScrollEventArgs(Point scrollPosition)
+		public ScrollEventArgs (Point scrollPosition)
 		{
 			this.ScrollPosition = scrollPosition;
 		}
@@ -32,46 +36,54 @@ namespace Eto.Forms
 	public partial class Scrollable : Container
 	{
 		IScrollable inner;
+		public const string ScrollEvent = "Scrollable.ScrollEvent";
 		
-		public event EventHandler<ScrollEventArgs> Scroll;
-		
-		public virtual void OnScroll(ScrollEventArgs e)
-		{
-			if (Scroll != null) Scroll(this, e);
+		event EventHandler<ScrollEventArgs> scroll;
+
+		public event EventHandler<ScrollEventArgs> Scroll {
+			add { 
+				HandleEvent (ScrollEvent);
+				scroll += value; 
+			}
+			remove { scroll -= value; }
 		}
 		
-		public Scrollable() : this(Generator.Current) {}
+		public virtual void OnScroll (ScrollEventArgs e)
+		{
+			if (scroll != null)
+				scroll (this, e);
+		}
+		
+		public Scrollable () : this(Generator.Current)
+		{
+		}
 
-		public Scrollable(Generator g) : base(g, typeof(IScrollable))
+		public Scrollable (Generator g) : base(g, typeof(IScrollable))
 		{
 			inner = (IScrollable)Handler;
 		}
 
-		public void UpdateScrollSizes()
+		public void UpdateScrollSizes ()
 		{
-			inner.UpdateScrollSizes();
+			inner.UpdateScrollSizes ();
 		}
 
-		public Point ScrollPosition
-		{
+		public Point ScrollPosition {
 			get { return inner.ScrollPosition; }
 			set { inner.ScrollPosition = value; }
 		}
 
-		public Size ScrollSize
-		{
+		public Size ScrollSize {
 			get { return inner.ScrollSize; }
 			set { inner.ScrollSize = value; }
 		}
 		
-		public BorderType Border
-		{
+		public BorderType Border {
 			get { return inner.Border; }
 			set { inner.Border = value; }
 		}
 		
-		public Rectangle VisibleRect
-		{
+		public Rectangle VisibleRect {
 			get { return inner.VisibleRect; }
 		}
 

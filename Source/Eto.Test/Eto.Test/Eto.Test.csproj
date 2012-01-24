@@ -9,7 +9,6 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Eto.Test</RootNamespace>
     <AssemblyName>Eto.Test</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <ApplicationIcon>..\Eto.Test.Interface\TestIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

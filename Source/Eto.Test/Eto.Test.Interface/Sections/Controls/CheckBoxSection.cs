@@ -1,9 +1,10 @@
 using System;
 using Eto.Forms;
+using Eto.Test.Interface.Controls;
 
-namespace Eto.Test.Interface.Controls
+namespace Eto.Test.Interface.Sections.Controls
 {
-	public class CheckBoxSection : Panel
+	public class CheckBoxSection : SectionBase
 	{
 		public CheckBoxSection ()
 		{
@@ -23,6 +24,7 @@ namespace Eto.Test.Interface.Controls
 			var control = new CheckBox {
 				Text = "Default"
 			};
+			LogEvents(control);
 			return control;
 		}
 		
@@ -32,21 +34,26 @@ namespace Eto.Test.Interface.Controls
 				Text = "Disabled",
 				Enabled = false
 			};
+			LogEvents(control);
 			return control;
 		}
 		
 		Control Events ()
 		{
 			var control = new CheckBox{
-				Text = "Set and get state",
+				Text = "Set initial value",
 				Checked = true
 			};
-			
-			control.CheckedChanged += delegate {
-				MessageBox.Show (this, string.Format ("Checked was changed to {0}", control.Checked));
-			};
+			LogEvents (control);
 			
 			return control;
+		}
+		
+		void LogEvents(CheckBox control)
+		{
+			control.CheckedChanged += delegate {
+				Log (control, "CheckedChanged, Value: {0}", control.Checked);
+			};
 		}
 	}
 }

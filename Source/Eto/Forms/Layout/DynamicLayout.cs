@@ -237,6 +237,7 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
+			if (controls == null) controls = new Control[] { null };
 			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
 			var row = new DynamicRow (items.Cast<DynamicItem>());
 			currentItem.AddRow (row);

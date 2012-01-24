@@ -21,8 +21,9 @@ namespace Eto.Platform.Mac
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					this.AddCursorRectcursor (new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+					this.AddCursorRectcursor (new SD.RectangleF (SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
 			}
+			
 		}
 		
 		class FlippedView : NSView
@@ -43,6 +44,21 @@ namespace Eto.Platform.Mac
 			view = new FlippedView ();
 			control.DocumentView = view;
 			Control = control;
+		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Scrollable.ScrollEvent:
+				Control.ContentView.PostsBoundsChangedNotifications = true;
+				this.AddObserver (NSView.NSViewBoundsDidChangeNotification, delegate(ObserverActionArgs e) {
+					e.Widget.OnScroll (new ScrollEventArgs (e.Widget.ScrollPosition));
+				}, Control.ContentView);
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 		
 		public BorderType Border {
@@ -123,12 +139,16 @@ namespace Eto.Platform.Mac
 		public Point ScrollPosition {
 			get { 
 				var loc = Control.ContentView.Bounds.Location;
-				if (view.IsFlipped) return Generator.ConvertF (loc);
-				else return new Point((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
+				if (view.IsFlipped)
+					return Generator.ConvertF (loc);
+				else
+					return new Point ((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
 			}
 			set { 
-				if (view.IsFlipped) Control.ContentView.ScrollToPoint (Generator.ConvertF (value));
-				else Control.ContentView.ScrollToPoint (new SD.PointF(value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
+				if (view.IsFlipped)
+					Control.ContentView.ScrollToPoint (Generator.ConvertF (value));
+				else
+					Control.ContentView.ScrollToPoint (new SD.PointF (value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
 				Control.ReflectScrolledClipView (Control.ContentView);
 			}
 		}
@@ -172,7 +192,7 @@ namespace Eto.Platform.Mac
 		}
 		
 		public Rectangle VisibleRect {
-			get { return new Rectangle(ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 	}
 }

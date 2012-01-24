@@ -1,10 +1,11 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Test.Interface.Controls;
 
-namespace Eto.Test.Interface.Controls
+namespace Eto.Test.Interface.Sections.Controls
 {
-	public class TreeViewSection : Panel
+	public class TreeViewSection : SectionBase
 	{
 		int expanded;
 		
@@ -14,20 +15,12 @@ namespace Eto.Test.Interface.Controls
 		{
 			var layout = new DynamicLayout (this);
 			
-			layout.BeginVertical();
-			layout.BeginHorizontal ();
-			layout.Add (new Label{ Text = "Simple" });
-			layout.Add (Default ());
-			layout.EndHorizontal ();
+			layout.AddRow (new Label{ Text = "Simple" }, Default ());
 			
-			layout.BeginHorizontal ();
-			layout.Add (new Label{ Text = "With Images" });
-			layout.Add (Images ());
-			layout.EndHorizontal ();
+			layout.AddRow (new Label{ Text = "With Images" }, Images ());
+			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
 			
-			layout.EndVertical ();
-			
-			layout.Add (null, true, true);
+			layout.Add (null, false, true);
 		}
 		
 		TreeItem CreateTreeItem (int level, string name, Image image)
@@ -50,6 +43,7 @@ namespace Eto.Test.Interface.Controls
 			var control = new TreeView {
 				Size = new Size(100, 150)
 			};
+			LogEvents (control);
 			control.TopNode = CreateTreeItem (0, "Item", null);
 			return control;
 		}
@@ -59,8 +53,26 @@ namespace Eto.Test.Interface.Controls
 			var control = new TreeView {
 				Size = new Size(100, 150)
 			};
+			LogEvents (control);
 			control.TopNode = CreateTreeItem (0, "Item", Image);
 			return control;
+		}
+		
+		Control Disabled ()
+		{
+			var control = Images ();
+			control.Enabled = false;
+			return control;
+		}
+		
+		void LogEvents (TreeView control)
+		{
+			control.Activated += delegate(object sender, TreeViewItemEventArgs e) {
+				Log (control, "Activated, Item: {0}", e.Item.Text);
+			};
+			control.SelectionChanged += delegate {
+				Log (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? control.SelectedItem.Text : "<none selected>");
+			};
 		}
 	}
 }

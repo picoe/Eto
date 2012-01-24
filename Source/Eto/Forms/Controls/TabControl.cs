@@ -43,6 +43,11 @@ namespace Eto.Forms
 			get { return inner.SelectedIndex; }
 			set { inner.SelectedIndex = value; }
 		}
+		
+		public TabPage SelectedPage {
+			get { return TabPages[SelectedIndex]; }
+			set { SelectedIndex = pages.IndexOf (value); }
+		}
 
 		public TabPageCollection TabPages {
 			get { return pages; }

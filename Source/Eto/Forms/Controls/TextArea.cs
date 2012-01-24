@@ -7,6 +7,8 @@ namespace Eto.Forms
 	{
 		bool ReadOnly { get; set; }
 		
+		bool Wrap { get; set; }
+		
 		void Append(string text, bool scrollToCursor);
 	}
 	
@@ -28,6 +30,12 @@ namespace Eto.Forms
 		{
 			get { return inner.ReadOnly; }
 			set { inner.ReadOnly = value; }
+		}
+		
+		public bool Wrap
+		{
+			get { return inner.Wrap; }
+			set { inner.Wrap = value; }
 		}
 		
 		public void Append(string text, bool scrollToCursor = false)

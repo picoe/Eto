@@ -1,4 +1,5 @@
 using System;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -10,9 +11,11 @@ namespace Eto.Forms
 	{
 		//IPanel inner;
 		
-		public Panel() : this(Generator.Current) {}
-
-		public Panel(Generator g) : base(g, typeof(IPanel))
+		public Panel () : this(Generator.Current)
+		{
+		}
+		
+		public Panel (Generator g) : base(g, typeof(IPanel))
 		{
 			//inner = (IPanel)InnerControl;
 		}

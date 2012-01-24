@@ -98,6 +98,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 				stepper.MaxValue = value;
 			}
 		}
+		
+		public override bool Enabled {
+			get {
+				return stepper.Enabled;
+			}
+			set {
+				stepper.Enabled = value;
+				text.Enabled = value;
+			}
+		}
 
 		public Font Font {
 			get {
