@@ -23,8 +23,6 @@ namespace Eto.Platform.Mac
 				var panel1Rect = splitView.Subviews[0].Frame;
 				var panel2Rect = splitView.Subviews[1].Frame;
 				var newFrame = splitView.Frame;
-				if (newFrame.Size.IsEmpty)
-					return;
 				
 				if (oldSize.IsEmpty)
 					oldSize = newFrame.Size;
@@ -87,6 +85,15 @@ namespace Eto.Platform.Mac
 				splitView.Subviews[0].Frame = panel1Rect;
 				splitView.Subviews[1].Frame = panel2Rect;
 			} 
+
+
+			public override float ConstrainSplitPosition (NSSplitView splitView, float proposedPosition, int subviewDividerIndex)
+			{
+				if (Handler.Enabled)
+					return proposedPosition;
+				else 
+					return Handler.Position;
+			}
 			
 			public override void DidResizeSubviews (MonoMac.Foundation.NSNotification notification)
 			{
@@ -132,7 +139,7 @@ namespace Eto.Platform.Mac
 		
 		public SplitterHandler()
 		{
-			
+			Enabled = true;
 			control = new MySplitView();
 			control.DividerStyle = NSSplitViewDividerStyle.Thin;
 			control.AddSubview(new NSView{ AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
@@ -149,9 +156,7 @@ namespace Eto.Platform.Mac
 			get { return position ?? 0; }
 			set {
 				position = value;
-				var adjview = control.Subviews[0];
-				adjview.SetFrameSize(new System.Drawing.SizeF(adjview.Frame.Height, (float)position));
-				//control.AdjustSubviews();
+				control.AdjustSubviews();
 			}
 		}
 		
@@ -159,8 +164,8 @@ namespace Eto.Platform.Mac
 		{
 			get
 			{
-				if (control.IsVertical) return SplitterOrientation.Vertical;
-				else return SplitterOrientation.Horizontal;
+				if (control.IsVertical) return SplitterOrientation.Horizontal;
+				else return SplitterOrientation.Vertical;
 			}
 			set
 			{
@@ -174,6 +179,8 @@ namespace Eto.Platform.Mac
 				control.NeedsDisplay = true;
 			}
 		}
+		
+		public override bool Enabled { get; set; }
 		
 		public SplitterFixedPanel FixedPanel
 		{

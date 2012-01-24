@@ -52,9 +52,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			
 		}
+	
+		public override bool Enabled { get; set; }
 		
 		public void Create ()
 		{
+			Enabled = true;
 			Control = new MyView{ Handler = this };
 		}
 		

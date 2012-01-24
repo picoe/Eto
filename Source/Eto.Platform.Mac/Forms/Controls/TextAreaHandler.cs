@@ -43,6 +43,21 @@ namespace Eto.Platform.Mac
 			set { text.Editable = !value; }
 		}
 		
+		public override bool Enabled {
+			get { return text.Selectable; }
+			set {
+				text.Selectable = value;
+				if (!value) {
+					text.TextColor = NSColor.DisabledControlText;
+					Control.BackgroundColor = NSColor.ControlBackground;
+				}
+				else {
+					text.TextColor = NSColor.ControlText;
+					Control.BackgroundColor = NSColor.TextBackground;
+				}
+			}
+		}
+		
 		public string Text {
 			get {
 				return text.Value;

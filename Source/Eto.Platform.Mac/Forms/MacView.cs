@@ -204,9 +204,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public string Id { get; set; }
-
-		public virtual bool Enabled { get; set; }
+		public abstract bool Enabled { get; set; }
 
 		public virtual bool HasFocus {
 			get {

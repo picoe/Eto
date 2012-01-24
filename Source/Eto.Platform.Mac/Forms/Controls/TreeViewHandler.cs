@@ -193,6 +193,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
+		public override bool Enabled {
+			get { return outline.Enabled; }
+			set { outline.Enabled = value; }
+		}
+		
 		void ExpandItems (NSObject parent)
 		{
 			var ds = outline.DataSource;

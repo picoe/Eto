@@ -89,6 +89,7 @@ namespace Eto.Platform.Mac
 			Control = new MyTextField{ Handler = this };
 			Control.Bezeled = true;
 			Control.Editable = true;
+			Control.Selectable = true;
 			Control.Delegate = new MyDelegate{ Handler = this };
 			/*Control.Changed += delegate {
 				Widget.OnTextChanged(EventArgs.Empty);
@@ -102,8 +103,8 @@ namespace Eto.Platform.Mac
 		
 		public bool ReadOnly
 		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
+			get { return !Control.Editable; }
+			set { Control.Editable = !value; }
 		}
 		
 		public int MaxLength {

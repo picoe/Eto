@@ -9,6 +9,7 @@ namespace Eto.Platform.Mac
 	{
 		public TabControlHandler ()
 		{
+			Enabled = true;
 			Control = new NSTabView ();
 			Control.DidSelect += delegate {
 				this.Widget.OnSelectedIndexChanged (EventArgs.Empty);
@@ -20,6 +21,10 @@ namespace Eto.Platform.Mac
 		public int SelectedIndex {
 			get { return Control.IndexOf (Control.Selected); }
 			set { Control.SelectAt (value); }
+		}
+		
+		public override bool Enabled {
+			get; set;
 		}
 
 		public void AddTab (TabPage page)

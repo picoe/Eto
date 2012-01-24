@@ -46,11 +46,6 @@ namespace Eto.Platform.Mac
 		Icon icon;
 		bool enabled = true;
 		
-		public string ID
-		{
-			get; set;
-		}
-		
 		public ToolBarItemHandler()
 		{
 			this.ID = Guid.NewGuid().ToString();

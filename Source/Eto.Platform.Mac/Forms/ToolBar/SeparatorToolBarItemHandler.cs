@@ -16,7 +16,7 @@ namespace Eto.Platform.Mac
 			
 		}
 		
-		public string ID
+		public override string ID
 		{
 			get { 
 				switch (Type) {

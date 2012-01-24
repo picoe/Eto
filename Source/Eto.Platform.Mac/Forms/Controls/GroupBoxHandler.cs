@@ -12,6 +12,7 @@ namespace Eto.Platform.Mac
 			Control = new NSBox ();
 			Control.Title = string.Empty;
 			Control.ContentView = new NSView ();
+			Enabled = true;
 		}
 
 		public override object ContainerObject {
@@ -19,6 +20,8 @@ namespace Eto.Platform.Mac
 				return Control.ContentView;
 			}
 		}
+		
+		public override bool Enabled { get; set; }
 		
 		public override Eto.Drawing.Size ClientSize {
 			get {

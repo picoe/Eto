@@ -35,6 +35,7 @@ namespace Eto.Platform.Mac
 
 		public ScrollableHandler ()
 		{
+			Enabled = true;
 			control = new MyScrollView { Handler = this };
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
@@ -168,6 +169,8 @@ namespace Eto.Platform.Mac
 				
 			}
 		}
+		
+		public override bool Enabled { get; set; }
 		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{

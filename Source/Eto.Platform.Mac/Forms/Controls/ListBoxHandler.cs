@@ -72,6 +72,11 @@ namespace Eto.Platform.Mac
 			set;
 		}
 		
+		public override bool Enabled {
+			get { return control.Enabled; }
+			set { control.Enabled = value; }
+		}
+		
 		public ListBoxHandler ()
 		{
 			control = new MyTableView{ Handler = this };

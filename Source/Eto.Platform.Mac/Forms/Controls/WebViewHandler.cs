@@ -25,6 +25,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public WebViewHandler ()
 		{
+			Enabled = true;
 			Control = new MonoMac.WebKit.WebView ();
 			Control.UIDelegate = new MyUIDelegate{ Handler = this };
 		}
@@ -105,6 +106,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Control.GoForward ();
 		}
+		
+		public override bool Enabled { get; set; }
 
 		public bool CanGoBack {
 			get {

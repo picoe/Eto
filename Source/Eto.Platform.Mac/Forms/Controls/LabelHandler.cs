@@ -51,6 +51,7 @@ namespace Eto.Platform.Mac
 		
 		public LabelHandler ()
 		{
+			Enabled = true;
 			Control = new NSTextField ();
 			Control.Cell = new MyTextFieldCell{ Handler = this };
 			Control.DrawsBackground = false;
@@ -105,6 +106,8 @@ namespace Eto.Platform.Mac
 				}
 			}
 		}
+
+		public override bool Enabled { get; set; }
 		
 		public string Text {
 			get {
