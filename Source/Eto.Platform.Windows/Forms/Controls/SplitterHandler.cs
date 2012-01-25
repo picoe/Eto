@@ -7,9 +7,9 @@ namespace Eto.Platform.Windows
 {
 	public class SplitterHandler : WindowsControl<System.Windows.Forms.SplitContainer, Splitter>, ISplitter
 	{
-		Control panel1 = null;
-		Control panel2 = null;
-
+		Control panel1;
+		Control panel2;
+		int? position;
 		
 		public SplitterHandler ()
 		{
@@ -19,11 +19,17 @@ namespace Eto.Platform.Windows
 			Control.Panel2MinSize = 0;
 		}
 		
-		#region ISplitter Members
-
 		public int Position {
 			get { return Control.SplitterDistance; }
-			set { Control.SplitterDistance = value; }
+			set { position = value; Control.SplitterDistance = value; }
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			if (position != null) {
+				Control.SplitterDistance = position.Value;
+			}
 		}
 		
 		public SplitterFixedPanel FixedPanel {
@@ -42,13 +48,13 @@ namespace Eto.Platform.Windows
 			set {
 				switch (value) {
 				case SplitterFixedPanel.None:
-					Control.FixedPanel = System.Windows.Forms.FixedPanel.None;
+					Control.FixedPanel = SWF.FixedPanel.None;
 					break;
 				case SplitterFixedPanel.Panel1:
-					Control.FixedPanel = System.Windows.Forms.FixedPanel.Panel1;
+					Control.FixedPanel = SWF.FixedPanel.Panel1;
 					break;
 				case SplitterFixedPanel.Panel2:
-					Control.FixedPanel = System.Windows.Forms.FixedPanel.Panel2;
+					Control.FixedPanel = SWF.FixedPanel.Panel2;
 					break;
 				default:
 					throw new NotSupportedException ();
@@ -61,19 +67,19 @@ namespace Eto.Platform.Windows
 				switch (Control.Orientation) {
 				default:
 				case SWF.Orientation.Horizontal:
-					return SplitterOrientation.Horizontal;
-				case SWF.Orientation.Vertical:
 					return SplitterOrientation.Vertical;
+				case SWF.Orientation.Vertical:
+					return SplitterOrientation.Horizontal;
 				}
 			}
 			set {
 				switch (value) {
 				default:
 				case SplitterOrientation.Horizontal:
-					Control.Orientation = SWF.Orientation.Horizontal;
+					Control.Orientation = SWF.Orientation.Vertical;
 					break;
 				case SplitterOrientation.Vertical:
-					Control.Orientation = SWF.Orientation.Vertical;
+					Control.Orientation = SWF.Orientation.Horizontal;
 					break;
 				}
 			}
@@ -83,6 +89,7 @@ namespace Eto.Platform.Windows
 			get { return panel1; }
 			set {
 				if (panel1 != value) {
+					Control.SuspendLayout ();
 					if (panel1 != null) {
 						SWF.Control c = (SWF.Control)panel1.ControlObject;
 						c.VisibleChanged -= c1_VisibleChanged;
@@ -96,6 +103,7 @@ namespace Eto.Platform.Windows
 						Control.Panel1.Controls.Add ((SWF.Control)panel1.ControlObject);
 					}
 					Control.Panel1Collapsed = panel1 == null || !panel1.Visible;
+					Control.ResumeLayout ();
 				}
 			}
 		}
@@ -104,6 +112,7 @@ namespace Eto.Platform.Windows
 			get { return panel2; }
 			set {
 				if (panel2 != value) {
+					Control.SuspendLayout ();
 					if (panel2 != null) {
 						SWF.Control c = (SWF.Control)panel2.ControlObject;
 						c.VisibleChanged -= c2_VisibleChanged;
@@ -117,6 +126,7 @@ namespace Eto.Platform.Windows
 						Control.Panel2.Controls.Add ((SWF.Control)panel2.ControlObject);
 					}
 					Control.Panel2Collapsed = panel2 == null || !panel2.Visible;
+					Control.ResumeLayout ();
 				}
 			}
 		}
@@ -137,7 +147,5 @@ namespace Eto.Platform.Windows
 			else
 				Control.Panel2Collapsed = true;
 		}
-
-		#endregion
 	}
 }

@@ -3,25 +3,31 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using mwc = Microsoft.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class DateTimePickerHandler : WpfControl<System.Windows.Controls.DatePicker, DateTimePicker>, IDateTimePicker
+	public class DateTimePickerHandler : WpfControl<mwc.DateTimePicker, DateTimePicker>, IDateTimePicker
 	{
+		DateTimePickerMode mode;
+
 		public DateTimePickerHandler ()
 		{
-			Control = new System.Windows.Controls.DatePicker ();
+			Control = new mwc.DateTimePicker ();
+			Mode = DateTimePickerMode.Date;
 		}
 
 
 		public DateTime? Value
 		{
-			get; set; 
+			get { return Control.Value; }
+			set { Control.Value = value; }
 		}
 
 		public DateTime MinDate
 		{
-			get; set; 
+			get;
+			set;
 		}
 
 		public DateTime MaxDate
@@ -31,7 +37,24 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public DateTimePickerMode Mode
 		{
-			get; set; 
+			get { return mode; }
+			set
+			{
+				mode = value;
+				switch (mode) {
+					case DateTimePickerMode.Date:
+						Control.Format = mwc.DateTimeFormat.ShortDate;
+						break;
+					case DateTimePickerMode.DateTime:
+						Control.Format = mwc.DateTimeFormat.FullDateTime;
+						break;
+					case DateTimePickerMode.Time:
+						Control.Format = mwc.DateTimeFormat.LongTime;
+						break;
+					default:
+						throw new NotSupportedException ();
+				}
+			}
 		}
 	}
 }

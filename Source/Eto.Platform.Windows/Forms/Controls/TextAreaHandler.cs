@@ -9,9 +9,27 @@ namespace Eto.Platform.Windows
 	{
 		public class MyTextBox : SWF.TextBox
 		{
-			private void CheckForScrollbars ()
+			bool busy;
+			void CheckForScrollbars ()
 			{
-				try {
+				if (!busy) {
+					busy = true;
+
+					/**/
+					var textSize = SWF.TextRenderer.MeasureText (Text, Font);
+					bool verticalScroll = ClientSize.Height < textSize.Height; // +Convert.ToInt32 (Font.Size);
+					bool horizontalScroll = ClientSize.Width < textSize.Width;
+
+					if (verticalScroll && horizontalScroll)
+						ScrollBars = SWF.ScrollBars.Both;
+					else if (!verticalScroll && !horizontalScroll)
+						ScrollBars = SWF.ScrollBars.None;
+					else if (verticalScroll && !horizontalScroll)
+						ScrollBars = SWF.ScrollBars.Vertical;
+					else if (!verticalScroll && horizontalScroll)
+						ScrollBars = SWF.ScrollBars.Horizontal;
+					/**
+
 					bool scroll = false;
 					int lineCount = this.Lines.Length;
 					if (lineCount > 1) {
@@ -24,26 +42,33 @@ namespace Eto.Platform.Windows
 						int h = pos1 - pos0;
 						scroll = lineCount * h > (this.ClientSize.Height - 6);  // 6 = padding
 					}
-					if (scroll != (this.ScrollBars == SWF.ScrollBars.Vertical)) {
-						this.ScrollBars = scroll ? SWF.ScrollBars.Vertical : SWF.ScrollBars.None;
+					if (scroll != (this.ScrollBars == SWF.ScrollBars.Vertical || this.ScrollBars == SWF.ScrollBars.Both)) {
+
+						if (this.ScrollBars == SWF.ScrollBars.Both)
+							this.ScrollBars = scroll ? SWF.ScrollBars.Both : SWF.ScrollBars.Horizontal;
+						else
+							this.ScrollBars = scroll ? SWF.ScrollBars.Vertical : SWF.ScrollBars.None;
+							
 					}
-				}
-				catch {
+					/**/
+					busy = false;
 				}
 			}
 
+			/*
 			protected override void OnTextChanged (EventArgs e)
 			{
 				CheckForScrollbars ();
 				base.OnTextChanged (e);
 			}
 
-			protected override void OnClientSizeChanged (EventArgs e)
+			protected override void OnSizeChanged (EventArgs e)
 			{
 				CheckForScrollbars ();
-				base.OnClientSizeChanged (e);
+				base.OnSizeChanged (e);
 			}
-		}		
+			 */
+		}	
 		
 		public TextAreaHandler ()
 		{
@@ -51,6 +76,10 @@ namespace Eto.Platform.Windows
 			Control.Multiline = true;
 			Control.AcceptsReturn = true;
 			Control.AcceptsTab = true;
+			Control.ScrollBars = SWF.ScrollBars.Both;
+			Control.TextChanged += delegate {
+				Widget.OnTextChanged (EventArgs.Empty);
+			};
 		}
 		
 		public bool ReadOnly {

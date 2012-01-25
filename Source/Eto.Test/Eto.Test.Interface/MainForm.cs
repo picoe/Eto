@@ -58,7 +58,10 @@ namespace Eto.Test.Interface
 		
 		Control MainContent ()
 		{
-			var splitter = new Splitter ();
+			var splitter = new Splitter {
+				Position = 200,
+				FixedPanel = SplitterFixedPanel.Panel1
+			};
 			
 			var sectionList = new Controls.SectionList (this.ContentContainer, this.EventLog);
 			// set focus when the form is shown
@@ -69,8 +72,6 @@ namespace Eto.Test.Interface
 			splitter.Panel1 = sectionList;
 			splitter.Panel2 = RightPane ();
 
-			splitter.Position = 200;
-			
 			return splitter;
 		}
 		
@@ -83,8 +84,7 @@ namespace Eto.Test.Interface
 			};
 			
 			splitter.Panel1 = this.ContentContainer;
-			splitter.Panel2 = DockLayout.CreatePanel (this.EventLog, new Padding(5));
-			
+			splitter.Panel2 = DockLayout.CreatePanel (this.EventLog, new Padding (5));
 			
 			return splitter;
 		}

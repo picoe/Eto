@@ -118,6 +118,8 @@ namespace Eto.Test.Interface.Controls
 				}
 				contentContainer.AddDockedControl (control);
 			}
+			else 
+				contentContainer.AddDockedControl (null);
 		}
 	}
 }

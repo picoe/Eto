@@ -18,6 +18,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new System.Windows.Controls.Label ();
 			text = new System.Windows.Controls.TextBlock ();
 			Control.Content = text;
+			HorizontalAlign = HorizontalAlign.Left;
+			VerticalAlign = VerticalAlign.Top;
 		}
 
 		public HorizontalAlign HorizontalAlign

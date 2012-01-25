@@ -40,14 +40,6 @@ namespace Eto.Test.Interface.Controls
 			}
 		}
 		
-		protected void LogEvents (object control, string message, params string[] eventNames)
-		{
-			var type = control.GetType ();
-			foreach (var evt in eventNames) {
-				LogEvent (control, evt, message);
-			}
-		}
-
 		protected void LogEvents (object control, params string[] eventNames)
 		{
 			var type = control.GetType ();

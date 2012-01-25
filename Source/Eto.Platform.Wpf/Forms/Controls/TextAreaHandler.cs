@@ -2,17 +2,23 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WC = System.Windows.Controls;
+using swc = System.Windows.Controls;
+using sw = System.Windows;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TextAreaHandler : WpfControl<WC.TextBox, TextArea>, ITextArea
+	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea>, ITextArea
 	{
 		public TextAreaHandler ()
 		{
-			Control = new WC.TextBox ();
+			Control = new swc.TextBox {
+				AcceptsReturn = true,
+				AcceptsTab = true,
+				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
+				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
+			};
 		}
 
 		public bool ReadOnly
@@ -41,13 +47,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get
-			{
-				return Control.Text;
-			}
-			set
-			{
-				Control.Text = value;
+			get	{ return Control.Text; }
+			set	{ Control.Text = value;	}
+		}
+
+		public bool Wrap
+		{
+			get { return Control.TextWrapping == sw.TextWrapping.Wrap; }
+			set	{
+				Control.TextWrapping = value ? sw.TextWrapping.Wrap : sw.TextWrapping.NoWrap;
 			}
 		}
 	}

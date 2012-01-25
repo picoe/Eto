@@ -31,8 +31,15 @@ namespace Eto.Platform.Wpf.Forms
 				Control.Children.Clear ();
 				content = value;
 				if (content != null) {
-					var element = (System.Windows.UIElement)content.ControlObject;
+					var element = (System.Windows.FrameworkElement)content.ControlObject;
+					//element.Height = double.MaxValue;
 					System.Windows.Controls.DockPanel.SetDock (element, System.Windows.Controls.Dock.Top);
+					element.Height = double.NaN;
+					element.Width = double.NaN;
+					/*element.Width = element.Height = double.NaN;
+					 * */
+					element.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
+					element.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 					Control.Children.Add (element);
 				}
 			}

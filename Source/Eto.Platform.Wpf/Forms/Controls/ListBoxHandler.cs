@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -14,9 +15,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public ListBoxHandler ()
 		{
 			Control = new swc.ListBox ();
+			Control.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 			Control.DisplayMemberPath = "Text";
 			Control.SelectionChanged += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			};
+			Control.MouseDoubleClick += delegate {
+				Widget.OnActivated (EventArgs.Empty);
+			};
+			Control.KeyDown += (sender, e) => {
+				if (e.Key == sw.Input.Key.Return) {
+					Widget.OnActivated (EventArgs.Empty);
+					e.Handled = true;
+				}
 			};
 			
 		}

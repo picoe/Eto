@@ -23,7 +23,7 @@ namespace Eto.Test.Interface.Sections.Controls
 			layout.AddRow (null, ColourButton (), null);
 			layout.EndVertical ();
 			
-			layout.AddRow (null);
+			layout.Add (null);
 		}
 		
 		Control NormalButton ()

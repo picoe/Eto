@@ -52,8 +52,8 @@ namespace Eto.Test.Interface.Sections.Controls
 
 		Control Wrap ()
 		{
-			var control = new TextArea{ 
-				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap.\nSecond Line",
+			var control = new TextArea{
+				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + Environment.NewLine + "Second Line",
 				Size = new Size (100, 50),
 				Wrap = true
 			};
@@ -64,7 +64,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		Control NoWrap ()
 		{
 			var control = new TextArea{ 
-				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap.\nSecond Line",
+				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + Environment.NewLine + "Second Line",
 				Size = new Size (100, 50),
 				Wrap = false
 			};

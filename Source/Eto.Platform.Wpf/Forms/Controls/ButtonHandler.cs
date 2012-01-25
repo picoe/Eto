@@ -11,9 +11,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public ButtonHandler ()
 		{
 			Control = new System.Windows.Controls.Button ();
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);
-			};
+			Control.Click += new System.Windows.RoutedEventHandler (Control_Click);
+		}
+
+		void Control_Click (object sender, System.Windows.RoutedEventArgs e)
+		{
+			Widget.OnClick (EventArgs.Empty);
 		}
 
 		public string Text

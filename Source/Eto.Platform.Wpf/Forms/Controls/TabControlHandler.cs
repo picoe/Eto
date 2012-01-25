@@ -12,6 +12,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public TabControlHandler ()
 		{
 			Control = new swc.TabControl ();
+			Control.Loaded += delegate {
+				Control.SelectionChanged += delegate {
+					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+				};
+			};
 		}
 
 		public int SelectedIndex
