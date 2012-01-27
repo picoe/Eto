@@ -4,6 +4,9 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
+using sw = System.Windows;
+using swi = System.Windows.Input;
+using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -86,6 +89,67 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				Control.Visibility = (value) ? System.Windows.Visibility.Visible : System.Windows.Visibility.Hidden;
+			}
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			var wpfcontrol = Control as swc.Control;
+			switch (handler) {
+				case Eto.Forms.Control.MouseMoveEvent:
+					Control.MouseMove += (sender, e) => {
+						var args = Generator.ConvertMouseEvent (Control, e);
+						Widget.OnMouseMove (args);
+						e.Handled = args.Handled;
+					};
+					break;
+				case Eto.Forms.Control.MouseDownEvent:
+					Control.MouseDown += (sender, e) => {
+						var args = Generator.ConvertMouseEvent (Control, e);
+						Widget.OnMouseDown (args);
+						e.Handled = args.Handled;
+					};
+					break;
+				case Eto.Forms.Control.MouseDoubleClickEvent:
+					if (wpfcontrol != null)
+						wpfcontrol.MouseDoubleClick += (sender, e) => {
+							var args = Generator.ConvertMouseEvent (Control, e);
+							Widget.OnMouseDoubleClick (args);
+							e.Handled = args.Handled;
+						};
+					else
+						Control.MouseDown += (sender, e) => {
+							if (e.ClickCount == 2) {
+								var args = Generator.ConvertMouseEvent (Control, e);
+								Widget.OnMouseDoubleClick (args);
+								e.Handled = args.Handled;
+							}
+						};
+					break;
+				case Eto.Forms.Control.MouseUpEvent:
+					Control.MouseUp += (sender, e) => {
+						var args = Generator.ConvertMouseEvent (Control, e);
+						Widget.OnMouseUp (args);
+						e.Handled = args.Handled;
+					};
+					break;
+				case Eto.Forms.Control.MouseEnterEvent:
+					Control.MouseEnter += (sender, e) => {
+						var args = Generator.ConvertMouseEvent (Control, e);
+						Widget.OnMouseEnter (args);
+						e.Handled = args.Handled;
+					};
+					break;
+				case Eto.Forms.Control.MouseLeaveEvent:
+					Control.MouseEnter += (sender, e) => {
+						var args = Generator.ConvertMouseEvent (Control, e);
+						Widget.OnMouseLeave (args);
+						e.Handled = args.Handled;
+					};
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
 			}
 		}
 

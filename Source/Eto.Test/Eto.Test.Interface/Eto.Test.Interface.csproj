@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -34,6 +34,9 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Sections\Drawing\BitmapSection.cs" />
+    <Compile Include="Sections\Drawing\AntialiasSection.cs" />
+    <Compile Include="Sections\Drawing\PathSection.cs" />
     <Compile Include="TestApplication.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="Dialogs\About.cs" />
@@ -75,9 +78,8 @@
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Folder Include="Sections\" />
-    <Folder Include="Sections\Controls\" />
+    <EmbeddedResource Include="TestImage.png" />
   </ItemGroup>
+  <ItemGroup />
 </Project>

@@ -4,6 +4,10 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using System.Text.RegularExpressions;
+using Eto.Forms;
+using swi = System.Windows.Input;
+using swm = System.Windows.Media;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf
 {
@@ -24,39 +28,49 @@ namespace Eto.Platform.Wpf
 		}
 
 
-		public static System.Windows.Media.Color Convert(Color value)
+		public static swm.Color Convert(Color value)
 		{
-			return System.Windows.Media.Color.FromScRgb(value.A, value.R, value.G, value.B);
+			return swm.Color.FromScRgb(value.A, value.R, value.G, value.B);
 		}
 
-		public static Color Convert(System.Windows.Media.Color value)
+		public static Color Convert(swm.Color value)
 		{
 			return new Color { A = value.ScA, R = value.ScR, G = value.ScG, B = value.ScB };
 		}
 
-		public static Padding Convert (System.Windows.Thickness thickness)
+		public static Padding Convert (sw.Thickness value)
 		{
-			return new Padding ((int)thickness.Left, (int)thickness.Top, (int)thickness.Right, (int)thickness.Bottom);
+			return new Padding ((int)value.Left, (int)value.Top, (int)value.Right, (int)value.Bottom);
 		}
 
-		public static System.Windows.Thickness Convert (Padding value)
+		public static sw.Thickness Convert (Padding value)
 		{
-			return new System.Windows.Thickness (value.Left, value.Top, value.Right, value.Bottom);
+			return new sw.Thickness (value.Left, value.Top, value.Right, value.Bottom);
 		}
 
-		public static Rectangle Convert (System.Windows.Rect rect)
+		public static Rectangle Convert (sw.Rect value)
 		{
-			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+			return new Rectangle ((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
 		}
 
-		public static Size Convert (System.Windows.Size size)
+		public static Size Convert (sw.Size value)
 		{
-			return new Size ((int)size.Width, (int)size.Height);
+			return new Size ((int)value.Width, (int)value.Height);
 		}
 
-		public static System.Windows.Size Convert (Size value)
+		public static sw.Size Convert (Size value)
 		{
-			return new System.Windows.Size (value.Width, value.Height);
+			return new sw.Size (value.Width, value.Height);
+		}
+
+		public static Point Convert (sw.Point value)
+		{
+			return new Point ((int)value.X, (int)value.Y);
+		}
+
+		public static sw.Point Convert (Point value)
+		{
+			return new sw.Point (value.X, value.Y);
 		}
 
 		public static string ConvertMneumonicToWPF (string value)
@@ -72,5 +86,17 @@ namespace Eto.Platform.Wpf
 			return Regex.Replace (value, "(?<![_])[_]", (match) => { if (match.Value == "__") return "_"; else return "&"; });
 		}
 
+
+		public static MouseEventArgs ConvertMouseEvent (sw.IInputElement control, swi.MouseEventArgs e)
+		{
+			var buttons = MouseButtons.None;
+			if (e.LeftButton == swi.MouseButtonState.Pressed) buttons |= MouseButtons.Primary;
+			if (e.RightButton == swi.MouseButtonState.Pressed) buttons |= MouseButtons.Alternate;
+			if (e.MiddleButton == swi.MouseButtonState.Pressed) buttons |= MouseButtons.Middle;
+			var modifiers = Key.None;
+			var location = Generator.Convert(e.GetPosition(control));
+
+			return new MouseEventArgs(buttons, modifiers, location);
+		}
 	}
 }

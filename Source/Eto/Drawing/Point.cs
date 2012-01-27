@@ -46,6 +46,12 @@ namespace Eto.Drawing
 			this.x = x;
 			this.y = y;
 		}
+
+		public Point (Size size)
+		{
+			this.x = size.Width;
+			this.y = size.Height;
+		}
 		
 		public Point(PointF point)
 		{
@@ -102,6 +108,16 @@ namespace Eto.Drawing
 		public static Point operator - (Point point, Size size)
 		{
 			return new Point(point.x - size.Width, point.y - size.Height);
+		}
+
+		public static Point operator + (Point point, int size)
+		{
+			return new Point (point.x + size, point.y + size);
+		}
+
+		public static Point operator - (Point point, int size)
+		{
+			return new Point (point.x - size, point.y - size);
 		}
 		
 		public static bool operator==(Point p1, Point p2)

@@ -26,6 +26,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
 		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
+		bool alpha;
 		
 		public BitmapHandler ()
 		{
@@ -49,6 +50,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void Create (int width, int height, PixelFormat pixelFormat)
 		{
 			switch (pixelFormat) {
+				case PixelFormat.Format32bppRgba:
+				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
+				alpha = true;
+					break;
 			case PixelFormat.Format32bppRgb:
 				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
 				break;

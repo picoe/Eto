@@ -12,6 +12,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new System.Windows.Controls.Button ();
 			Control.Click += new System.Windows.RoutedEventHandler (Control_Click);
+			Control.MinWidth = Button.DefaultSize.Width;
+			Control.MinHeight = Button.DefaultSize.Height;
 		}
 
 		void Control_Click (object sender, System.Windows.RoutedEventArgs e)

@@ -39,6 +39,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control = swm.Imaging.BitmapFrame.Create (stream);
 		}
 
+		public void SetBitmap (swm.Imaging.BitmapSource bitmap)
+		{
+			this.Control = bitmap;
+		}
+
 		public void Create (int width, int height, PixelFormat pixelFormat)
 		{
 			swm.PixelFormat format;
@@ -52,6 +57,9 @@ namespace Eto.Platform.Wpf.Drawing
 				case PixelFormat.Format32bppRgb:
 					format = swm.PixelFormats.Bgr32;
 					break;
+				case PixelFormat.Format32bppRgba:
+					format = swm.PixelFormats.Pbgra32;
+					break;
 				default:
 					throw new NotSupportedException ();
 			}
@@ -63,7 +71,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Resize (int width, int height)
 		{
-			throw new NotImplementedException ();
+			
 		}
 
 		public BitmapData Lock ()
@@ -107,5 +115,6 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get { return new Size (Control.PixelWidth, Control.PixelHeight); }
 		}
+
 	}
 }

@@ -8,7 +8,8 @@ namespace Eto.Drawing
 	{
 		Format32bppRgb,
 		Format24bppRgb,
-		Format16bppRgb555
+		Format16bppRgb555,
+		Format32bppRgba
 	}
 	
 	public enum ImageFormat
@@ -51,6 +52,12 @@ namespace Eto.Drawing
 		
 		public Bitmap (int width, int height, PixelFormat pixelFormat) : this(Generator.Current, width, height, pixelFormat)
 		{
+		}
+
+		public static Bitmap FromResource (string resourceName)
+		{
+			var asm = Assembly.GetCallingAssembly ();
+			return FromResource (asm, resourceName);
 		}
 		
 		public static Bitmap FromResource(Assembly asm, string resourceName) {

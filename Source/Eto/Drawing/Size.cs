@@ -107,13 +107,15 @@ namespace Eto.Drawing
 			result.Height = size1.Height - size2.Height;
 			return result;
 		}
-		
-		public static Size operator + (Size size1, int adder)
+
+		public static Size operator - (Size size1, int amount)
 		{
-			Size result = size1;
-			result.Width = size1.Width + adder;
-			result.Height = size1.Height + adder;
-			return result;
+			return new Size (size1.Width - amount, size1.Height - amount);
+		}
+
+		public static Size operator + (Size size1, int amount)
+		{
+			return new Size (size1.Width + amount, size1.Height + amount);
 		}
 		
 		public static bool operator == (Size size1, Size size2)

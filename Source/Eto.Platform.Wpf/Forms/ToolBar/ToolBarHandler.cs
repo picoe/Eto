@@ -2,24 +2,27 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using swc = System.Windows.Controls;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class ToolBarHandler : WidgetHandler<System.Windows.Controls.ToolBar, ToolBar>, IToolBar
+	public class ToolBarHandler : WidgetHandler<swc.ToolBar, ToolBar>, IToolBar
 	{
 		public ToolBarHandler ()
 		{
-			Control = new System.Windows.Controls.ToolBar ();
-				 
+			Control = new swc.ToolBar ();
+			swc.ToolBarTray.SetIsLocked (Control, true);
 		}
 
 		public void AddButton (ToolBarItem button)
 		{
+			Control.Items.Add (button.ControlObject);
 		}
 
 		public void RemoveButton (ToolBarItem button)
 		{
+			Control.Items.Remove (button.ControlObject);
 		}
 
 		public void Clear ()
@@ -31,7 +34,7 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get
 			{
-				return ToolBarTextAlign.Right;
+				return ToolBarTextAlign.Underneath;
 			}
 			set
 			{

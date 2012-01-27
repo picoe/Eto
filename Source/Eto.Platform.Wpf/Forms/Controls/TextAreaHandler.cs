@@ -19,6 +19,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
 			};
+			Control.TextChanged += delegate {
+				Widget.OnTextChanged (EventArgs.Empty);
+			};
 		}
 
 		public bool ReadOnly

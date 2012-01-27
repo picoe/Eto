@@ -15,7 +15,9 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Style itemStyle;
 		public void CreateControl (int cols, int rows)
 		{
-			Control = new swc.Grid ();
+			Control = new swc.Grid {
+				SnapsToDevicePixels = true
+			};
 			//Control.Background = System.Windows.Media.Brushes.Blue;
 			for (int i = 0; i < cols; i++) Control.ColumnDefinitions.Add (new swc.ColumnDefinition {
 				Width = new System.Windows.GridLength (1, i == cols - 1 ? System.Windows.GridUnitType.Star : System.Windows.GridUnitType.Auto)

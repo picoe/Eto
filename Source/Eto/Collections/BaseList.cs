@@ -161,6 +161,26 @@ namespace Eto.Collections
 			}
 		}
 
+		public void Sort ()
+		{
+			list.Sort ();
+		}
+
+		public void Sort (Comparison<T> comparison)
+		{
+			list.Sort (comparison);
+		}
+
+		public void Sort (IComparer<T> comparer)
+		{
+			list.Sort (comparer);
+		}
+
+		public void Sort (int index, int count, IComparer<T> comparer)
+		{
+			list.Sort (index, count, comparer);
+		}
+
 		#region IList implementation
 		int IList.Add (object value)
 		{
@@ -201,8 +221,6 @@ namespace Eto.Collections
 			set { this[index] = (T)value; }
 		}
 		#endregion
-
-
 
 		#region ICollection implementation
 		void ICollection.CopyTo (Array array, int index)

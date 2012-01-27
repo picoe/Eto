@@ -66,6 +66,9 @@ namespace Eto.Platform.Windows.Drawing
 				case PixelFormat.Format16bppRgb555:
 					sdPixelFormat = SD.Imaging.PixelFormat.Format16bppRgb555;
 					break;
+				case PixelFormat.Format32bppRgba:
+					sdPixelFormat = SD.Imaging.PixelFormat.Format32bppPArgb;
+					break;
 				default:
 					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, "Not supported");
 			}

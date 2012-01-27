@@ -13,7 +13,8 @@ namespace Eto.Platform.Wpf.Forms
 		public DockLayoutHandler ()
 		{
 			Control = new System.Windows.Controls.DockPanel { 
-				LastChildFill = true
+				LastChildFill = true,
+				SnapsToDevicePixels = true
 			};
 		}
 

@@ -22,6 +22,11 @@ namespace Eto.Drawing
 		{
 			inner = (IGraphicsPath)Handler;
 		}
+
+		public void AddLine (Point point)
+		{
+			AddLines (new Point[] { point });
+		}
 		
 		public void AddLines(IEnumerable<Point> points)
 		{

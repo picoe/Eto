@@ -19,12 +19,13 @@ namespace Eto.Platform.Windows
 			Control.Click += delegate {
 				Widget.OnClick (EventArgs.Empty);	
 			};
-			Control.CheckedChanged += control_CheckedChanged;
+			Control.CheckedChanged += delegate {
+				Widget.OnCheckedChanged (EventArgs.Empty);
+			};
 		}
 
 		public void Create(RadioButton controller)
 		{
-			
 			if (controller != null)
 			{
 				RadioButtonHandler controllerInner = (RadioButtonHandler)controller.Handler;
@@ -36,15 +37,9 @@ namespace Eto.Platform.Windows
 				}
 				controllerInner.group.Add((RadioButton)this.Widget);
 				Control.Click += controllerInner.control_RadioSwitch;
-				Control.CheckedChanged += control_CheckedChanged;
 			}
 		}
 
-		void control_CheckedChanged(object sender, EventArgs e)
-		{
-			Widget.OnCheckedChanged(e);
-		}
-		
 		private void control_RadioSwitch(object sender, EventArgs e)
 		{
 			if (group != null)

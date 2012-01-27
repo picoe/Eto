@@ -77,7 +77,7 @@ namespace Eto.Platform.Mac.Drawing
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
 
-					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 					Control = new NSImage ();
 					Control.AddRepresentation (rep);
 				
@@ -102,6 +102,23 @@ namespace Eto.Platform.Mac.Drawing
 					//var provider = new CGDataProvider (data.ClassHandle);
 					//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
 					//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
+					break;
+				}
+			case PixelFormat.Format32bppRgba: {
+					int numComponents = 4;
+					int bitsPerComponent = 8;
+					int bitsPerPixel = numComponents * bitsPerComponent;
+					int bytesPerPixel = bitsPerPixel / 8;
+					int bytesPerRow = bytesPerPixel * width;
+
+					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					Control = new NSImage ();
+					Control.AddRepresentation (rep);
+
+					//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
+					//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+					//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
+
 					break;
 				}
 			/*case PixelFormat.Format16bppRgb555:

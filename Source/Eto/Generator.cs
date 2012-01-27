@@ -159,14 +159,18 @@ namespace Eto
 			var constructor = Find (type);
 			if (constructor == null)
 				throw new ApplicationException (string.Format ("the type {0} cannot be found in this generator", type.FullName));
-
-			var val = constructor.Invoke (new object[] { }) as IWidget;
-			if (widget != null) {
-				widget.Handler = val;
-				val.Handler = widget;
+			try {
+				var val = constructor.Invoke (new object[] { }) as IWidget;
+				if (widget != null) {
+					widget.Handler = val;
+					val.Handler = widget;
+				}
+				OnWidgetCreated (new WidgetCreatedArgs (val));
+				return val;
 			}
-			OnWidgetCreated (new WidgetCreatedArgs (val));
-			return val;
+			catch (Exception e) {
+				throw new EtoException (string.Format("Could not create instance of type {0}", type), e);
+			}
 		}
 
 		public static MethodInfo GetEventMethod (Type type, string methodName)

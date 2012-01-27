@@ -2,48 +2,120 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WC = System.Windows.Controls;
-using WN = System.Windows.Navigation;
+using swc = System.Windows.Controls;
+using swn = System.Windows.Navigation;
 using Eto.Forms;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class WebViewHandler : WpfFrameworkElement<WC.WebBrowser, WebView>, IWebView
+	public class WebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView>, IWebView
 	{
+		[ComImport, InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
+		[Guid ("6d5140c1-7436-11ce-8034-00aa006009fa")]
+		internal interface IServiceProvider
+		{
+			[return: MarshalAs (UnmanagedType.IUnknown)]
+			object QueryService (ref Guid guidService, ref Guid riid);
+		}
+
+		static readonly Guid SID_SWebBrowserApp = new Guid("0002DF05-0000-0000-C000-000000000046");
+
+		Guid serviceGuid = SID_SWebBrowserApp;
+		Guid iid = typeof (SHDocVw.IWebBrowser2).GUID;
+
+
+		object QueryDocumentService
+		{
+			get
+			{
+				IServiceProvider serviceProvider = (IServiceProvider)Control.Document;
+				if (serviceProvider == null) return null;
+				return serviceProvider.QueryService (ref serviceGuid, ref iid);
+			}
+		}
+
+		SHDocVw.DWebBrowserEvents_Event oldEventObject;
+
+		SHDocVw.IWebBrowser2 WebBrowser2
+		{
+			get { return (SHDocVw.IWebBrowser2)QueryDocumentService; }
+		}
+
+		SHDocVw.DWebBrowserEvents_Event WebEvents
+		{
+			get { return (SHDocVw.DWebBrowserEvents_Event)QueryDocumentService; }
+		}
+
+		HashSet<string> delayedEvents = new HashSet<string> ();
+
 		public WebViewHandler ()
 		{
-			Control = new WC.WebBrowser ();
+			Control = new swc.WebBrowser ();
 		}
+
+		void HookDocumentEvents (string newEvent = null)
+		{
+			var webEvents = WebEvents;
+			if (oldEventObject != null) {
+				foreach (var handler in delayedEvents)
+					RemoveEvent (webEvents, handler);
+			}
+			if (newEvent != null)
+				delayedEvents.Add (newEvent);
+			if (webEvents != null) {
+				foreach (var handler in delayedEvents)
+					AttachEvent (webEvents, handler);
+			}
+			oldEventObject = webEvents;
+		}
+
+		void RemoveEvent (SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
+		{
+			switch (handler) {
+				case WebView.DocumentTitleChangedEvent:
+					WebEvents.TitleChange -= WebEvents_TitleChange;
+					break;
+			}
+		}
+
+		void AttachEvent (SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
+		{
+			switch (handler) {
+				case WebView.DocumentTitleChangedEvent:
+					WebEvents.TitleChange += WebEvents_TitleChange;
+					break;
+			}
+		}
+
+		void WebEvents_TitleChange (string Text)
+		{
+			var args = new WebViewTitleEventArgs (Text);
+			Widget.OnDocumentTitleChanged (args);
+		}
+
 
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
 				case WebView.DocumentLoadedEvent:
-					Control.LoadCompleted += delegate (object sender, WN.NavigationEventArgs e) {
+					Control.LoadCompleted += delegate (object sender, swn.NavigationEventArgs e) {
 						var args = new WebViewLoadedEventArgs (e.Uri);
 						Widget.OnDocumentLoaded (args);
+						Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (this.DocumentTitle));
+						HookDocumentEvents ();
 					};
 					break;
 				case WebView.DocumentLoadingEvent:
-					Control.Navigating += delegate (object sender, WN.NavigatingCancelEventArgs e) {
+					Control.Navigating += delegate (object sender, swn.NavigatingCancelEventArgs e) {
 						var args = new WebViewLoadingEventArgs (e.Uri);
 						Widget.OnDocumentLoading (args);
 						e.Cancel = args.Cancel;
+						HookDocumentEvents ();
 					};
 					break;
 				case WebView.DocumentTitleChangedEvent:
-					Control.LoadCompleted += delegate (object sender, WN.NavigationEventArgs e) {
-						//dynamic doc = Control.Document;
-						var doc = Control.Document as mshtml.HTMLDocument;
-						var args = new WebViewTitleEventArgs (doc.title);
-						Widget.OnDocumentTitleChanged(args);
-					};
-					/*Control.Navigated += delegate (object sender, WN.NavigationEventArgs e) {
-						//dynamic doc = Control.Document;
-						var doc = Control.Document as mshtml.HTMLDocument;
-						var args = new WebViewTitleEventArgs (doc.title);
-						Widget.OnDocumentTitleChanged(args);
-					};*/
+					HookDocumentEvents(handler);
 					break;
 				default:
 					base.AttachEvent (handler);
@@ -59,7 +131,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 			set
 			{
-				
 			}
 		}
 
@@ -102,7 +173,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void Stop ()
 		{
-			
+			var browser = WebBrowser2;
+			if (browser != null)
+				browser.Stop ();
 		}
 
 		public void Reload ()
@@ -112,10 +185,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string DocumentTitle
 		{
-			get { 
-				var doc = Control.Document as mshtml.HTMLDocument;
-				if (doc != null) return doc.title;
+			get {
+				var browser = WebBrowser2;
+				if (browser != null && browser.Document != null)
+					return browser.Document.Title;
 				else return null;
+				/*var doc = Control.Document as mshtml.HTMLDocument;
+				if (doc != null) return doc.title;
+				else return null;*/
 			}
 		}
 

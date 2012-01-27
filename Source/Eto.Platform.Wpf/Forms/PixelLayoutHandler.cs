@@ -12,7 +12,9 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		public PixelLayoutHandler ()
 		{
-			Control = new WC.Canvas ();
+			Control = new WC.Canvas {
+				SnapsToDevicePixels = true
+			};
 		}
 
 		public override void OnLoad ()

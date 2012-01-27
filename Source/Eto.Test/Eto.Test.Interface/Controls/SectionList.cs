@@ -3,6 +3,7 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Test.Interface.Sections.Controls;
+using Eto.Test.Interface.Sections.Drawing;
 
 namespace Eto.Test.Interface.Controls
 {
@@ -67,18 +68,18 @@ namespace Eto.Test.Interface.Controls
 
 			var top = new TreeItem();
 			
-			var node = new TreeItem{ Text = "Controls", Expanded = true };
-			node.Children.AddRange (ControlSection ());
-			top.Children.Add (node);
+			top.Children.Add (DrawingSection());
+			top.Children.Add (ControlSection ());
 
 			this.TopNode = top;
 			
 			this.SelectedItem = top.Children.FirstOrDefault();
 		}
 		
-		IEnumerable<ITreeItem> ControlSection()
+		ITreeItem ControlSection()
 		{
-			var items = new List<ITreeItem> ();
+			var node = new TreeItem { Text = "Controls", Expanded = true };
+			var items = node.Children;
 			
 			items.Add (new Section<LabelSection> { Text = "Label Control" });
 			items.Add (new Section<ButtonSection> { Text = "Button Control" });
@@ -101,7 +102,20 @@ namespace Eto.Test.Interface.Controls
 			items.Add (new Section<XamlSection> { Text = "Xaml" });
 			
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
-			return items;
+			return node;
+		}
+
+		ITreeItem DrawingSection ()
+		{
+			var node = new TreeItem { Text = "Drawing", Expanded = true };
+			var items = node.Children;
+
+			items.Add (new Section<BitmapSection> { Text = "Bitmap" });
+			items.Add (new Section<PathSection> { Text = "Line Path" });
+			items.Add (new Section<AntialiasSection> { Text = "Antialias" });
+
+			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			return node;
 		}
 		
 		public override void OnSelectionChanged (EventArgs e)

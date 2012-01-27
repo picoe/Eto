@@ -54,7 +54,17 @@ namespace Eto.Drawing
 			return new PointF(point.x - size.Width, point.y - size.Height);
 		}
 
-		public static bool operator==(PointF p1, PointF p2)
+		public static PointF operator + (PointF point, float size)
+		{
+			return new PointF (point.x + size, point.y + size);
+		}
+
+		public static PointF operator - (PointF point, float size)
+		{
+			return new PointF (point.x - size, point.y - size);
+		}
+
+		public static bool operator == (PointF p1, PointF p2)
 		{
 			return p1.x == p2.x && p1.y == p2.y;
 		}

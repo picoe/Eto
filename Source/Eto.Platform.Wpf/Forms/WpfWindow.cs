@@ -5,25 +5,39 @@ using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
+using swm = System.Windows.Media;
 using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfWindow<T, W> : WpfControl<T, W>, IWindow
-		where T: System.Windows.Window
+	public interface IWpfWindow
+	{
+		sw.Window Control { get; }
+	}
+
+	public abstract class WpfWindow<T, W> : WpfControl<T, W>, IWindow, IWpfWindow
+		where T: sw.Window
 		where W: Window
 	{
 		Icon icon;
 		MenuBar menu;
 		ToolBar toolBar;
-		System.Windows.Controls.DockPanel main;
-		System.Windows.Controls.DockPanel content;
+		swc.DockPanel main;
+		swc.ContentControl menuHolder;
+		swc.ToolBarTray toolBarHolder;
+		swc.DockPanel content;
 
 		protected void Setup ()
 		{
 			main = new swc.DockPanel ();
 			content = new swc.DockPanel ();
+			menuHolder = new swc.ContentControl ();
+			toolBarHolder = new swc.ToolBarTray { IsEnabled = true };
 			content.Background = System.Windows.SystemColors.ControlBrush;
+			swc.DockPanel.SetDock (menuHolder, swc.Dock.Top);
+			swc.DockPanel.SetDock (toolBarHolder, swc.Dock.Top);
+			main.Children.Add (menuHolder);
+			main.Children.Add (toolBarHolder);
 			main.Children.Add (content);
 			Control.Content = main;
 		}
@@ -31,8 +45,13 @@ namespace Eto.Platform.Wpf.Forms
 		public ToolBar ToolBar
 		{
 			get { return toolBar; }
-			set {
+			set
+			{
 				toolBar = value;
+				toolBarHolder.ToolBars.Clear ();
+				if (toolBar != null) {
+					toolBarHolder.ToolBars.Add((swc.ToolBar)toolBar.ControlObject);
+				}
 			}
 		}
 
@@ -43,17 +62,14 @@ namespace Eto.Platform.Wpf.Forms
 
 		public MenuBar Menu
 		{
-			get {
-				return menu;
-			}
+			get { return menu; }
 			set {
-				if (menu != null)
-					main.Children.Remove ((sw.UIElement)menu.ControlObject);
 				menu = value;
 				if (menu != null) {
-					var element = (sw.UIElement)menu.ControlObject;
-					swc.DockPanel.SetDock (element, swc.Dock.Top);
-					main.Children.Insert (0, element);
+					menuHolder.Content = (sw.UIElement)menu.ControlObject;
+				}
+				else {
+					menuHolder.Content = null;
 				}
 			}
 		}
@@ -66,24 +82,24 @@ namespace Eto.Platform.Wpf.Forms
 				icon = value;
 				if (value != null)
 				{
-					Control.Icon = (System.Windows.Media.ImageSource)icon.ControlObject;
+					Control.Icon = (swm.ImageSource)icon.ControlObject;
 				}
 			}
 		}
 
 		public bool Resizable
 		{
-			get { return Control.ResizeMode == System.Windows.ResizeMode.CanResize || Control.ResizeMode == System.Windows.ResizeMode.CanResizeWithGrip; }
+			get { return Control.ResizeMode == sw.ResizeMode.CanResize || Control.ResizeMode == sw.ResizeMode.CanResizeWithGrip; }
 			set
 			{
-				if (value) Control.ResizeMode = System.Windows.ResizeMode.CanResizeWithGrip;
-				else Control.ResizeMode = System.Windows.ResizeMode.CanMinimize;
+				if (value) Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
+				else Control.ResizeMode = sw.ResizeMode.CanMinimize;
 			}
 		}
 
 		public void Minimize()
 		{
-			Control.WindowState = System.Windows.WindowState.Minimized;
+			Control.WindowState = sw.WindowState.Minimized;
 		}
 
 		public Size ClientSize
@@ -100,7 +116,7 @@ namespace Eto.Platform.Wpf.Forms
 		public virtual void SetLayout(Layout layout)
 		{
 			content.Children.Clear ();
-			content.Children.Add((System.Windows.UIElement)layout.ControlObject);
+			content.Children.Add ((sw.UIElement)layout.ControlObject);
 		}
 
 		public string Text
@@ -128,11 +144,11 @@ namespace Eto.Platform.Wpf.Forms
 			get
 			{
 				switch (Control.WindowState) {
-					case System.Windows.WindowState.Maximized:
+					case sw.WindowState.Maximized:
 						return WindowState.Maximized;
-					case System.Windows.WindowState.Minimized:
+					case sw.WindowState.Minimized:
 						return WindowState.Minimized;
-					case System.Windows.WindowState.Normal:
+					case sw.WindowState.Normal:
 						return WindowState.Normal;
 					default:
 						throw new NotSupportedException ();
@@ -142,13 +158,13 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				switch (value) {
 					case WindowState.Maximized:
-						Control.WindowState = System.Windows.WindowState.Maximized;
+						Control.WindowState = sw.WindowState.Maximized;
 						break;
 					case WindowState.Minimized:
-						Control.WindowState = System.Windows.WindowState.Minimized;
+						Control.WindowState = sw.WindowState.Minimized;
 						break;
 					case WindowState.Normal:
-						Control.WindowState = System.Windows.WindowState.Normal;
+						Control.WindowState = sw.WindowState.Normal;
 						break;
 					default:
 						throw new NotSupportedException ();
@@ -182,6 +198,11 @@ namespace Eto.Platform.Wpf.Forms
 					Control.MinWidth = 0;
 				}
 			}
+		}
+
+		sw.Window IWpfWindow.Control
+		{
+			get { return this.Control; }
 		}
 	}
 }

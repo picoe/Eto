@@ -80,12 +80,14 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		public static SizeF operator + (SizeF size1, float adder)
+		public static SizeF operator - (SizeF size1, float amount)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width + adder;
-			result.Height = size1.Height + adder;
-			return result;
+			return new SizeF (size1.Width - amount, size1.Height - amount);
+		}
+
+		public static SizeF operator + (SizeF size1, float amount)
+		{
+			return new SizeF (size1.Width + amount, size1.Height + amount);
 		}
 
 		public static bool operator == (SizeF size1, SizeF size2)

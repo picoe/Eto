@@ -65,6 +65,9 @@ namespace Eto.Platform.Windows.Drawing
 		public void CreateFromImage (Bitmap image)
 		{
 			Control = SD.Graphics.FromImage ((SD.Image)image.ControlObject);
+			Control.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
+			this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+			Control.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear; //.NearestNeighbor;
 		}
 
 		public void Commit ()

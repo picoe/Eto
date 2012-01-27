@@ -3,20 +3,35 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class ToolBarButtonHandler : ToolBarItemHandler<System.Windows.Controls.Button, ToolBarButton>, IToolBarButton
+	public class ToolBarButtonHandler : ToolBarItemHandler<swc.Button, ToolBarButton>, IToolBarButton
 	{
+		Icon icon;
+		swc.Image image;
+		swc.TextBlock label;
 		public ToolBarButtonHandler ()
 		{
-			Control = new System.Windows.Controls.Button ();
+			Control = new swc.Button ();
+			image = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
+			label = new swc.TextBlock ();
+			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
+			panel.Children.Add (image);
+			panel.Children.Add (label);
+			Control.Content = panel;
+			Control.Click += delegate {
+				Widget.OnClick (EventArgs.Empty);
+			};
 		}
 
 		public string Text
 		{
-			get { return Control.Content as string;	}
-			set { Control.Content = value; }
+			get { return label.Text; }
+			set { label.Text = value; }
 		}
 
 		public string ToolTip
@@ -25,15 +40,16 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public Eto.Drawing.Icon Icon
+		public Icon Icon
 		{
-			get
-			{
-				return null;
-			}
+			get { return icon; }
 			set
 			{
-				
+				icon = value;
+				if (icon != null)
+					image.Source = icon.ControlObject as swm.ImageSource;
+				else
+					image.Source = null;
 			}
 		}
 

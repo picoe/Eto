@@ -13,13 +13,28 @@ namespace Eto.Platform.Windows.Forms
 	public class ImageViewHandler : WindowsControl<SWF.PictureBox, ImageView>, IImageView
 	{
 		IImage image;
+		bool sizeSet;
 		
 		public ImageViewHandler ()
 		{
-			Control = new SWF.PictureBox();
-			Control.SizeMode = SWF.PictureBoxSizeMode.CenterImage;
+			Control = new SWF.PictureBox {
+				BorderStyle = SWF.BorderStyle.None,
+				SizeMode = SWF.PictureBoxSizeMode.CenterImage
+			};
 		}
-	
+
+		public override Size Size
+		{
+			get
+			{
+				return base.Size;
+			}
+			set
+			{
+				base.Size = value;
+				sizeSet = true;
+			}
+		}
 
 		#region IImageView implementation
 		public IImage Image {
@@ -35,6 +50,8 @@ namespace Eto.Platform.Windows.Forms
 					var icon = image.Handler as IconHandler;
 					Control.Image = icon.GetLargestIcon().ToBitmap();
 				}
+				if (!sizeSet && Control.Image != null)
+					Control.Size = Control.Image.Size;
 			}
 		}
 		#endregion

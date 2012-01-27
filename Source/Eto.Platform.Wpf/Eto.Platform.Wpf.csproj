@@ -47,9 +47,19 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomControls\VirtualCanvas\Gestures\AutoScroll.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\Gestures\ExponentialAnimation.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\Gestures\MapZoom.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\Gestures\Pan.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\Gestures\RectangleSelectionGesture.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\Gestures\SelectionRectVisual.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\PerfTimer.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\QuadTree.cs" />
+    <Compile Include="CustomControls\VirtualCanvas\VirtualCanvas.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
     <Compile Include="Drawing\FontHandler.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
+    <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
@@ -58,6 +68,7 @@
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
@@ -72,11 +83,14 @@
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\DialogHandler.cs" />
     <Compile Include="Forms\Menu\ContextMenuHandler.cs" />
     <Compile Include="Forms\Menu\ImageMenuItemHandler.cs" />
     <Compile Include="Forms\MessageBoxHandler.cs" />
+    <Compile Include="Forms\OpenFileDialogHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs" />
@@ -107,6 +121,15 @@
       <VersionMinor>0</VersionMinor>
       <Lcid>0</Lcid>
       <WrapperTool>primary</WrapperTool>
+      <Isolated>False</Isolated>
+      <EmbedInteropTypes>True</EmbedInteropTypes>
+    </COMReference>
+    <COMReference Include="SHDocVw">
+      <Guid>{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>1</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
       <Isolated>False</Isolated>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </COMReference>

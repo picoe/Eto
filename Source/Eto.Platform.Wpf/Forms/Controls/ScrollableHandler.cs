@@ -2,17 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WC = System.Windows.Controls;
-using W = System.Windows;
+using swc = System.Windows.Controls;
+using sw = System.Windows;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ScrollableHandler : WpfFrameworkElement<WC.Border, Scrollable>, IScrollable
+	public class ScrollableHandler : WpfFrameworkElement<swc.Border, Scrollable>, IScrollable
 	{
 		BorderType borderType;
-		WC.ScrollViewer scroller;
+		swc.ScrollViewer scroller;
 
 		public override Eto.Drawing.Color BackgroundColor
 		{
@@ -30,20 +30,24 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				return new Size ((int)Control.MinWidth, (int)Control.MinHeight);
+				return new Size ((int)Control.Width, (int)Control.Height);
 			}
 			set
 			{
-				Control.MinWidth = value.Width; Control.MinHeight = value.Height;
+				Control.Width = value.Width; Control.Height = value.Height;
 			}
 		}
 
 		public ScrollableHandler ()
 		{
-			Control = new WC.Border ();
-			scroller = new WC.ScrollViewer {
-				VerticalScrollBarVisibility = WC.ScrollBarVisibility.Auto,
-				HorizontalScrollBarVisibility = WC.ScrollBarVisibility.Auto
+			Control = new swc.Border {
+				SnapsToDevicePixels = true
+			};
+			scroller = new swc.ScrollViewer {
+				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Visible,
+				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Visible,
+				CanContentScroll = true,
+				SnapsToDevicePixels = true
 			};
 			Control.Child = scroller;
 			this.Border = BorderType.Bezel;
@@ -82,21 +86,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public BorderType Border
 		{
-			get
-			{
-				return borderType;
-			}
+			get { return borderType; }
 			set
 			{
 				borderType = value;
 				switch (value) {
 					case BorderType.Bezel:
-						Control.BorderBrush = W.SystemColors.ControlDarkDarkBrush;
-						Control.BorderThickness = new W.Thickness (1.0);
+						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
+						Control.BorderThickness = new sw.Thickness (1.0);
 						break;
 					case BorderType.Line:
-						Control.BorderBrush = W.SystemColors.ControlDarkDarkBrush;
-						Control.BorderThickness = new W.Thickness (1);
+						Control.BorderBrush = sw.SystemColors.ControlDarkDarkBrush;
+						Control.BorderThickness = new sw.Thickness (1);
 						break;
 					case BorderType.None:
 						Control.BorderBrush = null;
@@ -126,7 +127,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public object ContainerObject
 		{
-			get { return Control; }
+			get { return scroller; }
 		}
 
 		public void SetLayout (Layout layout)
