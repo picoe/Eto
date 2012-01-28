@@ -12,6 +12,8 @@ namespace Eto.Platform.Wpf.Forms
 		where T: mw.FileDialog
 		where W: FileDialog
 	{
+		IFileDialogFilter[] filters;
+
 		public string FileName
 		{
 			get { return Control.FileName; }
@@ -20,13 +22,39 @@ namespace Eto.Platform.Wpf.Forms
 
 		public IEnumerable<IFileDialogFilter> Filters
 		{
-			get; set;
+			get { return filters; }
+			set
+			{
+				filters = value.ToArray ();
+				var filterValues = from f in filters
+								   select string.Format ("{0}|{1}",
+									   f.Name,
+									   string.Join (";",
+										   from ex in f.Extensions
+										   select "*" + ex
+									   )
+								   );
+				Control.Filter = string.Join ("|", filterValues);
+			}
+		}
+
+		public IFileDialogFilter CurrentFilter
+		{
+			get
+			{
+				if (CurrentFilterIndex == -1 || filters == null) return null;
+				return filters[CurrentFilterIndex];
+			}
+			set
+			{
+				CurrentFilterIndex = Array.IndexOf (filters, value);
+			}
 		}
 
 		public int CurrentFilterIndex
 		{
-			get { return Control.FilterIndex; }
-			set { Control.FilterIndex = value; }
+			get { return (Control.FilterIndex > 0) ? Control.FilterIndex - 1 : 0; }
+			set { Control.FilterIndex = value + 1; }
 		}
 
 		public bool CheckFileExists

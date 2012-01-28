@@ -21,12 +21,36 @@ namespace Eto.Forms
 	
 	public class FileDialogFilter : IFileDialogFilter
 	{
+		public FileDialogFilter ()
+		{
+		}
+
+		public FileDialogFilter (string name, params string[] extensions)
+		{
+			this.Name = name;
+			this.Extensions = extensions;
+		}
+
 		public string Name {
 			get; set;
 		}
 		
 		public string[] Extensions {
 			get; set;
+		}
+
+		public override string ToString ()
+		{
+			return Name;
+		}
+
+		public override int GetHashCode ()
+		{
+			int hash;
+			if (Name != null) hash = Name.GetHashCode ();
+			else hash = string.Empty.GetHashCode();
+			if (Extensions != null) hash ^= Extensions.GetHashCode ();
+			return hash;
 		}
 	}
 	
@@ -35,6 +59,7 @@ namespace Eto.Forms
 		string FileName { get; set; }
 		IEnumerable<IFileDialogFilter> Filters { get; set; }
 		int CurrentFilterIndex { get; set; }
+		IFileDialogFilter CurrentFilter { get; set; }
 		bool CheckFileExists { get; set; }
 		string Title { get; set; }
 		Uri Directory { get; set; }
@@ -65,6 +90,12 @@ namespace Eto.Forms
 		{
 			get { return inner.CurrentFilterIndex; }
 			set { inner.CurrentFilterIndex = value; }
+		}
+
+		public IFileDialogFilter CurrentFilter
+		{
+			get { return inner.CurrentFilter; }
+			set { inner.CurrentFilter = value; }
 		}
 
 		public bool CheckFileExists 

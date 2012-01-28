@@ -56,6 +56,19 @@ namespace Eto.Platform.GtkSharp
 				}
 			}
 		}
+
+		public IFileDialogFilter CurrentFilter
+		{
+			get
+			{
+				if (CurrentFilterIndex == -1 || filters == null) return null;
+				return filters[CurrentFilterIndex];
+			}
+			set
+			{
+				CurrentFilterIndex = Array.IndexOf (filters, value);
+			}
+		}
 		
 		public int CurrentFilterIndex
 		{

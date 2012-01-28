@@ -149,6 +149,11 @@ namespace Eto.Forms
 			: this(null, padding, spacing)
 		{
 		}
+
+		public DynamicLayout (Container container, Size? spacing)
+			: this (container, null, spacing)
+		{
+		}
 		
 		public DynamicLayout (Container container, Padding? padding = null, Size? spacing = null)
 			: base (container != null ? container.Generator : Generator.Current, container, new InternalHandler (), false)

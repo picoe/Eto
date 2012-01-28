@@ -45,6 +45,19 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+		public IFileDialogFilter CurrentFilter
+		{
+			get
+			{
+				if (CurrentFilterIndex == -1 || filters == null) return null;
+				return filters[CurrentFilterIndex];
+			}
+			set
+			{
+				CurrentFilterIndex = Array.IndexOf (filters, value);
+			}
+		}
+
 		public int CurrentFilterIndex {
 			get { return (Control.FilterIndex > 0) ? Control.FilterIndex - 1 : 0; }
 			set { Control.FilterIndex = value + 1; }

@@ -68,8 +68,9 @@ namespace Eto.Platform.Wpf.Drawing
 			stride = (width * format.BitsPerPixel + 7) / 8;
 
 			var bufferSize = stride * height;
-			pixels = Marshal.AllocHGlobal (bufferSize); 
-			Control = swm.Imaging.WriteableBitmap.Create (width, height, 96, 96, format, null, pixels, bufferSize, stride);
+			pixels = Marshal.AllocHGlobal (bufferSize);
+			Marshal.Copy (new byte[bufferSize], 0, pixels, bufferSize); // clear out buffer
+			Control = swm.Imaging.BitmapFrame.Create (width, height, 96, 96, format, null, pixels, bufferSize, stride);
 		}
 
 		public void Resize (int width, int height)

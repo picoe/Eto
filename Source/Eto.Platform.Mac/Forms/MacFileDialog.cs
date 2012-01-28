@@ -149,6 +149,19 @@ namespace Eto.Platform.Mac.Forms
             }
         }
 
+		public IFileDialogFilter CurrentFilter
+		{
+			get
+			{
+				if (CurrentFilterIndex == -1 || filters == null) return null;
+				return filters[CurrentFilterIndex];
+			}
+			set
+			{
+				CurrentFilterIndex = Array.IndexOf (filters, value);
+			}
+		}
+
         public int CurrentFilterIndex {
             get { 
 				var title = fileTypes.TitleOfSelectedItem;
