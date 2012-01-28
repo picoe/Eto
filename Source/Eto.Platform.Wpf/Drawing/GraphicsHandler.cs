@@ -68,8 +68,8 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var pen = GetPen(color);
 			double t = pen.Thickness / 2;
-			PushGuideLines (x + t, y + t, width, height);
-			Control.DrawRectangle (null, pen, new sw.Rect (x, y, width, height));
+			PushGuideLines (x + t, y + t, width- 1, height - 1);
+			Control.DrawRectangle (null, pen, new sw.Rect (x, y, width - 1, height - 1));
 			Control.Pop ();
 		}
 
@@ -119,10 +119,24 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
 		{
+			var src = image.ControlObject as swm.ImageSource;
+			//Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { destination.Left, destination.Right }, new double[] { destination.Top, destination.Bottom }));
+			Control.PushClip (new swm.RectangleGeometry (Generator.Convert (destination)));
+			if (source.Size != destination.Size) {
+				// need to scale
+			}
+			Control.DrawImage (src, new sw.Rect(destination.X - source.X, destination.Y - source.Y, src.Width, src.Height));
+			Control.Pop ();
+			//Control.Pop ();
+			//Control.Pop ();
 		}
 
 		public void DrawIcon (Icon icon, int x, int y, int width, int height)
 		{
+			var src = ((IconHandler)icon.Handler).Control;
+			Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { x, x + width }, new double[] { y, y + height }));
+			Control.DrawImage (src, new sw.Rect (x, y, width, height));
+			Control.Pop ();
 		}
 
 		public void DrawText (Font font, Color color, int x, int y, string text)

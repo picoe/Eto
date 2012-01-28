@@ -4,25 +4,38 @@ using System.Linq;
 using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
+using swm = System.Windows.Media;
+using msc = Microsoft.Sample.Controls;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
+	public interface ISupportVirtualize
+	{
+		IEnumerable<msc.IVirtualChild> Children { get; }
+		void ClearChildren ();
+	}
+
 	public class ScrollableHandler : WpfFrameworkElement<swc.Border, Scrollable>, IScrollable
 	{
 		BorderType borderType;
 		swc.ScrollViewer scroller;
+		msc.VirtualCanvas virtualCanvas;
+		swc.Grid grid;
 
-		public override Eto.Drawing.Color BackgroundColor
+		public override Color BackgroundColor
 		{
 			get
 			{
-				throw new NotImplementedException ();
+				var brush = virtualCanvas.Background as swm.SolidColorBrush;
+				if (brush != null) return Generator.Convert (brush.Color);
+				else return Color.Black;
 			}
 			set
 			{
-				throw new NotImplementedException ();
+				virtualCanvas.Background = new swm.SolidColorBrush (Generator.Convert (value));
 			}
 		}
 
@@ -44,13 +57,41 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				SnapsToDevicePixels = true
 			};
 			scroller = new swc.ScrollViewer {
-				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Visible,
-				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Visible,
+				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
+				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				CanContentScroll = true,
 				SnapsToDevicePixels = true
 			};
+			virtualCanvas = new msc.VirtualCanvas {
+				SnapsToDevicePixels = true,
+				OrderControls = false
+			};
+
+			scroller.Content = virtualCanvas;
+			grid = new swc.Grid ();
+			//swc.Grid.SetRow (virtualCanvas, 0);
+			//swc.Grid.SetColumn (virtualCanvas, 0);
+			//grid.Children.Add (virtualCanvas);
+			//scroller.Content = grid;
 			Control.Child = scroller;
 			this.Border = BorderType.Bezel;
+		}
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			GetVirtualChildren ();
+		}
+
+		void GetVirtualChildren ()
+		{
+			var virtualChildren = new ObservableCollection<msc.IVirtualChild> ();
+			foreach (var child in Widget.Children.Select (r => r.Handler).OfType<ISupportVirtualize> ()) {
+				child.ClearChildren ();
+				foreach (var item in child.Children)
+					virtualChildren.Add (item);
+			}
+			virtualCanvas.VirtualChildren = virtualChildren;
 		}
 
 		public void UpdateScrollSizes ()
@@ -127,12 +168,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public object ContainerObject
 		{
-			get { return scroller; }
+			get { return virtualCanvas.ContentCanvas; }
 		}
 
 		public void SetLayout (Layout layout)
 		{
-			scroller.Content = layout.ControlObject;
+			var control = layout.ControlObject as sw.UIElement;
+			//swc.Grid.SetRow (control, 0);
+			//swc.Grid.SetColumn (control, 0);
+			//grid.Children.Add (control);
+			virtualCanvas.Backdrop.Child = control;
 		}
 
 		public Eto.Drawing.Size? MinimumSize

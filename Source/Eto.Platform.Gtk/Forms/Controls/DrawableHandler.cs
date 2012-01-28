@@ -13,7 +13,7 @@ namespace Eto.Platform.GtkSharp
 			Control.ExposeEvent += control_ExposeEvent;
 			Control.Events |= Gdk.EventMask.ExposureMask;
 			//Control.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(0, 0, 0));
-			Control.DoubleBuffered = false;
+			//Control.DoubleBuffered = false;
 			Control.CanFocus = false;
 			Control.CanDefault = true;
 		}
@@ -30,7 +30,7 @@ namespace Eto.Platform.GtkSharp
 		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
-			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BlackGC));
+			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BackgroundGC(Gtk.StateType.Normal)));
 			Rectangle rect = Generator.Convert (ev.Region.Clipbox);
 			Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			graphics.Dispose();
@@ -38,7 +38,7 @@ namespace Eto.Platform.GtkSharp
 
 		public void Update (Rectangle rect)
 		{
-			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC));
+			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BackgroundGC (Gtk.StateType.Normal)));
 			Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			graphics.Dispose();
 		}

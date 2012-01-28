@@ -49,6 +49,8 @@ namespace Microsoft.Sample.Controls
         /// </summary>
         event EventHandler BoundsChanged;
 
+		Canvas ParentCanvas { get; }
+
         /// <summary>
         /// Return the current Visual or null if it has not been created yet.
         /// </summary>
@@ -368,7 +370,9 @@ namespace Microsoft.Sample.Controls
                         _index.Insert(n, n.Bounds);
                     }
                 }
-            }
+				if (!double.IsNaN (_backdrop.ActualWidth) && !double.IsNaN (_backdrop.ActualWidth))
+					_extent = Rect.Union (new Rect (_extent), new Rect (0, 0, _backdrop.ActualWidth, _backdrop.ActualWidth)).Size;
+			}
 
             // Make sure we honor the min width & height.
             double w = Math.Max(_content.MinWidth, _extent.Width);
@@ -377,6 +381,7 @@ namespace Microsoft.Sample.Controls
             _content.Height = h;
 
             // Make sure the backdrop covers the ViewPort bounds.
+			/*
             double zoom = _scale.ScaleX;
             if (!double.IsInfinity(this.ViewportHeight) &&
                 !double.IsInfinity(this.ViewportHeight))
@@ -386,6 +391,7 @@ namespace Microsoft.Sample.Controls
                 _backdrop.Width = w;
                 _backdrop.Height = h;
             }
+			 * */
 
             if (_owner != null)
             {
@@ -653,6 +659,7 @@ namespace Microsoft.Sample.Controls
             Rect bounds = child.Bounds;
             Canvas.SetLeft(e, bounds.Left);
             Canvas.SetTop(e, bounds.Top);
+			var parentCanvas = child.ParentCanvas ?? _content;
 
 			if (OrderControls) {
 
@@ -661,12 +668,12 @@ namespace Microsoft.Sample.Controls
 
 				// Now do a binary search for the correct insertion position based
 				// on the visual positions of the existing visible children.
-				UIElementCollection c = _content.Children;
+				UIElementCollection c = parentCanvas.Children;
 				int min = 0;
 				int max = c.Count - 1;
 				while (max > min + 1) {
 					int i = (min + max) / 2;
-					UIElement v = _content.Children[i];
+					UIElement v = parentCanvas.Children[i];
 					IVirtualChild n = v.GetValue (VirtualChildProperty) as IVirtualChild;
 					if (n != null) {
 						int index = _visualPositions[n];
@@ -701,7 +708,7 @@ namespace Microsoft.Sample.Controls
 				c.Insert (max, e);
 			}
 			else {
-				_content.Children.Add (e);
+				parentCanvas.Children.Add (e);
 			}
 
         }
@@ -759,6 +766,7 @@ namespace Microsoft.Sample.Controls
                 // Iterate over the visible range of nodes and make sure they have visuals.
                 foreach (IVirtualChild n in _index.GetNodesInside(dirty))
                 {
+					var content = n.ParentCanvas ?? _content;
                     UIElement e = n.Visual;
                     if (e != null)
                     {
@@ -766,7 +774,7 @@ namespace Microsoft.Sample.Controls
                         if (!nrect.IntersectsWith(visible))
                         {
                             e.ClearValue(VirtualChildProperty);
-                            _content.Children.Remove(e);
+							content.Children.Remove (e);
                             n.DisposeVisual();
                             _removed++;                            
                         }

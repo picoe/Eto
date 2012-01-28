@@ -27,6 +27,19 @@ namespace Eto.Platform.Wpf
 			base.ExecuteOnMainThread(action);
 		}
 
+		public static Size GetSize (sw.FrameworkElement element)
+		{
+			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
+				return new Size ((int)element.ActualWidth, (int)element.ActualHeight);
+			else
+				return new Size ((int)(element.Width < 0 ? 0 : element.Width), (int)(element.Height < 0 ? 0 : element.Height));
+		}
+
+		public static void SetSize (sw.FrameworkElement element, Size size)
+		{
+			element.Width = size.Width;
+			element.Height = size.Height;
+		}
 
 		public static swm.Color Convert(Color value)
 		{
@@ -53,6 +66,11 @@ namespace Eto.Platform.Wpf
 			return new Rectangle ((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
 		}
 
+		public static sw.Rect Convert (Rectangle value)
+		{
+			return new sw.Rect (value.X, value.Y, value.Width, value.Height);
+		}
+
 		public static Size Convert (sw.Size value)
 		{
 			return new Size ((int)value.Width, (int)value.Height);
@@ -72,6 +90,7 @@ namespace Eto.Platform.Wpf
 		{
 			return new sw.Point (value.X, value.Y);
 		}
+
 
 		public static string ConvertMneumonicToWPF (string value)
 		{

@@ -32,30 +32,25 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			
 		}
 
-		public override void OnLoad (EventArgs e)
-		{
-			base.OnLoad (e);
-			Control.ItemsSource = Widget.Items;
-		}
-
 		public void AddRange (IEnumerable<IListItem> collection)
 		{
-			//Control.UpdateLayout ();
+			foreach (var item in collection)
+				AddItem (item);
 		}
 
 		public void AddItem (IListItem item)
 		{
-			//Control.UpdateLayout ();
+			Control.Items.Add (item);
 		}
 
 		public void RemoveItem (IListItem item)
 		{
-			//Control.UpdateLayout ();
+			Control.Items.Remove (item);
 		}
 
 		public void RemoveAll ()
 		{
-			//Control.UpdateLayout ();
+			Control.Items.Clear ();
 		}
 
 		public int SelectedIndex

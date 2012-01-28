@@ -23,7 +23,7 @@ namespace Eto.Test.Interface.Sections.Controls
 				Size = new Size (150, 50)
 			};
 			control.Paint += delegate (object sender, PaintEventArgs pe) {
-				pe.Graphics.DrawLine (Color.White, Point.Empty, new Point (control.Size));
+				pe.Graphics.DrawLine (Color.Black, Point.Empty, new Point (control.Size));
 			};
 			LogEvents (control);
 
@@ -33,7 +33,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		Control LargeCanvas ()
 		{
 			var control = new Drawable{
-				Size = new Size (5000, 5000),
+				Size = new Size (1000, 1000),
 				BackgroundColor = Color.Blue
 			};
 			var image = Bitmap.FromResource ("Eto.Test.Interface.TestImage.png");

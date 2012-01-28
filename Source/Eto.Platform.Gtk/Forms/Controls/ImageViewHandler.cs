@@ -12,7 +12,6 @@ namespace Eto.Platform.GtkSharp
 		public ImageViewHandler ()
 		{
 			Control = new Gtk.Image();
-			
 		}
 		
 		public Eto.Drawing.IImage Image {

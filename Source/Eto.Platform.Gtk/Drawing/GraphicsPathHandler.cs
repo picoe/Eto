@@ -14,20 +14,20 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		abstract class Command
 		{
-			public abstract void Apply (GraphicsHandler handler);
+			public abstract void Apply (GraphicsHandler handler, bool first);
 		}
 		
 		class Lines : Command
 		{
 			public Point[] Points { get; set; }
 
-			public override void Apply (GraphicsHandler handler)
+			public override void Apply (GraphicsHandler handler, bool first)
 			{
 #if CAIRO
 				var context = handler.Context;
 				for (int i=0; i<Points.Length; i++) {
 					var p = Points [i];
-					if (i == 0)
+					if (first && i == 0)
 						context.MoveTo (p.X, p.Y);
 					else
 						context.LineTo (p.X, p.Y);
@@ -49,9 +49,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		public void Apply(GraphicsHandler handler)
 		{
+			bool first = true;
 			foreach (var command in commands)
 			{
-				command.Apply (handler);
+				command.Apply (handler, first);
+				first = false;
 			}
 		}
 

@@ -12,8 +12,24 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class DrawableHandler : WpfPanel<msc.VirtualCanvas, Drawable>, IDrawable
+	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable>, IDrawable, ISupportVirtualize
 	{
+		List<EtoChild> virtualChildren;
+
+		class EtoMainCanvas : swc.Canvas
+		{
+			public DrawableHandler Handler { get; set; }
+
+			protected override void OnRender (swm.DrawingContext dc)
+			{
+				base.OnRender (dc);
+				if (Handler.virtualChildren == null) {
+					var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc));
+					Handler.Widget.OnPaint (new PaintEventArgs (graphics, new Rectangle (Handler.Widget.Size)));
+				}
+			}
+		}
+
 		class EtoCanvas : swc.Canvas
 		{
 			public EtoChild Child { get; set; }
@@ -58,6 +74,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				Visual = null;
 			}
+
+
+			public swc.Canvas ParentCanvas
+			{
+				get { return Handler.Control; }
+			}
 		}
 
 
@@ -78,15 +100,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override Size Size
 		{
-			get
-			{
-				return new Size((int)Control.ContentCanvas.Width, (int)Control.ContentCanvas.Height);
-			}
-			set
-			{
-				Control.ContentCanvas.Width = value.Width;
-				Control.ContentCanvas.Height = value.Height;
-				UpdateCanvas ();
+			get { return Generator.GetSize (Control); }
+			set { 
+				Generator.SetSize (Control, value);
+				if (virtualChildren != null)
+					UpdateCanvas ();
 			}
 		}
 
@@ -98,33 +116,42 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void Create ()
 		{
-			Control = new msc.VirtualCanvas { 
+			Control = new EtoMainCanvas {
+				Handler = this,
+				SnapsToDevicePixels = true
+			};
+			/*Control = new msc.VirtualCanvas { 
 				SnapsToDevicePixels = true,
 				OrderControls = false
 			};
 			Control.ContentCanvas.SnapsToDevicePixels = true;
 			Control.Backdrop.SnapsToDevicePixels = true;
+			 * */
 			Control.SizeChanged += Control_SizeChanged;
 		}
 
 		void Control_SizeChanged (object sender, sw.SizeChangedEventArgs e)
 		{
+			if (virtualChildren == null) 
+				return;
 			UpdateCanvas ();
 		}
 
 		void UpdateCanvas ()
 		{
-			Control.VirtualChildren.Clear ();
+			if (virtualChildren == null)
+				virtualChildren = new List<EtoChild> ();
+			virtualChildren.Clear ();
 			var tileSize = 100;
-			var width = Control.ContentCanvas.Width / tileSize;
-			var height = Control.ContentCanvas.Height / tileSize;
+			var width = Control.Width / tileSize;
+			var height = Control.Height / tileSize;
 			for (int y = 0; y < height; y++) {
 				for (int x = 0; x < width; x++) {
 					var child = new EtoChild {
 						Bounds = new sw.Rect (x * tileSize, y * tileSize, tileSize, tileSize),
 						Handler = this
 					};
-					Control.AddVirtualChild (child);
+					virtualChildren.Add (child);
 				}
 			}
 		}
@@ -138,6 +165,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get { return Control.Focusable; }
 			set { Control.Focusable = value; }
+		}
+
+		public IEnumerable<msc.IVirtualChild> Children
+		{
+			get {
+				UpdateCanvas ();
+				return virtualChildren;
+				
+			}
+		}
+
+		public void ClearChildren ()
+		{
+			Control.Children.Clear ();
 		}
 	}
 }

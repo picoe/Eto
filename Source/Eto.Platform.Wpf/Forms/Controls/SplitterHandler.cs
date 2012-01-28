@@ -33,7 +33,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.RowDefinitions.Add (new swc.RowDefinition ());
 
 			splitter = new swc.GridSplitter {
-				Background = sw.SystemColors.ControlLightBrush,
+				Background = sw.SystemColors.ControlBrush,
 				ResizeBehavior = swc.GridResizeBehavior.PreviousAndNext
 			};
 			pane1 = new swc.DockPanel { LastChildFill = true };

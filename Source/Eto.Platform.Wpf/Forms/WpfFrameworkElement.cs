@@ -22,12 +22,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual Size Size
 		{
-			get {
-				return new Size ((int)Control.Width, (int)Control.Height);
-			}
-			set {
-				Control.Width = value.Width; Control.Height = value.Height;
-			}
+			get { return Generator.GetSize (Control); }
+			set { Generator.SetSize (Control, value); }
 		}
 
 		public bool Enabled

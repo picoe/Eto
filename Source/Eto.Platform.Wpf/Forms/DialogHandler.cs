@@ -18,15 +18,27 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			Control = new sw.Window { ShowInTaskbar = false };
 			Setup ();
+			Resizable = false;
+		}
+
+		public override bool Resizable
+		{
+			get { return Control.ResizeMode == sw.ResizeMode.CanResize || Control.ResizeMode == sw.ResizeMode.CanResizeWithGrip; }
+			set
+			{
+				if (value) Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
+				else Control.ResizeMode = sw.ResizeMode.NoResize;
+			}
 		}
 
 		public DialogResult ShowDialog (Control parent)
 		{
-			Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			var parentWindow = parent.ParentWindow;
 			if (parentWindow != null)
 				Control.Owner = ((IWpfWindow)parentWindow.Handler).Control;
-			var result = Control.ShowDialog ();
+
+			Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
+			Control.ShowDialog ();
 			return Widget.DialogResult;
 		}
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using swm = System.Windows.Media;
 using Eto.Drawing;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -27,7 +28,8 @@ namespace Eto.Platform.Wpf.Drawing
 
 	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, IBitmap
 	{
-		byte[] pixels;
+		IntPtr pixels;
+		int stride;
 
 		public void Create (string fileName)
 		{
@@ -63,10 +65,11 @@ namespace Eto.Platform.Wpf.Drawing
 				default:
 					throw new NotSupportedException ();
 			}
-			int stride = (width * format.BitsPerPixel + 7) / 8;
+			stride = (width * format.BitsPerPixel + 7) / 8;
 
-			pixels = new byte[height * stride];
-			Control = swm.Imaging.BitmapSource.Create (width, height, 96, 96, format, null, pixels, stride);
+			var bufferSize = stride * height;
+			pixels = Marshal.AllocHGlobal (bufferSize); 
+			Control = swm.Imaging.WriteableBitmap.Create (width, height, 96, 96, format, null, pixels, bufferSize, stride);
 		}
 
 		public void Resize (int width, int height)
@@ -76,8 +79,13 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public BitmapData Lock ()
 		{
-			var buffer = new WPFUtil.BitmapBuffer (Control);
-			return new BitmapDataHandler (buffer.BufferPointer, (int)buffer.Stride, Control);
+			if (pixels != IntPtr.Zero) {
+				return new BitmapDataHandler (pixels, (int)stride, Control);
+			}
+			else {
+				var buffer = new WPFUtil.BitmapBuffer (Control);
+				return new BitmapDataHandler (buffer.BufferPointer, (int)buffer.Stride, Control);
+			}
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -116,5 +124,14 @@ namespace Eto.Platform.Wpf.Drawing
 			get { return new Size (Control.PixelWidth, Control.PixelHeight); }
 		}
 
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			if (pixels != IntPtr.Zero) {
+				Marshal.FreeHGlobal (pixels);
+				pixels = IntPtr.Zero;
+			}
+		}
 	}
 }

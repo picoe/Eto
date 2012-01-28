@@ -8,11 +8,11 @@ using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class OpenFileDialogHandler : WpfFileDialog<mw.OpenFileDialog, OpenFileDialog>, IOpenFileDialog
+	public class SaveFileDialogHandler : WpfFileDialog<mw.SaveFileDialog, SaveFileDialog>, ISaveFileDialog
 	{
-		public OpenFileDialogHandler ()
+		public SaveFileDialogHandler ()
 		{
-			Control = new mw.OpenFileDialog ();
+			Control = new mw.SaveFileDialog ();
 		}
 	}
 }

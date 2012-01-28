@@ -109,6 +109,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						return WrapMode.None;
 					case System.Windows.TextWrapping.Wrap:
 						return WrapMode.Word;
+					case System.Windows.TextWrapping.WrapWithOverflow:
+						return WrapMode.Character;
 					default:
 						throw new NotSupportedException ();
 				}
@@ -120,7 +122,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						text.TextWrapping = System.Windows.TextWrapping.Wrap;
 						break;
 					case WrapMode.Character:
-						throw new NotSupportedException ();
+						text.TextWrapping = System.Windows.TextWrapping.WrapWithOverflow;
+						break;
 					case WrapMode.None:
 						text.TextWrapping = System.Windows.TextWrapping.NoWrap;
 						break;

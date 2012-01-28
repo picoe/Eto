@@ -85,7 +85,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void DrawRectangle (Color color, int x, int y, int width, int height)
 		{
-			Control.DrawRectangle (new SD.Pen (Generator.Convert (color)), x, y, width, height);
+			Control.DrawRectangle (new SD.Pen (Generator.Convert (color)), x, y, width-1, height-1);
 		}
 
 		public void FillRectangle (Color color, int x, int y, int width, int height)

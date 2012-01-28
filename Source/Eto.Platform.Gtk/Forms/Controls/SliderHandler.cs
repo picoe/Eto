@@ -9,6 +9,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		int max = 100;
 		int tick = 1;
 		Gtk.Scale scale;
+		int? lastValue;
 		
 		public SliderHandler ()
 		{
@@ -20,7 +21,18 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		void HandleScaleValueChanged (object sender, EventArgs e)
 		{
-			Widget.OnValueChanged (EventArgs.Empty);
+			var value = (int)scale.Value;
+			var offset = value % tick;
+			if (offset != 0) {
+				if (offset > tick / 2)
+					scale.Value = value - offset + tick;
+				else
+					scale.Value -= offset;
+			}
+			else if (lastValue == null || lastValue.Value != value) {
+				Widget.OnValueChanged (EventArgs.Empty);
+				lastValue = value;
+			}
 		}
 		
 		public int MaxValue {

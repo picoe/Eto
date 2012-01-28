@@ -40,7 +40,7 @@ namespace Eto.Test.Interface.Sections.Drawing
 
 			var graphics = new Graphics (image);
 			graphics.DrawLine (Color.Blue, Point.Empty, new Point (image.Size));
-			graphics.DrawRectangle (Color.Blue, new Rectangle (image.Size - 1));
+			graphics.DrawRectangle (Color.Blue, new Rectangle (image.Size));
 			graphics.Flush ();
 
 			return new ImageView { Image = image };
@@ -52,7 +52,7 @@ namespace Eto.Test.Interface.Sections.Drawing
 
 			var graphics = new Graphics (image);
 			graphics.DrawLine (Color.Blue, Point.Empty, new Point (image.Size));
-			graphics.DrawRectangle (Color.Black, new Rectangle (image.Size - 1));
+			graphics.DrawRectangle (Color.Black, new Rectangle (image.Size));
 			graphics.Flush ();
 
 			return new ImageView { Image = image };

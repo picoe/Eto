@@ -70,7 +70,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.SelectedItemChanged += delegate {
 				Widget.OnSelectionChanged (EventArgs.Empty);
 			};
+
+			Control.KeyDown += (sender, e) => {
+				Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+			};
+			Control.MouseDoubleClick += delegate {
+				Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+			};
 		}
+
 
 		public ITreeItem TopNode
 		{

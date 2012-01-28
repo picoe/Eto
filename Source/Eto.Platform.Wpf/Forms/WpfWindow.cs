@@ -26,20 +26,37 @@ namespace Eto.Platform.Wpf.Forms
 		swc.ContentControl menuHolder;
 		swc.ToolBarTray toolBarHolder;
 		swc.DockPanel content;
+		Size? initialClientSize;
 
 		protected void Setup ()
 		{
+			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 			main = new swc.DockPanel ();
 			content = new swc.DockPanel ();
 			menuHolder = new swc.ContentControl ();
 			toolBarHolder = new swc.ToolBarTray { IsEnabled = true };
-			content.Background = System.Windows.SystemColors.ControlBrush;
+			//content.Background = System.Windows.SystemColors.ControlBrush;
 			swc.DockPanel.SetDock (menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock (toolBarHolder, swc.Dock.Top);
 			main.Children.Add (menuHolder);
 			main.Children.Add (toolBarHolder);
 			main.Children.Add (content);
 			Control.Content = main;
+			Control.Loaded += delegate {
+				if (initialClientSize != null) {
+					UpdateClientSize (initialClientSize.Value);
+					initialClientSize = null;
+				}
+			};
+		}
+
+		void UpdateClientSize (Size size)
+		{
+			var xdiff = Control.ActualWidth - content.ActualWidth;
+			var ydiff = Control.ActualHeight - content.ActualHeight;
+			Control.Width = size.Width + xdiff;
+			Control.Height = size.Height + ydiff;
+			Control.SizeToContent = sw.SizeToContent.Manual;
 		}
 
 		public ToolBar ToolBar
@@ -87,7 +104,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public bool Resizable
+		public virtual bool Resizable
 		{
 			get { return Control.ResizeMode == sw.ResizeMode.CanResize || Control.ResizeMode == sw.ResizeMode.CanResizeWithGrip; }
 			set
@@ -104,8 +121,28 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Size ClientSize
 		{
-			get { return this.Size; }
-			set { this.Size = value; }
+			get {
+				if (Control.IsLoaded)
+					return new Size ((int)content.ActualWidth, (int)content.ActualHeight);
+				else
+					return initialClientSize ?? Size.Empty;
+			}
+			set {
+				if (Control.IsLoaded)
+					UpdateClientSize (value);
+				else 
+					initialClientSize = value;
+			}
+		}
+
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				Control.SizeToContent = sw.SizeToContent.Manual;
+				base.Size = value;
+			}
 		}
 
 		public object ContainerObject

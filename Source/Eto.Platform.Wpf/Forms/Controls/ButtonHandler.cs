@@ -23,8 +23,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return Control.Content as string; }
-			set { Control.Content = value; }
+			get { return Generator.ConvertMneumonicFromWPF(Control.Content); }
+			set { Control.Content = Generator.ConvertMneumonicToWPF(value); }
 		}
 	}
 }

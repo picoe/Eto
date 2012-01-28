@@ -30,6 +30,28 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\x86\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
+    <OutputPath>bin\x86\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>x86</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
+    <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
+    <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
@@ -61,6 +83,7 @@
     <Compile Include="Drawing\GraphicsHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
+    <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
@@ -83,6 +106,14 @@
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
+    <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
+    <Compile Include="Forms\Menu\WpfMenuItem.cs" />
+    <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs" />
+    <Compile Include="Forms\SaveFileDialogHandler.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
+    <Compile Include="Forms\WpfFileDialog.cs" />
+    <Compile Include="Forms\WpfCommonDialog.cs" />
     <Compile Include="Forms\DialogHandler.cs" />
     <Compile Include="Forms\Menu\ContextMenuHandler.cs" />
     <Compile Include="Forms\Menu\ImageMenuItemHandler.cs" />

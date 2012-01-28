@@ -33,11 +33,19 @@ namespace Eto.Platform.Windows
 					proposedSize -= bordersAndPadding;
 					proposedSize.Width = Math.Max (0, proposedSize.Width);
 					proposedSize.Height = Math.Max (0, proposedSize.Height);
-					bool isDocked = (Handler.Widget.ParentLayout is DockLayout);
-					var proposedWidth = proposedSize.Width > 1 ? proposedSize.Width : isDocked ? Parent.Width : 0;
-					var size = g.MeasureString (this.Text, this.Font, proposedWidth, format);
+					bool isDocked = false;
+					if (proposedSize.Width <= 0) {
+						var dockLayout = Handler.Widget.ParentLayout as DockLayout;
+						if (dockLayout != null) {
+							proposedSize.Width = this.Parent.Width - dockLayout.Padding.Horizontal;
+							isDocked = true;
+						}
+					}
+					else
+						proposedSize.Width = Int32.MaxValue;
+					var size = g.MeasureString (this.Text, this.Font, proposedSize.Width, format);
 					if (isDocked)
-						size.Width = proposedWidth;
+						size.Width = proposedSize.Width;
 					size += bordersAndPadding;
 					return SD.Size.Ceiling (size);
 				}

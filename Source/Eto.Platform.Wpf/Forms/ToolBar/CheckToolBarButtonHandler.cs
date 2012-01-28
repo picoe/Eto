@@ -2,31 +2,42 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Eto.Forms;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using Eto.Forms;
 using Eto.Drawing;
-using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class ToolBarButtonHandler : ToolBarItemHandler<swc.Button, ToolBarButton>, IToolBarButton
+	public class CheckToolBarButtonHandler : ToolBarItemHandler<swc.Primitives.ToggleButton, CheckToolBarButton>, ICheckToolBarButton
 	{
 		Icon icon;
 		swc.Image image;
 		swc.TextBlock label;
-		public ToolBarButtonHandler ()
+		public CheckToolBarButtonHandler ()
 		{
-			Control = new swc.Button ();
+			Control = new swc.Primitives.ToggleButton {
+				IsThreeState = false
+			};
 			image = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
 			label = new swc.TextBlock ();
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			panel.Children.Add (image);
 			panel.Children.Add (label);
 			Control.Content = panel;
-			Control.Click += delegate {
-				Widget.OnClick (EventArgs.Empty);
+
+			Control.Checked += delegate {
+				Widget.OnCheckedChanged (EventArgs.Empty);
 			};
+			Control.Unchecked += delegate {
+				Widget.OnCheckedChanged (EventArgs.Empty);
+			};
+		}
+
+		public bool Checked
+		{
+			get { return Control.IsChecked ?? false; }
+			set { Control.IsChecked = value; }
 		}
 
 		public string Text
@@ -48,7 +59,7 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				icon = value;
 				if (icon != null)
-					image.Source = ((IconHandler)icon.Handler).GetIconClosestToSize ((int)image.MaxWidth);
+					image.Source = icon.ControlObject as swm.ImageSource;
 				else
 					image.Source = null;
 			}
