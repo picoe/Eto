@@ -144,6 +144,16 @@ namespace Eto.Platform.Mac
 					e.Widget.OnSizeChanged (EventArgs.Empty);
 				});
 				break;
+			case Eto.Forms.Control.MouseDoubleClickEvent:
+			case Eto.Forms.Control.MouseDownEvent:
+			case Eto.Forms.Control.MouseUpEvent:
+			case Eto.Forms.Control.ShownEvent:
+			case Eto.Forms.Control.HiddenEvent:
+			case Eto.Forms.Control.KeyDownEvent:
+			case Eto.Forms.Control.LostFocusEvent:
+			case Eto.Forms.Control.GotFocusEvent:
+				// TODO
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

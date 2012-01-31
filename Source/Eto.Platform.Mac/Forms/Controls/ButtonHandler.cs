@@ -21,7 +21,7 @@ namespace Eto.Platform.Mac
 			public override void DrawBezelWithFrame (System.Drawing.RectangleF frame, NSView controlView)
 			{
 				if (Color != null) {
-					MacEventView.Colourize(controlView, Color.Value, delegate {
+					MacEventView.Colourize (controlView, Color.Value, delegate {
 						base.DrawBezelWithFrame (frame, controlView);
 					});
 				} else 
@@ -65,6 +65,15 @@ namespace Eto.Platform.Mac
 			};
 		}
 		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+
 		public override Color BackgroundColor {
 			get {
 				var cell = Control.Cell as MyButtonCell;

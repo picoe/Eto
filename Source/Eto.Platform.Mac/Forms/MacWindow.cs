@@ -138,6 +138,24 @@ namespace Eto.Platform.Mac
 			AutoSize = true;
 		}
 		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Window.MaximizedEvent:
+			case Window.MinimizedEvent:
+			case Eto.Forms.Control.ShownEvent:
+			case Eto.Forms.Control.HiddenEvent:
+				// handled by delegate
+				break;
+			case Eto.Forms.Control.KeyDownEvent:
+				// TODO
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+		
 		void CreateCursorRect()
 		{
 			if (cursor != null) {

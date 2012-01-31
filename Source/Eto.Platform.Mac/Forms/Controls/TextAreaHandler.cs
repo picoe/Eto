@@ -29,14 +29,25 @@ namespace Eto.Platform.Mac
 			text.VerticallyResizable = true;
 			text.Editable = true;
 			text.Selectable = true;
-			text.TextDidChange += delegate {
-				Widget.OnTextChanged (EventArgs.Empty);
-			};
 			
 			Control.DocumentView = text;
 		}
 		
 		#region ITextArea Members
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TextArea.TextChangedEvent:
+				text.TextDidChange += delegate {
+					Widget.OnTextChanged (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 		
 		public bool ReadOnly {
 			get { return !text.Editable; }
@@ -50,8 +61,7 @@ namespace Eto.Platform.Mac
 				if (!value) {
 					text.TextColor = NSColor.DisabledControlText;
 					Control.BackgroundColor = NSColor.ControlBackground;
-				}
-				else {
+				} else {
 					text.TextColor = NSColor.ControlText;
 					Control.BackgroundColor = NSColor.TextBackground;
 				}
@@ -75,10 +85,9 @@ namespace Eto.Platform.Mac
 			set {
 				if (value) {
 					text.TextContainer.WidthTracksTextView = true;
-				}
-				else {
+				} else {
 					text.TextContainer.WidthTracksTextView = false;
-					text.TextContainer.ContainerSize = new System.Drawing.SizeF(float.MaxValue, float.MaxValue);
+					text.TextContainer.ContainerSize = new System.Drawing.SizeF (float.MaxValue, float.MaxValue);
 				}
 			}
 		}

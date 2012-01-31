@@ -59,7 +59,7 @@ namespace Eto.Test.Interface.Sections.Layouts.TableLayoutSection
 			mainTable = new TableLayout (new Panel (), 3, 1);
 
 			mainTable.Add (MiddleSection (), 1, 0, true, true);
-			mainTable.Add (rightSection = DockLayout.CreatePanel (null), 2, 0);
+			mainTable.Add (rightSection = new Panel(), 2, 0);
 
 			return mainTable.Container;
 		}
@@ -69,7 +69,7 @@ namespace Eto.Test.Interface.Sections.Layouts.TableLayoutSection
 			middleTable = new TableLayout (new Panel (), 1, 3);
 
 			middleTable.Add (new Label { Text = "Content", BackgroundColor = Color.LightGray, HorizontalAlign = HorizontalAlign.Center, VerticalAlign = VerticalAlign.Middle }, 0, 1, true, true);
-			middleTable.Add (topSection = DockLayout.CreatePanel (null), 0, 0);
+			middleTable.Add (topSection = new Panel(), 0, 0);
 
 			return middleTable.Container;
 		}

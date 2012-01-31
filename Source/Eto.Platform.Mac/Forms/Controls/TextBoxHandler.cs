@@ -13,26 +13,26 @@ namespace Eto.Platform.Mac
 		
 		public override string StringFor (NSObject value)
 		{
-			if (value == null) return string.Empty;
+			if (value == null)
+				return string.Empty;
 			var str = value as NSString;
 			//if (str != null && value.Handle != IntPtr.Zero)
-				return str.ToString ();
+			return str.ToString ();
 		}
 
 		[Export("getObjectValue:forString:errorDescription:")]
-		public bool GetObjectValue(ref IntPtr obj, IntPtr value, ref IntPtr error)
+		public bool GetObjectValue (ref IntPtr obj, IntPtr value, ref IntPtr error)
 		{
 			obj = value;
 			return true;
 		}
 		
 		[Export("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:")]
-		public bool IsPartialStringValid(ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
+		public bool IsPartialStringValid (ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
 		{
 			if (Handler.MaxLength >= 0) {
 				int size = value.Length;
-				if (size > Handler.MaxLength)
-				{
+				if (size > Handler.MaxLength) {
 					return false;
 				}
 			}
@@ -40,7 +40,7 @@ namespace Eto.Platform.Mac
 		}
 		
 		[Export("attributedStringForObjectValue:withDefaultAttributes:")]
-		public NSAttributedString AttributedStringForObjectValue(IntPtr anObject, NSDictionary attributes)
+		public NSAttributedString AttributedStringForObjectValue (IntPtr anObject, NSDictionary attributes)
 		{
 			return null;
 		}
@@ -49,17 +49,6 @@ namespace Eto.Platform.Mac
 	public class TextBoxHandler : MacText<NSTextField, TextBox>, ITextBox
 	{
 		
-		class MyDelegate : NSTextFieldDelegate
-		{
-			public TextBoxHandler Handler { get; set;}
-			
-			public override void Changed (NSNotification notification)
-			{
-				Handler.Widget.OnTextChanged(EventArgs.Empty);
-			}
-			
-		}
-		
 		class MyTextField : NSTextField
 		{
 			public TextBoxHandler Handler { get; set; }
@@ -67,13 +56,13 @@ namespace Eto.Platform.Mac
 			public override bool PerformKeyEquivalent (NSEvent theEvent)
 			{
 				if (Handler.Widget.HasFocus) {
-					MacEventView.KeyDown(Handler.Widget, theEvent);
+					MacEventView.KeyDown (Handler.Widget, theEvent);
 					return false;
 					/*return base.PerformKeyEquivalent (theEvent);
 					else
 						return false;*/
-				}
-				else return false;
+				} else
+					return false;
 			}
 			
 		}
@@ -84,16 +73,12 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public TextBoxHandler()
+		public TextBoxHandler ()
 		{
 			Control = new MyTextField{ Handler = this };
 			Control.Bezeled = true;
 			Control.Editable = true;
 			Control.Selectable = true;
-			Control.Delegate = new MyDelegate{ Handler = this };
-			/*Control.Changed += delegate {
-				Widget.OnTextChanged(EventArgs.Empty);
-			};*/
 			
 			Control.Formatter = new MyFormatter{ Handler = this };
 			//Control.BezelStyle = NSTextFieldBezelStyle.Square;
@@ -101,14 +86,28 @@ namespace Eto.Platform.Mac
 			MaxLength = -1;
 		}
 		
-		public bool ReadOnly
+		public override void AttachEvent (string handler)
 		{
+			switch (handler) {
+			case TextArea.TextChangedEvent:
+				Control.Changed += delegate {
+					Widget.OnTextChanged (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+		
+		public bool ReadOnly {
 			get { return !Control.Editable; }
 			set { Control.Editable = !value; }
 		}
 		
 		public int MaxLength {
-			get; set;
+			get;
+			set;
 		}
 	}
 }

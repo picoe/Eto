@@ -77,7 +77,7 @@ namespace Eto.Platform.Mac.Drawing
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
 
-					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 					Control = new NSImage ();
 					Control.AddRepresentation (rep);
 				
