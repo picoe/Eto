@@ -11,26 +11,23 @@ namespace Eto.Platform.Mac
 		
 		public TextAreaHandler ()
 		{
-			Control = new NSScrollView ();
-			Control.AutoresizesSubviews = true;
-			//Control.SetFrameSize (new System.Drawing.SizeF(120, 80));
-			//Control.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-			Control.HasVerticalScroller = true;
-			Control.HasHorizontalScroller = true;
-			Control.AutohidesScrollers = true;
-			Control.BorderType = NSBorderType.BezelBorder;
-			
-			text = new NSTextView ();
-			text.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-			//text.TextContainer.ContainerSize = new System.Drawing.SizeF(1.0e7f, 1.0e7f);
-			//text.TextContainer.WidthTracksTextView = false;
-			//text.SetFrameSize(new System.Drawing.SizeF(100, 100));
-			text.HorizontallyResizable = true;
-			text.VerticallyResizable = true;
-			text.Editable = true;
-			text.Selectable = true;
-			
-			Control.DocumentView = text;
+			text = new NSTextView {
+				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
+				HorizontallyResizable = true,
+				VerticallyResizable = true,
+				Editable = true,
+				Selectable = true,
+				AllowsUndo = true
+			};
+
+			Control = new NSScrollView {
+				AutoresizesSubviews = true,
+				HasVerticalScroller = true,
+				HasHorizontalScroller = true,
+				AutohidesScrollers = true,
+				BorderType = NSBorderType.BezelBorder,
+				DocumentView = text
+			};
 		}
 		
 		#region ITextArea Members
