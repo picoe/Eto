@@ -5,6 +5,8 @@ using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
+using swd = System.Windows.Data;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -16,22 +18,28 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new swc.ListBox ();
 			Control.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
-			Control.DisplayMemberPath = "Text";
+			//Control.DisplayMemberPath = "Text";
+			var template = new sw.DataTemplate (typeof (IListItem));
+
+			template.VisualTree = WpfListItemHelper.ItemTemplate ();
+			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			};
 			Control.MouseDoubleClick += delegate {
-				Widget.OnActivated (EventArgs.Empty);
+				if (SelectedIndex >= 0)
+					Widget.OnActivated (EventArgs.Empty);
 			};
 			Control.KeyDown += (sender, e) => {
 				if (e.Key == sw.Input.Key.Return) {
-					Widget.OnActivated (EventArgs.Empty);
-					e.Handled = true;
+					if (SelectedIndex >= 0) {
+						Widget.OnActivated (EventArgs.Empty);
+						e.Handled = true;
+					}
 				}
 			};
 			
 		}
-
 		public void AddRange (IEnumerable<IListItem> collection)
 		{
 			foreach (var item in collection)

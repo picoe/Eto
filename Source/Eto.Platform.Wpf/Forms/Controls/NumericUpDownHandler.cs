@@ -6,11 +6,15 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using mwc = Microsoft.Windows.Controls;
+using Eto.Drawing;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown>, INumericUpDown
 	{
+		Font font;
+
 		public NumericUpDownHandler ()
 		{
 			Control = new mwc.DoubleUpDown ();
@@ -40,12 +44,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Maximum = value; }
 		}
 
-		public Eto.Drawing.Font Font
+		public Font Font
 		{
-			get { return null; }
+			get { return font; }
 			set
 			{
-				
+				font = value;
+				FontHandler.Apply (Control, font);
 			}
 		}
 	}

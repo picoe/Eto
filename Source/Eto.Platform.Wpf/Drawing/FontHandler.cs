@@ -3,19 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
+using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Drawing
 {
 	public class FontHandler : WidgetHandler<object, Font>, IFont
 	{
 
-		public void Apply (System.Windows.Controls.Control control)
+		public void Apply (swc.Control control)
 		{
 			control.FontFamily = Family;
 
 			control.FontStyle = FontStyle;
 			control.FontWeight = FontWeight;
 			control.FontSize = Size;
+		}
+
+		public static void Apply (swc.Control control, Font font)
+		{
+			if (font != null) {
+				((FontHandler)font.Handler).Apply (control);
+			}
+			else {
+				control.SetValue (swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
+				control.SetValue (swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
+				control.SetValue (swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
+				control.SetValue (swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
+			}
+
 		}
 
 		string Convert (FontFamily family)

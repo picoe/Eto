@@ -22,6 +22,23 @@ namespace Eto.Platform.GtkSharp
 
 			// TODO: restart!
 		}
+
+		public void InvokeOnMainThread (System.Action action)
+		{
+			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
+				action ();
+			else {
+				var resetEvent = new ManualResetEvent (false);
+
+				Gtk.Application.Invoke (delegate {
+					action ();
+					resetEvent.Set ();
+				});
+
+				resetEvent.WaitOne ();
+			}
+		}
+
 		
 		public void Run (string[] args)
 		{

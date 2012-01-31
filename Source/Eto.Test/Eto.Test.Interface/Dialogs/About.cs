@@ -19,7 +19,7 @@ namespace Eto.Test.Interface.Dialogs
 			layout.AddCentered(new ImageView{
 				Image = new Icon(null, "Eto.Test.Interface.TestIcon.ico"),
 				Size = new Size(128, 128)
-			});
+			}, true, true);
 			
 			layout.Add (new Label{
 				Text = "Test Application",

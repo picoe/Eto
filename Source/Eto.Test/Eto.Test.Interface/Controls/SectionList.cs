@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Test.Interface.Sections.Controls;
 using Eto.Test.Interface.Sections.Drawing;
+using Eto.Test.Interface.Sections.Layouts;
 
 namespace Eto.Test.Interface.Controls
 {
@@ -70,6 +71,7 @@ namespace Eto.Test.Interface.Controls
 			
 			top.Children.Add (DrawingSection());
 			top.Children.Add (ControlSection ());
+			top.Children.Add (LayoutsSection ());
 
 			this.TopNode = top;
 			
@@ -113,6 +115,29 @@ namespace Eto.Test.Interface.Controls
 			items.Add (new Section<BitmapSection> { Text = "Bitmap" });
 			items.Add (new Section<PathSection> { Text = "Line Path" });
 			items.Add (new Section<AntialiasSection> { Text = "Antialias" });
+
+			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			return node;
+		}
+
+		ITreeItem LayoutsSection ()
+		{
+			var node = new TreeItem { Text = "Layouts", Expanded = true };
+			var items = node.Children;
+
+			items.Add (TableLayoutsSection ());
+
+			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			return node;
+		}
+
+		ITreeItem TableLayoutsSection ()
+		{
+			var node = new TreeItem { Text = "Table Layout", Expanded = true };
+			var items = node.Children;
+
+			items.Add (new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" });
+			items.Add (new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing & Scaling" });
 
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return node;

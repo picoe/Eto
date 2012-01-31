@@ -80,7 +80,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			this.image = image;
 			var active = Gdk.Screen.Default.ActiveWindow;
-			Control = new Gdk.Pixmap (active, image.Size.Width, image.Size.Height, active != null ? -1 : 24);
+			var handler = (BitmapHandler)image.Handler;
+			Control = new Gdk.Pixmap (active, image.Size.Width, image.Size.Height, active != null ? -1 : handler.Alpha ? 24 : 24);
 			if (Control.Colormap == null) 
 				Control.Colormap = new Gdk.Colormap (Gdk.Visual.System, true);
 			gc = new Gdk.GC (Control);
@@ -90,15 +91,25 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void Flush ()
 		{
 			if (image != null) {
+				var handler = (BitmapHandler)image.Handler;
 				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
-				pb.GetFromDrawable (Control, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.System, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
+				if (pb != null) {
+					// if alpha, convert directly to pixbuf using intptr's
+					if (handler.Alpha) {
+						//var img = Control.GetImage (0, 0, image.Size.Width, image.Size.Height);
+						//pb.GetFromImage (img, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.Best, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
+						pb.GetFromDrawable (Control, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.System, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
+					}
+					else
+						pb.GetFromDrawable (Control, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.System, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
+				}
 			}
 			if (context != null && Control != null)
 			{
 				((IDisposable)context).Dispose();
 				this.context = Gdk.CairoHelper.Create (Control);
 			}
-			//context.Paint ();
+			
 			//GdkHandler.Global.Flush ();
 		}
 
@@ -176,6 +187,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			context.Color = Generator.ConvertC(color);
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
+			context.LineCap = Cairo.LineCap.Square;
+			context.LineWidth = 1.0;
 			context.Stroke ();
 			context.Restore ();
 #endif

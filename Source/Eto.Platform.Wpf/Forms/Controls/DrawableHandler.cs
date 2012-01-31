@@ -51,7 +51,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			public sw.Rect Bounds { get; set; }
 
+			#pragma warning disable 67
 			public event EventHandler BoundsChanged;
+			#pragma warning restore 67
 
 			public sw.UIElement Visual
 			{
@@ -67,6 +69,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					SnapsToDevicePixels = true,
 					RenderTransform = transform
 				};
+				if (Handler.CanFocus) {
+					Visual.MouseDown += delegate {
+						Handler.Control.Focus ();
+					};
+					/*Visual.KeyDown += (sender, e) => {
+						Handler.Widget.OnKeyDown(
+					};*/
+				}
 				return Visual;
 			}
 
@@ -79,6 +89,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			public swc.Canvas ParentCanvas
 			{
 				get { return Handler.Control; }
+				//get { return null; }
 			}
 		}
 
@@ -100,11 +111,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override Size Size
 		{
-			get { return Generator.GetSize (Control); }
-			set { 
-				Generator.SetSize (Control, value);
-				if (virtualChildren != null)
-					UpdateCanvas ();
+			get { return base.Size; }
+			set {
+				if (value != base.Size) {
+					base.Size = value;
+					if (virtualChildren != null)
+						UpdateCanvas ();
+				}
 			}
 		}
 
@@ -126,7 +139,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 			Control.ContentCanvas.SnapsToDevicePixels = true;
 			Control.Backdrop.SnapsToDevicePixels = true;
-			 * */
+			 */
 			Control.SizeChanged += Control_SizeChanged;
 		}
 
@@ -135,6 +148,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (virtualChildren == null) 
 				return;
 			UpdateCanvas ();
+			var parent = Control.GetParent<Microsoft.Sample.Controls.VirtualCanvas> ();
+			if (parent != null) {
+				parent.InvalidateArrange ();
+				parent.InvalidateVisual ();
+			}
 		}
 
 		void UpdateCanvas ()
@@ -158,6 +176,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void Update (Eto.Drawing.Rectangle rect)
 		{
+			var parent = Control.GetParent<Microsoft.Sample.Controls.VirtualCanvas> ();
+			if (parent != null) {
+				parent.InvalidateMeasure ();
+			}
 			Control.InvalidateVisual ();
 		}
 

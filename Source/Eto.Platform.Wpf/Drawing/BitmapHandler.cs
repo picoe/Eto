@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swm = System.Windows.Media;
+using sw = System.Windows;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
 
@@ -26,9 +27,8 @@ namespace Eto.Platform.Wpf.Drawing
 		}
 	}
 
-	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, IBitmap
+	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, IBitmap, IWpfImage
 	{
-		IntPtr pixels;
 		int stride;
 
 		public void Create (string fileName)
@@ -68,9 +68,12 @@ namespace Eto.Platform.Wpf.Drawing
 			stride = (width * format.BitsPerPixel + 7) / 8;
 
 			var bufferSize = stride * height;
-			pixels = Marshal.AllocHGlobal (bufferSize);
-			Marshal.Copy (new byte[bufferSize], 0, pixels, bufferSize); // clear out buffer
-			Control = swm.Imaging.BitmapFrame.Create (width, height, 96, 96, format, null, pixels, bufferSize, stride);
+			var pixels = new byte[bufferSize];
+			//var pixels = Marshal.AllocHGlobal (bufferSize);
+			//Marshal.Copy (new byte[bufferSize], 0, pixels, bufferSize); // clear out buffer
+			var bf = new swm.Imaging.WriteableBitmap(width, height, 96, 96, format, null);
+			Control = bf;
+			
 		}
 
 		public void Resize (int width, int height)
@@ -80,17 +83,27 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public BitmapData Lock ()
 		{
-			if (pixels != IntPtr.Zero) {
-				return new BitmapDataHandler (pixels, (int)stride, Control);
+			var wb = Control as swm.Imaging.WriteableBitmap;
+			if (wb != null) {
+				wb.Lock ();
+				return new BitmapDataHandler (wb.BackBuffer, (int)stride, Control);
 			}
 			else {
-				var buffer = new WPFUtil.BitmapBuffer (Control);
-				return new BitmapDataHandler (buffer.BufferPointer, (int)buffer.Stride, Control);
+				wb = new swm.Imaging.WriteableBitmap (Control);
+				wb.Lock ();
+				Control = wb;
+				return new BitmapDataHandler (wb.BackBuffer, (int)stride, wb);
 			}
 		}
 
 		public void Unlock (BitmapData bitmapData)
 		{
+			var wb = Control as swm.Imaging.WriteableBitmap;
+			if (wb != null) {
+				
+				wb.AddDirtyRect (new sw.Int32Rect (0, 0, Size.Width, Size.Height));
+				wb.Unlock ();
+			}
 
 		}
 
@@ -129,10 +142,15 @@ namespace Eto.Platform.Wpf.Drawing
 		protected override void Dispose (bool disposing)
 		{
 			base.Dispose (disposing);
-			if (pixels != IntPtr.Zero) {
+			/*if (pixels != IntPtr.Zero) {
 				Marshal.FreeHGlobal (pixels);
 				pixels = IntPtr.Zero;
-			}
+			}*/
+		}
+
+		public swm.ImageSource GetIconClosestToSize (int width)
+		{
+			return Control;
 		}
 	}
 }

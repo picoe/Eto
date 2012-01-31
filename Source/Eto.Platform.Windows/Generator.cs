@@ -18,18 +18,6 @@ namespace Eto.Platform.Windows
 				return GeneratorID;
 			}
 		}
-
-		public override void ExecuteOnMainThread(Action action)
-		{
-			SWF.Control window = Application.Instance.MainForm.ControlObject as SWF.Control;
-			if (window == null) window = SWF.Form.ActiveForm;
-
-			if (window != null && window.InvokeRequired)
-			{
-				window.Invoke(action);
-			}
-			else action();
-		}
 		
 		public static Padding Convert(SWF.Padding padding)
 		{

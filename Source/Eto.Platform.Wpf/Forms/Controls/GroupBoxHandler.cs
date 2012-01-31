@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
+using swd = System.Windows.Data;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms.Controls

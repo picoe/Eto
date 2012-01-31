@@ -183,9 +183,10 @@ namespace Eto
 			return type.GetMethod (methodName, BindingFlags.Instance | BindingFlags.NonPublic, null, parameters, null);
 		}
 		
-		public virtual void ExecuteOnMainThread (System.Action action)
+		[Obsolete("Use Application.InvokeOnMainThread")]
+		public void ExecuteOnMainThread (System.Action action)
 		{
-			action ();
+			Forms.Application.Instance.InvokeOnMainThread (action);
 		}
 
 		public virtual IDisposable ThreadStart ()

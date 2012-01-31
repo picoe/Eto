@@ -10,10 +10,16 @@ using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl
+	public interface IWpfFrameworkElement
+	{
+		Size? PreferredSize { get; }
+	}
+
+	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl, IWpfFrameworkElement
 		where T : System.Windows.FrameworkElement
 		where W : Control
 	{
+		Size? size;
 		public abstract Color BackgroundColor
 		{
 			get;
@@ -22,8 +28,19 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual Size Size
 		{
-			get { return Generator.GetSize (Control); }
-			set { Generator.SetSize (Control, value); }
+			get {
+				if (!Control.IsLoaded && size != null) return size.Value;
+				else return Generator.GetSize (Control); 
+			}
+			set {
+				size = value;
+				Generator.SetSize (Control, value); 
+			}
+		}
+
+		public Size? PreferredSize
+		{
+			get { return size; }
 		}
 
 		public bool Enabled
@@ -32,7 +49,7 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.IsEnabled = value; }
 		}
 
-		public Cursor Cursor
+		public virtual Cursor Cursor
 		{
 			get;
 			set;
@@ -66,7 +83,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void ResumeLayout ()
 		{
-			Control.UpdateLayout ();
+			//Control.UpdateLayout ();
 		}
 
 		public void Focus ()
@@ -143,10 +160,61 @@ namespace Eto.Platform.Wpf.Forms
 						e.Handled = args.Handled;
 					};
 					break;
+				case Eto.Forms.Control.SizeChangedEvent:
+					Control.SizeChanged += (sender, e) => {
+						this.size = Generator.Convert (e.NewSize);
+						Widget.OnSizeChanged (EventArgs.Empty);
+					};
+					break;
+				case Eto.Forms.Control.KeyDownEvent:
+					Control.TextInput += (sender, e) => {
+						foreach (var keyChar in e.Text) {
+							var key = Key.None;
+							var args = new KeyPressEventArgs (key, keyChar);
+							Widget.OnKeyDown (args);
+							e.Handled |= args.Handled;
+						}
+					};
+					Control.KeyDown += (sender, e) => {
+						var args = Generator.Convert (e);
+						Widget.OnKeyDown (args);
+						e.Handled = args.Handled;
+					};
+					break;
+				case Eto.Forms.Control.ShownEvent:
+					Control.IsVisibleChanged += (sender, e) => {
+						if ((bool)e.NewValue) {
+							Widget.OnShown (EventArgs.Empty);
+						}
+					};
+					break;
+				case Eto.Forms.Control.HiddenEvent:
+					Control.IsVisibleChanged += (sender, e) => {
+						if (!(bool)e.NewValue) {
+							Widget.OnHidden (EventArgs.Empty);
+						}
+					};
+					break;
+				case Eto.Forms.Control.GotFocusEvent:
+					Control.GotFocus += (sender, e) => {
+						Widget.OnGotFocus (EventArgs.Empty);
+					};
+					break;
+				case Eto.Forms.Control.LostFocusEvent:
+					Control.LostFocus += (sender, e) => {
+						Widget.OnLostFocus (EventArgs.Empty);
+					};
+					break;
 				default:
 					base.AttachEvent (handler);
 					break;
 			}
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			
 		}
 
 		public virtual void OnLoad (EventArgs e)
@@ -167,26 +235,6 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual void SetParentLayout (Layout layout)
 		{
-		}
-
-		public IAsyncResult BeginInvoke (Delegate method, object[] args)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public object EndInvoke (IAsyncResult result)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public object Invoke (Delegate method, object[] args)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public bool InvokeRequired
-		{
-			get { throw new NotImplementedException (); }
 		}
 	}
 }

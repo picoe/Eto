@@ -10,11 +10,22 @@ namespace Eto.Platform.GtkSharp
 		public TextBoxHandler ()
 		{
 			Control = new Gtk.Entry ();
-			Control.Changed += delegate {
-				Widget.OnTextChanged (EventArgs.Empty);
-			};
 			Control.SetSizeRequest (20, -1);
 			Control.ActivatesDefault = true;
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case TextBox.TextChangedEvent:
+					Control.Changed += delegate {
+						Widget.OnTextChanged (EventArgs.Empty);
+					};
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
+			}
 		}
 
 		public override string Text {

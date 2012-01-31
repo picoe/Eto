@@ -341,14 +341,18 @@ namespace Microsoft.Sample.Controls
                     _visualPositions[c] = index++;
 
                     Rect childBounds = c.Bounds;
-                    if (childBounds.Width != 0 && childBounds.Height != 0)
+					if (childBounds.Width != 0 && childBounds.Height != 0)
                     {
-                        if (double.IsNaN(childBounds.Width) || double.IsNaN(childBounds.Height))
+						if (double.IsNaN (childBounds.Width) || double.IsNaN (childBounds.Height))
                         {
                             throw new InvalidOperationException(string.Format(System.Globalization.CultureInfo.CurrentUICulture,
                                 "Child type '{0}' returned NaN bounds", c.GetType().Name));
                         }
-                        if (first)
+						
+						if (c.ParentCanvas != null)
+							childBounds.Location = c.ParentCanvas.TranslatePoint (childBounds.Location, _content);
+
+						if (first)
                         {
                             extent = childBounds;
                             first = false;
@@ -365,12 +369,15 @@ namespace Microsoft.Sample.Controls
                 _index.Bounds = new Rect(0, 0, extent.Width, extent.Height);
                 foreach (IVirtualChild n in _children)
                 {
-                    if (n.Bounds.Width > 0 && n.Bounds.Height > 0)
+					var nrect = n.Bounds;
+					if (nrect.Width > 0 && nrect.Height > 0)
                     {
-                        _index.Insert(n, n.Bounds);
+						if (n.ParentCanvas != null)
+							nrect.Location = n.ParentCanvas.TranslatePoint (nrect.Location, _content);
+						_index.Insert (n, nrect);
                     }
                 }
-				if (!double.IsNaN (_backdrop.ActualWidth) && !double.IsNaN (_backdrop.ActualWidth))
+				if (!double.IsNaN (_backdrop.ActualWidth) && !double.IsNaN (_backdrop.ActualHeight))
 					_extent = Rect.Union (new Rect (_extent), new Rect (0, 0, _backdrop.ActualWidth, _backdrop.ActualWidth)).Size;
 			}
 
@@ -771,7 +778,9 @@ namespace Microsoft.Sample.Controls
                     if (e != null)
                     {
                         Rect nrect = n.Bounds;
-                        if (!nrect.IntersectsWith(visible))
+						if (n.ParentCanvas != null)
+							nrect.Location = n.ParentCanvas.TranslatePoint (nrect.Location, _content);
+						if (!nrect.IntersectsWith (visible))
                         {
                             e.ClearValue(VirtualChildProperty);
 							content.Children.Remove (e);
@@ -816,7 +825,9 @@ namespace Microsoft.Sample.Controls
                 IVirtualChild n = e.GetValue(VirtualChildProperty) as IVirtualChild;                
                 if (n != null) {
                     Rect nrect = n.Bounds;
-                    if (!nrect.IntersectsWith(_visible)) {
+					if (n.ParentCanvas != null)
+						nrect.Location = n.ParentCanvas.TranslatePoint (nrect.Location, _content);
+					if (!nrect.IntersectsWith (_visible)) {
                         e.ClearValue(VirtualChildProperty);
                         _content.Children.Remove(e);
                         n.DisposeVisual();

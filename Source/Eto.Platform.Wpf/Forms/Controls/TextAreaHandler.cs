@@ -19,9 +19,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
 			};
-			Control.TextChanged += delegate {
-				Widget.OnTextChanged (EventArgs.Empty);
-			};
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case TextArea.TextChangedEvent:
+					Control.TextChanged += delegate {
+						Widget.OnTextChanged (EventArgs.Empty);
+					};
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
+			}
 		}
 
 		public bool ReadOnly

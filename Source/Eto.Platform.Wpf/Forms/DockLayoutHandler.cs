@@ -3,18 +3,27 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using swc = System.Windows.Controls;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class DockLayoutHandler : WpfLayout<System.Windows.Controls.DockPanel, DockLayout>, IDockLayout
+	public class DockLayoutHandler : WpfLayout<swc.DockPanel, DockLayout>, IDockLayout
 	{
 		Control content;
 
 		public DockLayoutHandler ()
 		{
-			Control = new System.Windows.Controls.DockPanel { 
-				LastChildFill = true,
-				SnapsToDevicePixels = true
+			Control = new swc.DockPanel { 
+				SnapsToDevicePixels = true,
+				LastChildFill = true
+			};
+			Control.SizeChanged += (sender, e) => {
+				if (content != null) {
+					var element = (sw.FrameworkElement)content.ControlObject;
+					if (!double.IsNaN (element.Width)) element.Width = Math.Max (0, e.NewSize.Width - Padding.Horizontal);
+					if (!double.IsNaN (element.Height)) element.Height = Math.Max (0, e.NewSize.Height - Padding.Vertical);
+				}
 			};
 		}
 
@@ -32,18 +41,13 @@ namespace Eto.Platform.Wpf.Forms
 				Control.Children.Clear ();
 				content = value;
 				if (content != null) {
-					var element = (System.Windows.FrameworkElement)content.ControlObject;
-					//element.Height = double.MaxValue;
-					System.Windows.Controls.DockPanel.SetDock (element, System.Windows.Controls.Dock.Top);
-					element.Height = double.NaN;
-					element.Width = double.NaN;
-					/*element.Width = element.Height = double.NaN;
-					 * */
+					var element = (sw.FrameworkElement)content.ControlObject;
 					element.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 					element.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 					Control.Children.Add (element);
 				}
 			}
 		}
+
 	}
 }

@@ -249,23 +249,22 @@ namespace Eto.Forms
 			currentItem.CurrentRow = null;
 		}
 
-		[Obsolete("Please use one of the other overloads to AddCentered, the parameters of this method conflict with the other overrides")]
-		public void AddCentered (Control control, bool xscale, bool? yscale = null)
+		public void AddCentered (Control control, bool? xscale, bool? yscale = null)
 		{
-			AddCentered (control, true, true, null, null, xscale, yscale);
+			AddCentered (control, null, null, xscale, yscale, true, true);
 		}
 
 		public void AddCentered (Control control, Size spacing, bool? xscale = null, bool? yscale = null)
 		{
-			AddCentered (control, true, true, null, spacing, xscale, yscale);
+			AddCentered (control, null, spacing, xscale, yscale, true, true);
 		}
 		
 		public void AddCentered (Control control, Padding padding, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
-			AddCentered (control, true, true, padding, spacing, xscale, yscale);
+			AddCentered (control, padding, spacing, xscale, yscale, true, true);
 		}
 
-		public void AddCentered (Control control, bool horizontalCenter = true, bool verticalCenter = true, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		public void AddCentered (Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool horizontalCenter = true, bool verticalCenter = true)
 		{
 			this.BeginVertical (padding, spacing, xscale, yscale);
 			if (verticalCenter)

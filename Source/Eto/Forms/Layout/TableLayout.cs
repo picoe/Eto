@@ -112,14 +112,17 @@ namespace Eto.Forms
 		public void Add (Control control, int x, int y)
 		{
 			controls [x, y] = control;
-			control.SetParentLayout (this);
-			var load = Loaded && !control.Loaded;
-			if (load) {
-				control.OnPreLoad (EventArgs.Empty);
-				control.OnLoad (EventArgs.Empty);
+			bool load = Loaded;
+			if (control != null) {
+				control.SetParentLayout (this);
+				load &= !control.Loaded;
+				if (load) {
+					control.OnPreLoad (EventArgs.Empty);
+					control.OnLoad (EventArgs.Empty);
+				}
 			}
 			inner.Add (control, x, y);
-			if (load)
+			if (control != null && load)
 				control.OnLoadComplete (EventArgs.Empty);
 		}
 

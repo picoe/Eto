@@ -23,7 +23,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		BorderType borderType;
 		swc.ScrollViewer scroller;
 		msc.VirtualCanvas virtualCanvas;
-		swc.Grid grid;
+
+		class EtoScrollViewer : swc.ScrollViewer
+		{
+			protected override sw.Size MeasureOverride (sw.Size constraint)
+			{
+				return base.MeasureOverride (constraint);
+			}
+
+			protected override sw.Size ArrangeOverride (sw.Size arrangeBounds)
+			{
+				return base.ArrangeOverride (arrangeBounds);
+			}
+		}
 
 		public override Color BackgroundColor
 		{
@@ -36,18 +48,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				virtualCanvas.Background = new swm.SolidColorBrush (Generator.Convert (value));
-			}
-		}
-
-		public override Size Size
-		{
-			get
-			{
-				return new Size ((int)Control.Width, (int)Control.Height);
-			}
-			set
-			{
-				Control.Width = value.Width; Control.Height = value.Height;
 			}
 		}
 
@@ -68,19 +68,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 
 			scroller.Content = virtualCanvas;
-			grid = new swc.Grid ();
-			//swc.Grid.SetRow (virtualCanvas, 0);
-			//swc.Grid.SetColumn (virtualCanvas, 0);
-			//grid.Children.Add (virtualCanvas);
-			//scroller.Content = grid;
 			Control.Child = scroller;
 			this.Border = BorderType.Bezel;
+			
 		}
 
-		public override void OnLoad (EventArgs e)
+		public override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoad (e);
+			base.OnLoadComplete (e);
 			GetVirtualChildren ();
+			Control.InvalidateMeasure ();
 		}
 
 		void GetVirtualChildren ()
@@ -98,6 +95,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			var layout = Widget.Layout.Handler as IWpfLayout;
 			if (layout != null) layout.AutoSize ();
+			GetVirtualChildren ();
+			Control.InvalidateMeasure ();
 		}
 
 		public Eto.Drawing.Point ScrollPosition
@@ -154,10 +153,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				return new Eto.Drawing.Size ((int)scroller.ViewportWidth, (int)scroller.ViewportHeight);
+				return this.Size; // new Eto.Drawing.Size ((int)scroller.ViewportWidth, (int)scroller.ViewportHeight);
 			}
 			set
 			{
+				this.Size = value;
 			}
 		}
 
@@ -174,9 +174,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public void SetLayout (Layout layout)
 		{
 			var control = layout.ControlObject as sw.UIElement;
-			//swc.Grid.SetRow (control, 0);
-			//swc.Grid.SetColumn (control, 0);
-			//grid.Children.Add (control);
 			virtualCanvas.Backdrop.Child = control;
 		}
 
@@ -199,6 +196,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					Control.MinHeight = 0;
 					Control.MinWidth = 0;
 				}
+			}
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case Scrollable.ScrollEvent:
+					scroller.ScrollChanged += (sender, e) => {
+						Widget.OnScroll (new ScrollEventArgs (new Point ((int)e.HorizontalOffset, (int)e.VerticalOffset)));
+					};
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
 			}
 		}
 	}

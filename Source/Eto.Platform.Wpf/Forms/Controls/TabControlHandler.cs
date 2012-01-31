@@ -34,5 +34,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control.Items.Remove (page.ControlObject);
 		}
+
 	}
 }

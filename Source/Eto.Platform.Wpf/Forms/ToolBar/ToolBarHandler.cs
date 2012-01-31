@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms
 		public ToolBarHandler ()
 		{
 			Control = new swc.ToolBar ();
-			swc.ToolBarTray.SetIsLocked (Control, true);
+			//swc.ToolBarTray.SetIsLocked (Control, true);
 		}
 
 		public void AddButton (ToolBarItem button)

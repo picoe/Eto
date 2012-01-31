@@ -26,7 +26,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
 		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
-		bool alpha;
+		public bool Alpha { get; set; }
 		
 		public BitmapHandler ()
 		{
@@ -52,7 +52,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			switch (pixelFormat) {
 				case PixelFormat.Format32bppRgba:
 				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
-				alpha = true;
+				Control.Fill (0);
+				Alpha = true;
 					break;
 			case PixelFormat.Format32bppRgb:
 				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
@@ -64,7 +65,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
 					break;*/
 			default:
-				throw new ArgumentOutOfRangeException ("pixelFormat", pixelFormat, "Not supported");
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -122,6 +123,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public override void SetImage (Gtk.Image imageView)
 		{
 			imageView.Pixbuf = Control;
+			/*
+			Gdk.Pixmap pix;
+			Gdk.Pixmap mask;
+			Control.RenderPixmapAndMask (out pix, out mask, 0);
+			imageView.Pixmap = pix;
+			imageView.Mask = mask;
+			 * */
 		}
 
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)

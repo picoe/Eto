@@ -24,19 +24,5 @@ namespace Eto.Platform.Wpf.Forms
 				Control.Background = new System.Windows.Media.SolidColorBrush(Generator.Convert(value));
 			}
 		}
-
-		public Cursor Cursor
-		{
-			get;
-			set;
-		}
-
-		public string ToolTip
-		{
-			get { return Control.ToolTip as string; }
-			set { Control.ToolTip = value; }
-		}
-
-
 	}
 }

@@ -20,12 +20,6 @@ namespace Eto.Platform.Wpf
 			get { return GeneratorID; }
 		}
 
-		public override void ExecuteOnMainThread(Action action)
-		{
-			// TODO: use dispatcher
-			
-			base.ExecuteOnMainThread(action);
-		}
 
 		public static Size GetSize (sw.FrameworkElement element)
 		{
@@ -105,6 +99,13 @@ namespace Eto.Platform.Wpf
 			return Regex.Replace (value, "(?<![_])[_]", (match) => { if (match.Value == "__") return "_"; else return "&"; });
 		}
 
+		public static KeyPressEventArgs Convert (swi.KeyEventArgs e)
+		{
+			var key = KeyMap.Convert (e.Key, swi.Keyboard.Modifiers);
+			return new KeyPressEventArgs (key) {
+				Handled = e.Handled
+			};
+		}
 
 		public static MouseEventArgs ConvertMouseEvent (sw.IInputElement control, swi.MouseEventArgs e)
 		{

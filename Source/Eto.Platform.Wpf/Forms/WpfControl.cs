@@ -11,8 +11,6 @@ namespace Eto.Platform.Wpf.Forms
 		where T : System.Windows.Controls.Control
 		where W: Control
 	{
-		Cursor cursor;
-
 		public override Color BackgroundColor
 		{
 			get
@@ -26,21 +24,5 @@ namespace Eto.Platform.Wpf.Forms
 				Control.Background = new System.Windows.Media.SolidColorBrush(Generator.Convert(value));
 			}
 		}
-
-		public virtual Cursor Cursor
-		{
-			get { return cursor; }
-			set
-			{
-				cursor = value;
-			}
-		}
-
-		public virtual string ToolTip
-		{
-			get;
-			set;
-		}
-
 	}
 }

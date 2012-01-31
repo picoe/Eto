@@ -28,17 +28,6 @@ namespace Eto.Platform.Mac
 			return Generator.ConvertF (loc);
 		}
 		
-		public override void ExecuteOnMainThread (System.Action action)
-		{
-			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread)
-				action ();
-			else
-				NSApplication.SharedApplication.InvokeOnMainThread (delegate {
-					action (); 
-				});
-		}
-		
 		public override IDisposable ThreadStart ()
 		{
 			return new NSAutoreleasePool ();

@@ -19,9 +19,7 @@ namespace Eto.Platform.Windows
 		where W: ToolBarItem
 	{
 		Icon icon;
-		
-		public string ID { get; set; }
-		
+				
 		public abstract void CreateControl(ToolBarHandler handler);
 
 		public virtual void InvokeButton()

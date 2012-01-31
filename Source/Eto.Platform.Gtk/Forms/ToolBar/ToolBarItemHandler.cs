@@ -17,8 +17,6 @@ namespace Eto.Platform.GtkSharp
 	{
 		bool enabled = true;
 		
-		public string ID { get; set; }
-		
 		protected Gtk.Image Image { get; set; }
 		Icon icon;
 

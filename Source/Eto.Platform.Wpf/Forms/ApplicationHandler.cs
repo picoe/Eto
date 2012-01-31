@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using System.Diagnostics;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -22,6 +23,15 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			Control.Shutdown();
 		}
+
+		public void InvokeOnMainThread (Action action)
+		{
+			// TODO: use dispatcher
+			sw.Threading.Dispatcher.CurrentDispatcher.Invoke (action);
+
+			//base.ExecuteOnMainThread(action);
+		}
+
 
 		public void GetSystemActions(GenerateActionArgs args)
 		{

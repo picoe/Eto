@@ -41,24 +41,6 @@ namespace Eto.Forms
 				Closing (this, e);
 		}
 		
-		public const string ShownEvent = "Window.Shown";
-		
-		event EventHandler<EventArgs> shown;
-		
-		public event EventHandler<EventArgs> Shown {
-			add {
-				HandleEvent (ShownEvent);
-				shown += value;
-			}
-			remove { shown -= value; }
-		}
-		
-		public virtual void OnShown (EventArgs e)
-		{
-			if (shown != null)
-				shown (this, e);
-		}
-		
 		#endregion
 		
 

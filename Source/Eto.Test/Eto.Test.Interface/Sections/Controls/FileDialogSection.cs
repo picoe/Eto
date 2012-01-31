@@ -12,12 +12,19 @@ namespace Eto.Test.Interface.Sections.Controls
 		{
 			var layout = new DynamicLayout (this, new Size (20, 20));
 
-			//layout.SetColumnScale(0);
-
 			layout.AddRow (null, OpenFile (), OpenFileWithFilters (), null);
 			layout.AddRow (null, SaveFile (), SaveFileWithFilters (), null);
 
 			layout.Add (null);
+		}
+
+		IEnumerable<IFileDialogFilter> GetFilters (string allFormatDescription)
+		{
+			yield return new FileDialogFilter (allFormatDescription, "png", "jpg", "jpeg", "gif", "tiff");
+			yield return new FileDialogFilter ("PNG Files", "png");
+			yield return new FileDialogFilter ("JPeg Files", "jpg", "jpeg");
+			yield return new FileDialogFilter ("GIF Files", "gif");
+			yield return new FileDialogFilter ("TIFF Files", "tiff");
 		}
 
 		Control OpenFile ()
@@ -51,17 +58,6 @@ namespace Eto.Test.Interface.Sections.Controls
 					Log (dialog, "Result: {0}", result);
 			};
 			return button;
-		}
-
-		IEnumerable<IFileDialogFilter> GetFilters (string allFormatDescription)
-		{
-			var filters = new List<FileDialogFilter> ();
-			filters.Add (new FileDialogFilter (allFormatDescription, "png", "jpg", "jpeg", "gif", "tiff"));
-			filters.Add (new FileDialogFilter ("PNG Files", "png"));
-			filters.Add (new FileDialogFilter ("JPeg Files", "jpg", "jpeg"));
-			filters.Add (new FileDialogFilter ("GIF Files", "gif"));
-			filters.Add (new FileDialogFilter ("TIFF Files", "tiff"));
-			return filters;
 		}
 
 		Control SaveFileWithFilters ()

@@ -11,17 +11,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ComboBoxHandler : WpfControl<swc.ComboBox, ComboBox>, IComboBox
 	{
+
 		public ComboBoxHandler ()
 		{
 			Control = new swc.ComboBox ();
 			Control.SelectionChanged += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			};
-
 			var template = new sw.DataTemplate (typeof (IListItem));
-			var labelFactory = new sw.FrameworkElementFactory (typeof (swc.TextBlock));
-			labelFactory.SetBinding (swc.TextBlock.TextProperty, new swd.Binding ("Text"));
-			template.VisualTree = labelFactory;
+			template.VisualTree = WpfListItemHelper.TextBlock();
 			Control.ItemTemplate = template;
 		}
 

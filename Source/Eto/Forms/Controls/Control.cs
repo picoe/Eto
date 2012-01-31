@@ -199,6 +199,11 @@ namespace Eto.Forms
 			remove { shown -= value; }
 		}
 
+		public virtual void OnShown (EventArgs e)
+		{
+			if (shown != null) shown (this, e);
+		}
+
 		public const string HiddenEvent = "Control.Hidden";
 
 		event EventHandler<EventArgs> hidden;
@@ -210,6 +215,12 @@ namespace Eto.Forms
 			}
 			remove { hidden -= value; }
 		}
+
+		public virtual void OnHidden (EventArgs e)
+		{
+			if (hidden != null) hidden (this, e);
+		}
+
 		
 		
 		public event EventHandler<EventArgs> PreLoad;

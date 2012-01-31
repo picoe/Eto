@@ -47,8 +47,10 @@ namespace Eto.Platform.GtkSharp
 		public void Add (Control child, int x, int y)
 		{
 			Attach (child, x, y);
-			var widget = (Gtk.Widget)child.ControlObject;
-			widget.ShowAll ();
+			if (child != null) {
+				var widget = (Gtk.Widget)child.ControlObject;
+				widget.ShowAll ();
+			}
 		}
 
 		public void Move (Control child, int x, int y)

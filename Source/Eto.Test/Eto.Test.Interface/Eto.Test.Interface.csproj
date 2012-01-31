@@ -50,6 +50,8 @@
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
     <Compile Include="TestApplication.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="Dialogs\About.cs" />

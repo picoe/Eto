@@ -32,6 +32,9 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Unchecked += delegate {
 				Widget.OnCheckedChanged (EventArgs.Empty);
 			};
+			Control.Click += delegate {
+				Widget.OnClick (EventArgs.Empty);
+			};
 		}
 
 		public bool Checked

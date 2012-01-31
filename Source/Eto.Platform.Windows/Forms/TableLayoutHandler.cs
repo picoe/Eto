@@ -89,15 +89,19 @@ namespace Eto.Platform.Windows
 		
 		public void Add(Control child, int x, int y)
 		{
+			Control.SuspendLayout ();
 			var old = views[x, y];
 			if (old != null) Control.Controls.Remove((SWF.Control)old.ControlObject);
 			views[x, y] = child;
-			SWF.Control childControl = (SWF.Control)child.ControlObject;
-			if (childControl.Parent != null) childControl.Parent.Controls.Remove(childControl);
-			childControl.Dock = ((IWindowsControl)child.Handler).DockStyle;
-			childControl.Margin = GetPadding(x, y);
-			Control.Controls.Add(childControl, x, y);
-			SetMinSize();
+			if (child != null) {
+				SWF.Control childControl = (SWF.Control)child.ControlObject;
+				if (childControl.Parent != null) childControl.Parent.Controls.Remove (childControl);
+				childControl.Dock = ((IWindowsControl)child.Handler).DockStyle;
+				childControl.Margin = GetPadding (x, y);
+				Control.Controls.Add (childControl, x, y);
+			}
+			SetMinSize ();
+			Control.ResumeLayout ();
 		}
 		
 		void SetMinSize()

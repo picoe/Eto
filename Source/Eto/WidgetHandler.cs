@@ -37,6 +37,7 @@ namespace Eto
 		
 		public virtual void AttachEvent(string handler)
 		{
+			throw new NotSupportedException (string.Format ("Event {0} not supported by this control", handler));
 		}
 		
 		public IWidget Handler

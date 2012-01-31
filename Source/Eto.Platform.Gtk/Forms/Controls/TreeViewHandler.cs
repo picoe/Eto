@@ -88,10 +88,12 @@ namespace Eto.Platform.GtkSharp.Forms
 					parentIter = model.AppendValues (parent.Value, child, child.Text, pixbuf);
 				else
 					parentIter = model.AppendValues (child, child.Text, pixbuf);
-				if (child.Expandable && child.Expanded) {
+				if (child.Expandable) {
 					Populate (parentIter, child);
-					if (parentIter != null)
-						tree.ExpandRow (model.GetPath (parentIter.Value), false);
+					if (child.Expanded) {
+						if (parentIter != null)
+							tree.ExpandRow (model.GetPath (parentIter.Value), false);
+					}
 				}
 			}
 		}

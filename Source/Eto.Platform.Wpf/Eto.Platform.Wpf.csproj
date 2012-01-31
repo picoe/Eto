@@ -106,6 +106,8 @@
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
+    <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\WpfMenuItem.cs" />

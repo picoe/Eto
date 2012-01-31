@@ -15,6 +15,8 @@ namespace Eto.Forms
 		
 		void Open(string url);
 
+		void InvokeOnMainThread (Action action);
+
 	}
 
 	public partial class Application : InstanceWidget, IApplication
@@ -51,6 +53,11 @@ namespace Eto.Forms
 		public virtual void Run(params string[] args)
 		{
 			inner.Run(args);
+		}
+
+		public virtual void InvokeOnMainThread (Action action)
+		{
+			inner.InvokeOnMainThread (action);
 		}
 
 		public void Quit()

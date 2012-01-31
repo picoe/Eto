@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using sw = System.Windows;
+using swc = System.Windows.Controls;
 
 namespace Eto.Platform.Wpf.Forms
 {

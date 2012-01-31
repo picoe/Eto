@@ -5,7 +5,6 @@ namespace Eto.Forms
 {
 	public interface IToolBarItem : IInstanceWidget
 	{
-		string ID { get; set; }
 	}
 	
 	public class ToolBarItem : InstanceWidget
@@ -16,14 +15,5 @@ namespace Eto.Forms
 		{
 			inner = (IToolBarItem)Handler;
 		}
-		
-		public string ID
-		{
-			get { return inner.ID; }
-			set { inner.ID = value; }
-		}
-		
 	}
-
-
 }

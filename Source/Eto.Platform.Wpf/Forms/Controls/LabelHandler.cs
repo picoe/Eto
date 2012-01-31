@@ -93,10 +93,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				font = value;
-				if (font != null) {
-					var handler = (FontHandler)font.Handler;
-					handler.Apply (Control);
-				}
+				FontHandler.Apply (Control, font);
 			}
 		}
 

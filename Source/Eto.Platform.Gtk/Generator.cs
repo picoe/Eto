@@ -25,22 +25,6 @@ namespace Eto.Platform.GtkSharp
 			Gdk.Threads.Enter ();
 		}
 		
-		public override void ExecuteOnMainThread (System.Action action)
-		{
-			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
-				action ();
-			else {
-				var resetEvent = new ManualResetEvent (false);
-
-				Gtk.Application.Invoke (delegate {
-					action ();
-					resetEvent.Set ();
-				});
-
-				resetEvent.WaitOne ();
-			}
-		}
-
 		public static Gdk.Color Convert (Color color)
 		{
 			return new Gdk.Color ((byte)(color.R * byte.MaxValue), (byte)(color.G * byte.MaxValue), (byte)(color.B * byte.MaxValue));

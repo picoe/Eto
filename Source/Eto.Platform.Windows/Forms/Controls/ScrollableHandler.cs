@@ -19,13 +19,6 @@ namespace Eto.Platform.Windows
 				return e.Handled;
 			}
 			
-			protected override void OnScroll (System.Windows.Forms.ScrollEventArgs se)
-			{
-				base.OnScroll (se);
-				//Handler.Widget.OnScroll(new ScrollEventArgs(se.))
-				
-			}
-			
 			protected override void OnCreateControl ()
 			{
 				base.OnCreateControl ();

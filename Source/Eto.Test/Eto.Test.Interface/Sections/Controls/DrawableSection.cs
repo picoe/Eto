@@ -11,8 +11,8 @@ namespace Eto.Test.Interface.Sections.Controls
 		{
 			var layout = new DynamicLayout (this);
 
-			layout.AddRow (new Label { Text = "Default" }, this.Default (), null);
-			layout.AddRow (new Label { Text = "Large Canvas" }, this.LargeCanvas (), null);
+			layout.AddRow (new Label { Text = "Default" }, this.Default ());
+			layout.AddRow (new Label { Text = "Large Canvas" }, DockLayout.CreatePanel(this.LargeCanvas ()));
 
 			layout.Add (null);
 		}
@@ -20,7 +20,8 @@ namespace Eto.Test.Interface.Sections.Controls
 		Control Default ()
 		{
 			var control = new Drawable {
-				Size = new Size (150, 50)
+				Size = new Size (150, 50),
+				BackgroundColor = Color.Green
 			};
 			control.Paint += delegate (object sender, PaintEventArgs pe) {
 				pe.Graphics.DrawLine (Color.Black, Point.Empty, new Point (control.Size));
@@ -56,7 +57,7 @@ namespace Eto.Test.Interface.Sections.Controls
 			var layout = new PixelLayout (new Scrollable {
 				Size = new Size (450, 250)
 			});
-			layout.Add (control, 0, 0);
+			layout.Add (control, 25, 25);
 			return layout.Container;
 		}
 

@@ -13,7 +13,6 @@ namespace Eto.Platform.Wpf.Drawing
 	{
 		swm.Visual visual;
 		swm.DrawingVisual drawingVisual;
-		swm.RectangleGeometry clip;
 
 		Bitmap image;
 		double? dpi;
@@ -68,18 +67,14 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var pen = GetPen(color);
 			double t = pen.Thickness / 2;
-			PushGuideLines (x + t, y + t, width- 1, height - 1);
-			Control.DrawRectangle (null, pen, new sw.Rect (x, y, width - 1, height - 1));
-			Control.Pop ();
+			Control.DrawRectangle (null, pen, new sw.Rect (x + t, y + t, width - 1, height - 1));
 		}
 
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
 			var pen = GetPen (color);
 			double t = pen.Thickness / 2;
-			Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { startx + t, endx + t }, new double[] { starty + t, endy + t }));
-			Control.DrawLine (pen, new sw.Point (startx, starty), new sw.Point (endx, endy));
-			Control.Pop ();
+			Control.DrawLine (pen, new sw.Point (startx + t, starty + t), new sw.Point (endx + t, endy + t));
 		}
 
 		public void FillRectangle (Color color, int x, int y, int width, int height)
@@ -168,7 +163,6 @@ namespace Eto.Platform.Wpf.Drawing
 				Control.Close ();
 				var handler = image.Handler as BitmapHandler;
 				var bmp = handler.Control;
-				swmi.WriteableBitmap bb = new swmi.WriteableBitmap (bmp);
 				var newbmp = new swmi.RenderTargetBitmap (bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
 				newbmp.Render (visual);
 				handler.SetBitmap (newbmp);

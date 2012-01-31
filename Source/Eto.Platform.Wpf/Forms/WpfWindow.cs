@@ -24,7 +24,7 @@ namespace Eto.Platform.Wpf.Forms
 		ToolBar toolBar;
 		swc.DockPanel main;
 		swc.ContentControl menuHolder;
-		swc.ToolBarTray toolBarHolder;
+		swc.ContentControl toolBarHolder;
 		swc.DockPanel content;
 		Size? initialClientSize;
 
@@ -34,8 +34,8 @@ namespace Eto.Platform.Wpf.Forms
 			main = new swc.DockPanel ();
 			content = new swc.DockPanel ();
 			menuHolder = new swc.ContentControl ();
-			toolBarHolder = new swc.ToolBarTray { IsEnabled = true };
-			//content.Background = System.Windows.SystemColors.ControlBrush;
+			toolBarHolder = new swc.ContentControl ();
+			content.Background = System.Windows.SystemColors.ControlBrush;
 			swc.DockPanel.SetDock (menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock (toolBarHolder, swc.Dock.Top);
 			main.Children.Add (menuHolder);
@@ -48,6 +48,35 @@ namespace Eto.Platform.Wpf.Forms
 					initialClientSize = null;
 				}
 			};
+			Control.Closed += delegate {
+				Widget.OnClosed (EventArgs.Empty);
+			};
+			Control.Closing += (sender, e) => {
+				Widget.OnClosing (e);
+			};
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case Window.MaximizedEvent:
+					Control.StateChanged += (sender, e) => {
+						if (Control.WindowState == sw.WindowState.Maximized) {
+							Widget.OnMaximized (EventArgs.Empty);
+						}
+					};
+					break;
+				case Window.MinimizedEvent:
+					Control.StateChanged += (sender, e) => {
+						if (Control.WindowState == sw.WindowState.Minimized) {
+							Widget.OnMinimized (EventArgs.Empty);
+						}
+					};
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
+			}
 		}
 
 		void UpdateClientSize (Size size)
@@ -65,10 +94,11 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				toolBar = value;
-				toolBarHolder.ToolBars.Clear ();
 				if (toolBar != null) {
-					toolBarHolder.ToolBars.Add((swc.ToolBar)toolBar.ControlObject);
+					toolBarHolder.Content = toolBar.ControlObject;
 				}
+				else
+					toolBarHolder.Content = null;
 			}
 		}
 

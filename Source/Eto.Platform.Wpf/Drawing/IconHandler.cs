@@ -9,7 +9,12 @@ using swmi = System.Windows.Media.Imaging;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, IIcon
+	public interface IWpfImage
+	{
+		swm.ImageSource GetIconClosestToSize (int width);
+	}
+
+	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, IIcon, IWpfImage
 	{
 		swm.ImageSource[] icons;
 

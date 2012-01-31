@@ -5,8 +5,10 @@ using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
+using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -14,57 +16,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		ITreeItem topNode;
 
-		class MyTreeNode
-		{
-			public ITreeItem Item { get; set; }
-
-			public MyTreeNode (ITreeItem item)
-			{
-				this.Item = item;
-			}
-
-			public string Text
-			{
-				get { return Item.Text; }
-			}
-
-			public bool IsExpanded
-			{
-				get { return Item.Expanded; }
-				set { Item.Expanded = value; }
-			}
-
-			public IEnumerable Children
-			{
-				get
-				{
-					if (Item == null)
-						yield break;
-					for (int i = 0; i < Item.Count; i++) {
-						yield return new MyTreeNode (Item.GetChild (i));
-					}
-				}
-			}
-
-			public override string ToString ()
-			{
-				return Item.Text;
-			}
-
-		}
-
 		public TreeViewHandler ()
 		{
 			Control = new swc.TreeView ();
-			var template = new sw.HierarchicalDataTemplate (typeof (MyTreeNode));
-			var labelFactory = new sw.FrameworkElementFactory (typeof (swc.TextBlock));
-			labelFactory.SetBinding (swc.TextBlock.TextProperty, new swd.Binding ("Text"));
-			template.VisualTree = labelFactory;
-			template.ItemsSource = new swd.Binding ("Children");
+			var template = new sw.HierarchicalDataTemplate (typeof (ITreeItem));
+			template.VisualTree = WpfListItemHelper.ItemTemplate ();
+			template.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
 			Control.ItemTemplate = template;
 
 			var style = new sw.Style (typeof (swc.TreeViewItem));
-			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding ("IsExpanded") { Mode = swd.BindingMode.TwoWay }));
+			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
 			Control.ItemContainerStyle = style;
 
 			Control.SelectedItemChanged += delegate {
@@ -72,10 +33,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 
 			Control.KeyDown += (sender, e) => {
-				Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+				if (e.Key == sw.Input.Key.Enter) {
+					if (SelectedItem != null)
+						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+				}
 			};
 			Control.MouseDoubleClick += delegate {
-				Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+				if (SelectedItem != null) {
+					Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+				}
 			};
 		}
 
@@ -86,7 +52,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				topNode = value;
-				Control.ItemsSource = new MyTreeNode (value).Children;
+				Control.ItemsSource = WpfTreeItemHelper.GetChildren(topNode); //.OfType<ITreeItem>().ToArray();
 			}
 		}
 
@@ -121,8 +87,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				var node = Control.SelectedItem as MyTreeNode;
-				return node.Item;
+				return Control.SelectedItem as ITreeItem;
 			}
 			set
 			{

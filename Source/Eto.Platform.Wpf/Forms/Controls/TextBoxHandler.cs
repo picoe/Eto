@@ -12,9 +12,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public TextBoxHandler ()
 		{
 			Control = new swc.TextBox ();
-			Control.TextChanged += delegate {
-				Widget.OnTextChanged (EventArgs.Empty);
-			};
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case TextBox.TextChangedEvent:
+					Control.TextChanged += delegate {
+						Widget.OnTextChanged (EventArgs.Empty);
+					};
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
+			}
 		}
 
 		public bool ReadOnly

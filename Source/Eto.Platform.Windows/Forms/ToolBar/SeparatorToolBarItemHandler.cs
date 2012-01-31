@@ -14,8 +14,6 @@ namespace Eto.Platform.Windows
 		{
 			Control = new SWF.ToolStripSeparator();
 		}
-		
-		public string ID { get; set; }
 	
 		public SeparatorToolBarItemType Type {
 			get {
