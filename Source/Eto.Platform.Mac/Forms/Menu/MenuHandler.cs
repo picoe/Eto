@@ -18,7 +18,7 @@ namespace Eto.Platform.Mac
 		public virtual void AddMenu (int index, MenuItem item)
 		{
 			if (!Control.HasSubmenu)
-				Control.Submenu = new NSMenu{ AutoEnablesItems = false, ShowsStateColumn = true, Title = Control.Title };
+				Control.Submenu = new NSMenu{ AutoEnablesItems = true, ShowsStateColumn = true, Title = Control.Title };
 			Control.Submenu.InsertItematIndex ((NSMenuItem)item.ControlObject, index);
 		}
 

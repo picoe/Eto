@@ -93,7 +93,16 @@ namespace Eto.Platform.Mac
 			
 			args.Actions.Add (new MacButtonAction ("mac_performMiniaturize", "Minimize", "performMiniaturize:"){ Accelerator = Key.Application | Key.M });
 			args.Actions.Add (new MacButtonAction ("mac_performZoom", "Zoom", "performZoom:"));
-			
+			args.Actions.Add (new MacButtonAction ("mac_performClose", "Close", "performClose:") { Accelerator = Key.Application | Key.W });
+			args.Actions.Add (new MacButtonAction ("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:"));
+			args.Actions.Add (new MacButtonAction ("mac_cut", "Cut", "cut:") { Accelerator = Key.Application | Key.X });
+			args.Actions.Add (new MacButtonAction ("mac_copy", "Copy", "copy:") { Accelerator = Key.Application | Key.C });
+			args.Actions.Add (new MacButtonAction ("mac_paste", "Paste", "paste:") { Accelerator = Key.Application | Key.V });
+			args.Actions.Add (new MacButtonAction ("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Accelerator = Key.Application | Key.Alt | Key.Shift | Key.V });
+			args.Actions.Add (new MacButtonAction ("mac_delete", "Delete", "delete:"));
+			args.Actions.Add (new MacButtonAction ("mac_selectAll", "Select All", "selectAll:") { Accelerator = Key.Application | Key.A });
+			args.Actions.Add (new MacButtonAction ("mac_undo", "Undo", "undo:") { Accelerator = Key.Application | Key.Z });
+			args.Actions.Add (new MacButtonAction ("mac_redo", "Redo", "redo:") { Accelerator = Key.Application | Key.Shift | Key.Z });
 		}
 		
 		public Key CommonModifier {

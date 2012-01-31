@@ -112,6 +112,7 @@ namespace Eto.Test.Interface
 		void GenerateMenu (GenerateActionArgs args)
 		{
 			var file = args.Menu.FindAddSubMenu ("&File", 100);
+			var edit = args.Menu.FindAddSubMenu ("&Edit", 200);
 			var window = args.Menu.FindAddSubMenu ("&Window", 900);
 			var help = args.Menu.FindAddSubMenu ("Help", 1000);
 			
@@ -127,7 +128,16 @@ namespace Eto.Test.Interface
 				main.Actions.AddSeparator (900);
 				main.Actions.Add (Actions.Quit.ActionID, 1000);
 				
-				file.Actions.Add (Actions.Close.ActionID, 900);
+				file.Actions.Add ("mac_performClose", 900);
+				
+				edit.Actions.Add ("mac_undo", 100);
+				edit.Actions.Add ("mac_redo", 100);
+				edit.Actions.AddSeparator (200);
+				edit.Actions.Add ("mac_cut", 200);
+				edit.Actions.Add ("mac_copy", 200);
+				edit.Actions.Add ("mac_paste", 200);
+				edit.Actions.Add ("mac_delete", 200);
+				edit.Actions.Add ("mac_selectAll", 200);
 				
 				window.Actions.Add ("mac_performMiniaturize");
 				window.Actions.Add ("mac_performZoom");
