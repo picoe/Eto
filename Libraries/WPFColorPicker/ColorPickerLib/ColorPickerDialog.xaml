@@ -5,16 +5,16 @@
   xmlns:customControls="clr-namespace:Microsoft.Samples.CustomControls"
   Title="Select a Color"
   Width="600"
-  Height="400">
+  Height="419" SizeToContent="WidthAndHeight" WindowStartupLocation="CenterOwner" WindowStyle="SingleBorderWindow" ResizeMode="NoResize" ShowInTaskbar="False">
   <DockPanel>
     <StackPanel DockPanel.Dock="Bottom"
       Orientation="Horizontal"
       HorizontalAlignment="Right" 
       Margin="10">
-      <Button Name="OKButton"
+      <Button Name="OKButton" MinWidth="50" Margin="0,0,5,0"
         Click="okButtonClicked"
-        IsEnabled="False">OK</Button>
-      <Button Click="cancelButtonClicked">Cancel</Button>
+        IsEnabled="False" IsDefault="True">OK</Button>
+      <Button Click="cancelButtonClicked" MinWidth="50" IsCancel="True">Cancel</Button>
     </StackPanel>
 
     <customControls:ColorPicker 

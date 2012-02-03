@@ -277,12 +277,11 @@ namespace ColorPickerSampleApplication
             Shape selectedShape = (Shape)GetValue(SelectedShapeProperty);
             
             
-
                 Microsoft.Samples.CustomControls.ColorPickerDialog cPicker 
                     = new Microsoft.Samples.CustomControls.ColorPickerDialog();         
-                
                 cPicker.StartingColor = StrokeColor;
                 cPicker.Owner = this;
+				cPicker.ShowAlpha = false;
                 
                 bool? dialogResult = cPicker.ShowDialog(); 
                 if (dialogResult != null && (bool)dialogResult == true)

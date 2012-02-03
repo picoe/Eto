@@ -386,6 +386,8 @@
                 <Border Name="PART_ColorDetail" 
                   HorizontalAlignment="Stretch" 
                   VerticalAlignment="Stretch"
+                  MinWidth="{Binding ActualHeight, RelativeSource={RelativeSource Self}}" 
+                  MinHeight="{Binding ActualWidth, RelativeSource={RelativeSource Self}}"
                   Cursor="Cross">
                   <Border.Background>
                     <DrawingBrush 
@@ -509,11 +511,14 @@
                     </Rectangle>
                   </Border>
 
-                  <TextBlock Grid.Row="2">
+                  <TextBlock Grid.Row="2" 
+                     Visibility="{Binding AlphaVisibility, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}">
                     <Bold>Opacity</Bold>
                   </TextBlock>
                   <Border BorderBrush="{DynamicResource {x:Static SystemColors.ControlDarkDarkBrushKey}}"
+                    x:Name="opacityEntry"
                     BorderThickness="2,2,2,2"
+                    Visibility="{Binding AlphaVisibility, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
                     Background="{StaticResource CheckerBrush}"
                     VerticalAlignment="Top"
                     Grid.Row="3"
@@ -558,12 +563,14 @@
                     <Bold>ScRGB</Bold>
                   </Label>
                   <Label Grid.Column="0" Grid.Row="1"
+                     Visibility="{Binding AlphaVisibility, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
                      FontFamily="{TemplateBinding FontFamily}"
                      FontSize="{TemplateBinding FontSize}"
                      Foreground="{TemplateBinding Foreground}">ScA</Label>
                   <TextBox
                      Grid.Column="1" Grid.Row="1"
                      MaxLength="10"
+                     Visibility="{Binding AlphaVisibility, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
                      FontFamily="{TemplateBinding FontFamily}"
                      FontSize="{TemplateBinding FontSize}"
                      Foreground="{TemplateBinding Foreground}"
@@ -629,11 +636,13 @@
                     <Bold>sRGB</Bold>
                   </Label>
                   <Label Grid.Column="0" Grid.Row="1"
+                     Visibility="{Binding AlphaVisibility, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
                      FontFamily="{TemplateBinding FontFamily}"
                      FontSize="{TemplateBinding FontSize}"
                      Foreground="{TemplateBinding Foreground}">A</Label>
                   <TextBox
                      MaxLength="3"
+                     Visibility="{Binding AlphaVisibility, Mode=OneWay, RelativeSource={RelativeSource TemplatedParent}}"
                      FontFamily="{TemplateBinding FontFamily}"
                      FontSize="{TemplateBinding FontSize}"
                      Foreground="{TemplateBinding Foreground}"                      

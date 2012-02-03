@@ -43,6 +43,7 @@ namespace Microsoft.Samples.CustomControls
             SetValue(GProperty, m_color.G);
             SetValue(BProperty, m_color.B);
             SetValue(SelectedColorProperty, m_color);
+			SetValue (AlphaVisibilityProperty, System.Windows.Visibility.Visible);
         }
 
 
@@ -221,6 +222,19 @@ namespace Microsoft.Samples.CustomControls
             }
         }
 
+		public bool ShowAlpha
+		{
+			get
+			{
+				return (Visibility)GetValue (AlphaVisibilityProperty) == System.Windows.Visibility.Visible;
+			}
+			set
+			{
+				SetValue (AlphaVisibilityProperty, value ? System.Windows.Visibility.Visible : System.Windows.Visibility.Collapsed);
+				if (!ShowAlpha) this.A = 255;
+			}
+		}
+
         #endregion
 
 
@@ -315,6 +329,11 @@ namespace Microsoft.Samples.CustomControls
             new PropertyChangedCallback(HexadecimalStringChanged)
          ));
 
+		public static readonly DependencyProperty AlphaVisibilityProperty =
+			DependencyProperty.Register
+			("AlphaVisibility", typeof (Visibility), typeof (ColorPicker),
+			new PropertyMetadata (Visibility.Visible));
+
         #endregion
 
 
@@ -408,7 +427,7 @@ namespace Microsoft.Samples.CustomControls
                 m_color.ScA = newValue;
                 SetValue(AProperty, m_color.A);
                 SetValue(SelectedColorProperty, m_color);
-                SetValue(HexadecimalStringProperty, m_color.ToString());
+				SetValue (HexadecimalStringProperty, GetHexadecimal ());
             }
             isAlphaChange = false;
         }
@@ -429,7 +448,7 @@ namespace Microsoft.Samples.CustomControls
                 m_color.ScR = newValue;
                 SetValue(RProperty, m_color.R);
                 SetValue(SelectedColorProperty, m_color);
-                SetValue(HexadecimalStringProperty, m_color.ToString());
+				SetValue (HexadecimalStringProperty, GetHexadecimal ());
             }
         }
 
@@ -449,7 +468,7 @@ namespace Microsoft.Samples.CustomControls
                 m_color.ScG = newValue;
                 SetValue(GProperty, m_color.G);
                 SetValue(SelectedColorProperty, m_color);
-                SetValue(HexadecimalStringProperty, m_color.ToString());
+				SetValue (HexadecimalStringProperty, GetHexadecimal ());
             }
         }
 
@@ -468,7 +487,7 @@ namespace Microsoft.Samples.CustomControls
                 m_color.ScB = newValue;
                 SetValue(BProperty, m_color.B);
                 SetValue(SelectedColorProperty, m_color);
-                SetValue(HexadecimalStringProperty, m_color.ToString());
+				SetValue (HexadecimalStringProperty, GetHexadecimal ());
             }
         }
 
@@ -608,6 +627,15 @@ namespace Microsoft.Samples.CustomControls
 
         #region Color Resolution Helpers
 
+		string GetHexadecimal ()
+		{
+			if (ShowAlpha)
+				return m_color.ToString ();
+			else
+				return string.Format ("#{0:X2}{1:X2}{2:X2}", m_color.R, m_color.G, m_color.B);
+		}
+
+
         private void setColor(Color theColor)
         {
             m_color = theColor;
@@ -660,7 +688,7 @@ namespace Microsoft.Samples.CustomControls
             m_color = ColorUtilities.ConvertHsvToRgb(hsv.H, hsv.S, hsv.V);
             shouldFindPoint = false;
             m_color.ScA = (float)GetValue(ScAProperty);
-            SetValue(HexadecimalStringProperty, m_color.ToString());
+			SetValue (HexadecimalStringProperty, GetHexadecimal ());
             shouldFindPoint = true;
 
         }

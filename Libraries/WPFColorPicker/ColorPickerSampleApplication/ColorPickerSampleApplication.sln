@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual Studio 2005
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual C# Express 2010
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPickerSampleApplication", "ColorPickerSampleApplication.csproj", "{1091F084-417B-42A8-A590-4F5F011ED1A0}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ColorPicker", "..\ColorPickerLib\ColorPicker.csproj", "{99E90579-62FC-4898-B168-24F7DBD3A34D}"

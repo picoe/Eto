@@ -86,8 +86,18 @@ namespace Microsoft.Samples.CustomControls
                 
             }
 
-        }        
+        }
 
-
+		public bool ShowAlpha
+		{
+			get
+			{
+				return cPicker.ShowAlpha;
+			}
+			set
+			{
+				cPicker.ShowAlpha = value;
+			}
+		}
     }
 }
