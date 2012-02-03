@@ -46,9 +46,9 @@ namespace Eto.Forms
 
 		public const string ClosingEvent = "Window.Closing";
 
-		event EventHandler<EventArgs> closing;
+		event EventHandler<CancelEventArgs> closing;
 
-		public event EventHandler<EventArgs> Closing {
+		public event EventHandler<CancelEventArgs> Closing {
 			add {
 				HandleEvent (ClosingEvent);
 				closing += value;
@@ -56,7 +56,7 @@ namespace Eto.Forms
 			remove { closing -= value; }
 		}
 
-		public virtual void OnClosing (EventArgs e)
+		public virtual void OnClosing (CancelEventArgs e)
 		{
 			if (closing != null)
 				closing (this, e);
