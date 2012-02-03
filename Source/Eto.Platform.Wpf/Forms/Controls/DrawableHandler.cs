@@ -133,19 +133,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Handler = this,
 				SnapsToDevicePixels = true
 			};
-			/*Control = new msc.VirtualCanvas { 
-				SnapsToDevicePixels = true,
-				OrderControls = false
-			};
-			Control.ContentCanvas.SnapsToDevicePixels = true;
-			Control.Backdrop.SnapsToDevicePixels = true;
-			 */
 			Control.SizeChanged += Control_SizeChanged;
 		}
 
 		void Control_SizeChanged (object sender, sw.SizeChangedEventArgs e)
 		{
-			if (virtualChildren == null) 
+			if (virtualChildren == null)
 				return;
 			UpdateCanvas ();
 			var parent = Control.GetParent<Microsoft.Sample.Controls.VirtualCanvas> ();

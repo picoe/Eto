@@ -20,6 +20,7 @@ namespace Eto.Platform.Wpf.Forms
 		where W : Control
 	{
 		Size? size;
+		Size? newSize;
 		public abstract Color BackgroundColor
 		{
 			get;
@@ -29,7 +30,9 @@ namespace Eto.Platform.Wpf.Forms
 		public virtual Size Size
 		{
 			get {
-				if (!Control.IsLoaded && size != null) return size.Value;
+				var newSize = this.newSize;
+				if (!Widget.Loaded && size != null) return size.Value;
+				else if (newSize != null) return newSize.Value;
 				else return Generator.GetSize (Control); 
 			}
 			set {
@@ -162,8 +165,9 @@ namespace Eto.Platform.Wpf.Forms
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					Control.SizeChanged += (sender, e) => {
-						this.size = Generator.Convert (e.NewSize);
+						this.newSize = Generator.Convert (e.NewSize); // so we can report this back in Control.Size
 						Widget.OnSizeChanged (EventArgs.Empty);
+						this.newSize = null;
 					};
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
