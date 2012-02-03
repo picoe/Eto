@@ -21,7 +21,7 @@ namespace Eto.Platform.Mac
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					this.AddCursorRectcursor (new SD.RectangleF (SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+					this.AddCursorRect (new SD.RectangleF (SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
 			}
 			
 		}
@@ -185,7 +185,7 @@ namespace Eto.Platform.Mac
 				
 				if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) {
 					if (Widget.ParentLayout != null) {
-						var layout = Widget.ParentLayout.Handler as IMacLayout;
+						var layout = Widget.ParentLayout.InnerLayout.Handler as IMacLayout;
 						if (layout != null)
 							layout.SetContainerSize (contentSize);
 					}

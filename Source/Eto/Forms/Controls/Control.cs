@@ -61,6 +61,12 @@ namespace Eto.Forms
 			remove { sizeChanged -= value; }
 		}
 
+		public virtual void OnSizeChanged (EventArgs e)
+		{
+			if (sizeChanged != null)
+				sizeChanged (this, e);
+		}
+
 		public const string KeyDownEvent = "Control.KeyDown";
 
 		event EventHandler<KeyPressEventArgs> keyDown;
@@ -71,6 +77,15 @@ namespace Eto.Forms
 				keyDown += value;
 			}
 			remove { keyDown -= value; }
+		}
+		
+		public virtual void OnKeyDown (KeyPressEventArgs e)
+		{
+			//Console.WriteLine("{0} ({1})", e.KeyData, this);
+			if (keyDown != null)
+				keyDown (this, e);
+			if (!e.Handled && Parent != null)
+				Parent.OnKeyDown (e);
 		}
 
 		public const string TextChangedEvent = "Control.TextChanged";
@@ -85,6 +100,12 @@ namespace Eto.Forms
 			remove { textChanged -= value; }
 		}
 
+		public virtual void OnTextChanged (EventArgs e)
+		{
+			if (textChanged != null)
+				textChanged (this, e);
+		}
+
 		public const string MouseDownEvent = "Control.MouseDown";
 
 		event EventHandler<MouseEventArgs> mouseDown;
@@ -95,6 +116,12 @@ namespace Eto.Forms
 				mouseDown += value;
 			}
 			remove { mouseDown -= value; }
+		}
+
+		public virtual void OnMouseDown (MouseEventArgs e)
+		{
+			if (mouseDown != null)
+				mouseDown (this, e);
 		}
 
 		public const string MouseUpEvent = "Control.MouseUp";
@@ -109,6 +136,12 @@ namespace Eto.Forms
 			remove { mouseUp -= value; }
 		}
 
+		public virtual void OnMouseUp (MouseEventArgs e)
+		{
+			if (mouseUp != null)
+				mouseUp (this, e);
+		}
+
 		public const string MouseMoveEvent = "Control.MouseMove";
 
 		event EventHandler<MouseEventArgs> mouseMove;
@@ -119,6 +152,12 @@ namespace Eto.Forms
 				mouseMove += value;
 			}
 			remove { mouseMove -= value; }
+		}
+
+		public virtual void OnMouseMove (MouseEventArgs e)
+		{
+			if (mouseMove != null)
+				mouseMove (this, e);
 		}
 
 		public const string MouseLeaveEvent = "Control.MouseLeave";
@@ -133,6 +172,12 @@ namespace Eto.Forms
 			remove { mouseLeave -= value; }
 		}
 
+		public virtual void OnMouseLeave (MouseEventArgs e)
+		{
+			if (mouseLeave != null)
+				mouseLeave (this, e);
+		}
+
 		public const string MouseEnterEvent = "Control.MouseEnter";
 
 		event EventHandler<MouseEventArgs> mouseEnter;
@@ -143,6 +188,12 @@ namespace Eto.Forms
 				mouseEnter += value;
 			}
 			remove { mouseEnter -= value; }
+		}
+
+		public virtual void OnMouseEnter (MouseEventArgs e)
+		{
+			if (mouseEnter != null)
+				mouseEnter (this, e);
 		}
 		
 		public const string MouseDoubleClickEvent = "Control.MouseDoubleClick";
@@ -175,6 +226,12 @@ namespace Eto.Forms
 			remove { gotFocus -= value; }
 		}
 
+		public virtual void OnGotFocus (EventArgs e)
+		{
+			if (gotFocus != null)
+				gotFocus (this, e);
+		}
+
 		public const string LostFocusEvent = "Control.LostFocus";
 
 		event EventHandler<EventArgs> lostFocus;
@@ -185,6 +242,12 @@ namespace Eto.Forms
 				lostFocus += value;
 			}
 			remove { lostFocus -= value; }
+		}
+
+		public virtual void OnLostFocus (EventArgs e)
+		{
+			if (lostFocus != null)
+				lostFocus (this, e);
 		}
 		
 		public const string ShownEvent = "Control.Shown";
@@ -201,7 +264,8 @@ namespace Eto.Forms
 
 		public virtual void OnShown (EventArgs e)
 		{
-			if (shown != null) shown (this, e);
+			if (shown != null)
+				shown (this, e);
 		}
 
 		public const string HiddenEvent = "Control.Hidden";
@@ -218,16 +282,11 @@ namespace Eto.Forms
 
 		public virtual void OnHidden (EventArgs e)
 		{
-			if (hidden != null) hidden (this, e);
+			if (hidden != null)
+				hidden (this, e);
 		}
-
-		
 		
 		public event EventHandler<EventArgs> PreLoad;
-		public event EventHandler<EventArgs> Load;
-		public event EventHandler<EventArgs> LoadComplete;
-		
-		#endregion
 
 		public virtual void OnPreLoad (EventArgs e)
 		{
@@ -235,7 +294,9 @@ namespace Eto.Forms
 				PreLoad (this, e);
 			inner.OnPreLoad (e);
 		}
-		
+
+		public event EventHandler<EventArgs> Load;
+
 		public virtual void OnLoad (EventArgs e)
 		{
 			Loaded = true;
@@ -244,6 +305,8 @@ namespace Eto.Forms
 			inner.OnLoad (e);
 		}
 
+		public event EventHandler<EventArgs> LoadComplete;
+
 		public virtual void OnLoadComplete (EventArgs e)
 		{
 			if (LoadComplete != null)
@@ -251,75 +314,15 @@ namespace Eto.Forms
 			inner.OnLoadComplete (e);
 		}
 		
+		#endregion
+
+		
 		protected Control (Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
 			this.inner = (IControl)base.Handler;
 		}
 
-		public virtual void OnTextChanged (EventArgs e)
-		{
-			if (textChanged != null)
-				textChanged (this, e);
-		}
-
-		public virtual void OnSizeChanged (EventArgs e)
-		{
-			if (sizeChanged != null)
-				sizeChanged (this, e);
-		}
-
-		public virtual void OnKeyDown (KeyPressEventArgs e)
-		{
-			//Console.WriteLine("{0} ({1})", e.KeyData, this);
-			if (keyDown != null)
-				keyDown (this, e);
-			if (!e.Handled && Parent != null)
-				Parent.OnKeyDown (e);
-		}
-		
-		public virtual void OnMouseDown (MouseEventArgs e)
-		{
-			if (mouseDown != null)
-				mouseDown (this, e);
-		}
-
-		public virtual void OnMouseUp (MouseEventArgs e)
-		{
-			if (mouseUp != null)
-				mouseUp (this, e);
-		}
-
-		public virtual void OnMouseMove (MouseEventArgs e)
-		{
-			if (mouseMove != null)
-				mouseMove (this, e);
-		}
-
-		public virtual void OnMouseEnter (MouseEventArgs e)
-		{
-			if (mouseEnter != null)
-				mouseEnter (this, e);
-		}
-		
-		public virtual void OnMouseLeave (MouseEventArgs e)
-		{
-			if (mouseLeave != null)
-				mouseLeave (this, e);
-		}
-		
-		public virtual void OnGotFocus (EventArgs e)
-		{
-			if (gotFocus != null)
-				gotFocus (this, e);
-		}
-
-		public virtual void OnLostFocus (EventArgs e)
-		{
-			if (lostFocus != null)
-				lostFocus (this, e);
-		}
-		
 		public void Invalidate ()
 		{
 			inner.Invalidate ();
@@ -402,7 +405,6 @@ namespace Eto.Forms
 				return null;
 			}
 		}
-
 	}
 	
 	public class ControlCollection : List<Control>

@@ -100,6 +100,10 @@ namespace Eto.Forms
 			protected internal set;
 		}
 		
+		public Layout ParentLayout {
+			get { return (Container != null) ? Container.ParentLayout : null; }
+		}
+		
 		public virtual void Update ()
 		{
 			UpdateContainers (this.Container);

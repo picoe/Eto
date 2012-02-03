@@ -46,6 +46,7 @@ namespace Eto.Platform.Mac.Drawing
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, IBitmap
 	{
 		NSBitmapImageRep rep;
+		bool alpha = true;
 		
 		public BitmapHandler ()
 		{
@@ -71,13 +72,14 @@ namespace Eto.Platform.Mac.Drawing
 			switch (pixelFormat) {
 			case PixelFormat.Format32bppRgb:
 				{
+					alpha = false;
 					int numComponents = 4;
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
 
-					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, 3, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 					Control = new NSImage ();
 					Control.AddRepresentation (rep);
 				
@@ -89,6 +91,7 @@ namespace Eto.Platform.Mac.Drawing
 				}
 			case PixelFormat.Format24bppRgb:
 				{
+					alpha = false;
 					int numComponents = 3;
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
@@ -105,6 +108,7 @@ namespace Eto.Platform.Mac.Drawing
 					break;
 				}
 			case PixelFormat.Format32bppRgba: {
+					alpha = true;
 					int numComponents = 4;
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
@@ -214,7 +218,10 @@ namespace Eto.Platform.Mac.Drawing
 			var nsimage = this.Control;
 			var sourceRect = graphics.Translate (Generator.ConvertF (source), nsimage.Size.Height);
 			var destRect = graphics.TranslateView (Generator.ConvertF (destination), false);
-			nsimage.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+			if (alpha)
+				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+			else
+				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
 	}

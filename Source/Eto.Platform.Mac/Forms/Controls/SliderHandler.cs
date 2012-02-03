@@ -6,6 +6,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class SliderHandler : MacView<NSSlider, Slider>, ISlider
 	{
+		SliderOrientation orientation;
 		public SliderHandler ()
 		{
 			Control = new NSSlider ();
@@ -18,6 +19,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MinValue = 0;
 			MaxValue = 100;
 		}
+		
+		protected override void SetNaturalSize ()
+		{
+			if (Orientation == SliderOrientation.Horizontal)
+				Control.SetFrameSize (new System.Drawing.SizeF(80, 30));
+			else
+				Control.SetFrameSize (new System.Drawing.SizeF(30, 80));
+		}
 
 		public int MaxValue {
 			get { return (int)Control.MaxValue; }
@@ -27,7 +36,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				TickFrequency = old;
 			}
 		}
-
+		
 		public int MinValue {
 			get { return (int)Control.MinValue; }
 			set {
@@ -62,9 +71,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public SliderOrientation Orientation {
 			get {
-				return (Control.IsVertical == 1) ? SliderOrientation.Vertical : SliderOrientation.Horizontal;
+				return orientation;
 			}
 			set {
+				orientation = value;
 				// wha?!?! no way to do this other than change size or sumthun?
 				var size = this.Control.Frame.Size;
 				if (value == SliderOrientation.Vertical) {
@@ -72,6 +82,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				} else
 					size.Width = size.Height + 1;
 				this.Control.SetFrameSize (size);
+				LayoutIfNeeded ();
 			}
 		}
 	}

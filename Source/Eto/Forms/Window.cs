@@ -25,20 +25,41 @@ namespace Eto.Forms
 		
 		#region Events
 		
-		public event EventHandler<EventArgs> Closed;
+		public const string ClosedEvent = "Window.Closed";
+
+		event EventHandler<EventArgs> closed;
+
+		public event EventHandler<EventArgs> Closed {
+			add {
+				HandleEvent (ClosedEvent);
+				closed += value;
+			}
+			remove { closed -= value; }
+		}
 
 		public virtual void OnClosed (EventArgs e)
 		{
-			if (Closed != null)
-				Closed (this, e);
+			if (closed != null)
+				closed (this, e);
+		}
+		
+
+		public const string ClosingEvent = "Window.Closing";
+
+		event EventHandler<EventArgs> closing;
+
+		public event EventHandler<EventArgs> Closing {
+			add {
+				HandleEvent (ClosingEvent);
+				closing += value;
+			}
+			remove { closing -= value; }
 		}
 
-		public event EventHandler<CancelEventArgs> Closing;
-
-		public virtual void OnClosing (CancelEventArgs e)
+		public virtual void OnClosing (EventArgs e)
 		{
-			if (Closing != null)
-				Closing (this, e);
+			if (closing != null)
+				closing (this, e);
 		}
 		
 		#endregion

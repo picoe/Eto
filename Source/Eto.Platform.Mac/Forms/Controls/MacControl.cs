@@ -31,6 +31,7 @@ namespace Eto.Platform.Mac
 					Control.Font = font.ControlObject as NSFont;
 				else
 					Control.Font = null;
+				LayoutIfNeeded();
 			}
 		}
 	}

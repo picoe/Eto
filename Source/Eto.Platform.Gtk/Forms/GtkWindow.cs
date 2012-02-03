@@ -82,7 +82,6 @@ namespace Eto.Platform.GtkSharp
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			Control.DeleteEvent += GtkWindow_DeleteEvent;
 			vbox.PackStart (menuBox, false, false, 0);
 			vbox.PackStart (topToolbarBox, false, false, 0);
 			vbox.PackStart (containerBox, true, true, 0);
@@ -105,6 +104,19 @@ namespace Eto.Platform.GtkSharp
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case Window.ClosedEvent:
+				HandleEvent (Window.ClosingEvent);
+				break;
+			case Window.ClosingEvent:
+				Control.DeleteEvent += delegate(object o, Gtk.DeleteEventArgs args) {
+					var cancelArgs = new CancelEventArgs ();
+					Widget.OnClosing (cancelArgs);
+					args.RetVal = cancelArgs.Cancel;
+					if (!cancelArgs.Cancel) {
+						Widget.OnClosed (EventArgs.Empty);
+					}
+				};
+				break;
 			case Window.ShownEvent:
 				Control.Shown += delegate {
 					Widget.OnShown (EventArgs.Empty);
@@ -292,16 +304,6 @@ namespace Eto.Platform.GtkSharp
 		public Rectangle? RestoreBounds {
 			get {
 				return State == WindowState.Normal ? null : restoreBounds;
-			}
-		}
-
-		void GtkWindow_DeleteEvent (object o, Gtk.DeleteEventArgs args)
-		{
-			CancelEventArgs cancelArgs = new CancelEventArgs ();
-			Widget.OnClosing (cancelArgs);
-			args.RetVal = cancelArgs.Cancel;
-			if (!cancelArgs.Cancel) {
-				Widget.OnClosed (EventArgs.Empty);
 			}
 		}
 	}

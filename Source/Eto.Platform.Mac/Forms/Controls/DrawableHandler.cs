@@ -6,6 +6,7 @@ using Eto.Platform.Mac.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -13,16 +14,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		public class MyView : MacEventView
 		{
-			Drawable Drawable
-			{
+			Drawable Drawable {
 				get { return Widget as Drawable; }
 			}
 			
 			public override void DrawRect (System.Drawing.RectangleF dirtyRect)
 			{
-				if (Widget == null) return;
-				dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
-				Drawable.Update (Generator.ConvertF (dirtyRect));
+				if (Widget == null)
+					return;
+				//if (!WantsLayer) {
+					dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
+					Drawable.Update (Generator.ConvertF (dirtyRect));
+				/*} else {
+					var rects = GetRectsBeingDrawn??
+					//rect.Y = this.Frame.Height - rect.Y - rect.Height;
+					//Drawable.Update (Generator.ConvertF (rect));
+				}*/
 			}
 			
 			public bool CanFocus { get; set; }

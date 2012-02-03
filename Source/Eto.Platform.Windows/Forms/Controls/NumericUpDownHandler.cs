@@ -13,7 +13,7 @@ namespace Eto.Platform.Windows
 			Control = new SWF.NumericUpDown{
 				Maximum = 100,
 				Minimum = 0,
-				Width = 40
+				Width = 80
 			};
 			this.Control.ValueChanged += delegate {
 				Widget.OnValueChanged (EventArgs.Empty);

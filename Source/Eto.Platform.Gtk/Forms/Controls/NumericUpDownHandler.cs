@@ -10,7 +10,7 @@ namespace Eto.Platform.GtkSharp
 		public NumericUpDownHandler ()
 		{
 			Control = new Gtk.SpinButton (0, 100, 1);
-			Control.WidthRequest = 20;
+			Control.WidthRequest = 80;
 			Control.Wrap = true;
 			Control.ValueChanged += delegate {
 				Widget.OnValueChanged (EventArgs.Empty);

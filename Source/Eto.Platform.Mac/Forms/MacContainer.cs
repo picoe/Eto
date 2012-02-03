@@ -4,13 +4,12 @@ using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using SD = System.Drawing;
+using System.Linq;
 
 namespace Eto.Platform.Mac
 {
-	public interface IMacContainer
+	public interface IMacContainer : IMacAutoSizing
 	{
-		bool AutoSize { get; }
-
 		void SetContentSize (SD.SizeF contentSize);
 	}
 	
@@ -48,21 +47,16 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public override void OnLoadComplete (EventArgs e)
+		public override void SizeToFit ()
 		{
-			base.OnLoadComplete (e);
-			Widget.HandleEvent (Container.SizeChangedEvent);
-			
-			if (this.AutoSize) {
-				if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
-					var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-					if (layout != null)
-						layout.SizeToFit ();
-				} else
-					SetContentSize (SD.SizeF.Empty);
+			if (Widget.Layout != null) {
+				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
+				if (layout != null)
+					layout.SizeToFit ();
 			}
+			base.SizeToFit ();
 		}
-
+		
 		public virtual void SetContentSize (SD.SizeF contentSize)
 		{
 			//Console.WriteLine ("Set Content Size: {0}", contentSize);
@@ -72,12 +66,13 @@ namespace Eto.Platform.Mac
 			}
 			if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) {
 				if (Widget.ParentLayout != null) {
-					var layout = Widget.ParentLayout.Handler as IMacLayout;
+					var layout = Widget.ParentLayout.InnerLayout.Handler as IMacLayout;
 					if (layout != null)
 						layout.SetContainerSize (contentSize);
 				}
-			} else
+			} else {
 				Control.SetFrameSize (contentSize);
+			}
 		}
 	}
 }

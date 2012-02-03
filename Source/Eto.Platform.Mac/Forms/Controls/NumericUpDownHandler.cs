@@ -15,6 +15,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		class MyView : NSView
 		{
 			
+			
 			public override void SetFrameSize (System.Drawing.SizeF newSize)
 			{
 				base.SetFrameSize (newSize);
@@ -42,19 +43,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 				stepper.DoubleValue = text.DoubleValue;
 				Widget.OnValueChanged (EventArgs.Empty);
 			};
-			text.SizeToFit ();
 			
 			stepper = new NSStepper ();
 			stepper.Activated += delegate {
 				text.DoubleValue = stepper.DoubleValue;
 				Widget.OnValueChanged (EventArgs.Empty);
 			};
-			stepper.SizeToFit ();
 			MinValue = 0;
 			MaxValue = 100;
 			Value = 0;
+			text.SizeToFit ();
+			stepper.SizeToFit ();
 			
-			var height = Math.Max (text.Frame.Height, stepper.Frame.Height);
 			/*var stepperWidth = stepper.Frame.Width;
 			var width = 100;
 			//stepper.SetFrameOrigin (new System.Drawing.PointF(width - stepperWidth, offset));
@@ -62,9 +62,23 @@ namespace Eto.Platform.Mac.Forms.Controls
 			*/
 			Control.AddSubview (text);
 			Control.AddSubview (stepper);
-			Control.Frame = new System.Drawing.RectangleF (0, 0, 100, height);
+			var naturalHeight = Math.Max (text.Frame.Height, stepper.Frame.Height);
+			Control.Frame = new System.Drawing.RectangleF(0, 0, 80, naturalHeight);
 		}
-
+		
+		protected override void SetNaturalSize ()
+		{
+			text.SizeToFit ();
+			stepper.SizeToFit ();
+			var naturalHeight = Math.Max (text.Frame.Height, stepper.Frame.Height);
+			Control.SetFrameSize (new System.Drawing.SizeF(80, naturalHeight));
+		}
+		
+		public override void SizeToFit ()
+		{
+			base.SizeToFit ();
+		}
+		
 		public bool ReadOnly {
 			get { return text.Enabled; }
 			set { 

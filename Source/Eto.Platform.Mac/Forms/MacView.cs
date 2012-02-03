@@ -19,13 +19,13 @@ namespace Eto.Platform.Mac
 		[Export("mouseMoved:")]
 		public void MouseMoved (NSEvent theEvent)
 		{
-			Widget.OnMouseMove (Generator.GetMouseEvent(View, theEvent));
+			Widget.OnMouseMove (Generator.GetMouseEvent (View, theEvent));
 		}
 		
 		[Export("mouseEntered:")]
 		public void MouseEntered (NSEvent theEvent)
 		{
-			Widget.OnMouseEnter (Generator.GetMouseEvent(View, theEvent));
+			Widget.OnMouseEnter (Generator.GetMouseEvent (View, theEvent));
 		}
 
 		[Export("cursorUpdate::")]
@@ -36,11 +36,19 @@ namespace Eto.Platform.Mac
 		[Export("mouseExited:")]
 		public void MouseExited (NSEvent theEvent)
 		{
-			Widget.OnMouseLeave (Generator.GetMouseEvent(View, theEvent));
+			Widget.OnMouseLeave (Generator.GetMouseEvent (View, theEvent));
 		}
 	}
+	
+	public interface IMacAutoSizing
+	{
+		bool AutoSize { get; }
+		
+		void SizeToFit ();
+		
+	}
 
-	public interface IMacView
+	public interface IMacView : IMacAutoSizing
 	{
 		Size PositionOffset { get; }
 		
@@ -52,7 +60,6 @@ namespace Eto.Platform.Mac
 		
 		Cursor Cursor { get; set; }
 
-		bool AutoSize { get; }
 	}
 	
 	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacView
@@ -68,30 +75,79 @@ namespace Eto.Platform.Mac
 
 		public virtual bool AutoSize { get; protected set; }
 
-		public Size Size {
+		public virtual Size Size {
 			get { return Generator.ConvertF (Control.Frame.Size); }
 			set { 
 				this.PreferredSize = value;
-				Control.SetFrameSize (Generator.ConvertF (value));
+				Generator.SetSizeWithAuto(Control, value);
 				this.AutoSize = false;
 				CreateTracking ();
+				LayoutIfNeeded();
 			}
 		}
 		
-		public virtual Size? MinimumSize
+		protected void LayoutIfNeeded()
 		{
+			if (Widget.Loaded) {
+				var layout = Widget.ParentLayout.Handler as IMacLayout;
+				if (layout != null) layout.UpdateParentLayout();
+			}
+		}
+		
+		public virtual Size? MinimumSize {
 			get { return null; }
 			set { }
 		}
 		
-		public Size? PreferredSize
-		{
-			get; set;
+		public virtual Size? MaximumSize {
+			get;
+			set;
+		}
+		
+		public Size? PreferredSize {
+			get;
+			set;
 		}
 		
 		public MacView ()
 		{
-			this.AutoSize = true;
+ 			this.AutoSize = true;
+		}
+		
+		protected virtual void SetNaturalSize()
+		{
+			var control = Control as NSControl;
+			if (control != null)
+				control.SizeToFit ();
+		}
+		
+		public virtual void SizeToFit ()
+		{
+			if (!AutoSize) {
+				if (PreferredSize != null) {
+					var preferredSize = PreferredSize.Value;
+					if (preferredSize.Height == -1 || preferredSize.Width == -1) {
+						SetNaturalSize();
+						Generator.SetSizeWithAuto (Control, preferredSize);
+					}
+					else 
+						Control.SetFrameSize (Generator.ConvertF (PreferredSize.Value));
+				}
+			} else
+				SetNaturalSize ();
+
+			if (MinimumSize != null || MaximumSize != null) {
+				var size = Control.Frame.Size;
+				if (MinimumSize != null) {
+					size.Width = Math.Max (size.Width, MinimumSize.Value.Width);
+					size.Height = Math.Max (size.Height, MinimumSize.Value.Height);
+				}
+				if (MaximumSize != null) {
+					size.Width = Math.Min (size.Width, MaximumSize.Value.Width);
+					size.Height = Math.Min (size.Height, MaximumSize.Value.Height);
+				}
+				Control.SetFrameSize (size);
+			}
 		}
 		
 		public virtual Size PositionOffset { get { return Size.Empty; } }
@@ -110,7 +166,6 @@ namespace Eto.Platform.Mac
 				new NSDictionary ());
 			Control.AddTrackingArea (tracking);
 		}
-		
 
 		public virtual void SetParentLayout (Layout layout)
 		{

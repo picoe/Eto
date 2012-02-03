@@ -32,8 +32,6 @@ namespace Eto.Platform.Windows
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			Control.FormClosed += Control_Closed;
-			Control.FormClosing += Control_Closing;
 			
 			toolbarHolder = new SWF.Panel ();
 			toolbarHolder.Dock = System.Windows.Forms.DockStyle.Top;
@@ -48,24 +46,29 @@ namespace Eto.Platform.Windows
 			Control.Controls.Add (top);
 		}
 		
-		private void Control_Closing (object sender, System.Windows.Forms.FormClosingEventArgs e)
-		{
-			var args = new CancelEventArgs(e.Cancel);
-			Widget.OnClosing (args);
-			
-			if (!e.Cancel && SWF.Application.OpenForms.Count <= 1 
-				|| e.CloseReason == SWF.CloseReason.ApplicationExitCall
-				|| e.CloseReason == SWF.CloseReason.WindowsShutDown)
-			{
-				Application.Instance.OnTerminating (args);
-			}
-
-			e.Cancel = args.Cancel;
-		}
-		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case Window.ClosedEvent:
+				Control.FormClosed += delegate {
+					Widget.OnClosed (EventArgs.Empty);
+				};
+				break;
+			case Window.ClosingEvent:
+				Control.FormClosing += delegate(object sender, SWF.FormClosingEventArgs e) {
+					var args = new CancelEventArgs(e.Cancel);
+					Widget.OnClosing (args);
+					
+					if (!e.Cancel && SWF.Application.OpenForms.Count <= 1 
+						|| e.CloseReason == SWF.CloseReason.ApplicationExitCall
+						|| e.CloseReason == SWF.CloseReason.WindowsShutDown)
+					{
+						Application.Instance.OnTerminating (args);
+					}
+		
+					e.Cancel = args.Cancel;
+				};
+				break;
 			case Window.ShownEvent:
 				Control.Shown += delegate {
 					Widget.OnShown (EventArgs.Empty);
@@ -232,13 +235,5 @@ namespace Eto.Platform.Windows
 				else return Generator.Convert (Control.RestoreBounds);
 			}
 		}
-
-		private void Control_Closed (object sender, SWF.FormClosedEventArgs e)
-		{
-			Widget.OnClosed (e);
-		}
-
-
-		
 	}
 }

@@ -101,7 +101,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var cursor = Handler.Cursor;
 			if (cursor != null) {
-				this.AddCursorRectcursor (new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+				this.AddCursorRect (new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 

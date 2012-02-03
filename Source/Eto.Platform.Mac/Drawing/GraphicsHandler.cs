@@ -253,9 +253,8 @@ namespace Eto.Platform.Mac.Drawing
 			
 			if (!Flipped) context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight));
 			context.BeginPath ();
-			context.AddPath (path.ControlObject as CGPath);
-			context.ClosePath ();
-			context.SetFillColor(Generator.Convert(color));
+			context.AddPath (((GraphicsPathHandler)path.Handler).Control);
+			context.SetStrokeColor(Generator.Convert(color));
 			context.StrokePath ();
 		}
 		

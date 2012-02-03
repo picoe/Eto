@@ -94,7 +94,7 @@ namespace Eto.Platform.Mac
 
 		public virtual void SetLayout (Layout layout)
 		{
-			var maclayout = layout.Handler as IMacLayout;
+			var maclayout = layout.InnerLayout.Handler as IMacLayout;
 			if (maclayout == null)
 				return;
 			var control = maclayout.LayoutObject as NSView;
@@ -241,6 +241,16 @@ namespace Eto.Platform.Mac
 			get;
 			set;
 		}
+		
+		public virtual void SizeToFit ()
+		{
+			if (Widget.Layout != null) {
+				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
+				if (layout != null)
+					layout.SizeToFit ();
+			}
+		}
+		
 		#endregion
 	}
 }

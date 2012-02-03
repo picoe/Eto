@@ -115,6 +115,7 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				Control.StringValue = value ?? string.Empty;
+				LayoutIfNeeded();
 			}
 		}
 		

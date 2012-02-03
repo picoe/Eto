@@ -40,7 +40,10 @@ namespace Eto.Platform.Mac
 		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{
-			base.SetContentSize (contentSize + new SD.SizeF (14, 22)); // somehow get the size from the system?
+#if LOG
+			Console.WriteLine ("Set Group Content size from {0} to {1}", ((NSView)Control.ContentView).Frame, contentSize);
+#endif
+			Control.SetFrameFromContentFrame (new System.Drawing.RectangleF (0, 0, contentSize.Width, contentSize.Height));
 		}
 	}
 }

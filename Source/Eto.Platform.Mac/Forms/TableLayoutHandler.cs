@@ -30,17 +30,12 @@ namespace Eto.Platform.Mac
 		Padding padding;
 		bool loaded;
 		
-		public override void Update ()
-		{
-			Layout ();
-		}
-		
 		public Eto.Drawing.Size Spacing {
 			get { return spacing; }
 			set {
 				spacing = value;
-				if (Widget.Loaded)
-					Layout ();
+				if (loaded)
+					UpdateParentLayout ();
 			}
 		}
 		
@@ -48,8 +43,8 @@ namespace Eto.Platform.Mac
 			get { return padding; }
 			set {
 				padding = value;
-				if (Widget.Loaded)
-					Layout ();
+				if (loaded)
+					UpdateParentLayout ();
 			}
 		}
 		
@@ -62,20 +57,8 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		/*
-		public override object LayoutObject
-		{
-			get	{ return Control; }
-		}*/
-
 		public TableLayoutHandler ()
 		{
-			/*Control = new NSView();
-			Control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate { 
-				Layout();
-			});*/
 		}
 		
 		public override void Initialize ()
@@ -109,18 +92,9 @@ namespace Eto.Platform.Mac
 				for (int x=0; x<widths.Length; x++) {
 					var view = views [y, x];
 					if (view != null && view.Visible) {
-						AutoSize (view);
+						SizeToFit (view);
 						//Console.WriteLine ("CALC: x:{2} y:{3} view: {0} size: {1}", view, view.Size, x, y);
-						var macview = view.Handler as IMacView;
 						var size = view.Size;
-						if (macview != null) {
-							size = macview.PreferredSize ?? size;
-							var minsize = macview.MinimumSize;
-							if (minsize != null) {
-								size.Width = Math.Max (size.Width, minsize.Value.Width);
-								size.Height = Math.Max (size.Height, minsize.Value.Height);
-							}
-						}
 						if (size.Width > widths [x]) { 
 							requiredx += size.Width - widths [x];
 							widths [x] = size.Width;
@@ -137,7 +111,7 @@ namespace Eto.Platform.Mac
 			SetContainerSize (controlFrame.Size);
 		}
 		
-		void Layout ()
+		public override void LayoutChildren ()
 		{
 			if (views == null)
 				return;
@@ -168,17 +142,7 @@ namespace Eto.Platform.Mac
 				for (int x=0; x<widths.Length; x++) {
 					var view = views [y, x];
 					if (view != null && view.Visible) {
-						AutoSize (view);
-						var macview = view.Handler as IMacView;
 						var size = view.Size;
-						if (macview != null) {
-							size = macview.PreferredSize ?? view.Size;
-							var minsize = macview.MinimumSize;
-							if (minsize != null) {
-								size.Width = Math.Max (size.Width, minsize.Value.Width);
-								size.Height = Math.Max (size.Height, minsize.Value.Height);
-							}
-						}
 						//Console.WriteLine ("x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 						if (!xscaling [x] && widths [x] < size.Width) { 
 						
@@ -274,13 +238,17 @@ namespace Eto.Platform.Mac
 				if (currentView != null)
 					currentView.RemoveFromSuperview ();	
 			}
-			var view = (NSView)child.ControlObject;
 			views [y, x] = child;
-			if (loaded)
-				Layout ();
-			Control.AddSubview (view);
+			if (child != null) {
+				var view = (NSView)child.ControlObject;
+				if (loaded)
+					UpdateParentLayout ();
+				Control.AddSubview (view);
+			}
+			else if (loaded)
+				UpdateParentLayout ();
 		}
-
+		
 		public void Move (Control child, int x, int y)
 		{
 			var current = views [y, x];
@@ -292,7 +260,7 @@ namespace Eto.Platform.Mac
 
 			views [y, x] = child;
 			if (loaded)
-				Layout ();
+				UpdateParentLayout ();
 		}
 		
 		public void Remove (Control child)
@@ -305,19 +273,18 @@ namespace Eto.Platform.Mac
 						views [y, x] = null;
 				}
 			if (loaded)
-				Layout ();
+				UpdateParentLayout ();
 		}
 		
 		public override void OnLoadComplete ()
 		{
 			base.OnLoadComplete ();
-			Layout ();
-			
+			LayoutChildren ();
 #if OSX
 			Control.PostsFrameChangedNotifications = true;
 			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as TableLayoutHandler;
-				handler.Layout ();
+				handler.LayoutChildren ();
 			});
 #elif IOS
 			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
@@ -325,6 +292,7 @@ namespace Eto.Platform.Mac
 				Layout();
 			};
 #endif
+			
 			loaded = true;
 		}
 		
@@ -338,11 +306,15 @@ namespace Eto.Platform.Mac
 		public void SetColumnScale (int column, bool scale)
 		{
 			xscaling [column] = scale;
+			if (loaded)
+				UpdateParentLayout();
 		}
 		
 		public void SetRowScale (int row, bool scale)
 		{
 			yscaling [row] = scale;
+			if (loaded)
+				UpdateParentLayout();
 		}
 	}
 }

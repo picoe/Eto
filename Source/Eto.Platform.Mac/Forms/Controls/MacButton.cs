@@ -16,6 +16,7 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				Control.SetTitleWithMnemonic(value);
+				LayoutIfNeeded();
 			}
 		}
 

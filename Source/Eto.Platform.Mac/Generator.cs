@@ -130,5 +130,13 @@ namespace Eto.Platform.Mac
 			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
 			return new MouseEventArgs (buttons, modifiers, pt);
 		}
+		
+		public static void SetSizeWithAuto(NSView view, Size size)
+		{
+			var newSize = view.Frame.Size;
+			if (size.Width >= 0) newSize.Width = size.Width;
+			if (size.Height >= 0) newSize.Height = size.Height;
+			view.SetFrameSize (newSize);
+		}
 	}
 }

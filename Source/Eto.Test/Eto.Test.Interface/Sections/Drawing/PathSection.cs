@@ -50,11 +50,11 @@ namespace Eto.Test.Interface.Sections.Drawing
 		GraphicsPath CreatePath ()
 		{
 			var path = new GraphicsPath ();
-			path.AddLine (new Point (10, 10));
-			path.AddLine (new Point (20, 90));
-			path.AddLine (new Point (10, 60));
-			path.AddLine (new Point (90, 80));
-			path.AddLine (new Point (60, 30));
+			path.MoveTo (new Point (10, 10));
+			path.LineTo (new Point (20, 90));
+			path.LineTo (new Point (10, 60));
+			path.LineTo (new Point (90, 80));
+			path.LineTo (new Point (60, 30));
 			return path;
 		}
 

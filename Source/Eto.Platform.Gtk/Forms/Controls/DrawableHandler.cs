@@ -16,6 +16,7 @@ namespace Eto.Platform.GtkSharp
 			//Control.DoubleBuffered = false;
 			Control.CanFocus = false;
 			Control.CanDefault = true;
+			
 		}
 		
 		public bool CanFocus {
@@ -30,7 +31,7 @@ namespace Eto.Platform.GtkSharp
 		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
-			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BackgroundGC(Gtk.StateType.Normal)));
+			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BlackGC));
 			Rectangle rect = Generator.Convert (ev.Region.Clipbox);
 			Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			graphics.Dispose();
@@ -38,7 +39,7 @@ namespace Eto.Platform.GtkSharp
 
 		public void Update (Rectangle rect)
 		{
-			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BackgroundGC (Gtk.StateType.Normal)));
+			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC));
 			Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			graphics.Dispose();
 		}

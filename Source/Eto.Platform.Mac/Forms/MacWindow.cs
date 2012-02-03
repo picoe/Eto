@@ -14,7 +14,7 @@ namespace Eto.Platform.Mac
 		SD.RectangleF oldFrame;
 		bool zoom;
 		
-		public IMacWindow Handler { get; set; } 
+		public IMacWindow Handler { get; set; }
 		
 		public MyWindow (SD.Rectangle rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
@@ -48,8 +48,8 @@ namespace Eto.Platform.Mac
 		public override void SetFrame (System.Drawing.RectangleF frameRect, bool display)
 		{
 			if (Handler.MinimumSize != null) {
-				frameRect.Width = Math.Max(frameRect.Width, Handler.MinimumSize.Value.Width);
-				frameRect.Height = Math.Max(frameRect.Height, Handler.MinimumSize.Value.Height);
+				frameRect.Width = Math.Max (frameRect.Width, Handler.MinimumSize.Value.Width);
+				frameRect.Height = Math.Max (frameRect.Height, Handler.MinimumSize.Value.Height);
 			}
 			base.SetFrame (frameRect, display);
 		}
@@ -58,55 +58,14 @@ namespace Eto.Platform.Mac
 	public interface IMacWindow
 	{
 		Rectangle? RestoreBounds { get; set; }
-		Window Widget { get; }
-		NSMenu MenuBar { get; }
-		NSObject FieldEditorObject { get; set; }
-		Size? MinimumSize { get; }
-	}
-	
-	class MacWindowDelegate : NSWindowDelegate
-	{
-		public IMacWindow Handler { get; set; }
-		
-		public override NSObject WillReturnFieldEditor (NSWindow sender, NSObject client)
-		{
-			Handler.FieldEditorObject = client;
-			return null;
-		}
-		
-		public override bool WindowShouldClose (NSObject sender)
-		{
-			var args = new CancelEventArgs ();
-			Handler.Widget.OnClosing (args);
-			return !args.Cancel;
-		}
-		
-		public override void WillClose (NSNotification notification)
-		{
-			Handler.Widget.OnClosed (EventArgs.Empty);
-		}
-		
-		public override void WillMiniaturize (NSNotification notification)
-		{
-			Handler.RestoreBounds = Handler.Widget.Bounds;
-			Handler.Widget.OnMinimized (EventArgs.Empty);
-		}
 
-		public override void DidBecomeKey (NSNotification notification)
-		{
-			if (Handler.MenuBar != null) 
-				NSApplication.SharedApplication.SetMainMenu (Handler.MenuBar);
-			Handler.Widget.OnShown (EventArgs.Empty);
-		}
-		
-		public override bool ShouldZoom (NSWindow window, System.Drawing.RectangleF newFrame)
-		{
-			if (!window.IsZoomed) {
-				Handler.RestoreBounds = Handler.Widget.Bounds;
-				Handler.Widget.OnMaximized (EventArgs.Empty);
-			}
-			return true;
-		}
+		Window Widget { get; }
+
+		NSMenu MenuBar { get; }
+
+		NSObject FieldEditorObject { get; set; }
+
+		Size? MinimumSize { get; }
 	}
 	
 	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer, IMacWindow
@@ -123,27 +82,74 @@ namespace Eto.Platform.Mac
 		
 		public bool AutoSize { get; private set; }
 		
-		public Size? MinimumSize {
-			get; set;
+		public virtual void SizeToFit ()
+		{
+			if (Widget.Layout != null) {
+				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
+				if (layout != null)
+					layout.SizeToFit ();
+			}
 		}
 		
-		public NSMenu MenuBar
-		{
+		public Size? MinimumSize {
+			get;
+			set;
+		}
+		
+		public NSMenu MenuBar {
 			get { return menuBar != null ? menuBar.ControlObject as NSMenu : null; }
 		}
-		
 
 		public MacWindow ()
 		{
 			AutoSize = true;
+			
+		}
+		
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.DidBecomeKey += delegate {
+				if (MenuBar != null) 
+					NSApplication.SharedApplication.SetMainMenu (MenuBar);
+			};
 		}
 		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case Window.ClosedEvent:
+				Control.WillClose += delegate {
+					Widget.OnClosed (EventArgs.Empty);
+				};
+				break;
+			case Window.ClosingEvent:
+				Control.WindowShouldClose = (sender) => {
+					var args = new CancelEventArgs ();
+					Widget.OnClosing (args);
+					return !args.Cancel;
+				};
+				break;
 			case Window.MaximizedEvent:
+				Control.ShouldZoom = (window, newFrame) => {
+					if (!window.IsZoomed) {
+						RestoreBounds = Widget.Bounds;
+						Widget.OnMaximized (EventArgs.Empty);
+					}
+					return true;
+				};
+				break;
 			case Window.MinimizedEvent:
+				Control.WillMiniaturize += delegate {
+					this.RestoreBounds = Widget.Bounds;
+					Widget.OnMinimized (EventArgs.Empty);
+				};
+				break;
 			case Eto.Forms.Control.ShownEvent:
+				Control.DidBecomeKey += delegate {
+					Widget.OnShown (EventArgs.Empty);
+				};
+				break;
 			case Eto.Forms.Control.HiddenEvent:
 				// handled by delegate
 				break;
@@ -156,26 +162,29 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		void CreateCursorRect()
+		void CreateCursorRect ()
 		{
 			if (cursor != null) {
 				this.Control.ContentView.DiscardCursorRects ();
-				this.Control.ContentView.AddCursorRectcursor (new SD.RectangleF(SD.PointF.Empty, this.Control.Frame.Size), cursor.ControlObject as NSCursor);
-			}
-			else
+				this.Control.ContentView.AddCursorRect (new SD.RectangleF (SD.PointF.Empty, this.Control.Frame.Size), cursor.ControlObject as NSCursor);
+			} else
 				this.Control.ContentView.DiscardCursorRects ();
 		}
 		
 		protected void ConfigureWindow ()
 		{
 			Control.Handler = this;
-			Control.ContentView = new NSView();
+			Control.ContentView = new NSView ();
 			//Control.ContentMinSize = new System.Drawing.SizeF(0, 0);
 			Control.ContentView.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 			Control.ReleasedWhenClosed = false;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
-			Control.Delegate = new MacWindowDelegate{ Handler = this };
+			//Control.Delegate = new MacWindowDelegate{ Handler = this };
+			Control.WillReturnFieldEditor = (sender, client) => {
+				FieldEditorObject = client;
+				return null;
+			};
 		}
 		
 		public virtual object ContainerObject {
@@ -404,15 +413,11 @@ namespace Eto.Platform.Mac
 		
 		public virtual void OnLoad (EventArgs e)
 		{
+			this.SizeToFit ();
 		}
 		
 		public virtual void OnLoadComplete (EventArgs e)
 		{
-			if (this.AutoSize && Widget.Layout != null) {
-				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-				if (layout != null)
-					layout.SizeToFit ();
-			}
 		}
 
 		#region IMacContainer implementation
@@ -422,7 +427,19 @@ namespace Eto.Platform.Mac
 				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
 				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
 			}
-			Control.SetContentSize (contentSize);
+			
+			if (Widget.Loaded) {
+				var diffy = this.ClientSize.Height - (int)contentSize.Height;
+				var diffx = this.ClientSize.Width - (int)contentSize.Width;
+				var frame = Control.Frame;
+				frame.Y += diffy;
+				frame.X += diffx / 2;
+				frame.Height -= diffy;
+				frame.Width -= diffx;
+				Control.SetFrame (frame, true, false);
+			}
+			else 
+				Control.SetContentSize (contentSize);
 		}
 		#endregion
 

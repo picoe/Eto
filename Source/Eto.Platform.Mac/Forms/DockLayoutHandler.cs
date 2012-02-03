@@ -27,7 +27,7 @@ namespace Eto.Platform.Mac
 			get { return padding; }
 			set {
 				padding = value;
-				SetChildFrame();
+				UpdateParentLayout ();
 			}
 		}
 		
@@ -35,7 +35,7 @@ namespace Eto.Platform.Mac
 		{
 			if (child != null)
 			{
-				AutoSize (child);
+				SizeToFit (child);
 				var c = child.ControlObject as NSView;
 				if (c != null) {
 					SetContainerSize (c.Frame.Size);
@@ -44,7 +44,7 @@ namespace Eto.Platform.Mac
 			else SetContainerSize (SD.SizeF.Empty);
 		}
 		
-		void SetChildFrame()
+		public override void LayoutChildren ()
 		{
 			if (child == null) return;
 			
@@ -65,6 +65,9 @@ namespace Eto.Platform.Mac
 				frame.Y = 0;
 			}
 			
+#if LOG
+			Console.WriteLine ("Dock {0} to {1}", child, frame);
+#endif
 			childControl.Frame = frame;
 		}
 				
@@ -81,24 +84,27 @@ namespace Eto.Platform.Mac
 					this.child = value;
 					NSView childControl = (NSView)child.ControlObject;
 					childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-					if (Widget.Container.Loaded) SetChildFrame();
 					
 					NSView parent = (NSView)ControlObject;
 					parent.AddSubview(childControl);
 				}
-				else this.child = null;
+				else
+					this.child = null;
+				if (Widget.Loaded || Widget.Container.Loaded) {
+					UpdateParentLayout ();
+				}
 			}
 		}
 		
 		public override void OnLoadComplete ()
 		{
 			base.OnLoadComplete ();
-			SetChildFrame ();
+			LayoutChildren ();
 			
 			Control.PostsFrameChangedNotifications = true;
 			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as DockLayoutHandler;
-				handler.SetChildFrame();
+				handler.LayoutChildren();
 			});
 		}
 
@@ -107,7 +113,6 @@ namespace Eto.Platform.Mac
 			size += Generator.ConvertF (Padding.Size);
 			
 			base.SetContainerSize (size);
-			SetChildFrame();
 		}
 	}
 }

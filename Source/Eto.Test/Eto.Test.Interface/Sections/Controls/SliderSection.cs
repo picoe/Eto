@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Test.Interface.Controls;
+using Eto.Drawing;
 
 namespace Eto.Test.Interface.Sections.Controls
 {
@@ -48,7 +49,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		Control Vertical ()
 		{
 			var control = SetInitialValue ();
-			control.Size = new Eto.Drawing.Size (40, 200);
+			control.Size = new Size(-1, 150);
 			control.Orientation = SliderOrientation.Vertical;
 			var layout = new DynamicLayout (new Panel ());
 			layout.AddCentered (control);
