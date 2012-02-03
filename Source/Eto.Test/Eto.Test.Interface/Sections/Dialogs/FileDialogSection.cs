@@ -4,7 +4,7 @@ using Eto.Forms;
 using Eto.Test.Interface.Controls;
 using System.Collections.Generic;
 
-namespace Eto.Test.Interface.Sections.Controls
+namespace Eto.Test.Interface.Sections.Dialogs
 {
 	public class FileDialogSection : SectionBase
 	{

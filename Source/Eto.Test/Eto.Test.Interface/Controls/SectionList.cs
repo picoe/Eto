@@ -72,6 +72,7 @@ namespace Eto.Test.Interface.Controls
 			top.Children.Add (DrawingSection());
 			top.Children.Add (ControlSection ());
 			top.Children.Add (LayoutsSection ());
+			top.Children.Add (DialogsSection ());
 
 			this.TopNode = top;
 			
@@ -91,7 +92,6 @@ namespace Eto.Test.Interface.Controls
 			items.Add (new Section<TextBoxSection> { Text = "Text Box" });
 			items.Add (new Section<TextAreaSection> { Text = "Text Area" });
 			items.Add (new Section<WebViewSection> { Text = "Web View" });
-			items.Add (new Section<FileDialogSection> { Text = "File Dialog" });
 			items.Add (new Section<DrawableSection> { Text = "Drawable" });
 			items.Add (new Section<ListBoxSection> { Text = "List Box" });
 			items.Add (new Section<TabControlSection> { Text = "Tab Control" });
@@ -138,6 +138,18 @@ namespace Eto.Test.Interface.Controls
 
 			items.Add (new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" });
 			items.Add (new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing & Scaling" });
+
+			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			return node;
+		}
+
+		ITreeItem DialogsSection ()
+		{
+			var node = new TreeItem { Text = "Common Dialogs", Expanded = true };
+			var items = node.Children;
+
+			items.Add (new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Picker" });
+			items.Add (new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" });
 
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return node;

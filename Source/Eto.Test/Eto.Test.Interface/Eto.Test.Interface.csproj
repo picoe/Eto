@@ -47,6 +47,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
@@ -66,7 +67,7 @@
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />
     <Compile Include="Sections\Controls\DateTimePickerSection.cs" />
     <Compile Include="Sections\Controls\DrawableSection.cs" />
-    <Compile Include="Sections\Controls\FileDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\FileDialogSection.cs" />
     <Compile Include="Sections\Controls\GroupBoxSection.cs" />
     <Compile Include="Sections\Controls\LabelSection.cs" />
     <Compile Include="Sections\Controls\ListBoxSection.cs" />

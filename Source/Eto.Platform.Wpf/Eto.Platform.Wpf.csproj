@@ -53,6 +53,9 @@
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ColorPicker">
+      <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
+    </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="System" />
@@ -63,6 +66,7 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WPFToolkit.Extended">
       <HintPath>..\..\Libraries\WPFToolkit.Extended\WPFToolkit.Extended.dll</HintPath>
@@ -85,6 +89,7 @@
     <Compile Include="Drawing\IconHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
+    <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />

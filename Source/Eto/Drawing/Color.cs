@@ -217,7 +217,17 @@ namespace Eto.Drawing
 
 		public uint ToArgb ()
 		{
-			return ((uint)(B * 255) | (uint)(G * 255) << 8 | (uint)(R * 255) << 16 | (uint)(A * 255) << 24);
+			return ((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+		}
+
+		public string ToHex ()
+		{
+			return string.Format ("#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+		}
+
+		public override string ToString ()
+		{
+			return ToHex ();
 		}
 	}
 }

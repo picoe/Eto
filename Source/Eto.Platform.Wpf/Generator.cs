@@ -37,12 +37,12 @@ namespace Eto.Platform.Wpf
 
 		public static swm.Color Convert(Color value)
 		{
-			return swm.Color.FromScRgb(value.A, value.R, value.G, value.B);
+			return swm.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
 		}
 
 		public static Color Convert(swm.Color value)
 		{
-			return new Color { A = value.ScA, R = value.ScR, G = value.ScG, B = value.ScB };
+			return new Color { A = value.A / 255f, R = value.R / 255f, G = value.G / 255f, B = value.B / 255f };
 		}
 
 		public static Padding Convert (sw.Thickness value)

@@ -61,12 +61,12 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public void Invalidate ()
+		public virtual void Invalidate ()
 		{
 			Control.InvalidateVisual ();
 		}
 
-		public void Invalidate (Rectangle rect)
+		public virtual void Invalidate (Rectangle rect)
 		{
 			Control.InvalidateVisual ();
 		}
