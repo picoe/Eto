@@ -85,24 +85,15 @@ Currently supported targets
 
 * Mac OS X using MonoMac
 * Linux using GTK#
-* Windows using Windows Forms
+* Windows using Windows Forms and WPF
 	
 Under development
 -----------------
 
 * iOS using MonoTouch
-* WPF to replace Windows Forms platform, and to be basis for Silverlight
 
 	
 Future plans
 ------------
 
 * Android using Mono for Android (or equivalent)
-
-Not Working
------------
-
-These were built a LONG time ago with an older version of the core framework, and would need substantial updates to get working again.
-
-* Web using ASP.NET
-* WXWidgets
