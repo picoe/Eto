@@ -1,0 +1,57 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <!-- MSBUILD Project File -->
+  <PropertyGroup>
+    <DefaultClrNameSpace>Microsoft.Samples.ColorPickerExample</DefaultClrNameSpace>
+    <AssemblyName>ColorPicker</AssemblyName>
+    <TargetType>library</TargetType>
+    <Configuration>Release</Configuration>
+    <BuildSystem>MSBuild</BuildSystem>
+    <HostInBrowser>False</HostInBrowser>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{99E90579-62FC-4898-B168-24F7DBD3A34D}</ProjectGuid>
+    <OutputPath>bin\$(Configuration)\</OutputPath>
+    <RootNamespace>Microsoft.Samples.CustomControls</RootNamespace>
+    <StartupObject>
+    </StartupObject>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <DocumentationFile>
+    </DocumentationFile>
+    <CodeAnalysisRules>
+    </CodeAnalysisRules>
+  </PropertyGroup>
+  <!--Import the target file that contains all the common targets -->
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
+  <ItemGroup>
+    <!-- Aplication Definition Markup File -->
+    <Page Include="ColorPickerDialog.xaml" />
+    <Page Include="Themes\generic.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ColorPicker.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SupportingClasses.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ColorPickerDialog.xaml.cs">
+      <DependentUpon>ColorPickerDialog.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="UIAutomationProvider" />
+    <Reference Include="UIAutomationTypes" />
+  </ItemGroup>
+</Project>
