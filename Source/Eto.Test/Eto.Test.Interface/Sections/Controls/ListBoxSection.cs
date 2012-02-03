@@ -70,9 +70,9 @@ namespace Eto.Test.Interface.Sections.Controls
 			var item = new ImageMenuItem{ Text = "Click Me!"};
 			item.Click += delegate {
 				if (control.SelectedValue != null)
-					Log (item, "Click, Item: {0}", control.SelectedValue.Text);
-				else 
-					Log (item, "Click, no item selected");
+					Log.Write (item, "Click, Item: {0}", control.SelectedValue.Text);
+				else
+					Log.Write (item, "Click, no item selected");
 			};
 			menu.MenuItems.Add (item);
 			
@@ -83,10 +83,10 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (ListBox control)
 		{
 			control.SelectedIndexChanged += delegate {
-				Log (control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);
+				Log.Write (control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);
 			};
 			control.Activated += delegate {
-				Log (control, "Activated, Index: {0}", control.SelectedIndex);
+				Log.Write (control, "Activated, Index: {0}", control.SelectedIndex);
 			};
 		}
 		

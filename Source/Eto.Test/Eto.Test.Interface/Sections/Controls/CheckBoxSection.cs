@@ -52,7 +52,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents(CheckBox control)
 		{
 			control.CheckedChanged += delegate {
-				Log (control, "CheckedChanged, Value: {0}", control.Checked);
+				Log.Write (control, "CheckedChanged, Value: {0}", control.Checked);
 			};
 		}
 	}

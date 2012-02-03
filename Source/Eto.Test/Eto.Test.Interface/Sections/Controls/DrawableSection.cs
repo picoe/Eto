@@ -64,7 +64,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (Drawable control)
 		{
 			control.Paint += delegate (object sender, PaintEventArgs pe) {
-				Log (control, "Paint, ClipRectangle: {0}", pe.ClipRectangle);
+				Log.Write (control, "Paint, ClipRectangle: {0}", pe.ClipRectangle);
 			};
 		}
 	}

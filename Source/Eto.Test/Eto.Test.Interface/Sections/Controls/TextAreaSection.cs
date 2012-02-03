@@ -75,7 +75,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (TextArea control)
 		{
 			control.TextChanged += delegate {
-				Log (control, "TextChanged, Text: {0}", control.Text);
+				Log.Write (control, "TextChanged, Text: {0}", control.Text);
 			};
 		}
 	}

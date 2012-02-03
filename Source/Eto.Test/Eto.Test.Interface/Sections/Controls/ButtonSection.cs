@@ -49,7 +49,15 @@ namespace Eto.Test.Interface.Sections.Controls
 		
 		void LogEvents(Button button)
 		{
-			LogEvents(button, "Click", "MouseDown", "MouseUp");
+			button.Click += (sender, e) => {
+				Log.Write (button, "Click");
+			};
+			button.MouseDown += (sender, e) => {
+				Log.Write (button, "MouseDown");
+			};
+			button.MouseUp += (sender, e) => {
+				Log.Write (button, "MouseUp");
+			};
 		}
 	}
 }

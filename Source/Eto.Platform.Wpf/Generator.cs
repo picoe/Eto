@@ -26,13 +26,13 @@ namespace Eto.Platform.Wpf
 			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
 				return new Size ((int)element.ActualWidth, (int)element.ActualHeight);
 			else
-				return new Size ((int)(element.Width < 0 ? 0 : element.Width), (int)(element.Height < 0 ? 0 : element.Height));
+				return new Size ((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
 		}
 
 		public static void SetSize (sw.FrameworkElement element, Size size)
 		{
-			element.Width = size.Width;
-			element.Height = size.Height;
+			element.Width = size.Width == -1 ? double.NaN : size.Width;
+			element.Height = size.Height == -1 ? double.NaN : size.Height;
 		}
 
 		public static swm.Color Convert(Color value)

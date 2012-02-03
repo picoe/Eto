@@ -71,7 +71,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (RadioButton control)
 		{
 			control.CheckedChanged += delegate {
-				Log (control, "CheckedChanged, Value: {0}, Checked: {1}", control.Text, control.Checked);
+				Log.Write (control, "CheckedChanged, Value: {0}, Checked: {1}", control.Text, control.Checked);
 			};
 		}
 		

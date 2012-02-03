@@ -59,14 +59,14 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (TabControl control)
 		{
 			control.SelectedIndexChanged += delegate {
-				Log (control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);	
+				Log.Write (control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);	
 			};
 		}
 		
 		void LogEvents (TabPage control)
 		{
 			control.Click += delegate {
-				Log (control, "Click, Item: {0}", control.Text);
+				Log.Write (control, "Click, Item: {0}", control.Text);
 			};
 		}
 	}

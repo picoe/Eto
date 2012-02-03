@@ -68,10 +68,10 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (TreeView control)
 		{
 			control.Activated += delegate(object sender, TreeViewItemEventArgs e) {
-				Log (control, "Activated, Item: {0}", e.Item.Text);
+				Log.Write (control, "Activated, Item: {0}", e.Item.Text);
 			};
 			control.SelectionChanged += delegate {
-				Log (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? control.SelectedItem.Text : "<none selected>");
+				Log.Write (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? control.SelectedItem.Text : "<none selected>");
 			};
 		}
 	}

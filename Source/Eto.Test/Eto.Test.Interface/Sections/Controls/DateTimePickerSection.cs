@@ -52,7 +52,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (DateTimePicker control)
 		{
 			control.ValueChanged += delegate {
-				Log (control, "ValueChanged, Value: {0}", control.Value);
+				Log.Write (control, "ValueChanged, Value: {0}", control.Value);
 			};
 		}
 	}

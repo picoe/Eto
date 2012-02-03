@@ -163,10 +163,6 @@ namespace Eto.Test.Interface.Controls
 			
 			if (sectionGenerator != null) {
 				var control = sectionGenerator.GenerateControl ();
-				var section = control as SectionBase;
-				if (section != null) {
-					section.EventLog = this.eventLog;
-				}
 				contentContainer.AddDockedControl (control);
 			}
 			else 

@@ -68,7 +68,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (Scrollable control)
 		{
 			control.Scroll += delegate(object sender, ScrollEventArgs e) {
-				Log (control, "Scroll, ScrollPosition: {0}", e.ScrollPosition);
+				Log.Write (control, "Scroll, ScrollPosition: {0}", e.ScrollPosition);
 			};
 		}
 	}

@@ -87,16 +87,16 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void FillPath (Color color, GraphicsPath path)
 		{
-			var figure = path.ControlObject as swm.PathFigure;
+			var geometry = ((GraphicsPathHandler)path.Handler).Control;
 			var brush = new swm.SolidColorBrush (Generator.Convert (color));
-			Control.DrawGeometry (brush, null, new swm.PathGeometry (new swm.PathFigure[] { figure }));
+			Control.DrawGeometry (brush, null, geometry);
 		}
 
 		public void DrawPath (Color color, GraphicsPath path)
 		{
-			var figure = path.ControlObject as swm.PathFigure;
+			var geometry = ((GraphicsPathHandler)path.Handler).Control;
 			var pen = GetPen (color);
-			Control.DrawGeometry (null, pen, new swm.PathGeometry (new swm.PathFigure[] { figure }));
+			Control.DrawGeometry (null, pen, geometry);
 		}
 
 		public void DrawImage (IImage image, int x, int y)

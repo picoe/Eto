@@ -41,18 +41,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.IsReadOnly = value; }
 		}
 
-		public override Size Size
-		{
-			get
-			{
-				return new Size ((int)Control.MinWidth, (int)Control.Height);
-			}
-			set
-			{
-				Control.MinWidth = value.Width; Control.Height = value.Height;
-			}
-		}
-
 		public void Append (string text, bool scrollToCursor)
 		{
 			Control.AppendText (text);

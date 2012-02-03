@@ -16,8 +16,8 @@ namespace Eto.Platform.Wpf.Forms
 	}
 
 	public abstract class WpfWindow<T, W> : WpfControl<T, W>, IWindow, IWpfWindow
-		where T: sw.Window
-		where W: Window
+		where T : sw.Window
+		where W : Window
 	{
 		Icon icon;
 		MenuBar menu;
@@ -48,17 +48,21 @@ namespace Eto.Platform.Wpf.Forms
 					initialClientSize = null;
 				}
 			};
-			Control.Closed += delegate {
-				Widget.OnClosed (EventArgs.Empty);
-			};
-			Control.Closing += (sender, e) => {
-				Widget.OnClosing (e);
-			};
 		}
 
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+				case Window.ClosedEvent:
+					Control.Closed += delegate {
+						Widget.OnClosed (EventArgs.Empty);
+					};
+					break;
+				case Window.ClosingEvent:
+					Control.Closing += (sender, e) => {
+						Widget.OnClosing (e);
+					};
+					break;
 				case Window.MaximizedEvent:
 					Control.StateChanged += (sender, e) => {
 						if (Control.WindowState == sw.WindowState.Maximized) {
@@ -102,15 +106,16 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public void Close()
+		public void Close ()
 		{
-			Control.Close();
+			Control.Close ();
 		}
 
 		public MenuBar Menu
 		{
 			get { return menu; }
-			set {
+			set
+			{
 				menu = value;
 				if (menu != null) {
 					menuHolder.Content = (sw.UIElement)menu.ControlObject;
@@ -127,8 +132,7 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				icon = value;
-				if (value != null)
-				{
+				if (value != null) {
 					Control.Icon = (swm.ImageSource)icon.ControlObject;
 				}
 			}
@@ -144,23 +148,25 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public void Minimize()
+		public void Minimize ()
 		{
 			Control.WindowState = sw.WindowState.Minimized;
 		}
 
 		public Size ClientSize
 		{
-			get {
+			get
+			{
 				if (Control.IsLoaded)
 					return new Size ((int)content.ActualWidth, (int)content.ActualHeight);
 				else
 					return initialClientSize ?? Size.Empty;
 			}
-			set {
+			set
+			{
 				if (Control.IsLoaded)
 					UpdateClientSize (value);
-				else 
+				else
 					initialClientSize = value;
 			}
 		}
@@ -180,7 +186,7 @@ namespace Eto.Platform.Wpf.Forms
 			get { return Control; }
 		}
 
-		public virtual void SetLayout(Layout layout)
+		public virtual void SetLayout (Layout layout)
 		{
 			content.Children.Clear ();
 			content.Children.Add ((sw.UIElement)layout.ControlObject);
@@ -241,7 +247,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Rectangle? RestoreBounds
 		{
-			get { return Generator.Convert(Control.RestoreBounds); }
+			get { return Generator.Convert (Control.RestoreBounds); }
 		}
 
 

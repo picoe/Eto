@@ -65,7 +65,7 @@ namespace Eto.Test.Interface.Sections.Controls
 		void LogEvents (ComboBox control)
 		{
 			control.SelectedIndexChanged += delegate {
-				Log (control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
+				Log.Write (control, "SelectedIndexChanged, Value: {0}", control.SelectedIndex);
 			};
 		}
 		

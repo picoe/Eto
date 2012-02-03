@@ -34,10 +34,10 @@ namespace Eto.Test.Interface.Sections.Dialogs
 				var dialog = new OpenFileDialog ();
 				var result = dialog.ShowDialog (this.ParentWindow);
 				if (result == DialogResult.Ok) {
-					Log (dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);
+					Log.Write (dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);
 				}
 				else
-					Log (dialog, "Result: {0}", result);
+					Log.Write (dialog, "Result: {0}", result);
 			};
 			return button;
 		}
@@ -52,10 +52,10 @@ namespace Eto.Test.Interface.Sections.Dialogs
 
 				var result = dialog.ShowDialog (this.ParentWindow);
 				if (result == DialogResult.Ok) {
-					Log (dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
+					Log.Write (dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
 				}
 				else
-					Log (dialog, "Result: {0}", result);
+					Log.Write (dialog, "Result: {0}", result);
 			};
 			return button;
 		}
@@ -70,10 +70,10 @@ namespace Eto.Test.Interface.Sections.Dialogs
 
 				var result = dialog.ShowDialog (this.ParentWindow);
 				if (result == DialogResult.Ok) {
-					Log (dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
+					Log.Write (dialog, "Result: {0}, CurrentFilter: {1}, FileName: {2}", result, dialog.CurrentFilter, dialog.FileName);
 				}
 				else
-					Log (dialog, "Result: {0}", result);
+					Log.Write (dialog, "Result: {0}", result);
 			};
 			return button;
 		}
@@ -85,10 +85,10 @@ namespace Eto.Test.Interface.Sections.Dialogs
 				var dialog = new SaveFileDialog ();
 				var result = dialog.ShowDialog (this.ParentWindow);
 				if (result == DialogResult.Ok) {
-					Log (dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);
+					Log.Write (dialog, "Result: {0}, FileName: {1}", result, dialog.FileName);
 				}
 				else
-					Log (dialog, "Result: {0}", result);
+					Log.Write (dialog, "Result: {0}", result);
 			};
 			return button;
 		}

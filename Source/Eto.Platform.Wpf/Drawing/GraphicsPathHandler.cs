@@ -7,29 +7,52 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-	public class GraphicsPathHandler : WidgetHandler<swm.PathFigure, GraphicsPath>, IGraphicsPath
+	public class GraphicsPathHandler : WidgetHandler<swm.PathGeometry, GraphicsPath>, IGraphicsPath
 	{
 		bool started;
+		swm.PathFigure figure;
 
 		public GraphicsPathHandler ()
 		{
-			Control = new swm.PathFigure ();
-			Control.Segments = new swm.PathSegmentCollection ();
+			Control = new swm.PathGeometry ();
+			Control.Figures = new swm.PathFigureCollection ();
+		}
+
+		void StartNewFigure (Point startPoint)
+		{
+			figure = new swm.PathFigure ();
+			figure.StartPoint = Generator.Convert (startPoint);
+			figure.Segments = new swm.PathSegmentCollection ();
+			Control.Figures.Add (figure);
 		}
 
 		public void AddLines (IEnumerable<Point> points)
 		{
 			var enumerator = points.GetEnumerator();
-			if (!started) {
-				if (!enumerator.MoveNext ())
-					return;
-				Control.StartPoint = Generator.Convert (enumerator.Current);
-				started = true;
-			}
+			if (!enumerator.MoveNext ())
+				return;
+			StartNewFigure (enumerator.Current);
 			while (enumerator.MoveNext())
 			{
-				Control.Segments.Add(new swm.LineSegment(Generator.Convert(enumerator.Current), true));
+				figure.Segments.Add (new swm.LineSegment (Generator.Convert (enumerator.Current), true));
 			}
+		}
+
+
+		public void AddLine (Point point1, Point point2)
+		{
+			StartNewFigure (point1);
+			figure.Segments.Add (new swm.LineSegment (Generator.Convert(point2), true));
+		}
+
+		public void LineTo (Point point)
+		{
+			figure.Segments.Add (new swm.LineSegment (Generator.Convert (point), true));
+		}
+
+		public void MoveTo (Point point)
+		{
+			StartNewFigure (point);
 		}
 	}
 }
