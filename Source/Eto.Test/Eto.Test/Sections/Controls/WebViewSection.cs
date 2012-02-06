@@ -1,0 +1,142 @@
+using System;
+using Eto.Forms;
+
+namespace Eto.Test.Sections.Controls
+{
+	public class WebViewSection : Panel
+	{
+		WebView webView;
+		Button goBack;
+		Button goForward;
+		Button stopButton;
+		Label titleLabel;
+		
+		public WebViewSection ()
+		{
+			var layout = new TableLayout (this, 1, 3);
+			
+			int row = 0;
+			layout.Add (Buttons (), 0, row++);
+			layout.Add (TitleLabel (), 0, row++);
+			layout.Add (WebView (), 0, row++, true, true);
+		}
+		
+		Control WebView ()
+		{
+			var control = webView = new WebView ();
+			
+			control.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
+				UpdateButtons ();
+				stopButton.Enabled = true;
+			};
+			control.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
+				UpdateButtons ();
+				stopButton.Enabled = false;
+			};
+			control.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e) {
+				titleLabel.Text = e.Title;
+			};
+			control.Url = new Uri ("http://www.google.com");
+			return control;
+			
+		}
+
+		Control TitleLabel ()
+		{
+			titleLabel = new Label{};
+			return titleLabel;
+		}
+		
+		void UpdateButtons ()
+		{
+			goBack.Enabled = webView.CanGoBack;
+			goForward.Enabled = webView.CanGoForward;
+		}
+		
+		Control Buttons ()
+		{
+			var layout = new TableLayout (new Panel (), 7, 1);
+			
+			int col = 0;
+			layout.Add (BackButton (), col++, 0);
+			layout.Add (ForwardButton (), col++, 0);
+			layout.Add (LoadHtmlButton (), col++, 0);
+			layout.Add (ReloadButton (), col++, 0);
+			layout.Add (StopButton (), col++, 0);
+			layout.Add (ExecuteScriptButton (), col++, 0);
+			
+			layout.SetColumnScale (col++);
+			
+			
+			return layout.Container;
+		}
+		
+		Control BackButton ()
+		{
+			var control = goBack = new Button{
+				Text = "Back"
+			};
+			control.Click += delegate {
+				webView.GoBack ();
+			};
+			return control;
+		}
+
+		Control ForwardButton ()
+		{
+			var control = goForward = new Button{
+				Text = "Forward"
+			};
+			control.Click += delegate {
+				webView.GoForward ();
+			};
+			return control;
+		}
+		Control ReloadButton ()
+		{
+			var control = new Button{
+				Text = "Reload"
+			};
+			control.Click += delegate {
+				webView.Reload ();
+			};
+			return control;
+		}
+
+		Control StopButton ()
+		{
+			var control = stopButton = new Button{
+				Text = "Stop",
+				Enabled = false
+			};
+			control.Click += delegate {
+				webView.Stop ();
+				stopButton.Enabled = false;
+			};
+			return control;
+		}
+		
+		Control ExecuteScriptButton ()
+		{
+			var control = new Button{
+				Text = "Execute Script"
+			};
+			control.Click += delegate {
+				webView.ExecuteScript("alert('this is called from code');");
+			};
+			return control;
+		}
+
+		Control LoadHtmlButton ()
+		{
+			var control = new Button{
+				Text = "Load HTML"
+			};
+			control.Click += delegate {
+				webView.LoadHtml ("<html><head><title>Hello!</title></head><body><h1>Some custom html</h1></body></html>");
+			};
+			return control;
+		}
+	}
+}
+
