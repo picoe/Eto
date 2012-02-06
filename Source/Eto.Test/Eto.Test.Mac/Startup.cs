@@ -24,7 +24,7 @@ namespace Eto.Test.Mac
 		{
 			// support full screen mode!
 			Style.Add<Window, NSWindow> ("main", (widget, control) => {
-				//control.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary; // not in monomac/master yet..
+				control.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 			});
 			
 			Style.Add<Application, NSApplication> ("application", (widget, control) => {
