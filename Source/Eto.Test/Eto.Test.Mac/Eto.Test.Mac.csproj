@@ -52,10 +52,6 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
-      <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
-      <Name>Eto.Test</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
@@ -63,6 +59,10 @@
     <ProjectReference Include="..\..\Eto.Platform.Mac\Eto.Platform.Mac.csproj">
       <Project>{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}</Project>
       <Name>Eto.Platform.Mac</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
+      <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
+      <Name>Eto.Test</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

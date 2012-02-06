@@ -20,7 +20,6 @@
     <RootNamespace>Eto.Platform.Windows</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
