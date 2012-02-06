@@ -235,5 +235,18 @@ namespace Eto.Platform.Windows
 				else return Generator.Convert (Control.RestoreBounds);
 			}
 		}
+
+		public double Opacity
+		{
+			get
+			{
+				return Control.AllowTransparency ? Control.Opacity : 1.0;
+			}
+			set
+			{
+				Control.AllowTransparency = value != 1.0;
+				Control.Opacity = value;
+			}
+		}
 	}
 }

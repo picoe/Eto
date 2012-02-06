@@ -12,6 +12,8 @@ namespace Eto.Forms
 		
 		Point Location { get; set; }
 
+		double Opacity { get; set; }
+
 		//void AddToolbar(ToolBar toolBar);
 		//void RemoveToolbar(ToolBar toolBar);
 		//void ClearToolbars();
@@ -91,6 +93,11 @@ namespace Eto.Forms
 		public ToolBar ToolBar {
 			get { return inner.ToolBar; }
 			set { inner.ToolBar = value; }
+		}
+
+		public double Opacity {
+			get { return inner.Opacity; }
+			set { inner.Opacity = value; }
 		}
 		
 		public virtual void Close ()

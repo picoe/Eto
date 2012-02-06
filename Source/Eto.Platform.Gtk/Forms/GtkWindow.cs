@@ -6,7 +6,12 @@ using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public abstract class GtkWindow<T, W> : GtkContainer<T, W>, IWindow
+	public interface IGtkWindow
+	{
+		bool CloseWindow ();
+	}
+
+	public abstract class GtkWindow<T, W> : GtkContainer<T, W>, IWindow, IGtkWindow
 		where T: Gtk.Window
 		where W: Window
 	{
@@ -109,12 +114,7 @@ namespace Eto.Platform.GtkSharp
 				break;
 			case Window.ClosingEvent:
 				Control.DeleteEvent += delegate(object o, Gtk.DeleteEventArgs args) {
-					var cancelArgs = new CancelEventArgs ();
-					Widget.OnClosing (cancelArgs);
-					args.RetVal = cancelArgs.Cancel;
-					if (!cancelArgs.Cancel) {
-						Widget.OnClosed (EventArgs.Empty);
-					}
+					args.RetVal = !CloseWindow ();
 				};
 				break;
 			case Window.ShownEvent:
@@ -196,10 +196,21 @@ namespace Eto.Platform.GtkSharp
 			set { Control.Title = value; }
 		}
 
+		public bool CloseWindow ()
+		{
+			var cancelArgs = new CancelEventArgs ();
+			Widget.OnClosing (cancelArgs);
+			if (!cancelArgs.Cancel) {
+				Widget.OnClosed (EventArgs.Empty);
+			}
+			return !cancelArgs.Cancel;
+		}
+
 		public void Close ()
 		{
-			Widget.OnClosed (EventArgs.Empty);
-			Control.Hide ();
+			if (CloseWindow ()) {
+				Control.Hide ();
+			}
 		}
 		
 		protected override void Dispose (bool disposing)
@@ -305,6 +316,12 @@ namespace Eto.Platform.GtkSharp
 			get {
 				return State == WindowState.Normal ? null : restoreBounds;
 			}
+		}
+
+		public double Opacity
+		{
+			get { return Control.Opacity; }
+			set { Control.Opacity = value; }
 		}
 	}
 }

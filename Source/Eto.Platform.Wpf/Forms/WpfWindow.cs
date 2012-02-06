@@ -7,6 +7,8 @@ using Eto.Drawing;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swc = System.Windows.Controls;
+using System.Runtime.InteropServices;
+using Eto.Platform.Wpf.CustomControls;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -276,6 +278,31 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Window IWpfWindow.Control
 		{
 			get { return this.Control; }
+		}
+
+		public double Opacity
+		{
+			get { return Control.Opacity; }
+			set
+			{
+				if (value != 1.0) {
+					if (Control.IsLoaded) {
+						GlassHelper.BlurBehindWindow (Control);
+						//GlassHelper.ExtendGlassFrame (Control);
+						Control.Opacity = value;
+					}
+					else {
+						Control.Loaded += delegate {
+							GlassHelper.BlurBehindWindow (Control);
+							//GlassHelper.ExtendGlassFrame (Control);
+							Control.Opacity = value;
+						};
+					}
+				}
+				else {
+					Control.Opacity = value;
+				}
+			}
 		}
 	}
 }

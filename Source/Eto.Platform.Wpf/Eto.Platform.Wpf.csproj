@@ -73,6 +73,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CustomControls\GlassHelper.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\AutoScroll.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\ExponentialAnimation.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\MapZoom.cs" />

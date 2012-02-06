@@ -55,7 +55,7 @@ namespace Eto.Platform.GtkSharp
 
 		void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
-			if (CanQuit ()) {
+			if (CanQuit () && !object.Equals(args.RetVal, true)) {
 				Gtk.Application.Quit ();
 			}
 			else
@@ -64,8 +64,14 @@ namespace Eto.Platform.GtkSharp
 
 		public void Quit ()
 		{
-			if (CanQuit ())
+			bool shouldClose = true;
+			var mainForm = Widget.MainForm != null ? Widget.MainForm.Handler as IGtkWindow : null;
+			if (mainForm != null) {
+				shouldClose &= mainForm.CloseWindow ();
+			}
+			if (shouldClose && CanQuit ()) {
 				Gtk.Application.Quit ();
+			}
 		}
 		
 		public void Open (string url)

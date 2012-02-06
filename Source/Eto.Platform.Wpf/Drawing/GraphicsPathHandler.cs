@@ -9,7 +9,6 @@ namespace Eto.Platform.Wpf.Drawing
 {
 	public class GraphicsPathHandler : WidgetHandler<swm.PathGeometry, GraphicsPath>, IGraphicsPath
 	{
-		bool started;
 		swm.PathFigure figure;
 
 		public GraphicsPathHandler ()

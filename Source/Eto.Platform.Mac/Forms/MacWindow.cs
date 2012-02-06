@@ -406,6 +406,15 @@ namespace Eto.Platform.Mac
 			get { return State == WindowState.Normal ? null : restoreBounds; }
 			set { restoreBounds = value; }
 		}
+
+		public double Opacity
+		{
+			get { return Control.IsOpaque ? 1.0 : Control.AlphaValue; }
+			set {
+				Control.IsOpaque = value == 1.0;
+				Control.AlphaValue = (float)value; 
+			}
+		}
 		
 		public virtual void OnPreLoad (EventArgs e)
 		{
