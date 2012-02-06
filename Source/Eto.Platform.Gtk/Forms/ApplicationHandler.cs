@@ -61,6 +61,18 @@ namespace Eto.Platform.GtkSharp
 			else
 				args.RetVal = true; // cancel!
 		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Application.TerminatingEvent:
+				// called automatically
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 
 		public void Quit ()
 		{

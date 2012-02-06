@@ -58,13 +58,11 @@ namespace Eto.Test.Controls
 	public class SectionList : TreeView
 	{
 		Container contentContainer;
-		TextArea eventLog;
 		
-		public SectionList (Container contentContainer, TextArea eventLog)
+		public SectionList (Container contentContainer)
 		{
 			this.contentContainer = contentContainer;
 			this.Style = "sectionList";
-			this.eventLog = eventLog;
 			
 
 			var top = new TreeItem();

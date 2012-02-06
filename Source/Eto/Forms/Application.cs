@@ -29,10 +29,22 @@ namespace Eto.Forms
 			if (Initialized != null) Initialized(this, e);
 		}
 
-		public event EventHandler<CancelEventArgs> Terminating;
-		public virtual void OnTerminating(CancelEventArgs e)
+		public const string TerminatingEvent = "Application.Terminating";
+
+		event EventHandler<CancelEventArgs> terminating;
+
+		public event EventHandler<CancelEventArgs> Terminating {
+			add {
+				HandleEvent (TerminatingEvent);
+				terminating += value;
+			}
+			remove { terminating -= value; }
+		}
+
+		public virtual void OnTerminating (CancelEventArgs e)
 		{
-			if (Terminating != null) Terminating(this, e);
+			if (terminating != null)
+				terminating (this, e);
 		}
 		
 		IApplication inner;

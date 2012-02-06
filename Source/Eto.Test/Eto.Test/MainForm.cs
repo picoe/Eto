@@ -69,7 +69,7 @@ namespace Eto.Test
 				FixedPanel = SplitterFixedPanel.Panel1
 			};
 
-			var sectionList = new Controls.SectionList (this.ContentContainer, this.EventLog);
+			var sectionList = new Controls.SectionList (this.ContentContainer);
 			// set focus when the form is shown
 			this.Shown += delegate {
 				sectionList.Focus ();
@@ -222,8 +222,13 @@ namespace Eto.Test
 		{
 			base.OnClosing (e);
 			Log.Write (this, "Closing");
+			/*
+			 * Note that on OS X, windows usually close, but the application will keep running.  It is
+			 * usually better to handle the Application.OnTerminating event instead.
+			 * 
 			var result = MessageBox.Show (this, "Are you sure you want to close?", MessageBoxButtons.YesNo);
 			if (result == DialogResult.No) e.Cancel = true;
+			*/
 		}
 	}
 }

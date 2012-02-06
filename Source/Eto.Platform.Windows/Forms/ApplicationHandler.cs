@@ -50,6 +50,18 @@ namespace Eto.Platform.Windows
 			Process.Start (info);
 		}
 		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Application.TerminatingEvent:
+				// handled by WindowHandler
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+		
 		public void GetSystemActions (GenerateActionArgs args)
 		{
 			

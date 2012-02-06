@@ -66,6 +66,8 @@ namespace Eto.Platform.Mac
 		NSObject FieldEditorObject { get; set; }
 
 		Size? MinimumSize { get; }
+		
+		bool CloseWindow ();
 	}
 	
 	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer, IMacWindow
@@ -260,6 +262,16 @@ namespace Eto.Platform.Mac
 					NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
 			}
 		}
+		
+		public bool CloseWindow ()
+		{
+			var args = new CancelEventArgs ();
+			Widget.OnClosing (args);
+			if (!args.Cancel) {
+				Widget.OnClosed (EventArgs.Empty);
+			}
+			return !args.Cancel;
+		}
 
 		public void Close ()
 		{
@@ -407,8 +419,7 @@ namespace Eto.Platform.Mac
 			set { restoreBounds = value; }
 		}
 
-		public double Opacity
-		{
+		public double Opacity {
 			get { return Control.IsOpaque ? 1.0 : Control.AlphaValue; }
 			set {
 				Control.IsOpaque = value == 1.0;
@@ -446,8 +457,7 @@ namespace Eto.Platform.Mac
 				frame.Height -= diffy;
 				frame.Width -= diffx;
 				Control.SetFrame (frame, true, false);
-			}
-			else 
+			} else 
 				Control.SetContentSize (contentSize);
 		}
 		#endregion

@@ -79,6 +79,18 @@ namespace Eto.Platform.Mac
 			NSWorkspace.SharedWorkspace.OpenUrl (new NSUrl (url));
 		}
 		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Application.TerminatingEvent:
+				// handled by app delegate
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+		
 		public void GetSystemActions (GenerateActionArgs args)
 		{
 			args.Actions.AddButton ("mac_hide", string.Format ("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate {
