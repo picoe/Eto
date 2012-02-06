@@ -26,16 +26,11 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void InvokeOnMainThread (Action action)
 		{
-			// TODO: use dispatcher
-			sw.Threading.Dispatcher.CurrentDispatcher.Invoke (action);
-
-			//base.ExecuteOnMainThread(action);
+			Control.Dispatcher.Invoke (action);
 		}
-
 
 		public void GetSystemActions(GenerateActionArgs args)
 		{
-			
 		}
 
 		public Key CommonModifier
@@ -66,6 +61,18 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			System.Diagnostics.Process.Start (System.Windows.Application.ResourceAssembly.Location);
 			System.Windows.Application.Current.Shutdown ();
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case Application.TerminatingEvent:
+					// handled by WpfWindow
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
+			}
 		}
 	}
 }
