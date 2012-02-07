@@ -286,6 +286,14 @@ namespace Eto.Forms
 			this.EndVertical ();
 			
 		}
+
+		public void AddAutoSized (Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		{
+			this.BeginVertical (padding ?? Eto.Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
+			this.AddRow (control, null);
+			this.Add (null);
+			this.EndVertical ();
+		}
 		
 		public void AddColumn (params Control[] controls)
 		{

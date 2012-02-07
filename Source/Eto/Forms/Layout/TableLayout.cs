@@ -35,6 +35,8 @@ namespace Eto.Forms
 		
 		public override IEnumerable<Control> Controls {
 			get {
+				if (controls == null)
+					return Enumerable.Empty<Control> ();
 				return controls.OfType<Control> ();
 			}
 		}
@@ -59,7 +61,7 @@ namespace Eto.Forms
 			}
 		}
 
-		static AttachableMemberIdentifier LocationProperty = new AttachableMemberIdentifier (typeof (TableLayout), "Location");
+		static AttachableMemberIdentifier LocationProperty = new AttachableMemberIdentifier (typeof(TableLayout), "Location");
 		
 		public static Point GetLocation (Control control)
 		{
@@ -72,6 +74,15 @@ namespace Eto.Forms
 			var layout = control.ParentLayout as TableLayout;
 			if (layout != null)
 				layout.Move (control, value);
+		}
+		
+		public static Control AutoSized (Control control, Padding? padding = null)
+		{
+			var layout = new TableLayout(new Panel(), 2, 2);
+			layout.Padding = padding ?? Padding.Empty;
+			layout.Spacing = Size.Empty;
+			layout.Add (control, 0, 0);
+			return layout.Container;
 		}
 		
 		public TableLayout ()

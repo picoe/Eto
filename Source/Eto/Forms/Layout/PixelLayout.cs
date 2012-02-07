@@ -64,6 +64,7 @@ namespace Eto.Forms
 
 		public void Add (Control control, int x, int y)
 		{
+			controls.Add (control);
 			control.SetParentLayout (this);
 			var load = Loaded && !control.Loaded;
 			if (load) {
@@ -73,7 +74,6 @@ namespace Eto.Forms
 			inner.Add (control, x, y);
 			if (load)
 				control.OnLoadComplete (EventArgs.Empty);
-			controls.Add (control);
 		}
 
 		public void Add (Control child, Point p)
