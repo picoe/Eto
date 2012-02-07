@@ -1,12 +1,14 @@
 using System;
 using MonoMac.AppKit;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class SliderHandler : MacView<NSSlider, Slider>, ISlider
 	{
 		SliderOrientation orientation;
+
 		public SliderHandler ()
 		{
 			Control = new NSSlider ();
@@ -20,12 +22,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxValue = 100;
 		}
 		
-		protected override void SetNaturalSize ()
+		protected override Size GetNaturalSize ()
 		{
 			if (Orientation == SliderOrientation.Horizontal)
-				Control.SetFrameSize (new System.Drawing.SizeF(80, 30));
+				return new Size (80, 30);
 			else
-				Control.SetFrameSize (new System.Drawing.SizeF(30, 80));
+				return new Size (30, 80);
 		}
 
 		public int MaxValue {
@@ -60,7 +62,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set { 
 				Control.TickMarksCount = (int)((MaxValue - MinValue) / value) + 1;
-				if (value > 1) Control.AllowsTickMarkValuesOnly = true;
+				if (value > 1)
+					Control.AllowsTickMarkValuesOnly = true;
 			}
 		}
 		

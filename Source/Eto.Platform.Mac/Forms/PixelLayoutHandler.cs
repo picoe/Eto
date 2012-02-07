@@ -10,6 +10,7 @@ namespace Eto.Platform.Mac
 {
 	public class PixelLayoutHandler : MacLayout<NSView, PixelLayout>, IPixelLayout
 	{
+		bool loaded;
 		Dictionary<Control, Point> points = new Dictionary<Control, Point> ();
 		
 		public override NSView Control {
@@ -24,29 +25,21 @@ namespace Eto.Platform.Mac
 		public override SD.RectangleF GetPosition (Control control)
 		{
 			Point point;
-			if (points.TryGetValue (control, out point))
-			{
+			if (points.TryGetValue (control, out point)) {
 				var frameSize = ((NSView)control.ControlObject).Frame.Size;
-				return new SD.RectangleF(Generator.ConvertF(point), frameSize);
+				return new SD.RectangleF (Generator.ConvertF (point), frameSize);
 			}
 			return base.GetPosition (control);
 		}
 		
-		public override void SizeToFit ()
+		public override Size GetPreferredSize ()
 		{
-			SD.SizeF size = SD.SizeF.Empty;
+			Size size = Size.Empty;
 			foreach (var item in points) {
-				SizeToFit (item.Key);
-				var frameSize = ((NSView)item.Key.ControlObject).Frame.Size;
-				if (size.Width < frameSize.Width + item.Value.X)
-					size.Width = frameSize.Width + item.Value.X;
-				if (size.Height < frameSize.Height + item.Value.Y)
-					size.Height = frameSize.Height + item.Value.Y;
+				var frameSize = GetPreferredSize (item.Key);
+				size = Size.Max (size, frameSize + new Size(item.Value));
 			}
-			
-			if (size != Control.Frame.Size) {
-				SetContainerSize (size);
-			}
+			return size;
 		}
 		
 		public override void OnLoadComplete ()
@@ -58,6 +51,7 @@ namespace Eto.Platform.Mac
 				var handler = e.Widget.Handler as PixelLayoutHandler;
 				handler.LayoutChildren ();
 			});
+			loaded = true;
 		}
 		
 		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
@@ -65,11 +59,18 @@ namespace Eto.Platform.Mac
 			var offset = ((IMacView)control.Handler).PositionOffset;
 			var childView = control.ControlObject as NSView;
 			
-			SD.PointF origin;
-			if (flipped) origin = new System.Drawing.PointF (point.X + offset.Width, point.Y + offset.Height);
-			else origin = new System.Drawing.PointF (point.X + offset.Width, frameHeight - (childView.Frame.Height + point.Y + offset.Height));
+			var preferredSize = GetPreferredSize (control);
 
-			childView.SetFrameOrigin (origin);
+			SD.PointF origin;
+			if (flipped)
+				origin = new System.Drawing.PointF (point.X + offset.Width, point.Y + offset.Height);
+			else
+				origin = new System.Drawing.PointF (point.X + offset.Width, frameHeight - (preferredSize.Height + point.Y + offset.Height));
+			
+			var frame = new SD.RectangleF(origin, Generator.Convert (preferredSize));
+			if (frame != childView.Frame) {
+				childView.Frame = frame;
+			}
 		}
 
 		public override void LayoutChildren ()
@@ -87,20 +88,25 @@ namespace Eto.Platform.Mac
 			var location = new Point (x, y);
 			points [child] = location;
 			var childView = child.ControlObject as NSView;
-			if (Widget.Loaded) {
+			if (loaded) {
 				var frameHeight = Control.Frame.Height;
 				SetPosition (child, location, frameHeight, Control.IsFlipped);
 			}
 			Control.AddSubview (childView);
+			if (loaded)
+				UpdateParentLayout ();
 		}
 
 		public void Move (Control child, int x, int y)
 		{
 			var location = new Point (x, y);
-			points [child] = location;
-			if (Widget.Loaded) {
-				var frameHeight = Control.Frame.Height;
-				SetPosition (child, location, frameHeight, Control.IsFlipped);
+			if (points [child] != location) {
+				points [child] = location;
+				if (loaded) {
+					var frameHeight = Control.Frame.Height;
+					SetPosition (child, location, frameHeight, Control.IsFlipped);
+					UpdateParentLayout ();
+				}
 			}
 		}
 		
@@ -109,6 +115,8 @@ namespace Eto.Platform.Mac
 			var childView = child.ControlObject as NSView;
 			points.Remove (child);
 			childView.RemoveFromSuperview ();
+			if (loaded)
+				UpdateParentLayout ();
 		}
 	}
 }

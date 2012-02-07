@@ -8,17 +8,12 @@ namespace Eto.Platform.Mac
 	{
 		Control panel1;
 		Control panel2;
-		NSSplitView control;
 		int? position;
 		SplitterFixedPanel fixedPanel;
 		
-		class SVDelegate : NSSplitViewDelegate
+		static void ResizeSubviews(SplitterHandler handler, System.Drawing.SizeF oldSize)
 		{
-			bool initialized;
-			public SplitterHandler Handler { get; set; }
-			
-			public override void Resize (NSSplitView splitView, System.Drawing.SizeF oldSize)
-			{
+			var splitView = handler.Control;
 				var dividerThickness = splitView.DividerThickness;
 				var panel1Rect = splitView.Subviews[0].Frame;
 				var panel2Rect = splitView.Subviews[1].Frame;
@@ -30,23 +25,23 @@ namespace Eto.Platform.Mac
 				if (splitView.IsVertical) {
 					panel2Rect.Height = panel1Rect.Height = newFrame.Height;
 					panel1Rect.Location = new System.Drawing.PointF(0, 0);
-					if (Handler.position == null) {
+					if (handler.position == null) {
 						panel1Rect.Width = newFrame.Width / 2;
 						panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
 					}
 					else {
-						switch (Handler.fixedPanel) {
+						switch (handler.fixedPanel) {
 						case SplitterFixedPanel.Panel1:
-							panel1Rect.Width = Handler.position.Value;
+							panel1Rect.Width = handler.position.Value;
 							panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
 							break;
 						case SplitterFixedPanel.Panel2:
-							panel2Rect.Width = oldSize.Width - Handler.position.Value - dividerThickness;
+							panel2Rect.Width = oldSize.Width - handler.position.Value - dividerThickness;
 							panel1Rect.Width = newFrame.Width - panel2Rect.Width - dividerThickness;
 							break;
 						case SplitterFixedPanel.None:
 							var oldscale = newFrame.Width / oldSize.Width;
-							panel1Rect.Width = Handler.position.Value * oldscale;
+							panel1Rect.Width = handler.position.Value * oldscale;
 							panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
 							break;
 						}
@@ -57,34 +52,46 @@ namespace Eto.Platform.Mac
 					panel2Rect.X = 0;
 					panel2Rect.Width = panel1Rect.Width = newFrame.Width;
 					panel1Rect.Location = new System.Drawing.PointF(0, 0);
-					if (Handler.position == null) {
+					if (handler.position == null) {
 						panel1Rect.Height = newFrame.Height / 2;
 						panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
 					}
 					else {
-						switch (Handler.fixedPanel) {
+						switch (handler.fixedPanel) {
 						case SplitterFixedPanel.Panel1:
-							panel1Rect.Height = Handler.position.Value;
+							panel1Rect.Height = handler.position.Value;
 							panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
 							break;
 						case SplitterFixedPanel.Panel2:
-							panel2Rect.Height = oldSize.Height - Handler.position.Value - dividerThickness;
+							panel2Rect.Height = oldSize.Height - handler.position.Value - dividerThickness;
 							panel1Rect.Height = newFrame.Height - panel2Rect.Height - dividerThickness;
 							break;
 						case SplitterFixedPanel.None:
 							var oldscale = newFrame.Height / oldSize.Height;
-							panel1Rect.Height = Handler.position.Value * oldscale;
+							panel1Rect.Height = handler.position.Value * oldscale;
 							panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
 							break;
 						}
 					}
 					panel2Rect.Y = panel1Rect.Height + dividerThickness;
 				}
-				initialized = true;
 				
 				splitView.Subviews[0].Frame = panel1Rect;
 				splitView.Subviews[1].Frame = panel2Rect;
-			} 
+			
+		}
+		
+		class SVDelegate : NSSplitViewDelegate
+		{
+			bool initialized;
+			public SplitterHandler Handler { get; set; }
+			
+			/*
+			public override void Resize (NSSplitView splitView, System.Drawing.SizeF oldSize)
+			{
+				SplitterHandler.ResizeSubviews (Handler, oldSize);
+				initialized = true;
+			} */
 
 
 			public override float ConstrainSplitPosition (NSSplitView splitView, float proposedPosition, int subviewDividerIndex)
@@ -97,9 +104,9 @@ namespace Eto.Platform.Mac
 			
 			public override void DidResizeSubviews (MonoMac.Foundation.NSNotification notification)
 			{
-				var subview = Handler.control.Subviews[0];
-				if (subview != null && initialized) {
-					if (Handler.control.IsVertical) {
+				var subview = Handler.Control.Subviews[0];
+				if (subview != null && Handler.Widget.Loaded) {
+					if (Handler.Control.IsVertical) {
 						Handler.position = (int)subview.Frame.Width;
 					}
 					else {
@@ -112,6 +119,8 @@ namespace Eto.Platform.Mac
 		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
 		class MySplitView: NSSplitView
 		{
+			public SplitterHandler Handler { get; set; }
+			
 			public override void MouseDown (NSEvent theEvent)
 			{
 				var cursor = NSCursor.CurrentCursor;
@@ -135,18 +144,23 @@ namespace Eto.Platform.Mac
 				 || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
 					base.MouseUp(theEvent);
 			}
+			
+			public override void AdjustSubviews ()
+			{
+				//base.AdjustSubviews ();
+				SplitterHandler.ResizeSubviews (Handler, System.Drawing.SizeF.Empty);
+			}
 		}
 		
 		public SplitterHandler()
 		{
 			Enabled = true;
-			control = new MySplitView();
-			control.DividerStyle = NSSplitViewDividerStyle.Thin;
-			control.AddSubview(new NSView{ AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
-			control.AddSubview(new NSView{ AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
-			control.IsVertical = true;
-			control.Delegate = new SVDelegate{ Handler = this };
-			Control = control;
+			Control = new MySplitView { Handler = this };
+			Control.DividerStyle = NSSplitViewDividerStyle.Thin;
+			Control.AddSubview(new NSView{ AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
+			Control.AddSubview(new NSView{ AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable });
+			Control.IsVertical = true;
+			Control.Delegate = new SVDelegate{ Handler = this };
 		}
 		
 		#region ISplitter Members
@@ -156,7 +170,7 @@ namespace Eto.Platform.Mac
 			get { return position ?? 0; }
 			set {
 				position = value;
-				control.AdjustSubviews();
+				Control.AdjustSubviews();
 			}
 		}
 		
@@ -164,7 +178,7 @@ namespace Eto.Platform.Mac
 		{
 			get
 			{
-				if (control.IsVertical) return SplitterOrientation.Horizontal;
+				if (Control.IsVertical) return SplitterOrientation.Horizontal;
 				else return SplitterOrientation.Vertical;
 			}
 			set
@@ -172,11 +186,10 @@ namespace Eto.Platform.Mac
 				switch (value)
 				{
 					default:
-					case SplitterOrientation.Horizontal: control.IsVertical = true; break;
-					case SplitterOrientation.Vertical: control.IsVertical = false; break;
+					case SplitterOrientation.Horizontal: Control.IsVertical = true; break;
+					case SplitterOrientation.Vertical: Control.IsVertical = false; break;
 				}
-				control.AdjustSubviews();
-				control.NeedsDisplay = true;
+				Control.AdjustSubviews();
 			}
 		}
 		
@@ -187,8 +200,7 @@ namespace Eto.Platform.Mac
 			get { return fixedPanel; }
 			set {
 				fixedPanel = value;
-				control.AdjustSubviews();
-				control.NeedsDisplay = true;
+				Control.AdjustSubviews();
 			}
 		}
 
@@ -200,7 +212,7 @@ namespace Eto.Platform.Mac
 				if (panel1 != value)
 				{
 					NSView view = (value != null) ? value.ControlObject as NSView : null;
-					control.ReplaceSubviewWith(control.Subviews[0], view ?? new NSView());
+					Control.ReplaceSubviewWith(Control.Subviews[0], view ?? new NSView());
 					panel1 = value;
 				}
 			}
@@ -214,7 +226,7 @@ namespace Eto.Platform.Mac
 				if (panel2 != value)
 				{
 					NSView view = (value != null) ? value.ControlObject as NSView : null;
-					control.ReplaceSubviewWith(control.Subviews[1], view ?? new NSView());
+					Control.ReplaceSubviewWith(Control.Subviews[1], view ?? new NSView());
 					panel2 = value;
 				}
 			}

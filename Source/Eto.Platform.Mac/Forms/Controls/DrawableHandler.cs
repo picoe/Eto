@@ -62,6 +62,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 	
 		public override bool Enabled { get; set; }
 		
+		public override Color BackgroundColor {
+			get; set;
+		}
+		
 		public void Create ()
 		{
 			Enabled = true;
@@ -78,6 +82,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null) {
 				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height));
+				if (BackgroundColor.A != 0) {
+					graphics.FillRectangle (BackgroundColor, rect);
+				}
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}

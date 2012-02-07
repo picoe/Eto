@@ -44,7 +44,7 @@ namespace Eto.Platform.Mac
 	{
 		bool AutoSize { get; }
 		
-		void SizeToFit ();
+		Size GetPreferredSize ();
 		
 	}
 
@@ -72,31 +72,42 @@ namespace Eto.Platform.Mac
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
 		Cursor cursor;
-
+		Size? oldFrameSize;
+		Size? naturalSize;
+		
 		public virtual bool AutoSize { get; protected set; }
 
 		public virtual Size Size {
 			get { return Generator.ConvertF (Control.Frame.Size); }
 			set { 
+				var oldSize = GetPreferredSize ();
 				this.PreferredSize = value;
-				Generator.SetSizeWithAuto(Control, value);
+				Generator.SetSizeWithAuto (Control, value);
 				this.AutoSize = false;
 				CreateTracking ();
-				LayoutIfNeeded();
+				LayoutIfNeeded (oldSize);
 			}
 		}
 		
-		protected void LayoutIfNeeded()
+		protected virtual bool LayoutIfNeeded (Size? oldPreferredSize = null)
 		{
+			naturalSize = null;
 			if (Widget.Loaded) {
-				var layout = Widget.ParentLayout.Handler as IMacLayout;
-				if (layout != null) layout.UpdateParentLayout();
+				var oldSize = oldPreferredSize ?? Generator.ConvertF (Control.Frame.Size);
+				var newSize = GetPreferredSize ();
+				if (newSize != oldSize) {
+					var layout = Widget.ParentLayout.Handler as IMacLayout;
+					if (layout != null)
+						layout.UpdateParentLayout (true);
+					return true;
+				}
 			}
+			return false;
 		}
-		
+
 		public virtual Size? MinimumSize {
-			get { return null; }
-			set { }
+			get;
+			set;
 		}
 		
 		public virtual Size? MaximumSize {
@@ -108,46 +119,42 @@ namespace Eto.Platform.Mac
 			get;
 			set;
 		}
-		
+
 		public MacView ()
 		{
- 			this.AutoSize = true;
+			this.AutoSize = true;
 		}
-		
-		protected virtual void SetNaturalSize()
-		{
-			var control = Control as NSControl;
-			if (control != null)
-				control.SizeToFit ();
-		}
-		
-		public virtual void SizeToFit ()
-		{
-			if (!AutoSize) {
-				if (PreferredSize != null) {
-					var preferredSize = PreferredSize.Value;
-					if (preferredSize.Height == -1 || preferredSize.Width == -1) {
-						SetNaturalSize();
-						Generator.SetSizeWithAuto (Control, preferredSize);
-					}
-					else 
-						Control.SetFrameSize (Generator.ConvertF (PreferredSize.Value));
-				}
-			} else
-				SetNaturalSize ();
 
-			if (MinimumSize != null || MaximumSize != null) {
-				var size = Control.Frame.Size;
-				if (MinimumSize != null) {
-					size.Width = Math.Max (size.Width, MinimumSize.Value.Width);
-					size.Height = Math.Max (size.Height, MinimumSize.Value.Height);
-				}
-				if (MaximumSize != null) {
-					size.Width = Math.Min (size.Width, MaximumSize.Value.Width);
-					size.Height = Math.Min (size.Height, MaximumSize.Value.Height);
-				}
-				Control.SetFrameSize (size);
+		protected virtual Size GetNaturalSize ()
+		{
+			if (naturalSize != null) 
+				return naturalSize.Value;
+			var control = Control as NSControl;
+			if (control != null) {
+				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
+				control.SizeToFit ();
+				naturalSize = Generator.ConvertF (control.Frame.Size);
+				if (size != null) control.SetFrameSize (size.Value);
+				return naturalSize.Value;
 			}
+			return Size.Empty;
+		}
+		
+		public virtual Size GetPreferredSize ()
+		{
+			var size = GetNaturalSize ();
+			if (!AutoSize && PreferredSize != null) {
+				var preferredSize = PreferredSize.Value;
+				if (preferredSize.Width >= 0)
+					size.Width = preferredSize.Width;
+				if (preferredSize.Height >= 0)
+					size.Height = preferredSize.Height;
+			}
+			if (MinimumSize != null)
+				size = Size.Max (size, MinimumSize.Value);
+			if (MaximumSize != null)
+				size = Size.Min (size, MaximumSize.Value);
+			return size;
 		}
 		
 		public virtual Size PositionOffset { get { return Size.Empty; } }
@@ -195,8 +202,14 @@ namespace Eto.Platform.Mac
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
 				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) {
-					((MacView<T, W>)(e.Widget.Handler)). OnSizeChanged (EventArgs.Empty);
-					e.Widget.OnSizeChanged (EventArgs.Empty);
+					var h = ((MacView<T, W>)(e.Widget.Handler));
+					var oldFrameSize = h.oldFrameSize;
+					h.OnSizeChanged (EventArgs.Empty);
+					var newSize = e.Widget.Size;
+					if (oldFrameSize == null || oldFrameSize.Value != newSize) {
+						e.Widget.OnSizeChanged (EventArgs.Empty);
+						h.oldFrameSize = newSize;
+					}
 				});
 				break;
 			case Eto.Forms.Control.MouseDoubleClickEvent:

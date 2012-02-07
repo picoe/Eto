@@ -91,15 +91,25 @@ namespace Eto.Platform.Mac
 				}
 			}
 		}
-
+		
 		public override object ContainerObject {
 			get { return view; }
 		}
 		
-		public override void OnLoadComplete (EventArgs e)
+		public override void LayoutChildren ()
 		{
-			base.OnLoadComplete (e);
+			base.LayoutChildren ();
 			UpdateScrollSizes ();
+		}
+		
+		Size GetBorderSize ()
+		{
+			return Generator.ConvertF (Control.Frame.Size) - Generator.ConvertF (Control.DocumentVisibleRect.Size);
+		}
+		
+		protected override Size GetNaturalSize ()
+		{
+			return base.GetNaturalSize () + GetBorderSize ();
 		}
 		
 		void InternalSetFrameSize (SD.SizeF size)
@@ -111,20 +121,7 @@ namespace Eto.Platform.Mac
 		
 		public void UpdateScrollSizes ()
 		{
-			Control.Tile ();
-			SD.SizeF size = SD.SizeF.Empty;
-			if (Widget.Layout != null) {
-				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-				if (layout != null) {
-					foreach (var c in Widget.Controls) {
-						var frame = layout.GetPosition (c);
-						if (size.Width < frame.Right)
-							size.Width = frame.Right;
-						if (size.Height < frame.Bottom)
-							size.Height = frame.Bottom;
-					}
-				}
-			}
+			var size = Generator.ConvertF (base.GetNaturalSize ());
 			InternalSetFrameSize (size);
 		}
 		
@@ -179,19 +176,6 @@ namespace Eto.Platform.Mac
 				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
 			}
 			InternalSetFrameSize (contentSize);
-			if (this.AutoSize) {
-				contentSize.Width += 2;
-				contentSize.Height += 2;
-				
-				if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) {
-					if (Widget.ParentLayout != null) {
-						var layout = Widget.ParentLayout.InnerLayout.Handler as IMacLayout;
-						if (layout != null)
-							layout.SetContainerSize (contentSize);
-					}
-				} else
-					Control.SetFrameSize (contentSize);
-			}
 		}
 		
 		public Rectangle VisibleRect {

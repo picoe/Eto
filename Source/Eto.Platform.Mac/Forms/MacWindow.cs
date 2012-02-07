@@ -79,18 +79,20 @@ namespace Eto.Platform.Mac
 		ToolBar toolBar;
 		Rectangle? restoreBounds;
 		Cursor cursor;
+		bool setInitialSize;
 		
 		public NSObject FieldEditorObject { get; set; }
 		
 		public bool AutoSize { get; private set; }
 		
-		public virtual void SizeToFit ()
+		public virtual Size GetPreferredSize ()
 		{
 			if (Widget.Layout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					layout.SizeToFit ();
+					return layout.GetPreferredSize ();
 			}
+			return new Size (200, 200);
 		}
 		
 		public Size? MinimumSize {
@@ -238,7 +240,7 @@ namespace Eto.Platform.Mac
 			var control = maclayout.LayoutObject as NSView;
 			if (control != null) {
 				var view = ContainerObject as NSView;
-				control.SetFrameSize (view.Frame.Size);
+				//control.SetFrameSize (view.Frame.Size);
 				control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 				view.AddSubview (control);
 			}
@@ -433,12 +435,27 @@ namespace Eto.Platform.Mac
 		
 		public virtual void OnLoad (EventArgs e)
 		{
-			this.SizeToFit ();
+			if (AutoSize) {
+				var size = this.GetPreferredSize ();
+				SetContentSize (Generator.ConvertF (size));
+				setInitialSize = true;
+			}
 		}
 		
 		public virtual void OnLoadComplete (EventArgs e)
 		{
 		}
+		
+		public virtual void LayoutChildren ()
+		{
+			if (Widget.Layout != null) {
+				var childLayout = Widget.Layout.InnerLayout.Handler as IMacLayout;
+				if (childLayout != null) {
+					childLayout.LayoutChildren ();
+				}
+			}
+		}
+		
 
 		#region IMacContainer implementation
 		public void SetContentSize (SD.SizeF contentSize)
@@ -452,10 +469,13 @@ namespace Eto.Platform.Mac
 				var diffy = this.ClientSize.Height - (int)contentSize.Height;
 				var diffx = this.ClientSize.Width - (int)contentSize.Width;
 				var frame = Control.Frame;
-				frame.Y += diffy;
-				frame.X += diffx / 2;
-				frame.Height -= diffy;
-				frame.Width -= diffx;
+				if (diffx < 0 || !setInitialSize) {
+					frame.Width -= diffx;
+				}
+				if (diffy < 0 || !setInitialSize) {
+					frame.Y += diffy;
+					frame.Height -= diffy;
+				}
 				Control.SetFrame (frame, true, false);
 			} else 
 				Control.SetContentSize (contentSize);

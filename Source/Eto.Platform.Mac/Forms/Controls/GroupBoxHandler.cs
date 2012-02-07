@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 using SD = System.Drawing;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -38,11 +39,13 @@ namespace Eto.Platform.Mac
 			set { Control.Title = value; }
 		}
 		
+		public override Eto.Drawing.Size GetPreferredSize ()
+		{
+			return base.GetPreferredSize () + new Size (14, 22);
+		}
+		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{
-#if LOG
-			Console.WriteLine ("Set Group Content size from {0} to {1}", ((NSView)Control.ContentView).Frame, contentSize);
-#endif
 			Control.SetFrameFromContentFrame (new System.Drawing.RectangleF (0, 0, contentSize.Width, contentSize.Height));
 		}
 	}

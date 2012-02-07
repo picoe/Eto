@@ -11,6 +11,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSTextField text;
 		NSStepper stepper;
 		Font font;
+		Size? naturalSize;
 		
 		class MyView : NSView
 		{
@@ -52,31 +53,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MinValue = 0;
 			MaxValue = 100;
 			Value = 0;
-			text.SizeToFit ();
-			stepper.SizeToFit ();
 			
-			/*var stepperWidth = stepper.Frame.Width;
-			var width = 100;
-			//stepper.SetFrameOrigin (new System.Drawing.PointF(width - stepperWidth, offset));
-			//text.Frame = new System.Drawing.RectangleF(0, 0, width - stepperWidth, height);
-			*/
 			Control.AddSubview (text);
 			Control.AddSubview (stepper);
-			var naturalHeight = Math.Max (text.Frame.Height, stepper.Frame.Height);
-			Control.Frame = new System.Drawing.RectangleF(0, 0, 80, naturalHeight);
+			var naturalSize = GetNaturalSize ();
+			Control.Frame = new System.Drawing.RectangleF (0, 0, naturalSize.Width, naturalSize.Height);
 		}
 		
-		protected override void SetNaturalSize ()
+		protected override Size GetNaturalSize ()
 		{
-			text.SizeToFit ();
-			stepper.SizeToFit ();
-			var naturalHeight = Math.Max (text.Frame.Height, stepper.Frame.Height);
-			Control.SetFrameSize (new System.Drawing.SizeF(80, naturalHeight));
-		}
-		
-		public override void SizeToFit ()
-		{
-			base.SizeToFit ();
+			if (naturalSize == null) {
+				text.SizeToFit ();
+				stepper.SizeToFit ();
+				var naturalHeight = Math.Max (text.Frame.Height, stepper.Frame.Height);
+				naturalSize = new Size (80, (int)naturalHeight);
+			}
+			return naturalSize.Value;
 		}
 		
 		public bool ReadOnly {

@@ -114,8 +114,9 @@ namespace Eto.Platform.Mac
 				return Control.StringValue;
 			}
 			set {
+				var oldSize = GetPreferredSize ();
 				Control.StringValue = value ?? string.Empty;
-				LayoutIfNeeded();
+				LayoutIfNeeded(oldSize);
 			}
 		}
 		

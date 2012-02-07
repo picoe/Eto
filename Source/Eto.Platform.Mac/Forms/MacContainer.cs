@@ -11,6 +11,8 @@ namespace Eto.Platform.Mac
 	public interface IMacContainer : IMacAutoSizing
 	{
 		void SetContentSize (SD.SizeF contentSize);
+		
+		void LayoutChildren ();
 	}
 	
 	public abstract class MacContainer<T, W> : MacView<T, W>, IContainer, IMacContainer
@@ -47,19 +49,19 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public override void SizeToFit ()
+		protected override Size GetNaturalSize ()
 		{
+			var size = base.GetNaturalSize ();
 			if (Widget.Layout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					layout.SizeToFit ();
+					size = layout.GetPreferredSize ();
 			}
-			base.SizeToFit ();
+			return size;
 		}
 		
 		public virtual void SetContentSize (SD.SizeF contentSize)
 		{
-			//Console.WriteLine ("Set Content Size: {0}", contentSize);
 			if (MinimumSize != null) {
 				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
 				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
@@ -70,8 +72,16 @@ namespace Eto.Platform.Mac
 					if (layout != null)
 						layout.SetContainerSize (contentSize);
 				}
-			} else {
-				Control.SetFrameSize (contentSize);
+			}
+		}
+		
+		public virtual void LayoutChildren ()
+		{
+			if (Widget.Layout != null) {
+				var childLayout = Widget.Layout.InnerLayout.Handler as IMacLayout;
+				if (childLayout != null) {
+					childLayout.LayoutChildren ();
+				}
 			}
 		}
 	}

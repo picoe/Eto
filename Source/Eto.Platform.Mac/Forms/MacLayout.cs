@@ -4,6 +4,7 @@ using SD = System.Drawing;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -17,7 +18,7 @@ namespace Eto.Platform.Mac
 		
 		void LayoutChildren ();
 
-		void UpdateParentLayout ();
+		void UpdateParentLayout (bool updateSize);
 		
 		Layout Widget { get; }
 	}
@@ -69,22 +70,24 @@ namespace Eto.Platform.Mac
 					container.SetContentSize (size);
 			} else {
 				var view = Widget.Container.ContainerObject as NSView;
-				if (view != null)
+				if (view != null && size != view.Frame.Size)
 					view.SetFrameSize (size);
 			}
 		}
 		
-		protected void SizeToFit (Control view)
+		protected Size GetPreferredSize (Control view)
 		{
 			var mh = view.Handler as IMacAutoSizing;
 			if (mh != null) {
-				mh.SizeToFit ();
-				return;
+				return mh.GetPreferredSize ();
 			}
 			
 			var c = view.ControlObject as NSControl;
-			if (c != null)
+			if (c != null) {
 				c.SizeToFit ();
+				return Generator.ConvertF (c.Frame.Size);
+			}
+			return Size.Empty;
 		}
 		
 		public virtual void Update ()
@@ -92,41 +95,47 @@ namespace Eto.Platform.Mac
 			LayoutChildren ();	
 		}
 		
-		public abstract void SizeToFit ();
+		public abstract Size GetPreferredSize ();
 		
 		public abstract void LayoutChildren ();
 		
-		public virtual void UpdateParentLayout ()
+		public void UpdateParentLayout (bool updateSize = true)
 		{
 			var layout = this as IMacLayout;
 			if (layout.Widget.ParentLayout != null) {
 				// traverse up the tree to update everything we own
+				if (updateSize) {
+					if (!AutoSize) {
+						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
+							var size = child.GetPreferredSize ();
+							child.SetContentSize (Generator.ConvertF (size));
+						}
+						updateSize = false;
+					}
+				}
 				layout = layout.Widget.ParentLayout.InnerLayout.Handler as IMacLayout;
-				layout.UpdateParentLayout ();
+				layout.UpdateParentLayout (updateSize);
 			} else {
-				if (AutoSize)
-					SizeToFit ();
-				else {
-					foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
-						child.SizeToFit ();
+				if (updateSize) {
+					if (AutoSize) {
+						var size = GetPreferredSize ();
+						SetContainerSize (Generator.ConvertF (size));
+					} else {
+						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
+							var size = child.GetPreferredSize ();
+							child.SetContentSize (Generator.ConvertF (size));
+						}
 					}
 				}
 				
 				// layout everything!
 				LayoutChildren ();
-				foreach (var childContainer in Widget.Container.Children.OfType<Container>()) {
-					if (childContainer != null && childContainer.Layout != null) {
-						var childLayout = childContainer.Layout.InnerLayout.Handler as IMacLayout;
-						if (childLayout != null) {
-	#if LOG
-							Console.WriteLine ("Laying out {0} with {1} layout", childContainer, childLayout);
-	#endif
-							childLayout.LayoutChildren ();
-						}
-					}
+				foreach (var childContainer in Widget.Container.Children.Select (r => r.Handler).OfType<IMacContainer>()) {
+					childContainer.LayoutChildren();
 				}
 				
 			}
+			
 		}
 	}
 }

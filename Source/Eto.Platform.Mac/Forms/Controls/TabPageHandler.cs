@@ -126,14 +126,6 @@ namespace Eto.Platform.Mac
 		{
 			if (focus) 
 				Focus ();
-			if (this.AutoSize) {
-				if (Widget.Layout != null) {
-					var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-					if (layout != null)
-						layout.SizeToFit ();
-				} else
-					SetContentSize (SD.SizeF.Empty);
-			}
 		}
 		
 		#region IControl implementation
@@ -242,12 +234,23 @@ namespace Eto.Platform.Mac
 			set;
 		}
 		
-		public virtual void SizeToFit ()
+		public virtual Size GetPreferredSize ()
 		{
 			if (Widget.Layout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					layout.SizeToFit ();
+					return layout.GetPreferredSize ();
+			}
+			return Size.Empty;
+		}
+
+		public virtual void LayoutChildren ()
+		{
+			if (Widget.Layout != null) {
+				var childLayout = Widget.Layout.InnerLayout.Handler as IMacLayout;
+				if (childLayout != null) {
+					childLayout.LayoutChildren ();
+				}
 			}
 		}
 		

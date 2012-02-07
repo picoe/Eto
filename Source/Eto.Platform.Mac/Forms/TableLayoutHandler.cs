@@ -69,13 +69,12 @@ namespace Eto.Platform.Mac
 			this.Padding = TableLayout.DefaultPadding;
 		}
 		
-		public override void SizeToFit ()
+		public override Size GetPreferredSize ()
 		{
 			if (views == null)
-				return;
+				return Size.Empty;
 			var heights = new float[views.GetLength (0)];
 			var widths = new float[views.GetLength (1)];
-			var controlFrame = Control.Frame;
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
 			var requiredx = totalxpadding;
@@ -92,9 +91,7 @@ namespace Eto.Platform.Mac
 				for (int x=0; x<widths.Length; x++) {
 					var view = views [y, x];
 					if (view != null && view.Visible) {
-						SizeToFit (view);
-						//Console.WriteLine ("CALC: x:{2} y:{3} view: {0} size: {1}", view, view.Size, x, y);
-						var size = view.Size;
+						var size = GetPreferredSize (view);
 						if (size.Width > widths [x]) { 
 							requiredx += size.Width - widths [x];
 							widths [x] = size.Width;
@@ -105,10 +102,7 @@ namespace Eto.Platform.Mac
 						}
 					}
 				}
-			controlFrame.Width = requiredx;
-			controlFrame.Height = requiredy;
-			//Console.WriteLine("TableLayout container size: {0}", controlFrame.Size);
-			SetContainerSize (controlFrame.Size);
+			return new Size((int)requiredx, (int)requiredy);
 		}
 		
 		public override void LayoutChildren ()
@@ -142,8 +136,7 @@ namespace Eto.Platform.Mac
 				for (int x=0; x<widths.Length; x++) {
 					var view = views [y, x];
 					if (view != null && view.Visible) {
-						var size = view.Size;
-						//Console.WriteLine ("x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
+						var size = GetPreferredSize (view);
 						if (!xscaling [x] && widths [x] < size.Width) { 
 						
 							widths [x] = size.Width;

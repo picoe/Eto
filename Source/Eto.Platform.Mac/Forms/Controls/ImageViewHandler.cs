@@ -8,25 +8,19 @@ namespace Eto.Platform.Mac
 	public class ImageViewHandler : MacControl<NSImageView, ImageView>, IImageView
 	{
 		IImage image;
-		bool sizeSet;
 		
 		public ImageViewHandler ()
 		{
 			Control = new NSImageView ();
-			AutoSize = false;
 		}
 		
-		public override Size Size {
-			get {
-				return base.Size;
-			}
-			set {
-				base.Size = value;
-				sizeSet = true;
-			}
+		protected override Size GetNaturalSize ()
+		{
+			if (image != null)
+				return image.Size;
+			else
+				return Size.Empty;
 		}
-		
-		#region IImageView implementation
 		
 		public IImage Image {
 			get {
@@ -34,13 +28,12 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				image = value;
-				Control.Image = (NSImage)value.ControlObject;
-				if (!sizeSet)
-					Control.SetFrameSize (Generator.ConvertF (value.Size));
+				if (image != null)
+					Control.Image = (NSImage)value.ControlObject;
+				else
+					Control.Image = null;
 			}
 		}
-		
-		#endregion
 	}
 }
 

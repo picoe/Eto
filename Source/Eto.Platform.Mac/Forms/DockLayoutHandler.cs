@@ -31,17 +31,13 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public override void SizeToFit ()
+		public override Size GetPreferredSize ()
 		{
 			if (child != null)
 			{
-				SizeToFit (child);
-				var c = child.ControlObject as NSView;
-				if (c != null) {
-					SetContainerSize (c.Frame.Size);
-				}
+				return GetPreferredSize (child) + Padding.Size;
 			}
-			else SetContainerSize (SD.SizeF.Empty);
+			else return Size.Empty;
 		}
 		
 		public override void LayoutChildren ()
@@ -65,10 +61,8 @@ namespace Eto.Platform.Mac
 				frame.Y = 0;
 			}
 			
-#if LOG
-			Console.WriteLine ("Dock {0} to {1}", child, frame);
-#endif
-			childControl.Frame = frame;
+			if (childControl.Frame != frame)
+				childControl.Frame = frame;
 		}
 				
 		public Control Content {
