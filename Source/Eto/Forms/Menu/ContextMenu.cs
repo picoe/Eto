@@ -2,10 +2,9 @@ using System;
 
 namespace Eto.Forms
 {
-	
 	public interface IContextMenu : ISubMenu
 	{
-		
+		void Show (Control relativeTo);	
 	}
 	
 	public class ContextMenu : Menu, ISubMenuWidget
@@ -13,36 +12,37 @@ namespace Eto.Forms
 		IContextMenu inner;
 		MenuItemCollection menuItems;
 		
-		public ContextMenu()
+		public ContextMenu ()
 			: this(Generator.Current)
 		{
 		}
 
-		public ContextMenu(Generator g) : base(g, typeof(IContextMenu))
+		public ContextMenu (Generator g) : base(g, typeof(IContextMenu))
 		{
 			inner = (IContextMenu)this.Handler;
-			menuItems = new MenuItemCollection(this, inner);
+			menuItems = new MenuItemCollection (this, inner);
 		}
 
-		public ContextMenu(Generator g, ActionItemCollection actionItems) : this(g)
+		public ContextMenu (Generator g, ActionItemCollection actionItems) : this(g)
 		{
-			GenerateActions(actionItems);
+			GenerateActions (actionItems);
 		}
 		
 		public void GenerateActions (ActionItemCollection actionItems)
 		{
-			foreach (IActionItem ai in actionItems)
-			{
-				ai.Generate(this);
+			foreach (IActionItem ai in actionItems) {
+				ai.Generate (this);
 			}
 		}
 
-		#region IParentMenuWidget implementation
-		
 		public MenuItemCollection MenuItems {
 			get { return menuItems; }
 		}
-		#endregion
-}
+		
+		public void Show (Control relativeTo)
+		{
+			inner.Show (relativeTo);
+		}
+	}
 }
 

@@ -187,6 +187,9 @@ namespace Eto.Platform.Mac
 		static Selector selMouseDown = new Selector ("mouseDown:");
 		static Selector selMouseUp = new Selector ("mouseUp:");
 		static Selector selMouseDragged = new Selector ("mouseDragged:");
+		static Selector selRightMouseDown = new Selector ("rightMouseDown:");
+		static Selector selRightMouseUp = new Selector ("rightMouseUp:");
+		static Selector selRightMouseDragged = new Selector ("rightMouseDragged:");
 		static Selector selKeyDown = new Selector ("keyDown:");
 		static Selector selBecomeFirstResponder = new Selector ("becomeFirstResponder");
 		static Selector selResignFirstResponder = new Selector ("resignFirstResponder");
@@ -209,6 +212,7 @@ namespace Eto.Platform.Mac
 				HandleEvent (Eto.Forms.Control.SizeChangedEvent);
 				CreateTracking ();
 				AddMethod (selMouseDragged, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseDragged), "v@:@");
+				AddMethod (selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseDragged), "v@:@");
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
@@ -225,9 +229,11 @@ namespace Eto.Platform.Mac
 				break;
 			case Eto.Forms.Control.MouseDownEvent:
 				AddMethod (selMouseDown, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseDown), "v@:@");
+				AddMethod (selRightMouseDown, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseDown), "v@:@");
 				break;
 			case Eto.Forms.Control.MouseUpEvent:
 				AddMethod (selMouseUp, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseUp), "v@:@");
+				AddMethod (selRightMouseUp, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseUp), "v@:@");
 				break;
 			case Eto.Forms.Control.MouseDoubleClickEvent:
 				HandleEvent (Eto.Forms.Control.MouseDownEvent);

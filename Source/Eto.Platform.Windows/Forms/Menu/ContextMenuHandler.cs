@@ -7,24 +7,33 @@ namespace Eto.Platform.Windows
 	public class ContextMenuHandler : WidgetHandler<SWF.ContextMenuStrip, ContextMenu>, IContextMenu
 	{
 		
-		public ContextMenuHandler()
+		public ContextMenuHandler ()
 		{
-			this.Control = new System.Windows.Forms.ContextMenuStrip();
+			this.Control = new System.Windows.Forms.ContextMenuStrip ();
 		}
 		
-		public void AddMenu(int index, MenuItem item)
+		public void AddMenu (int index, MenuItem item)
 		{
-			Control.Items.Insert(index, (SWF.ToolStripItem)item.ControlObject);
+			Control.Items.Insert (index, (SWF.ToolStripItem)item.ControlObject);
 		}
 
-		public void RemoveMenu(MenuItem item)
+		public void RemoveMenu (MenuItem item)
 		{
-			Control.Items.Remove((SWF.ToolStripItem)item.ControlObject);
+			Control.Items.Remove ((SWF.ToolStripItem)item.ControlObject);
 		}
 
-		public void Clear()
+		public void Clear ()
 		{
-			Control.Items.Clear();
+			Control.Items.Clear ();
+		}
+		
+		public void Show (Control relativeTo)
+		{
+			if (relativeTo != null) {
+				var control = relativeTo.ControlObject as SWF.Control;
+				this.Control.Show (control, 0, 0);
+			} else
+				this.Control.Show ();
 		}
 	}
 }

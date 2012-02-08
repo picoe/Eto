@@ -29,6 +29,12 @@ namespace Eto.Platform.GtkSharp
 				Control.Remove(w);
 			}
 		}
+		
+		public void Show (Control relativeTo)
+		{
+			Control.Popup ();
+			Control.ShowAll ();
+		}
 
 	}
 }

@@ -162,6 +162,7 @@ namespace Eto.Test
 			items.Add (new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" });
 			items.Add (new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" });
 			items.Add (new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" });
+			items.Add (new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" });
 
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return node;

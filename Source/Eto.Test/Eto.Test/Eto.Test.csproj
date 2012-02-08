@@ -90,6 +90,7 @@
     <Compile Include="Sections\Behaviors\AllControlsBase.cs" />
     <Compile Include="Sections\Behaviors\FocusEventsSection.cs" />
     <Compile Include="Sections\Behaviors\KeyEventsSection.cs" />
+    <Compile Include="Sections\Behaviors\ContextMenuSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
