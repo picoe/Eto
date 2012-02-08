@@ -42,8 +42,11 @@ namespace Eto.Test
 		}
 
 		public int Count { get { return 0; } }
+
 		public bool Expanded { get; set; }
+
 		public bool Expandable { get { return false; } }
+
 		public ITreeItem Parent { get; set; }
 		#endregion
 
@@ -65,107 +68,79 @@ namespace Eto.Test
 			this.Style = "sectionList";
 			
 
-			var top = new TreeItem();
-			
-			top.Children.Add (BehaviorsSection ());
-			top.Children.Add (DrawingSection());
-			top.Children.Add (ControlSection ());
-			top.Children.Add (LayoutsSection ());
-			top.Children.Add (DialogsSection ());
-
-			this.TopNode = top;
-			
-			this.SelectedItem = top.Children.FirstOrDefault();
+			this.TopNode = Section ("Top", TopNodes ());
 		}
 		
-		ITreeItem ControlSection()
+		ITreeItem Section (string label, IEnumerable<ITreeItem> items)
 		{
-			var node = new TreeItem { Text = "Controls", Expanded = true };
-			var items = node.Children;
-			
-			items.Add (new Section<LabelSection> { Text = "Label Control" });
-			items.Add (new Section<ButtonSection> { Text = "Button Control" });
-			items.Add (new Section<CheckBoxSection> { Text = "Check Box" });
-			items.Add (new Section<RadioButtonSection> { Text = "Radio Button" });
-			items.Add (new Section<ScrollableSection> { Text = "Scrollable Control" });
-			items.Add (new Section<TextBoxSection> { Text = "Text Box" });
-			items.Add (new Section<TextAreaSection> { Text = "Text Area" });
-			items.Add (new Section<WebViewSection> { Text = "Web View" });
-			items.Add (new Section<DrawableSection> { Text = "Drawable" });
-			items.Add (new Section<ListBoxSection> { Text = "List Box" });
-			items.Add (new Section<TabControlSection> { Text = "Tab Control" });
-			items.Add (new Section<TreeViewSection> { Text = "Tree View" });
-			items.Add (new Section<NumericUpDownSection> { Text = "Numeric Up/Down" });
-			items.Add (new Section<DateTimePickerSection> { Text = "Date / Time" });
-			items.Add (new Section<ComboBoxSection> { Text = "Combo Box" });
-			items.Add (new Section<GroupBoxSection> { Text = "Group Box" });
-			items.Add (new Section<SliderSection> { Text = "Slider" });
-			items.Add (new Section<XamlSection> { Text = "Xaml" });
-			
-			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			var node = new TreeItem { Text = label, Expanded = true };
+			var children = node.Children;
+			children.AddRange (items);
+			children.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return node;
 		}
-
-		ITreeItem DrawingSection ()
+		
+		IEnumerable<ITreeItem> TopNodes ()
 		{
-			var node = new TreeItem { Text = "Drawing", Expanded = true };
-			var items = node.Children;
-
-			items.Add (new Section<BitmapSection> { Text = "Bitmap" });
-			items.Add (new Section<PathSection> { Text = "Line Path" });
-			items.Add (new Section<AntialiasSection> { Text = "Antialias" });
-
-			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
-			return node;
+			yield return Section ("Behaviors", BehaviorsSection ());
+			yield return Section ("Drawing", DrawingSection ());
+			yield return Section ("Controls", ControlSection ());
+			yield return Section ("Layouts", LayoutsSection ());
+			yield return Section ("Dialogs", DialogsSection ());
+		}
+		
+		IEnumerable<ITreeItem> ControlSection ()
+		{
+			yield return new Section<LabelSection> { Text = "Label Control" };
+			yield return new Section<ButtonSection> { Text = "Button Control" };
+			yield return new Section<CheckBoxSection> { Text = "Check Box" };
+			yield return new Section<RadioButtonSection> { Text = "Radio Button" };
+			yield return new Section<ScrollableSection> { Text = "Scrollable Control" };
+			yield return new Section<TextBoxSection> { Text = "Text Box" };
+			yield return new Section<TextAreaSection> { Text = "Text Area" };
+			yield return new Section<WebViewSection> { Text = "Web View" };
+			yield return new Section<DrawableSection> { Text = "Drawable" };
+			yield return new Section<ListBoxSection> { Text = "List Box" };
+			yield return new Section<TabControlSection> { Text = "Tab Control" };
+			yield return new Section<TreeViewSection> { Text = "Tree View" };
+			yield return new Section<NumericUpDownSection> { Text = "Numeric Up/Down" };
+			yield return new Section<DateTimePickerSection> { Text = "Date / Time" };
+			yield return new Section<ComboBoxSection> { Text = "Combo Box" };
+			yield return new Section<GroupBoxSection> { Text = "Group Box" };
+			yield return new Section<SliderSection> { Text = "Slider" };
+			yield return new Section<XamlSection> { Text = "Xaml" };
 		}
 
-		ITreeItem LayoutsSection ()
+		IEnumerable<ITreeItem> DrawingSection ()
 		{
-			var node = new TreeItem { Text = "Layouts", Expanded = true };
-			var items = node.Children;
-
-			items.Add (TableLayoutsSection ());
-
-			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
-			return node;
+			yield return new Section<BitmapSection> { Text = "Bitmap" };
+			yield return new Section<PathSection> { Text = "Line Path" };
+			yield return new Section<AntialiasSection> { Text = "Antialias" };
 		}
 
-		ITreeItem TableLayoutsSection ()
+		IEnumerable<ITreeItem> LayoutsSection ()
 		{
-			var node = new TreeItem { Text = "Table Layout", Expanded = true };
-			var items = node.Children;
-
-			items.Add (new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" });
-			items.Add (new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing & Scaling" });
-
-			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
-			return node;
+			yield return Section ("Table Layout", TableLayoutsSection ());
 		}
 
-		ITreeItem DialogsSection ()
+		IEnumerable<ITreeItem> TableLayoutsSection ()
 		{
-			var node = new TreeItem { Text = "Common Dialogs", Expanded = true };
-			var items = node.Children;
-
-			items.Add (new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" });
-			items.Add (new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" });
-
-			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
-			return node;
+			yield return new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" };
+			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing & Scaling" };
 		}
 
-		ITreeItem BehaviorsSection ()
+		IEnumerable<ITreeItem> DialogsSection ()
 		{
-			var node = new TreeItem { Text = "Behaviors", Expanded = true };
-			var items = node.Children;
+			yield return new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" };
+			yield return new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" };
+		}
 
-			items.Add (new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" });
-			items.Add (new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" });
-			items.Add (new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" });
-			items.Add (new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" });
-
-			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
-			return node;
+		IEnumerable<ITreeItem> BehaviorsSection ()
+		{
+			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };
+			yield return new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" };
+			yield return new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" };
+			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
 		}
 		
 		public override void OnSelectionChanged (EventArgs e)
@@ -177,8 +152,7 @@ namespace Eto.Test
 			if (sectionGenerator != null) {
 				var control = sectionGenerator.GenerateControl ();
 				contentContainer.AddDockedControl (control);
-			}
-			else 
+			} else 
 				contentContainer.AddDockedControl (null);
 		}
 	}
