@@ -89,10 +89,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			public swc.Canvas ParentCanvas
 			{
 				get { return Handler.Control; }
-				//get { return null; }
 			}
 		}
-
 
 		public override void OnLoadComplete (EventArgs e)
 		{
@@ -121,12 +119,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public override void OnLoad (EventArgs e)
-		{
-			base.OnLoad (e);
-
-		}
-
 		public void Create ()
 		{
 			Control = new EtoMainCanvas {
@@ -134,6 +126,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				SnapsToDevicePixels = true
 			};
 			Control.SizeChanged += Control_SizeChanged;
+		}
+
+		void Control_MouseDown (object sender, sw.Input.MouseButtonEventArgs e)
+		{
+			throw new NotImplementedException ();
 		}
 
 		void Control_SizeChanged (object sender, sw.SizeChangedEventArgs e)
@@ -179,7 +176,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public bool CanFocus
 		{
 			get { return Control.Focusable; }
-			set { Control.Focusable = value; }
+			set {
+				if (value != Control.Focusable) {
+					Control.Focusable = value;
+					if (value)
+						Control.MouseDown += Control_MouseDown;
+					else
+						Control.MouseDown -= Control_MouseDown;
+				}
+			}
 		}
 
 		public IEnumerable<msc.IVirtualChild> Children
@@ -187,7 +192,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get {
 				UpdateCanvas ();
 				return virtualChildren;
-				
 			}
 		}
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms.Menu
@@ -24,6 +25,15 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		public void Clear ()
 		{
 			Control.Items.Clear ();
+		}
+
+		public void Show (Control relativeTo)
+		{
+			Control.Placement = swc.Primitives.PlacementMode.MousePoint;
+			if (relativeTo != null) {
+				Control.PlacementTarget = relativeTo.ControlObject as sw.UIElement;
+			}
+			Control.IsOpen = true;
 		}
 	}
 }
