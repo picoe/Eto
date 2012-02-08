@@ -130,7 +130,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void Control_MouseDown (object sender, sw.Input.MouseButtonEventArgs e)
 		{
-			throw new NotImplementedException ();
+			Control.Focus ();
 		}
 
 		void Control_SizeChanged (object sender, sw.SizeChangedEventArgs e)
