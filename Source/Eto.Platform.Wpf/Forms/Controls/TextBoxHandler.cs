@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms.Controls
@@ -11,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		public TextBoxHandler ()
 		{
-			Control = new swc.TextBox ();
+			Control = new swc.TextBox { Width = 80 };
 		}
 
 		public override void AttachEvent (string handler)

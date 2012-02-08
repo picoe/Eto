@@ -14,6 +14,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public TextAreaHandler ()
 		{
 			Control = new swc.TextBox {
+				Width = 80,
+				Height = 24,
 				AcceptsReturn = true,
 				AcceptsTab = true,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
