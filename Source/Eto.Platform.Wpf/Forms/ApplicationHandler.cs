@@ -21,7 +21,13 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Quit()
 		{
-			Control.Shutdown();
+			bool cancel = false;
+			foreach (sw.Window window in Control.Windows) {
+				window.Close ();
+				cancel |= window.IsVisible;
+			}
+			if (!cancel)
+				Control.Shutdown();
 		}
 
 		public void InvokeOnMainThread (Action action)
