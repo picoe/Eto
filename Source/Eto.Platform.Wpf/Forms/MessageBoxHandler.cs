@@ -40,8 +40,9 @@ namespace Eto.Platform.Wpf.Forms
 			var window = element.GetParent<System.Windows.Window>();
 			System.Windows.MessageBoxResult result;
 			var icon = Convert (Type);
-			if (window != null) result = System.Windows.MessageBox.Show (window, Text, Caption, System.Windows.MessageBoxButton.OK, icon);
-			else result = System.Windows.MessageBox.Show (Text, string.Empty, System.Windows.MessageBoxButton.OK, icon);
+            var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Text : null);
+            if (window != null) result = System.Windows.MessageBox.Show(window, Text, caption, System.Windows.MessageBoxButton.OK, icon);
+            else result = System.Windows.MessageBox.Show(Text, caption, System.Windows.MessageBoxButton.OK, icon);
 			
 			return Convert(result);
 		}
@@ -53,8 +54,9 @@ namespace Eto.Platform.Wpf.Forms
 			System.Windows.MessageBoxResult result;
 			var wpfbuttons = Convert(buttons);
 			var icon = Convert(Type);
-			if (window != null) result = System.Windows.MessageBox.Show (window, Text, Caption, wpfbuttons, icon);
-			else result = System.Windows.MessageBox.Show (Text, string.Empty, wpfbuttons, icon);
+            var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Text : null);
+            if (window != null) result = System.Windows.MessageBox.Show(window, Text, caption, wpfbuttons, icon);
+            else result = System.Windows.MessageBox.Show(Text, caption, wpfbuttons, icon);
 			return Convert (result);
 		}
 

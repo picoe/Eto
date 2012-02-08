@@ -84,6 +84,12 @@ namespace Eto.Platform.Windows
 				if (CanFocusMe) Focus();
 			}
 
+            protected override void OnSizeChanged(EventArgs e)
+            {
+                base.OnSizeChanged(e);
+                Invalidate();
+            }
+
 		}
 		
 		public void Create ()

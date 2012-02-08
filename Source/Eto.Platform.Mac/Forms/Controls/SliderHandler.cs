@@ -58,6 +58,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Control.IntValue; }
 			set { Control.IntValue = value; }
 		}
+
+        public bool SnapToTick {
+            get { return Control.AllowsTickMarkValuesOnly; }
+            set { Control.AllowsTickMarkValuesOnly = value; }
+        }
 		
 		public int TickFrequency {
 			get { 
@@ -68,8 +73,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set { 
 				Control.TickMarksCount = (int)((MaxValue - MinValue) / value) + 1;
-				if (value > 1)
-					Control.AllowsTickMarkValuesOnly = true;
 			}
 		}
 		

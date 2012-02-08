@@ -12,7 +12,8 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "SetInitialValue" }, SetInitialValue ());
-			layout.AddRow (new Label { Text = "Disabled" }, Disabled ());
+            layout.AddRow (new Label { Text = "Snap To Tick" }, SnapToTick ());
+            layout.AddRow (new Label { Text = "Disabled" }, Disabled ());
 			layout.AddRow (new Label { Text = "Vertical" }, Vertical ());
 			
 			layout.Add (null, null, true);
@@ -37,6 +38,13 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control);
 			return control;
 		}
+
+        Control SnapToTick ()
+        {
+            var control = SetInitialValue ();
+            control.SnapToTick = true;
+            return control;
+        }
 		
 		Control Disabled ()
 		{

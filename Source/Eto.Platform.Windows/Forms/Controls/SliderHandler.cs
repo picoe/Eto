@@ -6,14 +6,41 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class SliderHandler : WindowsControl<SWF.TrackBar, Slider>, ISlider
 	{
+        int? lastValue;
+
 		public SliderHandler ()
 		{
-			this.Control = new SWF.TrackBar ();
-			this.Control.TickStyle = System.Windows.Forms.TickStyle.Both;
-			this.Control.ValueChanged += delegate {
-				Widget.OnValueChanged (EventArgs.Empty);
-			};
+            this.Control = new SWF.TrackBar {
+                TickStyle = System.Windows.Forms.TickStyle.BottomRight,
+                Maximum = 100,
+                AutoSize = true
+            };
 		}
+
+        public override void OnLoad(EventArgs e)
+        {
+            base.OnLoad(e);
+            this.Control.ValueChanged += HandleScaleValueChanged;
+        }
+
+        void HandleScaleValueChanged(object sender, EventArgs e)
+        {
+            var value = (int)Control.Value;
+            var tick = Control.TickFrequency;
+            var offset = value % tick;
+            if (SnapToTick && offset != 0)
+            {
+                if (offset > tick / 2)
+                    Control.Value = value - offset + tick;
+                else
+                    Control.Value -= offset;
+            }
+            else if (lastValue == null || lastValue.Value != value)
+            {
+                Widget.OnValueChanged(EventArgs.Empty);
+                lastValue = value;
+            }
+        }
 
 		public int MaxValue {
 			get { return this.Control.Maximum; }
@@ -29,6 +56,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 			get { return this.Control.Value; }
 			set { this.Control.Value = value; }
 		}
+
+        public bool SnapToTick { get; set; }
 
 		public int TickFrequency {
 			get { return this.Control.TickFrequency; }

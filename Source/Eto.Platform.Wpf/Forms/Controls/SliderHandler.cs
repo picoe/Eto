@@ -14,7 +14,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new swc.Slider {
 				Minimum = 0,
 				Maximum = 100,
-				IsSnapToTickEnabled = true,
 				TickPlacement = swc.Primitives.TickPlacement.BottomRight
 			};
 			Control.ValueChanged += delegate {
@@ -39,6 +38,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return (int)Control.Value; }
 			set { Control.Value = value; }
 		}
+
+        public bool SnapToTick
+        {
+            get { return Control.IsSnapToTickEnabled; }
+            set { Control.IsSnapToTickEnabled = value; }
+        }
 
 		public int TickFrequency
 		{

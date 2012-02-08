@@ -18,6 +18,7 @@ namespace Eto.Platform.Windows.Drawing
 		public void LineTo (Point point)
 		{
 			this.Control.AddLine (Generator.Convert (position), Generator.Convert (point));
+            position = point;
 		}
 		
 		public void MoveTo (Point point)

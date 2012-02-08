@@ -18,6 +18,8 @@ namespace Eto.Forms
 
 		int TickFrequency { get; set; }
 
+        bool SnapToTick { get; set; }
+
 		SliderOrientation Orientation { get; set; }
 	}
 	
@@ -48,6 +50,11 @@ namespace Eto.Forms
 			get { return inner.TickFrequency; }
 			set { inner.TickFrequency = value; }
 		}
+
+        public bool SnapToTick {
+            get { return inner.SnapToTick; }
+            set { inner.SnapToTick = value; }
+        }
 
 		public int MaxValue {
 			get { return inner.MaxValue; }

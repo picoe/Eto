@@ -136,7 +136,7 @@ namespace Eto.Platform.Windows
 		public virtual Size Size {
 			get { return Generator.Convert (Control.Size); }
 			set {
-				this.Control.AutoSize = false;
+				this.Control.AutoSize = value.Width == -1 || value.Height == -1;
 				Control.Size = Generator.Convert (value);
 			}
 		}
@@ -144,7 +144,7 @@ namespace Eto.Platform.Windows
 		public virtual Size ClientSize {
 			get	{ return new Size (Control.ClientSize.Width, Control.ClientSize.Height); }
 			set {
-				this.Control.AutoSize = false;
+                this.Control.AutoSize = value.Width == -1 || value.Height == -1;
 				Control.ClientSize = Generator.Convert (value);
 			}
 		}
