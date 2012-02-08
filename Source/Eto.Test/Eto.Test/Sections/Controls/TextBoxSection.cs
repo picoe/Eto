@@ -1,11 +1,10 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using Eto.Test.Controls;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class TextBoxSection : SectionBase
+	public class TextBoxSection : Panel
 	{
 		public TextBoxSection ()
 		{

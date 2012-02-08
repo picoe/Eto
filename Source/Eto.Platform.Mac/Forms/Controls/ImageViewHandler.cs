@@ -9,9 +9,14 @@ namespace Eto.Platform.Mac
 	{
 		IImage image;
 		
+		public class EtoImageView : NSImageView, IMacControl
+		{
+			public object Handler { get; set; }
+		}
+		
 		public ImageViewHandler ()
 		{
-			Control = new NSImageView ();
+			Control = new EtoImageView { Handler = this };
 		}
 		
 		protected override Size GetNaturalSize ()

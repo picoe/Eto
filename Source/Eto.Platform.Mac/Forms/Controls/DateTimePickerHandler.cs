@@ -8,9 +8,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class DateTimePickerHandler : MacControl<NSDatePicker, DateTimePicker>, IDateTimePicker
 	{
 		DateTime? proposedDate;
+		
+		public class EtoDatePicker : NSDatePicker, IMacControl
+		{
+			public object Handler { get; set; }
+		}
+		
+		
 		public DateTimePickerHandler ()
 		{
-			Control = new NSDatePicker ();
+			Control = new EtoDatePicker { Handler = this };
 			/*AddObserver(new NSString("DateValue"), delegate { 
 				Widget.OnValueChanged (EventArgs.Empty);
 			});*/

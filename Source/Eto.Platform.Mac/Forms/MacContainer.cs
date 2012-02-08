@@ -52,7 +52,7 @@ namespace Eto.Platform.Mac
 		protected override Size GetNaturalSize ()
 		{
 			var size = base.GetNaturalSize ();
-			if (Widget.Layout != null) {
+			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
 					size = layout.GetPreferredSize ();

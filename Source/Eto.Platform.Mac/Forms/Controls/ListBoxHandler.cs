@@ -21,7 +21,7 @@ namespace Eto.Platform.Mac
 			
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				return new MacImageData(Handler.data [row]);
+				return new MacImageData (Handler.data [row]);
 			}
 
 			public override int GetRowCount (NSTableView tableView)
@@ -46,8 +46,10 @@ namespace Eto.Platform.Mac
 			
 		}
 		
-		class MyTableView : NSTableView
+		class EtoListBoxTableView : NSTableView, IMacControl
 		{
+			object IMacControl.Handler { get { return Handler; } }
+			
 			public override NSMenu MenuForEvent (NSEvent theEvent)
 			{
 				if (Handler.ContextMenu != null)
@@ -77,9 +79,13 @@ namespace Eto.Platform.Mac
 			set { control.Enabled = value; }
 		}
 		
+		public override object EventObject {
+			get { return control; }
+		}
+		
 		public ListBoxHandler ()
 		{
-			control = new MyTableView{ Handler = this };
+			control = new EtoListBoxTableView{ Handler = this };
 			
 			var col = new NSTableColumn ();
 			col.ResizingMask = NSTableColumnResizing.Autoresizing;

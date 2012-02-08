@@ -1,11 +1,10 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Test.Controls;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class ButtonSection : SectionBase
+	public class ButtonSection : Panel
 	{
 		public ButtonSection ()
 		{
@@ -49,14 +48,8 @@ namespace Eto.Test.Sections.Controls
 		
 		void LogEvents(Button button)
 		{
-			button.Click += (sender, e) => {
+			button.Click += delegate {
 				Log.Write (button, "Click");
-			};
-			button.MouseDown += (sender, e) => {
-				Log.Write (button, "MouseDown");
-			};
-			button.MouseUp += (sender, e) => {
-				Log.Write (button, "MouseUp");
 			};
 		}
 	}

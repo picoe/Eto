@@ -2,11 +2,10 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.Generic;
-using Eto.Test.Controls;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class ListBoxSection : SectionBase
+	public class ListBoxSection : Panel
 	{
 		public ListBoxSection ()
 		{

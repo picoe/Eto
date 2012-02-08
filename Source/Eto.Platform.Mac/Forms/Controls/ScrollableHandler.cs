@@ -13,8 +13,9 @@ namespace Eto.Platform.Mac
 		NSScrollView control;
 		NSView view;
 		
-		class MyScrollView : NSScrollView
+		class EtoScrollView : NSScrollView, IMacControl
 		{
+			object IMacControl.Handler { get { return Handler; } }
 			public ScrollableHandler Handler { get; set; }
 			
 			public override void ResetCursorRects ()
@@ -36,7 +37,7 @@ namespace Eto.Platform.Mac
 		public ScrollableHandler ()
 		{
 			Enabled = true;
-			control = new MyScrollView { Handler = this };
+			control = new EtoScrollView { Handler = this };
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
 			control.HasVerticalScroller = true;

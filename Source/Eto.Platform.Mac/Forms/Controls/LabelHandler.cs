@@ -49,10 +49,18 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
+		
+		public class EtoLabel : NSTextField, IMacControl
+		{
+			public object Handler {
+				get; set;
+			}
+		}
+		
 		public LabelHandler ()
 		{
 			Enabled = true;
-			Control = new NSTextField ();
+			Control = new EtoLabel { Handler = this };
 			Control.Cell = new MyTextFieldCell{ Handler = this };
 			Control.DrawsBackground = false;
 			Control.Bordered = false;
@@ -116,7 +124,7 @@ namespace Eto.Platform.Mac
 			set {
 				var oldSize = GetPreferredSize ();
 				Control.StringValue = value ?? string.Empty;
-				LayoutIfNeeded(oldSize);
+				LayoutIfNeeded (oldSize);
 			}
 		}
 		

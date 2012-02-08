@@ -29,7 +29,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		class MyButton : NSButton
+		class EtoButton : NSButton, IMacControl
 		{
 			
 			public ButtonHandler Handler { get; set; }
@@ -49,12 +49,13 @@ namespace Eto.Platform.Mac
 				}
 			}
 			
+			object IMacControl.Handler { get { return Handler; } }
 		}
 		
 		
 		public ButtonHandler ()
 		{
-			Control = new MyButton{ Handler = this };
+			Control = new EtoButton{ Handler = this };
 			Control.Cell = new MyButtonCell ();
 			Control.Title = string.Empty;
 			Control.SetButtonType (NSButtonType.MomentaryPushIn);

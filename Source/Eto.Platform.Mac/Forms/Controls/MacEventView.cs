@@ -8,7 +8,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class MacEventView : NSView
+	public class MacEventView : NSView, IMacControl
 	{
 		static NSString CIInputImage = new NSString ("inputImage");
 		static NSString CIInputTransform = new NSString ("inputTransform");
@@ -64,10 +64,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		WeakReference handler;
 		
-		public IMacView Handler {
-			get { return handler.Target as IMacView; }
+		public IMacViewHandler Handler {
+			get { return handler.Target as IMacViewHandler; }
 			set { handler = new WeakReference (value); }
 		}
+		
+		object IMacControl.Handler { get { return Handler; } }
 		
 		public Control Widget {
 			get { return Handler != null ? Handler.Widget : null; }
@@ -105,21 +107,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
+		/*
 		public override void KeyDown (NSEvent theEvent)
 		{
 			//base.InterpretKeyEvents (new NSEvent [] { theEvent });
 			if (!KeyDown (Widget, theEvent))
 				base.KeyDown (theEvent);
 		}
+		*/
 		
-		MouseEventArgs CreateMouseArgs (NSEvent theEvent)
-		{
-			var pt = Generator.GetLocation (this, theEvent);
-			Key modifiers = KeyMap.GetModifiers (theEvent);
-			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
-			return new MouseEventArgs (buttons, modifiers, pt) { Pressure = theEvent.Pressure };
-		}
-			
+		/*
 		public override void MouseDragged (NSEvent theEvent)
 		{
 			if (Widget != null) {
@@ -130,7 +127,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			} else
 				base.MouseDragged (theEvent);
 		}
-			
+		
 		public override void MouseUp (NSEvent theEvent)
 		{
 			if (Widget != null) {
@@ -196,6 +193,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			} else
 				base.RightMouseDragged (theEvent);
 		}
+		*/
 	}
 }
 

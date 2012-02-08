@@ -8,9 +8,14 @@ namespace Eto.Platform.Mac
 {
 	public class GroupBoxHandler : MacContainer<NSBox, GroupBox>, IGroupBox
 	{
+		public class EtoBox : NSBox, IMacControl
+		{
+			public object Handler { get; set; }
+		}
+		
 		public GroupBoxHandler ()
 		{
-			Control = new NSBox ();
+			Control = new EtoBox { Handler = this };
 			Control.Title = string.Empty;
 			Control.ContentView = new NSView ();
 			Enabled = true;

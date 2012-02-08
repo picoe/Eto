@@ -15,8 +15,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		class MyView : NSView
 		{
-			
-			
 			public override void SetFrameSize (System.Drawing.SizeF newSize)
 			{
 				base.SetFrameSize (newSize);
@@ -30,13 +28,25 @@ namespace Eto.Platform.Mac.Forms.Controls
 				splitter.SetFrameOrigin (new SD.PointF (newSize.Width - splitter.Frame.Width, offset));
 			}
 		}
+		
+		public override object EventObject {
+			get {
+				return text;
+			}
+		}
+		
+		public class EtoUpDownTextField : NSTextField, IMacControl
+		{
+			public object Handler { get; set; }
+		}
 
 		public NumericUpDownHandler ()
 		{
 			this.Control = new MyView {
 				AutoresizesSubviews = false
 			};
-			text = new NSTextField{
+			text = new EtoUpDownTextField {
+				Handler = this,
 				Bezeled = true,
 				Editable = true
 			};

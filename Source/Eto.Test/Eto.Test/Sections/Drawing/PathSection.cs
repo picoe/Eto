@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Eto.Test.Controls;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class PathSection : SectionBase
+	public class PathSection : Panel
 	{
 		public PathSection ()
 		{

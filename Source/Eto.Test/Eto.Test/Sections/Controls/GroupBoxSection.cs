@@ -1,10 +1,9 @@
 using System;
 using Eto.Forms;
-using Eto.Test.Controls;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class GroupBoxSection : SectionBase
+	public class GroupBoxSection : Panel
 	{
 		public GroupBoxSection ()
 		{

@@ -1,12 +1,11 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Test.Controls;
 using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Dialogs
 {
-	public class FileDialogSection : SectionBase
+	public class FileDialogSection : Panel
 	{
 		public FileDialogSection ()
 		{

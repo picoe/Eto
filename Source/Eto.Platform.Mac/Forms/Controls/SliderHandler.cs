@@ -8,10 +8,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class SliderHandler : MacView<NSSlider, Slider>, ISlider
 	{
 		SliderOrientation orientation;
+		
+		public class EtoSlider : NSSlider, IMacControl
+		{
+			public object Handler { get; set; }
+
+		}
 
 		public SliderHandler ()
 		{
-			Control = new NSSlider ();
+			Control = new EtoSlider { Handler = this };
 			Control.Activated += delegate {
 				if (Control.DoubleValue != (double)Control.IntValue)
 					Control.IntValue = (int)Math.Round (Control.DoubleValue);

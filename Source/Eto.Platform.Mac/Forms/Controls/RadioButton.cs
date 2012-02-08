@@ -13,9 +13,14 @@ namespace Eto.Platform.Mac
 		
 		public event EventHandler<EventArgs> Activated;
 		
+		public class EtoRadioButton : NSButton, IMacControl
+		{
+			public object Handler { get; set; }
+		}
+		
 		public RadioButtonHandler()
 		{
-			Control = new NSButton();
+			Control = new EtoRadioButton{ Handler = this };
 			Control.SetButtonType(NSButtonType.Radio);
 			Control.Activated += control_Activated;
 		}

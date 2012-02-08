@@ -56,7 +56,7 @@ namespace Eto.Platform.Mac
 		
 		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
 		{
-			var offset = ((IMacView)control.Handler).PositionOffset;
+			var offset = ((IMacViewHandler)control.Handler).PositionOffset;
 			var childView = control.ControlObject as NSView;
 			
 			var preferredSize = GetPreferredSize (control);

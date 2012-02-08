@@ -9,9 +9,17 @@ namespace Eto.Platform.Mac
 	{
 		NSTextView text;
 		
+		public class EtoTextView : NSTextView, IMacControl
+		{
+			public object Handler {
+				get; set;
+			}
+		}
+		
 		public TextAreaHandler ()
 		{
-			text = new NSTextView {
+			text = new EtoTextView {
+				Handler = this,
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
 				HorizontallyResizable = true,
 				VerticallyResizable = true,
@@ -28,6 +36,10 @@ namespace Eto.Platform.Mac
 				BorderType = NSBorderType.BezelBorder,
 				DocumentView = text
 			};
+		}
+		
+		public override object EventObject {
+			get { return text; }
 		}
 		
 		#region ITextArea Members

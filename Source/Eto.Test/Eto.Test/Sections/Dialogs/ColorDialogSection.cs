@@ -1,12 +1,11 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Test.Controls;
 using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Dialogs
 {
-	public class ColorDialogSection : SectionBase
+	public class ColorDialogSection : Panel
 	{
 		public ColorDialogSection ()
 		{

@@ -7,10 +7,16 @@ namespace Eto.Platform.Mac
 {
 	public class TabControlHandler : MacView<NSTabView, TabControl>, ITabControl
 	{
+		public class EtoTabView : NSTabView, IMacControl
+		{
+			public object Handler { get; set; }
+			
+		}
+		
 		public TabControlHandler ()
 		{
 			Enabled = true;
-			Control = new NSTabView ();
+			Control = new EtoTabView { Handler = this };
 			Control.DidSelect += delegate {
 				this.Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			};

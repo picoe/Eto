@@ -10,9 +10,9 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class DrawableHandler : MacView<DrawableHandler.MyView, Drawable>, IDrawable
+	public class DrawableHandler : MacView<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
-		public class MyView : MacEventView
+		public class EtoDrawableView : MacEventView
 		{
 			Drawable Drawable {
 				get { return Widget as Drawable; }
@@ -44,20 +44,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return CanFocus;
 			}
 			
-			public override bool BecomeFirstResponder ()
-			{
-				if (Widget != null) 
-					Widget.OnGotFocus (EventArgs.Empty);
-				return base.BecomeFirstResponder ();
-			}
-			
-			public override bool ResignFirstResponder ()
-			{
-				if (Widget != null)
-					Widget.OnLostFocus (EventArgs.Empty);
-				return base.ResignFirstResponder ();
-			}
-			
 		}
 	
 		public override bool Enabled { get; set; }
@@ -69,7 +55,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public void Create ()
 		{
 			Enabled = true;
-			Control = new MyView{ Handler = this };
+			Control = new EtoDrawableView{ Handler = this };
 		}
 		
 		public bool CanFocus {

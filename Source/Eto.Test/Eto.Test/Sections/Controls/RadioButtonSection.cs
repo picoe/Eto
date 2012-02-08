@@ -1,10 +1,9 @@
 using System;
 using Eto.Forms;
-using Eto.Test.Controls;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class RadioButtonSection : SectionBase
+	public class RadioButtonSection : Panel
 	{
 		public RadioButtonSection ()
 		{

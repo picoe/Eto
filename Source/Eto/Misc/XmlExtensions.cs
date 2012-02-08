@@ -110,9 +110,11 @@ namespace Eto
 			XmlElement listNode = (!string.IsNullOrEmpty (listElement)) ? element.OwnerDocument.CreateElement (listElement) : element;
 			
 			foreach (T child in list) {
-				var childNode = element.OwnerDocument.CreateElement(childElement);
-				child.WriteXml(childNode);
-				listNode.AppendChild (childNode);
+				if (child != null) {
+					var childNode = element.OwnerDocument.CreateElement(childElement);
+					child.WriteXml(childNode);
+					listNode.AppendChild (childNode);
+				}
 			}
 
 			if (listNode != element && !listNode.IsEmpty) {

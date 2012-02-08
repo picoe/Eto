@@ -1,9 +1,16 @@
 using System;
 using MonoMac.Foundation;
 using System.Collections.Generic;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
+	public interface IMacControl
+	{
+		object Handler { get; }
+	}
+
+	
 	public class MacObject<T, W> : WidgetHandler<T, W>
 		where T: NSObject 
 		where W: Widget
@@ -33,10 +40,25 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
+		public virtual object EventObject
+		{
+			get { return Control; }
+		}
+		
 		protected void RemoveObserver (NSObject observer)
 		{
 			NSNotificationCenter.DefaultCenter.RemoveObserver (observer);
 			notifications.Remove (observer);
+		}
+
+		protected void AddMethod (Selector selector, Delegate action, string arguments, object control = null)
+		{
+			control = control ?? EventObject;
+			var type = control.GetType ();
+			if (!typeof(IMacControl).IsAssignableFrom (type))
+				throw new EtoException("Control does not inherit from IMacControl");
+			var cls = new Class(type);
+			cls.AddMethod (selector, action, arguments);
 		}
 		
 		protected NSObject AddObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)

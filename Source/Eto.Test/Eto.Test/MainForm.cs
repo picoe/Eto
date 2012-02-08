@@ -69,7 +69,7 @@ namespace Eto.Test
 				FixedPanel = SplitterFixedPanel.Panel1
 			};
 
-			var sectionList = new Controls.SectionList (this.ContentContainer);
+			var sectionList = new SectionList (this.ContentContainer);
 			// set focus when the form is shown
 			this.Shown += delegate {
 				sectionList.Focus ();

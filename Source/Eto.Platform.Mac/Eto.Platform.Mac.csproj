@@ -166,6 +166,7 @@
     <Compile Include="Forms\Controls\MacImageAndTextCell.cs" />
     <Compile Include="Forms\Controls\SliderHandler.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
+    <Compile Include="ObjCExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

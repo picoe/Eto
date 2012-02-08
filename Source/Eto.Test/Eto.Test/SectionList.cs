@@ -6,7 +6,7 @@ using Eto.Test.Sections.Controls;
 using Eto.Test.Sections.Drawing;
 using Eto.Test.Sections.Layouts;
 
-namespace Eto.Test.Controls
+namespace Eto.Test
 {
 	public interface ISectionGenerator
 	{
@@ -67,6 +67,7 @@ namespace Eto.Test.Controls
 
 			var top = new TreeItem();
 			
+			top.Children.Add (BehaviorsSection ());
 			top.Children.Add (DrawingSection());
 			top.Children.Add (ControlSection ());
 			top.Children.Add (LayoutsSection ());
@@ -146,8 +147,21 @@ namespace Eto.Test.Controls
 			var node = new TreeItem { Text = "Common Dialogs", Expanded = true };
 			var items = node.Children;
 
-			items.Add (new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Picker" });
+			items.Add (new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" });
 			items.Add (new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" });
+
+			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			return node;
+		}
+
+		ITreeItem BehaviorsSection ()
+		{
+			var node = new TreeItem { Text = "Behaviors", Expanded = true };
+			var items = node.Children;
+
+			items.Add (new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" });
+			items.Add (new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" });
+			items.Add (new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" });
 
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return node;

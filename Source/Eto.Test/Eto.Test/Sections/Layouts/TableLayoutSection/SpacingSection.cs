@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Eto.Test.Controls;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Test.Sections.Layouts.TableLayoutSection
 {
-	public class SpacingSection : SectionBase
+	public class SpacingSection : Panel
 	{
 		Size SquareSize = new Size (30, 40);
 		public SpacingSection ()

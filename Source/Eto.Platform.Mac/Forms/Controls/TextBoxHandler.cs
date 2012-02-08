@@ -49,8 +49,10 @@ namespace Eto.Platform.Mac
 	public class TextBoxHandler : MacText<NSTextField, TextBox>, ITextBox
 	{
 		
-		class MyTextField : NSTextField
+		class EtoTextField : NSTextField, IMacControl
 		{
+			object IMacControl.Handler { get { return Handler; } }
+
 			public TextBoxHandler Handler { get; set; }
 			
 			public override bool PerformKeyEquivalent (NSEvent theEvent)
@@ -75,7 +77,7 @@ namespace Eto.Platform.Mac
 		
 		public TextBoxHandler ()
 		{
-			Control = new MyTextField{ Handler = this };
+			Control = new EtoTextField{ Handler = this };
 			Control.Bezeled = true;
 			Control.Editable = true;
 			Control.Selectable = true;

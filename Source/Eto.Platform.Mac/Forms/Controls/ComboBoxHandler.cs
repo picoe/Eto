@@ -11,10 +11,14 @@ namespace Eto.Platform.Mac
 {
 	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox>, IComboBox
 	{
+		public class EtoPopUpButton : NSPopUpButton, IMacControl
+		{
+			public object Handler { get; set; }
+		}
 		
 		public ComboBoxHandler ()
 		{
-			Control = new NSPopUpButton ();
+			Control = new EtoPopUpButton { Handler = this };
 			Control.Activated += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			};

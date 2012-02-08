@@ -7,10 +7,15 @@ namespace Eto.Platform.Mac
 {
 	public class CheckBoxHandler : MacButton<NSButton, CheckBox>, ICheckBox
 	{
+		
+		public class EtoCheckBoxButton : NSButton, IMacControl
+		{
+			public object Handler { get; set; }
+		}
 
 		public CheckBoxHandler ()
 		{
-			Control = new NSButton ();
+			Control = new EtoCheckBoxButton { Handler = this };
 			Control.SetButtonType (NSButtonType.Switch);
 			Control.Activated += delegate {
 				Widget.OnCheckedChanged(EventArgs.Empty);

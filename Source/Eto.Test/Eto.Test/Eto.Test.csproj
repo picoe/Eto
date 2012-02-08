@@ -65,9 +65,7 @@
     <Compile Include="Actions\About.cs" />
     <Compile Include="Actions\Quit.cs" />
     <Compile Include="Actions\Close.cs" />
-    <Compile Include="Controls\SectionList.cs" />
     <Compile Include="Xaml\Test.cs" />
-    <Compile Include="Controls\SectionBase.cs" />
     <Compile Include="Sections\Controls\ButtonSection.cs" />
     <Compile Include="Sections\Controls\CheckBoxSection.cs" />
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />
@@ -87,6 +85,11 @@
     <Compile Include="Sections\Controls\WebViewSection.cs" />
     <Compile Include="Sections\Controls\XamlSection.cs" />
     <Compile Include="Sections\Controls\TextBoxSection.cs" />
+    <Compile Include="Sections\Behaviors\MouseEventsSection.cs" />
+    <Compile Include="SectionList.cs" />
+    <Compile Include="Sections\Behaviors\AllControlsBase.cs" />
+    <Compile Include="Sections\Behaviors\FocusEventsSection.cs" />
+    <Compile Include="Sections\Behaviors\KeyEventsSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
@@ -104,4 +107,7 @@
     <EmbeddedResource Include="TestImage.png" />
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Sections\Behaviors\" />
+  </ItemGroup>
 </Project>

@@ -1,11 +1,10 @@
 using System;
 using Eto.Forms;
-using Eto.Test.Controls;
 using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class SliderSection : SectionBase
+	public class SliderSection : Panel
 	{
 		public SliderSection ()
 		{

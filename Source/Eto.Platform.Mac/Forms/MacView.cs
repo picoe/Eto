@@ -7,6 +7,7 @@ using MonoMac.Foundation;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.ObjCRuntime;
 using SD = System.Drawing;
+using Eto.Platform.Mac.Forms.Controls;
 
 namespace Eto.Platform.Mac
 {
@@ -47,8 +48,8 @@ namespace Eto.Platform.Mac
 		Size GetPreferredSize ();
 		
 	}
-
-	public interface IMacView : IMacAutoSizing
+		
+	public interface IMacViewHandler : IMacAutoSizing
 	{
 		Size PositionOffset { get; }
 		
@@ -62,7 +63,7 @@ namespace Eto.Platform.Mac
 
 	}
 	
-	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacView
+	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacViewHandler
 		where T: NSView
 		where W: Control
 	{
@@ -119,12 +120,12 @@ namespace Eto.Platform.Mac
 			get;
 			set;
 		}
-
+		
 		public MacView ()
 		{
 			this.AutoSize = true;
 		}
-
+		
 		protected virtual Size GetNaturalSize ()
 		{
 			if (naturalSize != null) 
@@ -134,7 +135,8 @@ namespace Eto.Platform.Mac
 				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
 				control.SizeToFit ();
 				naturalSize = Generator.ConvertF (control.Frame.Size);
-				if (size != null) control.SetFrameSize (size.Value);
+				if (size != null)
+					control.SetFrameSize (size.Value);
 				return naturalSize.Value;
 			}
 			return Size.Empty;
@@ -181,13 +183,21 @@ namespace Eto.Platform.Mac
 		public virtual void SetParent (Control parent)
 		{
 		}
+
+		static Selector selMouseDown = new Selector ("mouseDown:");
+		static Selector selMouseUp = new Selector ("mouseUp:");
+		static Selector selMouseDragged = new Selector ("mouseDragged:");
+		static Selector selKeyDown = new Selector ("keyDown:");
+		static Selector selBecomeFirstResponder = new Selector ("becomeFirstResponder");
+		static Selector selResignFirstResponder = new Selector ("resignFirstResponder");
 		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
 			case Eto.Forms.Control.MouseEnterEvent:
+				HandleEvent (Eto.Forms.Control.MouseLeaveEvent);
+				break;
 			case Eto.Forms.Control.MouseLeaveEvent:
-				HandleEvent (Eto.Forms.Control.SizeChangedEvent);
 				mouseOptions |= NSTrackingAreaOptions.MouseEnteredAndExited;
 				mouseMove = true;
 				HandleEvent (Eto.Forms.Control.SizeChangedEvent);
@@ -198,6 +208,7 @@ namespace Eto.Platform.Mac
 				mouseMove = true;
 				HandleEvent (Eto.Forms.Control.SizeChangedEvent);
 				CreateTracking ();
+				AddMethod (selMouseDragged, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseDragged), "v@:@");
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
@@ -212,20 +223,101 @@ namespace Eto.Platform.Mac
 					}
 				});
 				break;
-			case Eto.Forms.Control.MouseDoubleClickEvent:
 			case Eto.Forms.Control.MouseDownEvent:
+				AddMethod (selMouseDown, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseDown), "v@:@");
+				break;
 			case Eto.Forms.Control.MouseUpEvent:
+				AddMethod (selMouseUp, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseUp), "v@:@");
+				break;
+			case Eto.Forms.Control.MouseDoubleClickEvent:
+				HandleEvent (Eto.Forms.Control.MouseDownEvent);
+				break;
+			case Eto.Forms.Control.KeyDownEvent:
+				AddMethod (selKeyDown, new Action<IntPtr, IntPtr, IntPtr> (TriggerKeyDown), "v@:@");
+				break;
+			case Eto.Forms.Control.LostFocusEvent:
+				AddMethod (selResignFirstResponder, new Func<IntPtr, IntPtr, bool> (TriggerLostFocus), "B@:");
+				break;
+			case Eto.Forms.Control.GotFocusEvent:
+				AddMethod (selBecomeFirstResponder, new Func<IntPtr, IntPtr, bool> (TriggerGotFocus), "B@:");
+				break;
 			case Eto.Forms.Control.ShownEvent:
 			case Eto.Forms.Control.HiddenEvent:
-			case Eto.Forms.Control.KeyDownEvent:
-			case Eto.Forms.Control.LostFocusEvent:
-			case Eto.Forms.Control.GotFocusEvent:
 				// TODO
 				break;
 			default:
 				base.AttachEvent (handler);
 				break;
 
+			}
+		}
+
+		static bool TriggerGotFocus (IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			handler.Widget.OnGotFocus (EventArgs.Empty);
+			return Messaging.bool_objc_msgSendSuper (obj.SuperHandle, sel);
+		}
+
+		static bool TriggerLostFocus (IntPtr sender, IntPtr sel)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			handler.Widget.OnLostFocus (EventArgs.Empty);
+			return Messaging.bool_objc_msgSendSuper (obj.SuperHandle, sel);
+		}
+
+		static void TriggerKeyDown (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			var theEvent = new NSEvent (e);
+			if (!MacEventView.KeyDown (handler.Widget, theEvent)) {
+				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
+			}
+		}
+		
+		static void TriggerMouseDown (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			var theEvent = new NSEvent (e);
+			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
+			if (theEvent.ClickCount >= 2)
+				handler.Widget.OnMouseDoubleClick (args);
+			
+			if (!args.Handled) {
+				handler.Widget.OnMouseDown (args);
+			}
+			if (!args.Handled) {
+				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
+			}
+		}
+
+		static void TriggerMouseUp (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+
+			var theEvent = new NSEvent(e);
+			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
+			handler.Widget.OnMouseUp (args);
+			if (!args.Handled) {
+				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
+			}
+		}
+
+		static void TriggerMouseDragged (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			
+			var theEvent = new NSEvent(e);
+			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
+			handler.Widget.OnMouseMove (args);
+			if (!args.Handled) {
+				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
 			}
 		}
 		
@@ -321,7 +413,7 @@ namespace Eto.Platform.Mac
 		
 		#region IMacView implementation
 
-		Control IMacView.Widget {
+		Control IMacViewHandler.Widget {
 			get {
 				return this.Widget;
 			}
