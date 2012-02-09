@@ -24,7 +24,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 			public override void Apply (GraphicsHandler handler, bool first)
 			{
-				var context = handler.Context;
+				var context = handler.Control;
 				for (int i=0; i<Points.Length; i++) {
 					var p = Points [i];
 					if (i == 0)
@@ -62,22 +62,22 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void MoveTo (Point point)
 		{
 			Add ((handler, first) => {
-				handler.Context.MoveTo (point.X, point.Y);
+				handler.Control.MoveTo (point.X, point.Y);
 			});
 		}
 		
 		public void LineTo (Point point)
 		{
 			Add ((handler, first) => {
-				handler.Context.LineTo (point.X, point.Y);
+				handler.Control.LineTo (point.X, point.Y);
 			});
 		}
 		
 		public void AddLine (Point point1, Point point2)
 		{
 			Add ((handler, first) => {
-				handler.Context.MoveTo (point1.X, point1.Y);
-				handler.Context.LineTo (point2.X, point2.Y);
+				handler.Control.MoveTo (point1.X, point1.Y);
+				handler.Control.LineTo (point2.X, point2.Y);
 			});
 		}
 		

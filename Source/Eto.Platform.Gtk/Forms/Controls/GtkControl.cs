@@ -345,6 +345,11 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
+		protected virtual Gtk.Widget FontControl
+		{
+			get { return Control; }
+		}
+		
 		public Font Font {
 			get {
 				return font;
@@ -352,9 +357,9 @@ namespace Eto.Platform.GtkSharp
 			set {
 				font = value;
 				if (font != null)
-					Control.ModifyFont (font.ControlObject as Pango.FontDescription);
+					FontControl.ModifyFont (font.ControlObject as Pango.FontDescription);
 				else
-					Control.ModifyFont (null);
+					FontControl.ModifyFont (null);
 			}
 		}
 				

@@ -31,17 +31,17 @@ namespace Eto.Platform.GtkSharp
 		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
-			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BlackGC));
-			Rectangle rect = Generator.Convert (ev.Region.Clipbox);
-			Widget.OnPaint (new PaintEventArgs (graphics, rect));
-			graphics.Dispose();
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BlackGC))) {
+				Rectangle rect = Generator.Convert (ev.Region.Clipbox);
+				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+			}
 		}
 
 		public void Update (Rectangle rect)
 		{
-			Graphics graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC));
-			Widget.OnPaint (new PaintEventArgs (graphics, rect));
-			graphics.Dispose();
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC))) {
+				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+			}
 		}
 	}
 }

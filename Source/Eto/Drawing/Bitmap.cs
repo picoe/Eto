@@ -8,7 +8,7 @@ namespace Eto.Drawing
 	{
 		Format32bppRgb,
 		Format24bppRgb,
-		Format16bppRgb555,
+		//Format16bppRgb555,
 		Format32bppRgba
 	}
 	

@@ -9,9 +9,18 @@ namespace Eto.Test.Sections.Controls
 		public DrawableSection ()
 		{
 			var layout = new DynamicLayout (this);
-
-			layout.AddRow (new Label { Text = "Default" }, this.Default ());
+			
+			layout.BeginVertical ();
+			layout.BeginHorizontal ();
+			layout.Add (new Label { Text = "Default" });
+			layout.Add (this.Default (), true);
+			layout.Add (new Label { Text = "No Background" });
+			layout.Add (this.NoBackground (), true);
+			layout.EndHorizontal ();
+			layout.EndVertical ();
+			layout.BeginVertical ();
 			layout.AddRow (new Label { Text = "Large Canvas" }, DockLayout.CreatePanel(this.LargeCanvas ()));
+			layout.EndVertical ();
 
 			layout.Add (null);
 		}
@@ -21,6 +30,18 @@ namespace Eto.Test.Sections.Controls
 			var control = new Drawable {
 				Size = new Size (150, 50),
 				BackgroundColor = Color.Green
+			};
+			control.Paint += delegate (object sender, PaintEventArgs pe) {
+				pe.Graphics.DrawLine (Color.Black, Point.Empty, new Point (control.Size));
+			};
+			LogEvents (control);
+
+			return control;
+		}
+		Control NoBackground ()
+		{
+			var control = new Drawable {
+				Size = new Size (150, 50)
 			};
 			control.Paint += delegate (object sender, PaintEventArgs pe) {
 				pe.Graphics.DrawLine (Color.Black, Point.Empty, new Point (control.Size));

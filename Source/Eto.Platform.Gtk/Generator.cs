@@ -35,6 +35,16 @@ namespace Eto.Platform.GtkSharp
 			return new Cairo.Color ((double)color.R, (double)color.G, (double)color.B, (double)color.A);
 		}
 
+		public static Cairo.Rectangle ConvertC (Rectangle rectangle)
+		{
+			return new Cairo.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		public static Rectangle ConvertC (Cairo.Rectangle rectangle)
+		{
+			return new Rectangle ((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
+		}
+		
 		public static Color Convert (Gdk.Color color)
 		{
 			return new Color ((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue);

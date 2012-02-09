@@ -19,6 +19,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -27,6 +28,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
     <DebugSymbols>true</DebugSymbols>
@@ -37,6 +39,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -45,6 +48,7 @@
     <DebugType>none</DebugType>
     <WarningLevel>4</WarningLevel>
     <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -65,7 +69,6 @@
     <Compile Include="Actions\About.cs" />
     <Compile Include="Actions\Quit.cs" />
     <Compile Include="Actions\Close.cs" />
-    <Compile Include="Xaml\Test.cs" />
     <Compile Include="Sections\Controls\ButtonSection.cs" />
     <Compile Include="Sections\Controls\CheckBoxSection.cs" />
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />
@@ -91,6 +94,8 @@
     <Compile Include="Sections\Behaviors\FocusEventsSection.cs" />
     <Compile Include="Sections\Behaviors\KeyEventsSection.cs" />
     <Compile Include="Sections\Behaviors\ContextMenuSection.cs" />
+    <Compile Include="Xaml\Test.cs" />
+    <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

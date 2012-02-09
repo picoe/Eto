@@ -137,6 +137,11 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			//control = control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
 		}
+		
+		public override NSImage GetImage ()
+		{
+			return Control;
+		}
 
 		public BitmapData Lock ()
 		{

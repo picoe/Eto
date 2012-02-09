@@ -15,6 +15,11 @@ namespace Eto.Platform.Mac.Drawing
 		}
 		
 		
+		public override NSImage GetImage ()
+		{
+			return null;
+		}
+		
 		#region IIcon Members
 		
 		public void Create(Bitmap bitmap)

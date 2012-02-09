@@ -40,21 +40,23 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		public override void DrawImage(GraphicsHandler graphics, int x, int y)
 		{
-			graphics.Control.DrawDrawable(graphics.GC, Control, 0, 0, x, y, size.Width, size.Height);
+			//graphics.Control.DrawDrawable(graphics.GC, Control, 0, 0, x, y, size.Width, size.Height);
 		}
 		
 		public override void DrawImage(GraphicsHandler graphics, int x, int y, int width, int height)
 		{
-			graphics.Control.DrawDrawable(graphics.GC, Control, 0, 0, x, y, width, height);
+			//graphics.Control.DrawDrawable(graphics.GC, Control, 0, 0, x, y, width, height);
 		}
 		
 		public override void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
+			/*
 			if (source.Width != destination.Width || source.Height != destination.Height)
 			{
 				throw new NotSupportedException("Cannot scale portions of screen bitmaps");
 			}
 			graphics.Control.DrawDrawable(graphics.GC, Control, source.X, source.Y, destination.X, destination.Y, destination.Width, destination.Height);
+			*/
 		}
 		
 	}

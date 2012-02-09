@@ -2,6 +2,7 @@ using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -34,7 +35,7 @@ namespace Eto.Platform.Mac
 			set {
 				image = value;
 				if (image != null)
-					Control.Image = (NSImage)value.ControlObject;
+					Control.Image = ((IImageHandler)value.Handler).GetImage ();
 				else
 					Control.Image = null;
 			}

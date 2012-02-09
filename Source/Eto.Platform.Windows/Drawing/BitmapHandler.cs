@@ -63,9 +63,9 @@ namespace Eto.Platform.Windows.Drawing
 				case PixelFormat.Format24bppRgb:
 					sdPixelFormat = SD.Imaging.PixelFormat.Format24bppRgb;
 					break;
-				case PixelFormat.Format16bppRgb555:
+				/*case PixelFormat.Format16bppRgb555:
 					sdPixelFormat = SD.Imaging.PixelFormat.Format16bppRgb555;
-					break;
+					break;*/
 				case PixelFormat.Format32bppRgba:
 					sdPixelFormat = SD.Imaging.PixelFormat.Format32bppPArgb;
 					break;

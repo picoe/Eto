@@ -1,6 +1,5 @@
 
 #define GTK_2_6
-
 using System;
 using System.IO;
 using System.Runtime.InteropServices;
@@ -9,26 +8,23 @@ using System.Linq;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
-
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler(IntPtr data, int scanWidth, object controlObject)
+		public IndexedBitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
 			: base(data, scanWidth, controlObject)
 		{
 		}
 
-		public override uint TranslateArgbToData(uint argb)
+		public override uint TranslateArgbToData (uint argb)
 		{
 			return argb;
 		}
 
-		public override uint TranslateDataToArgb(uint bitmapData)
+		public override uint TranslateDataToArgb (uint bitmapData)
 		{
 			return bitmapData;
 		}
 	}
-
-
 
 	public class IndexedBitmapHandler : ImageHandler<byte[], IndexedBitmap>, IIndexedBitmap
 	{
@@ -36,114 +32,123 @@ namespace Eto.Platform.GtkSharp.Drawing
 		int rowStride;
 		uint[] colors;
 
-		public int RowStride
-		{
+		public int RowStride {
 			get { return rowStride; }
 		}
 
-
-		public override Size Size
-		{
+		public override Size Size {
 			get { return size; }
 		}
 
 		#region IIndexedBitmap Members
 
-		public void Create(int width, int height, int bitsPerPixel)
+		public void Create (int width, int height, int bitsPerPixel)
 		{
 			rowStride = width * bitsPerPixel / 8;
-			int colorCount = (int)Math.Pow(2, bitsPerPixel);
+			int colorCount = (int)Math.Pow (2, bitsPerPixel);
 			colors = new uint[colorCount];
-			for (int i=0; i<colorCount; i++)
-			{
-				colors[i] = 0xffffffff;
+			for (int i=0; i<colorCount; i++) {
+				colors [i] = 0xffffffff;
 			}
 
-			size = new Size(width, height);
-			Control = new byte[height*rowStride];
+			size = new Size (width, height);
+			Control = new byte[height * rowStride];
 		}
 
-
-		public void Resize(int width, int height)
+		public void Resize (int width, int height)
 		{
-			throw new NotSupportedException("Cannot resize an indexed image");
+			throw new NotSupportedException ("Cannot resize an indexed image");
 		}
 
-		public BitmapData Lock()
+		public BitmapData Lock ()
 		{
-			IntPtr ptr = Marshal.AllocHGlobal(Control.Length);
-			Marshal.Copy(Control, 0, ptr, Control.Length);
-			return  new IndexedBitmapDataHandler(ptr, rowStride, null);
+			IntPtr ptr = Marshal.AllocHGlobal (Control.Length);
+			Marshal.Copy (Control, 0, ptr, Control.Length);
+			return  new IndexedBitmapDataHandler (ptr, rowStride, null);
 		}
 
-		public void Unlock(BitmapData bitmapData)
+		public void Unlock (BitmapData bitmapData)
 		{
 			IntPtr ptr = bitmapData.Data;
-			Marshal.Copy(ptr, Control, 0, Control.Length);
-			Marshal.FreeHGlobal(ptr);
+			Marshal.Copy (ptr, Control, 0, Control.Length);
+			Marshal.FreeHGlobal (ptr);
 		}
 
-		public Palette Palette
-		{
-			get
-			{
-				Palette pal = new Palette(colors.Length);
-				pal.AddRange (colors.Select(r => Color.FromArgb ((uint)r)));
+		public Palette Palette {
+			get {
+				Palette pal = new Palette (colors.Length);
+				pal.AddRange (colors.Select (r => Color.FromArgb ((uint)r)));
 				return pal;
 			}
-			set
-			{
-				if (value.Count != colors.Length) throw new ArgumentException("Input palette must have the same colors as the output");
-				for (int i=0; i<value.Count; i++)
-				{
-					colors[i] = value[i].ToArgb();
+			set {
+				if (value.Count != colors.Length)
+					throw new ArgumentException ("Input palette must have the same colors as the output");
+				for (int i=0; i<value.Count; i++) {
+					colors [i] = value [i].ToArgb ();
 				}
 			}
 		}
 
 		#endregion
 
+		private Gdk.RgbCmap GetPmap ()
+		{
+			return new Gdk.RgbCmap (colors);
+		}
 
-		public override void DrawImage(GraphicsHandler graphics, int x, int y, int width, int height)
-		{
-			if (width != this.size.Width || height != this.size.Height)
-			{
-				DrawImage(graphics, new Rectangle(0, 0, size.Width, size.Height), new Rectangle(x, y, width, height));
-			}
-			else
-			{
-				graphics.Control.DrawIndexedImage(graphics.GC, x, y, width, height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap());
-			}
-		}
-		
-		private Gdk.RgbCmap GetPmap()
-		{
-			#if GTK_1_0
-			Gdk.RgbCmap pmap = new Gdk.RgbCmap();
-			pmap.NColors = colors.Length;
-			pmap.Colors = colors;
-			return pmap;
-			#endif
-			
-			return new Gdk.RgbCmap(colors);
-		}
-		
 		public override void SetImage (Gtk.Image imageView)
 		{
-			using (var drawable = new Gdk.Pixmap(imageView.GdkWindow, Size.Width, Size.Height))
-			using (var gc = new Gdk.GC(drawable))
-			{
-				drawable.Colormap = new Gdk.Colormap(Gdk.Visual.System, true);
+			using (var drawable = new Gdk.Pixmap(null, Size.Width, Size.Height, 24))
+			using (var gc = new Gdk.GC(drawable)) {
+				drawable.Colormap = new Gdk.Colormap (Gdk.Visual.System, true);
 	
 				
-				drawable.DrawIndexedImage(gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap());
-				imageView.SetFromPixmap(drawable, null);
+				drawable.DrawIndexedImage (gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap ());
+				imageView.Pixmap = drawable;
 				
 			}
 		}
 
-		public override void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
+			// copy to a surface
+			var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, source.Width, source.Height);
+			unsafe {
+				byte* destrow = (byte*)surface.DataPtr;
+				fixed (byte* srcdata = this.Control) {
+					byte* srcrow = srcdata + (source.Top * rowStride) + source.Left;
+					for (int y = source.Top; y <= source.Bottom; y++) {
+						byte* src = (byte*)srcrow;
+						uint* dest = (uint*)destrow;
+						for (int x = source.Left; x <= source.Right; x++) {
+							*
+							dest = colors [*src];
+							src++;
+							dest++;
+						}
+						
+						srcrow += rowStride;
+						destrow += surface.Stride;
+					}
+				}
+			}
+			
+			var context = graphics.Control;
+			context.Save ();
+			context.Rectangle (Generator.ConvertC (destination));
+			double scalex = 1;
+			double scaley = 1;
+			if (source.Width != destination.Width || source.Height != destination.Height) {
+				scalex = (double)destination.Width / (double)source.Width;
+				scaley = (double)destination.Height / (double)source.Height;
+				context.Scale (scalex, scaley);
+			}
+			context.SetSourceSurface (surface, destination.Left, destination.Top);
+			context.Fill ();
+			context.Restore ();
+			
+			
+			/*
 			if (graphics == null || graphics.Control == null || graphics.GC == null) 
 				throw new Exception("WHAA?");
 			using (var drawable = new Gdk.Pixmap(graphics.Control, source.Right+1, source.Bottom+1))
@@ -173,7 +178,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					graphics.Control.DrawDrawable(graphics.GC, drawable, source.X, source.Y, destination.X, destination.Y, destination.Width, destination.Height);
 				}
 				
-			}
+			}*/
 		}
 	}
 }

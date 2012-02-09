@@ -114,6 +114,7 @@ namespace Eto.Test
 		IEnumerable<ITreeItem> DrawingSection ()
 		{
 			yield return new Section<BitmapSection> { Text = "Bitmap" };
+			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
 			yield return new Section<PathSection> { Text = "Line Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
 		}

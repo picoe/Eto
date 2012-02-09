@@ -25,23 +25,24 @@ namespace Eto.Platform.GtkSharp
 				this.Size = value;
 			}
 		}
-		
+
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
 			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
 				if (MinimumSize != null) {
 					var alloc = args.Requisition;
-					alloc.Width = Math.Max (alloc.Width, MinimumSize.Value.Width);
-					alloc.Height = Math.Max (alloc.Height, MinimumSize.Value.Height);
+					if (MinimumSize.Value.Width > 0) alloc.Width = Math.Max (alloc.Width, MinimumSize.Value.Width);
+					if (MinimumSize.Value.Height > 0) alloc.Height = Math.Max (alloc.Height, MinimumSize.Value.Height);
 					args.Requisition = alloc;
 				}
 			};
-			/*Control.SizeAllocated += delegate(object o, Gtk.SizeAllocatedArgs args) {
+			/*
+			Control.SizeAllocated += delegate(object o, Gtk.SizeAllocatedArgs args) {
 				if (MinimumSize != null) {
 					var alloc = args.Allocation;
-					alloc.Width = Math.Max (alloc.Width, MinimumSize.Value.Width);
-					alloc.Height = Math.Max (alloc.Height, MinimumSize.Value.Height);
+					if (MinimumSize.Value.Width > 0) alloc.Width = Math.Max (alloc.Width, MinimumSize.Value.Width);
+					if (MinimumSize.Value.Height > 0) alloc.Height = Math.Max (alloc.Height, MinimumSize.Value.Height);
 					if (alloc.Width != args.Allocation.Width || alloc.Height != args.Allocation.Height) {
 						Control.SetSizeRequest(alloc.Width, alloc.Height);
 						Control.Allocation = alloc; //.SetSizeRequest(alloc.Width, alloc.Height);
@@ -65,6 +66,8 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public Size? MinimumSize { get; set; }
+		public Size? MinimumSize {
+			get; set;
+		}
 	}
 }

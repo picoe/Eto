@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control LoadFromStream ()
 		{
-			var resourceStream = Resources.GetResource("Eto.Test.TestImage.png");
+			var resourceStream = Resources.GetResource ("Eto.Test.TestImage.png");
 
 			var image = new Bitmap (resourceStream);
 
@@ -37,10 +37,11 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var image = new Bitmap (100, 100, PixelFormat.Format32bppRgb);
 
-			var graphics = new Graphics (image);
-			graphics.DrawLine (Color.Blue, Point.Empty, new Point (image.Size));
-			graphics.DrawRectangle (Color.Blue, new Rectangle (image.Size));
-			graphics.Flush ();
+			// should always ensure .Dispose() is called when you are done with a Graphics object
+			using (var graphics = new Graphics (image)) {
+				graphics.DrawLine (Color.Blue, Point.Empty, new Point (image.Size));
+				graphics.DrawRectangle (Color.Blue, new Rectangle (image.Size));
+			}
 
 			return new ImageView { Image = image };
 		}
@@ -49,10 +50,11 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var image = new Bitmap (100, 100, PixelFormat.Format32bppRgba);
 
-			var graphics = new Graphics (image);
-			graphics.DrawLine (Color.Blue, Point.Empty, new Point (image.Size));
-			graphics.DrawRectangle (Color.Black, new Rectangle (image.Size));
-			graphics.Flush ();
+			// should always ensure .Dispose() is called when you are done with a Graphics object
+			using (var graphics = new Graphics (image)) {
+				graphics.DrawLine (Color.Blue, Point.Empty, new Point (image.Size));
+				graphics.DrawRectangle (Color.Black, new Rectangle (image.Size));
+			}
 
 			return new ImageView { Image = image };
 		}

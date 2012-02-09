@@ -5,45 +5,34 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class RegionHandler : Region
 	{
-		Gdk.Region region;
-		Gdk.Region original;
 
-		public RegionHandler (Gdk.Region region)
+		public RegionHandler ()
 		{
-			this.original = region;
-			this.region = region.Copy ();
 		}
 
 		public override object ControlObject {
-			get { return region; }
+			get { return null; }
 		}
 
 		public override void Exclude (Rectangle rect)
 		{
-			Gdk.Region r = new Gdk.Region ();
-			r.UnionWithRect (Generator.Convert (rect));
-			region.Subtract (r);
 		}
 
 		public override void Reset ()
 		{
-			region = original;
 		}
 
 		public override void Set (Rectangle rect)
 		{
-			region.Empty ();
-			region.UnionWithRect (Generator.Convert (rect));
 		}
 	}
 
-	public class GraphicsHandler : WidgetHandler<Gdk.Drawable, Graphics>, IGraphics
+	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, IGraphics
 	{
 		Gtk.Widget widget;
-		Gdk.GC gc;
-		Cairo.Context context;
-		bool deletegc = true;
+		Gdk.Drawable drawable;
 		IImage image;
+		Cairo.ImageSurface surface;
 
 		public GraphicsHandler ()
 		{
@@ -52,146 +41,135 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable, Gdk.GC gc)
 		{
 			this.widget = widget;
-			this.Control = drawable;
-			this.DisposeControl = false;
-			this.gc = gc;
-			this.context = Gdk.CairoHelper.Create (drawable);
-			deletegc = false;
+			this.drawable = drawable;
+			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 
-		public bool Antialias
-		{
-			get { return context.Antialias != Cairo.Antialias.None; }
+		public bool Antialias {
+			get { return Control.Antialias != Cairo.Antialias.None; }
 			set {
-				if (value) context.Antialias = Cairo.Antialias.Default;
-				else context.Antialias = Cairo.Antialias.None;
+				if (value)
+					Control.Antialias = Cairo.Antialias.Default;
+				else
+					Control.Antialias = Cairo.Antialias.None;
 			}
-		}
-
-		public Gdk.GC GC {
-			get { return gc; }
-		}
-		
-		public Cairo.Context Context {
-			get { return context; }
 		}
 
 		public void CreateFromImage (Bitmap image)
 		{
 			this.image = image;
-			var active = Gdk.Screen.Default.ActiveWindow;
 			var handler = (BitmapHandler)image.Handler;
-			Control = new Gdk.Pixmap (active, image.Size.Width, image.Size.Height, active != null ? -1 : handler.Alpha ? 24 : 24);
-			if (Control.Colormap == null) 
-				Control.Colormap = new Gdk.Colormap (Gdk.Visual.System, true);
-			gc = new Gdk.GC (Control);
-			this.context = Gdk.CairoHelper.Create (Control);
-		}
 
+			if (handler.Alpha)
+				surface = new Cairo.ImageSurface (Cairo.Format.Argb32, image.Size.Width, image.Size.Height);
+			else
+				surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, image.Size.Width, image.Size.Height);
+			Control = new Cairo.Context (surface);
+			Control.Save ();
+			Control.Rectangle (0, 0, image.Size.Width, image.Size.Height);
+			Gdk.CairoHelper.SetSourcePixbuf (Control, handler.Control, 0, 0);
+			Control.Operator = Cairo.Operator.Source;
+			Control.Fill ();
+			Control.Restore ();
+		}
+		
 		public void Flush ()
 		{
 			if (image != null) {
 				var handler = (BitmapHandler)image.Handler;
 				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
 				if (pb != null) {
-					// if alpha, convert directly to pixbuf using intptr's
-					if (handler.Alpha) {
-						//var img = Control.GetImage (0, 0, image.Size.Width, image.Size.Height);
-						//pb.GetFromImage (img, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.Best, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
-						pb.GetFromDrawable (Control, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.System, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
+
+					surface.Flush ();
+					var bd = handler.Lock ();
+					unsafe {
+						byte* srcrow = (byte*)surface.DataPtr;
+						byte* destrow = (byte*)bd.Data;
+						for (int y=0; y<image.Size.Height; y++) {
+							uint* src = (uint*)srcrow;
+							uint* dest = (uint*)destrow;
+							for (int x=0; x<image.Size.Width; x++) {
+								*dest = bd.TranslateArgbToData(*src);
+								dest++;
+								src++;
+							}
+							destrow += bd.ScanWidth;
+							srcrow += surface.Stride;
+						}
 					}
-					else
-						pb.GetFromDrawable (Control, Control.Colormap ?? new Gdk.Colormap (Gdk.Visual.System, true), 0, 0, 0, 0, image.Size.Width, image.Size.Height);
+					handler.Unlock (bd);
 				}
 			}
-			if (context != null && Control != null)
+			if (Control != null)
 			{
-				((IDisposable)context).Dispose();
-				this.context = Gdk.CairoHelper.Create (Control);
+				((IDisposable)Control).Dispose();
+				if (surface != null) {
+					this.Control = new Cairo.Context (surface);
+				}
+				else if (drawable != null) {
+					this.Control = Gdk.CairoHelper.Create (drawable);
+				}
 			}
-			
-			//GdkHandler.Global.Flush ();
 		}
 
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
-#if CAIRO
-			context.Save ();
-			context.Color = Generator.ConvertC(color);
+			Control.Save ();
+			Control.Color = Generator.ConvertC (color);
 			if (startx != endx || starty != endy) {
 				// to draw a line, it must move..
-				context.MoveTo (startx+0.5, starty+0.5);
-				context.LineTo (endx+0.5, endy+0.5);
-				context.LineCap = Cairo.LineCap.Square;
-				context.LineWidth = 1.0;
-				context.Stroke ();
-			}
-			else {
+				Control.MoveTo (startx + 0.5, starty + 0.5);
+				Control.LineTo (endx + 0.5, endy + 0.5);
+				Control.LineCap = Cairo.LineCap.Square;
+				Control.LineWidth = 1.0;
+				Control.Stroke ();
+			} else {
 				// to draw one pixel, we must fill it
-				context.Rectangle (startx, starty, 1, 1);
-				context.Fill();
+				Control.Rectangle (startx, starty, 1, 1);
+				Control.Fill ();
 			}
-			context.Restore ();
-#else
-			gc.RgbFgColor = Generator.Convert (color);
-			Control.DrawLine (gc, startx, starty, endx, endy);
-#endif
+			Control.Restore ();
 		}
 
 		public void DrawRectangle (Color color, int x, int y, int width, int height)
 		{
-#if CAIRO
-			context.Save ();
-			context.Color = Generator.ConvertC(color);
-			context.Rectangle (x+0.5, y+0.5, width-1, height-1);
-			context.LineWidth = 1.0;
-			context.Stroke ();
-			context.Restore ();
-#else
-			gc.RgbFgColor = Generator.Convert (color);
-			Control.DrawRectangle (gc, false, x, y, width + 1, height + 1);
-#endif
+			Control.Save ();
+			Control.Color = Generator.ConvertC (color);
+			Control.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
+			Control.LineWidth = 1.0;
+			Control.Stroke ();
+			Control.Restore ();
 		}
 
 		public void FillRectangle (Color color, int x, int y, int width, int height)
 		{
-#if CAIRO
-			context.Save ();
-			context.Color = Generator.ConvertC(color);
-			context.Rectangle (x, y, width, height);
-			context.Fill ();
-			context.Restore ();
-#else
-			gc.RgbBgColor = Generator.Convert (color);
-			gc.RgbFgColor = Generator.Convert (color);
-			Control.DrawRectangle (gc, true, x, y, width, height);
-#endif
+			Control.Save ();
+			Control.Color = Generator.ConvertC (color);
+			Control.Rectangle (x, y, width, height);
+			Control.Fill ();
+			Control.Restore ();
 		}
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{
-#if CAIRO
-			context.Save ();
-			context.Color = Generator.ConvertC(color);
+			Control.Save ();
+			Control.Color = Generator.ConvertC (color);
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
-			context.Fill ();
-			context.Restore ();
-#endif
+			Control.Fill ();
+			Control.Restore ();
 		}
 
 		public void DrawPath (Color color, GraphicsPath path)
 		{
-#if CAIRO
-			context.Save ();
-			context.Color = Generator.ConvertC(color);
+			Control.Save ();
+			Control.Color = Generator.ConvertC (color);
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
-			context.LineCap = Cairo.LineCap.Square;
-			context.LineWidth = 1.0;
-			context.Stroke ();
-			context.Restore ();
-#endif
+			Control.LineCap = Cairo.LineCap.Square;
+			Control.LineWidth = 1.0;
+			Control.Stroke ();
+			Control.Restore ();
 		}
 		
 		public void DrawImage (IImage image, int x, int y)
@@ -211,32 +189,45 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void DrawIcon (Icon icon, int x, int y, int width, int height)
 		{
-			((Gdk.Pixbuf)icon.ControlObject).RenderToDrawableAlpha (Control, 0, 0, x, y, width, height, Gdk.PixbufAlphaMode.Bilevel, 0, Gdk.RgbDither.Normal, 0, 0);
+			var iconHandler = ((IconHandler)icon.Handler);
+			var pixbuf = iconHandler.Pixbuf;
+			Control.Save ();
+			Gdk.CairoHelper.SetSourcePixbuf(Control, pixbuf, 0, 0);
+			if (width != pixbuf.Width || height != pixbuf.Height) {
+				Control.Scale ((double)width / (double)pixbuf.Width, (double)height / (double)pixbuf.Height);
+			}
+			Control.Rectangle (x, y, width, height);
+			Control.Fill ();
+			Control.Restore ();
 		}
-
+		
 		public Region ClipRegion {
-			get { return new RegionHandler (Control.ClipRegion); }
+			get { return null; }
 			set {
-				gc.ClipRegion = (Gdk.Region)((RegionHandler)value).ControlObject;
+				
 			}
 		}
 
 		public void DrawText (Font font, Color color, int x, int y, string text)
 		{
 			if (widget != null) {
-				Pango.Layout layout = new Pango.Layout (widget.PangoContext);
-				layout.FontDescription = (Pango.FontDescription)font.ControlObject;
-				layout.SetText (text);
-				gc.RgbFgColor = Generator.Convert (color);
-				//layout.Wrap = Pango.WrapMode.
-				Control.DrawLayout (gc, x, y, layout);
-				layout.Dispose ();
+				using (var layout = new Pango.Layout (widget.PangoContext)) {
+					layout.FontDescription = (Pango.FontDescription)font.ControlObject;
+					layout.SetText (text);
+					Control.Save ();
+					Control.Color = Generator.ConvertC (color);
+					Control.MoveTo (x, y);
+					Pango.CairoHelper.LayoutPath (Control, layout);
+					Control.Fill ();
+					Control.Restore ();
+				}
 			}
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
 			if (widget != null) {
+
 				Pango.Layout layout = new Pango.Layout (widget.PangoContext);
 				layout.FontDescription = (Pango.FontDescription)font.ControlObject;
 				layout.SetText (text);
@@ -250,18 +241,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		protected override void Dispose (bool disposing)
 		{
-			if (image != null) Flush();
-
-			if (disposing) {
-				if (gc != null && deletegc) {
-					gc.Dispose ();
-					gc = null;
-				}
-				if (context != null) {
-					((IDisposable) context).Dispose();
-					context = null;
-				}
-			}
+			if (image != null)
+				Flush ();
 			
 			base.Dispose (disposing);
 		}

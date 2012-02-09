@@ -25,7 +25,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
-		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
+		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf> ();
+
 		public bool Alpha { get; set; }
 		
 		public BitmapHandler ()
@@ -50,13 +51,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void Create (int width, int height, PixelFormat pixelFormat)
 		{
 			switch (pixelFormat) {
-				case PixelFormat.Format32bppRgba:
+			case PixelFormat.Format32bppRgba:
 				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
-				Control.Fill (0);
+				Control.Fill(0);
 				Alpha = true;
-					break;
+				break;
 			case PixelFormat.Format32bppRgb:
 				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
+				Control.Fill(0x000000FF);
 				break;
 			case PixelFormat.Format24bppRgb:
 				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
@@ -105,21 +107,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return new Size (Control.Width, Control.Height); }
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, int x, int y)
-		{
-			graphics.Control.DrawPixbuf (graphics.GC, Control, 0, 0, x, y, Control.Width, Control.Height, Gdk.RgbDither.None, 0, 0);
-		}
-
-		public override void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height)
-		{
-			if (width != Control.Width || height != Control.Height) {
-				Gdk.Pixbuf pbDest = Control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
-				pbDest.RenderToDrawable (graphics.Control, graphics.GC, 0, 0, x, y, pbDest.Width, pbDest.Height, Gdk.RgbDither.None, 0, 0);
-				pbDest.Dispose ();
-			} else
-				Control.RenderToDrawable (graphics.Control, graphics.GC, 0, 0, x, y, width, height, Gdk.RgbDither.None, 0, 0);
-		}
-		
 		public override void SetImage (Gtk.Image imageView)
 		{
 			imageView.Pixbuf = Control;
@@ -134,6 +121,21 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
+			var context = graphics.Control;
+			context.Save ();
+			context.Rectangle (Generator.ConvertC (destination));
+			double scalex = 1;
+			double scaley = 1;
+			if (source.Width != destination.Width || source.Height != destination.Height) {
+				scalex = (double)destination.Width / (double)source.Width;
+				scaley = (double)destination.Height / (double)source.Height;
+				context.Scale (scalex, scaley);
+			}
+			Gdk.CairoHelper.SetSourcePixbuf(context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
+			context.Fill ();
+			context.Restore ();
+			
+			/*
 			Gdk.Pixbuf pb = Control;
 			
 
@@ -147,7 +149,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 				pb = pbDest;
 			}
 			/*
-			 */
+			 *
 			pb.RenderToDrawable (graphics.Control, graphics.GC, source.X, source.Y, destination.X, destination.Y, destination.Width, destination.Height, Gdk.RgbDither.None, 0, 0);
 			/*
 			 *
@@ -161,8 +163,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			graphics.Drawable.DrawPixbuf(null, pb, source.X, source.Y, destination.X, destination.Y, destination.Width, destination.Height, Gdk.RgbDither.None, 0, 0);
 			/*
 			 */
-			if (pb != Control)
-				pb.Dispose ();
+			/*if (pb != Control)
+				pb.Dispose ();*/
 		}
 
 		#region IGtkPixbuf implementation
@@ -178,7 +180,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height) {
 				if (!sizes.TryGetValue (maxSize, out pixbuf)) {
 					pixbuf = Control.ScaleSimple (maxSize.Width, maxSize.Height, Gdk.InterpType.Bilinear);
-					sizes[maxSize] = pixbuf;
+					sizes [maxSize] = pixbuf;
 				}
 			}
 			
