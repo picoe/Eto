@@ -18,7 +18,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				return this.Control.SelectedDate;
 			}
 			set {
-				this.Control.SelectedDate = value.Value;
+				this.Control.SelectedDate = value;
 			}
 		}
 

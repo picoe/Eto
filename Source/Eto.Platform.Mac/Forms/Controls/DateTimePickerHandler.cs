@@ -2,52 +2,87 @@ using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class DateTimePickerHandler : MacControl<NSDatePicker, DateTimePicker>, IDateTimePicker
 	{
-		DateTime? proposedDate;
+		DateTime? curValue;
+		DateTimePickerMode mode;
 		
 		public class EtoDatePicker : NSDatePicker, IMacControl
 		{
-			public object Handler { get; set; }
+			public override void DrawRect (System.Drawing.RectangleF dirtyRect)
+			{
+				if (Handler.curValue != null)
+					base.DrawRect (dirtyRect);
+				else {
+					// paint with no elements visible
+					var old = this.DatePickerElements;
+					this.DatePickerElements = 0;
+					base.DrawRect (dirtyRect);
+					this.DatePickerElements = old;
+				}
+			}
+			
+			public DateTimePickerHandler Handler { get; set; }
+			
+			object IMacControl.Handler { get { return Handler; } }
 		}
-		
 		
 		public DateTimePickerHandler ()
 		{
 			Control = new EtoDatePicker { Handler = this };
-			/*AddObserver(new NSString("DateValue"), delegate { 
-				Widget.OnValueChanged (EventArgs.Empty);
-			});*/
-			Control.ValidateProposedDateValue += delegate(object sender, NSDatePickerValidatorEventArgs e) {
-				proposedDate = e.ProposedDateValue;
-				Widget.OnValueChanged (EventArgs.Empty);
-				proposedDate = null;
+			Control.TimeZone = NSTimeZone.LocalTimeZone;
+			Control.Calendar = NSCalendar.CurrentCalendar;
+			Control.DateValue = Generator.Convert (DateTime.Now);
+			this.Mode = DateTimePicker.DefaultMode;
+		}
+		
+		protected override Size GetNaturalSize ()
+		{
+			return Size.Max (new Size (mode == DateTimePickerMode.DateTime ? 180 : 120, 10), base.GetNaturalSize ());
+		}
+		
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			
+			// apple+backspace clears the value
+			Widget.KeyDown += delegate(object sender, KeyPressEventArgs ev) {
+				if (!ev.Handled) {
+					if (ev.KeyData == (Key.Application | Key.Backspace)) {
+						curValue = null;
+						Widget.OnValueChanged (EventArgs.Empty);
+						Control.NeedsDisplay = true;
+					}
+				}
 			};
-			Mode = DateTimePicker.DefaultMode;
+			// when clicking, set the value if it is null
+			Widget.MouseDown += delegate(object sender, MouseEventArgs ev) {
+				if (ev.Buttons == MouseButtons.Primary) {
+					if (curValue == null) {
+						curValue = Generator.Convert (Control.DateValue);
+						Widget.OnValueChanged (EventArgs.Empty);
+						Control.NeedsDisplay = true;
+					}
+				}
+			};
+			Control.ValidateProposedDateValue += delegate(object sender, NSDatePickerValidatorEventArgs ev) {
+				var date = Generator.Convert (ev.ProposedDateValue);
+				if (date != Generator.Convert (Control.DateValue)) {
+					curValue = date;
+					Widget.OnValueChanged (EventArgs.Empty);
+				}
+			};
 		}
 		
 		public DateTimePickerMode Mode {
-			get {
-				var flags = Control.DatePickerElements;
-				if ((flags & NSDatePickerElementFlags.YearMonthDate) != 0)
-				{
-					if ((flags & NSDatePickerElementFlags.HourMinute) != 0) 
-						return DateTimePickerMode.DateTime;
-					else
-						return DateTimePickerMode.Date;
-				}
-				else if ((flags & NSDatePickerElementFlags.HourMinute) != 0)
-				{
-					return DateTimePickerMode.Time;
-				}
-				else throw new NotImplementedException();
-			}
+			get { return mode; }
 			set {
-				switch (value)
-				{
+				mode = value;
+				switch (mode) {
 				case DateTimePickerMode.Date:
 					Control.DatePickerElements = NSDatePickerElementFlags.YearMonthDateDay;
 					break;
@@ -58,37 +93,39 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Control.DatePickerElements = NSDatePickerElementFlags.YearMonthDateDay | NSDatePickerElementFlags.HourMinuteSecond;
 					break;
 				default:
-					throw new NotImplementedException();
+					throw new NotSupportedException ();
 				}
 			}
 		}
 		
 		public DateTime MinDate {
 			get {
-				return Control.MinDate;
+				return Generator.Convert (Control.MinDate) ?? DateTime.MinValue;
 			}
 			set {
-				Control.MinDate = value;
+				Control.MinDate = Generator.Convert (value);
 			}
 		}
 		
 		public DateTime MaxDate {
 			get {
-				return Control.MaxDate;
+				return Generator.Convert (Control.MaxDate) ?? DateTime.MaxValue;
 			}
 			set {
-				Control.MaxDate = value;
+				Control.MaxDate = Generator.Convert (value);
 			}
 		}
 
 		public DateTime? Value {
 			get {
-				return proposedDate ?? Control.DateValue;
+				return curValue;
 			}
 			set {
-				if (value != null) {
-					Control.DateValue = value.Value;
-				}
+				curValue = value;
+				if (value != null)
+					Control.DateValue = Generator.Convert (value);
+				else
+					Control.DateValue = Generator.Convert (DateTime.Now);
 			}
 		}
 

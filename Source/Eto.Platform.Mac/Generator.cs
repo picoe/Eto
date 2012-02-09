@@ -131,12 +131,33 @@ namespace Eto.Platform.Mac
 			return new MouseEventArgs (buttons, modifiers, pt);
 		}
 		
-		public static void SetSizeWithAuto(NSView view, Size size)
+		public static void SetSizeWithAuto (NSView view, Size size)
 		{
 			var newSize = view.Frame.Size;
-			if (size.Width >= 0) newSize.Width = size.Width;
-			if (size.Height >= 0) newSize.Height = size.Height;
+			if (size.Width >= 0)
+				newSize.Width = size.Width;
+			if (size.Height >= 0)
+				newSize.Height = size.Height;
 			view.SetFrameSize (newSize);
+		}
+		
+		static DateTime ReferenceDate = new DateTime (2001, 1, 1, 0, 0, 0);
+
+		public static NSDate Convert (DateTime date)
+		{
+			return NSDate.FromTimeIntervalSinceReferenceDate ((date.ToUniversalTime () - ReferenceDate).TotalSeconds);
+		}
+		
+		public static NSDate Convert (DateTime? date)
+		{
+			if (date == null) return null;
+			return Convert (date.Value);
+		}
+		
+		public static DateTime? Convert (NSDate date)
+		{
+			if (date == null) return null;
+			return new DateTime ((long)(date.SecondsSinceReferenceDate * TimeSpan.TicksPerSecond + ReferenceDate.Ticks), DateTimeKind.Utc).ToLocalTime ();
 		}
 	}
 }

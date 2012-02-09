@@ -179,6 +179,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			};
 
 			this.clock = new AnalogClock ();
+			this.clock.SetSizeRequest (130, 130);
 			vbox.PackStart (this.clock, true, true, 0);
 
 			var spinners = new Gtk.HBox {

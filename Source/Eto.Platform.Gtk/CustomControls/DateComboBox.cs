@@ -7,7 +7,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 {
 	public class DateComboBox : BaseComboBox
 	{
-		DateTime selectedDate = DateTime.Now;
+		DateTime? selectedDate;
 		DateTimePickerMode mode = DateTimePickerMode.DateTime;
 	
 		public event EventHandler DateChanged;
@@ -20,10 +20,9 @@ namespace Eto.Platform.GtkSharp.CustomControls
 
 		public DateTimePickerMode Mode {
 			get { return mode; }
-			set
-			{
+			set {
 				mode = value;
-				SetValue();
+				SetValue ();
 			}
 		}
 
@@ -42,38 +41,44 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				return Entry.Text;
 			}
 		}
+
 		public DateTime MinDate {
-			get; set;
+			get;
+			set;
 		}
 
 		public DateTime MaxDate {
-			get; set;
+			get;
+			set;
 		}
 		
-		public DateTime SelectedDate {
+		public DateTime? SelectedDate {
 			get {
 				return selectedDate;
 			}
 			set {
 				selectedDate = value;
-				SetValue();
+				SetValue ();
 			}
 		}
 		
-		void SetValue()
+		void SetValue ()
 		{
-			switch (Mode) {
-			case DateTimePickerMode.DateTime:
-				Entry.Text = selectedDate.ToString ();
-				break;
-			case DateTimePickerMode.Date:
-				Entry.Text = selectedDate.ToShortDateString ();
-				break;
-			case DateTimePickerMode.Time:
-				Entry.Text = selectedDate.ToShortTimeString ();
-				break;
+			if (selectedDate == null) {
+				Entry.Text = string.Empty;
+			} else {
+				switch (Mode) {
+				case DateTimePickerMode.DateTime:
+					Entry.Text = selectedDate.Value.ToString ();
+					break;
+				case DateTimePickerMode.Date:
+					Entry.Text = selectedDate.Value.ToShortDateString ();
+					break;
+				case DateTimePickerMode.Time:
+					Entry.Text = selectedDate.Value.ToShortTimeString ();
+					break;
+				}
 			}
-			
 		}
 		
 		public DateComboBox ()
@@ -90,7 +95,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				OnDateChanged (EventArgs.Empty);
 			};
 			PopupButton.Clicked += delegate {
-				var dlg = new DateComboBoxDialog (selectedDate, this.Mode);
+				var dlg = new DateComboBoxDialog (selectedDate ?? DateTime.Now, this.Mode);
 				dlg.DateChanged += delegate {
 					SelectedDate = dlg.SelectedDate;
 				};
@@ -100,6 +105,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		
 		public bool IsDateValid ()
 		{
+			if (string.IsNullOrEmpty (Entry.Text))
+				return true;
 			DateTime date;
 			if (DateTime.TryParse (Entry.Text, CultureInfo.CurrentCulture, DateTimeStyles.None, out date)) {
 				if (date >= MinDate && date <= MaxDate) {
