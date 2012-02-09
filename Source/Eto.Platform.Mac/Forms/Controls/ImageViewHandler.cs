@@ -35,7 +35,7 @@ namespace Eto.Platform.Mac
 			set {
 				image = value;
 				if (image != null)
-					Control.Image = ((IImageHandler)value.Handler).GetImage ();
+					Control.Image = ((IImageSource)value.Handler).GetImage ();
 				else
 					Control.Image = null;
 			}

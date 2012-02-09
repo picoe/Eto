@@ -5,10 +5,13 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Drawing
 {
-	interface IImageHandler
+	interface IImageSource
 	{
 		NSImage GetImage ();
-		
+	}
+	
+	interface IImageHandler : IImageSource
+	{
 		void DrawImage (GraphicsHandler graphics, int x, int y);
 
 		void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height);

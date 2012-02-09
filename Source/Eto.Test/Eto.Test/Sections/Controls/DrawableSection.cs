@@ -14,31 +14,18 @@ namespace Eto.Test.Sections.Controls
 			layout.BeginHorizontal ();
 			layout.Add (new Label { Text = "Default" });
 			layout.Add (this.Default (), true);
-			layout.Add (new Label { Text = "No Background" });
-			layout.Add (this.NoBackground (), true);
+			layout.Add (new Label { Text = "With Background" });
+			layout.Add (this.WithBackground (), true);
 			layout.EndHorizontal ();
 			layout.EndVertical ();
 			layout.BeginVertical ();
-			layout.AddRow (new Label { Text = "Large Canvas" }, DockLayout.CreatePanel(this.LargeCanvas ()));
+			layout.AddRow (new Label { Text = "Large Canvas" }, DockLayout.CreatePanel (this.LargeCanvas ()));
 			layout.EndVertical ();
 
 			layout.Add (null);
 		}
 
 		Control Default ()
-		{
-			var control = new Drawable {
-				Size = new Size (150, 50),
-				BackgroundColor = Color.Green
-			};
-			control.Paint += delegate (object sender, PaintEventArgs pe) {
-				pe.Graphics.DrawLine (Color.Black, Point.Empty, new Point (control.Size));
-			};
-			LogEvents (control);
-
-			return control;
-		}
-		Control NoBackground ()
 		{
 			var control = new Drawable {
 				Size = new Size (150, 50)
@@ -51,6 +38,20 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 		
+		Control WithBackground ()
+		{
+			var control = new Drawable {
+				Size = new Size (150, 50),
+				BackgroundColor = Color.Green
+			};
+			control.Paint += delegate (object sender, PaintEventArgs pe) {
+				pe.Graphics.DrawLine (Color.Black, Point.Empty, new Point (control.Size));
+			};
+			LogEvents (control);
+
+			return control;
+		}
+
 		Control LargeCanvas ()
 		{
 			var control = new Drawable{
@@ -59,7 +60,7 @@ namespace Eto.Test.Sections.Controls
 			};
 			var image = Bitmap.FromResource ("Eto.Test.TestImage.png");
 			control.Paint += delegate(object sender, PaintEventArgs pe) {
-				pe.Graphics.FillRectangle (Color.Black, new Rectangle(150, 150, 100, 100));
+				pe.Graphics.FillRectangle (Color.Black, new Rectangle (150, 150, 100, 100));
 				var inc = 400;
 				for (int i = 0; i <= control.Size.Width / inc; i++) {
 					var pos = i * inc;

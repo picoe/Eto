@@ -6,7 +6,7 @@ using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Drawing
 {
-	public class IconHandler : WidgetHandler<NSImage, Icon>, IIcon
+	public class IconHandler : WidgetHandler<NSImage, Icon>, IIcon, IImageSource
 	{
 		public IconHandler()
 		{
@@ -22,7 +22,6 @@ namespace Eto.Platform.Mac.Drawing
 		public void Create (Stream stream)
 		{
 			var data = NSData.FromStream(stream);
-			// I love linda lots and lots and lots!!!  
 			Control = new NSImage (data);
 		}
 
@@ -39,5 +38,9 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
+		public NSImage GetImage ()
+		{
+			return Control;
+		}
 	}
 }
