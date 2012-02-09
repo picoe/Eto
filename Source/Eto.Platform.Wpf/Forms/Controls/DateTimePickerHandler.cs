@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using mwc = Microsoft.Windows.Controls;
+using System.Globalization;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -13,10 +14,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public DateTimePickerHandler ()
 		{
-			Control = new mwc.DateTimePicker ();
-			Mode = DateTimePickerMode.Date;
+			Control = new mwc.DateTimePicker {
+			};
+			Mode = DateTimePicker.DefaultMode;
 		}
 
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			Control.ValueChanged += delegate {
+				Widget.OnValueChanged (EventArgs.Empty);
+			};
+		}
 
 		public DateTime? Value
 		{
@@ -46,7 +55,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						Control.Format = mwc.DateTimeFormat.ShortDate;
 						break;
 					case DateTimePickerMode.DateTime:
-						Control.Format = mwc.DateTimeFormat.FullDateTime;
+						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
+						Control.Format = mwc.DateTimeFormat.Custom;
+						Control.FormatString = format.ShortDatePattern + " " + format.LongTimePattern;
 						break;
 					case DateTimePickerMode.Time:
 						Control.Format = mwc.DateTimeFormat.LongTime;

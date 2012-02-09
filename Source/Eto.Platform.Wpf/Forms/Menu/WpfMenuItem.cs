@@ -32,7 +32,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 				icon = value;
 				if (icon != null)
 					Control.Icon = new swc.Image { 
-						Source = ((IconHandler)icon.Handler).GetIconClosestToSize(16), 
+						Source = ((IWpfImage)icon.Handler).GetIconClosestToSize(16), 
 						MaxWidth = 16, MaxHeight = 16 };
 				else
 					Control.Icon = null;

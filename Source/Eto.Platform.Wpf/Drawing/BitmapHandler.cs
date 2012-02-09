@@ -50,9 +50,9 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			swm.PixelFormat format;
 			switch (pixelFormat) {
-				case PixelFormat.Format16bppRgb555:
+				/*case PixelFormat.Format16bppRgb555:
 					format = swm.PixelFormats.Bgr555;
-					break;
+					break;*/
 				case PixelFormat.Format24bppRgb:
 					format = swm.PixelFormats.Bgr24;
 					break;
