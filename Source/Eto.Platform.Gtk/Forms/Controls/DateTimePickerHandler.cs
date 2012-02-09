@@ -8,6 +8,12 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public DateTimePickerHandler ()
 		{
 			Control = new CustomControls.DateComboBox ();
+			this.Mode = DateTimePicker.DefaultMode;
+		}
+		
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
 			this.Control.DateChanged += delegate {
 				Widget.OnValueChanged (EventArgs.Empty);
 			};
