@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Log.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
@@ -113,7 +114,5 @@
     <EmbeddedResource Include="TestImage.png" />
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Sections\Behaviors\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

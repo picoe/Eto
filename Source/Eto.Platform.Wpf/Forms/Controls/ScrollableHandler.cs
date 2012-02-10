@@ -26,15 +26,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		class EtoScrollViewer : swc.ScrollViewer
 		{
-			protected override sw.Size MeasureOverride (sw.Size constraint)
-			{
-				return base.MeasureOverride (constraint);
-			}
-
-			protected override sw.Size ArrangeOverride (sw.Size arrangeBounds)
-			{
-				return base.ArrangeOverride (arrangeBounds);
-			}
 		}
 
 		public override Color BackgroundColor
@@ -60,7 +51,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				CanContentScroll = true,
-				SnapsToDevicePixels = true
+				SnapsToDevicePixels = true,
+				Focusable = false
 			};
 			virtualCanvas = new msc.VirtualCanvas {
 				SnapsToDevicePixels = true,

@@ -8,6 +8,7 @@ using swm = System.Windows.Media;
 using Eto.Forms;
 using Eto.Drawing;
 using msc = Microsoft.Sample.Controls;
+using swi = System.Windows.Input;
 using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
@@ -19,6 +20,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		class EtoMainCanvas : swc.Canvas
 		{
 			public DrawableHandler Handler { get; set; }
+
+			protected override void OnMouseDown (sw.Input.MouseButtonEventArgs e)
+			{
+				if (Handler.CanFocus) {
+					swi.Keyboard.Focus (this);
+				}
+				base.OnMouseDown (e);
+			}
 
 			protected override void OnRender (swm.DrawingContext dc)
 			{
@@ -69,14 +78,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					SnapsToDevicePixels = true,
 					RenderTransform = transform
 				};
-				if (Handler.CanFocus) {
-					Visual.MouseDown += delegate {
-						Handler.Control.Focus ();
-					};
-					/*Visual.KeyDown += (sender, e) => {
-						Handler.Widget.OnKeyDown(
-					};*/
-				}
 				return Visual;
 			}
 
@@ -128,11 +129,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.SizeChanged += Control_SizeChanged;
 		}
 
-		void Control_MouseDown (object sender, sw.Input.MouseButtonEventArgs e)
-		{
-			Control.Focus ();
-		}
-
 		void Control_SizeChanged (object sender, sw.SizeChangedEventArgs e)
 		{
 			if (virtualChildren == null)
@@ -141,7 +137,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			var parent = Control.GetParent<Microsoft.Sample.Controls.VirtualCanvas> ();
 			if (parent != null) {
 				parent.InvalidateArrange ();
-				parent.InvalidateVisual ();
+				//parent.InvalidateVisual ();
 			}
 		}
 
@@ -164,13 +160,35 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		public override void Invalidate ()
+		{
+			if (virtualChildren != null) {
+				foreach (var child in virtualChildren) {
+					var visual = child.Visual;
+					if (visual != null)
+						visual.InvalidateVisual ();
+				}
+			}
+			else
+				base.Invalidate ();
+		}
+
+		public override void Invalidate (Rectangle rect)
+		{
+			if (virtualChildren != null) {
+				foreach (var child in virtualChildren) {
+					var visual = child.Visual;
+					if (visual != null && rect.Intersects (Generator.Convert (child.Bounds)))
+						visual.InvalidateVisual ();
+				}
+			}
+			else
+				base.Invalidate (rect);
+		}
+
 		public void Update (Eto.Drawing.Rectangle rect)
 		{
-			var parent = Control.GetParent<Microsoft.Sample.Controls.VirtualCanvas> ();
-			if (parent != null) {
-				parent.InvalidateMeasure ();
-			}
-			Control.InvalidateVisual ();
+			Invalidate (rect);
 		}
 
 		public bool CanFocus
@@ -179,10 +197,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set {
 				if (value != Control.Focusable) {
 					Control.Focusable = value;
-					if (value)
-						Control.MouseDown += Control_MouseDown;
-					else
-						Control.MouseDown -= Control_MouseDown;
 				}
 			}
 		}

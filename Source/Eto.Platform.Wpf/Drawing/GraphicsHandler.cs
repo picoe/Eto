@@ -115,15 +115,20 @@ namespace Eto.Platform.Wpf.Drawing
 		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
 		{
 			var src = image.ControlObject as swm.ImageSource;
-			//Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { destination.Left, destination.Right }, new double[] { destination.Top, destination.Bottom }));
 			Control.PushClip (new swm.RectangleGeometry (Generator.Convert (destination)));
+			bool scaled = false;
+			double scalex = 1.0;
+			double scaley = 1.0;
 			if (source.Size != destination.Size) {
-				// need to scale
+				scalex = (double)destination.Width / (double)source.Width;
+				scaley = (double)destination.Height / (double)source.Height;
+				Control.PushTransform (new swm.ScaleTransform (scalex, scaley));
+				scaled = true;
 			}
-			Control.DrawImage (src, new sw.Rect(destination.X - source.X, destination.Y - source.Y, src.Width, src.Height));
+			Control.DrawImage (src, new sw.Rect((destination.X / scalex) - source.X, (destination.Y / scaley) - source.Y, destination.Width / scalex, destination.Height / scaley));
 			Control.Pop ();
-			//Control.Pop ();
-			//Control.Pop ();
+			if (scaled)
+				Control.Pop ();
 		}
 
 		public void DrawIcon (Icon icon, int x, int y, int width, int height)

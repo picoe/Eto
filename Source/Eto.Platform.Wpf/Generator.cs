@@ -8,6 +8,8 @@ using Eto.Forms;
 using swi = System.Windows.Input;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using System.Reflection;
+using System.IO;
 
 namespace Eto.Platform.Wpf
 {
@@ -20,6 +22,31 @@ namespace Eto.Platform.Wpf
 			get { return GeneratorID; }
 		}
 
+		static Dictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly> ();
+
+		static Generator ()
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
+				var assemblyName = new AssemblyName (args.Name);
+				if (assemblyName.Name.EndsWith (".resources")) return null;
+
+				string resourceName = "Eto.Platform.Wpf.CustomControls.Assemblies." + assemblyName.Name + ".dll";
+				Assembly assembly = null;
+				lock (loadedAssemblies) {
+					if (!loadedAssemblies.TryGetValue (resourceName, out assembly)) {
+						using (var stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream (resourceName)) {
+							if (stream != null) {
+								using (var binaryReader = new BinaryReader (stream)) {
+									assembly = Assembly.Load (binaryReader.ReadBytes ((int)stream.Length));
+									loadedAssemblies.Add (resourceName, assembly);
+								}
+							}
+						}
+					}
+				}
+				return assembly;
+			};
+		}
 
 		public static Size GetSize (sw.FrameworkElement element)
 		{

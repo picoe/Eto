@@ -21,6 +21,8 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		Size? size;
 		Size? newSize;
+		Cursor cursor;
+
 		public abstract Color BackgroundColor
 		{
 			get;
@@ -54,8 +56,15 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual Cursor Cursor
 		{
-			get;
-			set;
+			get { return cursor; }
+			set
+			{
+				cursor = value;
+				if (cursor != null)
+					Control.Cursor = ((CursorHandler)cursor.Handler).Control;
+				else
+					Control.Cursor = null;
+			}
 		}
 
 		public string ToolTip
@@ -157,7 +166,7 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
-					Control.MouseEnter += (sender, e) => {
+					Control.MouseLeave += (sender, e) => {
 						var args = Generator.ConvertMouseEvent (Control, e);
 						Widget.OnMouseLeave (args);
 						e.Handled = args.Handled;

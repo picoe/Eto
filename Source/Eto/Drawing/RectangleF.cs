@@ -102,7 +102,12 @@ namespace Eto.Drawing
 			if (Width == 0 || height == 0) return false;
 			return (x >= Left && x <= Right && y >= Top && y <= Bottom);
 		}
-		
+
+		public bool Intersects (RectangleF rect)
+		{
+			return rect.X < this.X + this.Width && this.X < rect.X + rect.Width && rect.Y < this.Y + this.Height && this.Y < rect.Y + rect.Height;
+		}
+
 		public static RectangleF Union(RectangleF rect1, RectangleF rect2)
 		{
 			RectangleF rect = rect1;

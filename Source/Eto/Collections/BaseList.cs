@@ -40,14 +40,14 @@ namespace Eto.Collections
 			if (Changed != null) Changed(this, e);
 		}
 		
-		public event ListEventHandler<T> Added;
+		public event EventHandler<ListEventArgs<T>> Added;
 		
 		protected virtual void OnAdded(ListEventArgs<T> e)
 		{
 			if (Added != null) Added(this, e);
 		}
 		
-		public event ListEventHandler<T> Removed;
+		public event EventHandler<ListEventArgs<T>> Removed;
 		
 		protected virtual void OnRemoved(ListEventArgs<T> e)
 		{

@@ -68,9 +68,6 @@ namespace Eto.Platform.Wpf.Drawing
 			stride = (width * format.BitsPerPixel + 7) / 8;
 
 			var bufferSize = stride * height;
-			var pixels = new byte[bufferSize];
-			//var pixels = Marshal.AllocHGlobal (bufferSize);
-			//Marshal.Copy (new byte[bufferSize], 0, pixels, bufferSize); // clear out buffer
 			var bf = new swm.Imaging.WriteableBitmap(width, height, 96, 96, format, null);
 			Control = bf;
 			
@@ -138,15 +135,6 @@ namespace Eto.Platform.Wpf.Drawing
 			get { return new Size (Control.PixelWidth, Control.PixelHeight); }
 		}
 
-
-		protected override void Dispose (bool disposing)
-		{
-			base.Dispose (disposing);
-			/*if (pixels != IntPtr.Zero) {
-				Marshal.FreeHGlobal (pixels);
-				pixels = IntPtr.Zero;
-			}*/
-		}
 
 		public swm.ImageSource GetIconClosestToSize (int width)
 		{

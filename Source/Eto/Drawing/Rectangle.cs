@@ -121,7 +121,7 @@ namespace Eto.Drawing
 		
 		public bool Intersects(Rectangle rect)
 		{
-			return Right >= rect.Left && Left <= rect.Right && Bottom >= rect.Top && Top <= rect.Bottom;
+			return rect.X < this.X + this.Width && this.X < rect.X + rect.Width && rect.Y < this.Y + this.Height && this.Y < rect.Y + rect.Height;
 		}
 
 		public static Rectangle Union(Rectangle rect1, Rectangle rect2)

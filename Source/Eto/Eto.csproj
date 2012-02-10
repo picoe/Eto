@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -130,7 +130,7 @@
     <Compile Include="Collections\BaseList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\ListItemEventHandler.cs">
+    <Compile Include="Collections\ListEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Collections\LookupList.cs">
@@ -334,7 +334,7 @@
     <Compile Include="Forms\ToolBar\ToolBarButton.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarInteractionItem.cs">
+    <Compile Include="Forms\ToolBar\ToolBarActionItem.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBarItem.cs">
@@ -377,9 +377,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Misc\Platform.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Misc\Url.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Misc\XmlExtensions.cs">

@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using System.Globalization;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
@@ -9,69 +10,86 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			Control = new System.Windows.Forms.DateTimePicker ();
 			Control.ShowCheckBox = true;
+			Mode = DateTimePicker.DefaultMode;
+			Value = null;
 			Control.ValueChanged += delegate {
 				Widget.OnValueChanged (EventArgs.Empty);
 			};
-			Mode = DateTimePicker.DefaultMode;
 		}
-		
-		public DateTimePickerMode Mode {
-			get {
+
+		public DateTimePickerMode Mode
+		{
+			get
+			{
 				switch (Control.Format) {
-				case System.Windows.Forms.DateTimePickerFormat.Long:
-					return DateTimePickerMode.DateTime;
-				case System.Windows.Forms.DateTimePickerFormat.Short:
-					return DateTimePickerMode.Date;
-				case System.Windows.Forms.DateTimePickerFormat.Time:
-					return DateTimePickerMode.Time;
-				default:
-					throw new NotImplementedException();
+					case System.Windows.Forms.DateTimePickerFormat.Long:
+						return DateTimePickerMode.DateTime;
+					case System.Windows.Forms.DateTimePickerFormat.Short:
+						return DateTimePickerMode.Date;
+					case System.Windows.Forms.DateTimePickerFormat.Time:
+						return DateTimePickerMode.Time;
+					default:
+						throw new NotImplementedException ();
 				}
 			}
-			set {
+			set
+			{
 				switch (value) {
-				case DateTimePickerMode.DateTime:
-					Control.Format = System.Windows.Forms.DateTimePickerFormat.Long;
-					break;
-				case DateTimePickerMode.Date:
-					Control.Format = System.Windows.Forms.DateTimePickerFormat.Short;
-					break;
-				case DateTimePickerMode.Time:
-					Control.Format = System.Windows.Forms.DateTimePickerFormat.Time;
-					break;
-				default:
-					throw new NotImplementedException();
+					case DateTimePickerMode.DateTime:
+						Control.Format = System.Windows.Forms.DateTimePickerFormat.Custom;
+						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
+						Control.CustomFormat = format.ShortDatePattern + " " + format.LongTimePattern;
+						break;
+					case DateTimePickerMode.Date:
+						Control.Format = System.Windows.Forms.DateTimePickerFormat.Short;
+						break;
+					case DateTimePickerMode.Time:
+						Control.Format = System.Windows.Forms.DateTimePickerFormat.Time;
+						break;
+					default:
+						throw new NotImplementedException ();
 				}
 			}
 		}
-		
-		public DateTime MinDate {
-			get {
+
+		public DateTime MinDate
+		{
+			get
+			{
 				return Control.MinDate;
 			}
-			set {
+			set
+			{
 				Control.MinDate = value;
 			}
 		}
-		
-		public DateTime MaxDate {
-			get {
+
+		public DateTime MaxDate
+		{
+			get
+			{
 				return Control.MaxDate;
 			}
-			set {
+			set
+			{
 				Control.MaxDate = value;
 			}
 		}
 
-		public DateTime? Value {
-			get {
-				return Control.Checked ? Control.Value : Control.Value;
+		public DateTime? Value
+		{
+			get
+			{
+				if (!Control.Checked) return null;
+				return Control.Value;
 			}
-			set {
+			set
+			{
 				if (value != null) {
 					Control.Value = value.Value;
 					Control.Checked = true;
-				} else
+				}
+				else
 					Control.Checked = false;
 			}
 		}
