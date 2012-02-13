@@ -49,6 +49,10 @@ namespace Eto.Drawing
 		public Bitmap (Stream stream) : this(Generator.Current, stream)
 		{
 		}
+
+		public Bitmap (Size size, PixelFormat pixelFormat) : this(size.Width, size.Height, pixelFormat)
+		{
+		}
 		
 		public Bitmap (int width, int height, PixelFormat pixelFormat) : this(Generator.Current, width, height, pixelFormat)
 		{

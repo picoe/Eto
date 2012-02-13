@@ -105,8 +105,10 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		
 		public bool IsDateValid ()
 		{
-			if (string.IsNullOrEmpty (Entry.Text))
+			if (string.IsNullOrEmpty (Entry.Text)) {
+				selectedDate = null;
 				return true;
+			}
 			DateTime date;
 			if (DateTime.TryParse (Entry.Text, CultureInfo.CurrentCulture, DateTimeStyles.None, out date)) {
 				if (date >= MinDate && date <= MaxDate) {
