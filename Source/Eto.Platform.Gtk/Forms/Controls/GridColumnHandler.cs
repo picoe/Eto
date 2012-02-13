@@ -8,7 +8,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		Cell dataCell;
 		bool autoSize;
 		bool editable;
-		int index;
 		
 		public GridColumnHandler ()
 		{

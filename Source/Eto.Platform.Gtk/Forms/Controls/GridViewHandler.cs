@@ -166,16 +166,18 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			public bool IterNthChild (out Gtk.TreeIter child, Gtk.TreeIter parent, int n)
 			{
 				if (parent.UserData == IntPtr.Zero && Handler.store != null) {
-					if (n >= Handler.store.Count)
-						return false;
-					child = IterFromNode (n);
-					return true;
+					if (n < Handler.store.Count) {
+						child = IterFromNode (n);
+						return true;
+					}
 				}
+				child = Gtk.TreeIter.Zero;
 				return false;
 			}
 
 			public bool IterParent (out Gtk.TreeIter parent, Gtk.TreeIter child)
 			{
+				parent = Gtk.TreeIter.Zero;
 				return false;
 			}
 

@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public static class WpfTreeItemHelper
 	{
-		public static IEnumerable GetChildren (ITreeItem item)
+		public static IEnumerable GetChildren (ITreeStore item)
 		{
 			if (item == null)
 				yield break;

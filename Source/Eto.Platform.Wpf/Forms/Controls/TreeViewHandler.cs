@@ -14,7 +14,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class TreeViewHandler : WpfControl<swc.TreeView, TreeView>, ITreeView
 	{
-		ITreeItem topNode;
+		ITreeStore topNode;
 
 		public TreeViewHandler ()
 		{
@@ -46,7 +46,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		}
 
 
-		public ITreeItem TopNode
+		public ITreeStore DataStore
 		{
 			get { return topNode; }
 			set
