@@ -8,7 +8,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TreeViewHandler : MacView<NSScrollView, TreeView>, ITreeView
 	{
-		ITreeItem top;
+		ITreeStore top;
 		NSOutlineView outline;
 		Dictionary<ITreeItem, EtoTreeItem> cachedItems = new Dictionary<ITreeItem, EtoTreeItem> ();
 		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
@@ -168,7 +168,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.DocumentView = outline;
 		}
 
-		public ITreeItem TopNode {
+		public ITreeStore DataStore {
 			get { return top; }
 			set {
 				top = value;

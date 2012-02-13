@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -20,7 +20,6 @@
     <RootNamespace>Eto</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
@@ -470,6 +469,14 @@
     <Compile Include="Drawing\PointConverter.cs" />
     <Compile Include="Drawing\PointFConverter.cs" />
     <Compile Include="Drawing\PaddingConverter.cs" />
+    <Compile Include="Forms\Controls\GridView.cs" />
+    <Compile Include="Forms\Controls\GridColumn.cs" />
+    <Compile Include="Forms\Controls\GridItem.cs" />
+    <Compile Include="Forms\IDataStore.cs" />
+    <Compile Include="Forms\Controls\Cell.cs" />
+    <Compile Include="Forms\Controls\TextCell.cs" />
+    <Compile Include="Forms\Controls\CheckBoxCell.cs" />
+    <Compile Include="Forms\Controls\ImageCell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

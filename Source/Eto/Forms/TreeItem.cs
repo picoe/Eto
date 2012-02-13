@@ -5,17 +5,13 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-	public interface ITreeItem : IImageListItem
+	public interface ITreeItem : IImageListItem, ITreeStore
 	{
-		int Count { get; }
-		
 		bool Expanded { get; set; }
 		
 		bool Expandable { get; }
 		
 		ITreeItem Parent { get; set; }
-		
-		ITreeItem GetChild (int index);
 	}
 	
 	[ContentProperty("Children")]

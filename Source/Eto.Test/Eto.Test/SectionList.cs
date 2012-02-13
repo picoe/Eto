@@ -109,6 +109,7 @@ namespace Eto.Test
 			yield return new Section<GroupBoxSection> { Text = "Group Box" };
 			yield return new Section<SliderSection> { Text = "Slider" };
 			yield return new Section<XamlSection> { Text = "Xaml" };
+			yield return new Section<GridViewSection> { Text = "Grid View" };
 		}
 
 		IEnumerable<ITreeItem> DrawingSection ()

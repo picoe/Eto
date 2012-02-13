@@ -9,7 +9,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class TreeViewHandler : WindowsControl<SWF.TreeView, TreeView>, ITreeView
 	{
-		ITreeItem top;
+		ITreeStore top;
 		Dictionary<Image, string> images = new Dictionary<Image, string> ();
 		
 		public TreeViewHandler ()
@@ -28,7 +28,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 		}
 
-		public ITreeItem TopNode {
+		public ITreeStore DataStore {
 			get { return top; }
 			set {
 				top = value;
@@ -38,7 +38,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 		
-		void PopulateNodes (System.Windows.Forms.TreeNodeCollection nodes, ITreeItem item)
+		void PopulateNodes (System.Windows.Forms.TreeNodeCollection nodes, ITreeStore item)
 		{
 			var count = item.Count;
 			for (int i=0; i<count; i++) {

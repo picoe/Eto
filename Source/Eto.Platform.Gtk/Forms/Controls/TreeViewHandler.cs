@@ -9,7 +9,7 @@ namespace Eto.Platform.GtkSharp.Forms
 	{
 		Gtk.TreeStore model;
 		Gtk.TreeView tree;
-		ITreeItem top;
+		ITreeStore top;
 		
 		public static Size MaxImageSize = new Size(16, 16);
 		
@@ -56,7 +56,7 @@ namespace Eto.Platform.GtkSharp.Forms
 			Control.Add(tree);
 		}
 
-		public ITreeItem TopNode {
+		public ITreeStore DataStore {
 			get { return top; }
 			set {
 				top = value;
@@ -72,7 +72,7 @@ namespace Eto.Platform.GtkSharp.Forms
 			
 		}
 		
-		void Populate (Gtk.TreeIter? parent, ITreeItem item)
+		void Populate (Gtk.TreeIter? parent, ITreeStore item)
 		{
 			for (int i=0; i<item.Count; i++) {
 				var child = item.GetChild (i);
