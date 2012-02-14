@@ -1,20 +1,20 @@
 using System;
-using SWF = System.Windows.Forms;
-using SD = System.Drawing;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Drawing;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
-	public class TreeViewHandler : WindowsControl<SWF.TreeView, TreeView>, ITreeView
+	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView>, ITreeView
 	{
 		ITreeStore top;
 		Dictionary<Image, string> images = new Dictionary<Image, string> ();
 		
 		public TreeViewHandler ()
 		{
-			this.Control = new SWF.TreeView ();
+			this.Control = new swf.TreeView ();
 			
 			this.Control.BeforeExpand += delegate(object sender, System.Windows.Forms.TreeViewCancelEventArgs e) {
 				var item = e.Node.Tag as ITreeItem;
@@ -63,7 +63,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				return null;
 			
 			if (this.Control.ImageList == null)
-				this.Control.ImageList = new System.Windows.Forms.ImageList{ ColorDepth = SWF.ColorDepth.Depth32Bit };
+				this.Control.ImageList = new System.Windows.Forms.ImageList{ ColorDepth = swf.ColorDepth.Depth32Bit };
 			string key;
 			if (!images.TryGetValue (image, out key)) {
 				key = Guid.NewGuid ().ToString ();

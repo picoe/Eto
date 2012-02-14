@@ -66,6 +66,24 @@ namespace Eto.Platform.Windows.Forms.Controls
 			get { return this.Control.Visible; }
 			set { this.Control.Visible = value; }
 		}
+
+		public object GetItemValue (object cellValue)
+		{
+			if (dataCell != null) {
+				var cellHandler = ((ICellHandler)dataCell.Handler);
+				return cellHandler.GetItemValue (cellValue);
+			}
+			return null;
+		}
+
+		public object GetCellValue (object itemValue)
+		{
+			if (dataCell != null) {
+				var cellHandler = ((ICellHandler)dataCell.Handler);
+				return cellHandler.GetCellValue (itemValue);
+			}
+			return null;
+		}
 	}
 }
 

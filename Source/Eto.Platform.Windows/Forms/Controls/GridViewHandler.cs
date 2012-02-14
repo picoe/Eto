@@ -11,6 +11,23 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public GridViewHandler ()
 		{
 			Control = new swf.DataGridView();
+			Control.VirtualMode = true;
+			Control.RowHeadersVisible = false;
+			Control.AllowUserToAddRows = false;
+			Control.AllowUserToResizeRows = false;
+			Control.CellValueNeeded += (sender, e) => {
+				var item = store.GetItem (e.RowIndex);
+				var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+				if (item != null && col != null)
+					e.Value = col.GetCellValue(item.GetValue (e.ColumnIndex));
+			};
+
+			Control.CellValuePushed += (sender, e) => {
+				var item = store.GetItem(e.RowIndex);
+				var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+				if (item != null && col != null)
+					item.SetValue (e.ColumnIndex, col.GetItemValue(e.Value));
+			};
 		}
 
 		public void InsertColumn (int index, GridColumn column)
@@ -50,6 +67,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 			get { return store; }
 			set {
 				store = value;
+				if (store != null)
+					Control.RowCount = store.Count;
+				else
+					Control.RowCount = 0;
 			}
 		}
 	}

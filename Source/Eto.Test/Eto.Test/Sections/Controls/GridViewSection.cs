@@ -28,9 +28,14 @@ namespace Eto.Test.Sections.Controls
 			var image1 = Bitmap.FromResource ("Eto.Test.TestImage.png");
 			var image2 = Icon.FromResource ("Eto.Test.TestIcon.ico");
 			var items = new GridItemCollection ();
-			items.Add (new GridItem ("Col 1", null, "Col 3", image1));
-			items.Add (new GridItem ("Col 1", false, null, image2));
-			items.Add (new GridItem ("Col 1", true, "Col 3", null));
+			var rand = new Random();
+			for (int i = 0; i < 10000; i++) {
+				var boolVal = rand.Next(3);
+				var image = rand.Next (2) == 0 ? (Image)image1 : (Image)image2;
+				var txt = string.Format ("Col 1 Row {0}", i);
+				var editText = rand.Next (10) == 0 ? null : "Editable, Sometimes Null";
+				items.Add (new GridItem (txt, boolVal == 0 ? (bool?)false : boolVal == 1 ? (bool?)true : null, editText, image));
+			}
 			control.DataStore = items;
 			
 			return control;

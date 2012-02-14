@@ -10,6 +10,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			Control = new swf.DataGridViewCheckBoxCell ();
 		}
+
+		public override object GetCellValue (object itemValue)
+		{
+			if (itemValue == null) return false;
+			return base.GetCellValue (itemValue);
+		}
 	}
 }
 

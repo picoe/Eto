@@ -7,6 +7,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 	public interface ICellHandler
 	{
 		swf.DataGridViewCell Control { get; }
+		object GetItemValue (object cellValue);
+		object GetCellValue (object itemValue);
 	}
 	
 	public class CellHandler<T, W> : WidgetHandler<T, W>, ICell, ICellHandler
@@ -16,6 +18,17 @@ namespace Eto.Platform.Windows.Forms.Controls
 		swf.DataGridViewCell ICellHandler.Control {
 			get { return Control; }
 		}
+
+		public virtual object GetItemValue (object cellValue)
+		{
+			return cellValue;
+		}
+
+		public virtual object GetCellValue (object itemValue)
+		{
+			return itemValue;
+		}
+
 	}
 }
 
