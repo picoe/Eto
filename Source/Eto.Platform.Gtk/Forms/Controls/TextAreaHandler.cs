@@ -48,8 +48,10 @@ namespace Eto.Platform.GtkSharp
 		{
 			var end = textView.Buffer.EndIter;
 			textView.Buffer.Insert (ref end, text);
-			if (scrollToCursor)
-				textView.ScrollToIter (end, 0, false, 0, 0);
+			if (scrollToCursor) {
+				var mark = textView.Buffer.CreateMark (null, end, false);
+				textView.ScrollToMark (mark, 0, false, 0, 0);
+			}
 		}
 		
 		
