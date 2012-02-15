@@ -55,7 +55,7 @@ namespace Eto.Test.Sections.Controls
 
 				var txt = string.Format ("Col 1 Row {0}", i);
 				var editText = rand.Next (10) == 0 ? null : "Editable, Sometimes Null";
-				items.Add (new LogGridItem (txt, boolVal, editText, image));
+				items.Add (new LogGridItem (txt, boolVal, editText, image){ Row = i });
 			}
 			control.DataStore = items;
 			
