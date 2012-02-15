@@ -23,6 +23,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			return false;
 		}
+		
+		public override NSObject GetObjectValue (object val)
+		{
+			if (val == null) return new NSNumber((int)NSCellStateValue.Off);
+			return base.GetObjectValue (val);
+		}
 	}
 }
 
