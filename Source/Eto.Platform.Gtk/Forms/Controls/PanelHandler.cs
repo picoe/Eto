@@ -7,26 +7,26 @@ namespace Eto.Platform.GtkSharp
 	{
 		Gtk.VBox box;
 		
-		public PanelHandler()
+		public PanelHandler ()
 		{
-			Control = new Gtk.EventBox();
-			box = new Gtk.VBox();
+			Control = new Gtk.EventBox ();
+			//Control.VisibleWindow = false; // can't use this as it causes overlapping widgets
+			box = new Gtk.VBox ();
 			Control.Add (box);
 		}
-
-		public override object ContainerObject
-		{
+		
+		public override object ContainerObject {
 			get { return box; }
 		}
 		
-		public override void SetLayout(Layout inner)
+		public override void SetLayout (Layout inner)
 		{
 			if (box.Children.Length > 0)
 				foreach (Gtk.Widget child in box.Children)
-					box.Remove(child);
+					box.Remove (child);
 			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
 			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
-			box.Add(containerWidget);
+			box.Add (containerWidget);
 			containerWidget.ShowAll ();
 		}
 		

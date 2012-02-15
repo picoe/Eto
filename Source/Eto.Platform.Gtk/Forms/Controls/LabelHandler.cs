@@ -43,6 +43,7 @@ namespace Eto.Platform.GtkSharp
 		public LabelHandler ()
 		{
 			Control = new Gtk.EventBox();
+			Control.VisibleWindow = false;
 			label = new WrapLabel {
 				SingleLineMode = false,
 				LineWrap = true,

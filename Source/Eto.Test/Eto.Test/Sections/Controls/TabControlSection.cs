@@ -32,6 +32,12 @@ namespace Eto.Test.Sections.Controls
 			LogEvents (page);
 			page.AddDockedControl (TabTwo ());
 			control.TabPages.Add (page);
+
+			page = new TabPage { 
+				Text = "Tab 3"
+			};
+			LogEvents (page);
+			control.TabPages.Add (page);
 			
 			return control;
 			

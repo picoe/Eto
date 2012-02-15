@@ -93,7 +93,11 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual Color BackgroundColor {
 			get { return Generator.Convert (Control.Style.Background (Gtk.StateType.Normal)); }
-			set { Control.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value)); }
+			set { 
+				var eb = Control as Gtk.EventBox;
+				if (eb != null) eb.VisibleWindow = !value.IsEmpty;
+				Control.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value));
+			}
 		}
 
 		public Graphics CreateGraphics ()

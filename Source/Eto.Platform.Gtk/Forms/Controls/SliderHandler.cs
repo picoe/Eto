@@ -14,6 +14,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public SliderHandler ()
 		{
 			this.Control = new Gtk.EventBox ();
+			Control.VisibleWindow = false;
 			scale = new Gtk.HScale (min, max, 1);
 			scale.ValueChanged += HandleScaleValueChanged;
 			this.Control.Child = scale;
