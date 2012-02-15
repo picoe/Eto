@@ -17,6 +17,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			base.Initialize ();
 			DataCell = new TextCell(Widget.Generator);
+			Editable = false;
 		}
 
 		public string HeaderText {

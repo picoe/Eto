@@ -4,6 +4,22 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
+	class LogGridItem : GridItem
+	{
+		public int Row { get; set; }
+
+		public LogGridItem (params object[] values)
+			: base (values)
+		{
+		}
+
+		public override void SetValue (int column, object value)
+		{
+			base.SetValue (column, value);
+			Log.Write (this, "SetValue, Row: {0}, Column: {1}, Value: {2}", Row, column, value);
+		}
+	}
+
 	public class GridViewSection : Panel
 	{
 		public GridViewSection ()
@@ -13,7 +29,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "No Header" }, NoHeader ());
 		}
-		
+
+
 		GridView Default ()
 		{
 			var control = new GridView {
@@ -30,11 +47,15 @@ namespace Eto.Test.Sections.Controls
 			var items = new GridItemCollection ();
 			var rand = new Random();
 			for (int i = 0; i < 10000; i++) {
-				var boolVal = rand.Next(3);
-				var image = rand.Next (2) == 0 ? (Image)image1 : (Image)image2;
+				var val = rand.Next(3);
+				var boolVal = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
+
+				val = rand.Next (3);
+				var image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
+
 				var txt = string.Format ("Col 1 Row {0}", i);
 				var editText = rand.Next (10) == 0 ? null : "Editable, Sometimes Null";
-				items.Add (new GridItem (txt, boolVal == 0 ? (bool?)false : boolVal == 1 ? (bool?)true : null, editText, image));
+				items.Add (new LogGridItem (txt, boolVal, editText, image){ Row = i });
 			}
 			control.DataStore = items;
 			

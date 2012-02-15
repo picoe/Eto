@@ -43,8 +43,8 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size (100, 150)
 			};
 			LogEvents (control);
-			
-			var image = new Icon (null, "Eto.Test.TestIcon.ico");
+
+			var image = Icon.FromResource ("Eto.Test.TestIcon.ico");
 			var items = new List<IListItem> ();
 			for (int i = 0; i < 1000; i++) {
 				items.Add (new ImageListItem{ Text = "Item " + i, Image = image });

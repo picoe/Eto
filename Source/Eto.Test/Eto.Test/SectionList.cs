@@ -68,7 +68,7 @@ namespace Eto.Test
 			this.Style = "sectionList";
 			
 
-			this.TopNode = Section ("Top", TopNodes ());
+			this.DataStore = Section ("Top", TopNodes ());
 		}
 		
 		ITreeItem Section (string label, IEnumerable<ITreeItem> items)
