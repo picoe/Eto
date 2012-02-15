@@ -17,7 +17,7 @@ namespace Eto.Test.Dialogs
 			var layout = new DynamicLayout (this);
 
 			layout.AddCentered(new ImageView{
-				Image = new Icon(null, "Eto.Test.TestIcon.ico"),
+				Image = Icon.FromResource ("Eto.Test.TestIcon.ico"),
 				Size = new Size(128, 128)
 			}, true, true);
 			

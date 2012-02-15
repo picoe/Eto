@@ -26,8 +26,8 @@ namespace Eto.Test.Sections.Controls
 			LogEvents (page);
 			
 			page = new TabPage { 
-				Text = "Tab 2", 
-				Image = new Icon(null, "Eto.Test.TestIcon.ico") 
+				Text = "Tab 2",
+				Image = Icon.FromResource ("Eto.Test.TestIcon.ico") 
 			};
 			LogEvents (page);
 			page.AddDockedControl (TabTwo ());

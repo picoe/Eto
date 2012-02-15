@@ -7,8 +7,8 @@ namespace Eto.Test.Sections.Controls
 	public class TreeViewSection : Panel
 	{
 		int expanded;
-		
-		static Image Image = new Icon (null, "Eto.Test.TestIcon.ico");
+
+		static Image Image = Icon.FromResource ("Eto.Test.TestIcon.ico");
 		
 		public TreeViewSection ()
 		{

@@ -25,14 +25,14 @@ namespace Eto.Forms
 			get; set;
 		}
 		
-		public object GetValue (int column)
+		public virtual object GetValue (int column)
 		{
 			if (Values == null || Values.Length <= column)
 				return null;
 			return Values[column];
 		}
 
-		public void SetValue (int column, object value)
+		public virtual void SetValue (int column, object value)
 		{
 			if (Values == null) {
 				Values = new object[column + 1];
@@ -45,5 +45,6 @@ namespace Eto.Forms
 			Values[column] = value;
 		}
 	}
+
 }
 

@@ -16,7 +16,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public class EtoComboBox : swc.ComboBox
 		{
-			private int _selected;
+			int? _selected;
 
 			public override void OnApplyTemplate ()
 			{
@@ -28,13 +28,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Loaded += ComboBoxEx_Loaded;
 			}
 
+			protected override void OnSelectionChanged (swc.SelectionChangedEventArgs e)
+			{
+				if (_selected == null)
+					base.OnSelectionChanged (e);
+			}
+
 			void ComboBoxEx_Loaded (object sender, sw.RoutedEventArgs e)
 			{
 				var popup = GetTemplateChild ("PART_Popup") as swc.Primitives.Popup;
 				var content = popup.Child as sw.FrameworkElement;
 				content.Measure (new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
 				MinWidth = content.DesiredSize.Width;
-				SelectedIndex = _selected;
+				SelectedIndex = _selected.Value;
+				_selected = null;
 			}
 
 		}
@@ -42,12 +49,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public ComboBoxHandler ()
 		{
 			Control = new EtoComboBox ();
-			Control.SelectionChanged += delegate {
-				Widget.OnSelectedIndexChanged (EventArgs.Empty);
-			};
 			var template = new sw.DataTemplate (typeof (IListItem));
 			template.VisualTree = WpfListItemHelper.TextBlock ();
 			Control.ItemTemplate = template;
+		}
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			Control.SelectionChanged += delegate {
+				Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			};
 		}
 
 

@@ -19,7 +19,7 @@ namespace Eto.Forms
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
 		{
 			Icon icon = null;
-			if (iconResource != string.Empty) icon = new Icon(Assembly.GetCallingAssembly(), iconResource);
+			if (iconResource != string.Empty) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
 			ButtonAction action = new ButtonAction(id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
@@ -29,7 +29,7 @@ namespace Eto.Forms
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated)
 		{
 			Icon icon = null;
-			if (iconResource != string.Empty) icon = new Icon(Assembly.GetCallingAssembly(), iconResource);
+			if (iconResource != string.Empty) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
 			ButtonAction action = new ButtonAction(id, text, icon, activated);
 			actions.Add(action);
 			return action;

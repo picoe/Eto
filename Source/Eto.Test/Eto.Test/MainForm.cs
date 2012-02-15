@@ -40,7 +40,7 @@ namespace Eto.Test
 		{
 			this.Text = "Test Application";
 			this.Style = "main";
-			this.Icon = new Icon (null, "Eto.Test.TestIcon.ico");
+			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
 			this.Size = new Size (800, 600);
 			//this.Opacity = 0.5;
 

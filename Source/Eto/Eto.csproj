@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -105,6 +105,10 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\Cell.cs" />
+    <Compile Include="Forms\Controls\CheckBoxCell.cs" />
+    <Compile Include="Forms\Controls\ImageCell.cs" />
+    <Compile Include="Forms\Controls\TextCell.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />
@@ -473,10 +477,6 @@
     <Compile Include="Forms\Controls\GridColumn.cs" />
     <Compile Include="Forms\Controls\GridItem.cs" />
     <Compile Include="Forms\IDataStore.cs" />
-    <Compile Include="Forms\Controls\Cell.cs" />
-    <Compile Include="Forms\Controls\TextCell.cs" />
-    <Compile Include="Forms\Controls\CheckBoxCell.cs" />
-    <Compile Include="Forms\Controls\ImageCell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

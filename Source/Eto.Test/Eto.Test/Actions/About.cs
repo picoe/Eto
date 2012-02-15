@@ -13,7 +13,7 @@ namespace Eto.Test.Actions
 			this.ID = ActionID;
 			this.MenuText = "About Test Application";
 			this.ToolBarText = "About";
-			this.Icon = new Icon(null, "Eto.Test.TestIcon.ico");
+			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
 		}
 		
 		protected override void OnActivated (EventArgs e)
