@@ -26,13 +26,19 @@ namespace Eto
 		public virtual void Initialize()
 		{
 		}
+
+		public bool IsEventHandled (string handler)
+		{
+			if (eventHooks == null) return false;
+			return eventHooks.Contains (handler);
+		}
 		
 		public void HandleEvent(string handler)
 		{
 			if (eventHooks == null) eventHooks = new HashSet<string>();
 			if (eventHooks.Contains(handler)) return;
-			AttachEvent(handler);
-			eventHooks.Add(handler);
+			eventHooks.Add (handler);
+			AttachEvent (handler);
 		}
 		
 		public virtual void AttachEvent(string handler)

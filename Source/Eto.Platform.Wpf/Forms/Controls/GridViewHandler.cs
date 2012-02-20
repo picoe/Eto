@@ -22,6 +22,31 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case GridView.BeginCellEditEvent:
+					Control.PreparingCellForEdit += (sender, e) => {
+						var row = e.Row.GetIndex();
+						var item = store.GetItem (row);
+						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
+						Widget.OnBeginCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					};
+					break;
+				case GridView.EndCellEditEvent:
+					Control.CellEditEnding += (sender, e) => {
+						var row = e.Row.GetIndex ();
+						var item = store.GetItem (row);
+						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
+						Widget.OnEndCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					};
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
+			}
+		}
+
 		public bool ShowHeader
 		{
 			get { return Control.HeadersVisibility.HasFlag(swc.DataGridHeadersVisibility.Column); }

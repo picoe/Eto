@@ -36,6 +36,7 @@ namespace Eto.Test.Sections.Controls
 			var control = new GridView {
 				Size = new Size (300, 100)
 			};
+			LogEvents (control);
 			
 			control.Columns.Add (new GridColumn{ HeaderText = "Default"});
 			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell (), Editable = true, AutoSize = true, Resizable = false});
@@ -67,6 +68,16 @@ namespace Eto.Test.Sections.Controls
 			var control = Default ();
 			control.ShowHeader = false;
 			return control;
+		}
+
+		void LogEvents (GridView control)
+		{
+			control.BeginCellEdit += (sender, e) => {
+				Log.Write (control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			};
+			control.EndCellEdit += (sender, e) => {
+				Log.Write (control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+			};
 		}
 	}
 }

@@ -30,6 +30,20 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			val = new GLib.Value(default(bool));
 		}
+
+		public override void AttachEvent (string eventHandler)
+		{
+			switch (eventHandler) {
+				case GridView.EndCellEditEvent:
+					Control.Toggled += (sender, e) => {
+						Source.EndCellEditing (e.Path, this.ColumnIndex);
+					};
+					break;
+				default:
+					base.AttachEvent (eventHandler);
+					break;
+			}
+		}
 	}
 }
 

@@ -18,8 +18,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public GridColumnHandler ()
 		{
-			Control = new NSTableColumn ();
-			Control.ResizingMask = NSTableColumnResizing.UserResizingMask;
+			Control = new NSTableColumn {
+				ResizingMask = NSTableColumnResizing.UserResizingMask
+			};
 			
 			Sortable = false;
 			AutoSize = true;

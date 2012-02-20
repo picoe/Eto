@@ -18,6 +18,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 			base.Initialize ();
 			DataCell = new TextCell(Widget.Generator);
 			Editable = false;
+			AutoSize = true;
+			Resizable = true;
 		}
 
 		public string HeaderText {

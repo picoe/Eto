@@ -107,6 +107,7 @@
     </Compile>
     <Compile Include="Forms\Controls\Cell.cs" />
     <Compile Include="Forms\Controls\CheckBoxCell.cs" />
+    <Compile Include="Forms\Controls\GridColumnCollection.cs" />
     <Compile Include="Forms\Controls\ImageCell.cs" />
     <Compile Include="Forms\Controls\TextCell.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />

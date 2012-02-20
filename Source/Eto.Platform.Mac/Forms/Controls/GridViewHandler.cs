@@ -51,17 +51,30 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public GridViewHandler ()
 		{
-			Control = new NSScrollView ();
-			Control.HasVerticalScroller = true;
-			Control.HasHorizontalScroller = true;
-			Control.AutohidesScrollers = true;
-			Control.BorderType = NSBorderType.BezelBorder;
-			
-			
-			table = new NSTableView ();
-			table.FocusRingType = NSFocusRingType.None;
-			table.DataSource = new EtoTableViewDataSource{ Handler = this };
-			Control.DocumentView = table;
+			table = new NSTableView {
+				FocusRingType = NSFocusRingType.None,
+				DataSource = new EtoTableViewDataSource { Handler = this }
+			};
+
+			Control = new NSScrollView {
+				HasVerticalScroller = true,
+				HasHorizontalScroller = true,
+				AutohidesScrollers = true,
+				BorderType = NSBorderType.BezelBorder,
+				DocumentView = table
+			};
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+				case GridView.BeginCellEditEvent:
+					
+					break;
+				default:
+					base.AttachEvent (handler);
+					break;
+			}
 		}
 
 		public void InsertColumn (int index, GridColumn column)

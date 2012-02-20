@@ -10,91 +10,124 @@ namespace Eto.Forms
 
 		IGridItem GetItem (int index);
 	}
-	
+
 	public class GridItemCollection : Collection<IGridItem>, IGridStore
 	{
 		IGridItem IGridStore.GetItem (int index)
 		{
-			return this [index];
+			return this[index];
 		}
 	}
-	
+
 	public interface IGridView : IControl
 	{
 		bool ShowHeader { get; set; }
-		
+
 		bool AllowColumnReordering { get; set; }
 
 		void InsertColumn (int index, GridColumn column);
-		
+
 		void RemoveColumn (int index, GridColumn column);
-		
+
 		void ClearColumns ();
-		
+
 		IGridStore DataStore { get; set; }
 	}
-	
-	public class ColumnCollection : Collection<GridColumn>
+
+	public class GridViewCellArgs : EventArgs
 	{
-		internal IGridView Handler { get; set; }
-		
-		protected override void InsertItem (int index, GridColumn item)
+		public GridColumn GridColumn { get; private set; }
+
+		public int Row { get; private set; }
+
+		public int Column { get; private set; }
+
+		public IGridItem Item { get; private set; }
+
+		public GridViewCellArgs (GridColumn gridColumn, int row, int column, IGridItem item)
 		{
-			base.InsertItem (index, item);
-			Handler.InsertColumn (index, item);
-		}
-		
-		protected override void RemoveItem (int index)
-		{
-			var item = this [index];
-			base.RemoveItem (index);
-			Handler.RemoveColumn (index, item);
-		}
-		
-		protected override void SetItem (int index, GridColumn item)
-		{
-			var oldItem = this [index];
-			base.SetItem (index, item);
-			Handler.RemoveColumn (index, oldItem);
-			Handler.InsertColumn (index, item);
-		}
-		
-		protected override void ClearItems ()
-		{
-			base.ClearItems ();
-			Handler.ClearColumns ();
+			this.GridColumn = gridColumn;
+			this.Row = row;
+			this.Column = column;
+			this.Item = item;
 		}
 	}
-	
+
+
 	public class GridView : Control
 	{
 		IGridView handler;
-		
-		public ColumnCollection Columns { get; private set; }
-		
+
+		#region Events
+
+		public const string BeginCellEditEvent = "GridView.BeginCellEditEvent";
+
+		event EventHandler<GridViewCellArgs> beginCellEdit;
+
+		public event EventHandler<GridViewCellArgs> BeginCellEdit
+		{
+			add
+			{
+				beginCellEdit += value;
+				HandleEvent (BeginCellEditEvent);
+			}
+			remove { beginCellEdit -= value; }
+		}
+		public virtual void OnBeginCellEdit (GridViewCellArgs e)
+		{
+			if (beginCellEdit != null) beginCellEdit (this, e);
+		}
+
+		public const string EndCellEditEvent = "GridView.EndCellEditEvent";
+
+		event EventHandler<GridViewCellArgs> endCellEdit;
+
+		public event EventHandler<GridViewCellArgs> EndCellEdit
+		{
+			add
+			{
+				endCellEdit += value;
+				HandleEvent (EndCellEditEvent);
+			}
+			remove { endCellEdit -= value; }
+		}
+
+		public virtual void OnEndCellEdit (GridViewCellArgs e)
+		{
+			if (endCellEdit != null) endCellEdit (this, e);
+		}
+
+		#endregion
+
+
+		public GridColumnCollection Columns { get; private set; }
+
 		public GridView ()
-			: this(Generator.Current)
+			: this (Generator.Current)
 		{
 		}
-		
+
 		public GridView (Generator g)
-			: base(g, typeof(IGridView), true)
+			: base (g, typeof (IGridView), true)
 		{
 			handler = (IGridView)Handler;
-			Columns = new ColumnCollection{ Handler = handler };
+			Columns = new GridColumnCollection { Handler = handler };
 		}
-		
-		public bool ShowHeader {
+
+		public bool ShowHeader
+		{
 			get { return handler.ShowHeader; }
 			set { handler.ShowHeader = value; }
 		}
-		
-		public bool AllowColumnReordering {
+
+		public bool AllowColumnReordering
+		{
 			get { return handler.AllowColumnReordering; }
 			set { handler.AllowColumnReordering = value; }
 		}
-		
-		public IGridStore DataStore {
+
+		public IGridStore DataStore
+		{
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
 		}

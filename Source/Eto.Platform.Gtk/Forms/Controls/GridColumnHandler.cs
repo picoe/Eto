@@ -8,6 +8,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		Cell dataCell;
 		bool autoSize;
 		bool editable;
+		int column;
+		GridViewHandler grid;
 		
 		public GridColumnHandler ()
 		{
@@ -54,6 +56,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			if (dataCell != null) {
 				((ICellHandler)dataCell.Handler).SetEditable (Control, editable);
+				SetupEvents ();
 			}
 		}
 		
@@ -88,13 +91,30 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set { Control.Visible = value; }
 		}
 		
-		public void BindCell (ICellDataSource source, int index)
+		public void BindCell (GridViewHandler grid, ICellDataSource source, int index)
 		{
+			this.grid = grid;
+			this.column = index;
 			if (dataCell != null) {
 				((ICellHandler)dataCell.Handler).BindCell (source, Control, index);
 			}
+			SetupEvents ();
 		}
-		
+
+		public void SetupEvents ()
+		{
+			if (grid == null) return;
+			if (grid.IsEventHandled (GridView.BeginCellEditEvent))
+				HandleEvent (GridView.BeginCellEditEvent);
+			if (grid.IsEventHandled (GridView.EndCellEditEvent))
+				HandleEvent (GridView.EndCellEditEvent);
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			((ICellHandler)dataCell.Handler).AttachEvent(handler);
+		}
+
 		public void GetNullValue (ref GLib.Value val)
 		{
 			if (dataCell != null) {
