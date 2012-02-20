@@ -4,28 +4,45 @@ using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
 	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem
 	{
 		Icon icon;
+		
+		[Register("EtoActionHandler")]
+		public class ActionHandler : NSObject
+		{
+			public ImageMenuItemHandler Handler { get; set; }
+			
+			[Export("activate:")]
+			public void Activate(NSObject sender)
+			{
+				Handler.Widget.OnClick (EventArgs.Empty);	
+			}
+			
+			[Export("validateMenuItem:")]
+			public bool ValidateMenuItem(NSMenuItem item)
+			{
+				return Handler.Enabled;
+			}
+		}
+		
+		static Selector selActivate = new Selector("activate:");
 
 		public ImageMenuItemHandler ()
 		{
 			Control = new NSMenuItem ();
-			Control.Enabled = true;
-			Control.Activated += delegate {
-				Widget.OnClick (EventArgs.Empty);	
-			};
+			Enabled = true;
+			Control.Target = new ActionHandler{ Handler = this };
+			Control.Action = selActivate;
 		}
 
 		#region IMenuItem Members
 
-		public bool Enabled {
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
+		public bool Enabled { get; set; }
 
 		public string Text {
 			get	{ return Control.Title; }
