@@ -41,6 +41,11 @@ namespace Eto.Drawing
 			return new Point(Math.Max (point1.X, point2.X), Math.Max (point1.Y, point2.Y));
 		}
 		
+		public static Point Abs (Point point)
+		{
+			return new Point(Math.Abs (point.X), Math.Abs (point.Y));
+		}
+		
 		public Point(int x, int y)
 		{
 			this.x = x;
