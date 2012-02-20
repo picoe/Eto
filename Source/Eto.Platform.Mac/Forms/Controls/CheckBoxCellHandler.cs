@@ -29,6 +29,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (val == null) return new NSNumber((int)NSCellStateValue.Off);
 			return base.GetObjectValue (val);
 		}
+		
+		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)
+		{
+			return 25;
+		}
 	}
 }
 

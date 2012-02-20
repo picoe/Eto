@@ -24,6 +24,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (str != null) return (string)str;
 			return null;
 		}
+		
+		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)
+		{
+			var font = Control.Font ?? NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+			var str = new NSString(Convert.ToString (value));
+			var attrs =  NSDictionary.FromObjectAndKey(font, NSAttributedString.FontAttributeName);
+			return str.StringSize(attrs).Width + 4; // for border
+			
+		}
 	}
 }
 

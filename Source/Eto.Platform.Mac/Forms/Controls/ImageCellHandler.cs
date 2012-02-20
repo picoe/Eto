@@ -27,6 +27,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			return null;
 		}
+		
+		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)
+		{
+			var img = value as Image;
+			if (img != null) {
+				return cellSize.Height / (float)img.Size.Height * (float)img.Size.Width;
+			}
+			return 16;
+		}
 	}
 }
 

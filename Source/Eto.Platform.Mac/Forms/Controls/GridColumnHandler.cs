@@ -33,15 +33,27 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.DataCell = new TextCell (Widget.Generator);
 		}
 		
-		internal void Loaded (GridViewHandler gridHandler)
+		internal void Loaded (GridViewHandler gridHandler, int column)
 		{
 			if (this.AutoSize) {
-				if (gridHandler.ShowHeader) {
-					var headerWidth = Control.HeaderCell.CellSize.Width;
-					var cellWidth = Control.DataCell.CellSize.Width;
-					Control.Width = Math.Max (headerWidth, cellWidth);
-				} else
-					Control.Width = Control.DataCell.CellSize.Width;
+				Control.SizeToFit ();
+				float width = Control.DataCell.CellSize.Width;
+				if (gridHandler.ShowHeader)
+					width = Math.Max (Control.HeaderCell.CellSize.Width, width);
+					
+				if (dataCell != null) {
+					var rect = gridHandler.Table.VisibleRect ();
+					var range = gridHandler.Table.RowsInRect (rect);
+					var cellSize = Control.DataCell.CellSize;
+					var dataCellHandler = ((ICellHandler)dataCell.Handler);
+					for (int i = range.Location; i < range.Location + range.Length; i++) {
+						var item = gridHandler.DataStore.GetItem (i);
+						var val = item.GetValue (column);
+						var cellWidth = dataCellHandler.GetPreferredSize (val, cellSize);
+						width = Math.Max (width, cellWidth);
+					}
+				}
+				Control.Width = width;
 			}
 		}
 		
@@ -66,16 +78,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get;
 			set;
 		}
-		/*{
-				return Control.ResizingMask.HasFlag (NSTableColumnResizing.Autoresizing);
-			}
-			set {
-				if (value)
-					Control.ResizingMask |= NSTableColumnResizing.Autoresizing;
-				else
-					Control.ResizingMask &= ~NSTableColumnResizing.Autoresizing;
-			}
-		}*/
 
 		public bool Sortable {
 			get {

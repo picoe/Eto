@@ -11,6 +11,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		IGridStore store;
 		NSTableView table;
 		
+		public NSTableView Table
+		{
+			get { return table; }
+		}
+		
 		class EtoTableViewDataSource : NSTableViewDataSource
 		{
 			public GridViewHandler Handler { get; set; }
@@ -85,8 +90,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			base.OnLoadComplete (e);
 			
+			int i = 0;
 			foreach (var col in this.Widget.Columns) {
-				((GridColumnHandler)col.Handler).Loaded (this);
+				((GridColumnHandler)col.Handler).Loaded (this, i++);
 			}
 		}
 
