@@ -6,26 +6,19 @@ Eto.Forms
 Description
 -----------
 
-This framework is built so that you can target multiple platforms with one set of UI code.
+This framework is built so that you can target multiple platforms with one UI codebase.
 
-The goal of this framework is NOT to expose all functionality of each platform, but to expose
-the common set to build functional applications that can be run on all platforms.
+The overall goal of this framework is to expose a common API that can be used to build functional
+applications that run across platforms using their native toolkit.  This will make your applications look and 
+work as if it were a native application on all platforms.
 
-A great use of this is to build smaller portions of the UI that is needed from core libraries
-such as plugins, etc, and to use the platform-specific UI to wrap around that.
+For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI
+in a larger application, or even create your own high-level controls with a custom implementations per platform.
 
-This library will suffer from "Lowest Common Denominator" and is no replacement for each
-platform's framework. Ideally, one would create the user interface for each platform to take 
-full advantage of its capabilities, but may take much more time to create than to use this 
-framework for portions of your app. However, one could take advantages of each platform
-by creating custom controls that wrap around platform-specific functionality.  This does involve
-writing specific code for each platform, but would allow you to create any sort of control
-you may need.
+This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, and GTK#.
+There is a Mobile/iOS port in the works, but is considered incomplete.
 
-Note that it is planned to have some different controls for Mobile platforms vs. Desktop.
-
-This framework was built so that using it in .NET is natural.
-For example, a simple hello-world application might look like:
+This framework was built so that using it in .NET is natural. For example, a simple hello-world application might look like:
 
 	public class MyForm : Form
 	{
@@ -33,9 +26,7 @@ For example, a simple hello-world application might look like:
 		{
 			Text = "My Cross-Platform App";
 			Size = new Size (200, 200);
-			var label = new Label {
-				Text = "Hello World!"
-			};
+			var label = new Label { Text = "Hello World!" };
 			this.AddDockedControl (label);
 		}
 		
@@ -43,18 +34,12 @@ For example, a simple hello-world application might look like:
 		static void Main () {
 			Generator generator;
 
-			if (Eto.Misc.Platform.IsWindows) {
-				// use WindowsForms
+			if (Eto.Misc.Platform.IsWindows)
 				generator = Generator.GetGenerator("Eto.Platform.Windows.Generator, Eto.Platform.Windows");
-			}
-			else if (Eto.Misc.Platform.IsMac) {
-				// use MonoMac
+			else if (Eto.Misc.Platform.IsMac)
 				generator = Generator.GetGenerator("Eto.Platform.Mac.Generator, Eto.Platform.Mac");
-			}
-			else {
-				// use Gtk#
+			else // use GTK#
 				generator = Generator.GetGenerator("Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk");
-			}
 
 			var app = new Application(generator);
 			app.Initialized += delegate {
@@ -83,9 +68,9 @@ Namespaces
 Currently supported targets
 ---------------------------
 
-* Mac OS X using MonoMac
-* Linux using GTK#
-* Windows using Windows Forms and WPF
+* OS X: MonoMac (Cocoa)
+* Linux: GTK#
+* Windows: Windows Forms or WPF
 	
 Under development
 -----------------
