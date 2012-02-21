@@ -2,6 +2,11 @@ Eto.Forms
 =========
 ### A cross platform desktop and mobile user interface framework
 
+Discussion
+----------
+
+* Join the [forums](http://groups.google.com/group/eto-forms)
+* Chat in [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
 
 Description
 -----------
