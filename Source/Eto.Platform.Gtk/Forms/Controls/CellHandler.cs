@@ -16,7 +16,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		void BindCell (ICellDataSource source, Gtk.TreeViewColumn column, int index);
 		void SetEditable (Gtk.TreeViewColumn column, bool editable);
 		void GetNullValue (ref GLib.Value val);
-		void AttachEvent (string eventHandler);
+		void HandleEvent (string eventHandler);
 	}
 	
 	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, ICell, ICellHandler

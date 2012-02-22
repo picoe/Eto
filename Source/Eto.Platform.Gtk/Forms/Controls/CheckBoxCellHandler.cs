@@ -11,8 +11,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			this.Control.Toggled += delegate(object o, Gtk.ToggledArgs args) {
 				SetValue (args.Path, !Control.Active);
 			};
-			//Control.Mode = Gtk.CellRendererMode.Activatable;
-			//Control.Sensitive = true;
 		}
 		
 		protected override void BindCell ()

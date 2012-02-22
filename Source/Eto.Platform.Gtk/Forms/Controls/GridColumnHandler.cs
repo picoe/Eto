@@ -14,8 +14,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public GridColumnHandler ()
 		{
 			Control = new Gtk.TreeViewColumn ();
-			Resizable = true;
 			AutoSize = true;
+			Resizable = true;
 		}
 		
 		public override void Initialize ()
@@ -46,7 +46,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set {
 				autoSize = value;
 				if (value)
-					Control.Sizing = Gtk.TreeViewColumnSizing.Autosize;
+					Control.Sizing = Gtk.TreeViewColumnSizing.GrowOnly;
 				else
 					Control.Sizing = Gtk.TreeViewColumnSizing.Fixed;
 			}
@@ -112,7 +112,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		public override void AttachEvent (string handler)
 		{
-			((ICellHandler)dataCell.Handler).AttachEvent(handler);
+			((ICellHandler)dataCell.Handler).HandleEvent(handler);
 		}
 
 		public void GetNullValue (ref GLib.Value val)

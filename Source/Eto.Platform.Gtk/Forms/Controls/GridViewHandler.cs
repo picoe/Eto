@@ -37,6 +37,12 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			tree.AppendColumn (new Gtk.TreeViewColumn());
+		}
+
 		void SetupColumnEvents ()
 		{
 			foreach (var col in Widget.Columns.Select (r => r.Handler).OfType<GridColumnHandler> ()) {

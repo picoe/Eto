@@ -10,18 +10,20 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		class EtoCellRendererPixbuf : Gtk.CellRendererPixbuf
 		{
 			Image image;
+
 			[GLib.Property("image")]
 			public Image Image {
 				get { 
 					return image; 
 				}
 				set {
-					if (value == NullValue) image = null;
-					else image = value;
-					if (image != null) {
-						this.Pixbuf = ((IGtkPixbuf)image.Handler).GetPixbuf (new Size(16, 16));
-					}
+					if (value == NullValue)
+						image = null;
 					else
+						image = value;
+					if (image != null) {
+						this.Pixbuf = ((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16));
+					} else
 						this.Pixbuf = null;
 				}
 			}
@@ -46,8 +48,21 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		
 		public override void GetNullValue (ref GLib.Value val)
 		{
-			if (NullValue == null) NullValue = new Bitmap(Widget.Generator, new BitmapHandler());
-			val = new GLib.Value(NullValue);
+			if (NullValue == null)
+				NullValue = new Bitmap (Widget.Generator, new BitmapHandler ());
+			val = new GLib.Value (NullValue);
+		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case GridView.EndCellEditEvent:
+				// no editing here
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 	}
 }
