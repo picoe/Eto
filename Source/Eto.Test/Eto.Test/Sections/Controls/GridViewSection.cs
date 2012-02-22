@@ -29,7 +29,7 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "No Header" }, NoHeader ());
-			layout.AddRow (new Label { Text = "Context Menu" }, WithContextMenu ());
+			layout.AddRow (new Label { Text = "Context Menu\n& Multi-Select" }, WithContextMenu ());
 		}
 
 		GridView Default ()

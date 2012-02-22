@@ -20,7 +20,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new swc.DataGrid {
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
 				AutoGenerateColumns = false,
-				CanUserAddRows = false
+				CanUserAddRows = false,
+				SelectionMode = swc.DataGridSelectionMode.Single
 			};
 		}
 

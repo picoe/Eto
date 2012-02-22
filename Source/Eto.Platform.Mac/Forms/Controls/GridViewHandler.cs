@@ -63,6 +63,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
 			}
+			
+			public override void SelectionDidChange (NSNotification notification)
+			{
+				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+			}
 		}
 		
 		public GridViewHandler ()
@@ -100,9 +105,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				// handled after object value is set
 				break;
 			case GridView.SelectionChangedEvent:
+				/* handled by delegate, for now
 				table.SelectionDidChange += delegate {
 					Widget.OnSelectionChanged (EventArgs.Empty);
-				};
+				};*/
 				break;
 			default:
 				base.AttachEvent (handler);
@@ -203,7 +209,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public IEnumerable<int> SelectedRows
 		{
-			get { return table.SelectedRows.Cast<int> (); }
+			get { return table.SelectedRows.Select (r => (int)r); }
 		}
 
 		public void SelectAll ()
