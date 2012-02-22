@@ -7,6 +7,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 	public class GridViewHandler : WindowsControl<swf.DataGridView, GridView>, IGridView
 	{
 		IGridStore store;
+		ContextMenu contextMenu;
 		
 		public GridViewHandler ()
 		{
@@ -108,6 +109,17 @@ namespace Eto.Platform.Windows.Forms.Controls
 					Control.RowCount = store.Count;
 				else
 					Control.RowCount = 0;
+			}
+		}
+		
+		public ContextMenu ContextMenu {
+			get { return contextMenu; }
+			set {
+				contextMenu = value;
+				if (contextMenu != null)
+					this.Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
+				else
+					this.Control.ContextMenuStrip = null;
 			}
 		}
 	}

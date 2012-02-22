@@ -2,24 +2,31 @@ using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public interface ICellHandler
 	{
 		NSCell Control { get; }
+		
+		GridColumnHandler ColumnHandler { get; set; }
 
 		NSObject GetObjectValue (object val);
 
 		object SetObjectValue (NSObject val);
 		
-		float GetPreferredSize(object value, System.Drawing.SizeF cellSize);
+		float GetPreferredSize (object value, System.Drawing.SizeF cellSize);
+		
+		void HandleEvent (string handler);
 	}
 	
-	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, ICell, ICellHandler
+	public abstract class CellHandler<T, W> : MacObject<T, W>, ICell, ICellHandler
 		where T: NSCell
 		where W: Cell
 	{
+		public GridColumnHandler ColumnHandler { get; set; }
+		
 		NSCell ICellHandler.Control {
 			get { return Control; }
 		}
@@ -32,7 +39,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public abstract object SetObjectValue (NSObject val);
 		
 		public abstract float GetPreferredSize (object value, System.Drawing.SizeF cellSize);
-		
 	}
 }
 

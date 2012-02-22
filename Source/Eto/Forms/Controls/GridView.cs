@@ -32,6 +32,8 @@ namespace Eto.Forms
 		void ClearColumns ();
 
 		IGridStore DataStore { get; set; }
+		
+		ContextMenu ContextMenu { get; set; }
 	}
 
 	public class GridViewCellArgs : EventArgs
@@ -130,6 +132,12 @@ namespace Eto.Forms
 		{
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
+		}
+		
+		public ContextMenu ContextMenu
+		{
+			get { return handler.ContextMenu; }
+			set { handler.ContextMenu = value; }
 		}
 	}
 }

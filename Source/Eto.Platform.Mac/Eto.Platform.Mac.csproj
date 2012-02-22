@@ -173,6 +173,7 @@
     <Compile Include="Forms\Controls\TextCellHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ImageCellHandler.cs" />
+    <Compile Include="Forms\MacCommon.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

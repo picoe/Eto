@@ -12,6 +12,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		Gtk.TreeView tree;
 		GtkGridViewModel model;
 		internal IGridStore store;
+		ContextMenu contextMenu;
 		
 		public GridViewHandler ()
 		{
@@ -22,8 +23,21 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			Control = new Gtk.ScrolledWindow ();
 			Control.ShadowType = Gtk.ShadowType.In;
 			Control.Add (tree);
-		}
 
+			tree.Events |= Gdk.EventMask.ButtonPressMask;
+			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
+		}
+		
+		[GLib.ConnectBefore]
+		void HandleTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		{
+			if (contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress) {
+				var menu = ((ContextMenuHandler)contextMenu.Handler).Control;
+				menu.Popup ();
+				menu.ShowAll ();
+			}
+		}
+		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
@@ -36,7 +50,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					break;
 			}
 		}
-
+		
 		public override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
@@ -90,6 +104,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				model = new GtkGridViewModel{ Handler = this };
 				tree.Model = new Gtk.TreeModelAdapter (model);
 			}
+		}
+		
+		public ContextMenu ContextMenu {
+			get { return contextMenu; }
+			set { contextMenu = value; }
 		}
 
 		public void SetValue (string path, int column, object value)

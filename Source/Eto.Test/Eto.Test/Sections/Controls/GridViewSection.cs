@@ -28,8 +28,8 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "No Header" }, NoHeader ());
+			layout.AddRow (new Label { Text = "Context Menu" }, WithContextMenu ());
 		}
-
 
 		GridView Default ()
 		{
@@ -41,14 +41,14 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add (new GridColumn{ HeaderText = "Default"});
 			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell (), Editable = true, AutoSize = true, Resizable = false});
 			control.Columns.Add (new GridColumn{ HeaderText = "Editable", Editable = true});
-			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageCell() });
+			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageCell () });
 			
 			var image1 = Bitmap.FromResource ("Eto.Test.TestImage.png");
 			var image2 = Icon.FromResource ("Eto.Test.TestIcon.ico");
 			var items = new GridItemCollection ();
-			var rand = new Random();
+			var rand = new Random ();
 			for (int i = 0; i < 10000; i++) {
-				var val = rand.Next(3);
+				var val = rand.Next (3);
 				var boolVal = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
 				val = rand.Next (3);
@@ -67,6 +67,24 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = Default ();
 			control.ShowHeader = false;
+			return control;
+		}
+
+		GridView WithContextMenu ()
+		{
+			var control = Default ();
+			
+			var menu = new ContextMenu ();
+			var item = new ImageMenuItem{ Text = "Click Me!"};
+			item.Click += delegate {
+				/*if (control.SelectedValue != null)
+					Log.Write (item, "Click, Item: {0}", control.SelectedValue.Text);
+				else*/
+					Log.Write (item, "Click, no item selected");
+			};
+			menu.MenuItems.Add (item);
+			
+			control.ContextMenu = menu;
 			return control;
 		}
 

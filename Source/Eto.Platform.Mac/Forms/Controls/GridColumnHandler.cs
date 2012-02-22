@@ -2,6 +2,7 @@ using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -12,9 +13,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public GridColumnHandler Handler { get; set; }
 	}
 
-	public class GridColumnHandler : WidgetHandler<NSTableColumn, GridColumn>, IGridColumn
+	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn>, IGridColumn
 	{
 		Cell dataCell;
+		
+		public int Column { get; private set; }
 		
 		public GridColumnHandler ()
 		{
@@ -36,6 +39,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		internal void Loaded (GridViewHandler gridHandler, int column)
 		{
+			this.Column = column;
 			if (this.AutoSize) {
 				Control.SizeToFit ();
 				float width = Control.DataCell.CellSize.Width;
@@ -125,14 +129,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 				dataCell = value;
 				if (dataCell != null) {
 					var editable = this.Editable;
-					Control.DataCell = ((ICellHandler)dataCell.Handler).Control;
+					var cellHandler = (ICellHandler)dataCell.Handler;
+					cellHandler.ColumnHandler = this;
+					Control.DataCell = cellHandler.Control;
 					Control.DataCell.Editable = editable;
 				} else
 					Control.DataCell = null;
 			}
 		}
 		
-		public void Setup (int column)
+		public void Setup (GridViewHandler gridHandler, int column)
 		{
 			Control.Identifier = new EtoGridColumnIdentifier{ Handler = this, Column = column };
 		}
