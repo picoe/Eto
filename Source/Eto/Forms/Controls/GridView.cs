@@ -1,6 +1,7 @@
 using System;
 using Eto.Collections;
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -32,8 +33,20 @@ namespace Eto.Forms
 		void ClearColumns ();
 
 		IGridStore DataStore { get; set; }
-		
+
 		ContextMenu ContextMenu { get; set; }
+
+		bool AllowMultipleSelection { get; set; }
+
+		IEnumerable<int> SelectedRows { get; }
+
+		void SelectRow (int row);
+
+		void UnselectRow (int row);
+
+		void SelectAll ();
+
+		void UnselectAll ();
 	}
 
 	public class GridViewCellArgs : EventArgs
@@ -99,6 +112,25 @@ namespace Eto.Forms
 			if (endCellEdit != null) endCellEdit (this, e);
 		}
 
+		public const string SelectionChangedEvent = "GridView.SelectionChanged";
+
+		event EventHandler<EventArgs> selectionChanged;
+
+		public event EventHandler<EventArgs> SelectionChanged
+		{
+			add
+			{
+				selectionChanged += value;
+				HandleEvent (SelectionChangedEvent);
+			}
+			remove { selectionChanged -= value; }
+		}
+
+		public virtual void OnSelectionChanged (EventArgs e)
+		{
+			if (selectionChanged != null) selectionChanged (this, e);
+		}
+
 		#endregion
 
 
@@ -133,11 +165,53 @@ namespace Eto.Forms
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
 		}
-		
+
 		public ContextMenu ContextMenu
 		{
 			get { return handler.ContextMenu; }
 			set { handler.ContextMenu = value; }
+		}
+
+		public bool AllowMultipleSelection
+		{
+			get { return handler.AllowMultipleSelection; }
+			set { handler.AllowMultipleSelection = value; }
+		}
+
+		public IEnumerable<IGridItem> SelectedItems
+		{
+			get
+			{
+				if (DataStore == null) yield break;
+				foreach (var row in SelectedRows) {
+					yield return DataStore.GetItem (row);
+				}
+			}
+		}
+
+		public IEnumerable<int> SelectedRows
+		{
+			get { return handler.SelectedRows; }
+		}
+
+		public void SelectRow (int row)
+		{
+			handler.SelectRow (row);
+		}
+
+		public void SelectAll ()
+		{
+			handler.SelectAll ();
+		}
+
+		public void UnselectRow (int row)
+		{
+			handler.UnselectRow (row);
+		}
+
+		public void UnselectAll ()
+		{
+			handler.UnselectAll ();
 		}
 	}
 }

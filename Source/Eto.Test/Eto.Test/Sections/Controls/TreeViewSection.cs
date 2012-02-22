@@ -53,7 +53,7 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150)
 			};
 			LogEvents (control);
-			control.TopNode = CreateTreeItem (0, "Item", Image);
+			control.DataStore = CreateTreeItem (0, "Item", Image);
 			return control;
 		}
 		

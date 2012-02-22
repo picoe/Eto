@@ -43,6 +43,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						Widget.OnEndCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
 					};
 					break;
+				case GridView.SelectionChangedEvent:
+					Control.SelectionChanged += (sender, e) => {
+						Widget.OnSelectionChanged (EventArgs.Empty);
+					};
+					break;
 				default:
 					base.AttachEvent (handler);
 					break;
@@ -92,6 +97,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			public GridViewHandler Handler { get; set; }
 			public IGridItem TheItem { get; set; }
+			public int Row { get; set; }
 
 			public int Add (object value)
 			{
@@ -170,7 +176,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (store == null)
 				yield break;
 			for (int i = 0; i < store.Count; i++)
-				yield return new GridItem { Handler = this, TheItem = store.GetItem (i) };
+				yield return new GridItem { Handler = this, TheItem = store.GetItem (i), Row = i };
 		}
 
 
@@ -196,6 +202,45 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				else
 					Control.ContextMenu = null;
 			}
+		}
+
+
+		public bool AllowMultipleSelection
+		{
+			get { return Control.SelectionMode == swc.DataGridSelectionMode.Extended; }
+			set { Control.SelectionMode = value ? swc.DataGridSelectionMode.Extended : swc.DataGridSelectionMode.Single; }
+		}
+
+		public IEnumerable<int> SelectedRows
+		{
+			get
+			{
+				foreach (var item in Control.SelectedItems.OfType<GridItem> ()) {
+					yield return item.Row;
+				}
+			}
+		}
+
+		public void SelectAll ()
+		{
+			Control.SelectAll ();
+		}
+
+		public void SelectRow (int row)
+		{
+			var coll = Control.ItemsSource as ObservableCollection<GridItem>;
+			Control.SelectedItems.Add (coll[row]);
+		}
+
+		public void UnselectRow (int row)
+		{
+			var coll = Control.ItemsSource as ObservableCollection<GridItem>;
+			Control.SelectedItems.Remove (coll[row]);
+		}
+
+		public void UnselectAll ()
+		{
+			Control.UnselectAll ();
 		}
 	}
 }

@@ -99,6 +99,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			case GridView.EndCellEditEvent:
 				// handled after object value is set
 				break;
+			case GridView.SelectionChangedEvent:
+				table.SelectionDidChange += delegate {
+					Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -188,6 +193,37 @@ namespace Eto.Platform.Mac.Forms.Controls
 				else
 					table.Menu = null;
 			}
+		}
+
+		public bool AllowMultipleSelection
+		{
+			get { return table.AllowsMultipleSelection; }
+			set { table.AllowsMultipleSelection = value; }
+		}
+
+		public IEnumerable<int> SelectedRows
+		{
+			get { return table.SelectedRows.Cast<int> (); }
+		}
+
+		public void SelectAll ()
+		{
+			table.SelectAll (table);
+		}
+
+		public void SelectRow (int row)
+		{
+			table.SelectRow (row, false);
+		}
+
+		public void UnselectRow (int row)
+		{
+			table.DeselectRow (row);
+		}
+
+		public void UnselectAll ()
+		{
+			table.DeselectAll (table);
 		}
 	}
 }

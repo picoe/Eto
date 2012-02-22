@@ -3,6 +3,7 @@ using Eto.Forms;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
 using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
@@ -45,6 +46,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				case GridView.EndCellEditEvent:
 					SetupColumnEvents ();
 					break;
+				case GridView.SelectionChangedEvent:
+					tree.Selection.Changed += delegate {
+						Widget.OnSelectionChanged (EventArgs.Empty);
+					};
+					break;
 				default:
 					base.AttachEvent (handler);
 					break;
@@ -67,7 +73,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public void InsertColumn (int index, GridColumn item)
 		{
 			var colHandler = ((GridColumnHandler)item.Handler);
-			if (index >= 0)
+			if (index >= 0 && tree.Columns.Length > 0)
 				tree.InsertColumn (colHandler.Control, index);
 			else
 				index = tree.AppendColumn (colHandler.Control);
@@ -133,6 +139,44 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			var row = treePath.Indices.Length > 0 ? treePath.Indices[0] : -1;
 			var item = model.GetItemAtPath (treePath);
 			Widget.OnBeginCellEdit (new GridViewCellArgs (Widget.Columns[column], row, column, item));
+		}
+
+
+		public bool AllowMultipleSelection
+		{
+			get { return tree.RubberBanding; }
+			set { tree.RubberBanding = value; }
+		}
+
+		public IEnumerable<int> SelectedRows
+		{
+			get
+			{
+				var rows = tree.Selection.GetSelectedRows ();
+				foreach (var row in rows) {
+					yield return row.Indices[0];
+				}
+			}
+		}
+
+		public void SelectAll ()
+		{
+			tree.Selection.SelectAll ();
+		}
+
+		public void SelectRow (int row)
+		{
+			tree.Selection.SelectIter (model.IterFromNode (row));
+		}
+
+		public void UnselectRow (int row)
+		{
+			tree.Selection.UnselectIter (model.IterFromNode (row));
+		}
+
+		public void UnselectAll ()
+		{
+			tree.Selection.UnselectAll ();
 		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -77,9 +78,9 @@ namespace Eto.Test.Sections.Controls
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};
 			item.Click += delegate {
-				/*if (control.SelectedValue != null)
-					Log.Write (item, "Click, Item: {0}", control.SelectedValue.Text);
-				else*/
+				if (control.SelectedRows.Count () > 0)
+					Log.Write (item, "Click, Rows: {0}", SelectedRowsString (control));
+				else
 					Log.Write (item, "Click, no item selected");
 			};
 			menu.MenuItems.Add (item);
@@ -96,6 +97,14 @@ namespace Eto.Test.Sections.Controls
 			control.EndCellEdit += (sender, e) => {
 				Log.Write (control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
+			control.SelectionChanged += delegate {
+				Log.Write (control, "Selection Changed, Rows: {0}", SelectedRowsString (control));
+			};
+		}
+
+		string SelectedRowsString (GridView control)
+		{
+			return string.Join (",", control.SelectedRows.Select (r => r.ToString ()).OrderBy (r => r));
 		}
 	}
 }

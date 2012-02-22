@@ -1,6 +1,8 @@
 using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
@@ -13,6 +15,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			Control = new swf.DataGridView {
 				VirtualMode = true,
+				SelectionMode = swf.DataGridViewSelectionMode.FullRowSelect,
 				RowHeadersVisible = false,
 				AllowUserToAddRows = false,
 				AllowUserToResizeRows = false,
@@ -60,6 +63,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 						var item = store.GetItem (e.RowIndex);
 						var column = Widget.Columns[e.ColumnIndex];
 						Widget.OnEndCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					};
+					break;
+				case GridView.SelectionChangedEvent:
+					Control.SelectionChanged += delegate {
+						Widget.OnSelectionChanged (EventArgs.Empty);
 					};
 					break;
 				default:
@@ -121,6 +129,37 @@ namespace Eto.Platform.Windows.Forms.Controls
 				else
 					this.Control.ContextMenuStrip = null;
 			}
+		}
+
+		public bool AllowMultipleSelection
+		{
+			get { return Control.MultiSelect; }
+			set { Control.MultiSelect = value; }
+		}
+
+		public IEnumerable<int> SelectedRows
+		{
+			get { return Control.SelectedRows.OfType<swf.DataGridViewRow> ().Select (r => r.Index); }
+		}
+
+		public void SelectAll ()
+		{
+			Control.SelectAll ();
+		}
+
+		public void SelectRow (int row)
+		{
+			Control.Rows[row].Selected = true;
+		}
+
+		public void UnselectRow (int row)
+		{
+			Control.Rows[row].Selected = false;
+		}
+
+		public void UnselectAll ()
+		{
+			Control.ClearSelection ();
 		}
 	}
 }
