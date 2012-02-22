@@ -6,12 +6,14 @@ using swc = System.Windows.Controls;
 using Eto.Forms;
 using System.Collections;
 using System.Collections.ObjectModel;
+using Eto.Platform.Wpf.Forms.Menu;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class GridViewHandler : WpfControl<swc.DataGrid, GridView>, IGridView
 	{
 		IGridStore store;
+		ContextMenu contextMenu;
 
 		public GridViewHandler ()
 		{
@@ -180,6 +182,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				store = value;
 				// must use observable collection for editing
 				Control.ItemsSource = new ObservableCollection<GridItem>(GetChildren (store));
+			}
+		}
+
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				if (contextMenu != null)
+					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
+				else
+					Control.ContextMenu = null;
 			}
 		}
 	}
