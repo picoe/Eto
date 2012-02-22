@@ -15,6 +15,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			Control = new swf.DataGridView {
 				VirtualMode = true,
+				MultiSelect = false,
 				SelectionMode = swf.DataGridViewSelectionMode.FullRowSelect,
 				RowHeadersVisible = false,
 				AllowUserToAddRows = false,

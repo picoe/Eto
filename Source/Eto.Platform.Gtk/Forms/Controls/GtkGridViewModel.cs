@@ -14,29 +14,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public int Row { get; set; }
 	}
 
-	public class GtkGridViewModel : GLib.GInterfaceAdapter, Gtk.TreeModelImplementor
+	public class GtkGridViewModel : GLib.Object, Gtk.TreeModelImplementor
 	{
-		static GLib.GType gtype;
-		IntPtr handle;
-		public override GLib.GType GType
-		{
-			get { return gtype; }
-		}
-
-		static GtkGridViewModel ()
-		{
-			gtype = GLib.GType.Object;
-			GLib.GType.Register (gtype, typeof (GtkGridViewModel));
-		}
-
-		public override IntPtr Handle { get { return handle; } }
-
 		public GridViewHandler Handler { get; set; }
-
-		public GtkGridViewModel (IntPtr ptr)
-		{
-			this.handle = ptr;
-		}
 
 		public GtkGridViewModel ()
 		{

@@ -74,6 +74,7 @@ namespace Eto.Test.Sections.Controls
 		GridView WithContextMenu ()
 		{
 			var control = Default ();
+			control.AllowMultipleSelection = true;
 			
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};

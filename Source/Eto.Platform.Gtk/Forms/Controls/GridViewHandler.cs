@@ -144,8 +144,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		public bool AllowMultipleSelection
 		{
-			get { return tree.RubberBanding; }
-			set { tree.RubberBanding = value; }
+			get { return tree.Selection.Mode == Gtk.SelectionMode.Multiple; }
+			set { tree.Selection.Mode = value ? Gtk.SelectionMode.Multiple : Gtk.SelectionMode.Browse; }
 		}
 
 		public IEnumerable<int> SelectedRows
