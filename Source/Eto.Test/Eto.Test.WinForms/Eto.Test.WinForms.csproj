@@ -11,6 +11,7 @@
     <RootNamespace>Eto.Test.WinForms</RootNamespace>
     <AssemblyName>Eto.Test.WinForms</AssemblyName>
     <FileAlignment>512</FileAlignment>
+    <ApplicationIcon>..\Eto.Test\TestIcon.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <PlatformTarget>x86</PlatformTarget>
