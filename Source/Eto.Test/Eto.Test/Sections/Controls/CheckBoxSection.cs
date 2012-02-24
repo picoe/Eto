@@ -7,13 +7,17 @@ namespace Eto.Test.Sections.Controls
 	{
 		public CheckBoxSection ()
 		{
-			var layout = new DynamicLayout(this);
+			var layout = new DynamicLayout (this);
 			
-			layout.Add (Default());
+			layout.Add (Default ());
 
-			layout.Add (Disabled());
+			layout.Add (Disabled ());
 			
-			layout.Add (Events());
+			layout.Add (SetInitialValue ());
+			
+			layout.Add (ThreeState ());
+			
+			layout.Add (ThreeStateInitialValue ());
 			
 			layout.Add (null, false, true);
 		}
@@ -23,7 +27,7 @@ namespace Eto.Test.Sections.Controls
 			var control = new CheckBox {
 				Text = "Default"
 			};
-			LogEvents(control);
+			LogEvents (control);
 			return control;
 		}
 		
@@ -33,11 +37,11 @@ namespace Eto.Test.Sections.Controls
 				Text = "Disabled",
 				Enabled = false
 			};
-			LogEvents(control);
+			LogEvents (control);
 			return control;
 		}
 		
-		Control Events ()
+		Control SetInitialValue ()
 		{
 			var control = new CheckBox{
 				Text = "Set initial value",
@@ -48,7 +52,28 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 		
-		void LogEvents(CheckBox control)
+		Control ThreeState ()
+		{
+			var control = new CheckBox {
+				Text = "Three State",
+				ThreeState = true
+			};
+			LogEvents (control);
+			return control;
+		}
+		
+		Control ThreeStateInitialValue ()
+		{
+			var control = new CheckBox {
+				Text = "Three State with Initial Value",
+				ThreeState = true,
+				Checked = null
+			};
+			LogEvents (control);
+			return control;
+		}
+		
+		void LogEvents (CheckBox control)
 		{
 			control.CheckedChanged += delegate {
 				Log.Write (control, "CheckedChanged, Value: {0}", control.Checked);

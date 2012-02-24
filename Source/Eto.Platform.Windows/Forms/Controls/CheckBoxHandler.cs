@@ -9,23 +9,40 @@ namespace Eto.Platform.Windows
 	public class CheckBoxHandler : WindowsControl<SWF.CheckBox, CheckBox>, ICheckBox
 	{
 
-		public CheckBoxHandler()
+		public CheckBoxHandler ()
 		{
-			Control = new SWF.CheckBox();
+			Control = new SWF.CheckBox ();
 			Control.AutoSize = true;
-			Control.CheckedChanged += delegate {
-				Widget.OnCheckedChanged(EventArgs.Empty);
+			this.Control.CheckStateChanged += delegate {
+				Widget.OnCheckedChanged (EventArgs.Empty);
 			};
 		}
 
-		#region ICheckBox Members
-
-		public bool Checked
-		{
-			get { return Control.Checked; }
-			set { Control.Checked = value; }
+		public bool? Checked {
+			get { 
+				switch (this.Control.CheckState) {
+				case SWF.CheckState.Checked:
+					return true;
+				case SWF.CheckState.Unchecked:
+					return false;
+				default:
+				case SWF.CheckState.Indeterminate:
+					return null;
+				}
+			}
+			set { 
+				if (value == null)
+					this.Control.CheckState = SWF.CheckState.Indeterminate;
+				else if (value.Value)
+					this.Control.CheckState = SWF.CheckState.Checked;
+				else
+					this.Control.CheckState = SWF.CheckState.Unchecked;
+			}
 		}
-
-		#endregion
+		
+		public bool ThreeState {
+			get { return Control.ThreeState; }
+			set { Control.ThreeState = value; }
+		}
 	}
 }

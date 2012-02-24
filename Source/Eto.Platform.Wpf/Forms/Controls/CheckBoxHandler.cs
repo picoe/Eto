@@ -23,9 +23,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		public bool Checked
+		public bool? Checked
 		{
-			get { return Control.IsChecked ?? false; }
+			get { return Control.IsChecked; }
 			set { Control.IsChecked = value; }
 		}
 
@@ -33,6 +33,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get { return Control.Content as string; }
 			set { Control.Content = value; }
+		}
+
+		public bool ThreeState
+		{
+			get { return Control.IsThreeState; }
+			set { Control.IsThreeState = value; }
 		}
 	}
 }

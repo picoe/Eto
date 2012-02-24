@@ -18,18 +18,35 @@ namespace Eto.Platform.Mac
 			Control = new EtoCheckBoxButton { Handler = this };
 			Control.SetButtonType (NSButtonType.Switch);
 			Control.Activated += delegate {
-				Widget.OnCheckedChanged(EventArgs.Empty);
+				Widget.OnCheckedChanged (EventArgs.Empty);
 			};
 		}
 
-		
-		#region ICheckBox Members
-
-		public bool Checked {
-			get { return Control.State == NSCellStateValue.On; }
-			set { Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; }
+		public bool? Checked {
+			get { 
+				switch (Control.State) {
+				case NSCellStateValue.On:
+					return true;
+				case NSCellStateValue.Off:
+					return false;
+				default:
+				case NSCellStateValue.Mixed:
+					return null;
+				}
+			}
+			set { 
+				if (value == null)
+					Control.State = NSCellStateValue.Mixed;
+				else if (value.Value)
+					Control.State = NSCellStateValue.On;
+				else
+					Control.State = NSCellStateValue.Off;
+			}
 		}
-
-		#endregion
+		
+		public bool ThreeState {
+			get { return Control.AllowsMixedState; }
+			set { Control.AllowsMixedState = value; }
+		}
 	}
 }

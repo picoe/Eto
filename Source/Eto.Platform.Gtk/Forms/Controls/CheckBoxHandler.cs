@@ -5,33 +5,52 @@ namespace Eto.Platform.GtkSharp
 {
 	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox>, ICheckBox
 	{
-
-		public CheckBoxHandler()
+		bool toggling;
+		
+		public CheckBoxHandler ()
 		{
-			Control = new Gtk.CheckButton();
-			Control.Toggled += control_CheckedChanged;
+			Control = new Gtk.CheckButton ();
+			Control.Toggled += HandleControlToggled;
 		}
 
-		private void control_CheckedChanged(object sender, EventArgs e)
+		void HandleControlToggled (object sender, EventArgs e)
 		{
-			Widget.OnCheckedChanged(e);
+			if (toggling)
+				return;
+			
+			toggling = true;
+			if (ThreeState) {
+				if (!Control.Inconsistent && Control.Active)
+					Control.Inconsistent = true;
+				else if (Control.Inconsistent) {
+					Control.Inconsistent = false;
+					Control.Active = true;
+				}
+			}
+			Widget.OnCheckedChanged (EventArgs.Empty);
+			toggling = false;
 		}
 
-		public override string Text
-		{
+		public override string Text {
 			get { return Control.Label; }
 			set { Control.Label = value; }
 		}
 
-		#region ICheckBox Members
-
-		public bool Checked
-		{
-			get { return Control.Active; }
-			set { Control.Active = value; }
+		public bool? Checked {
+			get { return Control.Inconsistent ? null : (bool?)Control.Active; }
+			set { 
+				if (value == null)
+					Control.Inconsistent = true;
+				else {
+					Control.Inconsistent = false;
+					Control.Active = value.Value;
+				}
+			}
 		}
-
-		#endregion
-
+		
+		public bool ThreeState {
+			get;
+			set;
+		}
 	}
 }
