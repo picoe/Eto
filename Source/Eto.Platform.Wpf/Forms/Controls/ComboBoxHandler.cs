@@ -40,8 +40,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var content = popup.Child as sw.FrameworkElement;
 				content.Measure (new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
 				MinWidth = content.DesiredSize.Width;
-				SelectedIndex = _selected.Value;
-				_selected = null;
+				if (_selected != null) {
+					SelectedIndex = _selected.Value;
+					_selected = null;
+				}
 			}
 
 		}

@@ -11,14 +11,14 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label{ Text = "Default"}, Default (), null);
 			
-			layout.AddRow (new Label{ Text = "Items"}, Items ());
+			layout.AddRow (new Label{ Text = "With Items"}, Items ());
 
 			layout.AddRow (new Label{ Text = "Disabled"}, Disabled ());
 			
-			layout.AddRow (new Label{ Text = "Events"}, Events ());
+			layout.AddRow (new Label{ Text = "Set Initial Value"}, SetInitialValue ());
 			
 			layout.AddRow (new Label{ Text = "EnumComboBox<Key>"}, EnumCombo ());
-			
+
 			layout.Add (null, null, true);
 		}
 		
@@ -46,7 +46,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 		
-		ComboBox Events ()
+		ComboBox SetInitialValue ()
 		{
 			var control = Items ();
 			control.SelectedKey = "Item 8";
