@@ -3,6 +3,7 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using System.Collections.Generic;
+using Eto.Platform.Mac.Forms.Menu;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -10,6 +11,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		ITreeStore top;
 		NSOutlineView outline;
+		ContextMenu contextMenu;
 		Dictionary<ITreeItem, EtoTreeItem> cachedItems = new Dictionary<ITreeItem, EtoTreeItem> ();
 		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
 		
@@ -205,6 +207,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override bool Enabled {
 			get { return outline.Enabled; }
 			set { outline.Enabled = value; }
+		}
+		
+		public ContextMenu ContextMenu {
+			get { return contextMenu; }
+			set {
+				contextMenu = value;
+				if (contextMenu != null)
+					outline.Menu = ((ContextMenuHandler)contextMenu.Handler).Control;
+				else
+					outline.Menu = null;
+			}
 		}
 		
 		void ExpandItems (NSObject parent)

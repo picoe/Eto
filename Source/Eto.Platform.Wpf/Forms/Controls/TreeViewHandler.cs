@@ -9,11 +9,13 @@ using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
+using Eto.Platform.Wpf.Forms.Menu;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class TreeViewHandler : WpfControl<swc.TreeView, TreeView>, ITreeView
 	{
+		ContextMenu contextMenu;
 		ITreeStore topNode;
 
 		public TreeViewHandler ()
@@ -92,6 +94,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				SetSelected (Control, value);
+			}
+		}
+
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				if (contextMenu != null)
+					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
+				else
+					Control.ContextMenu = null;
 			}
 		}
 	}

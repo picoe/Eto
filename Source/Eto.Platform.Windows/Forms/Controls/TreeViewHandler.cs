@@ -10,6 +10,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView>, ITreeView
 	{
 		ITreeStore top;
+		ContextMenu contextMenu;
 		Dictionary<Image, string> images = new Dictionary<Image, string> ();
 		
 		public TreeViewHandler ()
@@ -35,6 +36,17 @@ namespace Eto.Platform.Windows.Forms.Controls
 				this.Control.ImageList = null;
 				images.Clear ();
 				PopulateNodes (this.Control.Nodes, top);
+			}
+		}
+		
+		public ContextMenu ContextMenu {
+			get { return contextMenu; }
+			set {
+				contextMenu = value;
+				if (contextMenu != null)
+					this.Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
+				else
+					this.Control.ContextMenuStrip = null;
 			}
 		}
 		

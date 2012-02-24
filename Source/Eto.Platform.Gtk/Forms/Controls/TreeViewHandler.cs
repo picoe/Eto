@@ -9,6 +9,7 @@ namespace Eto.Platform.GtkSharp.Forms
 	{
 		Gtk.TreeStore model;
 		Gtk.TreeView tree;
+		ContextMenu contextMenu;
 		ITreeStore top;
 		
 		public static Size MaxImageSize = new Size(16, 16);
@@ -54,14 +55,32 @@ namespace Eto.Platform.GtkSharp.Forms
 			Control = new Gtk.ScrolledWindow();
 			Control.ShadowType = Gtk.ShadowType.In;
 			Control.Add(tree);
+			
+			tree.Events |= Gdk.EventMask.ButtonPressMask;
+			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
 		}
 
+		[GLib.ConnectBefore]
+		void HandleTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
+		{
+			if (contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress) {
+				var menu = ((ContextMenuHandler)contextMenu.Handler).Control;
+				menu.Popup ();
+				menu.ShowAll ();
+			}
+		}
+		
 		public ITreeStore DataStore {
 			get { return top; }
 			set {
 				top = value;
 				Populate ();
 			}
+		}
+
+		public ContextMenu ContextMenu {
+			get { return contextMenu; }
+			set { contextMenu = value; }
 		}
 		
 		void Populate ()

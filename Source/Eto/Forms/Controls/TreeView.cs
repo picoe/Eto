@@ -9,12 +9,14 @@ namespace Eto.Forms
 		
 		ITreeItem GetChild (int index);
 	}
-	
 
 	public interface ITreeView : IControl
 	{
 		ITreeStore DataStore { get; set; }
+
 		ITreeItem SelectedItem { get; set; }
+		
+		ContextMenu ContextMenu { get; set; }
 	}
 	
 	public class TreeViewItemEventArgs : EventArgs
@@ -71,6 +73,11 @@ namespace Eto.Forms
 		public ITreeStore DataStore {
 			get { return inner.DataStore; }
 			set { inner.DataStore = value; }
+		}
+		
+		public ContextMenu ContextMenu {
+			get { return inner.ContextMenu; }
+			set { inner.ContextMenu = value; }
 		}
 	}
 }

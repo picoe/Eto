@@ -16,7 +16,7 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label{ Text = "Simple" }, Default ());
 			
-			layout.AddRow (new Label{ Text = "With Images" }, Images ());
+			layout.AddRow (new Label{ Text = "With Images\n& Context Menu" }, ImagesAndMenu ());
 			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
 			
 			layout.Add (null, false, true);
@@ -47,11 +47,24 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		Control Images ()
+		Control ImagesAndMenu ()
 		{
 			var control = new TreeView {
 				Size = new Size(100, 150)
 			};
+			
+			var menu = new ContextMenu ();
+			var item = new ImageMenuItem{ Text = "Click Me!"};
+			item.Click += delegate {
+				if (control.SelectedItem != null)
+					Log.Write (item, "Click, Rows: {0}", control.SelectedItem.Text);
+				else
+					Log.Write (item, "Click, no item selected");
+			};
+			menu.MenuItems.Add (item);
+			
+			control.ContextMenu = menu;
+
 			LogEvents (control);
 			control.DataStore = CreateTreeItem (0, "Item", Image);
 			return control;
@@ -59,7 +72,7 @@ namespace Eto.Test.Sections.Controls
 		
 		Control Disabled ()
 		{
-			var control = Images ();
+			var control = ImagesAndMenu ();
 			control.Enabled = false;
 			return control;
 		}
