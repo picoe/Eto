@@ -69,20 +69,20 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		/*
 		public override Size ClientSize
 		{
 			get
 			{
-				Gdk.Rectangle rect = ((Gtk.Widget)ControlObject).Allocation;
-				return new Size(rect.Width, rect.Height);
+				int width, height;
+				containerBox.GetSizeRequest (out width, out height);
+				return new Size(width, height);
 			}
 			set
 			{
-				GtkWindow.Resize(value.Width, value.Height);
+				Control.SetSizeRequest (-1, -1);
+				containerBox.SetSizeRequest (value.Width, value.Height);
 			}
-		}*/
-
+		}
 
 		public override void Initialize ()
 		{

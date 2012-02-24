@@ -1,49 +1,30 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class DialogHandler : WindowHandler<SWF.Form, Dialog>, IDialog
+	public class DialogHandler : WindowHandler<swf.Form, Dialog>, IDialog
 	{
-		SWF.Form control;
-		SWF.Panel main;
 		Button button;
 		Button abortButton;
 
 		
 		public DialogHandler()
 		{
-			control = new SWF.Form();
-			control.SuspendLayout ();
-			control.FormBorderStyle = SWF.FormBorderStyle.FixedDialog;
-			control.StartPosition = SWF.FormStartPosition.CenterParent;
-			this.control.Size = SD.Size.Empty;
-			this.control.MinimumSize = SD.Size.Empty;
-			this.control.MaximumSize = SD.Size.Empty;
-			control.AutoSize = true;
-			control.ShowInTaskbar = false;
-			control.ShowIcon = false;
-			control.MaximizeBox = false;
-			control.MinimizeBox = false;
-			control.StartPosition = SWF.FormStartPosition.CenterParent;
-			main = new SWF.Panel();
-			main.SuspendLayout ();
-		
-			main.Dock = SWF.DockStyle.Fill;
-			main.AutoSize = true;
-			main.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-			control.Controls.Add(main);
-			control.ResumeLayout ();
-			this.Control = control;
-		}
-
-		public override void OnLoad (EventArgs e)
-		{
-			base.OnLoad (e);
-			main.ResumeLayout ();
+			Control = new swf.Form {
+				FormBorderStyle = swf.FormBorderStyle.FixedDialog,
+				StartPosition = swf.FormStartPosition.CenterParent,
+				AutoSize = true,
+				Size = sd.Size.Empty,
+				MinimumSize = sd.Size.Empty,
+				ShowInTaskbar = false,
+				ShowIcon = false,
+				MaximizeBox = false,
+				MinimizeBox = false
+			};
 		}
 
 		public Button AbortButton {
@@ -53,7 +34,7 @@ namespace Eto.Platform.Windows
 			set {
 				abortButton = value;
 				if (abortButton != null) {
-					var b = abortButton.ControlObject as SWF.IButtonControl;
+					var b = abortButton.ControlObject as swf.IButtonControl;
 					this.Control.CancelButton = b;
 				}
 				else
@@ -69,7 +50,7 @@ namespace Eto.Platform.Windows
 			set {
 				button = value;
 				if (button != null) {
-					var b = button.ControlObject as SWF.IButtonControl;
+					var b = button.ControlObject as swf.IButtonControl;
 					this.Control.AcceptButton = b;
 				}
 				else
@@ -77,24 +58,10 @@ namespace Eto.Platform.Windows
 			}
 		}
 		
-		public override object ContainerObject
-		{
-			get { return main; }
-		}
-
-		public override Size Size
-		{
-			get { return Generator.Convert(control.Size); }
-			set { 
-				control.Size = Generator.Convert(value);
-				control.AutoSize = false;
-			}
-		}
-
 		public DialogResult ShowDialog(Control parent)
 		{
-			if (parent != null) control.ShowDialog((SWF.Control)parent.ControlObject);
-			else control.ShowDialog();
+			if (parent != null) Control.ShowDialog((swf.Control)parent.ControlObject);
+			else Control.ShowDialog ();
 
 			return Widget.DialogResult;
 		}

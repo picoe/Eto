@@ -41,7 +41,7 @@ namespace Eto.Test
 			this.Text = "Test Application";
 			this.Style = "main";
 			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
-			this.Size = new Size (800, 600);
+			this.ClientSize = new Size (900, 650);
 			//this.Opacity = 0.5;
 
 			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent, MainForm.ClosedEvent, MainForm.ClosingEvent);
@@ -85,7 +85,7 @@ namespace Eto.Test
 		{
 			var splitter = new Splitter {
 				Orientation = SplitterOrientation.Vertical,
-				Position = 400,
+				Position = 500,
 				FixedPanel = SplitterFixedPanel.Panel2
 			};
 

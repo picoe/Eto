@@ -36,6 +36,7 @@ namespace Eto.Platform.Windows
 		public override Size ClientSize
 		{
 			get	{ return new Size(ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
+			set { base.ClientSize = value; }
 		}
 
 		
