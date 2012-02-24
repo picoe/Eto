@@ -43,28 +43,27 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var nscontext = NSGraphicsContext.CurrentContext;
 					var context = nscontext.GraphicsPort;
 
-					context.SetFillColor (Generator.ConvertNSToCG(BackgroundColor));
+					context.SetFillColor (Generator.ConvertNSToCG (BackgroundColor));
 					context.FillRect (cellFrame);
 				}
 
 				base.DrawBorderAndBackground (cellFrame, controlView);
 			}
 
-			/* Bug in MonoMac (RectangleF return values of functions) prevents us from doing this:
 			public override System.Drawing.RectangleF DrawTitle (NSAttributedString title, System.Drawing.RectangleF frame, NSView controlView)
 			{
 				var nscontext = NSGraphicsContext.CurrentContext;
 				var context = nscontext.GraphicsPort;
 				if (TextColor != null) {
-					context.SaveState ();
-					context.SetStrokeColor(Generator.ConvertNSToCG (TextColor));
+					var newtitle = title.MutableCopy () as NSMutableAttributedString;
+					var range = new NSRange (0, title.Length);
+					newtitle.RemoveAttribute (NSAttributedString.ForegroundColorAttributeName, range);
+					newtitle.AddAttribute (NSAttributedString.ForegroundColorAttributeName, TextColor, range);
+					title = newtitle;
 				}
 				var rect = base.DrawTitle (title, frame, controlView);
-				if (TextColor != null) {
-					context.RestoreState ();
-				}
 				return rect;
-			}*/
+			}
 		}
 		
 		public ComboBoxCellHandler ()
@@ -89,14 +88,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void SetForegroundColor (NSCell cell, Color color)
 		{
 			var c = cell as EtoCell;
-			var att = c.AttributedStringValue.MutableCopy () as NSMutableAttributedString;
-			var range = new NSRange(0, att.Length);
-			att.RemoveAttribute (NSAttributedString.ForegroundColorAttributeName, range);
-			att.AddAttribute (NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS (color), range);
-			c.AttributedStringValue = att;
-			//var dic = new NSMutableDictionary ();
-			//dic.Add (NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS (color));
-			//c.TextColor = Generator.ConvertNS (color);
+			c.TextColor = Generator.ConvertNS (color);
 		}
 
 		public override Color GetForegroundColor (NSCell cell)
@@ -110,7 +102,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (dataStore == null)
 				yield break;
 			for (int i = 0; i < dataStore.Count; i ++) {
-				var item = dataStore[i];
+				var item = dataStore [i];
 				yield return item;
 			}
 		}
@@ -128,7 +120,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			if (Widget.Binding != null) {
 				var row = ((NSNumber)val).Int32Value;
-				var item = dataStore[row];
+				var item = dataStore [row];
 				var value = item != null ? item.Key : null;
 				Widget.Binding.SetValue (dataItem, value);
 			}
@@ -149,7 +141,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					index ++;
 				}
 	
-				return new NSNumber(found);
+				return new NSNumber (found);
 			}
 			return null;
 		}
