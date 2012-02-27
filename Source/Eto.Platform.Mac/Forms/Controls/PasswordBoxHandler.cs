@@ -8,7 +8,7 @@ using MonoMac.ObjCRuntime;
 namespace Eto.Platform.Mac
 {
 
-	public class PasswordHandler : MacText<NSTextField, PasswordBox>, IPasswordBox
+	public class PasswordHandler : MacText<NSTextField, PasswordBox>, IPasswordBox, ITextBoxWithMaxLength
 	{
 
 		class EtoTextField : NSSecureTextField, IMacControl
