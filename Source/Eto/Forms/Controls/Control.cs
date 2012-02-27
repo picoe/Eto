@@ -90,7 +90,7 @@ namespace Eto.Forms
 
 		public const string TextChangedEvent = "Control.TextChanged";
 
-		event EventHandler<EventArgs> textChanged;
+		EventHandler<EventArgs> textChanged;
 
 		public event EventHandler<EventArgs> TextChanged {
 			add {
