@@ -110,6 +110,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Forms\Controls\GtkGridViewModel.cs" />
+    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>

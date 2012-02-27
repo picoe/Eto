@@ -12,7 +12,7 @@ namespace Eto.Forms
 	{
 		public static Size DefaultSize = new Size(80, 26);
 
-		private event EventHandler<EventArgs> click;
+		private EventHandler<EventArgs> click;
 		public event EventHandler<EventArgs> Click
 		{
 			add { click += value; }

@@ -115,6 +115,7 @@
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
     <Compile Include="Forms\Controls\PanelHandler.cs" />
+    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Forms\Controls\SliderHandler.cs" />

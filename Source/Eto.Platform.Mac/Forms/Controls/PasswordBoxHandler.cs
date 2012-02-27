@@ -7,53 +7,15 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
-	public class MyFormatter : NSFormatter
-	{
-		public ITextBox Handler { get; set; }
-		
-		public override string StringFor (NSObject value)
-		{
-			if (value == null)
-				return string.Empty;
-			var str = value as NSString;
-			//if (str != null && value.Handle != IntPtr.Zero)
-			return str.ToString ();
-		}
 
-		[Export("getObjectValue:forString:errorDescription:")]
-		public bool GetObjectValue (ref IntPtr obj, IntPtr value, ref IntPtr error)
-		{
-			obj = value;
-			return true;
-		}
-		
-		[Export("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:")]
-		public bool IsPartialStringValid (ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
-		{
-			if (Handler.MaxLength >= 0) {
-				int size = value.Length;
-				if (size > Handler.MaxLength) {
-					return false;
-				}
-			}
-			return true;
-		}
-		
-		[Export("attributedStringForObjectValue:withDefaultAttributes:")]
-		public NSAttributedString AttributedStringForObjectValue (IntPtr anObject, NSDictionary attributes)
-		{
-			return null;
-		}
-	}
-	
-	public class TextBoxHandler : MacText<NSTextField, TextBox>, ITextBox
+	public class PasswordHandler : MacText<NSTextField, PasswordBox>, IPasswordBox
 	{
-		
-		class EtoTextField : NSTextField, IMacControl
+
+		class EtoTextField : NSSecureTextField, IMacControl
 		{
 			object IMacControl.Handler { get { return Handler; } }
 
-			public TextBoxHandler Handler { get; set; }
+			public PasswordHandler Handler { get; set; }
 			
 			public override bool PerformKeyEquivalent (NSEvent theEvent)
 			{
@@ -75,7 +37,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public TextBoxHandler ()
+		public PasswordHandler ()
 		{
 			Control = new EtoTextField{ Handler = this };
 			Control.Bezeled = true;
@@ -110,6 +72,11 @@ namespace Eto.Platform.Mac
 		public int MaxLength {
 			get;
 			set;
+		}
+
+		public Char PasswordChar { // not supported on OSX
+			get { return '\0'; }
+			set { }
 		}
 	}
 }
