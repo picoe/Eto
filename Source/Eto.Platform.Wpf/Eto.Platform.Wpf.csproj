@@ -137,6 +137,7 @@
     <Compile Include="Forms\SaveFileDialogHandler.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
     <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
+    <Compile Include="Forms\UITimerHandler.cs" />
     <Compile Include="Forms\WpfFileDialog.cs" />
     <Compile Include="Forms\WpfCommonDialog.cs" />
     <Compile Include="Forms\DialogHandler.cs" />
