@@ -7,9 +7,14 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
+	public interface ITextBoxWithMaxLength
+	{
+		int MaxLength { get; set; }
+	}
+
 	public class MyFormatter : NSFormatter
 	{
-		public TextBoxHandler Handler { get; set; }
+		public ITextBoxWithMaxLength Handler { get; set; }
 		
 		public override string StringFor (NSObject value)
 		{
@@ -45,8 +50,8 @@ namespace Eto.Platform.Mac
 			return null;
 		}
 	}
-	
-	public class TextBoxHandler : MacText<NSTextField, TextBox>, ITextBox
+
+	public class TextBoxHandler : MacText<NSTextField, TextBox>, ITextBox, ITextBoxWithMaxLength
 	{
 		
 		class EtoTextField : NSTextField, IMacControl
