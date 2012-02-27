@@ -3,8 +3,10 @@ using System.Collections;
 
 namespace Eto.Forms
 {
-	public interface IPasswordBox : ITextBox
+	public interface IPasswordBox : ITextControl
 	{
+		bool ReadOnly { get; set; }
+		int MaxLength { get; set; }
 		char PasswordChar { get; set; }
 	}
 
