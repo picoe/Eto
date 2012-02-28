@@ -15,7 +15,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		Gtk.CellRenderer Control { get; }
 		void BindCell (ICellDataSource source, Gtk.TreeViewColumn column, int index);
 		void SetEditable (Gtk.TreeViewColumn column, bool editable);
-		void GetNullValue (ref GLib.Value val);
+		GLib.Value GetValue (IGridItem item, int column);
 		void HandleEvent (string eventHandler);
 	}
 	
@@ -48,7 +48,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			Source.SetValue (path, ColumnIndex, value);
 		}
 		
-		public abstract void GetNullValue (ref GLib.Value val);
+		public abstract GLib.Value GetValue (IGridItem item, int column);
 
 		public override void AttachEvent (string eventHandler)
 		{

@@ -17,7 +17,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (item == null)
 				yield break;
 			for (int i = 0; i < item.Count; i++)
-				yield return item.GetChild (i);
+				yield return item[i];
 		}
 
 		public class ChildrenConverter : swd.IValueConverter

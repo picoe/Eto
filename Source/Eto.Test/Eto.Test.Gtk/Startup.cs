@@ -7,7 +7,7 @@ namespace Eto.Test.Gtk
 {
 	class Startup
 	{
-		[STAThread]
+		//[STAThread]
 		static void Main (string [] args)
 		{
 			var generator = Generator.GetGenerator ("Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk");

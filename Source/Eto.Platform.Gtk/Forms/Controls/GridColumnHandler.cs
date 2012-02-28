@@ -81,8 +81,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 			set {
 				dataCell = value;
-				Control.PackStart (((ICellHandler)dataCell.Handler).Control, true);
-				SetCellAttributes ();
 			}
 		}
 		
@@ -96,6 +94,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			this.grid = grid;
 			this.column = index;
 			if (dataCell != null) {
+				Control.PackStart (((ICellHandler)dataCell.Handler).Control, true);
+				SetCellAttributes ();
 				((ICellHandler)dataCell.Handler).BindCell (source, Control, index);
 			}
 			SetupEvents ();
@@ -114,12 +114,13 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			((ICellHandler)dataCell.Handler).HandleEvent(handler);
 		}
-
-		public void GetNullValue (ref GLib.Value val)
+		
+		public GLib.Value GetValue (IGridItem item)
 		{
 			if (dataCell != null) {
-				((ICellHandler)dataCell.Handler).GetNullValue(ref val);
+				return ((ICellHandler)dataCell.Handler).GetValue(item, this.column);
 			}
+			else return new GLib.Value((string)null);
 		}
 	}
 }

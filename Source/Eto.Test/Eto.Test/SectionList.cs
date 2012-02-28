@@ -36,9 +36,9 @@ namespace Eto.Test
 
 		#region ITreeItem implementation
 		
-		public ITreeItem GetChild (int index)
+		public ITreeItem this[int index]
 		{
-			return null;
+			get { return null; }
 		}
 
 		public int Count { get { return 0; } }
@@ -91,11 +91,11 @@ namespace Eto.Test
 		
 		IEnumerable<ITreeItem> ControlSection ()
 		{
-			yield return new Section<LabelSection> { Text = "Label Control" };
-			yield return new Section<ButtonSection> { Text = "Button Control" };
+			yield return new Section<LabelSection> { Text = "Label" };
+			yield return new Section<ButtonSection> { Text = "Button" };
 			yield return new Section<CheckBoxSection> { Text = "Check Box" };
 			yield return new Section<RadioButtonSection> { Text = "Radio Button" };
-			yield return new Section<ScrollableSection> { Text = "Scrollable Control" };
+			yield return new Section<ScrollableSection> { Text = "Scrollable" };
 			yield return new Section<TextBoxSection> { Text = "Text Box" };
 			yield return new Section<TextAreaSection> { Text = "Text Area" };
 			yield return new Section<WebViewSection> { Text = "Web View" };
@@ -110,6 +110,7 @@ namespace Eto.Test
 			yield return new Section<SliderSection> { Text = "Slider" };
 			yield return new Section<XamlSection> { Text = "Xaml" };
 			yield return new Section<GridViewSection> { Text = "Grid View" };
+			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
 		}
 
 		IEnumerable<ITreeItem> DrawingSection ()

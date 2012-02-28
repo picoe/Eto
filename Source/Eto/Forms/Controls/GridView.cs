@@ -5,19 +5,12 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IGridStore : IDataStore
+	public interface IGridStore : IDataStore<IGridItem>
 	{
-		int Count { get; }
-
-		IGridItem GetItem (int index);
 	}
 
-	public class GridItemCollection : Collection<IGridItem>, IGridStore
+	public class GridItemCollection : DataStoreCollection<IGridItem>, IGridStore
 	{
-		IGridItem IGridStore.GetItem (int index)
-		{
-			return this[index];
-		}
 	}
 
 	public interface IGridView : IControl
@@ -142,10 +135,11 @@ namespace Eto.Forms
 		}
 
 		public GridView (Generator g)
-			: base (g, typeof (IGridView), true)
+			: base (g, typeof (IGridView), false)
 		{
 			handler = (IGridView)Handler;
 			Columns = new GridColumnCollection { Handler = handler };
+			Initialize ();
 		}
 
 		public bool ShowHeader
@@ -184,7 +178,7 @@ namespace Eto.Forms
 			{
 				if (DataStore == null) yield break;
 				foreach (var row in SelectedRows) {
-					yield return DataStore.GetItem (row);
+					yield return DataStore[row];
 				}
 			}
 		}

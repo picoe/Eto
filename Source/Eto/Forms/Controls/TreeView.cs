@@ -3,11 +3,9 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface ITreeStore : IDataStore
+	public interface ITreeStore : IDataStore<ITreeItem>
 	{
-		int Count { get; }
-		
-		ITreeItem GetChild (int index);
+
 	}
 
 	public interface ITreeView : IControl

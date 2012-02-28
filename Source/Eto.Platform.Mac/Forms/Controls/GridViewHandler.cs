@@ -10,7 +10,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class GridViewHandler : MacView<NSScrollView, GridView>, IGridView
 	{
-		IGridStore store;
+		CollectionHandler collection;
 		NSTableView table;
 		ContextMenu contextMenu;
 		
@@ -24,12 +24,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override int GetRowCount (NSTableView tableView)
 			{
-				return (Handler.store != null) ? Handler.store.Count : 0;
+				return (Handler.collection != null && Handler.collection.DataStore != null) ? Handler.collection.DataStore.Count : 0;
 			}
 
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.store.GetItem (row);
+				var item = Handler.collection.DataStore[row];
 				var id = tableColumn.Identifier as EtoGridColumnIdentifier;
 				if (item != null && id != null) {
 					var val = item.GetValue (id.Column);
@@ -40,7 +40,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void SetObjectValue (NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.store.GetItem (row);
+				var item = Handler.collection.DataStore[row];
 				var id = tableColumn.Identifier as EtoGridColumnIdentifier;
 				if (item != null && id != null) {
 					var val = id.Handler.SetObjectValue (theObject);
@@ -58,7 +58,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
 				var id = tableColumn.Identifier as EtoGridColumnIdentifier;
-				var item = Handler.store.GetItem (row);
+				var item = Handler.collection.DataStore[row];
 				var args = new GridViewCellArgs (id.Handler.Widget, row, id.Handler.Column, item);
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
@@ -172,11 +172,48 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
+		class CollectionHandler : CollectionChangedHandler<IGridItem, IGridStore>
+		{
+			public GridViewHandler Handler { get; set; }
+
+			public override int IndexOf (IGridItem item)
+			{
+				return -1; // not needed
+			}
+			
+			public override void AddRange (IEnumerable<IGridItem> items)
+			{
+				Handler.table.ReloadData ();
+			}
+
+			public override void AddItem (IGridItem item)
+			{
+				Handler.table.ReloadData ();
+			}
+
+			public override void InsertItem (int index, IGridItem item)
+			{
+				Handler.table.ReloadData ();
+			}
+
+			public override void RemoveItem (int index)
+			{
+				Handler.table.ReloadData ();
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.table.ReloadData ();
+			}
+		}
+
 		public IGridStore DataStore {
-			get { return store; }
+			get { return collection != null ? collection.DataStore : null; }
 			set {
-				store = value;
-				table.ReloadData ();
+				if (collection != null)
+					collection.Unregister ();
+				collection = new CollectionHandler{ Handler = this };
+				collection.Register (value);
 			}
 		}
 		

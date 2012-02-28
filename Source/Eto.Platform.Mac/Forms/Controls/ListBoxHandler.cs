@@ -13,20 +13,21 @@ namespace Eto.Platform.Mac
 	{
 		NSTableView control;
 		NSScrollView scroll;
-		List<IListItem> data = new List<IListItem> ();
-		
+		CollectionHandler collection;
+
+				
 		class DataSource : NSTableViewDataSource
 		{
 			public ListBoxHandler Handler { get; set; }
 			
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				return new MacImageData (Handler.data [row]);
+				return new MacImageData (Handler.collection.DataStore [row]);
 			}
 
 			public override int GetRowCount (NSTableView tableView)
 			{
-				return Handler.data.Count;
+				return Handler.collection.DataStore != null ? Handler.collection.DataStore.Count : 0;
 			}
 		}
 		
@@ -85,6 +86,7 @@ namespace Eto.Platform.Mac
 		
 		public ListBoxHandler ()
 		{
+			collection = new CollectionHandler{ Handler = this };
 			control = new EtoListBoxTableView{ Handler = this };
 			
 			var col = new NSTableColumn ();
@@ -110,24 +112,48 @@ namespace Eto.Platform.Mac
 			Control = scroll;
 		}
 		
-		#region IListControl Members
-		
-		public void AddRange (IEnumerable<IListItem> collection)
+		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
 		{
-			data.AddRange (collection);
-			control.ReloadData ();
-		}
-		
-		public void AddItem (IListItem item)
-		{
-			data.Add (item);
-			control.ReloadData ();
+			public ListBoxHandler Handler { get; set; }
+
+			public override int IndexOf (IListItem item)
+			{
+				return -1; // not needed
+			}
+			
+			public override void AddRange (IEnumerable<IListItem> items)
+			{
+				Handler.control.ReloadData ();
+			}
+
+			public override void AddItem (IListItem item)
+			{
+				Handler.control.ReloadData ();
+			}
+
+			public override void InsertItem (int index, IListItem item)
+			{
+				Handler.control.ReloadData ();
+			}
+
+			public override void RemoveItem (int index)
+			{
+				Handler.control.ReloadData ();
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.control.ReloadData ();
+			}
 		}
 
-		public void RemoveItem (IListItem item)
-		{
-			data.Remove (item);
-			control.ReloadData ();
+		public IListStore DataStore {
+			get { return collection.DataStore; }
+			set {
+				if (collection.DataStore != null)
+					collection.Unregister ();
+				collection.Register (value);
+			}
 		}
 
 		public int SelectedIndex {
@@ -142,13 +168,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public void RemoveAll ()
-		{
-			data.Clear ();
-			control.ReloadData ();
-		}
 
-		#endregion
-
+		
 	}
 }

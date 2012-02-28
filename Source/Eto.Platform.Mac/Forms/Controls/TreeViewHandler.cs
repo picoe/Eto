@@ -118,7 +118,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				EtoTreeItem item;
 				if (!items.TryGetValue (childIndex, out item)) {
 					var parentItem = myitem != null ? myitem.Item : Handler.top;
-					item = new EtoTreeItem{ Item = parentItem.GetChild (childIndex) };
+					item = new EtoTreeItem{ Item = parentItem[childIndex] };
 					Handler.cachedItems.Add (item.Item, item);
 					items.Add (childIndex, item);
 				}

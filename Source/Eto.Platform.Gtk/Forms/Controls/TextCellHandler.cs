@@ -7,9 +7,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	{
 		public TextCellHandler ()
 		{
-			Control = new Gtk.CellRendererText();
+			Control = new Gtk.CellRendererText ();
 			this.Control.Edited += delegate(object o, Gtk.EditedArgs args) {
-				SetValue(args.Path, args.NewText);
+				SetValue (args.Path, args.NewText);
 			};
 		}
 		
@@ -24,22 +24,27 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			this.Control.Editable = editable;
 		}
 		
-		public override void GetNullValue (ref GLib.Value val)
+		public override GLib.Value GetValue (IGridItem item, int column)
 		{
-			val = new GLib.Value((string)null);
+			if (item != null) {
+				var ret = item.GetValue (column);
+				if (ret != null)
+					return new GLib.Value (Convert.ToString (ret));
+			}
+			return new GLib.Value ((string)null);
 		}
-
+		
 		public override void AttachEvent (string eventHandler)
 		{
 			switch (eventHandler) {
-				case GridView.EndCellEditEvent:
-					Control.Edited += (sender, e) => {
-						Source.EndCellEditing (e.Path, this.ColumnIndex);
-					};
-					break;
-				default:
-					base.AttachEvent (eventHandler);
-					break;
+			case GridView.EndCellEditEvent:
+				Control.Edited += (sender, e) => {
+					Source.EndCellEditing (e.Path, this.ColumnIndex);
+				};
+				break;
+			default:
+				base.AttachEvent (eventHandler);
+				break;
 			}
 		}
 	}

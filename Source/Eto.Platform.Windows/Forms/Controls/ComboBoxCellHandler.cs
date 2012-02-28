@@ -1,39 +1,26 @@
 using System;
-using System.Reflection;
-using SWF = System.Windows.Forms;
-using SD = System.Drawing;
+using System.Linq;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
-using System.Linq;
 
-namespace Eto.Platform.Windows
+namespace Eto.Platform.Windows.Forms.Controls
 {
-	public class ComboBoxHandler : WindowsControl<SWF.ComboBox, ComboBox>, IComboBox
+	public class ComboBoxCellHandler : CellHandler<swf.DataGridViewComboBoxCell, ComboBoxCell>, IComboBoxCell
 	{
 		CollectionHandler collection;
-		
-		public ComboBoxHandler()
+
+		public ComboBoxCellHandler ()
 		{
-			Control = new SWF.ComboBox {
-				DropDownStyle = SWF.ComboBoxStyle.DropDownList,
+			Control = new swf.DataGridViewComboBoxCell {
 				ValueMember = "Key",
 				DisplayMember = "Text"
 			};
-			Control.SelectedIndexChanged += delegate {
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
-			};
-
 		}
-
-		public int SelectedIndex
-		{
-			get	{ return Control.SelectedIndex; }
-			set { Control.SelectedIndex = value; }
-		}
-
+		
 		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
 		{
-			public ComboBoxHandler Handler { get; set; }
+			public ComboBoxCellHandler Handler { get; set; }
 			
 			public override int IndexOf (IListItem item)
 			{
@@ -77,3 +64,4 @@ namespace Eto.Platform.Windows
 		}
 	}
 }
+

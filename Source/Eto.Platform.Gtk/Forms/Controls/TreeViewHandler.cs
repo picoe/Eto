@@ -94,7 +94,7 @@ namespace Eto.Platform.GtkSharp.Forms
 		void Populate (Gtk.TreeIter? parent, ITreeStore item)
 		{
 			for (int i=0; i<item.Count; i++) {
-				var child = item.GetChild (i);
+				var child = item[i];
 				var img = child.Image;
 				Gdk.Pixbuf pixbuf = null;
 				if (img != null) {

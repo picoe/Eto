@@ -54,7 +54,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			var count = item.Count;
 			for (int i=0; i<count; i++) {
-				var child = item.GetChild (i);
+				var child = item[i];
 				var node = nodes.Add (child.Key, child.Text, GetImageKey (child.Image));
 				node.Tag = child;
 				

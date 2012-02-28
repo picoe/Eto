@@ -9,24 +9,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	{
 		class EtoCellRendererPixbuf : Gtk.CellRendererPixbuf
 		{
-			Image image;
-
-			[GLib.Property("image")]
-			public Image Image {
-				get { 
-					return image; 
-				}
-				set {
-					if (value == NullValue)
-						image = null;
-					else
-						image = value;
-					if (image != null) {
-						this.Pixbuf = ((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16));
-					} else
-						this.Pixbuf = null;
-				}
-			}
 		}
 		
 		public ImageCellHandler ()
@@ -37,20 +19,20 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		protected override void BindCell ()
 		{
 			Column.ClearAttributes (Control);
-			Column.AddAttribute (Control, "image", ColumnIndex);
+			Column.AddAttribute (Control, "pixbuf", ColumnIndex);
 		}
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
 		{
 		}
 		
-		static Bitmap NullValue;
-		
-		public override void GetNullValue (ref GLib.Value val)
+		public override GLib.Value GetValue (IGridItem item, int column)
 		{
-			if (NullValue == null)
-				NullValue = new Bitmap (Widget.Generator, new BitmapHandler ());
-			val = new GLib.Value (NullValue);
+			if (item == null) return new GLib.Value((Gdk.Pixbuf)null);
+			var ret = item.GetValue (column);
+			var image = ret as Image;
+			if (image == null) return new GLib.Value((Gdk.Pixbuf)null);
+			return new GLib.Value(((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16)));
 		}
 		
 		public override void AttachEvent (string handler)

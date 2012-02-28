@@ -7,11 +7,13 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using Eto.Platform.Wpf.Drawing;
+using System.Collections;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ListBoxHandler : WpfControl<swc.ListBox, ListBox>, IListBox
 	{
+		IListStore store;
 		ContextMenu contextMenu;
 
 		public ListBoxHandler ()
@@ -38,27 +40,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					}
 				}
 			};
-			
-		}
-		public void AddRange (IEnumerable<IListItem> collection)
-		{
-			foreach (var item in collection)
-				AddItem (item);
+
 		}
 
-		public void AddItem (IListItem item)
+		public IListStore DataStore
 		{
-			Control.Items.Add (item);
-		}
-
-		public void RemoveItem (IListItem item)
-		{
-			Control.Items.Remove (item);
-		}
-
-		public void RemoveAll ()
-		{
-			Control.Items.Clear ();
+			get { return store; }
+			set
+			{
+				store = value;
+				Control.ItemsSource = store as IEnumerable ?? ListItemCollection.EnumerateDataStore (store);
+			}
 		}
 
 		public int SelectedIndex

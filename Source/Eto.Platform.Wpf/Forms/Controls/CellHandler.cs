@@ -17,11 +17,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		where T: swc.DataGridColumn
 		where W: Cell
 	{
+		public int DataColumn { get; private set; }
+
 		swc.DataGridColumn ICellHandler.Control
 		{
 			get { return Control; }
 		}
 
-		public abstract void Bind (int column);
+		public virtual void Bind (int column)
+		{
+			this.DataColumn = column;
+		}
 	}
 }

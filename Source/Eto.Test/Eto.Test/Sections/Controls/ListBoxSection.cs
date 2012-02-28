@@ -9,19 +9,15 @@ namespace Eto.Test.Sections.Controls
 	{
 		public ListBoxSection ()
 		{
-			var layout = new TableLayout (this, 2, 4);
+			var layout = new DynamicLayout (this);
 			
-			int row = 0;
-			layout.Add (new Label{ Text = "Default"}, 0, row);
-			layout.Add (Default (), 1, row++);
+			layout.AddRow (new Label{ Text = "Default"}, Default ());
+						
+			layout.AddRow (new Label{ Text = "Virtual list, with Icons"}, WithIcons ());
 
-			layout.Add (new Label{ Text = "With Icons"}, 0, row);
-			layout.Add (WithIcons (), 1, row++);
-
-			layout.Add (new Label{ Text = "Context Menu"}, 0, row);
-			layout.Add (WithContextMenu (), 1, row++);
+			layout.AddRow (new Label{ Text = "Context Menu"}, WithContextMenu ());
 			
-			layout.SetRowScale (row);
+			layout.Add (null);
 		}
 		
 		Control Default ()
@@ -34,7 +30,58 @@ namespace Eto.Test.Sections.Controls
 			for (int i = 0; i < 10; i++) {
 				control.Items.Add (new ListItem{ Text = "Item " + i });
 			}
+			
+			var layout = new DynamicLayout (new Panel());
+			layout.Add (control);
+			layout.BeginVertical ();
+			layout.AddRow (null, AddRowsButton (control), RemoveRowsButton (control), ClearButton (control), null);
+			layout.EndVertical ();
+			
+			return layout.Container;
+		}
+
+		Control AddRowsButton (ListBox list)
+		{
+			var control = new Button{ Text = "Add Rows" };
+			control.Click += delegate {
+				for (int i = 0; i < 10; i++)
+					list.Items.Add (new ListItem { Text = "Item " + list.Items.Count});
+			};
 			return control;
+		}
+		
+		Control RemoveRowsButton (ListBox list)
+		{
+			var control = new Button{ Text = "Remove Rows" };
+			control.Click += delegate {
+				if (list.SelectedIndex >= 0)
+					list.Items.RemoveAt (list.SelectedIndex);
+			};
+			return control;
+		}
+		
+		Control ClearButton (ListBox list)
+		{
+			var control = new Button{ Text = "Clear" };
+			control.Click += delegate {
+				list.Items.Clear ();
+			};
+			return control;
+		}
+		
+		class VirtualList : IListStore
+		{
+			Icon image = Icon.FromResource ("Eto.Test.TestIcon.ico");
+			
+			public int Count {
+				get { return 1000; }
+			}
+
+			public IListItem this [int index] {
+				get {
+					return new ImageListItem{ Text = "Item " + index, Image = image };
+				}
+			}
 		}
 		
 		Control WithIcons ()
@@ -43,14 +90,8 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size (100, 150)
 			};
 			LogEvents (control);
-
-			var image = Icon.FromResource ("Eto.Test.TestIcon.ico");
-			var items = new List<IListItem> ();
-			for (int i = 0; i < 1000; i++) {
-				items.Add (new ImageListItem{ Text = "Item " + i, Image = image });
-			}
-			// use addrange for speed!
-			control.Items.AddRange (items);
+			
+			control.DataStore = new VirtualList ();
 			return control;
 		}
 

@@ -9,11 +9,8 @@ namespace Eto.Forms
 	
 	public class ToolBarItem : InstanceWidget
 	{
-		IToolBarItem inner;
-		
-		public ToolBarItem(Generator g, Type type) : base(g, type)
+		public ToolBarItem (Generator g, Type type) : base(g, type)
 		{
-			inner = (IToolBarItem)Handler;
 		}
 	}
 }

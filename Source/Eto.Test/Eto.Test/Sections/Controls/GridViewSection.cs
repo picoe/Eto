@@ -28,8 +28,20 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout (this);
 			
 			layout.AddRow (new Label { Text = "Default" }, Default ());
-			layout.AddRow (new Label { Text = "No Header" }, NoHeader ());
+			layout.AddRow (new Label { Text = "No Header,\nNon-Editable" }, NoHeader ());
 			layout.AddRow (new Label { Text = "Context Menu\n& Multi-Select" }, WithContextMenu ());
+		}
+		
+		ComboBoxCell MyDropDown ()
+		{
+			var combo = new ComboBoxCell ();
+			var items = new ListItemCollection ();
+			items.Add (new ListItem{ Text = "Item 1" });
+			items.Add (new ListItem{ Text = "Item 2" });
+			items.Add (new ListItem{ Text = "Item 3" });
+			items.Add (new ListItem{ Text = "Item 4" });
+			combo.DataStore = items;
+			return combo;
 		}
 
 		GridView Default ()
@@ -39,10 +51,11 @@ namespace Eto.Test.Sections.Controls
 			};
 			LogEvents (control);
 			
-			control.Columns.Add (new GridColumn{ HeaderText = "Default"});
+			var dropDown = MyDropDown ();
 			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell (), Editable = true, AutoSize = true, Resizable = false});
-			control.Columns.Add (new GridColumn{ HeaderText = "Editable", Editable = true});
 			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageCell () });
+			control.Columns.Add (new GridColumn{ HeaderText = "Text", Editable = true});
+			control.Columns.Add (new GridColumn{ HeaderText = "Drop Down", DataCell = dropDown, Editable = true });
 			
 			var image1 = Bitmap.FromResource ("Eto.Test.TestImage.png");
 			var image2 = Icon.FromResource ("Eto.Test.TestIcon.ico");
@@ -56,8 +69,11 @@ namespace Eto.Test.Sections.Controls
 				var image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
 
 				var txt = string.Format ("Col 1 Row {0}", i);
-				var editText = rand.Next (10) == 0 ? null : "Editable, Sometimes Null";
-				items.Add (new LogGridItem (txt, boolVal, editText, image){ Row = i });
+				
+				val = rand.Next (dropDown.DataStore.Count + 1);
+				var combo = val == 0 ? null : dropDown.DataStore [val - 1].Key;
+				
+				items.Add (new LogGridItem (boolVal, image, txt, combo){ Row = i });
 			}
 			control.DataStore = items;
 			
@@ -67,6 +83,9 @@ namespace Eto.Test.Sections.Controls
 		GridView NoHeader ()
 		{
 			var control = Default ();
+			foreach (var col in control.Columns) {
+				col.Editable = false;
+			}
 			control.ShowHeader = false;
 			return control;
 		}

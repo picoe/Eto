@@ -109,7 +109,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\Controls\GtkGridViewModel.cs" />
+    <Compile Include="Forms\Controls\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
@@ -261,6 +261,7 @@
     <Compile Include="Forms\Controls\TextCellHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ImageCellHandler.cs" />
+    <Compile Include="Forms\Controls\GtkListModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

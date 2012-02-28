@@ -26,7 +26,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
 				var item = value as IListItem;
-				return item.Text;
+				return (item != null) ? item.Text : null;
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

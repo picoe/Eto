@@ -52,7 +52,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var cellSize = Control.DataCell.CellSize;
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (int i = range.Location; i < range.Location + range.Length; i++) {
-						var item = gridHandler.DataStore.GetItem (i);
+						var item = gridHandler.DataStore[i];
 						var val = item.GetValue (column);
 						var cellWidth = dataCellHandler.GetPreferredSize (val, cellSize);
 						width = Math.Max (width, cellWidth);
@@ -108,7 +108,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set {
 				Control.Editable = value;
 				if (Control.DataCell != null) {
-					Control.DataCell.Editable = value;
+					Control.DataCell.Enabled = Control.DataCell.Editable = value;
 				}
 			}
 		}
@@ -132,7 +132,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.ColumnHandler = this;
 					Control.DataCell = cellHandler.Control;
-					Control.DataCell.Editable = editable;
+					Control.DataCell.Enabled = Control.DataCell.Editable = editable;
 				} else
 					Control.DataCell = null;
 			}

@@ -8,11 +8,13 @@ using swd = System.Windows.Data;
 using swa = System.Windows.Automation;
 using swm = System.Windows.Media;
 using Eto.Forms;
+using System.Collections;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ComboBoxHandler : WpfControl<swc.ComboBox, ComboBox>, IComboBox
 	{
+		IListStore store;
 
 		public class EtoComboBox : swc.ComboBox
 		{
@@ -34,16 +36,28 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					base.OnSelectionChanged (e);
 			}
 
+			protected override void OnItemsChanged (System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+			{
+				base.OnItemsChanged (e);
+				if (this.IsLoaded)
+					UpdateSize ();
+			}
+
 			void ComboBoxEx_Loaded (object sender, sw.RoutedEventArgs e)
+			{
+				UpdateSize ();
+				if (_selected != null) {
+					SelectedIndex = _selected.Value;
+					_selected = null;
+				}
+			}
+
+			void UpdateSize ()
 			{
 				var popup = GetTemplateChild ("PART_Popup") as swc.Primitives.Popup;
 				var content = popup.Child as sw.FrameworkElement;
 				content.Measure (new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
 				MinWidth = content.DesiredSize.Width;
-				if (_selected != null) {
-					SelectedIndex = _selected.Value;
-					_selected = null;
-				}
 			}
 
 		}
@@ -65,25 +79,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		}
 
 
-		public void AddRange (IEnumerable<IListItem> collection)
+		public IListStore DataStore
 		{
-			foreach (var item in collection)
-				Control.Items.Add (item);
-		}
-
-		public void AddItem (IListItem item)
-		{
-			Control.Items.Add (item);
-		}
-
-		public void RemoveItem (IListItem item)
-		{
-			Control.Items.Remove (item);
-		}
-
-		public void RemoveAll ()
-		{
-			Control.Items.Clear ();
+			get { return store; }
+			set
+			{
+				store = value;
+				Control.ItemsSource = store as IEnumerable ?? ListItemCollection.EnumerateDataStore (store);
+			}
 		}
 
 		public int SelectedIndex

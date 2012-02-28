@@ -68,7 +68,7 @@ namespace Eto.Forms
 		
 		public bool Editable {
 			get { return handler.Editable; }
-			set { handler.Editable = true; }
+			set { handler.Editable = value; }
 		}
 		
 		public bool Visible {

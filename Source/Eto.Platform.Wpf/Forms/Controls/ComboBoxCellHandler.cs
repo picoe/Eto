@@ -6,41 +6,78 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
 using sw = System.Windows;
+using System.Collections;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class CheckBoxCellHandler : CellHandler<swc.DataGridCheckBoxColumn, CheckBoxCell>, ICheckBoxCell
+	public class ComboBoxCellHandler : CellHandler<swc.DataGridComboBoxColumn, ComboBoxCell>, IComboBoxCell
 	{
-		class Converter : swd.IValueConverter
+		IListStore store;
+
+		string GetValue (object context)
 		{
-			public CheckBoxCellHandler Handler { get; set; }
-
-			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-			{
-				var item = value as IGridItem;
-				if (item == null) return null;
-				return item.GetValue (Handler.Control.DisplayIndex);
+			var item = context as IGridItem;
+			if (item != null) {
+				var val = item.GetValue (DataColumn);
+				if (val != null) {
+					return Convert.ToString (val);
+				}
 			}
-
-			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
-			{
-				return value;
-			}
+			return null;
 		}
 
-		public CheckBoxCellHandler ()
+		class Column : swc.DataGridComboBoxColumn
 		{
-			Control = new swc.DataGridCheckBoxColumn { 
+			public ComboBoxCellHandler Handler { get; set; }
+
+
+			protected override sw.FrameworkElement GenerateElement (swc.DataGridCell cell, object dataItem)
+			{
+				var element = base.GenerateElement (cell, dataItem);
+				element.DataContextChanged += (sender, e) => {
+					var control = sender as swc.ComboBox;
+					control.SelectedValue = Handler.GetValue (control.DataContext);
+				};
+				return element;
+			}
+
+			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
+			{
+				var element = base.GenerateEditingElement (cell, dataItem);
+				element.DataContextChanged += (sender, e) => {
+					var control = sender as swc.ComboBox;
+					control.SelectedValue = Handler.GetValue (control.DataContext);
+				};
+				return element;
+			}
+
+			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
+			{
+				var control = editingElement as swc.ComboBox;
+				var item = control.DataContext as IGridItem;
+				if (item != null)
+					item.SetValue (Handler.DataColumn, control.SelectedValue);
+				return true;
+			}
+
+		}
+
+		public ComboBoxCellHandler ()
+		{
+			Control = new Column { Handler = this,
+				DisplayMemberPath = "Text",
+				SelectedValuePath = "Key"
 			};
 		}
 
-		public override void Bind (int column)
+		public IListStore DataStore
 		{
-			Control.Binding = new swd.Binding {
-				Mode = swd.BindingMode.TwoWay,
-				TargetNullValue = false,
-				Path = new sw.PropertyPath (string.Format (".[{0}]", column))
-			};
+			get { return store; }
+			set
+			{
+				store = value;
+				Control.ItemsSource = store as IEnumerable ?? ListItemCollection.EnumerateDataStore (store);
+			}
 		}
 	}
 }

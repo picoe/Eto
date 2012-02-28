@@ -17,11 +17,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		class Converter : swd.IValueConverter
 		{
+			public ImageCellHandler Handler { get; set; }
+
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
-				var image = value as Image;
-				if (image == null) return null;
-				return ((IWpfImage)image.Handler).GetIconClosestToSize (16);
+				var item = value as IGridItem;
+				if (item != null) {
+					var image = item.GetValue(Handler.DataColumn) as Image;
+					if (image != null)
+						return ((IWpfImage)image.Handler).GetIconClosestToSize (16);
+				}
+				return null;
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -40,7 +46,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			factory.SetValue (swc.Image.MaxWidthProperty, 16.0);
 			factory.SetValue (swc.Image.StretchDirectionProperty, swc.StretchDirection.DownOnly);
 			factory.SetValue (swc.Image.MarginProperty, new sw.Thickness (0, 2, 2, 2));
-			factory.SetBinding (swc.Image.SourceProperty, binding = new sw.Data.Binding { Converter = new Converter() });
+			factory.SetBinding (swc.Image.SourceProperty, binding = new sw.Data.Binding { Converter = new Converter { Handler = this } });
 			
 			template.VisualTree = factory;
 			Control.CellTemplate = template;
@@ -48,7 +54,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override void Bind (int column)
 		{
-			binding.Path = new sw.PropertyPath (string.Format (".[{0}]", column));
+			base.Bind (column);
+			binding.Path = new sw.PropertyPath (".");
 		}
 	}
 }

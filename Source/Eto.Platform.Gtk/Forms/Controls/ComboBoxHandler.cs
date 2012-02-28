@@ -7,44 +7,21 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox>, IComboBox
 	{
-		Gtk.ListStore store;
+		CollectionHandler collection;
+		Gtk.ListStore listStore;
+
 		public ComboBoxHandler ()
 		{
-			store = new Gtk.ListStore(typeof(string), typeof(IListItem));
-			Control = new Gtk.ComboBox(store);
-			var text = new Gtk.CellRendererText();
-			Control.PackStart(text, false);
-			Control.AddAttribute(text, "text", 0);			
+			listStore = new Gtk.ListStore (typeof(string));
+			Control = new Gtk.ComboBox (listStore);
+			var text = new Gtk.CellRendererText ();
+			Control.PackStart (text, false);
+			Control.AddAttribute (text, "text", 0);			
 			Control.Changed += delegate {
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			};
 		}
-
-		public void AddRange (IEnumerable<IListItem> collection)
-		{
-			foreach (var o in collection)
-				AddItem(o);
-		}
 		
-		public void AddItem (IListItem item)
-		{
-			store.AppendValues(item.Text, item);
-		}
-
-		public void RemoveItem (IListItem item)
-		{
-			Gtk.TreePath path = new Gtk.TreePath();
-			path.AppendIndex(Widget.Items.IndexOf(item));
-			Gtk.TreeIter iter;
-			store.GetIter(out iter, path);
-			store.Remove(ref iter);
-		}
-
-		public void RemoveAll ()
-		{
-			store.Clear();
-		}
-
 		public int SelectedIndex {
 			get {
 				return Control.Active;
@@ -53,6 +30,45 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				Control.Active = value;
 			}
 		}
+		
+
+		public class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		{
+			public ComboBoxHandler Handler { get; set; }
+
+			public override void AddItem (IListItem item)
+			{
+				Handler.listStore.AppendValues (item.Text);
+			}
+
+			public override void InsertItem (int index, IListItem item)
+			{
+				Handler.listStore.InsertWithValues (index, item.Text);
+			}
+
+			public override void RemoveItem (int index)
+			{
+				Gtk.TreeIter iter;
+				if (Handler.listStore.IterNthChild (out iter, index))
+					Handler.listStore.Remove (ref iter);
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.listStore.Clear ();
+			}
+		}
+		
+		public IListStore DataStore {
+			get { return collection != null ? collection.DataStore : null; }
+			set {
+				if (collection != null)
+					collection.Unregister ();
+				collection = new CollectionHandler{ Handler = this };
+				collection.Register (value);
+			}
+		}
+
 	}
 }
 

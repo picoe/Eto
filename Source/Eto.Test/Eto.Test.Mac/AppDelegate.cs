@@ -8,6 +8,14 @@ namespace Eto.Test.Mac
 	public partial class AppDelegate : Eto.Platform.Mac.AppDelegate
 	{
 		
+		class MyController : NSWindowController
+		{
+			public override void AwakeFromNib ()
+			{
+				base.AwakeFromNib ();
+			}
+		}
+		
 		// do any OS X - specific file/application open/launch handling here
 		
 		public override bool ApplicationShouldHandleReopen (NSApplication sender, bool hasVisibleWindows)

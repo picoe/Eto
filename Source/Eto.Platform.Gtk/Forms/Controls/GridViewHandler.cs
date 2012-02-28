@@ -8,21 +8,27 @@ using System.Collections.Generic;
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 
-	public class GridViewHandler : GtkControl<Gtk.ScrolledWindow, GridView>, IGridView, ICellDataSource
+	public class GridViewHandler : GtkControl<Gtk.ScrolledWindow, GridView>, IGridView, ICellDataSource, IGtkListModelHandler<IGridItem, IGridStore>
 	{
 		Gtk.TreeView tree;
-		GtkGridViewModel model;
-		internal IGridStore store;
+		GtkListModel<IGridItem, IGridStore> model;
+		CollectionHandler collection;
 		ContextMenu contextMenu;
 		
 		public GridViewHandler ()
 		{
-			model = new GtkGridViewModel{ Handler = this };
+			Control = new Gtk.ScrolledWindow {
+				ShadowType = Gtk.ShadowType.In
+			};
+		}
+		
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			model = new GtkListModel<IGridItem, IGridStore>{ Handler = this };
 			tree = new Gtk.TreeView (new Gtk.TreeModelAdapter (model));
 			tree.HeadersVisible = true;
-			
-			Control = new Gtk.ScrolledWindow ();
-			Control.ShadowType = Gtk.ShadowType.In;
+
 			Control.Add (tree);
 
 			tree.Events |= Gdk.EventMask.ButtonPressMask;
@@ -76,7 +82,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			if (index >= 0 && tree.Columns.Length > 0)
 				tree.InsertColumn (colHandler.Control, index);
 			else
-				index = tree.AppendColumn (colHandler.Control);
+				index = tree.AppendColumn (colHandler.Control) - 1;
 			colHandler.BindCell (this, this, index);
 		}
 
@@ -103,13 +109,64 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set { tree.Reorderable = value; }
 		}
 		
-		public IGridStore DataStore {
-			get { return store; }
-			set {
-				store = value;
-				model = new GtkGridViewModel{ Handler = this };
-				tree.Model = new Gtk.TreeModelAdapter (model);
+		public class CollectionHandler : CollectionChangedHandler<IGridItem, IGridStore>
+		{
+			public GridViewHandler Handler { get; set; }
+			
+
+			public override void AddRange (IEnumerable<IGridItem> items)
+			{
+				Handler.model = new GtkListModel<IGridItem, IGridStore>{ Handler = this.Handler };
+				Handler.tree.Model = new Gtk.TreeModelAdapter (Handler.model);
 			}
+
+			public override void AddItem (IGridItem item)
+			{
+				var iter = Handler.model.GetIterAtRow (DataStore.Count);
+				var path = Handler.model.GetPathAtRow (DataStore.Count);
+				Handler.tree.Model.EmitRowInserted (path, iter);
+			}
+
+			public override void InsertItem (int index, IGridItem item)
+			{
+				var iter = Handler.model.GetIterAtRow (index);
+				var path = Handler.model.GetPathAtRow (index);
+				Handler.tree.Model.EmitRowInserted (path, iter);
+			}
+
+			public override void RemoveItem (int index)
+			{
+				var path = Handler.model.GetPathAtRow (index);
+				Handler.tree.Model.EmitRowDeleted (path);
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.model = new GtkListModel<IGridItem, IGridStore>{ Handler = Handler };
+				Handler.tree.Model = new Gtk.TreeModelAdapter (Handler.model);
+			}
+		}
+		
+		public IGridStore DataStore {
+			get { return collection != null ? collection.DataStore : null; }
+			set {
+				if (collection != null)
+					collection.Unregister ();
+				collection = new CollectionHandler{ Handler = this };
+				collection.Register (value);
+			}
+		}
+
+		public int NumberOfColumns {
+			get {
+				return Widget.Columns.Count;
+			}
+		}
+		
+		public GLib.Value GetColumnValue (IGridItem item, int column)
+		{
+			var colHandler = (GridColumnHandler)Widget.Columns[column].Handler;
+			return colHandler.GetValue (item);
 		}
 		
 		public ContextMenu ContextMenu {
@@ -166,12 +223,12 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		public void SelectRow (int row)
 		{
-			tree.Selection.SelectIter (model.IterFromNode (row));
+			tree.Selection.SelectIter (model.GetIterAtRow (row));
 		}
 
 		public void UnselectRow (int row)
 		{
-			tree.Selection.UnselectIter (model.IterFromNode (row));
+			tree.Selection.UnselectIter (model.GetIterAtRow (row));
 		}
 
 		public void UnselectAll ()

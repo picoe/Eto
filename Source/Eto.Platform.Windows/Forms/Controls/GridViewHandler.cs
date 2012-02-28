@@ -8,7 +8,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class GridViewHandler : WindowsControl<swf.DataGridView, GridView>, IGridView
 	{
-		IGridStore store;
+		CollectionHandler collection;
 		ContextMenu contextMenu;
 		
 		public GridViewHandler ()
@@ -23,17 +23,17 @@ namespace Eto.Platform.Windows.Forms.Controls
 				ColumnHeadersHeightSizeMode = swf.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
 			};
 			Control.CellValueNeeded += (sender, e) => {
-				var item = store.GetItem (e.RowIndex);
-				var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+				var item = collection.DataStore [e.RowIndex];
+				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
 				if (item != null && col != null)
-					e.Value = col.GetCellValue(item.GetValue (e.ColumnIndex));
+					e.Value = col.GetCellValue (item.GetValue (e.ColumnIndex));
 			};
 
 			Control.CellValuePushed += (sender, e) => {
-				var item = store.GetItem(e.RowIndex);
-				var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+				var item = collection.DataStore [e.RowIndex];
+				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
 				if (item != null && col != null)
-					item.SetValue (e.ColumnIndex, col.GetItemValue(e.Value));
+					item.SetValue (e.ColumnIndex, col.GetItemValue (e.Value));
 			};
 		}
 
@@ -52,28 +52,28 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-				case GridView.BeginCellEditEvent:
-					Control.CellBeginEdit += (sender, e) => {
-						var item = store.GetItem(e.RowIndex);
-						var column = Widget.Columns[e.ColumnIndex];
-						Widget.OnBeginCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
-					};
-					break;
-				case GridView.EndCellEditEvent:
-					Control.CellEndEdit += (sender, e) => {
-						var item = store.GetItem (e.RowIndex);
-						var column = Widget.Columns[e.ColumnIndex];
-						Widget.OnEndCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
-					};
-					break;
-				case GridView.SelectionChangedEvent:
-					Control.SelectionChanged += delegate {
-						Widget.OnSelectionChanged (EventArgs.Empty);
-					};
-					break;
-				default:
-					base.AttachEvent (handler);
-					break;
+			case GridView.BeginCellEditEvent:
+				Control.CellBeginEdit += (sender, e) => {
+					var item = collection.DataStore [e.RowIndex];
+					var column = Widget.Columns [e.ColumnIndex];
+					Widget.OnBeginCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+				};
+				break;
+			case GridView.EndCellEditEvent:
+				Control.CellEndEdit += (sender, e) => {
+					var item = collection.DataStore [e.RowIndex];
+					var column = Widget.Columns [e.ColumnIndex];
+					Widget.OnEndCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+				};
+				break;
+			case GridView.SelectionChangedEvent:
+				Control.SelectionChanged += delegate {
+					Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 
@@ -90,7 +90,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			var colHandler = ((GridColumnHandler)column.Handler);
 			if (index >= 0)
-				this.Control.Columns.RemoveAt(index);
+				this.Control.Columns.RemoveAt (index);
 			else
 				this.Control.Columns.Remove (colHandler.Control);
 		}
@@ -109,15 +109,49 @@ namespace Eto.Platform.Windows.Forms.Controls
 			get { return this.Control.AllowUserToOrderColumns; }
 			set { this.Control.AllowUserToOrderColumns = value; }
 		}
+		
+		class CollectionHandler : CollectionChangedHandler<IGridItem, IGridStore>
+		{
+			public GridViewHandler Handler { get; set; }
+			
+			public override void AddRange (IEnumerable<IGridItem> items)
+			{
+				Handler.Control.Refresh ();
+				Handler.Control.RowCount = DataStore.Count;
+			}
+			
+			public override void AddItem (IGridItem item)
+			{
+				Handler.Control.RowCount ++;
+				Handler.Control.Refresh ();
+			}
+
+			public override void InsertItem (int index, IGridItem item)
+			{
+				Handler.Control.RowCount ++;
+				Handler.Control.Refresh ();
+			}
+
+			public override void RemoveItem (int index)
+			{
+				Handler.Control.RowCount --;
+				Handler.Control.Refresh ();
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.Control.RowCount = 0;
+				Handler.Control.Refresh ();
+			}
+		}
 
 		public IGridStore DataStore {
-			get { return store; }
+			get { return collection != null ? collection.DataStore : null; }
 			set {
-				store = value;
-				if (store != null)
-					Control.RowCount = store.Count;
-				else
-					Control.RowCount = 0;
+				if (collection != null)
+					collection.Unregister ();
+				collection = new CollectionHandler { Handler = this };
+				collection.Register (value);
 			}
 		}
 		
@@ -132,14 +166,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public bool AllowMultipleSelection
-		{
+		public bool AllowMultipleSelection {
 			get { return Control.MultiSelect; }
 			set { Control.MultiSelect = value; }
 		}
 
-		public IEnumerable<int> SelectedRows
-		{
+		public IEnumerable<int> SelectedRows {
 			get { return Control.SelectedRows.OfType<swf.DataGridViewRow> ().Select (r => r.Index); }
 		}
 
@@ -150,12 +182,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public void SelectRow (int row)
 		{
-			Control.Rows[row].Selected = true;
+			Control.Rows [row].Selected = true;
 		}
 
 		public void UnselectRow (int row)
 		{
-			Control.Rows[row].Selected = false;
+			Control.Rows [row].Selected = false;
 		}
 
 		public void UnselectAll ()

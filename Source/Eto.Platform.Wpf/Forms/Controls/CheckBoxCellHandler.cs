@@ -9,46 +9,57 @@ using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TextCellHandler : CellHandler<swc.DataGridTextColumn, TextCell>, ITextCell
+	public class CheckBoxCellHandler : CellHandler<swc.DataGridCheckBoxColumn, CheckBoxCell>, ICheckBoxCell
 	{
-		class Column : swc.DataGridTextColumn
+		bool? GetValue (object context)
 		{
-			public TextCellHandler Handler { get; set; }
+			var item = context as IGridItem;
+			if (item != null) {
+				var val = item.GetValue (DataColumn);
+				if (val != null) {
+					return Convert.ToBoolean (val);
+				}
+			}
+			return null;
+		}
+
+		class Column : swc.DataGridCheckBoxColumn
+		{
+			public CheckBoxCellHandler Handler { get; set; }
+
 
 			protected override sw.FrameworkElement GenerateElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateElement (cell, dataItem);
 				element.DataContextChanged += (sender, e) => {
-					var text = sender as swc.TextBlock;
-					var item = text.DataContext as IGridItem;
-					text.Text = item != null ? Convert.ToString (item.GetValue (this.Handler.DataColumn)) : null;
+					var control = sender as swc.CheckBox;
+					control.IsChecked = Handler.GetValue (control.DataContext);
 				};
 				return element;
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
-				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
+				var element = base.GenerateEditingElement (cell, dataItem);
 				element.DataContextChanged += (sender, e) => {
-					var text = sender as swc.TextBox;
-					var item = text.DataContext as IGridItem;
-					text.Text = item != null ? Convert.ToString (item.GetValue (this.Handler.DataColumn)) : null;
+					var control = sender as swc.CheckBox;
+					control.IsChecked = Handler.GetValue (control.DataContext);
 				};
 				return element;
 			}
 
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
-				var text = editingElement as swc.TextBox;
+				var text = editingElement as swc.CheckBox;
 				var item = text.DataContext as IGridItem;
 				if (item != null)
-					item.SetValue (Handler.DataColumn, text.Text);
+					item.SetValue (Handler.DataColumn, text.IsChecked);
 				return true;
 			}
 
 		}
 
-		public TextCellHandler ()
+		public CheckBoxCellHandler ()
 		{
 			Control = new Column { Handler = this };
 		}

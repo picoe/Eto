@@ -37,9 +37,9 @@ namespace Eto.Forms
 		
 		public virtual bool Expanded { get; set; }
 		
-		public virtual ITreeItem GetChild (int index)
+		public virtual ITreeItem this[int index]
 		{
-			return children [index];
+			get { return children [index]; }
 		}
 
 		public virtual int Count {

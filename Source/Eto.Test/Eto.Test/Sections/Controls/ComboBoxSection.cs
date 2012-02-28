@@ -11,13 +11,13 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label{ Text = "Default"}, Default (), null);
 			
-			layout.AddRow (new Label{ Text = "With Items"}, Items ());
+			layout.AddRow (new Label{ Text = "With Items"}, TableLayout.AutoSized(Items ()));
 
-			layout.AddRow (new Label{ Text = "Disabled"}, Disabled ());
+			layout.AddRow (new Label{ Text = "Disabled"}, TableLayout.AutoSized(Disabled ()));
 			
-			layout.AddRow (new Label{ Text = "Set Initial Value"}, SetInitialValue ());
+			layout.AddRow (new Label{ Text = "Set Initial Value"}, TableLayout.AutoSized(SetInitialValue ()));
 			
-			layout.AddRow (new Label{ Text = "EnumComboBox<Key>"}, EnumCombo ());
+			layout.AddRow (new Label{ Text = "EnumComboBox<Key>"}, TableLayout.AutoSized(EnumCombo ()));
 
 			layout.Add (null, null, true);
 		}
@@ -26,6 +26,42 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new ComboBox ();
 			LogEvents (control);
+			
+			var layout = new DynamicLayout (new Panel());
+			layout.Add (TableLayout.AutoSized(control));
+			layout.BeginVertical ();
+			layout.AddRow (null, AddRowsButton (control), RemoveRowsButton (control), ClearButton (control), null);
+			layout.EndVertical ();
+			
+			return layout.Container;
+		}
+		
+		Control AddRowsButton (ComboBox list)
+		{
+			var control = new Button{ Text = "Add Rows" };
+			control.Click += delegate {
+				for (int i = 0; i < 10; i++)
+					list.Items.Add (new ListItem { Text = "Item " + list.Items.Count});
+			};
+			return control;
+		}
+		
+		Control RemoveRowsButton (ComboBox list)
+		{
+			var control = new Button{ Text = "Remove Rows" };
+			control.Click += delegate {
+				if (list.SelectedIndex >= 0)
+					list.Items.RemoveAt (list.SelectedIndex);
+			};
+			return control;
+		}
+		
+		Control ClearButton (ComboBox list)
+		{
+			var control = new Button{ Text = "Clear" };
+			control.Click += delegate {
+				list.Items.Clear ();
+			};
 			return control;
 		}
 		

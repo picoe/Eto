@@ -28,30 +28,30 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-				case GridView.BeginCellEditEvent:
-					Control.PreparingCellForEdit += (sender, e) => {
-						var row = e.Row.GetIndex();
-						var item = store.GetItem (row);
-						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-						Widget.OnBeginCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
-					};
-					break;
-				case GridView.EndCellEditEvent:
-					Control.CellEditEnding += (sender, e) => {
-						var row = e.Row.GetIndex ();
-						var item = store.GetItem (row);
-						var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-						Widget.OnEndCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
-					};
-					break;
-				case GridView.SelectionChangedEvent:
-					Control.SelectionChanged += (sender, e) => {
-						Widget.OnSelectionChanged (EventArgs.Empty);
-					};
-					break;
-				default:
-					base.AttachEvent (handler);
-					break;
+			case GridView.BeginCellEditEvent:
+				Control.PreparingCellForEdit += (sender, e) => {
+					var row = e.Row.GetIndex ();
+					var item = store[row];
+					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
+					Widget.OnBeginCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+				};
+				break;
+			case GridView.EndCellEditEvent:
+				Control.CellEditEnding += (sender, e) => {
+					var row = e.Row.GetIndex ();
+					var item = store[row];
+					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
+					Widget.OnEndCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+				};
+				break;
+			case GridView.SelectionChangedEvent:
+				Control.SelectedCellsChanged += (sender, e) => {
+					Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 
@@ -94,93 +94,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.Columns.Clear ();
 		}
 
-		public class GridItem : IList
-		{
-			public GridViewHandler Handler { get; set; }
-			public IGridItem TheItem { get; set; }
-			public int Row { get; set; }
-
-			public int Add (object value)
-			{
-				return 0;
-			}
-
-			public void Clear ()
-			{
-			}
-
-			public bool Contains (object value)
-			{
-				return false;
-			}
-
-			public int IndexOf (object value)
-			{
-				return 0;
-			}
-
-			public void Insert (int index, object value)
-			{
-			}
-
-			public bool IsFixedSize
-			{
-				get { return true; }
-			}
-
-			public bool IsReadOnly
-			{
-				get { return false; }
-			}
-
-			public void Remove (object value)
-			{
-			}
-
-			public void RemoveAt (int index)
-			{
-			}
-
-			public object this[int index]
-			{
-				get { return TheItem.GetValue (index); }
-				set { TheItem.SetValue (index, value); }
-			}
-
-			public void CopyTo (Array array, int index)
-			{
-			}
-
-			public int Count
-			{
-				get { return Handler.Control.Columns.Count; }
-			}
-
-			public bool IsSynchronized
-			{
-				get { return false; }
-			}
-
-			public object SyncRoot
-			{
-				get { return null; }
-			}
-
-			public IEnumerator GetEnumerator ()
-			{
-				return null;
-			}
-		}
-
-		public IEnumerable<GridItem> GetChildren (IGridStore store)
-		{
-			if (store == null)
-				yield break;
-			for (int i = 0; i < store.Count; i++)
-				yield return new GridItem { Handler = this, TheItem = store.GetItem (i), Row = i };
-		}
-
-
 		public IGridStore DataStore
 		{
 			get { return store; }
@@ -188,7 +101,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				store = value;
 				// must use observable collection for editing
-				Control.ItemsSource = new ObservableCollection<GridItem>(GetChildren (store));
+				if (store is ObservableCollection<IGridItem>)
+					Control.ItemsSource = store as ObservableCollection<IGridItem>;
+				else
+					Control.ItemsSource = new ObservableCollection<IGridItem> (GridItemCollection.EnumerateDataStore (store));
 			}
 		}
 
@@ -216,8 +132,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				foreach (var item in Control.SelectedItems.OfType<GridItem> ()) {
-					yield return item.Row;
+				var list = Control.ItemsSource as IList;
+				if (list != null) {
+					foreach (var item in Control.SelectedItems.OfType<IGridItem> ()) {
+						yield return list.IndexOf (item);
+					}
 				}
 			}
 		}
@@ -229,14 +148,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void SelectRow (int row)
 		{
-			var coll = Control.ItemsSource as ObservableCollection<GridItem>;
-			Control.SelectedItems.Add (coll[row]);
+			var list = Control.ItemsSource as IList;
+			if (list != null)
+				Control.SelectedItems.Add (list[row]);
 		}
 
 		public void UnselectRow (int row)
 		{
-			var coll = Control.ItemsSource as ObservableCollection<GridItem>;
-			Control.SelectedItems.Remove (coll[row]);
+			var list = Control.ItemsSource as IList;
+			if (list != null)
+				Control.SelectedItems.Remove (list[row]);
 		}
 
 		public void UnselectAll ()
