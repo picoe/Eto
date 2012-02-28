@@ -45,7 +45,7 @@ namespace Eto.Forms
 		}
 		
 		public TabPage SelectedPage {
-			get { return TabPages[SelectedIndex]; }
+			get { return SelectedIndex < 0 ? null : TabPages[SelectedIndex]; }
 			set { SelectedIndex = pages.IndexOf (value); }
 		}
 
