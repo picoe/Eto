@@ -10,12 +10,12 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
-	public class WpfMenuItem<C,W> : WidgetHandler<C, W>, IMenuActionItem
-		where C: swc.MenuItem
-		where W: MenuActionItem
+	public class WpfMenuItem<C, W> : WidgetHandler<C, W>, IMenuActionItem, swi.ICommand
+		where C : swc.MenuItem
+		where W : MenuActionItem
 	{
 		Eto.Drawing.Icon icon;
-		swi.RoutedCommand command = new swi.RoutedCommand();
+		swi.RoutedCommand command = new swi.RoutedCommand ();
 
 		protected void Setup ()
 		{
@@ -31,9 +31,11 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			{
 				icon = value;
 				if (icon != null)
-					Control.Icon = new swc.Image { 
-						Source = ((IWpfImage)icon.Handler).GetIconClosestToSize(16), 
-						MaxWidth = 16, MaxHeight = 16 };
+					Control.Icon = new swc.Image {
+						Source = ((IWpfImage)icon.Handler).GetIconClosestToSize (16),
+						MaxWidth = 16,
+						MaxHeight = 16
+					};
 				else
 					Control.Icon = null;
 			}
@@ -41,8 +43,8 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public string Text
 		{
-			get { return Generator.ConvertMneumonicFromWPF(Control.Header); }
-			set { Control.Header = Generator.ConvertMneumonicToWPF(value); }
+			get { return Generator.ConvertMneumonicFromWPF (Control.Header); }
+			set { Control.Header = Generator.ConvertMneumonicToWPF (value); }
 		}
 
 		public string ToolTip
@@ -53,21 +55,23 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public Key Shortcut
 		{
-			get { 
-				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding>().FirstOrDefault();
+			get
+			{
+				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding> ().FirstOrDefault ();
 				if (keyBinding != null)
-					return KeyMap.Convert(keyBinding.Key, keyBinding.Modifiers);
+					return KeyMap.Convert (keyBinding.Key, keyBinding.Modifiers);
 				return Key.None;
 			}
-			set {
+			set
+			{
 				Control.InputBindings.Clear ();
 				if (value != Key.None) {
 					var key = KeyMap.ConvertKey (value);
 					var modifier = KeyMap.ConvertModifier (value);
-					Control.InputBindings.Add (new swi.KeyBinding { Key = key, Modifiers = modifier });
+					Control.InputBindings.Add (new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
 					Control.InputGestureText = KeyMap.KeyToString (value);
 				}
-				else 
+				else
 					Control.InputGestureText = null;
 			}
 		}
@@ -75,7 +79,11 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		public bool Enabled
 		{
 			get { return Control.IsEnabled; }
-			set { Control.IsEnabled = value; }
+			set
+			{
+				Control.IsEnabled = value;
+				OnCanExecuteChanged (EventArgs.Empty);
+			}
 		}
 
 		public void AddMenu (int index, MenuItem item)
@@ -90,7 +98,25 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public void Clear ()
 		{
-			Control.Items.Clear ();	
+			Control.Items.Clear ();
+		}
+
+		bool swi.ICommand.CanExecute (object parameter)
+		{
+			return this.Enabled;
+		}
+
+		public event EventHandler CanExecuteChanged;
+
+		protected virtual void OnCanExecuteChanged (EventArgs e)
+		{
+			if (CanExecuteChanged != null)
+				CanExecuteChanged (this, e);
+		}
+
+		void swi.ICommand.Execute (object parameter)
+		{
+			Widget.OnClick (EventArgs.Empty);
 		}
 	}
 }
