@@ -1,6 +1,7 @@
 using System;
 using System.IO;
 using Eto.Forms;
+using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -13,6 +14,17 @@ namespace Eto.Platform.GtkSharp
 			
 			Control.AddButton(Gtk.Stock.Cancel, Gtk.ResponseType.Cancel);
 			Control.AddButton(Gtk.Stock.Open, Gtk.ResponseType.Ok);
+		}
+
+		public bool MultiSelect
+		{
+			get { return Control.SelectMultiple; }
+			set { Control.SelectMultiple = value; }	
+		}
+
+		public IEnumerable<string> Filenames
+		{
+			get { return Control.Filenames; }
 		}
 
 	}

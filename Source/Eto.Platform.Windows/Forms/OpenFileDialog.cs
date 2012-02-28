@@ -2,6 +2,7 @@ using System;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Windows
 {
@@ -12,5 +13,15 @@ namespace Eto.Platform.Windows
 			Control = new SWF.OpenFileDialog();
 		}
 
+		public bool MultiSelect
+		{
+			get { return Control.Multiselect; }
+			set { Control.Multiselect = value; }
+		}
+
+		public IEnumerable<string> Filenames
+		{
+			get { return Control.FileNames; }
+		}
 	}
 }

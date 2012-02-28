@@ -36,8 +36,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public DialogResult ShowDialog (Control parent)
 		{
-			var element = parent.ControlObject as System.Windows.FrameworkElement;
-			var window = element.GetParent<System.Windows.Window>();
+			var element = parent == null ? null : parent.ControlObject as System.Windows.FrameworkElement;
+			var window = element == null ? null : element.GetParent<System.Windows.Window>();
 			System.Windows.MessageBoxResult result;
 			var icon = Convert (Type);
             var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Text : null);
@@ -49,8 +49,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public DialogResult ShowDialog (Control parent, MessageBoxButtons buttons)
 		{
-			var element = parent.ControlObject as System.Windows.FrameworkElement;
-			var window = element.GetParent<System.Windows.Window> ();
+			var element = parent == null ? null: parent.ControlObject as System.Windows.FrameworkElement;
+			var window = element == null ? null: element.GetParent<System.Windows.Window>();
 			System.Windows.MessageBoxResult result;
 			var wpfbuttons = Convert(buttons);
 			var icon = Convert(Type);
