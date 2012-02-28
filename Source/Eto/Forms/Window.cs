@@ -29,7 +29,7 @@ namespace Eto.Forms
 		
 		public const string ClosedEvent = "Window.Closed";
 
-		event EventHandler<EventArgs> closed;
+		EventHandler<EventArgs> closed;
 
 		public event EventHandler<EventArgs> Closed {
 			add {
@@ -48,7 +48,7 @@ namespace Eto.Forms
 
 		public const string ClosingEvent = "Window.Closing";
 
-		event EventHandler<CancelEventArgs> closing;
+		EventHandler<CancelEventArgs> closing;
 
 		public event EventHandler<CancelEventArgs> Closing {
 			add {
