@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class PasswordBoxHandler : WindowsControl<SWF.TextBox, TextBox>, IPasswordBox
+	public class PasswordBoxHandler : WindowsControl<SWF.TextBox, PasswordBox>, IPasswordBox
 	{
 		public PasswordBoxHandler()
 		{
