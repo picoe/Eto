@@ -51,7 +51,7 @@ namespace Eto.Forms
 		
 		public const string SizeChangedEvent = "Control.SizeChanged";
 
-		event EventHandler<EventArgs> sizeChanged;
+		EventHandler<EventArgs> sizeChanged;
 
 		public event EventHandler<EventArgs> SizeChanged {
 			add {
@@ -69,7 +69,7 @@ namespace Eto.Forms
 
 		public const string KeyDownEvent = "Control.KeyDown";
 
-		event EventHandler<KeyPressEventArgs> keyDown;
+		EventHandler<KeyPressEventArgs> keyDown;
 
 		public event EventHandler<KeyPressEventArgs> KeyDown {
 			add {
@@ -108,7 +108,7 @@ namespace Eto.Forms
 
 		public const string MouseDownEvent = "Control.MouseDown";
 
-		event EventHandler<MouseEventArgs> mouseDown;
+		EventHandler<MouseEventArgs> mouseDown;
 
 		public event EventHandler<MouseEventArgs> MouseDown {
 			add {
@@ -126,7 +126,7 @@ namespace Eto.Forms
 
 		public const string MouseUpEvent = "Control.MouseUp";
 
-		event EventHandler<MouseEventArgs> mouseUp;
+		EventHandler<MouseEventArgs> mouseUp;
 
 		public event EventHandler<MouseEventArgs> MouseUp {
 			add {
@@ -144,7 +144,7 @@ namespace Eto.Forms
 
 		public const string MouseMoveEvent = "Control.MouseMove";
 
-		event EventHandler<MouseEventArgs> mouseMove;
+		EventHandler<MouseEventArgs> mouseMove;
 
 		public event EventHandler<MouseEventArgs> MouseMove {
 			add {
@@ -162,7 +162,7 @@ namespace Eto.Forms
 
 		public const string MouseLeaveEvent = "Control.MouseLeave";
 
-		event EventHandler<MouseEventArgs> mouseLeave;
+		EventHandler<MouseEventArgs> mouseLeave;
 
 		public event EventHandler<MouseEventArgs> MouseLeave {
 			add {
@@ -180,7 +180,7 @@ namespace Eto.Forms
 
 		public const string MouseEnterEvent = "Control.MouseEnter";
 
-		event EventHandler<MouseEventArgs> mouseEnter;
+		EventHandler<MouseEventArgs> mouseEnter;
 
 		public event EventHandler<MouseEventArgs> MouseEnter {
 			add {
@@ -198,7 +198,7 @@ namespace Eto.Forms
 		
 		public const string MouseDoubleClickEvent = "Control.MouseDoubleClick";
 
-		event EventHandler<MouseEventArgs> mouseDoubleClick;
+		EventHandler<MouseEventArgs> mouseDoubleClick;
 
 		public event EventHandler<MouseEventArgs> MouseDoubleClick {
 			add {
@@ -216,7 +216,7 @@ namespace Eto.Forms
 
 		public const string GotFocusEvent = "Control.GotFocus";
 
-		event EventHandler<EventArgs> gotFocus;
+		EventHandler<EventArgs> gotFocus;
 
 		public event EventHandler<EventArgs> GotFocus {
 			add {
@@ -234,7 +234,7 @@ namespace Eto.Forms
 
 		public const string LostFocusEvent = "Control.LostFocus";
 
-		event EventHandler<EventArgs> lostFocus;
+		EventHandler<EventArgs> lostFocus;
 
 		public event EventHandler<EventArgs> LostFocus {
 			add {
@@ -252,7 +252,7 @@ namespace Eto.Forms
 		
 		public const string ShownEvent = "Control.Shown";
 
-		event EventHandler<EventArgs> shown;
+		EventHandler<EventArgs> shown;
 
 		public event EventHandler<EventArgs> Shown {
 			add {
@@ -270,7 +270,7 @@ namespace Eto.Forms
 
 		public const string HiddenEvent = "Control.Hidden";
 
-		event EventHandler<EventArgs> hidden;
+		EventHandler<EventArgs> hidden;
 
 		public event EventHandler<EventArgs> Hidden {
 			add {
