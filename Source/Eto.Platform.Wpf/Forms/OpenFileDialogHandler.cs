@@ -14,5 +14,16 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			Control = new mw.OpenFileDialog ();
 		}
+
+		public bool MultiSelect
+		{
+			get { return Control.Multiselect; }
+			set { Control.Multiselect = value; }
+		}
+
+		public IEnumerable<string> Filenames
+		{
+			get { return Control.FileNames; }
+		}
 	}
 }
