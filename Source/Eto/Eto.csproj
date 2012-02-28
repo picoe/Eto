@@ -111,6 +111,7 @@
     <Compile Include="Forms\Controls\ImageCell.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\TextCell.cs" />
+    <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />

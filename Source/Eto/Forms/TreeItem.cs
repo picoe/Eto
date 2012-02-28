@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using Eto.Collections;
 using System.Windows.Markup;
+using System.Collections.Specialized;
 
 namespace Eto.Forms
 {
@@ -13,19 +14,28 @@ namespace Eto.Forms
 		
 		ITreeItem Parent { get; set; }
 	}
+
+	public class TreeItemCollection : DataStoreCollection<ITreeItem>
+	{
+	}
 	
 	[ContentProperty("Children")]
 	public class TreeItem : ImageListItem, ITreeItem
 	{
-		BaseList<ITreeItem> children;
-		
-		public BaseList<ITreeItem> Children {
+		TreeItemCollection children;
+
+		public TreeItemCollection Children
+		{
 			get { 
 				if (children != null)
 					return children;
-				children = new BaseList<ITreeItem> ();
-				children.Added += (sender, e) => {
-					e.Item.Parent = this;
+				children = new TreeItemCollection ();
+				children.CollectionChanged += (sender, e) => {
+					if (e.Action == NotifyCollectionChangedAction.Add) {
+						foreach (ITreeItem item in e.NewItems) {
+							item.Parent = this;
+						}
+					}
 				};
 				return children; 
 			}

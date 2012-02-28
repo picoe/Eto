@@ -14,10 +14,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		public static IEnumerable GetChildren (ITreeStore item)
 		{
-			if (item == null)
-				yield break;
-			for (int i = 0; i < item.Count; i++)
-				yield return item[i];
+			return item as IEnumerable ?? new DataStoreVirtualCollection<ITreeItem>(item);
 		}
 
 		public class ChildrenConverter : swd.IValueConverter
