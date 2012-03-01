@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -105,13 +105,9 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\Cell.cs" />
-    <Compile Include="Forms\Controls\CheckBoxCell.cs" />
     <Compile Include="Forms\Controls\GridColumnCollection.cs" />
-    <Compile Include="Forms\Controls\ImageCell.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
-    <Compile Include="Forms\Controls\TextCell.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
@@ -482,7 +478,14 @@
     <Compile Include="Forms\Controls\GridItem.cs" />
     <Compile Include="Forms\IDataStore.cs" />
     <Compile Include="CollectionChangedHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxCell.cs" />
+    <Compile Include="Forms\Controls\DataColumn.cs" />
+    <Compile Include="Forms\Controls\TreeColumn.cs" />
+    <Compile Include="Forms\Cells\Cell.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCell.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCell.cs" />
+    <Compile Include="Forms\Cells\ImageCell.cs" />
+    <Compile Include="Forms\Cells\TextCell.cs" />
+    <Compile Include="Forms\Cells\ImageTextCell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -492,4 +495,7 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Forms\Cells\" />
+  </ItemGroup>
 </Project>

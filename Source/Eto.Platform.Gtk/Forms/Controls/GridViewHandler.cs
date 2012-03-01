@@ -109,7 +109,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set { tree.Reorderable = value; }
 		}
 		
-		public class CollectionHandler : CollectionChangedHandler<IGridItem, IGridStore>
+		public class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
 			

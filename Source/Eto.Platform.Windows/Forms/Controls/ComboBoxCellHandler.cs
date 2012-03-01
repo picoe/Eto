@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 		}
 		
-		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ComboBoxCellHandler Handler { get; set; }
 			

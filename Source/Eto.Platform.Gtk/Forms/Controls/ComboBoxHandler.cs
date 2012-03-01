@@ -32,7 +32,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		}
 		
 
-		public class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		public class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ComboBoxHandler Handler { get; set; }
 

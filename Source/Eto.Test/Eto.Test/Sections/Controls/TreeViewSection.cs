@@ -22,16 +22,16 @@ namespace Eto.Test.Sections.Controls
 			layout.Add (null, false, true);
 		}
 		
-		TreeItem CreateTreeItem (int level, string name, Image image)
+
+		TreeItem CreateSimpleTreeItem (int level, string name)
 		{
 			var item = new TreeItem {
-				Text = name,
-				Expanded = expanded++ % 2 == 0,
-				Image = image
+				Expanded = expanded++ % 2 == 0
 			};
+			item.Values = new object[] { "col 0 - " + name };
 			if (level < 4) {
 				for (int i = 0; i < 4; i++) {
-					item.Children.Add (CreateTreeItem (level + 1, name + " " + i, image));
+					item.Children.Add (CreateSimpleTreeItem (level + 1, name + " " + i));
 				}
 			}
 			return item;
@@ -40,24 +40,43 @@ namespace Eto.Test.Sections.Controls
 		Control Default ()
 		{
 			var control = new TreeView {
-				Size = new Size(100, 150)
+				Size = new Size(100, 150),
+				ShowHeader = false
 			};
+			control.Columns.Add (new TreeColumn());
 			LogEvents (control);
-			control.DataStore = CreateTreeItem (0, "Item", null);
+			control.DataStore = CreateSimpleTreeItem (0, "");
 			return control;
 		}
 
+		TreeItem CreateComplexTreeItem (int level, string name, Image image)
+		{
+			var item = new TreeItem {
+				Expanded = expanded++ % 2 == 0
+			};
+			item.Values = new object[] { new object[] { image, "col 0 - " + name }, "col 1 - " + name };
+			if (level < 4) {
+				for (int i = 0; i < 4; i++) {
+					item.Children.Add (CreateComplexTreeItem (level + 1, name + " " + i, image));
+				}
+			}
+			return item;
+		}
+		
 		Control ImagesAndMenu ()
 		{
 			var control = new TreeView {
 				Size = new Size(100, 150)
 			};
 			
+			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(), HeaderText = "Outline", AutoSize = true, Resizable = true, Editable = true });
+			control.Columns.Add (new TreeColumn{ DataCell = new TextCell(), HeaderText = "Hello!", AutoSize = false, Resizable = true, Editable = true });
+			
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};
 			item.Click += delegate {
 				if (control.SelectedItem != null)
-					Log.Write (item, "Click, Rows: {0}", control.SelectedItem.Text);
+					Log.Write (item, "Click, Rows: {0}", control.SelectedItem);
 				else
 					Log.Write (item, "Click, no item selected");
 			};
@@ -66,7 +85,7 @@ namespace Eto.Test.Sections.Controls
 			control.ContextMenu = menu;
 
 			LogEvents (control);
-			control.DataStore = CreateTreeItem (0, "Item", Image);
+			control.DataStore = CreateComplexTreeItem (0, "", Image);
 			return control;
 		}
 		
@@ -80,10 +99,10 @@ namespace Eto.Test.Sections.Controls
 		void LogEvents (TreeView control)
 		{
 			control.Activated += delegate(object sender, TreeViewItemEventArgs e) {
-				Log.Write (control, "Activated, Item: {0}", e.Item.Text);
+				Log.Write (control, "Activated, Item: {0}", e.Item);
 			};
 			control.SelectionChanged += delegate {
-				Log.Write (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? control.SelectedItem.Text : "<none selected>");
+				Log.Write (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? Convert.ToString (control.SelectedItem) : "<none selected>");
 			};
 		}
 	}

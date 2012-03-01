@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using Eto.Collections;
 using System.Windows.Markup;
 using System.Collections.Specialized;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface ITreeItem : IImageListItem, ITreeStore
+	public interface ITreeItem : IGridItem, ITreeStore
 	{
 		bool Expanded { get; set; }
 		
@@ -15,17 +16,24 @@ namespace Eto.Forms
 		ITreeItem Parent { get; set; }
 	}
 
-	public class TreeItemCollection : DataStoreCollection<ITreeItem>
+	public class TreeItemCollection : DataStoreCollection<ITreeItem>, ITreeStore
 	{
+		public TreeItemCollection ()
+		{
+		}
+
+		public TreeItemCollection (IEnumerable<ITreeItem> items)
+			: base(items)
+		{
+		}
 	}
 	
 	[ContentProperty("Children")]
-	public class TreeItem : ImageListItem, ITreeItem
+	public class TreeItem : GridItem, ITreeItem
 	{
 		TreeItemCollection children;
 
-		public TreeItemCollection Children
-		{
+		public TreeItemCollection Children {
 			get { 
 				if (children != null)
 					return children;
@@ -47,8 +55,7 @@ namespace Eto.Forms
 		
 		public virtual bool Expanded { get; set; }
 		
-		public virtual ITreeItem this[int index]
-		{
+		public virtual ITreeItem this [int index] {
 			get { return children [index]; }
 		}
 
@@ -60,7 +67,13 @@ namespace Eto.Forms
 		{
 		}
 		
-		public TreeItem (IEnumerable<ITreeItem> children)
+		public TreeItem (params object[] values)
+			: base (values)
+		{
+		}
+		
+		public TreeItem (IEnumerable<ITreeItem> children, params object[] values)
+			: base (values)
 		{
 			this.Children.AddRange (children);
 		}

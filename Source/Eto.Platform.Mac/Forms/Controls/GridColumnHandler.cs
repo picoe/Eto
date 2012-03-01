@@ -13,7 +13,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public GridColumnHandler Handler { get; set; }
 	}
 
-	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn>, IGridColumn
+	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn>, IGridColumn, IDataColumnHandler
 	{
 		Cell dataCell;
 		
@@ -138,7 +138,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public void Setup (GridViewHandler gridHandler, int column)
+		public void Setup (int column)
 		{
 			Control.Identifier = new EtoGridColumnIdentifier{ Handler = this, Column = column };
 		}

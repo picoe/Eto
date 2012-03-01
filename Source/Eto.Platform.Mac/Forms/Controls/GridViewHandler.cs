@@ -120,7 +120,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var colhandler = ((GridColumnHandler)column.Handler);
 			if (index == -1 || index == table.ColumnCount) {
-				colhandler.Setup (this, index);
+				colhandler.Setup (index);
 				table.AddColumn (colhandler.Control);
 			} else {
 				var columns = new List<NSTableColumn> (table.TableColumns ());
@@ -132,7 +132,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var col = columns [i];
 					var id = col.Identifier as EtoGridColumnIdentifier;
 					if (id != null)
-						id.Handler.Setup (this, i);
+						id.Handler.Setup (i);
 					table.AddColumn (col);
 				}
 			}
@@ -172,7 +172,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		class CollectionHandler : CollectionChangedHandler<IGridItem, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
 

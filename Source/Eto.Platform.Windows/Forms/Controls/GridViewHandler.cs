@@ -110,7 +110,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set { this.Control.AllowUserToOrderColumns = value; }
 		}
 		
-		class CollectionHandler : CollectionChangedHandler<IGridItem, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
 			

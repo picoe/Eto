@@ -11,6 +11,14 @@ namespace Eto.Forms
 
 	public class GridItemCollection : DataStoreCollection<IGridItem>, IGridStore
 	{
+		public GridItemCollection ()
+		{
+		}
+
+		public GridItemCollection (IEnumerable<IGridItem> items)
+			: base(items)
+		{
+		}
 	}
 
 	public interface IGridView : IControl
@@ -61,7 +69,6 @@ namespace Eto.Forms
 		}
 	}
 
-
 	public class GridView : Control
 	{
 		IGridView handler;
@@ -72,28 +79,26 @@ namespace Eto.Forms
 
 		event EventHandler<GridViewCellArgs> beginCellEdit;
 
-		public event EventHandler<GridViewCellArgs> BeginCellEdit
-		{
-			add
-			{
+		public event EventHandler<GridViewCellArgs> BeginCellEdit {
+			add {
 				beginCellEdit += value;
 				HandleEvent (BeginCellEditEvent);
 			}
 			remove { beginCellEdit -= value; }
 		}
+
 		public virtual void OnBeginCellEdit (GridViewCellArgs e)
 		{
-			if (beginCellEdit != null) beginCellEdit (this, e);
+			if (beginCellEdit != null)
+				beginCellEdit (this, e);
 		}
 
 		public const string EndCellEditEvent = "GridView.EndCellEditEvent";
 
 		event EventHandler<GridViewCellArgs> endCellEdit;
 
-		public event EventHandler<GridViewCellArgs> EndCellEdit
-		{
-			add
-			{
+		public event EventHandler<GridViewCellArgs> EndCellEdit {
+			add {
 				endCellEdit += value;
 				HandleEvent (EndCellEditEvent);
 			}
@@ -102,17 +107,16 @@ namespace Eto.Forms
 
 		public virtual void OnEndCellEdit (GridViewCellArgs e)
 		{
-			if (endCellEdit != null) endCellEdit (this, e);
+			if (endCellEdit != null)
+				endCellEdit (this, e);
 		}
 
 		public const string SelectionChangedEvent = "GridView.SelectionChanged";
 
 		event EventHandler<EventArgs> selectionChanged;
 
-		public event EventHandler<EventArgs> SelectionChanged
-		{
-			add
-			{
+		public event EventHandler<EventArgs> SelectionChanged {
+			add {
 				selectionChanged += value;
 				HandleEvent (SelectionChangedEvent);
 			}
@@ -121,7 +125,8 @@ namespace Eto.Forms
 
 		public virtual void OnSelectionChanged (EventArgs e)
 		{
-			if (selectionChanged != null) selectionChanged (this, e);
+			if (selectionChanged != null)
+				selectionChanged (this, e);
 		}
 
 		#endregion
@@ -142,49 +147,42 @@ namespace Eto.Forms
 			Initialize ();
 		}
 
-		public bool ShowHeader
-		{
+		public bool ShowHeader {
 			get { return handler.ShowHeader; }
 			set { handler.ShowHeader = value; }
 		}
 
-		public bool AllowColumnReordering
-		{
+		public bool AllowColumnReordering {
 			get { return handler.AllowColumnReordering; }
 			set { handler.AllowColumnReordering = value; }
 		}
 
-		public IGridStore DataStore
-		{
+		public IGridStore DataStore {
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
 		}
 
-		public ContextMenu ContextMenu
-		{
+		public ContextMenu ContextMenu {
 			get { return handler.ContextMenu; }
 			set { handler.ContextMenu = value; }
 		}
 
-		public bool AllowMultipleSelection
-		{
+		public bool AllowMultipleSelection {
 			get { return handler.AllowMultipleSelection; }
 			set { handler.AllowMultipleSelection = value; }
 		}
 
-		public IEnumerable<IGridItem> SelectedItems
-		{
-			get
-			{
-				if (DataStore == null) yield break;
+		public IEnumerable<IGridItem> SelectedItems {
+			get {
+				if (DataStore == null)
+					yield break;
 				foreach (var row in SelectedRows) {
 					yield return DataStore[row];
 				}
 			}
 		}
 
-		public IEnumerable<int> SelectedRows
-		{
+		public IEnumerable<int> SelectedRows {
 			get { return handler.SelectedRows; }
 		}
 

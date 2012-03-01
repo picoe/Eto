@@ -11,10 +11,10 @@ namespace Eto.Platform.GtkSharp.Forms
 		Gtk.TreeView tree;
 		ContextMenu contextMenu;
 		ITreeStore top;
+		public static Size MaxImageSize = new Size (16, 16);
 		
-		public static Size MaxImageSize = new Size(16, 16);
-		
-		class CellRendererTextImage : Gtk.CellRendererText {
+		class CellRendererTextImage : Gtk.CellRendererText
+		{
 			
 			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
@@ -38,10 +38,10 @@ namespace Eto.Platform.GtkSharp.Forms
 				this.Widget.OnSelectionChanged (EventArgs.Empty);
 			};
 			tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
-				this.Widget.OnActivated (new TreeViewItemEventArgs(GetTreeItem(args.Path)));
+				this.Widget.OnActivated (new TreeViewItemEventArgs (GetTreeItem (args.Path)));
 			};
 			
-			var col = new Gtk.TreeViewColumn();
+			var col = new Gtk.TreeViewColumn ();
 			var pbcell = new Gtk.CellRendererPixbuf ();
 			col.PackStart (pbcell, false);
 			col.SetAttributes (pbcell, "pixbuf", 2);
@@ -52,9 +52,9 @@ namespace Eto.Platform.GtkSharp.Forms
 			
 			tree.ShowExpanders = true;
 			
-			Control = new Gtk.ScrolledWindow();
+			Control = new Gtk.ScrolledWindow ();
 			Control.ShadowType = Gtk.ShadowType.In;
-			Control.Add(tree);
+			Control.Add (tree);
 			
 			tree.Events |= Gdk.EventMask.ButtonPressMask;
 			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
@@ -86,7 +86,8 @@ namespace Eto.Platform.GtkSharp.Forms
 		void Populate ()
 		{
 			model.Clear ();
-			if (top == null) return;
+			if (top == null)
+				return;
 			Populate (null, top);
 			
 		}
@@ -94,7 +95,8 @@ namespace Eto.Platform.GtkSharp.Forms
 		void Populate (Gtk.TreeIter? parent, ITreeStore item)
 		{
 			for (int i=0; i<item.Count; i++) {
-				var child = item[i];
+				var child = item [i];
+				/*
 				var img = child.Image;
 				Gdk.Pixbuf pixbuf = null;
 				if (img != null) {
@@ -113,7 +115,7 @@ namespace Eto.Platform.GtkSharp.Forms
 						if (parentIter != null)
 							tree.ExpandRow (model.GetPath (parentIter.Value), false);
 					}
-				}
+				}*/
 			}
 		}
 		
@@ -142,6 +144,11 @@ namespace Eto.Platform.GtkSharp.Forms
 			set {
 				//Control.Selection.SelectPath (iter);
 			}
+		}
+		
+		public bool ShowHeader {
+			get { return tree.HeadersVisible; }
+			set { tree.HeadersVisible = value; }
 		}
 	}
 }

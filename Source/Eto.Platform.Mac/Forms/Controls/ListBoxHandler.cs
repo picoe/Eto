@@ -112,7 +112,7 @@ namespace Eto.Platform.Mac
 			Control = scroll;
 		}
 		
-		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ListBoxHandler Handler { get; set; }
 

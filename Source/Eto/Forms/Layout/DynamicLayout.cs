@@ -207,6 +207,12 @@ namespace Eto.Forms
 			currentItem = currentItem.Parent ?? topTable;
 		}
 		
+		public void EndBeginVertical (Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		{
+			EndVertical ();
+			BeginVertical (padding, spacing, xscale, yscale);
+		}
+		
 		public void EndBeginHorizontal (bool? yscale = null)
 		{
 			EndHorizontal ();

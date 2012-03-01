@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
@@ -15,6 +16,8 @@ namespace Eto.Forms
 		ITreeItem SelectedItem { get; set; }
 		
 		ContextMenu ContextMenu { get; set; }
+		
+		bool ShowHeader { get; set; }
 	}
 	
 	public class TreeViewItemEventArgs : EventArgs
@@ -47,14 +50,18 @@ namespace Eto.Forms
 				SelectionChanged (this, e);
 		}
 		
+		public TreeColumnCollection Columns { get; private set; }
+		
 		public TreeView ()
 			: this (Generator.Current)
 		{
 		}
 
-		public TreeView (Generator g) : base(g, typeof(ITreeView))
+		public TreeView (Generator g) : base(g, typeof(ITreeView), false)
 		{
 			inner = (ITreeView)Handler;
+			Columns = new TreeColumnCollection ();
+			Initialize ();
 		}
 		
 		public ITreeItem SelectedItem {
@@ -76,6 +83,11 @@ namespace Eto.Forms
 		public ContextMenu ContextMenu {
 			get { return inner.ContextMenu; }
 			set { inner.ContextMenu = value; }
+		}
+		
+		public bool ShowHeader {
+			get { return inner.ShowHeader; }
+			set { inner.ShowHeader = value; }
 		}
 	}
 }

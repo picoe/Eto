@@ -10,7 +10,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		NSCell Control { get; }
 		
-		GridColumnHandler ColumnHandler { get; set; }
+		IDataColumnHandler ColumnHandler { get; set; }
 
 		NSObject GetObjectValue (object val);
 
@@ -25,7 +25,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		where T: NSCell
 		where W: Cell
 	{
-		public GridColumnHandler ColumnHandler { get; set; }
+		public IDataColumnHandler ColumnHandler { get; set; }
 		
 		NSCell ICellHandler.Control {
 			get { return Control; }

@@ -16,6 +16,14 @@ namespace Eto.Forms
 
 	public class DataStoreCollection<T> : ObservableCollection<T>, IDataStore<T>
 	{
+		public DataStoreCollection ()
+		{
+		}
+		
+		public DataStoreCollection (IEnumerable<T> items)
+		{
+			AddRange (items);
+		}
 
 		public void Sort (IComparer<T> comparer)
 		{
@@ -27,8 +35,8 @@ namespace Eto.Forms
 			}
 			for (int i = this.Count - 1; i >= 0; i--) {
 				for (int j = 1; j <= i; j++) {
-					var o1 = this[j - 1];
-					var o2 = this[j];
+					var o1 = this [j - 1];
+					var o2 = this [j];
 
 					if (comparer.Compare (o1, o2) > 0) {
 						this.Remove (o1);
@@ -48,17 +56,16 @@ namespace Eto.Forms
 			}
 			for (int i = this.Count - 1; i >= 0; i--) {
 				for (int j = 1; j <= i; j++) {
-					var o1 = this[j - 1];
-					var o2 = this[j];
+					var o1 = this [j - 1];
+					var o2 = this [j];
 
-					if (comparison(o1, o2) > 0) {
+					if (comparison (o1, o2) > 0) {
 						this.Remove (o1);
 						this.Insert (j, o1);
 					}
 				}
 			}
 		}
-
 
 		public static IEnumerable<T> EnumerateDataStore (IDataStore<T> store)
 		{

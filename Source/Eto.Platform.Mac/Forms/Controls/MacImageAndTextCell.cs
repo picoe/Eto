@@ -75,7 +75,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 	public class MacImageListItemCell : NSTextFieldCell
 	{
-		const int IMAGE_PADDING = 2;
+		public const int IMAGE_PADDING = 2;
 		
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 

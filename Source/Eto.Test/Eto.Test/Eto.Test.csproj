@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -99,6 +99,8 @@
     <Compile Include="Xaml\Test.cs" />
     <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
     <Compile Include="Sections\Controls\GridViewSection.cs" />
+    <Compile Include="Sections\Controls\ProgressBarSection.cs" />
+    <Compile Include="Sections\Controls\KitchenSinkSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

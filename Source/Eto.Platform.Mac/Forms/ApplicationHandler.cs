@@ -35,7 +35,6 @@ namespace Eto.Platform.Mac
 
 		public void InvokeOnMainThread (System.Action action)
 		{
-			NSControl c;
 			var thread = NSThread.Current;
 			if (thread != null && thread.IsMainThread)
 				action ();

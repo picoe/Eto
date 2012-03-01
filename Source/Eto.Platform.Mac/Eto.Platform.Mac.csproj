@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -177,6 +177,9 @@
     <Compile Include="Forms\Controls\ImageCellHandler.cs" />
     <Compile Include="Forms\MacCommon.cs" />
     <Compile Include="Forms\Controls\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Controls\TreeColumnHandler.cs" />
+    <Compile Include="Forms\Controls\DataColumnHandler.cs" />
+    <Compile Include="Forms\Controls\ImageTextCellHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

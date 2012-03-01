@@ -13,7 +13,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new swc.ProgressBar {
 				Minimum = 0,
-				Maximum = 100
+				Maximum = 100,
+				Height = 24
 			};
 		}
 

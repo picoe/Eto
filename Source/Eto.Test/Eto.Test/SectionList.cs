@@ -15,18 +15,27 @@ namespace Eto.Test
 		Control GenerateControl ();
 	}
 	
-	public class Section<T> : ISectionGenerator, IListItem, ITreeItem
+	public class Section<T> : ISectionGenerator, ITreeItem
 		where T: Control, new()
 	{
 		public string Text { get; set; }
 		
-		public string Key {
-			get { return Text; }
-		}
-		
 		public Control GenerateControl ()
 		{
 			return new T ();
+		}
+		
+		public object GetValue (int column)
+		{
+			if (column == 0)
+				return Text;
+			else
+				return null;
+		}
+		
+		public void SetValue (int column, object value)
+		{
+			// nothing!
 		}
 		
 		public override string ToString ()
@@ -36,8 +45,7 @@ namespace Eto.Test
 
 		#region ITreeItem implementation
 		
-		public ITreeItem this[int index]
-		{
+		public ITreeItem this [int index] {
 			get { return null; }
 		}
 
@@ -66,17 +74,20 @@ namespace Eto.Test
 		{
 			this.contentContainer = contentContainer;
 			this.Style = "sectionList";
+			this.ShowHeader = false;
 			
+			Columns.Add (new TreeColumn ());
 
 			this.DataStore = Section ("Top", TopNodes ());
 		}
 		
 		ITreeItem Section (string label, IEnumerable<ITreeItem> items)
 		{
-			var node = new TreeItem { Text = label, Expanded = true };
+			var node = new TreeItem { Expanded = true, Values = new object[] { label } };
 			var children = node.Children;
 			children.AddRange (items);
-			children.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+
+			children.Sort ((x, y) => string.Compare (Convert.ToString (x.GetValue (0)), Convert.ToString (y.GetValue (0)), StringComparison.CurrentCultureIgnoreCase));
 			return node;
 		}
 		
@@ -111,6 +122,8 @@ namespace Eto.Test
 			yield return new Section<XamlSection> { Text = "Xaml" };
 			yield return new Section<GridViewSection> { Text = "Grid View" };
 			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
+			yield return new Section<ProgressBarSection> { Text = "Progress Bar" };
+			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 		}
 
 		IEnumerable<ITreeItem> DrawingSection ()

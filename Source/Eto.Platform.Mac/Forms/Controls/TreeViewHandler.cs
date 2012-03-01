@@ -7,15 +7,16 @@ using Eto.Platform.Mac.Forms.Menu;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TreeViewHandler : MacView<NSScrollView, TreeView>, ITreeView
+	public class TreeViewHandler : MacView<NSScrollView, TreeView>, ITreeView, IDataViewHandler
 	{
-		ITreeStore top;
+		ITreeStore store;
 		NSOutlineView outline;
 		ContextMenu contextMenu;
+		ColumnCollection columns;
 		Dictionary<ITreeItem, EtoTreeItem> cachedItems = new Dictionary<ITreeItem, EtoTreeItem> ();
 		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
 		
-		class EtoTreeItem : MacImageData
+		class EtoTreeItem : NSObject
 		{
 			Dictionary<int, EtoTreeItem> items;
 			ITreeItem item;
@@ -29,23 +30,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 			}
 			
-			public EtoTreeItem(EtoTreeItem value)
+			public EtoTreeItem (EtoTreeItem value)
 			{
 				this.Item = value.Item;
 				this.items = value.items;
 			}
 
-			public ITreeItem Item 
-			{
-				get { return item; }
-				set
-				{
-					item = value;
-					if (item.Image != null)
-						base.Image = Item.Image.ControlObject as NSImage;
-					base.Text = (NSString)item.Text;
-				}
-			}
+			public ITreeItem Item { get; set; }
 			
 			public Dictionary<int, EtoTreeItem> Items {
 				get {
@@ -53,11 +44,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 						items = new Dictionary<int, EtoTreeItem> ();
 					return items;
 				}
-			}
-			
-			public override object Clone ()
-			{
-				return new EtoTreeItem(this);
 			}
 			
 		}
@@ -95,7 +81,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
 			{
 				var myitem = byItem as EtoTreeItem;
-				return myitem;
+				var id = forTableColumn.Identifier as EtoDataColumnIdentifier;
+				var val = myitem.Item.GetValue (id.Column);
+				return id.Handler.GetObjectValue(val);
+			}
+			
+			public override void SetObjectValue (NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
+			{
+				var myitem = item as EtoTreeItem;
+				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
+				var val = id.Handler.SetObjectValue(theObject);
+				myitem.Item.SetValue (id.Column, val);
 			}
 			
 			public override bool ItemExpandable (NSOutlineView outlineView, NSObject item)
@@ -117,8 +113,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				
 				EtoTreeItem item;
 				if (!items.TryGetValue (childIndex, out item)) {
-					var parentItem = myitem != null ? myitem.Item : Handler.top;
-					item = new EtoTreeItem{ Item = parentItem[childIndex] };
+					var parentItem = myitem != null ? myitem.Item : Handler.store;
+					item = new EtoTreeItem{ Item = parentItem [childIndex] };
 					Handler.cachedItems.Add (item.Item, item);
 					items.Add (childIndex, item);
 				}
@@ -127,11 +123,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override int GetChildrenCount (NSOutlineView outlineView, NSObject item)
 			{
-				if (Handler.top == null)
+				if (Handler.store == null)
 					return 0;
 				
 				if (item == null)
-					return Handler.top.Count;
+					return Handler.store.Count;
 				
 				var myitem = item as EtoTreeItem;
 				return myitem.Item.Count;
@@ -152,15 +148,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			outline = new EtoOutlineView { Handler = this };
 			outline.Delegate = new EtoOutlineDelegate{ Handler = this };
 			outline.DataSource = new EtoDataSource{ Handler = this };
-			outline.HeaderView = null;
-			var col = new NSTableColumn ();
-			col.DataCell = new MacImageListItemCell ();
-			//col.ResizingMask = NSTableColumnResizingMask.None;
-			outline.AddColumn (col);
-			outline.OutlineTableColumn = col;
+			//outline.HeaderView = null;
 			outline.AutoresizesOutlineColumn = true;
-			outline.AllowsColumnResizing = false;
-			outline.ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly;
+			//outline.AllowsColumnResizing = false;
+			outline.AllowsColumnReordering = false;
+			//outline.ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly;
 			
 			Control = new NSScrollView ();
 			Control.HasVerticalScroller = true;
@@ -169,11 +161,95 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.BorderType = NSBorderType.BezelBorder;
 			Control.DocumentView = outline;
 		}
+		
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			
+			int i = 0;
+			foreach (var col in this.Widget.Columns) {
+				((TreeColumnHandler)col.Handler).Loaded (this, i++);
+			}
+		}
+		
+		
+		class ColumnCollection : EnumerableChangedHandler<TreeColumn, TreeColumnCollection>
+		{
+			public TreeViewHandler Handler { get; set; }
+			
+			public override void AddItem (TreeColumn item)
+			{
+				var colhandler = ((TreeColumnHandler)item.Handler);
+				Handler.outline.AddColumn (colhandler.Control);
+				colhandler.Setup (Handler.outline.ColumnCount - 1);
+				
+				if (Handler.outline.OutlineTableColumn == null) {
+					Handler.outline.OutlineTableColumn = Handler.outline.TableColumns()[0];
+				}
+			}
 
+			public override void InsertItem (int index, TreeColumn item)
+			{
+				var outline = Handler.outline;
+				var columns = new List<NSTableColumn> (outline.TableColumns ());
+				if (index == 0)
+					outline.OutlineTableColumn = null;
+				for (int i = index; i < columns.Count; i++) {
+					outline.RemoveColumn (columns [i]);
+				}
+				var colhandler = (TreeColumnHandler)item.Handler;
+				columns.Insert (index, colhandler.Control);
+				outline.AddColumn (colhandler.Control);
+				colhandler.Setup (index);
+				for (int i = index + 1; i < columns.Count; i++) {
+					var col = columns [i];
+					var id = col.Identifier as EtoDataColumnIdentifier;
+					id.Handler.Setup (i);
+					outline.AddColumn (col);
+				}
+				if (index == 0) {
+					outline.OutlineTableColumn = columns[0];
+				}
+			}
+
+			public override void RemoveItem (int index)
+			{
+				var outline = Handler.outline;
+				var columns = new List<NSTableColumn> (outline.TableColumns ());
+				if (index == 0)
+					outline.OutlineTableColumn = null;
+				for (int i = index; i < columns.Count; i++) {
+					outline.RemoveColumn (columns [i]);
+				}
+				columns.RemoveAt (index);
+				for (int i = index; i < columns.Count; i++) {
+					var col = columns [i];
+					var id = col.Identifier as EtoDataColumnIdentifier;
+					id.Handler.Setup (i);
+					outline.AddColumn (col);
+				}
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.outline.OutlineTableColumn = null;
+				foreach (var col in Handler.outline.TableColumns ())
+					Handler.outline.RemoveColumn (col);
+			}
+
+		}
+		
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			columns = new ColumnCollection{ Handler = this };
+			columns.Register (Widget.Columns);
+		}
+		
 		public ITreeStore DataStore {
-			get { return top; }
+			get { return store; }
 			set {
-				top = value;
+				store = value;
 				topitems.Clear ();
 				cachedItems.Clear ();
 				outline.ReloadData ();
@@ -225,12 +301,40 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var ds = outline.DataSource;
 			var count = ds.GetChildrenCount (outline, parent);
 			for (int i=0; i<count; i++) {
+				
 				var item = ds.GetChild (outline, i, parent) as EtoTreeItem;
 				if (item != null && item.Item.Expanded) {
 					outline.ExpandItem (item);
 					ExpandItems (item);
 				}
 			}
+		}
+
+		public bool ShowHeader {
+			get {
+				return outline.HeaderView != null;
+			}
+			set {
+				if (value && outline.HeaderView == null) {
+					outline.HeaderView = new NSTableHeaderView ();
+				} else if (!value && outline.HeaderView != null) {
+					outline.HeaderView = null;
+				}
+			}
+		}
+
+		public NSTableView Table {
+			get { return outline; }
+		}
+		
+		public object GetDataValue (int row, int column)
+		{
+			var ds = outline.DataSource;
+			var item = outline.ItemAtRow (row) as EtoTreeItem;
+			if (item != null)
+				return item.Item.GetValue (column);
+			else
+				return null;
 		}
 	}
 }

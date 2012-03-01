@@ -55,6 +55,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			var count = item.Count;
 			for (int i=0; i<count; i++) {
 				var child = item[i];
+				/*
 				var node = nodes.Add (child.Key, child.Text, GetImageKey (child.Image));
 				node.Tag = child;
 				
@@ -65,7 +66,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					} else {
 						node.Nodes.Add ("empty", string.Empty);
 					}
-				}
+				}*/
 			}
 		}
 		
@@ -93,9 +94,20 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 			set {
 				// TODO: finish this
+				/*
 				var nodes = this.Control.Nodes.Find (value.Key, true);
 				if (nodes.Length > 0)
 					this.Control.SelectedNode = nodes [0];
+					*/
+			}
+		}
+		
+		public bool ShowHeader {
+			get {
+				throw new NotImplementedException ();
+			}
+			set {
+				throw new NotImplementedException ();
 			}
 		}
 	}

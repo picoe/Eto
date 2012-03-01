@@ -120,7 +120,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		public class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ListBoxHandler Handler { get; set; }
 			
