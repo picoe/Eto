@@ -12,16 +12,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		NSTableView Table { get; }
 		
-		object GetDataValue (int row, int column);
+		object GetItem (int row);
 	}
 	
 	public interface IDataColumnHandler
 	{
 		void Setup (int column);
 		
-		NSObject GetObjectValue (object val);
+		NSObject GetObjectValue (object dataItem);
 		
-		object SetObjectValue (NSObject val);
+		void SetObjectValue (object dataItem, NSObject val);
+		
+		DataColumn Widget { get; }
 	}
 	
 	public class EtoDataColumnIdentifier : NSObject
@@ -37,7 +39,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Cell dataCell;
 		
-		public IDataViewHandler Handler { get; private set; }
+		public IDataViewHandler DataViewHandler { get; private set; }
 		
 		public int Column { get; private set; }
 		
@@ -59,7 +61,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public void Loaded (IDataViewHandler handler, int column)
 		{
 			this.Column = column;
-			this.Handler = handler;
+			this.DataViewHandler = handler;
 			if (this.AutoSize) {
 				Control.SizeToFit ();
 				float width = Control.DataCell.CellSize.Width;
@@ -83,7 +85,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		protected virtual float GetRowWidth(ICellHandler cell, int row, System.Drawing.SizeF cellSize)
 		{
-			var val = Handler.GetDataValue (row, Column);
+			var val = GetObjectValue(DataViewHandler.GetItem (row));
 			return cell.GetPreferredSize (val, cellSize);
 		}
 		
@@ -169,14 +171,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.Identifier = new EtoDataColumnIdentifier{ Handler = this, Column = column };
 		}
 		
-		public NSObject GetObjectValue (object val)
+		public NSObject GetObjectValue (object dataItem)
 		{
-			return ((ICellHandler)dataCell.Handler).GetObjectValue (val);
+			return ((ICellHandler)dataCell.Handler).GetObjectValue (dataItem);
 		}
 		
-		public object SetObjectValue (NSObject val)
+		public void SetObjectValue (object dataItem, NSObject val)
 		{
-			return ((ICellHandler)dataCell.Handler).SetObjectValue (val);
+			((ICellHandler)dataCell.Handler).SetObjectValue (dataItem, val);
+		}
+
+		DataColumn IDataColumnHandler.Widget {
+			get { return (DataColumn)Widget; }
 		}
 	}
 }

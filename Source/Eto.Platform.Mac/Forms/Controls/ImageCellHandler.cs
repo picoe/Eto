@@ -35,19 +35,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoImageCell { Handler = this };
 		}
 		
-		public override MonoMac.Foundation.NSObject GetObjectValue (object val)
+		public override NSObject GetObjectValue (object dataItem)
 		{
-			var img = val as Image;
-			if (img != null) {
-				var imgHandler = ((IImageSource)img.Handler);
-				return imgHandler.GetImage ();
+			if (Widget.Binding != null) {
+				var img = Widget.Binding.GetValue (dataItem) as Image;
+				if (img != null) {
+					var imgHandler = ((IImageSource)img.Handler);
+					return imgHandler.GetImage ();
+				}
 			}
-			return null;
+			return new NSImage();
 		}
 
-		public override object SetObjectValue (MonoMac.Foundation.NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject val)
 		{
-			return null;
 		}
 		
 		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)

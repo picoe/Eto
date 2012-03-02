@@ -4,12 +4,9 @@ namespace Eto.Forms
 {
 	public interface IGridItem
 	{
-		object GetValue (int column);
-
-		void SetValue (int column, object value);
 	}
 	
-	public class GridItem : IGridItem
+	public class GridItem : IGridItem, IColumnItem
 	{
 		public GridItem()
 		{

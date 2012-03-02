@@ -6,8 +6,20 @@ namespace Eto.Forms
 	{
 	}
 	
-	public class ImageCell : Cell, IImageCell
+	public class ImageCell : SingleValueCell, IImageCell
 	{
+		public ImageCell (int column)
+			: this()
+		{
+			Binding = new ColumnBinding (column);
+		}
+		
+		public ImageCell (string property)
+			: this()
+		{
+			Binding = new PropertyBinding (property);
+		}
+
 		public ImageCell ()
 			: this(Generator.Current)
 		{

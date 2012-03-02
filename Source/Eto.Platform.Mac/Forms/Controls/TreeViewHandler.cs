@@ -9,7 +9,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TreeViewHandler : MacView<NSScrollView, TreeView>, ITreeView, IDataViewHandler
 	{
-		ITreeStore store;
+		ITreeStore<ITreeItem> store;
 		NSOutlineView outline;
 		ContextMenu contextMenu;
 		ColumnCollection columns;
@@ -19,7 +19,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		class EtoTreeItem : NSObject
 		{
 			Dictionary<int, EtoTreeItem> items;
-			ITreeItem item;
 			
 			public EtoTreeItem ()
 			{
@@ -82,16 +81,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var myitem = byItem as EtoTreeItem;
 				var id = forTableColumn.Identifier as EtoDataColumnIdentifier;
-				var val = myitem.Item.GetValue (id.Column);
-				return id.Handler.GetObjectValue(val);
+				return id.Handler.GetObjectValue(myitem.Item);
 			}
 			
 			public override void SetObjectValue (NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
 			{
 				var myitem = item as EtoTreeItem;
 				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				var val = id.Handler.SetObjectValue(theObject);
-				myitem.Item.SetValue (id.Column, val);
+				id.Handler.SetObjectValue(myitem.Item, theObject);
 			}
 			
 			public override bool ItemExpandable (NSOutlineView outlineView, NSObject item)
@@ -113,7 +110,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				
 				EtoTreeItem item;
 				if (!items.TryGetValue (childIndex, out item)) {
-					var parentItem = myitem != null ? myitem.Item : Handler.store;
+					var parentItem = myitem != null ? (ITreeStore<ITreeItem>)myitem.Item : Handler.store;
 					item = new EtoTreeItem{ Item = parentItem [childIndex] };
 					Handler.cachedItems.Add (item.Item, item);
 					items.Add (childIndex, item);
@@ -130,7 +127,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return Handler.store.Count;
 				
 				var myitem = item as EtoTreeItem;
-				return myitem.Item.Count;
+				return ((ITreeStore<ITreeItem>)myitem.Item).Count;
 			}
 		}
 		
@@ -246,7 +243,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			columns.Register (Widget.Columns);
 		}
 		
-		public ITreeStore DataStore {
+		public ITreeStore<ITreeItem> DataStore {
 			get { return store; }
 			set {
 				store = value;
@@ -327,12 +324,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return outline; }
 		}
 		
-		public object GetDataValue (int row, int column)
+		public object GetItem (int row)
 		{
-			var ds = outline.DataSource;
 			var item = outline.ItemAtRow (row) as EtoTreeItem;
 			if (item != null)
-				return item.Item.GetValue (column);
+				return item.Item;
 			else
 				return null;
 		}

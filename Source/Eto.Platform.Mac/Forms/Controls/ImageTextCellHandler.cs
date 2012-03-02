@@ -35,35 +35,29 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoCell { Handler = this };
 		}
 		
-		public override NSObject GetObjectValue (object val)
+		public override NSObject GetObjectValue (object dataItem)
 		{
-			if (val == null)
-				return null;
 			var result = new MacImageData();
-			var objVal = val as object[];
-			if (objVal != null && objVal.Length >= 2) {
-				var image = objVal[0] as Image;
+			if (Widget.TextBinding != null) {
+				result.Text = (NSString)Convert.ToString (Widget.TextBinding.GetValue (dataItem));
+			}
+			if (Widget.ImageBinding != null) {
+				var image = Widget.ImageBinding.GetValue (dataItem) as Image;
 				result.Image = image != null ? ((IImageSource)image.Handler).GetImage () : null;
-				result.Text = (NSString)Convert.ToString (objVal[1]);
 			}
-			else {
-				var listItem = val as IImageListItem;
-				if (listItem != null) {
-					var image = listItem.Image as Image;
-					result.Image = image != null ? ((IImageSource)image.Handler).GetImage () : null;
-					result.Text = (NSString)(listItem.Text ?? string.Empty);
-				}
-			}
+			else result.Image = new NSImage();
 			return result;
 		}
 		
-		public override object SetObjectValue (NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject val)
 		{
-			var data = val as MacImageData;
-			if (data != null) {
-				// grr.
+			if (Widget.TextBinding != null) {
+				var str = val as NSString;
+				if (str != null)
+					Widget.TextBinding.SetValue (dataItem, (string)str);
+				else
+					Widget.TextBinding.SetValue (dataItem, null);
 			}
-			return null;
 		}
 		
 		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)

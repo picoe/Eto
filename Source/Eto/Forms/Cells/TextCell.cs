@@ -6,8 +6,20 @@ namespace Eto.Forms
 	{
 	}
 	
-	public class TextCell : Cell
+	public class TextCell : SingleValueCell
 	{
+		public TextCell (int column)
+			: this()
+		{
+			Binding = new ColumnBinding (column);
+		}
+		
+		public TextCell (string property)
+			: this()
+		{
+			Binding = new PropertyBinding (property);
+		}
+		
 		public TextCell ()
 			: this(Generator.Current)
 		{

@@ -57,27 +57,34 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public override object SetObjectValue (MonoMac.Foundation.NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject val)
 		{
-			var row = ((NSNumber)val).Int32Value;
-			var item = dataStore[row];
-			return item != null ? item.Key : null;
+			if (Widget.Binding != null) {
+				var row = ((NSNumber)val).Int32Value;
+				var item = dataStore[row];
+				var value = item != null ? item.Key : null;
+				Widget.Binding.SetValue (dataItem, value);
+			}
 		}
 		
-		public override NSObject GetObjectValue (object val)
+		public override NSObject GetObjectValue (object dataItem)
 		{
-			var key = Convert.ToString (val);
-			int found = -1;
-			int index = 0;
-			foreach (var item in GetItems ()) {
-				if (object.Equals (item.Key, key)) {
-					found = index;
-					break;
+			if (Widget.Binding != null) {
+				var val = Widget.Binding.GetValue (dataItem);
+				var key = Convert.ToString (val);
+				int found = -1;
+				int index = 0;
+				foreach (var item in GetItems ()) {
+					if (object.Equals (item.Key, key)) {
+						found = index;
+						break;
+					}
+					index ++;
 				}
-				index ++;
+	
+				return new NSNumber(found);
 			}
-
-			return new NSNumber(found);
+			return null;
 		}
 		
 		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)

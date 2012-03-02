@@ -8,7 +8,7 @@ using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class GridViewHandler : MacView<NSScrollView, GridView>, IGridView
+	public class GridViewHandler : MacView<NSScrollView, GridView>, IGridView, IDataViewHandler
 	{
 		CollectionHandler collection;
 		NSTableView table;
@@ -29,24 +29,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.collection.DataStore[row];
-				var id = tableColumn.Identifier as EtoGridColumnIdentifier;
-				if (item != null && id != null) {
-					var val = item.GetValue (id.Column);
-					return id.Handler.GetObjectValue (val);
+				var item = Handler.collection.DataStore [row];
+				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
+				if (id != null) {
+					return id.Handler.GetObjectValue (item);
 				}
 				return null;
 			}
 
 			public override void SetObjectValue (NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.collection.DataStore[row];
-				var id = tableColumn.Identifier as EtoGridColumnIdentifier;
-				if (item != null && id != null) {
-					var val = id.Handler.SetObjectValue (theObject);
-					item.SetValue (id.Column, val);
+				var item = Handler.collection.DataStore [row];
+				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
+				if (id != null) {
+					id.Handler.SetObjectValue (item, theObject);
 					
-					Handler.Widget.OnEndCellEdit (new GridViewCellArgs (id.Handler.Widget, row, id.Column, item));
+					Handler.Widget.OnEndCellEdit (new GridViewCellArgs ((GridColumn)id.Handler.Widget, row, id.Column, item));
 				}
 			}
 		}
@@ -57,9 +55,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				var id = tableColumn.Identifier as EtoGridColumnIdentifier;
-				var item = Handler.collection.DataStore[row];
-				var args = new GridViewCellArgs (id.Handler.Widget, row, id.Handler.Column, item);
+				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
+				var item = Handler.collection.DataStore [row];
+				var args = new GridViewCellArgs ((GridColumn)id.Handler.Widget, row, id.Column, item);
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
 			}
@@ -130,7 +128,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				columns.Insert (index, ((GridColumnHandler)column.Handler).Control);
 				for (int i = index; i < columns.Count; i++) {
 					var col = columns [i];
-					var id = col.Identifier as EtoGridColumnIdentifier;
+					var id = col.Identifier as EtoDataColumnIdentifier;
 					if (id != null)
 						id.Handler.Setup (i);
 					table.AddColumn (col);
@@ -238,14 +236,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public bool AllowMultipleSelection
-		{
+		public bool AllowMultipleSelection {
 			get { return table.AllowsMultipleSelection; }
 			set { table.AllowsMultipleSelection = value; }
 		}
 
-		public IEnumerable<int> SelectedRows
-		{
+		public IEnumerable<int> SelectedRows {
 			get { return table.SelectedRows.Select (r => (int)r); }
 		}
 
@@ -267,6 +263,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public void UnselectAll ()
 		{
 			table.DeselectAll (table);
+		}
+
+		public object GetItem (int row)
+		{
+			return collection.DataStore [row];
 		}
 	}
 }

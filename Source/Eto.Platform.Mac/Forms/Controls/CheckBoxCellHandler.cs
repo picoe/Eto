@@ -35,21 +35,45 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.SetButtonType (NSButtonType.Switch);
 		}
 		
-		public override object SetObjectValue (MonoMac.Foundation.NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject val)
 		{
-			var num = val as NSNumber;
-			if (num != null) {
-				var state = (NSCellStateValue)num.IntValue;
-				return state == NSCellStateValue.On;
+			if (Widget.Binding != null) {
+				var num = val as NSNumber;
+				if (num != null) {
+					var state = (NSCellStateValue)num.IntValue;
+					bool? value;
+					switch (state) {
+					case NSCellStateValue.Mixed:
+						value = null;
+						break;
+					case NSCellStateValue.On:
+						value = true;
+						break;
+					case NSCellStateValue.Off:
+						value = false;
+						break;
+					}
+					Widget.Binding.SetValue(dataItem, value);
+				}
 			}
-			return false;
 		}
 		
-		public override NSObject GetObjectValue (object val)
+		public override NSObject GetObjectValue (object dataItem)
 		{
-			if (val == null)
-				return new NSNumber ((int)NSCellStateValue.Off);
-			return base.GetObjectValue (val);
+			if (Widget.Binding != null) {
+				NSCellStateValue state = NSCellStateValue.Off;
+				var val = Widget.Binding.GetValue(dataItem);
+				if (val is bool?) {
+					var boolVal = (bool?)val;
+					state = boolVal != null ? boolVal.Value ? NSCellStateValue.On : NSCellStateValue.Off : NSCellStateValue.Mixed;
+				}
+				else if (val is bool) {
+					var boolVal = (bool)val;
+					state = boolVal ? NSCellStateValue.On : NSCellStateValue.Off;
+				}
+				return new NSNumber((int)state);
+			}
+			return new NSNumber ((int)NSCellStateValue.Off);
 		}
 		
 		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)

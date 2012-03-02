@@ -43,7 +43,7 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150),
 				ShowHeader = false
 			};
-			control.Columns.Add (new TreeColumn());
+			control.Columns.Add (new TreeColumn{ DataCell = new TextCell(0) });
 			LogEvents (control);
 			control.DataStore = CreateSimpleTreeItem (0, "");
 			return control;
@@ -54,7 +54,7 @@ namespace Eto.Test.Sections.Controls
 			var item = new TreeItem {
 				Expanded = expanded++ % 2 == 0
 			};
-			item.Values = new object[] { new object[] { image, "col 0 - " + name }, "col 1 - " + name };
+			item.Values = new object[] { image, "col 0 - " + name, "col 1 - " + name };
 			if (level < 4) {
 				for (int i = 0; i < 4; i++) {
 					item.Children.Add (CreateComplexTreeItem (level + 1, name + " " + i, image));
@@ -69,8 +69,8 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150)
 			};
 			
-			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(), HeaderText = "Outline", AutoSize = true, Resizable = true, Editable = true });
-			control.Columns.Add (new TreeColumn{ DataCell = new TextCell(), HeaderText = "Hello!", AutoSize = false, Resizable = true, Editable = true });
+			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(0, 1), HeaderText = "Outline", AutoSize = true, Resizable = true, Editable = true });
+			control.Columns.Add (new TreeColumn{ DataCell = new TextCell(2), HeaderText = "Hello!", AutoSize = false, Resizable = true, Editable = true });
 			
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};

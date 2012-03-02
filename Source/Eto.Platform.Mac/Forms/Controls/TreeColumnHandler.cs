@@ -17,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var width = base.GetRowWidth (cell, row, cellSize);
 			if (Column == 0) {
-				var outline = (NSOutlineView)base.Handler.Table;
+				var outline = (NSOutlineView)base.DataViewHandler.Table;
 				var level = outline.LevelForRow (row) + 1;
 				width += level * outline.IndentationPerLevel;
 			}

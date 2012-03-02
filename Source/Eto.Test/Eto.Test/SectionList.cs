@@ -15,56 +15,37 @@ namespace Eto.Test
 		Control GenerateControl ();
 	}
 	
-	public class Section<T> : ISectionGenerator, ITreeItem
-		where T: Control, new()
+	public class Section : List<Section>, ITreeItem<Section>
 	{
 		public string Text { get; set; }
 		
+		public bool Expanded { get; set; }
+
+		public bool Expandable { get { return Count > 0; } }
+
+		public ITreeItem Parent { get; set; }
+		
+		public Section ()
+		{
+		}
+		
+		public Section (string text, IEnumerable<Section> sections)
+			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase))
+		{
+			this.Text = text;
+			this.Expanded = true;
+		}
+	}
+	
+	public class Section<T> : Section, ISectionGenerator
+		where T: Control, new()
+	{
 		public Control GenerateControl ()
 		{
 			return new T ();
 		}
-		
-		public object GetValue (int column)
-		{
-			if (column == 0)
-				return Text;
-			else
-				return null;
-		}
-		
-		public void SetValue (int column, object value)
-		{
-			// nothing!
-		}
-		
-		public override string ToString ()
-		{
-			return Text;
-		}
-
-		#region ITreeItem implementation
-		
-		public ITreeItem this [int index] {
-			get { return null; }
-		}
-
-		public int Count { get { return 0; } }
-
-		public bool Expanded { get; set; }
-
-		public bool Expandable { get { return false; } }
-
-		public ITreeItem Parent { get; set; }
-		#endregion
-
-		#region IImageListItem implementation
-		public Eto.Drawing.Image Image { get { return null; } }
-
-		#endregion
-
-
 	}
+	
 		
 	public class SectionList : TreeView
 	{
@@ -76,31 +57,21 @@ namespace Eto.Test
 			this.Style = "sectionList";
 			this.ShowHeader = false;
 			
-			Columns.Add (new TreeColumn ());
+			Columns.Add (new TreeColumn { DataCell = new TextCell{ Binding = new PropertyBinding("Text") }});
 
-			this.DataStore = Section ("Top", TopNodes ());
+			this.DataStore = new Section ("Top", TopNodes ());
 		}
-		
-		ITreeItem Section (string label, IEnumerable<ITreeItem> items)
-		{
-			var node = new TreeItem { Expanded = true, Values = new object[] { label } };
-			var children = node.Children;
-			children.AddRange (items);
 
-			children.Sort ((x, y) => string.Compare (Convert.ToString (x.GetValue (0)), Convert.ToString (y.GetValue (0)), StringComparison.CurrentCultureIgnoreCase));
-			return node;
-		}
-		
-		IEnumerable<ITreeItem> TopNodes ()
+		IEnumerable<Section> TopNodes ()
 		{
-			yield return Section ("Behaviors", BehaviorsSection ());
-			yield return Section ("Drawing", DrawingSection ());
-			yield return Section ("Controls", ControlSection ());
-			yield return Section ("Layouts", LayoutsSection ());
-			yield return Section ("Dialogs", DialogsSection ());
+			yield return new Section ("Behaviors", BehaviorsSection ());
+			yield return new Section ("Drawing", DrawingSection ());
+			yield return new Section ("Controls", ControlSection ());
+			yield return new Section ("Layouts", LayoutsSection ());
+			yield return new Section ("Dialogs", DialogsSection ());
 		}
 		
-		IEnumerable<ITreeItem> ControlSection ()
+		IEnumerable<Section> ControlSection ()
 		{
 			yield return new Section<LabelSection> { Text = "Label" };
 			yield return new Section<ButtonSection> { Text = "Button" };
@@ -126,7 +97,7 @@ namespace Eto.Test
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 		}
 
-		IEnumerable<ITreeItem> DrawingSection ()
+		IEnumerable<Section> DrawingSection ()
 		{
 			yield return new Section<BitmapSection> { Text = "Bitmap" };
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
@@ -134,25 +105,25 @@ namespace Eto.Test
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
 		}
 
-		IEnumerable<ITreeItem> LayoutsSection ()
+		IEnumerable<Section> LayoutsSection ()
 		{
-			yield return Section ("Table Layout", TableLayoutsSection ());
+			yield return new Section ("Table Layout", TableLayoutsSection ());
 		}
 
-		IEnumerable<ITreeItem> TableLayoutsSection ()
+		IEnumerable<Section> TableLayoutsSection ()
 		{
 			yield return new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" };
 			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing & Scaling" };
 		}
 
-		IEnumerable<ITreeItem> DialogsSection ()
+		IEnumerable<Section> DialogsSection ()
 		{
 			yield return new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" };
 			yield return new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" };
 			yield return new Section<Sections.Dialogs.SelectFolderSection> { Text = "Select Folder Dialog" };
 		}
 
-		IEnumerable<ITreeItem> BehaviorsSection ()
+		IEnumerable<Section> BehaviorsSection ()
 		{
 			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };
 			yield return new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" };

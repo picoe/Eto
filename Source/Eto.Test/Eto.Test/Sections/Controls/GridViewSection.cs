@@ -23,6 +23,9 @@ namespace Eto.Test.Sections.Controls
 
 	public class GridViewSection : Panel
 	{
+		static Image image1 = Bitmap.FromResource ("Eto.Test.TestImage.png");
+		static Image image2 = Icon.FromResource ("Eto.Test.TestIcon.ico");
+		
 		public GridViewSection ()
 		{
 			var layout = new DynamicLayout (this);
@@ -32,9 +35,68 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label { Text = "Context Menu\n& Multi-Select" }, WithContextMenu ());
 		}
 		
-		ComboBoxCell MyDropDown ()
+		/// <summary>
+		/// POCO (Plain Old CLR Object) to test property bindings
+		/// </summary>
+		class MyGridItem : IGridItem
 		{
-			var combo = new ComboBoxCell ();
+			bool? check;
+			string text;
+			string dropDownKey;
+			
+			public int Row { get; set; }
+			
+			void Log (string property, object value)
+			{
+				Eto.Test.Log.Write (this, "SetValue, Row: {0}, Column: {1}, Value: {2}", Row, property, value);
+			}
+			
+			public bool? Check {
+				get { return check; }
+				set {
+					check = value;
+					Log ("Check", value);
+				}
+			}
+			
+			public string Text {
+				get { return text; }
+				set {
+					text = value;
+					Log ("Text", value);
+				}
+			}
+			
+			public Image Image { get; set; }
+			
+			public string DropDownKey {
+				get { return dropDownKey; }
+				set {
+					dropDownKey = value;
+					Log ("DropDownKey", value);
+				}
+			}
+			
+			public MyGridItem (Random rand, int row, ComboBoxCell dropDown)
+			{
+				// initialize to random values
+				this.Row = row;
+				var val = rand.Next (3);
+				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
+
+				val = rand.Next (3);
+				Image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
+
+				text = string.Format ("Col 1 Row {0}", row);
+				
+				val = rand.Next (dropDown.DataStore.Count + 1);
+				dropDownKey = val == 0 ? null : dropDown.DataStore [val - 1].Key;
+			}
+		}
+
+		ComboBoxCell MyDropDown (string bindingProperty)
+		{
+			var combo = new ComboBoxCell (bindingProperty);
 			var items = new ListItemCollection ();
 			items.Add (new ListItem{ Text = "Item 1" });
 			items.Add (new ListItem{ Text = "Item 2" });
@@ -43,7 +105,7 @@ namespace Eto.Test.Sections.Controls
 			combo.DataStore = items;
 			return combo;
 		}
-
+		
 		GridView Default ()
 		{
 			var control = new GridView {
@@ -51,29 +113,16 @@ namespace Eto.Test.Sections.Controls
 			};
 			LogEvents (control);
 			
-			var dropDown = MyDropDown ();
-			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell (), Editable = true, AutoSize = true, Resizable = false});
-			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageCell () });
-			control.Columns.Add (new GridColumn{ HeaderText = "Text", Editable = true});
+			var dropDown = MyDropDown ("DropDownKey");
+			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell ("Check"), Editable = true, AutoSize = true, Resizable = false});
+			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageCell ("Image") });
+			control.Columns.Add (new GridColumn{ HeaderText = "Text", DataCell = new TextCell ("Text"), Editable = true});
 			control.Columns.Add (new GridColumn{ HeaderText = "Drop Down", DataCell = dropDown, Editable = true });
 			
-			var image1 = Bitmap.FromResource ("Eto.Test.TestImage.png");
-			var image2 = Icon.FromResource ("Eto.Test.TestIcon.ico");
 			var items = new GridItemCollection ();
 			var rand = new Random ();
 			for (int i = 0; i < 10000; i++) {
-				var val = rand.Next (3);
-				var boolVal = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
-
-				val = rand.Next (3);
-				var image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
-
-				var txt = string.Format ("Col 1 Row {0}", i);
-				
-				val = rand.Next (dropDown.DataStore.Count + 1);
-				var combo = val == 0 ? null : dropDown.DataStore [val - 1].Key;
-				
-				items.Add (new LogGridItem (boolVal, image, txt, combo){ Row = i });
+				items.Add (new MyGridItem (rand, i, dropDown));
 			}
 			control.DataStore = items;
 			

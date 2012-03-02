@@ -33,19 +33,25 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoTextFieldCell { Handler = this };
 		}
 		
-		public override NSObject GetObjectValue (object val)
+		public override NSObject GetObjectValue (object dataItem)
 		{
-			if (val == null)
+			if (Widget.Binding != null) {
+				var val = Widget.Binding.GetValue (dataItem);
+				return val is string ? new NSString((string)val) : null;
+			}
+			else
 				return new NSString ();
-			return base.GetObjectValue (val);
 		}
 		
-		public override object SetObjectValue (NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject val)
 		{
-			var str = val as NSString;
-			if (str != null)
-				return (string)str;
-			return null;
+			if (Widget.Binding != null) {
+				var str = val as NSString;
+				if (str != null)
+					Widget.Binding.SetValue (dataItem, (string)str);
+				else
+					Widget.Binding.SetValue (dataItem, null);
+			}
 		}
 		
 		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)

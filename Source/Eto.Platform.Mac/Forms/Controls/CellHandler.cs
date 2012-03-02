@@ -12,9 +12,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		IDataColumnHandler ColumnHandler { get; set; }
 
-		NSObject GetObjectValue (object val);
+		NSObject GetObjectValue (object dataItem);
 
-		object SetObjectValue (NSObject val);
+		void SetObjectValue (object dataItem, NSObject val);
 		
 		float GetPreferredSize (object value, System.Drawing.SizeF cellSize);
 		
@@ -31,12 +31,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Control; }
 		}
 		
-		public virtual NSObject GetObjectValue (object val)
+		public virtual NSObject GetObjectValue (object dataItem)
 		{
-			return NSObject.FromObject (val);
+			return null;
 		}
 		
-		public abstract object SetObjectValue (NSObject val);
+		public abstract void SetObjectValue (object dataItem, NSObject value);
 		
 		public abstract float GetPreferredSize (object value, System.Drawing.SizeF cellSize);
 	}

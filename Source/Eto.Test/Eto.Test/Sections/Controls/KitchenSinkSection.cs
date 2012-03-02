@@ -105,10 +105,10 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new GridView { Size = new Size(-1, 150)};
 			
-			control.Columns.Add (new GridColumn{ DataCell = new ImageCell(), HeaderText = "Image" });
-			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell(), HeaderText = "Check", Editable = true });
-			control.Columns.Add (new GridColumn{ DataCell = new TextCell(), HeaderText = "Text", Editable = true });
-			control.Columns.Add (new GridColumn{ DataCell = new ComboBoxCell{ DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
+			control.Columns.Add (new GridColumn{ DataCell = new ImageCell(0), HeaderText = "Image" });
+			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell(1), HeaderText = "Check", Editable = true });
+			control.Columns.Add (new GridColumn{ DataCell = new TextCell(2), HeaderText = "Text", Editable = true });
+			control.Columns.Add (new GridColumn{ DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
 			
 			var items = new GridItemCollection ();
 			items.Add (new GridItem(bitmap1, true, "Text in Grid 1", "1"));
@@ -123,18 +123,18 @@ namespace Eto.Test.Sections.Controls
 		IEnumerable<ITreeItem> TreeChildren(int level = 0)
 		{
 			if (level > 4) yield break;
-			yield return new TreeItem(TreeChildren(level + 1), new object[] { bitmap1, "Text in Tree 1"}, true, "1") { Expanded = level < 2 };
-			yield return new TreeItem(new object[] { icon1, "Text in Tree 2"}, false, "2");
-			yield return new TreeItem(TreeChildren(level + 1), new object[] { bitmap1, "Text in Tree 3"}, null, "3");
+			yield return new TreeItem(TreeChildren(level + 1), bitmap1, "Text in Tree 1", true, "1") { Expanded = level < 2 };
+			yield return new TreeItem(icon1, "Text in Tree 2", false, "2");
+			yield return new TreeItem(TreeChildren(level + 1), bitmap1, "Text in Tree 3", null, "3");
 		}
 
 		Control TreeView ()
 		{
 			var control = new TreeView { Size = new Size(-1, 150)};
 			
-			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(), HeaderText = "Image and Text" });
-			control.Columns.Add (new TreeColumn{ DataCell = new CheckBoxCell(), HeaderText = "Check", Editable = true, AutoSize = true });
-			control.Columns.Add (new TreeColumn{ DataCell = new ComboBoxCell{ DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
+			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(0,1), HeaderText = "Image and Text" });
+			control.Columns.Add (new TreeColumn{ DataCell = new CheckBoxCell(2), HeaderText = "Check", Editable = true, AutoSize = true });
+			control.Columns.Add (new TreeColumn{ DataCell = new ComboBoxCell(3){ DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
 			
 			control.DataStore = new TreeItemCollection(TreeChildren ());
 			

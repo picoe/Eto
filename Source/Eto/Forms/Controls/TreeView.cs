@@ -4,14 +4,19 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	public interface ITreeStore : IDataStore<ITreeItem>
+	
+	public interface ITreeStore<out T> : IDataStore<T>
+		where T: ITreeItem
 	{
-
 	}
 
+	public interface ITreeStore : ITreeStore<ITreeItem>
+	{
+	}
+	
 	public interface ITreeView : IControl
 	{
-		ITreeStore DataStore { get; set; }
+		ITreeStore<ITreeItem> DataStore { get; set; }
 
 		ITreeItem SelectedItem { get; set; }
 		
@@ -70,12 +75,12 @@ namespace Eto.Forms
 		}
 		
 		[Obsolete("Use DataStore property instead")]
-		public ITreeStore TopNode {
+		public ITreeStore<ITreeItem> TopNode {
 			get { return this.DataStore; }
 			set { this.DataStore = value; }
 		}
 		
-		public ITreeStore DataStore {
+		public ITreeStore<ITreeItem> DataStore {
 			get { return inner.DataStore; }
 			set { inner.DataStore = value; }
 		}

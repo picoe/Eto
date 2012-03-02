@@ -403,7 +403,6 @@
     <Compile Include="Forms\Menu\SubMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\TreeItem.cs" />
     <Compile Include="Forms\Container.desktop.cs" />
     <Compile Include="Forms\Controls\ListBox.desktop.cs" />
     <Compile Include="Forms\Controls\CommonControl.cs" />
@@ -486,6 +485,9 @@
     <Compile Include="Forms\Cells\ImageCell.cs" />
     <Compile Include="Forms\Cells\TextCell.cs" />
     <Compile Include="Forms\Cells\ImageTextCell.cs" />
+    <Compile Include="Forms\Cells\SingleValueCell.cs" />
+    <Compile Include="Forms\Binding.cs" />
+    <Compile Include="Forms\Controls\TreeItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

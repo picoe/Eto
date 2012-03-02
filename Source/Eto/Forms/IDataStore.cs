@@ -5,7 +5,7 @@ using System.Collections.Specialized;
 
 namespace Eto.Forms
 {
-	public interface IDataStore<T>
+	public interface IDataStore<out T>
 	{
 		int Count { get; }
 		
@@ -72,7 +72,7 @@ namespace Eto.Forms
 			if (store == null)
 				yield break;
 			for (int i = 0; i < store.Count; i++)
-				yield return store [i];
+				yield return (T)store [i];
 		}
 		
 		public void AddRange (IEnumerable<T> items)
