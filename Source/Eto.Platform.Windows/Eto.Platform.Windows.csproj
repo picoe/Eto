@@ -112,7 +112,7 @@
     <Compile Include="EtoEnvironmentHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Generator.cs">
@@ -304,10 +304,10 @@
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
-    <Compile Include="Forms\Controls\CellHandler.cs" />
-    <Compile Include="Forms\Controls\TextCellHandler.cs" />
-    <Compile Include="Forms\Controls\CheckBoxCellHandler.cs" />
-    <Compile Include="Forms\Controls\ImageCellHandler.cs" />
+    <Compile Include="Forms\Cells\CellHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

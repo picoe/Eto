@@ -16,7 +16,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class TreeViewHandler : WpfControl<swc.TreeView, TreeView>, ITreeView
 	{
 		ContextMenu contextMenu;
-		ITreeStore topNode;
+		ITreeStore<ITreeItem> topNode;
 
 		public TreeViewHandler ()
 		{
@@ -48,7 +48,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		}
 
 
-		public ITreeStore DataStore
+		public ITreeStore<ITreeItem> DataStore
 		{
 			get { return topNode; }
 			set
@@ -107,6 +107,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
 				else
 					Control.ContextMenu = null;
+			}
+		}
+
+
+		public bool ShowHeader
+		{
+			get
+			{
+				throw new NotImplementedException ();
+			}
+			set
+			{
+				throw new NotImplementedException ();
 			}
 		}
 	}

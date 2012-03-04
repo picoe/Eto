@@ -1,54 +1,34 @@
 using System;
+using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
+using System.Collections.Generic;
 
-namespace Eto.Platform.GtkSharp.Forms
+namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView>, ITreeView
+	public class TreeViewHandler : GtkControl<Gtk.ScrolledWindow, TreeView>, ITreeView, IDataViewHandler, ICellDataSource, IGtkListModelHandler<ITreeItem, ITreeStore<ITreeItem>>
 	{
-		Gtk.TreeStore model;
+		GtkTreeModel<ITreeItem, ITreeStore<ITreeItem>> model;
 		Gtk.TreeView tree;
 		ContextMenu contextMenu;
-		ITreeStore top;
+		CollectionHandler collection;
 		public static Size MaxImageSize = new Size (16, 16);
-		
-		class CellRendererTextImage : Gtk.CellRendererText
-		{
-			
-			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
-			{
-				base.Render (window, widget, background_area, cell_area, expose_area, flags);
-			}
-			
-			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				width += 16;
-			}
-		}
+		ColumnCollection columnCollection;
+		Dictionary<int, int> columnMap = new Dictionary<int, int> ();
+		int numDataColumns;
 		
 		public TreeViewHandler ()
 		{
-			model = new Gtk.TreeStore (typeof(ITreeItem), typeof(string), typeof(Gdk.Pixbuf));
-			tree = new Gtk.TreeView (model);
-			tree.HeadersVisible = false;
-			
+			model = new GtkTreeModel<ITreeItem, ITreeStore<ITreeItem>>{ Handler = this };
+			tree = new Gtk.TreeView (new Gtk.TreeModelAdapter (model));
+
 			tree.Selection.Changed += delegate {
 				this.Widget.OnSelectionChanged (EventArgs.Empty);
 			};
 			tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
-				this.Widget.OnActivated (new TreeViewItemEventArgs (GetTreeItem (args.Path)));
+				this.Widget.OnActivated (new TreeViewItemEventArgs (model.GetItemAtPath (args.Path)));
 			};
-			
-			var col = new Gtk.TreeViewColumn ();
-			var pbcell = new Gtk.CellRendererPixbuf ();
-			col.PackStart (pbcell, false);
-			col.SetAttributes (pbcell, "pixbuf", 2);
-			var textcell = new Gtk.CellRendererText ();
-			col.PackStart (textcell, true);
-			col.SetAttributes (textcell, "text", 1);
-			tree.AppendColumn (col);
 			
 			tree.ShowExpanders = true;
 			
@@ -58,6 +38,62 @@ namespace Eto.Platform.GtkSharp.Forms
 			
 			tree.Events |= Gdk.EventMask.ButtonPressMask;
 			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
+		}
+		
+		class ColumnCollection : EnumerableChangedHandler<TreeColumn, TreeColumnCollection>
+		{
+			public TreeViewHandler Handler { get; set; }
+			
+			void RebindColumns ()
+			{
+				Handler.columnMap.Clear ();
+				int columnIndex = 0;
+				int dataIndex = 0;
+				foreach (var col in Handler.Widget.Columns.Select (r => r.Handler).OfType<IDataColumnHandler>()) {
+					col.BindCell (Handler, Handler, columnIndex++, ref dataIndex);
+				}
+				Handler.numDataColumns = dataIndex;
+			}
+			
+			public override void AddItem (TreeColumn item)
+			{
+				var colhandler = (TreeColumnHandler)item.Handler;
+				Handler.tree.AppendColumn (colhandler.Control);
+				RebindColumns ();
+			}
+
+			public override void InsertItem (int index, TreeColumn item)
+			{
+				var colhandler = (TreeColumnHandler)item.Handler;
+				if (Handler.tree.Columns.Length > 0)
+					Handler.tree.InsertColumn (colhandler.Control, index);
+				else
+					Handler.tree.AppendColumn (colhandler.Control);
+				RebindColumns ();
+			}
+
+			public override void RemoveItem (int index)
+			{
+				var colhandler = (TreeColumnHandler)Handler.Widget.Columns [index].Handler;
+				Handler.tree.RemoveColumn (colhandler.Control);
+				RebindColumns ();
+			}
+
+			public override void RemoveAllItems ()
+			{
+				foreach (var col in Handler.tree.Columns) {
+					Handler.tree.RemoveColumn (col);
+				}
+				RebindColumns ();
+			}
+
+		}
+		
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			columnCollection = new ColumnCollection { Handler = this };
+			columnCollection.Register (Widget.Columns);
 		}
 
 		[GLib.ConnectBefore]
@@ -70,11 +106,74 @@ namespace Eto.Platform.GtkSharp.Forms
 			}
 		}
 		
-		public ITreeStore DataStore {
-			get { return top; }
+		public class CollectionHandler : DataStoreChangedHandler<ITreeItem, ITreeStore<ITreeItem>>
+		{
+			public TreeViewHandler Handler { get; set; }
+			
+			void ExpandItems(ITreeStore<ITreeItem> store, Gtk.TreePath path)
+			{
+				for (int i = 0; i < store.Count; i++) {
+					var item = store[i];
+					if (item.Expandable && item.Expanded) {
+						var newpath = path.Copy ();
+						newpath.AppendIndex (i);
+						Handler.tree.ExpandToPath (newpath);
+						ExpandItems ((ITreeStore<ITreeItem>)item, newpath);
+					}
+				}
+			}
+			
+			void ExpandItems()
+			{
+				var store = Handler.collection.DataStore;
+				Gtk.TreePath path = new Gtk.TreePath();
+				ExpandItems (store, path);
+			}
+
+			public override void AddRange (IEnumerable<ITreeItem> items)
+			{
+				Handler.model = new GtkTreeModel<ITreeItem, ITreeStore<ITreeItem>>{ Handler = this.Handler };
+				Handler.tree.Model = new Gtk.TreeModelAdapter (Handler.model);
+				ExpandItems();
+			}
+
+			public override void AddItem (ITreeItem item)
+			{
+				var path = new Gtk.TreePath ();
+				path.AppendIndex (DataStore.Count);
+				var iter = Handler.model.GetIterFromItem (item, path);
+				Handler.tree.Model.EmitRowInserted (path, iter);
+			}
+
+			public override void InsertItem (int index, ITreeItem item)
+			{
+				var path = new Gtk.TreePath ();
+				path.AppendIndex (index);
+				var iter = Handler.model.GetIterFromItem (item, path);
+				Handler.tree.Model.EmitRowInserted (path, iter);
+			}
+
+			public override void RemoveItem (int index)
+			{
+				var path = new Gtk.TreePath ();
+				path.AppendIndex (index);
+				Handler.tree.Model.EmitRowDeleted (path);
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.model = new GtkTreeModel<ITreeItem, ITreeStore<ITreeItem>>{ Handler = this.Handler };
+				Handler.tree.Model = new Gtk.TreeModelAdapter (Handler.model);
+			}
+		}
+		
+		public ITreeStore<ITreeItem> DataStore {
+			get { return collection != null ? collection.DataStore : null; }
 			set {
-				top = value;
-				Populate ();
+				if (collection != null)
+					collection.Unregister ();
+				collection = new CollectionHandler { Handler = this };
+				collection.Register (value);
 			}
 		}
 
@@ -83,61 +182,11 @@ namespace Eto.Platform.GtkSharp.Forms
 			set { contextMenu = value; }
 		}
 		
-		void Populate ()
-		{
-			model.Clear ();
-			if (top == null)
-				return;
-			Populate (null, top);
-			
-		}
-		
-		void Populate (Gtk.TreeIter? parent, ITreeStore item)
-		{
-			for (int i=0; i<item.Count; i++) {
-				var child = item [i];
-				/*
-				var img = child.Image;
-				Gdk.Pixbuf pixbuf = null;
-				if (img != null) {
-					var imghandler =  img.Handler as IGtkPixbuf;
-					pixbuf = imghandler.GetPixbuf (MaxImageSize);
-				}
-				
-				Gtk.TreeIter? parentIter = null;
-				if (parent != null)
-					parentIter = model.AppendValues (parent.Value, child, child.Text, pixbuf);
-				else
-					parentIter = model.AppendValues (child, child.Text, pixbuf);
-				if (child.Expandable) {
-					Populate (parentIter, child);
-					if (child.Expanded) {
-						if (parentIter != null)
-							tree.ExpandRow (model.GetPath (parentIter.Value), false);
-					}
-				}*/
-			}
-		}
-		
-		ITreeItem GetTreeItem (Gtk.TreeIter iter)
-		{
-			return model.GetValue (iter, 0) as ITreeItem;
-		}
-
-		ITreeItem GetTreeItem (Gtk.TreePath path)
-		{
-			Gtk.TreeIter iter;
-			if (model.GetIter (out iter, path))
-				return model.GetValue (iter, 0) as ITreeItem;
-			else
-				return null;
-		}
-		
 		public ITreeItem SelectedItem {
 			get {
 				Gtk.TreeIter iter;
 				if (tree.Selection.GetSelected (out iter)) {
-					return GetTreeItem (iter);
+					return model.GetItemAtIter (iter);
 				}
 				return null;
 			}
@@ -149,6 +198,40 @@ namespace Eto.Platform.GtkSharp.Forms
 		public bool ShowHeader {
 			get { return tree.HeadersVisible; }
 			set { tree.HeadersVisible = value; }
+		}
+
+		public object GetItem (string path)
+		{
+			return model.GetItemAtPath (path);
+		}
+
+		public void EndCellEditing (string path, int column)
+		{
+			
+		}
+
+		public void BeginCellEditing (string path, int column)
+		{
+			
+		}
+
+		public void SetColumnMap (int dataIndex, int column)
+		{
+			columnMap [dataIndex] = column;
+		}
+
+		public GLib.Value GetColumnValue (ITreeItem item, int dataColumn)
+		{
+			int column;
+			if (columnMap.TryGetValue (dataColumn, out column)) {
+				var colHandler = (IDataColumnHandler)Widget.Columns [column].Handler;
+				return colHandler.GetValue (item, dataColumn);
+			}
+			return new GLib.Value ((string)null);
+		}
+
+		public int NumberOfColumns {
+			get { return numDataColumns; }
 		}
 	}
 }

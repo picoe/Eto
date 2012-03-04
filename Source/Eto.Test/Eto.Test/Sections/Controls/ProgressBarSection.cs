@@ -23,7 +23,6 @@ namespace Eto.Test.Sections.Controls
 		Control Default ()
 		{
 			var control = new ProgressBar ();
-			LogEvents (control);
 			return control;
 		}
 		
@@ -34,7 +33,6 @@ namespace Eto.Test.Sections.Controls
 				MaxValue = 1000,
 				Value = 500
 			};
-			LogEvents (control);
 			
 			
 			var layout = new DynamicLayout (new Panel ());
@@ -66,7 +64,7 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button { Text = "Start" };
 			control.Click += delegate {
 				if (timer == null) {
-					timer = new UITimer { Interval = 1.0 };
+					timer = new UITimer { Interval = 0.5 };
 					timer.Elapsed += delegate {
 						if (bar.Value < bar.MaxValue)
 							bar.Value += 50;
@@ -79,11 +77,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		void LogEvents (ProgressBar control)
-		{
 
-		}
-		
 		protected override void Dispose (bool disposing)
 		{
 			if (timer != null)

@@ -10,10 +10,6 @@ namespace Eto.Forms
 	{
 	}
 
-	public interface ITreeStore : ITreeStore<ITreeItem>
-	{
-	}
-	
 	public interface ITreeView : IControl
 	{
 		ITreeStore<ITreeItem> DataStore { get; set; }

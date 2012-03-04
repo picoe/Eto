@@ -3,20 +3,21 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class TextCellHandler : CellHandler<Gtk.CellRendererText, TextCell>, ITextCell
+	public class TextBoxCellHandler : SingleCellHandler<Gtk.CellRendererText, TextBoxCell>, ITextBoxCell
 	{
-		public TextCellHandler ()
+		public TextBoxCellHandler ()
 		{
 			Control = new Gtk.CellRendererText ();
 			this.Control.Edited += delegate(object o, Gtk.EditedArgs args) {
 				SetValue (args.Path, args.NewText);
 			};
 		}
-		
-		protected override void BindCell ()
+
+		protected override void BindCell (ref int dataIndex)
 		{
 			Column.ClearAttributes (Control);
-			Column.AddAttribute (Control, "text", ColumnIndex);
+			SetColumnMap (dataIndex);
+			Column.AddAttribute (Control, "text", dataIndex++);
 		}
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
@@ -24,10 +25,17 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			this.Control.Editable = editable;
 		}
 		
-		public override GLib.Value GetValue (IGridItem item, int column)
+		public override void SetValue (object dataItem, object value)
 		{
-			if (item != null) {
-				var ret = item.GetValue (column);
+			if (Widget.Binding != null) {
+				Widget.Binding.SetValue (dataItem, value as string);
+			}
+		}
+		
+		public override GLib.Value GetValue (object item, int column)
+		{
+			if (Widget.Binding != null) {
+				var ret = Widget.Binding.GetValue (item);
 				if (ret != null)
 					return new GLib.Value (Convert.ToString (ret));
 			}

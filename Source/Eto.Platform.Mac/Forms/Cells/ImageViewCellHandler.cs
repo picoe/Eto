@@ -8,7 +8,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class ImageCellHandler : CellHandler<NSImageCell, ImageCell>, IImageCell
+	public class ImageViewCellHandler : CellHandler<NSImageCell, ImageViewCell>, IImageViewCell
 	{
 		public class EtoImageCell : NSImageCell, IMacControl
 		{
@@ -30,7 +30,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public ImageCellHandler ()
+		public ImageViewCellHandler ()
 		{
 			Control = new EtoImageCell { Handler = this };
 		}

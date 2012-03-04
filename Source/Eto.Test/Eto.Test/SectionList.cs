@@ -34,6 +34,7 @@ namespace Eto.Test
 		{
 			this.Text = text;
 			this.Expanded = true;
+			this.ForEach (r => r.Parent = this);
 		}
 	}
 	
@@ -57,7 +58,7 @@ namespace Eto.Test
 			this.Style = "sectionList";
 			this.ShowHeader = false;
 			
-			Columns.Add (new TreeColumn { DataCell = new TextCell{ Binding = new PropertyBinding("Text") }});
+			Columns.Add (new TreeColumn { DataCell = new TextBoxCell{ Binding = new PropertyBinding("Text") }});
 
 			this.DataStore = new Section ("Top", TopNodes ());
 		}

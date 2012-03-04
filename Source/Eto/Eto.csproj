@@ -482,12 +482,12 @@
     <Compile Include="Forms\Cells\Cell.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
     <Compile Include="Forms\Cells\ComboBoxCell.cs" />
-    <Compile Include="Forms\Cells\ImageCell.cs" />
-    <Compile Include="Forms\Cells\TextCell.cs" />
     <Compile Include="Forms\Cells\ImageTextCell.cs" />
     <Compile Include="Forms\Cells\SingleValueCell.cs" />
     <Compile Include="Forms\Binding.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
+    <Compile Include="Forms\Cells\TextBoxCell.cs" />
+    <Compile Include="Forms\Cells\ImageViewCell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

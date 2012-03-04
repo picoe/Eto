@@ -115,8 +115,8 @@ namespace Eto.Test.Sections.Controls
 			
 			var dropDown = MyDropDown ("DropDownKey");
 			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell ("Check"), Editable = true, AutoSize = true, Resizable = false});
-			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageCell ("Image") });
-			control.Columns.Add (new GridColumn{ HeaderText = "Text", DataCell = new TextCell ("Text"), Editable = true});
+			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageViewCell ("Image") });
+			control.Columns.Add (new GridColumn{ HeaderText = "Text", DataCell = new TextBoxCell ("Text"), Editable = true});
 			control.Columns.Add (new GridColumn{ HeaderText = "Drop Down", DataCell = dropDown, Editable = true });
 			
 			var items = new GridItemCollection ();

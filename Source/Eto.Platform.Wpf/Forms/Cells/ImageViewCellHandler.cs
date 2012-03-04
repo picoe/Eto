@@ -11,23 +11,27 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ImageCellHandler : CellHandler<swc.DataGridTemplateColumn, ImageCell>, IImageCell
+	public class ImageViewCellHandler : CellHandler<swc.DataGridTemplateColumn, ImageViewCell>, IImageViewCell
 	{
 		swd.Binding binding;
 
+		object GetValue (object dataItem)
+		{
+			if (Widget.Binding != null) {
+				var image = Widget.Binding.GetValue (dataItem) as Image;
+				if (image != null)
+					return ((IWpfImage)image.Handler).GetIconClosestToSize (16);
+			}
+			return null;
+		}
+
 		class Converter : swd.IValueConverter
 		{
-			public ImageCellHandler Handler { get; set; }
+			public ImageViewCellHandler Handler { get; set; }
 
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
-				var item = value as IGridItem;
-				if (item != null) {
-					var image = item.GetValue(Handler.DataColumn) as Image;
-					if (image != null)
-						return ((IWpfImage)image.Handler).GetIconClosestToSize (16);
-				}
-				return null;
+				return Handler.GetValue (value);
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
@@ -36,7 +40,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public ImageCellHandler ()
+		public ImageViewCellHandler ()
 		{
 			Control = new swc.DataGridTemplateColumn ();
 			var template = new sw.DataTemplate ();

@@ -14,16 +14,21 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		IListStore store;
 
-		string GetValue (object context)
+		string GetValue (object dataItem)
 		{
-			var item = context as IGridItem;
-			if (item != null) {
-				var val = item.GetValue (DataColumn);
-				if (val != null) {
+			if (Widget.Binding != null) {
+				var val = Widget.Binding.GetValue (dataItem);
+				if (val != null)
 					return Convert.ToString (val);
-				}
 			}
 			return null;
+		}
+
+		void SetValue (object dataItem, object value)
+		{
+			if (Widget.Binding != null) {
+				Widget.Binding.SetValue (dataItem, Convert.ToString (value));
+			}
 		}
 
 		class Column : swc.DataGridComboBoxColumn
@@ -54,9 +59,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
 				var control = editingElement as swc.ComboBox;
-				var item = control.DataContext as IGridItem;
-				if (item != null)
-					item.SetValue (Handler.DataColumn, control.SelectedValue);
+				Handler.SetValue (control.DataContext, control.SelectedValue);
 				return true;
 			}
 

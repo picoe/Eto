@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -109,7 +109,6 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Forms\Controls\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Generator.cs">
@@ -258,11 +257,16 @@
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
-    <Compile Include="Forms\Controls\CellHandler.cs" />
-    <Compile Include="Forms\Controls\TextCellHandler.cs" />
-    <Compile Include="Forms\Controls\CheckBoxCellHandler.cs" />
-    <Compile Include="Forms\Controls\ImageCellHandler.cs" />
     <Compile Include="Forms\Controls\GtkListModel.cs" />
+    <Compile Include="Forms\Cells\CellHandler.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\Controls\DataColumnHandler.cs" />
+    <Compile Include="Forms\Controls\TreeColumnHandler.cs" />
+    <Compile Include="Forms\Controls\GtkTreeModel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -273,4 +277,7 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Forms\Cells\" />
+  </ItemGroup>
 </Project>

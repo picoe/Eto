@@ -43,6 +43,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var state = (NSCellStateValue)num.IntValue;
 					bool? value;
 					switch (state) {
+					default:
 					case NSCellStateValue.Mixed:
 						value = null;
 						break;

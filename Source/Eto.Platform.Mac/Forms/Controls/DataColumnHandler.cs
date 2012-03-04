@@ -55,7 +55,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			this.DataCell = new TextCell (Widget.Generator);
+			this.DataCell = new TextBoxCell (Widget.Generator);
 		}
 		
 		public void Loaded (IDataViewHandler handler, int column)

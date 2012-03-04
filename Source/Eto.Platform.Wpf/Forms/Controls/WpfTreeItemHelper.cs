@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public static class WpfTreeItemHelper
 	{
-		public static IEnumerable GetChildren (ITreeStore item)
+		public static IEnumerable GetChildren (ITreeStore<ITreeItem> item)
 		{
 			return item as IEnumerable ?? new DataStoreVirtualCollection<ITreeItem>(item);
 		}
@@ -22,7 +22,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
 				var item = value as ITreeItem;
-				return GetChildren (item);
+				return GetChildren ((ITreeStore<ITreeItem>)item);
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

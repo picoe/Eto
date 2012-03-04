@@ -9,7 +9,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView>, ITreeView
 	{
-		ITreeStore top;
+		ITreeStore<ITreeItem> top;
 		ContextMenu contextMenu;
 		Dictionary<Image, string> images = new Dictionary<Image, string> ();
 		
@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			this.Control = new swf.TreeView ();
 			
 			this.Control.BeforeExpand += delegate(object sender, System.Windows.Forms.TreeViewCancelEventArgs e) {
-				var item = e.Node.Tag as ITreeItem;
+				var item = e.Node.Tag as ITreeStore<ITreeItem>;
 				if (e.Node.Nodes.Count == 1 && e.Node.Nodes [0].Name == "empty") {
 					e.Node.Nodes.Clear ();
 					PopulateNodes (e.Node.Nodes, item);
@@ -29,7 +29,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 		}
 
-		public ITreeStore DataStore {
+		public ITreeStore<ITreeItem> DataStore {
 			get { return top; }
 			set {
 				top = value;
@@ -50,7 +50,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 		
-		void PopulateNodes (System.Windows.Forms.TreeNodeCollection nodes, ITreeStore item)
+		void PopulateNodes (System.Windows.Forms.TreeNodeCollection nodes, ITreeStore<ITreeItem> item)
 		{
 			var count = item.Count;
 			for (int i=0; i<count; i++) {

@@ -16,7 +16,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			DataCell = new TextCell(Widget.Generator);
+			DataCell = new TextBoxCell(Widget.Generator);
 			Editable = false;
 			AutoSize = true;
 			Resizable = true;
@@ -52,7 +52,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set {
 				dataCell = value;
 				if (dataCell != null) {
-					var cellHandler = ((ICellHandler)dataCell.Handler);
+					var cellHandler = (ICellHandler)dataCell.Handler;
 					this.Control.CellTemplate = cellHandler.Control;
 				}
 				else
@@ -70,20 +70,19 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set { this.Control.Visible = value; }
 		}
 
-		public object GetItemValue (object cellValue)
+		public void SetCellValue (object dataItem, object value)
 		{
 			if (dataCell != null) {
-				var cellHandler = ((ICellHandler)dataCell.Handler);
-				return cellHandler.GetItemValue (cellValue);
+				var cellHandler = (ICellHandler)dataCell.Handler;
+				cellHandler.SetCellValue (dataItem, value);
 			}
-			return null;
 		}
 
-		public object GetCellValue (object itemValue)
+		public object GetCellValue (object dataItem)
 		{
 			if (dataCell != null) {
 				var cellHandler = ((ICellHandler)dataCell.Handler);
-				return cellHandler.GetCellValue (itemValue);
+				return cellHandler.GetCellValue (dataItem);
 			}
 			return null;
 		}

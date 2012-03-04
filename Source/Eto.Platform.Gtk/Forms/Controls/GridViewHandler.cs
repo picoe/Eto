@@ -7,13 +7,13 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-
-	public class GridViewHandler : GtkControl<Gtk.ScrolledWindow, GridView>, IGridView, ICellDataSource, IGtkListModelHandler<IGridItem, IGridStore>
+	public class GridViewHandler : GtkControl<Gtk.ScrolledWindow, GridView>, IGridView, ICellDataSource, IGtkListModelHandler<IGridItem, IGridStore>, IDataViewHandler
 	{
 		Gtk.TreeView tree;
 		GtkListModel<IGridItem, IGridStore> model;
 		CollectionHandler collection;
 		ContextMenu contextMenu;
+		Dictionary<int, int> columnMap = new Dictionary<int, int>();
 		
 		public GridViewHandler ()
 		{
@@ -48,31 +48,41 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-				case GridView.BeginCellEditEvent:
-				case GridView.EndCellEditEvent:
-					SetupColumnEvents ();
-					break;
-				case GridView.SelectionChangedEvent:
-					tree.Selection.Changed += delegate {
-						Widget.OnSelectionChanged (EventArgs.Empty);
-					};
-					break;
-				default:
-					base.AttachEvent (handler);
-					break;
+			case GridView.BeginCellEditEvent:
+			case GridView.EndCellEditEvent:
+				SetupColumnEvents ();
+				break;
+			case GridView.SelectionChangedEvent:
+				tree.Selection.Changed += delegate {
+					Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 		
 		public override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
-			tree.AppendColumn (new Gtk.TreeViewColumn());
+			tree.AppendColumn (new Gtk.TreeViewColumn ());
 		}
 
 		void SetupColumnEvents ()
 		{
 			foreach (var col in Widget.Columns.Select (r => r.Handler).OfType<GridColumnHandler> ()) {
 				col.SetupEvents ();
+			}
+		}
+		
+		void RebindColumns ()
+		{
+			columnMap.Clear ();
+			int columnIndex = 0;
+			int dataIndex = 0;
+			foreach (var col in Widget.Columns.Select (r => r.Handler).OfType<IDataColumnHandler>()) {
+				col.BindCell (this, this, columnIndex++, ref dataIndex);
 			}
 		}
 
@@ -82,14 +92,15 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			if (index >= 0 && tree.Columns.Length > 0)
 				tree.InsertColumn (colHandler.Control, index);
 			else
-				index = tree.AppendColumn (colHandler.Control) - 1;
-			colHandler.BindCell (this, this, index);
+				tree.AppendColumn (colHandler.Control);
+			RebindColumns ();
 		}
 
 		public void RemoveColumn (int index, GridColumn item)
 		{
 			var colHandler = ((GridColumnHandler)item.Handler);
 			tree.RemoveColumn (colHandler.Control);
+			RebindColumns ();
 		}
 
 		public void ClearColumns ()
@@ -97,6 +108,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			foreach (var col in tree.Columns) {
 				tree.RemoveColumn (col);
 			}
+			columnMap.Clear ();
 		}
 
 		public bool ShowHeader {
@@ -112,7 +124,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
-			
 
 			public override void AddRange (IEnumerable<IGridItem> items)
 			{
@@ -163,10 +174,24 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 		
-		public GLib.Value GetColumnValue (IGridItem item, int column)
+		public GLib.Value GetColumnValue (IGridItem item, int dataColumn)
 		{
-			var colHandler = (GridColumnHandler)Widget.Columns[column].Handler;
-			return colHandler.GetValue (item);
+			int column;
+			if (columnMap.TryGetValue (dataColumn, out column)) {
+				var colHandler = (IDataColumnHandler)Widget.Columns [column].Handler;
+				return colHandler.GetValue (item, dataColumn);
+			}
+			return new GLib.Value((string)null);
+		}
+		
+		public object GetItem (string path)
+		{
+			return model.GetItemAtPath (path);
+		}
+		
+		public void SetColumnMap (int dataIndex, int column)
+		{
+			columnMap[dataIndex] = column;
 		}
 		
 		public ContextMenu ContextMenu {
@@ -174,41 +199,29 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set { contextMenu = value; }
 		}
 
-		public void SetValue (string path, int column, object value)
-		{
-			IGridItem item = model.GetItemAtPath (path);
-			if (item != null)
-				item.SetValue (column, value);
-		}
-
-
 		public void EndCellEditing (string path, int column)
 		{
 			var treePath = new Gtk.TreePath (path);
-			var row = treePath.Indices.Length > 0 ? treePath.Indices[0] : -1;
+			var row = treePath.Indices.Length > 0 ? treePath.Indices [0] : -1;
 			var item = model.GetItemAtPath (treePath);
-			Widget.OnEndCellEdit(new GridViewCellArgs(Widget.Columns[column], row, column, item));
+			Widget.OnEndCellEdit (new GridViewCellArgs (Widget.Columns [column], row, column, item));
 		}
 
 		public void BeginCellEditing (string path, int column)
 		{
 			var treePath = new Gtk.TreePath (path);
-			var row = treePath.Indices.Length > 0 ? treePath.Indices[0] : -1;
+			var row = treePath.Indices.Length > 0 ? treePath.Indices [0] : -1;
 			var item = model.GetItemAtPath (treePath);
-			Widget.OnBeginCellEdit (new GridViewCellArgs (Widget.Columns[column], row, column, item));
+			Widget.OnBeginCellEdit (new GridViewCellArgs (Widget.Columns [column], row, column, item));
 		}
 
-
-		public bool AllowMultipleSelection
-		{
+		public bool AllowMultipleSelection {
 			get { return tree.Selection.Mode == Gtk.SelectionMode.Multiple; }
 			set { tree.Selection.Mode = value ? Gtk.SelectionMode.Multiple : Gtk.SelectionMode.Browse; }
 		}
 
-		public IEnumerable<int> SelectedRows
-		{
-			get
-			{
+		public IEnumerable<int> SelectedRows {
+			get {
 				var rows = tree.Selection.GetSelectedRows ();
 				foreach (var row in rows) {
 					yield return row.Indices[0];

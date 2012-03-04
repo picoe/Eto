@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class CheckBoxCellHandler : CellHandler<Gtk.CellRendererToggle, CheckBoxCell>, ICheckBoxCell
+	public class CheckBoxCellHandler : SingleCellHandler<Gtk.CellRendererToggle, CheckBoxCell>, ICheckBoxCell
 	{
 		public CheckBoxCellHandler ()
 		{
@@ -13,21 +13,29 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			};
 		}
 		
-		protected override void BindCell ()
+		protected override void BindCell (ref int dataIndex)
 		{
 			Column.ClearAttributes (Control);
-			Column.AddAttribute (Control, "active", ColumnIndex);
+			SetColumnMap (dataIndex);
+			Column.AddAttribute (Control, "active", dataIndex++);
 		}
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
 		{
 			this.Control.Activatable = editable;
 		}
-		
-		public override GLib.Value GetValue (IGridItem item, int column)
+
+		public override void SetValue (object dataItem, object value)
 		{
-			if (item != null) {
-				var ret = item.GetValue (column);
+			if (Widget.Binding != null) {
+				Widget.Binding.SetValue (dataItem, value);
+			}
+		}
+		
+		public override GLib.Value GetValue (object item, int column)
+		{
+			if (Widget.Binding != null) {
+				var ret = Widget.Binding.GetValue (item);
 				if (ret != null)
 					return new GLib.Value (ret);
 			}

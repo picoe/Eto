@@ -6,7 +6,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TextCellHandler : CellHandler<NSTextFieldCell, TextCell>, ITextCell
+	public class TextBoxCellHandler : CellHandler<NSTextFieldCell, TextBoxCell>, ITextBoxCell
 	{
 		public class EtoTextFieldCell : NSTextFieldCell, IMacControl
 		{
@@ -28,7 +28,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public TextCellHandler ()
+		public TextBoxCellHandler ()
 		{
 			Control = new EtoTextFieldCell { Handler = this };
 		}

@@ -62,6 +62,21 @@ namespace Eto.Platform.Windows.Forms.Controls
 				collection.Register (value); 
 			}
 		}
+
+		public override object GetCellValue (object dataItem)
+		{
+			if (Widget.Binding != null) {
+				return Widget.Binding.GetValue (dataItem);
+			}
+			return null;
+		}
+
+		public override void SetCellValue (object dataItem, object value)
+		{
+			if (Widget.Binding != null) {
+				Widget.Binding.SetValue (dataItem, value);
+			}
+		}
 	}
 }
 

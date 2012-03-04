@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class ComboBoxCellHandler : CellHandler<Gtk.CellRendererCombo, ComboBoxCell>, IComboBoxCell
+	public class ComboBoxCellHandler : SingleCellHandler<Gtk.CellRendererCombo, ComboBoxCell>, IComboBoxCell
 	{
 		CollectionHandler collection;
 		Gtk.ListStore listStore;
@@ -21,10 +21,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			};
 		}
 		
-		protected override void BindCell ()
+		protected override void BindCell (ref int dataIndex)
 		{
 			Column.ClearAttributes (Control);
-			Column.AddAttribute (Control, "text", ColumnIndex);
+			SetColumnMap (dataIndex);
+			Column.AddAttribute (Control, "text", dataIndex++);
 		}
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
@@ -32,10 +33,17 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			this.Control.Editable = editable;
 		}
 		
-		public override GLib.Value GetValue (IGridItem item, int column)
+		public override void SetValue (object dataItem, object value)
 		{
-			if (item != null) {
-				var ret = item.GetValue (column);
+			if (Widget.Binding != null) {
+				Widget.Binding.SetValue (dataItem, value as string);
+			}
+		}
+		
+		public override GLib.Value GetValue (object item, int column)
+		{
+			if (Widget.Binding != null) {
+				var ret = Widget.Binding.GetValue (item);
 				if (ret != null)
 					return new GLib.Value (ret);
 			}

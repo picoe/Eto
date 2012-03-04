@@ -43,7 +43,7 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150),
 				ShowHeader = false
 			};
-			control.Columns.Add (new TreeColumn{ DataCell = new TextCell(0) });
+			control.Columns.Add (new TreeColumn{ DataCell = new TextBoxCell(0) });
 			LogEvents (control);
 			control.DataStore = CreateSimpleTreeItem (0, "");
 			return control;
@@ -69,8 +69,8 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size(100, 150)
 			};
 			
-			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(0, 1), HeaderText = "Outline", AutoSize = true, Resizable = true, Editable = true });
-			control.Columns.Add (new TreeColumn{ DataCell = new TextCell(2), HeaderText = "Hello!", AutoSize = false, Resizable = true, Editable = true });
+			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
+			control.Columns.Add (new TreeColumn{ DataCell = new TextBoxCell(2), HeaderText = "Text", AutoSize = false, Resizable = true, Editable = true });
 			
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};

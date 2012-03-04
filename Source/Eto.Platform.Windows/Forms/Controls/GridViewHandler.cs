@@ -26,14 +26,14 @@ namespace Eto.Platform.Windows.Forms.Controls
 				var item = collection.DataStore [e.RowIndex];
 				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
 				if (item != null && col != null)
-					e.Value = col.GetCellValue (item.GetValue (e.ColumnIndex));
+					e.Value = col.GetCellValue (item);
 			};
 
 			Control.CellValuePushed += (sender, e) => {
 				var item = collection.DataStore [e.RowIndex];
 				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
 				if (item != null && col != null)
-					item.SetValue (e.ColumnIndex, col.GetItemValue (e.Value));
+					col.SetCellValue (item, e.Value);
 			};
 		}
 

@@ -9,19 +9,35 @@ using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TextCellHandler : CellHandler<swc.DataGridTextColumn, TextCell>, ITextCell
+	public class TextBoxCellHandler : CellHandler<swc.DataGridTextColumn, TextBoxCell>, ITextBoxCell
 	{
+		string GetValue (object dataItem)
+		{
+			if (Widget.Binding != null) {
+				var val = Widget.Binding.GetValue (dataItem);
+				if (val != null)
+					return Convert.ToString (val);
+			}
+			return null;
+		}
+
+		void SetValue (object dataItem, object value)
+		{
+			if (Widget.Binding != null) {
+				Widget.Binding.SetValue (dataItem, value);
+			}
+		}
+
 		class Column : swc.DataGridTextColumn
 		{
-			public TextCellHandler Handler { get; set; }
+			public TextBoxCellHandler Handler { get; set; }
 
 			protected override sw.FrameworkElement GenerateElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateElement (cell, dataItem);
 				element.DataContextChanged += (sender, e) => {
 					var text = sender as swc.TextBlock;
-					var item = text.DataContext as IGridItem;
-					text.Text = item != null ? Convert.ToString (item.GetValue (this.Handler.DataColumn)) : null;
+					text.Text = Handler.GetValue (text.DataContext);
 				};
 				return element;
 			}
@@ -31,8 +47,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
 				element.DataContextChanged += (sender, e) => {
 					var text = sender as swc.TextBox;
-					var item = text.DataContext as IGridItem;
-					text.Text = item != null ? Convert.ToString (item.GetValue (this.Handler.DataColumn)) : null;
+					text.Text = Handler.GetValue (text.DataContext);
 				};
 				return element;
 			}
@@ -40,15 +55,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
 				var text = editingElement as swc.TextBox;
-				var item = text.DataContext as IGridItem;
-				if (item != null)
-					item.SetValue (Handler.DataColumn, text.Text);
+				Handler.SetValue (text.DataContext, text.Text);
 				return true;
 			}
 
 		}
 
-		public TextCellHandler ()
+		public TextBoxCellHandler ()
 		{
 			Control = new Column { Handler = this };
 		}

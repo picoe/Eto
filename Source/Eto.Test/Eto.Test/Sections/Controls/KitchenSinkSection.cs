@@ -105,9 +105,9 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new GridView { Size = new Size(-1, 150)};
 			
-			control.Columns.Add (new GridColumn{ DataCell = new ImageCell(0), HeaderText = "Image" });
+			control.Columns.Add (new GridColumn{ DataCell = new ImageViewCell(0), HeaderText = "Image" });
 			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell(1), HeaderText = "Check", Editable = true });
-			control.Columns.Add (new GridColumn{ DataCell = new TextCell(2), HeaderText = "Text", Editable = true });
+			control.Columns.Add (new GridColumn{ DataCell = new TextBoxCell(2), HeaderText = "Text", Editable = true });
 			control.Columns.Add (new GridColumn{ DataCell = new ComboBoxCell(3) { DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
 			
 			var items = new GridItemCollection ();
