@@ -16,7 +16,7 @@ namespace Eto.Test
 	}
 	
 	public class Section<T> : ISectionGenerator, IListItem, ITreeItem
-		where T: Control, new()
+		where T : Control, new ()
 	{
 		public string Text { get; set; }
 		
@@ -26,7 +26,13 @@ namespace Eto.Test
 		
 		public Control GenerateControl ()
 		{
-			return new T ();
+			try {
+				return new T ();
+			}
+			catch (Exception ex) {
+				Log.Write (this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+				return null;
+			}
 		}
 		
 		public override string ToString ()
@@ -37,13 +43,9 @@ namespace Eto.Test
 		#region ITreeItem implementation
 		
 		public ITreeItem this [int index] {
-			get {
-				try {
-					return new T ();
-				} catch (Exception ex) {
-					Log.Write (this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
-					return null;
-				}
+			get
+			{
+				return null;
 			}
 
 		}
