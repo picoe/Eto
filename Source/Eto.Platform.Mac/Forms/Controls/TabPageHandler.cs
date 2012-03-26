@@ -255,5 +255,9 @@ namespace Eto.Platform.Mac
 		}
 		
 		#endregion
+		
+		public virtual void MapPlatformAction (string systemAction, BaseAction action)
+		{
+		}
 	}
 }
