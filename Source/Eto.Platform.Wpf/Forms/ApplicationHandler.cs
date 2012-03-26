@@ -34,9 +34,14 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public void InvokeOnMainThread (Action action)
+		public void Invoke (Action action)
 		{
 			Control.Dispatcher.Invoke (action);
+		}
+
+		public void AsyncInvoke (Action action)
+		{
+			Control.Dispatcher.BeginInvoke (action);
 		}
 
 		public void GetSystemActions(GenerateActionArgs args)

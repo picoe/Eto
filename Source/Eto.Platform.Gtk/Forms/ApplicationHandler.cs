@@ -23,7 +23,7 @@ namespace Eto.Platform.GtkSharp
 			// TODO: restart!
 		}
 
-		public void InvokeOnMainThread (System.Action action)
+		public void Invoke (System.Action action)
 		{
 			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
 				action ();
@@ -39,6 +39,16 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		public void AsyncInvoke (System.Action action)
+		{
+			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
+				action ();
+			else {
+				Gtk.Application.Invoke (delegate {
+					action ();
+				});
+			}
+		}
 		
 		public void Run (string[] args)
 		{
@@ -55,10 +65,9 @@ namespace Eto.Platform.GtkSharp
 
 		void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
 		{
-			if (CanQuit () && !object.Equals(args.RetVal, true)) {
+			if (CanQuit () && !object.Equals (args.RetVal, true)) {
 				Gtk.Application.Quit ();
-			}
-			else
+			} else
 				args.RetVal = true; // cancel!
 		}
 		

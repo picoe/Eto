@@ -15,7 +15,8 @@ namespace Eto.Forms
 		
 		void Open(string url);
 
-		void InvokeOnMainThread (Action action);
+		void Invoke (Action action);
+		void AsyncInvoke (Action action);
 
 	}
 
@@ -67,11 +68,22 @@ namespace Eto.Forms
 			inner.Run(args);
 		}
 
+		[Obsolete("Use Invoke instead")]
 		public virtual void InvokeOnMainThread (Action action)
 		{
-			inner.InvokeOnMainThread (action);
+			Invoke (action);
 		}
 
+		public virtual void Invoke (Action action)
+		{
+			inner.Invoke (action);
+		}
+
+		public virtual void AsyncInvoke (Action action)
+		{
+			inner.AsyncInvoke (action);
+		}
+		
 		public void Quit()
 		{
 			inner.Quit();

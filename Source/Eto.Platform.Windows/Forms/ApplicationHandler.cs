@@ -67,16 +67,34 @@ namespace Eto.Platform.Windows
 			
 		}
 
-		public void InvokeOnMainThread (Action action)
+		public void Invoke (Action action)
 		{
-			var window = this.Widget.MainForm.ControlObject as SWF.Control;
-			if (window == null) window = SWF.Form.ActiveForm;
+			if (Widget.MainForm != null) {
+				var window = this.Widget.MainForm.ControlObject as SWF.Control;
+				if (window == null) window = SWF.Form.ActiveForm;
 
-			if (window != null && window.InvokeRequired) {
-				window.Invoke (action);
+				if (window != null && window.InvokeRequired) {
+					window.Invoke (action);
+				}
+				else action ();
 			}
 			else action ();
 		}
+		
+		public void AsyncInvoke (Action action)
+		{
+			if (Widget.MainForm != null) {
+				var window = this.Widget.MainForm.ControlObject as SWF.Control;
+				if (window == null) window = SWF.Form.ActiveForm;
+
+				if (window != null && window.InvokeRequired) {
+					window.BeginInvoke (action);
+				}
+				else action ();
+			}
+			else action ();
+		}
+		
 
 		public Key CommonModifier {
 			get {

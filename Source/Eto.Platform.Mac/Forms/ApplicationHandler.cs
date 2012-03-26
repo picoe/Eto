@@ -33,16 +33,28 @@ namespace Eto.Platform.Mac
 			NSTask.LaunchFromPath ("/bin/sh", args);
 		}
 
-		public void InvokeOnMainThread (System.Action action)
+		public void Invoke (System.Action action)
 		{
-			NSControl c;
 			var thread = NSThread.Current;
 			if (thread != null && thread.IsMainThread)
 				action ();
-			else
+			else {
 				Control.InvokeOnMainThread (delegate {
 					action ();
 				});
+			}
+		}
+
+		public void AsyncInvoke (System.Action action)
+		{
+			var thread = NSThread.Current;
+			if (thread != null && thread.IsMainThread)
+				action ();
+			else {
+				Control.BeginInvokeOnMainThread (delegate {
+					action ();
+				});
+			}
 		}
 		
 		public void Restart ()
