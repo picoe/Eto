@@ -71,6 +71,8 @@ namespace Eto.Platform.Windows
 			};
 			Control.Controls.Add (menuHolder);
 
+			// Always handle closing because we want to send Application.Terminating event
+			HandleEvent (Window.ClosingEvent);
 		}
 		
 		public override void AttachEvent (string handler)
