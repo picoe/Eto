@@ -92,7 +92,9 @@ namespace Eto.Platform.Mac
 			var col = new NSTableColumn ();
 			col.ResizingMask = NSTableColumnResizing.Autoresizing;
 			col.Editable = false;
-			col.DataCell = new MacImageListItemCell ();
+			var cell = new MacImageListItemCell ();
+			cell.Wraps = false;
+			col.DataCell = cell;
 			control.AddColumn (col);
 			
 			control.DataSource = new DataSource{ Handler = this };
@@ -168,7 +170,18 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-
+		public override void Focus ()
+		{
+			if (this.control.Window != null)
+				this.control.Window.MakeFirstResponder (this.control);
+			else 
+				base.Focus();
+		}
 		
+		public override bool HasFocus {
+			get {
+				return control.Window != null && control.Window.FirstResponder == control;
+			}
+		}
 	}
 }

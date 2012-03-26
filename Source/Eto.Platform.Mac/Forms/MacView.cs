@@ -358,7 +358,7 @@ namespace Eto.Platform.Mac
 		{
 		}
 
-		public void Focus ()
+		public virtual void Focus ()
 		{
 			if (Control.Window != null)
 				Control.Window.MakeFirstResponder (Control);
