@@ -10,6 +10,9 @@ namespace Eto
 
 	public delegate void StyleWidgetControlHandler<W,C> (W widget,C control)
 		where W: InstanceWidget;
+
+	public delegate void StyleHandler<H> (H handler)
+		where H: IWidget;
 	
 	public static class Style
 	{
@@ -56,7 +59,16 @@ namespace Eto
 					handler (control, (C)control.ControlObject);
 			};
 		}
-		
+
+		public static void AddHandler<H> (string style, StyleHandler<H> handler)
+			where H: class, IWidget
+		{
+			styleMap [style] = delegate(InstanceWidget widget){
+				var control = widget as Widget;
+				if (control != null)
+					handler ((H)control.Handler);
+			};
+		}
 	}
 }
 

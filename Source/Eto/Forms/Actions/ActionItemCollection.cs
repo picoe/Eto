@@ -26,7 +26,7 @@ namespace Eto.Forms
 				ActionItemSubMenu subMenu = actionItem as ActionItemSubMenu;
 				if (subMenu != null)
 				{
-					ActionItemSubMenu currentSubMenu = FindAddSubMenu(subMenu.SubMenuText);
+					ActionItemSubMenu currentSubMenu = FindAddSubMenu(subMenu.SubMenuText, subMenu.Order);
 					currentSubMenu.Actions.Merge(subMenu.Actions);
 				}
 				else Add(actionItem);

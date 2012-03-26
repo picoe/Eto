@@ -7,6 +7,7 @@ using System.Collections;
 using Eto.Collections;
 using System.Xaml;
 using System.ComponentModel;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
@@ -29,7 +30,7 @@ namespace Eto.Forms
 		ITableLayout inner;
 		Control[,] controls;
 		Size size;
-		BaseList<Control> children;
+		IList<Control> children;
 		public static Size DefaultSpacing = new Size (5, 5);
 		public static Padding DefaultPadding = new Padding (5);
 		
@@ -41,10 +42,10 @@ namespace Eto.Forms
 			}
 		}
 		
-		public BaseList<Control> Children {
+		public IList<Control> Children {
 			get { 
 				if (children == null) {
-					children = new BaseList<Control> ();
+					children = new Collection<Control> ();
 				}
 				return children; 
 			}
@@ -174,8 +175,10 @@ namespace Eto.Forms
 		public override void EndInit ()
 		{
 			base.EndInit ();
-			foreach (var child in children) {
-				this.Add (child, GetLocation (child));
+			if (children != null) {
+				foreach (var child in children) {
+					this.Add (child, GetLocation (child));
+				}
 			}
 		}
 

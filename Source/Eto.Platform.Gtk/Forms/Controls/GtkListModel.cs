@@ -94,6 +94,7 @@ namespace Eto.Platform.GtkSharp
 			if (path == null)
 				throw new ArgumentNullException ("path");
 
+				
 			var row = GetRow (path);
 			if (row >= 0) {
 				iter = new Gtk.TreeIter { UserData = (IntPtr)row };
@@ -106,6 +107,7 @@ namespace Eto.Platform.GtkSharp
 		public Gtk.TreePath GetPath (Gtk.TreeIter iter)
 		{
 			var node = NodeFromIter (iter);
+
 			var path = new Gtk.TreePath ();
 			path.AppendIndex (node);
 			return path;

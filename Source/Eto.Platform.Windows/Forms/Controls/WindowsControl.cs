@@ -319,5 +319,9 @@ namespace Eto.Platform.Windows
 					this.Control.Font = null;
 			}
 		}
+		
+		public virtual void MapPlatformAction (string systemAction, BaseAction action)
+		{
+		}
 	}
 }

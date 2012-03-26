@@ -27,15 +27,18 @@ namespace Eto.Forms
 			var type = typeof(T);
 			if (!type.IsEnum) throw new EtoException("T must be an enumeration");
 			
+			var items = new ListItemCollection();
 			var values = Enum.GetValues (type);
 			var names = Enum.GetNames (type);
 			for (int i = 0; i<names.Length; i++)
 			{
-				base.Items.Add (new EnumValue{
+				items.Add (new EnumValue{
 					Text = names[i],
 					Key = Convert.ToString (Convert.ToInt32 (values.GetValue (i)))
 				});
 			}
+			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
+			this.DataStore = items;
 		}
 	}
 }

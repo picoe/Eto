@@ -8,6 +8,7 @@ using Eto.Platform.Mac.Drawing;
 using MonoMac.ObjCRuntime;
 using SD = System.Drawing;
 using Eto.Platform.Mac.Forms.Controls;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Mac
 {
@@ -306,7 +307,7 @@ namespace Eto.Platform.Mac
 			var obj = Runtime.GetNSObject (sender);
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 
-			var theEvent = new NSEvent(e);
+			var theEvent = new NSEvent (e);
 			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
 			handler.Widget.OnMouseUp (args);
 			if (!args.Handled) {
@@ -319,7 +320,7 @@ namespace Eto.Platform.Mac
 			var obj = Runtime.GetNSObject (sender);
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			
-			var theEvent = new NSEvent(e);
+			var theEvent = new NSEvent (e);
 			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
 			handler.Widget.OnMouseMove (args);
 			if (!args.Handled) {
@@ -357,7 +358,7 @@ namespace Eto.Platform.Mac
 		{
 		}
 
-		public void Focus ()
+		public virtual void Focus ()
 		{
 			if (Control.Window != null)
 				Control.Window.MakeFirstResponder (Control);
@@ -426,6 +427,93 @@ namespace Eto.Platform.Mac
 		}
 		
 		#endregion
+		
+		static void TriggerSystemAction (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var selector = new Selector (sel);
+			
+			var control = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)control).Handler;
+			BaseAction action;
+			if (handler.systemActions != null && handler.systemActions.TryGetValue (selector.Name, out action)) {
+				action.Activate ();
+			}
+		}
+		
+		static bool ValidateSystemMenuAction (IntPtr sender, IntPtr sel, IntPtr item)
+		{
+			var menuItem = new NSMenuItem (item);
+			
+			var control = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)control).Handler;
+			BaseAction action;
+			if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue (menuItem.Action.Name, out action)) {
+				if (action != null)
+					return action.Enabled;
+			}
+			return false;
+		}
+
+		static bool ValidateSystemToolbarAction (IntPtr sender, IntPtr sel, IntPtr item)
+		{
+			var toolbarItem = new NSToolbarItem (item);
+			
+			var control = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)control).Handler;
+			BaseAction action;
+			if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue (toolbarItem.Action.Name, out action)) {
+				if (action != null)
+					return action.Enabled;
+			}
+			return false;
+		}
+		
+		Dictionary<string, BaseAction> systemActions;
+		static Selector selValidateMenuItem = new Selector ("validateMenuItem:");
+		static Selector selValidateToolbarItem = new Selector ("validateToolbarItem:");
+		static Selector selCut = new Selector ("cut:");
+		static Selector selCopy = new Selector ("copy:");
+		static Selector selPaste = new Selector ("paste:");
+		static Selector selSelectAll = new Selector ("selectAll:");
+		static Selector selDelete = new Selector ("delete:");
+		static Selector selUndo = new Selector ("undo:");
+		static Selector selRedo = new Selector ("redo:");
+		static Selector selPasteAsPlainText = new Selector ("pasteAsPlainText:");
+		static Selector selPerformClose = new Selector ("performClose:");
+		static Selector selPerformZoom = new Selector ("performZoom:");
+		static Selector selArrangeInFront = new Selector ("arrangeInFront:");
+		static Selector selPerformMiniaturize = new Selector ("performMiniaturize:");
+		static Dictionary<string, Selector> systemActionSelectors = new Dictionary<string, Selector> ()
+		{
+		    { "cut", selCut },
+		    { "copy", selCopy },
+		    { "paste", selPaste },
+		    { "selectAll", selSelectAll },
+		    { "delete", selDelete },
+		    { "undo", selUndo },
+		    { "redo", selRedo },
+		    { "pasteAsPlainText", selPasteAsPlainText },
+		    { "performClose", selPerformClose },
+		    { "performZoom", selPerformZoom },
+		    { "arrangeInFront", selArrangeInFront },
+		    { "performMiniaturize", selPerformMiniaturize }
+		};
+
+		public virtual void MapPlatformAction (string systemAction, BaseAction action)
+		{
+			Selector sel;
+			if (systemActionSelectors.TryGetValue (systemAction, out sel)) {
+				if (sel != null) {
+					if (systemActions == null) {
+						systemActions = new Dictionary<string, BaseAction> ();
+						AddMethod (selValidateMenuItem, new Func<IntPtr, IntPtr, IntPtr, bool> (ValidateSystemMenuAction), "B@:@");
+						AddMethod (selValidateToolbarItem, new Func<IntPtr, IntPtr, IntPtr, bool> (ValidateSystemToolbarAction), "B@:@");
+					}
+					AddMethod (sel, new Action<IntPtr, IntPtr, IntPtr> (TriggerSystemAction), "v@:@");
+					systemActions [sel.Name] = action;
+				}
+			}
+		}
 	}
 }
 

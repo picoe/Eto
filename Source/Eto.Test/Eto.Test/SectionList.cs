@@ -25,6 +25,13 @@ namespace Eto.Test
 
 		public ITreeItem Parent { get; set; }
 		
+		public ITreeItem this [int index] {
+			get
+			{
+				return null;
+			}
+		}
+		
 		public Section ()
 		{
 		}
@@ -43,7 +50,13 @@ namespace Eto.Test
 	{
 		public Control GenerateControl ()
 		{
-			return new T ();
+			try {
+				return new T ();
+			}
+			catch (Exception ex) {
+				Log.Write (this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+				return null;
+			}
 		}
 	}
 	

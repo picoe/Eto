@@ -54,10 +54,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			void UpdateSize ()
 			{
-				var popup = GetTemplateChild ("PART_Popup") as swc.Primitives.Popup;
-				var content = popup.Child as sw.FrameworkElement;
-				content.Measure (new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
-				MinWidth = content.DesiredSize.Width;
+				if (this.HasItems) {
+					var popup = GetTemplateChild ("PART_Popup") as swc.Primitives.Popup;
+					var content = popup.Child as sw.FrameworkElement;
+					content.Measure (new sw.Size (double.MaxValue, double.MaxValue));
+					MinWidth = content.DesiredSize.Width;
+				}
 			}
 
 		}
@@ -85,7 +87,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				Control.ItemsSource = store as IEnumerable ?? ListItemCollection.EnumerateDataStore (store);
+				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable ();
 			}
 		}
 

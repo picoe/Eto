@@ -51,7 +51,7 @@ namespace Eto.Platform.Mac
 			notifications.Remove (observer);
 		}
 
-		protected void AddMethod (Selector selector, Delegate action, string arguments, object control = null)
+		public void AddMethod (Selector selector, Delegate action, string arguments, object control = null)
 		{
 			control = control ?? EventObject;
 			var type = control.GetType ();
@@ -61,7 +61,7 @@ namespace Eto.Platform.Mac
 			cls.AddMethod (selector, action, arguments);
 		}
 		
-		protected NSObject AddObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
+		public NSObject AddObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
 		{
 			if (notifications == null)
 				notifications = new List<NSObject> ();

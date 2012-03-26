@@ -22,7 +22,10 @@ namespace Eto.Forms
 	
 	public class ListItemCollection : DataStoreCollection<IListItem>, IListStore
 	{
-		
+		public void Add (string text)
+		{
+			base.Add (new ListItem{ Text = text });
+		}
 	}
 	
 	[ContentProperty("Items")]
@@ -47,7 +50,7 @@ namespace Eto.Forms
 			get {
 				var items = (ListItemCollection)DataStore;
 				if (items == null) {
-					items = new ListItemCollection();
+					items = new ListItemCollection ();
 					this.DataStore = items;
 				}
 				return items;
@@ -55,8 +58,7 @@ namespace Eto.Forms
 			
 		}
 		
-		public IListStore DataStore
-		{
+		public IListStore DataStore {
 			get { return inner.DataStore; }
 			set { inner.DataStore = value; }
 		}

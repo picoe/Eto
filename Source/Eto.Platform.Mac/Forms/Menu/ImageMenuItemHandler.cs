@@ -8,40 +8,27 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
-	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem
+
+	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem, IMenuActionHandler
 	{
 		Icon icon;
-		
-		[Register("EtoActionHandler")]
-		public class ActionHandler : NSObject
-		{
-			public ImageMenuItemHandler Handler { get; set; }
-			
-			[Export("activate:")]
-			public void Activate(NSObject sender)
-			{
-				Handler.Widget.OnClick (EventArgs.Empty);	
-			}
-			
-			[Export("validateMenuItem:")]
-			public bool ValidateMenuItem(NSMenuItem item)
-			{
-				return Handler.Enabled;
-			}
-		}
-		
-		static Selector selActivate = new Selector("activate:");
 
 		public ImageMenuItemHandler ()
 		{
 			Control = new NSMenuItem ();
 			Enabled = true;
-			Control.Target = new ActionHandler{ Handler = this };
-			Control.Action = selActivate;
+			Control.Target = new MenuActionHandler{ Handler = this };
+			Control.Action = MenuActionHandler.selActivate;
 		}
-
+		
+		public void HandleClick ()
+		{
+			Widget.OnClick (EventArgs.Empty);
+		}
+		
+		
 		#region IMenuItem Members
-
+		
 		public bool Enabled { get; set; }
 
 		public string Text {

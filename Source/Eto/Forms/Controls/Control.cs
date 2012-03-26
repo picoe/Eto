@@ -39,9 +39,11 @@ namespace Eto.Forms
 		void SetParent (Control parent);
 
 		void SetParentLayout (Layout layout);
+		
+		void MapPlatformAction (string systemAction, BaseAction action);
 	}
 	
-	public abstract partial class Control : InstanceWidget, IControl
+	public abstract partial class Control : InstanceWidget
 	{
 		IControl inner;
 		
@@ -404,6 +406,11 @@ namespace Eto.Forms
 				}
 				return null;
 			}
+		}
+		
+		public void MapPlatformAction(string systemAction, BaseAction action)
+		{
+			inner.MapPlatformAction(systemAction, action);
 		}
 	}
 	

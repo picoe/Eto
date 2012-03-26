@@ -283,13 +283,13 @@ namespace Eto.Drawing
 
 		public int MiddleX
 		{
-			get { return x + (Size.Width/2); }
-			set { x = value - (Size.Width/2); }
+			get { return x + (this.Width/2); }
+			set { x = value - (this.Width/2); }
 		}
 		public int MiddleY
 		{
-			get { return y + (Size.Height/2); }
-			set { y = value - (Size.Height/2); }
+			get { return y + (this.Height/2); }
+			set { y = value - (this.Height/2); }
 		}
 		#endregion
 

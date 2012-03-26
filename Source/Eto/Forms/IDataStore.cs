@@ -14,6 +14,17 @@ namespace Eto.Forms
 		}
 	}
 
+	public static class DataStoreExtensions
+	{
+		public static IEnumerable<T> AsEnumerable<T> (this IDataStore<T> store)
+		{
+			if (store == null)
+				yield break;
+			for (int i = 0; i < store.Count; i++)
+				yield return (T)store[i];
+		}
+	}
+
 	public class DataStoreCollection<T> : ObservableCollection<T>, IDataStore<T>
 	{
 		public DataStoreCollection ()
@@ -67,14 +78,6 @@ namespace Eto.Forms
 			}
 		}
 
-		public static IEnumerable<T> EnumerateDataStore (IDataStore<T> store)
-		{
-			if (store == null)
-				yield break;
-			for (int i = 0; i < store.Count; i++)
-				yield return (T)store [i];
-		}
-		
 		public void AddRange (IEnumerable<T> items)
 		{
 			foreach (var item in items) {

@@ -11,8 +11,16 @@ namespace Eto
 		where S: class
 	{
 		public S DataStore { get; private set; }
+		
+		protected virtual void OnRegisterCollection (EventArgs e)
+		{
+		}
+		
+		protected virtual void OnUnregisterCollection (EventArgs e)
+		{
+		}
 			
-		public bool Register (S store, bool addItems = true)
+		public bool Register (S store)
 		{
 			this.DataStore = store;
 			
@@ -20,13 +28,11 @@ namespace Eto
 			if (notify != null) {
 				notify.CollectionChanged += CollectionChanged;
 			}
-			if (addItems) {
-				AddInitialItems ();
-			}
+			OnRegisterCollection (EventArgs.Empty);
 			return store != null;
 		}
 		
-		public void Unregister (bool removeExistingItems = true)
+		public void Unregister ()
 		{
 			if (DataStore == null)
 				return;
@@ -35,8 +41,7 @@ namespace Eto
 			if (notify != null) {
 				notify.CollectionChanged -= CollectionChanged;
 			}
-			if (removeExistingItems)
-				RemoveAllItems ();
+			OnUnregisterCollection (EventArgs.Empty);
 			
 			DataStore = null;
 		}
@@ -53,8 +58,6 @@ namespace Eto
 		
 		protected abstract int InternalIndexOf (T item);
 		
-		protected abstract void AddInitialItems ();
-			
 		public abstract void AddItem (T item);
 			
 		public abstract void InsertItem (int index, T item);
@@ -146,8 +149,9 @@ namespace Eto
 			return -1;
 		}
 		
-		protected override void AddInitialItems ()
+		protected override void OnRegisterCollection (EventArgs e)
 		{
+			base.OnRegisterCollection (e);
 			AddRange (DataStore.Cast<T>());
 		}
 	}
@@ -155,9 +159,10 @@ namespace Eto
 	public abstract class DataStoreChangedHandler<T, S> : CollectionChangedHandler<T, S>
 		where S: class, IDataStore<T>
 	{
-		protected override void AddInitialItems ()
+		protected override void OnRegisterCollection (EventArgs e)
 		{
-			AddRange (DataStoreCollection<T>.EnumerateDataStore (DataStore));
+			base.OnRegisterCollection (e);
+			AddRange (DataStore.AsEnumerable ());
 		}
 		
 		protected override int InternalIndexOf (T item)

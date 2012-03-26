@@ -129,10 +129,15 @@ namespace Eto.Platform.GtkSharp
 				return -1;
 			}
 			
-			public override void AddRange (IEnumerable<IListItem> items)
+			protected override void OnRegisterCollection (EventArgs e)
 			{
 				Handler.model = new GtkListModel<IListItem, IListStore>{ Handler = this.Handler };
 				Handler.tree.Model = new Gtk.TreeModelAdapter (Handler.model);
+			}
+
+			protected override void OnUnregisterCollection (EventArgs e)
+			{
+				Handler.tree.Model = null;
 			}
 
 			public override void AddItem (IListItem item)
@@ -154,7 +159,7 @@ namespace Eto.Platform.GtkSharp
 				var path = Handler.model.GetPathAtRow (index);
 				Handler.tree.Model.EmitRowDeleted (path);
 			}
-
+			
 			public override void RemoveAllItems ()
 			{
 				Handler.model = new GtkListModel<IListItem, IListStore>{ Handler = Handler };
