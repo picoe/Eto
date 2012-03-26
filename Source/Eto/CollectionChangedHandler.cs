@@ -11,8 +11,17 @@ namespace Eto
 		where S: class, IDataStore<T>
 	{
 		public S DataStore { get; private set; }
+		
+		protected virtual void OnRegisterCollection (EventArgs e)
+		{
+			AddRange (DataStore.AsEnumerable());
+		}
+		
+		protected virtual void OnUnregisterCollection (EventArgs e)
+		{
+		}
 			
-		public bool Register (S store, bool addItems = true)
+		public bool Register (S store)
 		{
 			this.DataStore = store;
 			
@@ -20,13 +29,11 @@ namespace Eto
 			if (notify != null) {
 				notify.CollectionChanged += CollectionChanged;
 			}
-			if (addItems) {
-				AddRange (DataStoreCollection<T>.EnumerateDataStore (DataStore));
-			}
+			OnRegisterCollection (EventArgs.Empty);
 			return store != null;
 		}
 		
-		public void Unregister (bool removeExistingItems = true)
+		public void Unregister ()
 		{
 			if (DataStore == null)
 				return;
@@ -35,8 +42,7 @@ namespace Eto
 			if (notify != null) {
 				notify.CollectionChanged -= CollectionChanged;
 			}
-			if (removeExistingItems)
-				RemoveAllItems ();
+			OnUnregisterCollection (EventArgs.Empty);
 			
 			DataStore = null;
 		}
