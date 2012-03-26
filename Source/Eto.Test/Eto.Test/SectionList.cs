@@ -36,9 +36,16 @@ namespace Eto.Test
 
 		#region ITreeItem implementation
 		
-		public ITreeItem this[int index]
-		{
-			get { return null; }
+		public ITreeItem this [int index] {
+			get {
+				try {
+					return new T ();
+				} catch (Exception ex) {
+					Log.Write (this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+					return null;
+				}
+			}
+
 		}
 
 		public int Count { get { return 0; } }

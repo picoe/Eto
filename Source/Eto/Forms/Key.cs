@@ -1,4 +1,6 @@
 using System;
+using System.Text;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -105,5 +107,65 @@ namespace Eto.Forms
 		None = 0x0000,
 
 	}
+	
+	public static class KeyExtensions
+	{
+		static void AppendSeparator (StringBuilder sb, string separator, string value)
+		{
+			if (sb.Length > 0)
+				sb.Append (separator);
+			sb.Append (value);
+		}
+		
+		static Dictionary<Key, string> keymap = new Dictionary<Key, string> () {
+			{ Key.D0, "0" },
+			{ Key.D1, "1" },
+			{ Key.D2, "2" },
+			{ Key.D3, "3" },
+			{ Key.D4, "4" },
+			{ Key.D5, "5" },
+			{ Key.D6, "6" },
+			{ Key.D7, "7" },
+			{ Key.D8, "8" },
+			{ Key.D9, "9" },
 
+			{ Key.Minus, "-" },
+			{ Key.Plus, "+" },
+			{ Key.Grave, "`" },
+			{ Key.Divide, "/" },
+			{ Key.Decimal, "." },
+			{ Key.Backslash, "\\" },
+			{ Key.Equal, "=" },
+		
+			{ Key.SemiColon, ";" },
+			{ Key.Quote, "'" },
+		
+			{ Key.Comma, "," },
+			{ Key.Period, "." },
+			{ Key.ForwardSlash, "/" },
+		
+			{ Key.RightBracket, "(" },
+			{ Key.LeftBracket, ")" }
+		};
+		
+		public static string ToShortcutString (this Key key, string separator = "+")
+		{
+			var sb = new StringBuilder ();
+			if (key.HasFlag (Key.Control))
+				AppendSeparator (sb, separator, "Ctrl");
+			if (key.HasFlag (Key.Shift))
+				AppendSeparator (sb, separator, "Shift");
+			if (key.HasFlag (Key.Alt))
+				AppendSeparator (sb, separator, "Alt");
+			
+			var mainKey = key & Key.KeyMask;
+			string val;
+			if (keymap.TryGetValue (mainKey, out val))
+				AppendSeparator (sb, separator, val);
+			else
+				AppendSeparator (sb, separator, mainKey.ToString ());
+			
+			return sb.ToString ();
+		}
+	}
 }

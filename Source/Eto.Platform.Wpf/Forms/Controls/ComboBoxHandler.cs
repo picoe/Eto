@@ -87,7 +87,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				Control.ItemsSource = store as IEnumerable ?? ListItemCollection.EnumerateDataStore (store);
+				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable ();
 			}
 		}
 

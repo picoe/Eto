@@ -64,7 +64,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public ComboBoxCellHandler ()
 		{
-			Control = new Column { Handler = this,
+			Control = new Column { 
+				Handler = this,
 				DisplayMemberPath = "Text",
 				SelectedValuePath = "Key"
 			};
@@ -76,7 +77,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				Control.ItemsSource = store as IEnumerable ?? ListItemCollection.EnumerateDataStore (store);
+				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable();
 			}
 		}
 	}

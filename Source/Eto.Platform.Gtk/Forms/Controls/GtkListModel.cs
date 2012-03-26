@@ -107,8 +107,6 @@ namespace Eto.Platform.GtkSharp
 		public Gtk.TreePath GetPath (Gtk.TreeIter iter)
 		{
 			var node = NodeFromIter (iter);
-			if (node == null)
-				throw new ArgumentException ("iter");
 
 			var path = new Gtk.TreePath ();
 			path.AppendIndex (node);
