@@ -177,6 +177,7 @@
     <Compile Include="Forms\Controls\ImageCellHandler.cs" />
     <Compile Include="Forms\MacCommon.cs" />
     <Compile Include="Forms\Controls\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Menu\MenuActionHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

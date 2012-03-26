@@ -8,24 +8,26 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.Mac
 {
-	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem>, IRadioMenuItem
+	public class RadioMenuItemHandler : MenuHandler<NSMenuItem, RadioMenuItem>, IRadioMenuItem, IMenuActionHandler
 	{
 		List<RadioMenuItem> radioGroup;
 
 		public RadioMenuItemHandler ()
 		{
 			Control = new NSMenuItem ();
+			Enabled = true;
 			//control.SetButtonType(NSButtonType.Radio);
-			Control.Activated += control_Click;
+			Control.Target = new MenuActionHandler{ Handler = this };
+			Control.Action = MenuActionHandler.selActivate;
 		}
-
-		private void control_Click (object sender, EventArgs e)
+		
+		public void HandleClick ()
 		{
-			Widget.OnClick (e);
+			Widget.OnClick (EventArgs.Empty);
 			
 			if (radioGroup != null) {
 				foreach (RadioMenuItem item in radioGroup) {
-					item.Checked = (item.ControlObject == sender);
+					item.Checked = (item.ControlObject == Control);
 				}
 			}
 		}
@@ -45,10 +47,7 @@ namespace Eto.Platform.Mac
 
 		#region IMenuItem Members
 
-		public bool Enabled {
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
+		public bool Enabled { get; set; }
 
 		public string Text {
 			get	{ return Control.Title; }
