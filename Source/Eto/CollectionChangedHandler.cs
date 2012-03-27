@@ -19,6 +19,7 @@ namespace Eto
 		
 		protected virtual void OnUnregisterCollection (EventArgs e)
 		{
+			RemoveAllItems ();
 		}
 			
 		public bool Register (S store)
