@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
+#if DESKTOP
 	[ContentProperty("Rows")]
+#endif
 	public class DynamicLayout : Layout
 	{
 		DynamicTable topTable;

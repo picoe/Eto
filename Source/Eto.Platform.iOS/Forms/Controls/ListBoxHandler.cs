@@ -10,15 +10,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class ListBoxHandler : iosView<UITableView, ListBox>, IListBox
 	{
-		List<IListItem> data = new List<IListItem> ();
+		CollectionChangedHandler<IListItem, IListStore> collection;
 		
 		class DataSource : UITableViewDataSource
 		{
+			 static NSString kCellIdentifier = new NSString ("cell");
+
 			public ListBoxHandler Handler { get; set; }
 
 			public override int RowsInSection (UITableView tableView, int section)
 			{
-				return Handler.data.Count;
+				return Handler.collection != null ? Handler.collection.DataStore.Count : 0;
 			}
 
 			public override int NumberOfSections (UITableView tableView)
@@ -28,11 +30,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 			public override UITableViewCell GetCell (UITableView tableView, NSIndexPath indexPath)
 			{
-				var cell = tableView.DequeueReusableCell("cell");
+				var cell = tableView.DequeueReusableCell(kCellIdentifier);
 				if (cell == null) {
-					cell = new UITableViewCell(UITableViewCellStyle.Default, "cell");
+					cell = new UITableViewCell(UITableViewCellStyle.Default, kCellIdentifier);
 				}
-				cell.TextLabel.Text = Handler.data[indexPath.Row].Text;
+				cell.TextLabel.Text = Handler.collection.DataStore[indexPath.Row].Text;
 				return cell;
 			}
 		}
@@ -45,7 +47,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				Handler.Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			}
-
 		}
 		
 		public ListBoxHandler ()
@@ -55,34 +56,59 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.Delegate = new Delegate { Handler = this };
 		}
 		
-		public void AddRange (IEnumerable<IListItem> collection)
+		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
 		{
-			data.AddRange(collection);
-			Control.ReloadData();
-		}
+			public ListBoxHandler Handler { get; set; }
+			
+			protected override void OnRegisterCollection (EventArgs e)
+			{
+				Handler.Control.ReloadData ();
+			}
+			protected override void OnUnregisterCollection (EventArgs e)
+			{
+				Handler.Control.ReloadData ();
+			}
+			public override void AddItem (IListItem item)
+			{
+				Handler.Control.ReloadData ();
+			}
 
-		public void AddItem (IListItem item)
-		{
-			data.Add (item);
-			Control.ReloadData ();
-		}
+			public override void InsertItem (int index, IListItem item)
+			{
+				Handler.Control.ReloadData ();
+			}
 
-		public void RemoveItem (IListItem item)
-		{
-			data.Remove (item);
-			Control.ReloadData ();
-		}
+			public override void RemoveItem (int index)
+			{
+				Handler.Control.ReloadData ();
+			}
 
+			public override void RemoveAllItems ()
+			{
+				Handler.Control.ReloadData ();
+			}
+		}
+		
+		public IListStore DataStore {
+			get {
+				return collection != null ? collection.DataStore : null;
+			}
+			set {
+				if (collection != null) {
+					var oldcollection = collection;
+					collection = null;
+					oldcollection.Unregister ();
+				}
+				if (value != null) {
+					collection = new CollectionHandler { Handler = this };
+					collection.Register (value);
+				}
+			}
+		}
+		
 		public int SelectedIndex {
 			get	{ return Control.IndexPathForSelectedRow.Row; }
 			set { Control.SelectRow (NSIndexPath.FromRowSection (value, 0), true, UITableViewScrollPosition.Middle); }
 		}
-
-		public void RemoveAll ()
-		{
-			data.Clear ();
-			Control.ReloadData ();
-		}
-
 	}
 }

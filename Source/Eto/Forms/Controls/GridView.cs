@@ -13,7 +13,7 @@ namespace Eto.Forms
 	{
 	}
 
-	public interface IGridView : IControl
+	public partial interface IGridView : IControl
 	{
 		bool ShowHeader { get; set; }
 
@@ -26,8 +26,6 @@ namespace Eto.Forms
 		void ClearColumns ();
 
 		IGridStore DataStore { get; set; }
-
-		ContextMenu ContextMenu { get; set; }
 
 		bool AllowMultipleSelection { get; set; }
 
@@ -62,7 +60,7 @@ namespace Eto.Forms
 	}
 
 
-	public class GridView : Control
+	public partial class GridView : Control
 	{
 		IGridView handler;
 
@@ -158,12 +156,6 @@ namespace Eto.Forms
 		{
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return handler.ContextMenu; }
-			set { handler.ContextMenu = value; }
 		}
 
 		public bool AllowMultipleSelection

@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Eto.Collections;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 using System.Collections.Specialized;
 
 namespace Eto.Forms
@@ -19,7 +21,9 @@ namespace Eto.Forms
 	{
 	}
 	
+#if DESKTOP
 	[ContentProperty("Children")]
+#endif
 	public class TreeItem : ImageListItem, ITreeItem
 	{
 		TreeItemCollection children;

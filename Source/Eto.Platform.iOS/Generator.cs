@@ -37,15 +37,6 @@ namespace Eto.Platform.iOS
 			return Generator.ConvertF (loc);
 		}
 		
-		public override void ExecuteOnMainThread (System.Action action)
-		{
-			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread)
-				action ();
-			else
-				UIApplication.SharedApplication.BeginInvokeOnMainThread (delegate {
-					action (); });
-		}
 		
 		public override IDisposable ThreadStart ()
 		{

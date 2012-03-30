@@ -78,21 +78,35 @@ namespace Eto.Platform.iOS.Forms
 
 		public override void AttachEvent (string handler)
 		{
-			base.AttachEvent (handler);
 			switch (handler) {
+			case Eto.Forms.Control.MouseDownEvent:
+			case Eto.Forms.Control.MouseUpEvent:
+			case Eto.Forms.Control.MouseDoubleClickEvent:
+			case Eto.Forms.Control.MouseEnterEvent:
+			case Eto.Forms.Control.MouseLeaveEvent:
+			case Eto.Forms.Control.KeyDownEvent:
+			case Eto.Forms.Control.GotFocusEvent:
+			case Eto.Forms.Control.LostFocusEvent:
+				break;
 			case Eto.Forms.Control.MouseMoveEvent:
 				//mouseMove = true;
 				CreateTracking ();
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
-				UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
-				this.AddObserver(null, UIDevice.OrientationDidChangeNotification, delegate { 
+				this.AddControlObserver(new NSString("frame"), delegate {
 					Widget.OnSizeChanged (EventArgs.Empty);
 				});
+				/*UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
+				this.AddObserver(null, UIDevice.OrientationDidChangeNotification, delegate {
+					Widget.OnSizeChanged (EventArgs.Empty);
+				});*/
 				/*Control.Window.PostsFrameChangedNotifications = true;
 				this.AddObserver (UIView.UIViewFrameDidChangeNotification, delegate {
 					Widget.OnSizeChanged (EventArgs.Empty); 
 				});*/
+				break;
+			default:
+				base.AttachEvent (handler);
 				break;
 			}
 		}
@@ -129,22 +143,17 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 		public virtual Color BackgroundColor {
-			get { 
-				return Generator.Convert(Control.BackgroundColor);
-			}
-			set {
-				Control.BackgroundColor = Generator.ConvertUI (value);
-			}
+			get { return Generator.Convert(Control.BackgroundColor); }
+			set { Control.BackgroundColor = Generator.ConvertUI (value); }
 		}
 
-		public string Id { get; set; }
-
-		public virtual bool Enabled { get; set; }
+		public virtual bool Enabled {
+			get { return Control.UserInteractionEnabled; }
+			set { Control.UserInteractionEnabled = value; }
+		}
 
 		public bool HasFocus {
-			get {
-				return Control.IsFirstResponder;
-			}
+			get { return Control.IsFirstResponder; }
 		}
 
 		public bool Visible {
@@ -166,6 +175,9 @@ namespace Eto.Platform.iOS.Forms
 
 		#endregion
 
+		public void MapPlatformAction (string systemAction, BaseAction action)
+		{
+		}
 	}
 }
 

@@ -20,6 +20,7 @@
     <RootNamespace>Eto</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
+    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
@@ -483,6 +484,8 @@
     <Compile Include="Forms\IDataStore.cs" />
     <Compile Include="CollectionChangedHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxCell.cs" />
+    <Compile Include="Forms\Controls\GridView.desktop.cs" />
+    <Compile Include="Forms\Controls\TreeView.desktop.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

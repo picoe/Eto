@@ -3,7 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
 using System.Linq;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
@@ -16,7 +18,9 @@ namespace Eto.Forms
 		void SetLayout (Layout layout);
 	}
 	
+#if DESKTOP
 	[ContentProperty("Layout")]
+#endif
 	public partial class Container : Control
 	{
 		IContainer inner;

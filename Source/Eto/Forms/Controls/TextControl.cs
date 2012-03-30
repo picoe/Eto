@@ -1,5 +1,7 @@
 using System;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
@@ -8,7 +10,9 @@ namespace Eto.Forms
 		string Text { get; set; }
 	}
 	
+#if DESKTOP
 	[ContentProperty("Text")]
+#endif
 	public class TextControl : Control
 	{
 		ITextControl inner;

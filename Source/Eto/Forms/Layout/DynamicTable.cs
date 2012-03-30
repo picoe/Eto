@@ -3,11 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
+#if DESKTOP
 	[ContentProperty("Items")]
+#endif
 	public class DynamicRow
 	{
 		List<DynamicItem> items = new List<DynamicItem> ();
@@ -27,7 +31,9 @@ namespace Eto.Forms
 
 	}
 
+#if DESKTOP
 	[ContentProperty("Rows")]
+#endif
 	public class DynamicTable : DynamicItem
 	{
 		List<DynamicRow> rows = new List<DynamicRow> ();

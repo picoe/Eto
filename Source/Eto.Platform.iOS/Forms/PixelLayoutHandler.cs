@@ -16,7 +16,11 @@ namespace Eto.Platform.iOS.Forms
 				base.Control = value;
 			}
 		}
-
+		
+		public override Eto.Drawing.Size GetPreferredSize ()
+		{
+			return Size.Empty;
+		}
 		
 		public void Add(Control child, int x, int y)
 		{

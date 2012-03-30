@@ -4,8 +4,10 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Collections;
 using Eto.Drawing;
-using System.Windows.Markup;
 using System.Collections.ObjectModel;
+#if DESKTOP
+using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
@@ -28,7 +30,9 @@ namespace Eto.Forms
 		}
 	}
 	
+#if DESKTOP
 	[ContentProperty("Items")]
+#endif
 	public class ListControl : Control
 	{
 		public event EventHandler<EventArgs> SelectedIndexChanged;

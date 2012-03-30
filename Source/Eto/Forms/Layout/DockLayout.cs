@@ -2,7 +2,9 @@ using System;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
@@ -27,7 +29,9 @@ namespace Eto.Forms
 		}
 	}
 	
+#if DESKTOP
 	[ContentProperty("Content")]
+#endif
 	public class DockLayout : Layout
 	{
 		IDockLayout inner;

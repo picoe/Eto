@@ -24,16 +24,20 @@ namespace Eto.Platform.iOS.Forms.Controls
 				
 			}
 		}
-
-
-		#region ICheckBox Members
-
-		public bool Checked
-		{
-			get { return Control.On; }
-			set { Control.On = value; }
+		
+		public bool ThreeState {
+			get {
+				throw new NotImplementedException ();
+			}
+			set {
+				throw new NotImplementedException ();
+			}
 		}
 
-		#endregion
+		public bool? Checked
+		{
+			get { return Control.On; }
+			set { Control.On = value ?? false; }
+		}
 	}
 }

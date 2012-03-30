@@ -26,6 +26,11 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 		
+		public double Opacity {
+			get { return Control.Alpha; }
+			set { Control.Alpha = (float)value; }
+		}
+		
 		#region IWindow implementation
 		
 		public virtual void Close ()

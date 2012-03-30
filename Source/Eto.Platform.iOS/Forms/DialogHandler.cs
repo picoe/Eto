@@ -16,13 +16,13 @@ namespace Eto.Platform.iOS.Forms
 		
 		protected override void Dispose (bool disposing)
 		{
-			base.Dispose (disposing);
-			Console.WriteLine ("view disposing");
 			var c = Control as IDisposable;
 			if (c != null) {
 				c.Dispose ();
 				c = null;
 			}
+			
+			base.Dispose (disposing);
 		}
 	}
 
