@@ -91,13 +91,13 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		protected virtual bool LayoutIfNeeded (Size? oldPreferredSize = null)
+		protected virtual bool LayoutIfNeeded (Size? oldPreferredSize = null, bool force = false)
 		{
 			naturalSize = null;
 			if (Widget.Loaded) {
 				var oldSize = oldPreferredSize ?? Generator.ConvertF (Control.Frame.Size);
 				var newSize = GetPreferredSize ();
-				if (newSize != oldSize) {
+				if (newSize != oldSize || force) {
 					var layout = Widget.ParentLayout.Handler as IMacLayout;
 					if (layout != null)
 						layout.UpdateParentLayout (true);
@@ -391,7 +391,13 @@ namespace Eto.Platform.Mac
 
 		public bool Visible {
 			get { return !Control.Hidden; }
-			set { Control.Hidden = !value; }
+			set { 
+				if (Control.Hidden == value) {
+					var oldSize = this.GetPreferredSize ();
+					Control.Hidden = !value;
+					LayoutIfNeeded (oldSize, true);
+				}
+			}
 		}
 		
 		public Cursor Cursor {
