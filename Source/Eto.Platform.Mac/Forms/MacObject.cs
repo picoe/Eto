@@ -58,7 +58,7 @@ namespace Eto.Platform.Mac
 			if (!typeof(IMacControl).IsAssignableFrom (type))
 				throw new EtoException("Control does not inherit from IMacControl");
 			var cls = new Class(type);
-			cls.AddMethod (selector, action, arguments);
+			cls.AddMethod (selector.Handle, action, arguments);
 		}
 		
 		public NSObject AddObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
