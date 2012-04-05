@@ -7,10 +7,12 @@ using MonoMac.AppKit;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using MonoMac.CoreText;
+using System.Text.RegularExpressions;
 
 namespace Eto.Platform.Mac
 {
-	public class LabelHandler : MacView<NSTextField, Label>, ILabel
+	public class LabelHandler : MacView<LabelHandler.EtoLabel, Label>, ILabel
 	{
 		Font font;
 		bool is106;
@@ -53,7 +55,33 @@ namespace Eto.Platform.Mac
 		public class EtoLabel : NSTextField, IMacControl
 		{
 			public object Handler {
-				get; set;
+				get;
+				set;
+			}
+			
+			static IntPtr selAttributedStringValue = Selector.GetHandle ("attributedStringValue");
+			static IntPtr selSetAttributedStringValue = Selector.GetHandle ("setAttributedStringValue:");
+			
+			public NSAttributedString AttributedStringValue {
+				[Export ("attributedStringValue")]
+				get {
+					if (this.IsDirectBinding) {
+						return new NSAttributedString (Messaging.IntPtr_objc_msgSend (base.Handle, EtoLabel.selAttributedStringValue));
+					}
+					return new NSAttributedString (Messaging.IntPtr_objc_msgSendSuper (base.SuperHandle, EtoLabel.selAttributedStringValue));
+				}
+				[Export ("setAttributedStringValue:")]
+				set {
+					if (value == null) {
+						throw new ArgumentNullException ("value");
+					}
+					if (this.IsDirectBinding) {
+						Messaging.void_objc_msgSend_IntPtr (base.Handle, EtoLabel.selSetAttributedStringValue, value.Handle);
+					} else {
+						Messaging.void_objc_msgSendSuper_IntPtr (base.SuperHandle, EtoLabel.selSetAttributedStringValue, value.Handle);
+					}
+				}
+				
 			}
 		}
 		
@@ -123,7 +151,22 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				var oldSize = GetPreferredSize ();
-				Control.StringValue = value ?? string.Empty;
+				
+				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+				if (match.Success) {
+					var str = new NSMutableAttributedString (value.Remove(match.Index, match.Length));
+					
+					// copy existing attributes
+					NSRange range;
+					var attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+					if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
+						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
+					str.AddAttributes (attributes, new NSRange(0, str.Length));
+					
+					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index, 1));
+					Control.AttributedStringValue = str;
+				} else
+					Control.StringValue = value ?? string.Empty;
 				LayoutIfNeeded (oldSize);
 			}
 		}
