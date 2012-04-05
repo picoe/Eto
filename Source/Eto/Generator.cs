@@ -47,7 +47,6 @@ namespace Eto
 			constructorMap = new Dictionary<string, ConstructorInfo> ();
 		}
 		
-		
 		public virtual bool Supports<T> ()
 			where T: IWidget
 		{
@@ -64,6 +63,34 @@ namespace Eto
 			}
 		}
 		
+		const string GtkPlatform = "Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk";
+		const string MacPlatform = "Eto.Platform.Mac.Generator, Eto.Platform.Mac";
+		const string WinPlatform = "Eto.Platform.Windows.Generator, Eto.Platform.Windows";
+		const string WpfPlatform = "Eto.Platform.Wpf.Generator, Eto.Platform.Wpf";
+		
+		public static Generator Detect {
+			get {
+				if (current != null)
+					return current;
+			
+				if (Misc.Platform.IsMac)
+					current = Generator.GetGenerator (MacPlatform, true);
+				else if (Misc.Platform.IsWindows) {
+					current = Generator.GetGenerator (WinPlatform, true);
+					if (current == null)
+						current = Generator.GetGenerator (WpfPlatform, true);
+				}
+				
+				if (current == null && Misc.Platform.IsUnix)
+					current = Generator.GetGenerator (GtkPlatform, true);
+				
+				if (current == null)
+					throw new EtoException ("Could not detect platform. Are you missing a platform assembly?");
+					
+				return current;
+			}
+		}
+		
 		public static void Initialize (Generator generator)
 		{
 			current = generator;
@@ -71,9 +98,17 @@ namespace Eto
 		
 		public static Generator GetGenerator (string generatorType)
 		{
+			return GetGenerator (generatorType, false);
+		}
+
+		internal static Generator GetGenerator (string generatorType, bool allowNull)
+		{
 			Type type = Type.GetType (generatorType);
 			if (type == null) {
-				throw new EtoException("Generator not found. Are you missing the platform assembly?");
+				if (allowNull) 
+					return null;
+				else
+					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
 			}
 			if (type.IsSubclassOf (typeof(Generator))) {
 				return (Generator)Activator.CreateInstance (type);
@@ -107,7 +142,8 @@ namespace Eto
 				throw new ApplicationException (string.Format ("the type {0} cannot be found in this generator", typeof(T).FullName));
 
 			T val = (T)constructor.Invoke (new object[] { });
-			if (widget != null) widget.Handler = val;
+			if (widget != null)
+				widget.Handler = val;
 			OnWidgetCreated (new WidgetCreatedArgs (val as IWidget));
 			return val;
 		}
@@ -167,9 +203,8 @@ namespace Eto
 				}
 				OnWidgetCreated (new WidgetCreatedArgs (val));
 				return val;
-			}
-			catch (Exception e) {
-				throw new EtoException (string.Format("Could not create instance of type {0}", type), e);
+			} catch (Exception e) {
+				throw new EtoException (string.Format ("Could not create instance of type {0}", type), e);
 			}
 		}
 
