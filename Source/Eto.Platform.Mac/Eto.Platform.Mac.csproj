@@ -9,6 +9,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
+    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -178,6 +179,7 @@
     <Compile Include="Forms\MacCommon.cs" />
     <Compile Include="Forms\Controls\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Menu\MenuActionHandler.cs" />
+    <Compile Include="EtoBundle.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

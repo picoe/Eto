@@ -4,6 +4,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Actions;
 using System.ComponentModel;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
@@ -18,6 +19,7 @@ namespace Eto.Platform.Mac
 		public ApplicationHandler ()
 		{
 			NSApplication.Init ();
+			EtoBundle.Init();
 			Control = NSApplication.SharedApplication;
 		}
 		
@@ -71,8 +73,12 @@ namespace Eto.Platform.Mac
 			NSApplication.SharedApplication.NextEvent (NSEventMask.AnyEvent, NSDate.DistantFuture, NSRunLoop.NSDefaultRunLoopMode, true);
 		}
 		
+		
+		
 		public void Run (string[] args)
 		{
+			
+			Control.Delegate = new AppDelegate();
 			NSApplication.Main (args);
 		}
 		
