@@ -50,7 +50,6 @@
     <Compile Include="Widget.cs" />
     <Compile Include="WidgetHandler.cs" />
     <Compile Include="Collections\BaseList.cs" />
-    <Compile Include="Collections\ListItemEventHandler.cs" />
     <Compile Include="Collections\LookupList.cs" />
     <Compile Include="Drawing\Bitmap.cs" />
     <Compile Include="Drawing\Color.cs" />
@@ -81,11 +80,9 @@
     <Compile Include="IO\VirtualFileInfo.cs" />
     <Compile Include="Misc\ArrayExtensions.cs" />
     <Compile Include="Misc\Platform.cs" />
-    <Compile Include="Misc\Url.cs" />
     <Compile Include="Forms\Application.cs" />
     <Compile Include="Forms\Container.cs" />
     <Compile Include="Forms\Dialog.cs" />
-    <Compile Include="Forms\DockLayout.cs" />
     <Compile Include="Forms\FileDialog.cs" />
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\GenerateActionArgs.cs" />
@@ -93,10 +90,8 @@
     <Compile Include="Forms\Layout.cs" />
     <Compile Include="Forms\MessageBox.cs" />
     <Compile Include="Forms\OpenFileDialog.cs" />
-    <Compile Include="Forms\PixelLayout.cs" />
     <Compile Include="Forms\SaveFileDialog.cs" />
     <Compile Include="Forms\SelectFolderDialog.cs" />
-    <Compile Include="Forms\TableLayout.cs" />
     <Compile Include="Forms\Window.cs" />
     <Compile Include="Forms\Actions\ActionItem.cs" />
     <Compile Include="Forms\Actions\ActionItemCollection.cs" />
@@ -131,7 +126,6 @@
     <Compile Include="Forms\ToolBar\SeparatorToolBarItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
     <Compile Include="Forms\ToolBar\ToolBarButton.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarInteractionItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBarItem.cs" />
     <Compile Include="CancelEventHandler.cs" />
     <Compile Include="Forms\Controls\Navigation.cs" />
@@ -149,7 +143,6 @@
     <Compile Include="Forms\Controls\WebView.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
-    <Compile Include="Forms\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
     <Compile Include="Forms\TreeItem.cs" />
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
@@ -159,6 +152,39 @@
     <Compile Include="Forms\Controls\Slider.cs" />
     <Compile Include="Forms\Controls\NavigationItem.cs" />
     <Compile Include="Forms\Controls\Drawable.mobile.cs" />
+    <Compile Include="Drawing\ColorConverter.cs" />
+    <Compile Include="Drawing\PaddingConverter.cs" />
+    <Compile Include="Drawing\PointConverter.cs" />
+    <Compile Include="Drawing\PointFConverter.cs" />
+    <Compile Include="Drawing\RectangleConverter.cs" />
+    <Compile Include="Drawing\RectangleFConverter.cs" />
+    <Compile Include="Drawing\SizeConverter.cs" />
+    <Compile Include="Drawing\SizeFConverter.cs" />
+    <Compile Include="Collections\ListEventArgs.cs" />
+    <Compile Include="Forms\Layout\DockLayout.cs" />
+    <Compile Include="Forms\Layout\DynamicControl.cs" />
+    <Compile Include="Forms\Layout\DynamicItem.cs" />
+    <Compile Include="Forms\Layout\DynamicLayout.cs" />
+    <Compile Include="Forms\Layout\DynamicTable.cs" />
+    <Compile Include="Forms\Layout\PixelLayout.cs" />
+    <Compile Include="Forms\Layout\TableLayout.cs" />
+    <Compile Include="Forms\Controls\Cell.cs" />
+    <Compile Include="Forms\Controls\CheckBoxCell.cs" />
+    <Compile Include="Forms\Controls\ComboBoxCell.cs" />
+    <Compile Include="Forms\Controls\CommonControl.cs" />
+    <Compile Include="Forms\Controls\GridColumn.cs" />
+    <Compile Include="Forms\Controls\GridColumnCollection.cs" />
+    <Compile Include="Forms\Controls\GridItem.cs" />
+    <Compile Include="Forms\Controls\GridView.cs" />
+    <Compile Include="Forms\Controls\ImageCell.cs" />
+    <Compile Include="Forms\Controls\PasswordBox.cs" />
+    <Compile Include="Forms\Controls\ProgressBar.cs" />
+    <Compile Include="Forms\Controls\TextCell.cs" />
+    <Compile Include="Forms\Cursor.cs" />
+    <Compile Include="Forms\DataStoreVirtualCollection.cs" />
+    <Compile Include="CollectionChangedHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolBarActionItem.cs" />
+    <Compile Include="Forms\IDataStore.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

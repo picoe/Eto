@@ -98,7 +98,7 @@ namespace Eto.IO
 		protected abstract IEnumerable<EtoDirectoryInfo> GetPathDirectories();
 
 		public abstract IEnumerable<EtoFileInfo> GetFiles();
-		
+
 		public virtual IEnumerable<EtoFileInfo> GetFiles(IEnumerable<string> patterns)
 		{
 			// convert search pattern to regular expression!

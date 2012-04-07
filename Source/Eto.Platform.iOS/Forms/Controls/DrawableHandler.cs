@@ -35,6 +35,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 			public MyTiledView()
 			{
 				var tiledLayer = (CATiledLayer)this.Layer;
+				if (UIScreen.MainScreen.RespondsToSelector (new Selector("scale")) && UIScreen.MainScreen.Scale == 2.0f) {
+					tiledLayer.TileSize = new SD.SizeF(512, 512);
+				}
 				tiledLayer.LevelsOfDetail = 4;
 			}
 		}
@@ -96,6 +99,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 				Handler.Widget.OnLostFocus (EventArgs.Empty);
 				return base.ResignFirstResponder ();
 			}
+			
+			static IntPtr selFrame = Selector.GetHandle("frame");
+			
+			public SD.RectangleF BaseFrame
+			{
+				get {
+					SD.RectangleF result;
+					Messaging.RectangleF_objc_msgSend_stret (out result, base.Handle, selFrame);
+					return result;
+				}
+			}
 		}
 		
 		public override Eto.Drawing.Size Size {
@@ -114,7 +128,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public void Create (bool largeCanvas)
 		{
-			Console.WriteLine ("Creating large canvas:{0}", largeCanvas);
 			if (largeCanvas)
 				Control = new MyTiledView{ Handler = this };
 			else
@@ -140,8 +153,13 @@ namespace Eto.Platform.iOS.Forms.Controls
 				//lock (this) {
 				//context.TranslateCTM(0, 0);
 				//context.ScaleCTM(1, -1);
-				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height, false));
-				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+				//var oldCheck = UIApplication.CheckForIllegalCrossThreadCalls;
+				//UIApplication.CheckForIllegalCrossThreadCalls = false;
+				
+				using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.BaseFrame.Height, false))) {
+					Widget.OnPaint (new PaintEventArgs (graphics, rect));
+				}
+				//UIApplication.CheckForIllegalCrossThreadCalls = oldCheck;
 				//}
 			}
 		}

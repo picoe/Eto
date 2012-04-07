@@ -12,8 +12,6 @@
 	<string>1</string>
 	<key>LSMinimumSystemVersion</key>
 	<string>10.5</string>
-	<key>NSMainNibFile</key>
-	<string>MainMenu</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

@@ -54,7 +54,7 @@ namespace Eto.Forms
 		
 		public string Name { get; set; }
 
-		public Application() : this(Generator.Current) { }
+		public Application() : this(Generator.Detect) { }
 		
 		public Application(Generator g) : base(g, typeof(IApplication))
 		{

@@ -1,6 +1,8 @@
 using System;
 using System.ComponentModel;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto
 {
@@ -12,7 +14,9 @@ namespace Eto
 		void HandleEvent (string handler);
 	}
 	
+#if DESKTOP
 	[RuntimeNameProperty("ID")]
+#endif
 	public abstract class InstanceWidget : Widget, IWidget
 	{
 		IInstanceWidget inner;

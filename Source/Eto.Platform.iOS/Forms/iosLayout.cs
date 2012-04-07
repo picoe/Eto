@@ -3,6 +3,7 @@ using Eto.Forms;
 using SD = System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -37,6 +38,26 @@ namespace Eto.Platform.iOS.Forms
 		
 		public virtual void Update()
 		{
+		}
+		
+		protected void UpdateParentLayout()
+		{
+		}
+		
+		public static Size GetPreferredSize(Control control)
+		{
+			return Size.Empty;
+		}
+		
+		public abstract Size GetPreferredSize ();
+		
+		public virtual void LayoutChildren()
+		{
+		}
+		
+		protected void Layout()
+		{
+			
 		}
 		
 		public virtual void SetContainerSize(SD.SizeF size)

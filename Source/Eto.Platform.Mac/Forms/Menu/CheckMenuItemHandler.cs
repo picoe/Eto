@@ -25,7 +25,10 @@ namespace Eto.Platform.Mac
 		
 		#region IMenuItem Members
 
-		public bool Enabled { get; set; }
+		public bool Enabled {
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
+		}
 
 		public string Text {
 			get	{ return Control.Title; }

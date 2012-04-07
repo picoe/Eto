@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
 using Eto.Collections;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 using System.Collections.Specialized;
 using Eto.Drawing;
 
@@ -21,7 +23,6 @@ namespace Eto.Forms
 	{
 	}
 	
-
 	public class TreeItemCollection : DataStoreCollection<ITreeItem>, ITreeStore<ITreeItem>
 	{
 		public TreeItemCollection ()
@@ -34,7 +35,9 @@ namespace Eto.Forms
 		}
 	}
 	
+#if DESKTOP
 	[ContentProperty("Children")]
+#endif
 	public class TreeItem : GridItem, ITreeItem, ITreeStore<ITreeItem>
 	{
 		TreeItemCollection children;

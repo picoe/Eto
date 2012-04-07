@@ -102,10 +102,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.Delegate = new Delegate { Handler = this };
 			Control.AddSubview (Child);
 			
+			/*
 			foreach (var gestureRecognizer in Control.GestureRecognizers.OfType<UIPanGestureRecognizer>()) {
 				gestureRecognizer.MinimumNumberOfTouches = 2;
 				gestureRecognizer.MaximumNumberOfTouches = 2;
-			}			
+			}*/			
 		}
 
 		public void UpdateScrollSizes ()

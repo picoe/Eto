@@ -28,6 +28,11 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 		
+		public override Eto.Drawing.Size GetPreferredSize ()
+		{
+			return Size.Empty;
+		}
+		
 		void SetChildFrame()
 		{
 			if (child == null) return;

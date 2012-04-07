@@ -20,8 +20,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		class Delegate : UINavigationControllerDelegate
 		{
-			
-			
 			public override void DidShowViewController (UINavigationController navigationController, UIViewController viewController, bool animated)
 			{
 				Handler.Widget.OnItemShown (EventArgs.Empty);

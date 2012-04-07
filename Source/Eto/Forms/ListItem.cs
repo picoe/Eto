@@ -1,6 +1,8 @@
 using System;
 using Eto.Drawing;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
@@ -11,7 +13,9 @@ namespace Eto.Forms
 		string Key { get; }
 	}
 	
+#if DESKTOP
 	[ContentProperty("Text")]
+#endif
 	public class ListItem : IListItem
 	{
 		string key;
@@ -29,7 +33,9 @@ namespace Eto.Forms
 		public Image Image { get; set; }
 	}
 	
+#if DESKTOP
 	[ContentProperty("Item")]
+#endif
 	public class ObjectListItem : IListItem
 	{
 		public object Item { get; set; }

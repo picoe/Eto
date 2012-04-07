@@ -1,6 +1,8 @@
 using System;
-using System.Xaml;
 using System.Collections.Generic;
+#if DESKTOP
+using System.Xaml;
+#endif
 
 namespace Eto
 {
@@ -11,6 +13,7 @@ namespace Eto
 		void Initialize ();
 	}
 
+#if DESKTOP
 	public class PropertyStore : IAttachedPropertyStore
 	{
 		IDictionary<AttachableMemberIdentifier, object> attachedProperties = new Dictionary<AttachableMemberIdentifier, object> ();
@@ -66,9 +69,11 @@ namespace Eto
 			return attachedProperties.TryGetValue (member, out value);
 		}
 	}
+#endif
 	
 	public abstract class Widget : IWidget, IDisposable
 	{
+#if DESKTOP
 		PropertyStore properties;
 
 		public PropertyStore Properties
@@ -79,6 +84,8 @@ namespace Eto
 				return properties;
 			}
 		}
+#endif
+		public event EventHandler<EventArgs> Disposed;
 
 		public Generator Generator { get; private set; }
 
@@ -127,6 +134,8 @@ namespace Eto
 		protected virtual void Dispose (bool disposing)
 		{
 			if (disposing) {
+				if (Disposed != null)
+					Disposed(this, EventArgs.Empty);
 				var handler = this.Handler as IDisposable;
 				if (handler != null)
 					handler.Dispose ();

@@ -2,12 +2,14 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using System.Windows.Markup;
 using System.Collections;
 using Eto.Collections;
-using System.Xaml;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
+#if DESKTOP
+using System.Windows.Markup;
+using System.Xaml;
+#endif
 
 namespace Eto.Forms
 {
@@ -24,7 +26,9 @@ namespace Eto.Forms
 		Padding Padding { get; set; }
 	}
 
+#if DESKTOP
 	[ContentProperty("Children")]
+#endif
 	public class TableLayout : Layout
 	{
 		ITableLayout inner;
@@ -62,6 +66,7 @@ namespace Eto.Forms
 			}
 		}
 
+#if DESKTOP		
 		static AttachableMemberIdentifier LocationProperty = new AttachableMemberIdentifier (typeof(TableLayout), "Location");
 		
 		public static Point GetLocation (Control control)
@@ -76,6 +81,7 @@ namespace Eto.Forms
 			if (layout != null)
 				layout.Move (control, value);
 		}
+#endif
 		
 		public static Control AutoSized (Control control, Padding? padding = null)
 		{
@@ -175,11 +181,13 @@ namespace Eto.Forms
 		public override void EndInit ()
 		{
 			base.EndInit ();
+#if DESKTOP			
 			if (children != null) {
 				foreach (var child in children) {
 					this.Add (child, GetLocation (child));
 				}
 			}
+#endif
 		}
 
 	}

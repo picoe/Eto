@@ -2,11 +2,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
+#if DESKTOP
 using System.Windows.Markup;
+#endif
 
 namespace Eto.Forms
 {
+#if DESKTOP
 	[ContentProperty("Rows")]
+#endif
 	public class DynamicLayout : Layout
 	{
 		DynamicTable topTable;
@@ -241,7 +245,12 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
-			currentItem.Add (new DynamicControl{ Control = control, XScale = xscale, YScale = yscale ?? this.yscale});
+			if (xscale == null && currentItem.CurrentRow != null && control == null)
+				xscale = true;
+			yscale = yscale ?? this.yscale;
+			if (yscale == null && currentItem.CurrentRow == null && control == null)
+				yscale = true;
+			currentItem.Add (new DynamicControl{ Control = control, XScale = xscale, YScale = yscale });
 		}
 		
 		public void AddRow (params Control[] controls)

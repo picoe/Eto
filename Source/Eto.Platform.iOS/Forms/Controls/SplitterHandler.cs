@@ -63,6 +63,15 @@ namespace Eto.Platform.iOS.Forms.Controls
 				}*/
 			}
 		}
+		
+		public SplitterFixedPanel FixedPanel {
+			get {
+				return SplitterFixedPanel.None;
+			}
+			set {
+				
+			}
+		}
 
 		public Control Panel1
 		{
