@@ -76,9 +76,9 @@ namespace Eto
 				if (Misc.Platform.IsMac)
 					current = Generator.GetGenerator (MacPlatform, true);
 				else if (Misc.Platform.IsWindows) {
-					current = Generator.GetGenerator (WinPlatform, true);
+					current = Generator.GetGenerator (WpfPlatform, true);
 					if (current == null)
-						current = Generator.GetGenerator (WpfPlatform, true);
+						current = Generator.GetGenerator (WinPlatform, true);
 				}
 				
 				if (current == null && Misc.Platform.IsUnix)
