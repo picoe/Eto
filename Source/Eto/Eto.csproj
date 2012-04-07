@@ -488,9 +488,9 @@
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
-    <Compile Include="Forms\Controls\ComboBoxCell.cs" />
     <Compile Include="Forms\Controls\GridView.desktop.cs" />
     <Compile Include="Forms\Controls\TreeView.desktop.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCell.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

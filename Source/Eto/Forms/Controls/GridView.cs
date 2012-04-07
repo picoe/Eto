@@ -160,17 +160,9 @@ namespace Eto.Forms
 			set { handler.DataStore = value; }
 		}
 
-<<<<<<< HEAD
-		public ContextMenu ContextMenu {
-			get { return handler.ContextMenu; }
-			set { handler.ContextMenu = value; }
-		}
 
-		public bool AllowMultipleSelection {
-=======
 		public bool AllowMultipleSelection
 		{
->>>>>>> master
 			get { return handler.AllowMultipleSelection; }
 			set { handler.AllowMultipleSelection = value; }
 		}
