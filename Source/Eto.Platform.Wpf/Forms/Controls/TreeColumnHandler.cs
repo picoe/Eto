@@ -7,7 +7,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class GridColumnHandler : DataColumnHandler<swc.DataGridColumn, GridColumn>, IGridColumn
+	public class TreeColumnHandler : DataColumnHandler<swc.DataGridColumn, TreeColumn>, ITreeColumn
 	{
 	}
 }

@@ -10,30 +10,26 @@ using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
+using Eto.Platform.Wpf.CustomControls.TreeGridView;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<swc.TreeView, TreeView>, ITreeView
+	public class TreeViewHandler : WpfControl<swc.DataGrid, TreeView>, ITreeView
 	{
 		ContextMenu contextMenu;
 		ITreeStore<ITreeItem> topNode;
+		ColumnCollection columns;
+		TreeController controller;
 
 		public TreeViewHandler ()
 		{
-			Control = new swc.TreeView ();
-			var template = new sw.HierarchicalDataTemplate (typeof (ITreeItem));
-			template.VisualTree = WpfListItemHelper.ItemTemplate ();
-			template.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
-			Control.ItemTemplate = template;
-
-			var style = new sw.Style (typeof (swc.TreeViewItem));
-			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
-			Control.ItemContainerStyle = style;
-
-			Control.SelectedItemChanged += delegate {
-				Widget.OnSelectionChanged (EventArgs.Empty);
+			Control = new swc.DataGrid {
+				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
+				AutoGenerateColumns = false,
+				CanUserAddRows = false,
+				SelectionMode = swc.DataGridSelectionMode.Single
 			};
-
+			controller = new TreeController ();
 			Control.KeyDown += (sender, e) => {
 				if (e.Key == sw.Input.Key.Enter) {
 					if (SelectedItem != null)
@@ -47,6 +43,39 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			columns = new ColumnCollection { Handler = this };
+			columns.Register (Widget.Columns);
+		}
+
+		class ColumnCollection : EnumerableChangedHandler<TreeColumn, TreeColumnCollection>
+		{
+			public TreeViewHandler Handler { get; set; }
+
+			public override void AddItem (TreeColumn item)
+			{
+				var colhandler = (TreeColumnHandler)item.Handler;
+				Handler.Control.Columns.Add(colhandler.Control);
+			}
+
+			public override void InsertItem (int index, TreeColumn item)
+			{
+				var colhandler = (TreeColumnHandler)item.Handler;
+				Handler.Control.Columns.Insert(index, colhandler.Control);
+			}
+
+			public override void RemoveItem (int index)
+			{
+				Handler.Control.Columns.RemoveAt(index);
+			}
+
+			public override void RemoveAllItems ()
+			{
+				Handler.Control.Columns.Clear ();
+			}
+		}
 
 		public ITreeStore<ITreeItem> DataStore
 		{
@@ -115,11 +144,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				throw new NotImplementedException ();
+				return Control.HeadersVisibility.HasFlag (swc.DataGridHeadersVisibility.Column);
 			}
 			set
 			{
-				throw new NotImplementedException ();
+				Control.HeadersVisibility = value ? swc.DataGridHeadersVisibility.Column : swc.DataGridHeadersVisibility.None;
 			}
 		}
 	}

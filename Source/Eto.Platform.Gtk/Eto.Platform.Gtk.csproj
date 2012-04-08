@@ -101,6 +101,7 @@
       <HintPath>..\..\Libraries\webkit-sharp\webkit-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Mono.WebBrowser" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">

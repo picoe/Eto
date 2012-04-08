@@ -31,7 +31,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public Gtk.TreeIter GetIterAtRow (int row)
 		{
-			return new Gtk.TreeIter { UserData = (IntPtr)row };
+			return new Gtk.TreeIter { UserData = (IntPtr)(row+1) };
 		}
 
 		public Gtk.TreePath GetPathAtRow (int row)
@@ -86,7 +86,7 @@ namespace Eto.Platform.GtkSharp
 
 		public int NodeFromIter (Gtk.TreeIter iter)
 		{
-			return (int)iter.UserData;
+			return ((int)iter.UserData) - 1;
 		}
 
 		public bool GetIter (out Gtk.TreeIter iter, Gtk.TreePath path)
@@ -97,7 +97,7 @@ namespace Eto.Platform.GtkSharp
 				
 			var row = GetRow (path);
 			if (row >= 0) {
-				iter = new Gtk.TreeIter { UserData = (IntPtr)row };
+				iter = new Gtk.TreeIter { UserData = (IntPtr)(row + 1) };
 				return true;
 			}
 			iter = Gtk.TreeIter.Zero;
@@ -115,7 +115,7 @@ namespace Eto.Platform.GtkSharp
 
 		public void GetValue (Gtk.TreeIter iter, int col, ref GLib.Value val)
 		{
-			var row = (int)iter.UserData;
+			var row = ((int)iter.UserData) - 1;
 			if (row >= 0) {
 				var item = Handler.DataStore [row];
 				val = Handler.GetColumnValue (item, col);
@@ -126,9 +126,9 @@ namespace Eto.Platform.GtkSharp
 
 		public bool IterNext (ref Gtk.TreeIter iter)
 		{
-			var row = (int)iter.UserData;
+			var row = ((int)iter.UserData) - 1;
 			if (row >= 0 && Handler.DataStore != null && row < Handler.DataStore.Count - 1) {
-				iter = new Gtk.TreeIter { UserData = (IntPtr)(row + 1) };
+				iter = new Gtk.TreeIter { UserData = (IntPtr)(row + 2) };
 				return true;
 			}
 			iter = Gtk.TreeIter.Zero;
@@ -137,9 +137,9 @@ namespace Eto.Platform.GtkSharp
 
 		public bool IterPrevious (ref Gtk.TreeIter iter)
 		{
-			var row = (int)iter.UserData;
+			var row = (int)iter.UserData - 1;
 			if (row > 0) {
-				iter = new Gtk.TreeIter { UserData = (IntPtr)(row - 1) };
+				iter = new Gtk.TreeIter { UserData = (IntPtr)(row) };
 				return true;
 			}
 			iter = Gtk.TreeIter.Zero;
@@ -149,7 +149,7 @@ namespace Eto.Platform.GtkSharp
 		public bool IterChildren (out Gtk.TreeIter child, Gtk.TreeIter parent)
 		{
 			if (parent.UserData == IntPtr.Zero && Handler.DataStore != null && Handler.DataStore.Count > 0) {
-				child = new Gtk.TreeIter { UserData = (IntPtr)0 };
+				child = new Gtk.TreeIter { UserData = (IntPtr)1 };
 				return true;
 			}
 			child = Gtk.TreeIter.Zero;
@@ -173,7 +173,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			if (parent.UserData == IntPtr.Zero && Handler.DataStore != null) {
 				if (n < Handler.DataStore.Count) {
-					child = new Gtk.TreeIter { UserData = (IntPtr)n };
+					child = new Gtk.TreeIter { UserData = (IntPtr)(n+1) };
 					return true;
 				}
 			}

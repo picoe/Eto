@@ -399,7 +399,6 @@
     <Compile Include="Forms\ColorDialog.cs" />
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
-    <Compile Include="Forms\Controls\EnumComboBox.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
     <Compile Include="Forms\Menu\SubMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
@@ -491,6 +490,7 @@
     <Compile Include="Forms\Controls\GridView.desktop.cs" />
     <Compile Include="Forms\Controls\TreeView.desktop.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
+    <Compile Include="Forms\Controls\EnumComboBox.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

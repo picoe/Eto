@@ -176,7 +176,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override void AddItem (TreeColumn item)
 			{
-				var colhandler = ((TreeColumnHandler)item.Handler);
+				var colhandler = (TreeColumnHandler)item.Handler;
 				Handler.outline.AddColumn (colhandler.Control);
 				colhandler.Setup (Handler.outline.ColumnCount - 1);
 				

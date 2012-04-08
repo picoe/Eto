@@ -17,7 +17,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		where T: swc.DataGridColumn
 		where W: Cell
 	{
-		public int DataColumn { get; private set; }
 
 		swc.DataGridColumn ICellHandler.Control
 		{
@@ -26,7 +25,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public virtual void Bind (int column)
 		{
-			this.DataColumn = column;
 		}
 	}
 }

@@ -104,7 +104,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (store is ObservableCollection<IGridItem>)
 					Control.ItemsSource = store as ObservableCollection<IGridItem>;
 				else
-					Control.ItemsSource = new ObservableCollection<IGridItem> (GridItemCollection.EnumerateDataStore (store));
+					Control.ItemsSource = new ObservableCollection<IGridItem> (store.AsEnumerable());
 			}
 		}
 

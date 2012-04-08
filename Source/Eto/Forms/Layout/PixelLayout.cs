@@ -29,10 +29,8 @@ namespace Eto.Forms
 			}
 		}
 
-		public BaseList<Control> Children
-		{
-			get
-			{
+		public BaseList<Control> Children {
+			get {
 				if (children == null) {
 					children = new BaseList<Control> ();
 				}
@@ -113,8 +111,10 @@ namespace Eto.Forms
 		{
 			base.EndInit ();
 #if DESKTOP
-			foreach (var control in children) {
-				Add (control, GetLocation (control));
+			if (children != null) {
+				foreach (var control in children) {
+					Add (control, GetLocation (control));
+				}
 			}
 #endif
 		}

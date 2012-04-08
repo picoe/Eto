@@ -32,7 +32,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			public CheckBoxCellHandler Handler { get; set; }
 
-
 			protected override sw.FrameworkElement GenerateElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateElement (cell, dataItem);
