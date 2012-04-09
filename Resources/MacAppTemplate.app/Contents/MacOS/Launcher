@@ -17,7 +17,7 @@ RESOURCES_PATH="$CONTENTS_DIR/Resources"
 MONO_FRAMEWORK_PATH=/Library/Frameworks/Mono.framework/Versions/Current
 
 # Environment setup
-export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:$(HOME)/lib:/usr/local/lib:/lib:/usr/lib"
+export DYLD_FALLBACK_LIBRARY_PATH="$MONO_FRAMEWORK_PATH/lib:$DYLD_FALLBACK_LIBRARY_PATH:/usr/local/lib:/lib:/usr/lib"
 export PATH="$MONO_FRAMEWORK_PATH/bin:$PATH"
 export DYLD_LIBRARY_PATH="$RESOURCES_PATH:$DYLD_LIBRARY_PATH"
 
