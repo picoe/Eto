@@ -62,6 +62,7 @@
     <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
+    <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
