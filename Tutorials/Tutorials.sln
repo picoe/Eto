@@ -1,0 +1,26 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial1 - Hello World", "Tutorial1 - Hello World\Tutorial1 - Hello World.csproj", "{7BE9E187-3FC4-49D2-A322-F4651C3AE256}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial2 - Menus and Toolbars", "Tutorial2\Tutorial2 - Menus and Toolbars.csproj", "{0844A0AD-778A-4DB3-8332-03AC50A17D05}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|x86 = Debug|x86
+		Release|x86 = Release|x86
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0844A0AD-778A-4DB3-8332-03AC50A17D05}.Debug|x86.ActiveCfg = Debug|x86
+		{0844A0AD-778A-4DB3-8332-03AC50A17D05}.Debug|x86.Build.0 = Debug|x86
+		{0844A0AD-778A-4DB3-8332-03AC50A17D05}.Release|x86.ActiveCfg = Release|x86
+		{0844A0AD-778A-4DB3-8332-03AC50A17D05}.Release|x86.Build.0 = Release|x86
+		{7BE9E187-3FC4-49D2-A322-F4651C3AE256}.Debug|x86.ActiveCfg = Debug|x86
+		{7BE9E187-3FC4-49D2-A322-F4651C3AE256}.Debug|x86.Build.0 = Debug|x86
+		{7BE9E187-3FC4-49D2-A322-F4651C3AE256}.Release|x86.ActiveCfg = Release|x86
+		{7BE9E187-3FC4-49D2-A322-F4651C3AE256}.Release|x86.Build.0 = Release|x86
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Tutorial2\Tutorial2 - Menus and Toolbars.csproj
+	EndGlobalSection
+EndGlobal
