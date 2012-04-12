@@ -6,6 +6,7 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
+using System.Globalization;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -141,13 +142,18 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void DrawText (Font font, Color color, int x, int y, string text)
 		{
-			//var formattedText = new swm.FormattedText(
-			//Control.DrawText(
+			var fontHandler = font.Handler as FontHandler;
+			var brush = new swm.SolidColorBrush(Generator.Convert(color));
+			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, font.Size, brush);
+			Control.DrawText (formattedText, new sw.Point (x, y));
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			return SizeF.Empty;
+			var fontHandler = font.Handler as FontHandler;
+			var brush = new swm.SolidColorBrush (swm.Colors.White);
+			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, font.Size, brush);
+			return new SizeF ((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 		}
 
 		public Region ClipRegion

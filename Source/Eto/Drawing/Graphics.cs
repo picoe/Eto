@@ -180,6 +180,11 @@ namespace Eto.Drawing
 		{
 			inner.DrawText (font, color, x, y, text);
 		}
+
+		public void DrawText (Font font, Color color, Point location, string text)
+		{
+			inner.DrawText (font, color, location.X, location.Y, text);
+		}
 		
 		public SizeF MeasureString (Font font, string text)
 		{

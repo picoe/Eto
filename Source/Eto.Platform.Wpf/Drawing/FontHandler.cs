@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -44,6 +46,14 @@ namespace Eto.Platform.Wpf.Drawing
 					return "Times New Roman";
 				default:
 					throw new NotSupportedException ();
+			}
+		}
+
+		public swm.Typeface Typeface
+		{
+			get
+			{
+				return new swm.Typeface (Family, FontStyle, FontWeight, sw.FontStretches.Normal);
 			}
 		}
 
