@@ -32,7 +32,9 @@ namespace Eto.Forms
 	public partial class TreeView : Control
 	{
 		ITreeView inner;
-		
+
+		#region Events
+
 		public event EventHandler<TreeViewItemEventArgs> Activated;
 
 		public virtual void OnActivated (TreeViewItemEventArgs e)
@@ -40,15 +42,29 @@ namespace Eto.Forms
 			if (Activated != null)
 				Activated (this, e);
 		}
-		
-		public event EventHandler<EventArgs> SelectionChanged;
-		
+
+		public const string SelectionChangedEvent = "GridView.SelectionChanged";
+
+		event EventHandler<EventArgs> selectionChanged;
+
+		public event EventHandler<EventArgs> SelectionChanged
+		{
+			add
+			{
+				selectionChanged += value;
+				HandleEvent (SelectionChangedEvent);
+			}
+			remove { selectionChanged -= value; }
+		}
+
 		public virtual void OnSelectionChanged (EventArgs e)
 		{
-			if (SelectionChanged != null)
-				SelectionChanged (this, e);
+			if (selectionChanged != null)
+				selectionChanged (this, e);
 		}
-		
+
+		#endregion
+
 		public TreeColumnCollection Columns { get; private set; }
 		
 		public TreeView ()

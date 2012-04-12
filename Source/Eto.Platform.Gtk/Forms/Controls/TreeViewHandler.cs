@@ -23,9 +23,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			model = new GtkTreeModel<ITreeItem, ITreeStore<ITreeItem>>{ Handler = this };
 			tree = new Gtk.TreeView (new Gtk.TreeModelAdapter (model));
 
-			tree.Selection.Changed += delegate {
-				this.Widget.OnSelectionChanged (EventArgs.Empty);
-			};
 			tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
 				this.Widget.OnActivated (new TreeViewItemEventArgs (model.GetItemAtPath (args.Path)));
 			};
@@ -38,6 +35,20 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			
 			tree.Events |= Gdk.EventMask.ButtonPressMask;
 			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeView.SelectionChangedEvent:
+				tree.Selection.Changed += delegate {
+					this.Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 		
 		class ColumnCollection : EnumerableChangedHandler<TreeColumn, TreeColumnCollection>

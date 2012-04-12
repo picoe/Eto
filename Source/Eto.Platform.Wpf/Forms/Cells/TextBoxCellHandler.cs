@@ -6,6 +6,7 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
 using sw = System.Windows;
+using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -39,22 +40,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					var text = sender as swc.TextBlock;
 					text.Text = Handler.GetValue (text.DataContext);
 				};
-				return element;
+				return Handler.SetupCell (element);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
+				element.Name = "text";
 				element.DataContextChanged += (sender, e) => {
 					var text = sender as swc.TextBox;
 					text.Text = Handler.GetValue (text.DataContext);
 				};
-				return element;
+				return Handler.SetupCell(element);
 			}
 
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
-				var text = editingElement as swc.TextBox;
+				var text = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("text");
 				Handler.SetValue (text.DataContext, text.Text);
 				return true;
 			}

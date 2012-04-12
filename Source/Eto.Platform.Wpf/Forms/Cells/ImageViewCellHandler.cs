@@ -13,8 +13,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ImageViewCellHandler : CellHandler<swc.DataGridTemplateColumn, ImageViewCell>, IImageViewCell
 	{
-		swd.Binding binding;
-
 		object GetValue (object dataItem)
 		{
 			if (Widget.Binding != null) {
@@ -50,16 +48,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			factory.SetValue (swc.Image.MaxWidthProperty, 16.0);
 			factory.SetValue (swc.Image.StretchDirectionProperty, swc.StretchDirection.DownOnly);
 			factory.SetValue (swc.Image.MarginProperty, new sw.Thickness (0, 2, 2, 2));
-			factory.SetBinding (swc.Image.SourceProperty, binding = new sw.Data.Binding { Converter = new Converter { Handler = this } });
+			factory.SetBinding (swc.Image.SourceProperty, new sw.Data.Binding { Converter = new Converter { Handler = this }, Path = new sw.PropertyPath (".") });
 			
 			template.VisualTree = factory;
 			Control.CellTemplate = template;
-		}
-
-		public override void Bind (int column)
-		{
-			base.Bind (column);
-			binding.Path = new sw.PropertyPath (".");
 		}
 	}
 }

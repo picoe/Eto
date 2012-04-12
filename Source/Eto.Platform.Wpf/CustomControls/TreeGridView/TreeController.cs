@@ -4,15 +4,15 @@ using System.Linq;
 using System.Text;
 using System.Collections.Specialized;
 using Eto.Forms;
+using System.Collections;
 
 namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 {
 	public interface ITreeHandler
 	{
-		void TriggerCollectionChanged (NotifyCollectionChangedEventArgs args);
 	}
 
-	public class TreeController : ITreeStore<ITreeItem>
+	public class TreeController : ITreeStore<ITreeItem>, IList, INotifyCollectionChanged
 	{
 		Dictionary<int, ITreeItem> cache = new Dictionary<int, ITreeItem> ();
 
@@ -31,6 +31,16 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 		}
 
 		public ITreeStore<ITreeItem> Store { get; set; }
+
+		public void InitializeItems ()
+		{
+			for (int i = Count-1; i >= 0; i--) {
+				var item = this[i];
+				if (item.Expanded) {
+					ExpandRowInternal (i, true);
+				}
+			}
+		}
 
 		public ITreeHandler Handler { get; set; }
 
@@ -79,22 +89,27 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 
 		ITreeItem GetItemAtRow (int row)
 		{
+			ITreeItem item = null;
 			if (sections == null || sections.Count == 0)
-				return Store[row];
-			foreach (var section in sections) {
-				if (row <= section.StartRow) {
-					return Store[row];
-				}
-				else if (row <= section.StartRow + section.Count) {
-					return section.GetItemAtRow (row - section.StartRow - 1);
-				}
-				else {
-					row -= section.Count;
+				item = Store[row];
+			if (item == null) {
+				foreach (var section in sections) {
+					if (row <= section.StartRow) {
+						item = Store[row];
+						break;
+					}
+					else if (row <= section.StartRow + section.Count) {
+						item = section.GetItemAtRow (row - section.StartRow - 1);
+						break;
+					}
+					else {
+						row -= section.Count;
+					}
 				}
 			}
-			if (row < Store.Count)
-				return Store[row];
-			return null;
+			if (item == null && row < Store.Count)
+				item = Store[row];
+			return item;
 		}
 
 		public bool IsExpanded (int row)
@@ -118,16 +133,18 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 
 		public void ExpandRow (int row)
 		{
-			ExpandRowInternal (row);
+			ExpandRowInternal (row, false);
 		}
 
-		ITreeStore<ITreeItem> ExpandRowInternal (int row)
+		ITreeStore<ITreeItem> ExpandRowInternal (int row, bool init)
 		{
 			ITreeStore<ITreeItem> children = null;
 			var originalRow = row;
 			if (sections == null || sections.Count == 0) {
 				children = (ITreeStore<ITreeItem>)Store [row];
-				Sections.Add (new TreeController { StartRow = row, Store = children });
+				var childController = new TreeController { StartRow = row, Store = children };
+				if (init) childController.InitializeItems ();
+				Sections.Add (childController);
 			}
 			else {
 				bool addTop = true;
@@ -136,7 +153,7 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 						break;
 					}
 					else if (row <= section.StartRow + section.Count) {
-						children = section.ExpandRowInternal (row - section.StartRow - 1);
+						children = section.ExpandRowInternal (row - section.StartRow - 1, init);
 						addTop = false;
 						break;
 					}
@@ -146,11 +163,13 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 				}
 				if (addTop && row < Store.Count) {
 					children = (ITreeStore<ITreeItem>)Store [row];
-					Sections.Add (new TreeController { StartRow = row, Store = children });
+					var childController = new TreeController { StartRow = row, Store = children };
+					if (init) childController.InitializeItems ();
+					Sections.Add (childController);
 				}
 			}
 			Sections.Sort ((x, y) => x.StartRow.CompareTo (y.StartRow));
-			if (Handler != null && children != null) {
+			if (children != null) {
 				if (children.Count < 50) {
 					var newlist = new Dictionary<int, ITreeItem> ();
 					foreach (var item in cache) {
@@ -158,11 +177,11 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 					}
 					cache = newlist;
 					for (int i = originalRow + 1; i <= originalRow + children.Count; i++)
-						Handler.TriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, this[i], i));
+						OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, this[i], i));
 				}
 				else {
 					cache.Clear ();
-					Handler.TriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+					OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 				}
 			}
 			return children;
@@ -188,9 +207,7 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 					Sections.RemoveAll (r => r.StartRow == row);
 			}
 			cache.Clear ();
-			if (Handler != null) {
-				Handler.TriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-			}
+			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
 		public int Count
@@ -202,6 +219,89 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 				else
 					return this.Store.Count;
 			}
+		}
+
+		public int Add (object value)
+		{
+			return 0;
+		}
+
+		public void Clear ()
+		{
+		}
+
+		public bool Contains (object value)
+		{
+			return true;
+		}
+
+		int IList.IndexOf (object value)
+		{
+			return IndexOf (value as ITreeItem);
+		}
+
+		public void Insert (int index, object value)
+		{
+			
+		}
+
+		public bool IsFixedSize
+		{
+			get { return true; }
+		}
+
+		public bool IsReadOnly
+		{
+			get { return false; }
+		}
+
+		public void Remove (object value)
+		{
+			
+		}
+
+		public void RemoveAt (int index)
+		{
+			
+		}
+
+		object IList.this[int index]
+		{
+			get { return this[index]; }
+			set
+			{
+				
+			}
+		}
+
+		public void CopyTo (Array array, int index)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool IsSynchronized
+		{
+			get { return false; }
+		}
+
+		public object SyncRoot
+		{
+			get { return this; }
+		}
+
+		public IEnumerator GetEnumerator ()
+		{
+			for (int i = 0; i < Count; i++) {
+				yield return this[i];
+			}
+		}
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged;
+
+		protected virtual void OnTriggerCollectionChanged (NotifyCollectionChangedEventArgs args)
+		{
+			if (CollectionChanged != null)
+				CollectionChanged (this, args);
 		}
 	}
 }

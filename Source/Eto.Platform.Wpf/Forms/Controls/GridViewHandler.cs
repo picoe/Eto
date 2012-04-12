@@ -77,10 +77,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Control.Columns.Insert (index, colHandler.Control);
 			else
 				Control.Columns.Add (colHandler.Control);
-			for (int i = index; i < Widget.Columns.Count; i++) {
-				var childCol = (GridColumnHandler)Widget.Columns[i].Handler;
-				childCol.Bind (i);
-			}
 		}
 
 		public void RemoveColumn (int index, GridColumn column)

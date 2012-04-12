@@ -74,6 +74,7 @@ namespace Eto.Test
 			Columns.Add (new TreeColumn { DataCell = new TextBoxCell{ Binding = new PropertyBinding("Text") }});
 
 			this.DataStore = new Section ("Top", TopNodes ());
+			HandleEvent (SelectionChangedEvent);
 		}
 
 		IEnumerable<Section> TopNodes ()

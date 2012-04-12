@@ -158,6 +158,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.BorderType = NSBorderType.BezelBorder;
 			Control.DocumentView = outline;
 		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeView.SelectionChangedEvent:
+				// handled in delegate
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 		
 		public override void OnLoadComplete (EventArgs e)
 		{

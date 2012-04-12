@@ -25,7 +25,7 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 		public static FrameworkElement Create (FrameworkElement content, TreeController controller)
 		{
 			var panel = new StackPanel { Orientation = Orientation.Horizontal };
-			var button = new TreeToggleButton { Controller = controller };
+			var button = new TreeToggleButton { Controller = controller, Width = 16 };
 			panel.Children.Add (button);
 			panel.DataContextChanged += (sender, e) => {
 				button.Configure (panel.DataContext as ITreeItem);

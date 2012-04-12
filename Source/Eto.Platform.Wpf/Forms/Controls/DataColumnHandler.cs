@@ -8,11 +8,24 @@ using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class DataColumnHandler<C, W> : WidgetHandler<C, W>, IDataColumn
+	public interface IDataGridHandler
+	{
+		sw.FrameworkElement SetupCell (IDataColumnHandler column, sw.FrameworkElement defaultContent);
+	}
+
+	public interface IDataColumnHandler : IDataColumn
+	{
+		swc.DataGridColumn Control { get; }
+	}
+
+
+	public class DataColumnHandler<C, W> : WidgetHandler<C, W>, IDataColumnHandler, ICellContainerHandler
 		where C: swc.DataGridColumn
 		where W: DataColumn
 	{
 		Cell dataCell;
+
+		public IDataGridHandler GridHandler { get; set; }
 
 		public override void Initialize ()
 		{
@@ -79,7 +92,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				var oldCell = dataCell;
 				dataCell = value;
-				Control = (C)((ICellHandler)dataCell.Handler).Control;
+				var cellHandler = (ICellHandler)dataCell.Handler;
+				cellHandler.ContainerHandler = this;
+				Control = (C)cellHandler.Control;
 				CopyValues (oldCell);
 			}
 		}
@@ -96,12 +111,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Visibility = (value) ? sw.Visibility.Visible : sw.Visibility.Hidden; }
 		}
 
-		public void Bind (int col)
+		public void Setup (IDataGridHandler gridHandler)
 		{
-			if (dataCell != null) {
-				var cell = (ICellHandler)dataCell.Handler;
-				cell.Bind (col);
-			}
+			this.GridHandler = gridHandler;
 		}
+
+		public sw.FrameworkElement SetupCell (ICellHandler cell, sw.FrameworkElement defaultContent)
+		{
+			if (this.GridHandler != null)
+				return this.GridHandler.SetupCell (this, defaultContent);
+			else
+				return defaultContent;
+		}
+
+		swc.DataGridColumn IDataColumnHandler.Control
+		{
+			get { return (swc.DataGridColumn)this.Control; }
+		}
+
 	}
 }
