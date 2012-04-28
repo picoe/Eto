@@ -11,6 +11,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class GridViewHandler : MacView<NSScrollView, GridView>, IGridView, IDataViewHandler
 	{
 		CollectionHandler collection;
+		ColumnCollection columns;
 		NSTableView table;
 		ContextMenu contextMenu;
 		
@@ -67,6 +68,61 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
 			}
 		}
+
+		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
+		{
+			public GridViewHandler Handler { get; set; }
+
+			public override void AddItem (GridColumn item)
+			{
+				var colhandler = (GridColumnHandler)item.Handler;
+				Handler.table.AddColumn (colhandler.Control);
+				colhandler.Setup (Handler.table.ColumnCount - 1);
+			}
+
+			public override void InsertItem (int index, GridColumn item)
+			{
+				var outline = Handler.table;
+				var columns = new List<NSTableColumn> (outline.TableColumns ());
+				for (int i = index; i < columns.Count; i++) {
+					outline.RemoveColumn (columns[i]);
+				}
+				var colhandler = (GridColumnHandler)item.Handler;
+				columns.Insert (index, colhandler.Control);
+				outline.AddColumn (colhandler.Control);
+				colhandler.Setup (index);
+				for (int i = index + 1; i < columns.Count; i++) {
+					var col = columns[i];
+					var id = col.Identifier as EtoDataColumnIdentifier;
+					id.Handler.Setup (i);
+					outline.AddColumn (col);
+				}
+			}
+
+			public override void RemoveItem (int index)
+			{
+				var table = Handler.table;
+				var columns = new List<NSTableColumn> (table.TableColumns ());
+				for (int i = index; i < columns.Count; i++) {
+					table.RemoveColumn (columns[i]);
+				}
+				columns.RemoveAt (index);
+				for (int i = index; i < columns.Count; i++) {
+					var col = columns[i];
+					var id = col.Identifier as EtoDataColumnIdentifier;
+					id.Handler.Setup (i);
+					table.AddColumn (col);
+				}
+			}
+
+			public override void RemoveAllItems ()
+			{
+				foreach (var col in Handler.table.TableColumns ())
+					Handler.table.RemoveColumn (col);
+			}
+
+		}
+
 		
 		public GridViewHandler ()
 		{
@@ -113,27 +169,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				break;
 			}
 		}
-		
-		public void InsertColumn (int index, GridColumn column)
+
+		public override void Initialize ()
 		{
-			var colhandler = ((GridColumnHandler)column.Handler);
-			if (index == -1 || index == table.ColumnCount) {
-				colhandler.Setup (index);
-				table.AddColumn (colhandler.Control);
-			} else {
-				var columns = new List<NSTableColumn> (table.TableColumns ());
-				for (int i = 0; i < index; i++) {
-					table.RemoveColumn (columns [i]);
-				}
-				columns.Insert (index, ((GridColumnHandler)column.Handler).Control);
-				for (int i = index; i < columns.Count; i++) {
-					var col = columns [i];
-					var id = col.Identifier as EtoDataColumnIdentifier;
-					if (id != null)
-						id.Handler.Setup (i);
-					table.AddColumn (col);
-				}
-			}
+			base.Initialize ();
+			columns = new ColumnCollection { Handler = this };
+			columns.Register (Widget.Columns);
 		}
 		
 		public override void OnLoadComplete (EventArgs e)
@@ -144,17 +185,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			foreach (var col in this.Widget.Columns) {
 				((GridColumnHandler)col.Handler).Loaded (this, i++);
 			}
-		}
-
-		public void RemoveColumn (int index, GridColumn column)
-		{
-			table.RemoveColumn (((GridColumnHandler)column.Handler).Control);
-		}
-
-		public void ClearColumns ()
-		{
-			foreach (var col in table.TableColumns ())
-				table.RemoveColumn (col);
 		}
 
 		public bool ShowHeader {

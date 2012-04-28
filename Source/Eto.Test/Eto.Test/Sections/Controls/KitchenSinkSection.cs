@@ -120,7 +120,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 		
-		IEnumerable<ITreeItem> TreeChildren(int level = 0)
+		IEnumerable<ITreeGridItem> TreeChildren(int level = 0)
 		{
 			if (level > 4) yield break;
 			yield return new TreeItem(TreeChildren(level + 1), bitmap1, "Text in Tree 1", true, "1") { Expanded = level < 2 };
@@ -130,11 +130,11 @@ namespace Eto.Test.Sections.Controls
 
 		Control TreeView ()
 		{
-			var control = new TreeView { Size = new Size(-1, 150)};
-			
-			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(0,1), HeaderText = "Image and Text" });
-			control.Columns.Add (new TreeColumn{ DataCell = new CheckBoxCell(2), HeaderText = "Check", Editable = true, AutoSize = true });
-			control.Columns.Add (new TreeColumn{ DataCell = new ComboBoxCell(3){ DataStore = ComboCellItems() }, HeaderText = "Combo", Editable = true });
+			var control = new TreeGridView { Size = new Size(-1, 150)};
+
+			control.Columns.Add (new GridColumn { DataCell = new ImageTextCell (0, 1), HeaderText = "Image and Text" });
+			control.Columns.Add (new GridColumn { DataCell = new CheckBoxCell (2), HeaderText = "Check", Editable = true, AutoSize = true });
+			control.Columns.Add (new GridColumn { DataCell = new ComboBoxCell (3) { DataStore = ComboCellItems () }, HeaderText = "Combo", Editable = true });
 			
 			control.DataStore = new TreeItemCollection(TreeChildren ());
 			

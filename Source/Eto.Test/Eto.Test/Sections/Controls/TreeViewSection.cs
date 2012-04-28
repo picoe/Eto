@@ -39,11 +39,11 @@ namespace Eto.Test.Sections.Controls
 		
 		Control Default ()
 		{
-			var control = new TreeView {
+			var control = new TreeGridView {
 				Size = new Size(100, 150),
 				ShowHeader = false
 			};
-			control.Columns.Add (new TreeColumn{ DataCell = new TextBoxCell(0) });
+			control.Columns.Add (new GridColumn{ DataCell = new TextBoxCell(0) });
 			LogEvents (control);
 			control.DataStore = CreateSimpleTreeItem (0, "");
 			return control;
@@ -65,12 +65,12 @@ namespace Eto.Test.Sections.Controls
 		
 		Control ImagesAndMenu ()
 		{
-			var control = new TreeView {
+			var control = new TreeGridView {
 				Size = new Size(100, 150)
 			};
-			
-			control.Columns.Add (new TreeColumn{ DataCell = new ImageTextCell(0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
-			control.Columns.Add (new TreeColumn{ DataCell = new TextBoxCell(2), HeaderText = "Text", AutoSize = false, Resizable = true, Editable = true });
+
+			control.Columns.Add (new GridColumn { DataCell = new ImageTextCell (0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
+			control.Columns.Add (new GridColumn { DataCell = new TextBoxCell (2), HeaderText = "Text", AutoSize = false, Resizable = true, Editable = true });
 			
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};
@@ -96,7 +96,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 		
-		void LogEvents (TreeView control)
+		void LogEvents (TreeGridView control)
 		{
 			control.Activated += delegate(object sender, TreeViewItemEventArgs e) {
 				Log.Write (control, "Activated, Item: {0}", e.Item);

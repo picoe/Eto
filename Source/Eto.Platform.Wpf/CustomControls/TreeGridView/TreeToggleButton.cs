@@ -15,7 +15,7 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 
 		public TreeController Controller { get; set; }
 
-		public ITreeItem Item { get; private set; }
+		public ITreeGridItem Item { get; private set; }
 
 		static TreeToggleButton ()
 		{
@@ -28,7 +28,7 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 			var button = new TreeToggleButton { Controller = controller, Width = 16 };
 			panel.Children.Add (button);
 			panel.DataContextChanged += (sender, e) => {
-				button.Configure (panel.DataContext as ITreeItem);
+				button.Configure (panel.DataContext as ITreeGridItem);
 			};
 			panel.Children.Add (content);
 			return panel;
@@ -37,7 +37,7 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 		protected override void OnClick ()
 		{
 			base.OnClick ();
-			var index = Controller.IndexOf ((ITreeItem)this.DataContext);
+			var index = Controller.IndexOf ((ITreeGridItem)this.DataContext);
 			if (index >= 0) {
 				if (!Controller.IsExpanded (index))
 					Controller.ExpandRow (index);
@@ -46,7 +46,7 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 			}
 		}
 
-		public void Configure (ITreeItem item)
+		public void Configure (ITreeGridItem item)
 		{
 			this.Item = item;
 			var index = Controller.IndexOf (item);

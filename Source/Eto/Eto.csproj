@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -20,7 +20,6 @@
     <RootNamespace>Eto</RootNamespace>
     <FileUpgradeFlags>
     </FileUpgradeFlags>
-    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
@@ -106,7 +105,7 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\GridColumnCollection.cs" />
+    <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
@@ -299,7 +298,7 @@
     <Compile Include="Forms\Controls\TextControl.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\TreeView.cs">
+    <Compile Include="Forms\Controls\TreeGridView.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Menu\CheckMenuItem.cs">
@@ -473,22 +472,20 @@
     <Compile Include="Drawing\PointFConverter.cs" />
     <Compile Include="Drawing\PaddingConverter.cs" />
     <Compile Include="Forms\Controls\GridView.cs" />
-    <Compile Include="Forms\Controls\GridColumn.cs" />
     <Compile Include="Forms\Controls\GridItem.cs" />
     <Compile Include="Forms\IDataStore.cs" />
     <Compile Include="CollectionChangedHandler.cs" />
-    <Compile Include="Forms\Controls\DataColumn.cs" />
-    <Compile Include="Forms\Controls\TreeColumn.cs" />
+    <Compile Include="Forms\Controls\GridColumn.cs" />
     <Compile Include="Forms\Cells\Cell.cs" />
     <Compile Include="Forms\Cells\ComboBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageTextCell.cs" />
     <Compile Include="Forms\Cells\SingleValueCell.cs" />
     <Compile Include="Forms\Binding.cs" />
-    <Compile Include="Forms\Controls\TreeItem.cs" />
+    <Compile Include="Forms\Controls\TreeGridItem.cs" />
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
     <Compile Include="Forms\Controls\GridView.desktop.cs" />
-    <Compile Include="Forms\Controls\TreeView.desktop.cs" />
+    <Compile Include="Forms\Controls\TreeGridView.desktop.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
   </ItemGroup>
@@ -500,7 +497,5 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Forms\Cells\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

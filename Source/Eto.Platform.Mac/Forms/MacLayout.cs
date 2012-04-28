@@ -57,6 +57,14 @@ namespace Eto.Platform.Mac
 		{
 		}
 		
+		protected NSView GetView(Control control)
+		{
+			var containerHandler = control.Handler as IMacContainerControl;
+			if (containerHandler != null)
+				return containerHandler.ContainerControl;
+			return control.ControlObject as NSView;
+		}
+		
 		public virtual SD.RectangleF GetPosition (Control control)
 		{
 			return ((NSView)control.ControlObject).Frame;

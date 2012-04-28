@@ -1,16 +1,29 @@
 using System;
-using SWF = System.Windows.Forms;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
-	public class SliderHandler : WindowsControl<SWF.TrackBar, Slider>, ISlider
+	public class SliderHandler : WindowsControl<swf.TrackBar, Slider>, ISlider
 	{
         int? lastValue;
 
+		class EtoTrackBar : swf.TrackBar
+		{
+			protected override void OnCreateControl ()
+			{
+				SetStyle (swf.ControlStyles.SupportsTransparentBackColor, true);
+				if (Parent != null)
+					BackColor = Parent.BackColor;
+
+				base.OnCreateControl ();
+			}
+		}
+
 		public SliderHandler ()
 		{
-            this.Control = new SWF.TrackBar {
+			this.Control = new EtoTrackBar {
                 TickStyle = System.Windows.Forms.TickStyle.BottomRight,
                 Maximum = 100,
                 AutoSize = true
@@ -67,8 +80,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 
 		public SliderOrientation Orientation {
-			get { return this.Control.Orientation == SWF.Orientation.Horizontal ? SliderOrientation.Horizontal : SliderOrientation.Vertical; }
-			set { this.Control.Orientation = value == SliderOrientation.Horizontal ? SWF.Orientation.Horizontal : SWF.Orientation.Vertical; }
+			get { return this.Control.Orientation == swf.Orientation.Horizontal ? SliderOrientation.Horizontal : SliderOrientation.Vertical; }
+			set { this.Control.Orientation = value == SliderOrientation.Horizontal ? swf.Orientation.Horizontal : swf.Orientation.Vertical; }
 		}
 	}
 }

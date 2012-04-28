@@ -207,7 +207,7 @@ namespace Eto.Platform.Mac
 				for (int x=0; x<widths.Length; x++) {
 					var view = views [y, x];
 					if (view != null && view.Visible) {
-						var nsview = view.ControlObject as NSView;
+						var nsview = GetView(view);
 						var frame = nsview.Frame;
 						frame.Width = widths [x];
 						frame.Height = heights [y];
@@ -227,13 +227,13 @@ namespace Eto.Platform.Mac
 		{
 			var current = views [y, x];
 			if (current != null) {
-				var currentView = (NSView)current.ControlObject;
+				var currentView = GetView(current);
 				if (currentView != null)
 					currentView.RemoveFromSuperview ();	
 			}
 			views [y, x] = child;
 			if (child != null) {
-				var view = (NSView)child.ControlObject;
+				var view = GetView(child);
 				if (loaded)
 					UpdateParentLayout ();
 				Control.AddSubview (view);
@@ -246,10 +246,15 @@ namespace Eto.Platform.Mac
 		{
 			var current = views [y, x];
 			if (current != null) {
-				var currentView = (NSView)current.ControlObject;
+				var currentView = GetView(current);
 				if (currentView != null)
 					currentView.RemoveFromSuperview ();	
 			}
+			for (int yy=0; yy<views.GetLength(0); yy++)
+				for (int xx=0; xx<views.GetLength(1); xx++) {
+					if (views [yy, xx] == child)
+						views [yy, xx] = null;
+				}
 
 			views [y, x] = child;
 			if (loaded)
@@ -258,7 +263,7 @@ namespace Eto.Platform.Mac
 		
 		public void Remove (Control child)
 		{
-			var view = (NSView)child.ControlObject;
+			var view = GetView(child);
 			view.RemoveFromSuperview ();
 			for (int y=0; y<views.GetLength(0); y++)
 				for (int x=0; x<views.GetLength(1); x++) {

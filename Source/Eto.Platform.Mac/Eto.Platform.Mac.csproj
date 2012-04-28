@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,7 +9,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
-    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -165,17 +164,14 @@
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Menu\ContextMenuHandler.cs" />
-    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
+    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\MacImageAndTextCell.cs" />
     <Compile Include="Forms\Controls\SliderHandler.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="ObjCExtensions.cs" />
-    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\MacCommon.cs" />
     <Compile Include="Forms\Menu\MenuActionHandler.cs" />
-    <Compile Include="Forms\Controls\TreeColumnHandler.cs" />
-    <Compile Include="Forms\Controls\DataColumnHandler.cs" />
     <Compile Include="Forms\Controls\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Cells\CellHandler.cs" />
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
@@ -183,6 +179,7 @@
     <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
     <Compile Include="EtoBundle.cs" />
+    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -198,7 +195,5 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Forms\Cells\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

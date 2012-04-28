@@ -5,11 +5,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public interface ICellDataSource
 	{
-		object GetItem (string path);
+		object GetItem (Gtk.TreePath path);
 
-		void EndCellEditing (string path, int column);
+		void EndCellEditing (Gtk.TreePath path, int column);
 
-		void BeginCellEditing (string path, int column);
+		void BeginCellEditing (Gtk.TreePath path, int column);
 		
 		void SetColumnMap(int dataIndex, int column);
 	}
@@ -41,7 +41,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			switch (eventHandler) {
 			case GridView.BeginCellEditEvent:
 				Control.EditingStarted += (sender, e) => {
-					Source.BeginCellEditing (e.Path, ColumnIndex);
+					Source.BeginCellEditing (new Gtk.TreePath(e.Path), ColumnIndex);
 				};
 				break;
 			default:
@@ -79,8 +79,13 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		}
 		
 		public abstract void SetEditable (Gtk.TreeViewColumn column, bool editable);
-		
+
 		protected void SetValue (string path, object value)
+		{
+			SetValue (new Gtk.TreePath (path), value);
+		}
+		
+		protected void SetValue (Gtk.TreePath path, object value)
 		{
 			var item = Source.GetItem (path);
 			SetValue (item, value);

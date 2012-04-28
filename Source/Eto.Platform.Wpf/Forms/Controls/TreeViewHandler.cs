@@ -15,22 +15,21 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<swc.DataGrid, TreeView>, ITreeView, IDataGridHandler
+	public class TreeViewHandler : GridHandler<swc.DataGrid, TreeGridView>, ITreeGridView
 	{
-		ContextMenu contextMenu;
-		ColumnCollection columns;
 		TreeController controller;
 
-		public TreeViewHandler ()
+		protected override IGridItem GetItemAtRow (int row)
 		{
-			Control = new swc.DataGrid {
-				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
-				AutoGenerateColumns = false,
-				CanUserAddRows = false,
-				GridLinesVisibility = swc.DataGridGridLinesVisibility.None,
-				Background = sw.SystemColors.WindowBrush,
-				SelectionMode = swc.DataGridSelectionMode.Single
-			};
+			if (controller == null) return null;
+			return controller[row];
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.Background = sw.SystemColors.WindowBrush;
+			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
 			Control.KeyDown += (sender, e) => {
 				if (e.Key == sw.Input.Key.Enter) {
 					if (SelectedItem != null)
@@ -44,74 +43,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		public override void AttachEvent (string handler)
-		{
-			switch (handler) {
-/*			case GridView.BeginCellEditEvent:
-				Control.PreparingCellForEdit += (sender, e) => {
-					var row = e.Row.GetIndex ();
-					var item = store[row];
-					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnBeginCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
-				};
-				break;
-			case GridView.EndCellEditEvent:
-				Control.CellEditEnding += (sender, e) => {
-					var row = e.Row.GetIndex ();
-					var item = store[row];
-					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnEndCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
-				};
-				break;*/
-			case TreeView.SelectionChangedEvent:
-				Control.SelectedCellsChanged += (sender, e) => {
-					Widget.OnSelectionChanged (EventArgs.Empty);
-				};
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
-			}
-		}
-
-
-		public override void Initialize ()
-		{
-			base.Initialize ();
-			columns = new ColumnCollection { Handler = this };
-			columns.Register (Widget.Columns);
-		}
-
-		class ColumnCollection : EnumerableChangedHandler<TreeColumn, TreeColumnCollection>
-		{
-			public TreeViewHandler Handler { get; set; }
-
-			public override void AddItem (TreeColumn item)
-			{
-				var colhandler = (TreeColumnHandler)item.Handler;
-				colhandler.Setup (Handler);
-				Handler.Control.Columns.Add(colhandler.Control);
-			}
-
-			public override void InsertItem (int index, TreeColumn item)
-			{
-				var colhandler = (TreeColumnHandler)item.Handler;
-				colhandler.Setup (Handler);
-				Handler.Control.Columns.Insert (index, colhandler.Control);
-			}
-
-			public override void RemoveItem (int index)
-			{
-				Handler.Control.Columns.RemoveAt(index);
-			}
-
-			public override void RemoveAllItems ()
-			{
-				Handler.Control.Columns.Clear ();
-			}
-		}
-
-		public ITreeStore<ITreeItem> DataStore
+		public ITreeGridStore<ITreeGridItem> DataStore
 		{
 			get { return controller != null ? controller.Store : null; }
 			set
@@ -149,34 +81,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			return false;
 		}
 
-		public ITreeItem SelectedItem
+		public ITreeGridItem SelectedItem
 		{
-			get { return Control.SelectedItem as ITreeItem; }
+			get { return Control.SelectedItem as ITreeGridItem; }
 			set { SetSelected (Control, value); }
 		}
 
-		public ContextMenu ContextMenu
+		public override sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.ContextMenu = null;
-			}
-		}
-
-		public bool ShowHeader
-		{
-			get { return Control.HeadersVisibility.HasFlag (swc.DataGridHeadersVisibility.Column); }
-			set { Control.HeadersVisibility = value ? swc.DataGridHeadersVisibility.Column : swc.DataGridHeadersVisibility.None; }
-		}
-
-		public sw.FrameworkElement SetupCell (IDataColumnHandler column, sw.FrameworkElement defaultContent)
-		{
-			if (object.ReferenceEquals (column, columns.DataStore[0].Handler))
+			if (object.ReferenceEquals (column, Columns.DataStore[0].Handler))
 				return TreeToggleButton.Create (defaultContent, controller);
 			else
 				return defaultContent;

@@ -2,12 +2,12 @@ using System;
 
 namespace Eto.Forms
 {
-	public partial interface ITreeView
+	public partial interface ITreeGridView
 	{
 		ContextMenu ContextMenu { get; set; }
 	}
 	
-	public partial class TreeView
+	public partial class TreeGridView
 	{
 		public ContextMenu ContextMenu {
 			get { return inner.ContextMenu; }

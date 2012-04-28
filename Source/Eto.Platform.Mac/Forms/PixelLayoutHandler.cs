@@ -37,7 +37,7 @@ namespace Eto.Platform.Mac
 			Size size = Size.Empty;
 			foreach (var item in points) {
 				var frameSize = GetPreferredSize (item.Key);
-				size = Size.Max (size, frameSize + new Size(item.Value));
+				size = Size.Max (size, frameSize + new Size (item.Value));
 			}
 			return size;
 		}
@@ -50,24 +50,31 @@ namespace Eto.Platform.Mac
 			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as PixelLayoutHandler;
 				handler.LayoutChildren ();
-			});
+			}
+			);
 			loaded = true;
 		}
 		
 		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
 		{
 			var offset = ((IMacViewHandler)control.Handler).PositionOffset;
-			var childView = control.ControlObject as NSView;
+			var childView = GetView (control);
 			
 			var preferredSize = GetPreferredSize (control);
 
 			SD.PointF origin;
 			if (flipped)
-				origin = new System.Drawing.PointF (point.X + offset.Width, point.Y + offset.Height);
+				origin = new System.Drawing.PointF (
+					point.X + offset.Width,
+					point.Y + offset.Height
+				);
 			else
-				origin = new System.Drawing.PointF (point.X + offset.Width, frameHeight - (preferredSize.Height + point.Y + offset.Height));
+				origin = new System.Drawing.PointF (
+					point.X + offset.Width,
+					frameHeight - (preferredSize.Height + point.Y + offset.Height)
+				);
 			
-			var frame = new SD.RectangleF(origin, Generator.Convert (preferredSize));
+			var frame = new SD.RectangleF (origin, Generator.Convert (preferredSize));
 			if (frame != childView.Frame) {
 				childView.Frame = frame;
 			}
@@ -87,7 +94,7 @@ namespace Eto.Platform.Mac
 		{
 			var location = new Point (x, y);
 			points [child] = location;
-			var childView = child.ControlObject as NSView;
+			var childView = GetView (child);
 			if (loaded) {
 				var frameHeight = Control.Frame.Height;
 				SetPosition (child, location, frameHeight, Control.IsFlipped);
@@ -112,7 +119,7 @@ namespace Eto.Platform.Mac
 		
 		public void Remove (Control child)
 		{
-			var childView = child.ControlObject as NSView;
+			var childView = GetView(child);
 			points.Remove (child);
 			childView.RemoveFromSuperview ();
 			if (loaded)

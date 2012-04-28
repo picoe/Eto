@@ -39,23 +39,30 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					var control = sender as swc.CheckBox;
 					control.IsChecked = Handler.GetValue (control.DataContext);
 				};
-				return element;
+				return Handler.SetupCell(element);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateEditingElement (cell, dataItem);
+				element.Name = "control";
 				element.DataContextChanged += (sender, e) => {
 					var control = sender as swc.CheckBox;
 					control.IsChecked = Handler.GetValue (control.DataContext);
 				};
-				return element;
+				return Handler.SetupCell(element);
+			}
+
+			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
+			{
+				var control = editingElement as swc.CheckBox ?? editingElement.FindChild<swc.CheckBox> ("control");
+				return base.PrepareCellForEdit (editingElement, editingEventArgs);
 			}
 
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
-				var text = editingElement as swc.CheckBox;
-				Handler.SetValue (text.DataContext, text.IsChecked);
+				var control = editingElement as swc.CheckBox ?? editingElement.FindChild<swc.CheckBox> ("control");
+				Handler.SetValue (control.DataContext, control.IsChecked);
 				return true;
 			}
 

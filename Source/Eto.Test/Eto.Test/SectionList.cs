@@ -23,9 +23,9 @@ namespace Eto.Test
 
 		public bool Expandable { get { return Count > 0; } }
 
-		public ITreeItem Parent { get; set; }
+		public ITreeGridItem Parent { get; set; }
 		
-		public ITreeItem this [int index] {
+		public ITreeGridItem this [int index] {
 			get
 			{
 				return null;
@@ -61,7 +61,7 @@ namespace Eto.Test
 	}
 	
 		
-	public class SectionList : TreeView
+	public class SectionList : TreeGridView
 	{
 		Container contentContainer;
 		
@@ -70,8 +70,8 @@ namespace Eto.Test
 			this.contentContainer = contentContainer;
 			this.Style = "sectionList";
 			this.ShowHeader = false;
-			
-			Columns.Add (new TreeColumn { DataCell = new TextBoxCell{ Binding = new PropertyBinding("Text") }});
+
+			Columns.Add (new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
 			this.DataStore = new Section ("Top", TopNodes ());
 			HandleEvent (SelectionChangedEvent);

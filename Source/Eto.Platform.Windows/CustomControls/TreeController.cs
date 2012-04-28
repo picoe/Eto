@@ -6,7 +6,7 @@ using System.Collections.Specialized;
 using Eto.Forms;
 using System.Collections;
 
-namespace Eto.Platform.Wpf.CustomControls.TreeGridView
+namespace Eto.Platform.Windows.CustomControls
 {
 	public interface ITreeHandler
 	{
@@ -86,6 +86,59 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 				return item;
 			}
 		}
+
+		public class TreeNode
+		{
+			public ITreeGridItem Item { get; set; }
+			public int RowIndex { get; set; }
+			public int Count { get; set; }
+			public int Index { get; set; }
+			public int Level { get; set; }
+			public TreeNode Parent { get; set; }
+
+			public bool IsRoot { get { return Parent == null; } }
+
+			public bool IsFirstNode { get { return Index == 0; } }
+
+			public bool IsLastNode { get { return Index == Count-1; } }
+		}
+
+		public TreeNode GetNodeAtRow (int row)
+		{
+			return GetNodeAtRow (row, null, 0);
+		}
+
+		TreeNode GetNodeAtRow (int row, TreeNode parent, int level)
+		{
+			var node = new TreeNode { RowIndex = row, Parent = parent, Count = Store.Count, Level = level };
+			if (sections == null || sections.Count == 0) {
+				node.Item = Store[row];
+				node.Index = row;
+			}
+			else {
+				foreach (var section in sections) {
+					if (row <= section.StartRow) {
+						node.Item = Store[row];
+						node.Index = row;
+						break;
+					}
+					else if (row <= section.StartRow + section.Count) {
+						node.Index = section.StartRow;
+						node.Item = section.Store as ITreeGridItem;
+						return section.GetNodeAtRow (row - section.StartRow - 1, node, level + 1);
+					}
+					else {
+						row -= section.Count;
+					}
+				}
+			}
+			if (node.Item == null && row < Store.Count) {
+				node.Item = Store[row];
+				node.Index = row;
+			}
+			return node;
+		}
+
 
 		ITreeGridItem GetItemAtRow (int row)
 		{

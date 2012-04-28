@@ -64,7 +64,12 @@ namespace Eto.Platform.Mac
 
 	}
 	
-	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacViewHandler
+	public interface IMacContainerControl
+	{
+		NSView ContainerControl { get; }
+	}
+	
+	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacViewHandler, IMacContainerControl
 		where T: NSView
 		where W: Control
 	{
@@ -76,6 +81,8 @@ namespace Eto.Platform.Mac
 		Cursor cursor;
 		Size? oldFrameSize;
 		Size? naturalSize;
+		
+		public virtual NSView ContainerControl { get { return (NSView)Control; } }
 		
 		public virtual bool AutoSize { get; protected set; }
 

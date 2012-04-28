@@ -1,11 +1,24 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
 	public interface IGridItem
 	{
 	}
-	
+
+	public class GridItemCollection : DataStoreCollection<IGridItem>, IGridStore
+	{
+		public GridItemCollection ()
+		{
+		}
+
+		public GridItemCollection (IEnumerable<IGridItem> items)
+			: base (items)
+		{
+		}
+	}
+
 	public class GridItem : IGridItem, IColumnItem
 	{
 		public GridItem()

@@ -43,22 +43,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					var control = sender as swc.ComboBox;
 					control.SelectedValue = Handler.GetValue (control.DataContext);
 				};
-				return element;
+				return Handler.SetupCell(element);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateEditingElement (cell, dataItem);
+				element.Name = "control";
 				element.DataContextChanged += (sender, e) => {
 					var control = sender as swc.ComboBox;
 					control.SelectedValue = Handler.GetValue (control.DataContext);
 				};
-				return element;
+				return Handler.SetupCell(element);
 			}
 
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
-				var control = editingElement as swc.ComboBox;
+				var control = editingElement as swc.ComboBox ?? editingElement.FindChild<swc.ComboBox> ("control");
 				Handler.SetValue (control.DataContext, control.SelectedValue);
 				return true;
 			}

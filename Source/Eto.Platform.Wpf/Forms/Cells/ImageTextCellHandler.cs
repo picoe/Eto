@@ -45,7 +45,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			swc.Image Image ()
 			{
-				var image = new swc.Image ();
+				var image = new swc.Image { MaxWidth = 16, MaxHeight = 16, StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
 				image.DataContextChanged += (sender, e) => {
 					var img = sender as swc.Image;
 					img.Source = Handler.GetImageValue (img.DataContext) as swm.ImageSource;
@@ -71,10 +71,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				return SetupCell (element);
 			}
 
+			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
+			{
+				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("control");
+				return base.PrepareCellForEdit (control, editingEventArgs);
+			}
+
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
-				element.Name = "text";
+				element.Name = "control";
 				element.DataContextChanged += (sender, e) => {
 					var text = sender as swc.TextBox;
 					text.Text = Handler.GetTextValue (text.DataContext);
@@ -84,8 +90,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
-				var text = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("text");
-				Handler.SetTextValue (text.DataContext, text.Text);
+				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("control");
+				Handler.SetTextValue (control.DataContext, control.Text);
 				return true;
 			}
 

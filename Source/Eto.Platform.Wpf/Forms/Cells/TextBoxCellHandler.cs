@@ -46,7 +46,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
 			{
 				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
-				element.Name = "text";
+				element.Name = "control";
 				element.DataContextChanged += (sender, e) => {
 					var text = sender as swc.TextBox;
 					text.Text = Handler.GetValue (text.DataContext);
@@ -54,10 +54,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				return Handler.SetupCell(element);
 			}
 
+			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
+			{
+				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("control");
+				return base.PrepareCellForEdit (control, editingEventArgs);
+			}
+
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
-				var text = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("text");
-				Handler.SetValue (text.DataContext, text.Text);
+				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("control");
+				Handler.SetValue (control.DataContext, control.Text);
 				return true;
 			}
 

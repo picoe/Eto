@@ -47,7 +47,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			switch (eventHandler) {
 			case GridView.EndCellEditEvent:
 				Control.Toggled += (sender, e) => {
-					Source.EndCellEditing (e.Path, this.ColumnIndex);
+					Source.EndCellEditing (new Gtk.TreePath(e.Path), this.ColumnIndex);
 				};
 				break;
 			default:

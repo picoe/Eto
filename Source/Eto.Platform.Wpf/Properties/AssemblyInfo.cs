@@ -9,9 +9,9 @@ using System.Windows;
 [assembly: AssemblyTitle("Eto.Platform.Wpf")]
 [assembly: AssemblyDescription("")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Microsoft")]
+[assembly: AssemblyCompany("Picoe")]
 [assembly: AssemblyProduct("Eto.Platform.Wpf")]
-[assembly: AssemblyCopyright("Copyright © Microsoft 2011")]
+[assembly: AssemblyCopyright("Copyright © Curtis Wensley 2012")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
