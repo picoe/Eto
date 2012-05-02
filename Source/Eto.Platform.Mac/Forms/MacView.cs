@@ -69,6 +69,19 @@ namespace Eto.Platform.Mac
 		NSView ContainerControl { get; }
 	}
 	
+	public static class MacViewExtensions
+	{
+		public static NSView GetContainerView(this Control control)
+		{
+			if (control == null)
+				return null;
+			var containerHandler = control.Handler as IMacContainerControl;
+			if (containerHandler != null)
+				return containerHandler.ContainerControl;
+			return control.ControlObject as NSView;
+		}
+	}
+	
 	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacViewHandler, IMacContainerControl
 		where T: NSView
 		where W: Control

@@ -58,7 +58,7 @@ namespace Eto.Platform.Mac
 		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
 		{
 			var offset = ((IMacViewHandler)control.Handler).PositionOffset;
-			var childView = GetView (control);
+			var childView = control.GetContainerView ();
 			
 			var preferredSize = GetPreferredSize (control);
 
@@ -94,7 +94,7 @@ namespace Eto.Platform.Mac
 		{
 			var location = new Point (x, y);
 			points [child] = location;
-			var childView = GetView (child);
+			var childView = child.GetContainerView ();
 			if (loaded) {
 				var frameHeight = Control.Frame.Height;
 				SetPosition (child, location, frameHeight, Control.IsFlipped);
@@ -119,7 +119,7 @@ namespace Eto.Platform.Mac
 		
 		public void Remove (Control child)
 		{
-			var childView = GetView(child);
+			var childView = child.GetContainerView ();
 			points.Remove (child);
 			childView.RemoveFromSuperview ();
 			if (loaded)
