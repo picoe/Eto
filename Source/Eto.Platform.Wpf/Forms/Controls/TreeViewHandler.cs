@@ -10,26 +10,30 @@ using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
-using Eto.Platform.Wpf.CustomControls.TreeGridView;
-using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : GridHandler<swc.DataGrid, TreeGridView>, ITreeGridView
+	public class TreeViewHandler : WpfControl<swc.TreeView, TreeView>, ITreeView
 	{
-		TreeController controller;
+		ContextMenu contextMenu;
+		ITreeStore topNode;
 
-		protected override IGridItem GetItemAtRow (int row)
+		public TreeViewHandler ()
 		{
-			if (controller == null) return null;
-			return controller[row];
-		}
+			Control = new swc.TreeView ();
+			var template = new sw.HierarchicalDataTemplate (typeof (ITreeItem));
+			template.VisualTree = WpfListItemHelper.ItemTemplate ();
+			template.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
+			Control.ItemTemplate = template;
 
-		public override void Initialize ()
-		{
-			base.Initialize ();
-			Control.Background = sw.SystemColors.WindowBrush;
-			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
+			var style = new sw.Style (typeof (swc.TreeViewItem));
+			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
+			Control.ItemContainerStyle = style;
+
+			Control.SelectedItemChanged += delegate {
+				Widget.OnSelectionChanged (EventArgs.Empty);
+			};
+
 			Control.KeyDown += (sender, e) => {
 				if (e.Key == sw.Input.Key.Enter) {
 					if (SelectedItem != null)
@@ -43,14 +47,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		public ITreeGridStore<ITreeGridItem> DataStore
+
+		public ITreeStore DataStore
 		{
-			get { return controller != null ? controller.Store : null; }
+			get { return topNode; }
 			set
 			{
-				controller = new TreeController{ Store = value };
-				controller.InitializeItems();
-				Control.ItemsSource = controller;
+				topNode = value;
+				Control.ItemsSource = WpfTreeItemHelper.GetChildren(topNode); //.OfType<ITreeItem>().ToArray();
 			}
 		}
 
@@ -81,18 +85,29 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			return false;
 		}
 
-		public ITreeGridItem SelectedItem
+		public ITreeItem SelectedItem
 		{
-			get { return Control.SelectedItem as ITreeGridItem; }
-			set { SetSelected (Control, value); }
+			get
+			{
+				return Control.SelectedItem as ITreeItem;
+			}
+			set
+			{
+				SetSelected (Control, value);
+			}
 		}
 
-		public override sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)
+		public ContextMenu ContextMenu
 		{
-			if (object.ReferenceEquals (column, Columns.DataStore[0].Handler))
-				return TreeToggleButton.Create (defaultContent, controller);
-			else
-				return defaultContent;
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				if (contextMenu != null)
+					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
+				else
+					Control.ContextMenu = null;
+			}
 		}
 	}
 }

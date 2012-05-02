@@ -15,7 +15,7 @@ namespace Eto.Test
 		Control GenerateControl ();
 	}
 	
-	public class Section : List<Section>, ITreeItem<Section>
+	public class Section : List<Section>, ITreeGridItem<Section>
 	{
 		public string Text { get; set; }
 		
@@ -25,7 +25,7 @@ namespace Eto.Test
 
 		public ITreeGridItem Parent { get; set; }
 		
-		public ITreeGridItem this [int index] {
+		public new ITreeGridItem this [int index] {
 			get
 			{
 				return null;
@@ -99,6 +99,7 @@ namespace Eto.Test
 			yield return new Section<DrawableSection> { Text = "Drawable" };
 			yield return new Section<ListBoxSection> { Text = "List Box" };
 			yield return new Section<TabControlSection> { Text = "Tab Control" };
+			yield return new Section<TreeGridViewSection> { Text = "Tree Grid View" };
 			yield return new Section<TreeViewSection> { Text = "Tree View" };
 			yield return new Section<NumericUpDownSection> { Text = "Numeric Up/Down" };
 			yield return new Section<DateTimePickerSection> { Text = "Date / Time" };

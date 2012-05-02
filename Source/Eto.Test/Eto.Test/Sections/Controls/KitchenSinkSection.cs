@@ -123,9 +123,9 @@ namespace Eto.Test.Sections.Controls
 		IEnumerable<ITreeGridItem> TreeChildren(int level = 0)
 		{
 			if (level > 4) yield break;
-			yield return new TreeItem(TreeChildren(level + 1), bitmap1, "Text in Tree 1", true, "1") { Expanded = level < 2 };
-			yield return new TreeItem(icon1, "Text in Tree 2", false, "2");
-			yield return new TreeItem(TreeChildren(level + 1), bitmap1, "Text in Tree 3", null, "3");
+			yield return new TreeGridItem (TreeChildren(level + 1), bitmap1, "Text in Tree 1", true, "1") { Expanded = level < 2 };
+			yield return new TreeGridItem (icon1, "Text in Tree 2", false, "2");
+			yield return new TreeGridItem (TreeChildren (level + 1), bitmap1, "Text in Tree 3", null, "3");
 		}
 
 		Control TreeView ()
@@ -136,8 +136,15 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add (new GridColumn { DataCell = new CheckBoxCell (2), HeaderText = "Check", Editable = true, AutoSize = true });
 			control.Columns.Add (new GridColumn { DataCell = new ComboBoxCell (3) { DataStore = ComboCellItems () }, HeaderText = "Combo", Editable = true });
 			
-			control.DataStore = new TreeItemCollection(TreeChildren ());
+			control.DataStore = new TreeGridItemCollection(TreeChildren ());
 			
+			return control;
+		}
+		
+		Control WebView()
+		{
+			var control = new WebView { Size = new Size(-1, 100) };
+			control.LoadHtml("<html><head><title>Hello</title></head><body><h1>Web View</h1><p>This is a web view loaded with a html string</p></body>");
 			return control;
 		}
 		
@@ -146,7 +153,7 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout (new Panel ());
 			layout.DefaultPadding = Padding.Empty;
 			
-			layout.Add (new WebView { Url = new Uri("https://github.com/picoe/Eto/wiki"), Size = new Size(-1, 150) });
+			layout.Add (WebView());
 			layout.Add (GridView());
 			layout.Add (TreeView());
 			

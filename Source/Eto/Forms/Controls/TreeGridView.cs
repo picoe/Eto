@@ -17,11 +17,11 @@ namespace Eto.Forms
 		ITreeGridItem SelectedItem { get; set; }
 	}
 	
-	public class TreeViewItemEventArgs : EventArgs
+	public class TreeGridViewItemEventArgs : EventArgs
 	{
 		public ITreeGridItem Item { get; private set; }
-		
-		public TreeViewItemEventArgs (ITreeGridItem item)
+
+		public TreeGridViewItemEventArgs (ITreeGridItem item)
 		{
 			this.Item = item;
 		}
@@ -33,9 +33,9 @@ namespace Eto.Forms
 
 		#region Events
 
-		public event EventHandler<TreeViewItemEventArgs> Activated;
+		public event EventHandler<TreeGridViewItemEventArgs> Activated;
 
-		public virtual void OnActivated (TreeViewItemEventArgs e)
+		public virtual void OnActivated (TreeGridViewItemEventArgs e)
 		{
 			if (Activated != null)
 				Activated (this, e);

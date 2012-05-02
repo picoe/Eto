@@ -87,7 +87,7 @@ Global
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Release|x86.Build.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Eto.Test\Eto.Test.Gtk\Eto.Test.Gtk.csproj
+		StartupItem = Eto.Test\Eto.Test.Mac\Eto.Test.Mac.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical

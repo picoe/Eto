@@ -130,6 +130,7 @@
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />

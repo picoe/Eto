@@ -13,7 +13,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class GridHandler : GridHandler<swc.DataGrid, GridView>, IGridView
 	{
 		IGridStore store;
-		ContextMenu contextMenu;
 
 		public GridHandler ()
 		{

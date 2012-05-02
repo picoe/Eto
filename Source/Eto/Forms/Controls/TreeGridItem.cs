@@ -18,18 +18,18 @@ namespace Eto.Forms
 		ITreeGridItem Parent { get; set; }
 	}
 
-	public interface ITreeItem<T> : ITreeGridItem, ITreeGridStore<T>
+	public interface ITreeGridItem<T> : ITreeGridItem, ITreeGridStore<T>
 		where T: ITreeGridItem
 	{
 	}
 	
-	public class TreeItemCollection : DataStoreCollection<ITreeGridItem>, ITreeGridStore<ITreeGridItem>
+	public class TreeGridItemCollection : DataStoreCollection<ITreeGridItem>, ITreeGridStore<ITreeGridItem>
 	{
-		public TreeItemCollection ()
+		public TreeGridItemCollection ()
 		{
 		}
 
-		public TreeItemCollection (IEnumerable<ITreeGridItem> items)
+		public TreeGridItemCollection (IEnumerable<ITreeGridItem> items)
 			: base(items)
 		{
 		}
@@ -38,15 +38,16 @@ namespace Eto.Forms
 #if DESKTOP
 	[ContentProperty("Children")]
 #endif
-	public class TreeItem : GridItem, ITreeGridItem, ITreeGridStore<ITreeGridItem>
+	public class TreeGridItem : GridItem, ITreeGridItem, ITreeGridStore<ITreeGridItem>
 	{
-		TreeItemCollection children;
+		TreeGridItemCollection children;
 
-		public TreeItemCollection Children {
+		public TreeGridItemCollection Children
+		{
 			get { 
 				if (children != null)
 					return children;
-				children = new TreeItemCollection ();
+				children = new TreeGridItemCollection ();
 				children.CollectionChanged += (sender, e) => {
 					if (e.Action == NotifyCollectionChangedAction.Add) {
 						foreach (ITreeGridItem item in e.NewItems) {
@@ -72,16 +73,16 @@ namespace Eto.Forms
 			get { return (children != null) ? children.Count : 0; }
 		}
 		
-		public TreeItem ()
+		public TreeGridItem ()
 		{
 		}
 		
-		public TreeItem (params object[] values)
+		public TreeGridItem (params object[] values)
 			: base (values)
 		{
 		}
-		
-		public TreeItem (IEnumerable<ITreeGridItem> children, params object[] values)
+
+		public TreeGridItem (IEnumerable<ITreeGridItem> children, params object[] values)
 			: base (values)
 		{
 			this.Children.AddRange (children);

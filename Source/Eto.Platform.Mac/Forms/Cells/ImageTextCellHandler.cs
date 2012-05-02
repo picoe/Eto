@@ -62,10 +62,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)
 		{
+			var val = value as MacImageData;
+			if (val == null) return 0;
+			
 			var font = Control.Font ?? NSFont.SystemFontOfSize (NSFont.SystemFontSize);
-			var str = new NSString (Convert.ToString (value));
+			var str = val.Text;
 			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
-			return str.StringSize (attrs).Width + 4 + 16 + MacImageListItemCell.IMAGE_PADDING * 2; // for border + image
+			
+			var size = str.StringSize (attrs).Width + 4 + 16 + MacImageListItemCell.IMAGE_PADDING * 2; // for border + image
+			return size;
 			
 		}
 	}

@@ -151,14 +151,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public TreeGridViewHandler ()
 		{
-			table = new EtoOutlineView { Handler = this };
-			table.Delegate = new EtoOutlineDelegate{ Handler = this };
-			table.DataSource = new EtoDataSource{ Handler = this };
-			//outline.HeaderView = null;
-			table.AutoresizesOutlineColumn = true;
-			//outline.AllowsColumnResizing = false;
-			table.AllowsColumnReordering = false;
-			//outline.ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly;
+			table = new EtoOutlineView { 
+				Handler = this,
+				Delegate = new EtoOutlineDelegate{ Handler = this },
+				DataSource = new EtoDataSource{ Handler = this },
+				//HeaderView = null,
+				//AutoresizesOutlineColumn = true,
+				//AllowsColumnResizing = false,
+				AllowsColumnReordering = false,
+				FocusRingType = NSFocusRingType.None,
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
+			};
 			
 			ScrollView = new NSScrollView {
 				HasVerticalScroller = true,
@@ -188,7 +191,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			int i = 0;
 			foreach (var col in this.Widget.Columns) {
-				((GridColumnHandler)col.Handler).Loaded (this, i++);
+				((GridColumnHandler)col.Handler).Loaded (this, i++, Control);
 			}
 		}
 		

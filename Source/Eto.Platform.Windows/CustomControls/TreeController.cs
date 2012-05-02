@@ -96,8 +96,6 @@ namespace Eto.Platform.Windows.CustomControls
 			public int Level { get; set; }
 			public TreeNode Parent { get; set; }
 
-			public bool IsRoot { get { return Parent == null; } }
-
 			public bool IsFirstNode { get { return Index == 0; } }
 
 			public bool IsLastNode { get { return Index == Count-1; } }

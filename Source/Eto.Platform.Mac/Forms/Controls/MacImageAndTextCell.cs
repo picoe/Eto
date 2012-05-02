@@ -94,7 +94,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var size = base.CellSizeForBounds (bounds);
 			var data = ObjectValue as MacImageData;
 			if (data != null && data.Image != null) {
-				size.Width += bounds.Height + IMAGE_PADDING;
+				size.Width += size.Height + IMAGE_PADDING * 2;
 			}
 			size.Width = Math.Min (size.Width, bounds.Width);
 			return size;

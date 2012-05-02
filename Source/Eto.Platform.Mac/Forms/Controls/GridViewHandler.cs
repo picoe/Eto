@@ -183,7 +183,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			int i = 0;
 			foreach (var col in this.Widget.Columns) {
-				((GridColumnHandler)col.Handler).Loaded (this, i++);
+				((GridColumnHandler)col.Handler).Loaded (this, i++, null);
 			}
 		}
 

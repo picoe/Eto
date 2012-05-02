@@ -16,22 +16,22 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label{ Text = "Simple" }, Default ());
 			
-			layout.AddRow (new Label{ Text = "With Images\n& Context Menu" }, ImagesAndMenu ());
+			layout.AddRow (new Label{ Text = "With Images\n&& Context Menu" }, ImagesAndMenu ());
 			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
 			
 			layout.Add (null, false, true);
 		}
 		
-
-		TreeItem CreateSimpleTreeItem (int level, string name)
+		TreeItem CreateTreeItem (int level, string name, Image image)
 		{
 			var item = new TreeItem {
-				Expanded = expanded++ % 2 == 0
+				Text = name,
+				Expanded = expanded++ % 2 == 0,
+				Image = image
 			};
-			item.Values = new object[] { "col 0 - " + name };
 			if (level < 4) {
 				for (int i = 0; i < 4; i++) {
-					item.Children.Add (CreateSimpleTreeItem (level + 1, name + " " + i));
+					item.Children.Add (CreateTreeItem (level + 1, name + " " + i, image));
 				}
 			}
 			return item;
@@ -39,44 +39,25 @@ namespace Eto.Test.Sections.Controls
 		
 		Control Default ()
 		{
-			var control = new TreeGridView {
-				Size = new Size(100, 150),
-				ShowHeader = false
+			var control = new TreeView {
+				Size = new Size(100, 150)
 			};
-			control.Columns.Add (new GridColumn{ DataCell = new TextBoxCell(0) });
 			LogEvents (control);
-			control.DataStore = CreateSimpleTreeItem (0, "");
+			control.DataStore = CreateTreeItem (0, "Item", null);
 			return control;
 		}
 
-		TreeItem CreateComplexTreeItem (int level, string name, Image image)
-		{
-			var item = new TreeItem {
-				Expanded = expanded++ % 2 == 0
-			};
-			item.Values = new object[] { image, "col 0 - " + name, "col 1 - " + name };
-			if (level < 4) {
-				for (int i = 0; i < 4; i++) {
-					item.Children.Add (CreateComplexTreeItem (level + 1, name + " " + i, image));
-				}
-			}
-			return item;
-		}
-		
 		Control ImagesAndMenu ()
 		{
-			var control = new TreeGridView {
+			var control = new TreeView {
 				Size = new Size(100, 150)
 			};
-
-			control.Columns.Add (new GridColumn { DataCell = new ImageTextCell (0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
-			control.Columns.Add (new GridColumn { DataCell = new TextBoxCell (2), HeaderText = "Text", AutoSize = false, Resizable = true, Editable = true });
 			
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};
 			item.Click += delegate {
 				if (control.SelectedItem != null)
-					Log.Write (item, "Click, Rows: {0}", control.SelectedItem);
+					Log.Write (item, "Click, Rows: {0}", control.SelectedItem.Text);
 				else
 					Log.Write (item, "Click, no item selected");
 			};
@@ -85,7 +66,7 @@ namespace Eto.Test.Sections.Controls
 			control.ContextMenu = menu;
 
 			LogEvents (control);
-			control.DataStore = CreateComplexTreeItem (0, "", Image);
+			control.DataStore = CreateTreeItem (0, "Item", Image);
 			return control;
 		}
 		
@@ -96,13 +77,13 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 		
-		void LogEvents (TreeGridView control)
+		void LogEvents (TreeView control)
 		{
 			control.Activated += delegate(object sender, TreeViewItemEventArgs e) {
-				Log.Write (control, "Activated, Item: {0}", e.Item);
+				Log.Write (control, "Activated, Item: {0}", e.Item.Text);
 			};
 			control.SelectionChanged += delegate {
-				Log.Write (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? Convert.ToString (control.SelectedItem) : "<none selected>");
+				Log.Write (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? control.SelectedItem.Text : "<none selected>");
 			};
 		}
 	}

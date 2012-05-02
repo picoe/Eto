@@ -44,10 +44,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public GridColumnHandler ()
 		{
 			Control = new NSTableColumn ();
-			
+			Control.ResizingMask = NSTableColumnResizing.None;
 			Sortable = false;
 			HeaderText = string.Empty;
 			Editable = false;
+			AutoSize = true;
 		}
 		
 		public override void Initialize ()
@@ -56,7 +57,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.DataCell = new TextBoxCell (Widget.Generator);
 		}
 		
-		public void Loaded (IDataViewHandler handler, int column)
+		public void Loaded (IDataViewHandler handler, int column, NSOutlineView ov)
 		{
 			this.Column = column;
 			this.DataViewHandler = handler;
@@ -73,10 +74,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (int i = range.Location; i < range.Location + range.Length; i++) {
 						var cellWidth = GetRowWidth (dataCellHandler, i, cellSize);
+						if (ov != null)
+							cellWidth += (ov.LevelForRow (i) + 1) * ov.IndentationPerLevel;
 						width = Math.Max (width, cellWidth);
-						
 					}
 				}
+				Console.WriteLine ("Setting width of {1} to {0}", width, HeaderText);
 				Control.Width = width;
 			}
 		}

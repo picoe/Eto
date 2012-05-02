@@ -120,6 +120,7 @@
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
+    <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
