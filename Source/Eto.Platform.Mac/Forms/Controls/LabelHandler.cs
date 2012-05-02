@@ -9,6 +9,7 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreText;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Eto.Platform.Mac
 {
@@ -154,7 +155,10 @@ namespace Eto.Platform.Mac
 				
 				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
 				if (match.Success) {
-					var str = new NSMutableAttributedString (value.Remove(match.Index, match.Length));
+					var str = new NSMutableAttributedString (value.Remove(match.Index, match.Length).Replace ("&&", "&"));
+					
+					var matches = Regex.Matches (value, @"[&][&]");
+					var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
 					
 					// copy existing attributes
 					NSRange range;
@@ -163,10 +167,12 @@ namespace Eto.Platform.Mac
 						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
 					str.AddAttributes (attributes, new NSRange(0, str.Length));
 					
-					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index, 1));
+					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
 					Control.AttributedStringValue = str;
-				} else
-					Control.StringValue = value ?? string.Empty;
+				} else if (!string.IsNullOrEmpty(value))
+					Control.StringValue = value.Replace ("&&", "&");
+				else
+					Control.StringValue = string.Empty;
 				LayoutIfNeeded (oldSize);
 			}
 		}
