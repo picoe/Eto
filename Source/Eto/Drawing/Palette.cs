@@ -1,12 +1,12 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using Eto.Collections;
 using System.Linq;
+using System.Collections.ObjectModel;
 
 namespace Eto.Drawing
 {
-	public class Palette : BaseList<Color>, ICloneable
+	public class Palette : ObservableCollection<Color>, ICloneable
 	{
 		public static readonly int[] EGAColors = new int[] {0,1,2,3,4,5,20,7,56,57,58,59,60,61,62,63};
 		List<uint> argb;
@@ -16,18 +16,21 @@ namespace Eto.Drawing
 			argb = new List<uint> ();
 		}
 		
-		public Palette (int capacity)
-			: base(capacity)
+		public Palette (IList<Color> items)
+			: base(items)
 		{
-			argb = new List<uint> (capacity);
+			argb = new List<uint> ();
+			foreach (var item in items) {
+				argb.Add (item.ToArgb ());
+			}
 		}
-
+		
 		public static Palette GetEgaPalette ()
 		{
 			var mid = 168f / 255f;
 			var low = 84f / 255f;
 			var high = 252f / 255f;
-			Palette pal = new Palette (64);
+			Palette pal = new Palette ();
 			pal.Add (new Color (0, 0, 0));
 			pal.Add (new Color (0, 0, mid));
 			pal.Add (new Color (0, mid, 0));
@@ -101,7 +104,7 @@ namespace Eto.Drawing
 			var low = 87f / 255f;
 			var high = 1f;
 
-			Palette pal = new Palette (16);
+			Palette pal = new Palette ();
 			pal.Add (new Color (0, 0, 0));
 			pal.Add (new Color (0, 0, mid));
 			pal.Add (new Color (0, mid, 0));
@@ -125,9 +128,9 @@ namespace Eto.Drawing
 		{
 			if (palEGA.Count != 64)
 				throw new Exception ("source palette is not an EGA palette");
-			Palette output = new Palette (EGAColors.Length);
+			Palette output = new Palette ();
 			for (int i=0; i<EGAColors.Length; i++) {
-				output [i] = palEGA [EGAColors [i]];
+				output.Add (palEGA [EGAColors [i]]);
 			}
 			return output;
 		}
@@ -145,14 +148,12 @@ namespace Eto.Drawing
 		public void Load (BinaryReader br, int size, int shift = 0)
 		{
 			Clear ();
-			this.Capacity = size;
 			for (int i=0; i<size; i++) {
 				int red = (br.ReadByte () << shift) & 0xff;
 				int green = (br.ReadByte () << shift) & 0xff;
 				int blue = (br.ReadByte () << shift) & 0xff;
 				Add (new Color (red, green, blue));
 			}
-			OnChanged (EventArgs.Empty);
 		}
 
 		public static UInt32 GenerateRGBColor (Color c)
@@ -165,57 +166,40 @@ namespace Eto.Drawing
 			return argb [index];
 		}
 		
-		public override Color this [int index] {
-			get {
-				return base [index];
-			}
-			set {
-				base [index] = value;
-				argb [index] = value.ToArgb ();
-			}
-		}
-		
-		public override void Add (Color item)
+		public void AddRange (IEnumerable<Color> items)
 		{
-			argb.Add (item.ToArgb ());
-			base.Add (item);
+			foreach (var item in items)
+				Add (item);
 		}
 		
-		public override void AddRange (IEnumerable<Color> collection)
-		{
-			argb.AddRange (collection.Select (r => r.ToArgb ()));
-			base.AddRange (collection);
-		}
-		
-		public override void Insert (int index, Color item)
+		protected override void InsertItem (int index, Color item)
 		{
 			argb.Insert (index, item.ToArgb ());
-			base.Insert (index, item);
+			base.InsertItem (index, item);
 		}
 		
-		public override bool Remove (Color item)
+		protected override void SetItem (int index, Color item)
 		{
-			bool ret = base.Remove (item);
-			ret &= argb.Remove (item.ToArgb ());
-			return ret;
+			argb [index] = item.ToArgb ();
+			base.SetItem (index, item);
 		}
 		
-		public override void RemoveAt (int index)
+		protected override void ClearItems ()
 		{
-			base.RemoveAt (index);
-			argb.RemoveAt (index);
-		}
-		
-		public override void Clear ()
-		{
-			base.Clear ();
+			base.ClearItems ();
 			argb.Clear ();
+		}
+
+		protected override void RemoveItem (int index)
+		{
+			base.RemoveItem (index);
+			argb.RemoveAt (index);
 		}
 		
 		public int FindClosest (Color color)
 		{
 			int closestIndex = 0;
-			var colorHsl = new ColorHSL(color);
+			var colorHsl = new ColorHSL (color);
 			var closestDifference = ColorHSL.Distance (colorHsl, new ColorHSL (this [0]));
 			for (int i = 1; i < this.Count; i++) {
 				var curDifference = ColorHSL.Distance (colorHsl, new ColorHSL (this [i]));

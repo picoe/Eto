@@ -56,7 +56,7 @@ namespace Eto.Platform.Wpf.Drawing
 			get
 			{
 				if (palette == null) {
-					palette = new Eto.Drawing.Palette (Control.Palette.Colors.Count);
+					palette = new Eto.Drawing.Palette ();
 					foreach (var col in Control.Palette.Colors) {
 						palette.Add (Generator.Convert (col));
 					}

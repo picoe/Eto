@@ -31,7 +31,7 @@ namespace Eto.Forms
 		
 		public static bool RemoveCheckHandler(this ActionCollection actions, string actionID, EventHandler<EventArgs> checkChangedHandler)
 		{
-			CheckAction action = actions.Find(actionID) as CheckAction;
+			CheckAction action = actions[actionID] as CheckAction;
 			if (action != null)
 			{
 				action.CheckedChanged -= checkChangedHandler;

@@ -80,10 +80,7 @@ namespace Eto.Platform.Windows.Drawing
 			get
 			{
 				SD.Imaging.ColorPalette cp = Control.Palette;
-				var pal = new Palette(cp.Entries.Length);
-				pal.AddRange (cp.Entries.Select(r => Generator.Convert (r)));
-				
-				return pal;
+				return new Palette(cp.Entries.Select(r => Generator.Convert (r)).ToList ());
 			}
 			set
 			{

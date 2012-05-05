@@ -133,15 +133,6 @@
     <Compile Include="WidgetHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Collections\BaseList.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\ListEventArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Collections\LookupList.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Application.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -379,16 +370,10 @@
     <Compile Include="IO\VirtualFileInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Misc\ArrayExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Misc\Platform.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Misc\XmlExtensions.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Threading\Thread.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\GlobalAssemblyInfo.cs">

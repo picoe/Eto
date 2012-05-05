@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using Eto.Collections;
 #if DESKTOP
 using System.Windows.Markup;
 #endif

@@ -76,9 +76,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public Palette Palette {
 			get {
-				Palette pal = new Palette (colors.Length);
-				pal.AddRange (colors.Select (r => Color.FromArgb ((uint)r)));
-				return pal;
+				return new Palette (colors.Select (r => Color.FromArgb ((uint)r)).ToList ());
 			}
 			set {
 				if (value.Count != colors.Length)

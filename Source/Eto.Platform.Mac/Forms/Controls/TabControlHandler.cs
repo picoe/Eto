@@ -32,17 +32,26 @@ namespace Eto.Platform.Mac
 		public override bool Enabled {
 			get; set;
 		}
-
-		public void AddTab (TabPage page)
+		
+		public void InsertTab (int index, TabPage page)
 		{
-			Control.Add ((NSTabViewItem)page.ControlObject);
+			if (index == -1)
+				Control.Add (((TabPageHandler)page.Handler).Control);
+			else
+				Control.Insert (((TabPageHandler)page.Handler).Control, index);
 		}
-
-		public void RemoveTab (TabPage page)
+		
+		public void ClearTabs ()
 		{
-			Control.Remove ((NSTabViewItem)page.ControlObject);
+			foreach (var tab in Control.Items)
+				Control.Remove (tab);
 		}
-
+		
+		public void RemoveTab (int index, TabPage page)
+		{
+			Control.Remove (((TabPageHandler)page.Handler).Control);
+		}
+		
 		#endregion
 	}
 }

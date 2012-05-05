@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+
 #if DESKTOP
 using System.Windows.Markup;
 #endif
@@ -11,9 +12,11 @@ namespace Eto.Forms
 	{
 		int SelectedIndex { get; set; }
 
-		void AddTab (TabPage page);
+		void InsertTab (int index, TabPage page);
+		
+		void ClearTabs ();
 
-		void RemoveTab (TabPage page);
+		void RemoveTab (int index, TabPage page);
 	}
 	
 #if DESKTOP
@@ -49,7 +52,7 @@ namespace Eto.Forms
 		}
 		
 		public TabPage SelectedPage {
-			get { return SelectedIndex < 0 ? null : TabPages[SelectedIndex]; }
+			get { return SelectedIndex < 0 ? null : TabPages [SelectedIndex]; }
 			set { SelectedIndex = pages.IndexOf (value); }
 		}
 
@@ -57,7 +60,7 @@ namespace Eto.Forms
 			get { return pages; }
 		}
 
-		protected internal void AddTab (TabPage page)
+		internal void InsertTab (int index, TabPage page)
 		{
 			if (Loaded) {
 				page.OnPreLoad (EventArgs.Empty);
@@ -65,13 +68,18 @@ namespace Eto.Forms
 				page.OnLoadComplete (EventArgs.Empty);
 			}
 			page.SetParent (this);
-			inner.AddTab (page);
+			inner.InsertTab (index, page);
 		}
 
-		protected internal void RemoveTab (TabPage page)
+		internal void RemoveTab (int index, TabPage page)
 		{
 			page.SetParent (null);
-			inner.RemoveTab (page);
+			inner.RemoveTab (index, page);
+		}
+		
+		internal void ClearTabs ()
+		{
+			inner.ClearTabs ();
 		}
 
 		public override void OnPreLoad (EventArgs e)
