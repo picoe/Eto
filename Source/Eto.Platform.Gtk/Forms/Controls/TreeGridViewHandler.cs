@@ -7,7 +7,7 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<TreeGridView>, ITreeGridView, IGridHandler, ICellDataSource, IGtkListModelHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
+	public class TreeGridViewHandler : GridHandler<TreeGridView>, ITreeGridView, ICellDataSource, IGtkListModelHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
 	{
 		GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> model;
 		CollectionHandler collection;
@@ -97,6 +97,42 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 			set {
 				//Control.Selection.SelectPath (iter);
+			}
+		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeGridView.ExpandingEvent:
+				this.Tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args) {
+					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
+					Widget.OnExpanding (e);
+					args.RetVal = e.Cancel;
+				};
+				break;
+			case TreeGridView.ExpandedEvent:
+				this.Tree.RowExpanded += delegate(object o, Gtk.RowExpandedArgs args) {
+					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
+					Widget.OnExpanded (e);
+				};
+				break;
+			case TreeGridView.CollapsingEvent:
+				this.Tree.TestCollapseRow += delegate(object o, Gtk.TestCollapseRowArgs args) {
+					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
+					Widget.OnCollapsing (e);
+					args.RetVal = e.Cancel;
+				};
+				break;
+			case TreeGridView.CollapsedEvent:
+				this.Tree.RowCollapsed += delegate(object o, Gtk.RowCollapsedArgs args) {
+					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
+					Widget.OnCollapsed (e);
+				};
+				break;
+				
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 

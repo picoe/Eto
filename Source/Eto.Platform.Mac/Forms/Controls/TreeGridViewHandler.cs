@@ -62,7 +62,30 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var myitem = notification.UserInfo [(NSString)"NSObject"] as EtoTreeItem;
 				if (myitem != null) {
 					myitem.Item.Expanded = false;
+					Handler.Widget.OnCollapsed (new TreeGridViewItemEventArgs (myitem.Item));
 				}
+			}
+			
+			public override bool ShouldExpandItem (NSOutlineView outlineView, NSObject item)
+			{
+				var myitem = item as EtoTreeItem;
+				if (myitem != null) {
+					var args = new TreeGridViewItemCancelEventArgs (myitem.Item);
+					Handler.Widget.OnExpanding (args);
+					return !args.Cancel;
+				}
+				return true;
+			}
+			
+			public override bool ShouldCollapseItem (NSOutlineView outlineView, NSObject item)
+			{
+				var myitem = item as EtoTreeItem;
+				if (myitem != null) {
+					var args = new TreeGridViewItemCancelEventArgs (myitem.Item);
+					Handler.Widget.OnCollapsing (args);
+					return !args.Cancel;
+				}
+				return true;
 			}
 			
 			public override void ItemDidExpand (NSNotification notification)
@@ -70,6 +93,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var myitem = notification.UserInfo [(NSString)"NSObject"] as EtoTreeItem;
 				if (myitem != null) {
 					myitem.Item.Expanded = true;
+					Handler.Widget.OnExpanded (new TreeGridViewItemEventArgs (myitem.Item));
 				}
 			}
 		}
@@ -82,14 +106,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var myitem = byItem as EtoTreeItem;
 				var id = forTableColumn.Identifier as EtoDataColumnIdentifier;
-				return id.Handler.GetObjectValue(myitem.Item);
+				return id.Handler.GetObjectValue (myitem.Item);
 			}
 			
 			public override void SetObjectValue (NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
 			{
 				var myitem = item as EtoTreeItem;
 				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				id.Handler.SetObjectValue(myitem.Item, theObject);
+				id.Handler.SetObjectValue (myitem.Item, theObject);
 			}
 			
 			public override bool ItemExpandable (NSOutlineView outlineView, NSObject item)
@@ -146,7 +170,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		public NSScrollView ScrollView {
-			get; private set;
+			get;
+			private set;
 		}
 		
 		public TreeGridViewHandler ()
@@ -155,12 +180,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler = this,
 				Delegate = new EtoOutlineDelegate{ Handler = this },
 				DataSource = new EtoDataSource{ Handler = this },
-				//HeaderView = null,
-				//AutoresizesOutlineColumn = true,
-				//AllowsColumnResizing = false,
+			//HeaderView = null,
+			//AutoresizesOutlineColumn = true,
+			//AllowsColumnResizing = false,
 				AllowsColumnReordering = false,
 				FocusRingType = NSFocusRingType.None,
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.LastColumnOnly
 			};
 			
 			ScrollView = new NSScrollView {
@@ -177,6 +202,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			switch (handler) {
 			case TreeGridView.SelectionChangedEvent:
+			case TreeGridView.ExpandedEvent:
+			case TreeGridView.ExpandingEvent:
+			case TreeGridView.CollapsedEvent:
+			case TreeGridView.CollapsingEvent:
 				// handled in delegate
 				break;
 			default:
@@ -207,7 +236,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				colhandler.Setup (Handler.table.ColumnCount - 1);
 				
 				if (Handler.table.OutlineTableColumn == null) {
-					Handler.table.OutlineTableColumn = Handler.table.TableColumns()[0];
+					Handler.table.OutlineTableColumn = Handler.table.TableColumns () [0];
 				}
 			}
 
@@ -231,7 +260,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					outline.AddColumn (col);
 				}
 				if (index == 0) {
-					outline.OutlineTableColumn = columns[0];
+					outline.OutlineTableColumn = columns [0];
 				}
 			}
 

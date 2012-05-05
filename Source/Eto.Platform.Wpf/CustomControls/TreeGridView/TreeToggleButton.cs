@@ -6,6 +6,7 @@ using System.Windows.Controls.Primitives;
 using System.Windows;
 using Eto.Forms;
 using System.Windows.Controls;
+using Eto.Platform.CustomControls;
 
 namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 {
@@ -34,15 +35,19 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 			return panel;
 		}
 
-		protected override void OnClick ()
+		protected override void OnPreviewMouseLeftButtonDown (System.Windows.Input.MouseButtonEventArgs e)
 		{
-			base.OnClick ();
+			base.OnPreviewMouseLeftButtonDown (e);
 			var index = Controller.IndexOf ((ITreeGridItem)this.DataContext);
 			if (index >= 0) {
-				if (!Controller.IsExpanded (index))
-					Controller.ExpandRow (index);
-				else
-					Controller.CollapseRow (index);
+				if (this.IsChecked ?? false) {
+					if (!Controller.CollapseRow (index)) {
+						e.Handled = true;
+					}
+				}
+				else if (!Controller.ExpandRow (index)) {
+					e.Handled = true;
+				}
 			}
 		}
 

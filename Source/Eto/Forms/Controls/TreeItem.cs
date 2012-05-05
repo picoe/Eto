@@ -7,13 +7,8 @@ using System.Collections.Specialized;
 
 namespace Eto.Forms
 {
-	public interface ITreeItem : IImageListItem, ITreeStore
+	public interface ITreeItem : IImageListItem, ITreeStore, ITreeItem<ITreeItem>
 	{
-		bool Expanded { get; set; }
-		
-		bool Expandable { get; }
-		
-		ITreeItem Parent { get; set; }
 	}
 
 	public class TreeItemCollection : DataStoreCollection<ITreeItem>

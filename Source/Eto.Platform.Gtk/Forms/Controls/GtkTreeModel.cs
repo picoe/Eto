@@ -9,8 +9,8 @@ using System.Collections;
 namespace Eto.Platform.GtkSharp
 {
 	public class GtkTreeModel<T, S> : GLib.Object, Gtk.TreeModelImplementor
-		where S: IDataStore<T>
-		where T: class, ITreeGridItem
+		where S: class, IDataStore<T>
+		where T: class, ITreeItem<T>
 	{
 
 		public IGtkListModelHandler<T, S> Handler { get; set; }
@@ -30,13 +30,13 @@ namespace Eto.Platform.GtkSharp
 		Node GetNodeAtPath (Gtk.TreePath path)
 		{
 			if (path.Indices.Length > 0) {
-				ITreeGridStore<T> item = (ITreeGridStore<T>)Handler.DataStore;
+				S item = (S)Handler.DataStore;
 				for (int i = 0; i < path.Indices.Length; i++) {
 					var idx = path.Indices [i];
-					item = (ITreeGridStore<T>)item [idx];
+					item = (S)(object)item [idx];
 				}
 				var node = new Node ();
-				node.Item = (T)item;
+				node.Item = (T)(object)item;
 				node.Indices = path.Indices;
 				return node;
 			}
@@ -46,13 +46,13 @@ namespace Eto.Platform.GtkSharp
 		public T GetItemAtPath (Gtk.TreePath path)
 		{
 			if (path.Indices.Length > 0) {
-				var store = (ITreeGridStore<T>)Handler.DataStore;
+				var store = (S)Handler.DataStore;
 				if (store != null) {
 					for (int i = 0; i < path.Indices.Length; i++) {
 						var idx = path.Indices [i];
-						store = (ITreeGridStore<T>)store [idx];
+						store = (S)(object)store [idx];
 					}
-					return (T)store;
+					return (T)(object)store;
 				}
 			}
 			return default(T);
@@ -173,36 +173,36 @@ namespace Eto.Platform.GtkSharp
 			return false;
 		}
 
-		ITreeGridStore<ITreeGridItem> GetStore (Gtk.TreeIter item)
+		S GetStore (Gtk.TreeIter item)
 		{
 			if (item.UserData == IntPtr.Zero) {
-				return (ITreeGridStore<ITreeGridItem>)Handler.DataStore;
+				return (S)Handler.DataStore;
 			} else {
 				var node = GetNodeAtIter (item);
-				return (ITreeGridStore<ITreeGridItem>)node.Item;
+				return (S)(object)node.Item;
 			}
 		}
 		
-		ITreeGridStore<ITreeGridItem> GetParentStore (Node node)
+		S GetParentStore (Node node)
 		{
 
 			if (node.Indices.Length <= 1)
-				return (ITreeGridStore<ITreeGridItem>)Handler.DataStore;
+				return (S)Handler.DataStore;
 			else
-				return (ITreeGridStore<ITreeGridItem>)node.Item.Parent;
+				return (S)(object)node.Item.Parent;
 		}
 
 		public bool IterChildren (out Gtk.TreeIter child, Gtk.TreeIter parent)
 		{
-			ITreeGridStore<ITreeGridItem> store;
+			S store;
 			Gtk.TreePath path;
 			if (parent.UserData == IntPtr.Zero) {
-				store = (ITreeGridStore<ITreeGridItem>)Handler.DataStore;
+				store = (S)Handler.DataStore;
 				path = new Gtk.TreePath ();
 			} else {
 				var node = GetNodeAtIter (parent);
 				path = new Gtk.TreePath(node.Indices);
-				store = (ITreeGridStore<ITreeGridItem>)node.Item;
+				store = (S)(object)node.Item;
 			}
 			path.AppendIndex (0);
 
@@ -216,12 +216,12 @@ namespace Eto.Platform.GtkSharp
 		
 		public bool IterHasChild (Gtk.TreeIter iter)
 		{
-			ITreeGridStore<ITreeGridItem> store;
+			S store;
 			if (iter.UserData == IntPtr.Zero) {
-				store = (ITreeGridStore<ITreeGridItem>)Handler.DataStore;
+				store = (S)Handler.DataStore;
 			} else {
 				var node = GetNodeAtIter (iter);
-				store = (ITreeGridStore<ITreeGridItem>)node.Item;
+				store = (S)(object)node.Item;
 			}
 
 			if (store != null) {

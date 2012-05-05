@@ -40,28 +40,15 @@ namespace Eto.Test.Sections.Controls
 			layout.Add (control);
 			
 			layout.BeginVertical ();
-			layout.AddRow (null, StartButton (control), StopButton (), null);
+			layout.AddRow (null, StartStopButton (control), null);
 			layout.EndVertical ();
 			
 			return layout.Container;
 		}
 		
-		Control StopButton ()
+		Control StartStopButton (ProgressBar bar)
 		{
-			var control = new Button { Text = "Stop" };
-			control.Click += delegate {
-				if (timer != null) {
-					timer.Stop ();
-					timer.Dispose ();
-					timer = null;
-				}
-			};
-			return control;
-		}
-		
-		Control StartButton (ProgressBar bar)
-		{
-			var control = new Button { Text = "Start" };
+			var control = new Button { Text = "Start Timer" };
 			control.Click += delegate {
 				if (timer == null) {
 					timer = new UITimer { Interval = 0.5 };
@@ -72,11 +59,16 @@ namespace Eto.Test.Sections.Controls
 							bar.Value = bar.MinValue;
 					};
 					timer.Start ();
+					control.Text = "Stop Timer";
+				} else {
+					timer.Stop ();
+					timer.Dispose ();
+					timer = null;
+					control.Text = "Start Timer";
 				}
 			};
 			return control;
 		}
-
 
 		protected override void Dispose (bool disposing)
 		{

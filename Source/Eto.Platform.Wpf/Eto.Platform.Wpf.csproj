@@ -79,8 +79,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Eto.Platform.Windows\CustomControls\TreeController.cs">
+      <Link>CustomControls\TreeGridView\TreeController.cs</Link>
+    </Compile>
     <Compile Include="CustomControls\GlassHelper.cs" />
-    <Compile Include="CustomControls\TreeGridView\TreeController.cs" />
     <Compile Include="CustomControls\TreeGridView\TreeToggleButton.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\AutoScroll.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\ExponentialAnimation.cs" />

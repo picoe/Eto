@@ -10,6 +10,7 @@ using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
+using Eto.Platform.CustomControls;
 using Eto.Platform.Wpf.CustomControls.TreeGridView;
 using System.Collections.ObjectModel;
 
@@ -41,6 +42,35 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					Widget.OnActivated (new TreeGridViewItemEventArgs (this.SelectedItem));
 				}
 			};
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeGridView.ExpandingEvent:
+				controller.Expanding += (sender, e) => {
+					Widget.OnExpanding (e);
+				};
+				break;
+			case TreeGridView.ExpandedEvent:
+				controller.Expanded += (sender, e) => {
+					Widget.OnExpanded (e);
+				};
+				break;
+			case TreeGridView.CollapsingEvent:
+				controller.Collapsing += (sender, e) => {
+					Widget.OnCollapsing (e);
+				};
+				break;
+			case TreeGridView.CollapsedEvent:
+				controller.Collapsed += (sender, e) => {
+					Widget.OnCollapsed (e);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 
 		public ITreeGridStore<ITreeGridItem> DataStore

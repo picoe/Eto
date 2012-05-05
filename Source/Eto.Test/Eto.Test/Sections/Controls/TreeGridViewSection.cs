@@ -7,12 +7,25 @@ namespace Eto.Test.Sections.Controls
 	public class TreeGridViewSection : Panel
 	{
 		int expanded;
-
+		CheckBox allowCollapsing;
+		CheckBox allowExpanding;
 		static Image Image = Icon.FromResource ("Eto.Test.TestIcon.ico");
 		
 		public TreeGridViewSection ()
 		{
 			var layout = new DynamicLayout (this);
+		
+			layout.BeginHorizontal ();
+			layout.Add (new Label { });
+			layout.BeginVertical ();
+			layout.BeginHorizontal ();
+			layout.Add (null);
+			layout.Add (allowExpanding = new CheckBox{ Text = "Allow Expanding", Checked = true });
+			layout.Add (allowCollapsing = new CheckBox{ Text = "Allow Collapsing", Checked = true });
+			layout.Add (null);
+			layout.EndHorizontal ();
+			layout.EndVertical ();
+			layout.EndHorizontal ();
 			
 			layout.AddRow (new Label{ Text = "Simple" }, Default ());
 			
@@ -22,7 +35,6 @@ namespace Eto.Test.Sections.Controls
 			layout.Add (null, false, true);
 		}
 		
-
 		TreeGridItem CreateSimpleTreeItem (int level, string name)
 		{
 			var item = new TreeGridItem {
@@ -40,12 +52,12 @@ namespace Eto.Test.Sections.Controls
 		Control Default ()
 		{
 			var control = new TreeGridView {
-				Size = new Size(100, 150),
+				Size = new Size (100, 150),
 				ShowHeader = false
 			};
-			control.Columns.Add (new GridColumn{ DataCell = new TextBoxCell(0) });
-			LogEvents (control);
+			control.Columns.Add (new GridColumn{ DataCell = new TextBoxCell (0) });
 			control.DataStore = CreateSimpleTreeItem (0, "");
+			LogEvents (control);
 			return control;
 		}
 
@@ -66,7 +78,7 @@ namespace Eto.Test.Sections.Controls
 		Control ImagesAndMenu ()
 		{
 			var control = new TreeGridView {
-				Size = new Size(100, 150)
+				Size = new Size (100, 150)
 			};
 
 			control.Columns.Add (new GridColumn { DataCell = new ImageTextCell (0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
@@ -84,8 +96,8 @@ namespace Eto.Test.Sections.Controls
 			
 			control.ContextMenu = menu;
 
-			LogEvents (control);
 			control.DataStore = CreateComplexTreeItem (0, "", Image);
+			LogEvents (control);
 			return control;
 		}
 		
@@ -103,6 +115,21 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.SelectionChanged += delegate {
 				Log.Write (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? Convert.ToString (control.SelectedItem) : "<none selected>");
+			};
+
+			control.Expanding += (sender, e) => {
+				Log.Write (control, "Expanding, Item: {0}", e.Item);
+				e.Cancel = !(allowExpanding.Checked ?? true);
+			};
+			control.Expanded += (sender, e) => {
+				Log.Write (control, "Expanded, Item: {0}", e.Item);
+			};
+			control.Collapsing += (sender, e) => {
+				Log.Write (control, "Collapsing, Item: {0}", e.Item);
+				e.Cancel = !(allowCollapsing.Checked ?? true);
+			};
+			control.Collapsed += (sender, e) => {
+				Log.Write (control, "Collapsed, Item: {0}", e.Item);
 			};
 		}
 	}

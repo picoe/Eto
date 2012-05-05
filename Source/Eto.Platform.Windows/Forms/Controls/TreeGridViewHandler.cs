@@ -5,7 +5,7 @@ using sd = System.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Drawing;
-using Eto.Platform.Windows.CustomControls;
+using Eto.Platform.CustomControls;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
@@ -51,6 +51,35 @@ namespace Eto.Platform.Windows.Forms.Controls
 			Control.BackgroundColor = sd.SystemColors.Window;
 			Control.SelectionMode = swf.DataGridViewSelectionMode.FullRowSelect;
 			Control.CellBorderStyle = swf.DataGridViewCellBorderStyle.None;
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeGridView.ExpandingEvent:
+				controller.Expanding += (sender, e) => {
+					Widget.OnExpanding (e);
+				};
+				break;
+			case TreeGridView.ExpandedEvent:
+				controller.Expanded += (sender, e) => {
+					Widget.OnExpanded (e);
+				};
+				break;
+			case TreeGridView.CollapsingEvent:
+				controller.Collapsing += (sender, e) => {
+					Widget.OnCollapsing (e);
+				};
+				break;
+			case TreeGridView.CollapsedEvent:
+				controller.Collapsed += (sender, e) => {
+					Widget.OnCollapsed (e);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 
 		public ITreeGridStore<ITreeGridItem> DataStore

@@ -89,14 +89,16 @@ namespace Eto.Platform.Mac
 		public LabelHandler ()
 		{
 			Enabled = true;
-			Control = new EtoLabel { Handler = this };
-			Control.Cell = new MyTextFieldCell{ Handler = this };
-			Control.DrawsBackground = false;
-			Control.Bordered = false;
-			Control.Bezeled = false;
-			Control.Editable = false;
-			Control.Selectable = false;
-			Control.Alignment = NSTextAlignment.Left;
+			Control = new EtoLabel { 
+				Handler = this,
+				Cell = new MyTextFieldCell{ Handler = this, StringValue = string.Empty },
+				DrawsBackground = false,
+				Bordered = false,
+				Bezeled = false,
+				Editable = false,
+				Selectable = false,
+				Alignment = NSTextAlignment.Left
+			};
 			is106 = Control.Cell.RespondsToSelector (new Selector ("setUsesSingleLineMode:"));
 			if (is106)
 				Control.Cell.UsesSingleLineMode = false;

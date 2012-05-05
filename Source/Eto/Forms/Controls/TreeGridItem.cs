@@ -8,13 +8,17 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface ITreeGridItem : IGridItem
+	public interface ITreeItem<T>
 	{
 		bool Expanded { get; set; }
 		
 		bool Expandable { get; }
 		
-		ITreeGridItem Parent { get; set; }
+		T Parent { get; set; }
+	}
+	
+	public interface ITreeGridItem : IGridItem, ITreeItem<ITreeGridItem>
+	{
 	}
 
 	public interface ITreeGridItem<T> : ITreeGridItem, ITreeGridStore<T>

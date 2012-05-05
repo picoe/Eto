@@ -10,7 +10,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	public abstract class GridHandler<W> : GtkControl<Gtk.ScrolledWindow, W>, IGrid, ICellDataSource, IGridHandler
 		where W: Grid
 	{
-		int numDataColumns;
 		ColumnCollection columns;
 		ContextMenu contextMenu;
 		Dictionary<int, int> columnMap = new Dictionary<int, int>();
@@ -102,7 +101,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				foreach (var col in Handler.Widget.Columns.Select (r => r.Handler).OfType<IGridColumnHandler> ()) {
 					col.BindCell (Handler, Handler, columnIndex++, ref dataIndex);
 				}
-				Handler.numDataColumns = dataIndex;
 			}
 
 			public override void AddItem (GridColumn item)

@@ -5,8 +5,9 @@ using System.Text;
 using System.Collections.Specialized;
 using Eto.Forms;
 using System.Collections;
+using System.ComponentModel;
 
-namespace Eto.Platform.Windows.CustomControls
+namespace Eto.Platform.CustomControls
 {
 	public interface ITreeHandler
 	{
@@ -20,6 +21,30 @@ namespace Eto.Platform.Windows.CustomControls
 
 		List<TreeController> sections;
 
+		public event EventHandler<TreeGridViewItemCancelEventArgs> Expanding;
+		public event EventHandler<TreeGridViewItemCancelEventArgs> Collapsing;
+		public event EventHandler<TreeGridViewItemEventArgs> Expanded;
+		public event EventHandler<TreeGridViewItemEventArgs> Collapsed;
+
+		protected virtual void OnExpanding (TreeGridViewItemCancelEventArgs e)
+		{
+			if (Expanding != null) Expanding (this, e);
+		}
+
+		protected virtual void OnCollapsing (TreeGridViewItemCancelEventArgs e)
+		{
+			if (Collapsing != null) Collapsing (this, e);
+		}
+
+		protected virtual void OnExpanded (TreeGridViewItemEventArgs e)
+		{
+			if (Expanded != null) Expanded (this, e);
+		}
+
+		protected virtual void OnCollapsed (TreeGridViewItemEventArgs e)
+		{
+			if (Collapsed != null) Collapsed (this, e);
+		}
 
 		List<TreeController> Sections
 		{
@@ -182,9 +207,15 @@ namespace Eto.Platform.Windows.CustomControls
 			return false;
 		}
 
-		public void ExpandRow (int row)
+		public bool ExpandRow (int row)
 		{
+			var args = new TreeGridViewItemCancelEventArgs(GetItemAtRow(row));
+			OnExpanding (args);
+			if (args.Cancel)
+				return false;
 			ExpandRowInternal (row, false);
+			OnExpanded (new TreeGridViewItemEventArgs (args.Item));
+			return true;
 		}
 
 		ITreeGridStore<ITreeGridItem> ExpandRowInternal (int row, bool init)
@@ -238,8 +269,14 @@ namespace Eto.Platform.Windows.CustomControls
 			return children;
 		}
 
-		public void CollapseRow (int row)
+		public bool CollapseRow (int row)
 		{
+			var args = new TreeGridViewItemCancelEventArgs (GetItemAtRow (row));
+			OnCollapsing (args);
+			if (args.Cancel)
+				return false;
+			OnCollapsed (new TreeGridViewItemEventArgs (args.Item));
+
 			if (sections != null && sections.Count > 0) {
 				bool addTop = true;
 				foreach (var section in sections) {
@@ -259,6 +296,7 @@ namespace Eto.Platform.Windows.CustomControls
 			}
 			cache.Clear ();
 			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			return true;
 		}
 
 		public int Count
