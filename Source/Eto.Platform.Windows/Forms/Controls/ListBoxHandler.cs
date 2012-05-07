@@ -95,7 +95,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ListBoxHandler Handler { get; set; }
 			

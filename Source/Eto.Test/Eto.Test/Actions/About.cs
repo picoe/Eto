@@ -14,6 +14,7 @@ namespace Eto.Test.Actions
 			this.MenuText = "About Test Application";
 			this.ToolBarText = "About";
 			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
+			this.Accelerator = Key.F11;
 		}
 		
 		protected override void OnActivated (EventArgs e)

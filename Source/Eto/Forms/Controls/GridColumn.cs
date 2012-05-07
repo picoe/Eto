@@ -1,7 +1,12 @@
 using System;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
+	public class GridColumnCollection : ObservableCollection<GridColumn>
+	{
+	}
+
 	public interface IGridColumn : IInstanceWidget
 	{
 		string HeaderText { get; set; }
@@ -24,14 +29,19 @@ namespace Eto.Forms
 	public class GridColumn : InstanceWidget
 	{
 		IGridColumn handler;
-		
+
 		public GridColumn ()
-			: this(Generator.Current)
+			: this (Generator.Current)
 		{
 		}
-		
+
 		public GridColumn (Generator g)
-			: base(g, typeof(IGridColumn), true)
+			: this(g, typeof(IGridColumn), true)
+		{
+		}
+
+		protected GridColumn (Generator g, Type type, bool initialize)
+			: base(g, type, initialize)
 		{
 			handler = (IGridColumn)Handler;
 		}

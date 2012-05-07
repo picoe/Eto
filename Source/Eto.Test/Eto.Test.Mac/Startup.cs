@@ -4,6 +4,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 using Eto.Forms;
+using Eto.Platform.Mac.Forms.Controls;
 
 namespace Eto.Test.Mac
 {
@@ -34,10 +35,9 @@ namespace Eto.Test.Mac
 			});
 
 			// other styles
-			Style.Add<TreeView, NSScrollView> ("sectionList", (widget, control) => {
-				control.BorderType = NSBorderType.NoBorder;
-				var table = control.DocumentView as NSTableView;
-				table.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
+			Style.AddHandler<TreeGridViewHandler> ("sectionList", (handler) => {
+				handler.ScrollView.BorderType = NSBorderType.NoBorder;
+				handler.Control.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
 			});
 		}
 	}

@@ -31,7 +31,7 @@ namespace Eto.Platform.Windows
 			set { Control.SelectedIndex = value; }
 		}
 
-		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ComboBoxHandler Handler { get; set; }
 			

@@ -14,7 +14,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		public static IEnumerable GetChildren (ITreeStore item)
 		{
-			return item as IEnumerable ?? new DataStoreVirtualCollection<ITreeItem>(item);
+			return item as IEnumerable ?? new DataStoreVirtualCollection<ITreeItem> (item);
 		}
 
 		public class ChildrenConverter : swd.IValueConverter
@@ -22,7 +22,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
 				var item = value as ITreeItem;
-				return GetChildren (item);
+				return GetChildren ((ITreeStore)item);
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

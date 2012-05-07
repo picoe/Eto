@@ -25,15 +25,22 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.SelectedIndex = value; }
 		}
 
-		public void AddTab (TabPage page)
+		public void InsertTab (int index, TabPage page)
 		{
-			Control.Items.Add (page.ControlObject);
+			if (index == -1)
+				Control.Items.Add (page.ControlObject);
+			else
+				Control.Items.Insert (index, page.ControlObject);
 		}
 
-		public void RemoveTab (TabPage page)
+		public void ClearTabs ()
+		{
+			Control.Items.Clear ();
+		}
+
+		public void RemoveTab (int index, TabPage page)
 		{
 			Control.Items.Remove (page.ControlObject);
 		}
-
 	}
 }

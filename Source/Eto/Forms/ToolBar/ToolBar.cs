@@ -1,6 +1,6 @@
 using System;
 using System.Collections;
-using Eto.Collections;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
@@ -33,32 +33,33 @@ namespace Eto.Forms
 		IToolBar inner;
 		ToolbarItemCollection items;
 	
-		public class ToolbarItemCollection : BaseList<ToolBarItem>
+		public class ToolbarItemCollection : Collection<ToolBarItem>
 		{
 			ToolBar toolBar;
+			
 			protected internal ToolbarItemCollection(ToolBar toolBar)
 			{
 				this.toolBar = toolBar;
 			}
-
-			protected override void OnAdded (ListEventArgs<ToolBarItem> e)
+			
+			protected override void InsertItem (int index, ToolBarItem item)
 			{
-				base.OnAdded (e);
-				((IToolBar)toolBar.Handler).AddButton(e.Item);
+				base.InsertItem (index, item);
+				toolBar.inner.AddButton (item);
 			}
 			
-			protected override void OnRemoved (ListEventArgs<ToolBarItem> e)
+			protected override void RemoveItem (int index)
 			{
-				base.OnRemoved (e);
-				((IToolBar)toolBar.Handler).RemoveButton(e.Item);
+				var item = this[index];
+				base.RemoveItem (index);
+				toolBar.inner.RemoveButton (item);
 			}
 			
-			public override void Clear()
+			protected override void ClearItems ()
 			{
-				base.Clear ();
-				((IToolBar)toolBar.Handler).Clear();
+				base.ClearItems ();
+				toolBar.inner.Clear ();
 			}
-
 		}
 		
 		public ToolBar() : this(Generator.Current)

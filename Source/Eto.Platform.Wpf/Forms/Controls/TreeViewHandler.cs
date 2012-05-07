@@ -18,16 +18,96 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		ContextMenu contextMenu;
 		ITreeStore topNode;
 
+		public class EtoTreeViewItem : swc.TreeViewItem
+		{
+			public static readonly sw.RoutedEvent CollapsingEvent =
+					sw.EventManager.RegisterRoutedEvent ("Collapsing",
+					sw.RoutingStrategy.Bubble, typeof (sw.RoutedEventHandler),
+					typeof (EtoTreeViewItem));
+			public static readonly sw.RoutedEvent ExpandingEvent =
+					sw.EventManager.RegisterRoutedEvent ("Expanding",
+					sw.RoutingStrategy.Bubble, typeof (sw.RoutedEventHandler),
+					typeof (EtoTreeViewItem));
+
+			public event sw.RoutedEventHandler Collapsing
+			{
+				add { AddHandler (CollapsingEvent, value); }
+				remove { RemoveHandler (CollapsingEvent, value); }
+			}
+			public event sw.RoutedEventHandler Expanding
+			{
+				add { AddHandler (ExpandingEvent, value); }
+				remove { RemoveHandler (ExpandingEvent, value); }
+			}
+
+			bool cancelEvents;
+
+			protected override void OnExpanded (sw.RoutedEventArgs e)
+			{
+				if (cancelEvents) return;
+				var args = new sw.RoutedEventArgs (ExpandingEvent, this);
+				OnExpanding (args);
+				if (!args.Handled)
+					base.OnExpanded (e);
+				else {
+					cancelEvents = true;
+					this.IsExpanded = false;
+					cancelEvents = false;
+				}
+			}
+			protected override void OnCollapsed (sw.RoutedEventArgs e)
+			{
+				if (cancelEvents) return;
+				var args = new sw.RoutedEventArgs (CollapsingEvent, this);
+				OnCollapsing (args);
+				if (!args.Handled)
+					base.OnCollapsed (e);
+				else {
+					cancelEvents = true;
+					this.IsExpanded = true;
+					cancelEvents = false;
+				}
+			}
+
+			protected virtual void OnCollapsing (sw.RoutedEventArgs e) { RaiseEvent (e); }
+
+			protected virtual void OnExpanding (sw.RoutedEventArgs e) { RaiseEvent (e); }
+
+			protected override sw.DependencyObject GetContainerForItemOverride ()
+			{
+				return new EtoTreeViewItem ();
+			}
+
+			protected override bool IsItemItsOwnContainerOverride (object item)
+			{
+				return item is EtoTreeViewItem;
+			}
+		}
+
+		public class EtoTreeView : swc.TreeView
+		{
+			protected override sw.DependencyObject GetContainerForItemOverride ()
+			{
+				return new EtoTreeViewItem ();
+			}
+
+			protected override bool IsItemItsOwnContainerOverride (object item)
+			{
+				return item is EtoTreeViewItem;
+			}
+		}
+
 		public TreeViewHandler ()
 		{
-			Control = new swc.TreeView ();
+			Control = new EtoTreeView ();
 			var template = new sw.HierarchicalDataTemplate (typeof (ITreeItem));
 			template.VisualTree = WpfListItemHelper.ItemTemplate ();
 			template.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
 			Control.ItemTemplate = template;
 
 			var style = new sw.Style (typeof (swc.TreeViewItem));
-			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
+			//style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
+			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding ("Expanded") { Mode = swd.BindingMode.TwoWay }));
 			Control.ItemContainerStyle = style;
 
 			Control.SelectedItemChanged += delegate {
@@ -47,6 +127,54 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeView.ExpandedEvent:
+				Control.AddHandler (swc.TreeViewItem.ExpandedEvent, new sw.RoutedEventHandler ((sender, e) => {
+					var treeItem = e.OriginalSource as swc.TreeViewItem;
+					var item = treeItem.DataContext as ITreeItem;
+					if (item != null) {
+						Widget.OnExpanded (new TreeViewItemEventArgs (item));
+					}
+				}));
+				break;
+			case TreeView.ExpandingEvent:
+				Control.AddHandler (EtoTreeViewItem.ExpandingEvent, new sw.RoutedEventHandler ((sender, e) => {
+					var treeItem = e.OriginalSource as swc.TreeViewItem;
+					var item = treeItem.DataContext as ITreeItem;
+					if (item != null) {
+						var args = new TreeViewItemCancelEventArgs (item);
+						Widget.OnExpanding (args);
+						e.Handled = args.Cancel;
+					}
+				}));
+				break;
+			case TreeView.CollapsedEvent:
+				Control.AddHandler (swc.TreeViewItem.CollapsedEvent, new sw.RoutedEventHandler ((sender, e) => {
+					var treeItem = e.OriginalSource as swc.TreeViewItem;
+					var item = treeItem.DataContext as ITreeItem;
+					if (item != null) {
+						Widget.OnCollapsed (new TreeViewItemEventArgs (item));
+					}
+				}));
+				break;
+			case TreeView.CollapsingEvent:
+				Control.AddHandler (EtoTreeViewItem.CollapsingEvent, new sw.RoutedEventHandler ((sender, e) => {
+					var treeItem = e.OriginalSource as swc.TreeViewItem;
+					var item = treeItem.DataContext as ITreeItem;
+					if (item != null) {
+						var args = new TreeViewItemCancelEventArgs (item);
+						Widget.OnCollapsing (args);
+						e.Handled = args.Cancel;
+					}
+				}));
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 
 		public ITreeStore DataStore
 		{
@@ -54,7 +182,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				topNode = value;
-				Control.ItemsSource = WpfTreeItemHelper.GetChildren(topNode); //.OfType<ITreeItem>().ToArray();
+				Control.ItemsSource = WpfTreeItemHelper.GetChildren (topNode); //.OfType<ITreeItem>().ToArray();
 			}
 		}
 

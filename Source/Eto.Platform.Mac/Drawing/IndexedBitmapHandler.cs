@@ -86,7 +86,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public Palette Palette {
 			get {
-				var pal = new Palette (colors.Length);
+				var pal = new Palette ();
 				pal.AddRange (colors.Select (r => Color.FromArgb (BitmapDataHandler.DataToArgb (r))));
 				return pal;
 			}

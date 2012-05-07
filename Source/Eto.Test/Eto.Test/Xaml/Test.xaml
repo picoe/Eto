@@ -6,7 +6,7 @@
   <TableLayout Size="10,10">
     <Panel TableLayout.Location="0,1">
       <TableLayout Size="2,4">
-        <Button TableLayout.Location="1,0" Click="HandleButtonClick">Click Me</Button>
+        <Button TableLayout.Location="1,0" Click="HandleButtonClick" Text="Click Me"></Button>
         <CheckBox TableLayout.Location="1,1" ID="someOption">Some Option</CheckBox>
       </TableLayout>
     </Panel>

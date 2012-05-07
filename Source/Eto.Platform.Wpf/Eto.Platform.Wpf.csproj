@@ -10,7 +10,6 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>Eto.Platform.Wpf</RootNamespace>
     <AssemblyName>Eto.Platform.Wpf</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -40,6 +39,8 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>bin\x86\Release\</OutputPath>
@@ -51,9 +52,7 @@
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignAssembly>false</SignAssembly>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ColorPicker">
@@ -80,7 +79,11 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Eto.Platform.Windows\CustomControls\TreeController.cs">
+      <Link>CustomControls\TreeGridView\TreeController.cs</Link>
+    </Compile>
     <Compile Include="CustomControls\GlassHelper.cs" />
+    <Compile Include="CustomControls\TreeGridView\TreeToggleButton.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\AutoScroll.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\ExponentialAnimation.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\MapZoom.cs" />
@@ -98,19 +101,21 @@
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
+    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
-    <Compile Include="Forms\Controls\CellHandler.cs" />
-    <Compile Include="Forms\Controls\CheckBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\CellHandler.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ComboBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
-    <Compile Include="Forms\Controls\ImageCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
@@ -126,7 +131,8 @@
     <Compile Include="Forms\Controls\TabPageHandler.cs" />
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
-    <Compile Include="Forms\Controls\TextCellHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
@@ -205,6 +211,32 @@
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
+  <ItemGroup>
+    <Page Include="themes\aero.normalcolor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="themes\classic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="themes\generic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="themes\luna.homestead.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="themes\luna.metallic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="themes\luna.normalcolor.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

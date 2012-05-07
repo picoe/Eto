@@ -9,6 +9,7 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using MonoMac.CoreText;
 using System.Text.RegularExpressions;
+using System.Linq;
 
 namespace Eto.Platform.Mac
 {
@@ -61,7 +62,8 @@ namespace Eto.Platform.Mac
 			
 			static IntPtr selAttributedStringValue = Selector.GetHandle ("attributedStringValue");
 			static IntPtr selSetAttributedStringValue = Selector.GetHandle ("setAttributedStringValue:");
-			
+
+			// remove when implemented in monomac
 			public NSAttributedString AttributedStringValue {
 				[Export ("attributedStringValue")]
 				get {
@@ -88,14 +90,16 @@ namespace Eto.Platform.Mac
 		public LabelHandler ()
 		{
 			Enabled = true;
-			Control = new EtoLabel { Handler = this };
-			Control.Cell = new MyTextFieldCell{ Handler = this };
-			Control.DrawsBackground = false;
-			Control.Bordered = false;
-			Control.Bezeled = false;
-			Control.Editable = false;
-			Control.Selectable = false;
-			Control.Alignment = NSTextAlignment.Left;
+			Control = new EtoLabel { 
+				Handler = this,
+				Cell = new MyTextFieldCell{ Handler = this, StringValue = string.Empty },
+				DrawsBackground = false,
+				Bordered = false,
+				Bezeled = false,
+				Editable = false,
+				Selectable = false,
+				Alignment = NSTextAlignment.Left
+			};
 			is106 = Control.Cell.RespondsToSelector (new Selector ("setUsesSingleLineMode:"));
 			if (is106)
 				Control.Cell.UsesSingleLineMode = false;
@@ -154,7 +158,10 @@ namespace Eto.Platform.Mac
 				
 				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
 				if (match.Success) {
-					var str = new NSMutableAttributedString (value.Remove(match.Index, match.Length));
+					var str = new NSMutableAttributedString (value.Remove(match.Index, match.Length).Replace ("&&", "&"));
+					
+					var matches = Regex.Matches (value, @"[&][&]");
+					var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
 					
 					// copy existing attributes
 					NSRange range;
@@ -163,10 +170,12 @@ namespace Eto.Platform.Mac
 						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
 					str.AddAttributes (attributes, new NSRange(0, str.Length));
 					
-					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index, 1));
+					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
 					Control.AttributedStringValue = str;
-				} else
-					Control.StringValue = value ?? string.Empty;
+				} else if (!string.IsNullOrEmpty(value))
+					Control.StringValue = value.Replace ("&&", "&");
+				else
+					Control.StringValue = string.Empty;
 				LayoutIfNeeded (oldSize);
 			}
 		}

@@ -1,7 +1,7 @@
 using System;
 using System.Collections;
-using Eto.Collections;
 using Eto.Drawing;
+using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
@@ -49,27 +49,31 @@ namespace Eto.Forms
 		}
 	}
 
-	public class TabPageCollection : BaseList<TabPage>
+	public class TabPageCollection : Collection<TabPage>
 	{
 		TabControl control;
 
-		public TabPageCollection (TabControl control)
+		internal TabPageCollection (TabControl control)
 		{
 			this.control = control;
 		}
-
-		protected override void OnAdded (ListEventArgs<TabPage> e)
+		
+		protected override void InsertItem (int index, TabPage item)
 		{
-			base.OnAdded (e);
-			e.Item.SetParent (control);
-			control.AddTab (e.Item);
+			base.InsertItem (index, item);
+			control.InsertTab (index, item);
+		}
+
+		protected override void ClearItems ()
+		{
+			base.ClearItems ();
+			control.ClearTabs ();
 		}
 		
-		protected override void OnRemoved (ListEventArgs<TabPage> e)
+		protected override void RemoveItem (int index)
 		{
-			base.OnRemoved (e);
-			e.Item.SetParent (null);
-			control.RemoveTab (e.Item);
+			control.RemoveTab (index, this[index]);
+			base.RemoveItem (index);
 		}
 	}
 }
