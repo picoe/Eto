@@ -32,7 +32,7 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "No Header,\nNon-Editable" }, NoHeader ());
-			layout.AddRow (new Label { Text = "Context Menu\n& Multi-Select" }, WithContextMenu ());
+			layout.AddRow (new Label { Text = "Context Menu\n&& Multi-Select" }, WithContextMenu ());
 		}
 		
 		/// <summary>
@@ -116,8 +116,8 @@ namespace Eto.Test.Sections.Controls
 			var dropDown = MyDropDown ("DropDownKey");
 			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell ("Check"), Editable = true, AutoSize = true, Resizable = false});
 			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageViewCell ("Image") });
-			control.Columns.Add (new GridColumn{ HeaderText = "Text", DataCell = new TextBoxCell ("Text"), Editable = true});
-			control.Columns.Add (new GridColumn{ HeaderText = "Drop Down", DataCell = dropDown, Editable = true });
+			control.Columns.Add (new GridColumn{ HeaderText = "Text", DataCell = new TextBoxCell ("Text"), Editable = true, Sortable = true });
+			control.Columns.Add (new GridColumn{ HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
 			
 			var items = new GridItemCollection ();
 			var rand = new Random ();
@@ -168,6 +168,9 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.SelectionChanged += delegate {
 				Log.Write (control, "Selection Changed, Rows: {0}", SelectedRowsString (control));
+			};
+			control.ColumnHeaderClick += delegate(object sender, GridColumnEventArgs e) {
+				Log.Write (control, "Column Header Clicked: {0}", e.Column);
 			};
 		}
 

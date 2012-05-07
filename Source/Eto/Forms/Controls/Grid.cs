@@ -23,6 +23,16 @@ namespace Eto.Forms
 
 		void UnselectAll ();
 	}
+	
+	public class GridColumnEventArgs : EventArgs
+	{
+		public GridColumn Column { get; private set; }
+		
+		public GridColumnEventArgs (GridColumn column)
+		{
+			this.Column = column;
+		}
+	}
 
 	public abstract class Grid : Control
 	{
@@ -32,64 +42,76 @@ namespace Eto.Forms
 
 		#region Events
 
-		public const string BeginCellEditEvent = "BaseGrid.BeginCellEditEvent";
+		public const string BeginCellEditEvent = "Grid.BeginCellEditEvent";
 
-		event EventHandler<GridViewCellArgs> beginCellEdit;
+		event EventHandler<GridViewCellArgs> _BeginCellEdit;
 
-		public event EventHandler<GridViewCellArgs> BeginCellEdit
-		{
-			add
-			{
-				beginCellEdit += value;
+		public event EventHandler<GridViewCellArgs> BeginCellEdit {
+			add {
+				_BeginCellEdit += value;
 				HandleEvent (BeginCellEditEvent);
 			}
-			remove { beginCellEdit -= value; }
+			remove { _BeginCellEdit -= value; }
 		}
 
 		public virtual void OnBeginCellEdit (GridViewCellArgs e)
 		{
-			if (beginCellEdit != null)
-				beginCellEdit (this, e);
+			if (_BeginCellEdit != null)
+				_BeginCellEdit (this, e);
 		}
 
-		public const string EndCellEditEvent = "BaseGrid.EndCellEditEvent";
+		public const string EndCellEditEvent = "Grid.EndCellEditEvent";
 
-		event EventHandler<GridViewCellArgs> endCellEdit;
+		event EventHandler<GridViewCellArgs> _EndCellEdit;
 
-		public event EventHandler<GridViewCellArgs> EndCellEdit
-		{
-			add
-			{
-				endCellEdit += value;
+		public event EventHandler<GridViewCellArgs> EndCellEdit {
+			add {
+				_EndCellEdit += value;
 				HandleEvent (EndCellEditEvent);
 			}
-			remove { endCellEdit -= value; }
+			remove { _EndCellEdit -= value; }
 		}
 
 		public virtual void OnEndCellEdit (GridViewCellArgs e)
 		{
-			if (endCellEdit != null)
-				endCellEdit (this, e);
+			if (_EndCellEdit != null)
+				_EndCellEdit (this, e);
 		}
 
-		public const string SelectionChangedEvent = "BaseGrid.SelectionChanged";
+		public const string SelectionChangedEvent = "Grid.SelectionChanged";
 
-		event EventHandler<EventArgs> selectionChanged;
+		event EventHandler<EventArgs> _SelectionChanged;
 
-		public event EventHandler<EventArgs> SelectionChanged
-		{
-			add
-			{
-				selectionChanged += value;
+		public event EventHandler<EventArgs> SelectionChanged {
+			add {
+				_SelectionChanged += value;
 				HandleEvent (SelectionChangedEvent);
 			}
-			remove { selectionChanged -= value; }
+			remove { _SelectionChanged -= value; }
 		}
 
 		public virtual void OnSelectionChanged (EventArgs e)
 		{
-			if (selectionChanged != null)
-				selectionChanged (this, e);
+			if (_SelectionChanged != null)
+				_SelectionChanged (this, e);
+		}
+		
+		public const string ColumnHeaderClickEvent = "Grid.ColumnHeaderClickEvent";
+
+		event EventHandler<GridColumnEventArgs> _ColumnHeaderClick;
+
+		public event EventHandler<GridColumnEventArgs> ColumnHeaderClick {
+			add {
+				_ColumnHeaderClick += value;
+				HandleEvent (ColumnHeaderClickEvent);
+			}
+			remove { _ColumnHeaderClick -= value; }
+		}
+
+		public virtual void OnColumnHeaderClick (GridColumnEventArgs e)
+		{
+			if (_ColumnHeaderClick != null)
+				_ColumnHeaderClick (this, e);
 		}
 
 		#endregion
@@ -103,28 +125,24 @@ namespace Eto.Forms
 				Initialize ();
 		}
 
-		public bool ShowHeader
-		{
+		public bool ShowHeader {
 			get { return handler.ShowHeader; }
 			set { handler.ShowHeader = value; }
 		}
 
-		public bool AllowColumnReordering
-		{
+		public bool AllowColumnReordering {
 			get { return handler.AllowColumnReordering; }
 			set { handler.AllowColumnReordering = value; }
 		}
 
-		public bool AllowMultipleSelection
-		{
+		public bool AllowMultipleSelection {
 			get { return handler.AllowMultipleSelection; }
 			set { handler.AllowMultipleSelection = value; }
 		}
 
 		public abstract IEnumerable<IGridItem> SelectedItems { get; }
 
-		public IEnumerable<int> SelectedRows
-		{
+		public IEnumerable<int> SelectedRows {
 			get { return handler.SelectedRows; }
 		}
 

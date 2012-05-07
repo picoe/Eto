@@ -131,6 +131,9 @@ namespace Eto.Test.Sections.Controls
 			control.Collapsed += (sender, e) => {
 				Log.Write (control, "Collapsed, Item: {0}", e.Item);
 			};
+			control.ColumnHeaderClick += delegate(object sender, GridColumnEventArgs e) {
+				Log.Write (control, "Column Header Clicked: {0}", e.Column);
+			};
 		}
 	}
 }

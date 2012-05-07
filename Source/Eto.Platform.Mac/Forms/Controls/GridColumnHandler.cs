@@ -13,6 +13,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSTableView Table { get; }
 		
 		object GetItem (int row);
+		
+		int RowCount { get; }
+		
+		System.Drawing.RectangleF GetVisibleRect ();
 	}
 	
 	public interface IDataColumnHandler
@@ -57,36 +61,44 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.DataCell = new TextBoxCell (Widget.Generator);
 		}
 		
-		public void Loaded (IDataViewHandler handler, int column, NSOutlineView ov)
+		public void Loaded (IDataViewHandler handler, int column)
 		{
 			this.Column = column;
 			this.DataViewHandler = handler;
-			if (this.AutoSize) {
+		}
+		
+		public void Resize ()
+		{
+			var handler = this.DataViewHandler;
+			if (this.AutoSize && handler != null) {
 				Control.SizeToFit ();
 				float width = Control.DataCell.CellSize.Width;
+				var outlineView = handler.Table as NSOutlineView;
 				if (handler.ShowHeader)
 					width = Math.Max (Control.HeaderCell.CellSize.Width, width);
 					
 				if (dataCell != null) {
-					var rect = handler.Table.VisibleRect ();
+					var rect = handler.GetVisibleRect ();
 					var range = handler.Table.RowsInRect (rect);
+					//var range = new NSRange(0, handler.RowCount);
 					var cellSize = Control.DataCell.CellSize;
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (int i = range.Location; i < range.Location + range.Length; i++) {
-						var cellWidth = GetRowWidth (dataCellHandler, i, cellSize);
-						if (ov != null)
-							cellWidth += (ov.LevelForRow (i) + 1) * ov.IndentationPerLevel;
+						//var dataCellRow = Control.DataCellForRow(i);
+						//var cellWidth = dataCellRow.CellSize.Width;
+						var cellWidth = GetRowWidth (dataCellHandler, i, cellSize) + 4;
+						if (outlineView != null && Column == 0)
+							cellWidth += (outlineView.LevelForRow (i) + 1) * outlineView.IndentationPerLevel;
 						width = Math.Max (width, cellWidth);
 					}
 				}
-				Console.WriteLine ("Setting width of {1} to {0}", width, HeaderText);
 				Control.Width = width;
 			}
 		}
 		
-		protected virtual float GetRowWidth(ICellHandler cell, int row, System.Drawing.SizeF cellSize)
+		protected virtual float GetRowWidth (ICellHandler cell, int row, System.Drawing.SizeF cellSize)
 		{
-			var val = GetObjectValue(DataViewHandler.GetItem (row));
+			var val = GetObjectValue (DataViewHandler.GetItem (row));
 			return cell.GetPreferredSize (val, cellSize);
 		}
 		
@@ -112,22 +124,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set;
 		}
 
-		public bool Sortable {
-			get {
-				return Control.SortDescriptorPrototype != null;
-			}
-			set {
-				if (value) {
-					var descriptor = Control.SortDescriptorPrototype;
-					if (descriptor == null) {
-						descriptor = new NSSortDescriptor (Guid.NewGuid ().ToString (), true);
-						Control.SortDescriptorPrototype = descriptor;
-					}
-				} else {
-					Control.SortDescriptorPrototype = null;
-				}
-			}
-		}
+		public bool Sortable { get; set; }
 		
 		public bool Editable {
 			get {

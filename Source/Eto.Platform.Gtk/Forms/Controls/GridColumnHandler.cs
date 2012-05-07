@@ -6,6 +6,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	public interface IGridHandler
 	{
 		bool IsEventHandled(string handler);
+		
+		void ColumnClicked(GridColumnHandler column);
 	}
 	
 	public interface IGridColumnHandler
@@ -122,11 +124,23 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				HandleEvent (GridView.BeginCellEditEvent);
 			if (grid.IsEventHandled (GridView.EndCellEditEvent))
 				HandleEvent (GridView.EndCellEditEvent);
+			if (grid.IsEventHandled (Grid.ColumnHeaderClickEvent))
+				HandleEvent (Grid.ColumnHeaderClickEvent);
 		}
 
 		public override void AttachEvent (string handler)
 		{
-			((ICellHandler)dataCell.Handler).HandleEvent(handler);
+			switch (handler) {
+			case Grid.ColumnHeaderClickEvent:
+				Control.Clicked += (sender, e) => {
+					if (grid != null)
+						grid.ColumnClicked (this);
+				};
+				break;
+			default:
+				((ICellHandler)dataCell.Handler).HandleEvent(handler);
+				break;
+			}
 		}
 		
 		public GLib.Value GetValue (object dataItem, int dataColumn)
@@ -136,6 +150,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 			else return new GLib.Value((string)null);
 		}
+		
 	}
 }
 

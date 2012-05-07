@@ -29,7 +29,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public void InsertTab (int index, TabPage page)
 		{
 			var pageHandler = (TabPageHandler)page.Handler;
-			if (index == -1)
+			if (index == -1 || index == this.Control.TabPages.Count)
 				this.Control.TabPages.Add (pageHandler.Control);
 			else
 				this.Control.TabPages.Insert (index, pageHandler.Control);

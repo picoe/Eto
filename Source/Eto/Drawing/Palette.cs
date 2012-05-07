@@ -16,13 +16,11 @@ namespace Eto.Drawing
 			argb = new List<uint> ();
 		}
 		
-		public Palette (IList<Color> items)
-			: base(items)
+		public Palette (IEnumerable<Color> items)
+			: this()
 		{
-			argb = new List<uint> ();
-			foreach (var item in items) {
-				argb.Add (item.ToArgb ());
-			}
+			foreach (var item in items)
+				Add (item);
 		}
 		
 		public static Palette GetEgaPalette ()

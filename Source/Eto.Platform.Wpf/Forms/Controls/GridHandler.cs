@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
 using System.Collections;
@@ -33,6 +34,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case Grid.ColumnHeaderClickEvent:
+				Control.Sorting += (sender, e) => {
+					var column = Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, e.Column));
+					Widget.OnColumnHeaderClick(new GridColumnEventArgs(column));
+					e.Handled = true;
+				};
+				break;
 			case Grid.BeginCellEditEvent:
 				Control.PreparingCellForEdit += (sender, e) => {
 					var row = e.Row.GetIndex ();

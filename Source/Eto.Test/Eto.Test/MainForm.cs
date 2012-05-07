@@ -90,9 +90,34 @@ namespace Eto.Test
 			};
 
 			splitter.Panel1 = this.ContentContainer;
-			splitter.Panel2 = DockLayout.CreatePanel (this.EventLog, new Padding (5));
+			splitter.Panel2 = this.EventLogSection();
 
 			return splitter;
+		}
+		Control EventLogSection()
+		{
+			var layout = new DynamicLayout(new Panel());
+			
+			layout.BeginHorizontal ();
+			layout.Add (EventLog, true);
+			
+			layout.BeginVertical ();
+			layout.Add (ClearButton());
+			layout.Add (null);
+			layout.EndVertical ();
+			layout.EndHorizontal ();
+			return layout.Container;
+		}
+		
+		Control ClearButton()
+		{
+			var control = new Button{
+				Text = "Clear"
+			};
+			control.Click += (sender, e) => {
+				EventLog.Text = string.Empty;
+			};
+			return control;
 		}
 
 		void GenerateMenuToolBarActions ()

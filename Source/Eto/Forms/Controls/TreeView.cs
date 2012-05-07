@@ -16,7 +16,7 @@ namespace Eto.Forms
 		ITreeItem SelectedItem { get; set; }
 	}
 	
-	public class TreeViewItemEventArgs : CancelEventArgs
+	public class TreeViewItemEventArgs : EventArgs
 	{
 		public ITreeItem Item { get; private set; }
 		
@@ -26,6 +26,16 @@ namespace Eto.Forms
 		}
 	}
 
+	public class TreeViewItemCancelEventArgs : CancelEventArgs
+	{
+		public ITreeItem Item { get; private set; }
+		
+		public TreeViewItemCancelEventArgs (ITreeItem item)
+		{
+			this.Item = item;
+		}
+	}
+	
 	public partial class TreeView : Control
 	{
 		ITreeView inner;
@@ -48,21 +58,19 @@ namespace Eto.Forms
 				SelectionChanged (this, e);
 		}
 		
-		public const string ExpandingEvent = "TreeGridView.ExpandingEvent";
+		public const string ExpandingEvent = "TreeView.ExpandingEvent";
 
-		event EventHandler<TreeGridViewItemCancelEventArgs> _Expanding;
+		event EventHandler<TreeViewItemCancelEventArgs> _Expanding;
 
-		public event EventHandler<TreeGridViewItemCancelEventArgs> Expanding
-		{
-			add
-			{
+		public event EventHandler<TreeViewItemCancelEventArgs> Expanding {
+			add {
 				_Expanding += value;
 				HandleEvent (ExpandingEvent);
 			}
 			remove { _Expanding -= value; }
 		}
 
-		public virtual void OnExpanding (TreeGridViewItemCancelEventArgs e)
+		public virtual void OnExpanding (TreeViewItemCancelEventArgs e)
 		{
 			if (_Expanding != null)
 				_Expanding (this, e);
@@ -70,60 +78,53 @@ namespace Eto.Forms
 
 		public const string ExpandedEvent = "TreeView.ExpandedEvent";
 
-		event EventHandler<TreeGridViewItemEventArgs> _Expanded;
+		event EventHandler<TreeViewItemEventArgs> _Expanded;
 
-		public event EventHandler<TreeGridViewItemEventArgs> Expanded
-		{
-			add
-			{
+		public event EventHandler<TreeViewItemEventArgs> Expanded {
+			add {
 				_Expanded += value;
 				HandleEvent (ExpandedEvent);
 			}
 			remove { _Expanded -= value; }
 		}
 
-		public virtual void OnExpanded (TreeGridViewItemEventArgs e)
+		public virtual void OnExpanded (TreeViewItemEventArgs e)
 		{
 			if (_Expanded != null)
 				_Expanded (this, e);
 		}
 		
-		
-		public const string CollapsingEvent = "TreeGridView.CollapsingEvent";
+		public const string CollapsingEvent = "TreeView.CollapsingEvent";
 
-		event EventHandler<TreeGridViewItemCancelEventArgs> _Collapsing;
+		event EventHandler<TreeViewItemCancelEventArgs> _Collapsing;
 
-		public event EventHandler<TreeGridViewItemCancelEventArgs> Collapsing
-		{
-			add
-			{
+		public event EventHandler<TreeViewItemCancelEventArgs> Collapsing {
+			add {
 				_Collapsing += value;
 				HandleEvent (CollapsingEvent);
 			}
 			remove { _Collapsing -= value; }
 		}
 
-		public virtual void OnCollapsing (TreeGridViewItemCancelEventArgs e)
+		public virtual void OnCollapsing (TreeViewItemCancelEventArgs e)
 		{
 			if (_Collapsing != null)
 				_Collapsing (this, e);
 		}
 		
-		public const string CollapsedEvent = "TreeGridView.CollapsedEvent";
+		public const string CollapsedEvent = "TreeView.CollapsedEvent";
 
-		event EventHandler<TreeGridViewItemEventArgs> _Collapsed;
+		event EventHandler<TreeViewItemEventArgs> _Collapsed;
 
-		public event EventHandler<TreeGridViewItemEventArgs> Collapsed
-		{
-			add
-			{
+		public event EventHandler<TreeViewItemEventArgs> Collapsed {
+			add {
 				_Collapsed += value;
 				HandleEvent (CollapsedEvent);
 			}
 			remove { _Collapsed -= value; }
 		}
 
-		public virtual void OnCollapsed (TreeGridViewItemEventArgs e)
+		public virtual void OnCollapsed (TreeViewItemEventArgs e)
 		{
 			if (_Collapsed != null)
 				_Collapsed (this, e);

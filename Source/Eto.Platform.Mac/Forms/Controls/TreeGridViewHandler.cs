@@ -8,12 +8,9 @@ using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TreeGridViewHandler : MacView<NSOutlineView, TreeGridView>, ITreeGridView, IDataViewHandler
+	public class TreeGridViewHandler : GridHandler<NSOutlineView, TreeGridView>, ITreeGridView, IDataViewHandler
 	{
 		ITreeGridStore<ITreeGridItem> store;
-		NSOutlineView table;
-		ContextMenu contextMenu;
-		ColumnCollection columns;
 		Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();
 		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
 		
@@ -45,7 +42,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return items;
 				}
 			}
-			
 		}
 		
 		class EtoOutlineDelegate : NSOutlineViewDelegate
@@ -95,6 +91,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 					myitem.Item.Expanded = true;
 					Handler.Widget.OnExpanded (new TreeGridViewItemEventArgs (myitem.Item));
 				}
+			}
+			
+			public override void DidClickTableColumn (NSOutlineView outlineView, NSTableColumn tableColumn)
+			{
+				var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
+				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (column));
 			}
 		}
 			
@@ -162,42 +164,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		public override object EventObject {
-			get { return table; }
+			get { return Control; }
 		}
 		
-		public override NSView ContainerControl {
-			get { return ScrollView; }
-		}
-		
-		public NSScrollView ScrollView {
-			get;
-			private set;
-		}
-		
-		public TreeGridViewHandler ()
-		{
-			table = new EtoOutlineView { 
-				Handler = this,
-				Delegate = new EtoOutlineDelegate{ Handler = this },
-				DataSource = new EtoDataSource{ Handler = this },
-			//HeaderView = null,
-			//AutoresizesOutlineColumn = true,
-			//AllowsColumnResizing = false,
-				AllowsColumnReordering = false,
-				FocusRingType = NSFocusRingType.None,
-				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.LastColumnOnly
-			};
-			
-			ScrollView = new NSScrollView {
-				HasVerticalScroller = true,
-				HasHorizontalScroller = true,
-				AutohidesScrollers = true,
-				BorderType = NSBorderType.BezelBorder,
-				DocumentView = table
-			};
-			Control = table;
-		}
-
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
@@ -206,6 +175,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			case TreeGridView.ExpandingEvent:
 			case TreeGridView.CollapsedEvent:
 			case TreeGridView.CollapsingEvent:
+			case Grid.ColumnHeaderClickEvent:
 				// handled in delegate
 				break;
 			default:
@@ -214,88 +184,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public override void OnLoadComplete (EventArgs e)
-		{
-			base.OnLoadComplete (e);
-			
-			int i = 0;
-			foreach (var col in this.Widget.Columns) {
-				((GridColumnHandler)col.Handler).Loaded (this, i++, Control);
-			}
-		}
-		
-		
-		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
-		{
-			public TreeGridViewHandler Handler { get; set; }
-			
-			public override void AddItem (GridColumn item)
-			{
-				var colhandler = (GridColumnHandler)item.Handler;
-				Handler.table.AddColumn (colhandler.Control);
-				colhandler.Setup (Handler.table.ColumnCount - 1);
-				
-				if (Handler.table.OutlineTableColumn == null) {
-					Handler.table.OutlineTableColumn = Handler.table.TableColumns () [0];
-				}
-			}
-
-			public override void InsertItem (int index, GridColumn item)
-			{
-				var outline = Handler.table;
-				var columns = new List<NSTableColumn> (outline.TableColumns ());
-				if (index == 0)
-					outline.OutlineTableColumn = null;
-				for (int i = index; i < columns.Count; i++) {
-					outline.RemoveColumn (columns [i]);
-				}
-				var colhandler = (GridColumnHandler)item.Handler;
-				columns.Insert (index, colhandler.Control);
-				outline.AddColumn (colhandler.Control);
-				colhandler.Setup (index);
-				for (int i = index + 1; i < columns.Count; i++) {
-					var col = columns [i];
-					var id = col.Identifier as EtoDataColumnIdentifier;
-					id.Handler.Setup (i);
-					outline.AddColumn (col);
-				}
-				if (index == 0) {
-					outline.OutlineTableColumn = columns [0];
-				}
-			}
-
-			public override void RemoveItem (int index)
-			{
-				var outline = Handler.table;
-				var columns = new List<NSTableColumn> (outline.TableColumns ());
-				if (index == 0)
-					outline.OutlineTableColumn = null;
-				for (int i = index; i < columns.Count; i++) {
-					outline.RemoveColumn (columns [i]);
-				}
-				columns.RemoveAt (index);
-				for (int i = index; i < columns.Count; i++) {
-					var col = columns [i];
-					var id = col.Identifier as EtoDataColumnIdentifier;
-					id.Handler.Setup (i);
-					outline.AddColumn (col);
-				}
-			}
-
-			public override void RemoveAllItems ()
-			{
-				Handler.table.OutlineTableColumn = null;
-				foreach (var col in Handler.table.TableColumns ())
-					Handler.table.RemoveColumn (col);
-			}
-
-		}
-		
 		public override void Initialize ()
 		{
+			Control = new EtoOutlineView { 
+				Handler = this,
+				Delegate = new EtoOutlineDelegate{ Handler = this },
+				DataSource = new EtoDataSource{ Handler = this },
+				//HeaderView = null,
+				//AutoresizesOutlineColumn = true,
+				//AllowsColumnResizing = false,
+				AllowsColumnReordering = false,
+				FocusRingType = NSFocusRingType.None,
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
+			};
+
 			base.Initialize ();
-			columns = new ColumnCollection{ Handler = this };
-			columns.Register (Widget.Columns);
 		}
 		
 		public ITreeGridStore<ITreeGridItem> DataStore {
@@ -304,124 +207,74 @@ namespace Eto.Platform.Mac.Forms.Controls
 				store = value;
 				topitems.Clear ();
 				cachedItems.Clear ();
-				table.ReloadData ();
+				Control.ReloadData ();
 				ExpandItems (null);
 			}
 		}
 		
 		public ITreeGridItem SelectedItem {
 			get {
-				var row = table.SelectedRow;
+				var row = Control.SelectedRow;
 				if (row == -1)
 					return null;
-				var myitem = table.ItemAtRow (row) as EtoTreeItem;
+				var myitem = Control.ItemAtRow (row) as EtoTreeItem;
 				return myitem.Item;
 			}
 			set {
 				if (value == null)
-					table.SelectRow (-1, false);
+					Control.SelectRow (-1, false);
 				else {
 					
 					EtoTreeItem myitem;
 					if (cachedItems.TryGetValue (value, out myitem)) {
-						var row = table.RowForItem (myitem);
+						var row = Control.RowForItem (myitem);
 						if (row >= 0)
-							table.SelectRow (row, false);
+							Control.SelectRow (row, false);
 					}
 				}
 			}
 		}
 		
-		public override bool Enabled {
-			get { return table.Enabled; }
-			set { table.Enabled = value; }
-		}
-		
-		public ContextMenu ContextMenu {
-			get { return contextMenu; }
-			set {
-				contextMenu = value;
-				if (contextMenu != null)
-					table.Menu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					table.Menu = null;
-			}
-		}
-		
 		void ExpandItems (NSObject parent)
 		{
-			var ds = table.DataSource;
-			var count = ds.GetChildrenCount (table, parent);
+			var ds = Control.DataSource;
+			var count = ds.GetChildrenCount (Control, parent);
 			for (int i=0; i<count; i++) {
 				
-				var item = ds.GetChild (table, i, parent) as EtoTreeItem;
+				var item = ds.GetChild (Control, i, parent) as EtoTreeItem;
 				if (item != null && item.Item.Expanded) {
-					table.ExpandItem (item);
+					Control.ExpandItem (item);
 					ExpandItems (item);
 				}
 			}
 		}
-
-		public bool ShowHeader {
-			get {
-				return table.HeaderView != null;
-			}
-			set {
-				if (value && table.HeaderView == null) {
-					table.HeaderView = new NSTableHeaderView ();
-				} else if (!value && table.HeaderView != null) {
-					table.HeaderView = null;
-				}
-			}
-		}
-
-		public NSTableView Table {
-			get { return table; }
+		
+		protected override void PreUpdateColumn (int index)
+		{
+			base.PreUpdateColumn (index);
+			if (index == 0)
+				Control.OutlineTableColumn = null;
 		}
 		
-		public object GetItem (int row)
+		protected override void UpdateColumns ()
 		{
-			var item = table.ItemAtRow (row) as EtoTreeItem;
+			base.UpdateColumns ();
+			if (Control.OutlineTableColumn == null) {
+				if (Widget.Columns.Count > 0)
+					Control.OutlineTableColumn = ((GridColumnHandler)Widget.Columns[0].Handler).Control;
+			}
+			else if (Widget.Columns.Count == 0)
+				Control.OutlineTableColumn = null;
+		}
+
+		public override object GetItem (int row)
+		{
+			var item = Control.ItemAtRow (row) as EtoTreeItem;
 			if (item != null)
 				return item.Item;
 			else
 				return null;
 		}
-		
-		public bool AllowColumnReordering {
-			get { return table.AllowsColumnReordering; }
-			set { table.AllowsColumnReordering = value; }
-		}
-		
-		public bool AllowMultipleSelection {
-			get { return table.AllowsMultipleSelection; }
-			set { table.AllowsMultipleSelection = value; }
-		}
-
-		public IEnumerable<int> SelectedRows {
-			get { return table.SelectedRows.Select (r => (int)r); }
-		}
-
-		public void SelectAll ()
-		{
-			table.SelectAll (table);
-		}
-
-		public void SelectRow (int row)
-		{
-			table.SelectRow (row, false);
-		}
-
-		public void UnselectRow (int row)
-		{
-			table.DeselectRow (row);
-		}
-
-		public void UnselectAll ()
-		{
-			table.DeselectAll (table);
-		}
-
 	}
 }
 

@@ -62,7 +62,8 @@ namespace Eto.Platform.Mac
 			
 			static IntPtr selAttributedStringValue = Selector.GetHandle ("attributedStringValue");
 			static IntPtr selSetAttributedStringValue = Selector.GetHandle ("setAttributedStringValue:");
-			
+
+			// remove when implemented in monomac
 			public NSAttributedString AttributedStringValue {
 				[Export ("attributedStringValue")]
 				get {

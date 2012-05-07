@@ -4,6 +4,7 @@ using SD = System.Drawing;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -51,10 +52,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var imgitem = value as IImageListItem;
 			if (imgitem != null && imgitem.Image != null)
-				this.Image = imgitem.Image.ControlObject as NSImage;
+				this.Image = ((IImageSource)imgitem.Image.Handler).GetImage ();
 			this.Text = (NSString)value.Text;
 		}
-			
+		
 		[Export("copyWithZone:")]
 		public virtual NSObject CopyWithZone (IntPtr zone)
 		{

@@ -72,21 +72,26 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-			case GridView.BeginCellEditEvent:
+			case Grid.ColumnHeaderClickEvent:
+				Control.ColumnHeaderMouseClick += (sender, e) => {
+					Widget.OnColumnHeaderClick (new GridColumnEventArgs (Widget.Columns[e.ColumnIndex]));
+				};
+				break;
+			case Grid.BeginCellEditEvent:
 				Control.CellBeginEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
 					Widget.OnBeginCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
-			case GridView.EndCellEditEvent:
+			case Grid.EndCellEditEvent:
 				Control.CellEndEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
 					Widget.OnEndCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
-			case GridView.SelectionChangedEvent:
+			case Grid.SelectionChangedEvent:
 				Control.SelectionChanged += delegate {
 					Widget.OnSelectionChanged (EventArgs.Empty);
 				};

@@ -8,16 +8,9 @@ using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class GridViewHandler : MacView<NSScrollView, GridView>, IGridView, IDataViewHandler
+	public class GridViewHandler : GridHandler<NSTableView, GridView>, IGridView
 	{
 		CollectionHandler collection;
-		ColumnCollection columns;
-		NSTableView table;
-		ContextMenu contextMenu;
-		
-		public NSTableView Table {
-			get { return table; }
-		}
 		
 		class EtoTableViewDataSource : NSTableViewDataSource
 		{
@@ -67,78 +60,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
 			}
+
+			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
+			{
+				var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
+				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (column));
+			}
 		}
 
-		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
-		{
-			public GridViewHandler Handler { get; set; }
-
-			public override void AddItem (GridColumn item)
-			{
-				var colhandler = (GridColumnHandler)item.Handler;
-				Handler.table.AddColumn (colhandler.Control);
-				colhandler.Setup (Handler.table.ColumnCount - 1);
-			}
-
-			public override void InsertItem (int index, GridColumn item)
-			{
-				var outline = Handler.table;
-				var columns = new List<NSTableColumn> (outline.TableColumns ());
-				for (int i = index; i < columns.Count; i++) {
-					outline.RemoveColumn (columns[i]);
-				}
-				var colhandler = (GridColumnHandler)item.Handler;
-				columns.Insert (index, colhandler.Control);
-				outline.AddColumn (colhandler.Control);
-				colhandler.Setup (index);
-				for (int i = index + 1; i < columns.Count; i++) {
-					var col = columns[i];
-					var id = col.Identifier as EtoDataColumnIdentifier;
-					id.Handler.Setup (i);
-					outline.AddColumn (col);
-				}
-			}
-
-			public override void RemoveItem (int index)
-			{
-				var table = Handler.table;
-				var columns = new List<NSTableColumn> (table.TableColumns ());
-				for (int i = index; i < columns.Count; i++) {
-					table.RemoveColumn (columns[i]);
-				}
-				columns.RemoveAt (index);
-				for (int i = index; i < columns.Count; i++) {
-					var col = columns[i];
-					var id = col.Identifier as EtoDataColumnIdentifier;
-					id.Handler.Setup (i);
-					table.AddColumn (col);
-				}
-			}
-
-			public override void RemoveAllItems ()
-			{
-				foreach (var col in Handler.table.TableColumns ())
-					Handler.table.RemoveColumn (col);
-			}
-
-		}
-
-		
 		public GridViewHandler ()
 		{
-			table = new NSTableView {
-				FocusRingType = NSFocusRingType.None,
-				DataSource = new EtoTableViewDataSource { Handler = this },
-				Delegate = new EtoTableDelegate { Handler = this }
-			};
-
-			Control = new NSScrollView {
-				HasVerticalScroller = true,
-				HasHorizontalScroller = true,
-				AutohidesScrollers = true,
-				BorderType = NSBorderType.BezelBorder,
-				DocumentView = table
-			};
 		}
 
 		public override void AttachEvent (string handler)
@@ -164,6 +95,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Widget.OnSelectionChanged (EventArgs.Empty);
 				};*/
 				break;
+			case GridView.ColumnHeaderClickEvent:
+				/*
+				table.DidClickTableColumn += delegate(object sender, NSTableViewTableEventArgs e) {
+					var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
+					Handler.Widget.OnHeaderClick (new GridColumnEventArgs (column));
+				};
+				*/
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -172,34 +111,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override void Initialize ()
 		{
+			Control = new NSTableView {
+				FocusRingType = NSFocusRingType.None,
+				DataSource = new EtoTableViewDataSource { Handler = this },
+				Delegate = new EtoTableDelegate { Handler = this },
+				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.None
+			};
+			
 			base.Initialize ();
-			columns = new ColumnCollection { Handler = this };
-			columns.Register (Widget.Columns);
 		}
 		
-		public override void OnLoadComplete (EventArgs e)
-		{
-			base.OnLoadComplete (e);
-			
-			int i = 0;
-			foreach (var col in this.Widget.Columns) {
-				((GridColumnHandler)col.Handler).Loaded (this, i++, null);
-			}
-		}
-
-		public bool ShowHeader {
-			get {
-				return table.HeaderView != null;
-			}
-			set {
-				if (value && table.HeaderView == null) {
-					table.HeaderView = new NSTableHeaderView ();
-				} else if (!value && table.HeaderView != null) {
-					table.HeaderView = null;
-				}
-			}
-		}
-
 		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
@@ -211,27 +132,27 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override void AddRange (IEnumerable<IGridItem> items)
 			{
-				Handler.table.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void AddItem (IGridItem item)
 			{
-				Handler.table.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void InsertItem (int index, IGridItem item)
 			{
-				Handler.table.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void RemoveItem (int index)
 			{
-				Handler.table.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void RemoveAllItems ()
 			{
-				Handler.table.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 		}
 
@@ -245,57 +166,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public override bool Enabled {
-			get { return table.Enabled; }
-			set { table.Enabled = value; }
-		}
-		
-		public bool AllowColumnReordering {
-			get { return table.AllowsColumnReordering; }
-			set { table.AllowsColumnReordering = value; }
-		}
-		
-		public ContextMenu ContextMenu {
-			get { return contextMenu; }
-			set {
-				contextMenu = value;
-				if (contextMenu != null)
-					table.Menu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					table.Menu = null;
-			}
-		}
-
-		public bool AllowMultipleSelection {
-			get { return table.AllowsMultipleSelection; }
-			set { table.AllowsMultipleSelection = value; }
-		}
-
-		public IEnumerable<int> SelectedRows {
-			get { return table.SelectedRows.Select (r => (int)r); }
-		}
-
-		public void SelectAll ()
-		{
-			table.SelectAll (table);
-		}
-
-		public void SelectRow (int row)
-		{
-			table.SelectRow (row, false);
-		}
-
-		public void UnselectRow (int row)
-		{
-			table.DeselectRow (row);
-		}
-
-		public void UnselectAll ()
-		{
-			table.DeselectAll (table);
-		}
-
-		public object GetItem (int row)
+		public override object GetItem (int row)
 		{
 			return collection.DataStore [row];
 		}
