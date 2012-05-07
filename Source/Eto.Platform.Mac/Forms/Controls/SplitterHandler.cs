@@ -200,7 +200,7 @@ namespace Eto.Platform.Mac
 			get { return panel1; }
 			set {
 				if (panel1 != value) {
-					NSView view = (value != null) ? value.ControlObject as NSView : null;
+					var view = value.GetContainerView ();
 					Control.ReplaceSubviewWith (Control.Subviews [0], view ?? new NSView ());
 					panel1 = value;
 				}
@@ -211,7 +211,7 @@ namespace Eto.Platform.Mac
 			get { return panel2; }
 			set {
 				if (panel2 != value) {
-					NSView view = (value != null) ? value.ControlObject as NSView : null;
+					var view = value.GetContainerView ();
 					Control.ReplaceSubviewWith (Control.Subviews [1], view ?? new NSView ());
 					panel2 = value;
 				}

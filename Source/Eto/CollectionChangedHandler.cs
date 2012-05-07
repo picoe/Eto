@@ -8,13 +8,12 @@ using System.Collections;
 namespace Eto
 {
 	public abstract class CollectionChangedHandler<T, S>
-		where S: class, IDataStore<T>
+		where S: class
 	{
 		public S DataStore { get; private set; }
 		
 		protected virtual void OnRegisterCollection (EventArgs e)
 		{
-			AddRange (DataStore.AsEnumerable());
 		}
 		
 		protected virtual void OnUnregisterCollection (EventArgs e)
@@ -54,15 +53,12 @@ namespace Eto
 			if (list != null)
 				return list.IndexOf (item);
 			else {
-				// revert to (really) slow way of finding index
-				for (int i = 0; i < list.Count; i++) {
-					if (object.ReferenceEquals(item, DataStore[i])) 
-						return i;
-				}
-				return -1;
+				return InternalIndexOf (item);
 			}
 		}
-			
+		
+		protected abstract int InternalIndexOf (T item);
+		
 		public abstract void AddItem (T item);
 			
 		public abstract void InsertItem (int index, T item);
@@ -138,7 +134,46 @@ namespace Eto
 				break;
 			}
 		}
-			
+	}
+
+	public abstract class EnumerableChangedHandler<T, S> : CollectionChangedHandler<T, S>
+		where S: class, IEnumerable
+	{
+		protected override int InternalIndexOf (T item)
+		{
+			int index = 0;
+			foreach (var child in DataStore) {
+				if (object.ReferenceEquals (item, child)) 
+					return index;
+				index++;
+			}
+			return -1;
+		}
+		
+		protected override void OnRegisterCollection (EventArgs e)
+		{
+			base.OnRegisterCollection (e);
+			AddRange (DataStore.Cast<T>());
+		}
+	}
+	
+	public abstract class DataStoreChangedHandler<T, S> : CollectionChangedHandler<T, S>
+		where S: class, IDataStore<T>
+	{
+		protected override void OnRegisterCollection (EventArgs e)
+		{
+			base.OnRegisterCollection (e);
+			AddRange (DataStore.AsEnumerable ());
+		}
+		
+		protected override int InternalIndexOf (T item)
+		{
+			for (int i = 0; i < DataStore.Count; i++) {
+				if (object.ReferenceEquals (item, DataStore [i])) 
+					return i;
+			}
+			return -1;
+		}
 	}
 }
 

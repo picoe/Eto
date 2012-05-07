@@ -58,6 +58,7 @@
   <ItemGroup>
     <Compile Include="Log.cs" />
     <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
+    <Compile Include="Sections\Controls\TreeViewSection.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
     <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
@@ -87,7 +88,7 @@
     <Compile Include="Sections\Controls\SliderSection.cs" />
     <Compile Include="Sections\Controls\TabControlSection.cs" />
     <Compile Include="Sections\Controls\TextAreaSection.cs" />
-    <Compile Include="Sections\Controls\TreeViewSection.cs" />
+    <Compile Include="Sections\Controls\TreeGridViewSection.cs" />
     <Compile Include="Sections\Controls\WebViewSection.cs" />
     <Compile Include="Sections\Controls\XamlSection.cs" />
     <Compile Include="Sections\Controls\TextBoxSection.cs" />
@@ -100,6 +101,8 @@
     <Compile Include="Xaml\Test.cs" />
     <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
     <Compile Include="Sections\Controls\GridViewSection.cs" />
+    <Compile Include="Sections\Controls\ProgressBarSection.cs" />
+    <Compile Include="Sections\Controls\KitchenSinkSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

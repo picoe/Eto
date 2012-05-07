@@ -7,15 +7,15 @@ namespace Eto.Drawing
 		Size Size { get; }
 	}
 	
-	public class Image : InstanceWidget, IImage
+	public abstract class Image : InstanceWidget, IImage
 	{
 		IImage inner;
-		public Image(Generator g, Type type) : base(g, type)
+		protected Image(Generator g, Type type) : base(g, type)
 		{
 			inner = (IImage)Handler;
 		}
 
-		public Image(Generator g, IImage handler) : base(g, handler)
+		protected Image(Generator g, IImage handler) : base(g, handler)
 		{
 			inner = (IImage)Handler;
 		}

@@ -3,13 +3,26 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, IGridColumn
+	public interface IGridHandler
+	{
+		bool IsEventHandled(string handler);
+		
+		void ColumnClicked(GridColumnHandler column);
+	}
+	
+	public interface IGridColumnHandler
+	{
+		GLib.Value GetValue(object dataItem, int dataColumn);
+		void BindCell (IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
+	}
+	
+	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, IGridColumn, IGridColumnHandler
 	{
 		Cell dataCell;
 		bool autoSize;
 		bool editable;
-		int column;
-		GridViewHandler grid;
+		bool cellsAdded;
+		IGridHandler grid;
 		
 		public GridColumnHandler ()
 		{
@@ -21,7 +34,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			this.DataCell = new TextCell (Widget.Generator);
+			this.DataCell = new TextBoxCell (Widget.Generator);
 		}
 
 		public string HeaderText {
@@ -89,14 +102,17 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set { Control.Visible = value; }
 		}
 		
-		public void BindCell (GridViewHandler grid, ICellDataSource source, int index)
+		public void BindCell (IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex)
 		{
 			this.grid = grid;
-			this.column = index;
 			if (dataCell != null) {
-				Control.PackStart (((ICellHandler)dataCell.Handler).Control, true);
+				var cellhandler = (ICellHandler)dataCell.Handler;
+				if (!cellsAdded) {
+					cellhandler.AddCells (Control);
+					cellsAdded = true;
+				}
 				SetCellAttributes ();
-				((ICellHandler)dataCell.Handler).BindCell (source, Control, index);
+				cellhandler.BindCell (source, Control, columnIndex, ref dataIndex);
 			}
 			SetupEvents ();
 		}
@@ -108,20 +124,33 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				HandleEvent (GridView.BeginCellEditEvent);
 			if (grid.IsEventHandled (GridView.EndCellEditEvent))
 				HandleEvent (GridView.EndCellEditEvent);
+			if (grid.IsEventHandled (Grid.ColumnHeaderClickEvent))
+				HandleEvent (Grid.ColumnHeaderClickEvent);
 		}
 
 		public override void AttachEvent (string handler)
 		{
-			((ICellHandler)dataCell.Handler).HandleEvent(handler);
+			switch (handler) {
+			case Grid.ColumnHeaderClickEvent:
+				Control.Clicked += (sender, e) => {
+					if (grid != null)
+						grid.ColumnClicked (this);
+				};
+				break;
+			default:
+				((ICellHandler)dataCell.Handler).HandleEvent(handler);
+				break;
+			}
 		}
 		
-		public GLib.Value GetValue (IGridItem item)
+		public GLib.Value GetValue (object dataItem, int dataColumn)
 		{
 			if (dataCell != null) {
-				return ((ICellHandler)dataCell.Handler).GetValue(item, this.column);
+				return ((ICellHandler)dataCell.Handler).GetValue(dataItem, dataColumn);
 			}
 			else return new GLib.Value((string)null);
 		}
+		
 	}
 }
 

@@ -29,17 +29,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 			}
 			
-			public EtoTreeItem(EtoTreeItem value)
+			public EtoTreeItem (EtoTreeItem value)
+				: base (value)
 			{
 				this.Item = value.Item;
 				this.items = value.items;
 			}
 
-			public ITreeItem Item 
-			{
+			public ITreeItem Item {
 				get { return item; }
-				set
-				{
+				set {
 					item = value;
 					if (item.Image != null)
 						base.Image = Item.Image.ControlObject as NSImage;
@@ -57,7 +56,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override object Clone ()
 			{
-				return new EtoTreeItem(this);
+				return new EtoTreeItem (this);
 			}
 			
 		}
@@ -76,7 +75,30 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var myitem = notification.UserInfo [(NSString)"NSObject"] as EtoTreeItem;
 				if (myitem != null) {
 					myitem.Item.Expanded = false;
+					Handler.Widget.OnCollapsed (new TreeViewItemEventArgs (myitem.Item));
 				}
+			}
+			
+			public override bool ShouldExpandItem (NSOutlineView outlineView, NSObject item)
+			{
+				var myitem = item as EtoTreeItem;
+				if (myitem != null) {
+					var args = new TreeViewItemCancelEventArgs (myitem.Item);
+					Handler.Widget.OnExpanding (args);
+					return !args.Cancel;
+				}
+				return true;
+			}
+			
+			public override bool ShouldCollapseItem (NSOutlineView outlineView, NSObject item)
+			{
+				var myitem = item as EtoTreeItem;
+				if (myitem != null) {
+					var args = new TreeViewItemCancelEventArgs (myitem.Item);
+					Handler.Widget.OnCollapsing (args);
+					return !args.Cancel;
+				}
+				return true;
 			}
 			
 			public override void ItemDidExpand (NSNotification notification)
@@ -84,6 +106,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var myitem = notification.UserInfo [(NSString)"NSObject"] as EtoTreeItem;
 				if (myitem != null) {
 					myitem.Item.Expanded = true;
+					Handler.Widget.OnExpanded (new TreeViewItemEventArgs (myitem.Item));
 				}
 			}
 		}
@@ -118,7 +141,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				EtoTreeItem item;
 				if (!items.TryGetValue (childIndex, out item)) {
 					var parentItem = myitem != null ? myitem.Item : Handler.top;
-					item = new EtoTreeItem{ Item = parentItem[childIndex] };
+					item = new EtoTreeItem{ Item = parentItem [childIndex] };
 					Handler.cachedItems.Add (item.Item, item);
 					items.Add (childIndex, item);
 				}
@@ -168,6 +191,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.AutohidesScrollers = true;
 			Control.BorderType = NSBorderType.BezelBorder;
 			Control.DocumentView = outline;
+		}
+		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeView.ExpandedEvent:
+			case TreeView.ExpandingEvent:
+			case TreeView.CollapsedEvent:
+			case TreeView.CollapsingEvent:
+				// handled in delegate
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 
 		public ITreeStore DataStore {

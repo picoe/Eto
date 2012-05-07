@@ -3,7 +3,6 @@ using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
 using System.Collections;
-using Eto.Collections;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 #if DESKTOP
@@ -49,7 +48,7 @@ namespace Eto.Forms
 		public IList<Control> Children {
 			get { 
 				if (children == null) {
-					children = new Collection<Control> ();
+					children = new List<Control> ();
 				}
 				return children; 
 			}

@@ -21,15 +21,26 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.CurrentPage; }
 			set { Control.CurrentPage = value; }
 		}
-
-		public void AddTab(TabPage page)
+		
+		public void InsertTab (int index, TabPage page)
 		{
-			Control.AppendPage((Gtk.Widget)page.ContainerObject, (Gtk.Widget)((TabPageHandler)page.Handler).LabelControl);
+			var pageHandler = (TabPageHandler)page.Handler;
+			
+			if (index == -1)
+				Control.AppendPage(pageHandler.Control, pageHandler.LabelControl);
+			else
+				Control.InsertPage(pageHandler.Control, pageHandler.LabelControl, index);
+		}
+		
+		public void ClearTabs ()
+		{
+			while (Control.NPages > 0)
+				Control.RemovePage (0);
 		}
 
-		public void RemoveTab(TabPage page)
+		public void RemoveTab (int index, TabPage page)
 		{
-			Control.RemovePage(Control.PageNum((Gtk.Widget)page.ContainerObject));
+			Control.RemovePage (index);
 		}
 	}
 }

@@ -15,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public ProgressBarHandler ()
 		{
-			Control = new EtoSlider { Handler = this };
+			Control = new EtoSlider { Handler = this, Indeterminate = false };
 
 			MinValue = 0;
 			MaxValue = 100;

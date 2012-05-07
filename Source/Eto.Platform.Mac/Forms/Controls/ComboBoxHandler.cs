@@ -27,7 +27,7 @@ namespace Eto.Platform.Mac
 			};
 		}
 		
-		class CollectionHandler : CollectionChangedHandler<IListItem, IListStore>
+		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ComboBoxHandler Handler { get; set; }
 

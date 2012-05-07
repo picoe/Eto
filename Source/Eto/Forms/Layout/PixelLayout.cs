@@ -2,7 +2,6 @@ using System;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Collections;
-using Eto.Collections;
 #if DESKTOP
 using System.Windows.Markup;
 using System.Xaml;
@@ -20,7 +19,7 @@ namespace Eto.Forms
 	public class PixelLayout : Layout
 	{
 		IPixelLayout inner;
-		BaseList<Control> children;
+		IList<Control> children;
 		List<Control> controls = new List<Control> ();
 		
 		public override IEnumerable<Control> Controls {
@@ -29,12 +28,10 @@ namespace Eto.Forms
 			}
 		}
 
-		public BaseList<Control> Children
-		{
-			get
-			{
+		public IList<Control> Children {
+			get {
 				if (children == null) {
-					children = new BaseList<Control> ();
+					children = new List<Control> ();
 				}
 				return children;
 			}
@@ -113,8 +110,10 @@ namespace Eto.Forms
 		{
 			base.EndInit ();
 #if DESKTOP
-			foreach (var control in children) {
-				Add (control, GetLocation (control));
+			if (children != null) {
+				foreach (var control in children) {
+					Add (control, GetLocation (control));
+				}
 			}
 #endif
 		}

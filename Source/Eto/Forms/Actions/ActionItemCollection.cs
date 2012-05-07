@@ -50,7 +50,7 @@ namespace Eto.Forms
 		
 		public ActionItem Add(string actionID, int order = 500)
 		{
-			var action = actions.Find(actionID);
+			var action = actions[actionID];
 			#if DEBUG
 			if (action == null) Console.WriteLine("action {0} is not found", actionID);
 			#endif
@@ -59,7 +59,7 @@ namespace Eto.Forms
 
 		public ActionItem Add(string actionID, bool showLabel, int order = 500)
 		{
-			var action = actions.Find(actionID);
+			var action = actions[actionID];
 			#if DEBUG
 			if (action == null) Console.WriteLine("action {0} is not found", actionID);
 			#endif

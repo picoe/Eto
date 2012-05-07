@@ -46,7 +46,7 @@ namespace Eto.Platform.Mac
 			
 			NSView parent = (NSView)ControlObject;
 			
-			NSView childControl = (NSView)child.ControlObject;
+			NSView childControl = child.GetContainerView ();
 			var frame = parent.Frame;
 			
 			if (frame.Width > padding.Horizontal && frame.Height > padding.Vertical)
@@ -71,12 +71,12 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				if (this.child != null) { 
-					((NSView)this.child.ControlObject).RemoveFromSuperview(); 
+					this.child.GetContainerView ().RemoveFromSuperview(); 
 				}
 				if (value != null)
 				{
 					this.child = value;
-					NSView childControl = (NSView)child.ControlObject;
+					NSView childControl = child.GetContainerView ();
 					childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 					
 					NSView parent = (NSView)ControlObject;

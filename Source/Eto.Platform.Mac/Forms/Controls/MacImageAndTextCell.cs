@@ -4,6 +4,7 @@ using SD = System.Drawing;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -51,10 +52,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var imgitem = value as IImageListItem;
 			if (imgitem != null && imgitem.Image != null)
-				this.Image = imgitem.Image.ControlObject as NSImage;
+				this.Image = ((IImageSource)imgitem.Image.Handler).GetImage ();
 			this.Text = (NSString)value.Text;
 		}
-			
+		
 		[Export("copyWithZone:")]
 		public virtual NSObject CopyWithZone (IntPtr zone)
 		{
@@ -75,7 +76,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 	public class MacImageListItemCell : NSTextFieldCell
 	{
-		const int IMAGE_PADDING = 2;
+		public const int IMAGE_PADDING = 2;
 		
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
@@ -94,7 +95,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var size = base.CellSizeForBounds (bounds);
 			var data = ObjectValue as MacImageData;
 			if (data != null && data.Image != null) {
-				size.Width += bounds.Height + IMAGE_PADDING;
+				size.Width += size.Height + IMAGE_PADDING * 2;
 			}
 			size.Width = Math.Min (size.Width, bounds.Width);
 			return size;

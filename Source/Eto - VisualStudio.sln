@@ -101,7 +101,7 @@ Global
 		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Eto.Test\Eto.Test.csproj
+		StartupItem = Eto.Test\Eto.Test.WinForms\Eto.Test.WinForms.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical

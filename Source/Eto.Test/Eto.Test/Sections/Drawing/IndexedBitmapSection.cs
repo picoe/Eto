@@ -25,8 +25,7 @@ namespace Eto.Test.Sections.Drawing
 		IndexedBitmap CreateImage()
 		{
 			var image = new IndexedBitmap (100, 100, 8);
-			var pal = new Palette (256);
-			pal.AddRange (Palette.GetEgaPalette ());
+			var pal = new Palette (Palette.GetEgaPalette ());
 			
 			// must have at least 256 colors for an 8-bit bitmap
 			while (pal.Count < 256)

@@ -7,6 +7,7 @@ using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
 using System.Collections.Generic;
 using GLib;
+using System.Text;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -33,15 +34,27 @@ namespace Eto.Platform.GtkSharp
 
 		public static string StringToMnuemonic (string label)
 		{
-			//label = label.Replace("_", "__");
-			label = label.Replace ("&", "_");
-			return label;
+			label = label.Replace ("_", "__");
+			var match = Regex.Match (label, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+			if (match.Success) {
+				var sb = new StringBuilder (label);
+				sb[match.Index] = '_';
+				sb.Replace ("&&", "&");
+				return sb.ToString ();
+			}
+			return label.Replace ("&&", "&");
 		}
 
 		public static string MnuemonicToString (string label)
 		{
-			label = label.Replace ("_", "&");
-			//label = label.Replace("__", "_");
+			var match = Regex.Match (label, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
+			if (match.Success) {
+				var sb = new StringBuilder (label);
+				sb[match.Index] = '&';
+				sb.Replace ("__", "_");
+				return sb.ToString ();
+			}
+			label = label.Replace ("__", "_");
 			return label;
 		}
 
