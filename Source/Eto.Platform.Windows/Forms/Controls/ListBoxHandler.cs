@@ -21,6 +21,19 @@ namespace Eto.Platform.Windows
 				DrawMode = swf.DrawMode.OwnerDrawFixed;
 			}
 
+			public override sd.Font Font
+			{
+				get
+				{
+					return base.Font;
+				}
+				set
+				{
+					base.Font = value;
+					this.ItemHeight = value.Height;
+				}
+			}
+
 			protected override void OnDrawItem (swf.DrawItemEventArgs e)
 			{
 				e.DrawBackground ();

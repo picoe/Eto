@@ -3,11 +3,14 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using SD = System.Drawing;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac
 {
 	public class GroupBoxHandler : MacContainer<NSBox, GroupBox>, IGroupBox
 	{
+		Font font;
+
 		public class EtoBox : NSBox, IMacControl
 		{
 			public object Handler { get; set; }
@@ -36,6 +39,23 @@ namespace Eto.Platform.Mac
 			}
 			set {
 				Control.SetFrameFromContentFrame (new System.Drawing.RectangleF (0, 0, value.Width, value.Height));
+			}
+		}
+
+		public Font Font
+		{
+			get
+			{
+				return font;
+			}
+			set
+			{
+				font = value;
+				if (font != null)
+					Control.TitleFont = ((FontHandler)font.Handler).Control;
+				else
+					Control.TitleFont = null;
+				LayoutIfNeeded ();
 			}
 		}
 

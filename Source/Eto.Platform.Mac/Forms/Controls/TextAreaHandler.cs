@@ -5,9 +5,9 @@ using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
-	public class TextAreaHandler : MacView<NSScrollView, TextArea>, ITextArea
+	public class TextAreaHandler : MacTextControl<NSTextView, TextArea>, ITextArea
 	{
-		NSTextView text;
+		NSScrollView scroll;
 		
 		public class EtoTextView : NSTextView, IMacControl
 		{
@@ -15,10 +15,15 @@ namespace Eto.Platform.Mac
 				get; set;
 			}
 		}
+
+		public override NSView ContainerControl
+		{
+			get { return scroll; }
+		}
 		
 		public TextAreaHandler ()
 		{
-			text = new EtoTextView {
+			Control = new EtoTextView {
 				Handler = this,
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
 				HorizontallyResizable = true,
@@ -28,18 +33,14 @@ namespace Eto.Platform.Mac
 				AllowsUndo = true
 			};
 
-			Control = new NSScrollView {
+			scroll = new NSScrollView {
 				AutoresizesSubviews = true,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
 				BorderType = NSBorderType.BezelBorder,
-				DocumentView = text
+				DocumentView = Control
 			};
-		}
-		
-		public override object EventObject {
-			get { return text; }
 		}
 		
 		#region ITextArea Members
@@ -48,7 +49,7 @@ namespace Eto.Platform.Mac
 		{
 			switch (handler) {
 			case TextArea.TextChangedEvent:
-				text.TextDidChange += delegate {
+				Control.TextDidChange += delegate {
 					Widget.OnTextChanged (EventArgs.Empty);
 				};
 				break;
@@ -59,19 +60,19 @@ namespace Eto.Platform.Mac
 		}
 		
 		public bool ReadOnly {
-			get { return !text.Editable; }
-			set { text.Editable = !value; }
+			get { return !Control.Editable; }
+			set { Control.Editable = !value; }
 		}
 		
 		public override bool Enabled {
-			get { return text.Selectable; }
+			get { return Control.Selectable; }
 			set {
-				text.Selectable = value;
+				Control.Selectable = value;
 				if (!value) {
-					text.TextColor = NSColor.DisabledControlText;
+					Control.TextColor = NSColor.DisabledControlText;
 					Control.BackgroundColor = NSColor.ControlBackground;
 				} else {
-					text.TextColor = NSColor.ControlText;
+					Control.TextColor = NSColor.ControlText;
 					Control.BackgroundColor = NSColor.TextBackground;
 				}
 			}
@@ -79,36 +80,36 @@ namespace Eto.Platform.Mac
 		
 		public string Text {
 			get {
-				return text.Value;
+				return Control.Value;
 			}
 			set {
-				text.Value = value;
-				this.text.DisplayIfNeeded ();
+				Control.Value = value;
+				this.Control.DisplayIfNeeded ();
 			}
 		}
 		
 		public bool Wrap {
 			get {
-				return text.TextContainer.WidthTracksTextView;
+				return Control.TextContainer.WidthTracksTextView;
 			}
 			set {
 				if (value) {
-					text.TextContainer.WidthTracksTextView = true;
+					Control.TextContainer.WidthTracksTextView = true;
 				} else {
-					text.TextContainer.WidthTracksTextView = false;
-					text.TextContainer.ContainerSize = new System.Drawing.SizeF (float.MaxValue, float.MaxValue);
+					Control.TextContainer.WidthTracksTextView = false;
+					Control.TextContainer.ContainerSize = new System.Drawing.SizeF (float.MaxValue, float.MaxValue);
 				}
 			}
 		}
 		
 		public void Append (string text, bool scrollToCursor)
 		{
-			var range = new NSRange (this.text.Value.Length, 0);
-			this.text.Replace (range, text);
-			range = new NSRange (this.text.Value.Length, 0);
-			this.text.SelectedRange = range;
+			var range = new NSRange (this.Control.Value.Length, 0);
+			this.Control.Replace (range, text);
+			range = new NSRange (this.Control.Value.Length, 0);
+			this.Control.SelectedRange = range;
 			if (scrollToCursor)
-				this.text.ScrollRangeToVisible (range);
+				this.Control.ScrollRangeToVisible (range);
 		}
 		
 		#endregion

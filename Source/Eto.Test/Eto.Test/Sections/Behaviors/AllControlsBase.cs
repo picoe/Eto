@@ -15,7 +15,8 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddRow (null, TextBoxControl (), TextAreaControl (), null);
 			layout.AddRow (null, CheckBoxControl (), RadioButtonControl (), null);
 			layout.AddRow (null, DateTimeControl (), NumericUpDownControl (), null);
-			layout.AddRow (null, ComboBoxControl (), DrawableControl (), null);
+			layout.AddRow (null, ComboBoxControl (), PasswordBoxControl (), null);
+			layout.AddRow (null, ListBoxControl (), DrawableControl (), null);
 			layout.Add (null);
 		}
 		
@@ -39,7 +40,14 @@ namespace Eto.Test.Sections.Behaviors
 			LogEvents (control);
 			return control;
 		}
-		
+
+		Control PasswordBoxControl ()
+		{
+			var control = new PasswordBox { Text = "PasswordBox Control" };
+			LogEvents (control);
+			return control;
+		}
+
 		Control TextAreaControl ()
 		{
 			var control = new TextArea { Text = "TextArea Control" };
@@ -84,7 +92,17 @@ namespace Eto.Test.Sections.Behaviors
 			LogEvents (control);
 			return control;
 		}
-		
+
+		Control ListBoxControl ()
+		{
+			var control = new ListBox { };
+			control.Items.Add (new ListItem { Text = "Item 1" });
+			control.Items.Add (new ListItem { Text = "Item 2" });
+			control.Items.Add (new ListItem { Text = "Item 3" });
+			LogEvents (control);
+			return control;
+		}
+
 		Control DrawableControl ()
 		{
 			var control = new Drawable { Size = new Size (100, 30), CanFocus = true };

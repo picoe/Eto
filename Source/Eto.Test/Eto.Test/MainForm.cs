@@ -38,7 +38,7 @@ namespace Eto.Test
 
 		public MainForm ()
 		{
-			this.Text = "Test Application";
+			this.Title = "Test Application";
 			this.Style = "main";
 			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
 			this.ClientSize = new Size (900, 650);

@@ -191,7 +191,7 @@ namespace Eto.Platform.GtkSharp
 			containerWidget.ShowAll ();
 		}
 
-		public override string Text {
+		public string Title {
 			get { return Control.Title; }
 			set { Control.Title = value; }
 		}

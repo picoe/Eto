@@ -10,7 +10,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-	public interface IListControl : IControl
+	public interface IListControl : ICommonControl
 	{
 		IListStore DataStore { get; set; }
 		
@@ -32,7 +32,7 @@ namespace Eto.Forms
 #if DESKTOP
 	[ContentProperty("Items")]
 #endif
-	public class ListControl : Control
+	public class ListControl : CommonControl
 	{
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 

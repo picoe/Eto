@@ -1,10 +1,13 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class CheckBoxHandler : GtkControl<Gtk.CheckButton, CheckBox>, ICheckBox
 	{
+		Font font;
 		bool toggling;
 		
 		public CheckBoxHandler ()
@@ -35,6 +38,20 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.Label; }
 			set { Control.Label = value; }
 		}
+
+		public override Font Font
+		{
+			get { return font; }
+			set
+			{
+				font = value;
+				if (font != null)
+					Control.Child.ModifyFont (((FontHandler)font.Handler).Control);
+				else
+					Control.Child.ModifyFont (null);
+			}
+		}
+
 
 		public bool? Checked {
 			get { return Control.Inconsistent ? null : (bool?)Control.Active; }

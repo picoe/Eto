@@ -2,21 +2,25 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
+using Eto.Drawing;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public class ComboBoxHandler : GtkControl<Gtk.ComboBox, ComboBox>, IComboBox
 	{
+		Font font;
 		CollectionHandler collection;
 		Gtk.ListStore listStore;
+		Gtk.CellRendererText text;
 
 		public ComboBoxHandler ()
 		{
 			listStore = new Gtk.ListStore (typeof(string));
 			Control = new Gtk.ComboBox (listStore);
-			var text = new Gtk.CellRendererText ();
+			text = new Gtk.CellRendererText ();
 			Control.PackStart (text, false);
-			Control.AddAttribute (text, "text", 0);			
+			Control.AddAttribute (text, "text", 0);
 			Control.Changed += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			};
@@ -30,7 +34,22 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				Control.Active = value;
 			}
 		}
-		
+
+		public override Font Font
+		{
+			get
+			{
+				return font;
+			}
+			set
+			{
+				font = value;
+				if (font != null)
+					text.FontDesc = ((FontHandler)font.Handler).Control;
+				else
+					text.FontDesc = null;
+			}
+		}
 
 		public class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
@@ -58,7 +77,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				Handler.listStore.Clear ();
 			}
 		}
-		
+
 		public IListStore DataStore {
 			get { return collection != null ? collection.DataStore : null; }
 			set {

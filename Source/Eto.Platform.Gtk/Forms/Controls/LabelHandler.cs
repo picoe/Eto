@@ -4,13 +4,18 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class LabelHandler : GtkControl<Gtk.EventBox, Label>, ILabel
+	public class LabelHandler : GtkControl<LabelHandler.EtoLabel, Label>, ILabel
 	{
-		WrapLabel label;
+		Gtk.EventBox eventBox;
 		HorizontalAlign horizontalAlign = HorizontalAlign.Left;
 		VerticalAlign verticalAlign = VerticalAlign.Top;
+
+		public override Gtk.Widget ContainerControl
+		{
+			get { return eventBox; }
+		}
 		
-		class WrapLabel : Gtk.Label
+		public class EtoLabel : Gtk.Label
 		{
 			int wrapWidth = 0;
 			
@@ -42,46 +47,46 @@ namespace Eto.Platform.GtkSharp
 
 		public LabelHandler ()
 		{
-			Control = new Gtk.EventBox();
-			Control.VisibleWindow = false;
-			label = new WrapLabel {
+			eventBox = new Gtk.EventBox();
+			eventBox.VisibleWindow = false;
+			Control = new EtoLabel {
 				SingleLineMode = false,
 				LineWrap = true,
 				LineWrapMode = Pango.WrapMode.Word
 			};
-			label.SetAlignment (0, 0);
-			Control.Child = label;
+			Control.SetAlignment (0, 0);
+			eventBox.Child = (Gtk.Label)Control;
 		}
 		
 		public WrapMode Wrap {
 			get {
-				if (!label.LineWrap)
+				if (!Control.LineWrap)
 					return WrapMode.None;
-				else if (label.LineWrapMode == Pango.WrapMode.Word)
+				else if (Control.LineWrapMode == Pango.WrapMode.Word)
 					return WrapMode.Word;
-				else if (label.LineWrapMode == Pango.WrapMode.Char)
+				else if (Control.LineWrapMode == Pango.WrapMode.Char)
 					return WrapMode.Character;
 				else 
 					return WrapMode.Character;
 			}
 			set {
 				switch (value) {
-				case WrapMode.None: 
-					label.Wrap = false;
-					label.LineWrap = false;
-					label.SingleLineMode = true;
+				case WrapMode.None:
+					Control.Wrap = false;
+					Control.LineWrap = false;
+					Control.SingleLineMode = true;
 					break;
 				case WrapMode.Word:
-					label.Wrap = true;
-					label.LineWrapMode = Pango.WrapMode.Word;
-					label.LineWrap = true;
-					label.SingleLineMode = false;
+					Control.Wrap = true;
+					Control.LineWrapMode = Pango.WrapMode.Word;
+					Control.LineWrap = true;
+					Control.SingleLineMode = false;
 					break;
 				case WrapMode.Character:
-					label.Wrap = true;
-					label.LineWrapMode = Pango.WrapMode.Char;
-					label.LineWrap = true;
-					label.SingleLineMode = false;
+					Control.Wrap = true;
+					Control.LineWrapMode = Pango.WrapMode.Char;
+					Control.LineWrap = true;
+					Control.SingleLineMode = false;
 					break;
 				default:
 					throw new NotSupportedException();
@@ -90,13 +95,13 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		public virtual Color TextColor {
-			get { return Generator.Convert (label.Style.Foreground (Gtk.StateType.Normal)); }
-			set { label.ModifyFg (Gtk.StateType.Normal, Generator.Convert (value)); }
+			get { return Generator.Convert (Control.Style.Foreground (Gtk.StateType.Normal)); }
+			set { Control.ModifyFg (Gtk.StateType.Normal, Generator.Convert (value)); }
 		}
 
 		public override string Text {
-			get { return MnuemonicToString (label.Text); }
-			set { label.TextWithMnemonic = StringToMnuemonic (value); }
+			get { return MnuemonicToString (Control.Text); }
+			set { Control.TextWithMnemonic = StringToMnuemonic (value); }
 		}
 
 		public HorizontalAlign HorizontalAlign {
@@ -138,8 +143,8 @@ namespace Eto.Platform.GtkSharp
 				yalignment = 1F;
 				break;
 			}
-			label.SetAlignment(xalignment, yalignment);
-			label.Justify = justify;
+			Control.SetAlignment (xalignment, yalignment);
+			Control.Justify = justify;
 		}
 
 		public VerticalAlign VerticalAlign {

@@ -14,6 +14,21 @@ namespace Eto.Platform.GtkSharp
 	public interface IGtkControl
 	{
 		Point Location { get; set; }
+
+		Gtk.Widget ContainerControl { get; }
+	}
+
+	public static class GtkControlExtensions
+	{
+		public static Gtk.Widget GetContainerWidget (this Control control)
+		{
+			if (control == null)
+				return null;
+			var containerHandler = control.Handler as IGtkControl;
+			if (containerHandler != null)
+				return containerHandler.ContainerControl;
+			return control.ControlObject as Gtk.Widget;
+		}
 	}
 
 	public abstract class GtkControl<T, W> : WidgetHandler<T, W>, IControl, IGtkControl
@@ -30,6 +45,11 @@ namespace Eto.Platform.GtkSharp
 		public GtkControl ()
 		{
 			size = Size.Empty;
+		}
+
+		public virtual Gtk.Widget ContainerControl
+		{
+			get { return Control; }
 		}
 
 		public static string StringToMnuemonic (string label)
@@ -64,9 +84,9 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public virtual Size Size {
-			get { 
-				if (Control.Visible) 
-					return Generator.Convert (Control.Allocation.Size);
+			get {
+				if (ContainerControl.Visible)
+					return Generator.Convert (ContainerControl.Allocation.Size);
 				else
 					return size; 
 			}
@@ -76,7 +96,7 @@ namespace Eto.Platform.GtkSharp
 					var alloc = Control.Allocation;
 					alloc.Size = Generator.Convert (value);
 					//Control.Allocation = alloc;
-					Control.SetSizeRequest (size.Width, size.Height);
+					ContainerControl.SetSizeRequest (size.Width, size.Height);
 				}
 			}
 		}
@@ -367,7 +387,7 @@ namespace Eto.Platform.GtkSharp
 			get { return Control; }
 		}
 		
-		public Font Font {
+		public virtual Font Font {
 			get {
 				return font;
 			}

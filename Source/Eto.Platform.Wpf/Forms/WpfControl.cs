@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -11,6 +12,8 @@ namespace Eto.Platform.Wpf.Forms
 		where T : System.Windows.Controls.Control
 		where W: Control
 	{
+		Font font;
+
 		public override Color BackgroundColor
 		{
 			get
@@ -24,5 +27,16 @@ namespace Eto.Platform.Wpf.Forms
 				Control.Background = new System.Windows.Media.SolidColorBrush(Generator.Convert(value));
 			}
 		}
+
+		public Font Font
+		{
+			get { return font; }
+			set
+			{
+				font = value;
+				FontHandler.Apply (Control, font);
+			}
+		}
+
 	}
 }

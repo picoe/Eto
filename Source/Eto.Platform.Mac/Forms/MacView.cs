@@ -100,11 +100,11 @@ namespace Eto.Platform.Mac
 		public virtual bool AutoSize { get; protected set; }
 
 		public virtual Size Size {
-			get { return Generator.ConvertF (Control.Frame.Size); }
+			get { return Generator.ConvertF (ContainerControl.Frame.Size); }
 			set { 
 				var oldSize = GetPreferredSize ();
 				this.PreferredSize = value;
-				Generator.SetSizeWithAuto (Control, value);
+				Generator.SetSizeWithAuto (ContainerControl, value);
 				this.AutoSize = false;
 				CreateTracking ();
 				LayoutIfNeeded (oldSize);
@@ -115,7 +115,7 @@ namespace Eto.Platform.Mac
 		{
 			naturalSize = null;
 			if (Widget.Loaded) {
-				var oldSize = oldPreferredSize ?? Generator.ConvertF (Control.Frame.Size);
+				var oldSize = oldPreferredSize ?? Generator.ConvertF (ContainerControl.Frame.Size);
 				var newSize = GetPreferredSize ();
 				if (newSize != oldSize || force) {
 					var layout = Widget.ParentLayout.Handler as IMacLayout;

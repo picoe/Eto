@@ -7,33 +7,38 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class ListBoxHandler : GtkControl<Gtk.ScrolledWindow, ListBox>, IListBox, IGtkListModelHandler<IListItem, IListStore>
+	public class ListBoxHandler : GtkControl<Gtk.TreeView, ListBox>, IListBox, IGtkListModelHandler<IListItem, IListStore>
 	{
-		Gtk.TreeView tree;
+		Gtk.ScrolledWindow scroll;
 		GtkListModel<IListItem, IListStore> model;
 		ContextMenu contextMenu;
 		CollectionHandler collection;
 		public static Size MaxImageSize = new Size (16, 16);
+
+		public override Gtk.Widget ContainerControl
+		{
+			get { return scroll; }
+		}
 		
 		public ListBoxHandler ()
 		{
 			model = new GtkListModel<IListItem, IListStore>{ Handler = this };
 			
-			Control = new Gtk.ScrolledWindow ();
-			Control.ShadowType = Gtk.ShadowType.In;
-			tree = new Gtk.TreeView (new Gtk.TreeModelAdapter (model));
+			scroll = new Gtk.ScrolledWindow ();
+			scroll.ShadowType = Gtk.ShadowType.In;
+			Control = new Gtk.TreeView (new Gtk.TreeModelAdapter (model));
 			//tree.FixedHeightMode = true;
-			tree.ShowExpanders = false;
-			Control.Add (tree);
-			
-			tree.Events |= Gdk.EventMask.ButtonPressMask;
-			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
+			Control.ShowExpanders = false;
+			scroll.Add (Control);
 
-			tree.AppendColumn ("Img", new Gtk.CellRendererPixbuf (), "pixbuf", 1);
-			tree.AppendColumn ("Data", new Gtk.CellRendererText (), "text", 0);
-			tree.HeadersVisible = false;
-			tree.Selection.Changed += selection_Changed;
-			tree.RowActivated += tree_RowActivated;
+			Control.Events |= Gdk.EventMask.ButtonPressMask;
+			Control.ButtonPressEvent += HandleTreeButtonPressEvent;
+
+			Control.AppendColumn ("Img", new Gtk.CellRendererPixbuf (), "pixbuf", 1);
+			Control.AppendColumn ("Data", new Gtk.CellRendererText (), "text", 0);
+			Control.HeadersVisible = false;
+			Control.Selection.Changed += selection_Changed;
+			Control.RowActivated += tree_RowActivated;
 		}
 		
 		[GLib.ConnectBefore]
@@ -48,14 +53,14 @@ namespace Eto.Platform.GtkSharp
 
 		public override void Focus ()
 		{
-			tree.GrabFocus ();
+			Control.GrabFocus ();
 		}
 
 		public int SelectedIndex {
 			get {
 				Gtk.TreeIter iter;
-				
-				if (tree.Selection != null && tree.Selection.GetSelected (out iter)) {
+
+				if (Control.Selection != null && Control.Selection.GetSelected (out iter)) {
 					var val = model.NodeFromIter (iter);
 					if (val >= 0)
 						return val;
@@ -65,15 +70,15 @@ namespace Eto.Platform.GtkSharp
 			}
 			set {
 				if (value == -1) {
-					if (tree.Selection != null)
-						tree.Selection.UnselectAll ();
+					if (Control.Selection != null)
+						Control.Selection.UnselectAll ();
 					return;
 				}
 				Gtk.TreePath path = new Gtk.TreePath ();
 				path.AppendIndex (value);
-				Gtk.TreeViewColumn focus_column = tree.Columns [0];
-				
-				tree.SetCursor (path, focus_column, false);
+				Gtk.TreeViewColumn focus_column = Control.Columns[0];
+
+				Control.SetCursor (path, focus_column, false);
 			}
 		}
 
@@ -132,38 +137,38 @@ namespace Eto.Platform.GtkSharp
 			protected override void OnRegisterCollection (EventArgs e)
 			{
 				Handler.model = new GtkListModel<IListItem, IListStore>{ Handler = this.Handler };
-				Handler.tree.Model = new Gtk.TreeModelAdapter (Handler.model);
+				Handler.Control.Model = new Gtk.TreeModelAdapter (Handler.model);
 			}
 
 			protected override void OnUnregisterCollection (EventArgs e)
 			{
-				Handler.tree.Model = null;
+				Handler.Control.Model = null;
 			}
 
 			public override void AddItem (IListItem item)
 			{
 				var iter = Handler.model.GetIterAtRow (DataStore.Count);
 				var path = Handler.model.GetPathAtRow (DataStore.Count);
-				Handler.tree.Model.EmitRowInserted (path, iter);
+				Handler.Control.Model.EmitRowInserted (path, iter);
 			}
 
 			public override void InsertItem (int index, IListItem item)
 			{
 				var iter = Handler.model.GetIterAtRow (index);
 				var path = Handler.model.GetPathAtRow (index);
-				Handler.tree.Model.EmitRowInserted (path, iter);
+				Handler.Control.Model.EmitRowInserted (path, iter);
 			}
 
 			public override void RemoveItem (int index)
 			{
 				var path = Handler.model.GetPathAtRow (index);
-				Handler.tree.Model.EmitRowDeleted (path);
+				Handler.Control.Model.EmitRowDeleted (path);
 			}
 			
 			public override void RemoveAllItems ()
 			{
 				Handler.model = new GtkListModel<IListItem, IListStore>{ Handler = Handler };
-				Handler.tree.Model = new Gtk.TreeModelAdapter (Handler.model);
+				Handler.Control.Model = new Gtk.TreeModelAdapter (Handler.model);
 			}
 		}
 		

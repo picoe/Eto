@@ -217,6 +217,11 @@ namespace Eto.Platform.Windows
 				Control.Icon = (sd.Icon)icon.ControlObject;
 			}
 		}
+
+		public string Title {
+			get { return Control.Text; }
+			set { Control.Text = value; }
+		}
 		
 		public Point Location {
 			get {

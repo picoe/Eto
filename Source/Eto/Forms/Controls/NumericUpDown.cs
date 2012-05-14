@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface INumericUpDown : IControl
+	public interface INumericUpDown : ICommonControl
 	{
 		bool ReadOnly { get; set; }
 
@@ -13,11 +13,9 @@ namespace Eto.Forms
 		double MinValue { get; set; }
 
 		double MaxValue { get; set; }
-		
-		Font Font { get; set; }
 	}
 	
-	public class NumericUpDown : Control
+	public class NumericUpDown : CommonControl
 	{
 		INumericUpDown inner;
 		
@@ -56,11 +54,6 @@ namespace Eto.Forms
 		public double MaxValue {
 			get { return inner.MaxValue; }
 			set { inner.MaxValue = value; }
-		}
-		
-		public Font Font {
-			get { return inner.Font; }
-			set { inner.Font = value; }
 		}
 	}
 }

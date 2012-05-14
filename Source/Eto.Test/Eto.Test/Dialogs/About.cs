@@ -11,7 +11,7 @@ namespace Eto.Test.Dialogs
 	{
 		public About ()
 		{
-			this.Text = "About Eto Test";
+			this.Title = "About Eto Test";
 			this.Resizable = true;
 
 			var layout = new DynamicLayout (this);

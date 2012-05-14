@@ -13,8 +13,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class NumericUpDownHandler : WpfControl<mwc.DoubleUpDown, NumericUpDown>, INumericUpDown
 	{
-		Font font;
-
 		public NumericUpDownHandler ()
 		{
 			Control = new mwc.DoubleUpDown ();
@@ -44,14 +42,5 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Maximum = value; }
 		}
 
-		public Font Font
-		{
-			get { return font; }
-			set
-			{
-				font = value;
-				FontHandler.Apply (Control, font);
-			}
-		}
 	}
 }

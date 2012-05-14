@@ -29,7 +29,6 @@ namespace Eto.Forms
 	{
 		HorizontalAlign HorizontalAlign { get; set; }
 		VerticalAlign VerticalAlign { get; set; }
-		Font Font { get; set; }
 		WrapMode Wrap { get; set; }
 		Color TextColor { get; set; }
 	}
@@ -43,12 +42,6 @@ namespace Eto.Forms
 		public Label(Generator g) : base(g, typeof(ILabel))
 		{
 			inner = (ILabel)Handler;
-		}
-		
-		public Font Font
-		{
-			get { return inner.Font; }
-			set { inner.Font = value; }
 		}
 		
 		public WrapMode Wrap

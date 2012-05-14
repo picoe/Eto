@@ -34,7 +34,7 @@ namespace Eto.Platform.GtkSharp
 				
 				content = value;
 				if (content != null) {
-					var widget = (Gtk.Widget)content.ControlObject;
+					var widget = content.GetContainerWidget ();
 					Control.Child = widget;
 					widget.ShowAll ();
 				}

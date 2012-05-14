@@ -25,7 +25,7 @@ namespace Eto.Platform.GtkSharp
 			IGtkControl ctl = ((IGtkControl)child.Handler);
 			if (ctl.Location.X != x || ctl.Location.Y != y)
 			{
-				Control.Move((Gtk.Widget)child.ControlObject, x, y);
+				Control.Move (child.GetContainerWidget (), x, y);
 				
 				ctl.Location = new Point(x, y);
 			}
@@ -33,7 +33,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public void Remove(Control child)
 		{
-			Control.Remove((Gtk.Widget)child.ControlObject);
+			Control.Remove (child.GetContainerWidget ());
 		}
 		
 	}

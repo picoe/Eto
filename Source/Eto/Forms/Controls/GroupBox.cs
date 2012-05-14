@@ -1,9 +1,13 @@
 using System;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IGroupBox : IContainer, ITextControl
+	public interface IGroupBox : IContainer
 	{
+		Font Font { get; set; }
+
+		string Text { get; set; }
 	}
 	
 	public class GroupBox : Container
@@ -15,6 +19,12 @@ namespace Eto.Forms
 		public GroupBox(Generator g) : base(g, typeof(IGroupBox))
 		{
 			inner = (IGroupBox)base.Handler;
+		}
+
+		public Font Font
+		{
+			get { return inner.Font; }
+			set { inner.Font = value; }
 		}
 		
 		public string Text

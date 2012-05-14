@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public partial interface IWindow : IContainer, ITextControl
+	public partial interface IWindow : IContainer
 	{
 		ToolBar ToolBar { get; set; }
 		
@@ -13,6 +13,8 @@ namespace Eto.Forms
 		Point Location { get; set; }
 
 		double Opacity { get; set; }
+
+		string Title { get; set; }
 
 		//void AddToolbar(ToolBar toolBar);
 		//void RemoveToolbar(ToolBar toolBar);
@@ -73,10 +75,16 @@ namespace Eto.Forms
 			//toolBars = new ToolBarCollection(this);
 			Initialize (); 
 		}
-	
+
+		public string Title {
+			get { return inner.Title; }
+			set { inner.Title = value; }
+		}
+
+		[Obsolete("Use Title instead")]
 		public string Text {
-			get { return inner.Text; }
-			set { inner.Text = value; }
+			get { return Title; }
+			set { Title = value; }
 		}
 		
 		public Point Location {

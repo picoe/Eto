@@ -10,7 +10,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class LabelHandler : WpfControl<System.Windows.Controls.Label, Label>, ILabel
 	{
-		Font font;
 		System.Windows.Controls.TextBlock text;
 
 		public LabelHandler ()
@@ -84,16 +83,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					default:
 						throw new NotSupportedException ();
 				}
-			}
-		}
-
-		public Font Font
-		{
-			get { return font; }
-			set
-			{
-				font = value;
-				FontHandler.Apply (Control, font);
 			}
 		}
 

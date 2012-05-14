@@ -9,11 +9,15 @@ using Eto.Platform.Mac.Forms.Controls;
 
 namespace Eto.Platform.Mac
 {
-	public class ListBoxHandler : MacView<NSScrollView, ListBox>, IListBox
+	public class ListBoxHandler : MacControl<NSTableView, ListBox>, IListBox
 	{
-		NSTableView control;
 		NSScrollView scroll;
 		CollectionHandler collection;
+
+		public override NSView ContainerControl
+		{
+			get { return scroll; }
+		}
 
 				
 		class DataSource : NSTableViewDataSource
@@ -76,18 +80,14 @@ namespace Eto.Platform.Mac
 		}
 		
 		public override bool Enabled {
-			get { return control.Enabled; }
-			set { control.Enabled = value; }
-		}
-		
-		public override object EventObject {
-			get { return control; }
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
 		
 		public ListBoxHandler ()
 		{
 			collection = new CollectionHandler{ Handler = this };
-			control = new EtoListBoxTableView{ Handler = this };
+			Control = new EtoListBoxTableView { Handler = this };
 			
 			var col = new NSTableColumn ();
 			col.ResizingMask = NSTableColumnResizing.Autoresizing;
@@ -95,23 +95,22 @@ namespace Eto.Platform.Mac
 			var cell = new MacImageListItemCell ();
 			cell.Wraps = false;
 			col.DataCell = cell;
-			control.AddColumn (col);
-			
-			control.DataSource = new DataSource{ Handler = this };
-			control.HeaderView = null;
-			control.DoubleClick += delegate {
+			Control.AddColumn (col);
+
+			Control.DataSource = new DataSource { Handler = this };
+			Control.HeaderView = null;
+			Control.DoubleClick += delegate {
 				Widget.OnActivated (EventArgs.Empty);
 			};
-			control.Delegate = new Delegate { Handler = this };
+			Control.Delegate = new Delegate { Handler = this };
 			
 			scroll = new NSScrollView ();
 			scroll.AutoresizesSubviews = true;
-			scroll.DocumentView = control;
+			scroll.DocumentView = Control;
 			scroll.HasVerticalScroller = true;
 			scroll.HasHorizontalScroller = true;
 			scroll.AutohidesScrollers = true;
 			scroll.BorderType = NSBorderType.BezelBorder;
-			Control = scroll;
 		}
 		
 		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
@@ -125,27 +124,27 @@ namespace Eto.Platform.Mac
 			
 			public override void AddRange (IEnumerable<IListItem> items)
 			{
-				Handler.control.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void AddItem (IListItem item)
 			{
-				Handler.control.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void InsertItem (int index, IListItem item)
 			{
-				Handler.control.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void RemoveItem (int index)
 			{
-				Handler.control.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 
 			public override void RemoveAllItems ()
 			{
-				Handler.control.ReloadData ();
+				Handler.Control.ReloadData ();
 			}
 		}
 
@@ -159,28 +158,28 @@ namespace Eto.Platform.Mac
 		}
 
 		public int SelectedIndex {
-			get	{ return control.SelectedRow; }
+			get { return Control.SelectedRow; }
 			set {
 				if (value == -1)
-					control.DeselectAll (control);
+					Control.DeselectAll (Control);
 				else {
-					control.SelectRow (value, false);
-					control.ScrollRowToVisible (value);
+					Control.SelectRow (value, false);
+					Control.ScrollRowToVisible (value);
 				}
 			}
 		}
 
 		public override void Focus ()
 		{
-			if (this.control.Window != null)
-				this.control.Window.MakeFirstResponder (this.control);
+			if (this.Control.Window != null)
+				this.Control.Window.MakeFirstResponder (this.Control);
 			else 
 				base.Focus();
 		}
 		
 		public override bool HasFocus {
 			get {
-				return control.Window != null && control.Window.FirstResponder == control;
+				return Control.Window != null && Control.Window.FirstResponder == Control;
 			}
 		}
 	}

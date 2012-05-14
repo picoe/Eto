@@ -210,7 +210,7 @@ namespace Eto.Platform.Wpf.Forms
 			content.Children.Add ((sw.UIElement)layout.ControlObject);
 		}
 
-		public string Text
+		public string Title
 		{
 			get { return Control.Title; }
 			set { Control.Title = value; }

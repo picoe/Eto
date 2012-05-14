@@ -9,8 +9,8 @@ namespace Eto.Forms
 		Time = 2,
 		DateTime = Date | Time
 	}
-	
-	public interface IDateTimePicker : IControl
+
+	public interface IDateTimePicker : ICommonControl
 	{
 		DateTime? Value { get; set; }
 		DateTime MinDate { get; set; }
@@ -18,7 +18,7 @@ namespace Eto.Forms
 		DateTimePickerMode Mode { get; set; }
 	}
 	
-	public class DateTimePicker : Control
+	public class DateTimePicker : CommonControl
 	{
 		IDateTimePicker inner;
 		

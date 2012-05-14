@@ -65,7 +65,7 @@ namespace Eto.Platform.GtkSharp
 				if (Control.Child1 != null)
 					Control.Remove (Control.Child1);
 				if (panel1 != null) {
-					var widget = (Gtk.Widget)panel1.ControlObject;
+					var widget = panel1.GetContainerWidget ();
 					Control.Pack1 (widget, fixedPanel != SplitterFixedPanel.Panel1, true);
 					if (setposition) Control.Position = position.Value;
 					widget.ShowAll ();
@@ -81,7 +81,7 @@ namespace Eto.Platform.GtkSharp
 				if (Control.Child2 != null)
 					Control.Remove (Control.Child2);
 				if (panel2 != null) {
-					var widget = (Gtk.Widget)panel2.ControlObject;
+					var widget = panel2.GetContainerWidget ();
 					Control.Pack2 (widget, fixedPanel != SplitterFixedPanel.Panel2, true);
 					if (setposition) Control.Position = position.Value;
 					widget.ShowAll ();

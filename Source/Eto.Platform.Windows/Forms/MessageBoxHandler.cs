@@ -24,14 +24,14 @@ namespace Eto.Platform.Windows
 		public DialogResult ShowDialog(Control parent)
 		{
 			SWF.Control c = (parent == null) ? null : (SWF.Control)parent.ControlObject;
-            var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Text : null);
+            var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
             SWF.DialogResult result = SWF.MessageBox.Show(c, Text, caption, SWF.MessageBoxButtons.OK, Convert(Type));
 			return Generator.Convert(result);
 		}
 
 		public DialogResult ShowDialog(Control parent, MessageBoxButtons buttons)
 		{
-            var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Text : null);
+			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
             SWF.Control c = (parent == null) ? null : (SWF.Control)parent.ControlObject;
 			SWF.DialogResult result = SWF.MessageBox.Show(c, Text, caption, Convert(buttons), Convert(Type));
 			return Generator.Convert(result);

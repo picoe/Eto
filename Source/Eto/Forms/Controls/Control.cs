@@ -13,7 +13,7 @@ namespace Eto.Forms
 		Size Size { get; set; }
 
 		bool Enabled { get; set; }
-		
+
 		void Invalidate ();
 
 		void Invalidate (Rectangle rect);

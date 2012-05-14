@@ -5,7 +5,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-	public interface ITextControl : IControl
+	public interface ITextControl : ICommonControl
 	{
 		string Text { get; set; }
 	}
@@ -13,7 +13,7 @@ namespace Eto.Forms
 #if DESKTOP
 	[ContentProperty("Text")]
 #endif
-	public class TextControl : Control
+	public class TextControl : CommonControl
 	{
 		ITextControl inner;
 		

@@ -195,7 +195,7 @@ namespace Eto.Platform.Mac
 			get { return Control.ContentView; }
 		}
 		
-		public virtual string Text { get { return Control.Title; } set { Control.Title = value; } }
+		public virtual string Title { get { return Control.Title; } set { Control.Title = value; } }
 
 		public bool Resizable {
 			get { return (Control.StyleMask & NSWindowStyle.Resizable) != 0; }
