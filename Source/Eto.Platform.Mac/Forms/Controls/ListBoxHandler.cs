@@ -6,13 +6,17 @@ using MonoMac.Foundation;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Platform.Mac.Forms.Controls;
+using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac
 {
 	public class ListBoxHandler : MacControl<NSTableView, ListBox>, IListBox
 	{
+		Font font;
 		NSScrollView scroll;
 		CollectionHandler collection;
+		MacImageListItemCell cell;
 
 		public override NSView ContainerControl
 		{
@@ -92,7 +96,7 @@ namespace Eto.Platform.Mac
 			var col = new NSTableColumn ();
 			col.ResizingMask = NSTableColumnResizing.Autoresizing;
 			col.Editable = false;
-			var cell = new MacImageListItemCell ();
+			cell = new MacImageListItemCell ();
 			cell.Wraps = false;
 			col.DataCell = cell;
 			Control.AddColumn (col);
@@ -112,7 +116,21 @@ namespace Eto.Platform.Mac
 			scroll.AutohidesScrollers = true;
 			scroll.BorderType = NSBorderType.BezelBorder;
 		}
-		
+
+		public override Eto.Drawing.Font Font {
+			get { return font; }
+			set {
+				font = value;
+				if (font != null) {
+					var fontHandler = (FontHandler)font.Handler;
+					cell.Font = fontHandler.Control;
+					Control.RowHeight = fontHandler.LineHeight;
+				}
+				else
+					cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+			}
+		}
+
 		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ListBoxHandler Handler { get; set; }

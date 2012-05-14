@@ -86,7 +86,7 @@ namespace Eto.Platform.Mac
 			Control.Bezeled = true;
 			Control.Editable = true;
 			Control.Selectable = true;
-			
+
 			Control.Formatter = new MyFormatter{ Handler = this };
 			//Control.BezelStyle = NSTextFieldBezelStyle.Square;
 			//Control.Bordered = true;

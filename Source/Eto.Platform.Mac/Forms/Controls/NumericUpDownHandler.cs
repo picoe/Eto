@@ -135,6 +135,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 					text.Font = font.ControlObject as NSFont;
 				else
 					text.Font = null;
+				text.SizeToFit ();
+				LayoutIfNeeded();
 			}
 		}
 	}

@@ -71,6 +71,19 @@ namespace Eto.Platform.Mac.Drawing
 				throw new NotSupportedException();
 			}
 		}
+
+		public float LineHeight
+		{
+			get {
+				var leading = Math.Floor (Math.Max (0, Control.Leading) + 0.5f);
+				var lineHeight = (float)(Math.Floor(Control.Ascender + 0.5f) - Math.Floor (Control.Descender + 0.5f) + leading);
+
+				if (leading > 0)
+					return lineHeight;
+				else
+					return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
+			}
+		}
 		
 		public void Create (FontFamily family, float size, FontStyle style)
 		{

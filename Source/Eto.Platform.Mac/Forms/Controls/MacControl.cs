@@ -21,7 +21,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 		
-		public Font Font {
+		public virtual Font Font {
 			get {
 				return font;
 			}
@@ -31,6 +31,7 @@ namespace Eto.Platform.Mac
 					Control.Font = font.ControlObject as NSFont;
 				else
 					Control.Font = null;
+				Control.SizeToFit ();
 				LayoutIfNeeded();
 			}
 		}
