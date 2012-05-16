@@ -110,10 +110,14 @@ namespace Eto
 				else
 					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
 			}
-			if (type.IsSubclassOf (typeof(Generator))) {
-				return (Generator)Activator.CreateInstance (type);
-			}
-			return null;
+            try
+            {
+                return (Generator)Activator.CreateInstance(type);
+            }
+            catch (TargetInvocationException e)
+            {
+                throw e.InnerException;
+            }
 		}
 
 		public ConstructorInfo Add<T> (Type handlerType)

@@ -20,7 +20,9 @@ namespace Eto.Platform.GtkSharp
 		
 		public Generator ()
 		{
-			Gtk.Application.Init ();
+			if (Eto.Misc.Platform.IsWindows && Environment.Is64BitProcess)
+				throw new NotSupportedException("Please compile/run GTK in x86 mode (32-bit) on windows");
+			Gtk.Application.Init();
 			
 			Gdk.Threads.Enter ();
 		}
