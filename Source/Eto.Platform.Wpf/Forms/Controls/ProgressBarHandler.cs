@@ -36,5 +36,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Value = value; }
 		}
 
+		public bool Indeterminate
+		{
+			get { return Control.IsIndeterminate; }
+			set { Control.IsIndeterminate = value; }
+		}
+
 	}
 }

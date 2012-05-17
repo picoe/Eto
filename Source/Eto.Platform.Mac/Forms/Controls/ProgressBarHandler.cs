@@ -21,18 +21,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxValue = 100;
 		}
 
-		protected override Size GetNaturalSize()
+		protected override Size GetNaturalSize ()
 		{
-			return new Size(80, 30);
+			return new Size (80, 30);
 		}
 
-
-		public override bool Enabled
-		{
+		public override bool Enabled {
 			get { return true; }
 			set {  }
 		}
 
+		public bool Indeterminate {
+			get { return Control.Indeterminate; }
+			set { 
+				Control.Indeterminate = value;
+				if (value)
+					Control.StartAnimation (Control);
+				else
+					Control.StopAnimation (Control);
+			}
+		}
 
 		public int MaxValue {
 			get { return (int)Control.MaxValue; }

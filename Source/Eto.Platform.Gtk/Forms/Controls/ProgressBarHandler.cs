@@ -5,25 +5,61 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar>, IProgressBar
 	{
-		public ProgressBarHandler()
+		int minValue = 0;
+		int maxValue = 100;
+		bool indeterminate;
+		UITimer timer;
+		public static double UpdateInterval = 0.2;
+		public static double PulseStep = 0.1;
+
+		public ProgressBarHandler ()
 		{
-			this.Control = new Gtk.ProgressBar ();
-			MinValue = 0;
-			MaxValue = 100;
-			this.Control.Fraction = 0;
+			this.Control = new Gtk.ProgressBar {
+				Fraction = 0
+			};
 		}
 
+		public bool Indeterminate {
+			get { return indeterminate; }
+			set {
+				indeterminate = value;
+				if (indeterminate) {
+					if (timer == null) {
+						timer = new UITimer (this.Widget.Generator);
+						timer.Elapsed += delegate {
+							Control.Pulse ();
+						};
+					}
+					timer.Interval = UpdateInterval;
+					Control.PulseStep = PulseStep;
+					timer.Start ();
+				} else if (timer != null)
+					timer.Stop ();
+			}
+		}
 		
-		public int MaxValue { get; set; }
+		public int MaxValue {
+			get { return maxValue; }
+			set {
+				var val = this.Value;
+				maxValue = value;
+				this.Value = val;
+			}
+		}
 
-		public int MinValue { get;set; }
+		public int MinValue {
+			get { return minValue; }
+			set {
+				var val = this.Value;
+				minValue = value;
+				this.Value = val;
+			}
+		}
 
 		public int Value {
-			get { 
-				return (int)((Control.Fraction * MaxValue) + MinValue);
-			}
-			set { 
-				Control.Fraction = ((double)value - MinValue) / (double)MaxValue;
+			get { return (int)((Control.Fraction * MaxValue) + MinValue); }
+			set {
+				Control.Fraction = Math.Max (0, Math.Min (1, ((double)value - MinValue) / (double)MaxValue));
 			}
 		}
 	}

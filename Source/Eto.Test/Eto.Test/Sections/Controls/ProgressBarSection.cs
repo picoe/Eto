@@ -14,6 +14,7 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "SetInitialValue" }, SetValue ());
+			layout.AddRow (new Label { Text = "Indeterminate" }, Indeterminate ());
 
 			
 			layout.Add (null, null, true);
@@ -33,8 +34,7 @@ namespace Eto.Test.Sections.Controls
 				MaxValue = 1000,
 				Value = 500
 			};
-			
-			
+
 			var layout = new DynamicLayout (new Panel ());
 			
 			layout.Add (control);
@@ -44,6 +44,14 @@ namespace Eto.Test.Sections.Controls
 			layout.EndVertical ();
 			
 			return layout.Container;
+		}
+
+		Control Indeterminate ()
+		{
+			var control = new ProgressBar {
+				Indeterminate = true
+			};
+			return control;
 		}
 		
 		Control StartStopButton (ProgressBar bar)

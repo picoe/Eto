@@ -10,6 +10,8 @@ namespace Eto.Forms
 		int MinValue { get; set; }
 
 		int Value { get; set; }
+
+		bool Indeterminate { get; set; }
 	}
 	
 	public class ProgressBar : Control
@@ -43,6 +45,11 @@ namespace Eto.Forms
 			set { inner.Value = value; }
 		}
 
+
+		public bool Indeterminate {
+			get { return inner.Indeterminate; }
+			set { inner.Indeterminate = value; }
+		}
 	}
 }
 
