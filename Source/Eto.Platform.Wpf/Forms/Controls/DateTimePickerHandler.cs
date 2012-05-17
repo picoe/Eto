@@ -11,10 +11,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class DateTimePickerHandler : WpfControl<mwc.DateTimePicker, DateTimePicker>, IDateTimePicker
 	{
 		DateTimePickerMode mode;
+		bool sizeSet;
 
 		public DateTimePickerHandler ()
 		{
 			Control = new mwc.DateTimePicker {
+
 			};
 			Mode = DateTimePicker.DefaultMode;
 		}
@@ -41,7 +43,25 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public DateTime MaxDate
 		{
-			get; set; 
+			get;
+			set;
+		}
+
+		public override Eto.Drawing.Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				base.Size = value;
+				sizeSet = value.Width != -1;
+				SetWidth ();
+			}
+		}
+		void SetWidth ()
+		{
+			if (!sizeSet) {
+				Control.Width = mode == DateTimePickerMode.DateTime ? 180 : 120;
+			}
 		}
 
 		public DateTimePickerMode Mode
@@ -51,20 +71,21 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				mode = value;
 				switch (mode) {
-					case DateTimePickerMode.Date:
-						Control.Format = mwc.DateTimeFormat.ShortDate;
-						break;
-					case DateTimePickerMode.DateTime:
-						var format = CultureInfo.CurrentUICulture.DateTimeFormat;
-						Control.Format = mwc.DateTimeFormat.Custom;
-						Control.FormatString = format.ShortDatePattern + " " + format.LongTimePattern;
-						break;
-					case DateTimePickerMode.Time:
-						Control.Format = mwc.DateTimeFormat.LongTime;
-						break;
-					default:
-						throw new NotSupportedException ();
+				case DateTimePickerMode.Date:
+					Control.Format = mwc.DateTimeFormat.ShortDate;
+					break;
+				case DateTimePickerMode.DateTime:
+					var format = CultureInfo.CurrentUICulture.DateTimeFormat;
+					Control.Format = mwc.DateTimeFormat.Custom;
+					Control.FormatString = format.ShortDatePattern + " " + format.LongTimePattern;
+					break;
+				case DateTimePickerMode.Time:
+					Control.Format = mwc.DateTimeFormat.LongTime;
+					break;
+				default:
+					throw new NotSupportedException ();
 				}
+				SetWidth ();
 			}
 		}
 	}
