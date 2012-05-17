@@ -42,14 +42,11 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public Font Font
-		{
-			get
-			{
+		public Font Font {
+			get {
 				return font;
 			}
-			set
-			{
+			set {
 				font = value;
 				if (font != null)
 					Control.TitleFont = ((FontHandler)font.Handler).Control;
@@ -66,7 +63,7 @@ namespace Eto.Platform.Mac
 		
 		public override Eto.Drawing.Size GetPreferredSize ()
 		{
-			return base.GetPreferredSize () + new Size (14, 22);
+			return base.GetPreferredSize () + new Size (14, (int)Control.TitleFont.LineHeight () + 12);
 		}
 		
 		public override void SetContentSize (SD.SizeF contentSize)

@@ -52,6 +52,11 @@ namespace Eto.Platform.GtkSharp
 			get { return Control; }
 		}
 
+		public virtual Gtk.Widget EventControl
+		{
+			get { return Control; }
+		}
+
 		public static string StringToMnuemonic (string label)
 		{
 			label = label.Replace ("_", "__");
@@ -125,11 +130,11 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Generator.Convert (Control.Style.Background (Gtk.StateType.Normal)); }
+			get { return Generator.Convert (ContainerControl.Style.Background (Gtk.StateType.Normal)); }
 			set { 
-				var eb = Control as Gtk.EventBox;
+				var eb = ContainerControl as Gtk.EventBox;
 				if (eb != null) eb.VisibleWindow = !value.IsEmpty;
-				Control.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value));
+				ContainerControl.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value));
 			}
 		}
 
@@ -202,48 +207,48 @@ namespace Eto.Platform.GtkSharp
 		{
 			switch (handler) {
 			case Eto.Forms.Control.KeyDownEvent:
-				Control.AddEvents ((int)Gdk.EventMask.KeyPressMask);
-				Control.KeyPressEvent += GtkControlObject_KeyPressEvent;
+				EventControl.AddEvents ((int)Gdk.EventMask.KeyPressMask);
+				EventControl.KeyPressEvent += GtkControlObject_KeyPressEvent;
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
-				Control.AddEvents ((int)Gdk.EventMask.StructureMask);
-				Control.SizeAllocated += GtkControlObject_SizeAllocated;
+				EventControl.AddEvents ((int)Gdk.EventMask.StructureMask);
+				EventControl.SizeAllocated += GtkControlObject_SizeAllocated;
 				break;
 			case Eto.Forms.Control.MouseDoubleClickEvent:
 			case Eto.Forms.Control.MouseDownEvent:
 				if (!mouseDownHandled) {
-					Control.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
-					Control.AddEvents ((int)Gdk.EventMask.ButtonReleaseMask);
-					Control.ButtonPressEvent += GtkControlObject_ButtonPressEvent;
+					EventControl.AddEvents ((int)Gdk.EventMask.ButtonPressMask);
+					EventControl.AddEvents ((int)Gdk.EventMask.ButtonReleaseMask);
+					EventControl.ButtonPressEvent += GtkControlObject_ButtonPressEvent;
 					mouseDownHandled = true;
 				}
 				break;
 			case Eto.Forms.Control.MouseUpEvent:
-				Control.AddEvents ((int)Gdk.EventMask.ButtonReleaseMask);
-				Control.ButtonReleaseEvent += GtkControlObject_ButtonReleaseEvent;
+				EventControl.AddEvents ((int)Gdk.EventMask.ButtonReleaseMask);
+				EventControl.ButtonReleaseEvent += GtkControlObject_ButtonReleaseEvent;
 				break;
 			case Eto.Forms.Control.MouseEnterEvent:
-				Control.AddEvents ((int)Gdk.EventMask.EnterNotifyMask);
-				Control.EnterNotifyEvent += HandleControlEnterNotifyEvent;
+				EventControl.AddEvents ((int)Gdk.EventMask.EnterNotifyMask);
+				EventControl.EnterNotifyEvent += HandleControlEnterNotifyEvent;
 				break;
 			case Eto.Forms.Control.MouseLeaveEvent:
-				Control.AddEvents ((int)Gdk.EventMask.LeaveNotifyMask);
-				Control.LeaveNotifyEvent += HandleControlLeaveNotifyEvent;
+				EventControl.AddEvents ((int)Gdk.EventMask.LeaveNotifyMask);
+				EventControl.LeaveNotifyEvent += HandleControlLeaveNotifyEvent;
 				break;
 			case Eto.Forms.Control.MouseMoveEvent:
-				Control.AddEvents ((int)Gdk.EventMask.ButtonMotionMask);
-				Control.AddEvents ((int)Gdk.EventMask.PointerMotionMask);
+				EventControl.AddEvents ((int)Gdk.EventMask.ButtonMotionMask);
+				EventControl.AddEvents ((int)Gdk.EventMask.PointerMotionMask);
 					//GtkControlObject.Events |= Gdk.EventMask.PointerMotionHintMask;
-				Control.MotionNotifyEvent += GtkControlObject_MotionNotifyEvent;
+				EventControl.MotionNotifyEvent += GtkControlObject_MotionNotifyEvent;
 				break;
 			case Eto.Forms.Control.GotFocusEvent:
-				Control.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
-				Control.FocusInEvent += delegate {
+				EventControl.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
+				EventControl.FocusInEvent += delegate {
 					Widget.OnGotFocus (EventArgs.Empty); };
 				break;
 			case Eto.Forms.Control.LostFocusEvent:
-				Control.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
-				Control.FocusOutEvent += delegate {
+				EventControl.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
+				EventControl.FocusOutEvent += delegate {
 					Widget.OnLostFocus (EventArgs.Empty); };
 				break;
 			default:

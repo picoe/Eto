@@ -15,6 +15,10 @@ namespace Eto.Test.Sections.Drawing
 			if (cc != null) {
 				cc.Font = new Font (FontFamily.Serif, 20, FontStyle.Italic);
 			}
+			var gb = control as GroupBox;
+			if (gb != null) {
+				gb.Font = new Font (FontFamily.Serif, 20, FontStyle.Italic);
+			}
 		}
 	}
 }

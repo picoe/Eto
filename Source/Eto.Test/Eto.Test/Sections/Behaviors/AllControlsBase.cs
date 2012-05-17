@@ -17,6 +17,7 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddRow (null, DateTimeControl (), NumericUpDownControl (), null);
 			layout.AddRow (null, ComboBoxControl (), PasswordBoxControl (), null);
 			layout.AddRow (null, ListBoxControl (), DrawableControl (), null);
+			layout.AddRow (null, GroupBoxControl (), new Panel(), null);
 			layout.Add (null);
 		}
 		
@@ -109,6 +110,14 @@ namespace Eto.Test.Sections.Behaviors
 			control.Paint += delegate(object sender, PaintEventArgs pe) {
 				pe.Graphics.FillRectangle (Color.Blue, pe.ClipRectangle);
 			};
+			LogEvents (control);
+			return control;
+		}
+
+		Control GroupBoxControl ()
+		{
+			var control = new GroupBox { Text = "Some Group Box" };
+			control.AddDockedControl (new Label{ Text = "Content" });
 			LogEvents (control);
 			return control;
 		}

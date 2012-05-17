@@ -14,6 +14,10 @@ namespace Eto.Platform.GtkSharp
 		{
 			get { return eventBox; }
 		}
+
+		public override Gtk.Widget EventControl {
+			get { return eventBox; }
+		}
 		
 		public class EtoLabel : Gtk.Label
 		{

@@ -1,30 +1,32 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class GroupBoxHandler : GtkContainer<Gtk.Frame, GroupBox>, IGroupBox
 	{
-		public GroupBoxHandler()
+		Font font;
+
+		public GroupBoxHandler ()
 		{
-			Control = new Gtk.Frame();
+			Control = new Gtk.Frame ();
 		}
 
-		public override object ContainerObject
-		{
+		public override object ContainerObject {
 			get { return Control; }
 		}
 		
-		public override string Text
-		{
+		public override string Text {
 			get { return Control.Label; }
 			set { Control.Label = value; }
 		}
 
 		public override Size ClientSize {
 			get {
-				if (Control.Visible && Control.Child != null) return Generator.Convert(Control.Child.Allocation.Size);
+				if (Control.Visible && Control.Child != null)
+					return Generator.Convert (Control.Child.Allocation.Size);
 				else {
 					var label = Control.LabelWidget;
 					var size = base.Size;
@@ -42,12 +44,25 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void SetLayout(Layout inner)
+		public override Eto.Drawing.Font Font {
+			get { return font; }
+			set {
+				font = value;
+				if (font != null) {
+					var fontHandler = (FontHandler)font.Handler;
+					Control.LabelWidget.ModifyFont (fontHandler.Control);
+				} else 
+					Control.LabelWidget.ModifyFont (null);
+			}
+		}
+
+		public override void SetLayout (Layout inner)
 		{
-			if (Control.Child != null) Control.Remove(Control.Child);
+			if (Control.Child != null)
+				Control.Remove (Control.Child);
 			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
 			var widget = (Gtk.Widget)gtklayout.ContainerObject;
-			Control.Add(widget);
+			Control.Add (widget);
 
 			/*if (clientSize != null) {
 				var label = Control.LabelWidget;

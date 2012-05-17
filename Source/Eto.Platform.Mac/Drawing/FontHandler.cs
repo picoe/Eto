@@ -16,6 +16,20 @@ namespace Eto.Platform.Mac.Drawing
 	
 #endif
 {
+	public static class FontExtensions
+	{
+		public static float LineHeight(this NSFont font)
+		{
+			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
+			var lineHeight = (float)(Math.Floor(font.Ascender + 0.5f) - Math.Floor (font.Descender + 0.5f) + leading);
+
+			if (leading > 0)
+				return lineHeight;
+			else
+				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
+		}
+	}
+
 	public class FontHandler : WidgetHandler<NSFont, Font>, IFont, IDisposable
 	{
 		public const float FONT_SIZE_FACTOR = 1.3F;
@@ -75,13 +89,7 @@ namespace Eto.Platform.Mac.Drawing
 		public float LineHeight
 		{
 			get {
-				var leading = Math.Floor (Math.Max (0, Control.Leading) + 0.5f);
-				var lineHeight = (float)(Math.Floor(Control.Ascender + 0.5f) - Math.Floor (Control.Descender + 0.5f) + leading);
-
-				if (leading > 0)
-					return lineHeight;
-				else
-					return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
+				return Control.LineHeight ();
 			}
 		}
 		
