@@ -126,6 +126,47 @@ namespace Eto.Platform.GtkSharp.Forms
 			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
 		}
 
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case TreeView.ExpandingEvent:
+				tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args) {
+					var e = new TreeViewItemCancelEventArgs(GetItem(args.Path) as ITreeItem);
+					Widget.OnExpanding (e);
+					args.RetVal = e.Cancel;
+				};
+				break;
+			case TreeView.ExpandedEvent:
+				tree.RowExpanded += delegate(object o, Gtk.RowExpandedArgs args) {
+					var e = new TreeViewItemEventArgs(GetItem(args.Path) as ITreeItem);
+					Widget.OnExpanded (e);
+				};
+				break;
+			case TreeView.CollapsingEvent:
+				tree.TestCollapseRow += delegate(object o, Gtk.TestCollapseRowArgs args) {
+					var e = new TreeViewItemCancelEventArgs(GetItem(args.Path) as ITreeItem);
+					Widget.OnCollapsing (e);
+					args.RetVal = e.Cancel;
+				};
+				break;
+			case TreeView.CollapsedEvent:
+				tree.RowCollapsed += delegate(object o, Gtk.RowCollapsedArgs args) {
+					var e = new TreeViewItemEventArgs(GetItem(args.Path) as ITreeItem);
+					Widget.OnCollapsed (e);
+				};
+				break;
+				
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+
+		public object GetItem (Gtk.TreePath path)
+		{
+			return model.GetItemAtPath (path);
+		}
+
 		[GLib.ConnectBefore]
 		void HandleTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
 		{
