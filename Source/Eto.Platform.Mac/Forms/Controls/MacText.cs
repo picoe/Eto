@@ -3,7 +3,7 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using Eto.Drawing;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public abstract class MacText<T, W> : MacControl<T, W>, ITextControl
 		where T: NSTextField

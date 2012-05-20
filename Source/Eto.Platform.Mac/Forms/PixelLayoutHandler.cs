@@ -6,7 +6,7 @@ using SD = System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public class PixelLayoutHandler : MacLayout<NSView, PixelLayout>, IPixelLayout
 	{

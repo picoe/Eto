@@ -6,7 +6,7 @@ using Eto.Platform.Mac.Forms.Actions;
 using System.ComponentModel;
 using MonoMac.ObjCRuntime;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public class ApplicationHandler : WidgetHandler<NSApplication, Application>, IApplication
 	{

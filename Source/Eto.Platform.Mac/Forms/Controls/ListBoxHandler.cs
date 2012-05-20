@@ -9,7 +9,7 @@ using Eto.Platform.Mac.Forms.Controls;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ListBoxHandler : MacControl<NSTableView, ListBox>, IListBox
 	{
@@ -23,6 +23,10 @@ namespace Eto.Platform.Mac
 			get { return scroll; }
 		}
 
+		public NSScrollView Scroll
+		{
+			get { return scroll; }
+		}
 				
 		class DataSource : NSTableViewDataSource
 		{

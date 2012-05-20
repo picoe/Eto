@@ -11,7 +11,7 @@ using MonoMac.CoreText;
 using System.Text.RegularExpressions;
 using System.Linq;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class LabelHandler : MacView<LabelHandler.EtoLabel, Label>, ILabel
 	{

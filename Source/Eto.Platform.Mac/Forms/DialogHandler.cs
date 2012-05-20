@@ -5,7 +5,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public class DialogHandler : MacWindow<MyWindow, Dialog>, IDialog
 	{

@@ -5,7 +5,7 @@ using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Controls;
 using MonoMac.ObjCRuntime;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 
 	public class PasswordHandler : MacText<NSTextField, PasswordBox>, IPasswordBox, ITextBoxWithMaxLength

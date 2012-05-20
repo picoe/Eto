@@ -5,6 +5,7 @@ using SD = System.Drawing;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac.Drawing
 {

@@ -3,7 +3,7 @@ using MonoMac.Foundation;
 using System.Collections.Generic;
 using MonoMac.ObjCRuntime;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public interface IMacControl
 	{

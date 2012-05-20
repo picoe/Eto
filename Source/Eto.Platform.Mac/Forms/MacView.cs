@@ -10,7 +10,7 @@ using SD = System.Drawing;
 using Eto.Platform.Mac.Forms.Controls;
 using System.Collections.Generic;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	class MouseDelegate : NSObject
 	{

@@ -5,7 +5,7 @@ using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	
 	

@@ -6,7 +6,7 @@ using MonoMac.AppKit;
 using MonoMac.CoreAnimation;
 using MonoMac.Foundation;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacContainer<NSScrollView, Scrollable>, IScrollable
 	{

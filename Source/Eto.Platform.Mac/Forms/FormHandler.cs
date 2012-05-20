@@ -4,7 +4,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using SD = System.Drawing;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public class FormHandler : MacWindow<MyWindow, Form>, IDisposable, IForm
 	{

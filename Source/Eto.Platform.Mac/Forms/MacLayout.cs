@@ -6,7 +6,7 @@ using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public interface IMacLayout : IMacAutoSizing
 	{

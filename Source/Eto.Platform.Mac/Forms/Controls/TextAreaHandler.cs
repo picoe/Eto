@@ -3,7 +3,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TextAreaHandler : MacTextControl<NSTextView, TextArea>, ITextArea
 	{

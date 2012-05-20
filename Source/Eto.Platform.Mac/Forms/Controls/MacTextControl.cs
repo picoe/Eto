@@ -4,7 +4,7 @@ using MonoMac.AppKit;
 using Eto.Drawing;
 using MonoMac.Foundation;
 using System.Collections.Generic;
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public abstract class MacTextControl<T, W> : MacView<T, W>
 		where T: NSText

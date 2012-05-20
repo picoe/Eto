@@ -5,7 +5,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using System.Collections.Generic;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class RadioButtonHandler : MacButton<NSButton, RadioButton>, IRadioButton
 	{

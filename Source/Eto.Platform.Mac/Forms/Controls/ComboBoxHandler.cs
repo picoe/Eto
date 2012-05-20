@@ -8,7 +8,7 @@ using MonoMac.Foundation;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox>, IComboBox
 	{

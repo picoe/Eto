@@ -12,7 +12,7 @@ namespace Eto.Platform.iOS.Forms
 
 #elif OSX
 using MonoMac.AppKit;
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 #endif
 {
 	public class TableLayoutHandler : 

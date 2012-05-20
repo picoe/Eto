@@ -3,7 +3,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public class SelectFolderDialogHandler : WidgetHandler<NSOpenPanel, SelectFolderDialog>, ISelectFolderDialog
 	{

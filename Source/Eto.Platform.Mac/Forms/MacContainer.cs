@@ -6,7 +6,7 @@ using MonoMac.Foundation;
 using SD = System.Drawing;
 using System.Linq;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms
 {
 	public interface IMacContainer : IMacAutoSizing
 	{

@@ -2,7 +2,7 @@ using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class SplitterHandler : MacView<NSSplitView, Splitter>, ISplitter
 	{

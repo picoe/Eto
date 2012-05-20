@@ -5,7 +5,7 @@ using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class GroupBoxHandler : MacContainer<NSBox, GroupBox>, IGroupBox
 	{

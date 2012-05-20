@@ -6,7 +6,7 @@ using MonoMac.Foundation;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TabPageHandler : WidgetHandler<NSTabViewItem, TabPage>, ITabPage, IMacContainer
 	{

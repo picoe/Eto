@@ -3,7 +3,7 @@ using System.Reflection;
 using Eto.Forms;
 using MonoMac.AppKit;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class CheckBoxHandler : MacButton<NSButton, CheckBox>, ICheckBox
 	{

@@ -3,9 +3,11 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Forms;
 using System.ComponentModel;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac
 {
+
 	[MonoMac.Foundation.Register("EtoAppDelegate")]
 	public class AppDelegate : NSApplicationDelegate
 	{

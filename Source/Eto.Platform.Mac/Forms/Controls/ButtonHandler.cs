@@ -8,9 +8,8 @@ using MonoMac.CoreImage;
 using MonoMac.CoreGraphics;
 using MonoMac.ObjCRuntime;
 using MonoMac.Foundation;
-using Eto.Platform.Mac.Forms.Controls;
 
-namespace Eto.Platform.Mac
+namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ButtonHandler : MacButton<NSButton, Button>, IButton
 	{
