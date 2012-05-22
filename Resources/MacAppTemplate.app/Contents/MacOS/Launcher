@@ -10,7 +10,7 @@ ASSEMBLY="MyApp.exe"
 # Determine app name and locations
 MACOS_DIR=$(cd "$(dirname "$0")"; pwd)
 APP_ROOT=${MACOS_DIR%%/Contents/MacOS}
- 
+
 CONTENTS_DIR="$APP_ROOT/Contents"
 RESOURCES_PATH="$CONTENTS_DIR/Resources"
 

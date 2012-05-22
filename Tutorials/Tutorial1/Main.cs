@@ -10,12 +10,13 @@ namespace Tutorial1
 		{
 			this.ClientSize = new Size(600, 400);
 			
-			this.Text = "Hello, Eto.Forms";
+			this.Title = "Hello, Eto.Forms";
 		}
 	}
 	
 	class MainClass
 	{
+		[STAThread]
 		public static void Main (string[] args)
 		{
 			var app = new Application ();

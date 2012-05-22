@@ -31,7 +31,7 @@ namespace Tutorial2
 		public MyForm()
 		{
 			this.ClientSize = new Size(600, 400);
-			this.Text = "Menus and Toolbars";
+			this.Title = "Menus and Toolbars";
 
 			GenerateActions();
 		}
@@ -60,6 +60,7 @@ namespace Tutorial2
 	
 	class MainClass
 	{
+		[STAThread]
 		public static void Main (string[] args)
 		{
 			var app = new Application ();
