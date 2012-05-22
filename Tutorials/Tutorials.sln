@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial1 - Hello World", "Tutorial1 - Hello World\Tutorial1 - Hello World.csproj", "{7BE9E187-3FC4-49D2-A322-F4651C3AE256}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial1 - Hello World", "Tutorial1\Tutorial1 - Hello World.csproj", "{7BE9E187-3FC4-49D2-A322-F4651C3AE256}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Tutorial2 - Menus and Toolbars", "Tutorial2\Tutorial2 - Menus and Toolbars.csproj", "{0844A0AD-778A-4DB3-8332-03AC50A17D05}"
 EndProject
