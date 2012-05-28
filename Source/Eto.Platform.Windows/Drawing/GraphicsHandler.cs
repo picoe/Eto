@@ -104,17 +104,17 @@ namespace Eto.Platform.Windows.Drawing
 		}
 		
 
-		public void DrawImage (IImage image, int x, int y)
+		public void DrawImage (Image image, int x, int y)
 		{
 			Control.DrawImageUnscaled ((SD.Image)image.ControlObject, x, y);
 		}
 
-		public void DrawImage (IImage image, int x, int y, int width, int height)
+		public void DrawImage (Image image, int x, int y, int width, int height)
 		{
 			Control.DrawImage ((SD.Image)image.ControlObject, x, y, width, height);
 		}
 
-		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
 			this.Control.DrawImage ((SD.Image)image.ControlObject, Generator.Convert (destination), Generator.Convert (source), SD.GraphicsUnit.Pixel);
 		}

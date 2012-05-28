@@ -26,7 +26,7 @@ namespace Eto.Platform.Wpf
 		{
 		}
 
-		public IWidget Handler { get; set; }
+		public Widget Widget { get; set; }
 	}
 }
 

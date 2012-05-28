@@ -270,7 +270,7 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 		
-		public void DrawImage (IImage image, int x, int y)
+		public void DrawImage (Image image, int x, int y)
 		{
 			StartDrawing ();
 
@@ -279,7 +279,7 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawImage (IImage image, int x, int y, int width, int height)
+		public void DrawImage (Image image, int x, int y, int width, int height)
 		{
 			StartDrawing ();
 
@@ -288,7 +288,7 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
 			StartDrawing ();
 

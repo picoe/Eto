@@ -8,7 +8,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ImageViewHandler : MacControl<NSImageView, ImageView>, IImageView
 	{
-		IImage image;
+		Image image;
 		
 		public class EtoImageView : NSImageView, IMacControl
 		{
@@ -28,7 +28,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Size.Empty;
 		}
 		
-		public IImage Image {
+		public Image Image {
 			get {
 				return image;
 			}

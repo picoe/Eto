@@ -11,7 +11,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ImageViewHandler : WpfFrameworkElement<swc.Image, ImageView>, IImageView
 	{
-		IImage image;
+		Image image;
 		bool setSize;
 
 		public override Color BackgroundColor
@@ -45,7 +45,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public IImage Image
+		public Image Image
 		{
 			get { return image; }
 			set

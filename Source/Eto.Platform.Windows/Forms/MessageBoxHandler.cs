@@ -8,7 +8,7 @@ namespace Eto.Platform.Windows
 	public class MessageBoxHandler : IMessageBox
 	{
 		
-		public IWidget Handler { get; set; }
+		public Widget Widget { get; set; }
 		
 		public void Initialize()
 		{

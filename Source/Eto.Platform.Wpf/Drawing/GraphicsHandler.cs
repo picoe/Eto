@@ -100,12 +100,12 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.DrawGeometry (null, pen, geometry);
 		}
 
-		public void DrawImage (IImage image, int x, int y)
+		public void DrawImage (Image image, int x, int y)
 		{
 			DrawImage (image, x, y, image.Size.Width, image.Size.Height);
 		}
 
-		public void DrawImage (IImage image, int x, int y, int width, int height)
+		public void DrawImage (Image image, int x, int y, int width, int height)
 		{
 			var src = image.ControlObject as swm.ImageSource;
 			Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { x , x  + width }, new double[] { y , y + height }));
@@ -113,7 +113,7 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Pop ();
 		}
 
-		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
 			var src = image.ControlObject as swm.ImageSource;
 			Control.PushClip (new swm.RectangleGeometry (Generator.Convert (destination)));

@@ -203,7 +203,7 @@ namespace Eto
 				var val = constructor.Invoke (new object[] { }) as IWidget;
 				if (widget != null) {
 					widget.Handler = val;
-					val.Handler = widget;
+					val.Widget = widget;
 				}
 				OnWidgetCreated (new WidgetCreatedArgs (val));
 				return val;

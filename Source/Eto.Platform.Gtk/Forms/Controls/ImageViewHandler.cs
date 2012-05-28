@@ -7,14 +7,14 @@ namespace Eto.Platform.GtkSharp
 {
 	public class ImageViewHandler : GtkControl<Gtk.Image, ImageView>, IImageView
 	{
-		IImage image;
+		Image image;
 		
 		public ImageViewHandler ()
 		{
 			Control = new Gtk.Image();
 		}
 		
-		public Eto.Drawing.IImage Image {
+		public Image Image {
 			get {
 				return image;
 			}

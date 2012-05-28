@@ -12,7 +12,7 @@ namespace Eto.Platform.Windows.Forms
 {
 	public class ImageViewHandler : WindowsControl<SWF.PictureBox, ImageView>, IImageView
 	{
-		IImage image;
+		Image image;
 		bool sizeSet;
 		
 		public ImageViewHandler ()
@@ -37,7 +37,7 @@ namespace Eto.Platform.Windows.Forms
 		}
 
 		#region IImageView implementation
-		public IImage Image {
+		public Image Image {
 			get {
 				return image;
 			}

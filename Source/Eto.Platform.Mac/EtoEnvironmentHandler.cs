@@ -38,7 +38,7 @@ namespace Eto.Platform.Mac
 		{
 		}
 
-		public IWidget Handler { get; set; }
+		public Widget Widget { get; set; }
 		
 		#endregion
 	}

@@ -28,7 +28,7 @@ namespace Eto.Platform.Windows
 		{
 		}
 
-		public IWidget Handler { get; set; }
+		public Widget Widget { get; set; }
 		
 		#endregion
 	}

@@ -46,7 +46,7 @@ namespace Eto
 			throw new NotSupportedException (string.Format ("Event {0} not supported by this control", handler));
 		}
 		
-		public IWidget Handler
+		Widget IWidget.Widget
 		{
 			get { return Widget; }
 			set { Widget = (W)value; }

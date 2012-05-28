@@ -31,7 +31,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	{
 		Gtk.Widget widget;
 		Gdk.Drawable drawable;
-		IImage image;
+		Image image;
 		Cairo.ImageSurface surface;
 
 		public GraphicsHandler ()
@@ -172,17 +172,17 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 		
-		public void DrawImage (IImage image, int x, int y)
+		public void DrawImage (Image image, int x, int y)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y);
 		}
 
-		public void DrawImage (IImage image, int x, int y, int width, int height)
+		public void DrawImage (Image image, int x, int y, int width, int height)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y, width, height);
 		}
 
-		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, source, destination);
 		}

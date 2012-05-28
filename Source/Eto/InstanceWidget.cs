@@ -17,7 +17,7 @@ namespace Eto
 #if DESKTOP
 	[RuntimeNameProperty("ID")]
 #endif
-	public abstract class InstanceWidget : Widget, IWidget
+	public abstract class InstanceWidget : Widget
 	{
 		IInstanceWidget inner;
 		string style;

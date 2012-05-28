@@ -9,7 +9,7 @@ namespace Eto.Forms
 		void Stop();
 	}
 	
-	public class UITimer : Widget, IUITimer
+	public class UITimer : Widget
 	{
 		IUITimer inner;
 		

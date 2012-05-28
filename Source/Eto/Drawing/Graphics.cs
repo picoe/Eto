@@ -17,11 +17,11 @@ namespace Eto.Drawing
 
 		void DrawPath (Color color, GraphicsPath path);
 		
-		void DrawImage (IImage image, int x, int y);
+		void DrawImage (Image image, int x, int y);
 
-		void DrawImage (IImage image, int x, int y, int width, int height);
+		void DrawImage (Image image, int x, int y, int width, int height);
 
-		void DrawImage (IImage image, Rectangle source, Rectangle destination);
+		void DrawImage (Image image, Rectangle source, Rectangle destination);
 
 		void DrawIcon (Icon icon, int x, int y, int width, int height);
 
@@ -136,32 +136,32 @@ namespace Eto.Drawing
 			inner.DrawPath (color, path);
 		}
 		
-		public void DrawImage (IImage image, Point point)
+		public void DrawImage (Image image, Point point)
 		{
 			inner.DrawImage (image, point.X, point.Y);
 		}
 
-		public void DrawImage (IImage image, int x, int y)
+		public void DrawImage (Image image, int x, int y)
 		{
 			inner.DrawImage (image, x, y);
 		}
 
-		public void DrawImage (IImage image, int x, int y, int width, int height)
+		public void DrawImage (Image image, int x, int y, int width, int height)
 		{
 			inner.DrawImage (image, x, y, width, height);
 		}
 
-		public void DrawImage (IImage image, Rectangle rect)
+		public void DrawImage (Image image, Rectangle rect)
 		{
 			inner.DrawImage (image, rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		public void DrawImage (IImage image, Rectangle source, Point destination)
+		public void DrawImage (Image image, Rectangle source, Point destination)
 		{
 			inner.DrawImage (image, source, new Rectangle (destination, source.Size));
 		}
 
-		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
 			inner.DrawImage (image, source, destination);
 		}

@@ -28,7 +28,7 @@ namespace Eto.Platform.GtkSharp
 		{
 		}
 
-		public IWidget Handler { get; set; }
+		public Widget Widget { get; set; }
 		
 		#endregion
 	}

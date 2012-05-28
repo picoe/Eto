@@ -5,7 +5,7 @@ namespace Eto.Forms
 {
 	public interface IImageView : IControl
 	{
-		IImage Image { get; set; }
+		Image Image { get; set; }
 	}
 	
 	public class ImageView : Control
@@ -23,7 +23,7 @@ namespace Eto.Forms
 			inner = (IImageView)Handler;
 		}
 		
-		public IImage Image
+		public Image Image
 		{
 			get { return inner.Image; }
 			set { inner.Image = value; }

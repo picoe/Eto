@@ -14,7 +14,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public string Caption { get; set; }
 
-		public IWidget Handler { get; set; }
+		public Widget Widget { get; set; }
 		
 		public MessageBoxType Type { get; set; }
      

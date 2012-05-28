@@ -12,7 +12,7 @@ namespace Eto.Forms
 		bool Enabled { get; set; }
 	}
 	
-	public class ToolBarActionItem : ToolBarItem, IToolBarActionItem
+	public class ToolBarActionItem : ToolBarItem
 	{
 		IToolBarActionItem inner;
 		

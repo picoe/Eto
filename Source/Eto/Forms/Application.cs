@@ -20,7 +20,7 @@ namespace Eto.Forms
 
 	}
 
-	public partial class Application : InstanceWidget, IApplication
+	public partial class Application : InstanceWidget
 	{
 		public static Application Instance { get; private set; }
 		

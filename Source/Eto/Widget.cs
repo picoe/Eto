@@ -8,7 +8,7 @@ namespace Eto
 {
 	public interface IWidget
 	{
-		IWidget Handler { get; set; }
+		Widget Widget { get; set; }
 
 		void Initialize ();
 	}
@@ -71,7 +71,7 @@ namespace Eto
 	}
 #endif
 	
-	public abstract class Widget : IWidget, IDisposable
+	public abstract class Widget : IDisposable
 	{
 #if DESKTOP
 		PropertyStore properties;
@@ -103,7 +103,7 @@ namespace Eto
 		{
 			this.Generator = generator;
 			this.Handler = handler;
-			this.Handler.Handler = this; // tell the handler who we are
+			this.Handler.Widget = this; // tell the handler who we are
 			if (initialize)
 				Initialize ();
 		}
@@ -116,7 +116,7 @@ namespace Eto
 				Initialize ();
 		}
 		
-		public void Initialize ()
+		protected void Initialize ()
 		{
 			Handler.Initialize ();
 		}
