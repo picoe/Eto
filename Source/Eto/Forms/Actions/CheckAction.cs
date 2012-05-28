@@ -88,6 +88,8 @@ namespace Eto.Forms
 			tbb.ID = this.ID;
 			tbb.Checked = Checked;
 			tbb.Enabled = this.Enabled;
+			if (!string.IsNullOrEmpty (ToolBarItemStyle))
+				tbb.Style = ToolBarItemStyle;
 			if (ShowLabel || actionItem.ShowLabel || toolBar.TextAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			if (Icon != null) tbb.Icon = Icon;
 			new ToolBarConnector(this, tbb);

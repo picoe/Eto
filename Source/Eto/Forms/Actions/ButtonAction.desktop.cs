@@ -14,6 +14,8 @@ namespace Eto.Forms
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = this.Enabled;
+			if (!string.IsNullOrEmpty (MenuItemStyle))
+				mi.Style = MenuItemStyle;
 			if (Icon != null) mi.Icon = Icon;
 			mi.Click += new EventHandler<EventArgs>(delegate { this.Activate(); }).MakeWeak((e) => mi.Click -= e);
 			this.EnabledChanged += new EventHandler<EventArgs>(delegate { mi.Enabled = this.Enabled; }).MakeWeak((e) => this.EnabledChanged -= e);

@@ -63,8 +63,12 @@ namespace Eto.Forms
 		}
 		
 		public string MenuText { get; set; }
+
+		public string MenuItemStyle { get; set; }
 		
 		public string ToolBarText { get; set; }
+		
+		public string ToolBarItemStyle { get; set; }
 		
 		public string TooltipText { get; set; }
 		

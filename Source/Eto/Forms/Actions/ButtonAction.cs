@@ -88,6 +88,8 @@ namespace Eto.Forms
 			ToolBarButton tbb = new ToolBarButton(toolBar.Generator);
 			tbb.ID = this.ID;
 			tbb.Enabled = this.Enabled;
+			if (!string.IsNullOrEmpty (ToolBarItemStyle))
+				tbb.Style = ToolBarItemStyle;
 			if (ShowLabel || actionItem.ShowLabel || toolBar.TextAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			//Console.WriteLine("Adding toolbar {0}", ToolBarText);
 			if (Icon != null) tbb.Icon = Icon;

@@ -136,12 +136,17 @@ namespace Eto.Forms
 		{
 			var list = new List<IActionItem>(this);
 			list.Sort(Compare);
-			foreach (IActionItem ai in list)
+			var lastSeparator = false;
+			for (int i = 0; i < list.Count; i++)
 			{
-				//ActionItem action = ai as ActionItem;
-				//if (action != null) Console.WriteLine("\tGenerating toolbar item {0}", action.Action.ID);
-				//else Console.WriteLine("\tGenerating action");
+				var ai = list[i];
+				var isSeparator = (ai is ActionItemSeparator);
+				
+				if ((lastSeparator && isSeparator) || (isSeparator && (i == 0 || i == list.Count - 1)))
+					continue;
+				
 				ai.Generate(toolBar);
+				lastSeparator = isSeparator;	
 			}
 		}
 

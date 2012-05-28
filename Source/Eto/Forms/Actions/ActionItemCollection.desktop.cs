@@ -18,9 +18,16 @@ namespace Eto.Forms
 		{
 			var list = new List<IActionItem>(this);
 			list.Sort(Compare);
-			foreach (IActionItem ai in list)
+			var lastSeparator = false;
+			for (int i = 0; i < list.Count; i++)
 			{
+				var ai = list[i];
+				var isSeparator = (ai is ActionItemSeparator);
+				
+				if ((lastSeparator && isSeparator) || (isSeparator && (i == 0 || i == list.Count - 1)))
+					continue;
 				ai.Generate(menu);
+				lastSeparator = isSeparator;	
 			}
 		}
 	}

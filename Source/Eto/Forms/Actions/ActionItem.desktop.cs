@@ -16,7 +16,10 @@ namespace Eto.Forms
 	{
 		public override void Generate(ISubMenuWidget menu)
 		{
-			menu.MenuItems.Add(new SeparatorMenuItem(menu.Generator));
+			var mi = new SeparatorMenuItem(menu.Generator);
+			if (!string.IsNullOrEmpty (MenuItemStyle))
+				mi.Style = MenuItemStyle;
+			menu.MenuItems.Add(mi);
 		}
 	}
 	
@@ -29,6 +32,8 @@ namespace Eto.Forms
 			{
 				var item = new ImageMenuItem(menu.Generator);
 				item.Text = SubMenuText;
+				if (!string.IsNullOrEmpty (MenuItemStyle))
+					item.Style = MenuItemStyle;
 				actions.Generate(item);
 				menu.MenuItems.Add(item);
 			}
@@ -40,8 +45,11 @@ namespace Eto.Forms
 		public override void Generate(ISubMenuWidget menu)
 		{
 			var item = this.Action.Generate(this, menu);
-			if (item != null)
+			if (item != null) {
+				if (!string.IsNullOrEmpty (MenuItemStyle))
+					item.Style = MenuItemStyle;
 				menu.MenuItems.Add (item);
+			}
 		}
 	}
 	

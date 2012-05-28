@@ -21,6 +21,10 @@ namespace Eto.Forms
 			get { return order; }
 			set { order = value; }
 		}
+		
+		public string ToolBarItemStyle { get; set; }
+		
+		public string MenuItemStyle { get; set; }
 	}
 	
 	public partial class ActionItemSeparator : ActionItemBase
@@ -29,7 +33,10 @@ namespace Eto.Forms
 
 		public override void Generate(ToolBar toolBar)
 		{
-			toolBar.Items.Add(new SeparatorToolBarItem(toolBar.Generator) { Type = this.ToolBarType });
+			var tbb = new SeparatorToolBarItem(toolBar.Generator) { Type = this.ToolBarType };
+			if (!string.IsNullOrEmpty (ToolBarItemStyle))
+				tbb.Style = ToolBarItemStyle;
+			toolBar.Items.Add(tbb);
 		}
 
 	}
@@ -95,8 +102,11 @@ namespace Eto.Forms
 		public override void Generate(ToolBar toolBar)
 		{
 			var item = Action.Generate(this, toolBar);
-			if (item != null)
+			if (item != null) {
+				if (!string.IsNullOrEmpty (ToolBarItemStyle))
+					item.Style = ToolBarItemStyle;
 				toolBar.Items.Add (item);
+			}
 		}
 
 	}

@@ -14,6 +14,9 @@ namespace Eto.Forms
 			mi.Shortcut = Accelerator;
 			mi.Enabled = this.Enabled;
 			mi.Checked = Checked;
+			if (!string.IsNullOrEmpty (MenuItemStyle))
+				mi.Style = MenuItemStyle;
+
 			new MenuConnector(this, mi);
 			return mi;
 		}
