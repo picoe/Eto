@@ -1,6 +1,7 @@
 using System;
 using Eto;
 using System.Reflection;
+using System.IO;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -24,7 +25,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			switch (folder) {
 			case EtoSpecialFolder.ApplicationResources:
-				return Assembly.GetEntryAssembly ().Location;
+				return Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location);
 			default:
 				return Environment.GetFolderPath (Convert (folder));
 			}

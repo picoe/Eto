@@ -29,7 +29,6 @@ namespace Eto.Platform.Mac
 			switch (folder) {
 			case EtoSpecialFolder.ApplicationResources:
 				return NSBundle.MainBundle.ResourcePath;
-				break;
 			default:
 				NSSearchPathDirectory dir;
 				NSSearchPathDomain domain;
