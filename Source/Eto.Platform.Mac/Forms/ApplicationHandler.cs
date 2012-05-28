@@ -145,7 +145,7 @@ namespace Eto.Platform.Mac.Forms
 			args.Actions.Add (new MacButtonAction ("mac_selectAll", "Select All", "selectAll:") { Accelerator = Key.Application | Key.A });
 			args.Actions.Add (new MacButtonAction ("mac_undo", "Undo", "undo:") { Accelerator = Key.Application | Key.Z });
 			args.Actions.Add (new MacButtonAction ("mac_redo", "Redo", "redo:") { Accelerator = Key.Application | Key.Shift | Key.Z });
-			args.Actions.Add (new MacButtonAction ("mac_toggleFullScreen", "Toggle Fullscreen", "toggleFullScreen:") { Accelerator = Key.Application | Key.Control | Key.F });
+			args.Actions.Add (new MacButtonAction ("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Key.Application | Key.Control | Key.F });
 			
 			if (addStandardItems) {
 				var file = args.Menu.FindAddSubMenu ("&File", 100);
