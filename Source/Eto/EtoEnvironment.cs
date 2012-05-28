@@ -5,6 +5,7 @@ namespace Eto
 	public enum EtoSpecialFolder
 	{
 		ApplicationSettings,
+		ApplicationResources,
 		Documents
 	}
 	
