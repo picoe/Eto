@@ -44,7 +44,7 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Dispatcher.BeginInvoke (action);
 		}
 
-		public void GetSystemActions(GenerateActionArgs args)
+		public void GetSystemActions (GenerateActionArgs args, bool addStandardItems)
 		{
 		}
 
