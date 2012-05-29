@@ -13,7 +13,7 @@ namespace Eto.Platform.Wpf.Forms
 			get; set;
 		}
 
-		public IWidget Handler
+		public Widget Widget
 		{
 			get; set; 
 		}
