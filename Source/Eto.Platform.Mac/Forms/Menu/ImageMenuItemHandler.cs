@@ -12,6 +12,8 @@ namespace Eto.Platform.Mac
 	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem, IMenuActionHandler
 	{
 		Icon icon;
+		
+		public static bool UseImages = false;
 
 		public ImageMenuItemHandler ()
 		{
@@ -64,16 +66,16 @@ namespace Eto.Platform.Mac
 			get { return icon; }
 			set {
 				icon = value;
-				/*
-				if (icon != null) {
-					var image = ((NSImage)icon.ControlObject);
-					var rep = image.BestRepresentation (new System.Drawing.RectangleF(0, 0, 16, 16), null, new NSDictionary());
-					var image2 = new NSImage();
-					image2.AddRepresentation (rep);
-					Control.Image = image2;
+				if (UseImages) {
+					if (icon != null) {
+						var image = ((NSImage)icon.ControlObject);
+						var rep = image.BestRepresentation (new System.Drawing.RectangleF (0, 0, 16, 16), null, new NSDictionary ());
+						var image2 = new NSImage ();
+						image2.AddRepresentation (rep);
+						Control.Image = image2;
+					} else
+						Control.Image = null;
 				}
-				else Control.Image = null;
-				*/
 			}
 		}
 
