@@ -123,6 +123,12 @@ namespace Eto.Platform.Mac
 			return new Color (red, green, blue, alpha);
 		}
 		
+		public static NSUrl Convert (Uri uri)
+		{
+			if (uri == null) return null;
+			return new NSUrl(uri.AbsoluteUri);
+		}
+		
 		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent)
 		{
 			var pt = Generator.GetLocation (view, theEvent);
