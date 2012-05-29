@@ -82,12 +82,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public TextBoxHandler ()
 		{
-			Control = new EtoTextField{ Handler = this };
-			Control.Bezeled = true;
-			Control.Editable = true;
-			Control.Selectable = true;
+			Control = new EtoTextField {
+				Handler = this,
+				Bezeled = true,
+				Editable = true,
+				Selectable = true,
+				Formatter = new MyFormatter{ Handler = this }
+			};
+			Control.Cell.LineBreakMode = NSLineBreakMode.CharWrapping;
 
-			Control.Formatter = new MyFormatter{ Handler = this };
 			//Control.BezelStyle = NSTextFieldBezelStyle.Square;
 			//Control.Bordered = true;
 			MaxLength = -1;
