@@ -1,6 +1,7 @@
 using System;
 using System.Xml;
 using System.Collections.Generic;
+using System.IO;
 
 namespace Eto
 {
@@ -148,6 +149,36 @@ namespace Eto
 			where T: IXmlReadable, new()
 		{
 			ReadChildListXml<T>(element, list, delegate { return new T(); }, childElement, listElement);
+		}
+
+		public static void SaveXml(this IXmlReadable obj, string fileName, string topNodeName = "object")
+		{
+			using (var fileStream = File.Create (fileName)) {
+				SaveXml(obj, fileStream, topNodeName);
+			}
+		}
+		
+		public static void SaveXml(this IXmlReadable obj, Stream stream, string topNodeName = "object")
+		{
+			var doc = new XmlDocument ();
+			var topNode = doc.CreateElement (topNodeName);
+			obj.WriteXml (topNode);
+			doc.AppendChild (topNode);
+			doc.Save (stream);
+		}
+		
+		public static void LoadXml(this IXmlReadable obj, string fileName)
+		{
+			using (var fileStream = File.OpenRead (fileName)) {
+				LoadXml (obj, fileStream);
+			}
+		}
+
+		public static void LoadXml(this IXmlReadable obj, Stream stream)
+		{
+			var doc = new XmlDocument();
+			doc.Load (stream);
+			obj.ReadXml (doc.DocumentElement);
 		}
 	}
 }

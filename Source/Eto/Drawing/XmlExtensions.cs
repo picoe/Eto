@@ -21,7 +21,13 @@ namespace Eto.Drawing
 				element.WriteChildXml (elementName, new SizeSaver{ Size = value.Value });
 		}
 
-		public static void ReadChildXml(this XmlElement element, string elementName, Size value)
+		public static void WriteChildXml (this XmlElement element, string elementName, Size value)
+		{
+			if (value != null)
+				element.WriteChildXml (elementName, new SizeSaver { Size = value });
+		}
+
+		public static void ReadChildXml (this XmlElement element, string elementName, Size value)
 		{
 			element.ReadChildXml (elementName, new SizeSaver{ Size = value });
 		}
