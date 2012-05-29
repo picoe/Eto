@@ -24,23 +24,23 @@ namespace Eto.Forms
 	}
 	
 	
-	public partial class ActionItemSubMenu : ActionItemBase
+	public partial class ActionItemSubMenu
 	{
 		public override void Generate(ISubMenuWidget menu)
 		{
-			if (actions.Count > 0)
+			if (Actions.Count > 0)
 			{
 				var item = new ImageMenuItem(menu.Generator);
 				item.Text = SubMenuText;
 				if (!string.IsNullOrEmpty (MenuItemStyle))
 					item.Style = MenuItemStyle;
-				actions.Generate(item);
+				Actions.Generate(item);
 				menu.MenuItems.Add(item);
 			}
 		}
 	}
 	
-	public partial class ActionItem : ActionItemBase
+	public partial class ActionItem
 	{
 		public override void Generate(ISubMenuWidget menu)
 		{

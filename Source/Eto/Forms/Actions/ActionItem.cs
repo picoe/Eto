@@ -43,42 +43,23 @@ namespace Eto.Forms
 
 	public partial class ActionItemSubMenu : ActionItemBase
 	{
-		string subMenuText;
-		string icon;
-		ActionItemCollection actions;
-
 		public ActionItemSubMenu(ActionCollection actions, string subMenuText)
 		{
-			this.actions = new ActionItemCollection(actions);
-			this.subMenuText = subMenuText;
+			this.Actions = new ActionItemCollection(actions);
+			this.SubMenuText = subMenuText;
 		}
 
-		public string Icon
-		{
-			get { return icon; }
-			set { icon = value; }
-		}
+		public string Icon { get; set; }
 
-		public string SubMenuText
-		{
-			get { return subMenuText; }
-			set { subMenuText = value; }
-		}
-
-		public ActionItemCollection Actions
-		{
-			get { return actions; }
-		}
+		public string SubMenuText { get; set; }
+		
+		public ActionItemCollection Actions { get; private set; }
 
 		public override void Generate(ToolBar toolBar)
 		{
 		}
 	}
 	
-
-	/// <summary>
-	/// Summary description for ActionItem.
-	/// </summary>
 	public partial class ActionItem : ActionItemBase
 	{
 		
