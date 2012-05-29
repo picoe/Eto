@@ -51,6 +51,8 @@ namespace Eto.Platform.Wpf.Forms
 					initialClientSize = null;
 				}
 			};
+			// needed to handle Application.Terminating event
+			HandleEvent (Window.ClosingEvent);
 		}
 
 		public override void AttachEvent (string handler)
