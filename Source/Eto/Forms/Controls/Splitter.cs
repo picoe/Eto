@@ -68,30 +68,34 @@ namespace Eto.Forms
 					inner.Panel1.SetParent (null);
 				if (value != null) {
 					value.SetParent (this);
-					if (Loaded) {
+					if (Loaded && !value.Loaded) {
 						value.OnPreLoad (EventArgs.Empty);
 						value.OnLoad (EventArgs.Empty);
-						value.OnLoadComplete (EventArgs.Empty);
 					}
 				}
 				inner.Panel1 = value;
+				if (Loaded && value != null && !value.Loaded)
+					value.OnLoadComplete (EventArgs.Empty);
 			}
 		}
 
 		public Control Panel2 {
 			get { return inner.Panel2; }
-			set { 
+			set {
 				if (inner.Panel2 != null)
 					inner.Panel2.SetParent (null);
+				bool load = false;
 				if (value != null) {
 					value.SetParent (this);
-					if (Loaded) {
+					if (Loaded && !value.Loaded) {
+						load = true;
 						value.OnPreLoad (EventArgs.Empty);
 						value.OnLoad (EventArgs.Empty);
-						value.OnLoadComplete (EventArgs.Empty);
 					}
 				}
 				inner.Panel2 = value; 
+				if (load)
+					value.OnLoadComplete (EventArgs.Empty);
 			}
 		}
 		
