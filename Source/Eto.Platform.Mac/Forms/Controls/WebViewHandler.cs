@@ -82,9 +82,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.StringByEvaluatingJavaScriptFromString (script);
 		}
 
-		public void LoadHtml (string html)
+		public void LoadHtml (string html, Uri baseUri)
 		{
-			Control.MainFrame.LoadHtmlString (html, null);
+			Control.MainFrame.LoadHtmlString (html, Generator.Convert (baseUri));
 		}
 		
 		public void Stop ()

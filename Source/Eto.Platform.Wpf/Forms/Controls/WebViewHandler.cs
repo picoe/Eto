@@ -6,6 +6,7 @@ using swc = System.Windows.Controls;
 using swn = System.Windows.Navigation;
 using Eto.Forms;
 using System.Runtime.InteropServices;
+using Eto.Platform.CustomControls;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -52,6 +53,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public WebViewHandler ()
 		{
 			Control = new swc.WebBrowser ();
+			Control.Loaded += delegate {
+				WebBrowser2.Silent = true;
+			};
 		}
 
 		void HookDocumentEvents (string newEvent = null)
@@ -146,9 +150,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public void LoadHtml (string html)
+		HttpServer server;
+
+		public void LoadHtml (string html, Uri baseUri)
 		{
-			Control.NavigateToString (html);
+			if (baseUri != null) {
+				if (server == null)
+					server = new HttpServer ();
+				server.SetHtml (html, baseUri != null ? baseUri.LocalPath : null);
+				Control.Navigate (server.Url);
+			}
+			else
+				Control.NavigateToString (html);
+
 		}
 
 		public void GoBack ()
@@ -190,26 +204,22 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (browser != null && browser.Document != null)
 					return browser.Document.Title;
 				else return null;
-				/*var doc = Control.Document as mshtml.HTMLDocument;
-				if (doc != null) return doc.title;
-				else return null;*/
 			}
 		}
 
 		public void ExecuteScript (string script)
 		{
-			var doc = Control.Document as mshtml.HTMLDocument;
-			var scriptElement = doc.getElementById("eto_forms_execute_script");
-			if (scriptElement == null) {
-				scriptElement = doc.createElement("script");
-				scriptElement.id = "eto_forms_execute_script";
-				var head = doc.getElementsByTagName ("head");
-				var headitem = head.OfType<mshtml.HTMLHeadElement>().FirstOrDefault();
-				if (headitem != null)
-					headitem.appendChild (scriptElement as mshtml.IHTMLDOMNode);
+			Control.InvokeScript ("execScript", new Object[] { script, "JavaScript" });
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+
+			if (server != null) {
+				server.Dispose ();
+				server = null;
 			}
-			scriptElement.setAttribute ("text", "function eto_forms_execute_script() { " + script + " }");
-			this.Control.InvokeScript ("eto_forms_execute_script");
 		}
 	}
 }
