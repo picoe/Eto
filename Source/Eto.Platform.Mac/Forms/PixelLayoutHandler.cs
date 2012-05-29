@@ -45,7 +45,6 @@ namespace Eto.Platform.Mac.Forms
 		public override void OnLoadComplete ()
 		{
 			base.OnLoadComplete ();
-			LayoutChildren ();
 			Control.PostsFrameChangedNotifications = true;
 			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as PixelLayoutHandler;

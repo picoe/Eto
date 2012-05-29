@@ -21,12 +21,16 @@ namespace Eto.Platform.Mac.Forms
 		void UpdateParentLayout (bool updateSize);
 		
 		Layout Widget { get; }
+		
+		bool InitialLayout { get; }
 	}
 	
 	public abstract class MacLayout<T, W> : MacObject<T, W>, ILayout, IMacLayout
 		where T: NSObject
 		where W: Layout
 	{
+		public bool InitialLayout { get; private set; }
+		
 		Layout IMacLayout.Widget {
 			get { return Widget; }
 		}
@@ -55,6 +59,16 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual void OnLoadComplete ()
 		{
+			// make sure LayoutChildren is called only once per layout, and in parent to child order
+			var parentLayoutHandler = Widget.ParentLayout != null ? Widget.ParentLayout.Handler as IMacLayout : null;
+			if (parentLayoutHandler == null || parentLayoutHandler.InitialLayout) {
+				this.InitialLayout = true;
+				LayoutChildren ();
+				foreach (var childContainer in Widget.Container.Children.Select (r => r.Handler).OfType<IMacContainer>()) {
+					childContainer.LayoutChildren();
+				}
+			}
+			
 		}
 		
 		public virtual SD.RectangleF GetPosition (Control control)

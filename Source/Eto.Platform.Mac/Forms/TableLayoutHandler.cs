@@ -277,7 +277,6 @@ namespace Eto.Platform.Mac.Forms
 		public override void OnLoadComplete ()
 		{
 			base.OnLoadComplete ();
-			LayoutChildren ();
 #if OSX
 			Control.PostsFrameChangedNotifications = true;
 			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
