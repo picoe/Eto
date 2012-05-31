@@ -182,7 +182,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				topNode = value;
-				Control.ItemsSource = WpfTreeItemHelper.GetChildren (topNode); //.OfType<ITreeItem>().ToArray();
+				var source = WpfTreeItemHelper.GetChildren (topNode);
+				if (Control.ItemsSource == source)
+					Control.ItemsSource = null; // force a refresh
+				Control.ItemsSource = source;
 			}
 		}
 
