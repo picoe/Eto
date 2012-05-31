@@ -10,11 +10,12 @@ namespace Eto.Test.Sections.Controls
 		{
 			var layout = new DynamicLayout (this);
 
-			layout.AddRow (new Label{ Text = "Default" }, Default ());
-			layout.AddRow (new Label{ Text = "Different Size" }, DifferentSize ());
-			layout.AddRow (new Label{ Text = "Read Only" }, ReadOnly ());
-			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
-			
+			layout.AddRow (new Label { Text = "Default" }, Default ());
+			layout.AddRow (new Label { Text = "Different Size" }, DifferentSize ());
+			layout.AddRow (new Label { Text = "Read Only" }, ReadOnly ());
+			layout.AddRow (new Label { Text = "Disabled" }, Disabled ());
+			layout.AddRow (new Label { Text = "Placeholder" }, Placeholder ());
+
 			// growing space at end is blank!
 			layout.Add (null);
 		}
@@ -44,6 +45,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = Default ();
 			control.Enabled = false;
+			return control;
+		}
+
+		Control Placeholder ()
+		{
+			var control = new TextBox { PlaceholderText = "Some Placeholder" };
+			LogEvents (control);
 			return control;
 		}
 

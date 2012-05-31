@@ -119,5 +119,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get;
 			set;
 		}
+		
+		public string PlaceholderText {
+			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
+			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
+		}
 	}
 }

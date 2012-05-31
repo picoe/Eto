@@ -7,6 +7,9 @@ namespace Eto.Platform.GtkSharp
 {
 	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox>, ITextBox
 	{
+		Pango.Layout placeholderLayout;
+		string placeholderText;
+
 		public TextBoxHandler ()
 		{
 			Control = new Gtk.Entry ();
@@ -28,6 +31,45 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		void HandleExposeEvent (object o, Gtk.ExposeEventArgs args)
+		{
+			if (!string.IsNullOrEmpty(Control.Text) || args.Event.Window == Control.GdkWindow)
+				return;
+
+			if (placeholderLayout == null) {
+				placeholderLayout = new Pango.Layout (Control.PangoContext);
+				placeholderLayout.FontDescription = Control.PangoContext.FontDescription.Copy ();
+			}
+			placeholderLayout.SetText (placeholderText);
+
+			int currentHeight, currentWidth;
+			args.Event.Window.GetSize (out currentWidth, out currentHeight);
+
+			int width, height;
+			placeholderLayout.GetPixelSize (out width, out height);
+
+			var style = Control.Style;
+			var bc = style.Base (Gtk.StateType.Normal);
+			var tc = style.Text (Gtk.StateType.Normal);
+
+			using (var gc = new Gdk.GC (args.Event.Window)) {
+				gc.Copy (style.TextGC (Gtk.StateType.Normal));
+
+				gc.RgbFgColor = new Gdk.Color ((byte)(((int)bc.Red + tc.Red) / 2 / 256), (byte)(((int)bc.Green + (int)tc.Green) / 2 / 256), (byte)((bc.Blue + tc.Blue) / 2 / 256));
+
+				args.Event.Window.DrawLayout (gc, 2, (currentHeight - height) / 2 + 1, placeholderLayout);
+			}
+		}
+
+		public override Eto.Drawing.Font Font
+		{
+			get { return base.Font; }
+			set {
+				base.Font = value;
+				placeholderLayout = null;
+			}
+		}
+
 		public override string Text {
 			get { return Control.Text; }
 			set { Control.Text = value; }
@@ -41,6 +83,17 @@ namespace Eto.Platform.GtkSharp
 		public int MaxLength {
 			get { return Control.MaxLength; }
 			set { Control.MaxLength = value; }
+		}
+
+		public string PlaceholderText {
+			get { return placeholderText; }
+			set	{
+				if (!string.IsNullOrEmpty(placeholderText))
+					Control.ExposeEvent -= HandleExposeEvent;
+				placeholderText = value;
+				if (!string.IsNullOrEmpty (placeholderText))
+					Control.ExposeEvent += HandleExposeEvent;
+			}
 		}
 
 	}
