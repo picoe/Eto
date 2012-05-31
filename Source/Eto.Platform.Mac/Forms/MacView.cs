@@ -440,7 +440,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual void OnLoadComplete (EventArgs e)
 		{
-			if (focus)
+			if (focus && Control.Window != null)
 				Control.Window.MakeFirstResponder (Control);
 		}
 		
