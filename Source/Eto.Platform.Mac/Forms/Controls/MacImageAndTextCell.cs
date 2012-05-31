@@ -76,7 +76,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 	public class MacImageListItemCell : NSTextFieldCell
 	{
-		public const int IMAGE_PADDING = 2;
+		public const int ImagePadding = 2;
 		
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
@@ -95,7 +95,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var size = base.CellSizeForBounds (bounds);
 			var data = ObjectValue as MacImageData;
 			if (data != null && data.Image != null) {
-				size.Width += size.Height + IMAGE_PADDING * 2;
+				size.Width += size.Height + ImagePadding * 2;
 			}
 			size.Width = Math.Min (size.Width, bounds.Width);
 			return size;
@@ -118,8 +118,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 						#pragma warning restore 618
 						data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
 					}
-					cellFrame.Width -= cellFrame.Height + IMAGE_PADDING;
-					cellFrame.X += cellFrame.Height + IMAGE_PADDING;
+					cellFrame.Width -= cellFrame.Height + ImagePadding;
+					cellFrame.X += cellFrame.Height + ImagePadding;
 				}
 			}
 			

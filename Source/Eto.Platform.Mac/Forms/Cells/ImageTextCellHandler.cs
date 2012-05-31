@@ -69,7 +69,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var str = val.Text;
 			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
 			
-			var size = str.StringSize (attrs).Width + 4 + 16 + MacImageListItemCell.IMAGE_PADDING * 2; // for border + image
+			var size = str.StringSize (attrs).Width + 4 + 16 + MacImageListItemCell.ImagePadding * 2; // for border + image
 			return size;
 			
 		}
