@@ -148,12 +148,16 @@ namespace Eto.Platform.Mac.Forms
 			args.Actions.Add (new MacButtonAction ("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Key.Application | Key.Control | Key.F });
 			
 			if (addStandardItems) {
-				var file = args.Menu.FindAddSubMenu (Widget.Name ?? "Application", 100);
-				file.Actions.AddSeparator (800);
-				file.Actions.Add ("mac_hide", 800);
-				file.Actions.Add ("mac_hideothers", 800);
-				file.Actions.Add ("mac_showall", 800);
-				file.Actions.AddSeparator (801);
+				var application = args.Menu.FindAddSubMenu (Widget.Name ?? "Application", 100);
+				application.Actions.AddSeparator (800);
+				application.Actions.Add ("mac_hide", 800);
+				application.Actions.Add ("mac_hideothers", 800);
+				application.Actions.Add ("mac_showall", 800);
+				application.Actions.AddSeparator (801);
+
+				var file = args.Menu.FindAddSubMenu ("&File", 100);
+				file.Actions.AddSeparator (900);
+				file.Actions.Add ("mac_performClose", 900);
 				
 				var edit = args.Menu.FindAddSubMenu ("&Edit", 200);
 				edit.Actions.AddSeparator (100);
