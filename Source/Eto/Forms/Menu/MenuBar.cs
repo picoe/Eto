@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -28,12 +29,12 @@ namespace Eto.Forms
 			menuItems = new MenuItemCollection (this, handler);
 		}
 
-		public MenuBar (Generator g, ActionItemCollection actionItems) : this(g)
+		public MenuBar (Generator g, IEnumerable<IActionItem> actionItems) : this(g)
 		{
 			GenerateActions (actionItems);
 		}
 		
-		public void GenerateActions (ActionItemCollection actionItems)
+		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (IActionItem ai in actionItems) {
 				ai.Generate (this);

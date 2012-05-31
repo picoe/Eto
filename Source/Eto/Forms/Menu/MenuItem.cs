@@ -10,9 +10,10 @@ namespace Eto.Forms
 	{
 	}
 	
-	public class MenuItem : Menu
+	public abstract class MenuItem : Menu
 	{
-		public MenuItem (Generator g, Type type) : base(g, type)
+		protected MenuItem (Generator g, Type type, bool initialize = true) 
+			: base(g, type, initialize)
 		{
 		}
 	}

@@ -19,8 +19,8 @@ namespace Eto.Forms
 		{
 		}
 		
-		public RadioMenuItem (Generator g, RadioMenuItem controller)
-			: this (g, typeof(IRadioMenuItem))
+		public RadioMenuItem (Generator g, RadioMenuItem controller = null)
+			: this (g, typeof(IRadioMenuItem), controller)
 		{
 		}
 

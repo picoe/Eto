@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -49,7 +50,7 @@ namespace Eto.Forms
 			set { handler.Icon = value; }
 		}
 		
-		public void GenerateActions (ActionItemCollection actionItems)
+		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (IActionItem ai in actionItems) {
 				ai.Generate (this);

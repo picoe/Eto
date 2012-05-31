@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -21,7 +22,7 @@ namespace Eto.Forms
 		
 		MenuItemCollection MenuItems { get; }
 		
-		void GenerateActions (ActionItemCollection actionItems);
+		void GenerateActions (IEnumerable<IActionItem> actionItems);
 	}
 }
 
