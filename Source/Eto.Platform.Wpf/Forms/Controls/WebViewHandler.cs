@@ -53,7 +53,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public WebViewHandler ()
 		{
 			Control = new swc.WebBrowser ();
-			Control.Loaded += delegate {
+			Control.Navigated += delegate {
 				WebBrowser2.Silent = true;
 			};
 		}
