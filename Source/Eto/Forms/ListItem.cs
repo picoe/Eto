@@ -26,6 +26,8 @@ namespace Eto.Forms
 			get { return key ?? Text; }
 			set { key = value; }
 		}
+		
+		public object Tag { get; set; }
 	}
 	
 	public class ImageListItem : ListItem, IImageListItem
