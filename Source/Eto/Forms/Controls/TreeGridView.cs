@@ -148,8 +148,6 @@ namespace Eto.Forms
 			: base (generator, type, initialize)
 		{
 			handler = (ITreeGridView)Handler;
-			if (initialize)
-				Initialize ();
 		}
 
 		
@@ -169,9 +167,9 @@ namespace Eto.Forms
 			{
 				if (DataStore == null)
 					yield break;
-				/*foreach (var row in SelectedRows) {
+				foreach (var row in SelectedRows) {
 					yield return DataStore[row];
-				}*/
+				}
 			}
 		}
 		
