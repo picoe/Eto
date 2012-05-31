@@ -6,25 +6,36 @@ namespace Eto.Forms
 {
 	public interface IRadioMenuItem : IMenuActionItem
 	{
-		void Create(RadioMenuItem controller);
+		void Create (RadioMenuItem controller);
+
 		bool Checked { get; set; }
 	}
 	
 	public class RadioMenuItem : MenuActionItem
 	{
-		IRadioMenuItem inner;
+		IRadioMenuItem handler;
 
-		public RadioMenuItem(Generator g, RadioMenuItem controller) : base(g, typeof(IRadioMenuItem))
+		public RadioMenuItem (RadioMenuItem controller = null) : this (Generator.Current, controller)
 		{
-			inner = (IRadioMenuItem)base.Handler;
-			inner.Create(controller);
+		}
+		
+		public RadioMenuItem (Generator g, RadioMenuItem controller)
+			: this (g, typeof(IRadioMenuItem))
+		{
 		}
 
-
-		public bool Checked
+		protected RadioMenuItem (Generator generator, Type type, RadioMenuItem controller, bool initialize = true)
+			: base (generator, type, false)
 		{
-			get { return inner.Checked; }
-			set { inner.Checked = value; }
+			handler = (IRadioMenuItem)base.Handler;
+			handler.Create (controller);
+			if (initialize)
+				Initialize ();
+		}
+
+		public bool Checked {
+			get { return handler.Checked; }
+			set { handler.Checked = value; }
 		}
 	}
 }

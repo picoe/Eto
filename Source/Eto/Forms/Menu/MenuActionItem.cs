@@ -13,36 +13,36 @@ namespace Eto.Forms
 		bool Enabled { get; set; }
 	}
 	
-	public class MenuActionItem : MenuItem
+	public abstract class MenuActionItem : MenuItem
 	{
-		IMenuActionItem inner;
+		IMenuActionItem handler;
 		
 		public event EventHandler<EventArgs> Click;
 
-		public MenuActionItem (Generator g, Type type)
-			: base(g, type)
+		protected MenuActionItem (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
 		{
-			inner = (IMenuActionItem)Handler;
+			handler = (IMenuActionItem)Handler;
 		}
 		
 		public string Text {
-			get { return inner.Text; }
-			set { inner.Text = value; }
+			get { return handler.Text; }
+			set { handler.Text = value; }
 		}
 		
 		public string ToolTip {
-			get { return inner.ToolTip; }
-			set { inner.ToolTip = value; }
+			get { return handler.ToolTip; }
+			set { handler.ToolTip = value; }
 		}
 		
 		public bool Enabled {
-			get { return inner.Enabled; }
-			set { inner.Enabled = value; }
+			get { return handler.Enabled; }
+			set { handler.Enabled = value; }
 		}
 
 		public Key Shortcut {
-			get { return inner.Shortcut; }
-			set { inner.Shortcut = value; }
+			get { return handler.Shortcut; }
+			set { handler.Shortcut = value; }
 		}
 
 		public virtual void OnClick (EventArgs e)

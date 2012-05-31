@@ -10,7 +10,7 @@ namespace Eto.Forms
 	
 	public class ImageView : Control
 	{
-		IImageView inner;
+		IImageView handler;
 		
 		public ImageView ()
 			: this(Generator.Current)
@@ -18,15 +18,21 @@ namespace Eto.Forms
 		}
 		
 		public ImageView (Generator g)
-			: base(g, typeof(IImageView))
+			: this (g, typeof(IImageView))
 		{
-			inner = (IImageView)Handler;
 		}
+		
+		protected ImageView (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (IImageView)Handler;
+		}
+
 		
 		public Image Image
 		{
-			get { return inner.Image; }
-			set { inner.Image = value; }
+			get { return handler.Image; }
+			set { handler.Image = value; }
 		}
 	}
 }

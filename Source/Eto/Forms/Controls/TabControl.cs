@@ -25,7 +25,7 @@ namespace Eto.Forms
 	public class TabControl : Control
 	{
 		TabPageCollection pages;
-		ITabControl inner;
+		ITabControl handler;
 		
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
@@ -42,13 +42,18 @@ namespace Eto.Forms
 
 		public TabControl (Generator g) : base(g, typeof(ITabControl))
 		{
+		}
+		
+		protected TabControl (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
 			pages = new TabPageCollection (this);
-			inner = (ITabControl)base.Handler;
+			handler = (ITabControl)base.Handler;
 		}
 
 		public int SelectedIndex {
-			get { return inner.SelectedIndex; }
-			set { inner.SelectedIndex = value; }
+			get { return handler.SelectedIndex; }
+			set { handler.SelectedIndex = value; }
 		}
 		
 		public TabPage SelectedPage {
@@ -68,18 +73,18 @@ namespace Eto.Forms
 				page.OnLoadComplete (EventArgs.Empty);
 			}
 			page.SetParent (this);
-			inner.InsertTab (index, page);
+			handler.InsertTab (index, page);
 		}
 
 		internal void RemoveTab (int index, TabPage page)
 		{
 			page.SetParent (null);
-			inner.RemoveTab (index, page);
+			handler.RemoveTab (index, page);
 		}
 		
 		internal void ClearTabs ()
 		{
-			inner.ClearTabs ();
+			handler.ClearTabs ();
 		}
 
 		public override void OnPreLoad (EventArgs e)

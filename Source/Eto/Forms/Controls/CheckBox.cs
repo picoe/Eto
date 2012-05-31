@@ -22,11 +22,16 @@ namespace Eto.Forms
 				CheckedChanged (this, e);
 		}
 
-		public CheckBox () : this(Generator.Current)
+		public CheckBox () : this (Generator.Current)
 		{
 		}
 		
-		public CheckBox (Generator g) : base(g, typeof(ICheckBox))
+		public CheckBox (Generator g) : this (g, typeof(ICheckBox))
+		{
+		}
+		
+		protected CheckBox (Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
 		{
 			inner = (ICheckBox)base.Handler;
 		}

@@ -35,37 +35,42 @@ namespace Eto.Forms
 	
 	public class Label : TextControl
 	{
-		ILabel inner;
+		ILabel handler;
 		
 		public Label() : this(Generator.Current) { }
 		
-		public Label(Generator g) : base(g, typeof(ILabel))
+		public Label(Generator g) : this (g, typeof(ILabel))
 		{
-			inner = (ILabel)Handler;
+		}
+		
+		protected Label (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (ILabel)Handler;
 		}
 		
 		public WrapMode Wrap
 		{
-			get { return inner.Wrap; }
-			set { inner.Wrap = value; }
+			get { return handler.Wrap; }
+			set { handler.Wrap = value; }
 		}
 		
 		public Color TextColor
 		{
-			get { return inner.TextColor; }
-			set { inner.TextColor = value; }
+			get { return handler.TextColor; }
+			set { handler.TextColor = value; }
 		}
 		
 		public HorizontalAlign HorizontalAlign
 		{
-			get { return inner.HorizontalAlign; }
-			set { inner.HorizontalAlign = value; }
+			get { return handler.HorizontalAlign; }
+			set { handler.HorizontalAlign = value; }
 		}
 		
 		public VerticalAlign VerticalAlign
 		{
-			get { return inner.VerticalAlign; }
-			set { inner.VerticalAlign = value; }
+			get { return handler.VerticalAlign; }
+			set { handler.VerticalAlign = value; }
 		}
 	}
 }

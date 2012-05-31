@@ -40,7 +40,7 @@ namespace Eto.Forms
 	
 	public partial class TreeGridView : Grid
 	{
-		ITreeGridView inner;
+		ITreeGridView handler;
 
 		#region Events
 
@@ -140,20 +140,27 @@ namespace Eto.Forms
 		{
 		}
 
-		public TreeGridView (Generator g) : base(g, typeof(ITreeGridView), false)
+		public TreeGridView (Generator g) : this (g, typeof(ITreeGridView))
 		{
-			inner = (ITreeGridView)Handler;
-			Initialize ();
 		}
 		
+		protected TreeGridView (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (ITreeGridView)Handler;
+			if (initialize)
+				Initialize ();
+		}
+
+		
 		public ITreeGridItem SelectedItem {
-			get { return inner.SelectedItem; }
-			set { inner.SelectedItem = value; }
+			get { return handler.SelectedItem; }
+			set { handler.SelectedItem = value; }
 		}
 		
 		public ITreeGridStore<ITreeGridItem> DataStore {
-			get { return inner.DataStore; }
-			set { inner.DataStore = value; }
+			get { return handler.DataStore; }
+			set { handler.DataStore = value; }
 		}
 
 		public override IEnumerable<IGridItem> SelectedItems

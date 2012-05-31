@@ -9,15 +9,20 @@ namespace Eto.Forms
 	
 	public class Panel : Container
 	{
-		//IPanel inner;
 		
-		public Panel () : this(Generator.Current)
+		public Panel () : this (Generator.Current)
 		{
 		}
 		
-		public Panel (Generator g) : base(g, typeof(IPanel))
+		public Panel (Generator g) : this (g, typeof(IPanel))
 		{
-			//inner = (IPanel)InnerControl;
 		}
+		
+		protected Panel (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			
+		}
+
 	}
 }

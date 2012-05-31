@@ -12,7 +12,7 @@ namespace Eto.Forms
 	
 	public class MenuItem : Menu
 	{
-		public MenuItem(Generator g, Type type) : base(g, type)
+		public MenuItem (Generator g, Type type) : base(g, type)
 		{
 		}
 	}
@@ -21,12 +21,12 @@ namespace Eto.Forms
 	{
 		ISubMenu subMenu;
 		
-		public ISubMenuWidget Parent
-		{
-			get; private set;
+		public ISubMenuWidget Parent {
+			get;
+			private set;
 		}
 		
-		public MenuItemCollection(ISubMenuWidget parent, ISubMenu parentMenu)
+		public MenuItemCollection (ISubMenuWidget parent, ISubMenu parentMenu)
 		{
 			this.Parent = parent;
 			this.subMenu = parentMenu;
@@ -35,20 +35,20 @@ namespace Eto.Forms
 		protected override void InsertItem (int index, MenuItem item)
 		{
 			base.InsertItem (index, item);
-			subMenu.AddMenu(index, item);
+			subMenu.AddMenu (index, item);
 		}
 		
 		protected override void RemoveItem (int index)
 		{
-			var item = this[index];
+			var item = this [index];
 			base.RemoveItem (index);
-			subMenu.RemoveMenu(item);
+			subMenu.RemoveMenu (item);
 		}
 		
 		protected override void ClearItems ()
 		{
 			base.ClearItems ();
-			subMenu.Clear();
+			subMenu.Clear ();
 		}
 	}
 }

@@ -4,23 +4,22 @@ namespace Eto.Forms
 {
 	public interface ICommonDialog : IInstanceWidget
 	{
-		DialogResult ShowDialog(Window parent);
-
+		DialogResult ShowDialog (Window parent);
 	}
 	
 	public abstract class CommonDialog : InstanceWidget
 	{
-		ICommonDialog inner;
+		ICommonDialog handler;
 		
-		public CommonDialog (Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
+		protected CommonDialog (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
 		{
-			inner = (ICommonDialog)Handler;
+			handler = (ICommonDialog)Handler;
 		}
 		
-		public DialogResult ShowDialog(Window parent)
+		public DialogResult ShowDialog (Window parent)
 		{
-			return inner.ShowDialog(parent);
+			return handler.ShowDialog (parent);
 		}
 		
 	}

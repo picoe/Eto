@@ -11,7 +11,8 @@ namespace Eto.Forms
 	{
 		//IMenu inner;
 
-		protected Menu(Generator g, Type type) : base(g, type)
+		protected Menu (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
 		{
 			//inner = (IMenu)base.Handler;
 		}

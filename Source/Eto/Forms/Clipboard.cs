@@ -28,7 +28,7 @@ namespace Eto.Forms
 	
 	public class Clipboard : InstanceWidget
 	{
-		IClipboard inner;
+		IClipboard handler;
 		
 		public Clipboard ()
 			: this(Generator.Current)
@@ -38,11 +38,11 @@ namespace Eto.Forms
 		public Clipboard (Generator generator)
 			: base(generator, typeof(IClipboard))
 		{
-			inner = (IClipboard)Handler;
+			handler = (IClipboard)Handler;
 		}
 		
 		public string[] Types {
-			get { return inner.Types; }
+			get { return handler.Types; }
 		}
 		
 		public void SetDataStream (Stream stream, string type)
@@ -56,12 +56,12 @@ namespace Eto.Forms
 		
 		public void SetData (byte[] value, string type)
 		{
-			inner.SetData (value, type);
+			handler.SetData (value, type);
 		}
 		
 		public byte[] GetData (string type)
 		{
-			return inner.GetData (type);
+			return handler.GetData (type);
 		}
 		
 		public Stream GetDataStream (string type)
@@ -75,32 +75,32 @@ namespace Eto.Forms
 		
 		public void SetString (string value, string type)
 		{
-			inner.SetString (value, type);
+			handler.SetString (value, type);
 		}
 		
 		public string GetString (string type)
 		{
-			return inner.GetString (type);
+			return handler.GetString (type);
 		}
 		
 		public string Text {
-			get { return inner.Text; }
-			set { inner.Text = value; }
+			get { return handler.Text; }
+			set { handler.Text = value; }
 		}
 		
 		public string Html {
-			get { return inner.Html; }
-			set { inner.Html = value; }
+			get { return handler.Html; }
+			set { handler.Html = value; }
 		}
 		
 		public Image Image {
-			get { return inner.Image; }
-			set { inner.Image = value; }
+			get { return handler.Image; }
+			set { handler.Image = value; }
 		}
 		
 		public void Clear ()
 		{
-			inner.Clear ();
+			handler.Clear ();
 		}
 		
 	}

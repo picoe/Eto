@@ -65,37 +65,37 @@ namespace Eto.Forms
 
 		
 		public virtual MenuBar Menu {
-			get { return inner.Menu; }
-			set { inner.Menu = value; }
+			get { return handler.Menu; }
+			set { handler.Menu = value; }
 		}
 
 		public Icon Icon {
-			get { return inner.Icon; }
-			set { inner.Icon = value; }
+			get { return handler.Icon; }
+			set { handler.Icon = value; }
 		}
 		
 		public bool Resizable {
-			get { return inner.Resizable; }
-			set { inner.Resizable = value; }
+			get { return handler.Resizable; }
+			set { handler.Resizable = value; }
 		}
 		
 		public WindowState State {
-			get { return inner.State; }
-			set { inner.State = value; }
+			get { return handler.State; }
+			set { handler.State = value; }
 		}
 		
 		public Rectangle? RestoreBounds {
-			get { return inner.RestoreBounds; }
+			get { return handler.RestoreBounds; }
 		}
 		
 		public void Minimize ()
 		{
-			inner.State = WindowState.Minimized;
+			handler.State = WindowState.Minimized;
 		}
 		
 		public void Maximize ()
 		{
-			inner.State = WindowState.Maximized;
+			handler.State = WindowState.Maximized;
 		}
 	}
 }

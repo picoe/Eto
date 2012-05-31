@@ -12,12 +12,12 @@ namespace Eto.Forms
 	{
 		public void RunIteration ()
 		{
-			inner.RunIteration ();
+			handler.RunIteration ();
 		}
 
 		public void Restart ()
 		{
-			inner.Restart ();
+			handler.Restart ();
 		}
 	}
 }

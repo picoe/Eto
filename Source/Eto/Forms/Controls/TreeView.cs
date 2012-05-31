@@ -38,7 +38,7 @@ namespace Eto.Forms
 	
 	public partial class TreeView : Control
 	{
-		ITreeView inner;
+		ITreeView handler;
 		
 		#region Events
 		
@@ -132,19 +132,23 @@ namespace Eto.Forms
 
 		#endregion
 		
-		public TreeView ()
-			: this (Generator.Current)
+		public TreeView () : this (Generator.Current)
 		{
 		}
 
-		public TreeView (Generator g) : base(g, typeof(ITreeView))
+		public TreeView (Generator g) : this (g, typeof(ITreeView))
 		{
-			inner = (ITreeView)Handler;
+		}
+		
+		protected TreeView (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (ITreeView)Handler;
 		}
 		
 		public ITreeItem SelectedItem {
-			get { return inner.SelectedItem; }
-			set { inner.SelectedItem = value; }
+			get { return handler.SelectedItem; }
+			set { handler.SelectedItem = value; }
 		}
 		
 		[Obsolete("Use DataStore property instead")]
@@ -154,8 +158,8 @@ namespace Eto.Forms
 		}
 		
 		public ITreeStore DataStore {
-			get { return inner.DataStore; }
-			set { inner.DataStore = value; }
+			get { return handler.DataStore; }
+			set { handler.DataStore = value; }
 		}
 	}
 }

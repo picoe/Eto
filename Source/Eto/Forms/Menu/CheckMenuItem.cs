@@ -11,22 +11,25 @@ namespace Eto.Forms
 	
 	public class CheckMenuItem : MenuActionItem
 	{
-		ICheckMenuItem inner;
+		ICheckMenuItem handler;
 
-		public CheckMenuItem() : this(Generator.Current)
+		public CheckMenuItem () : this (Generator.Current)
 		{
 		}
 		
-		public CheckMenuItem(Generator g) : base(g, typeof(ICheckMenuItem))
+		public CheckMenuItem (Generator g) : this (g, typeof(ICheckMenuItem))
 		{
-			inner = (ICheckMenuItem)base.Handler;
 		}
 
-
-		public bool Checked
+		protected CheckMenuItem (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
-			get { return inner.Checked; }
-			set { inner.Checked = value; }
+			handler = (ICheckMenuItem)base.Handler;
+		}
+
+		public bool Checked {
+			get { return handler.Checked; }
+			set { handler.Checked = value; }
 		}
 	}
 }

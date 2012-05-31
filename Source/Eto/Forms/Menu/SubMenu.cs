@@ -4,9 +4,11 @@ namespace Eto.Forms
 {
 	public interface ISubMenu : IMenu
 	{
-		void AddMenu(int index, MenuItem item);
-		void RemoveMenu(MenuItem item);
-		void Clear();
+		void AddMenu (int index, MenuItem item);
+
+		void RemoveMenu (MenuItem item);
+
+		void Clear ();
 	}
 	
 	public interface ISubMenuWidget
@@ -19,7 +21,7 @@ namespace Eto.Forms
 		
 		MenuItemCollection MenuItems { get; }
 		
-		void GenerateActions(ActionItemCollection actionItems);
+		void GenerateActions (ActionItemCollection actionItems);
 	}
 }
 

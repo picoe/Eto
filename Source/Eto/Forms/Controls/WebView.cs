@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 
 namespace Eto.Forms
 {
@@ -57,7 +58,8 @@ namespace Eto.Forms
 	
 	public class WebView : Control
 	{
-		IWebView inner;
+		IWebView handler;
+		
 		#region Events
 		
 		public const string DocumentLoadedEvent = "WebView.DocumentLoaded";
@@ -119,56 +121,68 @@ namespace Eto.Forms
 		}
 		
 		public WebView (Generator generator)
-			: base(generator, typeof(IWebView))
+			: this (generator, typeof(IWebView))
 		{
-			inner = (IWebView)Handler;
+		}
+		
+		protected WebView (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (IWebView)Handler;
 		}
 		
 		public void GoBack ()
 		{
-			inner.GoBack ();
+			handler.GoBack ();
 		}
 		
 		public bool CanGoBack {
-			get{ return inner.CanGoBack; }
+			get{ return handler.CanGoBack; }
 		}
 		
 		public void GoForward ()
 		{
-			inner.GoForward ();
+			handler.GoForward ();
 		}
 		
 		public bool CanGoForward {
-			get { return inner.CanGoForward; }
+			get { return handler.CanGoForward; }
 		}
 
 		public Uri Url {
-			get { return inner.Url; }
-			set { inner.Url = value; }
+			get { return handler.Url; }
+			set { handler.Url = value; }
 		}
 		
 		public void Stop ()
 		{
-			inner.Stop ();
+			handler.Stop ();
 		}
 		
 		public void Reload ()
 		{
-			inner.Reload ();
+			handler.Reload ();
 		}
 		
 		public void ExecuteScript (string script)
 		{
-			inner.ExecuteScript (script);
+			handler.ExecuteScript (script);
 		}
 
 		public string DocumentTitle {
-			get { return inner.DocumentTitle; }
+			get { return handler.DocumentTitle; }
+		}
+
+		public void LoadHtml (Stream stream, Uri baseUri = null)
+		{
+			using (var reader = new StreamReader(stream)) {
+				handler.LoadHtml (reader.ReadToEnd (), baseUri);
+			}
 		}
 		
 		public void LoadHtml (string html, Uri baseUri = null)
 		{
-			inner.LoadHtml (html, baseUri);
+			handler.LoadHtml (html, baseUri);
 		}
 	}
 }

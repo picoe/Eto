@@ -14,15 +14,20 @@ namespace Eto.Forms
 
 	public class TabPage : Container, IImageListItem
 	{
-		ITabPage inner;
+		ITabPage handler;
 		
-		public TabPage () : this(Generator.Current)
+		public TabPage () : this (Generator.Current)
 		{
 		}
 		
-		public TabPage (Generator g) : base(g, typeof(ITabPage))
+		public TabPage (Generator g) : this (g, typeof(ITabPage))
 		{
-			inner = (ITabPage)Handler;
+		}
+		
+		protected TabPage (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (ITabPage)Handler;
 		}
 		
 		public event EventHandler<EventArgs> Click;
@@ -34,19 +39,16 @@ namespace Eto.Forms
 		}
 		
 		public string Text {
-			get { return inner.Text; }
-			set { inner.Text = value; }
+			get { return handler.Text; }
+			set { handler.Text = value; }
 		}
 
 		public Image Image {
-			get { return inner.Image; }
-			set { inner.Image = value; }
+			get { return handler.Image; }
+			set { handler.Image = value; }
 		}
 		
-		public virtual string Key {
-			get;
-			set;
-		}
+		public virtual string Key { get; set; }
 	}
 
 	public class TabPageCollection : Collection<TabPage>
@@ -72,7 +74,7 @@ namespace Eto.Forms
 		
 		protected override void RemoveItem (int index)
 		{
-			control.RemoveTab (index, this[index]);
+			control.RemoveTab (index, this [index]);
 			base.RemoveItem (index);
 		}
 	}

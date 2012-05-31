@@ -29,19 +29,22 @@ namespace Eto.Forms
 				CheckedChanged (this, e);
 		}
 		
-		public RadioButton ()
-			: this (null)
-		{
-		}
-		
-		public RadioButton (RadioButton controller) : this(Generator.Current, controller)
+		public RadioButton (RadioButton controller = null) : this (Generator.Current, controller)
 		{
 		}
 
-		public RadioButton (Generator g, RadioButton controller) : base(g, typeof(IRadioButton))
+		public RadioButton (Generator g, RadioButton controller = null)
+			: this (g, typeof(IRadioButton), controller)
+		{
+		}
+		
+		protected RadioButton (Generator generator, Type type, RadioButton controller, bool initialize = true)
+			: base (generator, type, false)
 		{
 			inner = (IRadioButton)base.Handler;
 			inner.Create (controller);
+			if (initialize)
+				Initialize ();
 		}
 
 		public virtual bool Checked {

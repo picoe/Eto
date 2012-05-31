@@ -6,28 +6,34 @@ namespace Eto.Forms
 	public interface IOpenFileDialog : IFileDialog
 	{
 		bool MultiSelect { get; set; }
+
 		IEnumerable<string> Filenames { get; }
 	}
 	
 	public class OpenFileDialog : FileDialog
 	{
-		IOpenFileDialog inner;
+		IOpenFileDialog handler;
 		
-		public OpenFileDialog()
+		public OpenFileDialog ()
 			: this(Generator.Current)
 		{
 		}
 
-		public OpenFileDialog(Generator g) : base(g, typeof(IOpenFileDialog))
+		public OpenFileDialog (Generator g) : this(g, typeof(IOpenFileDialog))
 		{
-			inner = (IOpenFileDialog)Handler;
+		}
+		
+		protected OpenFileDialog (Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
+		{
+			handler = (IOpenFileDialog)Handler;
 		}
 
 		public bool MultiSelect { 
-			get { return inner.MultiSelect; }
-			set { inner.MultiSelect = value; }
+			get { return handler.MultiSelect; }
+			set { handler.MultiSelect = value; }
 		}
 		
-		public IEnumerable<string> Filenames { get { return inner.Filenames; } }
+		public IEnumerable<string> Filenames { get { return handler.Filenames; } }
 	}
 }

@@ -10,8 +10,8 @@ namespace Eto.Forms
 	public partial class ListBox
 	{
 		public ContextMenu ContextMenu {
-			get { return inner.ContextMenu; }
-			set { inner.ContextMenu = value; }
+			get { return handler.ContextMenu; }
+			set { handler.ContextMenu = value; }
 		}
 	}
 }

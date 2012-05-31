@@ -48,24 +48,31 @@ namespace Eto.Forms
 				terminating (this, e);
 		}
 		
-		IApplication inner;
+		IApplication handler;
 
 		public Form MainForm { get; set; }
 		
 		public string Name { get; set; }
 
-		public Application() : this(Generator.Detect) { }
+		public Application() : this(Generator.Detect)
+		{
+		}
 		
-		public Application(Generator g) : base(g, typeof(IApplication))
+		public Application(Generator g) : this(g, typeof(IApplication))
+		{
+		}
+			
+		protected Application(Generator g, Type type, bool initialize = true)
+				: base(g, type, initialize)
 		{
 			Application.Instance = this;
-			inner = (IApplication)base.Handler;
+			handler = (IApplication)base.Handler;
 			Generator.Initialize(g); // make everything use this by default
 		}
 
 		public virtual void Run(params string[] args)
 		{
-			inner.Run(args);
+			handler.Run(args);
 		}
 
 		[Obsolete("Use Invoke instead")]
@@ -76,37 +83,37 @@ namespace Eto.Forms
 
 		public virtual void Invoke (Action action)
 		{
-			inner.Invoke (action);
+			handler.Invoke (action);
 		}
 
 		public virtual void AsyncInvoke (Action action)
 		{
-			inner.AsyncInvoke (action);
+			handler.AsyncInvoke (action);
 		}
 		
 		public void Quit()
 		{
-			inner.Quit();
+			handler.Quit();
 		}
 		
 		public void Open(string url)
 		{
-			inner.Open(url);
+			handler.Open(url);
 		}
 		
 		public Key CommonModifier
 		{
-			get { return inner.CommonModifier; }
+			get { return handler.CommonModifier; }
 		}
 		
 		public Key AlternateModifier
 		{
-			get { return inner.AlternateModifier; }
+			get { return handler.AlternateModifier; }
 		}
 		
 		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
 		{
-			inner.GetSystemActions(args, addStandardItems);
+			handler.GetSystemActions(args, addStandardItems);
 		}
 	}
 }

@@ -11,11 +11,16 @@ namespace Eto.Forms
 	{
 		//private IComboBox inner;
 		
-		public ComboBox() : this(Generator.Current)
+		public ComboBox () : this (Generator.Current)
 		{
 		}
 
-		public ComboBox(Generator g) : base(g, typeof(IComboBox))
+		public ComboBox (Generator g) : this (g, typeof(IComboBox))
+		{
+		}
+		
+		protected ComboBox (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
 		{
 			//inner = (IComboBox)base.InnerControl;
 		}

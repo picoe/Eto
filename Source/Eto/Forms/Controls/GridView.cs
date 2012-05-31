@@ -44,7 +44,12 @@ namespace Eto.Forms
 		}
 
 		public GridView (Generator g)
-			: base (g, typeof (IGridView), true)
+			: this (g, typeof (IGridView))
+		{
+		}
+		
+		protected GridView (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 			handler = (IGridView)Handler;
 		}

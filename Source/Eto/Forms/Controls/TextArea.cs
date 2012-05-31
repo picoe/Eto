@@ -9,38 +9,41 @@ namespace Eto.Forms
 		
 		bool Wrap { get; set; }
 		
-		void Append(string text, bool scrollToCursor);
+		void Append (string text, bool scrollToCursor);
 	}
 	
 	public class TextArea : TextControl
 	{
-		ITextArea inner;
+		ITextArea handler;
 
-		public TextArea()
-			: this(Generator.Current)
+		public TextArea ()
+			: this (Generator.Current)
 		{
 		}
 
-		public TextArea(Generator g) : base(g, typeof(ITextArea))
+		public TextArea (Generator g) : this (g, typeof(ITextArea))
 		{
-			inner = (ITextArea)base.Handler;
 		}
 		
-		public bool ReadOnly
+		protected TextArea (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
-			get { return inner.ReadOnly; }
-			set { inner.ReadOnly = value; }
+			handler = (ITextArea)base.Handler;
 		}
 		
-		public bool Wrap
-		{
-			get { return inner.Wrap; }
-			set { inner.Wrap = value; }
+		public bool ReadOnly {
+			get { return handler.ReadOnly; }
+			set { handler.ReadOnly = value; }
 		}
 		
-		public void Append(string text, bool scrollToCursor = false)
+		public bool Wrap {
+			get { return handler.Wrap; }
+			set { handler.Wrap = value; }
+		}
+		
+		public void Append (string text, bool scrollToCursor = false)
 		{
-			inner.Append (text, scrollToCursor);
+			handler.Append (text, scrollToCursor);
 		}
 	}
 }

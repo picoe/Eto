@@ -5,50 +5,55 @@ namespace Eto.Forms
 	public interface IUITimer : IWidget
 	{
 		double Interval { get; set; }
-		void Start();
-		void Stop();
+
+		void Start ();
+
+		void Stop ();
 	}
 	
 	public class UITimer : Widget
 	{
-		IUITimer inner;
-		
+		IUITimer handler;
 		public static double DefaultInterval = 1.0; // 1 second
 		
 		public event EventHandler<EventArgs> Elapsed;
 		
-		public virtual void OnElapsed(EventArgs e)
+		public virtual void OnElapsed (EventArgs e)
 		{
-			if (Elapsed != null) Elapsed(this, e);
+			if (Elapsed != null)
+				Elapsed (this, e);
 		}
 
-		public UITimer ()
-			: this(Generator.Current)
+		public UITimer () : this (Generator.Current)
 		{
 		}
 		
-		public UITimer (Generator generator)
-			: base(generator, typeof(IUITimer))
+		public UITimer (Generator generator) : this (generator, typeof(IUITimer))
 		{
-			inner = (IUITimer)Handler;
+		}
+		
+		protected UITimer (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
+		{
+			handler = (IUITimer)Handler;
 		}
 		
 		/// <summary>
 		/// Gets or sets the interval, in seconds
 		/// </summary>
-		public double Interval
-		{
-			get { return inner.Interval; }
-			set { inner.Interval = value; }
+		public double Interval {
+			get { return handler.Interval; }
+			set { handler.Interval = value; }
 		}
 		
-		public void Start()
+		public void Start ()
 		{
-			inner.Start();
+			handler.Start ();
 		}
-		public void Stop()
+
+		public void Stop ()
 		{
-			inner.Stop();
+			handler.Stop ();
 		}
 	}
 }

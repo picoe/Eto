@@ -24,12 +24,12 @@ namespace Eto.Forms
 
 	public class Dialog : Window
 	{
-		IDialog inner;
+		IDialog handler;
 
-		protected Dialog (Generator g, Type type)
-			: base(g, type)
+		protected Dialog (Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
 		{
-			inner = (IDialog)this.Handler;
+			handler = (IDialog)this.Handler;
 			this.DialogResult = DialogResult.None;
 		}
 
@@ -45,14 +45,14 @@ namespace Eto.Forms
 		
 		public Button AbortButton
 		{
-			get { return inner.AbortButton; }
-			set { inner.AbortButton = value; }
+			get { return handler.AbortButton; }
+			set { handler.AbortButton = value; }
 		}
 		
 		public Button DefaultButton
 		{
-			get { return inner.DefaultButton; }
-			set { inner.DefaultButton = value; }
+			get { return handler.DefaultButton; }
+			set { handler.DefaultButton = value; }
 		}
 
 		public DialogResult ShowDialog (Control parent)
@@ -64,7 +64,7 @@ namespace Eto.Forms
 				OnLoadComplete (EventArgs.Empty);
 			}
 			
-			this.DialogResult = inner.ShowDialog (parent);
+			this.DialogResult = handler.ShowDialog (parent);
 			return DialogResult;
 		}
 	}

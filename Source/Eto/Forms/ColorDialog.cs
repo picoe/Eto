@@ -8,17 +8,16 @@ namespace Eto.Forms
 		Color Color { get; set; }
 	}
 	
-	
 	public class ColorDialog : CommonDialog
 	{
-		IColorDialog inner;
-		
+		IColorDialog handler;
 		
 		public event EventHandler<EventArgs> ColorChanged;
 		
-		public virtual void OnColorChanged(EventArgs e)
+		public virtual void OnColorChanged (EventArgs e)
 		{
-			if (ColorChanged != null) ColorChanged(this, e);
+			if (ColorChanged != null)
+				ColorChanged (this, e);
 		}
 		
 		public ColorDialog ()
@@ -27,17 +26,20 @@ namespace Eto.Forms
 		}
 		
 		public ColorDialog (Generator g)
-			: base(g, typeof(IColorDialog))
+			: this (g, typeof(IColorDialog))
 		{
-			inner = (IColorDialog)Handler;
 		}
 		
-		public Color Color
+		protected ColorDialog (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
-			get { return inner.Color; }
-			set { inner.Color = value; }
+			handler = (IColorDialog)Handler;
 		}
 		
+		public Color Color {
+			get { return handler.Color; }
+			set { handler.Color = value; }
+		}
 	}
 }
 

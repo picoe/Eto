@@ -11,7 +11,7 @@ namespace Eto.Forms
 	{
 	}
 
-	public class TreeItemCollection : DataStoreCollection<ITreeItem>
+	public class TreeItemCollection : DataStoreCollection<ITreeItem>, ITreeStore
 	{
 	}
 	

@@ -24,13 +24,18 @@ namespace Eto.Forms
 			if (click != null) click(this, e);
 		}
 
-		public Button() : this(Generator.Current)
+		public Button() : this (Generator.Current)
 		{
 		}
 		
-		public Button(Generator g) : base(g, typeof(IButton))
+		public Button(Generator g) : this (g, typeof(IButton))
 		{
 			//this.Width = DefaultSize.Width;
+		}
+		
+		protected Button(Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
+		{
 		}
 	}
 }

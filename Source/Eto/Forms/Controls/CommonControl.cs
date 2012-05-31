@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface ICommonControl : IControl 
+	public interface ICommonControl : IControl
 	{
 		Font Font { get; set; }
 	}
@@ -12,14 +12,13 @@ namespace Eto.Forms
 	{
 		ICommonControl inner;
 		
-		protected CommonControl(Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
+		protected CommonControl (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 			this.inner = (ICommonControl)base.Handler;
 		}
 		
-		public Font Font
-		{
+		public Font Font {
 			get { return inner.Font; }
 			set { inner.Font = value; }
 		}

@@ -21,38 +21,34 @@ namespace Eto.Forms
 
 	public class GridItem : IGridItem, IColumnItem
 	{
-		public GridItem()
+		public GridItem ()
 		{
 		}
 		
-		public GridItem(params object[] values)
+		public GridItem (params object[] values)
 		{
 			this.Values = values;
 		}
 		
-		public object[] Values
-		{
-			get; set;
-		}
+		public object[] Values { get; set; }
 		
 		public virtual object GetValue (int column)
 		{
 			if (Values == null || Values.Length <= column)
 				return null;
-			return Values[column];
+			return Values [column];
 		}
 
 		public virtual void SetValue (int column, object value)
 		{
 			if (Values == null) {
 				Values = new object[column + 1];
-			}
-			else if (column >= Values.Length) {
+			} else if (column >= Values.Length) {
 				var oldvalues = Values;
 				Values = new object[column + 1];
 				Array.Copy (oldvalues, Values, oldvalues.Length);
 			}
-			Values[column] = value;
+			Values [column] = value;
 		}
 	}
 

@@ -35,7 +35,7 @@ namespace Eto.Forms
 	
 	public partial class Scrollable : Container
 	{
-		IScrollable inner;
+		IScrollable handler;
 		public const string ScrollEvent = "Scrollable.ScrollEvent";
 		
 		event EventHandler<ScrollEventArgs> scroll;
@@ -54,37 +54,42 @@ namespace Eto.Forms
 				scroll (this, e);
 		}
 		
-		public Scrollable () : this(Generator.Current)
+		public Scrollable () : this (Generator.Current)
 		{
 		}
 
-		public Scrollable (Generator g) : base(g, typeof(IScrollable))
+		public Scrollable (Generator g) : this (g, typeof(IScrollable))
 		{
-			inner = (IScrollable)Handler;
+		}
+		
+		protected Scrollable (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (IScrollable)Handler;
 		}
 
 		public void UpdateScrollSizes ()
 		{
-			inner.UpdateScrollSizes ();
+			handler.UpdateScrollSizes ();
 		}
 
 		public Point ScrollPosition {
-			get { return inner.ScrollPosition; }
-			set { inner.ScrollPosition = value; }
+			get { return handler.ScrollPosition; }
+			set { handler.ScrollPosition = value; }
 		}
 
 		public Size ScrollSize {
-			get { return inner.ScrollSize; }
-			set { inner.ScrollSize = value; }
+			get { return handler.ScrollSize; }
+			set { handler.ScrollSize = value; }
 		}
 		
 		public BorderType Border {
-			get { return inner.Border; }
-			set { inner.Border = value; }
+			get { return handler.Border; }
+			set { handler.Border = value; }
 		}
 		
 		public Rectangle VisibleRect {
-			get { return inner.VisibleRect; }
+			get { return handler.VisibleRect; }
 		}
 
 	}

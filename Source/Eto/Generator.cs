@@ -18,9 +18,10 @@ namespace Eto
 	
 	public abstract class Generator
 	{
-		Dictionary<string, ConstructorInfo> constructorMap;
+		Dictionary<string, ConstructorInfo> constructorMap = new Dictionary<string, ConstructorInfo> ();
 		Hashtable attributes;
-		List<Type> types;
+		List<Type> types = new List<Type>();
+		HashSet<Assembly> typeAssemblies = new HashSet<Assembly>();
 		
 		public event EventHandler<WidgetCreatedArgs> WidgetCreated;
 		
@@ -44,7 +45,7 @@ namespace Eto
 		
 		protected Generator ()
 		{
-			constructorMap = new Dictionary<string, ConstructorInfo> ();
+			AddAssembly(this.GetType ().Assembly);
 		}
 		
 		public virtual bool Supports<T> ()
@@ -110,27 +111,22 @@ namespace Eto
 				else
 					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
 			}
-            try
-            {
-                return (Generator)Activator.CreateInstance(type);
-            }
-            catch (TargetInvocationException e)
-            {
-                throw e.InnerException;
-            }
+			try
+			{
+				return (Generator)Activator.CreateInstance(type);
+			}
+			catch (TargetInvocationException e)
+			{
+				throw e.InnerException;
+			}
 		}
 
 		public ConstructorInfo Add<T> (Type handlerType)
 			where T: IWidget
 		{
-			ConstructorInfo constructor = handlerType.GetConstructor (new Type[] { });
-			if (constructor == null) 
-				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
-
-			constructorMap.Add (typeof(T).Name, constructor);
-			return constructor;
+			return Add (typeof(T), handlerType);
 		}
-
+		
 		protected ConstructorInfo Find<T> ()
 			where T: IWidget
 		{
@@ -158,10 +154,19 @@ namespace Eto
 			if (constructor == null) 
 				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
 
-			constructorMap.Add (type.Name, constructor);
+			constructorMap[type.Name] = constructor;
 			return constructor;
 		}
 		
+		public void AddAssembly (Assembly assembly)
+		{
+			if (!typeAssemblies.Contains (assembly)) {
+				
+				typeAssemblies.Add (assembly);
+				types.AddRange(assembly.GetExportedTypes ());
+			}
+		}
+
 		protected ConstructorInfo Find (Type type)
 		{
 			lock (this) {
@@ -170,9 +175,6 @@ namespace Eto
 					return info;
 
 				List<Type > removalTypes = null;
-				if (types == null)
-					types = new List<Type> (this.GetType ().Assembly.GetExportedTypes ());
-				
 				foreach (Type foundType in types) {
 					try {
 						if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom (foundType)) {

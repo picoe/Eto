@@ -13,10 +13,9 @@ namespace Eto.Forms
 	
 	public partial class Container : Control
 	{
-		public Size? MinimumSize
-		{
-			get { return inner.MinimumSize; }
-			set { inner.MinimumSize = value; }
+		public Size? MinimumSize {
+			get { return handler.MinimumSize; }
+			set { handler.MinimumSize = value; }
 		}
 	}
 }

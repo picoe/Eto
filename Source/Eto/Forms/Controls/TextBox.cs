@@ -6,30 +6,44 @@ namespace Eto.Forms
 	public interface ITextBox : ITextControl
 	{
 		bool ReadOnly { get; set; }
+
 		int MaxLength { get; set; }
+		
+		string PlaceholderText { get; set; }
 	}
 	
 	public class TextBox : TextControl
 	{
-		ITextBox inner;
+		ITextBox handler;
 		
-		public TextBox() : this(Generator.Current) { }
-		
-		public TextBox(Generator g) : base(g, typeof(ITextBox))
+		public TextBox () : this(Generator.Current)
 		{
-			inner = (ITextBox)base.Handler;
+		}
+		
+		public TextBox (Generator g) 
+			: this(g, typeof(ITextBox))
+		{
+			
+		}
+		protected TextBox (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
+		{
+			handler = (ITextBox)base.Handler;
 		}
 
-		public bool ReadOnly
-		{
-			get { return inner.ReadOnly; }
-			set { inner.ReadOnly = value; }
+		public bool ReadOnly {
+			get { return handler.ReadOnly; }
+			set { handler.ReadOnly = value; }
 		}
 		
-		public virtual int MaxLength
-		{
-			get { return inner.MaxLength; }
-			set { inner.MaxLength = value; }
+		public int MaxLength {
+			get { return handler.MaxLength; }
+			set { handler.MaxLength = value; }
+		}
+		
+		public string PlaceholderText {
+			get { return handler.PlaceholderText; }
+			set { handler.PlaceholderText = value; }
 		}
 	}
 }

@@ -18,14 +18,14 @@ namespace Eto.Forms
 
 		int TickFrequency { get; set; }
 
-        bool SnapToTick { get; set; }
+		bool SnapToTick { get; set; }
 
 		SliderOrientation Orientation { get; set; }
 	}
 	
 	public class Slider : Control
 	{
-		ISlider inner;
+		ISlider handler;
 		
 		public event EventHandler<EventArgs> ValueChanged;
 		
@@ -36,44 +36,49 @@ namespace Eto.Forms
 		}
 		
 		public Slider ()
-			: this(Generator.Current)
+			: this (Generator.Current)
 		{
 		}
 		
 		public Slider (Generator generator)
-			: base(generator, typeof(ISlider), true)
+			: this (generator, typeof(ISlider))
 		{
-			inner = (ISlider)Handler;
+		}
+		
+		protected Slider (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (ISlider)Handler;
 		}
 		
 		public int TickFrequency {
-			get { return inner.TickFrequency; }
-			set { inner.TickFrequency = value; }
+			get { return handler.TickFrequency; }
+			set { handler.TickFrequency = value; }
 		}
 
-        public bool SnapToTick {
-            get { return inner.SnapToTick; }
-            set { inner.SnapToTick = value; }
-        }
+		public bool SnapToTick {
+			get { return handler.SnapToTick; }
+			set { handler.SnapToTick = value; }
+		}
 
 		public int MaxValue {
-			get { return inner.MaxValue; }
-			set { inner.MaxValue = value; }
+			get { return handler.MaxValue; }
+			set { handler.MaxValue = value; }
 		}
 
 		public int MinValue {
-			get { return inner.MinValue; }
-			set { inner.MinValue = value; }
+			get { return handler.MinValue; }
+			set { handler.MinValue = value; }
 		}
 
 		public int Value {
-			get { return inner.Value; }
-			set { inner.Value = value; }
+			get { return handler.Value; }
+			set { handler.Value = value; }
 		}
 
 		public SliderOrientation Orientation {
-			get { return inner.Orientation; }
-			set { inner.Orientation = value; }
+			get { return handler.Orientation; }
+			set { handler.Orientation = value; }
 		}
 	}
 }

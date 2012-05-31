@@ -23,6 +23,12 @@ namespace Eto.Forms
 		}
 		
 		public EnumComboBox ()
+			: this (Generator.Current)
+		{
+		}
+		
+		protected EnumComboBox (Generator generator)
+			: base (generator)
 		{
 			var type = typeof(T);
 			if (!type.IsEnum) throw new EtoException("T must be an enumeration");

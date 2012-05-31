@@ -31,41 +31,46 @@ namespace Eto.Forms
 	
 	public class Splitter : Control
 	{
-		ISplitter inner;
+		ISplitter handler;
 		
 		public static bool Supported {
 			get { return Generator.Current.Supports<ISplitter> (); }
 		}
 		
-		public Splitter () : this(Generator.Current)
+		public Splitter () : this (Generator.Current)
 		{
 		}
 		
-		public Splitter (Generator g) : base(g, typeof(ISplitter))
+		public Splitter (Generator g) : this (g, typeof(ISplitter))
 		{
-			inner = (ISplitter)base.Handler;
+		}
+		
+		protected Splitter (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (ISplitter)base.Handler;
 		}
 
 		public SplitterOrientation Orientation {
-			get { return inner.Orientation; }
-			set { inner.Orientation = value; }
+			get { return handler.Orientation; }
+			set { handler.Orientation = value; }
 		}
 		
 		public SplitterFixedPanel FixedPanel {
-			get { return inner.FixedPanel; }
-			set { inner.FixedPanel = value; }
+			get { return handler.FixedPanel; }
+			set { handler.FixedPanel = value; }
 		}
 		
 		public int Position {
-			get { return inner.Position; }
-			set { inner.Position = value; }
+			get { return handler.Position; }
+			set { handler.Position = value; }
 		}
 
 		public Control Panel1 {
-			get { return inner.Panel1; }
+			get { return handler.Panel1; }
 			set { 
-				if (inner.Panel1 != null)
-					inner.Panel1.SetParent (null);
+				if (handler.Panel1 != null)
+					handler.Panel1.SetParent (null);
 				if (value != null) {
 					value.SetParent (this);
 					if (Loaded && !value.Loaded) {
@@ -73,17 +78,17 @@ namespace Eto.Forms
 						value.OnLoad (EventArgs.Empty);
 					}
 				}
-				inner.Panel1 = value;
+				handler.Panel1 = value;
 				if (Loaded && value != null && !value.Loaded)
 					value.OnLoadComplete (EventArgs.Empty);
 			}
 		}
 
 		public Control Panel2 {
-			get { return inner.Panel2; }
+			get { return handler.Panel2; }
 			set {
-				if (inner.Panel2 != null)
-					inner.Panel2.SetParent (null);
+				if (handler.Panel2 != null)
+					handler.Panel2.SetParent (null);
 				bool load = false;
 				if (value != null) {
 					value.SetParent (this);
@@ -93,7 +98,7 @@ namespace Eto.Forms
 						value.OnLoad (EventArgs.Empty);
 					}
 				}
-				inner.Panel2 = value; 
+				handler.Panel2 = value; 
 				if (load)
 					value.OnLoadComplete (EventArgs.Empty);
 			}

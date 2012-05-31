@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -9,28 +10,32 @@ namespace Eto.Forms
 	
 	public class ContextMenu : Menu, ISubMenuWidget
 	{
-		IContextMenu inner;
+		IContextMenu handler;
 		MenuItemCollection menuItems;
 		
-		public ContextMenu ()
-			: this(Generator.Current)
+		public ContextMenu () : this (Generator.Current)
 		{
 		}
 
-		public ContextMenu (Generator g) : base(g, typeof(IContextMenu))
+		public ContextMenu (Generator g) : this (g, typeof(IContextMenu))
 		{
-			inner = (IContextMenu)this.Handler;
-			menuItems = new MenuItemCollection (this, inner);
 		}
 
-		public ContextMenu (Generator g, ActionItemCollection actionItems) : this(g)
+		protected ContextMenu (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (IContextMenu)this.Handler;
+			menuItems = new MenuItemCollection (this, handler);
+		}
+
+		public ContextMenu (Generator g, IEnumerable<IActionItem> actionItems) : this (g)
 		{
 			GenerateActions (actionItems);
 		}
 		
-		public void GenerateActions (ActionItemCollection actionItems)
+		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
-			foreach (IActionItem ai in actionItems) {
+			foreach (var ai in actionItems) {
 				ai.Generate (this);
 			}
 		}
@@ -41,7 +46,7 @@ namespace Eto.Forms
 		
 		public void Show (Control relativeTo)
 		{
-			inner.Show (relativeTo);
+			handler.Show (relativeTo);
 		}
 	}
 }

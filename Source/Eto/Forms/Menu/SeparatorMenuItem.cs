@@ -10,11 +10,20 @@ namespace Eto.Forms
 	
 	public class SeparatorMenuItem : MenuItem
 	{
-		//ISeparatorMenuItem inner;
-
-		public SeparatorMenuItem(Generator g) : base(g, typeof(ISeparatorMenuItem))
+		
+		public SeparatorMenuItem () : this (Generator.Current)
 		{
-			//inner = (ISeparatorMenuItem)base.InnerControl;
 		}
+
+		public SeparatorMenuItem (Generator g) : this (g, typeof(ISeparatorMenuItem))
+		{
+		}
+		
+		protected SeparatorMenuItem (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			
+		}
+
 	}
 }

@@ -17,7 +17,7 @@ namespace Eto.Forms
 	
 	public class NumericUpDown : CommonControl
 	{
-		INumericUpDown inner;
+		INumericUpDown handler;
 		
 		public event EventHandler<EventArgs> ValueChanged;
 		
@@ -27,33 +27,38 @@ namespace Eto.Forms
 				ValueChanged (this, e);
 		}
 		
-		public NumericUpDown () : this(Generator.Current)
+		public NumericUpDown () : this (Generator.Current)
 		{
 		}
 		
-		public NumericUpDown (Generator g) : base(g, typeof(INumericUpDown))
+		public NumericUpDown (Generator g) : this (g, typeof(INumericUpDown))
 		{
-			inner = (INumericUpDown)base.Handler;
+		}
+		
+		protected NumericUpDown (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
+		{
+			handler = (INumericUpDown)base.Handler;
 		}
 		
 		public bool ReadOnly {
-			get { return inner.ReadOnly; }
-			set { inner.ReadOnly = value; }
+			get { return handler.ReadOnly; }
+			set { handler.ReadOnly = value; }
 		}
 		
 		public double Value {
-			get { return inner.Value; }
-			set { inner.Value = value; }
+			get { return handler.Value; }
+			set { handler.Value = value; }
 		}
 
 		public double MinValue {
-			get { return inner.MinValue; }
-			set { inner.MinValue = value; }
+			get { return handler.MinValue; }
+			set { handler.MinValue = value; }
 		}
 
 		public double MaxValue {
-			get { return inner.MaxValue; }
-			set { inner.MaxValue = value; }
+			get { return handler.MaxValue; }
+			set { handler.MaxValue = value; }
 		}
 	}
 }

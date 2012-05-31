@@ -5,40 +5,43 @@ namespace Eto.Forms
 	public interface ISelectFolderDialog : IWidget
 	{
 		string Title { get; set; }
+
 		string Directory { get; set; }
-		DialogResult ShowDialog(Window parent);
+
+		DialogResult ShowDialog (Window parent);
 	}
 	
 	public class SelectFolderDialog : Widget
 	{
-		ISelectFolderDialog inner;
+		ISelectFolderDialog handler;
 		
-		public SelectFolderDialog()
-			: this(Generator.Current)
+		public SelectFolderDialog () : this (Generator.Current)
 		{
 		}
 		
-		public SelectFolderDialog (Generator g)
-			: base(g, typeof(ISelectFolderDialog))
+		public SelectFolderDialog (Generator g) : this (g, typeof(ISelectFolderDialog))
 		{
-			inner = (ISelectFolderDialog)Handler;
 		}
 		
-		public string Title
+		protected SelectFolderDialog (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
 		{
-			get { return inner.Title; }
-			set { inner.Title = value; }
+			handler = (ISelectFolderDialog)Handler;
 		}
 		
-		public string Directory
-		{
-			get { return inner.Directory; }
-			set { inner.Directory = value; }
+		public string Title {
+			get { return handler.Title; }
+			set { handler.Title = value; }
 		}
 		
-		public DialogResult ShowDialog(Window parent)
+		public string Directory {
+			get { return handler.Directory; }
+			set { handler.Directory = value; }
+		}
+		
+		public DialogResult ShowDialog (Window parent)
 		{
-			return inner.ShowDialog(parent);
+			return handler.ShowDialog (parent);
 		}
 	}
 }

@@ -116,7 +116,7 @@ namespace Eto.Forms
 
 		#endregion
 
-		protected Grid (Generator generator, Type type, bool initialize)
+		protected Grid (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, false)
 		{
 			handler = (IGrid)Handler;

@@ -23,9 +23,8 @@ namespace Eto.Forms
 	
 	public abstract partial class Window : Container
 	{
-		IWindow inner;
+		IWindow handler;
 		//ToolBarCollection toolBars;
-		
 		
 		#region Events
 		
@@ -67,18 +66,18 @@ namespace Eto.Forms
 		}
 		
 		#endregion
-		
 
-		protected Window (Generator g, Type type) : base(g, type, false)
+		protected Window (Generator g, Type type, bool initialize = true)
+			: base(g, type, false)
 		{
-			inner = (IWindow)this.Handler;
+			handler = (IWindow)this.Handler;
 			//toolBars = new ToolBarCollection(this);
-			Initialize (); 
+			if (initialize) Initialize (); 
 		}
 
 		public string Title {
-			get { return inner.Title; }
-			set { inner.Title = value; }
+			get { return handler.Title; }
+			set { handler.Title = value; }
 		}
 
 		[Obsolete("Use Title instead")]
@@ -88,29 +87,29 @@ namespace Eto.Forms
 		}
 		
 		public Point Location {
-			get { return inner.Location; }
-			set { inner.Location = value; }
+			get { return handler.Location; }
+			set { handler.Location = value; }
 		}
 		
 		public Rectangle Bounds {
-			get { return new Rectangle (inner.Location, inner.Size); }
-			set { inner.Location = value.Location;
-				inner.Size = value.Size; }
+			get { return new Rectangle (handler.Location, handler.Size); }
+			set { handler.Location = value.Location;
+				handler.Size = value.Size; }
 		}
 		
 		public ToolBar ToolBar {
-			get { return inner.ToolBar; }
-			set { inner.ToolBar = value; }
+			get { return handler.ToolBar; }
+			set { handler.ToolBar = value; }
 		}
 
 		public double Opacity {
-			get { return inner.Opacity; }
-			set { inner.Opacity = value; }
+			get { return handler.Opacity; }
+			set { handler.Opacity = value; }
 		}
 		
 		public virtual void Close ()
 		{
-			inner.Close ();
+			handler.Close ();
 		}
 		
 	}

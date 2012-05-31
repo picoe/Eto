@@ -27,7 +27,7 @@ namespace Eto.Forms
 
 	public abstract class Layout : InstanceWidget, ISupportInitialize
 	{
-		ILayout inner;
+		ILayout handler;
 
 		public bool Initializing { get; private set; }
 		
@@ -48,7 +48,7 @@ namespace Eto.Forms
 		{
 			if (PreLoad != null)
 				PreLoad (this, e);
-			inner.OnPreLoad ();
+			handler.OnPreLoad ();
 		}
 		
 		
@@ -59,7 +59,7 @@ namespace Eto.Forms
 			Loaded = true;
 			if (Load != null)
 				Load (this, e);
-			inner.OnLoad ();
+			handler.OnLoad ();
 		}
 
 		public event EventHandler<EventArgs> LoadComplete;
@@ -68,14 +68,14 @@ namespace Eto.Forms
 		{
 			if (LoadComplete != null)
 				LoadComplete (this, e);
-			inner.OnLoadComplete ();
+			handler.OnLoadComplete ();
 		}
 
 		protected Layout (Generator g, Container container, Type type, bool initialize = true)
 			: base(g, type, false)
 		{
 			this.Container = container;
-			inner = (ILayout)Handler;
+			handler = (ILayout)Handler;
 			if (initialize) {
 				Initialize ();
 				if (this.Container != null)
@@ -87,7 +87,7 @@ namespace Eto.Forms
 			: base (g, handler, false)
 		{
 			this.Container = container;
-			inner = (ILayout)Handler;
+			this.handler = (ILayout)Handler;
 			if (initialize) {
 				Initialize ();
 				if (this.Container != null)
@@ -107,7 +107,7 @@ namespace Eto.Forms
 		public virtual void Update ()
 		{
 			UpdateContainers (this.Container);
-			inner.Update ();
+			handler.Update ();
 		}
 		
 		void UpdateContainers (Container container)

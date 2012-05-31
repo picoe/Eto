@@ -36,12 +36,12 @@ namespace Eto.Forms
 		}
 
 		public GridColumn (Generator g)
-			: this(g, typeof(IGridColumn), true)
+			: this (g, typeof(IGridColumn), true)
 		{
 		}
 
-		protected GridColumn (Generator g, Type type, bool initialize)
-			: base(g, type, initialize)
+		protected GridColumn (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
 		{
 			handler = (IGridColumn)Handler;
 		}

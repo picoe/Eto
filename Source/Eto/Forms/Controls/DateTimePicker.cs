@@ -13,22 +13,25 @@ namespace Eto.Forms
 	public interface IDateTimePicker : ICommonControl
 	{
 		DateTime? Value { get; set; }
+
 		DateTime MinDate { get; set; }
+
 		DateTime MaxDate { get; set; }
+
 		DateTimePickerMode Mode { get; set; }
 	}
 	
 	public class DateTimePicker : CommonControl
 	{
 		IDateTimePicker inner;
-		
 		public static DateTimePickerMode DefaultMode = DateTimePickerMode.Date;
 		
 		public event EventHandler<EventArgs> ValueChanged;
 		
-		public virtual void OnValueChanged(EventArgs e)
+		public virtual void OnValueChanged (EventArgs e)
 		{
-			if (ValueChanged != null) ValueChanged(this, e);
+			if (ValueChanged != null)
+				ValueChanged (this, e);
 		}
 		
 		public DateTimePicker ()
@@ -37,31 +40,32 @@ namespace Eto.Forms
 		}
 		
 		public DateTimePicker (Generator generator)
-			: base(generator, typeof(IDateTimePicker))
+			: this (generator, typeof(IDateTimePicker))
+		{
+		}
+		
+		protected DateTimePicker (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 			inner = (IDateTimePicker)Handler;
 		}
 		
-		public DateTime MinDate
-		{
+		public DateTime MinDate {
 			get { return inner.MinDate; }
 			set { inner.MinDate = value; }
 		}
 
-		public DateTime MaxDate
-		{
+		public DateTime MaxDate {
 			get { return inner.MaxDate; }
 			set { inner.MaxDate = value; }
 		}
 		
-		public DateTime? Value
-		{
+		public DateTime? Value {
 			get { return inner.Value; }
 			set { inner.Value = value; }
 		}
 		
-		public DateTimePickerMode Mode
-		{
+		public DateTimePickerMode Mode {
 			get { return inner.Mode; }
 			set { inner.Mode = value; }
 		}

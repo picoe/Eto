@@ -13,19 +13,19 @@ namespace Eto.Forms
 #if DESKTOP
 	[ContentProperty("Text")]
 #endif
-	public class TextControl : CommonControl
+	public abstract class TextControl : CommonControl
 	{
-		ITextControl inner;
+		ITextControl handler;
 		
-		public TextControl(Generator g, Type type) : base(g, type)
+		protected TextControl(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
 		{
-			inner = (ITextControl)base.Handler;
+			handler = (ITextControl)base.Handler;
 		}
 		
 		public virtual string Text
 		{
-			get { return inner.Text; }
-			set { inner.Text = value; }
+			get { return handler.Text; }
+			set { handler.Text = value; }
 		}
 	}
 }

@@ -37,7 +37,7 @@ namespace Eto.Forms
 
 	public partial class Drawable : Control
 	{
-		IDrawable inner;
+		IDrawable handler;
 
 		public event PaintEventHandler Paint;
 
@@ -45,12 +45,18 @@ namespace Eto.Forms
 		{
 		}
 
-		public Drawable (Generator g) : base(g, typeof(IDrawable), false)
+		public Drawable (Generator g) : this(g, typeof(IDrawable))
 		{
-			inner = (IDrawable)Handler;
-			inner.Create ();
-			Initialize ();
 		}
+		
+		protected Drawable (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, false)
+		{
+			handler = (IDrawable)Handler;
+			handler.Create ();
+			if (initialize) Initialize ();
+		}
+
 
 		public virtual void OnPaint (PaintEventArgs pe)
 		{
@@ -59,17 +65,13 @@ namespace Eto.Forms
 		}
 
 		public bool CanFocus {
-			get {
-				return inner.CanFocus;
-			}
-			set {
-				inner.CanFocus = value;
-			}
+			get { return handler.CanFocus; }
+			set { handler.CanFocus = value; }
 		}
 
 		public void Update (Rectangle rect)
 		{
-			inner.Update (rect);
+			handler.Update (rect);
 		}
 
 	}

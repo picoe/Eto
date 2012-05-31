@@ -320,7 +320,7 @@ namespace Eto.Forms
 
 		
 		protected Control (Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
+			: base (generator, type, initialize)
 		{
 			this.inner = (IControl)base.Handler;
 		}

@@ -21,7 +21,7 @@ namespace Eto.Forms
 	
 	public class Cursor : InstanceWidget
 	{
-		ICursor inner;
+		ICursor handler;
 		
 		public Cursor (CursorType cursor)
 			: this (Generator.Current, cursor)
@@ -31,14 +31,20 @@ namespace Eto.Forms
 		public Cursor (Generator generator, CursorType cursor)
 			: this (generator)
 		{
-			inner.Create (cursor);
+			handler.Create (cursor);
 		}
 		
 		protected Cursor (Generator generator)
-			: base(generator, typeof(ICursor), true)
+			: this (generator, typeof(ICursor))
 		{
-			inner = (ICursor)Handler;
 		}
+		
+		protected Cursor (Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
+		{
+			handler = (ICursor)Handler;
+		}
+		
 	}
 }
 

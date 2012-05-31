@@ -10,15 +10,20 @@ namespace Eto.Forms
 
 	public class Form : Window
 	{
-		IForm inner;
+		IForm handler;
 
 		public Form () : this(Generator.Current)
 		{
 		}
 
-		public Form (Generator g) : base(g, typeof(IForm))
+		public Form (Generator g) : this(g, typeof(IForm))
 		{
-			inner = (IForm)this.Handler;
+		}
+		
+		protected Form (Generator g, Type type, bool initialize = true)
+			: base (g, type, initialize)
+		{
+			handler = (IForm)this.Handler;
 		}
 
 		public void Show ()
@@ -30,7 +35,7 @@ namespace Eto.Forms
 				OnLoadComplete (EventArgs.Empty);
 			}
 			
-			inner.Show ();
+			handler.Show ();
 		}
 	}
 }
