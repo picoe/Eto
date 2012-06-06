@@ -19,6 +19,13 @@ namespace Eto
 	
 	public static class XmlExtensions
 	{
+		public static string GetStringAttribute(this XmlElement element, string name)
+		{
+			string attr = element.GetAttribute(name);
+			if (string.IsNullOrEmpty(attr)) return null;
+			else return attr;
+		}
+		
 		public static bool? GetBoolAttribute(this XmlElement element, string name)
 		{
 			//return XmlExtensions.GetAttribute<bool>(element, name, bool.TryParse);
@@ -139,8 +146,10 @@ namespace Eto
 				list.Clear ();
 				foreach (XmlElement childNode in childNodes) {
 					var item = create(childNode);
-					item.ReadXml(childNode);
-					list.Add (item);
+					if (item != null) {
+						item.ReadXml(childNode);
+						list.Add (item);
+					}
 				}
 			}
 		}
