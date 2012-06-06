@@ -35,12 +35,11 @@ namespace Eto.Forms
 				SelectedIndexChanged (this, e);
 		}
 		
-		public TabControl ()
-			: this(Generator.Current)
+		public TabControl () : this (Generator.Current)
 		{
 		}
 
-		public TabControl (Generator g) : base(g, typeof(ITabControl))
+		public TabControl (Generator g) : this (g, typeof(ITabControl))
 		{
 		}
 		
