@@ -14,6 +14,8 @@ namespace Eto.Platform.GtkSharp
 		public SplitterHandler ()
 		{
 			Control = new Gtk.HPaned ();
+			Control.Pack1 (EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
+			Control.Pack2 (EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
 		}
 
 		public int Position {
@@ -51,10 +53,16 @@ namespace Eto.Platform.GtkSharp
 			}
 			if (old != null) {
 				if (old.Parent != null) Control.Parent = old.Parent;
-				if (old.Child1 != null) Control.Pack1 (old.Child1, fixedPanel != SplitterFixedPanel.Panel1, true);
-				if (old.Child2 != null) Control.Pack2 (old.Child2, fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack1 (old.Child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
+				Control.Pack2 (old.Child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
 				old.Destroy ();
 			}
+		}
+		
+		Gtk.Widget EmptyContainer()
+		{
+			var bin = new Gtk.VBox();
+			return bin;
 		}
 
 		public Control Panel1 {
@@ -64,12 +72,10 @@ namespace Eto.Platform.GtkSharp
 				var setposition = position != null && (Control.Child1 == null || Control.Child2 == null);
 				if (Control.Child1 != null)
 					Control.Remove (Control.Child1);
-				if (panel1 != null) {
-					var widget = panel1.GetContainerWidget ();
-					Control.Pack1 (widget, fixedPanel != SplitterFixedPanel.Panel1, true);
-					if (setposition) Control.Position = position.Value;
-					widget.ShowAll ();
-				}
+				var widget = panel1 != null ? panel1.GetContainerWidget () : EmptyContainer ();
+				Control.Pack1 (widget, fixedPanel != SplitterFixedPanel.Panel1, true);
+				if (setposition) Control.Position = position.Value;
+				widget.ShowAll ();
 			}
 		}
 
@@ -80,12 +86,10 @@ namespace Eto.Platform.GtkSharp
 				var setposition = position != null && (Control.Child1 == null || Control.Child2 == null);
 				if (Control.Child2 != null)
 					Control.Remove (Control.Child2);
-				if (panel2 != null) {
-					var widget = panel2.GetContainerWidget ();
-					Control.Pack2 (widget, fixedPanel != SplitterFixedPanel.Panel2, true);
-					if (setposition) Control.Position = position.Value;
-					widget.ShowAll ();
-				}
+				var widget = panel2 != null ? panel2.GetContainerWidget () : EmptyContainer ();
+				Control.Pack2 (widget, fixedPanel != SplitterFixedPanel.Panel2, true);
+				if (setposition) Control.Position = position.Value;
+				widget.ShowAll ();
 			}
 		}
 	}
