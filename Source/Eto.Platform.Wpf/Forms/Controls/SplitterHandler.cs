@@ -18,6 +18,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		SplitterFixedPanel fixedPanel;
 		int? position;
 		int? initialWidth;
+		int? initialHeight;
 		sw.Style style;
 
 		Control panel1;
@@ -54,8 +55,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.Loaded += delegate {
 				UpdateColumnSizing ();
 				if (FixedPanel == SplitterFixedPanel.Panel2) {
-					if (initialWidth != null)
+					if (Orientation == SplitterOrientation.Horizontal && initialWidth != null && initialWidth.Value > 0)
 						Position = this.Size.Width - (initialWidth.Value - position.Value);
+					else if (Orientation == SplitterOrientation.Vertical && initialHeight != null && initialHeight.Value > 0)
+						Position = this.Size.Height - (initialHeight.Value - position.Value);
+					else if (position != null)
+						Position = position.Value;
 				}
 				else if (position != null)
 					Position = position.Value;
@@ -201,6 +206,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (!Widget.Loaded) {
 					position = value;
 					initialWidth = this.Size.Width;
+					initialHeight = this.Size.Height;
 					return;
 				}
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns) {
