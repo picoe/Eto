@@ -124,5 +124,21 @@ namespace Eto.Forms
 			get { return handler.ClientSize; }
 			set { handler.ClientSize = value; }
 		}
+		
+		public override void Unbind ()
+		{
+			base.Unbind ();
+			foreach (var control in Controls) {
+				control.Unbind ();
+			}
+		}
+		
+		public override void UpdateBindings ()
+		{
+			base.UpdateBindings ();
+			foreach (var control in Controls) {
+				control.UpdateBindings ();
+			}
+		}
 	}
 }

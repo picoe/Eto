@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+
 #if DESKTOP
 using System.Xaml;
 #endif
@@ -73,6 +74,8 @@ namespace Eto
 	
 	public abstract class Widget : IDisposable
 	{
+		BindingCollection bindings;
+		
 #if DESKTOP
 		PropertyStore properties;
 
@@ -88,10 +91,17 @@ namespace Eto
 		public event EventHandler<EventArgs> Disposed;
 
 		public Generator Generator { get; private set; }
+		
+		public BindingCollection Bindings {
+			get {
+				if (bindings == null) bindings = new BindingCollection (); 
+				return bindings;
+			}
+		}
 
 		public object Tag { get; set; }
 
-		public IWidget Handler { get; set; }
+		public IWidget Handler { get; internal protected set; }
 
 		~Widget ()
 		{
@@ -131,15 +141,31 @@ namespace Eto
 		
 		#endregion
 		
+		public virtual void Unbind ()
+		{
+			if (bindings != null) {
+				bindings.Unbind();
+				bindings = null;
+			}
+		}
+		
+		public virtual void UpdateBindings ()
+		{
+			if (bindings != null) {
+				bindings.Update ();
+			}
+		}
+		
 		protected virtual void Dispose (bool disposing)
 		{
+			Unbind ();
 			if (disposing) {
 				if (Disposed != null)
 					Disposed(this, EventArgs.Empty);
 				var handler = this.Handler as IDisposable;
 				if (handler != null)
 					handler.Dispose ();
-				Handler = null;
+				this.Handler = null;
 			}
 		}		
 		

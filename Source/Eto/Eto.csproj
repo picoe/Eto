@@ -443,7 +443,6 @@
     <Compile Include="Forms\Cells\ComboBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageTextCell.cs" />
     <Compile Include="Forms\Cells\SingleValueCell.cs" />
-    <Compile Include="Forms\Binding.cs" />
     <Compile Include="Forms\Controls\TreeGridItem.cs" />
     <Compile Include="Forms\Cells\TextBoxCell.cs" />
     <Compile Include="Forms\Cells\ImageViewCell.cs" />
@@ -451,6 +450,17 @@
     <Compile Include="Forms\Controls\TreeGridView.desktop.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
+    <Compile Include="Binding\Binding.cs" />
+    <Compile Include="Binding\BindingCollection.cs" />
+    <Compile Include="Binding\BindingChangingEventArgs.cs" />
+    <Compile Include="Binding\BindingChangedEventArgs.cs" />
+    <Compile Include="Binding\SingleBinding.cs" />
+    <Compile Include="Binding\ColumnBinding.cs" />
+    <Compile Include="Binding\PropertyBinding.cs" />
+    <Compile Include="Binding\ObjectBinding.cs" />
+    <Compile Include="Binding\ObjectSingleBinding.cs" />
+    <Compile Include="Binding\DualBinding.cs" />
+    <Compile Include="Binding\BindingExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -461,4 +471,7 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Binding\" />
+  </ItemGroup>
 </Project>

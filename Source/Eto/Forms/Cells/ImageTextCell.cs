@@ -8,9 +8,9 @@ namespace Eto.Forms
 	
 	public class ImageTextCell : Cell
 	{
-		public Binding ImageBinding { get; set; }
+		public SingleBinding ImageBinding { get; set; }
 		
-		public Binding TextBinding { get; set; }
+		public SingleBinding TextBinding { get; set; }
 		
 		public ImageTextCell (int imageColumn, int textColumn)
 			: this()
