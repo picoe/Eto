@@ -19,13 +19,13 @@ namespace Eto
 #endif
 	public abstract class InstanceWidget : Widget
 	{
-		IInstanceWidget inner;
+		IInstanceWidget handler;
 		string style;
 
 		public string ID
 		{
-			get { return inner.ID; }
-			set { inner.ID = value; }
+			get { return handler.ID; }
+			set { handler.ID = value; }
 		}
 		
 		public string Style
@@ -51,22 +51,22 @@ namespace Eto
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
-			inner = (IInstanceWidget)Handler;
+			this.handler = (IInstanceWidget)Handler;
 		}
 
 		protected InstanceWidget (Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			inner = (IInstanceWidget)Handler;
+			this.handler = (IInstanceWidget)Handler;
 		}
 		
 		public object ControlObject {
-			get { return inner.ControlObject; }
+			get { return handler.ControlObject; }
 		}
 
 		public void HandleEvent (string id)
 		{
-			inner.HandleEvent (id);
+			handler.HandleEvent (id);
 		}
 		
 		public void HandleEvent (params string[] ids)
