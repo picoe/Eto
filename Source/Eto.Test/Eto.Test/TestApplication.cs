@@ -8,11 +8,12 @@ namespace Eto.Test
 		public TestApplication (Generator generator)
 			: base(generator)
 		{
+			this.Name = "Test Application";
 		}
 		
 		public override void OnInitialized (EventArgs e)
 		{
-			this.MainForm = new MainForm();
+			this.MainForm = new MainForm ();
             HandleEvent (Application.TerminatingEvent);
 			
 			base.OnInitialized (e);

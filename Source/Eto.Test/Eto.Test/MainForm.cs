@@ -126,7 +126,7 @@ namespace Eto.Test
 			var args = new GenerateActionArgs ();
 
 			// generate actions to use in menus and toolbars
-			Application.Instance.GetSystemActions (args);
+			Application.Instance.GetSystemActions (args, true);
 
 			args.Actions.Add (new Actions.About ());
 			args.Actions.Add (new Actions.Quit ());
@@ -145,33 +145,14 @@ namespace Eto.Test
 			var file = args.Menu.FindAddSubMenu ("&File", 100);
 			var edit = args.Menu.FindAddSubMenu ("&Edit", 200);
 			var window = args.Menu.FindAddSubMenu ("&Window", 900);
-			var help = args.Menu.FindAddSubMenu ("Help", 1000);
+			var help = args.Menu.FindAddSubMenu ("&Help", 1000);
 
 			if (Generator.ID == "mac") {
 				// have a nice OS X style menu
 
-				var main = args.Menu.FindAddSubMenu ("Test Application", 0);
+				var main = args.Menu.FindAddSubMenu (Application.Instance.Name, 0);
 				main.Actions.Add (Actions.About.ActionID, 0);
-				main.Actions.AddSeparator ();
-				main.Actions.Add ("mac_hide", 700);
-				main.Actions.Add ("mac_hideothers", 700);
-				main.Actions.Add ("mac_showall", 700);
-				main.Actions.AddSeparator (900);
 				main.Actions.Add (Actions.Quit.ActionID, 1000);
-
-				file.Actions.Add ("mac_performClose", 900);
-
-				edit.Actions.Add ("mac_undo", 100);
-				edit.Actions.Add ("mac_redo", 100);
-				edit.Actions.AddSeparator (200);
-				edit.Actions.Add ("mac_cut", 200);
-				edit.Actions.Add ("mac_copy", 200);
-				edit.Actions.Add ("mac_paste", 200);
-				edit.Actions.Add ("mac_delete", 200);
-				edit.Actions.Add ("mac_selectAll", 200);
-
-				window.Actions.Add ("mac_performMiniaturize");
-				window.Actions.Add ("mac_performZoom");
 			}
 			else {
 				// windows/gtk style window
