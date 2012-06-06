@@ -5,17 +5,22 @@ namespace Eto.Platform.GtkSharp
 {
 	public class SplitterHandler : GtkControl<Gtk.Paned, Splitter>, ISplitter
 	{
+		Gtk.Alignment container;
 		Control panel1;
 		Control panel2;
 		SplitterOrientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
 
+		public override Gtk.Widget ContainerControl
+		{
+			get { return container; }
+		}
+
 		public SplitterHandler ()
 		{
-			Control = new Gtk.HPaned ();
-			Control.Pack1 (EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-			Control.Pack2 (EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
+			container = new Gtk.Alignment (0, 0, 1, 1);
+			CreateControl ();
 		}
 
 		public int Position {
@@ -26,16 +31,20 @@ namespace Eto.Platform.GtkSharp
 		public SplitterFixedPanel FixedPanel {
 			get { return fixedPanel; }
 			set {
-				fixedPanel = value;
-				CreateControl ();
+				if (fixedPanel != value) {
+					fixedPanel = value;
+					CreateControl ();
+				}
 			}
 		}
 
 		public SplitterOrientation Orientation {
 			get	{ return (Control is Gtk.HPaned) ? SplitterOrientation.Horizontal : SplitterOrientation.Vertical; }
 			set {
-				orientation = value;
-				CreateControl ();
+				if (orientation != value) {
+					orientation = value;
+					CreateControl ();
+				}
 			}
 		}
 		
@@ -51,11 +60,17 @@ namespace Eto.Platform.GtkSharp
 				Control = new Gtk.VPaned ();
 				break;
 			}
+			if (container.Child != null)
+				container.Remove (container.Child);
+			container.Child = Control;
 			if (old != null) {
-				if (old.Parent != null) Control.Parent = old.Parent;
-				Control.Pack1 (old.Child1 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2 (old.Child2 ?? EmptyContainer(), fixedPanel != SplitterFixedPanel.Panel2, true);
+				Control.Pack1 (old.Child1 ?? EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel1, true);
+				Control.Pack2 (old.Child2 ?? EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel2, true);
 				old.Destroy ();
+			}
+			else {
+				Control.Pack1 (EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel1, true);
+				Control.Pack2 (EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel2, true);
 			}
 		}
 		
