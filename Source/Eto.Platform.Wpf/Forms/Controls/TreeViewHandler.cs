@@ -110,8 +110,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding ("Expanded") { Mode = swd.BindingMode.TwoWay }));
 			Control.ItemContainerStyle = style;
 
-			Control.SelectedItemChanged += delegate {
-				Widget.OnSelectionChanged (EventArgs.Empty);
+			Control.SelectedItemChanged += (sender, e) => {
+				Control.Dispatcher.BeginInvoke (new Action(() => {
+					Widget.OnSelectionChanged (EventArgs.Empty);
+				}));
 			};
 
 			Control.KeyDown += (sender, e) => {
