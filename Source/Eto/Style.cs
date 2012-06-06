@@ -60,13 +60,14 @@ namespace Eto
 			};
 		}
 
-		public static void AddHandler<H> (string style, StyleHandler<H> handler)
+		public static void AddHandler<H> (string style, StyleHandler<H> styleHandler)
 			where H: class, IWidget
 		{
 			styleMap [style] = delegate(InstanceWidget widget){
 				var control = widget as Widget;
-				if (control != null)
-					handler ((H)control.Handler);
+				var handler = control.Handler as H;
+				if (control != null && handler != null)
+					styleHandler (handler);
 			};
 		}
 	}
