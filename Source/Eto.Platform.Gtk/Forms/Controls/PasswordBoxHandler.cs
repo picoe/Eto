@@ -29,7 +29,6 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-
 		public char PasswordChar {
 			get { return Control.InvisibleChar; }
 			set { Control.InvisibleChar = value; }
@@ -37,7 +36,7 @@ namespace Eto.Platform.GtkSharp
 		}
 		public override string Text {
 			get { return Control.Text; }
-			set { Control.Text = value; }
+			set { Control.Text = value ?? string.Empty; }
 		}
 
 		public bool ReadOnly {
