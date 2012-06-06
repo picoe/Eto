@@ -122,7 +122,8 @@ namespace Eto.Test.Sections.Controls
 				Text = "Execute Script"
 			};
 			control.Click += delegate {
-				webView.ExecuteScript("alert('this is called from code');");
+				var ret = webView.ExecuteScript("alert('this is called from code'); return 'return value from ExecuteScript';");
+				Log.Write (this, "ExecuteScript, Return: {0}", ret);
 			};
 			return control;
 		}

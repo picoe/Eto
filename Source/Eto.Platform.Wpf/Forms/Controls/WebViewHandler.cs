@@ -202,14 +202,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get {
 				var browser = WebBrowser2;
 				if (browser != null && browser.Document != null)
-					return browser.Document.Title;
+					return Convert.ToString(browser.Document.Title);
 				else return null;
 			}
 		}
 
-		public void ExecuteScript (string script)
+		public string ExecuteScript (string script)
 		{
-			Control.InvokeScript ("execScript", new Object[] { script, "JavaScript" });
+			var fullScript = string.Format ("var fn = function() {{ {0} }}; fn();", script);
+			return Convert.ToString(Control.InvokeScript ("eval", fullScript));
 		}
 
 		protected override void Dispose (bool disposing)

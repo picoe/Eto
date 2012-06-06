@@ -50,9 +50,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 		
-		public void ExecuteScript (string script)
+		public string ExecuteScript (string script)
 		{
-			this.Control.Document.InvokeScript ("execScript", new object[] { script, "JavaScript" });
+			var fullScript = string.Format ("var fn = function() {{ {0} }}; fn();", script);
+			return Convert.ToString (Control.Document.InvokeScript ("eval", new object[] { fullScript }));
 		}
 		
 		public void Stop ()

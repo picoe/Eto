@@ -3,6 +3,9 @@
 
 using System;
 using Eto.Forms;
+using System.Net;
+using System.Web;
+using System.Threading;
 
 #if USE_MONO_WEBBROWSER
 using Mono.WebBrowser;
@@ -78,9 +81,12 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			webView.ExecuteScript(script);
 		}
 
-		public void LoadHtml (string html)
+		public void LoadHtml (string html, Uri baseUri)
 		{
-			webView.Render (html);
+			if (baseUri == null)
+				webView.Render (html);
+			else
+				webView.Render (html, baseUri.AbsoluteUri, "text/html");
 		}
 		
 		public void Stop ()
@@ -112,14 +118,24 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		}
 #else
 		WebKit.WebView webView;
+		ManualResetEventSlim returnResetEvent = new ManualResetEventSlim();
+		string scriptReturnValue;
+		const string EtoReturnPrefix = "etoscriptreturn://";
 		
 		public WebViewHandler ()
 		{
 			Control = new Gtk.ScrolledWindow ();
 
-			webView = new WebKit.WebView (); 
+			try {
+				webView = new WebKit.WebView (); 
+			}
+			catch (Exception ex)
+			{
+				throw new EtoException("GTK WebView is only supported on Linux, and requires webkit-sharp", ex);
+			}
 			
 			Control.Add (webView);
+			HandleEvent (WebView.DocumentLoadingEvent);
 		}
 		
 		public override void AttachEvent (string handler)
@@ -127,17 +143,25 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			switch (handler) {
 			case WebView.DocumentLoadedEvent:
 				webView.LoadFinished += delegate(object o, WebKit.LoadFinishedArgs args) {
-					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (new Uri (args.Frame.Uri)));
+					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (args.Frame.Uri != null ? new Uri (args.Frame.Uri) : null));
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
 				webView.NavigationRequested += delegate(object o, WebKit.NavigationRequestedArgs args) {
-					var e = new WebViewLoadingEventArgs (new Uri (args.Request.Uri));
-					Widget.OnDocumentLoading (e);
-					if (e.Cancel)
+					if (args.Request.Uri.StartsWith (EtoReturnPrefix)) {
+						// pass back the response to ExecuteScript()
+						this.scriptReturnValue = HttpUtility.UrlDecode (args.Request.Uri.Substring (EtoReturnPrefix.Length));
+						returnResetEvent.Set ();
 						args.RetVal = WebKit.NavigationResponse.Ignore;
-					else
-						args.RetVal = WebKit.NavigationResponse.Accept;
+					}
+					else {
+						var e = new WebViewLoadingEventArgs (new Uri (args.Request.Uri));
+						Widget.OnDocumentLoading (e);
+						if (e.Cancel)
+							args.RetVal = WebKit.NavigationResponse.Ignore;
+						else
+							args.RetVal = WebKit.NavigationResponse.Accept;
+					}
 				};
 				break;
 			case WebView.DocumentTitleChangedEvent:
@@ -167,10 +191,16 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 		
-		public void ExecuteScript (string script)
+		public string ExecuteScript (string script)
 		{
-			
-			webView.ExecuteScript(script);
+			// no access to DOM or return value, so get return value via URL (limited length, but better than nothing)
+			var getResultScript = @"try {{ var fn = function () {{ {0} }}; window.location.href = '" + EtoReturnPrefix + @"' + encodeURI(fn()); }} catch (e) {{ window.location.href = '" + EtoReturnPrefix + @"'; }}";
+			returnResetEvent.Reset ();
+			webView.ExecuteScript(string.Format (getResultScript, script));
+			while (!returnResetEvent.Wait (0)) {
+				Gtk.Application.RunIteration();
+			}
+			return scriptReturnValue;
 		}
 
 		public void LoadHtml (string html, Uri baseUri)

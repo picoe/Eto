@@ -23,7 +23,7 @@ namespace Eto.Forms
 		
 		string DocumentTitle { get; }
 		
-		void ExecuteScript (string script);
+		string ExecuteScript (string script);
 	}
 	
 	public class WebViewLoadedEventArgs : EventArgs
@@ -164,9 +164,9 @@ namespace Eto.Forms
 			handler.Reload ();
 		}
 		
-		public void ExecuteScript (string script)
+		public string ExecuteScript (string script)
 		{
-			handler.ExecuteScript (script);
+			return handler.ExecuteScript (script);
 		}
 
 		public string DocumentTitle {

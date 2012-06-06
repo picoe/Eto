@@ -39,6 +39,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
+				/*this.Control.UICreateWebView = (sender, request) => {
+					var args = new WebViewLoadingEventArgs (new Uri (request.Url.AbsoluteString));
+					Widget.OnDocumentLoading (args);
+					if (!args.Cancel) {
+						// open new window event
+					}
+					return null;
+				};*/
 				this.Control.DecidePolicyForNavigation += delegate(object sender, MonoMac.WebKit.WebNavigatioPolicyEventArgs e) {
 					var args = new WebViewLoadingEventArgs (new Uri (e.Request.Url.AbsoluteString));
 					Widget.OnDocumentLoading (args);
@@ -77,9 +85,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public void ExecuteScript (string script)
+		public string ExecuteScript (string script)
 		{
-			Control.StringByEvaluatingJavaScriptFromString (script);
+			var fullScript = string.Format ("var fn = function () {{ {0} }}; fn();", script);
+			return Control.StringByEvaluatingJavaScriptFromString (fullScript);
 		}
 
 		public void LoadHtml (string html, Uri baseUri)
