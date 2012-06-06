@@ -17,9 +17,7 @@ namespace Eto.Forms
 			if (!string.IsNullOrEmpty (MenuItemStyle))
 				mi.Style = MenuItemStyle;
 			if (Icon != null) mi.Icon = Icon;
-			mi.Click += new EventHandler<EventArgs>(delegate { this.Activate(); }).MakeWeak((e) => mi.Click -= e);
-			this.EnabledChanged += new EventHandler<EventArgs>(delegate { mi.Enabled = this.Enabled; }).MakeWeak((e) => this.EnabledChanged -= e);
-			//new MenuConnector(this, mi);
+			new MenuConnector(this, mi);
 			return mi;
 		}
 		
@@ -32,16 +30,16 @@ namespace Eto.Forms
 			{
 				this.action = action;
 				this.menuItem = menuItem;
-				this.menuItem.Click += menuItem_Clicked;
-				this.action.EnabledChanged += new EventHandler<EventArgs>(action_EnabledChanged).MakeWeak((e) => this.action.EnabledChanged -= e);
+				this.menuItem.Click += HandleClick;
+				this.menuItem.Validate += HandleValidate;
 			}
-			
-			void menuItem_Clicked(Object sender, EventArgs e)
+
+			void HandleClick (object sender, EventArgs e)
 			{
 				action.OnActivated(e);
 			}
-			
-			void action_EnabledChanged(Object sender, EventArgs e)
+
+			void HandleValidate (object sender, EventArgs e)
 			{
 				menuItem.Enabled = action.Enabled;
 			}

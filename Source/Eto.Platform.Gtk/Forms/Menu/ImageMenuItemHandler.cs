@@ -1,10 +1,11 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class ImageMenuItemHandler : MenuHandler<Gtk.ImageMenuItem, ImageMenuItem>, IImageMenuItem
+	public class ImageMenuItemHandler : MenuActionItemHandler<Gtk.ImageMenuItem, ImageMenuItem>, IImageMenuItem
 	{
 		string tooltip;
 		string text;
@@ -22,7 +23,7 @@ namespace Eto.Platform.GtkSharp
 			label.AccelWidget = Control;
 			Control.Add(label);
 		}
-
+		
 		public bool Enabled
 		{
 			get { return Control.Sensitive; }
@@ -102,6 +103,8 @@ namespace Eto.Platform.GtkSharp
 		}
 		private void control_Activated(object sender, EventArgs e)
 		{
+			if (Control.Submenu != null)
+				ValidateItems ();
 			Widget.OnClick(e);
 		}
 	}

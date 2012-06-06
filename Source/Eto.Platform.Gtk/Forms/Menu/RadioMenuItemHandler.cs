@@ -9,7 +9,7 @@ namespace Eto.Platform.GtkSharp
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class RadioMenuItemHandler : MenuHandler<Gtk.RadioMenuItem, RadioMenuItem>, IRadioMenuItem
+	public class RadioMenuItemHandler : MenuActionItemHandler<Gtk.RadioMenuItem, RadioMenuItem>, IRadioMenuItem
 	{
 		string tooltip;
 		string text = string.Empty;

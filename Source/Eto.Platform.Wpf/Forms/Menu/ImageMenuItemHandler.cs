@@ -16,6 +16,5 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			Control = new swc.MenuItem();
 			Setup ();
 		}
-
 	}
 }

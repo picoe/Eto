@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 
@@ -10,8 +11,16 @@ namespace Eto.Platform.Windows
 		public ContextMenuHandler ()
 		{
 			this.Control = new System.Windows.Forms.ContextMenuStrip ();
+			this.Control.Opened += HandleOpened;
 		}
-		
+
+		void HandleOpened (object sender, EventArgs e)
+		{
+			foreach (var item in Widget.MenuItems.OfType<MenuActionItem> ()) {
+				item.OnValidate (EventArgs.Empty);
+			}
+		}
+
 		public void AddMenu (int index, MenuItem item)
 		{
 			Control.Items.Insert (index, (SWF.ToolStripItem)item.ControlObject);

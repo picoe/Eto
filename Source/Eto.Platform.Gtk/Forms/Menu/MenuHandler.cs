@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -9,6 +10,16 @@ namespace Eto.Platform.GtkSharp
 	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IMenu, IWidget
 		where W: Widget
 	{
+		protected void ValidateItems()
+		{
+			var subMenu = Widget as ISubMenuWidget;
+			if (subMenu != null) {
+				foreach (var item in subMenu.MenuItems.OfType<MenuActionItem>()) {
+					item.OnValidate(EventArgs.Empty);
+				}
+			}
+		}
+		
 
 		#region IMenu Members
 

@@ -4,13 +4,22 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget
 		where T: SWF.ToolStripItem
 		where W: Widget
 	{
-		
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case MenuActionItem.ValidateEvent:
+				// handled by parents
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+
 	}
 }

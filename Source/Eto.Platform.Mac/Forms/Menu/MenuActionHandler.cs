@@ -2,6 +2,7 @@ using System;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using MonoMac.AppKit;
+using Eto.Forms;
 
 namespace Eto.Platform.Mac
 {
@@ -10,6 +11,8 @@ namespace Eto.Platform.Mac
 		void HandleClick ();
 		
 		bool Enabled { get; }
+		
+		MenuActionItem Widget { get; }
 	}
 		
 	[Register("EtoMenuActionHandler")]
@@ -28,6 +31,7 @@ namespace Eto.Platform.Mac
 		[Export("validateMenuItem:")]
 		public bool ValidateMenuItem (NSMenuItem item)
 		{
+			Handler.Widget.OnValidate(EventArgs.Empty);
 			return Handler.Enabled;
 		}
 	}

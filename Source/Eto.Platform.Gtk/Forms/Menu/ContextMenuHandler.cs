@@ -32,8 +32,9 @@ namespace Eto.Platform.GtkSharp
 		
 		public void Show (Control relativeTo)
 		{
-			Control.Popup ();
+			ValidateItems ();
 			Control.ShowAll ();
+			Control.Popup ();
 		}
 
 	}

@@ -55,5 +55,8 @@ namespace Eto.Platform.Mac
 
 		#endregion
 
+		MenuActionItem IMenuActionHandler.Widget {
+			get { return Widget; }
+		}
 	}
 }

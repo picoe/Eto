@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using sw = System.Windows;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
@@ -16,6 +17,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 	{
 		Eto.Drawing.Icon icon;
 		swi.RoutedCommand command = new swi.RoutedCommand ();
+		bool openingHandled;
 
 		protected void Setup ()
 		{
@@ -86,9 +88,25 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			}
 		}
 
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case MenuActionItem.ValidateEvent:
+				// handled by parent
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+
 		public void AddMenu (int index, MenuItem item)
 		{
 			Control.Items.Insert (index, item.ControlObject);
+			if (!openingHandled) {
+				Control.SubmenuOpened += HandleContextMenuOpening;
+				openingHandled = true;
+			}
 		}
 
 		public void RemoveMenu (MenuItem item)
@@ -105,6 +123,17 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		{
 			return this.Enabled;
 		}
+
+		void HandleContextMenuOpening (object sender, sw.RoutedEventArgs e)
+		{
+			var submenu = Widget as ISubMenuWidget;
+			if (submenu != null) {
+				foreach (var item in submenu.MenuItems.OfType<MenuActionItem>()) {
+					item.OnValidate (EventArgs.Empty);
+				}
+			}
+		}
+
 
 		public event EventHandler CanExecuteChanged;
 

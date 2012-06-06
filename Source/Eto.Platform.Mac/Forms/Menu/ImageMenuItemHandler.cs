@@ -29,6 +29,18 @@ namespace Eto.Platform.Mac
 		}
 		
 		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case ImageMenuItem.ValidateEvent:
+				// handled in MenuActionHandler
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
+		
 		#region IMenuItem Members
 		
 		public bool Enabled {
@@ -87,6 +99,9 @@ namespace Eto.Platform.Mac
 			//if (Control.HasSubmenu) Control.Submenu.Title = Control.Title;
 		}
 
+		MenuActionItem IMenuActionHandler.Widget {
+			get { return Widget; }
+		}
 
 	}
 }

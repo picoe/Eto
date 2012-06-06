@@ -17,6 +17,24 @@ namespace Eto.Forms
 	{
 		IMenuActionItem handler;
 		
+		public const string ValidateEvent = "MenuActionItem.ValidateEvent";
+
+		event EventHandler<EventArgs> _Validate;
+
+		public event EventHandler<EventArgs> Validate {
+			add {
+				_Validate += value;
+				HandleEvent (ValidateEvent);
+			}
+			remove { _Validate -= value; }
+		}
+
+		public virtual void OnValidate (EventArgs e)
+		{
+			if (_Validate != null)
+				_Validate (this, e);
+		}
+		
 		public event EventHandler<EventArgs> Click;
 
 		protected MenuActionItem (Generator g, Type type, bool initialize = true)
