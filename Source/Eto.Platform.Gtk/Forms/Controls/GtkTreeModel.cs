@@ -50,7 +50,10 @@ namespace Eto.Platform.GtkSharp
 				if (store != null) {
 					for (int i = 0; i < path.Indices.Length; i++) {
 						var idx = path.Indices [i];
-						store = (S)(object)store [idx];
+						if (idx < store.Count)
+							store = (S)(object)store [idx];
+						else
+							return null;
 					}
 					return (T)(object)store;
 				}
