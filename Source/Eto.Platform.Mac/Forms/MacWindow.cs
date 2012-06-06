@@ -44,15 +44,6 @@ namespace Eto.Platform.Mac.Forms
 				zoom = true;
 			}
 		}
-
-		public override void SetFrame (System.Drawing.RectangleF frameRect, bool display)
-		{
-			if (Handler.MinimumSize != null) {
-				frameRect.Width = Math.Max (frameRect.Width, Handler.MinimumSize.Value.Width);
-				frameRect.Height = Math.Max (frameRect.Height, Handler.MinimumSize.Value.Height);
-			}
-			base.SetFrame (frameRect, display);
-		}
 	}
 	
 	public interface IMacWindow
@@ -80,6 +71,7 @@ namespace Eto.Platform.Mac.Forms
 		Rectangle? restoreBounds;
 		Cursor cursor;
 		bool setInitialSize;
+		Size? minimumSize;
 		
 		public NSObject FieldEditorObject { get; set; }
 		
@@ -96,8 +88,20 @@ namespace Eto.Platform.Mac.Forms
 		}
 		
 		public Size? MinimumSize {
-			get;
-			set;
+			get { return minimumSize; }
+			set {
+				minimumSize = value;
+				if (minimumSize != null) {
+					Control.WillResize = (sender, frameSize) => {
+						if (minimumSize != null) {
+							return new SD.SizeF(Math.Max (frameSize.Width, minimumSize.Value.Width), Math.Max (frameSize.Height, minimumSize.Value.Height));
+						}
+						else return frameSize;
+					};
+				}
+				else
+					Control.WillResize = null;
+			}
 		}
 		
 		public NSMenu MenuBar {
@@ -218,17 +222,6 @@ namespace Eto.Platform.Mac.Forms
 			set {
 				Control.SetFrame (Generator.ConvertF (Control.Frame, value), true);
 				AutoSize = false;
-			}
-		}
-		
-		protected virtual void OnSizeChanged (EventArgs e)
-		{
-			if (MinimumSize != null) {
-				var size = this.Size;
-				size.Width = Math.Max (size.Width, MinimumSize.Value.Width);
-				size.Height = Math.Max (size.Height, MinimumSize.Value.Height);
-				if (size != this.Size)
-					this.Size = size;
 			}
 		}
 		
