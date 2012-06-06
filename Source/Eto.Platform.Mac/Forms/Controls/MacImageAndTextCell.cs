@@ -95,7 +95,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var size = base.CellSizeForBounds (bounds);
 			var data = ObjectValue as MacImageData;
 			if (data != null && data.Image != null) {
-				size.Width += size.Height + ImagePadding * 2;
+				var imageSize = data.Image.Size;
+				var newHeight = Math.Min (imageSize.Height, size.Height);
+				var newWidth = imageSize.Width * newHeight / imageSize.Height;
+				size.Width += newWidth + ImagePadding;
 			}
 			size.Width = Math.Min (size.Width, bounds.Width);
 			return size;
@@ -107,7 +110,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (data != null) {
 					
 				if (data.Image != null) {
-					var imageRect = new SD.RectangleF (cellFrame.X, cellFrame.Y, cellFrame.Height, cellFrame.Height);
+					var imageSize = data.Image.Size;
+					var newHeight = Math.Min (imageSize.Height, cellFrame.Height);
+					var newWidth = imageSize.Width * newHeight / imageSize.Height;
+					
+					var imageRect = new SD.RectangleF (cellFrame.X, cellFrame.Y, newWidth, newHeight);
+					imageRect.Y += (cellFrame.Height - newHeight) / 2;
+					
 					if (data.Image.RespondsToSelector (new Selector (selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 						// 10.6+
 						data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
@@ -118,8 +127,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 						#pragma warning restore 618
 						data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
 					}
-					cellFrame.Width -= cellFrame.Height + ImagePadding;
-					cellFrame.X += cellFrame.Height + ImagePadding;
+					cellFrame.Width -= newWidth + ImagePadding;
+					cellFrame.X += newWidth + ImagePadding;
 				}
 			}
 			
