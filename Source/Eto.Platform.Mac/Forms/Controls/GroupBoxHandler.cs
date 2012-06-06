@@ -63,7 +63,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override Eto.Drawing.Size GetPreferredSize ()
 		{
-			return base.GetPreferredSize () + new Size (14, (int)Control.TitleFont.LineHeight () + 12);
+			return base.GetPreferredSize () + new Size (14, (int)(Control.TitleFont.LineHeight () * 1.4));
 		}
 		
 		public override void SetContentSize (SD.SizeF contentSize)
