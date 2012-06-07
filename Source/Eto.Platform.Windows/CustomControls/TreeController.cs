@@ -19,7 +19,7 @@ namespace Eto.Platform.CustomControls
 		int? countCache;
 		List<TreeController> sections;
 
-		protected int StartRow { get; set; }
+		protected int StartRow { get; private set; }
 
 		List<TreeController> Sections
 		{
@@ -30,7 +30,7 @@ namespace Eto.Platform.CustomControls
 			}
 		}
 
-		public ITreeGridStore<ITreeGridItem> Store { get; set; }
+		public ITreeGridStore<ITreeGridItem> Store { get; private set; }
 
 		public ITreeHandler Handler { get; set; }
 
@@ -59,17 +59,25 @@ namespace Eto.Platform.CustomControls
 			if (Collapsed != null) Collapsed (this, e);
 		}
 
-		public void InitializeItems ()
+		public void InitializeItems (ITreeGridStore<ITreeGridItem> store)
 		{
-			for (int row = 0; row < Store.Count; row++ ) {
-				var item = Store[row];
-				if (item.Expanded) {
-					var children = (ITreeGridStore<ITreeGridItem>)item;
-					var section = new TreeController { StartRow = row, Store = children };
-					section.InitializeItems ();
-					Sections.Add (section);
+			ClearCache ();
+			if (sections != null)
+				sections.Clear ();
+			this.Store = store;
+
+			if (Store != null) {
+				for (int row = 0; row < Store.Count; row++) {
+					var item = Store[row];
+					if (item.Expanded) {
+						var children = (ITreeGridStore<ITreeGridItem>)item;
+						var section = new TreeController { StartRow = row };
+						section.InitializeItems (children);
+						Sections.Add (section);
+					}
 				}
 			}
+			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 		}
 
 		void ClearCache ()
@@ -174,6 +182,8 @@ namespace Eto.Platform.CustomControls
 
 		ITreeGridItem GetItemAtRow (int row)
 		{
+			if (Store == null) return null;
+
 			ITreeGridItem item = null;
 			if (sections == null || sections.Count == 0)
 				item = Store[row];
