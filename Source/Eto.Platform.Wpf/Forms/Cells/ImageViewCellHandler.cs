@@ -6,52 +6,60 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
+using swm = System.Windows.Media;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ImageViewCellHandler : CellHandler<swc.DataGridTemplateColumn, ImageViewCell>, IImageViewCell
+	public class ImageViewCellHandler : CellHandler<swc.DataGridColumn, ImageViewCell>, IImageViewCell
 	{
+		public static int ImageSize = 16;
+
 		object GetValue (object dataItem)
 		{
 			if (Widget.Binding != null) {
 				var image = Widget.Binding.GetValue (dataItem) as Image;
 				if (image != null)
-					return ((IWpfImage)image.Handler).GetIconClosestToSize (16);
+					return ((IWpfImage)image.Handler).GetIconClosestToSize (ImageSize);
 			}
 			return null;
 		}
 
-		class Converter : swd.IValueConverter
+		public class Column : swc.DataGridColumn
 		{
 			public ImageViewCellHandler Handler { get; set; }
 
-			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+			swc.Image Image ()
 			{
-				return Handler.GetValue (value);
+				var image = new swc.Image { MaxWidth = 16, MaxHeight = 16, StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
+				image.DataContextChanged += (sender, e) => {
+					var img = sender as swc.Image;
+					img.Source = Handler.GetValue (img.DataContext) as swm.ImageSource;
+				};
+				return image;
 			}
 
-			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
+			protected override sw.FrameworkElement GenerateElement (swc.DataGridCell cell, object dataItem)
 			{
-				throw new NotImplementedException ();
+				return Handler.SetupCell (Image());
+			}
+
+			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
+			{
+				var control = editingElement as swc.TextBox ?? editingElement.FindChild<swc.TextBox> ("control");
+				return base.PrepareCellForEdit (control, editingEventArgs);
+			}
+
+			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
+			{
+				return Handler.SetupCell (Image ());
 			}
 		}
 
 		public ImageViewCellHandler ()
 		{
-			Control = new swc.DataGridTemplateColumn ();
-			var template = new sw.DataTemplate ();
-
-			var factory = new sw.FrameworkElementFactory (typeof (swc.Image));
-			factory.SetValue (swc.Image.MaxHeightProperty, 16.0);
-			factory.SetValue (swc.Image.MaxWidthProperty, 16.0);
-			factory.SetValue (swc.Image.StretchDirectionProperty, swc.StretchDirection.DownOnly);
-			factory.SetValue (swc.Image.MarginProperty, new sw.Thickness (0, 2, 2, 2));
-			factory.SetBinding (swc.Image.SourceProperty, new sw.Data.Binding { Converter = new Converter { Handler = this }, Path = new sw.PropertyPath (".") });
-			
-			template.VisualTree = factory;
-			Control.CellTemplate = template;
+			Control = new Column { Handler = this };
 		}
 	}
 }
