@@ -18,11 +18,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class TreeGridViewHandler : GridHandler<swc.DataGrid, TreeGridView>, ITreeGridView
 	{
-		TreeController controller;
+		TreeController controller = new TreeController();
 
 		protected override IGridItem GetItemAtRow (int row)
 		{
-			if (controller == null) return null;
 			return controller[row];
 		}
 
@@ -75,11 +74,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public ITreeGridStore<ITreeGridItem> DataStore
 		{
-			get { return controller != null ? controller.Store : null; }
+			get { return controller.Store; }
 			set
 			{
-				controller = new TreeController{ Store = value };
-				controller.InitializeItems();
+				controller.InitializeItems (value);
 				Control.ItemsSource = controller;
 			}
 		}

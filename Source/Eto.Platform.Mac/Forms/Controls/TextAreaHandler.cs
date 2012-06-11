@@ -7,8 +7,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TextAreaHandler : MacTextControl<NSTextView, TextArea>, ITextArea
 	{
-		NSScrollView scroll;
-		
 		public class EtoTextView : NSTextView, IMacControl
 		{
 			public object Handler {
@@ -16,9 +14,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
+		public NSScrollView Scroll { get; private set; }
+
 		public override NSView ContainerControl
 		{
-			get { return scroll; }
+			get { return Scroll; }
 		}
 		
 		public TextAreaHandler ()
@@ -33,7 +33,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				AllowsUndo = true
 			};
 
-			scroll = new NSScrollView {
+			Scroll = new NSScrollView {
 				AutoresizesSubviews = true,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,

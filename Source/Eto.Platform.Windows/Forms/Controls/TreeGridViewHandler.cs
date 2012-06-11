@@ -26,12 +26,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected override IGridItem GetItemAtRow (int row)
 		{
-			if (controller == null) return null;
 			return controller[row];
 		}
 
 		public TreeGridViewHandler ()
 		{
+			controller = new TreeController { Handler = this };
+			controller.CollectionChanged += HandleCollectionChanged;
 		}
 
 		public override void OnLoad (EventArgs e)
@@ -84,16 +85,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public ITreeGridStore<ITreeGridItem> DataStore
 		{
-			get { return controller != null ? controller.Store : null; }
+			get { return controller.Store; }
 			set
 			{
-				if (controller != null)
-					controller.CollectionChanged -= HandleCollectionChanged;
-
-				controller = new TreeController { Handler = this, Store = value };
-				controller.InitializeItems ();
-				controller.CollectionChanged += HandleCollectionChanged;
-				Control.RowCount = controller.Count;
+				controller.InitializeItems (value);
 				Control.Refresh ();
 			}
 		}
@@ -109,8 +104,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			get
 			{
-				if (controller == null)
-					return null;
 				var index = Control.SelectedRows.OfType<swf.DataGridViewRow> ().Select (r => r.Index).FirstOrDefault ();
 				return controller[index];
 			}

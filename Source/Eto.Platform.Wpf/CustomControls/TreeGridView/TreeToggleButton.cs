@@ -38,17 +38,21 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 		protected override void OnPreviewMouseLeftButtonDown (System.Windows.Input.MouseButtonEventArgs e)
 		{
 			base.OnPreviewMouseLeftButtonDown (e);
+			
 			var index = Controller.IndexOf ((ITreeGridItem)this.DataContext);
 			if (index >= 0) {
-				if (this.IsChecked ?? false) {
-					if (!Controller.CollapseRow (index)) {
-						e.Handled = true;
+				Dispatcher.BeginInvoke (new Action (delegate {
+					if (this.IsChecked ?? false) {
+						if (Controller.CollapseRow (index)) {
+							this.IsChecked = false;
+						}
 					}
-				}
-				else if (!Controller.ExpandRow (index)) {
-					e.Handled = true;
-				}
+					else if (Controller.ExpandRow (index)) {
+						this.IsChecked = true;
+					}
+				}));
 			}
+			e.Handled = true;
 		}
 
 		public void Configure (ITreeGridItem item)
