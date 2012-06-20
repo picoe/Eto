@@ -12,6 +12,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public FormHandler()
 		{
+			DisposeControl = false;
 			Control = new MyWindow(new SD.Rectangle(0,0,200,200), 
 				NSWindowStyle.Resizable | NSWindowStyle.Closable | NSWindowStyle.Miniaturizable | NSWindowStyle.Titled, 
 				NSBackingStore.Buffered, false);

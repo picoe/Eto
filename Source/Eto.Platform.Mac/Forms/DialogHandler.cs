@@ -57,6 +57,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public DialogHandler ()
 		{
+			this.DisposeControl = false;
 			var dlg = new DialogWindow();
 			dlg.Handler = this;
 			Control = dlg;
