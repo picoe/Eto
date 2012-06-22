@@ -96,9 +96,8 @@
     <Compile Include="InstanceWidget.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Resources.cs">
-      <SubType>Code</SubType>
-    </Compile>
+    <Compile Include="ResourceNotFoundException.cs" />
+    <Compile Include="Resources.cs" />
     <Compile Include="WeakEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>

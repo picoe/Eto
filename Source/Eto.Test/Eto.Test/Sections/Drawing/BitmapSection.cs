@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control LoadFromStream ()
 		{
-			var resourceStream = Resources.GetResource ("Eto.Test.TestImage.png");
+			var resourceStream = GetType().Assembly.GetManifestResourceStream ("Eto.Test.TestImage.png");
 
 			var image = new Bitmap (resourceStream);
 

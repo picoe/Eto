@@ -66,26 +66,21 @@ namespace Eto.Drawing
 		
 		public static Bitmap FromResource(Assembly asm, string resourceName) {
 			if (asm == null) asm = Assembly.GetCallingAssembly();
-			using (var stream = Resources.GetResource(resourceName, asm)) {
-				if (stream == null) Console.WriteLine("Resource not found: {0} - {1}", asm.FullName, resourceName);	
-				else
-				{
-					return new Bitmap(stream);
-				}
+			using (var stream = asm.GetManifestResourceStream (resourceName)) {
+				if (stream == null)
+					throw new ResourceNotFoundException (asm, resourceName);
+				return new Bitmap(stream);
 			}
-			return null;
 		}
 		
 		[Obsolete("use Bitmap.FromResource")]
 		public Bitmap(Assembly asm, string resourceName) : this(Generator.Current)
 		{
 			if (asm == null) asm = Assembly.GetCallingAssembly();
-			Stream stream = Resources.GetResource(resourceName, asm);
-			if (stream == null) Console.WriteLine("Resource not found: {0} - {1}", asm.FullName, resourceName);	
-			else
-			{
-				inner.Create(stream);
-				stream.Close();
+			using (var stream = asm.GetManifestResourceStream(resourceName)) {
+				if (stream == null)
+					throw new ResourceNotFoundException (asm, resourceName);
+				inner.Create (stream);
 			}
 		}
 		

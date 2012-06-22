@@ -62,7 +62,7 @@ namespace Eto
 			where T: InstanceWidget, new()
 		{
 			var type = typeof(T);
-			var stream = Resources.GetResource (type.FullName + ".xaml", type.Assembly);
+			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".xaml");
 			return Load<T> (stream, null);
 		}
 		
@@ -76,7 +76,7 @@ namespace Eto
 			where T: InstanceWidget
 		{
 			var type = typeof(T);
-			var stream = Resources.GetResource (type.FullName + ".xaml", type.Assembly);
+			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".xaml");
 			return Load<T> (stream, instance);
 		}
 

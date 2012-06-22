@@ -36,7 +36,9 @@ namespace Eto.Drawing
 		{
 			if (asm == null)
 				asm = Assembly.GetCallingAssembly ();
-			using (var stream = Resources.GetResource (resourceName, asm)) {
+			using (var stream = asm.GetManifestResourceStream(resourceName)) {
+				if (stream == null)
+					throw new ResourceNotFoundException (asm, resourceName);
 				return new Icon (stream);
 			}
 		}
@@ -53,12 +55,10 @@ namespace Eto.Drawing
 			inner = (IIcon)Handler;
 			if (asm == null)
 				asm = Assembly.GetCallingAssembly ();
-			Stream stream = Resources.GetResource (resourceName, asm);
-			if (stream == null)
-				Console.WriteLine ("Resource not found: {0} - {1}", asm.FullName, resourceName);
-			else {
+			using (var stream = asm.GetManifestResourceStream (resourceName)) {
+				if (stream == null)
+					throw new ResourceNotFoundException (asm, resourceName);
 				inner.Create (stream);
-				stream.Close ();
 			}
 		}
 	}
