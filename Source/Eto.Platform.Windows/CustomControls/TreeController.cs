@@ -269,20 +269,8 @@ namespace Eto.Platform.CustomControls
 			}
 			Sections.Sort ((x, y) => x.StartRow.CompareTo (y.StartRow));
 			if (children != null) {
-				if (children.Count < 50) {
-					var newlist = new Dictionary<int, ITreeGridItem> ();
-					countCache = null;
-					foreach (var item in cache) {
-						newlist.Add (item.Key <= originalRow ? item.Key : item.Key + children.Count, item.Value);
-					}
-					cache = newlist;
-					for (int i = originalRow + 1; i <= originalRow + children.Count; i++)
-						OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Add, this[i], i));
-				}
-				else {
-					ClearCache ();
-					OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-				}
+				ClearCache ();
+				OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 			}
 			return children;
 		}
