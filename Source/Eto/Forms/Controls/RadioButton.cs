@@ -33,7 +33,7 @@ namespace Eto.Forms
 		{
 		}
 
-		public RadioButton (Generator g, RadioButton controller = null)
+		public RadioButton (Generator g, RadioButton controller)
 			: this (g, typeof(IRadioButton), controller)
 		{
 		}
