@@ -45,7 +45,8 @@ namespace Eto.Platform.Mac.Drawing
 
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, IBitmap
 	{
-		NSBitmapImageRep rep;
+		NSImageRep rep;
+		NSBitmapImageRep bmprep;
 		bool alpha = true;
 		
 		public BitmapHandler ()
@@ -60,11 +61,17 @@ namespace Eto.Platform.Mac.Drawing
 		public void Create (string fileName)
 		{
 			Control = new NSImage (fileName);
+			rep = Control.BestRepresentationForDevice(null);
+			bmprep = rep as NSBitmapImageRep;
+			Control.Size = new SD.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create (Stream stream)
 		{
 			Control = new NSImage (NSData.FromStream (stream));
+			rep = Control.BestRepresentationForDevice(null);
+			bmprep = rep as NSBitmapImageRep;
+			Control.Size = new SD.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create (int width, int height, PixelFormat pixelFormat)
@@ -79,7 +86,7 @@ namespace Eto.Platform.Mac.Drawing
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
 
-					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, 3, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					rep = bmprep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, 3, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 					Control = new NSImage ();
 					Control.AddRepresentation (rep);
 				
@@ -98,7 +105,7 @@ namespace Eto.Platform.Mac.Drawing
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
 				
-					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					rep = bmprep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 					Control = new NSImage ();
 					Control.AddRepresentation (rep);
 
@@ -115,7 +122,7 @@ namespace Eto.Platform.Mac.Drawing
 					int bytesPerPixel = bitsPerPixel / 8;
 					int bytesPerRow = bytesPerPixel * width;
 
-					rep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+					rep = bmprep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
 					Control = new NSImage ();
 					Control.AddRepresentation (rep);
 
@@ -146,7 +153,10 @@ namespace Eto.Platform.Mac.Drawing
 		public BitmapData Lock ()
 		{
 			//Control.LockFocus();
-			return new BitmapDataHandler (rep.BitmapData, rep.BytesPerRow, Control);
+			if (bmprep != null)
+				return new BitmapDataHandler (bmprep.BitmapData, bmprep.BytesPerRow, Control);
+			else
+				return null;
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -183,8 +193,8 @@ namespace Eto.Platform.Mac.Drawing
 			var newrep = reps.OfType<NSBitmapImageRep> ().FirstOrDefault ();
 			if (newrep == null) {
 				NSData tiff;
-				if (this.rep != null)
-					tiff = this.rep.TiffRepresentation;
+				if (this.bmprep != null)
+					tiff = this.bmprep.TiffRepresentation;
 				else
 					tiff = Control.AsTiff ();
 				newrep = new NSBitmapImageRep (tiff);
@@ -197,7 +207,15 @@ namespace Eto.Platform.Mac.Drawing
 		}
 
 		public override Size Size {
-			get { return Generator.ConvertF (Control.Size); }
+			get { 
+				NSImageRep rep = this.rep;
+				if (rep == null)
+					rep = Control.BestRepresentationForDevice (null);
+				if (rep != null)
+					return new Size(rep.PixelsWide, rep.PixelsHigh);
+				else
+					return Generator.ConvertF (Control.Size);
+			}
 		}
 		
 		/*
