@@ -65,13 +65,13 @@ namespace Eto.Platform.Mac.Drawing
 			this.Control = NSGraphicsContext.FromWindow (view.Window);
 			this.context = this.Control.GraphicsPort;
 			context.SaveState ();
-			context.ClipToRect (view.ConvertRectToBase (view.VisibleRect ()));
+			context.ClipToRect (view.ConvertRectToView (view.VisibleRect (), null));
 			AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as GraphicsHandler;
 				var innerview = handler.view;
 				var innercontext = handler.Control.GraphicsPort;
 				innercontext.RestoreState ();
-				innercontext.ClipToRect (innerview.ConvertRectToBase (innerview.VisibleRect ()));
+				innercontext.ClipToRect (innerview.ConvertRectToView (innerview.VisibleRect (), null));
 				innercontext.SaveState ();
 			}, view);
 			this.Flipped = view.IsFlipped;
@@ -154,7 +154,7 @@ namespace Eto.Platform.Mac.Drawing
 			if (view != null) {
 				if (!Flipped)
 					point.Y = view.Bounds.Height - point.Y;
-				point = view.ConvertPointToBase (point);
+				point = view.ConvertPointToView (point, null);
 			} else if (!Flipped)
 				point.Y = this.height - point.Y;
 			return point;
@@ -172,7 +172,7 @@ namespace Eto.Platform.Mac.Drawing
 			if (view != null) {
 				if (!Flipped)
 					rect.Y = view.Bounds.Height - rect.Y - rect.Height;
-				rect = view.ConvertRectToBase (rect);	
+				rect = view.ConvertRectToView (rect, null);
 			} else if (!Flipped)
 				rect.Y = this.height - rect.Y - rect.Height;
 			return rect;
