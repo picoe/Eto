@@ -15,7 +15,9 @@ namespace Eto.Test.Sections.Controls
 						
 			layout.AddRow (new Label{ Text = "Virtual list, with Icons"}, WithIcons ());
 
+#if DESKTOP
 			layout.AddRow (new Label{ Text = "Context Menu"}, WithContextMenu ());
+#endif
 			
 			layout.Add (null);
 		}
@@ -95,6 +97,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+#if DESKTOP
 		Control WithContextMenu ()
 		{
 			var control = new ListBox {
@@ -119,6 +122,7 @@ namespace Eto.Test.Sections.Controls
 			control.ContextMenu = menu;
 			return control;
 		}
+#endif
 		
 		void LogEvents (ListBox control)
 		{

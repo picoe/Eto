@@ -40,11 +40,16 @@ namespace Eto.Test
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
+#if DESKTOP
 			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
+#endif
 			this.ClientSize = new Size (900, 650);
 			//this.Opacity = 0.5;
 
-			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent, MainForm.ClosedEvent, MainForm.ClosingEvent);
+#if DESKTOP
+			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent);
+#endif
+			HandleEvent (MainForm.ClosedEvent, MainForm.ClosingEvent);
 
 			/* Option 1: use actions to generate menu and toolbar (recommended)
 			 */
@@ -161,14 +166,19 @@ namespace Eto.Test
 				help.Actions.Add (Actions.About.ActionID);
 			}
 
+#if DESKTOP
 			this.Menu = args.Menu.GenerateMenuBar ();
+#endif
 		}
 
 		void GenerateToolBar (GenerateActionArgs args)
 		{
 			args.ToolBar.Add (Actions.Quit.ActionID);
 			args.ToolBar.Add (Actions.About.ActionID);
+#if DESKTOP
+			// TODO for mobile
 			this.ToolBar = args.ToolBar.GenerateToolBar ();
+#endif
 		}
 
 		#region Generate Menu & Toolbar Manually
@@ -206,6 +216,7 @@ namespace Eto.Test
 		*/
 		#endregion
 
+#if DESKTOP
 		public override void OnMaximized (EventArgs e)
 		{
 			base.OnMaximized (e);
@@ -216,12 +227,6 @@ namespace Eto.Test
 		{
 			base.OnMinimized (e);
 			Log.Write (this, "Minimized");
-		}
-
-		public override void OnClosed (EventArgs e)
-		{
-			base.OnClosed (e);
-			Log.Write (this, "Closed");
 		}
 
 		public override void OnClosing (System.ComponentModel.CancelEventArgs e)
@@ -236,6 +241,14 @@ namespace Eto.Test
 			if (result == DialogResult.No) e.Cancel = true;
 			*/
 		}
+#endif
+
+		public override void OnClosed (EventArgs e)
+		{
+			base.OnClosed (e);
+			Log.Write (this, "Closed");
+		}
+
 	}
 }
 
