@@ -9,7 +9,6 @@ namespace Eto.Platform.iOS.Forms
 {
 	public class ApplicationHandler : WidgetHandler<UIApplication, Application>, IApplication
 	{
-		
 		public static ApplicationHandler Instance {
 			get { return Application.Instance.Handler as ApplicationHandler; }
 		}
@@ -57,6 +56,10 @@ namespace Eto.Platform.iOS.Forms
 				UIApplication.SharedApplication.BeginInvokeOnMainThread (delegate {
 					action (); 
 				});
+		}
+
+		public virtual void GetSystemActions (GenerateActionArgs args, bool addStandardItems)
+		{
 		}
 
 		public void Quit ()

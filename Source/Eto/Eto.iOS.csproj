@@ -14,22 +14,22 @@
     </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iOS\Debug</OutputPath>
     <DefineConstants>DEBUG;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iOS\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <ConsolePause>False</ConsolePause>
     <DefineConstants>MOBILE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -49,8 +49,6 @@
     <Compile Include="WeakEventHandler.cs" />
     <Compile Include="Widget.cs" />
     <Compile Include="WidgetHandler.cs" />
-    <Compile Include="Collections\BaseList.cs" />
-    <Compile Include="Collections\LookupList.cs" />
     <Compile Include="Drawing\Bitmap.cs" />
     <Compile Include="Drawing\Color.cs" />
     <Compile Include="Drawing\Font.cs" />
@@ -78,7 +76,6 @@
     <Compile Include="IO\VirtualDirectoryType.cs" />
     <Compile Include="IO\VirtualFileEntry.cs" />
     <Compile Include="IO\VirtualFileInfo.cs" />
-    <Compile Include="Misc\ArrayExtensions.cs" />
     <Compile Include="Misc\Platform.cs" />
     <Compile Include="Forms\Application.cs" />
     <Compile Include="Forms\Container.cs" />
@@ -129,7 +126,6 @@
     <Compile Include="Forms\ToolBar\ToolBarItem.cs" />
     <Compile Include="CancelEventHandler.cs" />
     <Compile Include="Forms\Controls\Navigation.cs" />
-    <Compile Include="Threading\Thread.cs" />
     <Compile Include="Forms\Actions\ActionCollection.cs" />
     <Compile Include="Misc\XmlExtensions.cs" />
     <Compile Include="Drawing\BitmapData.cs" />
@@ -144,7 +140,6 @@
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\TreeItem.cs" />
     <Compile Include="Forms\Controls\EnumComboBox.cs" />
     <Compile Include="Drawing\ColorCMYK.cs" />
     <Compile Include="Drawing\ColorHSB.cs" />
@@ -160,7 +155,6 @@
     <Compile Include="Drawing\RectangleFConverter.cs" />
     <Compile Include="Drawing\SizeConverter.cs" />
     <Compile Include="Drawing\SizeFConverter.cs" />
-    <Compile Include="Collections\ListEventArgs.cs" />
     <Compile Include="Forms\Layout\DockLayout.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
@@ -168,28 +162,46 @@
     <Compile Include="Forms\Layout\DynamicTable.cs" />
     <Compile Include="Forms\Layout\PixelLayout.cs" />
     <Compile Include="Forms\Layout\TableLayout.cs" />
-    <Compile Include="Forms\Controls\Cell.cs" />
-    <Compile Include="Forms\Controls\CheckBoxCell.cs" />
-    <Compile Include="Forms\Controls\ComboBoxCell.cs" />
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\GridColumn.cs" />
-    <Compile Include="Forms\Controls\GridColumnCollection.cs" />
     <Compile Include="Forms\Controls\GridItem.cs" />
     <Compile Include="Forms\Controls\GridView.cs" />
-    <Compile Include="Forms\Controls\ImageCell.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
-    <Compile Include="Forms\Controls\TextCell.cs" />
     <Compile Include="Forms\Cursor.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="CollectionChangedHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarActionItem.cs" />
     <Compile Include="Forms\IDataStore.cs" />
+    <Compile Include="Binding\Binding.cs" />
+    <Compile Include="Binding\BindingChangedEventArgs.cs" />
+    <Compile Include="Binding\BindingChangingEventArgs.cs" />
+    <Compile Include="Binding\BindingCollection.cs" />
+    <Compile Include="Binding\BindingExtensions.cs" />
+    <Compile Include="Binding\ColumnBinding.cs" />
+    <Compile Include="Binding\DualBinding.cs" />
+    <Compile Include="Binding\ObjectBinding.cs" />
+    <Compile Include="Binding\ObjectSingleBinding.cs" />
+    <Compile Include="Binding\PropertyBinding.cs" />
+    <Compile Include="Binding\SingleBinding.cs" />
+    <Compile Include="ResourceNotFoundException.cs" />
+    <Compile Include="Forms\Cells\Cell.cs" />
+    <Compile Include="Forms\Cells\CheckBoxCell.cs" />
+    <Compile Include="Forms\Cells\ComboBoxCell.cs" />
+    <Compile Include="Forms\Cells\ImageTextCell.cs" />
+    <Compile Include="Forms\Cells\ImageViewCell.cs" />
+    <Compile Include="Forms\Cells\SingleValueCell.cs" />
+    <Compile Include="Forms\Cells\TextBoxCell.cs" />
+    <Compile Include="Forms\Controls\Grid.cs" />
+    <Compile Include="Forms\Controls\TreeGridItem.cs" />
+    <Compile Include="Forms\Controls\TreeGridView.cs" />
+    <Compile Include="Forms\Controls\TreeItem.cs" />
+    <Compile Include="Threading\Thread.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
-    <Folder Include="Threading\" />
     <Folder Include="Forms\Menu\" />
+    <Folder Include="Threading\" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />

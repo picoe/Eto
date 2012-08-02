@@ -14,24 +14,24 @@
     </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;IOS;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ConsolePause>False</ConsolePause>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>bin\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <ConsolePause>False</ConsolePause>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>IOS;MOBILE</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -45,7 +45,6 @@
     <Folder Include="Drawing\" />
     <Folder Include="Forms\" />
     <Folder Include="Forms\Controls\" />
-    <Folder Include="Threading\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generator.cs" />
@@ -92,7 +91,6 @@
     <Compile Include="Forms\Controls\NavigationHandler.cs" />
     <Compile Include="Forms\iosContainer.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
-    <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="..\Eto.Platform.Mac\Drawing\FontHandler.cs">
       <Link>Drawing\FontHandler.cs</Link>
@@ -101,6 +99,11 @@
       <Link>Forms\TableLayoutHandler.cs</Link>
     </Compile>
     <Compile Include="Forms\MessageBoxHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\ObjCExtensions.cs">
+      <Link>ObjCExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Forms\iosViewExtensions.cs" />
+    <Compile Include="Threading\ThreadHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

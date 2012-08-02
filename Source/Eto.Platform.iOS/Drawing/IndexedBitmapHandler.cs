@@ -89,7 +89,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			get
 			{
-				Palette pal = new Palette(colors.Length);
+				Palette pal = new Palette();
 				pal.AddRange(colors.Select(r => Color.FromArgb((uint)r)));
 				return pal;
 			}

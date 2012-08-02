@@ -87,6 +87,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				Handler.Control.ReloadData ();
 			}
+
+			protected override int InternalIndexOf (IListItem item)
+			{
+				return -1; // TODO
+			}
 		}
 		
 		public IListStore DataStore {

@@ -50,7 +50,7 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		public override string Text {
+		public override string Title {
 			get { return Controller.Title; }
 			set { Controller.Title = value; }
 		}

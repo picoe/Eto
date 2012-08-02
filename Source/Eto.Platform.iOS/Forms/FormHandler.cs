@@ -13,7 +13,7 @@ namespace Eto.Platform.iOS.Forms
 			Control.AutosizesSubviews = true;
 		}
 		
-		public override string Text {
+		public override string Title {
 			get { return null; }
 			set { }
 		}

@@ -50,7 +50,7 @@ namespace Eto.Platform.iOS.Forms
 
 		#region ITextControl implementation
 		
-		public abstract string Text { get; set; }
+		public abstract string Title { get; set; }
 
 		#endregion
 

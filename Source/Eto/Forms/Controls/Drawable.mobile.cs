@@ -16,8 +16,8 @@ namespace Eto.Forms
 		
 		public Drawable (Generator g, bool largeCanvas) : base(g, typeof(IDrawable))
 		{
-			inner = (IDrawable)Handler;
-			inner.Create (largeCanvas);
+			handler = (IDrawable)Handler;
+			handler.Create (largeCanvas);
 		}
 	}
 }

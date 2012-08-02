@@ -205,7 +205,7 @@ namespace Eto.Platform.iOS.Drawing
 			throw new NotImplementedException ();
 		}
 
-		public void DrawImage (IImage image, int x, int y)
+		public void DrawImage (Image image, int x, int y)
 		{
 			UIGraphics.PushContext (this.context);
 
@@ -214,7 +214,7 @@ namespace Eto.Platform.iOS.Drawing
 			UIGraphics.PopContext ();
 		}
 
-		public void DrawImage (IImage image, int x, int y, int width, int height)
+		public void DrawImage (Image image, int x, int y, int width, int height)
 		{
 			UIGraphics.PushContext (this.context);
 
@@ -223,7 +223,7 @@ namespace Eto.Platform.iOS.Drawing
 			UIGraphics.PopContext ();
 		}
 
-		public void DrawImage (IImage image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
 			UIGraphics.PushContext (this.context);
 

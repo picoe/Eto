@@ -13,20 +13,20 @@ namespace Eto.Forms
 		
 		public float MinimumZoom
 		{
-			get { return inner.MinimumZoom; }
-			set { inner.MinimumZoom = value; }
+			get { return handler.MinimumZoom; }
+			set { handler.MinimumZoom = value; }
 		}
 
 		public float MaximumZoom
 		{
-			get { return inner.MaximumZoom; }
-			set { inner.MaximumZoom = value; }
+			get { return handler.MaximumZoom; }
+			set { handler.MaximumZoom = value; }
 		}
 		
 		public float Zoom
 		{
-			get { return inner.Zoom; }
-			set { inner.Zoom = value; }
+			get { return handler.Zoom; }
+			set { handler.Zoom = value; }
 		}
 	}
 }

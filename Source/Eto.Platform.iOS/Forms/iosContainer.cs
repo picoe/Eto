@@ -7,6 +7,8 @@ namespace Eto.Platform.iOS.Forms
 {
 	public interface IiosContainer
 	{
+		UIView ContainerControl { get; }
+
 		void SetContentSize (System.Drawing.SizeF size);
 	}
 	
@@ -27,6 +29,11 @@ namespace Eto.Platform.iOS.Forms
 		
 		public virtual void SetLayout (Layout layout)
 		{
+		}
+
+		public virtual UIView ContainerControl
+		{
+			get { return Control; }
 		}
 
 		public virtual Eto.Drawing.Size ClientSize {

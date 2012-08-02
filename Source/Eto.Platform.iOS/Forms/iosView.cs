@@ -160,6 +160,11 @@ namespace Eto.Platform.iOS.Forms
 			get { return !Control.Hidden; }
 			set { Control.Hidden = !value; }
 		}
+
+		// TODO
+		public Font Font { 
+			get; set;
+		}
 		
 		public virtual void OnPreLoad (EventArgs e)
 		{
