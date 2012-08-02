@@ -106,11 +106,13 @@ namespace Eto.Test
 			yield return new Section<ComboBoxSection> { Text = "Combo Box" };
 			yield return new Section<GroupBoxSection> { Text = "Group Box" };
 			yield return new Section<SliderSection> { Text = "Slider" };
-			yield return new Section<XamlSection> { Text = "Xaml" };
 			yield return new Section<GridViewSection> { Text = "Grid View" };
 			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
 			yield return new Section<ProgressBarSection> { Text = "Progress Bar" };
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
+#if DESKTOP
+			yield return new Section<XamlSection> { Text = "Xaml" };
+#endif
 		}
 
 		IEnumerable<Section> DrawingSection ()
@@ -146,7 +148,9 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };
 			yield return new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" };
 			yield return new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" };
+#if DESKTOP
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
+#endif
 		}
 		
 		public override void OnSelectionChanged (EventArgs e)

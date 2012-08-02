@@ -32,7 +32,9 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "No Header,\nNon-Editable" }, NoHeader ());
+#if DESKTOP
 			layout.AddRow (new Label { Text = "Context Menu\n&& Multi-Select" }, WithContextMenu ());
+#endif
 		}
 		
 		/// <summary>
@@ -139,6 +141,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
+#if DESKTOP
 		GridView WithContextMenu ()
 		{
 			var control = Default ();
@@ -157,6 +160,7 @@ namespace Eto.Test.Sections.Controls
 			control.ContextMenu = menu;
 			return control;
 		}
+#endif
 
 		void LogEvents (GridView control)
 		{

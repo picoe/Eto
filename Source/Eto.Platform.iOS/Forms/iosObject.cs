@@ -15,9 +15,8 @@ namespace Eto.Platform.iOS.Forms
 		{
 			public Action Action { get; set; }
 			public NSString KeyPath { get; set; }
-			
-			[Export("observeValueForKeyPath:ofObject:change:context:")]
-			public void ObserveValue(NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
+
+			public override void ObserveValue (NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
 			{
 				Action();
 			}

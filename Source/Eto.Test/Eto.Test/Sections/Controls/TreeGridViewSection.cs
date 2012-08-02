@@ -74,7 +74,8 @@ namespace Eto.Test.Sections.Controls
 			}
 			return item;
 		}
-		
+
+
 		Control ImagesAndMenu ()
 		{
 			var control = new TreeGridView {
@@ -83,7 +84,8 @@ namespace Eto.Test.Sections.Controls
 
 			control.Columns.Add (new GridColumn { DataCell = new ImageTextCell (0, 1), HeaderText = "Image and Text", AutoSize = true, Resizable = true, Editable = true });
 			control.Columns.Add (new GridColumn { DataCell = new TextBoxCell (2), HeaderText = "Text", AutoSize = true, Width = 150, Resizable = true, Editable = true });
-			
+		
+#if DESKTOP
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};
 			item.Click += delegate {
@@ -95,6 +97,7 @@ namespace Eto.Test.Sections.Controls
 			menu.MenuItems.Add (item);
 			
 			control.ContextMenu = menu;
+#endif
 
 			control.DataStore = CreateComplexTreeItem (0, "", Image);
 			LogEvents (control);

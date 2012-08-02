@@ -66,7 +66,8 @@ namespace Eto.Test.Sections.Controls
 			var control = new TreeView {
 				Size = new Size(100, 150)
 			};
-			
+
+#if DESKTOP
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};
 			item.Click += delegate {
@@ -78,6 +79,7 @@ namespace Eto.Test.Sections.Controls
 			menu.MenuItems.Add (item);
 			
 			control.ContextMenu = menu;
+#endif
 
 			control.DataStore = CreateTreeItem (0, "Item", Image);
 			LogEvents (control);

@@ -10,8 +10,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto</RootNamespace>
     <AssemblyName>Eto</AssemblyName>
-    <ReleaseVersion>
-    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -32,12 +30,6 @@
     <ConsolePause>False</ConsolePause>
     <DefineConstants>MOBILE</DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
-    <Reference Include="System.Core" />
-    <Reference Include="monotouch" />
-  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -205,5 +197,10 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
   </ItemGroup>
 </Project>

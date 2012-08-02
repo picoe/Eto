@@ -30,6 +30,19 @@ namespace Eto.Platform.iOS.Forms
 			get { return Control.Alpha; }
 			set { Control.Alpha = (float)value; }
 		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler) {
+			case Window.ClosedEvent:
+			case Window.ClosingEvent:
+				// TODO
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
+		}
 		
 		#region IWindow implementation
 		

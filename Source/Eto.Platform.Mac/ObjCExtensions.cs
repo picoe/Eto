@@ -1,5 +1,9 @@
 using System;
+#if DESKTOP
 using MonoMac.ObjCRuntime;
+#elif MOBILE
+using MonoTouch.ObjCRuntime;
+#endif
 using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac
