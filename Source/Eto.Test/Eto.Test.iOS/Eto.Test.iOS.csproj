@@ -12,71 +12,71 @@
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <MtouchDebug>True</MtouchDebug>
-    <MtouchProfiling>True</MtouchProfiling>
+    <ConsolePause>false</ConsolePause>
+    <MtouchDebug>true</MtouchDebug>
+    <MtouchProfiling>true</MtouchProfiling>
     <MtouchLink>None</MtouchLink>
     <AssemblyName>EtoTest</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
+    <ConsolePause>false</ConsolePause>
     <MtouchLink>None</MtouchLink>
     <AssemblyName>EtoTest</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
+    <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
-    <MtouchDebug>True</MtouchDebug>
-    <MtouchProfiling>True</MtouchProfiling>
+    <MtouchDebug>true</MtouchDebug>
+    <MtouchProfiling>true</MtouchProfiling>
     <AssemblyName>EtoTestiOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
+    <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <AssemblyName>EtoTestiOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <BuildIpa>True</BuildIpa>
+    <ConsolePause>false</ConsolePause>
+    <BuildIpa>true</BuildIpa>
     <CodesignKey>iPhone Distribution</CodesignKey>
     <AssemblyName>EtoTestiOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>bin\iPhone\AppStore</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
+    <ConsolePause>false</ConsolePause>
     <CodesignKey>iPhone Distribution</CodesignKey>
     <AssemblyName>EtoTestiOS</AssemblyName>
   </PropertyGroup>
@@ -90,7 +90,6 @@
     <None Include="Info.plist" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AppDelegate.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="MainForm.cs" />
   </ItemGroup>
