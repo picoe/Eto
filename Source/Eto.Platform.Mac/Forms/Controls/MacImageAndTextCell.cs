@@ -33,7 +33,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		[Export("description")]
-		public NSString Description {
+		public new NSString Description {
 			get { return Text ?? new NSString (string.Empty); }
 		}
 			

@@ -90,6 +90,7 @@ namespace Eto.Platform.Windows
 			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
 			if (!openedHandled) {
 				Control.DropDownOpening += HandleDropDownOpened;
+				openedHandled = true;
 			}
 		}
 

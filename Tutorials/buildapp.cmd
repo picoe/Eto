@@ -20,7 +20,7 @@ SET cp=xcopy /y /i
 
 echo Copy Eto files to output for Gtk and Windows platforms
 %cp% "%eto_bin_dir%\Eto.dll" "%target_dir%"
-%cp% "%eto_bin_dir%\Eto.Platform.GTK.dll" "%target_dir%"
+%cp% "%eto_bin_dir%\Eto.Platform.Gtk.dll" "%target_dir%"
 %cp% "%eto_bin_dir%\Eto.Platform.Windows.dll" "%target_dir%"
 %cp% "%eto_bin_dir%\Eto.Platform.Wpf.dll" "%target_dir%"
 
