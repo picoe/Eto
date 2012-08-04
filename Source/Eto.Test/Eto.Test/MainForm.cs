@@ -148,8 +148,8 @@ namespace Eto.Test
 		void GenerateMenu (GenerateActionArgs args)
 		{
 			var file = args.Menu.FindAddSubMenu ("&File", 100);
-			var edit = args.Menu.FindAddSubMenu ("&Edit", 200);
-			var window = args.Menu.FindAddSubMenu ("&Window", 900);
+			args.Menu.FindAddSubMenu ("&Edit", 200);
+			args.Menu.FindAddSubMenu ("&Window", 900);
 			var help = args.Menu.FindAddSubMenu ("&Help", 1000);
 
 			if (Generator.ID == "mac") {

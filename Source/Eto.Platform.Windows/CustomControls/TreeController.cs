@@ -240,7 +240,6 @@ namespace Eto.Platform.CustomControls
 		ITreeGridStore<ITreeGridItem> ExpandRowInternal (int row)
 		{
 			ITreeGridStore<ITreeGridItem> children = null;
-			var originalRow = row;
 			if (sections == null || sections.Count == 0) {
 				children = (ITreeGridStore<ITreeGridItem>)Store [row];
 				var childController = new TreeController { StartRow = row, Store = children };

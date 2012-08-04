@@ -17,9 +17,9 @@ output_macos="$output_app/Contents/MacOS"
 
 # copy Eto files to output for Gtk & Windows platforms
 cp "$eto_bin_dir"/Eto.dll "$target_dir"
-cp "$eto_bin_dir"/Eto.Platform.GTK.dll "$target_dir"
+cp "$eto_bin_dir"/Eto.Platform.Gtk.dll "$target_dir"
 cp "$eto_bin_dir"/Eto.Platform.Windows.dll "$target_dir"
-cp "$eto_bin_dir"/Eto.Platform.Wpf.dll "$target_dir"
+#cp "$eto_bin_dir"/Eto.Platform.Wpf.dll "$target_dir"
 
 
 # copy MacAppTemplate.app to our new .app bundle
@@ -37,9 +37,8 @@ cp "$eto_bin_dir"/Eto.Platform.Mac.dll "$output_res"
 cp "$eto_bin_dir"/MonoMac.dll "$output_res"
 
 # update launcher to execute our executable
-sed -i "" -e "s/\"MyApp.exe\"/\"$assembly\"/" "$output_macos/Launcher"
-sed -i "" -e "s/\"MyApp\"/\"$project_name\"/" "$output_macos/Launcher"
+sed -i"" -e "s/\"MyApp.exe\"/\"$assembly\"/" "$output_macos/Launcher"
+sed -i"" -e "s/\"MyApp\"/\"$project_name\"/" "$output_macos/Launcher"
 
 # update Info.plist to use our project name as the app name
-sed -i "" -e "s/>MyApp</>$project_name</" "$output_app/Contents/Info.plist"
-
+sed -i"" -e "s/>MyApp</>$project_name</" "$output_app/Contents/Info.plist"
