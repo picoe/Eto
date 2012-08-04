@@ -28,10 +28,12 @@ namespace Eto
 			if (_DataValueChanged != null)
 				_DataValueChanged (this, e);
 		}
-		
+
+		#pragma warning disable 67
 		public virtual event EventHandler<BindingChangingEventArgs> Changing;
 		public virtual event EventHandler<BindingChangedEventArgs> Changed;
-		
+		#pragma warning restore 67
+
 		public abstract object DataItem { get; }
 		
 		public abstract object GetValue ();
