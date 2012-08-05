@@ -54,7 +54,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 			Control = new EtoCell {
 				Handler = this,
 				ValueMember = "Key",
-				DisplayMember = "Text"
+				DisplayMember = "Text",
+				FlatStyle = swf.FlatStyle.Flat
 			};
 		}
 		

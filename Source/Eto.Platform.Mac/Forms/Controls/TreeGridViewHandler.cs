@@ -170,11 +170,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-			case TreeGridView.SelectionChangedEvent:
 			case TreeGridView.ExpandedEvent:
 			case TreeGridView.ExpandingEvent:
 			case TreeGridView.CollapsedEvent:
 			case TreeGridView.CollapsingEvent:
+			case Grid.SelectionChangedEvent:
 			case Grid.ColumnHeaderClickEvent:
 				// handled in delegate
 				break;

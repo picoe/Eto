@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Platform.GtkSharp.Forms.Cells;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
@@ -12,7 +13,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	
 	public interface IGridColumnHandler
 	{
-		GLib.Value GetValue(object dataItem, int dataColumn);
+		GLib.Value GetValue(object dataItem, int dataColumn, int row);
 		void BindCell (IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
 	}
 	
@@ -112,7 +113,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					cellsAdded = true;
 				}
 				SetCellAttributes ();
-				cellhandler.BindCell (source, Control, columnIndex, ref dataIndex);
+				cellhandler.BindCell (source, this, columnIndex, ref dataIndex);
 			}
 			SetupEvents ();
 		}
@@ -126,6 +127,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				HandleEvent (GridView.EndCellEditEvent);
 			if (grid.IsEventHandled (Grid.ColumnHeaderClickEvent))
 				HandleEvent (Grid.ColumnHeaderClickEvent);
+			if (grid.IsEventHandled (Grid.CellFormattingEvent))
+				HandleEvent (Grid.CellFormattingEvent);
 		}
 
 		public override void AttachEvent (string handler)
@@ -143,10 +146,10 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 		
-		public GLib.Value GetValue (object dataItem, int dataColumn)
+		public GLib.Value GetValue (object dataItem, int dataColumn, int row)
 		{
 			if (dataCell != null) {
-				return ((ICellHandler)dataCell.Handler).GetValue(dataItem, dataColumn);
+				return ((ICellHandler)dataCell.Handler).GetValue(dataItem, dataColumn, row);
 			}
 			else return new GLib.Value((string)null);
 		}

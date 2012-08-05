@@ -3,20 +3,21 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TextBoxCellHandler : CellHandler<NSTextFieldCell, TextBoxCell>, ITextBoxCell
 	{
-		public class EtoTextFieldCell : NSTextFieldCell, IMacControl
+		public class EtoCell : NSTextFieldCell, IMacControl
 		{
 			public object Handler { get; set; }
 			
-			public EtoTextFieldCell ()
+			public EtoCell ()
 			{
 			}
 			
-			public EtoTextFieldCell (IntPtr handle) : base(handle)
+			public EtoCell (IntPtr handle) : base(handle)
 			{
 			}
 			
@@ -24,15 +25,41 @@ namespace Eto.Platform.Mac.Forms.Controls
 			NSObject CopyWithZone (IntPtr zone)
 			{
 				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.selCopyWithZone.Handle, zone);
-				return new EtoTextFieldCell (ptr) { Handler = this.Handler };
+				return new EtoCell (ptr) { Handler = this.Handler };
 			}
 		}
 		
 		public TextBoxCellHandler ()
 		{
-			Control = new EtoTextFieldCell { Handler = this };
+			Control = new EtoCell { Handler = this };
+			Control.Wraps = false;
 		}
-		
+
+		public override void SetBackgroundColor (NSCell cell, Color color)
+		{
+			var c = cell as EtoCell;
+			c.BackgroundColor = Generator.ConvertNS (color);
+			c.DrawsBackground = color != Color.Transparent;
+		}
+
+		public override Color GetBackgroundColor (NSCell cell)
+		{
+			var c = cell as EtoCell;
+			return Generator.Convert (c.BackgroundColor);
+		}
+
+		public override void SetForegroundColor (NSCell cell, Color color)
+		{
+			var c = cell as EtoCell;
+			c.TextColor = Generator.ConvertNS (color);
+		}
+
+		public override Color GetForegroundColor (NSCell cell)
+		{
+			var c = cell as EtoCell;
+			return Generator.Convert (c.TextColor);
+		}
+
 		public override NSObject GetObjectValue (object dataItem)
 		{
 			if (Widget.Binding != null) {

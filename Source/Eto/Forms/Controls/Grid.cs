@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
 	public interface IGrid : IControl
 	{
 		bool ShowHeader { get; set; }
+
+		int RowHeight { get; set; }
 
 		bool AllowColumnReordering { get; set; }
 
@@ -31,6 +34,28 @@ namespace Eto.Forms
 		public GridColumnEventArgs (GridColumn column)
 		{
 			this.Column = column;
+		}
+	}
+
+	public abstract class GridCellFormatEventArgs : EventArgs
+	{
+		public GridColumn Column { get; private set; }
+
+		public object Item { get; private set; }
+
+		public int Row { get; private set; }
+
+		public abstract Font Font { get; set; }
+
+		public abstract Color BackgroundColor { get; set; }
+
+		public abstract Color ForegroundColor { get; set; }
+
+		public GridCellFormatEventArgs (GridColumn column, object item, int row)
+		{
+			this.Column = column;
+			this.Item = item;
+			this.Row = row;
 		}
 	}
 
@@ -114,6 +139,25 @@ namespace Eto.Forms
 				_ColumnHeaderClick (this, e);
 		}
 
+		public const string CellFormattingEvent = "Grid.CellFormattingEvent";
+
+		event EventHandler<GridCellFormatEventArgs> _CellFormatting;
+
+		public event EventHandler<GridCellFormatEventArgs> CellFormatting {
+			add {
+				_CellFormatting += value;
+				HandleEvent (CellFormattingEvent);
+			}
+			remove { _CellFormatting -= value; }
+		}
+
+		public virtual void OnCellFormatting (GridCellFormatEventArgs e)
+		{
+			if (_CellFormatting != null)
+				_CellFormatting (this, e);
+		}
+
+
 		#endregion
 
 		protected Grid (Generator generator, Type type, bool initialize = true)
@@ -144,6 +188,12 @@ namespace Eto.Forms
 
 		public IEnumerable<int> SelectedRows {
 			get { return handler.SelectedRows; }
+		}
+
+		public int RowHeight
+		{
+			get { return handler.RowHeight; }
+			set { handler.RowHeight = value; }
 		}
 
 		public void SelectRow (int row)

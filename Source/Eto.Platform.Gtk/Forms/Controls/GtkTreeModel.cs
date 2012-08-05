@@ -128,11 +128,16 @@ namespace Eto.Platform.GtkSharp
 
 		public void GetValue (Gtk.TreeIter iter, int col, ref GLib.Value val)
 		{
-			var item = GetItemAtIter (iter);
-			if (item != null)
-				val = Handler.GetColumnValue (item, col);
-			else 
-				val = Handler.GetColumnValue (null, col);
+			var node = GetNodeAtIter (iter);
+			if (node != null) {
+				var row = node.Indices.Sum ();
+				if (node.Item != null) {
+					val = Handler.GetColumnValue (node.Item, col, row);
+					return;
+				}
+			}
+
+			val = Handler.GetColumnValue (null, col, -1);
 
 		}
 

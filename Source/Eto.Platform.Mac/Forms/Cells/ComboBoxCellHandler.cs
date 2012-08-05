@@ -5,6 +5,8 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Drawing;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -12,32 +14,97 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		IListStore dataStore;
 		
-		public class EtoPopUpButtonCell : NSPopUpButtonCell, IMacControl
+		public class EtoCell : NSPopUpButtonCell, IMacControl
 		{
 			public object Handler { get; set; }
 
-			public EtoPopUpButtonCell ()
+			public EtoCell ()
 			{
 			}
 
-			public EtoPopUpButtonCell (IntPtr handle) : base(handle)
+			public EtoCell (IntPtr handle) : base(handle)
 			{
 			}
+
+			public NSColor TextColor { get; set; }
+
+			public bool DrawsBackground { get; set; }
 
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone (IntPtr zone)
 			{
 				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.selCopyWithZone.Handle, zone);
-				return new EtoPopUpButtonCell (ptr) { Handler = this.Handler };
+				return new EtoCell (ptr) { Handler = this.Handler };
 			}
+
+			public override void DrawBorderAndBackground (System.Drawing.RectangleF cellFrame, NSView controlView)
+			{
+				if (DrawsBackground) {
+					var nscontext = NSGraphicsContext.CurrentContext;
+					var context = nscontext.GraphicsPort;
+
+					context.SetFillColor (Generator.ConvertNSToCG(BackgroundColor));
+					context.FillRect (cellFrame);
+				}
+
+				base.DrawBorderAndBackground (cellFrame, controlView);
+			}
+
+			/* Bug in MonoMac (RectangleF return values of functions) prevents us from doing this:
+			public override System.Drawing.RectangleF DrawTitle (NSAttributedString title, System.Drawing.RectangleF frame, NSView controlView)
+			{
+				var nscontext = NSGraphicsContext.CurrentContext;
+				var context = nscontext.GraphicsPort;
+				if (TextColor != null) {
+					context.SaveState ();
+					context.SetStrokeColor(Generator.ConvertNSToCG (TextColor));
+				}
+				var rect = base.DrawTitle (title, frame, controlView);
+				if (TextColor != null) {
+					context.RestoreState ();
+				}
+				return rect;
+			}*/
 		}
 		
 		public ComboBoxCellHandler ()
 		{
-			Control = new EtoPopUpButtonCell { Handler = this, ControlSize = NSControlSize.Mini };
+			Control = new EtoCell { Handler = this, ControlSize = NSControlSize.Regular, Bordered = false };
 			Control.Title = string.Empty;
 		}
-		
+
+		public override void SetBackgroundColor (NSCell cell, Color color)
+		{
+			var c = cell as EtoCell;
+			c.BackgroundColor = Generator.ConvertNS (color);
+			c.DrawsBackground = color != Color.Transparent;
+		}
+
+		public override Color GetBackgroundColor (NSCell cell)
+		{
+			var c = cell as EtoCell;
+			return Generator.Convert (c.BackgroundColor);
+		}
+
+		public override void SetForegroundColor (NSCell cell, Color color)
+		{
+			var c = cell as EtoCell;
+			var att = c.AttributedStringValue.MutableCopy () as NSMutableAttributedString;
+			var range = new NSRange(0, att.Length);
+			att.RemoveAttribute (NSAttributedString.ForegroundColorAttributeName, range);
+			att.AddAttribute (NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS (color), range);
+			c.AttributedStringValue = att;
+			//var dic = new NSMutableDictionary ();
+			//dic.Add (NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS (color));
+			//c.TextColor = Generator.ConvertNS (color);
+		}
+
+		public override Color GetForegroundColor (NSCell cell)
+		{
+			var c = cell as EtoCell;
+			return Generator.Convert (c.TextColor);
+		}
+
 		IEnumerable<IListItem> GetItems ()
 		{
 			if (dataStore == null)

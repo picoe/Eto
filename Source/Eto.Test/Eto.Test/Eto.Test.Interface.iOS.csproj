@@ -150,6 +150,7 @@
     <Compile Include="Actions\Close.cs" />
     <Compile Include="Actions\Quit.cs" />
     <Compile Include="Log.cs" />
+    <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

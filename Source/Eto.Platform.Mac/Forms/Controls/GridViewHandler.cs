@@ -5,12 +5,21 @@ using System.Collections.Generic;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
+using Eto.Platform.Mac.Drawing;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<NSTableView, GridView>, IGridView
 	{
 		CollectionHandler collection;
+
+		public class EtoTableView : NSTableView, IMacControl
+		{
+			public GridViewHandler Handler { get; set; }
+
+			object IMacControl.Handler { get { return Handler; } }
+		}
 		
 		class EtoTableViewDataSource : NSTableViewDataSource
 		{
@@ -42,6 +51,42 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 		}
+
+		class MacCellFormatArgs : GridCellFormatEventArgs
+		{
+			Font font;
+
+			public ICellHandler CellHandler { get { return Column.DataCell.Handler as ICellHandler; } }
+
+			public NSCell Cell { get; private set; }
+
+			public MacCellFormatArgs(GridColumn column, object item, int row, NSCell cell)
+				: base(column, item, row)
+			{
+				this.Cell = cell;
+			}
+
+			public override Font Font {
+				get { return font; }
+				set {
+					font = value;
+					if (font != null)
+						Cell.Font = ((FontHandler)font.Handler).Control;
+					else
+						Cell.Font = null;
+				}
+			}
+
+			public override Color BackgroundColor {
+				get { return CellHandler.GetBackgroundColor (Cell); }
+				set { CellHandler.SetBackgroundColor (Cell, value); }
+			}
+
+			public override Color ForegroundColor {
+				get { return CellHandler.GetForegroundColor (Cell); }
+				set { CellHandler.SetForegroundColor (Cell, value); }
+			}
+		}
 		
 		class EtoTableDelegate : NSTableViewDelegate
 		{
@@ -63,8 +108,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
 			{
-				var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
+				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
+				var column = Handler.Widget.Columns[id.Column];
+				// var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
 				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (column));
+			}
+
+			public override void WillDisplayCell (NSTableView tableView, NSObject cell, NSTableColumn tableColumn, int row)
+			{
+				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
+				var column = Handler.Widget.Columns[id.Column];
+				//var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
+				var item = Handler.GetItem (row);
+				Handler.Widget.OnCellFormatting(new MacCellFormatArgs(column, item, row, cell as NSCell));
+
 			}
 		}
 
@@ -75,7 +132,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-			case GridView.BeginCellEditEvent:
+			case Grid.BeginCellEditEvent:
 				// handled by delegate
 				/* following should work, but internal delegate to trigger event does not work
 				table.ShouldEditTableColumn = (tableView, tableColumn, row) => {
@@ -86,22 +143,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return true;
 				};*/
 				break;
-			case GridView.EndCellEditEvent:
+			case Grid.EndCellEditEvent:
 				// handled after object value is set
 				break;
-			case GridView.SelectionChangedEvent:
+			case Grid.SelectionChangedEvent:
 				/* handled by delegate, for now
 				table.SelectionDidChange += delegate {
 					Widget.OnSelectionChanged (EventArgs.Empty);
 				};*/
 				break;
-			case GridView.ColumnHeaderClickEvent:
+			case Grid.ColumnHeaderClickEvent:
 				/*
 				table.DidClickTableColumn += delegate(object sender, NSTableViewTableEventArgs e) {
 					var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
 					Handler.Widget.OnHeaderClick (new GridColumnEventArgs (column));
 				};
 				*/
+				break;
+			case Grid.CellFormattingEvent:
 				break;
 			default:
 				base.AttachEvent (handler);
@@ -111,7 +170,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override void Initialize ()
 		{
-			Control = new NSTableView {
+			Control = new EtoTableView {
+				Handler = this,
 				FocusRingType = NSFocusRingType.None,
 				DataSource = new EtoTableViewDataSource { Handler = this },
 				Delegate = new EtoTableDelegate { Handler = this },

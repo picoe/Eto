@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
 using System.Collections.Generic;
+using Eto.Platform.GtkSharp.Forms.Cells;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
@@ -146,15 +147,22 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			throw new NotImplementedException ();
 		}
 
-		public GLib.Value GetColumnValue (ITreeGridItem item, int dataColumn)
+		public GLib.Value GetColumnValue (ITreeGridItem item, int dataColumn, int row)
 		{
 			int column;
 			if (ColumnMap.TryGetValue (dataColumn, out column)) {
 				var colHandler = (IGridColumnHandler)Widget.Columns[column].Handler;
-				return colHandler.GetValue (item, dataColumn);
+				return colHandler.GetValue (item, dataColumn, row);
 			}
 			return new GLib.Value ((string)null);
 		}
+
+		public int GetRowOfItem (ITreeGridItem item)
+		{
+			if (collection == null) return -1;
+			return collection.IndexOf (item);
+		}
+
 
 	}
 }

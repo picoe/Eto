@@ -42,6 +42,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				element.DataContextChanged += (sender, e) => {
 					var control = sender as swc.ComboBox;
 					control.SelectedValue = Handler.GetValue (control.DataContext);
+					Handler.FormatCell (control, cell, dataItem);
 				};
 				return Handler.SetupCell(element);
 			}
@@ -53,6 +54,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				element.DataContextChanged += (sender, e) => {
 					var control = sender as swc.ComboBox;
 					control.SelectedValue = Handler.GetValue (control.DataContext);
+					Handler.FormatCell (control, cell, dataItem);
 				};
 				return Handler.SetupCell(element);
 			}

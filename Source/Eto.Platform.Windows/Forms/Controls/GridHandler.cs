@@ -4,6 +4,8 @@ using Eto.Forms;
 using System.Linq;
 using System.Collections.Generic;
 using sd = System.Drawing;
+using Eto.Drawing;
+using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
@@ -47,11 +49,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 				if (item != null && col != null)
 					col.SetCellValue (item, e.Value);
 			};
-			Control.RowPostPaint += new swf.DataGridViewRowPostPaintEventHandler (Control_RowPostPaint);
+			Control.RowPostPaint += HandleRowPostPaint;
 		}
 
 		bool handledAutoSize = false;
-		void Control_RowPostPaint (object sender, swf.DataGridViewRowPostPaintEventArgs e)
+		void HandleRowPostPaint (object sender, swf.DataGridViewRowPostPaintEventArgs e)
 		{
 			if (handledAutoSize) return;
 
@@ -66,6 +68,39 @@ namespace Eto.Platform.Windows.Forms.Controls
 					col.Width = width;
 				}
 				colNum++;
+			}
+		}
+
+		class FormattingArgs : GridCellFormatEventArgs
+		{
+			public swf.DataGridViewCellFormattingEventArgs Args { get; private set; }
+
+			public FormattingArgs (swf.DataGridViewCellFormattingEventArgs args, GridColumn column, object item, int row)
+				: base(column, item, row)
+			{
+				this.Args = args;
+			}
+
+			Font font;
+			public override Eto.Drawing.Font Font {
+				get { return font; }
+				set {
+					font = value;
+					if (font != null)
+						Args.CellStyle.Font = ((FontHandler)font.Handler).Control;
+					else
+						Args.CellStyle.Font = null;
+				}
+			}
+
+			public override Eto.Drawing.Color BackgroundColor {
+				get { return Generator.Convert (Args.CellStyle.BackColor); }
+				set { Args.CellStyle.BackColor = Generator.Convert (value); }
+			}
+
+			public override Eto.Drawing.Color ForegroundColor {
+				get { return Generator.Convert (Args.CellStyle.ForeColor); }
+				set { Args.CellStyle.ForeColor = Generator.Convert (value); }
 			}
 		}
 
@@ -94,6 +129,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			case Grid.SelectionChangedEvent:
 				Control.SelectionChanged += delegate {
 					Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
+			case Grid.CellFormattingEvent:
+				Control.CellFormatting += (sender, e) => {
+					var column = Widget.Columns[e.ColumnIndex];
+					var item = GetItemAtRow (e.RowIndex);
+					Widget.OnCellFormatting (new FormattingArgs(e, column, item, e.RowIndex));
 				};
 				break;
 			default:
@@ -166,6 +208,17 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public IEnumerable<int> SelectedRows {
 			get { return Control.SelectedRows.OfType<swf.DataGridViewRow> ().Select (r => r.Index); }
+		}
+
+		public int RowHeight
+		{
+			get { return Control.RowTemplate.Height; }
+			set { 
+				Control.RowTemplate.Height = value;
+				foreach (swf.DataGridViewRow row in Control.Rows) {
+					row.Height = value;
+				}
+			}
 		}
 
 		public void SelectAll ()

@@ -21,16 +21,16 @@ namespace Eto.Platform.Mac
 		}
 		
 		enum KeyCharacters {
-		   NSParagraphSeparatorCharacter = 0x2029,
-		   NSLineSeparatorCharacter      = 0x2028,
-		   NSTabCharacter                = 0x0009,
-		   NSFormFeedCharacter           = 0x000c,
-		   NSNewlineCharacter            = 0x000a,
-		   NSCarriageReturnCharacter     = 0x000d,
-		   NSEnterCharacter              = 0x0003,
-		   NSBackspaceCharacter          = 0x0008,
-		   NSBackTabCharacter            = 0x0019,
-		   NSDeleteCharacter             = 0x007f
+			NSParagraphSeparatorCharacter = 0x2029,
+			NSLineSeparatorCharacter      = 0x2028,
+			NSTabCharacter                = 0x0009,
+			NSFormFeedCharacter           = 0x000c,
+			NSNewlineCharacter            = 0x000a,
+			NSCarriageReturnCharacter     = 0x000d,
+			NSEnterCharacter              = 0x0003,
+			NSBackspaceCharacter          = 0x0008,
+			NSBackTabCharacter            = 0x0019,
+			NSDeleteCharacter             = 0x007f
 		};
 
 		public static Key Convert (string keyEquivalent, NSEventModifierMask modifier)

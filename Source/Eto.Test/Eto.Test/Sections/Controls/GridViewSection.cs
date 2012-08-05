@@ -127,7 +127,7 @@ namespace Eto.Test.Sections.Controls
 				items.Add (new MyGridItem (rand, i, dropDown));
 			}
 			control.DataStore = items;
-			
+
 			return control;
 		}
 		
@@ -162,7 +162,7 @@ namespace Eto.Test.Sections.Controls
 		}
 #endif
 
-		void LogEvents (GridView control)
+		protected virtual void LogEvents (GridView control)
 		{
 			control.BeginCellEdit += (sender, e) => {
 				Log.Write (control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);

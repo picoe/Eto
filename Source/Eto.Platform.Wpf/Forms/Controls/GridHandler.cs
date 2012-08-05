@@ -4,10 +4,13 @@ using System.Linq;
 using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
 using System.Collections.ObjectModel;
 using Eto.Platform.Wpf.Forms.Menu;
+using Eto.Drawing;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -62,6 +65,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Control.SelectedCellsChanged += (sender, e) => {
 					Widget.OnSelectionChanged (EventArgs.Empty);
 				};
+				break;
+			case Grid.CellFormattingEvent:
+				// handled by FormatCell method
 				break;
 			default:
 				base.AttachEvent (handler);
@@ -153,6 +159,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		public int RowHeight
+		{
+			get { return (int)Control.RowHeight; }
+			set { Control.RowHeight = value; }
+		}
+
 		public void SelectAll ()
 		{
 			Control.SelectAll ();
@@ -180,6 +192,67 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public virtual System.Windows.FrameworkElement SetupCell (IGridColumnHandler column, System.Windows.FrameworkElement defaultContent)
 		{
 			return defaultContent;
+		}
+
+		class FormatEventArgs : GridCellFormatEventArgs
+		{
+			public sw.FrameworkElement Element { get; private set; }
+
+			public swc.DataGridCell Cell { get; private set; }
+			Font font;
+
+			public FormatEventArgs (GridColumn column, swc.DataGridCell gridcell, object item, int row, sw.FrameworkElement element)
+				: base(column, item, row)
+			{
+				this.Element = element;
+				this.Cell = gridcell;
+			}
+
+			public override Eto.Drawing.Font Font
+			{
+				get { return font; }
+				set
+				{
+					font = value;
+					FontHandler.Apply (Cell, font);
+				}
+			}
+
+			public override Eto.Drawing.Color BackgroundColor
+			{
+				get
+				{
+					var brush = Cell.Background as swm.SolidColorBrush;
+					if (brush != null) return Generator.Convert (brush.Color);
+					else return Color.White;
+				}
+				set
+				{
+					Cell.Background = new swm.SolidColorBrush (Generator.Convert (value));
+				}
+			}
+
+			public override Eto.Drawing.Color ForegroundColor
+			{
+				get
+				{
+					var brush = Cell.Foreground as swm.SolidColorBrush;
+					if (brush != null) return Generator.Convert (brush.Color);
+					else return Color.Black;
+				}
+				set
+				{
+					Cell.Foreground = new swm.SolidColorBrush (Generator.Convert (value));
+				}
+			}
+		}
+
+		public virtual void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
+		{
+			if (IsEventHandled (Grid.CellFormattingEvent)) {
+				var row = Control.Items.IndexOf (dataItem);
+				Widget.OnCellFormatting (new FormatEventArgs (column.Widget as GridColumn, gridcell, dataItem, row, element));
+			}
 		}
 	}
 }

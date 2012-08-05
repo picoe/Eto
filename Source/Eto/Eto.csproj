@@ -470,7 +470,5 @@
   </PropertyGroup>
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Binding\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

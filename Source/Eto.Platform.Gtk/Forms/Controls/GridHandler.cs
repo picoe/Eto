@@ -4,6 +4,7 @@ using System.Runtime.InteropServices;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
+using Eto.Platform.GtkSharp.Forms.Cells;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
@@ -64,6 +65,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			case Grid.ColumnHeaderClickEvent:
 			case Grid.BeginCellEditEvent:
 			case Grid.EndCellEditEvent:
+			case Grid.CellFormattingEvent:
 				SetupColumnEvents ();
 				break;
 			case Grid.SelectionChangedEvent:
@@ -201,6 +203,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 
+		public int RowHeight
+		{
+			get; set;
+		}
+
 		public void SelectAll ()
 		{
 			Tree.Selection.SelectAll ();
@@ -220,6 +227,12 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			Tree.Selection.UnselectAll ();
 		}
+
+		public void OnCellFormatting (GridCellFormatEventArgs args)
+		{
+			Widget.OnCellFormatting (args);
+		}
+
 	}
 }
 

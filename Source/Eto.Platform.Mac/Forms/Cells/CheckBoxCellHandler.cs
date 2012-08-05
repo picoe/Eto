@@ -3,20 +3,21 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class CheckBoxCellHandler : CellHandler<NSButtonCell, CheckBoxCell>, ICheckBoxCell
 	{
-		public class EtoButtonCell : NSButtonCell, IMacControl
+		public class EtoCell : NSButtonCell, IMacControl
 		{
 			public object Handler { get; set; }
 
-			public EtoButtonCell ()
+			public EtoCell ()
 			{
 			}
 
-			public EtoButtonCell (IntPtr handle) : base(handle)
+			public EtoCell (IntPtr handle) : base(handle)
 			{
 			}
 
@@ -24,17 +25,39 @@ namespace Eto.Platform.Mac.Forms.Controls
 			NSObject CopyWithZone (IntPtr zone)
 			{
 				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.selCopyWithZone.Handle, zone);
-				return new EtoButtonCell (ptr) { Handler = this.Handler };
+				return new EtoCell (ptr) { Handler = this.Handler };
 			}
 		}
 		
 		public CheckBoxCellHandler ()
 		{
-			Control = new EtoButtonCell { Handler = this };
+			Control = new EtoCell { Handler = this };
 			Control.Title = string.Empty;
 			Control.SetButtonType (NSButtonType.Switch);
 		}
-		
+
+		public override void SetBackgroundColor (NSCell cell, Color color)
+		{
+			var c = cell as EtoCell;
+			c.BackgroundColor = Generator.ConvertNS (color);
+		}
+
+		public override Color GetBackgroundColor (NSCell cell)
+		{
+			var c = cell as EtoCell;
+			return Generator.Convert (c.BackgroundColor);
+		}
+
+		public override void SetForegroundColor (NSCell cell, Color color)
+		{
+		}
+
+		public override Color GetForegroundColor (NSCell cell)
+		{
+			return Color.Empty;
+		}
+
+
 		public override void SetObjectValue (object dataItem, NSObject val)
 		{
 			if (Widget.Binding != null) {

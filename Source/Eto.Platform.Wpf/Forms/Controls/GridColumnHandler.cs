@@ -11,6 +11,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public interface IGridHandler
 	{
 		sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent);
+		void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem);
 	}
 
 	public interface IGridColumnHandler : IGridColumn
@@ -120,6 +121,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				return this.GridHandler.SetupCell (this, defaultContent);
 			else
 				return defaultContent;
+		}
+
+		public void FormatCell (ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
+		{
+			if (this.GridHandler != null)
+				this.GridHandler.FormatCell (this, cell, element, gridcell, dataItem);
 		}
 
 		swc.DataGridColumn IGridColumnHandler.Control

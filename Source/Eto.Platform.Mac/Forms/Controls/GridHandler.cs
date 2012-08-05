@@ -243,6 +243,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Control.DeselectAll (Control);
 		}
+
+		public int RowHeight
+		{
+			get { return (int)Control.RowHeight; }
+			set { Control.RowHeight = value; }
+		}
 		
 		public abstract object GetItem (int row);
 		

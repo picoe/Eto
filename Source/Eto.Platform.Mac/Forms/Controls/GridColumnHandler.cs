@@ -3,6 +3,8 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -40,6 +42,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn>, IGridColumn, IDataColumnHandler
 	{
 		Cell dataCell;
+		Font font;
 		
 		public IDataViewHandler DataViewHandler { get; private set; }
 		
@@ -132,8 +135,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				Control.Editable = value;
-				if (Control.DataCell != null) {
-					Control.DataCell.Enabled = Control.DataCell.Editable = value;
+				if (dataCell != null) {
+					var cellHandler = (ICellHandler)dataCell.Handler;
+					cellHandler.Editable = value;
 				}
 			}
 		}
@@ -155,9 +159,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (dataCell != null) {
 					var editable = this.Editable;
 					var cellHandler = (ICellHandler)dataCell.Handler;
-					cellHandler.ColumnHandler = this;
 					Control.DataCell = cellHandler.Control;
-					Control.DataCell.Enabled = Control.DataCell.Editable = editable;
+					cellHandler.ColumnHandler = this;
+					cellHandler.Editable = editable;
 				} else
 					Control.DataCell = null;
 			}
@@ -181,6 +185,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		GridColumn IDataColumnHandler.Widget {
 			get { return (GridColumn)Widget; }
+		}
+
+		public Font Font {
+			get { return font; }
+			set {
+				font = value;
+				if (font != null) {
+					var fontHandler = (FontHandler)font.Handler;
+					Control.DataCell.Font = fontHandler.Control;
+				}
+				else
+					Control.DataCell.Font = null;
+			}
 		}
 	}
 }

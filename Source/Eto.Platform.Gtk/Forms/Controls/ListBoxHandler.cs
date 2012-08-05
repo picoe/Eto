@@ -101,7 +101,7 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnActivated (EventArgs.Empty);
 		}
 
-		public GLib.Value GetColumnValue (IListItem item, int column)
+		public GLib.Value GetColumnValue (IListItem item, int column, int row)
 		{
 			switch (column) {
 			case 0:
@@ -185,5 +185,12 @@ namespace Eto.Platform.GtkSharp
 		public int NumberOfColumns {
 			get { return 2; }
 		}
+
+		public int GetRowOfItem (IListItem item)
+		{
+			if (collection == null) return -1;
+			return collection.IndexOf (item);
+		}
+
 	}
 }

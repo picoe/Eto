@@ -34,7 +34,32 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Control = new EtoCell { Handler = this };
 		}
-		
+
+		public override void SetBackgroundColor (NSCell cell, Color color)
+		{
+			var c = cell as EtoCell;
+			c.BackgroundColor = Generator.ConvertNS (color);
+			c.DrawsBackground = color != Color.Transparent;
+		}
+
+		public override Color GetBackgroundColor (NSCell cell)
+		{
+			var c = cell as EtoCell;
+			return Generator.Convert (c.BackgroundColor);
+		}
+
+		public override void SetForegroundColor (NSCell cell, Color color)
+		{
+			var c = cell as EtoCell;
+			c.TextColor = Generator.ConvertNS (color);
+		}
+
+		public override Color GetForegroundColor (NSCell cell)
+		{
+			var c = cell as EtoCell;
+			return Generator.Convert (c.TextColor);
+		}
+
 		public override NSObject GetObjectValue (object dataItem)
 		{
 			var result = new MacImageData();

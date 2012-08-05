@@ -9,9 +9,6 @@ using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public class ImageMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ImageMenuItem>, IImageMenuItem, IMenu
 	{
 		Icon icon;
@@ -20,7 +17,9 @@ namespace Eto.Platform.Windows
 		public ImageMenuItemHandler()
 		{
 			Control = new SWF.ToolStripMenuItem();
-			Control.Click += control_Click;
+			Control.Click += (sender, e) => {
+				Widget.OnClick (EventArgs.Empty);
+			};
 		}
 
 		void HandleDropDownOpened (object sender, EventArgs e)
@@ -28,11 +27,6 @@ namespace Eto.Platform.Windows
 			foreach (var item in Widget.MenuItems.OfType<MenuActionItem>()) {
 				item.OnValidate (EventArgs.Empty);
 			}
-		}
-
-		private void control_Click(object sender, EventArgs e)
-		{
-			Widget.OnClick(e);
 		}
 
 		#region IMenuItem Members

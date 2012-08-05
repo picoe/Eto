@@ -15,7 +15,9 @@ namespace Eto.Platform.GtkSharp
 		
 		int NumberOfColumns { get; }
 		
-		GLib.Value GetColumnValue (T item, int column);
+		GLib.Value GetColumnValue (T item, int column, int row);
+
+		int GetRowOfItem (T item);
 	}
 
 	public class GtkListModel<T, S> : GLib.Object, Gtk.TreeModelImplementor
@@ -118,9 +120,9 @@ namespace Eto.Platform.GtkSharp
 			var row = ((int)iter.UserData) - 1;
 			if (row >= 0) {
 				var item = Handler.DataStore [row];
-				val = Handler.GetColumnValue (item, col);
+				val = Handler.GetColumnValue (item, col, row);
 			} else 
-				val = Handler.GetColumnValue (null, col);
+				val = Handler.GetColumnValue (null, col, row);
 
 		}
 

@@ -23,6 +23,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public static void Apply (swc.Control control, Font font)
 		{
+			if (control == null) return;
 			if (font != null) {
 				((FontHandler)font.Handler).Apply (control);
 			}

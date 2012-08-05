@@ -1,5 +1,7 @@
 using System;
 using Eto.Forms;
+using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Test
 {
@@ -10,11 +12,11 @@ namespace Eto.Test
 		{
 			this.Name = "Test Application";
 		}
-		
+
 		public override void OnInitialized (EventArgs e)
 		{
 			this.MainForm = new MainForm ();
-            HandleEvent (Application.TerminatingEvent);
+			HandleEvent (Application.TerminatingEvent);
 			
 			base.OnInitialized (e);
 			

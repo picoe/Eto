@@ -18,6 +18,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 		}
 
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
+		}
+
 		protected override IGridItem GetItemAtRow (int row)
 		{
 			if (store == null) return null;

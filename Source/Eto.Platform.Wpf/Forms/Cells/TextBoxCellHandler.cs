@@ -39,9 +39,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				var element = base.GenerateElement (cell, dataItem);
 				element.DataContextChanged += (sender, e) => {
-					var text = sender as swc.TextBlock;
-					text.Text = Handler.GetValue (text.DataContext);
-					// cell formatting!
+					var control = sender as swc.TextBlock;
+					control.Text = Handler.GetValue (control.DataContext);
+					Handler.FormatCell (control, cell, dataItem);
 				};
 				return Handler.SetupCell (element);
 			}
@@ -51,10 +51,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var element = base.GenerateEditingElement (cell, dataItem) as swc.TextBox;
 				element.Name = "control";
 				element.DataContextChanged += (sender, e) => {
-					var text = sender as swc.TextBox;
-					text.Text = Handler.GetValue (text.DataContext);
-					// cell formatting!
-					//FontHandler.Apply (text, font);
+					var control = sender as swc.TextBox;
+					control.Text = Handler.GetValue (control.DataContext);
+					Handler.FormatCell (control, cell, dataItem);
 				};
 				return Handler.SetupCell(element);
 			}

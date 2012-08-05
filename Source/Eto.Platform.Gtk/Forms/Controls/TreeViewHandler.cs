@@ -206,9 +206,7 @@ namespace Eto.Platform.GtkSharp.Forms
 			}
 		}
 
-		#region IGtkListModelHandler[ITreeItem,ITreeStore] implementation
-		
-		public GLib.Value GetColumnValue (ITreeItem item, int column)
+		public GLib.Value GetColumnValue (ITreeItem item, int column, int row)
 		{
 			switch (column) {
 			case 0: 
@@ -227,8 +225,12 @@ namespace Eto.Platform.GtkSharp.Forms
 		public int NumberOfColumns {
 			get { return 2; }
 		}
-		
-		#endregion
+
+		public int GetRowOfItem (ITreeItem item)
+		{
+			if (collection == null) return -1;
+			return collection.IndexOf (item);
+		}
 	}
 }
 

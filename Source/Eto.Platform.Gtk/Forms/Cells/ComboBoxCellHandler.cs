@@ -1,17 +1,43 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.Platform.GtkSharp.Forms.Controls
+namespace Eto.Platform.GtkSharp.Forms.Cells
 {
 	public class ComboBoxCellHandler : SingleCellHandler<Gtk.CellRendererCombo, ComboBoxCell>, IComboBoxCell
 	{
 		CollectionHandler collection;
 		Gtk.ListStore listStore;
-		
+
+		class Renderer : Gtk.CellRendererCombo
+		{
+			public ComboBoxCellHandler Handler { get; set; }
+
+			[GLib.Property("item")]
+			public object Item { get; set; }
+
+			[GLib.Property("row")]
+			public int Row { get; set; }
+
+
+			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				height = Math.Max(height, Handler.Source.RowHeight);
+			}
+
+			protected override void Render (Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
+			{
+				if (Handler.FormattingEnabled)
+					Handler.Format(new GtkTextCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
+				base.Render (window, widget, background_area, cell_area, expose_area, flags);
+			}
+		}
+
 		public ComboBoxCellHandler ()
 		{
 			listStore = new Gtk.ListStore (typeof(string), typeof(string));
-			Control = new Gtk.CellRendererCombo {
+			Control = new Renderer {
+				Handler = this,
 				Model = listStore,
 				TextColumn = 0,
 				HasEntry = false
@@ -20,12 +46,12 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				SetValue (args.Path, args.NewText);
 			};
 		}
-		
+
 		protected override void BindCell (ref int dataIndex)
 		{
-			Column.ClearAttributes (Control);
+			Column.Control.ClearAttributes (Control);
 			SetColumnMap (dataIndex);
-			Column.AddAttribute (Control, "text", dataIndex++);
+			Column.Control.AddAttribute (Control, "text", dataIndex++);
 		}
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
@@ -40,8 +66,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 		
-		public override GLib.Value GetValue (object item, int column)
+		protected override GLib.Value GetValueInternal (object item, int column, int row)
 		{
+
 			if (Widget.Binding != null) {
 				var ret = Widget.Binding.GetValue (item);
 				if (ret != null)
