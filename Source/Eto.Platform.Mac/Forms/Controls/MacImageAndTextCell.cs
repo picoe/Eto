@@ -31,12 +31,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.Text = value.Text;
 			this.Image = value.Image;
 		}
-		
-		[Export("description")]
-		public new NSString Description {
-			get { return Text ?? new NSString (string.Empty); }
+
+		public override string Description {
+			get { return (string)Text ?? string.Empty; }
 		}
-			
+
 		public NSImage Image { get; set; }
 
 		public NSString Text { get; set; }
