@@ -30,8 +30,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var ciImage = CIImage.FromData (image.AsTiff ());
 			
 			if (control.IsFlipped) {
+				var realSize = control.ConvertSizeToBase (size);
 				var affineTransform = new NSAffineTransform ();
-				affineTransform.Translate (0, size.Height);
+				affineTransform.Translate (0, realSize.Height);
 				affineTransform.Scale (1, -1);
 				var filter1 = CIFilter.FromName ("CIAffineTransform");
 				filter1.SetValueForKey (ciImage, CIInputImage);
