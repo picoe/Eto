@@ -29,7 +29,7 @@ namespace Eto.Test.Sections.Drawing
 			
 			// must have at least 256 colors for an 8-bit bitmap
 			while (pal.Count < 256)
-				pal.Add (Color.Black);
+				pal.Add (Colors.Black);
 			image.Palette = pal;
 			var bd = image.Lock ();
 			

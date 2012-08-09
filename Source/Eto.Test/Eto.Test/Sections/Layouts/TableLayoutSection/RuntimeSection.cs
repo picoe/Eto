@@ -66,7 +66,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		{
 			middleTable = new TableLayout (new Panel (), 1, 3);
 
-			middleTable.Add (new Label { Text = "Content", BackgroundColor = Color.LightGray, HorizontalAlign = HorizontalAlign.Center, VerticalAlign = VerticalAlign.Middle }, 0, 1, true, true);
+			middleTable.Add (new Label { Text = "Content", BackgroundColor = Colors.LightGrey, HorizontalAlign = HorizontalAlign.Center, VerticalAlign = VerticalAlign.Middle }, 0, 1, true, true);
 			middleTable.Add (topSection = new Panel(), 0, 0);
 
 			return middleTable.Container;
@@ -74,18 +74,18 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		Control VerticalSection ()
 		{
-			var layout = new DynamicLayout (new Panel { BackgroundColor = Color.Blue });
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Color.Green });
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Color.Green });
+			var layout = new DynamicLayout (new Panel { BackgroundColor = Colors.Blue });
+			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
+			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
 			return layout.Container;
 		}
 
 		Control HorizontalSection ()
 		{
-			var layout = new DynamicLayout (new Panel { BackgroundColor = Color.Blue });
+			var layout = new DynamicLayout (new Panel { BackgroundColor = Colors.Blue });
 			layout.BeginHorizontal ();
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Color.Green });
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Color.Green });
+			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
+			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
 			layout.EndHorizontal ();
 			return layout.Container;
 		}

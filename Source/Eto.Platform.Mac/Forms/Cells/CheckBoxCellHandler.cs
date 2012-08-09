@@ -54,7 +54,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override Color GetForegroundColor (NSCell cell)
 		{
-			return Color.Empty;
+			return Colors.Transparent;
 		}
 
 

@@ -33,8 +33,8 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var label = new Label{ 
 				Size = new Size(100, 100), 
-				BackgroundColor = Color.Blue,
-				TextColor = Color.White,
+				BackgroundColor = Colors.Blue,
+				TextColor = Colors.White,
 				HorizontalAlign = HorizontalAlign.Center,
 				VerticalAlign = VerticalAlign.Middle,
 				Text = "Click on me!"

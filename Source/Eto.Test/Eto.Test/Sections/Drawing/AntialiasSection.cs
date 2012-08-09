@@ -24,12 +24,12 @@ namespace Eto.Test.Sections.Drawing
 
 		Control AntialiasOn ()
 		{
-			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Color.Black };
+			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
 				e.Graphics.Antialias = true;
-				e.Graphics.DrawPath (Color.White, path);
+				e.Graphics.DrawPath (Colors.White, path);
 			};
 
 			return control;
@@ -37,12 +37,12 @@ namespace Eto.Test.Sections.Drawing
 
 		Control AntialiasOff ()
 		{
-			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Color.Black };
+			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
 				e.Graphics.Antialias = false;
-				e.Graphics.DrawPath (Color.White, path);
+				e.Graphics.DrawPath (Colors.White, path);
 			};
 
 			return control;

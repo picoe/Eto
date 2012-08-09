@@ -2,6 +2,9 @@ using System;
 
 namespace Eto.Drawing
 {
+	/// <summary>
+	/// Colour representation in HSB
+	/// </summary>
 	public struct ColorHSB
 	{
 		/// <summary>
@@ -75,6 +78,73 @@ namespace Eto.Drawing
 			return H.GetHashCode () ^ S.GetHashCode () ^ B.GetHashCode () ^ A.GetHashCode ();
 		}
 
+		public Color ToColor ()
+		{
+			float r = 0;
+			float g = 0;
+			float b = 0;
+
+			if (this.S == 0) {
+				r = g = b = 0;
+			}
+			else {
+				// the color wheel consists of 6 sectors. Figure out which sector
+
+				// you're in.
+
+				float sectorPos = this.H / 60.0f;
+				int sectorNumber = (int)(Math.Floor (sectorPos));
+				// get the fractional part of the sector
+
+				float fractionalSector = sectorPos - sectorNumber;
+
+				// calculate values for the three axes of the color.
+
+				float p = this.B * (1.0f - this.S);
+				float q = this.B * (1.0f - (this.S * fractionalSector));
+				float t = this.B * (1.0f - (this.S * (1 - fractionalSector)));
+
+				// assign the fractional colors to r, g, and b based on the sector
+
+				// the angle is in.
+
+				switch (sectorNumber) {
+				case 0:
+					r = this.B;
+					g = t;
+					b = p;
+					break;
+				case 1:
+					r = q;
+					g = this.B;
+					b = p;
+					break;
+				case 2:
+					r = p;
+					g = this.B;
+					b = t;
+					break;
+				case 3:
+					r = p;
+					g = q;
+					b = this.B;
+					break;
+				case 4:
+					r = t;
+					g = p;
+					b = this.B;
+					break;
+				case 5:
+					r = this.B;
+					g = p;
+					b = q;
+					break;
+				}
+			}
+
+			return new Color (r, g, b, this.A);
+		}
+
 		public static bool operator == (ColorHSB x, ColorHSB y)
 		{
 			return x.H == y.H && x.S == y.S && x.B == y.B && x.A == y.A;
@@ -83,6 +153,11 @@ namespace Eto.Drawing
 		public static bool operator != (ColorHSB x, ColorHSB y)
 		{
 			return !(x == y);
+		}
+
+		public static implicit operator Color (ColorHSB hsb)
+		{
+			return hsb.ToColor ();
 		}
 		
 	}

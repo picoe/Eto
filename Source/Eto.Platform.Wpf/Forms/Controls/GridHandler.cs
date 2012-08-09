@@ -224,7 +224,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				{
 					var brush = Cell.Background as swm.SolidColorBrush;
 					if (brush != null) return Generator.Convert (brush.Color);
-					else return Color.White;
+					else return Colors.White;
 				}
 				set
 				{
@@ -238,7 +238,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				{
 					var brush = Cell.Foreground as swm.SolidColorBrush;
 					if (brush != null) return Generator.Convert (brush.Color);
-					else return Color.Black;
+					else return Colors.Black;
 				}
 				set
 				{

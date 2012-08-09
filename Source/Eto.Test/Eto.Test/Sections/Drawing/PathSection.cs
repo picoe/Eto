@@ -24,11 +24,11 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DrawLinePath ()
 		{
-			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Color.Black };
+			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
-				e.Graphics.DrawPath (Color.White, path);
+				e.Graphics.DrawPath (Colors.White, path);
 			};
 
 			return control;
@@ -36,11 +36,11 @@ namespace Eto.Test.Sections.Drawing
 
 		Control FillLinePath ()
 		{
-			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Color.Black };
+			var control = new Drawable { Size = new Size (100, 100), BackgroundColor = Colors.Black };
 
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
-				e.Graphics.FillPath (Color.White, path);
+				e.Graphics.FillPath (Colors.White, path);
 			};
 
 			return control;

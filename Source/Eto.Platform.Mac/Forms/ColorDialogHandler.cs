@@ -47,7 +47,7 @@ namespace Eto.Platform.Mac.Forms
 		public ColorDialogHandler()
 		{
 			Control = NSColorPanel.SharedColorPanel;
-			this.Color = Color.White;
+			this.Color = Colors.White;
 		}
 		
 		public Color Color { get; set; }

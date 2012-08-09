@@ -34,7 +34,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				var brush = virtualCanvas.Background as swm.SolidColorBrush;
 				if (brush != null) return Generator.Convert (brush.Color);
-				else return Color.Black;
+				else return Colors.Black;
 			}
 			set
 			{

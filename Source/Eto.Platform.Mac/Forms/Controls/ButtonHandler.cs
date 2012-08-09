@@ -77,7 +77,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override Color BackgroundColor {
 			get {
 				var cell = Control.Cell as MyButtonCell;
-				return cell.Color ?? Color.Transparent;
+				return cell.Color ?? Colors.Transparent;
 			}
 			set {
 				var cell = Control.Cell as MyButtonCell;

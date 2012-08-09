@@ -89,6 +89,46 @@ namespace Eto.Drawing
 			this.L = l;
 			this.A = color.A;
 		}
+
+		public Color ToColor ()
+		{
+
+			if (this.S == 0) {
+				// achromatic color (gray scale)
+				return new Color(L, L, L, A);
+			}
+			else {
+				float q = (this.L < 0.5f) ? (this.L * (1f + this.S)) : (this.L + this.S - (this.L * this.S));
+				float p = (2f * this.L) - q;
+
+				float Hk = this.H / 360f;
+				float[] T = new float[3];
+				T[0] = Hk + (1f / 3f);    // Tr
+				T[1] = Hk;                // Tb
+				T[2] = Hk - (1f / 3f);    // Tg
+
+				for (int i = 0; i < 3; i++) {
+					if (T[i] < 0)
+						T[i] += 1f;
+					if (T[i] > 1)
+						T[i] -= 1f;
+
+					if ((T[i] * 6f) < 1) {
+						T[i] = p + ((q - p) * 6f * T[i]);
+					}
+					else if ((T[i] * 2f) < 1) { //(1.0/6.0)<=T[i] && T[i]<0.5
+						T[i] = q;
+					}
+					else if ((T[i] * 3f) < 2) { // 0.5<=T[i] && T[i]<(2.0/3.0)
+						T[i] = p + (q - p) * ((2f / 3f) - T[i]) * 6f;
+					}
+					else
+						T[i] = p;
+				}
+
+				return new Color (T[0], T[1], T[2], A);
+			}
+		}
 		
 		public override bool Equals (object obj)
 		{
@@ -108,6 +148,11 @@ namespace Eto.Drawing
 		public static bool operator != (ColorHSL x, ColorHSL y)
 		{
 			return !(x == y);
+		}
+
+		public static implicit operator Color (ColorHSL hsl)
+		{
+			return hsl.ToColor ();
 		}
 		
 	}

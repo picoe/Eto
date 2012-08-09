@@ -66,7 +66,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var c = cell as EtoCell;
 			c.BackgroundColor = color;
-			c.DrawsBackground = color != Color.Transparent;
+			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)
@@ -81,7 +81,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override Color GetForegroundColor (NSCell cell)
 		{
-			return Color.Empty;
+			return Colors.Transparent;
 		}
 
 		public override NSObject GetObjectValue (object dataItem)

@@ -76,7 +76,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var c = cell as EtoCell;
 			c.BackgroundColor = Generator.ConvertNS (color);
-			c.DrawsBackground = color != Color.Transparent;
+			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)

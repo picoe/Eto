@@ -41,7 +41,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control ColourButton ()
 		{
-			var control = new Button{ Text = "Button with Color", BackgroundColor = Color.Green };
+			var control = new Button{ Text = "Button with Color", BackgroundColor = Colors.Lime };
 			LogEvents(control);
 			return control;
 		}

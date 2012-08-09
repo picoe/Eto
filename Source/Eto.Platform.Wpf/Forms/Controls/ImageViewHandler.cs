@@ -18,7 +18,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				return Color.Transparent;
+				return Colors.Transparent;
 			}
 			set
 			{

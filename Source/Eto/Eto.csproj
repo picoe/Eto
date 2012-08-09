@@ -74,6 +74,7 @@
     <Compile Include="CancelEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Drawing\Colors.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>

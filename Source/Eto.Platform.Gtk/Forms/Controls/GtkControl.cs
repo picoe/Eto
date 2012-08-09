@@ -133,7 +133,7 @@ namespace Eto.Platform.GtkSharp
 			get { return Generator.Convert (ContainerControl.Style.Background (Gtk.StateType.Normal)); }
 			set { 
 				var eb = ContainerControl as Gtk.EventBox;
-				if (eb != null) eb.VisibleWindow = !value.IsEmpty;
+				if (eb != null) eb.VisibleWindow = value.A > 0;
 				ContainerControl.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value));
 			}
 		}

@@ -51,7 +51,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control Default ()
 		{
-			var control = new Drawable { Size = new Size (400, 400), BackgroundColor = Color.Black };
+			var control = new Drawable { Size = new Size (400, 400), BackgroundColor = Colors.Black };
 
 			control.Paint += (sender, e) => {
 				var g = e.Graphics;
@@ -59,7 +59,7 @@ namespace Eto.Test.Sections.Drawing
 				float y = 0;
 				foreach (var info in GetDrawInfo ()) {
 					var size = g.MeasureString (info.Font, info.Text);
-					g.DrawText (info.Font, Color.White, 10, (int)y, info.Text);
+					g.DrawText (info.Font, Colors.White, 10, (int)y, info.Text);
 					y += size.Height;
 				}
 			};

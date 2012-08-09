@@ -41,7 +41,7 @@ namespace Eto.Test.Sections.Dialogs
 			var button = new Button { Text = "Pick Color with initial starting color (green)" };
 			button.Click += delegate {
 				var dialog = new ColorDialog {
-					Color = Color.Green
+					Color = Colors.Lime
 				};
 				dialog.ColorChanged += delegate {
 					// need to handle this event for OS X, where the dialog is a floating window
