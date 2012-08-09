@@ -44,7 +44,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					control.SelectedValue = Handler.GetValue (control.DataContext);
 					Handler.FormatCell (control, cell, dataItem);
 				};
-				return Handler.SetupCell(element);
+				Handler.FormatCell (element, cell, dataItem);
+				return Handler.SetupCell (element);
 			}
 
 			protected override sw.FrameworkElement GenerateEditingElement (swc.DataGridCell cell, object dataItem)
@@ -56,7 +57,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					control.SelectedValue = Handler.GetValue (control.DataContext);
 					Handler.FormatCell (control, cell, dataItem);
 				};
-				return Handler.SetupCell(element);
+				Handler.FormatCell (element, cell, dataItem);
+				return Handler.SetupCell (element);
 			}
 
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
