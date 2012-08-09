@@ -15,9 +15,7 @@ namespace Eto.Platform.Mac
 	public class Generator : Eto.Generator
 	{ 	
 		public override string ID {
-			get {
-				return "mac";
-			}
+			get { return Generators.Mac; }
 		}
 		
 		public static Point GetLocation (NSView view, NSEvent theEvent)

@@ -15,11 +15,9 @@ namespace Eto.Platform.Wpf
 {
 	public class Generator : Eto.Generator
 	{
-		public const string GeneratorID = "wpf";
-
 		public override string ID
 		{
-			get { return GeneratorID; }
+			get { return Generators.Wpf; }
 		}
 
 		static Dictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly> ();

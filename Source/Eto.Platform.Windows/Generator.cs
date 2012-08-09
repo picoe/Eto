@@ -11,11 +11,9 @@ namespace Eto.Platform.Windows
 {
 	public class Generator : Eto.Generator
 	{
-		public const string GeneratorID = "windows";
-		
 		public override string ID {
 			get {
-				return GeneratorID;
+				return Generators.Windows;
 			}
 		}
 		

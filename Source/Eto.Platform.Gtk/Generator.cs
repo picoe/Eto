@@ -10,12 +10,8 @@ namespace Eto.Platform.GtkSharp
 {
 	public class Generator : Eto.Generator
 	{ 	
-		public const string GeneratorID = "gtk";
-		
 		public override string ID {
-			get {
-				return GeneratorID;
-			}
+			get { return Generators.Gtk; }
 		}
 		
 		public Generator ()

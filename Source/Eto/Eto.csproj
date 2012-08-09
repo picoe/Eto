@@ -93,6 +93,7 @@
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Generators.cs" />
     <Compile Include="InstanceWidget.cs">
       <SubType>Code</SubType>
     </Compile>

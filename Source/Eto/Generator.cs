@@ -64,26 +64,21 @@ namespace Eto
 			}
 		}
 		
-		const string GtkPlatform = "Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk";
-		const string MacPlatform = "Eto.Platform.Mac.Generator, Eto.Platform.Mac";
-		const string WinPlatform = "Eto.Platform.Windows.Generator, Eto.Platform.Windows";
-		const string WpfPlatform = "Eto.Platform.Wpf.Generator, Eto.Platform.Wpf";
-		
 		public static Generator Detect {
 			get {
 				if (current != null)
 					return current;
 			
 				if (Misc.Platform.IsMac)
-					current = Generator.GetGenerator (MacPlatform, true);
+					current = Generator.GetGenerator (Generators.MacAssembly, true);
 				else if (Misc.Platform.IsWindows) {
-					current = Generator.GetGenerator (WpfPlatform, true);
+					current = Generator.GetGenerator (Generators.WpfAssembly, true);
 					if (current == null)
-						current = Generator.GetGenerator (WinPlatform, true);
+						current = Generator.GetGenerator (Generators.WinAssembly, true);
 				}
 				
 				if (current == null && Misc.Platform.IsUnix)
-					current = Generator.GetGenerator (GtkPlatform, true);
+					current = Generator.GetGenerator (Generators.GtkAssembly, true);
 				
 				if (current == null)
 					throw new EtoException ("Could not detect platform. Are you missing a platform assembly?");
