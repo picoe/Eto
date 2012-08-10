@@ -142,6 +142,7 @@ namespace Eto.Test
 			yield return new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" };
 			yield return new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" };
 			yield return new Section<Sections.Dialogs.SelectFolderSection> { Text = "Select Folder Dialog" };
+			yield return new Section<Sections.Dialogs.CustomDialogSection> { Text = "Custom Dialog" };
 		}
 
 		IEnumerable<Section> BehaviorsSection ()

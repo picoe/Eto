@@ -55,6 +55,30 @@ namespace Eto.Platform.Mac.Forms
 			return ret;
 		}
 
+		enum NSRun
+		{
+			StoppedResponse    = (-1000),
+			AbortedResponse    = (-1001),
+			ContinuesResponse  = (-1002)
+		}
+
+		public static void Run (NSWindow theWindow)
+		{
+			var app = NSApplication.SharedApplication;
+			var session = app.BeginModalSession (theWindow);
+			int result = (int)NSRun.ContinuesResponse;
+
+			// Loop until some result other than continues:
+			while (result == (int)NSRun.ContinuesResponse) {
+				// Run the window modally until there are no events to process:
+				result = app.RunModalSession (session);
+
+				// Give the main loop some time:
+				NSRunLoop.Current.LimitDateForMode (NSRunLoopMode.Default);
+			}
+			app.EndModalSession (session);
+		}
+
 	}
 }
 

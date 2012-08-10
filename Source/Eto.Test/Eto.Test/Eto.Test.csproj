@@ -86,6 +86,7 @@
     <Compile Include="Sections\Controls\ProgressBarSection.cs" />
     <Compile Include="Sections\Controls\KitchenSinkSection.cs" />
     <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
+    <Compile Include="Sections\Dialogs\CustomDialogSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

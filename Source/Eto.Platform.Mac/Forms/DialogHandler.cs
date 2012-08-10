@@ -70,14 +70,17 @@ namespace Eto.Platform.Mac.Forms
 				if (parent.ControlObject is NSWindow) Control.ParentWindow = (NSWindow)parent.ControlObject;
 				else if (parent.ControlObject is NSView) Control.ParentWindow = ((NSView)parent.ControlObject).Window;
 			}
-			//Control.MakeKeyAndOrderFront (ApplicationHandler.Instance.AppDelegate);
 			Control.MakeKeyWindow ();
 			
-			Widget.Closed += delegate {
-				NSApplication.SharedApplication.StopModal();
-			};
-			NSApplication.SharedApplication.RunModalForWindow(Control);
+			Widget.Closed += HandleClosed;
+			MacModal.Run (Control);
 			return Widget.DialogResult;
+		}
+
+		void HandleClosed (object sender, EventArgs e)
+		{
+			NSApplication.SharedApplication.StopModal();
+			Widget.Closed -= HandleClosed;
 		}
 
 	}

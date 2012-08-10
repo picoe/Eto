@@ -27,10 +27,18 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public void Show()
+		protected override void PositionWindow ()
 		{
+			base.PositionWindow ();
 			if (!centered) { Control.Center(); centered = true; }
-			Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
+		}
+
+		public void Show ()
+		{
+			if (this.State == WindowState.Minimized)
+				Control.MakeKeyWindow();
+			else
+				Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
 		}
 
 		

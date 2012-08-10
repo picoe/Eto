@@ -72,6 +72,7 @@ namespace Eto.Platform.Mac.Forms
 		Cursor cursor;
 		bool setInitialSize;
 		Size? minimumSize;
+		WindowState? initialState;
 		
 		public NSObject FieldEditorObject { get; set; }
 		
@@ -382,6 +383,8 @@ namespace Eto.Platform.Mac.Forms
 		
 		public WindowState State {
 			get {
+				if (initialState != null)
+					return initialState.Value;
 				if (Control.IsMiniaturized)
 					return WindowState.Minimized;
 				else if (Control.IsZoomed)
@@ -390,10 +393,15 @@ namespace Eto.Platform.Mac.Forms
 					return WindowState.Normal;
 			}
 			set {
+				if (!Widget.Loaded) {
+					initialState = value;
+					return;
+				}
 				switch (value) {
 				case WindowState.Maximized: 
-					if (!Control.IsZoomed)
+					if (!Control.IsZoomed) {
 						Control.Zoom (Control);
+					}
 					break;
 				case WindowState.Minimized:
 					if (!Control.IsMiniaturized)
@@ -432,9 +440,21 @@ namespace Eto.Platform.Mac.Forms
 				var size = this.GetPreferredSize ();
 				SetContentSize (Generator.ConvertF (size));
 				setInitialSize = true;
+
+				PositionWindow ();
+				if (initialState != null) {
+					State = initialState.Value;
+					initialState = null;
+				}
+			} else {
+				PositionWindow();
 			}
 		}
-		
+
+		protected virtual void PositionWindow()
+		{
+		}
+
 		public virtual void OnLoadComplete (EventArgs e)
 		{
 		}
@@ -469,7 +489,7 @@ namespace Eto.Platform.Mac.Forms
 					frame.Y += diffy;
 					frame.Height -= diffy;
 				}
-				Control.SetFrame (frame, true, false);
+				Control.SetFrame (frame, false, false);
 			} else 
 				Control.SetContentSize (contentSize);
 		}
