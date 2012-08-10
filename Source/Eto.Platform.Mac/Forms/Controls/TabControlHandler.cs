@@ -2,6 +2,7 @@ using System;
 using System.Reflection;
 using Eto.Forms;
 using MonoMac.AppKit;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -53,5 +54,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		#endregion
+
+		protected override Size GetNaturalSize ()
+		{
+			Size size = base.GetNaturalSize();
+			foreach (var tab in Widget.TabPages) {
+				var tabsizing = tab.Handler as IMacAutoSizing;
+				if (tabsizing != null)
+					size = Size.Max (size, tabsizing.GetPreferredSize ());
+			}
+			return size;
+		}
 	}
 }

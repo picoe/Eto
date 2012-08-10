@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -263,6 +264,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public System.Drawing.RectangleF GetVisibleRect ()
 		{
 			return ScrollView.VisibleRect ();
+		}
+
+		protected override Eto.Drawing.Size GetNaturalSize ()
+		{
+			var width = Widget.Columns.Sum (r => r.Width);
+			if (width == 0) width = 100;
+			var height = this.RowHeight * 10;
+			return new Size(width, height);
 		}
 	}
 }

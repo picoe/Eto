@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using MonoMac.AppKit;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -27,20 +28,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 				panel1Rect.Location = new System.Drawing.PointF (0, 0);
 				if (handler.position == null) {
 					panel1Rect.Width = newFrame.Width / 2;
-					panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
+					panel2Rect.Width = Math.Max (0, newFrame.Width - panel1Rect.Width - dividerThickness);
 				} else {
+					var pos = handler.position.Value;
 					switch (handler.fixedPanel) {
 					case SplitterFixedPanel.Panel1:
-						panel1Rect.Width = handler.position.Value;
+						panel1Rect.Width = Math.Max (0, Math.Min (newFrame.Width - dividerThickness, pos));
 						panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
 						break;
 					case SplitterFixedPanel.Panel2:
-						panel2Rect.Width = oldSize.Width - handler.position.Value - dividerThickness;
+						panel2Rect.Width = Math.Max (0, Math.Min (newFrame.Width - dividerThickness, oldSize.Width - pos - dividerThickness));
 						panel1Rect.Width = newFrame.Width - panel2Rect.Width - dividerThickness;
 						break;
 					case SplitterFixedPanel.None:
 						var oldscale = newFrame.Width / oldSize.Width;
-						panel1Rect.Width = handler.position.Value * oldscale;
+						panel1Rect.Width = Math.Max (0, Math.Min (newFrame.Width - dividerThickness, pos * oldscale));
 						panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
 						break;
 					}
@@ -52,20 +54,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 				panel1Rect.Location = new System.Drawing.PointF (0, 0);
 				if (handler.position == null) {
 					panel1Rect.Height = newFrame.Height / 2;
-					panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
+					panel2Rect.Height = Math.Max (0, newFrame.Height - panel1Rect.Height - dividerThickness);
 				} else {
+					var pos = handler.position.Value;
 					switch (handler.fixedPanel) {
 					case SplitterFixedPanel.Panel1:
-						panel1Rect.Height = handler.position.Value;
+						panel1Rect.Height = Math.Max (0, Math.Min (newFrame.Height - dividerThickness, pos));
 						panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
 						break;
 					case SplitterFixedPanel.Panel2:
-						panel2Rect.Height = oldSize.Height - handler.position.Value - dividerThickness;
+						panel2Rect.Height = Math.Max (0, Math.Min (newFrame.Height - dividerThickness, oldSize.Height - pos - dividerThickness));
 						panel1Rect.Height = newFrame.Height - panel2Rect.Height - dividerThickness;
 						break;
 					case SplitterFixedPanel.None:
 						var oldscale = newFrame.Height / oldSize.Height;
-						panel1Rect.Height = handler.position.Value * oldscale;
+						panel1Rect.Height = Math.Max (0, Math.Min (newFrame.Height - dividerThickness, pos * oldscale));
 						panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
 						break;
 					}
@@ -219,5 +222,34 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		#endregion
+
+		protected override Size GetNaturalSize ()
+		{
+			Size size = new Size ();
+
+			var p1 = panel1 != null ? panel1.Handler as IMacAutoSizing : null;
+			var p2 = panel2 != null ? panel2.Handler as IMacAutoSizing : null;
+			var p1size = p1 != null ? p1.GetPreferredSize () : Size.Empty;
+			var p2size = p2 != null ? p2.GetPreferredSize () : Size.Empty;
+			if (Control.IsVertical) {
+				if (position != null) {
+					switch (FixedPanel) {
+					case SplitterFixedPanel.None:
+					case SplitterFixedPanel.Panel1:
+						p1size.Width = Math.Max (p1size.Width, position.Value);
+						break;
+					case SplitterFixedPanel.Panel2:
+						p2size.Width = Math.Max (p2size.Width, this.Size.Width - position.Value);
+						break;
+					}
+				}
+				size.Width = p1size.Width + p2size.Width + (int)Control.DividerThickness;
+				size.Height = Math.Max (p1size.Height, p2size.Height);
+			} else {
+				size.Height = p1size.Height + p2size.Height + (int)Control.DividerThickness;
+				size.Width = Math.Max (p1size.Width, p2size.Width);
+			}
+			return size;
+		}
 	}
 }
