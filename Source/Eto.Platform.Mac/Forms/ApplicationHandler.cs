@@ -10,7 +10,7 @@ namespace Eto.Platform.Mac.Forms
 {
 	public class ApplicationHandler : WidgetHandler<NSApplication, Application>, IApplication
 	{
-		public NSApplicationDelegate AppDelegate { get; private set; }
+		public NSApplicationDelegate AppDelegate { get; set; }
 		
 		public bool AddFullScreenMenuItem { get; set; }
 		
@@ -79,8 +79,8 @@ namespace Eto.Platform.Mac.Forms
 		
 		public void Run (string[] args)
 		{
-			
-			Control.Delegate = new AppDelegate();
+			if (Control.Delegate == null)
+				Control.Delegate = this.AppDelegate ?? new AppDelegate ();
 			NSApplication.Main (args);
 		}
 		

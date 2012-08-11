@@ -5,6 +5,8 @@ using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 using Eto.Forms;
 using Eto.Platform.Mac.Forms.Controls;
+using Eto.Platform.Mac.Forms;
+using Eto.Platform.Mac;
 
 namespace Eto.Test.Mac
 {
@@ -17,6 +19,9 @@ namespace Eto.Test.Mac
 			var generator = new Eto.Platform.Mac.Generator ();
 			
 			var app = new TestApplication (generator);
+
+			// use this to use your own app delegate:
+			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();
 			app.Run (args);
 			
 		}
