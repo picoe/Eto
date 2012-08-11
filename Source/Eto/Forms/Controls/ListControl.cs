@@ -54,14 +54,13 @@ namespace Eto.Forms
 			get {
 				var items = (ListItemCollection)DataStore;
 				if (items == null) {
-					items = new ListItemCollection ();
+					items = CreateDefaultItems();
 					this.DataStore = items;
 				}
 				return items;
 			}
-			
 		}
-		
+
 		public IListStore DataStore {
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
@@ -85,6 +84,17 @@ namespace Eto.Forms
 					SelectedIndex = Items.IndexOf (val);
 			}
 		}
-		
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			if (DataStore == null)
+				this.DataStore = CreateDefaultItems ();
+		}
+
+		protected virtual ListItemCollection CreateDefaultItems ()
+		{
+			return new ListItemCollection ();
+		}
 	}
 }
