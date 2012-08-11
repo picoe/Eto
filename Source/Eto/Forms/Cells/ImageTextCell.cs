@@ -8,15 +8,15 @@ namespace Eto.Forms
 	
 	public class ImageTextCell : Cell
 	{
-		public SingleBinding ImageBinding { get; set; }
+		public IndirectBinding ImageBinding { get; set; }
 		
-		public SingleBinding TextBinding { get; set; }
+		public IndirectBinding TextBinding { get; set; }
 		
 		public ImageTextCell (int imageColumn, int textColumn)
 			: this()
 		{
-			ImageBinding = new ColumnBinding(imageColumn);
-			TextBinding = new ColumnBinding(textColumn);
+			ImageBinding = new ColumnBinding (imageColumn);
+			TextBinding = new ColumnBinding (textColumn);
 		}
 		
 		public ImageTextCell (string imageProperty, string textProperty)

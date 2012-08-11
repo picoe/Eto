@@ -71,6 +71,7 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Binding\ColumnBinding.cs" />
     <Compile Include="CancelEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -455,11 +456,10 @@
     <Compile Include="Binding\BindingCollection.cs" />
     <Compile Include="Binding\BindingChangingEventArgs.cs" />
     <Compile Include="Binding\BindingChangedEventArgs.cs" />
-    <Compile Include="Binding\SingleBinding.cs" />
-    <Compile Include="Binding\ColumnBinding.cs" />
+    <Compile Include="Binding\IndirectBinding.cs" />
     <Compile Include="Binding\PropertyBinding.cs" />
+    <Compile Include="Binding\DirectBinding.cs" />
     <Compile Include="Binding\ObjectBinding.cs" />
-    <Compile Include="Binding\ObjectSingleBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
     <Compile Include="Binding\BindingExtensions.cs" />
   </ItemGroup>

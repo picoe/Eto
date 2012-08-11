@@ -5,12 +5,36 @@ using System.Collections.ObjectModel;
 
 namespace Eto
 {
-	public class PropertyBinding : SingleBinding
+	/// <summary>
+	/// Indirect binding to get/set values using a property of a specified object
+	/// </summary>
+	/// <remarks>
+	/// This is used when you are binding to a particular property of an object.
+	/// 
+	/// This can be used to get/set values from any object.  If you want to bind to a particular object
+	/// directly, use the <see cref="ObjectBinding"/> with this class as its inner binding.
+	/// </remarks>
+	public class PropertyBinding : IndirectBinding
 	{
-		PropertyDescriptor property;
+		PropertyDescriptor descriptor;
+		string property;
 				
-		public string Property { get; set; }
+		/// <summary>
+		/// Gets or sets the property in which to get/set values from for this binding
+		/// </summary>
+		public string Property
+		{
+			get { return property; }
+			set {
+				property = value;
+				descriptor = null;
+			}
+		}
 		
+		/// <summary>
+		/// Initializes a new instance of the PropertyBinding with the specified property
+		/// </summary>
+		/// <param name="property">property to use to get/set values for this binding</param>
 		public PropertyBinding (string property)
 		{
 			this.Property = property;
@@ -18,25 +42,35 @@ namespace Eto
 		
 		void EnsureProperty (object dataItem)
 		{
-			if (property == null && dataItem != null) {
-				property = TypeDescriptor.GetProperties (dataItem).Find (Property, true);
+			if (descriptor == null && dataItem != null) {
+				descriptor = TypeDescriptor.GetProperties (dataItem).Find (Property, true);
 			}
 		}
 		
+		/// <summary>
+		/// Implements the logic to get the value from the specified object
+		/// </summary>
+		/// <param name="dataItem">object to get the value from</param>
+		/// <returns>value of the property from the specified dataItem object</returns>
 		protected override object InternalGetValue (object dataItem)
 		{
 			EnsureProperty (dataItem);
-			if (property != null) {
-				return property.GetValue (dataItem);
+			if (descriptor != null) {
+				return descriptor.GetValue (dataItem);
 			}
 			return null;
 		}
 		
+		/// <summary>
+		/// Implements the logic to set the value on the specified object
+		/// </summary>
+		/// <param name="dataItem">object to set the value to</param>
+		/// <param name="value">value to set to the property of the specified dataItem object</param>
 		protected override void InternalSetValue (object dataItem, object value)
 		{
 			EnsureProperty (dataItem);
-			if (property != null) {
-				property.SetValue (dataItem, value);
+			if (descriptor != null) {
+				descriptor.SetValue (dataItem, value);
 			}
 		}
 		
@@ -55,6 +89,12 @@ namespace Eto
 			}
 		}
 		
+		/// <summary>
+		/// Wires an event handler to fire when the property of the dataItem is changed
+		/// </summary>
+		/// <param name="dataItem">object to detect changes on</param>
+		/// <param name="handler">handler to fire when the property changes on the specified dataItem</param>
+		/// <returns>binding reference used to track the event hookup, to pass to <see cref="RemoveValueChangedHandler"/> when removing the handler</returns>
 		public override object AddValueChangedHandler (object dataItem, EventHandler<EventArgs> handler)
 		{
 			if (dataItem == null)
@@ -76,7 +116,12 @@ namespace Eto
 				return dataItem;
 			}
 		}
-		
+
+		/// <summary>
+		/// Removes the handler for the specified reference from <see cref="AddValueChangedHandler"/>
+		/// </summary>
+		/// <param name="bindingReference">Reference from the call to <see cref="AddValueChangedHandler"/></param>
+		/// <param name="handler">Same handler that was set up during the <see cref="AddValueChangedHandler"/> call</param>
 		public override void RemoveValueChangedHandler (object bindingReference, EventHandler<EventArgs> handler)
 		{
 			var helper = bindingReference as ValueChangedHandler;
