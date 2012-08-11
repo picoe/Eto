@@ -25,7 +25,8 @@ namespace Eto.Test.Sections.Drawing
 		IndexedBitmap CreateImage()
 		{
 			var image = new IndexedBitmap (100, 100, 8);
-			var pal = new Palette (Palette.GetEgaPalette ());
+			var ega = Palette.GetEgaPalette ();
+			var pal = new Palette (ega);
 			
 			// must have at least 256 colors for an 8-bit bitmap
 			while (pal.Count < 256)
@@ -38,9 +39,10 @@ namespace Eto.Test.Sections.Drawing
 				byte* brow = (byte*)bd.Data;
 				for (int y = 0; y < image.Size.Height; y++) {
 					byte* b = brow;
+					col = -y;
 					for (int x = 0; x < image.Size.Width; x++) {
-						if (col >= pal.Count) 
-							col = 0;
+						while (col < 0) col = ega.Count + col;
+						while (col >= ega.Count) col -= ega.Count;
 						*b = (byte)col++;
 						b++;
 					}
