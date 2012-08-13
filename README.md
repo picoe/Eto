@@ -48,6 +48,7 @@ This framework was built so that using it in .NET is natural. For example, a sim
 
 Applications
 ------------
+* [Manager](https://www.manager.io) - Accounting Software
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
 * [JabbR.Eto](https://github.com/cwensley/JabbR.Eto) - JabbR client
 * [Notedown by Mod Monkeys](https://github.com/modmonkeys/Notedown) - Note taking application
