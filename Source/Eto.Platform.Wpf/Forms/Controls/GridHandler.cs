@@ -247,6 +247,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		public override void Invalidate ()
+		{
+			Control.Items.Refresh ();
+			base.Invalidate ();
+		}
+
+		public override void Invalidate (Rectangle rect)
+		{
+			Control.Items.Refresh ();
+			base.Invalidate (rect);
+		}
+
 		public virtual void FormatCell (IGridColumnHandler column, ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
 		{
 			if (IsEventHandled (Grid.CellFormattingEvent)) {
