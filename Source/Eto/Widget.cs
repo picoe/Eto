@@ -1,84 +1,55 @@
 using System;
 using System.Collections.Generic;
 
-#if DESKTOP
-using System.Xaml;
-#endif
-
 namespace Eto
 {
+	/// <summary>
+	/// Handler interface for the <see cref="Widget"/> class
+	/// </summary>
 	public interface IWidget
 	{
+		/// <summary>
+		/// Gets the widget this handler is implemented for
+		/// </summary>
 		Widget Widget { get; set; }
 
+		/// <summary>
+		/// Initializes the widget after it has been constructed
+		/// </summary>
+		/// <remarks>
+		/// This is typically called automatically when passing the initialize value to 
+		/// a constructor of the widget to true.
+		/// 
+		/// For widget implementors, if you have any constructor code that must be called before Initialize
+		/// is called on the widget handler, then you would pass false to the constructor's initialize parameter,
+		/// then call this manually (via <see cref="M:Widget.Initialize()"/>
+		/// </remarks>
 		void Initialize ();
 	}
 
-#if DESKTOP
-	public class PropertyStore : IAttachedPropertyStore
-	{
-		IDictionary<AttachableMemberIdentifier, object> attachedProperties = new Dictionary<AttachableMemberIdentifier, object> ();
-
-		public T Get<T> (AttachableMemberIdentifier member, T defaultValue)
-		{
-			object value;
-			if (attachedProperties.TryGetValue (member, out value))
-				return (T)value;
-			else
-				return defaultValue;
-		}
-
-		public T Get<T> (AttachableMemberIdentifier member)
-		{
-			object value;
-			if (attachedProperties.TryGetValue (member, out value))
-				return (T)value;
-			else
-				return default(T);
-		}
-
-		public void Set (AttachableMemberIdentifier member, object value)
-		{
-			attachedProperties[member] = value;
-		}
-
-		public bool Remove (AttachableMemberIdentifier member)
-		{
-			return attachedProperties.Remove (member);
-		}
-
-
-		void IAttachedPropertyStore.CopyPropertiesTo (KeyValuePair<AttachableMemberIdentifier, object>[] array, int index)
-		{
-			attachedProperties.CopyTo (array, index);
-		}
-
-		int IAttachedPropertyStore.PropertyCount { get { return attachedProperties.Count; } }
-
-		bool IAttachedPropertyStore.RemoveProperty (AttachableMemberIdentifier member)
-		{
-			return attachedProperties.Remove (member);
-		}
-
-		void IAttachedPropertyStore.SetProperty (AttachableMemberIdentifier member, object value)
-		{
-			attachedProperties[member] = value;
-		}
-
-		bool IAttachedPropertyStore.TryGetProperty (AttachableMemberIdentifier member, out object value)
-		{
-			return attachedProperties.TryGetValue (member, out value);
-		}
-	}
-#endif
-	
+	/// <summary>
+	/// Base widget class for all objects requiring a platform-specific implementation
+	/// </summary>
+	/// <remarks>
+	/// The Widget is the base of all abstracted objects that have platform-specific implementations.
+	///
+	/// The <see cref="InstanceWidget"/> is the class that's typically used as a base as it provides
+	/// an instance of the platform-specific object, as well as adds the ability to handle events
+	/// on the object.  This is used as the base for static objects such as the <see cref="Forms.MessageBox"/>
+	/// or <see cref="EtoEnvironment"/>.
+	/// 
+	/// To implement the handler for a widget, use the <see cref="WidgetHandler{T}"/> as the base class.
+	/// </remarks>
 	public abstract class Widget : IDisposable
 	{
 		BindingCollection bindings;
 		
 #if DESKTOP
 		PropertyStore properties;
-
+		
+		/// <summary>
+		/// Gets the attached properties for this widget
+		/// </summary>
 		public PropertyStore Properties
 		{
 			get
@@ -88,10 +59,18 @@ namespace Eto
 			}
 		}
 #endif
-		public event EventHandler<EventArgs> Disposed;
-
+		/// <summary>
+		/// Gets the generator that was used to create the <see cref="Handler"/> for this widget
+		/// </summary>
+		/// <remarks>
+		/// The generator is typically either passed to the constructor of the control, or the
+		/// <see cref="P:Generator.Current"/> is used.
+		/// </remarks>
 		public Generator Generator { get; private set; }
 		
+		/// <summary>
+		/// Gets the collection of bindings that are attached to this widget
+		/// </summary>
 		public BindingCollection Bindings {
 			get {
 				if (bindings == null) bindings = new BindingCollection (); 
@@ -99,16 +78,35 @@ namespace Eto
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a user-defined object that contains data about the control
+		/// </summary>
+		/// <remarks>
+		/// A common use of the tag property is to store data that is associated with the control that you can later
+		/// retrieve.
+		/// </remarks>
 		public object Tag { get; set; }
 
-		public IWidget Handler { get; internal protected set; }
+		/// <summary>
+		/// Gets the platform-specific handler for this widget
+		/// </summary>
+		public IWidget Handler { get; internal set; }
 
+		/// <summary>
+		/// Finalizes this widget
+		/// </summary>
 		~Widget ()
 		{
 			//Console.WriteLine ("GC: {0}", this.GetType ().FullName);
 			Dispose (false);
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the Widget class
+		/// </summary>
+		/// <param name="generator">Generator the widget handler was created with</param>
+		/// <param name="handler">Handler to assign to this widget for its implementation</param>
+		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
 		protected Widget (Generator generator, IWidget handler, bool initialize = true)
 		{
 			this.Generator = generator;
@@ -118,14 +116,30 @@ namespace Eto
 				Initialize ();
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the Widget class
+		/// </summary>
+		/// <param name="generator">Generator the widget handler was created with</param>
+		/// <param name="type">Type of widget handler to create from the generator for this widget</param>
+		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
 		protected Widget (Generator generator, Type type, bool initialize = true)
 		{
 			this.Generator = generator;
-			this.Handler = generator.CreateControl (type, this);
+			this.Handler = generator.CreateHandler (type, this);
 			if (initialize)
 				Initialize ();
 		}
 		
+		/// <summary>
+		/// Initializes the widget handler
+		/// </summary>
+		/// <remarks>
+		/// This is typically called from the constructor after all of the logic is completed to construct
+		/// the object.
+		/// 
+		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
+		/// after all of its logic has finished.
+		/// </remarks>
 		protected void Initialize ()
 		{
 			Handler.Initialize ();
@@ -133,6 +147,9 @@ namespace Eto
 		
 		#region IDisposable Members
 
+		/// <summary>
+		/// Disposes of this widget, supressing the finalizer
+		/// </summary>
 		public void Dispose ()
 		{
 			Dispose (true);
@@ -141,6 +158,9 @@ namespace Eto
 		
 		#endregion
 		
+		/// <summary>
+		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
+		/// </summary>
 		public virtual void Unbind ()
 		{
 			if (bindings != null) {
@@ -149,6 +169,9 @@ namespace Eto
 			}
 		}
 		
+		/// <summary>
+		/// Updates all bindings in this widget
+		/// </summary>
 		public virtual void UpdateBindings ()
 		{
 			if (bindings != null) {
@@ -156,12 +179,14 @@ namespace Eto
 			}
 		}
 		
+		/// <summary>
+		/// Handles the disposal of this widget
+		/// </summary>
+		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if this is called from the finalizer</param>
 		protected virtual void Dispose (bool disposing)
 		{
 			Unbind ();
 			if (disposing) {
-				if (Disposed != null)
-					Disposed(this, EventArgs.Empty);
 				var handler = this.Handler as IDisposable;
 				if (handler != null)
 					handler.Dispose ();

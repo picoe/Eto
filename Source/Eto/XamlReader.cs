@@ -7,9 +7,11 @@ using System.Windows.Markup;
 
 namespace Eto
 {
+	/// <summary>
+	/// Methods to help load/save Eto objects to/from xaml
+	/// </summary>
 	public static class XamlReader
 	{
-		
 		class EtoXamlType : XamlType
 		{
 			public EtoXamlType (Type type, XamlSchemaContext schema) : base(type, schema)
@@ -58,6 +60,17 @@ namespace Eto
 
 		}
 
+		/// <summary>
+		/// Loads the specified type from a xaml of the same name
+		/// </summary>
+		/// <remarks>
+		/// If your class name is MyNamespace.MyType, then this will attempt to load MyNamespace.MyType.xaml
+		/// for the xaml definition in the same assembly.
+		/// 
+		/// If you want to specify a different xaml, use <see cref="Load{T}(Stream)"/>
+		/// </remarks>
+		/// <typeparam name="T">Type of object to load from xaml</typeparam>
+		/// <returns>A new instance of the specified type with the contents loaded from xaml</returns>
 		public static T Load<T> ()
 			where T: InstanceWidget, new()
 		{
@@ -66,12 +79,34 @@ namespace Eto
 			return Load<T> (stream, null);
 		}
 		
+		/// <summary>
+		/// Loads the specified type from the specified xaml stream
+		/// </summary>
+		/// <remarks>
+		/// If your class name is MyNamespace.MyType, then this will attempt to load MyNamespace.MyType.xaml
+		/// for the xaml definition in the same assembly.
+		/// </remarks>
+		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
+		/// <param name="stream">Xaml content to load (e.g. from resources)</param>
+		/// <returns>A new instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T> (Stream stream)
 			where T: InstanceWidget, new()
 		{
 			return Load<T> (stream, null);
 		}
-		
+
+		/// <summary>
+		/// Loads the specified instance with xaml of the same name
+		/// </summary>
+		/// <remarks>
+		/// If your class name is MyNamespace.MyType, then this will attempt to load MyNamespace.MyType.xaml
+		/// for the xaml definition in the same assembly.
+		/// 
+		/// If you want to specify a different xaml, use <see cref="Load{T}(Stream, T)"/>
+		/// </remarks>
+		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
+		/// <param name="instance">Instance to use as the starting object</param>
+		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T> (T instance)
 			where T: InstanceWidget
 		{
@@ -80,6 +115,13 @@ namespace Eto
 			return Load<T> (stream, instance);
 		}
 
+		/// <summary>
+		/// Loads the specified type from the specified xaml stream
+		/// </summary>
+		/// <typeparam name="T">Type of object to load from the specified xaml</typeparam>
+		/// <param name="stream">Xaml content to load (e.g. from resources)</param>
+		/// <param name="instance">Instance to use as the starting object</param>
+		/// <returns>A new or existing instance of the specified type with the contents loaded from the xaml stream</returns>
 		public static T Load<T> (Stream stream, T instance)
 			where T : InstanceWidget
 		{
@@ -102,7 +144,6 @@ namespace Eto
 			XamlServices.Transform (reader, writer);
 			return writer.Result as T;
 		}
-
 	}
 }
 

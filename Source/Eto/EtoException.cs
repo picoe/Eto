@@ -3,6 +3,9 @@ using System.Runtime.Serialization;
 
 namespace Eto
 {
+	/// <summary>
+	/// General exception for errors in the Eto framework
+	/// </summary>
 	[Serializable]
 	public class EtoException : Exception
 	{

@@ -26,31 +26,31 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE;DESKTOP</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
+    <DocumentationFile>..\..\BuildOutput\Release\Eto.XML</DocumentationFile>
     <FileAlignment>4096</FileAlignment>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <RegisterForComInterop>False</RegisterForComInterop>
     <RemoveIntegerChecks>False</RemoveIntegerChecks>
     <WarningLevel>4</WarningLevel>
     <DebugType>none</DebugType>
+    <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE;DESKTOP</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
+    <DocumentationFile>..\..\BuildOutput\Debug\Eto.XML</DocumentationFile>
+    <DebugSymbols>True</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <RegisterForComInterop>False</RegisterForComInterop>
     <RemoveIntegerChecks>False</RemoveIntegerChecks>
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
+    <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -99,6 +99,7 @@
     <Compile Include="InstanceWidget.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="WeakEventHandler.cs">

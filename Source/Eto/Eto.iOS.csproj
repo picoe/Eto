@@ -11,36 +11,36 @@
     <RootNamespace>Eto</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iOS\Debug</OutputPath>
     <DefineConstants>DEBUG;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <ConsolePause>False</ConsolePause>
     <AssemblyName>Eto</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iOS\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
+    <ConsolePause>False</ConsolePause>
     <DefineConstants>MOBILE</DefineConstants>
     <AssemblyName>Eto</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'iPhoneSimulator|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iPhoneSimulator</OutputPath>
     <WarningLevel>4</WarningLevel>
     <AssemblyName>EtoiOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
     <AssemblyName>EtoiOS</AssemblyName>
@@ -48,7 +48,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
     <WarningLevel>4</WarningLevel>
     <AssemblyName>EtoiOS</AssemblyName>
@@ -56,7 +56,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
     <WarningLevel>4</WarningLevel>
     <AssemblyName>EtoiOS</AssemblyName>
@@ -64,7 +64,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
     <WarningLevel>4</WarningLevel>
     <AssemblyName>EtoiOS</AssemblyName>
@@ -72,7 +72,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iPhone\AppStore</OutputPath>
     <WarningLevel>4</WarningLevel>
     <AssemblyName>EtoiOS</AssemblyName>
@@ -80,7 +80,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
     <WarningLevel>4</WarningLevel>
     <AssemblyName>EtoiOS</AssemblyName>
@@ -229,9 +229,7 @@
     <Compile Include="Binding\ColumnBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
     <Compile Include="Binding\ObjectBinding.cs" />
-    <Compile Include="Binding\ObjectSingleBinding.cs" />
     <Compile Include="Binding\PropertyBinding.cs" />
-    <Compile Include="Binding\SingleBinding.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Forms\Cells\Cell.cs" />
     <Compile Include="Forms\Cells\CheckBoxCell.cs" />
@@ -245,6 +243,11 @@
     <Compile Include="Forms\Controls\TreeGridView.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Threading\Thread.cs" />
+    <Compile Include="Binding\DirectBinding.cs" />
+    <Compile Include="Binding\IndirectBinding.cs" />
+    <Compile Include="Generators.cs" />
+    <Compile Include="PropertyStore.cs" />
+    <Compile Include="Drawing\Colors.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

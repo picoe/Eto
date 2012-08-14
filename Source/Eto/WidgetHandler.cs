@@ -4,48 +4,111 @@ using System.Collections.Generic;
 
 namespace Eto
 {
+	/// <summary>
+	/// Base platform handler for widgets
+	/// </summary>
+	/// <remarks>
+	/// This is the base class for platform handlers. 
+	/// It is used to help wire up events and provide base functionality of a widget.
+	/// 
+	/// If you are creating an InstanceWidget, you should use <see cref="WidgetHandler{T,W}"/>.
+	/// </remarks>
+	/// <example>
+	/// This example shows how to implement a platform handler for a widget called StaticWidget
+	/// <code><![CDATA[
+	/// // override the class and implement widget-specific interface
+	/// public MyStaticWidgetHandler : WidgetHandler<StaticWidget>, IStaticWidget
+	/// {
+	///		// implement IStaticWidget's properties and methods
+	/// }
+	/// ]]></code>
+	/// </example>
+	/// <seealso cref="WidgetHandler{T,W}"/>
+	/// <typeparam name="W">Type of widget the handler is for</typeparam>
 	public abstract class WidgetHandler<W> : IWidget, IDisposable
 		where W: Widget
 	{
 		HashSet<string> eventHooks; 
 		
+		/// <summary>
+		/// Finalizes the WidgetHandler
+		/// </summary>
 		~WidgetHandler()
 		{
 			Dispose(false);
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the WidgetHandler class
+		/// </summary>
 		public WidgetHandler()
 		{
 		}
 		
-		
+		/// <summary>
+		/// Gets the widget that this platform handler is attached to
+		/// </summary>
 		public W Widget { get; private set; }
 		
 		#region IWidget Members
 
+		/// <summary>
+		/// Called to initialize this widget after it has been constructed
+		/// </summary>
+		/// <remarks>
+		/// Override this to initialize any of the platform objects.  This is called
+		/// in the widget constructor, after all of the widget's constructor code has been called.
+		/// </remarks>
 		public virtual void Initialize()
 		{
 		}
 
-		public bool IsEventHandled (string handler)
+		/// <summary>
+		/// Gets a value indicating that the specified event is handled
+		/// </summary>
+		/// <param name="id">Identifier of the event</param>
+		/// <returns>True if the event is handled, otherwise false</returns>
+		public bool IsEventHandled (string id)
 		{
 			if (eventHooks == null) return false;
-			return eventHooks.Contains (handler);
+			return eventHooks.Contains (id);
 		}
 		
-		public void HandleEvent(string handler)
+		/// <summary>
+		/// Called to handle the specified event
+		/// </summary>
+		/// <remarks>
+		/// This is typically called directly from the Widget's event handlers, or from the
+		/// user of the widget manually.  This method takes care of only handling the
+		/// event once by passing the event off to <see cref="AttachEvent"/> only when it has
+		/// not been attached already.
+		/// </remarks>
+		/// <param name="id">Identifier of the event</param>
+		public void HandleEvent(string id)
 		{
 			if (eventHooks == null) eventHooks = new HashSet<string>();
-			if (eventHooks.Contains(handler)) return;
-			eventHooks.Add (handler);
-			AttachEvent (handler);
+			if (eventHooks.Contains(id)) return;
+			eventHooks.Add (id);
+			AttachEvent (id);
 		}
 		
-		public virtual void AttachEvent(string handler)
+		/// <summary>
+		/// Attaches the specified event to the platform-specific control
+		/// </summary>
+		/// <remarks>
+		/// Implementors should override this method to handle any events that the widget
+		/// supports. Ensure to call the base class' implementation if the event is not
+		/// one the specific widget supports, so the base class' events can be handled as well.
+		/// </remarks>
+		/// <param name="id">Identifier of the event</param>
+		public virtual void AttachEvent(string id)
 		{
-			throw new NotSupportedException (string.Format ("Event {0} not supported by this control", handler));
+			throw new NotSupportedException (string.Format ("Event {0} not supported by this control", id));
 		}
 		
+		/// <summary>
+		/// Gets or sets the widget instance
+		/// </summary>
 		Widget IWidget.Widget
 		{
 			get { return Widget; }
@@ -56,6 +119,12 @@ namespace Eto
 		
 		#region IDisposable Members
 
+		/// <summary>
+		/// Disposes this object
+		/// </summary>
+		/// <remarks>
+		/// To handle disposal logic, use the <see cref="Dispose(bool)"/> method.
+		/// </remarks>
 		public void Dispose()
 		{
 			Dispose(true);
@@ -64,30 +133,74 @@ namespace Eto
 		
 		#endregion
 		
+		/// <summary>
+		/// Disposes the object
+		/// </summary>
+		/// <param name="disposing">True when disposed manually, false if disposed via the finalizer</param>
 	    protected virtual void Dispose(bool disposing)
 	    {
 	    }		
 	}
 
+	/// <summary>
+	/// Base platform handler for <see cref="InstanceWidget"/> objects
+	/// </summary>
+	/// <remarks>
+	/// This is the base class for platform handlers. 
+	/// It is used to help wire up events and provide base functionality of a widget.
+	/// </remarks>
+	/// <example>
+	/// This example shows how to implement a platform handler for a widget
+	/// <code><![CDATA[
+	/// // override the class and implement widget-specific interface
+	/// public MyWidgetHandler : WidgetHandler<MyPlatformControl, MyWidget>, IMyWidget
+	/// {
+	///		// implement IStaticWidget's properties and methods
+	/// }
+	/// ]]></code>
+	/// </example>
+	/// <seealso cref="WidgetHandler{T,W}"/>
+	/// <typeparam name="T">Type of the platform-specific object</typeparam>
+	/// <typeparam name="W">Type of widget the handler is for</typeparam>
 	public abstract class WidgetHandler<T, W> : WidgetHandler<W>, IInstanceWidget
-		where W: Widget
+		where W: InstanceWidget
 	{
+		/// <summary>
+		/// Initializes a new instance of the WidgetHandler class
+		/// </summary>
 		public WidgetHandler()
 		{
 			DisposeControl = true;
 		}
+
+		/// <summary>
+		/// Gets or sets the ID of this widget
+		/// </summary>
 		public virtual string ID { get; set; }
 		
+		/// <summary>
+		/// Gets or sets a value indicating that control should automatically be disposed when this widget is disposed
+		/// </summary>
 		protected bool DisposeControl { get; set; }
 
+		/// <summary>
+		/// Gets or sets the platform-specific control object
+		/// </summary>
 		public virtual T Control { get; protected set; }
 		
-		public object ControlObject {
+		/// <summary>
+		/// Gets the platform-specific control object
+		/// </summary>
+		object IInstanceWidget.ControlObject {
 			get {
 				return this.Control;
 			}
 		}
 		
+		/// <summary>
+		/// Disposes this widget and the associated control if <see cref="DisposeControl"/> is <c>true</c>
+		/// </summary>
+		/// <param name="disposing">True if <see cref="Dispose"/> was called manually, false if called from the finalizer</param>
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && DisposeControl) {
@@ -97,12 +210,5 @@ namespace Eto
 			this.Control = default(T);
 			base.Dispose (disposing);
 		}
-
-	}
-	
-	public abstract class WidgetHandler : WidgetHandler<Widget>
-	{
-
-
 	}
 }
