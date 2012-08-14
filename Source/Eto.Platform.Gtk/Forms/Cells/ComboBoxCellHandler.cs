@@ -120,7 +120,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		}
 		
 		public IListStore DataStore {
-			get { return collection != null ? collection.DataStore : null; }
+			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)
 					collection.Unregister ();

@@ -34,12 +34,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				return new MacImageData (Handler.collection.DataStore [row]);
+				return new MacImageData (Handler.collection.Collection [row]);
 			}
 
 			public override int GetRowCount (NSTableView tableView)
 			{
-				return Handler.collection.DataStore != null ? Handler.collection.DataStore.Count : 0;
+				return Handler.collection.Collection != null ? Handler.collection.Collection.Count : 0;
 			}
 		}
 		
@@ -171,9 +171,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 
 		public IListStore DataStore {
-			get { return collection.DataStore; }
+			get { return collection.Collection; }
 			set {
-				if (collection.DataStore != null)
+				if (collection.Collection != null)
 					collection.Unregister ();
 				collection.Register (value);
 			}

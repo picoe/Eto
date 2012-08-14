@@ -17,7 +17,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		protected override IGridItem GetItemAtRow (int row)
 		{
 			if (collection == null) return null;
-			return collection.DataStore[row];
+			return collection.Collection[row];
 		}
 
 		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
@@ -27,7 +27,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			public override void AddRange (IEnumerable<IGridItem> items)
 			{
 				Handler.Control.Refresh ();
-				Handler.Control.RowCount = DataStore.Count;
+				Handler.Control.RowCount = Collection.Count;
 			}
 			
 			public override void AddItem (IGridItem item)
@@ -56,7 +56,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 
 		public IGridStore DataStore {
-			get { return collection != null ? collection.DataStore : null; }
+			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)
 					collection.Unregister ();

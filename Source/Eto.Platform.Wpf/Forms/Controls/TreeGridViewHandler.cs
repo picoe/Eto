@@ -117,7 +117,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{
-			if (object.ReferenceEquals (column, Columns.DataStore[0].Handler))
+			if (object.ReferenceEquals (column, Columns.Collection[0].Handler))
 				return TreeToggleButton.Create (defaultContent, controller);
 			else
 				return defaultContent;

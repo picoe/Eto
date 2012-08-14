@@ -34,8 +34,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 			public override void AddItem (IGridItem item)
 			{
-				var iter = Handler.model.GetIterAtRow (DataStore.Count);
-				var path = Handler.model.GetPathAtRow (DataStore.Count);
+				var iter = Handler.model.GetIterAtRow (Collection.Count);
+				var path = Handler.model.GetPathAtRow (Collection.Count);
 				Handler.Tree.Model.EmitRowInserted (path, iter);
 			}
 
@@ -59,7 +59,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		}
 		
 		public IGridStore DataStore {
-			get { return collection != null ? collection.DataStore : null; }
+			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)
 					collection.Unregister ();

@@ -48,7 +48,7 @@ namespace Eto.Platform.GtkSharp.Forms
 			
 			void ExpandItems ()
 			{
-				var store = Handler.collection.DataStore;
+				var store = Handler.collection.Collection;
 				Gtk.TreePath path = new Gtk.TreePath ();
 				ExpandItems (store, path);
 			}
@@ -62,7 +62,7 @@ namespace Eto.Platform.GtkSharp.Forms
 			public override void AddItem (ITreeItem item)
 			{
 				var path = new Gtk.TreePath ();
-				path.AppendIndex (DataStore.Count);
+				path.AppendIndex (Collection.Count);
 				var iter = Handler.model.GetIterFromItem (item, path);
 				Handler.tree.Model.EmitRowInserted (path, iter);
 			}
@@ -178,7 +178,7 @@ namespace Eto.Platform.GtkSharp.Forms
 		}
 		
 		public ITreeStore DataStore {
-			get { return collection != null ? collection.DataStore : null; }
+			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)
 					collection.Unregister ();

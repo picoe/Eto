@@ -147,8 +147,8 @@ namespace Eto.Platform.GtkSharp
 
 			public override void AddItem (IListItem item)
 			{
-				var iter = Handler.model.GetIterAtRow (DataStore.Count);
-				var path = Handler.model.GetPathAtRow (DataStore.Count);
+				var iter = Handler.model.GetIterAtRow (Collection.Count);
+				var path = Handler.model.GetPathAtRow (Collection.Count);
 				Handler.Control.Model.EmitRowInserted (path, iter);
 			}
 
@@ -173,7 +173,7 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		public IListStore DataStore {
-			get { return collection != null ? collection.DataStore : null; }
+			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)
 					collection.Unregister ();

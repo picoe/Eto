@@ -27,12 +27,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override int GetRowCount (NSTableView tableView)
 			{
-				return (Handler.collection != null && Handler.collection.DataStore != null) ? Handler.collection.DataStore.Count : 0;
+				return (Handler.collection != null && Handler.collection.Collection != null) ? Handler.collection.Collection.Count : 0;
 			}
 
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.collection.DataStore [row];
+				var item = Handler.collection.Collection [row];
 				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
 				if (id != null) {
 					return id.Handler.GetObjectValue (item);
@@ -42,7 +42,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void SetObjectValue (NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
 			{
-				var item = Handler.collection.DataStore [row];
+				var item = Handler.collection.Collection [row];
 				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
 				if (id != null) {
 					id.Handler.SetObjectValue (item, theObject);
@@ -95,7 +95,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
 				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				var item = Handler.collection.DataStore [row];
+				var item = Handler.collection.Collection [row];
 				var args = new GridViewCellArgs ((GridColumn)id.Handler.Widget, row, id.Column, item);
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
@@ -217,7 +217,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 
 		public IGridStore DataStore {
-			get { return collection != null ? collection.DataStore : null; }
+			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)
 					collection.Unregister ();
@@ -228,7 +228,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override object GetItem (int row)
 		{
-			return collection.DataStore [row];
+			return collection.Collection [row];
 		}
 	}
 }

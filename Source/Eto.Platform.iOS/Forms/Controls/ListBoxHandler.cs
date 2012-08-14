@@ -20,7 +20,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 			public override int RowsInSection (UITableView tableView, int section)
 			{
-				return Handler.collection != null ? Handler.collection.DataStore.Count : 0;
+				return Handler.collection != null ? Handler.collection.Collection.Count : 0;
 			}
 
 			public override int NumberOfSections (UITableView tableView)
@@ -34,7 +34,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				if (cell == null) {
 					cell = new UITableViewCell(UITableViewCellStyle.Default, kCellIdentifier);
 				}
-				cell.TextLabel.Text = Handler.collection.DataStore[indexPath.Row].Text;
+				cell.TextLabel.Text = Handler.collection.Collection[indexPath.Row].Text;
 				return cell;
 			}
 		}
@@ -96,7 +96,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public IListStore DataStore {
 			get {
-				return collection != null ? collection.DataStore : null;
+				return collection != null ? collection.Collection : null;
 			}
 			set {
 				if (collection != null) {
