@@ -4,7 +4,12 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac
 {
-	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget, IMenu
+	public interface IMenuHandler
+	{
+		void EnsureSubMenu ();
+	}
+
+	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget, IMenu, IMenuHandler
 		where T: NSMenuItem
 		where W: Menu
 	{
@@ -12,13 +17,16 @@ namespace Eto.Platform.Mac
 		public MenuHandler ()
 		{
 		}
-		
-		#region IMenu Members
 
-		public virtual void AddMenu (int index, MenuItem item)
+		public void EnsureSubMenu ()
 		{
 			if (!Control.HasSubmenu)
 				Control.Submenu = new NSMenu{ AutoEnablesItems = true, ShowsStateColumn = true, Title = Control.Title };
+		}
+
+		public virtual void AddMenu (int index, MenuItem item)
+		{
+			EnsureSubMenu ();
 			Control.Submenu.InsertItematIndex ((NSMenuItem)item.ControlObject, index);
 		}
 
@@ -34,7 +42,5 @@ namespace Eto.Platform.Mac
 			Control.Submenu = null;
 		}
 
-		#endregion
-		
 	}
 }

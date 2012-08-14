@@ -190,7 +190,10 @@ namespace Eto.Platform.Mac.Forms
 					view.Actions.AddSeparator (901);
 				}
 				
-				//var help = args.Menu.FindAddSubMenu ("&Help", 900);
+				var help = args.Menu.FindAddSubMenu ("&Help", 900);
+
+				// add separator so help menu is always shown even when empty
+				help.Actions.AddSeparator (0);
 			}
 		}
 		
