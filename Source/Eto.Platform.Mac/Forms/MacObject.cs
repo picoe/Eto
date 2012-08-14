@@ -13,7 +13,7 @@ namespace Eto.Platform.Mac.Forms
 	
 	public class MacObject<T, W> : WidgetHandler<T, W>
 		where T: NSObject 
-		where W: Widget
+		where W: InstanceWidget
 	{
 		List<NSObject> notifications;
 		

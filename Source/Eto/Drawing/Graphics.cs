@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eto.Drawing
 {
-	public interface IGraphics : IWidget
+	public interface IGraphics : IInstanceWidget
 	{
 		void CreateFromImage (Bitmap image);
 
@@ -47,7 +47,7 @@ namespace Eto.Drawing
 		public abstract void Set (Rectangle rect);
 	}
 	
-	public class Graphics : Widget
+	public class Graphics : InstanceWidget
 	{
 		IGraphics inner;
 		

@@ -37,7 +37,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 			if (child == null) return;
 			
-			UIView parent = (UIView)ControlObject;
+			UIView parent = this.Control;
 			
 			UIView childControl = (UIView)child.ControlObject;
 			var frame = parent.Frame;
@@ -64,7 +64,7 @@ namespace Eto.Platform.iOS.Forms
 					var childControl = (UIView)child.ControlObject;
 					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 					SetChildFrame();
-					UIView parent = (UIView)ControlObject;
+					UIView parent = this.Control;
 					parent.AddSubview(childControl);
 				}
 				

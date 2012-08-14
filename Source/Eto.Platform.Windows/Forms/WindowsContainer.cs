@@ -42,7 +42,7 @@ namespace Eto.Platform.Windows
 		
 		public virtual object ContainerObject
 		{
-			get	{ return ControlObject; }
+			get	{ return Control; }
 		}
 		
 		public override void SuspendLayout ()

@@ -2,7 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ISelectFolderDialog : IWidget
+	public interface ISelectFolderDialog : IInstanceWidget
 	{
 		string Title { get; set; }
 
@@ -11,7 +11,7 @@ namespace Eto.Forms
 		DialogResult ShowDialog (Window parent);
 	}
 	
-	public class SelectFolderDialog : Widget
+	public class SelectFolderDialog : InstanceWidget
 	{
 		ISelectFolderDialog handler;
 		

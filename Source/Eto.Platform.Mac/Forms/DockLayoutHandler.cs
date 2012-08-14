@@ -44,7 +44,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 			if (child == null) return;
 			
-			NSView parent = (NSView)ControlObject;
+			NSView parent = this.Control;
 			
 			NSView childControl = child.GetContainerView ();
 			var frame = parent.Frame;
@@ -79,7 +79,7 @@ namespace Eto.Platform.Mac.Forms
 					NSView childControl = child.GetContainerView ();
 					childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
 					
-					NSView parent = (NSView)ControlObject;
+					NSView parent = this.Control;
 					parent.AddSubview(childControl);
 				}
 				else

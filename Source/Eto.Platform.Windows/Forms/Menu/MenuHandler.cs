@@ -6,7 +6,7 @@ namespace Eto.Platform.Windows
 {
 	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget
 		where T: SWF.ToolStripItem
-		where W: Widget
+		where W: InstanceWidget
 	{
 
 		public override void AttachEvent (string handler)

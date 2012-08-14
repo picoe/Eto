@@ -15,7 +15,7 @@ namespace Eto.Threading
 		bool IsAlive { get; }
 	}
 	
-	public class Thread : Widget
+	public class Thread : InstanceWidget
 	{
 		IThread inner;
 		Action action;

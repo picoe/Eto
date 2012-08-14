@@ -33,7 +33,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public override void CreateControl(ToolBarHandler handler)
 		{
-			Gtk.Toolbar tb = (Gtk.Toolbar)handler.ControlObject;
+			Gtk.Toolbar tb = handler.Control;
 			
 			Control = new Gtk.ToggleToolButton();
 			Control.Active = ischecked;

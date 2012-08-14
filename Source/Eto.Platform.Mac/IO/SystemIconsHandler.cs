@@ -6,35 +6,29 @@ using System.IO;
 using Eto.Platform.Mac.Drawing;
 namespace Eto.Platform.Mac.IO
 {
-	public class SystemIconsHandler : WidgetHandler, ISystemIcons
+	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons
 	{
-		public SystemIconsHandler ()
-		{
-		}
-	
-
 		#region ISystemIcons implementation
 		public Icon GetFileIcon (string fileName, IconSize size)
 		{
-			var ws = new NSWorkspace();
-			var image = ws.IconForFileType(Path.GetExtension(fileName));
-			return new Icon(new IconHandler(image));	
+			var ws = new NSWorkspace ();
+			var image = ws.IconForFileType (Path.GetExtension (fileName));
+			return new Icon (new IconHandler (image));
 		}
 
 		public Icon GetStaticIcon (StaticIconType type, IconSize size)
 		{
-			var ws = new NSWorkspace();
+			var ws = new NSWorkspace ();
 			string code;
-			switch (type)
-			{
+			switch (type) {
 			case StaticIconType.OpenDirectory: code = "ofld"; break;
 			default:
 			case StaticIconType.CloseDirectory: code = "ofld"; break;
 			}
-			var image = ws.IconForFileType(code);
-			return new Icon(new IconHandler(image));	
+			var image = ws.IconForFileType (code);
+			return new Icon (new IconHandler (image));
 		}
 		#endregion
-}
+	}
 }
 

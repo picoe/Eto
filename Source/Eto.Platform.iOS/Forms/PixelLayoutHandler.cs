@@ -24,7 +24,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public void Add(Control child, int x, int y)
 		{
-			var parent = ControlObject as UIView;
+			var parent = this.Control;
 			var childView = child.ControlObject as UIView;
 			var offset = ((IiosView)child.Handler).PositionOffset;
 			

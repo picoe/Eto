@@ -6,7 +6,7 @@ namespace Eto.Platform.iOS.Forms
 {
 	public class iosObject<T, W> : WidgetHandler<T, W>
 		where T: NSObject 
-		where W: Widget
+		where W: InstanceWidget
 	{
 		List<NSObject> notifications;
 		List<ControlObserver> observers;

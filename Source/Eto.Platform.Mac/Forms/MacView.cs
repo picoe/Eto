@@ -405,7 +405,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual bool HasFocus {
 			get {
-				return Control.Window != null && Control.Window.FirstResponder == ControlObject;
+				return Control.Window != null && Control.Window.FirstResponder == Control;
 			}
 		}
 

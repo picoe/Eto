@@ -2,7 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IUITimer : IWidget
+	public interface IUITimer : IInstanceWidget
 	{
 		double Interval { get; set; }
 
@@ -11,7 +11,7 @@ namespace Eto.Forms
 		void Stop ();
 	}
 	
-	public class UITimer : Widget
+	public class UITimer : InstanceWidget
 	{
 		IUITimer handler;
 		public static double DefaultInterval = 1.0; // 1 second

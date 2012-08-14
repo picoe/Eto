@@ -4,11 +4,8 @@ using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
-	/// <summary>
-	/// Summary description for MenuBarHandler.
-	/// </summary>
 	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IMenu, IWidget
-		where W: Widget
+		where W: InstanceWidget
 	{
 		protected void ValidateItems()
 		{

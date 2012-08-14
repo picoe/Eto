@@ -4,10 +4,7 @@ using Eto.IO;
 
 namespace Eto.Platform.GtkSharp.IO
 {
-	/// <summary>
-	/// Summary description for SystemIcons.
-	/// </summary>
-	public class SystemIcons : WidgetHandler, ISystemIcons
+	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons
 	{
 		#region ISystemIcons Members
 

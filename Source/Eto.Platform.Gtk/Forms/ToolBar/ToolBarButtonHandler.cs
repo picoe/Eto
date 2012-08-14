@@ -16,7 +16,7 @@ namespace Eto.Platform.GtkSharp
 
 		public override void CreateControl(ToolBarHandler handler)
 		{
-			Gtk.Toolbar tb = (Gtk.Toolbar)handler.ControlObject;
+			Gtk.Toolbar tb = handler.Control;
 
 			Control = new Gtk.ToolButton(Image, this.Text);
 			Control.Clicked += button_Clicked;

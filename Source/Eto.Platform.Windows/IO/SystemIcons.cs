@@ -6,10 +6,7 @@ using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows.IO
 {
-	/// <summary>
-	/// Summary description for SystemIcons.
-	/// </summary>
-	public class SystemIcons : WidgetHandler, ISystemIcons
+	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons
 	{
 		#region ISystemIcons Members
 
