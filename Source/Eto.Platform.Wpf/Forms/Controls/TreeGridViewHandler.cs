@@ -82,37 +82,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		static private bool SetSelected (swc.ItemsControl parent, object child)
-		{
-
-			if (parent == null || child == null) {
-				return false;
-			}
-
-			var childNode = parent.ItemContainerGenerator.ContainerFromItem (child) as swc.TreeViewItem;
-
-			if (childNode != null) {
-				childNode.Focus ();
-				return childNode.IsSelected = true;
-			}
-
-			if (parent.Items.Count > 0) {
-				foreach (object childItem in parent.Items) {
-					var childControl = parent.ItemContainerGenerator.ContainerFromItem (childItem) as swc.ItemsControl;
-
-					if (SetSelected (childControl, child)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
 		public ITreeGridItem SelectedItem
 		{
 			get { return Control.SelectedItem as ITreeGridItem; }
-			set { SetSelected (Control, value); }
+			set { Control.SelectedItem = value; }
 		}
 
 		public override sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)
