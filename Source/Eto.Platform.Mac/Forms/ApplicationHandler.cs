@@ -13,6 +13,8 @@ namespace Eto.Platform.Mac.Forms
 		public NSApplicationDelegate AppDelegate { get; set; }
 		
 		public bool AddFullScreenMenuItem { get; set; }
+
+		public bool AddPrintingMenuItems { get; set; }
 		
 		public static ApplicationHandler Instance {
 			get { return Application.Instance.Handler as ApplicationHandler; }
@@ -146,7 +148,9 @@ namespace Eto.Platform.Mac.Forms
 			args.Actions.Add (new MacButtonAction ("mac_undo", "Undo", "undo:") { Accelerator = Key.Application | Key.Z });
 			args.Actions.Add (new MacButtonAction ("mac_redo", "Redo", "redo:") { Accelerator = Key.Application | Key.Shift | Key.Z });
 			args.Actions.Add (new MacButtonAction ("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Key.Application | Key.Control | Key.F });
-			
+			args.Actions.Add (new MacButtonAction ("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Accelerator = Key.Application | Key.Shift | Key.P });
+			args.Actions.Add (new MacButtonAction ("mac_print", "Print...", "print:") { Accelerator = Key.Application | Key.P });
+
 			if (addStandardItems) {
 				var application = args.Menu.FindAddSubMenu (Widget.Name ?? "Application", 100);
 				application.Actions.AddSeparator (800);
@@ -158,7 +162,13 @@ namespace Eto.Platform.Mac.Forms
 				var file = args.Menu.FindAddSubMenu ("&File", 100);
 				file.Actions.AddSeparator (900);
 				file.Actions.Add ("mac_performClose", 900);
-				
+
+				if (AddPrintingMenuItems) {
+					file.Actions.AddSeparator (1000);
+					file.Actions.Add ("mac_runPageLayout", 1000);
+					file.Actions.Add ("mac_print", 1000);
+				}
+
 				var edit = args.Menu.FindAddSubMenu ("&Edit", 200);
 				edit.Actions.AddSeparator (100);
 				edit.Actions.Add ("mac_undo", 100);
