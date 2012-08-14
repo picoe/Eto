@@ -70,7 +70,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var image = Widget.ImageBinding.GetValue (dataItem) as Image;
 				result.Image = image != null ? ((IImageSource)image.Handler).GetImage () : null;
 			}
-			else result.Image = new NSImage();
+			else result.Image = null;
 			return result;
 		}
 		

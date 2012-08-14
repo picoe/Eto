@@ -110,24 +110,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 					
 				if (data.Image != null) {
 					var imageSize = data.Image.Size;
-					var newHeight = Math.Min (imageSize.Height, cellFrame.Height);
-					var newWidth = imageSize.Width * newHeight / imageSize.Height;
-					
-					var imageRect = new SD.RectangleF (cellFrame.X, cellFrame.Y, newWidth, newHeight);
-					imageRect.Y += (cellFrame.Height - newHeight) / 2;
-					
-					if (data.Image.RespondsToSelector (new Selector (selDrawInRectFromRectOperationFractionRespectFlippedHints)))
-						// 10.6+
-						data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
-					else {
-						// 10.5-
-						#pragma warning disable 618
-						data.Image.Flipped = this.ControlView.IsFlipped; 
-						#pragma warning restore 618
-						data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
+					if (imageSize.Width > 0 && imageSize.Height > 0) {
+						var newHeight = Math.Min (imageSize.Height, cellFrame.Height);
+						var newWidth = imageSize.Width * newHeight / imageSize.Height;
+						
+						var imageRect = new SD.RectangleF (cellFrame.X, cellFrame.Y, newWidth, newHeight);
+						imageRect.Y += (cellFrame.Height - newHeight) / 2;
+
+						if (data.Image.RespondsToSelector (new Selector (selDrawInRectFromRectOperationFractionRespectFlippedHints)))
+							// 10.6+
+							data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1, true, null);
+						else {
+							// 10.5-
+							#pragma warning disable 618
+							data.Image.Flipped = this.ControlView.IsFlipped; 
+							#pragma warning restore 618
+							data.Image.Draw (imageRect, new SD.RectangleF (SD.PointF.Empty, data.Image.Size), NSCompositingOperation.SourceOver, 1);
+						}
+						cellFrame.Width -= newWidth + ImagePadding;
+						cellFrame.X += newWidth + ImagePadding;
 					}
-					cellFrame.Width -= newWidth + ImagePadding;
-					cellFrame.X += newWidth + ImagePadding;
 				}
 			}
 			

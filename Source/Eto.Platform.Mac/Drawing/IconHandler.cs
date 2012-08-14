@@ -27,6 +27,8 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void Create (string fileName)
 		{
+			if (!File.Exists (fileName))
+				throw new FileNotFoundException ("Icon not found", fileName);
 			Control = new NSImage (fileName);
 		}
 
