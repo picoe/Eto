@@ -2,9 +2,19 @@ using System;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Enumeration of the orientations available for the <see cref="Slider"/> control
+	/// </summary>
 	public enum SliderOrientation
 	{
+		/// <summary>
+		/// Slider should be shown in a horizontal orientation
+		/// </summary>
 		Horizontal,
+
+		/// <summary>
+		/// Slider should be shown in a vertical orientation
+		/// </summary>
 		Vertical
 	}
 	

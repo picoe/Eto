@@ -72,19 +72,19 @@ namespace Eto
 		/// <summary>
 		/// Called to handle an event for this binding
 		/// </summary>
-		/// <param name="handler"></param>
-		protected virtual void HandleEvent (string handler)
+		/// <param name="id"></param>
+		protected virtual void HandleEvent (string id)
 		{
 #if DEBUG
-			throw new EtoException(string.Format ("This binding does not support the {0} event", handler));
+			throw new EtoException(string.Format ("This binding does not support the {0} event", id));
 #endif
 		}
 		
 		/// <summary>
 		/// Called to remove an event for this binding
 		/// </summary>
-		/// <param name="handler"></param>
-		protected virtual void RemoveEvent (string handler)
+		/// <param name="id"></param>
+		protected virtual void RemoveEvent (string id)
 		{
 		}
 	}

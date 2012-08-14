@@ -2,26 +2,85 @@ using System;
 
 namespace Eto.Drawing
 {
+	/// <summary>
+	/// Enumeration of the standard Font Families for a <see cref="Font"/>
+	/// </summary>
 	public enum FontFamily
 	{
+		/// <summary>
+		/// Font family with each character having the same width
+		/// </summary>
 		Monospace,
+
+		/// <summary>
+		/// Font family with no serifs (e.g. Arial, Helvetica, etc)
+		/// </summary>
 		Sans,
+
+		/// <summary>
+		/// Font family with serifs (e.g. Times New Roman, etc)
+		/// </summary>
 		Serif
 	}
 	
+	/// <summary>
+	/// Enumeration of the different system fonts
+	/// </summary>
+	/// <remarks>
+	/// This is useful when you want to use a font that is the same as standard UI elements.
+	/// </remarks>
 	public enum SystemFont
 	{
+		/// <summary>
+		/// Default system font
+		/// </summary>
 		Default,
+
+		/// <summary>
+		/// Default system font in BOLD
+		/// </summary>
 		Bold,
+
+		/// <summary>
+		/// Default label font
+		/// </summary>
 		Label
-#if DESKTOP		
+#if DESKTOP
 		,
+
+		/// <summary>
+		/// Default title bar font (window title)
+		/// </summary>
 		TitleBar,
+
+		/// <summary>
+		/// Default tool top font
+		/// </summary>
 		ToolTip,
+
+		/// <summary>
+		/// Default menu bar font
+		/// </summary>
 		MenuBar,
+
+		/// <summary>
+		/// Default font for items in a menu
+		/// </summary>
 		Menu,
+
+		/// <summary>
+		/// Default font for message boxes
+		/// </summary>
 		Message,
+
+		/// <summary>
+		/// Default font for palette dialogs
+		/// </summary>
 		Palette,
+
+		/// <summary>
+		/// Default font for status bars
+		/// </summary>
 		StatusBar
 #endif
 	}

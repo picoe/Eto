@@ -60,7 +60,9 @@ namespace Eto.Test.Sections.Dialogs
 			control.Click += delegate {
 				var dialog = CreateDialog ();
 				dialog.Title = "Resizable Dialog";
+#if DESKTOP
 				dialog.Resizable = true;
+#endif
 				dialog.ShowDialog (this);
 			};
 
@@ -72,9 +74,11 @@ namespace Eto.Test.Sections.Dialogs
 			var control = new Button { Text = "Kitchen Sink && Maximized" };
 			control.Click += delegate {
 				var dialog = new Dialog ();
+#if DESKTOP
 				dialog.State = WindowState.Maximized;
-				dialog.Title = "Kitchen Sink Dialog";
 				dialog.Resizable = true;
+#endif
+				dialog.Title = "Kitchen Sink Dialog";
 				dialog.AddDockedControl(new Controls.KitchenSinkSection());
 				dialog.ShowDialog (this);
 			};

@@ -30,8 +30,8 @@ namespace Eto
 	/// </summary>
 	/// <remarks>
 	/// This binding is an indirect binding on a particular column/index of each object.
-	/// This is used to get/set values of a passed-in object to the <see cref="ColumnBinding.GetValue"/> and
-	/// <see cref="ColumnBinding.SetValue"/>.
+	/// This is used to get/set values of a passed-in object to the <see cref="IndirectBinding.GetValue"/> and
+	/// <see cref="IndirectBinding.SetValue"/>.
 	/// </remarks>
 	public class ColumnBinding : IndirectBinding
 	{

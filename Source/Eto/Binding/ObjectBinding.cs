@@ -13,7 +13,7 @@ namespace Eto
 	/// a <see cref="IndirectBinding"/> as its logic to actually retrieve/set the values.
 	/// 
 	/// This acts as a bridge between the <see cref="IndirectBinding"/> and <see cref="DirectBinding"/>
-	/// so that you can utilize the <see cref="ObjectBinding.DataValueChanged"/> method.
+	/// so that you can utilize the <see cref="DirectBinding.DataValueChanged"/> method.
 	/// 
 	/// Typically, one would use the <see cref="PropertyBinding"/>, or the <see cref="ObjectBinding (object, string)"/>
 	/// constructor to hook up this binding to a particular property of the specified object

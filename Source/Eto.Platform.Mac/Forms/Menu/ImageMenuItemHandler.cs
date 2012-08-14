@@ -27,8 +27,7 @@ namespace Eto.Platform.Mac
 		{
 			Widget.OnClick (EventArgs.Empty);
 		}
-		
-		
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {

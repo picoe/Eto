@@ -9,7 +9,7 @@ namespace Eto
 	/// Arguments for when a binding's value is changing
 	/// </summary>
 	/// <remarks>
-	/// When handling the event, one could cancel setting the new value by setting the <see cref="BindingChangingEventArgs.Cancel"/>
+	/// When handling the event, one could cancel setting the new value by setting the <see cref="CancelEventArgs.Cancel"/>
 	/// property to false.
 	/// </remarks>
 	public class BindingChangingEventArgs : CancelEventArgs

@@ -9,15 +9,6 @@ namespace Eto.Platform.Windows
 {
 	public class ButtonHandler : WindowsControl<System.Windows.Forms.Button, Button>, IButton
 	{
-		/*
-		private static MethodInfo miClick;
-
-		static ButtonHandler()
-		{
-			miClick = Generator.GetEventMethod(typeof(Button), "OnClick");
-		}
-		*/
-		
 		public override SWF.DockStyle DockStyle {
 			get {
 				return SWF.DockStyle.Top;

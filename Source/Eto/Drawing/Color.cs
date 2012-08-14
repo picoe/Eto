@@ -37,8 +37,10 @@ namespace Eto.Drawing
 		/// <summary>
 		/// An empty color with zero for all components
 		/// </summary>
+		#pragma warning disable 618
 		[Obsolete("Use nullable values instead of empty color structs")]
 		public static readonly Color Empty = new Color { IsEmpty = true };
+		#pragma warning restore 618
 
 		public static Color FromArgb (uint argb)
 		{

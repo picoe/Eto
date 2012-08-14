@@ -29,18 +29,16 @@ namespace Eto.Test.Mac
 		static void AddStyles ()
 		{
 			// support full screen mode!
-			Style.Add<Window, NSWindow> ("main", (widget, control) => {
-				control.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
+			Style.Add<FormHandler> ("main", handler => {
+				handler.Control.CollectionBehavior |= NSWindowCollectionBehavior.FullScreenPrimary;
 			});
-			
-			Style.Add<Application, NSApplication> ("application", (widget, control) => {
-				if (control.RespondsToSelector (new Selector ("presentationOptions:"))) {
-					control.PresentationOptions |= NSApplicationPresentationOptions.FullScreen;
-				}
+
+			Style.Add<ApplicationHandler> ("application", handler => {
+				handler.EnableFullScreen ();
 			});
 
 			// other styles
-			Style.AddHandler<TreeGridViewHandler> ("sectionList", (handler) => {
+			Style.Add<TreeGridViewHandler> ("sectionList", handler => {
 				handler.ScrollView.BorderType = NSBorderType.NoBorder;
 				handler.Control.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
 			});

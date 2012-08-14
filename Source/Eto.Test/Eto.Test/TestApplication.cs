@@ -11,6 +11,7 @@ namespace Eto.Test
 			: base(generator)
 		{
 			this.Name = "Test Application";
+			this.Style = "application";
 		}
 
 		public override void OnInitialized (EventArgs e)

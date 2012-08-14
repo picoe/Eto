@@ -77,7 +77,7 @@ namespace Eto
 		/// This is used to wire up events (or other mechanisms) to detect if the value is changed for a particular
 		/// object.
 		/// 
-		/// This is typically used to fire the <see cref="ObjectBinding.DataValueChanged"/> event (which is wired up automatically)
+		/// This is typically used to fire the <see cref="DirectBinding.DataValueChanged"/> event (which is wired up automatically)
 		/// </remarks>
 		/// <param name="dataItem">object to hook up the value changed event for</param>
 		/// <param name="handler">handler for when the value of this binding changes for the specified object</param>
