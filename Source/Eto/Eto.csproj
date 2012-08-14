@@ -99,6 +99,7 @@
     <Compile Include="InstanceWidget.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />

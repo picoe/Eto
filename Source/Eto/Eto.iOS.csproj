@@ -246,6 +246,7 @@
     <Compile Include="Binding\IndirectBinding.cs" />
     <Compile Include="Generators.cs" />
     <Compile Include="PropertyStore.cs" />
+    <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="XmlExtensions.cs" />
   </ItemGroup>

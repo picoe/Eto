@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using Eto.Misc;
 using System.Diagnostics;
 using System.Threading;
 using System.ComponentModel;

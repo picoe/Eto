@@ -52,6 +52,20 @@ namespace Eto
 	/// </summary>
 	public static class EtoEnvironment
 	{
+		static OperatingSystemPlatform platform;
+
+		/// <summary>
+		/// Gets the platform information for the currently running operating system
+		/// </summary>
+		public static OperatingSystemPlatform Platform {
+			get
+			{
+				if (platform == null)
+					platform = new OperatingSystemPlatform ();
+				return platform;
+			}
+		}
+
 		/// <summary>
 		/// Gets the folder path for the specified special folder
 		/// </summary>
