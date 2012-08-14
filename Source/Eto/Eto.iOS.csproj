@@ -175,7 +175,6 @@
     <Compile Include="CancelEventHandler.cs" />
     <Compile Include="Forms\Controls\Navigation.cs" />
     <Compile Include="Forms\Actions\ActionCollection.cs" />
-    <Compile Include="Misc\XmlExtensions.cs" />
     <Compile Include="Drawing\BitmapData.cs" />
     <Compile Include="Forms\UITimer.cs" />
     <Compile Include="Forms\Clipboard.cs" />
@@ -248,6 +247,7 @@
     <Compile Include="Generators.cs" />
     <Compile Include="PropertyStore.cs" />
     <Compile Include="Drawing\Colors.cs" />
+    <Compile Include="XmlExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
