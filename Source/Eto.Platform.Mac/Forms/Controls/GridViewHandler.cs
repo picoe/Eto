@@ -33,9 +33,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override NSObject GetObjectValue (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
 				var item = Handler.collection.Collection [row];
-				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				if (id != null) {
-					return id.Handler.GetObjectValue (item);
+				var colHandler = Handler.GetColumn (tableColumn);
+				if (colHandler != null) {
+					return colHandler.GetObjectValue (item);
 				}
 				return null;
 			}
@@ -43,60 +43,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void SetObjectValue (NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)
 			{
 				var item = Handler.collection.Collection [row];
-				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				if (id != null) {
-					id.Handler.SetObjectValue (item, theObject);
+				var colHandler = Handler.GetColumn (tableColumn);
+				if (colHandler != null) {
+					colHandler.SetObjectValue (item, theObject);
 					
-					Handler.Widget.OnEndCellEdit (new GridViewCellArgs ((GridColumn)id.Handler.Widget, row, id.Column, item));
+					Handler.Widget.OnEndCellEdit (new GridViewCellArgs ((GridColumn)colHandler.Widget, row, colHandler.Column, item));
 				}
 			}
 		}
 
-		class MacCellFormatArgs : GridCellFormatEventArgs
-		{
-			Font font;
-
-			public ICellHandler CellHandler { get { return Column.DataCell.Handler as ICellHandler; } }
-
-			public NSCell Cell { get; private set; }
-
-			public MacCellFormatArgs(GridColumn column, object item, int row, NSCell cell)
-				: base(column, item, row)
-			{
-				this.Cell = cell;
-			}
-
-			public override Font Font {
-				get { return font; }
-				set {
-					font = value;
-					if (font != null)
-						Cell.Font = ((FontHandler)font.Handler).Control;
-					else
-						Cell.Font = null;
-				}
-			}
-
-			public override Color BackgroundColor {
-				get { return CellHandler.GetBackgroundColor (Cell); }
-				set { CellHandler.SetBackgroundColor (Cell, value); }
-			}
-
-			public override Color ForegroundColor {
-				get { return CellHandler.GetForegroundColor (Cell); }
-				set { CellHandler.SetForegroundColor (Cell, value); }
-			}
-		}
-		
 		class EtoTableDelegate : NSTableViewDelegate
 		{
 			public GridViewHandler Handler { get; set; }
 
 			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
-				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
+				var colHandler = Handler.GetColumn (tableColumn);
 				var item = Handler.collection.Collection [row];
-				var args = new GridViewCellArgs ((GridColumn)id.Handler.Widget, row, id.Column, item);
+				var args = new GridViewCellArgs (colHandler.Widget, row, colHandler.Column, item);
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
 			}
@@ -108,19 +72,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
 			{
-				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				var column = Handler.Widget.Columns[id.Column];
-				// var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
-				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (column));
+				var colHandler = Handler.GetColumn (tableColumn);
+				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (colHandler.Widget));
 			}
 
 			public override void WillDisplayCell (NSTableView tableView, NSObject cell, NSTableColumn tableColumn, int row)
 			{
-				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				var column = Handler.Widget.Columns[id.Column];
-				//var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
+				var colHandler = Handler.GetColumn (tableColumn);
 				var item = Handler.GetItem (row);
-				Handler.Widget.OnCellFormatting(new MacCellFormatArgs(column, item, row, cell as NSCell));
+				Handler.OnCellFormatting(colHandler.Widget, item, row, cell as NSCell);
 
 			}
 		}

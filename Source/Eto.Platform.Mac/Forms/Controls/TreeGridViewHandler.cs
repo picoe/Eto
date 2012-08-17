@@ -13,7 +13,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		ITreeGridStore<ITreeGridItem> store;
 		Dictionary<ITreeGridItem, EtoTreeItem> cachedItems = new Dictionary<ITreeGridItem, EtoTreeItem> ();
 		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
-		
+
 		class EtoTreeItem : NSObject
 		{
 			Dictionary<int, EtoTreeItem> items;
@@ -95,8 +95,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override void DidClickTableColumn (NSOutlineView outlineView, NSTableColumn tableColumn)
 			{
-				var column = Handler.Widget.Columns.First (r => object.ReferenceEquals (r.ControlObject, tableColumn));
-				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (column));
+				var column = Handler.GetColumn (tableColumn);
+				Handler.Widget.OnColumnHeaderClick (new GridColumnEventArgs (column.Widget));
+			}
+
+			public override void WillDisplayCell (NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)
+			{
+				var colHandler = Handler.GetColumn (tableColumn);
+				var myitem = item as EtoTreeItem;
+				if (myitem != null) {
+					Handler.OnCellFormatting(colHandler.Widget, myitem.Item, -1, cell as NSCell);
+				}
 			}
 		}
 			
@@ -107,15 +116,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
 			{
 				var myitem = byItem as EtoTreeItem;
-				var id = forTableColumn.Identifier as EtoDataColumnIdentifier;
-				return id.Handler.GetObjectValue (myitem.Item);
+				var colHandler = Handler.GetColumn (forTableColumn);
+				if (colHandler != null) {
+					return colHandler.GetObjectValue (myitem.Item);
+				}
+				return null;
 			}
 			
 			public override void SetObjectValue (NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
 			{
 				var myitem = item as EtoTreeItem;
-				var id = tableColumn.Identifier as EtoDataColumnIdentifier;
-				id.Handler.SetObjectValue (myitem.Item, theObject);
+				var colHandler = Handler.GetColumn (tableColumn);
+				if (colHandler != null) {
+					colHandler.SetObjectValue (myitem.Item, theObject);
+				}
 			}
 			
 			public override bool ItemExpandable (NSOutlineView outlineView, NSObject item)

@@ -32,7 +32,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public ImageTextCellHandler ()
 		{
-			Control = new EtoCell { Handler = this };
+			Control = new EtoCell { 
+				Handler = this, 
+				Wraps = false
+			};
 		}
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
@@ -85,12 +88,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)
+		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell)
 		{
 			var val = value as MacImageData;
 			if (val == null) return 0;
 			
-			var font = Control.Font ?? NSFont.SystemFontOfSize (NSFont.SystemFontSize);
+			var font = cell.Font ?? NSFont.SystemFontOfSize (NSFont.SystemFontSize);
 			var str = val.Text;
 			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
 			

@@ -6,6 +6,7 @@ using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -52,6 +53,43 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.MouseDown (theEvent);
 		}
 	}
+
+	class MacCellFormatArgs : GridCellFormatEventArgs
+	{
+		Font font;
+		
+		public ICellHandler CellHandler { get { return Column.DataCell.Handler as ICellHandler; } }
+		
+		public NSCell Cell { get; private set; }
+		
+		public MacCellFormatArgs(GridColumn column, object item, int row, NSCell cell)
+			: base(column, item, row)
+		{
+			this.Cell = cell;
+		}
+		
+		public override Font Font {
+			get { return font; }
+			set {
+				font = value;
+				if (font != null)
+					Cell.Font = ((FontHandler)font.Handler).Control;
+				else
+					Cell.Font = null;
+			}
+		}
+		
+		public override Color BackgroundColor {
+			get { return CellHandler.GetBackgroundColor (Cell); }
+			set { CellHandler.SetBackgroundColor (Cell, value); }
+		}
+		
+		public override Color ForegroundColor {
+			get { return CellHandler.GetForegroundColor (Cell); }
+			set { CellHandler.SetForegroundColor (Cell, value); }
+		}
+	}
+
 	
 	public abstract class GridHandler<T, W> : MacView<T, W>, IGrid, IDataViewHandler, IGridHandler
 		where T: NSTableView
@@ -59,7 +97,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
-		
+
 		public NSTableView Table {
 			get { return Control; }
 		}
@@ -75,7 +113,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected virtual void UpdateColumns ()
 		{
 		}
-		
+
+		public GridColumnHandler GetColumn (NSTableColumn tableColumn)
+		{
+			var str = tableColumn.Identifier as NSString;
+			if (str != null) {
+				int col;
+				if (int.TryParse ((string)str, out col)) {
+					return GetColumn (col);
+				}
+			}
+			return null;
+		}
+
+		public GridColumnHandler GetColumn (int column)
+		{
+			return Widget.Columns[column].Handler as GridColumnHandler;
+			//return Widget.Columns.Select (r => r.Handler as GridColumnHandler).First (r => r.Column == column);
+		}
 		
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
@@ -104,8 +159,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				colhandler.Setup (index);
 				for (int i = index + 1; i < columns.Count; i++) {
 					var col = columns [i];
-					var id = col.Identifier as EtoDataColumnIdentifier;
-					id.Handler.Setup (i);
+					var colHandler = Handler.GetColumn (i);
+					colHandler.Setup (i);
 					outline.AddColumn (col);
 				}
 				Handler.UpdateColumns ();
@@ -122,8 +177,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				columns.RemoveAt (index);
 				for (int i = index; i < columns.Count; i++) {
 					var col = columns [i];
-					var id = col.Identifier as EtoDataColumnIdentifier;
-					id.Handler.Setup (i);
+					var colHandler = Handler.GetColumn (i);
+					colHandler.Setup (i);
 					outline.AddColumn (col);
 				}
 				Handler.UpdateColumns ();
@@ -279,6 +334,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (width == 0) width = 100;
 			var height = this.RowHeight * 10;
 			return new Size(width, height);
+		}
+
+		public void OnCellFormatting(GridColumn column, object item, int row, NSCell cell)
+		{
+			Widget.OnCellFormatting(new MacCellFormatArgs(column, item, row, cell));
 		}
 	}
 }

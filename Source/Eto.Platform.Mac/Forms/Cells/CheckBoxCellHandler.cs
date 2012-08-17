@@ -100,7 +100,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return new NSNumber ((int)NSCellStateValue.Off);
 		}
 		
-		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize)
+		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell)
 		{
 			return 25;
 		}

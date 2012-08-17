@@ -19,6 +19,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		int RowCount { get; }
 		
 		System.Drawing.RectangleF GetVisibleRect ();
+
+		void OnCellFormatting(GridColumn column, object item, int row, NSCell cell);
 	}
 	
 	public interface IDataColumnHandler
@@ -30,15 +32,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		void SetObjectValue (object dataItem, NSObject val);
 		
 		GridColumn Widget { get; }
+
+		IDataViewHandler DataViewHandler { get; }
 	}
 	
-	public class EtoDataColumnIdentifier : NSObject
-	{
-		public int Column { get; set; }
-
-		public IDataColumnHandler Handler { get; set; }
-	}
-
 	public class GridColumnHandler : MacObject<NSTableColumn, GridColumn>, IGridColumn, IDataColumnHandler
 	{
 		Cell dataCell;
@@ -101,8 +98,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		protected virtual float GetRowWidth (ICellHandler cell, int row, System.Drawing.SizeF cellSize)
 		{
-			var val = GetObjectValue (DataViewHandler.GetItem (row));
-			return cell.GetPreferredSize (val, cellSize);
+			var item = DataViewHandler.GetItem (row);
+			var val = GetObjectValue (item);
+			return cell.GetPreferredSize (val, cellSize, row, item);
 		}
 		
 		public string HeaderText {
@@ -170,7 +168,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public void Setup (int column)
 		{
 			this.Column = column;
-			Control.Identifier = new EtoDataColumnIdentifier{ Handler = this, Column = column };
+			Control.Identifier = new NSString(column.ToString ());
 		}
 		
 		public NSObject GetObjectValue (object dataItem)

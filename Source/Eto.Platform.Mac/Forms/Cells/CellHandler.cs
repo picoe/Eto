@@ -17,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		void SetObjectValue (object dataItem, NSObject val);
 		
-		float GetPreferredSize (object value, System.Drawing.SizeF cellSize);
+		float GetPreferredSize (object value, System.Drawing.SizeF cellSize, int row, object dataItem);
 		
 		void HandleEvent (string handler);
 
@@ -37,6 +37,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		where W: Cell
 	{
 		public IDataColumnHandler ColumnHandler { get; set; }
+		NSCell copy;
 		
 		NSCell ICellHandler.Control {
 			get { return Control; }
@@ -64,7 +65,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public abstract void SetObjectValue (object dataItem, NSObject value);
 		
-		public abstract float GetPreferredSize (object value, System.Drawing.SizeF cellSize);
+		public abstract float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell);
+
+		public float GetPreferredSize (object value, System.Drawing.SizeF cellSize, int row, object dataItem)
+		{
+			if (copy == null)
+				copy = Control.Copy () as NSCell;
+			ColumnHandler.DataViewHandler.OnCellFormatting (ColumnHandler.Widget, dataItem, row, copy);
+			return GetPreferredSize (value, cellSize, copy);
+		}
+
 	}
 }
 
