@@ -182,6 +182,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
+		public void ResizeAllColumns ()
+		{
+			foreach (var col in Widget.Columns.Select (r => r.Handler as GridColumnHandler)) {
+				col.Resize();
+			}
+		}
+
 		public bool ShowHeader {
 			get {
 				return Control.HeaderView != null;

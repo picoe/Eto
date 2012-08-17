@@ -223,6 +223,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 					collection.Unregister ();
 				collection = new CollectionHandler{ Handler = this };
 				collection.Register (value);
+				if (Widget.Loaded)
+					ResizeAllColumns ();
 			}
 		}
 		

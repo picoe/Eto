@@ -209,6 +209,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				cachedItems.Clear ();
 				Control.ReloadData ();
 				ExpandItems (null);
+				if (Widget.Loaded)
+					ResizeAllColumns ();
 			}
 		}
 		
