@@ -116,7 +116,7 @@ namespace Eto.Platform.Wpf.Drawing
 					pos += 4;
 					int imgOffset = BitConverter.ToInt32 (srcBuf, pos);    // ICONDIRENTRY.dwImageOffset
 					if (imgOffset + imgSize > srcBuf.Length)
-						throw new Exception ("ugh");
+						throw new InvalidDataException ("Icon not a valid format");
 					writer.Write (srcBuf, imgOffset, imgSize);
 					writer.Flush ();
 

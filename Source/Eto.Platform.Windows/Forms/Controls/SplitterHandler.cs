@@ -30,6 +30,8 @@ namespace Eto.Platform.Windows
 			if (position != null) {
 				Control.SplitterDistance = position.Value;
 			}
+			Control.Panel1Collapsed = panel1 == null || !((IWindowsControl)panel1.Handler).InternalVisible;
+			Control.Panel2Collapsed = panel2 == null || !((IWindowsControl)panel2.Handler).InternalVisible;
 		}
 		
 		public SplitterFixedPanel FixedPanel {
@@ -102,7 +104,8 @@ namespace Eto.Platform.Windows
 						c.VisibleChanged += c1_VisibleChanged;
 						Control.Panel1.Controls.Add ((SWF.Control)panel1.ControlObject);
 					}
-					Control.Panel1Collapsed = panel1 == null || !panel1.Visible;
+					if (Widget.Loaded)
+						Control.Panel1Collapsed = panel1 == null || !((IWindowsControl)panel1.Handler).InternalVisible;
 					Control.ResumeLayout ();
 				}
 			}
@@ -125,7 +128,8 @@ namespace Eto.Platform.Windows
 						c.VisibleChanged += c2_VisibleChanged;
 						Control.Panel2.Controls.Add ((SWF.Control)panel2.ControlObject);
 					}
-					Control.Panel2Collapsed = panel2 == null || !panel2.Visible;
+					if (Widget.Loaded)
+						Control.Panel2Collapsed = panel2 == null || !((IWindowsControl)panel2.Handler).InternalVisible;
 					Control.ResumeLayout ();
 				}
 			}
