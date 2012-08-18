@@ -173,5 +173,74 @@ namespace Eto.Platform.Mac
 			if (date == null) return null;
 			return new DateTime ((long)(date.SecondsSinceReferenceDate * TimeSpan.TicksPerSecond + ReferenceDate.Ticks), DateTimeKind.Utc).ToLocalTime ();
 		}
+
+		public static NSImageInterpolation Convert (ImageInterpolation value)
+		{
+			switch (value) {
+			case ImageInterpolation.None:
+				return NSImageInterpolation.None;
+			case ImageInterpolation.Low:
+				return NSImageInterpolation.Low;
+			case ImageInterpolation.Medium:
+				return NSImageInterpolation.Medium;
+			case ImageInterpolation.High:
+				return NSImageInterpolation.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+
+		public static ImageInterpolation Convert (NSImageInterpolation value)
+		{
+			switch (value) {
+			case NSImageInterpolation.None:
+				return ImageInterpolation.None;
+			case NSImageInterpolation.Low:
+				return ImageInterpolation.Low;
+			case NSImageInterpolation.Medium:
+				return ImageInterpolation.Medium;
+			case NSImageInterpolation.Default:
+			case NSImageInterpolation.High:
+				return ImageInterpolation.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+
+		public static CGInterpolationQuality ConvertCG (ImageInterpolation value)
+		{
+			switch (value) {
+			case ImageInterpolation.Default:
+				return CGInterpolationQuality.Default;
+			case ImageInterpolation.None:
+				return CGInterpolationQuality.None;
+			case ImageInterpolation.Low:
+				return CGInterpolationQuality.Low;
+			case ImageInterpolation.Medium:
+				return CGInterpolationQuality.Medium;
+			case ImageInterpolation.High:
+				return CGInterpolationQuality.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+
+		public static ImageInterpolation ConvertCG (CGInterpolationQuality value)
+		{
+			switch (value) {
+			case CGInterpolationQuality.Default:
+				return ImageInterpolation.Default;
+			case CGInterpolationQuality.None:
+				return ImageInterpolation.None;
+			case CGInterpolationQuality.Low:
+				return ImageInterpolation.Low;
+			case CGInterpolationQuality.Medium:
+				return ImageInterpolation.Medium;
+			case CGInterpolationQuality.High:
+				return ImageInterpolation.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
 	}
 }

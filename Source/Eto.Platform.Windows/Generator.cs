@@ -121,5 +121,44 @@ namespace Eto.Platform.Windows
 			else if (family == SD.FontFamily.GenericSerif) return FontFamily.Serif;
 			else return FontFamily.Sans;
 		}
+
+		public static ImageInterpolation Convert (SD.Drawing2D.InterpolationMode value)
+		{
+			switch (value) {
+			case SD.Drawing2D.InterpolationMode.NearestNeighbor:
+				return ImageInterpolation.None;
+			case SD.Drawing2D.InterpolationMode.Low:
+				return ImageInterpolation.Low;
+			case SD.Drawing2D.InterpolationMode.High:
+				return ImageInterpolation.Medium;
+			case SD.Drawing2D.InterpolationMode.HighQualityBilinear:
+				return ImageInterpolation.High;
+			case SD.Drawing2D.InterpolationMode.Default:
+				return ImageInterpolation.Default;
+			case SD.Drawing2D.InterpolationMode.HighQualityBicubic:
+			case SD.Drawing2D.InterpolationMode.Bicubic:
+			case SD.Drawing2D.InterpolationMode.Bilinear:
+			default:
+				throw new NotSupportedException();
+			}
+		}
+
+		public static SD.Drawing2D.InterpolationMode Convert (ImageInterpolation value)
+		{
+			switch (value) {
+			case ImageInterpolation.Default:
+				return SD.Drawing2D.InterpolationMode.Default;
+			case ImageInterpolation.None:
+				return SD.Drawing2D.InterpolationMode.NearestNeighbor;
+			case ImageInterpolation.Low:
+				return SD.Drawing2D.InterpolationMode.Low;
+			case ImageInterpolation.Medium:
+				return SD.Drawing2D.InterpolationMode.High;
+			case ImageInterpolation.High:
+				return SD.Drawing2D.InterpolationMode.HighQualityBilinear;
+			default:
+				throw new NotSupportedException();
+			}
+		}
 	}
 }

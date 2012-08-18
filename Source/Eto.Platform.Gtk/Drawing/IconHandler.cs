@@ -41,7 +41,21 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
-			
+			var context = graphics.Control;
+			context.Save ();
+			context.Rectangle (Generator.ConvertC (destination));
+			double scalex = 1;
+			double scaley = 1;
+			if (source.Width != destination.Width || source.Height != destination.Height) {
+				scalex = (double)destination.Width / (double)source.Width;
+				scaley = (double)destination.Height / (double)source.Height;
+				context.Scale (scalex, scaley);
+			}
+			Gdk.CairoHelper.SetSourcePixbuf (context, Pixbuf, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
+			var pattern = context.Source as Cairo.SurfacePattern;
+			pattern.Filter = Generator.ConvertC (graphics.ImageInterpolation);
+			context.Fill ();
+			context.Restore ();
 		}
 
 		protected override void Dispose (bool disposing)

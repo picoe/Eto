@@ -33,8 +33,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				base.OnRender (dc);
 				if (Handler.virtualChildren == null) {
-					var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc));
-					Handler.Widget.OnPaint (new PaintEventArgs (graphics, new Rectangle (Handler.Widget.Size)));
+					var rect = new Rectangle (Handler.Widget.Size);
+					var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, Generator.Convert(rect)));
+					Handler.Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}
 			}
 		}
@@ -47,9 +48,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			protected override void OnRender (swm.DrawingContext dc)
 			{
-				var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc));
+				var rect = new sw.Rect (Child.Bounds.X, Child.Bounds.Y, Child.Bounds.Width + 0.5, Child.Bounds.Height + 0.5);
+				var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, rect));
 				dc.PushGuidelineSet(new swm.GuidelineSet(new double[] { Child.Bounds.Left, Child.Bounds.Right }, new double[] { Child.Bounds.Top, Child.Bounds.Bottom }));
-				dc.PushClip (new swm.RectangleGeometry (new sw.Rect(Child.Bounds.X, Child.Bounds.Y, Child.Bounds.Width + 0.5, Child.Bounds.Height + 0.5)));
 				Handler.Widget.OnPaint (new PaintEventArgs (graphics, Generator.Convert (Child.Bounds)));
 			}
 		}

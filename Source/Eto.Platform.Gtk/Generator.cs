@@ -42,6 +42,24 @@ namespace Eto.Platform.GtkSharp
 		{
 			return new Rectangle ((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
 		}
+
+		public static Cairo.Filter ConvertC (ImageInterpolation value)
+		{
+			switch (value) {
+			case ImageInterpolation.Default:
+				return  Cairo.Filter.Bilinear;
+			case ImageInterpolation.None:
+				return Cairo.Filter.Nearest;
+			case ImageInterpolation.High:
+				return  Cairo.Filter.Best;
+			case ImageInterpolation.Low:
+				return  Cairo.Filter.Fast;
+			case ImageInterpolation.Medium:
+				return  Cairo.Filter.Good;
+			default:
+				throw new NotSupportedException();
+			}
+		}
 		
 		public static Color Convert (Gdk.Color color)
 		{

@@ -55,6 +55,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
+		public ImageInterpolation ImageInterpolation {
+			get; set;
+		}
+
 		public void CreateFromImage (Bitmap image)
 		{
 			this.image = image;

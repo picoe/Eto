@@ -124,6 +124,7 @@ namespace Eto.Test
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
+			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 		}
 
 		IEnumerable<Section> LayoutsSection ()

@@ -143,5 +143,39 @@ namespace Eto.Platform.Wpf
 
 			return new MouseEventArgs(buttons, modifiers, location);
 		}
+
+		public static swm.BitmapScalingMode Convert (ImageInterpolation value)
+		{
+			switch (value) {
+			case ImageInterpolation.Default:
+				return swm.BitmapScalingMode.Unspecified;
+			case ImageInterpolation.None:
+				return swm.BitmapScalingMode.NearestNeighbor;
+			case ImageInterpolation.Low:
+				return swm.BitmapScalingMode.LowQuality;
+			case ImageInterpolation.Medium:
+				return swm.BitmapScalingMode.HighQuality;
+			case ImageInterpolation.High:
+				return swm.BitmapScalingMode.HighQuality;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static ImageInterpolation Convert (swm.BitmapScalingMode value)
+		{
+			switch (value) {
+			case swm.BitmapScalingMode.HighQuality:
+				return ImageInterpolation.High;
+			case swm.BitmapScalingMode.LowQuality:
+				return ImageInterpolation.Low;
+			case swm.BitmapScalingMode.NearestNeighbor:
+				return ImageInterpolation.None;
+			case swm.BitmapScalingMode.Unspecified:
+				return ImageInterpolation.Default;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }

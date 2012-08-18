@@ -101,6 +101,11 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
+		public ImageInterpolation ImageInterpolation {
+			get { return Generator.ConvertCG (context.InterpolationQuality); }
+			set { context.InterpolationQuality = Generator.ConvertCG (value); }
+		}
+
 		public void CreateFromImage (Bitmap image)
 		{
 			NSImage nsimage = (NSImage)image.ControlObject;
@@ -262,6 +267,8 @@ namespace Eto.Platform.Mac.Drawing
 			
 			if (!Flipped)
 				context.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+			context.SetLineCap (CGLineCap.Square);
+			context.SetLineWidth (1.0F);
 			context.BeginPath ();
 			context.AddPath (((GraphicsPathHandler)path.Handler).Control);
 			context.SetStrokeColor (Generator.Convert (color));

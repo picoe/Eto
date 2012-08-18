@@ -3,6 +3,15 @@ using System.Collections.Generic;
 
 namespace Eto.Drawing
 {
+	public enum ImageInterpolation
+	{
+		Default,
+		None,
+		Low,
+		Medium,
+		High
+	}
+
 	public interface IGraphics : IInstanceWidget
 	{
 		void CreateFromImage (Bitmap image);
@@ -34,6 +43,8 @@ namespace Eto.Drawing
 		void Flush ();
 		
 		bool Antialias { get; set; }
+
+		ImageInterpolation ImageInterpolation { get; set; }
 	}
 
 	public abstract class Region
@@ -49,11 +60,11 @@ namespace Eto.Drawing
 	
 	public class Graphics : InstanceWidget
 	{
-		IGraphics inner;
-		
-		public Graphics (Generator g, IGraphics inner) : base(g, inner)
+		IGraphics handler;
+
+		public Graphics (Generator g, IGraphics handler) : base(g, handler)
 		{
-			this.inner = inner;
+			this.handler = handler;
 		}
 
 		public Graphics (Bitmap image)
@@ -63,28 +74,28 @@ namespace Eto.Drawing
 
 		public Graphics (Generator g, Bitmap image) : base(g, typeof(IGraphics))
 		{
-			inner = (IGraphics)Handler;
-			inner.CreateFromImage (image);
+			this.handler = (IGraphics)Handler;
+			this.handler.CreateFromImage (image);
 		}
 
 		public void DrawLine (Color color, Point start, Point end)
 		{
-			inner.DrawLine (color, start.X, start.Y, end.X, end.Y);
+			handler.DrawLine (color, start.X, start.Y, end.X, end.Y);
 		}
 		
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
-			inner.DrawLine (color, startx, starty, endx, endy);
+			handler.DrawLine (color, startx, starty, endx, endy);
 		}
 
 		public void DrawRectangle (Color color, int x, int y, int width, int height)
 		{
-			inner.DrawRectangle (color, x, y, width, height);
+			handler.DrawRectangle (color, x, y, width, height);
 		}
 
 		public void DrawRectangle (Color color, Rectangle rectangle)
 		{
-			inner.DrawRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			handler.DrawRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 		
 		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, Rectangle rectangle)
@@ -97,18 +108,18 @@ namespace Eto.Drawing
 
 		public void FillRectangle (Color color, int x, int y, int width, int height)
 		{
-			inner.FillRectangle (color, x, y, width, height);
+			handler.FillRectangle (color, x, y, width, height);
 		}
 
 		public void FillRectangle (Color color, Rectangle rectangle)
 		{
-			inner.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
 		public void FillRectangles (Color color, IEnumerable<Rectangle> rectangles)
 		{
 			foreach (Rectangle rectangle in rectangles) {
-				inner.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+				handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 			}
 		}
 		
@@ -128,82 +139,87 @@ namespace Eto.Drawing
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{
-			inner.FillPath (color, path);
+			handler.FillPath (color, path);
 		}
 
 		public void DrawPath (Color color, GraphicsPath path)
 		{
-			inner.DrawPath (color, path);
+			handler.DrawPath (color, path);
 		}
 		
 		public void DrawImage (Image image, Point point)
 		{
-			inner.DrawImage (image, point.X, point.Y);
+			handler.DrawImage (image, point.X, point.Y);
 		}
 
 		public void DrawImage (Image image, int x, int y)
 		{
-			inner.DrawImage (image, x, y);
+			handler.DrawImage (image, x, y);
 		}
 
 		public void DrawImage (Image image, int x, int y, int width, int height)
 		{
-			inner.DrawImage (image, x, y, width, height);
+			handler.DrawImage (image, x, y, width, height);
 		}
 
 		public void DrawImage (Image image, Rectangle rect)
 		{
-			inner.DrawImage (image, rect.X, rect.Y, rect.Width, rect.Height);
+			handler.DrawImage (image, rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
 		public void DrawImage (Image image, Rectangle source, Point destination)
 		{
-			inner.DrawImage (image, source, new Rectangle (destination, source.Size));
+			handler.DrawImage (image, source, new Rectangle (destination, source.Size));
 		}
 
 		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
-			inner.DrawImage (image, source, destination);
+			handler.DrawImage (image, source, destination);
 		}
 
 		public void DrawIcon (Icon icon, Rectangle rectangle)
 		{
-			inner.DrawIcon (icon, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			handler.DrawIcon (icon, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
 		public void DrawIcon (Icon icon, int x, int y, int width, int height)
 		{
-			inner.DrawIcon (icon, x, y, width, height);
+			handler.DrawIcon (icon, x, y, width, height);
 		}
 
 		public void DrawText (Font font, Color color, int x, int y, string text)
 		{
-			inner.DrawText (font, color, x, y, text);
+			handler.DrawText (font, color, x, y, text);
 		}
 
 		public void DrawText (Font font, Color color, Point location, string text)
 		{
-			inner.DrawText (font, color, location.X, location.Y, text);
+			handler.DrawText (font, color, location.X, location.Y, text);
 		}
 		
 		public SizeF MeasureString (Font font, string text)
 		{
-			return inner.MeasureString (font, text);
+			return handler.MeasureString (font, text);
 		}
 
 		public bool Antialias {
-			get { return inner.Antialias; }
-			set { inner.Antialias = value; }
+			get { return handler.Antialias; }
+			set { handler.Antialias = value; }
 		}
 
 		public Region ClipRegion {
-			get { return inner.ClipRegion; }
-			set { inner.ClipRegion = value; }
+			get { return handler.ClipRegion; }
+			set { handler.ClipRegion = value; }
+		}
+
+		public ImageInterpolation ImageInterpolation {
+			get { return handler.ImageInterpolation; }
+			set { handler.ImageInterpolation = value; }
 		}
 		
 		public void Flush ()
 		{
-			inner.Flush ();
+			handler.Flush ();
 		}
 	}
 }

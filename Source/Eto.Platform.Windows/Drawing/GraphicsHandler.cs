@@ -37,7 +37,8 @@ namespace Eto.Platform.Windows.Drawing
 
 	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
-		
+		ImageInterpolation imageInterpolation;
+
 		public GraphicsHandler ()
 		{
 		}
@@ -62,12 +63,20 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 
+		public ImageInterpolation ImageInterpolation {
+			get { return imageInterpolation; }
+			set {
+				imageInterpolation = value;
+				Control.InterpolationMode = Generator.Convert (value);
+			}
+		}
+
 		public void CreateFromImage (Bitmap image)
 		{
 			Control = SD.Graphics.FromImage ((SD.Image)image.ControlObject);
 			Control.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
 			this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-			Control.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBilinear; //.NearestNeighbor;
+			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
 		public void Commit ()

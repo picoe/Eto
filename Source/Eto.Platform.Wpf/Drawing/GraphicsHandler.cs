@@ -14,6 +14,7 @@ namespace Eto.Platform.Wpf.Drawing
 	{
 		swm.Visual visual;
 		swm.DrawingVisual drawingVisual;
+		ImageInterpolation imageInterpolation;
 
 		Bitmap image;
 		double? dpi;
@@ -22,7 +23,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 		}
 
-		public GraphicsHandler (swm.Visual visual, swm.DrawingContext context)
+		public GraphicsHandler (swm.Visual visual, swm.DrawingContext context, sw.Rect? clipRect)
 		{
 			this.visual = visual;
 			
@@ -30,6 +31,10 @@ namespace Eto.Platform.Wpf.Drawing
 
 			if (DPI != 1.0)
 				this.Control.PushTransform (new swm.ScaleTransform (DPI, DPI));
+
+			if (clipRect != null)
+				this.Control.PushClip (new swm.RectangleGeometry (clipRect.Value));
+			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
 		public void CreateFromImage (Bitmap image)
@@ -40,6 +45,7 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.DrawImage (image.ControlObject as swm.ImageSource, new sw.Rect (0, 0, image.Size.Width, image.Size.Height));
 
 			visual = drawingVisual;
+			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
 		public double DPI
@@ -198,6 +204,15 @@ namespace Eto.Platform.Wpf.Drawing
 			set
 			{
 				swm.RenderOptions.SetEdgeMode (visual, value ? swm.EdgeMode.Unspecified : swm.EdgeMode.Aliased);
+			}
+		}
+
+		public ImageInterpolation ImageInterpolation
+		{
+			get { return imageInterpolation; }
+			set {
+				imageInterpolation = value;
+				swm.RenderOptions.SetBitmapScalingMode (visual, Generator.Convert (value));
 			}
 		}
 

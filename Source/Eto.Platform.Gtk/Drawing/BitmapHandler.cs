@@ -131,7 +131,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 				scaley = (double)destination.Height / (double)source.Height;
 				context.Scale (scalex, scaley);
 			}
-			Gdk.CairoHelper.SetSourcePixbuf(context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
+			Gdk.CairoHelper.SetSourcePixbuf (context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
+			var pattern = context.Source as Cairo.SurfacePattern;
+			pattern.Filter = Generator.ConvertC (graphics.ImageInterpolation);
 			context.Fill ();
 			context.Restore ();
 			
