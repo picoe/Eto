@@ -1,6 +1,8 @@
 using System;
 using Eto;
 using Eto.Misc;
+using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test.Wpf
 {
@@ -14,6 +16,7 @@ namespace Eto.Test.Wpf
 			var app = new TestApplication (generator);
 			app.Run (args);
 		}
+
 	}
 }
 

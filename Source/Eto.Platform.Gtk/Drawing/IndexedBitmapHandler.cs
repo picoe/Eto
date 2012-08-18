@@ -115,10 +115,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 				byte* destrow = (byte*)surface.DataPtr;
 				fixed (byte* srcdata = this.Control) {
 					byte* srcrow = srcdata + (source.Top * rowStride) + source.Left;
-					for (int y = source.Top; y <= source.Bottom; y++) {
+					for (int y = source.Top; y < source.Bottom; y++) {
 						byte* src = (byte*)srcrow;
 						uint* dest = (uint*)destrow;
-						for (int x = source.Left; x <= source.Right; x++) {
+						for (int x = source.Left; x < source.Right; x++) {
 							*
 							dest = colors [*src];
 							src++;

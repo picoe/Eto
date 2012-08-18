@@ -100,10 +100,10 @@ namespace Eto.Drawing
 		
 		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, Rectangle rectangle)
 		{
-			DrawLine (topLeftColor, rectangle.TopLeft, rectangle.TopRight);
-			DrawLine (topLeftColor, rectangle.TopLeft, rectangle.BottomLeft);
-			DrawLine (bottomRightColor, rectangle.BottomLeft, rectangle.BottomRight);
-			DrawLine (bottomRightColor, rectangle.TopRight, rectangle.BottomRight);
+			DrawLine (topLeftColor, rectangle.TopLeft, rectangle.InnerTopRight);
+			DrawLine (topLeftColor, rectangle.TopLeft, rectangle.InnerBottomLeft);
+			DrawLine (bottomRightColor, rectangle.InnerBottomLeft, rectangle.InnerBottomRight);
+			DrawLine (bottomRightColor, rectangle.InnerTopRight, rectangle.InnerBottomRight);
 		}
 
 		public void FillRectangle (Color color, int x, int y, int width, int height)

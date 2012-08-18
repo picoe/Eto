@@ -4,49 +4,48 @@ using System.ComponentModel;
 namespace Eto.Drawing
 {
 	[TypeConverter(typeof(PointConverter))]
-	public struct Point
+	public struct Point : IEquatable<Point>
 	{
 		int x;
 		int y;
+		public static readonly Point Empty = new Point (0, 0);
 		
-		public static readonly Point Empty  = new Point(0, 0);
-		
-		public static double Distance(Point point1, Point point2)
+		public static double Distance (Point point1, Point point2)
 		{
-			return Math.Sqrt(Math.Abs(point1.X - point2.X) + Math.Abs (point1.Y - point2.Y));
+			return Math.Sqrt (Math.Abs (point1.X - point2.X) + Math.Abs (point1.Y - point2.Y));
 		}
 		
-		public static Point Truncate(PointF point)
+		public static Point Truncate (PointF point)
 		{
-			return new Point((int)point.X, (int)point.Y);
+			return new Point ((int)point.X, (int)point.Y);
 		}
 
-		public static Point Round(PointF point)
+		public static Point Round (PointF point)
 		{
-			return new Point((int)Math.Round(point.X), (int)Math.Round(point.Y));
+			return new Point ((int)Math.Round (point.X), (int)Math.Round (point.Y));
 		}
 		
-		public static Point Add(Point point, Size size)
+		public static Point Add (Point point, Size size)
 		{
-			return new Point(point.X + size.Width, point.Y + size.Height);
+			return new Point (point.X + size.Width, point.Y + size.Height);
 		}
 		
 		public static Point Min (Point point1, Point point2)
 		{
-			return new Point(Math.Min (point1.X, point2.X), Math.Min (point1.Y, point2.Y));
+			return new Point (Math.Min (point1.X, point2.X), Math.Min (point1.Y, point2.Y));
 		}
 
 		public static Point Max (Point point1, Point point2)
 		{
-			return new Point(Math.Max (point1.X, point2.X), Math.Max (point1.Y, point2.Y));
+			return new Point (Math.Max (point1.X, point2.X), Math.Max (point1.Y, point2.Y));
 		}
 		
 		public static Point Abs (Point point)
 		{
-			return new Point(Math.Abs (point.X), Math.Abs (point.Y));
+			return new Point (Math.Abs (point.X), Math.Abs (point.Y));
 		}
 		
-		public Point(int x, int y)
+		public Point (int x, int y)
 		{
 			this.x = x;
 			this.y = y;
@@ -58,61 +57,67 @@ namespace Eto.Drawing
 			this.y = size.Height;
 		}
 		
-		public Point(PointF point)
+		public Point (PointF point)
 		{
 			this.x = (int)point.X;
 			this.y = (int)point.Y;
 		}
 		
-		public int X
-		{
+		public int X {
 			get { return x; }
 			set { x = value; }
 		}
 
-		public int Y
-		{
+		public int Y {
 			get { return y; }
 			set { y = value; }
 		}
-		
-		public void Restrict(Rectangle rectangle)
-		{
-			if (x < rectangle.Left) x = rectangle.Left;
-			if (x > rectangle.Right) x = rectangle.Right;
-			if (y < rectangle.Top) y = rectangle.Top;
-			if (y > rectangle.Bottom) y = rectangle.Bottom;
+
+		public bool IsEmpty {
+			get { return x == 0 && y == 0; }
 		}
 		
-		public void Add(int x, int y)
+		public void Restrict (Rectangle rectangle)
+		{
+			if (x < rectangle.Left)
+				x = rectangle.Left;
+			if (x > rectangle.InnerRight)
+				x = rectangle.InnerRight;
+			if (y < rectangle.Top)
+				y = rectangle.Top;
+			if (y > rectangle.InnerBottom)
+				y = rectangle.InnerBottom;
+		}
+		
+		public void Add (int x, int y)
 		{
 			this.x += x;
 			this.y += y;
 		}
 
-		public void Add(Point val)
+		public void Add (Point val)
 		{
 			this.Add (val.X, val.Y);
 		}
 		
-		public static Point operator - (Point point1, Point point2)
+		public static Size operator - (Point point1, Point point2)
 		{
-			return new Point(point1.x - point2.x, point1.y - point2.y);
+			return new Size (point1.x - point2.x, point1.y - point2.y);
 		}
 
-		public static Point operator + (Point point1, Point point2)
+		public static Size operator + (Point point1, Point point2)
 		{
-			return new Point(point1.x + point2.x, point1.y + point2.y);
+			return new Size (point1.x + point2.x, point1.y + point2.y);
 		}
 
 		public static Point operator + (Point point, Size size)
 		{
-			return new Point(point.x + size.Width, point.y + size.Height);
+			return new Point (point.x + size.Width, point.y + size.Height);
 		}
 
 		public static Point operator - (Point point, Size size)
 		{
-			return new Point(point.x - size.Width, point.y - size.Height);
+			return new Point (point.x - size.Width, point.y - size.Height);
 		}
 
 		public static Point operator + (Point point, int size)
@@ -125,17 +130,17 @@ namespace Eto.Drawing
 			return new Point (point.x - size, point.y - size);
 		}
 		
-		public static bool operator==(Point p1, Point p2)
+		public static bool operator== (Point p1, Point p2)
 		{
 			return p1.x == p2.x && p1.y == p2.y;
 		}
 
-		public static bool operator!=(Point p1, Point p2)
+		public static bool operator!= (Point p1, Point p2)
 		{
 			return p1.x != p2.x || p1.y != p2.y;
 		}
 
-		public static Point operator *(Point point, Size size)
+		public static Point operator * (Point point, Size size)
 		{
 			var result = point;
 			result.x *= size.Width;
@@ -143,7 +148,7 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		public static Point operator /(Point point, Size size)
+		public static Point operator / (Point point, Size size)
 		{
 			var result = point;
 			result.x /= size.Width;
@@ -151,7 +156,7 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		public static Point operator *(Point point, int size)
+		public static Point operator * (Point point, int size)
 		{
 			var result = point;
 			result.x *= size;
@@ -159,7 +164,7 @@ namespace Eto.Drawing
 			return result;
 		}
 
-		public static Point operator /(Point point, int size)
+		public static Point operator / (Point point, int size)
 		{
 			var result = point;
 			result.x /= size;
@@ -167,22 +172,27 @@ namespace Eto.Drawing
 			return result;
 		}
 		
-		public override bool Equals(object obj)
+		public override bool Equals (object obj)
 		{
-			if (!(obj is Point)) return false;
-			Point p = (Point)obj;
-			return (x == p.x && y == p.y);
+			if (!(obj is Point))
+				return false;
+			Point other = (Point)obj;
+			return (x == other.x && y == other.y);
 		}
 
-		public override int GetHashCode()
+		public override int GetHashCode ()
 		{
 			return base.GetHashCode ();
 		}
 
-		public override string ToString()
+		public override string ToString ()
 		{
-			return String.Format("X={0} Y={1}", x, y);
+			return String.Format ("X={0} Y={1}", x, y);
 		}
 
+		public bool Equals (Point other)
+		{
+			return (x == other.x && y == other.y);
+		}
 	}
 }

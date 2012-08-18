@@ -2,6 +2,8 @@ using System;
 using Eto;
 using Eto.Misc;
 using Eto.Test;
+using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test.WinForms
 {
@@ -15,6 +17,7 @@ namespace Eto.Test.WinForms
 			var app = new TestApplication (generator);
 			app.Run (args);
 		}
+
 	}
 }
 

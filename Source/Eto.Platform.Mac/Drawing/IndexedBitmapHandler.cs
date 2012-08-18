@@ -110,7 +110,7 @@ namespace Eto.Platform.Mac.Drawing
 		void CopyTo (BitmapHandler bmp, Rectangle source)
 		{
 			var bd = bmp.Lock ();
-			if (source.Top < 0 || source.Left < 0 || source.Right >= size.Width || source.Bottom >= size.Height)
+			if (source.Top < 0 || source.Left < 0 || source.Right > size.Width || source.Bottom > size.Height)
 				throw new Exception ("Source rectangle exceeds image size");
 			
 			// we have to draw to a temporary bitmap pixel by pixel
@@ -135,10 +135,10 @@ namespace Eto.Platform.Mac.Drawing
 					int bottom = source.Bottom;
 					int right = source.Right;
 					int left = source.Left;
-					for (int y=source.Top; y <= bottom; y++) {
+					for (int y=source.Top; y < bottom; y++) {
 						var srcrow = src;
 						var destrow = (uint*)dest;
-						for (int x=left; x <= right; x++) {
+						for (int x=left; x < right; x++) {
 							*
 							destrow = colors [*srcrow];
 							destrow++;

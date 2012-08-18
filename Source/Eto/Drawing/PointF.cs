@@ -4,10 +4,10 @@ using System.ComponentModel;
 namespace Eto.Drawing
 {
 	[TypeConverter(typeof(PointFConverter))]
-	public struct PointF
+	public struct PointF : IEquatable<PointF>
 	{
-		private float x;
-		private float y;
+		float x;
+		float y;
 		public static readonly PointF Empty = new PointF (0, 0);
 
 		public static double Distance (Point point1, Point point2)
@@ -51,14 +51,18 @@ namespace Eto.Drawing
 			set { y = value; }
 		}
 
-		public static PointF operator - (PointF point1, PointF point2)
-		{
-			return new PointF (point1.x - point2.x, point1.y - point2.y);
+		public bool IsEmpty {
+			get { return x == 0 && y == 0; }
 		}
 		
-		public static PointF operator + (PointF point1, PointF point2)
+		public static SizeF operator - (PointF point1, PointF point2)
 		{
-			return new PointF (point1.x + point2.x, point1.y + point2.y);
+			return new SizeF (point1.x - point2.x, point1.y - point2.y);
+		}
+
+		public static SizeF operator + (PointF point1, PointF point2)
+		{
+			return new SizeF (point1.x + point2.x, point1.y + point2.y);
 		}
 		
 		public static PointF operator + (PointF point, Size size)
@@ -132,8 +136,8 @@ namespace Eto.Drawing
 		{
 			if (!(obj is PointF))
 				return false;
-			PointF p = (PointF)obj;
-			return (x == p.x && y == p.y);
+			PointF other = (PointF)obj;
+			return (x == other.x && y == other.y);
 		}
 
 		public override int GetHashCode ()
@@ -146,5 +150,9 @@ namespace Eto.Drawing
 			return String.Format ("X={0} Y={1}", x, y);
 		}
 
+		public bool Equals (PointF other)
+		{
+			return (x == other.x && y == other.y);
+		}
 	}
 }

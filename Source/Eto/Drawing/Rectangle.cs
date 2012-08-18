@@ -3,128 +3,119 @@ using System.ComponentModel;
 
 namespace Eto.Drawing
 {
-	[TypeConverter(typeof(RectangleConverter))]
-	public struct Rectangle
+	[TypeConverter (typeof (RectangleConverter))]
+	public struct Rectangle : IEquatable<Rectangle>
 	{
-		int x;
-		int y;
-		int width;
-		int height;
+		Point location;
+		Size size;
 
-		public static Rectangle Round(RectangleF rectangle)
+		const int InnerOffset = 1;
+
+		public static Rectangle Round (RectangleF rectangle)
 		{
-			return new Rectangle((int)Math.Round(rectangle.X), (int)Math.Round(rectangle.Y), (int)Math.Round(rectangle.Width), (int)Math.Round(rectangle.Height));
+			return new Rectangle ((int)Math.Round (rectangle.X), (int)Math.Round (rectangle.Y), (int)Math.Round (rectangle.Width), (int)Math.Round (rectangle.Height));
 		}
 
-		public static Rectangle Ceiling(RectangleF rectangle)
+		public static Rectangle Ceiling (RectangleF rectangle)
 		{
-			return new Rectangle((int)Math.Truncate(rectangle.X), (int)Math.Truncate(rectangle.Y), (int)Math.Ceiling(rectangle.Width), (int)Math.Ceiling(rectangle.Height));
+			return new Rectangle ((int)Math.Truncate (rectangle.X), (int)Math.Truncate (rectangle.Y), (int)Math.Ceiling (rectangle.Width), (int)Math.Ceiling (rectangle.Height));
 		}
 
-		
-		public static Rectangle Truncate(RectangleF rectangle)
+
+		public static Rectangle Truncate (RectangleF rectangle)
 		{
-			return new Rectangle((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
+			return new Rectangle ((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
 		}
 
 		/* COMMON */
 
-		public static readonly Rectangle Empty = new Rectangle(0, 0, 0, 0);
-		
-		public void Restrict(Point point, Size size)
+
+		public static readonly Rectangle Empty = new Rectangle (0, 0, 0, 0);
+
+		public void Restrict (Point Point, Size Size)
 		{
-			Restrict(new Rectangle(point, size));
+			Restrict (new Rectangle (Point, Size));
 		}
 
-		public void Restrict(Size size)
+		public void Restrict (Size Size)
 		{
-			Restrict(new Rectangle(size));
+			Restrict (new Rectangle (Size));
 		}
-		
-		public void Restrict(Rectangle rectangle)
+
+		public void Restrict (Rectangle Rectangle)
 		{
-			if (Left < rectangle.Left) Left = rectangle.Left;
-			if (Top < rectangle.Top) Top = rectangle.Top;
-			if (Right > rectangle.Right) Right = rectangle.Right;
-			if (Bottom > rectangle.Bottom) Bottom = rectangle.Bottom;
+			if (Left < Rectangle.Left) Left = Rectangle.Left;
+			if (Top < Rectangle.Top) Top = Rectangle.Top;
+			if (Right > Rectangle.Right) Right = Rectangle.Right;
+			if (Bottom > Rectangle.Bottom) Bottom = Rectangle.Bottom;
 		}
-		
-		public void Normalize()
+
+		public void Normalize ()
 		{
-			if (width < 0)
-			{
-				int old = x;
-				x = x+width;
-				width = old-x+1;
+			if (Width < 0) {
+				int old = X;
+				X += size.Width;
+				size.Width = old - X + 1;
 			}
-			if (height < 0)
-			{
-				int old = y;
-				y = y+height;
-				height = old-y+1;
+			if (Height < 0) {
+				int old = Y;
+				Y += Height;
+				Height = old - Y + 1;
 			}
 		}
 
 
-		public Rectangle(Point start, Point end)
+		public Rectangle (Point start, Point end)
 		{
-			this.x = start.X;
-			this.y = start.Y;
-			this.width = (end.X >= start.X) ? end.X - start.X + 1 : end.X - start.X;
-			this.height = (end.Y >= start.Y) ? end.Y - start.Y + 1: end.Y - start.Y;
+			location = start;
+			size = new Size((end.X >= start.X) ? end.X - start.X + 1 : end.X - start.X, (end.Y >= start.Y) ? end.Y - start.Y + 1: end.Y - start.Y);
 		}
 
-		public Rectangle(Point point, Size size)
+		public Rectangle (Point location, Size size)
 		{
-			this.x = point.X;
-			this.y = point.Y;
-			this.width = size.Width;
-			this.height = size.Height;
+			this.location = location;
+			this.size = size;
 		}
 
-		public Rectangle(Size size)
+		public Rectangle (Size size)
 		{
-			this.x = 0;
-			this.y = 0;
-			this.width = size.Width;
-			this.height = size.Height;
-		}
-		
-		public Rectangle(int x, int y, int width, int height)
-		{
-			this.x = x;
-			this.y = y;
-			this.width = width;
-			this.height = height;
+			this.location = new Point (0, 0);
+			this.size = size;
 		}
 
-		public void Offset(int x, int y)
+		public Rectangle (int x, int y, int width, int height)
 		{
-			this.x += x;
-			this.y += y;
+			this.location = new Point (x, y);
+			this.size = new Size (width, height);
 		}
-		public void Offset(Size size)
+
+		public void Offset (int x, int y)
 		{
-			this.x += size.Width;
-			this.y += size.Height;
+			this.location.X += x;
+			this.location.Y += y;
 		}
-		public bool Contains(Point point)
+		public void Offset (Size Size)
 		{
-			return Contains(point.X, point.Y);
+			this.location.X += Size.Width;
+			this.location.Y += Size.Height;
 		}
-		
-		public bool Contains(int x, int y)
+		public bool Contains (Point Point)
 		{
-			if (Width == 0 || height == 0) return false;
-			return (x >= Left && x <= Right && y >= Top && y <= Bottom);
+			return Contains (Point.X, Point.Y);
 		}
-		
-		public bool Intersects(Rectangle rect)
+
+		public bool Contains (int x, int y)
+		{
+			if (Width == 0 || Height == 0) return false;
+			return (x >= Left && x <= InnerRight && y >= Top && y <= InnerBottom);
+		}
+
+		public bool Intersects (Rectangle rect)
 		{
 			return rect.X < this.X + this.Width && this.X < rect.X + rect.Width && rect.Y < this.Y + this.Height && this.Y < rect.Y + rect.Height;
 		}
 
-		public static Rectangle Union(Rectangle rect1, Rectangle rect2)
+		public static Rectangle Union (Rectangle rect1, Rectangle rect2)
 		{
 			Rectangle rect = rect1;
 			if (rect2.Left < rect.Left) rect.Left = rect2.Left;
@@ -133,149 +124,208 @@ namespace Eto.Drawing
 			if (rect2.Bottom > rect.Bottom) rect.Bottom = rect2.Bottom;
 			return rect;
 		}
-		
+
 		public bool IsZero
 		{
-			get { return width == 0 && height == 0 && x == 0 && y == 0; }
+			get { return location.IsEmpty && size.IsEmpty; }
 		}
-		
+
 		public bool IsEmpty
 		{
-			get { return width==0 || height==0; }
+			get { return size.IsEmpty; }
 		}
-		
+
 		public Point Location
 		{
-			get { return new Point(x, y); }
-			set { x = value.X; y = value.Y; }
+			get { return location; }
+			set { location = value; }
 		}
-		
+
 		public Point EndLocation
 		{
 			get
 			{
-				int xx = (width > 0) ? x+width-1 : x+width;
-				int yy = (height > 0) ? y+height-1 : y+height;
-				return new Point(xx, yy);
+				int xx = (Width > 0) ? X + Width - 1 : X + Width;
+				int yy = (Height > 0) ? Y + Height - 1 : Y + Height;
+				return new Point (xx, yy);
 			}
 			set
 			{
-				width = (value.X >= x) ? (value.X - x) + 1 : value.X - x;
-				height = (value.Y >= y) ? (value.Y - y) + 1 : value.Y - y;
+				Width = (value.X >= X) ? (value.X - X) + 1 : value.X - X;
+				Height = (value.Y >= Y) ? (value.Y - Y) + 1 : value.Y - Y;
 			}
 		}
 
 		public Size Size
 		{
-			get { return new Size(width, height); }
-			set { width = value.Width; height = value.Height; }
-		}
-		
-		public Point TopLeft
-		{
-			get { return new Point(Left, Top); }
-			set { Top = value.Y; Left = value.X; }
+			get { return size; }
+			set { size = value; }
 		}
 
-		public Point TopRight
-		{
-			get { return new Point(Right, Top); }
-			set { Top = value.Y; Right = value.X; }
-		}
-		
-		public Point BottomRight
-		{
-			get { return new Point(Right, Bottom); }
-			set { Bottom = value.Y; Right = value.X; }
-		}
-
-		public Point BottomLeft
-		{
-			get { return new Point(Left, Bottom); }
-			set { Bottom = value.Y; Left = value.X; }
-		}
-		
 		public int X
 		{
-			get { return x; }
-			set { x = value; }
+			get { return location.X; }
+			set { location.X = value; }
 		}
 
 		public int Y
 		{
-			get { return y; }
-			set { y = value; }
+			get { return location.Y; }
+			set { location.Y = value; }
 		}
 
 		public int Width
 		{
-			get { return width; }
-			set { width = value; }
+			get { return size.Width; }
+			set { size.Width = value; }
 		}
 
 		public int Height
 		{
-			get { return height; }
-			set { height = value; }
+			get { return size.Height; }
+			set { size.Height = value; }
 		}
 
 		#region Positional methods
+
 		public int Top
 		{
-			get { return (height >= 0) ? y : y+height; }
+			get { return (Height >= 0) ? Y : Y + Height; }
 			set
 			{
-				if (height >= 0) { 
-					height += y-value; y = value;
-					if (height < 0) height = 0;
+				if (Height >= 0) {
+					Height += Y - value;
+					Y = value;
+					if (Height < 0) Height = 0;
 				}
-				else { height = value-y; }
+				else { Height = value - Y; }
 			}
 		}
 
 		public int Left
 		{
-			get { return (width >= 0) ? x : x+width; }
+			get { return (Width >= 0) ? X : X + Width; }
 			set
 			{
-				if (width >= 0) { 
-					width += x-value; x = value; 
-					if (width < 0) width = 0;
+				if (Width >= 0) {
+					Width += X - value; X = value;
+					if (Width < 0) Width = 0;
 				}
-				else { width = value-x; }
-			}
-		}
-
-		public int Bottom
-		{
-			get { return (height > 0) ? y + height-1 : y; }
-			set
-			{
-				if (height >= 0) {
-					height = value - y + 1;
-					if (height < 0) { y += height - 1; height = 0; }
-				}
-				else { height += y-value; y = value; }
+				else { Width = value - X; }
 			}
 		}
 
 		public int Right
 		{
-			get { return (width > 0) ? x + width-1 : x; }
+			get { return (Width >= 0) ? X + Width : X + 1; }
 			set
 			{
-				if (width >= 0) {
-					width = value - x + 1;
-					if (width < 0) { x += width - 1; width = 0; }
+				if (Width >= 0) {
+					Width = value - X;
+					if (Width < 0) { X += Width; Width = 0; }
 				}
-				else { width += x-value; x = value; }
+				else {
+					Width += Right - value;
+					X = value - 1;
+				}
 			}
 		}
-		
+
+		public int Bottom
+		{
+			get { return (Height >= 0) ? Y + Height : Y + 1; }
+			set
+			{
+				if (Height >= 0) {
+					Height = value - Y;
+					if (Height < 0) { Y += Height; Height = 0; }
+				}
+				else {
+					Height += Bottom - value;
+					Y = value - 1;
+				}
+			}
+		}
+
+		public Point TopLeft
+		{
+			get { return new Point (Left, Top); }
+			set { Top = value.Y; Left = value.X; }
+		}
+
+		public Point TopRight
+		{
+			get { return new Point (Right, Top); }
+			set { Top = value.Y; Right = value.X; }
+		}
+
+		public Point BottomRight
+		{
+			get { return new Point (Right, Bottom); }
+			set { Bottom = value.Y; Right = value.X; }
+		}
+
+		public Point BottomLeft
+		{
+			get { return new Point (Left, Bottom); }
+			set { Bottom = value.Y; Left = value.X; }
+		}
+
+		#endregion
+
+		#region Inner Positional Methods
+
+		public Point InnerTopRight
+		{
+			get { return new Point (InnerRight, Top); }
+			set { Top = value.Y; InnerRight = value.X; }
+		}
+
+		public Point InnerBottomRight
+		{
+			get { return new Point (InnerRight, InnerBottom); }
+			set { InnerBottom = value.Y; InnerRight = value.X; }
+		}
+
+		public Point InnerBottomLeft
+		{
+			get { return new Point (Left, InnerBottom); }
+			set { InnerBottom = value.Y; Left = value.X; }
+		}
+
+		public int InnerBottom
+		{
+			get { return (Height > 0) ? Y + Height - InnerOffset : Y; }
+			set
+			{
+				if (Height >= 0) {
+					Height = value - Y + InnerOffset;
+					if (Height < 0) { Y += Height - InnerOffset; Height = 0; }
+				}
+				else { Height += Y - value; Y = value; }
+			}
+		}
+
+		public int InnerRight
+		{
+			get { return (Width > 0) ? X + Width - InnerOffset : X; }
+			set
+			{
+				if (Width >= 0) {
+					Width = value - X + InnerOffset;
+					if (Width < 0) { X += Width - InnerOffset; Width = 0; }
+				}
+				else { Width += X - value; X = value; }
+			}
+		}
+
+		#endregion
+
 		public Point Center
 		{
-			get { return new Point(MiddleX, MiddleY); }
-			set { 
+			get { return new Point (MiddleX, MiddleY); }
+			set
+			{
 				MiddleX = value.X;
 				MiddleY = value.Y;
 			}
@@ -283,61 +333,57 @@ namespace Eto.Drawing
 
 		public int MiddleX
 		{
-			get { return x + (this.Width/2); }
-			set { x = value - (this.Width/2); }
+			get { return X + (this.Width / 2); }
+			set { X = value - (this.Width / 2); }
 		}
+
 		public int MiddleY
 		{
-			get { return y + (this.Height/2); }
-			set { y = value - (this.Height/2); }
-		}
-		#endregion
-
-		public void Inflate(Size size)
-		{
-			Inflate(size.Width, size.Height);
+			get { return Y + (this.Height / 2); }
+			set { Y = value - (this.Height / 2); }
 		}
 
-		public void Inflate(int x, int y)
+		public void Inflate (Size Size)
 		{
-			if (width >= 0)
-			{
-				this.x -= x;
-				this.width += x*2;
-			}
-			else
-			{
-				this.x += x;
-				this.width -= x*2;
-			}
-			
-			if (height >= 0)
-			{
-				this.y -= y;
-				this.height += y*2;
-			}
-			else
-			{
-				this.y += y;
-				this.height -= y*2;
-			}
-		}
-		
-		public void Align(Size size)
-		{
-			Align(size.Width, size.Height);
+			Inflate (Size.Width, Size.Height);
 		}
 
-		
-		public void Align(int xofs, int yofs)
+		public void Inflate (int x, int y)
+		{
+			if (Width >= 0) {
+				this.X -= x;
+				this.Width += x * 2;
+			}
+			else {
+				this.X += x;
+				this.Width -= x * 2;
+			}
+
+			if (Height >= 0) {
+				this.Y -= y;
+				this.Height += y * 2;
+			}
+			else {
+				this.Y += y;
+				this.Height -= y * 2;
+			}
+		}
+
+		public void Align (Size Size)
+		{
+			Align (Size.Width, Size.Height);
+		}
+
+
+		public void Align (int xofs, int yofs)
 		{
 			Top = Top - (Top % yofs);
 			Left = Left - (Left % xofs);
 			Right = Right + xofs - (Right % xofs);
 			Bottom = Bottom + yofs - (Bottom % yofs);
-		}		
+		}
 
-		public static Rectangle operator *(Rectangle rect, int multiply)
+		public static Rectangle operator * (Rectangle rect, int multiply)
 		{
 			var rect2 = rect;
 			rect2.X *= multiply;
@@ -346,52 +392,69 @@ namespace Eto.Drawing
 			rect2.Height *= multiply;
 			return rect2;
 		}
-		
-		public static Rectangle operator *(Rectangle rect, Size size)
+
+		public static Rectangle operator / (Rectangle rect, int divide)
 		{
 			var rect2 = rect;
-			rect2.X *= size.Width;
-			rect2.Y *= size.Height;
-			rect2.Width *= size.Width;
-			rect2.Height *= size.Height;
+			rect2.X /= divide;
+			rect2.Y /= divide;
+			rect2.Width /= divide;
+			rect2.Height /= divide;
 			return rect2;
 		}
 
-		public static Rectangle operator /(Rectangle rect, Size size)
+		public static Rectangle operator * (Rectangle rect, Size Size)
 		{
 			var rect2 = rect;
-			rect2.X /= size.Width;
-			rect2.Y /= size.Height;
-			rect2.Width /= size.Width;
-			rect2.Height /= size.Height;
+			rect2.X *= Size.Width;
+			rect2.Y *= Size.Height;
+			rect2.Width *= Size.Width;
+			rect2.Height *= Size.Height;
 			return rect2;
 		}
-		
-		public static bool operator ==(Rectangle rect1, Rectangle rect2)
+
+		public static Rectangle operator / (Rectangle rect, Size Size)
 		{
-			return rect1.Equals(rect2);
+			var rect2 = rect;
+			rect2.X /= Size.Width;
+			rect2.Y /= Size.Height;
+			rect2.Width /= Size.Width;
+			rect2.Height /= Size.Height;
+			return rect2;
 		}
 
-		public static bool operator !=(Rectangle rect1, Rectangle rect2)
+		public static bool operator == (Rectangle rect1, Rectangle rect2)
 		{
-			return !rect1.Equals(rect2);
+			return rect1.Equals (rect2);
 		}
-		
 
-		public override string ToString()
+		public static bool operator != (Rectangle rect1, Rectangle rect2)
 		{
-			return String.Format("X={0} Y={1} Width={2} Height={3}", x, y, width, height);
+			return !rect1.Equals (rect2);
 		}
-		
-		public override bool Equals(Object o)
+
+
+		public override string ToString ()
 		{
-			Rectangle rect = (Rectangle)o;
-			return (x == rect.x && y == rect.y && width == rect.width && height == rect.height);
+			return String.Format ("{0} {1}", location, size);
 		}
-		
-		public override int GetHashCode()
+
+		public override bool Equals (Object o)
 		{
-			return x.GetHashCode() ^ y.GetHashCode() ^ width.GetHashCode() ^ height.GetHashCode();
+			if (!(o is Rectangle))
+				return false;
+			Rectangle other = (Rectangle)o;
+			return (location == other.location && size == other.size);
+		}
+
+		public override int GetHashCode ()
+		{
+			return location.GetHashCode () ^ size.GetHashCode ();
+		}
+
+		public bool Equals (Rectangle other)
+		{
+			return (location == other.location && size == other.size);
 		}
 	}
 }

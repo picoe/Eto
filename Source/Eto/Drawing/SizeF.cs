@@ -4,14 +4,31 @@ using System.ComponentModel;
 namespace Eto.Drawing
 {
 	[TypeConverter(typeof(SizeFConverter))]
-	public struct SizeF
+	public struct SizeF : IEquatable<SizeF>
 	{
 		public float Width { get; set; }
 
 		public float Height { get; set; }
 
 		public static readonly SizeF Empty = new SizeF (0, 0);
-		
+
+
+		public static SizeF Min (SizeF size1, SizeF size2)
+		{
+			return new SizeF (Math.Min (size1.Width, size2.Width), Math.Min (size1.Height, size2.Height));
+		}
+
+		public static SizeF Max (SizeF size1, SizeF size2)
+		{
+			return new SizeF (Math.Max (size1.Width, size2.Width), Math.Max (size1.Height, size2.Height));
+		}
+
+		public static SizeF Abs (SizeF size)
+		{
+			return new SizeF(Math.Abs (size.Width), Math.Abs (size.Height));
+		}
+
+
 		public SizeF (float width, float height)
 			: this()
 		{
@@ -109,8 +126,8 @@ namespace Eto.Drawing
 		{
 			if (!(obj is SizeF))
 				return false;
-			SizeF size = (SizeF)obj;		
-			return (Width == size.Width && Height == size.Height);
+			SizeF other = (SizeF)obj;		
+			return (Width == other.Width && Height == other.Height);
 		}
 
 		public override int GetHashCode ()
@@ -123,5 +140,9 @@ namespace Eto.Drawing
 			return String.Format ("Width={0} Height={1}", Width, Height);
 		}
 
+		public bool Equals (SizeF other)
+		{
+			return (Width == other.Width && Height == other.Height);
+		}
 	}
 }

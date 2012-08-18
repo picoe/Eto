@@ -1,5 +1,4 @@
 using System;
-using System.Drawing;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
@@ -7,6 +6,7 @@ using Eto.Forms;
 using Eto.Platform.Mac.Forms.Controls;
 using Eto.Platform.Mac.Forms;
 using Eto.Platform.Mac;
+using Eto.Drawing;
 
 namespace Eto.Test.Mac
 {
@@ -25,7 +25,7 @@ namespace Eto.Test.Mac
 			app.Run (args);
 			
 		}
-		
+
 		static void AddStyles ()
 		{
 			// support full screen mode!

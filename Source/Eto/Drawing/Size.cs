@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace Eto.Drawing
 {
 	[TypeConverter(typeof(SizeConverter))]
-	public struct Size
+	public struct Size : IEquatable<Size>
 	{
 		public int Width { get; set; }
 
@@ -30,6 +30,11 @@ namespace Eto.Drawing
 		public static Size Max (Size size1, Size size2)
 		{
 			return new Size (Math.Max (size1.Width, size2.Width), Math.Max (size1.Height, size2.Height));
+		}
+
+		public static Size Abs (Size size)
+		{
+			return new Size (Math.Abs (size.Width), Math.Abs (size.Height));
 		}
 		
 		public Size (int width, int height)
@@ -132,8 +137,8 @@ namespace Eto.Drawing
 		{
 			if (!(obj is Size))
 				return false;
-			Size size = (Size)obj;
-			return (Width == size.Width && Height == size.Height);
+			Size other = (Size)obj;
+			return (Width == other.Width && Height == other.Height);
 		}
 
 		public override int GetHashCode ()
@@ -146,6 +151,9 @@ namespace Eto.Drawing
 			return String.Format ("Width={0} Height={1}", Width, Height);
 		}
 
-
+		public bool Equals (Size other)
+		{
+			return (Width == other.Width && Height == other.Height);
+		}
 	}
 }
