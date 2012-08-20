@@ -30,20 +30,27 @@ namespace Eto
 				descriptor = null;
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets whether the <see cref="Property"/> specified is case-sensitive or not
+		/// </summary>
+		public bool IgnoreCase { get; set; }
 		
 		/// <summary>
 		/// Initializes a new instance of the PropertyBinding with the specified property
 		/// </summary>
-		/// <param name="property">property to use to get/set values for this binding</param>
-		public PropertyBinding (string property)
+		/// <param name="property">Property to use to get/set values for this binding</param>
+		/// <param name="ignoreCase">True to ignore case for the property, false to be case sensitive</param>
+		public PropertyBinding (string property, bool ignoreCase = true)
 		{
 			this.Property = property;
+			this.IgnoreCase = ignoreCase;
 		}
 		
 		void EnsureProperty (object dataItem)
 		{
-			if (descriptor == null && dataItem != null) {
-				descriptor = TypeDescriptor.GetProperties (dataItem).Find (Property, true);
+			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsAssignableFrom(dataItem.GetType()))) {
+				descriptor = TypeDescriptor.GetProperties (dataItem).Find (Property, IgnoreCase);
 			}
 		}
 		
