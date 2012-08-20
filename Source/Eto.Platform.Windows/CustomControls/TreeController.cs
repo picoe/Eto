@@ -232,6 +232,7 @@ namespace Eto.Platform.CustomControls
 			OnExpanding (args);
 			if (args.Cancel)
 				return false;
+			args.Item.Expanded = true;
 			ExpandRowInternal (row);
 			OnExpanded (new TreeGridViewItemEventArgs (args.Item));
 			return true;
@@ -280,6 +281,7 @@ namespace Eto.Platform.CustomControls
 			OnCollapsing (args);
 			if (args.Cancel)
 				return false;
+			args.Item.Expanded = false;
 			OnCollapsed (new TreeGridViewItemEventArgs (args.Item));
 			if (sections != null && sections.Count > 0) {
 				bool addTop = true;

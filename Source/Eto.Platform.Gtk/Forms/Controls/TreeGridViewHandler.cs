@@ -13,6 +13,14 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> model;
 		CollectionHandler collection;
 
+		public override void Initialize ()
+		{
+			base.Initialize ();
+
+			// these are always handled to set the expanded property
+			Widget.HandleEvent (TreeGridView.ExpandedEvent, TreeGridView.CollapsedEvent);
+		}
+
 		protected override Gtk.TreeModelImplementor CreateModelImplementor ()
 		{
 			model = new GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> { Handler = this };
@@ -114,6 +122,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			case TreeGridView.ExpandedEvent:
 				this.Tree.RowExpanded += delegate(object o, Gtk.RowExpandedArgs args) {
 					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
+					e.Item.Expanded = true;
 					Widget.OnExpanded (e);
 				};
 				break;
@@ -127,6 +136,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			case TreeGridView.CollapsedEvent:
 				this.Tree.RowCollapsed += delegate(object o, Gtk.RowCollapsedArgs args) {
 					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
+					e.Item.Expanded = false;
 					Widget.OnCollapsed (e);
 				};
 				break;
