@@ -134,10 +134,7 @@ namespace Eto.Drawing
 
 		public override bool Equals (object obj)
 		{
-			if (!(obj is PointF))
-				return false;
-			PointF other = (PointF)obj;
-			return (x == other.x && y == other.y);
+			return obj is PointF && (PointF)obj == this;
 		}
 
 		public override int GetHashCode ()
@@ -152,7 +149,7 @@ namespace Eto.Drawing
 
 		public bool Equals (PointF other)
 		{
-			return (x == other.x && y == other.y);
+			return other == this;
 		}
 	}
 }

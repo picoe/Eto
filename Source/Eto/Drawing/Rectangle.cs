@@ -425,12 +425,12 @@ namespace Eto.Drawing
 
 		public static bool operator == (Rectangle rect1, Rectangle rect2)
 		{
-			return rect1.Equals (rect2);
+			return rect1.location == rect2.location && rect1.size == rect2.size;
 		}
 
 		public static bool operator != (Rectangle rect1, Rectangle rect2)
 		{
-			return !rect1.Equals (rect2);
+			return !(rect1 == rect2);
 		}
 
 
@@ -439,12 +439,9 @@ namespace Eto.Drawing
 			return String.Format ("{0} {1}", location, size);
 		}
 
-		public override bool Equals (Object o)
+		public override bool Equals (Object obj)
 		{
-			if (!(o is Rectangle))
-				return false;
-			Rectangle other = (Rectangle)o;
-			return (location == other.location && size == other.size);
+			return obj is Rectangle && (Rectangle)obj == this;
 		}
 
 		public override int GetHashCode ()
@@ -454,7 +451,7 @@ namespace Eto.Drawing
 
 		public bool Equals (Rectangle other)
 		{
-			return (location == other.location && size == other.size);
+			return other == this;
 		}
 	}
 }

@@ -135,10 +135,7 @@ namespace Eto.Drawing
 
 		public override bool Equals (object obj)
 		{
-			if (!(obj is Size))
-				return false;
-			Size other = (Size)obj;
-			return (Width == other.Width && Height == other.Height);
+			return obj is Size && (Size)obj == this;
 		}
 
 		public override int GetHashCode ()
@@ -153,7 +150,7 @@ namespace Eto.Drawing
 
 		public bool Equals (Size other)
 		{
-			return (Width == other.Width && Height == other.Height);
+			return other == this;
 		}
 	}
 }
