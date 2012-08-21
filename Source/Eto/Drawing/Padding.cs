@@ -4,7 +4,7 @@ using System.ComponentModel;
 namespace Eto.Drawing
 {
 	[TypeConverter(typeof(PaddingConverter))]
-	public struct Padding
+	public struct Padding : IEquatable<Padding>
 	{
 		public int Top { get; set; }
 		public int Left { get; set; }
@@ -54,12 +54,20 @@ namespace Eto.Drawing
 		{
 			get { return new Size(Horizontal, Vertical); }
 		}
+
+		public static bool operator == (Padding value1, Padding value2)
+		{
+			return value1.Top == value2.Top && value1.Bottom == value2.Bottom && value1.Left == value2.Left && value1.Right == value2.Right;
+		}
+
+		public static bool operator != (Padding value1, Padding value2)
+		{
+			return !(value1 == value2);
+		}
 		
 		public override bool Equals (object obj)
 		{
-			if (!(obj is Padding)) return false;
-			var val = (Padding)obj;
-			return val.Top == Top && val.Bottom == Bottom && val.Left == Left && val.Right == Right;
+			return obj is Padding && (Padding)obj == this;
 		}
 		
 		public override int GetHashCode ()
@@ -70,6 +78,11 @@ namespace Eto.Drawing
 		public override string ToString ()
 		{
 			return string.Format ("[Padding: Top={0}, Left={1}, Right={2}, Bottom={3}]", Top, Left, Right, Bottom);
+		}
+
+		public bool Equals (Padding other)
+		{
+			return other == this;
 		}
 	}
 }
