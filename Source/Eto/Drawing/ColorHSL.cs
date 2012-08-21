@@ -2,8 +2,29 @@ using System;
 
 namespace Eto.Drawing
 {
-	public struct ColorHSL
+	/// <summary>
+	/// Color representation in the HSL color model
+	/// </summary>
+	/// <remarks>
+	/// This allows you to manage a color in the HSL cylindrical model.
+	/// 
+	/// This is a helper class to handle HSL colors. Whenever a color is used it must be
+	/// converted to a <see cref="Color"/> struct first, either by using <see cref="ColorHSL.ToColor"/>
+	/// or the implicit conversion.
+	/// </remarks>
+	public struct ColorHSL : IEquatable<ColorHSL>
 	{
+		#region Obsolete
+
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("Use nullable values instead")]
+		public readonly static ColorHSL Empty = new ColorHSL ();
+
+		#endregion
+
+
 		/// <summary>
 		/// Gets or sets the alpha (0-1)
 		/// </summary>
@@ -24,13 +45,30 @@ namespace Eto.Drawing
 		/// </summary>
 		public float L { get; set; }
 		
-		public readonly static ColorHSL Empty = new ColorHSL ();
-		
+		/// <summary>
+		/// Calculates the 'distance' of two HSL colors
+		/// </summary>
+		/// <remarks>
+		/// This is useful for comparing two different color values to determine if they are similar.
+		/// 
+		/// The HSL comparison algorithm, while not essentially accurate, gives a good representation of like-colours
+		/// to the human eye. This method of calculating distance is preferred over the other methods (RGB, CMYK, HSB)
+		/// </remarks>
+		/// <param name="value1">First color to compare</param>
+		/// <param name="value2">Second color to compare</param>
+		/// <returns>The overall distance/difference between the two colours. A lower value indicates a closer match</returns>
 		public static float Distance (ColorHSL value1, ColorHSL value2)
 		{
 			return (float)Math.Sqrt (Math.Pow ((value1.H - value2.H) / 360f, 2) + Math.Pow (value1.S - value2.S, 2) + Math.Pow (value1.L - value2.L, 2));
 		}
 		
+		/// <summary>
+		/// Initializes a new instance of the ColorHSL class
+		/// </summary>
+		/// <param name="hue">Hue component (0-360)</param>
+		/// <param name="saturation">Saturation component (0-1)</param>
+		/// <param name="luminance">Luminace component (0-1)</param>
+		/// <param name="alpha">Alpha component (0-1)</param>
 		public ColorHSL (float hue, float saturation, float luminance, float alpha = 1f)
 			: this()
 		{
@@ -40,6 +78,10 @@ namespace Eto.Drawing
 			A = alpha;
 		}
  
+		/// <summary>
+		/// Initializes a new instance of the ColorHSL class with converted HSL values from a <see cref="Color"/>
+		/// </summary>
+		/// <param name="color">RGB color to convert to HSL</param>
 		public ColorHSL (Color color)
 			: this()
 		{
@@ -90,6 +132,10 @@ namespace Eto.Drawing
 			this.A = color.A;
 		}
 
+		/// <summary>
+		/// Converts this HSL color to a RGB <see cref="Color"/> value
+		/// </summary>
+		/// <returns>A new instance of an RGB <see cref="Color"/> converted from HSL</returns>
 		public Color ToColor ()
 		{
 
@@ -130,31 +176,76 @@ namespace Eto.Drawing
 			}
 		}
 		
+		/// <summary>
+		/// Compares two <see cref="ColorHSL"/> objects for equality
+		/// </summary>
+		/// <param name="color1">First color to compare</param>
+		/// <param name="color2">Second color to compare</param>
+		/// <returns>True if the objects are equal, false otherwise</returns>
+		public static bool operator == (ColorHSL color1, ColorHSL color2)
+		{
+			return color1.H == color2.H && color1.S == color2.S && color1.L == color2.L && color1.A == color2.A;
+		}
+
+		/// <summary>
+		/// Compares two <see cref="ColorHSL"/> objects for equality
+		/// </summary>
+		/// <param name="color1">First color to compare</param>
+		/// <param name="color2">Second color to compare</param>
+		/// <returns>True if the objects are equal, false otherwise</returns>
+		public static bool operator != (ColorHSL color1, ColorHSL color2)
+		{
+			return !(color1 == color2);
+		}
+
+		/// <summary>
+		/// Implicitly converts a <see cref="ColorHSL"/> to an RGB <see cref="Color"/>
+		/// </summary>
+		/// <param name="hsl">HSL Color to convert</param>
+		/// <returns>An RGB color converted from the specified <paramref name="hsl"/> color</returns>
+		public static implicit operator Color (ColorHSL hsl)
+		{
+			return hsl.ToColor ();
+		}
+
+		/// <summary>
+		/// Implicitly converts from a <see cref="Color"/> to a ColorHSL
+		/// </summary>
+		/// <param name="color">RGB color value to convert</param>
+		/// <returns>A new instance of a ColorHSL that represents the RGB <paramref name="color"/> value</returns>
+		public static implicit operator ColorHSL (Color color)
+		{
+			return new ColorHSL (color);
+		}
+
+		/// <summary>
+		/// Compares the given object for equality with this object
+		/// </summary>
+		/// <param name="obj">Object to compare with</param>
+		/// <returns>True if the object is equal to this instance, false otherwise</returns>
 		public override bool Equals (object obj)
 		{
 			return obj is ColorHSL && this == (ColorHSL)obj;
 		}
 
+		/// <summary>
+		/// Gets the hash code for this object
+		/// </summary>
+		/// <returns>Hash code for this object</returns>
 		public override int GetHashCode ()
 		{
 			return H.GetHashCode () ^ S.GetHashCode () ^ L.GetHashCode () ^ A.GetHashCode ();
 		}
 
-		public static bool operator == (ColorHSL x, ColorHSL y)
+		/// <summary>
+		/// Compares the given object for equality with this object
+		/// </summary>
+		/// <param name="obj">Object to compare with</param>
+		/// <returns>True if the object is equal to this instance, false otherwise</returns>
+		public bool Equals (ColorHSL other)
 		{
-			return x.H == y.H && x.S == y.S && x.L == y.L && x.A == y.A;
+			return other == this;
 		}
-
-		public static bool operator != (ColorHSL x, ColorHSL y)
-		{
-			return !(x == y);
-		}
-
-		public static implicit operator Color (ColorHSL hsl)
-		{
-			return hsl.ToColor ();
-		}
-		
 	}
 }
 

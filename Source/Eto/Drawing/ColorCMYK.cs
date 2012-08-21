@@ -3,15 +3,25 @@ using System;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Represents a color with CMYKA (Cyan, Magenta, Yellow, Key, and Alpha) components
+	/// Represents a color in the CMYK color model.
 	/// </summary>
 	/// <remarks>
 	/// This is a helper class to handle CMYK colors. Whenever a color is used it must be
 	/// converted to a <see cref="Color"/> struct first, either by using <see cref="ColorCMYK.ToColor"/>
 	/// or the implicit conversion.
 	/// </remarks>
-	public struct ColorCMYK
+	public struct ColorCMYK : IEquatable<ColorCMYK>
 	{
+		#region Obsolete
+
+		/// <summary>
+		/// An empty color with zero for all components
+		/// </summary>
+		[Obsolete("Use nullable values instead")]
+		public readonly static ColorCMYK Empty = new ColorCMYK ();
+
+		#endregion
+
 		/// <summary>
 		/// Cyan component
 		/// </summary>
@@ -36,11 +46,6 @@ namespace Eto.Drawing
 		/// Alpha component
 		/// </summary>
 		public float A { get; set; }
-		
-		/// <summary>
-		/// An empty color with zero for all components
-		/// </summary>
-		public readonly static ColorCMYK Empty = new ColorCMYK ();
 		
 		/// <summary>
 		/// Calculates the 'distance' of two CMYK colors
@@ -102,7 +107,62 @@ namespace Eto.Drawing
 			}
 			this.A = color.A;
 		}
-		
+
+		/// <summary>
+		/// Gets this object as an ARGB color value
+		/// </summary>
+		public Color ToColor ()
+		{
+			return new Color (
+				(1 - this.C) * (1 - this.K),
+				(1 - this.M) * (1 - this.K),
+				(1 - this.Y) * (1 - this.K),
+				this.A
+				);
+		}
+
+		/// <summary>
+		/// Compares two colors for equality
+		/// </summary>
+		/// <param name="color1">First color to compare</param>
+		/// <param name="color2">Second color to compare</param>
+		/// <returns>true if the two colors are equal, false otherwise</returns>
+		public static bool operator == (ColorCMYK color1, ColorCMYK color2)
+		{
+			return color1.C == color2.C && color1.M == color2.M && color1.Y == color2.Y && color1.K == color2.K && color1.A == color2.A;
+		}
+
+		/// <summary>
+		/// Compares two colors for inequality
+		/// </summary>
+		/// <param name="color1">First color to compare</param>
+		/// <param name="color2">Second color to compare</param>
+		/// <returns>true if the two colors are not equal, false otherwise</returns>
+		public static bool operator != (ColorCMYK color1, ColorCMYK color2)
+		{
+			return !(color1 == color2);
+		}
+
+		/// <summary>
+		/// Converts this instance to an ARGB color value
+		/// </summary>
+		/// <param name="cmyk">cmyk value to convert</param>
+		/// <returns>A new instance of the Color class with the converted value</returns>
+		public static implicit operator Color (ColorCMYK cmyk)
+		{
+			return cmyk.ToColor ();
+		}
+
+		/// <summary>
+		/// Converts this an ARGB color value to a CMYK value
+		/// </summary>
+		/// <param name="color">RGB value to convert</param>
+		/// <returns>A new instance of the ColorCMYK class with the converted value</returns>
+		public static implicit operator ColorCMYK (Color color)
+		{
+			return new ColorCMYK (color);
+		}
+
 		/// <summary>
 		/// Returns a value indicating that this is equal to the specified object
 		/// </summary>
@@ -122,50 +182,14 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets this object as an ARGB color value
+		/// Returns a value indicating that this is equal to the specified color
 		/// </summary>
-		public Color ToColor ()
+		/// <param name="other">ColorCMYK to compare with</param>
+		/// <returns>True if the colours are equal, false otherwise</returns>
+		public bool Equals (ColorCMYK other)
 		{
-			return new Color (
-				(1 - this.C) * (1 - this.K),
-				(1 - this.M) * (1 - this.K),
-				(1 - this.Y) * (1 - this.K),
-				this.A
-				);
+			return other == this;
 		}
-
-		/// <summary>
-		/// Compares two colors for equality
-		/// </summary>
-		/// <param name="x">First color to compare</param>
-		/// <param name="y">Second color to compare</param>
-		/// <returns>true if the two colors are equal, false otherwise</returns>
-		public static bool operator == (ColorCMYK x, ColorCMYK y)
-		{
-			return x.C == y.C && x.M == y.M && x.Y == y.Y && x.K == y.K && x.A == y.A;
-		}
-
-		/// <summary>
-		/// Compares two colors for inequality
-		/// </summary>
-		/// <param name="x">First color to compare</param>
-		/// <param name="y">Second color to compare</param>
-		/// <returns>true if the two colors are not equal, false otherwise</returns>
-		public static bool operator != (ColorCMYK x, ColorCMYK y)
-		{
-			return !(x == y);
-		}
-
-		/// <summary>
-		/// Converts this instance to an ARGB color value
-		/// </summary>
-		/// <param name="cmyk">cmyk value to convert</param>
-		/// <returns>A new instance of the Color class with the converted value</returns>
-		public static implicit operator Color (ColorCMYK cmyk)
-		{
-			return cmyk.ToColor ();
-		}
-		
 	}
 }
 
