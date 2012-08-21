@@ -39,27 +39,28 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			protected override void OnItemsChanged (System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
 			{
 				base.OnItemsChanged (e);
-				if (this.IsLoaded)
-					UpdateSize ();
+				if (this.IsLoaded) {
+					this.InvalidateMeasure ();
+				}
 			}
 
 			void ComboBoxEx_Loaded (object sender, sw.RoutedEventArgs e)
 			{
-				UpdateSize ();
 				if (_selected != null) {
 					SelectedIndex = _selected.Value;
 					_selected = null;
 				}
 			}
 
-			void UpdateSize ()
+			protected override sw.Size MeasureOverride (sw.Size constraint)
 			{
-				if (this.HasItems) {
-					var popup = GetTemplateChild ("PART_Popup") as swc.Primitives.Popup;
-					var content = popup.Child as sw.FrameworkElement;
-					content.Measure (new sw.Size (double.MaxValue, double.MaxValue));
-					MinWidth = content.DesiredSize.Width;
-				}
+				var size = base.MeasureOverride (constraint);
+
+				var popup = GetTemplateChild ("PART_Popup") as swc.Primitives.Popup;
+				var content = popup.Child as sw.FrameworkElement;
+				content.Measure (constraint);
+				size.Width = Math.Min(constraint.Width, Math.Max (content.DesiredSize.Width, size.Width));
+				return size;
 			}
 
 		}
