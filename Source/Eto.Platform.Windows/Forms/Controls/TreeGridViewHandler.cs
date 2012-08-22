@@ -109,6 +109,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 			set
 			{
+				if (controller != null && value != null) {
+					controller.ExpandToItem (value);
+					var index = controller.IndexOf(value);
+					if (index >= 0)
+						Control.Rows[index].Selected = true;
+				}
+				else Control.ClearSelection ();
 			}
 		}
 

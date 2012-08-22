@@ -85,7 +85,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public ITreeGridItem SelectedItem
 		{
 			get { return Control.SelectedItem as ITreeGridItem; }
-			set { Control.SelectedItem = value; }
+			set {
+				if (controller != null && value != null) {
+					controller.ExpandToItem (value);
+					Control.SelectedItem = value;
+					Control.ScrollIntoView (value);
+				}
+				else
+					Control.UnselectAll ();
+			}
 		}
 
 		public override sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)

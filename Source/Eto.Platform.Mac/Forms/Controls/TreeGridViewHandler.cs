@@ -227,7 +227,85 @@ namespace Eto.Platform.Mac.Forms.Controls
 					ResizeAllColumns ();
 			}
 		}
+
+		IEnumerable<ITreeGridItem> GetParents (ITreeGridItem item)
+		{
+			var parent = item.Parent;
+			while (parent != null) {
+				yield return parent;
+				parent = parent.Parent;
+			}
+		}
+
+		EtoTreeItem GetCachedItem (ITreeGridItem item)
+		{
+			EtoTreeItem myitem;
+			if (cachedItems.TryGetValue (item, out myitem))
+				return myitem;
+			return null;
+		}
+
+		int CountRows (ITreeGridItem item)
+		{
+			if (!item.Expanded)
+				return 0;
+
+			var rows = 0;
+			var container = item as IDataStore<ITreeGridItem>;
+			if (container != null) {
+				rows += container.Count;
+				for (int i = 0; i < container.Count; i++)
+				{
+					rows += CountRows (container[i]);
+				}
+			}
+			return rows;
+		}
+
+		int FindRow (IDataStore<ITreeGridItem> container, ITreeGridItem item)
+		{
+			int row = 0;
+			for (int i = 0; i < container.Count; i++) {
+				var current = container [i];
+				if (object.ReferenceEquals (current, item)) {
+					return row;
+				}
+				row ++;
+				row += CountRows (current);
+			}
+			return -1;
+		}
 		
+		int? ExpandToItem (ITreeGridItem item)
+		{
+			var parents = GetParents (item).Reverse ();
+			IDataStore<ITreeGridItem> lastParent = null;
+			var row = 0;
+			foreach (var parent in parents) {
+				if (lastParent != null) {
+					var foundRow = FindRow (lastParent, parent);
+					if (foundRow == -1)
+						return null;
+					row += foundRow;
+					var foundItem = Control.ItemAtRow (row) as EtoTreeItem;
+					if (foundItem == null)
+						return null;
+					Control.ExpandItem (foundItem);
+					foundItem.Item.Expanded = true;
+					row ++;
+				}
+				lastParent = parent as IDataStore<ITreeGridItem>;
+			}
+			if (lastParent != null) {
+				var foundRow = FindRow (lastParent, item);
+				if (foundRow == -1)
+					return null;
+
+				return foundRow + row;
+			}
+			return null;
+		}
+
 		public ITreeGridItem SelectedItem {
 			get {
 				var row = Control.SelectedRow;
@@ -243,9 +321,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 					
 					EtoTreeItem myitem;
 					if (cachedItems.TryGetValue (value, out myitem)) {
-						var row = Control.RowForItem (myitem);
-						if (row >= 0)
-							Control.SelectRow (row, false);
+						var cachedRow = Control.RowForItem (myitem);
+						if (cachedRow >= 0) {
+							Control.ScrollRowToVisible (cachedRow);
+							Control.SelectRow (cachedRow, false);
+							return;
+						}
+					}
+
+					var row = ExpandToItem (value);
+					if (row != null) {
+						Control.ScrollRowToVisible (row.Value);
+						Control.SelectRow (row.Value, false);
 					}
 				}
 			}

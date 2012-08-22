@@ -105,7 +105,15 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				return null;
 			}
 			set {
-				//Control.Selection.SelectPath (iter);
+				if (value != null) {
+					var path = model.GetPathFromItem(value);
+					if (path != null) {
+						Tree.ExpandToPath(path);
+						Tree.Selection.SelectPath (path);
+					}
+				}
+				else
+					Tree.Selection.UnselectAll ();
 			}
 		}
 		

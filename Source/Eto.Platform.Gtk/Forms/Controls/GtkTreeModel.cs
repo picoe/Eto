@@ -65,7 +65,37 @@ namespace Eto.Platform.GtkSharp
 		{
 			return GetItemAtPath (new Gtk.TreePath (path));
 		}
-		
+
+		IEnumerable<T> GetParents (T item)
+		{
+			T parent = item.Parent;
+			while (parent != null) {
+				yield return parent;
+				parent = parent.Parent;
+			}
+		}
+
+		public Gtk.TreePath GetPathFromItem (T item)
+		{
+			var path = new Gtk.TreePath();
+			var parents = GetParents (item);
+			foreach (var parent in parents) {
+				S items = (S)(object)parent;
+				var found = false;
+				for (int i = 0; i < items.Count; i++) {
+					if (object.ReferenceEquals (items[i], item)) {
+						path.PrependIndex (i);
+						item = parent;
+						found = true;
+						break;
+					}
+				}
+				if (!found)
+					return null;
+			}
+			return path;
+		}
+
 		public Gtk.TreeIter GetIterFromItem (T item, Gtk.TreePath path)
 		{
 			GCHandle gch;

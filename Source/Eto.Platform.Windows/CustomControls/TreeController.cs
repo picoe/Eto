@@ -92,6 +92,12 @@ namespace Eto.Platform.CustomControls
 				var found = cache.First (r => object.ReferenceEquals (item, r.Value));
 				return found.Key;
 			}
+			else {
+				for (int i = 0; i < this.Count; i++) {
+					if (object.ReferenceEquals (this[i], item))
+						return i;
+				}
+			}
 			return -1;
 		}
 
@@ -401,6 +407,26 @@ namespace Eto.Platform.CustomControls
 		{
 			if (CollectionChanged != null)
 				CollectionChanged (this, args);
+		}
+
+		IEnumerable<ITreeGridItem> GetParents (ITreeGridItem value)
+		{
+			ITreeGridItem parent = value.Parent;
+			while (parent != null) {
+				yield return parent;
+				parent = parent.Parent;
+			}
+		}
+
+		public void ExpandToItem (ITreeGridItem value)
+		{
+			var parents = GetParents (value).Reverse ();
+
+			foreach (var parent in parents) {
+				var row = IndexOf (parent);
+				if (row >= 0 && !IsExpanded(row))
+					ExpandRow (row);
+			}
 		}
 	}
 }
