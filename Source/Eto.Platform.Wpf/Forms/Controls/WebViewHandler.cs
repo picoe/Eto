@@ -222,5 +222,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				server = null;
 			}
 		}
+
+        public void ShowPrintDialog()
+        {
+            throw new NotImplementedException ();
+        }
 	}
 }

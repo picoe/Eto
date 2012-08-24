@@ -129,6 +129,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Control.CanGoForward ();
 			}
 		}
+
+        public void ShowPrintDialog()
+        {
+            Control.Print (Control);
+        }
 	}
 }
 
