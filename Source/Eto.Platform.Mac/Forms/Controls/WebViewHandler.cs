@@ -47,13 +47,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 					}
 					return null;
 				};*/
-				this.Control.DecidePolicyForNavigation += delegate(object sender, MonoMac.WebKit.WebNavigatioPolicyEventArgs e) {
+				this.Control.DecidePolicyForNavigation += (sender, e) => {
 					var args = new WebViewLoadingEventArgs (new Uri (e.Request.Url.AbsoluteString));
 					Widget.OnDocumentLoading (args);
 					if (args.Cancel)
-						e.DecisionToken.PerformSelector (new Selector ("ignore"), null, 0);
+						e.Listener.PerformSelector (new Selector ("ignore"), null, 0);
 					else
-						e.DecisionToken.PerformSelector (new Selector ("use"), null, 0);
+						e.Listener.PerformSelector (new Selector ("use"), null, 0);
 				};
 				break;
 			case WebView.DocumentTitleChangedEvent:
@@ -115,7 +115,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Control.GoForward ();
 		}
-		
+
 		public override bool Enabled { get; set; }
 
 		public bool CanGoBack {
