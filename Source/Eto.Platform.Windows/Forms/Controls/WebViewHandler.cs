@@ -102,7 +102,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 				this.Control.DocumentText = html;
 
 		}
-		
+
+        public void ShowPrintDialog ()
+        {
+            this.Control.ShowPrintDialog();
+        }
 	}
 }
 

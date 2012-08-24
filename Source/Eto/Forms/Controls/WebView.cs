@@ -24,6 +24,8 @@ namespace Eto.Forms
 		string DocumentTitle { get; }
 		
 		string ExecuteScript (string script);
+
+        void ShowPrintDialog();
 	}
 	
 	public class WebViewLoadedEventArgs : EventArgs
@@ -184,6 +186,11 @@ namespace Eto.Forms
 		{
 			handler.LoadHtml (html, baseUri);
 		}
+
+        public void ShowPrintDialog ()
+        {
+            handler.ShowPrintDialog();
+        }
 	}
 }
 
