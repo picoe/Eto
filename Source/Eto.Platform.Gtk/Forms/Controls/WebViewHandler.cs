@@ -236,6 +236,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			get { return webView.CanGoForward (); }
 		}
 
+        public void ShowPrintDialog ()
+        {
+            webView.ExecuteScript("print();");
+        }
+
 #endif
 
 	}
