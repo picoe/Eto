@@ -9,6 +9,7 @@ namespace Eto.Test.Sections.Controls
 		Button goBack;
 		Button goForward;
 		Button stopButton;
+        Button printButton;
 		Label titleLabel;
 		
 		public WebViewSection ()
@@ -55,7 +56,7 @@ namespace Eto.Test.Sections.Controls
 		
 		Control Buttons ()
 		{
-			var layout = new TableLayout (new Panel (), 7, 1);
+			var layout = new TableLayout (new Panel (), 8, 1);
 			
 			int col = 0;
 			layout.Add (BackButton (), col++, 0);
@@ -64,6 +65,7 @@ namespace Eto.Test.Sections.Controls
 			layout.Add (ReloadButton (), col++, 0);
 			layout.Add (StopButton (), col++, 0);
 			layout.Add (ExecuteScriptButton (), col++, 0);
+            layout.Add (PrintButton(), col++, 0);
 			
 			layout.SetColumnScale (col++);
 			
@@ -115,6 +117,19 @@ namespace Eto.Test.Sections.Controls
 			};
 			return control;
 		}
+
+        Control PrintButton()
+        {
+            var control = printButton = new Button
+            {
+                Text = "Print",
+            };
+            control.Click += delegate
+            {
+                webView.ShowPrintDialog();
+            };
+            return control;
+        }
 		
 		Control ExecuteScriptButton ()
 		{

@@ -223,9 +223,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-        public void ShowPrintDialog()
+        public void ShowPrintDialog ()
         {
-            throw new NotImplementedException ();
+            var dialog = new System.Windows.Controls.PrintDialog();
+            dialog.PageRangeSelection = System.Windows.Controls.PageRangeSelection.AllPages;
+            dialog.UserPageRangeEnabled = true;
+
+            if (dialog.ShowDialog() == true)
+            {
+                dialog.PrintVisual(Control, "");
+            }
         }
 	}
 }
