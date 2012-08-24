@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -19,6 +20,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void UIRunJavaScriptAlertPanel (MonoMac.WebKit.WebView sender, string message)
 			{
 				MessageBox.Show (Handler.Widget, message);
+			}
+			
+			public override void UIRunOpenPanelForFileButton (MonoMac.WebKit.WebView sender, MonoMac.WebKit.WebOpenPanelResultListener resultListener)
+			{
+				var openDlg = new OpenFileDialog();
+
+				if (openDlg.ShowDialog (Handler.Widget.ParentWindow) == DialogResult.Ok)
+				{
+					resultListener.ChooseFilenames(openDlg.Filenames.ToArray ());
+				}
 			}
 			
 		}
