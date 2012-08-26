@@ -39,7 +39,35 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Enabled = true;
 			Control = new MonoMac.WebKit.WebView ();
 			Control.UIDelegate = new MyUIDelegate{ Handler = this };
+            SetUIPrintFrameView();
 		}
+
+        private void SetUIPrintFrameView()
+        {
+            Control.UIPrintFrameView += new EventHandler<MonoMac.WebKit.WebViewPrintEventArgs>((sender, e) =>
+            {
+                var margin = 24f;
+                var printOperation = e.FrameView.GetPrintOperation(new MonoMac.AppKit.NSPrintInfo() {
+                    VerticallyCentered = false,
+                    LeftMargin = margin,
+                    RightMargin = margin,
+                    TopMargin = margin,
+                    BottomMargin = margin
+                });
+                printOperation.PrintPanel.Options = 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsCopies | 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsOrientation | 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsPageRange | 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsPageSetupAccessory | 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsPaperSize | 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsPreview | 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsPrintSelection | 
+                    MonoMac.AppKit.NSPrintPanelOptions.ShowsScaling;
+                printOperation.RunOperation();
+            });
+            Control.UIGetHeaderHeight = new MonoMac.WebKit.WebViewGetFloat(x => { return 0f; });
+            Control.UIGetFooterHeight = new MonoMac.WebKit.WebViewGetFloat(x => { return 0f; });
+        }
 		
 		public override void AttachEvent (string handler)
 		{
@@ -143,7 +171,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 
         public void ShowPrintDialog()
         {
+<<<<<<< HEAD
+            ExecuteScript("print()");
+=======
             Control.Print (Control);
+>>>>>>> cd937d818fa3d39fa973b17df6a076d5fb314426
         }
 	}
 }
