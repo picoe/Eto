@@ -12,13 +12,14 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	{
 		GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> model;
 		CollectionHandler collection;
+		bool? selectCollapsingItem;
 
 		public override void Initialize ()
 		{
 			base.Initialize ();
 
 			// these are always handled to set the expanded property
-			Widget.HandleEvent (TreeGridView.ExpandedEvent, TreeGridView.CollapsedEvent);
+			Widget.HandleEvent (TreeGridView.ExpandedEvent, TreeGridView.CollapsedEvent, TreeGridView.CollapsingEvent);
 		}
 
 		protected override Gtk.TreeModelImplementor CreateModelImplementor ()
@@ -110,12 +111,26 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					if (path != null) {
 						Tree.ExpandToPath(path);
 						Tree.Selection.SelectPath (path);
+						Tree.ScrollToCell(path, null, false, 0, 0);
 					}
 				}
 				else
 					Tree.Selection.UnselectAll ();
 			}
 		}
+
+		bool ChildIsSelected (ITreeGridItem item)
+		{
+			var node = this.SelectedItem;
+			
+			while (node != null) {
+				if (node == item)
+					return true;
+				node = node.Parent;
+			}
+			return false;
+		}
+
 		
 		public override void AttachEvent (string handler)
 		{
@@ -139,6 +154,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
 					Widget.OnCollapsing (e);
 					args.RetVal = e.Cancel;
+					if (!e.Cancel) selectCollapsingItem = AllowMultipleSelection ? false : ChildIsSelected(e.Item);
 				};
 				break;
 			case TreeGridView.CollapsedEvent:
@@ -146,6 +162,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
 					e.Item.Expanded = false;
 					Widget.OnCollapsed (e);
+					if (selectCollapsingItem == true) {
+						Tree.Selection.UnselectAll ();
+						Tree.Selection.SelectPath(args.Path);
+						selectCollapsingItem = null;
+					}
 				};
 				break;
 				

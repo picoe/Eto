@@ -173,15 +173,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public void SelectRow (int row)
 		{
 			var list = Control.ItemsSource as IList;
-			if (list != null)
-				Control.SelectedItems.Add (list[row]);
+			if (list != null) {
+				if (this.AllowMultipleSelection)
+					Control.SelectedItems.Add (list[row]);
+				else
+					Control.SelectedIndex = row;
+			}
 		}
 
 		public void UnselectRow (int row)
 		{
 			var list = Control.ItemsSource as IList;
-			if (list != null)
-				Control.SelectedItems.Remove (list[row]);
+			if (list != null) {
+				if (this.AllowMultipleSelection)
+					Control.SelectedItems.Remove (list[row]);
+				else
+					Control.UnselectAll ();
+			}
 		}
 
 		public void UnselectAll ()

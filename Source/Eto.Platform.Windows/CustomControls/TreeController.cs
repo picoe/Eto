@@ -11,6 +11,9 @@ namespace Eto.Platform.CustomControls
 {
 	public interface ITreeHandler
 	{
+		ITreeGridItem SelectedItem { get; }
+		void SelectRow (int row);
+		bool AllowMultipleSelection { get; }
 	}
 
 	public class TreeController : ITreeGridStore<ITreeGridItem>, IList, INotifyCollectionChanged
@@ -71,7 +74,7 @@ namespace Eto.Platform.CustomControls
 					var item = Store[row];
 					if (item.Expanded) {
 						var children = (ITreeGridStore<ITreeGridItem>)item;
-						var section = new TreeController { StartRow = row };
+						var section = new TreeController { StartRow = row, Handler = this.Handler };
 						section.InitializeItems (children);
 						Sections.Add (section);
 					}
@@ -249,7 +252,7 @@ namespace Eto.Platform.CustomControls
 			ITreeGridStore<ITreeGridItem> children = null;
 			if (sections == null || sections.Count == 0) {
 				children = (ITreeGridStore<ITreeGridItem>)Store [row];
-				var childController = new TreeController { StartRow = row, Store = children };
+				var childController = new TreeController { StartRow = row, Store = children, Handler = this.Handler };
 				Sections.Add (childController);
 			}
 			else {
@@ -269,7 +272,7 @@ namespace Eto.Platform.CustomControls
 				}
 				if (addTop && row < Store.Count) {
 					children = (ITreeGridStore<ITreeGridItem>)Store [row];
-					var childController = new TreeController { StartRow = row, Store = children };
+					var childController = new TreeController { StartRow = row, Store = children, Handler = this.Handler };
 					Sections.Add (childController);
 				}
 			}
@@ -281,12 +284,25 @@ namespace Eto.Platform.CustomControls
 			return children;
 		}
 
+		bool ChildIsSelected (ITreeGridItem item)
+		{
+			var node = Handler.SelectedItem;
+
+			while (node != null) {
+				if (object.ReferenceEquals (node, item))
+					return true;
+				node = node.Parent;
+			}
+			return false;
+		}
+
 		public bool CollapseRow (int row)
 		{
 			var args = new TreeGridViewItemCancelEventArgs (GetItemAtRow (row));
 			OnCollapsing (args);
 			if (args.Cancel)
 				return false;
+			var shouldSelect = !Handler.AllowMultipleSelection && ChildIsSelected (args.Item);
 			args.Item.Expanded = false;
 			OnCollapsed (new TreeGridViewItemEventArgs (args.Item));
 			if (sections != null && sections.Count > 0) {
@@ -309,6 +325,10 @@ namespace Eto.Platform.CustomControls
 			}
 			ClearCache ();
 			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+
+			if (shouldSelect) {
+				Handler.SelectRow (row);
+			}
 			return true;
 		}
 

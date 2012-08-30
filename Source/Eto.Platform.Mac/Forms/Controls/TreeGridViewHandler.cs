@@ -43,10 +43,25 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 		}
+
+		bool ChildIsSelected (ITreeGridItem item)
+		{
+			var node = this.SelectedItem;
+			
+			while (node != null) {
+				if (node == item)
+					return true;
+				node = node.Parent;
+			}
+			return false;
+		}
+
 		
 		class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
 			public TreeGridViewHandler Handler { get; set; }
+
+			bool? collapsedItemIsSelected;
 			
 			public override void SelectionDidChange (NSNotification notification)
 			{
@@ -59,6 +74,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null) {
 					myitem.Item.Expanded = false;
 					Handler.Widget.OnCollapsed (new TreeGridViewItemEventArgs (myitem.Item));
+					if (collapsedItemIsSelected == true) {
+						Handler.SelectedItem = myitem.Item;
+						collapsedItemIsSelected = null;
+					}
 				}
 			}
 			
@@ -79,8 +98,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null) {
 					var args = new TreeGridViewItemCancelEventArgs (myitem.Item);
 					Handler.Widget.OnCollapsing (args);
+					if (!args.Cancel && !Handler.AllowMultipleSelection)
+						collapsedItemIsSelected = Handler.ChildIsSelected (myitem.Item);
+					else 
+						collapsedItemIsSelected = null;
 					return !args.Cancel;
 				}
+				collapsedItemIsSelected = null;
 				return true;
 			}
 			

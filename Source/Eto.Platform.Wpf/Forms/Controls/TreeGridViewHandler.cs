@@ -16,9 +16,9 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TreeGridViewHandler : GridHandler<swc.DataGrid, TreeGridView>, ITreeGridView
+	public class TreeGridViewHandler : GridHandler<swc.DataGrid, TreeGridView>, ITreeGridView, ITreeHandler
 	{
-		TreeController controller = new TreeController();
+		TreeController controller;
 
 		protected override IGridItem GetItemAtRow (int row)
 		{
@@ -28,6 +28,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override void Initialize ()
 		{
 			base.Initialize ();
+			controller = new TreeController { Handler = this };
 			Control.Background = sw.SystemColors.WindowBrush;
 			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
 			Control.KeyDown += (sender, e) => {
