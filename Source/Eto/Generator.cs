@@ -129,6 +129,9 @@ namespace Eto
 			get {
 				if (current != null)
 					return current;
+#if MOBILE
+				current = Generator.GetGenerator (Generators.IosAssembly, true);
+#elif DESKTOP
 			
 				if (EtoEnvironment.Platform.IsMac)
 					current = Generator.GetGenerator (Generators.MacAssembly, true);
@@ -140,6 +143,7 @@ namespace Eto
 
 				if (current == null && EtoEnvironment.Platform.IsUnix)
 					current = Generator.GetGenerator (Generators.GtkAssembly, true);
+#endif
 				
 				if (current == null)
 					throw new EtoException ("Could not detect platform. Are you missing a platform assembly?");

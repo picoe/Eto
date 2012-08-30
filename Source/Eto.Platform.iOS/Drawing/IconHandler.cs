@@ -22,7 +22,6 @@ namespace Eto.Platform.iOS.Drawing
 		public void Create (Stream stream)
 		{
 			var data = NSData.FromStream(stream);
-			// I love linda lots and lots and lots!!!  
 			Control = new UIImage (data);
 		}
 

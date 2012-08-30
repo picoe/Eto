@@ -11,6 +11,16 @@ namespace Eto
 	public static class Generators
 	{
 		/// <summary>
+		/// ID of the iOS platform
+		/// </summary>
+		public const string Ios = "ios";
+		
+		/// <summary>
+		/// Assembly name of the iOS platform
+		/// </summary>
+		public const string IosAssembly = "Eto.Platform.iOS.Generator, Eto.Platform.iOS";
+
+		/// <summary>
 		/// ID of the GTK platform
 		/// </summary>
 		public const string Gtk = "gtk";

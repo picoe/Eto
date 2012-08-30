@@ -7,9 +7,9 @@ using Eto.Forms;
 namespace Eto.Platform.iOS
 {
 	[MonoTouch.Foundation.Register("EtoAppDelegate")]
-	public class AppDelegate : UIApplicationDelegate
+	public class EtoAppDelegate : UIApplicationDelegate
 	{
-		public AppDelegate ()
+		public EtoAppDelegate ()
 		{
 		}
 
