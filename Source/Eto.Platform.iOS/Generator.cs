@@ -135,6 +135,43 @@ namespace Eto.Platform.iOS
 			}
 			return new MouseEventArgs (MouseButtons.Primary, Key.None, Point.Empty);
 		}
+
+		public static CGInterpolationQuality ConvertCG (ImageInterpolation value)
+		{
+			switch (value) {
+			case ImageInterpolation.Default:
+				return CGInterpolationQuality.Default;
+			case ImageInterpolation.None:
+				return CGInterpolationQuality.None;
+			case ImageInterpolation.Low:
+				return CGInterpolationQuality.Low;
+			case ImageInterpolation.Medium:
+				return CGInterpolationQuality.Medium;
+			case ImageInterpolation.High:
+				return CGInterpolationQuality.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+		
+		public static ImageInterpolation ConvertCG (CGInterpolationQuality value)
+		{
+			switch (value) {
+			case CGInterpolationQuality.Default:
+				return ImageInterpolation.Default;
+			case CGInterpolationQuality.None:
+				return ImageInterpolation.None;
+			case CGInterpolationQuality.Low:
+				return ImageInterpolation.Low;
+			case CGInterpolationQuality.Medium:
+				return ImageInterpolation.Medium;
+			case CGInterpolationQuality.High:
+				return ImageInterpolation.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+
 	}
 }
 

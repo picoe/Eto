@@ -71,6 +71,11 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
+		public ImageInterpolation ImageInterpolation {
+			get { return Generator.ConvertCG (context.InterpolationQuality); }
+			set { context.InterpolationQuality = Generator.ConvertCG (value); }
+		}
+
 		public GraphicsHandler (UIView view)
 		{
 			this.view = view;

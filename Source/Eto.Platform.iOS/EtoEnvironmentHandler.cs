@@ -31,7 +31,7 @@ namespace Eto.Platform.iOS
 			
 			var manager = new NSFileManager();
 			NSError error;
-			var path = manager.GetUrl(dir, domain, new NSUrl(), false, out error);
+			var path = manager.GetUrl(dir, domain, null, false, out error);
 			return path.Path;
 		}
 
