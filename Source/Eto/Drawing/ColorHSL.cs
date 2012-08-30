@@ -240,7 +240,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Compares the given object for equality with this object
 		/// </summary>
-		/// <param name="obj">Object to compare with</param>
+		/// <param name="other">Object to compare with</param>
 		/// <returns>True if the object is equal to this instance, false otherwise</returns>
 		public bool Equals (ColorHSL other)
 		{

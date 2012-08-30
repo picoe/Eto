@@ -183,6 +183,12 @@ namespace Eto.Drawing
 		public abstract void Set (Rectangle rect);
 	}
 	
+	/// <summary>
+	/// Graphics context object for drawing operations
+	/// </summary>
+	/// <remarks>
+	/// This class allows you to draw on either a <see cref="Bitmap"/> or a <see cref="T:Eto.Forms.Drawable"/> control.
+	/// </remarks>
 	public class Graphics : InstanceWidget
 	{
 		IGraphics handler;
