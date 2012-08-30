@@ -64,8 +64,12 @@ namespace Eto.Platform.GtkSharp
 				container.Remove (container.Child);
 			container.Child = Control;
 			if (old != null) {
-				Control.Pack1 (old.Child1 ?? EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel1, true);
-				Control.Pack2 (old.Child2 ?? EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel2, true);
+				var child1 = old.Child1;
+				var child2 = old.Child2;
+				old.Remove (child2);
+				old.Remove (child1);
+				Control.Pack1 (child1 ?? EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel1, true);
+				Control.Pack2 (child2 ?? EmptyContainer (), fixedPanel != SplitterFixedPanel.Panel2, true);
 				old.Destroy ();
 			}
 			else {
