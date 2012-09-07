@@ -3,6 +3,7 @@ using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
+using System.Diagnostics;
 
 namespace Eto
 {
@@ -298,7 +299,8 @@ namespace Eto
 									types.Remove (t);
 							return Add (type, foundType);
 						}
-					} catch {
+					} catch (Exception e) {
+						Debug.WriteLine (string.Format ("Could not instantiate type '{0}'\n{1}", type, e));
 						if (removalTypes == null)
 							removalTypes = new List<Type> ();
 						removalTypes.Add (foundType);
