@@ -61,21 +61,38 @@ namespace Eto.Platform.Mac.Forms
 			AbortedResponse    = (-1001),
 			ContinuesResponse  = (-1002)
 		}
-
-		public static void Run (NSWindow theWindow)
+		
+		public class ModalHelper
+		{
+			public IntPtr Session { get; set; }
+			
+			public bool Stopped { get; private set; }
+			
+			public void Stop ()
+			{
+				Stopped = true;
+				NSApplication.SharedApplication.StopModal ();
+			}
+		}
+			
+		public static void Run (NSWindow theWindow, out ModalHelper helper)
 		{
 			var app = NSApplication.SharedApplication;
 			var session = app.BeginModalSession (theWindow);
-			int result = (int)NSRun.ContinuesResponse;
+			helper = new ModalHelper { Session = session };
+			int result;
 
 			// Loop until some result other than continues:
-			while (result == (int)NSRun.ContinuesResponse) {
+			do {
 				// Run the window modally until there are no events to process:
 				result = app.RunModalSession (session);
 
 				// Give the main loop some time:
 				NSRunLoop.Current.LimitDateForMode (NSRunLoopMode.Default);
 			}
+			while (result == (int)NSRun.ContinuesResponse || !helper.Stopped);
+			
+			Console.WriteLine ("Ending session {0}", session);
 			app.EndModalSession (session);
 		}
 

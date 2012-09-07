@@ -10,6 +10,7 @@ namespace Eto.Platform.Mac.Forms
 	public class DialogHandler : MacWindow<MyWindow, Dialog>, IDialog
 	{
 		Button button;
+		MacModal.ModalHelper session;
 		
 		class DialogWindow : MyWindow {
 			public new DialogHandler Handler
@@ -73,13 +74,15 @@ namespace Eto.Platform.Mac.Forms
 			Control.MakeKeyWindow ();
 			
 			Widget.Closed += HandleClosed;
-			MacModal.Run (Control);
+			MacModal.Run (Control, out session);
 			return Widget.DialogResult;
 		}
 
 		void HandleClosed (object sender, EventArgs e)
 		{
-			NSApplication.SharedApplication.StopModal();
+			if (session != null)
+				session.Stop ();
+			Console.WriteLine ("Stopping Modal");
 			Widget.Closed -= HandleClosed;
 		}
 
