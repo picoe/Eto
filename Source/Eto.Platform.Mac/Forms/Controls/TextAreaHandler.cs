@@ -30,8 +30,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				VerticallyResizable = true,
 				Editable = true,
 				Selectable = true,
-				AllowsUndo = true
+				AllowsUndo = true,
+				MinSize = new System.Drawing.SizeF(0, 0),
+				MaxSize = new System.Drawing.SizeF(float.MaxValue, float.MaxValue)
 			};
+			Control.TextContainer.WidthTracksTextView = true;
 
 			Scroll = new NSScrollView {
 				AutoresizesSubviews = true,
