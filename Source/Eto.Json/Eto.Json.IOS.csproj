@@ -53,6 +53,9 @@
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="NamespaceManager.cs" />
     <Compile Include="PropertyStoreConverter.cs" />
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

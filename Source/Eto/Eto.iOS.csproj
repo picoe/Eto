@@ -250,6 +250,9 @@
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

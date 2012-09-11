@@ -158,6 +158,9 @@
     <Compile Include="Forms\iosViewExtensions.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="EtoAppDelegate.cs" />
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">
