@@ -211,7 +211,8 @@ namespace Eto.Forms
 
 		public void Add (Control control, int x, int y)
 		{
-			SetLocation (control, new Point(x, y));
+			if (control != null)
+				SetLocation (control, new Point(x, y));
 			InnerAdd (control, x, y);
 		}
 
