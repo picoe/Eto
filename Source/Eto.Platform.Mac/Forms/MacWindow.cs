@@ -59,6 +59,8 @@ namespace Eto.Platform.Mac.Forms
 		Size? MinimumSize { get; }
 		
 		bool CloseWindow ();
+
+		NSWindow Control { get; }
 	}
 	
 	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer, IMacWindow
@@ -506,10 +508,13 @@ namespace Eto.Platform.Mac.Forms
 		}
 
 		Eto.Forms.Window IMacWindow.Widget {
-			get {
-				return this.Widget;
-			}
+			get { return this.Widget; }
 		}
+
+		NSWindow IMacWindow.Control {
+			get { return this.Control; }
+		}
+
 		#endregion
 		
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)

@@ -70,7 +70,7 @@ namespace Eto.Test
 			this.contentContainer = contentContainer;
 			this.Style = "sectionList";
 			this.ShowHeader = false;
-
+			
 			Columns.Add (new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
 			this.DataStore = new Section ("Top", TopNodes ());
@@ -84,6 +84,7 @@ namespace Eto.Test
 			yield return new Section ("Controls", ControlSection ());
 			yield return new Section ("Layouts", LayoutsSection ());
 			yield return new Section ("Dialogs", DialogsSection ());
+			yield return new Section ("Printing", PrintingSection ());
 			yield return new Section ("Serialization", SerializationSection ());
 		}
 		
@@ -151,6 +152,12 @@ namespace Eto.Test
 			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
 #endif
 		}
+
+		IEnumerable<Section> PrintingSection ()
+		{
+			yield return new Section<Sections.Printing.PrintDialogSection> { Text = "Print Dialog" };
+		}
+
 		IEnumerable<Section> BehaviorsSection ()
 		{
 			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };
