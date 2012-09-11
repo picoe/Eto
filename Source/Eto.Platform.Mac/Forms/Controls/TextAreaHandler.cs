@@ -45,6 +45,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 				DocumentView = Control
 			};
 		}
+
+		public override Eto.Drawing.Size GetPreferredSize ()
+		{
+			var size = base.GetPreferredSize ();
+			size.Height = Math.Max (size.Height, 60);
+			return size;
+		}
 		
 		#region ITextArea Members
 		
