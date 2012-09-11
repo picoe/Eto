@@ -1,3 +1,5 @@
+#if XAML
+
 using System;
 using System.IO;
 using System.Reflection;
@@ -35,29 +37,40 @@ namespace Eto
 		
 		class EtoXamlSchemaContext : XamlSchemaContext
 		{
-			Dictionary<Type, XamlType> _masterTypeTable = new Dictionary<Type, XamlType> ();
-			object _syncObject = new object ();
+			Dictionary<string, XamlType> cache = new Dictionary<string, XamlType> ();
+			object cache_sync = new object ();
 			
 			public EtoXamlSchemaContext (IEnumerable<Assembly> assemblies)
 				: base(assemblies)
 			{
 			}
 
-			public override XamlType GetXamlType (Type type)
+			const string clr_namespace = "clr-namespace:";
+			const string clr_assembly = "assembly=";
+
+			protected override XamlType GetXamlType (string xamlNamespace, string name, params XamlType[] typeArguments)
 			{
-				if (type == null) {
-					throw new ArgumentNullException ("type");
-				}
-				XamlType xamlType;
-				lock (this._syncObject) {
-					if (!this._masterTypeTable.TryGetValue (type, out xamlType)) {
-						xamlType = new EtoXamlType (type, this);
-						this._masterTypeTable.Add (type, xamlType);
+				var type = base.GetXamlType (xamlNamespace, name, typeArguments);
+				if (type == null && xamlNamespace.StartsWith (clr_namespace)) {
+					lock (this.cache_sync) {
+						if (!this.cache.TryGetValue (xamlNamespace + name, out type)) {
+							var nsComponents = xamlNamespace.Split (';');
+							if (nsComponents.Length == 2 && nsComponents[1].StartsWith (clr_assembly)) {
+								var assemblyName = nsComponents[1].Substring (clr_assembly.Length);
+								var ns = nsComponents[0].Substring (clr_namespace.Length);
+								var assembly = Assembly.Load (assemblyName);
+								if (assembly != null) {
+									var realType = assembly.GetType (ns + "." + name);
+									type = this.GetXamlType(realType);
+									this.cache.Add (xamlNamespace + name, type);
+								}
+							}
+						}
 					}
 				}
-				return xamlType;
-			}
 
+				return type;
+			}
 		}
 
 		/// <summary>
@@ -126,7 +139,7 @@ namespace Eto
 			where T : InstanceWidget
 		{
 			var type = typeof(T);
-			var context = new XamlSchemaContext (new Assembly[] { typeof(XamlReader).Assembly });
+			var context = new EtoXamlSchemaContext (new Assembly[] { typeof(XamlReader).Assembly });
 			var reader = new XamlXmlReader (stream, context);
 			var writerSettings = new XamlObjectWriterSettings {
 				RootObjectInstance = instance
@@ -147,3 +160,4 @@ namespace Eto
 	}
 }
 
+#endif
