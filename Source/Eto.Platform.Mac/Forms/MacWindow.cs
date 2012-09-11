@@ -6,6 +6,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Forms.Controls;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -60,7 +61,20 @@ namespace Eto.Platform.Mac.Forms
 		
 		bool CloseWindow ();
 	}
-	
+
+	public class CustomFieldEditor : NSTextView
+	{
+		public Control Widget { get; set; }
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			if (!MacEventView.KeyDown (Widget, theEvent)) {
+				base.KeyDown (theEvent);
+			}
+		}
+	}
+		
+
 	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer, IMacWindow
 		where T: MyWindow
 		where W: Eto.Forms.Window
@@ -179,7 +193,7 @@ namespace Eto.Platform.Mac.Forms
 			} else
 				this.Control.ContentView.DiscardCursorRects ();
 		}
-		
+
 		protected void ConfigureWindow ()
 		{
 			Control.Handler = this;
@@ -190,8 +204,15 @@ namespace Eto.Platform.Mac.Forms
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			//Control.Delegate = new MacWindowDelegate{ Handler = this };
-			Control.WillReturnFieldEditor = (sender, client) => {
-				FieldEditorObject = client;
+			Control.WillReturnFieldEditor = (sender, forObject) => {
+				FieldEditorObject = forObject;
+				var control = forObject as IMacControl;
+				if (control != null) {
+					var handler = control.Handler as IMacViewHandler;
+					if (handler != null && handler.IsEventHandled(TextBox.KeyDownEvent)) {
+						return new CustomFieldEditor { Widget = handler.Widget };
+					}
+				}
 				return null;
 			};
 		}

@@ -49,7 +49,7 @@ namespace Eto.Platform.Mac.Forms
 		Size GetPreferredSize ();
 		
 	}
-		
+
 	public interface IMacViewHandler : IMacAutoSizing
 	{
 		Size PositionOffset { get; }
@@ -61,6 +61,8 @@ namespace Eto.Platform.Mac.Forms
 		Control Widget { get; }
 		
 		Cursor Cursor { get; set; }
+
+		bool IsEventHandled (string eventName);
 
 	}
 	
