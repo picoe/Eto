@@ -249,6 +249,7 @@
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="XmlExtensions.cs" />
+    <Compile Include="EtoMemberIdentifier.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

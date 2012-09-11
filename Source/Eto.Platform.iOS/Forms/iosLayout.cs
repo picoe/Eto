@@ -39,6 +39,10 @@ namespace Eto.Platform.iOS.Forms
 		public virtual void Update()
 		{
 		}
+
+		public virtual void AttachedToContainer ()
+		{
+		}
 		
 		protected void UpdateParentLayout()
 		{

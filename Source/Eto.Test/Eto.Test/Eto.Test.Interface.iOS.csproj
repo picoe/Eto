@@ -99,10 +99,15 @@
       <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
       <Name>Eto.iOS</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Json\Eto.Json.IOS.csproj">
+      <Project>{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}</Project>
+      <Name>Eto.Json.IOS</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
     <EmbeddedResource Include="TestImage.png" />
+    <EmbeddedResource Include="Sections\Serialization\Json\Test.json" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainForm.cs" />
@@ -153,6 +158,8 @@
     <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
     <Compile Include="Sections\Dialogs\CustomDialogSection.cs" />
     <Compile Include="Sections\Drawing\InterpolationSection.cs" />
+    <Compile Include="Sections\Serialization\Json\Test.cs" />
+    <Compile Include="Sections\Serialization\JsonReadSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
