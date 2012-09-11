@@ -46,13 +46,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 		}
 
-		public override Eto.Drawing.Size GetPreferredSize ()
+		protected override Eto.Drawing.Size GetNaturalSize ()
 		{
-			var size = base.GetPreferredSize ();
+			var size = base.GetNaturalSize ();
 			size.Height = Math.Max (size.Height, 60);
 			return size;
 		}
-		
+
 		#region ITextArea Members
 		
 		public override void AttachEvent (string handler)

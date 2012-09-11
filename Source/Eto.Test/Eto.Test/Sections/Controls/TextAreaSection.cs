@@ -30,21 +30,21 @@ namespace Eto.Test.Sections.Controls
 		
 		Control DifferentSize ()
 		{
-			var control = new TextArea{ Text = "Some Text", Size = new Size (100, 50) };
+			var control = new TextArea{ Text = "Some Text", Size = new Size (100, 20) };
 			LogEvents (control);
 			return control;
 		}
 		
 		Control ReadOnly ()
 		{
-			var control = new TextArea{ Text = "Read only text", ReadOnly = true, Size = new Size (100, 50) };
+			var control = new TextArea{ Text = "Read only text", ReadOnly = true };
 			LogEvents (control);
 			return control;
 		}
 
 		Control Disabled ()
 		{
-			var control = DifferentSize ();
+			var control = Default ();
 			control.Enabled = false;
 			return control;
 		}
@@ -53,7 +53,6 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new TextArea{
 				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + Environment.NewLine + "Second Line",
-				Size = new Size (100, 50),
 				Wrap = true
 			};
 			LogEvents (control);
@@ -64,7 +63,6 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new TextArea{ 
 				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + Environment.NewLine + "Second Line",
-				Size = new Size (100, 50),
 				Wrap = false
 			};
 			LogEvents (control);
