@@ -284,7 +284,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 
 		public IEnumerable<int> SelectedRows {
-			get { return Control.SelectedRows.Select (r => (int)r); }
+			get { 
+				if (Control.SelectedRows != null && Control.SelectedRows.Count > 0)
+					return Control.SelectedRows.Select (r => (int)r);
+				else
+					return Enumerable.Empty<int>();
+			}
 		}
 
 		public void SelectAll ()
