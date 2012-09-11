@@ -306,12 +306,22 @@ namespace Eto.Platform.Mac.Forms
 			if (loaded)
 				UpdateParentLayout();
 		}
+
+		public bool GetColumnScale (int column)
+		{
+			return xscaling [column];
+		}
 		
 		public void SetRowScale (int row, bool scale)
 		{
 			yscaling [row] = scale;
 			if (loaded)
 				UpdateParentLayout();
+		}
+
+		public bool GetRowScale (int row)
+		{
+			return yscaling [row];
 		}
 	}
 }

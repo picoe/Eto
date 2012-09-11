@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
 namespace Eto.Forms
 {
-#if DESKTOP
+#if XAML
 	[ContentProperty("Control")]
 #endif
 	public class DynamicControl : DynamicItem

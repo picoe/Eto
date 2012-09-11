@@ -13,7 +13,8 @@ namespace Eto.Platform.Mac.Forms
 	{
 		Control child;
 		Padding padding;
-		
+		Control childToAdd;
+
 		public override NSView Control {
 			get {
 				return (NSView)Widget.Container.ContainerObject;
@@ -27,7 +28,8 @@ namespace Eto.Platform.Mac.Forms
 			get { return padding; }
 			set {
 				padding = value;
-				UpdateParentLayout ();
+				if (Widget.Container != null)
+					UpdateParentLayout ();
 			}
 		}
 		
@@ -39,7 +41,15 @@ namespace Eto.Platform.Mac.Forms
 			}
 			else return Size.Empty;
 		}
-		
+
+		public override void AttachedToContainer ()
+		{
+			base.AttachedToContainer ();
+			if (childToAdd != null)
+				this.Content = childToAdd;
+			UpdateParentLayout ();
+		}
+
 		public override void LayoutChildren ()
 		{
 			if (child == null) return;
@@ -70,6 +80,11 @@ namespace Eto.Platform.Mac.Forms
 				return this.child;
 			}
 			set {
+				if (Widget.Container == null) {
+					childToAdd = value;
+					return;
+				}
+
 				if (this.child != null) { 
 					this.child.GetContainerView ().RemoveFromSuperview(); 
 				}
@@ -78,7 +93,7 @@ namespace Eto.Platform.Mac.Forms
 					this.child = value;
 					NSView childControl = child.GetContainerView ();
 					childControl.AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable;
-					
+
 					NSView parent = this.Control;
 					parent.AddSubview(childControl);
 				}
@@ -89,7 +104,7 @@ namespace Eto.Platform.Mac.Forms
 				}
 			}
 		}
-		
+
 		public override void OnLoadComplete ()
 		{
 			base.OnLoadComplete ();

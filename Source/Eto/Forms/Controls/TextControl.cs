@@ -1,5 +1,5 @@
 using System;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
@@ -10,7 +10,7 @@ namespace Eto.Forms
 		string Text { get; set; }
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("Text")]
 #endif
 	public abstract class TextControl : CommonControl

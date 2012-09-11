@@ -14,6 +14,8 @@ namespace Eto.Forms
 		void OnLoadComplete ();
 
 		void Update ();
+
+		void AttachedToContainer();
 	}
 
 	public interface IPositionalLayout : ILayout
@@ -28,6 +30,7 @@ namespace Eto.Forms
 	public abstract class Layout : InstanceWidget, ISupportInitialize
 	{
 		ILayout handler;
+		Container container;
 
 		public bool Initializing { get; private set; }
 		
@@ -74,8 +77,8 @@ namespace Eto.Forms
 		protected Layout (Generator g, Container container, Type type, bool initialize = true)
 			: base(g, type, false)
 		{
-			this.Container = container;
 			handler = (ILayout)Handler;
+			this.container = container;
 			if (initialize) {
 				Initialize ();
 				if (this.Container != null)
@@ -86,8 +89,8 @@ namespace Eto.Forms
 		protected Layout (Generator g, Container container, ILayout handler, bool initialize = true)
 			: base (g, handler, false)
 		{
-			this.Container = container;
 			this.handler = (ILayout)Handler;
+			this.container = container;
 			if (initialize) {
 				Initialize ();
 				if (this.Container != null)
@@ -96,8 +99,11 @@ namespace Eto.Forms
 		}
 		
 		public virtual Container Container {
-			get;
-			protected internal set;
+			get { return container; }
+			protected internal set {
+				container = value;
+				handler.AttachedToContainer ();
+			}
 		}
 		
 		public Layout ParentLayout {

@@ -35,5 +35,9 @@ namespace Eto.Platform.Wpf.Forms
 		public virtual void OnPreLoad ()
 		{
 		}
+
+		public virtual void AttachedToContainer ()
+		{
+		}
 	}
 }

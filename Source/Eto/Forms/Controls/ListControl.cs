@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using System.Collections.ObjectModel;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
@@ -29,7 +29,7 @@ namespace Eto.Forms
 		}
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("Items")]
 #endif
 	public class ListControl : CommonControl

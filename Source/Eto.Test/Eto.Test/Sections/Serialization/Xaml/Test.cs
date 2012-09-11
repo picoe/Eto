@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 
-namespace Eto.Test.Xaml
+namespace Eto.Test.Sections.Serialization.Xaml
 {
 	public class Test : Panel
 	{
-		protected CheckBox someOption;
-		protected TextArea someTextArea;
+		protected CheckBox myCheckBox;
+		protected TextArea myTextArea;
 
 		public Test ()
 		{
@@ -17,8 +17,8 @@ namespace Eto.Test.Xaml
 			// mono does not have a full implementation of Xaml as of yet
 			XamlReader.Load (this);
 			
-			someOption.Checked = true;
-			someTextArea.Text = "This form was created via xaml!";
+			myCheckBox.Checked = true;
+			myTextArea.Text = "This form was created via xaml!";
 		}
 
 		protected void HandleButtonClick (object sender, EventArgs e)

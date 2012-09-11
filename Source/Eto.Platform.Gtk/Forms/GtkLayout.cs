@@ -48,5 +48,9 @@ namespace Eto.Platform.GtkSharp
 		public virtual void Update ()
 		{
 		}
+
+		public virtual void AttachedToContainer ()
+		{
+		}
 	}
 }

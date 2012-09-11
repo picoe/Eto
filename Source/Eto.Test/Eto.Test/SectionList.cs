@@ -84,6 +84,7 @@ namespace Eto.Test
 			yield return new Section ("Controls", ControlSection ());
 			yield return new Section ("Layouts", LayoutsSection ());
 			yield return new Section ("Dialogs", DialogsSection ());
+			yield return new Section ("Serialization", SerializationSection ());
 		}
 		
 		IEnumerable<Section> ControlSection ()
@@ -111,9 +112,6 @@ namespace Eto.Test
 			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
 			yield return new Section<ProgressBarSection> { Text = "Progress Bar" };
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
-#if DESKTOP
-			yield return new Section<XamlSection> { Text = "Xaml" };
-#endif
 		}
 
 		IEnumerable<Section> DrawingSection ()
@@ -146,6 +144,13 @@ namespace Eto.Test
 			yield return new Section<Sections.Dialogs.CustomDialogSection> { Text = "Custom Dialog" };
 		}
 
+		IEnumerable<Section> SerializationSection ()
+		{
+			yield return new Section<Sections.Serialization.JsonReadSection> { Text = "Json" };
+#if XAML
+			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
+#endif
+		}
 		IEnumerable<Section> BehaviorsSection ()
 		{
 			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };

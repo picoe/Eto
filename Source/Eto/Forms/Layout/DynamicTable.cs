@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
 namespace Eto.Forms
 {
-#if DESKTOP
+#if XAML
 	[ContentProperty("Items")]
 #endif
 	public class DynamicRow
@@ -31,7 +31,7 @@ namespace Eto.Forms
 
 	}
 
-#if DESKTOP
+#if XAML
 	[ContentProperty("Rows")]
 #endif
 	public class DynamicTable : DynamicItem
@@ -79,7 +79,7 @@ namespace Eto.Forms
 		{
 			if (rows.Count == 0)
 				return null;
-			int cols = rows.Max (r => r.Items.Count);
+			int cols = rows.Where (r => r != null).Max (r => r.Items.Count);
 
 			if (Container == null) {
 				Container = new Panel ();
@@ -98,10 +98,14 @@ namespace Eto.Forms
 			if (spacing != null)
 				tableLayout.Spacing = spacing.Value;
 
+			var scalingRow = new DynamicRow ();
+			scalingRow.Items.Add (new DynamicControl{ YScale = true });
 			for (int cy = 0; cy < rows.Count; cy++) {
 				var row = rows[cy];
+				if (row == null) row = scalingRow;
 				for (int cx = 0; cx < row.Items.Count; cx++) {
 					var item = row.Items[cx];
+					if (item == null) item = new DynamicControl { XScale = true };
 					item.Generate (layout, tableLayout, cx, cy);
 				}
 			}

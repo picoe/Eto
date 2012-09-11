@@ -25,7 +25,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DESKTOP</DefineConstants>
+    <DefineConstants>TRACE;DESKTOP;XAML</DefineConstants>
     <DocumentationFile>..\..\BuildOutput\Release\Eto.XML</DocumentationFile>
     <FileAlignment>4096</FileAlignment>
     <Optimize>True</Optimize>
@@ -40,7 +40,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE;DESKTOP</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;DESKTOP;XAML</DefineConstants>
     <DocumentationFile>..\..\BuildOutput\Debug\Eto.XML</DocumentationFile>
     <DebugSymbols>True</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
@@ -464,6 +464,8 @@
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
     <Compile Include="Binding\BindingExtensions.cs" />
+    <Compile Include="Widget.xaml.cs" />
+    <Compile Include="EtoMemberIdentifier.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

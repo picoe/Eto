@@ -2,7 +2,7 @@ using System;
 using System.Collections;
 using System.Linq;
 
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
@@ -19,7 +19,7 @@ namespace Eto.Forms
 		void RemoveTab (int index, TabPage page);
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("TabPages")]
 #endif
 	public class TabControl : Control

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Xaml;
 
 namespace Eto
 {
@@ -40,11 +41,10 @@ namespace Eto
 	/// 
 	/// To implement the handler for a widget, use the <see cref="WidgetHandler{T}"/> as the base class.
 	/// </remarks>
-	public abstract class Widget : IDisposable
+	public abstract partial class Widget : IDisposable
 	{
 		BindingCollection bindings;
 		
-#if DESKTOP
 		PropertyStore properties;
 		
 		/// <summary>
@@ -54,11 +54,11 @@ namespace Eto
 		{
 			get
 			{
-				if (properties == null) properties = new PropertyStore ();
+				if (properties == null) properties = new PropertyStore (this);
 				return properties;
 			}
 		}
-#endif
+
 		/// <summary>
 		/// Gets the generator that was used to create the <see cref="Handler"/> for this widget
 		/// </summary>
@@ -193,7 +193,7 @@ namespace Eto
 				this.Handler = null;
 			}
 		}		
-		
+
 	}
 }
 

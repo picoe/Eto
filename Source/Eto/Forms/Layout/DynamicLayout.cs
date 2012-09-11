@@ -2,13 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
 namespace Eto.Forms
 {
-#if DESKTOP
+#if XAML
 	[ContentProperty("Rows")]
 #endif
 	public class DynamicLayout : Layout
@@ -44,19 +44,9 @@ namespace Eto.Forms
 		{
 			get { return base.Container; }
 			protected internal set {
-
-				if (base.Container != null) {
-					base.Container.PreLoad -= HandleContainerLoad;
-					base.Container.Load -= HandleContainerLoad;
-				}
-
 				base.Container = value;
 				if (topTable != null)
 					topTable.Container = value;
-				if (base.Container != null) {
-					base.Container.PreLoad += HandleContainerLoad;
-					base.Container.Load += HandleContainerLoad;
-				}
 			}
 		}
 
@@ -114,10 +104,17 @@ namespace Eto.Forms
 			public void Update ()
 			{
 			}
+
+			public void AttachedToContainer ()
+			{
+			}
 		}
 
 		public override void OnPreLoad (EventArgs e)
 		{
+			if (!Generated)
+				this.Generate ();
+
 			base.OnPreLoad (e);
 			if (InnerLayout != null)
 				InnerLayout.OnPreLoad (e);
@@ -125,6 +122,9 @@ namespace Eto.Forms
 
 		public override void OnLoad (EventArgs e)
 		{
+			if (!Generated)
+				this.Generate ();
+
 			base.OnLoad (e);
 			if (InnerLayout != null)
 				InnerLayout.OnLoad (e);
@@ -171,12 +171,6 @@ namespace Eto.Forms
 			Initialize ();
 			if (this.Container != null)
 				this.Container.Layout = this;
-		}
-
-		void HandleContainerLoad (object sender, EventArgs e)
-		{
-			if (!Generated)
-				this.Generate ();
 		}
 
 		public void BeginVertical (bool xscale, bool? yscale = null)

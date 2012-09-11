@@ -173,7 +173,12 @@ namespace Eto.Platform.Windows
 			}
 			SetMinSize();
 		}
-		
+
+		public bool GetColumnScale (int row)
+		{
+			return Control.ColumnStyles[row].SizeType == SWF.SizeType.Percent;
+		}
+
 		public void SetRowScale(int row, bool scale)
 		{
 			if (scale || this.Control.RowCount == 1)
@@ -186,6 +191,11 @@ namespace Eto.Platform.Windows
 				Control.RowStyles[row].SizeType = SWF.SizeType.AutoSize;
 			}
 			SetMinSize();
+		}
+
+		public bool GetRowScale (int row)
+		{
+			return Control.RowStyles[row].SizeType == SWF.SizeType.Percent;
 		}
 	}
 }

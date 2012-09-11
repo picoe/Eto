@@ -2,7 +2,10 @@ using System;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Linq;
-#if DESKTOP
+using System.Runtime.Serialization;
+
+
+#if XAML
 using System.Windows.Markup;
 #endif
 
@@ -29,7 +32,7 @@ namespace Eto.Forms
 		}
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("Content")]
 #endif
 	public class DockLayout : Layout
@@ -83,37 +86,25 @@ namespace Eto.Forms
 			get { return inner.Content; }
 			set {
 				control = value;
-				if (!Initializing && this.Container != null) {
-					if (control != null) {
-						control.SetParentLayout (this);
-						var load = Loaded && !control.Loaded;
-						if (load) {
-							control.OnPreLoad (EventArgs.Empty);
-							control.OnLoad (EventArgs.Empty);
-						}
-						inner.Content = control;
-						if (load)
-							control.OnLoadComplete (EventArgs.Empty);
+				if (control != null) {
+					control.SetParentLayout (this);
+					var load = Loaded && !control.Loaded;
+					if (load) {
+						control.OnPreLoad (EventArgs.Empty);
+						control.OnLoad (EventArgs.Empty);
 					}
-					else
-						inner.Content = control;
+					inner.Content = control;
+					if (load)
+						control.OnLoadComplete (EventArgs.Empty);
 				}
+				else
+					inner.Content = control;
 			}
 		}
 		
 		public Padding Padding {
 			get { return inner.Padding; }
-			set {
-				if (Initializing) padding = value;
-				else inner.Padding = value;
-			}
-		}
-
-		public override void EndInit ()
-		{
-			base.EndInit ();
-			this.Content = control;
-			if (padding != null) this.Padding = padding.Value;
+			set { inner.Padding = value; }
 		}
 	}
 }

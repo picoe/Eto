@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Panel x:Class="Eto.Test.Sections.Serialization.Xaml.Test"
+	xmlns="http://schema.picoe.ca/eto.forms"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test"
+	>
+	<DynamicLayout>
+		<DynamicRow>
+			<DynamicControl XScale="true" YScale="true">
+				<TabControl>
+					<TabPage Text="Tab 1">
+						<DynamicLayout>
+							<DynamicRow>
+								<DynamicControl><Label Text="Text Box"/></DynamicControl>
+								<DynamicControl><TextBox/></DynamicControl>
+							</DynamicRow>
+							<DynamicRow>
+								<DynamicControl><Label Text="Text Area"/></DynamicControl>
+								<DynamicControl><TextArea ID="myTextArea"/></DynamicControl>
+							</DynamicRow>
+							<DynamicRow>
+								<DynamicControl></DynamicControl>
+								<DynamicControl><CheckBox ID="myCheckBox" Text="Check Box"/></DynamicControl>
+							</DynamicRow>
+							<DynamicRow>
+								<DynamicControl><Label Text="Combo Box"/></DynamicControl>
+								<DynamicControl>
+									<ComboBox>
+										<ListItem Text="Item 1"/>
+										<ListItem Text="Item 2"/>
+										<ListItem Text="Item 3"/>
+										<ListItem Text="Item 4"/>
+									</ComboBox>
+								</DynamicControl>
+							</DynamicRow>
+							<DynamicRow></DynamicRow>
+						</DynamicLayout>
+					</TabPage>
+					<TabPage Text="Tab 2">
+						<TableLayout Size="3,3">
+							<Label Text="Centered in tab" TableLayout.Location="1,1" />
+						</TableLayout>
+					</TabPage>
+					<TabPage Text="Tab 3">
+						<DockLayout>
+							<e:LabelSection />
+						</DockLayout>
+					</TabPage>
+				</TabControl>
+			</DynamicControl>
+		</DynamicRow>
+		<DynamicRow>
+			<DynamicTable>
+				<DynamicRow>
+					<DynamicControl XScale="true"></DynamicControl>
+					<DynamicControl>
+						<Button Text="Button 1" Click="HandleButtonClick"/>
+					</DynamicControl>
+					<DynamicControl>
+						<Button Text="Button 2" Click="HandleButtonClick"/>
+					</DynamicControl>
+				</DynamicRow>
+			</DynamicTable>
+		</DynamicRow>	
+	</DynamicLayout>
+</Panel>

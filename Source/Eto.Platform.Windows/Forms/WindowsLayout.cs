@@ -33,5 +33,9 @@ namespace Eto.Platform.Windows
 		public virtual void Update ()
 		{
 		}
+
+		public virtual void AttachedToContainer ()
+		{
+		}
 	}
 }

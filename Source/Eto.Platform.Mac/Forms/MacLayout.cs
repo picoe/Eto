@@ -108,7 +108,11 @@ namespace Eto.Platform.Mac.Forms
 		{
 			LayoutChildren ();	
 		}
-		
+
+		public virtual void AttachedToContainer ()
+		{
+		}
+
 		public abstract Size GetPreferredSize ();
 		
 		public abstract void LayoutChildren ();

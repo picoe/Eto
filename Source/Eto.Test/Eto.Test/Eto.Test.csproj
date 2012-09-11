@@ -15,7 +15,7 @@
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
-    <DefineConstants>DEBUG;DESKTOP</DefineConstants>
+    <DefineConstants>DEBUG;DESKTOP;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -29,7 +29,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>DESKTOP;</DefineConstants>
+    <DefineConstants>DESKTOP;XAML</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -72,7 +72,6 @@
     <Compile Include="Sections\Controls\TextAreaSection.cs" />
     <Compile Include="Sections\Controls\TreeGridViewSection.cs" />
     <Compile Include="Sections\Controls\WebViewSection.cs" />
-    <Compile Include="Sections\Controls\XamlSection.cs" />
     <Compile Include="Sections\Controls\TextBoxSection.cs" />
     <Compile Include="Sections\Behaviors\MouseEventsSection.cs" />
     <Compile Include="SectionList.cs" />
@@ -80,7 +79,6 @@
     <Compile Include="Sections\Behaviors\FocusEventsSection.cs" />
     <Compile Include="Sections\Behaviors\KeyEventsSection.cs" />
     <Compile Include="Sections\Behaviors\ContextMenuSection.cs" />
-    <Compile Include="Xaml\Test.cs" />
     <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
     <Compile Include="Sections\Controls\GridViewSection.cs" />
     <Compile Include="Sections\Controls\ProgressBarSection.cs" />
@@ -88,16 +86,27 @@
     <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
     <Compile Include="Sections\Dialogs\CustomDialogSection.cs" />
     <Compile Include="Sections\Drawing\InterpolationSection.cs" />
+    <Compile Include="Sections\Serialization\Xaml\Test.cs" />
+    <Compile Include="Sections\Serialization\Json\Test.cs" />
+    <Compile Include="Sections\Serialization\JsonReadSection.cs" />
+    <Compile Include="Sections\Serialization\XamlReadSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">
+      <Project>{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}</Project>
+      <Name>Eto.Json</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="TestIcon.ico" />
-    <EmbeddedResource Include="Xaml\Test.xaml">
+    <EmbeddedResource Include="Sections\Serialization\Xaml\Test.xaml">
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Sections\Serialization\Json\Test.json">
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
@@ -106,4 +115,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Sections\Serialization\" />
+  </ItemGroup>
 </Project>

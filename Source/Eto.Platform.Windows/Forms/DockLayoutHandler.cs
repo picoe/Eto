@@ -10,6 +10,7 @@ namespace Eto.Platform.Windows
 	{
 		Control child;
 		Padding padding;
+		Control childToAdd;
 		
 		public DockLayoutHandler ()
 		{
@@ -43,8 +44,14 @@ namespace Eto.Platform.Windows
 		}
 		
 		public Control Content {
-			get { return this.child; }
+			get { return (Widget.Container == null) ? childToAdd : this.child; }
 			set {
+				if (Widget.Container == null) {
+					childToAdd = value;
+					return;
+				}
+				if (child == value)
+					return;
 				SWF.Control parent = (SWF.Control)Widget.Container.ContainerObject;
 				parent.SuspendLayout ();
 	
@@ -69,5 +76,13 @@ namespace Eto.Platform.Windows
 				parent.ResumeLayout ();
 			}
 		}
+
+		public override void AttachedToContainer ()
+		{
+			base.AttachedToContainer ();
+			if (childToAdd != null)
+				this.Content = childToAdd;
+		}
+
 	}
 }

@@ -33,6 +33,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override bool HasFocus {
 			get {
+				if (Widget.ParentWindow == null)
+					return false;
 				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
 			}
 		}

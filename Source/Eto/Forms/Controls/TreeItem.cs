@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 using System.Collections.Specialized;
@@ -15,7 +15,7 @@ namespace Eto.Forms
 	{
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("Children")]
 #endif
 	public class TreeItem : ImageListItem, ITreeItem

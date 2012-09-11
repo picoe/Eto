@@ -2,7 +2,10 @@ using System;
 using Eto.Drawing;
 using System.Collections.Generic;
 using System.Collections;
-#if DESKTOP
+using System.Runtime.Serialization;
+
+
+#if XAML
 using System.Windows.Markup;
 using System.Xaml;
 #endif
@@ -13,7 +16,7 @@ namespace Eto.Forms
 	{
 	}
 
-#if DESKTOP
+#if XAML
 	[ContentProperty ("Children")]
 #endif
 	public class PixelLayout : Layout
@@ -48,8 +51,7 @@ namespace Eto.Forms
 			inner = (IPixelLayout)Handler;
 		}
 		
-#if DESKTOP
-		static AttachableMemberIdentifier LocationProperty = new AttachableMemberIdentifier (typeof (PixelLayout), "Location");
+		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier (typeof (PixelLayout), "Location");
 
 		public static Point GetLocation (Control control)
 		{
@@ -58,12 +60,11 @@ namespace Eto.Forms
 
 		public static void SetLocation (Control control, Point value)
 		{
-			control.Properties.Set (LocationProperty, value);
+			control.Properties[LocationProperty] = value;
 			var layout = control.ParentLayout as TableLayout;
 			if (layout != null)
 				layout.Move (control, value);
 		}
-#endif
 
 		public void Add (Control control, int x, int y)
 		{
@@ -106,16 +107,35 @@ namespace Eto.Forms
 				inner.Remove (child);
 		}
 
+		[OnDeserialized]
+		internal void OnDeserialized (StreamingContext context)
+		{
+			OnDeserialized ();
+		}
+
 		public override void EndInit ()
 		{
 			base.EndInit ();
-#if DESKTOP
-			if (children != null) {
-				foreach (var control in children) {
-					Add (control, GetLocation (control));
+			OnDeserialized (Container != null); // mono calls EndInit BEFORE setting to parent
+		}
+
+		void OnDeserialized (bool direct = false)
+		{
+			if (Loaded || direct) {
+				if (children != null) {
+					foreach (var control in children) {
+						Add (control, GetLocation (control));
+					}
 				}
+			} else {
+				this.PreLoad += HandleDeserialized;
 			}
-#endif
+		}
+		
+		void HandleDeserialized (object sender, EventArgs e)
+		{
+			OnDeserialized(true);
+			this.PreLoad -= HandleDeserialized;
 		}
 	}
 }

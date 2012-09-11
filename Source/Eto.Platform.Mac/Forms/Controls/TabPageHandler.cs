@@ -236,7 +236,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public virtual Size GetPreferredSize ()
 		{
-			if (Widget.Layout != null) {
+			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
 					return layout.GetPreferredSize ();

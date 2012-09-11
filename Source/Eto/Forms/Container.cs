@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using Eto.Drawing;
 using System.Linq;
 
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
@@ -19,7 +19,7 @@ namespace Eto.Forms
 		void SetLayout (Layout layout);
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("Layout")]
 #endif
 	public partial class Container : Control

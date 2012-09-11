@@ -101,6 +101,11 @@ namespace Eto.Platform.Wpf.Forms
 			SetSizes ();
 		}
 
+		public bool GetColumnScale (int column)
+		{
+			return Control.ColumnDefinitions[column].Width.IsStar;
+		}
+
 		public void SetRowScale (int row, bool scale)
 		{
 			Control.RowDefinitions[row].Height = new System.Windows.GridLength (1, scale ? System.Windows.GridUnitType.Star : System.Windows.GridUnitType.Auto);
@@ -114,6 +119,11 @@ namespace Eto.Platform.Wpf.Forms
 
 			}
 			SetSizes ();
+		}
+
+		public bool GetRowScale (int row)
+		{
+			return Control.RowDefinitions[row].Height.IsStar;
 		}
 
 		public Eto.Drawing.Size Spacing

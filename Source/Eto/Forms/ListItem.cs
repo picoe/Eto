@@ -1,6 +1,6 @@
 using System;
 using Eto.Drawing;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
@@ -13,7 +13,7 @@ namespace Eto.Forms
 		string Key { get; }
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("Text")]
 #endif
 	public class ListItem : IListItem
@@ -35,7 +35,7 @@ namespace Eto.Forms
 		public Image Image { get; set; }
 	}
 	
-#if DESKTOP
+#if XAML
 	[ContentProperty("Item")]
 #endif
 	public class ObjectListItem : IListItem

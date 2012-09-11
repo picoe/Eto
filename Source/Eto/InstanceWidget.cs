@@ -1,6 +1,6 @@
 using System;
 using System.ComponentModel;
-#if DESKTOP
+#if XAML
 using System.Windows.Markup;
 #endif
 
@@ -50,8 +50,9 @@ namespace Eto
 	/// 
 	/// InstanceWidgets also wrap the ability to handle late-bound events on the backend control.
 	/// </remarks>
-#if DESKTOP
-	[RuntimeNameProperty("ID")]
+#if XAML
+	// Doesn't work in mono yet:
+	// [RuntimeNameProperty("ID")]
 #endif
 	public abstract class InstanceWidget : Widget
 	{

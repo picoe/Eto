@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinForms", "Eto.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk", "Eto.Test\Eto.Test.Gtk\Eto.Test.Gtk.csproj", "{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json", "Eto.Json\Eto.Json.csproj", "{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -35,6 +37,10 @@ Global
 		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Release|Any CPU.Build.0 = Release|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -66,6 +72,7 @@ Global
 		$2.inheritsSet = null
 		$2.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $3
+		$3.PropertyBraceStyle = NextLine
 		$3.inheritsSet = Mono
 		$3.inheritsScope = text/x-csharp
 		$3.scope = text/x-csharp

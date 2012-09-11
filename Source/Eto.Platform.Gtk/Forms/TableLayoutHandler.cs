@@ -8,6 +8,8 @@ namespace Eto.Platform.GtkSharp
 {
 	public class TableLayoutHandler : GtkLayout<Gtk.Table, TableLayout>, ITableLayout
 	{
+		const Gtk.AttachOptions ScaledOptions = Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
+
 		Gtk.Alignment align;
 		Dictionary<int, Gtk.AttachOptions> columnOptions = new Dictionary<int, Gtk.AttachOptions> ();
 		Dictionary<int, Gtk.AttachOptions> rowOptions = new Dictionary<int, Gtk.AttachOptions> ();
@@ -106,6 +108,15 @@ namespace Eto.Platform.GtkSharp
 				Attach (new Panel (Widget.Generator), x, 0);
 			}
 		}
+
+		public bool GetColumnScale (int column)
+		{
+			Gtk.AttachOptions val;
+			if (columnOptions.TryGetValue(column, out val))
+				return val == ScaledOptions;
+			return false;
+		}
+
 		
 		bool Attach (Control child, int x, int y)
 		{
@@ -146,7 +157,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public void SetRowScale (int row, bool scale)
 		{
-			Gtk.AttachOptions yopts = (scale) ? Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill : Gtk.AttachOptions.Fill;
+			Gtk.AttachOptions yopts = (scale) ? ScaledOptions : Gtk.AttachOptions.Fill;
 			rowOptions [row] = yopts;
 			bool found = false;
 			var y = row;
@@ -156,6 +167,14 @@ namespace Eto.Platform.GtkSharp
 			if (scale && !found) {
 				Attach (new Panel (Widget.Generator), 0, y);
 			}
+		}
+
+		public bool GetRowScale (int row)
+		{
+			Gtk.AttachOptions val;
+			if (rowOptions.TryGetValue(row, out val))
+				return val == ScaledOptions;
+			return false;
 		}
 
 	}

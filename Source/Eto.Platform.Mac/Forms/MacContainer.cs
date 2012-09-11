@@ -77,7 +77,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual void LayoutChildren ()
 		{
-			if (Widget.Layout != null) {
+			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				var childLayout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (childLayout != null) {
 					childLayout.LayoutChildren ();
