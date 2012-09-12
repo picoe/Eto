@@ -89,6 +89,7 @@ namespace Eto.Platform.Mac.Forms
 		where T: MyWindow
 		where W: Eto.Forms.Window
 	{
+		CustomFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
 		ToolBar toolBar;
@@ -220,7 +221,10 @@ namespace Eto.Platform.Mac.Forms
 				if (control != null) {
 					var handler = control.Handler as IMacViewHandler;
 					if (handler != null && handler.IsEventHandled(TextBox.KeyDownEvent)) {
-						return new CustomFieldEditor { Widget = handler.Widget };
+						if (fieldEditor == null)
+							fieldEditor = new CustomFieldEditor ();
+						fieldEditor.Widget = handler.Widget;
+						return fieldEditor;
 					}
 				}
 				return null;

@@ -60,18 +60,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public TextBoxHandler Handler { get; set; }
 			
-			public override bool PerformKeyEquivalent (NSEvent theEvent)
-			{
-				if (Handler.Widget.HasFocus) {
-					MacEventView.KeyDown (Handler.Widget, theEvent);
-					return false;
-					/*return base.PerformKeyEquivalent (theEvent);
-					else
-						return false;*/
-				} else
-					return false;
-			}
-			
 		}
 		
 		public override bool HasFocus {
