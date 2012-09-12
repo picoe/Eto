@@ -92,7 +92,6 @@ namespace Eto.Platform.Mac.Forms
 			}
 			while (result == (int)NSRun.ContinuesResponse || !helper.Stopped);
 			
-			Console.WriteLine ("Ending session {0}", session);
 			app.EndModalSession (session);
 		}
 

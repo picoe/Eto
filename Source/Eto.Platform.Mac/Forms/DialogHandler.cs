@@ -82,7 +82,6 @@ namespace Eto.Platform.Mac.Forms
 		{
 			if (session != null)
 				session.Stop ();
-			Console.WriteLine ("Stopping Modal");
 			Widget.Closed -= HandleClosed;
 		}
 
