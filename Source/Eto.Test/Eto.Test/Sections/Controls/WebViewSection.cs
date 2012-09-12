@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -24,21 +25,36 @@ namespace Eto.Test.Sections.Controls
 		
 		Control WebView ()
 		{
-			var control = webView = new WebView ();
+			try {
+				var control = webView = new WebView ();
 			
-			control.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
-				UpdateButtons ();
-				stopButton.Enabled = true;
-			};
-			control.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
-				UpdateButtons ();
-				stopButton.Enabled = false;
-			};
-			control.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e) {
-				titleLabel.Text = e.Title;
-			};
-			control.Url = new Uri ("http://www.google.com");
-			return control;
+				control.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
+					UpdateButtons ();
+					stopButton.Enabled = true;
+				};
+				control.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
+					UpdateButtons ();
+					stopButton.Enabled = false;
+				};
+				control.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e) {
+					titleLabel.Text = e.Title;
+				};
+				control.Url = new Uri ("http://www.google.com");
+				return control;
+
+			} catch (HandlerInvalidException ex) {
+				var control = new Label { 
+					Text = string.Format ("WebView not supported on this platform with the {0} generator", Generator.ID),
+					BackgroundColor = Colors.Red,
+					HorizontalAlign = HorizontalAlign.Center,
+					VerticalAlign = VerticalAlign.Middle,
+					TextColor = Colors.White
+				};
+				if (Generator.ID == Generators.Gtk)
+					Log.Write (this, "You must install webkit-sharp for WebView to work under GTK. Note that GTK does not support webkit-sharp on any platform other than Linux.");
+				return control;
+			}
+
 			
 		}
 

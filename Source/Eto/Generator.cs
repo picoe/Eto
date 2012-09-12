@@ -323,7 +323,7 @@ namespace Eto
 		{
 			var constructor = Find (type);
 			if (constructor == null)
-				throw new ApplicationException (string.Format ("the type {0} cannot be found in this generator", type.FullName));
+				throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
 			try {
 				var val = constructor.Invoke (new object[] { }) as IWidget;
 				if (widget != null) {
@@ -333,7 +333,7 @@ namespace Eto
 				OnWidgetCreated (new WidgetCreatedArgs (val));
 				return val;
 			} catch (Exception e) {
-				throw new EtoException (string.Format ("Could not create instance of type {0}", type), e);
+				throw new HandlerInvalidException (string.Format ("Could not create instance of type {0}", type), e);
 			}
 		}
 

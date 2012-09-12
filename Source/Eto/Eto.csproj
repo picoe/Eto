@@ -466,6 +466,7 @@
     <Compile Include="Binding\BindingExtensions.cs" />
     <Compile Include="Widget.xaml.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
+    <Compile Include="HandlerInvalidException.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

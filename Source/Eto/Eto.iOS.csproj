@@ -253,6 +253,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="HandlerInvalidException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
