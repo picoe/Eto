@@ -23,12 +23,12 @@ namespace Eto.Json
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from json</typeparam>
 		/// <returns>A new instance of the specified type with the contents loaded from json</returns>
-		public static T Load<T> ()
+		public static T Load<T> (NamespaceManager namespaceManager = null)
 			where T: InstanceWidget, new()
 		{
 			var type = typeof(T);
 			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".json");
-			return Load<T> (stream, null);
+			return Load<T> (stream, null, namespaceManager);
 		}
 		
 		/// <summary>
@@ -41,10 +41,10 @@ namespace Eto.Json
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="stream">json content to load (e.g. from resources)</param>
 		/// <returns>A new instance of the specified type with the contents loaded from the json stream</returns>
-		public static T Load<T> (Stream stream)
+		public static T Load<T> (Stream stream, NamespaceManager namespaceManager = null)
 			where T: InstanceWidget, new()
 		{
-			return Load<T> (stream, null);
+			return Load<T> (stream, null, namespaceManager);
 		}
 		
 		/// <summary>
@@ -59,15 +59,13 @@ namespace Eto.Json
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
-		public static T Load<T> (T instance)
+		public static T Load<T> (T instance, NamespaceManager namespaceManager = null)
 			where T: InstanceWidget
 		{
 			var type = typeof(T);
 			var stream = type.Assembly.GetManifestResourceStream (type.FullName + ".json");
-			return Load<T> (stream, instance);
+			return Load<T> (stream, instance, namespaceManager);
 		}
-
-
 
 		/// <summary>
 		/// Loads the specified type from the specified json stream
@@ -82,11 +80,9 @@ namespace Eto.Json
 		{
 			var type = typeof(T);
 
-			using (var reader = new JsonTextReader (new StreamReader(stream))) {
+			using (var reader = new StreamReader(stream)) {
 				if (namespaceManager == null) {
-					namespaceManager = new NamespaceManager {
-						DefaultNamespace = new NamespaceInfo("Eto.Forms", typeof(Eto.Forms.Application).Assembly)
-					};
+					namespaceManager = new DefaultNamespaceManager ();
 				}
 				var serializer = new JsonSerializer {
 					TypeNameHandling = json.TypeNameHandling.Auto,
@@ -98,6 +94,7 @@ namespace Eto.Json
 				serializer.Converters.Add (new DynamicLayoutConverter ());
 				serializer.Converters.Add (new DelegateConverter ());
 				serializer.Converters.Add (new PropertyStoreConverter ());
+				serializer.Converters.Add (new ImageConverter ());
 
 				if (instance == null)
 					return serializer.Deserialize (reader, type) as T;

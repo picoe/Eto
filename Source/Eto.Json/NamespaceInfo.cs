@@ -1,47 +1,65 @@
 using System;
 using System.IO;
-using json = Newtonsoft.Json;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using System.Runtime.Serialization;
-using System.Collections.Generic;
 
 namespace Eto.Json
 {
-	
 	public class NamespaceInfo
 	{
-		public Assembly Assembly { get; set; }
-		
-		public string Namespace { get; set; }
-		
-		public string Prefix { get; set; }
-		
-		public NamespaceInfo ()
-		{
+		string assemblyName;
+		Assembly assembly;
+
+		public Assembly Assembly {
+			set {
+				assembly = value;
+				assemblyName = null;
+			}
+			get {
+				if (assembly == null && !string.IsNullOrEmpty (assemblyName))
+					assembly = Assembly.Load (assemblyName);
+				return assembly;
+			}
 		}
+
+		public string Namespace { get; private set; }
+		
+		public string Prefix { get; private set; }
 		
 		public NamespaceInfo (string ns)
 		{
-			var val = ns.Split (',');
-			if (val.Length == 2)
-			{
-				Namespace = val[0];
-				Assembly = Assembly.LoadFile (val[1]);
-			}
+			SetNamespace(ns);
 		}
 		
 		public NamespaceInfo (string ns, Assembly assembly)
 		{
-			this.Namespace = ns;
-			this.Assembly = assembly;
+			if (ns.Contains (","))
+				SetNamespace (ns);
+			else {
+				this.Namespace = ns;
+				this.Assembly = assembly;
+			}
+		}
+
+		void SetNamespace (string ns)
+		{
+			var val = ns.Split (',');
+			if (val.Length == 2)
+			{
+				Namespace = val[0].Trim ();
+				assemblyName = val[1].Trim ();
+			}
+			else
+				throw new ArgumentException("Namespace must include the assembly name in the form of: My.Namespace, MyAssembly", ns);
 		}
 		
 		public Type FindType (string typeName)
 		{
 			return Assembly.GetType (Namespace + "." + typeName);
 		}
+
+		public Stream FindResource (string resourceName)
+		{
+			return Assembly.GetManifestResourceStream (Namespace + "." + resourceName);
+		}
 	}
-	
 }

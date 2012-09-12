@@ -6,15 +6,15 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Serialization.Xaml
 {
+#if XAML
 	public class Test : Panel
 	{
-		protected CheckBox myCheckBox;
-		protected TextArea myTextArea;
+		CheckBox myCheckBox;
+		TextArea myTextArea;
 
 		public Test ()
 		{
-			// NOTE: this only works on MS.NET at the moment
-			// mono does not have a full implementation of Xaml as of yet
+			// NOTE: Only works in MS.NET or Mono 2.11 at the moment
 			XamlReader.Load (this);
 			
 			myCheckBox.Checked = true;
@@ -27,4 +27,5 @@ namespace Eto.Test.Sections.Serialization.Xaml
 		}
 
 	}
+#endif
 }

@@ -44,14 +44,15 @@
     <Compile Include="EventValueProvider.cs" />
     <Compile Include="EtoContractResolver.cs" />
     <Compile Include="PropertyStoreConverter.cs" />
-    <Compile Include="EtoJsonSerializer.cs" />
-    <Compile Include="NamespaceInfo.cs" />
     <Compile Include="NamespaceManager.cs" />
     <Compile Include="EtoBinder.cs" />
     <Compile Include="NameConverter.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DefaultNamespaceManager.cs" />
+    <Compile Include="ImageConverter.cs" />
+    <Compile Include="NamespaceInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

@@ -24,6 +24,7 @@
 												{ $type: "ListItem", Text: "Item 3" },
 												{ $type: "ListItem", Text: "Item 4" }
 											] } ],
+										[ { $type: "Label", Text: "Image" }, { $type: "ImageView", Image: "resource:Eto.Test.TestImage.png, Eto.Test" } ],
 										null
 									]
 								}
