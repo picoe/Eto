@@ -28,7 +28,8 @@ namespace Eto.Json
 				var val = (string)((JValue)JValue.ReadFrom (reader)).Value;
 				if (val.StartsWith (FilePrefix)) {
 					var fileName = val.Substring (FilePrefix.Length);
-					fileName = Path.Combine (EtoEnvironment.GetFolderPath(EtoSpecialFolder.ApplicationResources), fileName);
+					if (!Path.IsPathRooted (fileName))
+						fileName = Path.Combine (EtoEnvironment.GetFolderPath(EtoSpecialFolder.ApplicationResources), fileName);
 					if (IsIcon (fileName))
 						return new Icon (fileName);
 					else
