@@ -16,7 +16,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public NSScrollView Scroll { get; private set; }
 		
-		class EtoTreeItem : MacImageData
+		public class EtoTreeItem : MacImageData
 		{
 			Dictionary<int, EtoTreeItem> items;
 			ITreeItem item;
@@ -62,7 +62,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 		}
 		
-		class EtoOutlineDelegate : NSOutlineViewDelegate
+		public class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
 			public TreeViewHandler Handler { get; set; }
 			
@@ -112,7 +112,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 			
-		class EtoDataSource : NSOutlineViewDataSource
+		public class EtoDataSource : NSOutlineViewDataSource
 		{
 			public TreeViewHandler Handler { get; set; }
 			
