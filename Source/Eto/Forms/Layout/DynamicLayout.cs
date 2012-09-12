@@ -312,6 +312,11 @@ namespace Eto.Forms
 			EndVertical ();
 		}
 		
+		internal void SetBaseInnerLayout()
+		{
+			this.SetInnerLayout (false);
+		}
+		
 		/// <summary>
 		/// Generates the layout for the container
 		/// </summary>

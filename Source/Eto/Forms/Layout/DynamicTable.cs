@@ -87,7 +87,7 @@ namespace Eto.Forms
 			}
 			else {
 				this.Layout = new TableLayout (null, cols, rows.Count);
-				Container.SetInnerLayout ();
+				layout.SetBaseInnerLayout();
 			}
 			var tableLayout = this.Layout;
 			var padding = this.Padding ?? layout.DefaultPadding;

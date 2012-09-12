@@ -102,17 +102,17 @@ namespace Eto.Forms
 			set {
 				layout = value;
 				layout.Container = this;
-				SetInnerLayout ();
+				SetInnerLayout (true);
 			}
 		}
 
-		public void SetInnerLayout ()
+		internal void SetInnerLayout (bool load)
 		{
 			var innerLayout = layout.InnerLayout;
 			if (innerLayout != null) {
 				innerLayout.Container = this;
 				handler.SetLayout (innerLayout);
-				if (Loaded) {
+				if (Loaded && !layout.Loaded && load) {
 					layout.OnPreLoad (EventArgs.Empty);
 					layout.OnLoad (EventArgs.Empty);
 					layout.OnLoadComplete (EventArgs.Empty);
