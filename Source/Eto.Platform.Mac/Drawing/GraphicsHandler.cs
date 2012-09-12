@@ -212,6 +212,11 @@ namespace Eto.Platform.Mac.Drawing
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
 			StartDrawing ();
+			if (startx == endx && starty == endy) {
+				// drawing a one pixel line in retina display draws more than just one pixel
+				DrawRectangle (color, startx, starty, 1, 1);
+				return;
+			}
 			context.SetStrokeColor (Generator.Convert (color));
 			context.SetLineCap (CGLineCap.Square);
 			context.SetLineWidth (1.0F);
