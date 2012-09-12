@@ -66,6 +66,16 @@ namespace Eto.Platform.Mac.Forms
 	{
 		public Control Widget { get; set; }
 
+		public CustomFieldEditor ()
+		{
+			FieldEditor = true;
+		}
+
+		public CustomFieldEditor (IntPtr handle)
+			: base (handle)
+		{
+		}
+
 		public override void KeyDown (NSEvent theEvent)
 		{
 			if (!MacEventView.KeyDown (Widget, theEvent)) {
