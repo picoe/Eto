@@ -14,6 +14,7 @@ namespace Tutorial2
 			this.MenuText = "C&lick Me";
 			this.ToolBarText = "Click Me";
 			this.TooltipText = "This shows a dialog for no reason";
+			//this.Icon = Icon.FromResource ("MyResourceName.ico");
 			this.Accelerator = Application.Instance.CommonModifier | Key.M;  // control+M or cmd+M
 		}
 		
@@ -39,6 +40,8 @@ namespace Tutorial2
 		void GenerateActions ()
 		{
 			var actions = new GenerateActionArgs(this);
+
+			Application.Instance.GetSystemActions (actions, true);
 				
 			// define action
 			actions.Actions.Add (new MyAction());
