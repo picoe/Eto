@@ -10,6 +10,7 @@ using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -242,5 +243,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					Control.ContextMenu = null;
 			}
 		}
+
+        public override void Invalidate()
+        {
+            Control.Items.Refresh();
+            base.Invalidate();
+        }
+
+        public override void Invalidate(Rectangle rect)
+        {
+            Control.Items.Refresh();
+            base.Invalidate(rect);
+        }
 	}
 }
