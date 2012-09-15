@@ -31,8 +31,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public TextBoxCellHandler ()
 		{
-			Control = new EtoCell { Handler = this };
-			Control.Wraps = false;
+			Control = new EtoCell { 
+				Handler = this,
+				UsesSingleLineMode = true
+			};
 		}
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
