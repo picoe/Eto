@@ -6,11 +6,14 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
+using swk = System.Windows.Markup;
 using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
 using Eto.Drawing;
+using System.ComponentModel;
+using System.Reflection;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -18,6 +21,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		ContextMenu contextMenu;
 		ITreeStore topNode;
+        ITreeItem selectedItem;
 
 		public class EtoTreeViewItem : swc.TreeViewItem
 		{
@@ -98,6 +102,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+        static sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1<Eto.Forms.ITreeItem,Eto>,Eto.Expanded)");
+
 		public TreeViewHandler ()
 		{
 			Control = new EtoTreeView ();
@@ -106,10 +112,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			template.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
 			Control.ItemTemplate = template;
 
-			var style = new sw.Style (typeof (swc.TreeViewItem));
+            var style = new sw.Style (typeof (swc.TreeViewItem));
 			//style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
-			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding ("Expanded") { Mode = swd.BindingMode.TwoWay }));
+			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Path = expandedProperty, Mode = swd.BindingMode.TwoWay }));
 			Control.ItemContainerStyle = style;
+
 
 			Control.SelectedItemChanged += (sender, e) => {
 				Control.Dispatcher.BeginInvoke (new Action(() => {
@@ -227,11 +234,24 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 			set
 			{
-				SetSelected (Control, value);
+                if (!Control.IsLoaded)
+                {
+                    if (selectedItem == null && value != null)
+                        Control.Loaded += HandleSelectedItemLoad;
+                    selectedItem = value;
+                }
+				else SetSelected (Control, value);
 			}
 		}
 
-		public ContextMenu ContextMenu
+        public void HandleSelectedItemLoad(object sender, sw.RoutedEventArgs e)
+        {
+            SetSelected(Control, selectedItem);
+            selectedItem = null;
+            Control.Loaded -= HandleSelectedItemLoad;
+        }
+
+        public ContextMenu ContextMenu
 		{
 			get { return contextMenu; }
 			set
