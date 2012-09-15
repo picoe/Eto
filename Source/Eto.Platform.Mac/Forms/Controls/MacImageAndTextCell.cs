@@ -11,7 +11,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class MacImageData : NSObject, ICloneable
 	{
 		bool nodispose;
-
+		
 		public  MacImageData ()
 		{
 		}
@@ -76,12 +76,67 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class MacImageListItemCell : NSTextFieldCell
 	{
 		public const int ImagePadding = 2;
+		NSShadow textShadow;
+		NSShadow textHighlightShadow;
 		
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
 		
 		public MacImageListItemCell ()
 		{
+		}
+		
+		public bool UseTextShadow
+		{
+			get; set;
+		}
+		
+		public void SetGroupItem (bool isGroupItem, NSTableView tableView, float? groupSize = null, float? normalSize = null)
+		{
+			if (isGroupItem)
+				this.Font = NSFont.BoldSystemFontOfSize (groupSize ?? NSFont.SystemFontSize);
+			else if (Highlighted)
+				Font = NSFont.BoldSystemFontOfSize (normalSize ?? NSFont.SystemFontSize);
+			else
+				Font = NSFont.SystemFontOfSize (normalSize ?? NSFont.SystemFontSize);
+			
+			if (Highlighted)
+				TextColor = NSColor.Highlight;
+			else if (!tableView.Window.IsKeyWindow)
+				TextColor = NSColor.DisabledControlText;
+			else if (isGroupItem)
+				TextColor = NSColor.FromCalibratedRgba (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
+			else
+				TextColor = NSColor.ControlText;
+				
+		}
+		
+		public NSShadow TextShadow
+		{
+			get {
+				if (textShadow == null) {
+					textShadow = new NSShadow();
+					textShadow.ShadowColor = NSColor.FromDeviceWhite (1F, 0.5F);
+					textShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textShadow.ShadowBlurRadius = 0F;
+				}
+				return textShadow;
+			}
+			set { textShadow = value; }
+		}
+
+		public NSShadow TextHighlightShadow
+		{
+			get {
+				if (textHighlightShadow == null) {
+					textHighlightShadow = new NSShadow();
+					textHighlightShadow.ShadowColor = NSColor.FromDeviceWhite (0F, 0.5F);
+					textHighlightShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textHighlightShadow.ShadowBlurRadius = 2F;
+				}
+				return textHighlightShadow;
+			}
+			set { textShadow = value; }
 		}
 		
 		public MacImageListItemCell (IntPtr handle)
@@ -102,7 +157,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			size.Width = Math.Min (size.Width, bounds.Width);
 			return size;
 		}
-		
+
 		public override void DrawInteriorWithFrame (SD.RectangleF cellFrame, NSView inView)
 		{
 			var data = ObjectValue as MacImageData;
@@ -131,6 +186,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 						cellFrame.X += newWidth + ImagePadding;
 					}
 				}
+			}
+			
+			if (UseTextShadow) {
+				var str = new NSMutableAttributedString(this.StringValue);
+				str.AddAttribute (NSAttributedString.ShadowAttributeName, this.Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
+				this.AttributedStringValue = str;
 			}
 			
 			base.DrawInteriorWithFrame (cellFrame, inView);
