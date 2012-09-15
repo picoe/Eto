@@ -4,6 +4,7 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using System.Collections.Generic;
 using Eto.Platform.Mac.Forms.Menu;
+using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -183,8 +184,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly
 			};
 			var col = new NSTableColumn {
-				DataCell = new MacImageListItemCell ()
+				DataCell = new MacImageListItemCell { 
+					UsesSingleLineMode = true
+				}
 			};
+			
 			
 			Control.AddColumn (col);
 			Control.OutlineTableColumn = col;
@@ -239,10 +243,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 					
 					EtoTreeItem myitem;
 					if (cachedItems.TryGetValue (value, out myitem)) {
-						var row = Control.RowForItem (myitem);
-						if (row >= 0)
-							Control.SelectRow (row, false);
+						var cachedRow = Control.RowForItem (myitem);
+						if (cachedRow >= 0) {
+							Control.ScrollRowToVisible (cachedRow);
+							Control.SelectRow (cachedRow, false);
+							return;
+						}
 					}
+
+					var row = ExpandToItem (value);
+					if (row != null) {
+						Control.ScrollRowToVisible (row.Value);
+						Control.SelectRow (row.Value, false);
+					}
+					
 				}
 			}
 		}
@@ -263,15 +277,106 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
+		public override void Invalidate ()
+		{
+			var selectedItem = SelectedItem;
+			topitems.Clear ();
+			cachedItems.Clear ();
+			Control.ReloadData ();
+			ExpandItems (null);
+			this.SelectedItem = selectedItem;
+			base.Invalidate ();
+		}
+		
+		public override void Invalidate (Eto.Drawing.Rectangle rect)
+		{
+			Control.ReloadData ();
+			base.Invalidate (rect);
+		}
+		
+		IEnumerable<ITreeItem> GetParents (ITreeItem item)
+		{
+			var parent = item.Parent;
+			while (parent != null) {
+				yield return parent;
+				parent = parent.Parent;
+			}
+		}
+
+		int CountRows (ITreeItem item)
+		{
+			if (!item.Expanded)
+				return 0;
+			
+			var rows = 0;
+			var container = item as IDataStore<ITreeItem>;
+			if (container != null) {
+				rows += container.Count;
+				for (int i = 0; i < container.Count; i++)
+				{
+					rows += CountRows (container[i]);
+				}
+			}
+			return rows;
+		}
+		
+
+		int FindRow (IDataStore<ITreeItem> container, ITreeItem item)
+		{
+			int row = 0;
+			for (int i = 0; i < container.Count; i++) {
+				var current = container [i];
+				if (object.ReferenceEquals (current, item)) {
+					return row;
+				}
+				row ++;
+				row += CountRows (current);
+			}
+			return -1;
+		}
+		
+		int? ExpandToItem (ITreeItem item)
+		{
+			var parents = GetParents (item).Reverse ();
+			IDataStore<ITreeItem> lastParent = null;
+			var row = 0;
+			foreach (var parent in parents) {
+				if (lastParent != null) {
+					var foundRow = FindRow (lastParent, parent);
+					if (foundRow == -1)
+						return null;
+					row += foundRow;
+					var foundItem = Control.ItemAtRow (row) as EtoTreeItem;
+					if (foundItem == null)
+						return null;
+					Control.ExpandItem (foundItem);
+					foundItem.Item.Expanded = true;
+					row ++;
+				}
+				lastParent = parent as IDataStore<ITreeItem>;
+			}
+			if (lastParent != null) {
+				var foundRow = FindRow (lastParent, item);
+				if (foundRow == -1)
+					return null;
+				
+				return foundRow + row;
+			}
+			return null;
+		}
 		void ExpandItems (NSObject parent)
 		{
 			var ds = Control.DataSource;
 			var count = ds.GetChildrenCount (Control, parent);
 			for (int i=0; i<count; i++) {
 				var item = ds.GetChild (Control, i, parent) as EtoTreeItem;
-				if (item != null && item.Item.Expanded) {
-					Control.ExpandItem (item);
-					ExpandItems (item);
+				if (item != null && item.Item.Expandable) {
+					if (item.Item.Expanded) {
+						Control.ExpandItem (item);
+						ExpandItems (item);
+					}
+					else
+						Control.CollapseItem (item);
 				}
 			}
 		}

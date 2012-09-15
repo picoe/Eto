@@ -355,12 +355,12 @@ namespace Eto.Platform.Mac.Forms
 			CreateTracking ();
 		}
 		
-		public void Invalidate ()
+		public virtual void Invalidate ()
 		{
 			Control.NeedsDisplay = true;
 		}
 
-		public void Invalidate (Rectangle rect)
+		public virtual void Invalidate (Rectangle rect)
 		{
 			var region = Generator.ConvertF (rect);
 			region.Y = Control.Frame.Height - region.Y - region.Height;
