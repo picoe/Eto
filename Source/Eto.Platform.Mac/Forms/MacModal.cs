@@ -81,14 +81,14 @@ namespace Eto.Platform.Mac.Forms
 			var session = app.BeginModalSession (theWindow);
 			helper = new ModalHelper { Session = session };
 			int result;
-
+			
 			// Loop until some result other than continues:
 			do {
 				// Run the window modally until there are no events to process:
 				result = app.RunModalSession (session);
 
 				// Give the main loop some time:
-				NSRunLoop.Current.LimitDateForMode (NSRunLoopMode.Default);
+				NSRunLoop.Current.RunUntil (NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);
 			}
 			while (result == (int)NSRun.ContinuesResponse || !helper.Stopped);
 			

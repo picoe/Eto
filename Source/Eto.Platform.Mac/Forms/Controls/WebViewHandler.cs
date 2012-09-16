@@ -150,10 +150,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-        public void ShowPrintDialog()
-        {
-            Control.Print (Control);
-        }
+		public void ShowPrintDialog()
+		{
+			Control.Print (Control);
+		}
 	}
 }
 
