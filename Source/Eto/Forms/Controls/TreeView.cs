@@ -14,6 +14,10 @@ namespace Eto.Forms
 		ITreeStore DataStore { get; set; }
 
 		ITreeItem SelectedItem { get; set; }
+
+		void RefreshData ();
+
+		void RefreshItem (ITreeItem item);
 	}
 	
 	public class TreeViewItemEventArgs : EventArgs
@@ -160,6 +164,16 @@ namespace Eto.Forms
 		public ITreeStore DataStore {
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
+		}
+
+		public void RefreshData ()
+		{
+			handler.RefreshData ();
+		}
+		
+		public void RefreshItem (ITreeItem item)
+		{
+			handler.RefreshItem (item);
 		}
 	}
 }

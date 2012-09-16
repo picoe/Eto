@@ -264,16 +264,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-        public override void Invalidate()
-        {
-            Control.Items.Refresh();
-            base.Invalidate();
-        }
+		public void RefreshData ()
+		{
+			Control.Items.Refresh ();
+		}
 
-        public override void Invalidate(Rectangle rect)
-        {
-            Control.Items.Refresh();
-            base.Invalidate(rect);
-        }
+		public void RefreshItem (ITreeItem item)
+		{
+			Control.Items.Refresh ();
+		}
 	}
 }

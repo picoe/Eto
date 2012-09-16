@@ -14,6 +14,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		ContextMenu contextMenu;
 		Dictionary<ITreeItem, EtoTreeItem> cachedItems = new Dictionary<ITreeItem, EtoTreeItem> ();
 		Dictionary<int, EtoTreeItem> topitems = new Dictionary<int, EtoTreeItem> ();
+		bool selectionChanging;
 		
 		public NSScrollView Scroll { get; private set; }
 		
@@ -69,7 +70,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override void SelectionDidChange (NSNotification notification)
 			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+				if (!Handler.selectionChanging)
+					Handler.Widget.OnSelectionChanged (EventArgs.Empty);
 			}
 			
 			public override void ItemDidCollapse (NSNotification notification)
@@ -237,26 +239,30 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return myitem.Item;
 			}
 			set {
-				if (value == null)
-					Control.SelectRow (-1, false);
-				else {
-					
-					EtoTreeItem myitem;
-					if (cachedItems.TryGetValue (value, out myitem)) {
-						var cachedRow = Control.RowForItem (myitem);
-						if (cachedRow >= 0) {
-							Control.ScrollRowToVisible (cachedRow);
-							Control.SelectRow (cachedRow, false);
-							return;
-						}
+				PerformSelect (value, true);
+			}
+		}
+		
+		void PerformSelect (ITreeItem item, bool scrollToRow)
+		{
+			if (item == null)
+				Control.SelectRow (-1, false);
+			else {
+				
+				EtoTreeItem myitem;
+				if (cachedItems.TryGetValue (item, out myitem)) {
+					var cachedRow = Control.RowForItem (myitem);
+					if (cachedRow >= 0) {
+						if (scrollToRow) Control.ScrollRowToVisible (cachedRow);
+						Control.SelectRow (cachedRow, false);
+						return;
 					}
-
-					var row = ExpandToItem (value);
-					if (row != null) {
-						Control.ScrollRowToVisible (row.Value);
-						Control.SelectRow (row.Value, false);
-					}
-					
+				}
+				
+				var row = ExpandToItem (item);
+				if (row != null) {
+					if (scrollToRow) Control.ScrollRowToVisible (row.Value);
+					Control.SelectRow (row.Value, false);
 				}
 			}
 		}
@@ -275,23 +281,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				else
 					Control.Menu = null;
 			}
-		}
-		
-		public override void Invalidate ()
-		{
-			var selectedItem = SelectedItem;
-			topitems.Clear ();
-			cachedItems.Clear ();
-			Control.ReloadData ();
-			ExpandItems (null);
-			this.SelectedItem = selectedItem;
-			base.Invalidate ();
-		}
-		
-		public override void Invalidate (Eto.Drawing.Rectangle rect)
-		{
-			Control.ReloadData ();
-			base.Invalidate (rect);
 		}
 		
 		IEnumerable<ITreeItem> GetParents (ITreeItem item)
@@ -378,6 +367,27 @@ namespace Eto.Platform.Mac.Forms.Controls
 					else
 						Control.CollapseItem (item);
 				}
+			}
+		}
+
+		public void RefreshData ()
+		{
+			selectionChanging = true;
+			var selectedItem = SelectedItem;
+			topitems.Clear ();
+			cachedItems.Clear ();
+			Control.ReloadData ();
+			ExpandItems (null);
+			PerformSelect(selectedItem, false);
+			selectionChanging = false;
+		}
+
+		public void RefreshItem (ITreeItem item)
+		{
+			EtoTreeItem myitem;
+			if (cachedItems.TryGetValue (item, out myitem))
+			{
+				Control.ReloadItem (myitem);
 			}
 		}
 	}
