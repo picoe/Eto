@@ -256,7 +256,10 @@ namespace Eto.Platform.Mac.Forms
 				return Generator.ConvertF (Control.Frame.Size);
 			}
 			set {
-				Control.SetFrame (Generator.ConvertF (Control.Frame, value), true);
+				var oldFrame = Control.Frame;
+				var newFrame = Generator.ConvertF (oldFrame, value);
+				newFrame.Y = Math.Max (0, oldFrame.Y - (value.Height - oldFrame.Height));
+				Control.SetFrame (newFrame, true);
 				AutoSize = false;
 			}
 		}
@@ -362,6 +365,9 @@ namespace Eto.Platform.Mac.Forms
 		public Size ClientSize {
 			get { return Generator.ConvertF (Control.ContentView.Frame.Size); }
 			set { 
+				var oldFrame = Control.Frame;
+				var oldSize = Control.ContentView.Frame;
+				Control.SetFrameOrigin(new SD.PointF(oldFrame.X, Math.Max (0, oldFrame.Y - (value.Height - oldSize.Height))));
 				Control.SetContentSize (Generator.ConvertF (value));
 				AutoSize = false;
 			}
