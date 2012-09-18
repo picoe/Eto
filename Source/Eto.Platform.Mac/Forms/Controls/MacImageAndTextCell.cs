@@ -78,12 +78,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public const int ImagePadding = 2;
 		NSShadow textShadow;
 		NSShadow textHighlightShadow;
+		NSColor groupColor = NSColor.FromCalibratedRgba (0x6F / (float)0xFF, 0x7E / (float)0xFF, 0x8B / (float)0xFF, 1.0F);
+		//light shade: NSColor.FromCalibratedRgba (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
 		
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
 		
 		public MacImageListItemCell ()
 		{
+		}
+		
+		public NSColor GroupColor
+		{
+			get { return groupColor; }
+			set { groupColor = value; }
 		}
 		
 		public bool UseTextShadow
@@ -105,7 +113,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			else if (!tableView.Window.IsKeyWindow)
 				TextColor = NSColor.DisabledControlText;
 			else if (isGroupItem)
-				TextColor = NSColor.FromCalibratedRgba (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
+				TextColor = GroupColor;
 			else
 				TextColor = NSColor.ControlText;
 				
