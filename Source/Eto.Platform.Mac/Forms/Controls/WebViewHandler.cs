@@ -4,44 +4,126 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using System.Linq;
 using System.Net;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class WebViewHandler : MacView<MonoMac.WebKit.WebView, WebView>, IWebView
 	{
-		class MyUIDelegate : MonoMac.WebKit.WebUIDelegate
-		{
-			public WebViewHandler Handler { get; set; }
-			
-			public override bool UIRunJavaScriptConfirmPanel (MonoMac.WebKit.WebView sender, string message)
-			{
-				return MessageBox.Show (Handler.Widget, message, MessageBoxButtons.YesNo) == DialogResult.Yes;
-			}
-			
-			public override void UIRunJavaScriptAlertPanel (MonoMac.WebKit.WebView sender, string message)
-			{
-				MessageBox.Show (Handler.Widget, message);
-			}
-			
-			public override void UIRunOpenPanelForFileButton (MonoMac.WebKit.WebView sender, MonoMac.WebKit.WebOpenPanelResultListener resultListener)
-			{
-				var openDlg = new OpenFileDialog();
-
-				if (openDlg.ShowDialog (Handler.Widget.ParentWindow) == DialogResult.Ok)
-				{
-					resultListener.ChooseFilenames(openDlg.Filenames.ToArray ());
-				}
-			}
-			
-		}
-		
 		public WebViewHandler ()
 		{
 			Enabled = true;
 			Control = new MonoMac.WebKit.WebView ();
-			Control.UIDelegate = new MyUIDelegate{ Handler = this };
+			SetUIEvents ();
+			SetUIPrintFrameView ();
 		}
-		
+
+		class PromptDialog : Dialog
+		{
+			TextBox textBox;
+			Label prompt;
+
+			public string Prompt
+			{
+				get { return prompt.Text; }
+				set { prompt.Text = value; }
+			}
+
+			public string Text
+			{
+				get { return textBox.Text; }
+				set { textBox.Text = value; }
+			}
+
+			public PromptDialog (Eto.Generator generator)
+				: base(generator)
+			{
+				this.MinimumSize = new Size(400, 0);
+				var layout = new DynamicLayout(this, padding: new Padding(20, 10));
+				layout.BeginVertical (padding: Padding.Empty, spacing: new Size(10, 10));
+				layout.Add (prompt = new Label ());
+				layout.Add (textBox = new TextBox (), yscale:true);
+				layout.BeginVertical (padding: Padding.Empty);
+				layout.AddRow (null, CancelButton (), OkButton ());
+				layout.EndVertical ();
+			}
+
+			Control CancelButton ()
+			{
+				var button = new Button { Text = "Cancel" };
+				AbortButton = button;
+				button.Click += (sender, e) => {
+					Close (DialogResult.Cancel);
+				};
+				return button;
+			}
+
+			Control OkButton ()
+			{
+				var button = new Button { Text = "OK" };
+				DefaultButton = button;
+				button.Click += (sender, e) => {
+					Close (DialogResult.Ok);
+				};
+				return button;
+			}
+		}
+
+		void SetUIEvents ()
+		{
+			Control.UIRunJavaScriptConfirmationPanel = (sender, message, withFrame) => {
+				return MessageBox.Show (Widget, message, MessageBoxButtons.YesNo) == DialogResult.Yes;
+			};
+
+			Control.UIRunJavaScriptAlertPanelMessage += (sender, e) => {
+				MessageBox.Show (Widget, e.WithMessage);
+			};
+
+			Control.UIRunJavaScriptTextInputPanelWithFrame = (sender, prompt, defaultText, initiatedByFrame) => {
+				var dialog = new PromptDialog(Widget.Generator) {
+					Prompt = prompt,
+					Text = defaultText,
+					Title = this.DocumentTitle
+				};
+				var result = dialog.ShowDialog (Widget);
+				return (result == DialogResult.Ok) ? dialog.Text : string.Empty;
+			};
+
+			Control.UIRunOpenPanelForFileButton += (sender, e) => {
+				var openDlg = new OpenFileDialog();
+				if (openDlg.ShowDialog (Widget.ParentWindow) == DialogResult.Ok)
+				{
+					e.ResultListener.ChooseFilenames(openDlg.Filenames.ToArray ());
+				}
+			};
+		}
+
+		void SetUIPrintFrameView ()
+		{
+			Control.UIPrintFrameView += (sender, e) => {
+				var margin = 24f;
+				var printOperation = e.FrameView.GetPrintOperation(new MonoMac.AppKit.NSPrintInfo() {
+					VerticallyCentered = false,
+					LeftMargin = margin,
+					RightMargin = margin,
+					TopMargin = margin,
+					BottomMargin = margin
+				});
+				printOperation.PrintPanel.Options = 
+					MonoMac.AppKit.NSPrintPanelOptions.ShowsCopies | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsOrientation | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPageRange | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPageSetupAccessory | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPaperSize | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPreview | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPrintSelection | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsScaling;
+				printOperation.RunOperation();
+			};
+			Control.UIGetHeaderHeight = new MonoMac.WebKit.WebViewGetFloat(x => { return 0f; });
+			Control.UIGetFooterHeight = new MonoMac.WebKit.WebViewGetFloat(x => { return 0f; });
+		}
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {

@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 		Button goBack;
 		Button goForward;
 		Button stopButton;
-        Button printButton;
+		Button printButton;
 		Label titleLabel;
 		
 		public WebViewSection ()
@@ -39,7 +39,7 @@ namespace Eto.Test.Sections.Controls
 				control.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e) {
 					titleLabel.Text = e.Title;
 				};
-				control.Url = new Uri ("http://www.google.com");
+				LoadHtml();
 				return control;
 
 			} catch (HandlerInvalidException ex) {
@@ -72,19 +72,21 @@ namespace Eto.Test.Sections.Controls
 		
 		Control Buttons ()
 		{
-			var layout = new TableLayout (new Panel (), 8, 1);
-			
-			int col = 0;
-			layout.Add (BackButton (), col++, 0);
-			layout.Add (ForwardButton (), col++, 0);
-			layout.Add (LoadHtmlButton (), col++, 0);
-			layout.Add (ReloadButton (), col++, 0);
-			layout.Add (StopButton (), col++, 0);
-			layout.Add (ExecuteScriptButton (), col++, 0);
-            layout.Add (PrintButton(), col++, 0);
-			
-			layout.SetColumnScale (col++);
-			
+			var layout = new DynamicLayout (new Panel (), spacing: Size.Empty);
+
+			layout.BeginHorizontal ();
+			layout.Add (null);
+			layout.Add (BackButton ());
+			layout.Add (ForwardButton ());
+			layout.Add (LoadHtmlButton ());
+			layout.Add (LoadUrl ());
+			layout.Add (ReloadButton ());
+			layout.Add (StopButton ());
+			layout.Add (ExecuteScriptButton ());
+			layout.Add (PrintButton ());
+			layout.Add (null);
+			layout.EndHorizontal ();
+
 			
 			return layout.Container;
 		}
@@ -110,6 +112,7 @@ namespace Eto.Test.Sections.Controls
 			};
 			return control;
 		}
+
 		Control ReloadButton ()
 		{
 			var control = new Button{
@@ -134,18 +137,16 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-        Control PrintButton()
-        {
-            var control = printButton = new Button
-            {
-                Text = "Print",
-            };
-            control.Click += delegate
-            {
-                webView.ShowPrintDialog();
-            };
-            return control;
-        }
+		Control PrintButton ()
+		{
+			var control = printButton = new Button {
+				Text = "Print",
+			};
+			control.Click += delegate {
+				webView.ShowPrintDialog ();
+			};
+			return control;
+		}
 		
 		Control ExecuteScriptButton ()
 		{
@@ -153,7 +154,7 @@ namespace Eto.Test.Sections.Controls
 				Text = "Execute Script"
 			};
 			control.Click += delegate {
-				var ret = webView.ExecuteScript("alert('this is called from code'); return 'return value from ExecuteScript';");
+				var ret = webView.ExecuteScript ("alert('this is called from code'); return 'return value from ExecuteScript';");
 				Log.Write (this, "ExecuteScript, Return: {0}", ret);
 			};
 			return control;
@@ -165,7 +166,82 @@ namespace Eto.Test.Sections.Controls
 				Text = "Load HTML"
 			};
 			control.Click += delegate {
-				webView.LoadHtml ("<html><head><title>Hello!</title></head><body><h1>Some custom html</h1></body></html>");
+				LoadHtml();
+			};
+			return control;
+		}
+
+		void LoadHtml()
+		{
+			webView.LoadHtml (@"<html>
+<head><title>Hello!</title></head>
+<body>
+	<h1>Some custom html</h1>
+	<script type='text/javascript'>
+		function appendResult(id, value) {
+			var element = document.getElementById(id);
+
+			var result = document.createElement('li');
+			result.appendChild(document.createTextNode('result: ' + value));
+			element.appendChild(result);
+		}
+	</script>
+	<form method='post' enctype='multipart/form-data'>
+		<p><h2>Test Printing</h2>
+			<button onclick='print()'>Print</button>
+		</p>
+		<p><h2>Test Selecting a File</h2>
+			<input type='file'>
+		</p>
+		<p><h2>Test Alert</h2>
+			<button onclick='alert(""This is an alert"")'>Show Alert</button>
+		</p>
+		<p><h2>Test Confirm</h2>
+			<button onclick=""appendResult('confirmResult', confirm('Confirm yes or no'));"">Show Confirm</button>
+			<ul id='confirmResult'></ul>
+		</p>
+		<p><h2>Test Prompt</h2>
+			<button onclick=""appendResult('inputResult', prompt('Enter some text', 'some default text'));"">Show Prompt</button>
+			<ul id='inputResult'></ul>
+		</p>
+	</form>
+</body>
+
+</html>");
+		}
+
+		Control LoadUrl ()
+		{
+			var control = new Button{
+				Text = "Load Url"
+			};
+			control.Click += delegate {
+				var dialog = new Dialog();
+				dialog.MinimumSize = new Size(300, 0);
+				var layout = new DynamicLayout(dialog);
+				var textBox = new TextBox { Text = "http://google.com" };
+				var goButton = new Button { Text = "Go" };
+				dialog.DefaultButton = goButton;
+				goButton.Click += (sender, e) => {
+					dialog.DialogResult = DialogResult.Ok;
+					dialog.Close ();
+				};
+				var cancelButton = new Button { Text = "Cancel" };
+				dialog.AbortButton = cancelButton;
+				cancelButton.Click += (sender, e) => {
+					dialog.Close ();
+				};
+				layout.BeginVertical ();
+				layout.AddRow (new Label { Text = "Url" }, textBox);
+				layout.EndBeginVertical ();
+				layout.AddRow (null, cancelButton, goButton);
+				layout.EndVertical ();
+
+				if (dialog.ShowDialog (this) == DialogResult.Ok) {
+					Uri uri;
+					if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))
+						webView.Url = uri;
+				}
 			};
 			return control;
 		}

@@ -67,5 +67,11 @@ namespace Eto.Forms
 			this.DialogResult = handler.ShowDialog (parent);
 			return DialogResult;
 		}
+
+		public void Close (DialogResult result)
+		{
+			this.DialogResult = result;
+			Close ();
+		}
 	}
 }
