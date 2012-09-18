@@ -46,7 +46,7 @@ namespace Eto.Platform.GtkSharp.Forms
 				}
 			}
 			
-			void ExpandItems ()
+			public void ExpandItems ()
 			{
 				var store = Handler.collection.Collection;
 				Gtk.TreePath path = new Gtk.TreePath ();
@@ -244,7 +244,8 @@ namespace Eto.Platform.GtkSharp.Forms
 
 		public void RefreshData ()
 		{
-			this.Invalidate ();
+			UpdateModel ();
+			collection.ExpandItems ();
 		}
 
 		public void RefreshItem (ITreeItem item)
