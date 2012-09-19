@@ -24,7 +24,6 @@ namespace Eto.Platform.Wpf
                     var endIndex = qualifiedTypeName.IndexOf('>', genericIndex + 1);
                     var genericParameter = qualifiedTypeName.Substring(genericIndex + 1, endIndex - genericIndex - 1).Trim();
                     var baseType = qualifiedTypeName.Substring(0, genericIndex).Trim();
-                    baseType += qualifiedTypeName.Substring(endIndex + 1);
                     var genericType = Type.GetType(baseType);
                     string[] genericParameters = genericParameter.Split('|');
                     Type[] types = new Type[genericParameters.Length];
