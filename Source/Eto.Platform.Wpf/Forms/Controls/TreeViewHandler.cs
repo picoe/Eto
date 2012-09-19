@@ -7,6 +7,7 @@ using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
 using swk = System.Windows.Markup;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
@@ -102,7 +103,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-        static sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1<Eto.Forms.ITreeItem,Eto>,Eto.Expanded)");
+        static sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1,Eto<Eto.Forms.ITreeItem,Eto>.Expanded)");
 
 		public TreeViewHandler ()
 		{
@@ -117,23 +118,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Path = expandedProperty, Mode = swd.BindingMode.TwoWay }));
 			Control.ItemContainerStyle = style;
 
-
+			ITreeItem oldSelectedItem = null;
 			Control.SelectedItemChanged += (sender, e) => {
-				Control.Dispatcher.BeginInvoke (new Action(() => {
-					Widget.OnSelectionChanged (EventArgs.Empty);
+				if (selecting)
+					return;
+				Control.Dispatcher.BeginInvoke (new Action (() => {
+					var newSelected = this.SelectedItem;
+					if (oldSelectedItem != newSelected)
+					{
+						Widget.OnSelectionChanged (EventArgs.Empty);
+						oldSelectedItem = newSelected;
+						this.RefreshData ();
+					}
 				}));
-			};
-
-			Control.KeyDown += (sender, e) => {
-				if (e.Key == sw.Input.Key.Enter) {
-					if (SelectedItem != null)
-						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
-				}
-			};
-			Control.MouseDoubleClick += delegate {
-				if (SelectedItem != null) {
-					Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
-				}
 			};
 		}
 
@@ -213,22 +210,34 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		static private bool SetSelected (swc.ItemsControl parent, object child)
+		swc.ItemsControl selectItemParent;
+		bool selecting;
+
+		bool SetSelected (swc.ItemsControl parent, ITreeItem child)
 		{
 
 			if (parent == null || child == null) {
+				return false;
+			}
+			if (parent.ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
+			{
+				selectItemParent = parent;
+				selectedItem = child;
+				parent.ItemContainerGenerator.StatusChanged += HandleStatusChanged;
 				return false;
 			}
 
 			var childNode = parent.ItemContainerGenerator.ContainerFromItem (child) as swc.TreeViewItem;
 
 			if (childNode != null) {
-				childNode.Focus ();
-				return childNode.IsSelected = true;
+				childNode.IsSelected = true;
+				selecting = false;
+				return true;
 			}
-
-			if (parent.Items.Count > 0) {
-				foreach (object childItem in parent.Items) {
+			
+			if (parent.HasItems) {
+				foreach (var childItem in parent.Items.OfType<ITreeItem>())
+				{
 					var childControl = parent.ItemContainerGenerator.ContainerFromItem (childItem) as swc.ItemsControl;
 
 					if (SetSelected (childControl, child)) {
@@ -240,21 +249,38 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			return false;
 		}
 
+		void HandleStatusChanged (object sender, EventArgs e)
+		{
+			var container = sender as swc.ItemContainerGenerator;
+			if (container.Status == swc.Primitives.GeneratorStatus.ContainersGenerated && selectItemParent != null && selectedItem != null)
+			{
+				SetSelected (selectItemParent, selectedItem);
+				selectItemParent = null;
+				selectedItem = null;
+			}
+		}
+
 		public ITreeItem SelectedItem
 		{
 			get
 			{
-				return Control.SelectedItem as ITreeItem;
+				return selectedItem ?? Control.SelectedItem as ITreeItem;
 			}
 			set
 			{
-                if (!Control.IsLoaded)
-                {
-                    if (selectedItem == null && value != null)
-                        Control.Loaded += HandleSelectedItemLoad;
-                    selectedItem = value;
-                }
-				else SetSelected (Control, value);
+				if (!Control.IsLoaded)
+				{
+					if (selectedItem == null && value != null)
+						Control.Loaded += HandleSelectedItemLoad;
+					selectedItem = value;
+				}
+				else
+				{
+					selecting = false;
+					selectedItem = null;
+					selectItemParent = null;
+					SetSelected (Control, value);
+				}
 			}
 		}
 
@@ -280,12 +306,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void RefreshData ()
 		{
+			selecting = true;
+			var selectedItem = this.SelectedItem;
 			Control.Items.Refresh ();
+			this.SelectedItem = selectedItem;
 		}
 
 		public void RefreshItem (ITreeItem item)
 		{
+			selecting = true;
+			var selectedItem = this.SelectedItem;
 			Control.Items.Refresh ();
+			this.SelectedItem = selectedItem;
 		}
 	}
 }
