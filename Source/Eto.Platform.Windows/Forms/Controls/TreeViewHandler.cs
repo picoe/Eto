@@ -68,6 +68,21 @@ namespace Eto.Platform.Windows.Forms.Controls
 					Widget.OnCollapsed (new TreeViewItemEventArgs(e.Node.Tag as ITreeItem));
 				};
 				break;
+			case TreeView.ActivatedEvent:
+				this.Control.KeyDown += (sender, e) => {
+					if (e.KeyData == swf.Keys.Return && this.SelectedItem != null)
+					{
+						Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+						e.Handled = true;
+					}
+				};
+				this.Control.DoubleClick += (sender, e) => {
+					if (this.SelectedItem != null)
+					{
+						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+					}
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

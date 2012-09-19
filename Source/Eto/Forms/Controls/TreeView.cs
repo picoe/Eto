@@ -45,14 +45,25 @@ namespace Eto.Forms
 		ITreeView handler;
 		
 		#region Events
-		
-		public event EventHandler<TreeViewItemEventArgs> Activated;
+
+		public const string ActivatedEvent = "TreeView.Activated";
+
+		EventHandler<TreeViewItemEventArgs> _Activated;
+
+		public event EventHandler<TreeViewItemEventArgs> Activated {
+			add {
+				HandleEvent (ActivatedEvent);
+				_Activated += value;
+			}
+			remove { _Activated -= value; }
+		}
 
 		public virtual void OnActivated (TreeViewItemEventArgs e)
 		{
-			if (Activated != null)
-				Activated (this, e);
+			if (_Activated != null)
+				_Activated (this, e);
 		}
+		
 		
 		public event EventHandler<EventArgs> SelectionChanged;
 		

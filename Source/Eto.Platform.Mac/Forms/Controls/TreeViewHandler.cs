@@ -213,6 +213,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			case TreeView.CollapsingEvent:
 				// handled in delegate
 				break;
+			case TreeView.ActivatedEvent:
+				this.Widget.KeyDown += (sender, e) => {
+					if (e.KeyData == Key.Enter) {
+						Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+					}
+				};
+				Control.DoubleClick += (sender, e) => {
+					Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

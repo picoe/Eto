@@ -103,9 +103,6 @@ namespace Eto.Platform.GtkSharp.Forms
 			tree.Selection.Changed += delegate {
 				this.Widget.OnSelectionChanged (EventArgs.Empty);
 			};
-			tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
-				this.Widget.OnActivated (new TreeViewItemEventArgs (model.GetItemAtPath (args.Path)));
-			};
 			
 			var col = new Gtk.TreeViewColumn ();
 			var pbcell = new Gtk.CellRendererPixbuf ();
@@ -155,7 +152,11 @@ namespace Eto.Platform.GtkSharp.Forms
 					Widget.OnCollapsed (e);
 				};
 				break;
-				
+			case TreeView.ActivatedEvent:
+				tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
+					this.Widget.OnActivated (new TreeViewItemEventArgs (model.GetItemAtPath (args.Path)));
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

@@ -180,6 +180,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					}
 				}));
 				break;
+			case TreeView.ActivatedEvent:
+				Control.PreviewKeyDown += (sender, e) => {
+					if (e.Key == sw.Input.Key.Enter && SelectedItem != null) {
+						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+						e.Handled = true;
+					}
+				};
+				Control.PreviewMouseDoubleClick += (sender, e) => {
+					if (SelectedItem != null) {
+						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+						e.Handled = true;
+					}
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
