@@ -3,6 +3,7 @@
 	xmlns="http://schema.picoe.ca/eto.forms"
 	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
 	xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test"
+	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	>
 	<DynamicLayout>
 		<DynamicRow>
@@ -38,6 +39,18 @@
 					</TabPage>
 					<TabPage Text="Tab 2">
 						<TableLayout Size="3,3">
+							<TableLayout.ColumnScale>
+								<x:Array Type="sys:Int32">
+									<sys:Int32>0</sys:Int32>
+									<sys:Int32>2</sys:Int32>
+								</x:Array>
+							</TableLayout.ColumnScale>
+							<TableLayout.RowScale>
+								<x:Array Type="sys:Int32">
+									<sys:Int32>0</sys:Int32>
+									<sys:Int32>2</sys:Int32>
+								</x:Array>
+							</TableLayout.RowScale>
 							<Label Text="Centered in tab" TableLayout.Location="1,1" />
 						</TableLayout>
 					</TabPage>
