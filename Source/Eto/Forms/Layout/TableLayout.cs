@@ -235,6 +235,7 @@ namespace Eto.Forms
 
 		public void Add (Control child, int x, int y, bool xscale, bool yscale)
 		{
+			child.Properties[LocationProperty] = new Point(x, y);
 			SetColumnScale (x, xscale);
 			SetRowScale (y, yscale);
 			Add (child, x, y);
@@ -247,12 +248,13 @@ namespace Eto.Forms
 
 		public void Move (Control child, int x, int y)
 		{
-			Move (child, new Point(x, y));
+			child.Properties[LocationProperty] = new Point(x, y);
+			inner.Move (child, x, y);
 		}
 		
 		public void Move (Control child, Point p)
 		{
-			SetLocation (child, p);
+			Move (child, p.X, p.Y);
 		}
 		
 		public Size Spacing {
