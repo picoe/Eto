@@ -173,6 +173,19 @@ namespace Eto
 			DisposeControl = true;
 		}
 
+		public virtual T CreateControl ()
+		{
+			return default(T);
+		}
+
+		public override void Initialize ()
+		{
+			if (this.Control == null)
+				Control = CreateControl ();
+			base.Initialize ();
+			Style.OnStyleWidgetDefaults (this);
+		}
+
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>

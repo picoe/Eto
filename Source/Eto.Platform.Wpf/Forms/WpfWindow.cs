@@ -31,8 +31,10 @@ namespace Eto.Platform.Wpf.Forms
 		swc.DockPanel content;
 		Size? initialClientSize;
 
-		protected void Setup ()
+		public override void Initialize ()
 		{
+			base.Initialize ();
+
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 			main = new swc.DockPanel ();
 			content = new swc.DockPanel ();

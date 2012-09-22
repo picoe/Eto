@@ -19,7 +19,7 @@ namespace Eto.Platform.Windows
 		
 		public override object Control {
 			get {
-				return Widget.Container.ContainerObject;
+				return Widget.Container != null ? Widget.Container.ContainerObject : null;
 			}
 			protected set {
 				base.Control = value;

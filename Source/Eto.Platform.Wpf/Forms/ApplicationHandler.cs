@@ -10,9 +10,9 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class ApplicationHandler : WidgetHandler<System.Windows.Application, Application>, IApplication
 	{
-		public ApplicationHandler ()
+		public override sw.Application CreateControl ()
 		{
-			Control = new System.Windows.Application ();
+			return new sw.Application ();
 		}
 
 		public void RunIteration()
