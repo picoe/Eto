@@ -11,7 +11,7 @@ namespace Eto.Platform.Mac
 	interface IToolBarBaseItemHandler
 	{
 		string ID { get; }
-		void CreateControl();
+		void Create();
 		void ControlAdded(ToolBarHandler toolbar);
 	}
 	
@@ -51,7 +51,7 @@ namespace Eto.Platform.Mac
 			this.ID = Guid.NewGuid().ToString();
 		}
 		
-		public virtual void CreateControl()
+		public virtual void Create()
 		{
 			if (Control != null) return;
 			Control = (T)new NSToolbarItem(this.ID);

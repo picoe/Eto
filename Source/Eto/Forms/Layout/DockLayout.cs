@@ -39,7 +39,6 @@ namespace Eto.Forms
 	{
 		IDockLayout inner;
 		Control control;
-		Padding? padding;
 
 		public static Padding DefaultPadding = Padding.Empty;
 		

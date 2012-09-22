@@ -22,9 +22,9 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public override void CreateControl ()
+		public override void Create ()
 		{
-			base.CreateControl ();
+			base.Create ();
 			//if (isChecked && Control.) Control.Toolbar.SelectedItemIdentifier = Widget.ID;
 		}
 		

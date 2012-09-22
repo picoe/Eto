@@ -42,7 +42,7 @@ namespace Eto.Test.Sections.Controls
 				LoadHtml();
 				return control;
 
-			} catch (HandlerInvalidException ex) {
+			} catch (HandlerInvalidException) {
 				var control = new Label { 
 					Text = string.Format ("WebView not supported on this platform with the {0} generator", Generator.ID),
 					BackgroundColor = Colors.Red,

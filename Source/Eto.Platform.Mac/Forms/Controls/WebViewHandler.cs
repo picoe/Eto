@@ -29,7 +29,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				set { prompt.Text = value; }
 			}
 
-			public string Text
+			public string Value
 			{
 				get { return textBox.Text; }
 				set { textBox.Text = value; }
@@ -82,11 +82,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.UIRunJavaScriptTextInputPanelWithFrame = (sender, prompt, defaultText, initiatedByFrame) => {
 				var dialog = new PromptDialog(Widget.Generator) {
 					Prompt = prompt,
-					Text = defaultText,
+					Value = defaultText,
 					Title = this.DocumentTitle
 				};
 				var result = dialog.ShowDialog (Widget);
-				return (result == DialogResult.Ok) ? dialog.Text : string.Empty;
+				return (result == DialogResult.Ok) ? dialog.Value : string.Empty;
 			};
 
 			Control.UIRunOpenPanelForFileButton += (sender, e) => {
