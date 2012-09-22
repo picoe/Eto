@@ -5,6 +5,7 @@ using MonoMac.Foundation;
 using System.Collections.Generic;
 using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -363,6 +364,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			return null;
 		}
+		
 		void ExpandItems (NSObject parent)
 		{
 			var ds = Control.DataSource;
@@ -384,11 +386,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			selectionChanging = true;
 			var selectedItem = SelectedItem;
+			
+			var loc = Scroll.ContentView.Bounds.Location;
+			if (!Control.IsFlipped)
+				loc.Y = Control.Frame.Height - Scroll.ContentView.Frame.Height - loc.Y;
+
 			topitems.Clear ();
 			cachedItems.Clear ();
 			Control.ReloadData ();
 			ExpandItems (null);
 			PerformSelect(selectedItem, false);
+			
+			if (Control.IsFlipped)
+				Scroll.ContentView.ScrollToPoint (loc);
+			else
+				Scroll.ContentView.ScrollToPoint (new sd.PointF (loc.X, Control.Frame.Height - Scroll.ContentView.Frame.Height - loc.Y));
+			
+			Scroll.ReflectScrolledClipView (Scroll.ContentView);
+			
 			selectionChanging = false;
 		}
 
@@ -398,6 +413,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (cachedItems.TryGetValue (item, out myitem))
 			{
 				Control.ReloadItem (myitem);
+				var row = Control.RowForItem (myitem);
+				if (row >= 0)
+					topitems.Remove (row);
 			}
 		}
 	}
