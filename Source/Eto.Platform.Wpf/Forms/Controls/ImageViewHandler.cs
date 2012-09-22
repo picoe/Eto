@@ -29,7 +29,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public ImageViewHandler ()
 		{
-			Control = new swc.Image {
+			Control = new Eto.Platform.Wpf.CustomControls.MultiSizeImage {
 				Stretch = swm.Stretch.Uniform,
 				StretchDirection = swc.StretchDirection.DownOnly
 			};
