@@ -279,7 +279,7 @@ namespace Eto
 			if (!typeAssemblies.Contains (assembly)) {
 				
 				typeAssemblies.Add (assembly);
-				types.AddRange(assembly.GetExportedTypes ());
+				types.InsertRange(0, assembly.GetExportedTypes ());
 			}
 		}
 
