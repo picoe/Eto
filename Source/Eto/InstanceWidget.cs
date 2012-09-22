@@ -239,5 +239,22 @@ namespace Eto
 				HandleEvent (id);
 			}
 		}
+
+		/// <summary>
+		/// Initializes the widget handler
+		/// </summary>
+		/// <remarks>
+		/// This is typically called from the constructor after all of the logic is completed to construct
+		/// the object.
+		/// 
+		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
+		/// after all of its logic has finished.
+		/// </remarks>
+		protected new void Initialize ()
+		{
+			base.Initialize ();
+			Eto.Style.OnStyleWidgetDefaults (this);
+		}
+
 	}
 }
