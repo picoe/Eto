@@ -88,6 +88,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var result = dialog.ShowDialog (Widget);
 				return (result == DialogResult.Ok) ? dialog.Value : string.Empty;
 			};
+			
+			Control.UIGetContextMenuItems = (sender, forElement, defaultMenuItems) => {
+				return defaultMenuItems;
+			};
 
 			Control.UIRunOpenPanelForFileButton += (sender, e) => {
 				var openDlg = new OpenFileDialog();
