@@ -13,7 +13,7 @@ namespace Eto.Platform.GtkSharp
 		public TextBoxHandler ()
 		{
 			Control = new Gtk.Entry ();
-			Control.SetSizeRequest (20, -1);
+			Control.SetSizeRequest (100, -1);
 			Control.ActivatesDefault = true;
 		}
 

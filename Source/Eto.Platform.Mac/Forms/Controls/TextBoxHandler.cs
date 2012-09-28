@@ -84,6 +84,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			//Control.Bordered = true;
 			MaxLength = -1;
 		}
+
+		protected override Eto.Drawing.Size GetNaturalSize ()
+		{
+			var size = base.GetNaturalSize ();
+			size.Width = Math.Max (100, size.Height);
+			return size;
+		}
 		
 		public override void AttachEvent (string handler)
 		{
