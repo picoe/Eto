@@ -15,6 +15,25 @@ namespace Eto.Platform.Wpf.Forms
 			return new sw.Application ();
 		}
 
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.Startup += HandleStartup;
+		}
+
+		void HandleStartup (object sender, sw.StartupEventArgs e)
+		{
+			IsActive = true;
+			Control.Activated += (sender2, e2) => {
+				IsActive = true;
+			};
+			Control.Deactivated += (sender2, e2) => {
+				IsActive = false;
+			};
+		}
+
+		public bool IsActive { get; private set; }
+
 		public void RunIteration()
 		{
 		}

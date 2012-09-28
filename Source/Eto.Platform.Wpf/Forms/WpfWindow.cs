@@ -324,5 +324,10 @@ namespace Eto.Platform.Wpf.Forms
 				}
 			}
 		}
+
+		public override bool HasFocus
+		{
+			get { return Control.IsActive && ((ApplicationHandler)Application.Instance.Handler).IsActive; }
+		}
 	}
 }

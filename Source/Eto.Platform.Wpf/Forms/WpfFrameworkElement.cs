@@ -98,12 +98,12 @@ namespace Eto.Platform.Wpf.Forms
 			//Control.UpdateLayout ();
 		}
 
-		public void Focus ()
+		public virtual void Focus ()
 		{
 			Control.Focus ();
 		}
 
-		public bool HasFocus
+		public virtual bool HasFocus
 		{
 			get { return Control.IsFocused; }
 		}
