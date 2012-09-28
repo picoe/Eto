@@ -29,6 +29,23 @@ namespace Eto.Forms
 			this.items.AddRange (items);
 		}
 
+		public DynamicRow (IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
+		{
+			Add (controls, xscale, yscale);
+		}
+		
+		public void Add (params Control[] controls)
+		{
+			Add ((IEnumerable<Control>)controls);
+		}
+			
+		public void Add (IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
+		{
+			if (controls == null)
+				return;
+			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
+			Items.AddRange (items);
+		}
 	}
 
 #if XAML
