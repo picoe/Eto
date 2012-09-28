@@ -149,17 +149,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var args = new WebViewLoadingEventArgs (new Uri (e.Request.Url.AbsoluteString));
 					Widget.OnDocumentLoading (args);
 					if (args.Cancel)
-						e.Listener.PerformSelector (new Selector ("ignore"), null, 0);
+						e.DecisionToken.PerformSelector (new Selector ("ignore"), null, 0);
 					else
-						e.Listener.PerformSelector (new Selector ("use"), null, 0);
+						e.DecisionToken.PerformSelector (new Selector ("use"), null, 0);
 				};
 				this.Control.DecidePolicyForNewWindow += (sender, e) => {
 					var args = new WebViewLoadingEventArgs (new Uri (e.Request.Url.AbsoluteString));
 					Widget.OnDocumentLoading (args);
 					if (args.Cancel)
-						e.Listener.PerformSelector (new Selector ("ignore"), null, 0);
+						e.DecisionToken.PerformSelector (new Selector ("ignore"), null, 0);
 					else
-						e.Listener.PerformSelector (new Selector ("use"), null, 0);
+						e.DecisionToken.PerformSelector (new Selector ("use"), null, 0);
 				};
 				break;
 			case WebView.DocumentTitleChangedEvent:
