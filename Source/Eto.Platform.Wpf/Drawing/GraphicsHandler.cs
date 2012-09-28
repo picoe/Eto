@@ -92,6 +92,21 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Pop ();
 		}
 
+		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		{
+			var pen = GetPen (color);
+			double t = pen.Thickness / 2;
+			Control.DrawEllipse (null, pen, new sw.Point(x + width / 2.0, y + height / 2.0), width / 2.0, height / 2.0);
+		}
+
+		public void FillEllipse (Color color, int x, int y, int width, int height)
+		{
+			PushGuideLines (x, y, width, height);
+			var brush = new swm.SolidColorBrush (Generator.Convert (color));
+			Control.DrawEllipse (brush, null, new sw.Point (x + width / 2.0, y + height / 2.0), width / 2.0, height / 2.0);
+			Control.Pop ();
+		}
+
 		public void FillPath (Color color, GraphicsPath path)
 		{
 			var geometry = ((GraphicsPathHandler)path.Handler).Control;

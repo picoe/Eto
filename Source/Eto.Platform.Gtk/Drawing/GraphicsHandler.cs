@@ -38,7 +38,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 		}
 		
-		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable, Gdk.GC gc)
+		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable)
 		{
 			this.widget = widget;
 			this.drawable = drawable;
@@ -153,6 +153,26 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Fill ();
 			Control.Restore ();
 		}
+
+		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		{
+			Control.Save ();
+			Control.Color = Generator.ConvertC (color);
+			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
+			Control.LineWidth = 1.0;
+			Control.Stroke ();
+			Control.Restore ();
+		}
+
+		public void FillEllipse (Color color, int x, int y, int width, int height)
+		{
+			Control.Save ();
+			Control.Color = Generator.ConvertC (color);
+			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
+			Control.Fill ();
+			Control.Restore ();
+		}
+
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{

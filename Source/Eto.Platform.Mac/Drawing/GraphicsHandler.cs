@@ -251,6 +251,34 @@ namespace Eto.Platform.Mac.Drawing
 			context.FillRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			EndDrawing ();
 		}
+
+		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		{
+			StartDrawing ();
+			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height));
+			rect.Offset (0.5f, 0.5f);
+			rect.Width -= 1f;
+			rect.Height -= 1f;
+			context.SetStrokeColor (Generator.Convert (color));
+			context.SetLineCap (CGLineCap.Square);
+			context.SetLineWidth (1.0F);
+			context.StrokeEllipseInRect (rect);
+			EndDrawing ();
+		}
+
+		public void FillEllipse (Color color, int x, int y, int width, int height)
+		{
+			StartDrawing ();
+			/*	if (width == 1 || height == 1)
+			{
+				DrawLine(color, x, y, x+width-1, y+height-1);
+				return;
+			}*/
+
+			context.SetFillColor (Generator.Convert (color));
+			context.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height)));
+			EndDrawing ();
+		}
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{

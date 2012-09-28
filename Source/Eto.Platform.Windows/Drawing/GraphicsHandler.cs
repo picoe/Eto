@@ -101,6 +101,16 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), x - 0.5f, y - 0.5f, width, height);
 		}
+
+		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		{
+			Control.DrawEllipse (new SD.Pen (Generator.Convert (color)), x, y, width - 1, height - 1);
+		}
+
+		public void FillEllipse (Color color, int x, int y, int width, int height)
+		{
+			Control.FillEllipse (new SD.SolidBrush (Generator.Convert (color)), x - 0.5f, y - 0.5f, width, height);
+		}
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{

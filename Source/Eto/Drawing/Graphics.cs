@@ -75,6 +75,11 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
 		void FillRectangle (Color color, int x, int y, int width, int height);
+
+
+		void FillEllipse (Color color, int x, int y, int width, int height);
+		
+		void DrawEllipse (Color color, int x, int y, int width, int height);
 		
 		/// <summary>
 		/// Fills the specified <paramref name="path"/>
@@ -322,6 +327,16 @@ namespace Eto.Drawing
 			foreach (Rectangle rectangle in rectangles) {
 				handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 			}
+		}
+
+		public void FillEllipse (Color color, Rectangle rectangle)
+		{
+			handler.FillEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		public void DrawEllipse (Color color, Rectangle rectangle)
+		{
+			handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 		
 		/// <summary>

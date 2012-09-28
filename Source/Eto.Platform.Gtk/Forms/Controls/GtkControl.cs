@@ -140,7 +140,7 @@ namespace Eto.Platform.GtkSharp
 
 		public Graphics CreateGraphics ()
 		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC));
+			return new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow));
 		}
 
 		public void SuspendLayout ()
