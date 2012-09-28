@@ -5,6 +5,7 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Drawing;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
