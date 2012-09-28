@@ -60,6 +60,9 @@
     <Compile Include="CustomControls\GlassHelper.cs" />
     <Compile Include="CustomControls\HttpServer.cs" />
     <Compile Include="CustomControls\MultiSizeImage.cs" />
+    <Compile Include="CustomControls\OverlayIcon.xaml.cs">
+      <DependentUpon>OverlayIcon.xaml</DependentUpon>
+    </Compile>
     <Compile Include="CustomControls\SelectableTreeView.cs" />
     <Compile Include="CustomControls\TreeGridView\TreeToggleButton.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\AutoScroll.cs" />
@@ -182,6 +185,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="CustomControls\OverlayIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="themes\aero.normalcolor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

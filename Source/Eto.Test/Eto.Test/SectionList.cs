@@ -156,6 +156,7 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };
 			yield return new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" };
 			yield return new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" };
+			yield return new Section<Sections.Behaviors.BadgeLabelSection> { Text = "Badge Label" };
 #if DESKTOP
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
 #endif

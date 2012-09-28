@@ -5,11 +5,14 @@ using System.Text;
 using Eto.Forms;
 using System.Diagnostics;
 using sw = System.Windows;
+using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms
 {
 	public class ApplicationHandler : WidgetHandler<System.Windows.Application, Application>, IApplication
 	{
+		string badgeLabel;
+
 		public override sw.Application CreateControl ()
 		{
 			return new sw.Application ();
@@ -33,6 +36,38 @@ namespace Eto.Platform.Wpf.Forms
 		}
 
 		public bool IsActive { get; private set; }
+
+		public string BadgeLabel
+		{
+			get { return badgeLabel; }
+			set
+			{
+				badgeLabel = value;
+				var mainWindow = sw.Application.Current.MainWindow;
+				if (mainWindow != null)
+				{
+					if (mainWindow.TaskbarItemInfo == null)
+						mainWindow.TaskbarItemInfo = new sw.Shell.TaskbarItemInfo ();
+					if (!string.IsNullOrEmpty (badgeLabel))
+					{
+						var ctl = new CustomControls.OverlayIcon ();
+						ctl.Content = badgeLabel;
+						ctl.Measure (new sw.Size (16, 16));
+						var size = ctl.DesiredSize;
+
+						var m = sw.PresentationSource.FromVisual (mainWindow).CompositionTarget.TransformToDevice;
+
+						var bmp = new swm.Imaging.RenderTargetBitmap ((int)size.Width, (int)size.Height, m.M22 * 96, m.M22 * 96, swm.PixelFormats.Default);
+						ctl.Arrange (new sw.Rect (size));
+						bmp.Render (ctl);
+						mainWindow.TaskbarItemInfo.Overlay = bmp;
+					}
+					else
+						mainWindow.TaskbarItemInfo.Overlay = null;
+				}
+			}
+		}
+
 
 		public void RunIteration()
 		{
