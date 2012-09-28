@@ -307,7 +307,7 @@ namespace Eto.Platform.Mac.Forms
 			return !args.Cancel;
 		}
 
-		public void Close ()
+		public virtual void Close ()
 		{
 			Control.PerformClose (Control);
 		}

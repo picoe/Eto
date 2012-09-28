@@ -40,6 +40,8 @@ namespace Eto.Platform.GtkSharp
 		}
 		 */
 
+		public DialogDisplayMode DisplayMode { get; set; }
+
 		public DialogResult ShowDialog (Control parent)
 		{
 			Widget.OnPreLoad (EventArgs.Empty);

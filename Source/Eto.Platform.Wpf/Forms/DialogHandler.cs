@@ -36,6 +36,8 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		public DialogDisplayMode DisplayMode { get; set; }
+
 		public DialogResult ShowDialog (Control parent)
 		{
 			var parentWindow = parent.ParentWindow;
