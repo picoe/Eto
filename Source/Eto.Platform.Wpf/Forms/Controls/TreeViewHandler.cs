@@ -15,10 +15,11 @@ using Eto.Platform.Wpf.Forms.Menu;
 using Eto.Drawing;
 using System.ComponentModel;
 using System.Reflection;
+using Eto.Platform.Wpf.CustomControls;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<swc.TreeView, TreeView>, ITreeView
+	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView>, ITreeView
 	{
 		ContextMenu contextMenu;
 		ITreeStore topNode;
@@ -90,7 +91,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public class EtoTreeView : swc.TreeView
+		public class EtoTreeView : SelectableTreeView
 		{
 			protected override sw.DependencyObject GetContainerForItemOverride ()
 			{
@@ -119,9 +120,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.ItemContainerStyle = style;
 
 			ITreeItem oldSelectedItem = null;
-			Control.SelectedItemChanged += (sender, e) => {
-				if (selecting)
-					return;
+			Control.CurrentItemChanged += (sender, e) => {
 				Control.Dispatcher.BeginInvoke (new Action (() => {
 					var newSelected = this.SelectedItem;
 					if (oldSelectedItem != newSelected)
@@ -210,62 +209,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		swc.ItemsControl selectItemParent;
-		bool selecting;
-
-		bool SetSelected (swc.ItemsControl parent, ITreeItem child)
-		{
-
-			if (parent == null || child == null) {
-				return false;
-			}
-			if (parent.ItemContainerGenerator.Status != swc.Primitives.GeneratorStatus.ContainersGenerated)
-			{
-				selectItemParent = parent;
-				selectedItem = child;
-				parent.ItemContainerGenerator.StatusChanged += HandleStatusChanged;
-				return false;
-			}
-
-			var childNode = parent.ItemContainerGenerator.ContainerFromItem (child) as swc.TreeViewItem;
-
-			if (childNode != null) {
-				childNode.IsSelected = true;
-				selecting = false;
-				return true;
-			}
-			
-			if (parent.HasItems) {
-				foreach (var childItem in parent.Items.OfType<ITreeItem>())
-				{
-					var childControl = parent.ItemContainerGenerator.ContainerFromItem (childItem) as swc.ItemsControl;
-
-					if (SetSelected (childControl, child)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
-		void HandleStatusChanged (object sender, EventArgs e)
-		{
-			var container = sender as swc.ItemContainerGenerator;
-			if (container.Status == swc.Primitives.GeneratorStatus.ContainersGenerated && selectItemParent != null && selectedItem != null)
-			{
-				SetSelected (selectItemParent, selectedItem);
-				selectItemParent = null;
-				selectedItem = null;
-			}
-		}
-
 		public ITreeItem SelectedItem
 		{
-			get
-			{
-				return selectedItem ?? Control.SelectedItem as ITreeItem;
-			}
+			get { return selectedItem ?? Control.CurrentItem as ITreeItem; }
 			set
 			{
 				if (!Control.IsLoaded)
@@ -275,18 +221,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					selectedItem = value;
 				}
 				else
-				{
-					selecting = false;
-					selectedItem = null;
-					selectItemParent = null;
-					SetSelected (Control, value);
-				}
+					Control.CurrentItem = value;
 			}
 		}
 
         public void HandleSelectedItemLoad(object sender, sw.RoutedEventArgs e)
         {
-            SetSelected(Control, selectedItem);
+			Control.CurrentItem = selectedItem;
             selectedItem = null;
             Control.Loaded -= HandleSelectedItemLoad;
         }
@@ -306,18 +247,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void RefreshData ()
 		{
-			selecting = true;
-			var selectedItem = this.SelectedItem;
-			Control.Items.Refresh ();
-			this.SelectedItem = selectedItem;
+			Control.RefreshData ();
 		}
 
 		public void RefreshItem (ITreeItem item)
 		{
-			selecting = true;
-			var selectedItem = this.SelectedItem;
-			Control.Items.Refresh ();
-			this.SelectedItem = selectedItem;
+			Control.RefreshData ();
 		}
 	}
 }
