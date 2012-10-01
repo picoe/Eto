@@ -5,13 +5,16 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Drawing;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
 	interface IToolBarBaseItemHandler
 	{
-		string ID { get; }
-		void Create();
+		string Identifier { get; }
+		NSToolbarItem Control { get; }
+		bool Selectable { get; }
 		void ControlAdded(ToolBarHandler toolbar);
 	}
 	
@@ -45,21 +48,25 @@ namespace Eto.Platform.Mac
 	{
 		Icon icon;
 		bool enabled = true;
+
+		public virtual string Identifier { get; set; }
 		
 		public ToolBarItemHandler()
 		{
-			this.ID = Guid.NewGuid().ToString();
+			this.Identifier = Guid.NewGuid().ToString();
 		}
-		
-		public virtual void Create()
+
+		public override T CreateControl ()
 		{
-			if (Control != null) return;
-			Control = (T)new NSToolbarItem(this.ID);
+			return (T)new NSToolbarItem(this.Identifier);
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
 			Control.Target = new ToolBarItemHandlerTarget{ Handler = this };
 			Control.Action = new Selector("action");
 			Control.Autovalidates = false;
-			Control.Enabled = enabled;
-			Control.ToolTip = this.ToolTip ?? string.Empty;
 			if (icon != null) Control.Image = (NSImage)icon.ControlObject;
 			Control.Label = this.Text;
 		}
@@ -72,8 +79,15 @@ namespace Eto.Platform.Mac
 		{
 		}
 		
-		public string Text { get; set; }
-		public string ToolTip { get; set; }
+		public string Text {
+			get { return Control.Label; }
+			set { Control.Label = value ?? string.Empty; }
+		}
+
+		public string ToolTip {
+			get { return Control.ToolTip; }
+			set { Control.ToolTip = value ?? string.Empty; }
+		}
 
 		public Icon Icon
 		{
@@ -81,18 +95,30 @@ namespace Eto.Platform.Mac
 			set
 			{
 				this.icon = value;
+				if (this.icon != null)
+					Control.Image = ((IImageSource)icon.Handler).GetImage ();
+				else 
+					//Control = null; // grr. NRE in monomac
+					Control.Image = new NSImage(new sd.SizeF (1, 1));
 			}
 		}
 		
 		public virtual bool Enabled
 		{
-			get { return (Control != null) ? Control.Enabled : enabled; }
-			set { if (Control != null) Control.Enabled = value; enabled = value; }
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
+
+		public virtual bool Selectable { get; set; }
 		
 		public void OnClick()
 		{
 			this.InvokeButton();
+		}
+
+		NSToolbarItem IToolBarBaseItemHandler.Control
+		{
+			get { return (NSToolbarItem)this.Control; }
 		}
 	}
 

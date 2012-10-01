@@ -10,7 +10,7 @@ namespace Eto.Platform.Mac
 	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
 	{
 		ToolBarDock dock = ToolBarDock.Top;
-		List<ToolBarItem> items = new List<ToolBarItem> ();
+		List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler> ();
 		
 		class TBDelegate : NSToolbarDelegate
 		{
@@ -18,7 +18,7 @@ namespace Eto.Platform.Mac
 
 			public override string[] SelectableItemIdentifiers (NSToolbar toolbar)
 			{
-				return Handler.items.OfType<CheckToolBarButton> ().Select (r => r.ID).ToArray ();
+				return Handler.items.Where (r => r.Selectable).Select (r => r.Identifier).ToArray ();
 			}
 			
 			public override void WillAddItem (MonoMac.Foundation.NSNotification notification)
@@ -32,23 +32,21 @@ namespace Eto.Platform.Mac
 			
 			public override NSToolbarItem WillInsertItem (NSToolbar toolbar, string itemIdentifier, bool willBeInserted)
 			{
-				var item = Handler.items.FirstOrDefault (r => r.ID == itemIdentifier);
-				var tb = item.ControlObject as NSToolbarItem;
-				if (tb == null) {
-					tb = new NSToolbarItem (itemIdentifier);
-					tb.View = (NSView)item.ControlObject;
-				}
-				return tb;
+				var item = Handler.items.FirstOrDefault (r => r.Identifier == itemIdentifier);
+				if (item != null)
+					return item.Control;
+				else
+					return null;
 			}
 			
 			public override string[] DefaultItemIdentifiers (NSToolbar toolbar)
 			{
-				return Handler.items.Select (r => r.ID).ToArray ();
+				return Handler.items.Select (r => r.Identifier).ToArray ();
 			}
 			
 			public override string[] AllowedItemIdentifiers (NSToolbar toolbar)
 			{
-				return Handler.items.OfType<IToolBarItemHandler> ().Select (r => r.ID)
+				return Handler.items.Select (r => r.Identifier)
 				.Union (
 					new string[] { 
 					NSToolbar.NSToolbarSeparatorItemIdentifier, 
@@ -80,11 +78,9 @@ namespace Eto.Platform.Mac
 		
 		public void AddButton (ToolBarItem item)
 		{
-			items.Add (item);
 			var handler = item.Handler as IToolBarBaseItemHandler;
-			if (handler != null)
-				handler.Create ();
-			Control.InsertItem (item.ID ?? string.Empty, items.Count > 0 ? items.Count - 1 : 0);
+			items.Add (handler);
+			Control.InsertItem (handler.Identifier, items.Count - 1);
 			if (handler != null)
 				handler.ControlAdded (this);
 			//Control.ValidateVisibleItems();
@@ -92,8 +88,9 @@ namespace Eto.Platform.Mac
 
 		public void RemoveButton (ToolBarItem item)
 		{
-			var index = items.IndexOf (item);
-			items.Remove (item);
+			var handler = item.Handler as IToolBarBaseItemHandler;
+			var index = items.IndexOf (handler);
+			items.Remove (handler);
 			//var handler = item.Handler as IToolBarItemHandler;
 			Control.RemoveItem (index);
 			//Control.ValidateVisibleItems();

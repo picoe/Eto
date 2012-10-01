@@ -18,21 +18,21 @@ namespace Eto.Platform.Mac
 			set { 
 				isChecked = value;
 				if (isChecked && Control != null && toolbarHandler != null && toolbarHandler.Control != null) 
-					toolbarHandler.Control.SelectedItemIdentifier = Widget.ID;
+					toolbarHandler.Control.SelectedItemIdentifier = this.Identifier;
 			}
 		}
 
-		public override void Create ()
+		public override void Initialize ()
 		{
-			base.Create ();
-			//if (isChecked && Control.) Control.Toolbar.SelectedItemIdentifier = Widget.ID;
+			base.Initialize ();
+			Selectable = true;
 		}
-		
+
 		public override void ControlAdded (ToolBarHandler toolbar)
 		{
 			base.ControlAdded (toolbar);
 			this.toolbarHandler = toolbar;
-			if (isChecked) toolbar.Control.SelectedItemIdentifier = Widget.ID;
+			if (isChecked) toolbar.Control.SelectedItemIdentifier = this.Identifier;
 		}
 		
 		public override void InvokeButton()

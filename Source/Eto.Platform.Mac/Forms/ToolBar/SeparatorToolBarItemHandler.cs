@@ -7,16 +7,14 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac
 {
-	public class SeparatorToolBarItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolBarItem>, ISeparatorToolBarItem
+	public class SeparatorToolBarItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolBarItem>, ISeparatorToolBarItem, IToolBarBaseItemHandler
 	{
-		SeparatorToolBarItemType type;
-		
 		public SeparatorToolBarItemHandler()
 		{
-			
+			Type = SeparatorToolBarItemType.Divider;
 		}
 		
-		public override string ID
+		public virtual string Identifier
 		{
 			get { 
 				switch (Type) {
@@ -27,17 +25,17 @@ namespace Eto.Platform.Mac
 				}
 				
 			}
-			set { }
+		}
+
+		public bool Selectable {
+			get { return false; }
 		}
 		
-		public SeparatorToolBarItemType Type {
-			get {
-				return type;
-			}
-			set {
-				type = value;
-			}
+		public SeparatorToolBarItemType Type { get; set; }
+
+		public void ControlAdded (ToolBarHandler toolbar)
+		{
 		}
-		
+
 	}
 }
