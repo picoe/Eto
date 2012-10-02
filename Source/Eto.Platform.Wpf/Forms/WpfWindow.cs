@@ -31,6 +31,11 @@ namespace Eto.Platform.Wpf.Forms
 		swc.DockPanel content;
 		Size? initialClientSize;
 
+		public swc.DockPanel Content
+		{
+			get { return content; }
+		}
+
 		public override void Initialize ()
 		{
 			base.Initialize ();
@@ -94,7 +99,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		void UpdateClientSize (Size size)
+		protected virtual void UpdateClientSize (Size size)
 		{
 			var xdiff = Control.ActualWidth - content.ActualWidth;
 			var ydiff = Control.ActualHeight - content.ActualHeight;
