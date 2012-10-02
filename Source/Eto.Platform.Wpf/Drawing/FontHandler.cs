@@ -19,14 +19,24 @@ namespace Eto.Platform.Wpf.Drawing
 			control.FontStyle = FontStyle;
 			control.FontWeight = FontWeight;
 
-			if (sw.Application.Current.MainWindow != null)
-			{
-				// adjust font size for DPI settings
-				var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
-				control.FontSize = PointsToPixels(Size * m.M22);
-			}
-			else control.FontSize = PointsToPixels(Size);
+			control.FontSize = this.PixelSize;
 		}
+
+		public double PixelSize
+		{
+			get
+			{
+				if (sw.Application.Current.MainWindow != null)
+				{
+					// adjust font size for DPI settings
+					var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+					return PointsToPixels (Size * m.M22);
+				}
+				else
+					return PointsToPixels (Size);
+			}
+		}
+
 
 		public static double PointsToPixels (double points)
 		{
