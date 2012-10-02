@@ -13,7 +13,7 @@ namespace Eto.Platform.Mac.IO
 		{
 			var ws = new NSWorkspace ();
 			var image = ws.IconForFileType (Path.GetExtension (fileName));
-			return new Icon (new IconHandler (image));
+			return new Icon (Widget.Generator, new IconHandler (image));
 		}
 
 		public Icon GetStaticIcon (StaticIconType type, IconSize size)
@@ -26,7 +26,7 @@ namespace Eto.Platform.Mac.IO
 			case StaticIconType.CloseDirectory: code = "ofld"; break;
 			}
 			var image = ws.IconForFileType (code);
-			return new Icon (new IconHandler (image));
+			return new Icon (Widget.Generator, new IconHandler (image));
 		}
 		#endregion
 	}

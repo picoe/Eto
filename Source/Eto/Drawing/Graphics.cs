@@ -329,11 +329,21 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Fills an ellipse with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Fill color</param>
+		/// <param name="rectangle">Location for the ellipse</param>
 		public void FillEllipse (Color color, Rectangle rectangle)
 		{
 			handler.FillEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
+		/// <summary>
+		/// Draws an ellipse outline with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color to outline the ellipse</param>
+		/// <param name="rectangle">Location for the ellipse</param>
 		public void DrawEllipse (Color color, Rectangle rectangle)
 		{
 			handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);

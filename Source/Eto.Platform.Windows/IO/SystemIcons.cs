@@ -21,7 +21,7 @@ namespace Eto.Platform.Windows.IO
 			}
 
 			SD.Icon icon = ShellIcon.GetFileIcon( fileName, iconSize, false );
-			return new Icon(new IconHandler(icon));
+			return new Icon(Widget.Generator, new IconHandler(icon));
 		}
 
 		public Icon GetStaticIcon(Eto.IO.StaticIconType type, Eto.IO.IconSize size)
@@ -43,7 +43,7 @@ namespace Eto.Platform.Windows.IO
 			}
 			
 			SD.Icon icon = ShellIcon.GetFolderIcon(iconSize, folderType);
-			return new Icon(new IconHandler(icon));
+			return new Icon(Widget.Generator, new IconHandler(icon));
 		}
 
 		#endregion
