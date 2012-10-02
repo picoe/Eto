@@ -23,9 +23,14 @@ namespace Eto.Platform.Wpf.Drawing
 			{
 				// adjust font size for DPI settings
 				var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
-				control.FontSize = Size * m.M22;
+				control.FontSize = PointsToPixels(Size * m.M22);
 			}
-			else control.FontSize = Size;
+			else control.FontSize = PointsToPixels(Size);
+		}
+
+		public static double PointsToPixels (double points)
+		{
+			return points * (96.0 / 72.0);
 		}
 
 		public static void Apply (swc.Control control, Font font)
