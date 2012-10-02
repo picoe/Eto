@@ -42,24 +42,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public NSString Text { get; set; }
 		
 		
-		[Export("dealloc")]
-		public void Dealloc ()
-		{
-			diddealloc = true;
-			// this method is needed, we will free this object in Dispose()
-		}
-
-		protected override void Dispose (bool disposing)
-		{
-			if (diddealloc) {
-				// clean up memory leak on objects that were created using CopyWithZone()
-				var handle = this.Handle;
-				base.Dispose (true);
-				Marshal.FreeHGlobal (handle);
-			}
-			else
-				base.Dispose (disposing);
-		}
 		public void SetItem (IListItem value)
 		{
 			var imgitem = value as IImageListItem;
@@ -67,11 +49,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 				this.Image = ((IImageSource)imgitem.Image.Handler).GetImage ();
 			this.Text = (NSString)value.Text;
 		}
+
+		static IntPtr selRetain = Selector.GetHandle ("retain");
 		
 		[Export("copyWithZone:")]
 		public virtual NSObject CopyWithZone (IntPtr zone)
 		{
 			var clone = this.Clone () as MacImageData;
+			Messaging.void_objc_msgSend(clone.Handle, selRetain);
 			return clone;
 		}
 		
