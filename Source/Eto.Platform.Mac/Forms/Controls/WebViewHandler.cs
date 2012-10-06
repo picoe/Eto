@@ -20,6 +20,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			SetUIEvents ();
 			SetUIPrintFrameView ();
 			HandleEvent (WebView.OpenNewWindowEvent); // needed to provide default implementation
+			HandleEvent (WebView.DocumentLoadingEvent);
 		}
 
 		public class NewWindowHandler : NSObject
@@ -45,7 +46,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (!args.Cancel)
 					NSWorkspace.SharedWorkspace.OpenUrl(url);
 				listener.PerformSelector (new Selector ("ignore"), null, 0);
-				//listener.PerformSelector (new Selector ("use"), null, 0);
 			}
 		}
 
