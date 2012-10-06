@@ -38,11 +38,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override Size Size
 		{
 			get { return base.Size;	}
-			set
-			{
-				base.Size = value;
-				setSize = true;
-			}
+			set { base.Size = value; }
 		}
 
 		public Image Image
