@@ -11,8 +11,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class MacImageData : NSObject, ICloneable
 	{
-		bool diddealloc;
-		
 		public  MacImageData ()
 		{
 		}

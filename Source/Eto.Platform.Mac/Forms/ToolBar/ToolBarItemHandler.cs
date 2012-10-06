@@ -47,7 +47,6 @@ namespace Eto.Platform.Mac
 		where W: ToolBarItem
 	{
 		Icon icon;
-		bool enabled = true;
 
 		public virtual string Identifier { get; set; }
 		
