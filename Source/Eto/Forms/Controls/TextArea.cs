@@ -1,3 +1,4 @@
+using Eto.Drawing;
 using System;
 using System.Collections;
 
@@ -15,6 +16,8 @@ namespace Eto.Forms
 	public class TextArea : TextControl
 	{
 		ITextArea handler;
+
+		public static Size DefaultSize = new Size (100, 60);
 
 		public TextArea ()
 			: this (Generator.Current)

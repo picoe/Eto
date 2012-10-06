@@ -48,9 +48,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		protected override Eto.Drawing.Size GetNaturalSize ()
 		{
-			var size = base.GetNaturalSize ();
-			size.Height = Math.Max (size.Height, 60);
-			return size;
+			return TextArea.DefaultSize;
 		}
 
 		#region ITextArea Members

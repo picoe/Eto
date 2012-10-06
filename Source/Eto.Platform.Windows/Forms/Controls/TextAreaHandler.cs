@@ -80,6 +80,7 @@ namespace Eto.Platform.Windows
 			Control.TextChanged += delegate {
 				Widget.OnTextChanged (EventArgs.Empty);
 			};
+			this.Size = TextArea.DefaultSize;
 		}
 		
 		public bool ReadOnly {

@@ -17,6 +17,7 @@ namespace Eto.Platform.GtkSharp
 			scroll = new Gtk.ScrolledWindow ();
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new Gtk.TextView ();
+			this.Size = TextArea.DefaultSize;
 			scroll.Add (Control);
 		}
 		
