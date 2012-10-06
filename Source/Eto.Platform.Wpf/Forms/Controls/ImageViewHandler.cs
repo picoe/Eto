@@ -6,6 +6,7 @@ using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -51,13 +52,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				image = value;
-				if (image != null) {
+				if (image != null)
 					Control.Source = image.ControlObject as swm.ImageSource;
-					if (!setSize) {
-						Control.Width = image.Size.Width;
-						Control.Height = image.Size.Height;
-					}
-				}
 				else
 					Control.Source = null;
 			}
