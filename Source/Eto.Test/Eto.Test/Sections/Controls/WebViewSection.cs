@@ -10,7 +10,6 @@ namespace Eto.Test.Sections.Controls
 		Button goBack;
 		Button goForward;
 		Button stopButton;
-		Button printButton;
 		Label titleLabel;
 		
 		public WebViewSection ()
@@ -29,12 +28,17 @@ namespace Eto.Test.Sections.Controls
 				var control = webView = new WebView ();
 			
 				control.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
+					Log.Write (control, "Document loading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
 					UpdateButtons ();
 					stopButton.Enabled = true;
 				};
 				control.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
+					Log.Write (control, "Document loaded, Uri: {0}", e.Uri);
 					UpdateButtons ();
 					stopButton.Enabled = false;
+				};
+				control.OpenNewWindow += (sender, e) => {
+					Log.Write (control, "Open new window with name '{0}', Url: {1}", e.NewWindowName, e.Uri);
 				};
 				control.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e) {
 					titleLabel.Text = e.Title;
@@ -139,7 +143,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control PrintButton ()
 		{
-			var control = printButton = new Button {
+			var control = new Button {
 				Text = "Print",
 			};
 			control.Click += delegate {
@@ -188,21 +192,30 @@ namespace Eto.Test.Sections.Controls
 	</script>
 	<form method='post' enctype='multipart/form-data'>
 		<p><h2>Test Printing</h2>
-			<button onclick='print()'>Print</button>
+			<button onclick='print(); return false;'>Print</button>
 		</p>
 		<p><h2>Test Selecting a File</h2>
 			<input type='file'>
 		</p>
 		<p><h2>Test Alert</h2>
-			<button onclick='alert(""This is an alert"")'>Show Alert</button>
+			<button onclick='alert(""This is an alert""); return false;'>Show Alert</button>
 		</p>
 		<p><h2>Test Confirm</h2>
-			<button onclick=""appendResult('confirmResult', confirm('Confirm yes or no'));"">Show Confirm</button>
+			<button onclick=""appendResult('confirmResult', confirm('Confirm yes or no')); return false;"">Show Confirm</button>
 			<ul id='confirmResult'></ul>
 		</p>
 		<p><h2>Test Prompt</h2>
-			<button onclick=""appendResult('inputResult', prompt('Enter some text', 'some default text'));"">Show Prompt</button>
+			<button onclick=""appendResult('inputResult', prompt('Enter some text', 'some default text')); return false;"">Show Prompt</button>
 			<ul id='inputResult'></ul>
+		</p>
+		<p><h2>Test Navigation</h2>
+			<button onclick=""window.location = 'http://www.example.com'; return false;"">Set location</button>
+			<button onclick=""window.open('http://www.example.com'); return false;"">Open new window</button>
+			<button onclick=""window.open('http://www.example.com', 'name_of_new_window'); return false;"">Open named window</button>
+			<br>
+			<a href='http://www.example.com'>Open link in this window</a>
+			<a href='http://www.example.com' target='_blank'>Open in new window</a>
+			<a href='http://www.example.com' target='another_name_of_new_window'>Open in named window</a>
 		</p>
 	</form>
 </body>
