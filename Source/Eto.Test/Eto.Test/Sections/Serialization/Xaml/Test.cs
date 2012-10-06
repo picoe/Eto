@@ -9,8 +9,8 @@ namespace Eto.Test.Sections.Serialization.Xaml
 #if XAML
 	public class Test : Panel
 	{
-		CheckBox myCheckBox;
-		TextArea myTextArea;
+		protected CheckBox myCheckBox;
+		protected TextArea myTextArea;
 
 		public Test ()
 		{
