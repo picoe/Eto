@@ -91,10 +91,11 @@ namespace Eto.Platform.Windows
 		{
 			Control.SuspendLayout ();
 			var old = views[x, y];
-			if (old != null) Control.Controls.Remove((SWF.Control)old.ControlObject);
+			if (old != null)
+				Control.Controls.Remove (old.GetContainerControl ());
 			views[x, y] = child;
 			if (child != null) {
-				SWF.Control childControl = (SWF.Control)child.ControlObject;
+				SWF.Control childControl = child.GetContainerControl ();
 				if (childControl.Parent != null) childControl.Parent.Controls.Remove (childControl);
 				childControl.Dock = ((IWindowsControl)child.Handler).DockStyle;
 				childControl.Margin = GetPadding (x, y);
@@ -124,7 +125,7 @@ namespace Eto.Platform.Windows
 		
 		public void Move(Control child, int x, int y)
 		{
-			SWF.Control childControl = (SWF.Control)child.ControlObject;
+			SWF.Control childControl = child.GetContainerControl ();
 			//IEnhancedControl ec = childControl as IEnhancedControl;
 			//if (ec != null) ec.Margin = new Margin(4, 4, 4, 4);
 			Control.SetCellPosition(childControl, new SWF.TableLayoutPanelCellPosition(x, y));
@@ -132,7 +133,7 @@ namespace Eto.Platform.Windows
 		
 		public void Remove (Control child)
 		{
-			SWF.Control childControl = (SWF.Control)child.ControlObject;
+			SWF.Control childControl = child.GetContainerControl ();
 			if (childControl.Parent != null) childControl.Parent.Controls.Remove(childControl);
 			for (int y=0; y<views.GetLength(0); y++)
 			for (int x=0; x<views.GetLength(1); x++)

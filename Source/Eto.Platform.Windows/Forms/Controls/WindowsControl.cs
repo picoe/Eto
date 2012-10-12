@@ -15,6 +15,20 @@ namespace Eto.Platform.Windows
 		bool InternalVisible { get; }
 
 		SWF.DockStyle DockStyle { get; }
+
+		SWF.Control ContainerControl { get; }
+	}
+
+	public static class WindowsControlExtensions
+	{
+		public static SWF.Control GetContainerControl (this Control control)
+		{
+			var wc = control.Handler as IWindowsControl;
+			if (wc != null)
+				return wc.ContainerControl;
+			else
+				return control.ControlObject as SWF.Control;
+		}
 	}
 
 	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
@@ -25,6 +39,11 @@ namespace Eto.Platform.Windows
 		Font font;
 		Cursor cursor;
 		string tooltip;
+
+		public virtual SWF.Control ContainerControl
+		{
+			get { return this.Control; }
+		}
 
 		public override void Initialize ()
 		{
@@ -134,18 +153,18 @@ namespace Eto.Platform.Windows
 		}
 
 		public virtual Size Size {
-			get { return Generator.Convert (Control.Size); }
+			get { return Generator.Convert (ContainerControl.Size); }
 			set {
-				this.Control.AutoSize = value.Width == -1 || value.Height == -1;
-				Control.Size = Generator.Convert (value);
+				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
+				ContainerControl.Size = Generator.Convert (value);
 			}
 		}
 
 		public virtual Size ClientSize {
-			get	{ return new Size (Control.ClientSize.Width, Control.ClientSize.Height); }
+			get { return new Size (ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
 			set {
-                this.Control.AutoSize = value.Width == -1 || value.Height == -1;
-				Control.ClientSize = Generator.Convert (value);
+				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
+				ContainerControl.ClientSize = Generator.Convert (value);
 			}
 		}
 
@@ -219,10 +238,10 @@ namespace Eto.Platform.Windows
 		}
 
 		public bool Visible {
-			get { return Control.Visible; }
+			get { return ContainerControl.Visible; }
 			set {
 				internalVisible = value;
-				Control.Visible = value;
+				ContainerControl.Visible = value;
 			}
 		}
 

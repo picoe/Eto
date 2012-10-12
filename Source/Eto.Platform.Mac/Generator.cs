@@ -30,7 +30,7 @@ namespace Eto.Platform.Mac
 		{
 			return new NSAutoreleasePool ();
 		}
-		
+
 		public static System.Drawing.Size Convert (Size size)
 		{
 			return new System.Drawing.Size (size.Width, size.Height);
@@ -86,7 +86,17 @@ namespace Eto.Platform.Mac
 		{
 			return new System.Drawing.PointF ((int)point.X, (int)point.Y);
 		}
+
+		public static NSRange Convert (Range range)
+		{
+			return new NSRange(range.Location, range.Length);
+		}
 		
+		public static Range Convert (NSRange range)
+		{
+			return new Range (range.Location, range.Length);
+		}
+
 		static CGColorSpace deviceRGB;
 
 		static CGColorSpace CreateDeviceRGB ()

@@ -7,6 +7,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TextAreaHandler : MacTextControl<NSTextView, TextArea>, ITextArea
 	{
+		int? lastCaretIndex;
+		Range? lastSelection;
+
 		public class EtoTextView : NSTextView, IMacControl
 		{
 			public object Handler {
@@ -20,11 +23,37 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get { return Scroll; }
 		}
+
+		// Remove use of delegate when events work correctly in MonoMac
+		public class EtoDelegate : NSTextViewDelegate
+		{
+			public TextAreaHandler Handler { get; set; }
+
+			public override void TextDidChange (NSNotification notification)
+			{
+				Handler.Widget.OnTextChanged (EventArgs.Empty);
+			}
+
+			public override void DidChangeSelection (NSNotification notification)
+			{
+				var selection = Handler.Selection;
+				if (selection != Handler.lastSelection) {
+					Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+					Handler.lastSelection = selection;
+				}
+				var caretIndex = Handler.CaretIndex;
+				if (caretIndex != Handler.lastCaretIndex) {
+					Handler.Widget.OnCaretIndexChanged (EventArgs.Empty);
+					Handler.lastCaretIndex = caretIndex;
+				}
+			}
+		}
 		
 		public TextAreaHandler ()
 		{
 			Control = new EtoTextView {
 				Handler = this,
+				Delegate = new EtoDelegate { Handler = this },
 				AutoresizingMask = NSViewResizingMask.WidthSizable | NSViewResizingMask.HeightSizable,
 				HorizontallyResizable = true,
 				VerticallyResizable = true,
@@ -51,15 +80,31 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return TextArea.DefaultSize;
 		}
 
-		#region ITextArea Members
-		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
 			case TextArea.TextChangedEvent:
-				Control.TextDidChange += delegate {
+				/*Control.TextDidChange += (sender, e) => {
 					Widget.OnTextChanged (EventArgs.Empty);
-				};
+				};*/
+				break;
+			case TextArea.SelectionChangedEvent:
+				/*Control.DidChangeSelection += (sender, e) => {
+					var selection = this.Selection;
+					if (selection != lastSelection) {
+						Widget.OnSelectionChanged (EventArgs.Empty);
+						lastSelection = selection;
+					}
+				};*/
+				break;
+			case TextArea.CaretIndexChangedEvent:
+				/*Control.DidChangeSelection += (sender, e) => {
+					var caretIndex = Handler.CaretIndex;
+					if (caretIndex != lastCaretIndex) {
+						Handler.Widget.OnCaretIndexChanged (EventArgs.Empty);
+						lastCaretIndex = caretIndex;
+					}
+				};*/
 				break;
 			default:
 				base.AttachEvent (handler);
@@ -109,7 +154,44 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 		}
-		
+
+		public string SelectedText
+		{
+			get {
+				var range = Control.SelectedRange;
+				if (range.Location >= 0 && range.Length > 0)
+					return Control.Value.Substring (range.Location, range.Length);
+				else
+					return null;
+			}
+			set {
+				var range = Control.SelectedRange;
+				Control.TextStorage.DeleteRange (range);
+				if (value != null) {
+					range.Length = value.Length;
+					Control.TextStorage.Insert (new NSAttributedString(value), range.Location);
+					Control.SelectedRange = range;
+				}
+			}
+		}
+
+		public Range Selection
+		{
+			get { return Generator.Convert (Control.SelectedRange); }
+			set { Control.SelectedRange = Generator.Convert (value); }
+		}
+
+		public void SelectAll ()
+		{
+			Control.SelectAll (Control);
+		}
+
+		public int CaretIndex
+		{
+			get { return Control.SelectedRange.Location; }
+			set { Control.SelectedRange = new NSRange(value, 0); }
+		}
+
 		public void Append (string text, bool scrollToCursor)
 		{
 			var range = new NSRange (this.Control.Value.Length, 0);
@@ -119,7 +201,5 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (scrollToCursor)
 				this.Control.ScrollRangeToVisible (range);
 		}
-		
-		#endregion
 	}
 }

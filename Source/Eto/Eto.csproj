@@ -467,6 +467,7 @@
     <Compile Include="Widget.xaml.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
     <Compile Include="HandlerInvalidException.cs" />
+    <Compile Include="Forms\Range.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

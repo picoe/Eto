@@ -23,11 +23,70 @@ namespace Eto.Test.Sections.Controls
 		
 		Control Default ()
 		{
-			var control = new TextArea { Text = "Some Text" };
-			LogEvents (control);
+			var text = new TextArea { Text = "Some Text" };
+			LogEvents (text);
+
+			var layout = new DynamicLayout(new Panel());
+
+			layout.Add (text);
+			layout.BeginVertical (Padding.Empty, Size.Empty);
+			layout.AddRow (null, ShowSelectedText (text), SetSelectedText (text), ReplaceSelected (text), SelectAll (text), SetCaret (text), null);
+			layout.EndVertical ();
+
+			return layout.Container;
+		}
+
+		Control ShowSelectedText (TextArea text)
+		{
+			var control = new Button { Text = "Show selected text" };
+			control.Click += (sender, e) => {
+				MessageBox.Show (this, string.Format ("Selected Text: {0}", text.SelectedText));
+			};
 			return control;
 		}
-		
+
+		Control SelectAll (TextArea text)
+		{
+			var control = new Button { Text = "Select All" };
+			control.Click += (sender, e) => {
+				text.SelectAll ();
+				text.Focus ();
+			};
+			return control;
+		}
+
+		Control SetSelectedText (TextArea textArea)
+		{
+			var control = new Button { Text = "Set selected text" };
+			control.Click += (sender, e) => {
+				var text = textArea.Text;
+				// select the last half of the text
+				textArea.Selection = new Range(text.Length / 2, text.Length / 2 + 1);
+				textArea.Focus ();
+			};
+			return control;
+		}
+
+		Control ReplaceSelected (TextArea textArea)
+		{
+			var control = new Button { Text = "Replace selected text" };
+			control.Click += (sender, e) => {
+				textArea.SelectedText = "Some inserted text!";
+				textArea.Focus ();
+			};
+			return control;
+		}
+
+		Control SetCaret (TextArea textArea)
+		{
+			var control = new Button { Text = "Set Caret" };
+			control.Click += (sender, e) => {
+				textArea.CaretIndex = textArea.Text.Length / 2;
+				textArea.Focus ();
+			};
+			return control;
+		}
+
 		Control DifferentSize ()
 		{
 			var control = new TextArea{ Text = "Some Text", Size = new Size (100, 20) };
@@ -44,8 +103,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control Disabled ()
 		{
-			var control = Default ();
-			control.Enabled = false;
+			var control = new TextArea{ Text = "Disabled text that you cannot select", Enabled = false };
 			return control;
 		}
 
@@ -73,6 +131,14 @@ namespace Eto.Test.Sections.Controls
 		{
 			control.TextChanged += delegate {
 				Log.Write (control, "TextChanged, Text: {0}", control.Text);
+			};
+
+			control.SelectionChanged += (sender, e) => {
+				Log.Write (control, "SelectionChanged, Selection: {0}", control.Selection);
+			};
+
+			control.CaretIndexChanged += (sender, e) => {
+				Log.Write (control, "CaretIndexChanged, CaretIndex: {0}", control.CaretIndex);
 			};
 		}
 	}
