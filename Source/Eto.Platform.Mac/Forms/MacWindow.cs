@@ -185,7 +185,9 @@ namespace Eto.Platform.Mac.Forms
 				};
 				break;
 			case Eto.Forms.Control.HiddenEvent:
-				// handled by delegate
+				Control.DidResignKey += delegate {
+					Widget.OnHidden (EventArgs.Empty);
+				};
 				break;
 			case Eto.Forms.Control.KeyDownEvent:
 				// TODO
