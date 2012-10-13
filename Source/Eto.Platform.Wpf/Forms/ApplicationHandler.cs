@@ -12,6 +12,25 @@ namespace Eto.Platform.Wpf.Forms
 	public class ApplicationHandler : WidgetHandler<System.Windows.Application, Application>, IApplication
 	{
 		string badgeLabel;
+		static ApplicationHandler instance;
+		List<sw.Window> delayShownWindows;
+
+		public static ApplicationHandler Instance
+		{
+			get { return instance; }
+		}
+
+		public List<sw.Window> DelayShownWindows
+		{
+			get
+			{
+				if (delayShownWindows == null)
+					delayShownWindows = new List<sw.Window> ();
+				return delayShownWindows;
+			}
+		}
+
+		public bool IsStarted { get; private set; }
 
 		public override sw.Application CreateControl ()
 		{
@@ -21,18 +40,28 @@ namespace Eto.Platform.Wpf.Forms
 		public override void Initialize ()
 		{
 			base.Initialize ();
+			instance = this;
 			Control.Startup += HandleStartup;
 		}
 
 		void HandleStartup (object sender, sw.StartupEventArgs e)
 		{
 			IsActive = true;
+			IsStarted = true;
 			Control.Activated += (sender2, e2) => {
 				IsActive = true;
 			};
 			Control.Deactivated += (sender2, e2) => {
 				IsActive = false;
 			};
+			if (delayShownWindows != null)
+			{
+				foreach (var window in delayShownWindows)
+				{
+					window.Show ();
+				}
+				delayShownWindows = null;
+			}
 		}
 
 		public bool IsActive { get; private set; }

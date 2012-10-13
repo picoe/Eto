@@ -18,7 +18,10 @@ namespace Eto.Platform.Wpf.Forms
 		public void Show()
 		{
 			Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-			Control.Show();
+			if (ApplicationHandler.Instance.IsStarted)
+				Control.Show ();
+			else
+				ApplicationHandler.Instance.DelayShownWindows.Add (Control);
 		}
 	}
 }
