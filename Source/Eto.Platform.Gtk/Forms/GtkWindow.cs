@@ -122,6 +122,11 @@ namespace Eto.Platform.GtkSharp
 					Widget.OnShown (EventArgs.Empty);
 				};
 				break;
+			case Window.HiddenEvent:
+				Control.Hidden += delegate {
+					Widget.OnHidden (EventArgs.Empty);
+				};
+				break;
 			case Window.MaximizedEvent:
 				Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
 					if ((args.Event.ChangedMask & (Gdk.WindowState.Maximized | Gdk.WindowState.Fullscreen)) != 0 
