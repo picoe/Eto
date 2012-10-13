@@ -121,7 +121,7 @@ namespace Eto
 		{
 			if (!channeling) {
 				channeling = true;
-				Source.SetValue (Destination.GetValue ());
+				Source.DataValue = Destination.DataValue;
 				channeling = false;
 			}
 		}
@@ -133,7 +133,7 @@ namespace Eto
 		{
 			if (!channeling) {
 				channeling = true;
-				Destination.SetValue (Source.GetValue ());
+				Destination.DataValue = Source.DataValue;
 				channeling = false;
 			}
 		}

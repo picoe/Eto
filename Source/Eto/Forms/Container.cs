@@ -26,6 +26,15 @@ namespace Eto.Forms
 	{
 		IContainer handler;
 		Layout layout;
+		
+		protected internal override void OnDataContextChanged (EventArgs e)
+		{
+			base.OnDataContextChanged (e);
+			
+			foreach (var control in Controls) {
+				control.OnDataContextChanged (e);
+			}
+		}
 
 		public IEnumerable<Control> Controls {
 			get { 

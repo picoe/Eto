@@ -50,5 +50,22 @@ namespace Eto
 			widget.Bindings.Add (binding);
 			return binding;
 		}
+		
+		public static DualBinding Bind (this InstanceWidget widget, string widgetPropertyName, string dataContextPropertyName, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			var contextBinding = new ObjectBinding(widget, "DataContext");
+			var valueBinding = new ObjectBinding(contextBinding.DataValue, dataContextPropertyName);
+			contextBinding.DataValueChanged += delegate {
+				valueBinding.DataItem = contextBinding.DataValue;
+			};
+			var binding = new DualBinding (
+				valueBinding,
+				new ObjectBinding(widget, widgetPropertyName),
+				mode
+				);
+			widget.Bindings.Add (contextBinding);
+			widget.Bindings.Add (binding);
+			return binding;
+		}
 	}
 }

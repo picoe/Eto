@@ -58,6 +58,7 @@ namespace Eto
 	{
 		IInstanceWidget handler;
 		string style;
+		object dataContext;
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
@@ -99,6 +100,23 @@ namespace Eto
 					style = value;
 					OnStyleChanged(EventArgs.Empty);
 				}
+			}
+		}
+
+		public event EventHandler<EventArgs> DataContextChanged;
+
+		protected internal virtual void OnDataContextChanged (EventArgs e)
+		{
+			if (DataContextChanged != null)
+				DataContextChanged (this, e);
+		}
+		
+		public virtual object DataContext
+		{
+			get { return dataContext; }
+			set {
+				dataContext = value;
+				OnDataContextChanged (EventArgs.Empty);
 			}
 		}
 
