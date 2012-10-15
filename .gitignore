@@ -5,3 +5,4 @@
 bin/
 obj/
 /BuildOutput
+*.shfbproj_*
