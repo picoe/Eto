@@ -415,9 +415,6 @@
     <Compile Include="Drawing\RectangleF.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Drawing\ScreenBitmap.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Drawing\Size.cs">
       <SubType>Code</SubType>
     </Compile>

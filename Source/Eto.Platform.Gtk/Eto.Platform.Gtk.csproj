@@ -104,9 +104,6 @@
     <Compile Include="Drawing\IndexedBitmapHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Drawing\ScreenBitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\ApplicationHandler.cs">
       <SubType>Code</SubType>
     </Compile>
