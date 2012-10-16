@@ -11,11 +11,15 @@ namespace Eto.Json
 		public class Info
 		{
 			public object Instance { get; set; }
+			public PropertyInfo PropertyInfo { get; set; }
 			public FieldInfo FieldInfo { get; set; }
 
 			public void SetValue(object value)
 			{
-				FieldInfo.SetValue (Instance, value);
+				if (PropertyInfo != null)
+					PropertyInfo.SetValue (Instance, value, null);
+				else
+					FieldInfo.SetValue (Instance, value);
 			}
 		}
 
@@ -47,10 +51,17 @@ namespace Eto.Json
 			if (instance != null) {
 				var instanceType = instance.GetType ();
 
-				var fieldInfo = instanceType.GetField (id, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-				if (fieldInfo != null)
+				var property = instanceType.GetProperty (id, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+				if (property != null)
 					return new Info {
-						FieldInfo = fieldInfo,
+						PropertyInfo = property,
+						Instance = instance
+					};
+
+				var field = instanceType.GetField (id, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+				if (field != null)
+					return new Info {
+						FieldInfo = field,
 						Instance = instance
 					};
 			}

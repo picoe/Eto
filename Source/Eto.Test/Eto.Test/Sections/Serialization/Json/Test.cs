@@ -8,8 +8,8 @@ namespace Eto.Test.Sections.Serialization.Json
 {
 	public class Test : Panel
 	{
-		protected CheckBox myCheckBox;
-		protected TextArea myTextArea;
+		protected CheckBox myCheckBox { get; set; }
+		protected TextArea myTextArea { get; set; }
 
 		public Test ()
 		{

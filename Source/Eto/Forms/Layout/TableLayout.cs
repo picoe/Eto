@@ -72,6 +72,7 @@ namespace Eto.Forms
 			}
 		}
 
+		[TypeConverter(typeof(Int32ArrayConverter))]
 		public int[] ColumnScale
 		{
 			set {
@@ -92,6 +93,7 @@ namespace Eto.Forms
 			}
 		}
 
+		[TypeConverter (typeof (Int32ArrayConverter))]
 		public int[] RowScale
 		{
 			set {

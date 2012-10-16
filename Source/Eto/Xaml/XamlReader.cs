@@ -7,71 +7,14 @@ using System.Xaml;
 using System.Collections.Generic;
 using System.Windows.Markup;
 
-namespace Eto
+namespace Eto.Xaml
 {
+
 	/// <summary>
 	/// Methods to help load/save Eto objects to/from xaml
 	/// </summary>
 	public static class XamlReader
 	{
-		class EtoXamlType : XamlType
-		{
-			public EtoXamlType (Type type, XamlSchemaContext schema) : base(type, schema)
-			{
-			}
-			
-			protected override XamlMember LookupAttachableMember (string name)
-			{
-				var member = base.LookupAttachableMember (name);
-				if (member != null)
-					Console.WriteLine ("Looking up attachable {0}, {1}", name, member.Name);
-				return member;
-			}
-			
-			protected override XamlMember LookupMember (string name, bool skipReadOnlyCheck)
-			{
-				//Console.WriteLine ("Looking up member {0}", name);
-				return base.LookupMember (name, skipReadOnlyCheck);
-			}
-		}
-		
-		class EtoXamlSchemaContext : XamlSchemaContext
-		{
-			Dictionary<string, XamlType> cache = new Dictionary<string, XamlType> ();
-			object cache_sync = new object ();
-			
-			public EtoXamlSchemaContext (IEnumerable<Assembly> assemblies)
-				: base(assemblies)
-			{
-			}
-
-			const string clr_namespace = "clr-namespace:";
-			const string clr_assembly = "assembly=";
-
-			protected override XamlType GetXamlType (string xamlNamespace, string name, params XamlType[] typeArguments)
-			{
-				var type = base.GetXamlType (xamlNamespace, name, typeArguments);
-				if (type == null && xamlNamespace.StartsWith (clr_namespace)) {
-					lock (this.cache_sync) {
-						if (!this.cache.TryGetValue (xamlNamespace + name, out type)) {
-							var nsComponents = xamlNamespace.Split (';');
-							if (nsComponents.Length == 2 && nsComponents[1].StartsWith (clr_assembly)) {
-								var assemblyName = nsComponents[1].Substring (clr_assembly.Length);
-								var ns = nsComponents[0].Substring (clr_namespace.Length);
-								var assembly = Assembly.Load (assemblyName);
-								if (assembly != null) {
-									var realType = assembly.GetType (ns + "." + name);
-									type = this.GetXamlType(realType);
-									this.cache.Add (xamlNamespace + name, type);
-								}
-							}
-						}
-					}
-				}
-
-				return type;
-			}
-		}
 
 		/// <summary>
 		/// Loads the specified type from a xaml of the same name
@@ -147,9 +90,14 @@ namespace Eto
 			writerSettings.AfterPropertiesHandler += delegate (object sender, XamlObjectEventArgs e) {
 				var obj = e.Instance as InstanceWidget;
 				if (obj != null && !string.IsNullOrEmpty (obj.ID)) {
-					var field = type.GetField (obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
-					if (field != null)
-						field.SetValue (instance, obj);
+					var property = type.GetProperty (obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+					if (property != null)
+						property.SetValue (instance, obj, null);
+					else {
+						var field = type.GetField (obj.ID, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic | BindingFlags.DeclaredOnly);
+						if (field != null)
+							field.SetValue (instance, obj);
+					}
 				}
 			};
 

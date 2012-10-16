@@ -5,75 +5,90 @@
 	xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	>
-	<DynamicLayout>
-		<DynamicRow>
-			<DynamicControl XScale="true" YScale="true">
-				<TabControl>
-					<TabPage Text="Tab 1">
-						<DynamicLayout>
+	<DockLayout>
+		<TabControl>
+			<TabPage Text="Dynamic Layout &amp; Controls">
+				<DynamicLayout>
+					<DynamicRow>
+						<DynamicControl>
+							<Label Text="Text Box" />
+						</DynamicControl>
+						<DynamicControl>
+							<TextBox />
+						</DynamicControl>
+					</DynamicRow>
+					<DynamicRow>
+						<DynamicControl>
+							<Label Text="Text Area" />
+						</DynamicControl>
+						<DynamicControl>
+							<TextArea ID="myTextArea" />
+						</DynamicControl>
+					</DynamicRow>
+					<DynamicRow>
+						<DynamicControl>
+						</DynamicControl>
+						<DynamicControl>
+							<CheckBox ID="myCheckBox" Text="Check Box" />
+						</DynamicControl>
+					</DynamicRow>
+					<DynamicRow>
+						<DynamicControl>
+							<Label Text="Combo Box" />
+						</DynamicControl>
+						<DynamicControl>
+							<ComboBox>
+								<ListItem Text="Item 1" />
+								<ListItem Text="Item 2" />
+								<ListItem Text="Item 3" />
+								<ListItem Text="Item 4" />
+							</ComboBox>
+						</DynamicControl>
+					</DynamicRow>
+					<DynamicRow>
+						<DynamicControl>
+							<Label Text="Image" VerticalAlign="Middle" />
+						</DynamicControl>
+						<DynamicTable>
 							<DynamicRow>
-								<DynamicControl><Label Text="Text Box"/></DynamicControl>
-								<DynamicControl><TextBox/></DynamicControl>
-							</DynamicRow>
-							<DynamicRow>
-								<DynamicControl><Label Text="Text Area"/></DynamicControl>
-								<DynamicControl><TextArea ID="myTextArea"/></DynamicControl>
-							</DynamicRow>
-							<DynamicRow>
-								<DynamicControl></DynamicControl>
-								<DynamicControl><CheckBox ID="myCheckBox" Text="Check Box"/></DynamicControl>
-							</DynamicRow>
-							<DynamicRow>
-								<DynamicControl><Label Text="Combo Box"/></DynamicControl>
-								<DynamicControl>
-									<ComboBox>
-										<ListItem Text="Item 1"/>
-										<ListItem Text="Item 2"/>
-										<ListItem Text="Item 3"/>
-										<ListItem Text="Item 4"/>
-									</ComboBox>
+								<DynamicControl XScale="True">
+									<!-- mono has bugs using extension {Resource Eto.Test.TestImage.png, Eto.Test} as a source, but it is implemented -->
+									<ImageView Image="resource:Eto.Test.TestImage.png, Eto.Test" />
+								</DynamicControl>
+								<DynamicControl XScale="True">
+									<ImageView Image="resource:Eto.Test.TestIcon.ico, Eto.Test" />
 								</DynamicControl>
 							</DynamicRow>
-							<DynamicRow></DynamicRow>
-						</DynamicLayout>
-					</TabPage>
-					<TabPage Text="Tab 2">
-						<TableLayout Size="3,3">
-							<TableLayout.ColumnScale>
-								<x:Array Type="sys:Int32">
-									<sys:Int32>0</sys:Int32>
-									<sys:Int32>2</sys:Int32>
-								</x:Array>
-							</TableLayout.ColumnScale>
-							<TableLayout.RowScale>
-								<x:Array Type="sys:Int32">
-									<sys:Int32>0</sys:Int32>
-									<sys:Int32>2</sys:Int32>
-								</x:Array>
-							</TableLayout.RowScale>
-							<Label Text="Centered in tab" TableLayout.Location="1,1" />
-						</TableLayout>
-					</TabPage>
-					<TabPage Text="Tab 3">
-						<DockLayout>
-							<e:LabelSection />
-						</DockLayout>
-					</TabPage>
-				</TabControl>
-			</DynamicControl>
-		</DynamicRow>
-		<DynamicRow>
-			<DynamicTable>
-				<DynamicRow>
-					<DynamicControl XScale="true"></DynamicControl>
-					<DynamicControl>
-						<Button Text="Button 1" Click="HandleButtonClick"/>
-					</DynamicControl>
-					<DynamicControl>
-						<Button Text="Button 2" Click="HandleButtonClick"/>
-					</DynamicControl>
-				</DynamicRow>
-			</DynamicTable>
-		</DynamicRow>	
-	</DynamicLayout>
+						</DynamicTable>
+					</DynamicRow>
+					<DynamicRow>
+						<DynamicControl>
+							<Label Text="Button" />
+						</DynamicControl>
+						<DynamicTable>
+							<DynamicRow>
+								<DynamicControl>
+									<Button Text="Bind to Click event in code behind" Click="HandleButtonClick" />
+								</DynamicControl>
+								<DynamicControl XScale="true">
+								</DynamicControl>
+							</DynamicRow>
+						</DynamicTable>
+					</DynamicRow>
+					<DynamicRow>
+					</DynamicRow>
+				</DynamicLayout>
+			</TabPage>
+			<TabPage Text="Table Layout">
+				<TableLayout Size="3,3" ColumnScale="0,2" RowScale="0,2">
+					<Label Text="Centered in tab" TableLayout.Location="1,1" />
+				</TableLayout>
+			</TabPage>
+			<TabPage Text="External Control">
+				<DockLayout>
+					<e:LabelSection />
+				</DockLayout>
+			</TabPage>
+		</TabControl>
+	</DockLayout>
 </Panel>

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace Eto.Drawing
 {
@@ -22,6 +23,7 @@ namespace Eto.Drawing
 	/// For instance, <see cref="Graphics"/> and <see cref="Forms.ImageView"/> can reference
 	/// any Image-derived object.
 	/// </remarks>
+	[TypeConverter(typeof(ImageConverter))]
 	public abstract class Image : InstanceWidget
 	{
 		IImage handler;

@@ -52,7 +52,6 @@
     </Compile>
     <Compile Include="DefaultNamespaceManager.cs" />
     <Compile Include="ImageConverter.cs" />
-    <Compile Include="NamespaceInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>

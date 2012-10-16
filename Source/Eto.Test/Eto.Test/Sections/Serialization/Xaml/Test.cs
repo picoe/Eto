@@ -1,16 +1,18 @@
-﻿using System;
+﻿#if XAML
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using Eto.Xaml;
 
 namespace Eto.Test.Sections.Serialization.Xaml
 {
-#if XAML
 	public class Test : Panel
 	{
-		protected CheckBox myCheckBox;
-		protected TextArea myTextArea;
+		protected CheckBox myCheckBox { get; set; }
+		protected TextArea myTextArea { get; set; }
 
 		public Test ()
 		{
@@ -27,5 +29,6 @@ namespace Eto.Test.Sections.Serialization.Xaml
 		}
 
 	}
-#endif
 }
+
+#endif

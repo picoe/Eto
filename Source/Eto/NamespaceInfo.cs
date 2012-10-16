@@ -2,7 +2,7 @@ using System;
 using System.IO;
 using System.Reflection;
 
-namespace Eto.Json
+namespace Eto
 {
 	public class NamespaceInfo
 	{
@@ -60,6 +60,11 @@ namespace Eto.Json
 		public Stream FindResource (string resourceName)
 		{
 			return Assembly.GetManifestResourceStream (Namespace + "." + resourceName);
+		}
+	
+		public Stream FindResource ()
+		{
+			return Assembly.GetManifestResourceStream (Namespace);
 		}
 	}
 }
