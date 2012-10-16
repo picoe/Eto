@@ -9,39 +9,6 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac.Drawing
 {
-	public class RegionHandler : Region
-	{
-		//Gdk.Region region;
-		//Gdk.Region original;
-		public RegionHandler ()
-		{
-			//this.original = region;
-			//this.region = region.Copy();
-		}
-
-		public override object ControlObject {
-			get { return null; }
-		}
-
-		public override void Exclude (Rectangle rect)
-		{
-			//Gdk.Region r = new Gdk.Region();
-			//r.UnionWithRect(Generator.Convert(rect));
-			//region.Subtract(r);
-		}
-
-		public override void Reset ()
-		{
-			//region = original;
-		}
-
-		public override void Set (Rectangle rect)
-		{
-			//region.Empty();
-			//region.UnionWithRect(Generator.Convert(rect));
-		}
-	}
-
 	public class GraphicsHandler : MacObject<NSGraphicsContext, Graphics>, IGraphics
 	{
 		CGContext context;

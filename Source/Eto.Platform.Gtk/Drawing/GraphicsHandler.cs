@@ -3,30 +3,6 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
-	public class RegionHandler : Region
-	{
-
-		public RegionHandler ()
-		{
-		}
-
-		public override object ControlObject {
-			get { return null; }
-		}
-
-		public override void Exclude (Rectangle rect)
-		{
-		}
-
-		public override void Reset ()
-		{
-		}
-
-		public override void Set (Rectangle rect)
-		{
-		}
-	}
-
 	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, IGraphics
 	{
 		Gtk.Widget widget;

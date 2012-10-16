@@ -76,6 +76,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\Colors.cs" />
+    <Compile Include="Drawing\Region.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
