@@ -60,7 +60,7 @@ namespace Eto.Drawing
 		/// <param name="element">Element to append the child element to if <paramref name="value"/> is not null</param>
 		/// <param name="elementName">Name of the element to append</param>
 		/// <param name="value">Size value to write</param>
-		public static void WriteChildXml (this XmlElement element, string elementName, Size? value)
+		public static void WriteChildSizeXml (this XmlElement element, string elementName, Size? value)
 		{
 			if (value != null)
 				element.WriteChildXml (elementName, new SizeSaver { Size = value.Value });
