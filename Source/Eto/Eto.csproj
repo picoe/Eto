@@ -26,22 +26,23 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE;DESKTOP;XAML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Release\Eto.XML</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
     <FileAlignment>4096</FileAlignment>
     <Optimize>True</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <RegisterForComInterop>False</RegisterForComInterop>
     <RemoveIntegerChecks>False</RemoveIntegerChecks>
     <WarningLevel>4</WarningLevel>
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <GenerateDocumentation>True</GenerateDocumentation>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE;DESKTOP;XAML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Debug\Eto.XML</DocumentationFile>
+    <DefineConstants>TRACE;DEBUG;DESKTOP;XAML</DefineConstants>
+    <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
     <DebugSymbols>True</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <Optimize>False</Optimize>
@@ -51,6 +52,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
     <GenerateDocumentation>True</GenerateDocumentation>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
