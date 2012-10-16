@@ -58,7 +58,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public bool ReadOnly
 		{
 			get { return Control.IsReadOnly; }
-			set { Control.IsReadOnly = value; }
+			set {
+				Control.IsReadOnly = value;
+				Control.AcceptsTab = !value;
+				Control.AcceptsReturn = !value;
+			}
 		}
 
 		public void Append (string text, bool scrollToCursor)
