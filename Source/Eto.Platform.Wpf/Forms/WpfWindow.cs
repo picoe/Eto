@@ -43,8 +43,8 @@ namespace Eto.Platform.Wpf.Forms
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 			main = new swc.DockPanel ();
 			content = new swc.DockPanel ();
-			menuHolder = new swc.ContentControl ();
-			toolBarHolder = new swc.ContentControl ();
+			menuHolder = new swc.ContentControl { IsTabStop = false };
+			toolBarHolder = new swc.ContentControl { IsTabStop = false };
 			content.Background = System.Windows.SystemColors.ControlBrush;
 			swc.DockPanel.SetDock (menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock (toolBarHolder, swc.Dock.Top);
