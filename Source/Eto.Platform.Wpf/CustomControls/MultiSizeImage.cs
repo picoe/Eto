@@ -133,8 +133,10 @@ namespace Eto.Platform.Wpf.CustomControls
 
 		Size MeasureArrangeHelper (Size inputSize)
 		{
+			if (this.Source == null)
+				return new Size (0, 0);
 			var first = _availableFrames.LastOrDefault ();
-			Size size = new Size (this.Width, this.Height);
+			var size = new Size (this.Source.Width, this.Source.Width);
 			if (first == null)
 				return size;
 
