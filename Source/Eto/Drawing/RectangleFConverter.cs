@@ -4,13 +4,32 @@ using System.Globalization;
 
 namespace Eto.Drawing
 {
+	/// <summary>
+	/// Converter for the <see cref="RectangleF"/> class
+	/// </summary>
+	/// <remarks>
+	/// Allows for conversion from a string to a <see cref="RectangleF"/>.
+	/// </remarks>
 	public class RectangleFConverter : TypeConverter
 	{
+		/// <summary>
+		/// Determines if this converter can convert from the specified <paramref name="sourceType"/>
+		/// </summary>
+		/// <param name="context">Conversion context</param>
+		/// <param name="sourceType">Type to convert from</param>
+		/// <returns>True if this converter can convert from the specified type, false otherwise</returns>
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
 			return sourceType == typeof (string) || base.CanConvertFrom (context, sourceType);
 		}
 
+		/// <summary>
+		/// Converts the specified value to a <see cref="RectangleF"/>
+		/// </summary>
+		/// <param name="context">Conversion context</param>
+		/// <param name="culture">Culture to perform the conversion</param>
+		/// <param name="value">Value to convert</param>
+		/// <returns>A new instance of a <see cref="RectangleF"/> converted from the specified <paramref name="value"/></returns>
 		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			string text = value as string;

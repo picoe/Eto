@@ -67,23 +67,41 @@ namespace Eto.Drawing
 			handler.Create (fileName);
 		}
 		
-		public static Icon FromResource (Assembly asm, string resourceName)
+		/// <summary>
+		/// Loads an icon from an embedded resource of the specified assembly
+		/// </summary>
+		/// <param name="assembly">Assembly to load the resource from</param>
+		/// <param name="resourceName">Fully qualified name of the resource to load</param>
+		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
+		public static Icon FromResource (Assembly assembly, string resourceName)
 		{
-			if (asm == null)
-				asm = Assembly.GetCallingAssembly ();
-			using (var stream = asm.GetManifestResourceStream(resourceName)) {
+			if (assembly == null)
+				assembly = Assembly.GetCallingAssembly ();
+			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
 				if (stream == null)
-					throw new ResourceNotFoundException (asm, resourceName);
+					throw new ResourceNotFoundException (assembly, resourceName);
 				return new Icon (stream);
 			}
 		}
 
+		/// <summary>
+		/// Loads an icon from an embedded resource of the caller's assembly
+		/// </summary>
+		/// <remarks>
+		/// This is a shortcut for <see cref="FromResource(Assembly,string)"/> where it will
+		/// use the caller's assembly to load the resource from
+		/// </remarks>
+		/// <param name="resourceName">Fully qualified name of the resource to load</param>
+		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
 		public static Icon FromResource (string resourceName)
 		{
 			var asm = Assembly.GetCallingAssembly ();
 			return FromResource (asm, resourceName);
 		}
 		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
 		[Obsolete("Use Icon.FromResource instead")]
 		public Icon (Assembly asm, string resourceName) : base(Generator.Current, typeof(IIcon))
 		{

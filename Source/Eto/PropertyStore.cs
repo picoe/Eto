@@ -15,8 +15,15 @@ namespace Eto
 	/// </remarks>
 	public class PropertyStore : Dictionary<AttachableMemberIdentifier, object>
 	{
+		/// <summary>
+		/// Gets the parent object of this store
+		/// </summary>
 		public object Parent { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the PropertyStore class
+		/// </summary>
+		/// <param name="parent">Object that contains this property store</param>
 		public PropertyStore (object parent)
 		{
 			this.Parent = parent;

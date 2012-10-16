@@ -37,9 +37,9 @@ namespace Eto
 		/// </summary>
 		/// <param name="widget">Widget to add the binding to</param>
 		/// <param name="widgetPropertyName">Property on the widget to update</param>
-		/// <param name="sourceBinding">Binding to</param>
-		/// <param name="mode"></param>
-		/// <returns></returns>
+		/// <param name="sourceBinding">Binding to get/set the value to from the widget</param>
+		/// <param name="mode">Mode of the binding</param>
+		/// <returns>A new instance of the DualBinding class that is used to control the binding</returns>
 		public static DualBinding Bind (this Widget widget, string widgetPropertyName, DirectBinding sourceBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			var binding = new DualBinding (
@@ -51,6 +51,19 @@ namespace Eto
 			return binding;
 		}
 		
+		/// <summary>
+		/// Adds a new binding with the widget and the the widget's current data context 
+		/// </summary>
+		/// <remarks>
+		/// This binds to a property of the <see cref="InstanceWidget.DataContext"/>, which will return the topmost value
+		/// up the control hierarchy.  For example, you can set the DataContext of your form or panel, and then bind to properties
+		/// of that context on any of the child controls such as a text box, etc.
+		/// </remarks>
+		/// <param name="widget">Widget to add the binding to</param>
+		/// <param name="widgetPropertyName">Property on the widget to update</param>
+		/// <param name="dataContextPropertyName">Property on the widget's <see cref="InstanceWidget.DataContext"/> to bind to the widget</param>
+		/// <param name="mode">Mode of the binding</param>
+		/// <returns>A new instance of the DualBinding class that is used to control the binding</returns>
 		public static DualBinding Bind (this InstanceWidget widget, string widgetPropertyName, string dataContextPropertyName, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			var contextBinding = new ObjectBinding(widget, "DataContext");

@@ -61,11 +61,8 @@ namespace Eto
 		#endregion
 	
 		/// <summary>
-		/// Gets or sets the value of this binding on the bound object
+		/// Gets or sets the value of this binding
 		/// </summary>
-		/// <remarks>
-		/// This uses the <see cref="InnerBinding"/> on the <see cref="DataItem"/> to get/set the value
-		/// </remarks>
 		public abstract object DataValue { get; set; }
 	}
 }
