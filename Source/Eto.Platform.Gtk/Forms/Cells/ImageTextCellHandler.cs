@@ -53,7 +53,10 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			{
 				if (Handler.FormattingEnabled)
 					Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer> (this, Handler.Column.Widget, Item, Row));
-				base.Render (window, widget, background_area, cell_area, expose_area, flags);
+
+				// calling base crashes on windows /w gtk 2.12.9
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererPixbuf.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
+				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 		}
 
