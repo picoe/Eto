@@ -276,10 +276,22 @@ namespace Eto
 		/// <param name="assembly">Assembly with handler implementations to add</param>
 		public void AddAssembly (Assembly assembly)
 		{
-			if (!typeAssemblies.Contains (assembly)) {
-				
+			if (!typeAssemblies.Contains (assembly))
+			{
 				typeAssemblies.Add (assembly);
-				types.InsertRange(0, assembly.GetExportedTypes ());
+				IEnumerable<Type> exportedTypes;
+				try
+				{
+					exportedTypes = assembly.GetTypes ();
+				}
+				catch (ReflectionTypeLoadException ex)
+				{
+					Debug.WriteLine (string.Format ("Could not load type(s) from assembly '{0}': {1}", assembly.FullName, ex.GetBaseException ()));
+					exportedTypes = ex.Types;
+				}
+
+				exportedTypes = exportedTypes.Where (r => typeof (IWidget).IsAssignableFrom (r) && r.IsClass && !r.IsAbstract);
+				types.AddRange (exportedTypes);
 			}
 		}
 

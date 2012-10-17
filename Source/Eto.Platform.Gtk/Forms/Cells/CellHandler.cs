@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Platform.GtkSharp.Forms.Controls;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp.Forms.Cells
 {
@@ -30,6 +31,12 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		void HandleEvent (string eventHandler);
 
 		void AddCells (Gtk.TreeViewColumn column);
+	}
+
+	static class GtkCell
+	{
+		[DllImport ("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
+		public static extern void gtksharp_cellrenderer_invoke_render (IntPtr gtype, IntPtr handle, IntPtr window, IntPtr widget, ref Gdk.Rectangle background_area, ref Gdk.Rectangle cell_area, ref Gdk.Rectangle expose_area, Gtk.CellRendererState flags);
 	}
 	
 	public abstract class SingleCellHandler<T, W> : CellHandler<T, W>
