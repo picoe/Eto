@@ -57,6 +57,9 @@
     <Compile Include="..\Eto.Platform.Windows\CustomControls\TreeController.cs">
       <Link>CustomControls\TreeGridView\TreeController.cs</Link>
     </Compile>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CustomControls\GlassHelper.cs" />
     <Compile Include="CustomControls\HttpServer.cs" />
     <Compile Include="CustomControls\MultiSizeImage.cs" />
