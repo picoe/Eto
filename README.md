@@ -44,7 +44,12 @@ This framework was built so that using it in .NET is natural. For example, a sim
 			};
 			app.Run ();
 		}
-	}	
+	}
+
+Download
+--------
+
+Binaries are available in the [Downloads](https://github.com/picoe/Eto/downloads) section
 
 Applications
 ------------
@@ -53,7 +58,6 @@ Applications
 * [JabbR.Eto](https://github.com/cwensley/JabbR.Eto) - JabbR client
 * [Notedown by Mod Monkeys](https://github.com/modmonkeys/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
-
 
 Namespaces
 ----------
