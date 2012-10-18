@@ -48,7 +48,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					var container = graphics.BeginContainer ();
 					graphics.SetClip (cellBounds);
 
-					graphics.DrawImage (img, new sd.Rectangle (cellBounds.X + ICON_PADDING, cellBounds.Y + (cellBounds.Height - img.Height) / 2, ICON_SIZE, ICON_SIZE));
+					graphics.DrawImage (img, new sd.Rectangle (cellBounds.X + ICON_PADDING, cellBounds.Y + (cellBounds.Height - Math.Min(img.Height, cellBounds.Height)) / 2, ICON_SIZE, ICON_SIZE));
 					graphics.EndContainer (container);
 					cellBounds.X += ICON_SIZE + ICON_PADDING * 2;
 					cellBounds.Width -= ICON_SIZE + ICON_PADDING * 2;
