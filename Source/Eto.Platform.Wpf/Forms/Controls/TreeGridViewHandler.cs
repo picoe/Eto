@@ -71,7 +71,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			case TreeGridView.SelectedItemChangedEvent:
 				Control.SelectedCellsChanged += (sender, e) => {
 					var item = this.SelectedItem;
-					if (!object.ReferenceEquals(lastSelected, item))
+					if (!SkipSelectionChanged && !object.ReferenceEquals(lastSelected, item))
 					{
 						Widget.OnSelectedItemChanged (EventArgs.Empty);
 						lastSelected = item;
@@ -118,12 +118,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void ITreeHandler.PreResetTree ()
 		{
+			SkipSelectionChanged = true;
 			SaveFocus ();
 		}
 
 		void ITreeHandler.PostResetTree ()
 		{
 			RestoreFocus ();
+			SkipSelectionChanged = false;
 		}
 	}
 }

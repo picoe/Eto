@@ -21,6 +21,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		ContextMenu contextMenu;
 		bool hasFocus;
+		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
 
 		public GridHandler ()
@@ -66,7 +67,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				break;
 			case Grid.SelectionChangedEvent:
 				Control.SelectedCellsChanged += (sender, e) => {
-					Widget.OnSelectionChanged (EventArgs.Empty);
+					if (!SkipSelectionChanged)
+						Widget.OnSelectionChanged (EventArgs.Empty);
 				};
 				break;
 			case Grid.CellFormattingEvent:
