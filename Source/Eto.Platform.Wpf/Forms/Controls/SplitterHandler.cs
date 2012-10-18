@@ -53,6 +53,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			UpdateOrientation ();
 			Control.Loaded += delegate {
+				// controls should be stretched to fit panels
+				SetStretch (panel1);
+				SetStretch (panel2);
 				UpdateColumnSizing ();
 				if (FixedPanel == SplitterFixedPanel.Panel2) {
 					if (Orientation == SplitterOrientation.Horizontal && initialWidth != null && initialWidth.Value > 0)
@@ -65,7 +68,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				else if (position != null)
 					Position = position.Value;
 			};
+		}
 
+		void SetStretch (Control panel)
+		{
+			if (panel != null)
+			{
+				((sw.FrameworkElement)panel.ControlObject).Width = double.NaN;
+				((sw.FrameworkElement)panel.ControlObject).Height = double.NaN;
+			}
 		}
 
 		public override void Initialize ()
@@ -256,6 +267,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					control.Style = style;
 					//swc.DockPanel.SetDock (control, swc.Dock.Top);
 					//control.Height = double.NaN;
+					SetStretch (panel1);
 					pane1.Children.Add (control);
 				}
 			}
@@ -271,6 +283,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					control.Style = style;
 					//swc.DockPanel.SetDock (control, swc.Dock.Top);
 					control.Height = double.NaN;
+					SetStretch (panel2);
 					pane2.Children.Add (control);
 				}
 			}

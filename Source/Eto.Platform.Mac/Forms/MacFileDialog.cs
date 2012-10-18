@@ -48,7 +48,7 @@ namespace Eto.Platform.Mac.Forms
 			fileTypes = new NSPopUpButton();
         }
 		
-		protected void CreateControl()
+		void Create()
 		{
 			if (Control.AccessoryView != null) return;
 
@@ -186,7 +186,7 @@ namespace Eto.Platform.Mac.Forms
         {
             //Control.AllowsOtherFileTypes = false;
             Control.Delegate = new SavePanelDelegate{ Handler = this };
-			CreateControl();
+			Create();
 
 			
             int ret = MacModal.Run(Control, parent);

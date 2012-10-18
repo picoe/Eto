@@ -16,18 +16,9 @@ namespace Eto.Platform.Mac
 		{
 		}
 
-		void control_Click(object sender, EventArgs e)
-		{
-			Widget.OnClick(EventArgs.Empty);
-		}
-
-
 		public override void InvokeButton()
 		{
 			Widget.OnClick(EventArgs.Empty);
 		}
-		
 	}
-
-
 }

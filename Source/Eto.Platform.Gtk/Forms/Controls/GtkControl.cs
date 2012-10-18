@@ -140,7 +140,7 @@ namespace Eto.Platform.GtkSharp
 
 		public Graphics CreateGraphics ()
 		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC));
+			return new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow));
 		}
 
 		public void SuspendLayout ()
@@ -244,12 +244,28 @@ namespace Eto.Platform.GtkSharp
 			case Eto.Forms.Control.GotFocusEvent:
 				EventControl.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
 				EventControl.FocusInEvent += delegate {
-					Widget.OnGotFocus (EventArgs.Empty); };
+					Widget.OnGotFocus (EventArgs.Empty);
+				};
 				break;
 			case Eto.Forms.Control.LostFocusEvent:
 				EventControl.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
 				EventControl.FocusOutEvent += delegate {
-					Widget.OnLostFocus (EventArgs.Empty); };
+					Widget.OnLostFocus (EventArgs.Empty);
+				};
+				break;
+			case Eto.Forms.Control.ShownEvent:
+				EventControl.AddEvents ((int)Gdk.EventMask.VisibilityNotifyMask);
+				EventControl.VisibilityNotifyEvent += (o, args) => {
+					if (args.Event.State == Gdk.VisibilityState.FullyObscured)
+						Widget.OnShown (EventArgs.Empty);
+				};
+				break;
+			case Eto.Forms.Control.HiddenEvent:
+				EventControl.AddEvents ((int)Gdk.EventMask.VisibilityNotifyMask);
+				EventControl.VisibilityNotifyEvent += (o, args) => {
+					if (args.Event.State != Gdk.VisibilityState.FullyObscured)
+						Widget.OnShown (EventArgs.Empty);
+				};
 				break;
 			default:
 				base.AttachEvent (handler);

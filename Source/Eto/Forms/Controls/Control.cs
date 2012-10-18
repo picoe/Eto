@@ -350,6 +350,11 @@ namespace Eto.Forms
 			set { inner.Visible = value; }
 		}
 		
+		public override object DataContext {
+			get { return base.DataContext ?? (Parent != null ? Parent.DataContext : null); }
+			set { base.DataContext = value; }
+		}
+		
 		public Layout ParentLayout { get; private set; }
 		
 		public Control Parent { get; private set; }
@@ -357,6 +362,7 @@ namespace Eto.Forms
 		public void SetParent (Control parent)
 		{
 			this.Parent = parent;
+			OnDataContextChanged (EventArgs.Empty);
 			inner.SetParent (parent);
 		}
 

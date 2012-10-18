@@ -6,13 +6,13 @@ using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ImageViewHandler : WpfFrameworkElement<swc.Image, ImageView>, IImageView
 	{
 		Image image;
-		bool setSize;
 
 		public override Color BackgroundColor
 		{
@@ -29,7 +29,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public ImageViewHandler ()
 		{
-			Control = new swc.Image {
+			Control = new Eto.Platform.Wpf.CustomControls.MultiSizeImage {
 				Stretch = swm.Stretch.Uniform,
 				StretchDirection = swc.StretchDirection.DownOnly
 			};
@@ -38,11 +38,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override Size Size
 		{
 			get { return base.Size;	}
-			set
-			{
-				base.Size = value;
-				setSize = true;
-			}
+			set { base.Size = value; }
 		}
 
 		public Image Image
@@ -51,13 +47,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				image = value;
-				if (image != null) {
+				if (image != null)
 					Control.Source = image.ControlObject as swm.ImageSource;
-					if (!setSize) {
-						Control.Width = image.Size.Width;
-						Control.Height = image.Size.Height;
-					}
-				}
 				else
 					Control.Source = null;
 			}

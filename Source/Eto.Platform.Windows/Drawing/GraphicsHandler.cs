@@ -5,36 +5,6 @@ using SWF = System.Windows.Forms;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public class RegionHandler : Region
-	{
-		SD.Region region;
-
-		public RegionHandler (SD.Region region)
-		{
-			this.region = region;
-		}
-
-		public override object ControlObject {
-			get { return region; }
-		}
-
-		public override void Exclude (Rectangle rect)
-		{
-			region.Exclude (Generator.Convert (rect));
-		}
-
-		public override void Reset ()
-		{
-			region.MakeInfinite ();
-		}
-
-		public override void Set (Rectangle rect)
-		{
-			region.MakeEmpty ();
-			region.Complement (Generator.Convert (rect));
-		}
-	}
-
 	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
 		ImageInterpolation imageInterpolation;
@@ -101,6 +71,16 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), x - 0.5f, y - 0.5f, width, height);
 		}
+
+		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		{
+			Control.DrawEllipse (new SD.Pen (Generator.Convert (color)), x, y, width - 1, height - 1);
+		}
+
+		public void FillEllipse (Color color, int x, int y, int width, int height)
+		{
+			Control.FillEllipse (new SD.SolidBrush (Generator.Convert (color)), x - 0.5f, y - 0.5f, width, height);
+		}
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{
@@ -134,8 +114,8 @@ namespace Eto.Platform.Windows.Drawing
 		}
 
 		public Region ClipRegion {
-			get { return new RegionHandler (Control.Clip); }
-			set { Control.Clip = (SD.Region)((RegionHandler)value).ControlObject; }
+			get { return null; }
+			set { }
 		}
 
 		public void DrawText (Font font, Color color, int x, int y, string text)

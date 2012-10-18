@@ -57,7 +57,9 @@ namespace Eto.Platform.Windows
 					this.Control.AcceptButton = null;
 			}
 		}
-		
+
+		public DialogDisplayMode DisplayMode { get; set; }
+
 		public DialogResult ShowDialog(Control parent)
 		{
 			if (parent != null) Control.ShowDialog((swf.Control)parent.ControlObject);

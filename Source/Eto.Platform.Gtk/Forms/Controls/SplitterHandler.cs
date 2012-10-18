@@ -20,7 +20,7 @@ namespace Eto.Platform.GtkSharp
 		public SplitterHandler ()
 		{
 			container = new Gtk.Alignment (0, 0, 1, 1);
-			CreateControl ();
+			Create ();
 		}
 
 		public int Position {
@@ -33,7 +33,7 @@ namespace Eto.Platform.GtkSharp
 			set {
 				if (fixedPanel != value) {
 					fixedPanel = value;
-					CreateControl ();
+					Create ();
 				}
 			}
 		}
@@ -43,12 +43,12 @@ namespace Eto.Platform.GtkSharp
 			set {
 				if (orientation != value) {
 					orientation = value;
-					CreateControl ();
+					Create ();
 				}
 			}
 		}
 		
-		void CreateControl ()
+		void Create ()
 		{
 			Gtk.Paned old = Control;
 			switch (orientation) {

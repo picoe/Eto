@@ -11,6 +11,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox>, ITextBox
 	{
+		bool textChanging;
+
 		public TextBoxHandler ()
 		{
 			Control = new mwc.WatermarkTextBox { Width = 80 };
@@ -21,7 +23,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			switch (handler) {
 				case TextBox.TextChangedEvent:
 					Control.TextChanged += delegate {
-						Widget.OnTextChanged (EventArgs.Empty);
+						if (!textChanging)
+							Widget.OnTextChanged (EventArgs.Empty);
 					};
 					break;
 				default:
@@ -45,7 +48,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public string Text
 		{
 			get { return Control.Text; }
-			set { Control.Text = value; }
+			set {
+				textChanging = true;
+				Control.Text = value;
+				if (value != null)
+					Control.CaretIndex = value.Length;
+				textChanging = false;
+			}
 		}
 
 		public string PlaceholderText

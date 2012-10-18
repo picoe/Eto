@@ -4,6 +4,7 @@ using sd = System.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
@@ -12,6 +13,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		ITreeStore top;
 		ContextMenu contextMenu;
 		Dictionary<Image, string> images = new Dictionary<Image, string> ();
+		static string EmptyName = Guid.NewGuid ().ToString ();
 		
 		public TreeViewHandler ()
 		{
@@ -19,8 +21,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 			
 			this.Control.BeforeExpand += delegate(object sender, System.Windows.Forms.TreeViewCancelEventArgs e) {
 				var item = e.Node.Tag as ITreeItem;
-				if (e.Node.Nodes.Count == 1 && e.Node.Nodes [0].Name == "empty") {
-					e.Node.Nodes.Clear ();
+				if (e.Node.Nodes.Count == 1 && e.Node.Nodes[0].Name == EmptyName)
+				{
 					PopulateNodes (e.Node.Nodes, item);
 				}
 			};
@@ -66,6 +68,21 @@ namespace Eto.Platform.Windows.Forms.Controls
 					Widget.OnCollapsed (new TreeViewItemEventArgs(e.Node.Tag as ITreeItem));
 				};
 				break;
+			case TreeView.ActivatedEvent:
+				this.Control.KeyDown += (sender, e) => {
+					if (e.KeyData == swf.Keys.Return && this.SelectedItem != null)
+					{
+						Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
+						e.Handled = true;
+					}
+				};
+				this.Control.DoubleClick += (sender, e) => {
+					if (this.SelectedItem != null)
+					{
+						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+					}
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -85,6 +102,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		
 		void PopulateNodes (System.Windows.Forms.TreeNodeCollection nodes, ITreeStore item)
 		{
+			nodes.Clear ();
 			var count = item.Count;
 			for (int i=0; i<count; i++) {
 				var child = item[i];
@@ -96,7 +114,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 						PopulateNodes (node.Nodes, child);
 						node.Expand ();
 					} else {
-						node.Nodes.Add ("empty", string.Empty);
+						node.Nodes.Add (EmptyName, string.Empty);
 					}
 				}
 			}
@@ -129,6 +147,32 @@ namespace Eto.Platform.Windows.Forms.Controls
 				var nodes = this.Control.Nodes.Find (value.Key, true);
 				if (nodes.Length > 0)
 					this.Control.SelectedNode = nodes [0];
+			}
+		}
+
+		public void RefreshData ()
+		{
+			this.Control.ImageList = null;
+			images.Clear ();
+			Control.BeginUpdate ();
+			PopulateNodes (this.Control.Nodes, top);
+			Control.EndUpdate ();
+		}
+
+		public void RefreshItem (ITreeItem item)
+		{
+			var nodes = Control.Nodes.Find (item.Key, true);
+			var node = nodes.FirstOrDefault(r => object.Equals(item, r));
+			if (node != null) {
+				node.Text = item.Text;
+				PopulateNodes (node.Nodes, item);
+				if (node.IsExpanded != item.Expanded)
+				{
+					if (item.Expanded)
+						node.Expand ();
+					else
+						node.Collapse ();
+				}
 			}
 		}
 	}

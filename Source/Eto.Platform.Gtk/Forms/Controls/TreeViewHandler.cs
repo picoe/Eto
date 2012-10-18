@@ -46,7 +46,7 @@ namespace Eto.Platform.GtkSharp.Forms
 				}
 			}
 			
-			void ExpandItems ()
+			public void ExpandItems ()
 			{
 				var store = Handler.collection.Collection;
 				Gtk.TreePath path = new Gtk.TreePath ();
@@ -103,9 +103,6 @@ namespace Eto.Platform.GtkSharp.Forms
 			tree.Selection.Changed += delegate {
 				this.Widget.OnSelectionChanged (EventArgs.Empty);
 			};
-			tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
-				this.Widget.OnActivated (new TreeViewItemEventArgs (model.GetItemAtPath (args.Path)));
-			};
 			
 			var col = new Gtk.TreeViewColumn ();
 			var pbcell = new Gtk.CellRendererPixbuf ();
@@ -155,7 +152,11 @@ namespace Eto.Platform.GtkSharp.Forms
 					Widget.OnCollapsed (e);
 				};
 				break;
-				
+			case TreeView.ActivatedEvent:
+				tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args) {
+					this.Widget.OnActivated (new TreeViewItemEventArgs (model.GetItemAtPath (args.Path)));
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -201,9 +202,19 @@ namespace Eto.Platform.GtkSharp.Forms
 				return null;
 			}
 			set {
-				//model.GetIterFromItem(value)
-				//Control.Selection.SelectPath (iter);
-			}
+                if (value != null)
+                {
+                    var path = model.GetPathFromItem (value);
+                    if (path != null)
+                    {
+                        tree.ExpandToPath (path);
+                        tree.Selection.SelectPath (path);
+                        tree.ScrollToCell (path, null, false, 0, 0);
+                    }
+                }
+                else
+                    tree.Selection.UnselectAll ();
+            }
 		}
 
 		public GLib.Value GetColumnValue (ITreeItem item, int column, int row)
@@ -230,6 +241,22 @@ namespace Eto.Platform.GtkSharp.Forms
 		{
 			if (collection == null) return -1;
 			return collection.IndexOf (item);
+		}
+
+		public void RefreshData ()
+		{
+			UpdateModel ();
+			collection.ExpandItems ();
+		}
+
+		public void RefreshItem (ITreeItem item)
+		{
+			var path = this.model.GetPathFromItem (item);
+			if (path != null)
+			{
+				var iter = this.model.GetIterFromItem (item, path);
+				tree.Model.EmitRowChanged (path, iter);
+			}
 		}
 	}
 }

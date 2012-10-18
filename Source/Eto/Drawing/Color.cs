@@ -102,6 +102,16 @@ namespace Eto.Drawing
 		{
 		}
 
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("Use nullable values instead")]
+		public bool IsEmpty
+		{
+			get;
+			private set;
+		}
+
 		#endregion
 
 		/// <summary>
@@ -330,16 +340,6 @@ namespace Eto.Drawing
 		public static bool operator != (Color color1, Color color2)
 		{
 			return !(color1 == color2);
-		}
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use nullable values instead")]
-		public bool IsEmpty
-		{
-			get;
-			private set;
 		}
 
 		/// <summary>

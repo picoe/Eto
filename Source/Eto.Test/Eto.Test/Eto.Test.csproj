@@ -38,6 +38,7 @@
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Log.cs" />
+    <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
     <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
     <Compile Include="Sections\Controls\TreeViewSection.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />

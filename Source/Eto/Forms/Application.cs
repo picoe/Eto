@@ -18,6 +18,7 @@ namespace Eto.Forms
 		void Invoke (Action action);
 		void AsyncInvoke (Action action);
 
+		string BadgeLabel { get; set; }
 	}
 
 	public partial class Application : InstanceWidget
@@ -114,6 +115,12 @@ namespace Eto.Forms
 		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
 		{
 			handler.GetSystemActions(args, addStandardItems);
+		}
+
+		public string BadgeLabel
+		{
+			get { return handler.BadgeLabel; }
+			set { handler.BadgeLabel = value; }
 		}
 	}
 }

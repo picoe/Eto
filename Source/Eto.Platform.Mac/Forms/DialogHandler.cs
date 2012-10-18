@@ -31,11 +31,10 @@ namespace Eto.Platform.Mac.Forms
 					Handler.AbortButton.OnClick (EventArgs.Empty);
 			}
 		}
-		
-		public Button AbortButton
-		{
-			get; set;
-		}
+
+		public DialogDisplayMode DisplayMode { get; set; }
+
+		public Button AbortButton { get; set; }
 		
 		public Button DefaultButton
 		{
@@ -74,17 +73,34 @@ namespace Eto.Platform.Mac.Forms
 			Control.MakeKeyWindow ();
 			
 			Widget.Closed += HandleClosed;
-			MacModal.Run (Control, out session);
+			switch (DisplayMode) {
+			case DialogDisplayMode.Attached:
+				MacModal.RunSheet (Control, out session);
+				break;
+			default:
+			case DialogDisplayMode.Default:
+			case DialogDisplayMode.Separate:
+				MacModal.Run (Control, out session);
+				break;
+			}
 			return Widget.DialogResult;
 		}
-
+		
 		void HandleClosed (object sender, EventArgs e)
 		{
 			if (session != null)
 				session.Stop ();
-			Console.WriteLine ("Stopping Modal");
 			Widget.Closed -= HandleClosed;
 		}
-
+		
+		public override void Close ()
+		{
+			if (session != null && session.IsSheet) {
+				session.Stop ();
+			}
+			else
+				base.Close ();
+		}
+		
 	}
 }

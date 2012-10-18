@@ -14,6 +14,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 	public class TreeGridViewHandler : GridHandler<TreeGridView>, ITreeGridView, ITreeHandler
 	{
 		public static int INDENT_WIDTH = 16;
+		ITreeGridItem lastSelected;
 
 		swf.VisualStyles.VisualStyleRenderer openRenderer;
 		swf.VisualStyles.VisualStyleRenderer closedRenderer;
@@ -75,6 +76,16 @@ namespace Eto.Platform.Windows.Forms.Controls
 			case TreeGridView.CollapsedEvent:
 				controller.Collapsed += (sender, e) => {
 					Widget.OnCollapsed (e);
+				};
+				break;
+			case TreeGridView.SelectedItemChangedEvent:
+				Control.SelectionChanged += (sender, e) => {
+					var item = this.SelectedItem;
+					if (!object.ReferenceEquals(lastSelected, item))
+					{
+						Widget.OnSelectedItemChanged (EventArgs.Empty);
+						lastSelected = item;
+					}
 				};
 				break;
 			default:

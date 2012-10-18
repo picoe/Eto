@@ -31,7 +31,7 @@ namespace Eto.Platform.GtkSharp
 		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window, Control.Style.BlackGC))) {
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window))) {
 				Rectangle rect = Generator.Convert (ev.Region.Clipbox);
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
@@ -39,7 +39,7 @@ namespace Eto.Platform.GtkSharp
 
 		public void Update (Rectangle rect)
 		{
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow, Control.Style.BlackGC))) {
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow))) {
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}

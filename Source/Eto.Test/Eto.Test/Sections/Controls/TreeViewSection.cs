@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -23,6 +24,7 @@ namespace Eto.Test.Sections.Controls
 			layout.Add (null);
 			layout.Add (allowExpanding = new CheckBox{ Text = "Allow Expanding", Checked = true });
 			layout.Add (allowCollapsing = new CheckBox{ Text = "Allow Collapsing", Checked = true });
+			layout.Add (RefreshButton ());
 			layout.Add (null);
 			layout.EndHorizontal ();
 			layout.EndVertical ();
@@ -34,6 +36,18 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
 			
 			layout.Add (null, false, true);
+		}
+
+		Control RefreshButton ()
+		{
+			var control = new Button { Text = "Refresh" };
+			control.Click += (sender, e) => {
+				foreach (var tree in this.Children.OfType<TreeView>())
+				{
+					tree.RefreshData ();
+				}
+			};
+			return control;
 		}
 		
 		TreeItem CreateTreeItem (int level, string name, Image image)

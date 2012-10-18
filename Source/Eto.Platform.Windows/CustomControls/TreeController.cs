@@ -289,9 +289,10 @@ namespace Eto.Platform.CustomControls
 			var node = Handler.SelectedItem;
 
 			while (node != null) {
+				node = node.Parent;
+
 				if (object.ReferenceEquals (node, item))
 					return true;
-				node = node.Parent;
 			}
 			return false;
 		}
@@ -305,31 +306,42 @@ namespace Eto.Platform.CustomControls
 			var shouldSelect = !Handler.AllowMultipleSelection && ChildIsSelected (args.Item);
 			args.Item.Expanded = false;
 			OnCollapsed (new TreeGridViewItemEventArgs (args.Item));
-			if (sections != null && sections.Count > 0) {
+			CollapseSection (row);
+			ClearCache ();
+			
+			if (shouldSelect)
+				Handler.SelectRow (row);
+
+			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+
+			return true;
+		}
+
+		void CollapseSection (int row)
+		{
+			if (sections != null && sections.Count > 0)
+			{
 				bool addTop = true;
-				foreach (var section in sections) {
-					if (row <= section.StartRow) {
+				foreach (var section in sections)
+				{
+					if (row <= section.StartRow)
+					{
 						break;
 					}
-					else if (row <= section.StartRow + section.Count) {
+					else if (row <= section.StartRow + section.Count)
+					{
 						addTop = false;
-						section.CollapseRow (row - section.StartRow - 1);
+						section.CollapseSection (row - section.StartRow - 1);
 						break;
 					}
-					else {
+					else
+					{
 						row -= section.Count;
 					}
 				}
 				if (addTop && row < Store.Count)
 					Sections.RemoveAll (r => r.StartRow == row);
 			}
-			ClearCache ();
-			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
-
-			if (shouldSelect) {
-				Handler.SelectRow (row);
-			}
-			return true;
 		}
 
 		public int Count

@@ -14,9 +14,36 @@ namespace Eto.Forms
 		Ignore,
 		Retry
 	}
+	
+	/// <summary>
+	/// Hint to tell the platform how to display the dialog
+	/// </summary>
+	/// <remarks>
+	/// This tells the platform how you prefer to display the dialog.  Each platform
+	/// may support only certain modes and will choose the appropriate mode based on the hint
+	/// given.
+	/// </remarks>
+	public enum DialogDisplayMode
+	{
+		/// <summary>
+		/// The default display mode for modal dialogs in the platform
+		/// </summary>
+		Default,
+		
+		/// <summary>
+		/// Display the dialog attached to the parent window, if supported (e.g. OS X)
+		/// </summary>
+		Attached,
+		
+		/// <summary>
+		/// Display the dialog as a separate window (e.g. Windows/Linux only supports this mode)
+		/// </summary>
+		Separate
+	}
 
 	public interface IDialog : IWindow
 	{
+		DialogDisplayMode DisplayMode { get; set; }
 		DialogResult ShowDialog (Control parent);
 		Button DefaultButton { get; set; }
 		Button AbortButton { get; set; }
@@ -39,6 +66,12 @@ namespace Eto.Forms
 
 		public Dialog (Generator g) : this(g, typeof(IDialog))
 		{
+		}
+
+		public DialogDisplayMode DisplayMode
+		{
+			get { return handler.DisplayMode; }
+			set { handler.DisplayMode = value; }
 		}
 
 		public DialogResult DialogResult { get; set; }
@@ -66,6 +99,12 @@ namespace Eto.Forms
 			
 			this.DialogResult = handler.ShowDialog (parent);
 			return DialogResult;
+		}
+
+		public void Close (DialogResult result)
+		{
+			this.DialogResult = result;
+			Close ();
 		}
 	}
 }

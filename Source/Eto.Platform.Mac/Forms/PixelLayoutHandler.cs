@@ -15,7 +15,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		public override NSView Control {
 			get {
-				return (NSView)Widget.Container.ContainerObject;
+				return Widget.Container != null ? (NSView)Widget.Container.ContainerObject : null;
 			}
 			protected set {
 				base.Control = value;

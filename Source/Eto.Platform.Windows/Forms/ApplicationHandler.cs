@@ -1,47 +1,88 @@
 using System;
 using System.Runtime.InteropServices;
-using SWF = System.Windows.Forms;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Forms;
 using System.Diagnostics;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace Eto.Platform.Windows
 {
 	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
 	{
+		string badgeLabel;
+
 		public static bool EnableScrollingUnderMouse = true;
 		
 		public void RunIteration ()
 		{
-			SWF.Application.DoEvents ();
+			swf.Application.DoEvents ();
 		}
 
 		public void Restart ()
 		{
-			SWF.Application.Restart ();
+			swf.Application.Restart ();
+		}
+
+		public string BadgeLabel
+		{
+			get { return badgeLabel; }
+			set
+			{
+				badgeLabel = value;
+				if (TaskbarManager.IsPlatformSupported)
+				{
+					if (!string.IsNullOrEmpty (badgeLabel))
+					{
+						var bmp = new sd.Bitmap (16, 16, sd.Imaging.PixelFormat.Format32bppArgb);
+						using (var graphics = sd.Graphics.FromImage (bmp))
+						{
+							DrawBadgeLabel (bmp, graphics);
+						}
+						var icon = sd.Icon.FromHandle (bmp.GetHicon ());
+
+						TaskbarManager.Instance.SetOverlayIcon (icon, badgeLabel);
+					}
+					else
+						TaskbarManager.Instance.SetOverlayIcon (null, null);
+				}
+			}
+		}
+
+		protected virtual void DrawBadgeLabel (sd.Bitmap bmp, sd.Graphics graphics)
+		{
+			var font = new sd.Font (sd.FontFamily.GenericSansSerif, 9, sd.FontStyle.Bold, sd.GraphicsUnit.Pixel);
+
+			var size = graphics.MeasureString (badgeLabel, font, bmp.Size, sd.StringFormat.GenericTypographic);
+			graphics.SmoothingMode = sd.Drawing2D.SmoothingMode.AntiAlias;
+			graphics.FillEllipse (sd.Brushes.Red, new sd.Rectangle (0, 0, 16, 16));
+			graphics.DrawEllipse (new sd.Pen (sd.Brushes.White, 2), new sd.Rectangle (0, 0, 15, 15));
+			var pt = new sd.PointF ((bmp.Width - size.Width - 0.5F) / 2, (bmp.Height - size.Height - 1) / 2);
+			graphics.DrawString (badgeLabel, font, sd.Brushes.White, pt, sd.StringFormat.GenericTypographic);
 		}
 		
 		public void Run (string[] args)
 		{
-			SWF.Application.EnableVisualStyles ();
+			swf.Application.EnableVisualStyles ();
 			if (!EtoEnvironment.Platform.IsMono)
-				SWF.Application.DoEvents ();
+				swf.Application.DoEvents ();
 			
 			Application app = ((Application)Widget);
 			app.OnInitialized (EventArgs.Empty);
 
 			if (EnableScrollingUnderMouse)
-				SWF.Application.AddMessageFilter (new ScrollMessageFilter ());
+				swf.Application.AddMessageFilter (new ScrollMessageFilter ());
 			
 			//SWF.Application.AddMessageFilter(new KeyFilter());
 			if (app.MainForm != null && app.MainForm.Loaded) 
-				SWF.Application.Run ((SWF.Form)app.MainForm.ControlObject);
+				swf.Application.Run ((swf.Form)app.MainForm.ControlObject);
 			else 
-				SWF.Application.Run ();
+				swf.Application.Run ();
 		}
 
 		public void Quit ()
 		{
-			SWF.Application.Exit ();
+			swf.Application.Exit ();
 		}
 		
 		public void Open (string url)
@@ -70,8 +111,8 @@ namespace Eto.Platform.Windows
 		public void Invoke (Action action)
 		{
 			if (Widget.MainForm != null) {
-				var window = this.Widget.MainForm.ControlObject as SWF.Control;
-				if (window == null) window = SWF.Form.ActiveForm;
+				var window = this.Widget.MainForm.ControlObject as swf.Control;
+				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired) {
 					window.Invoke (action);
@@ -84,8 +125,8 @@ namespace Eto.Platform.Windows
 		public void AsyncInvoke (Action action)
 		{
 			if (Widget.MainForm != null) {
-				var window = this.Widget.MainForm.ControlObject as SWF.Control;
-				if (window == null) window = SWF.Form.ActiveForm;
+				var window = this.Widget.MainForm.ControlObject as swf.Control;
+				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired) {
 					window.BeginInvoke (action);

@@ -57,8 +57,16 @@
     <Compile Include="..\Eto.Platform.Windows\CustomControls\TreeController.cs">
       <Link>CustomControls\TreeGridView\TreeController.cs</Link>
     </Compile>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="CustomControls\GlassHelper.cs" />
     <Compile Include="CustomControls\HttpServer.cs" />
+    <Compile Include="CustomControls\MultiSizeImage.cs" />
+    <Compile Include="CustomControls\OverlayIcon.xaml.cs">
+      <DependentUpon>OverlayIcon.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\SelectableTreeView.cs" />
     <Compile Include="CustomControls\TreeGridView\TreeToggleButton.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\AutoScroll.cs" />
     <Compile Include="CustomControls\VirtualCanvas\Gestures\ExponentialAnimation.cs" />
@@ -149,6 +157,7 @@
     <Compile Include="Generator.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyPathHelper.cs" />
     <Compile Include="WpfExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -182,6 +191,10 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="CustomControls\OverlayIcon.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="themes\aero.normalcolor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>

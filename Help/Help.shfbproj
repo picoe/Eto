@@ -15,7 +15,7 @@
     <RootNamespace>Documentation</RootNamespace>
     <Name>Documentation</Name>
     <!-- SHFB properties -->
-    <OutputPath>..\BuildOutput\Docs\help\</OutputPath>
+    <OutputPath>..\BuildOutput\Help\html-shfb\</OutputPath>
     <HtmlHelpName>EtoForms</HtmlHelpName>
     <Language>en-US</Language>
     <HelpFileFormat>Website</HelpFileFormat>

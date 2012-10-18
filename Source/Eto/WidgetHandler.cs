@@ -174,6 +174,40 @@ namespace Eto
 		}
 
 		/// <summary>
+		/// Called to create the platform control for this widget
+		/// </summary>
+		/// <remarks>
+		/// This is used so that it is easy to override the control that is created for a handler.
+		/// If you derive from an existing platform handler to override it's behaviour, you can change
+		/// the class that is created via this method. You will still need that control to be of the same
+		/// type that the original handler has defined, but you will be able to subclass the platform control
+		/// to provide any specific functionality if needed.
+		/// 
+		/// This gets called automatically by <see cref="Initialize"/>, so you should only set properties on your control
+		/// in the handler's overridden initialize method, after the base class' initialize has been called.
+		/// </remarks>
+		/// <returns>A new instance of the platform-specific control this handler encapsulates</returns>
+		public virtual T CreateControl ()
+		{
+			return default(T);
+		}
+
+		/// <summary>
+		/// Called to initialize this widget after it has been constructed
+		/// </summary>
+		/// <remarks>
+		/// Override this to initialize any of the platform objects.  This is called
+		/// in the widget constructor, after all of the widget's constructor code has been called.
+		/// </remarks>
+		public override void Initialize ()
+		{
+			if (this.Control == null)
+				Control = CreateControl ();
+			base.Initialize ();
+			Style.OnStyleWidgetDefaults (this);
+		}
+
+		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
 		public virtual string ID { get; set; }

@@ -31,13 +31,20 @@ namespace Eto.Platform.Wpf.Forms
 		swc.DockPanel content;
 		Size? initialClientSize;
 
-		protected void Setup ()
+		public swc.DockPanel Content
 		{
+			get { return content; }
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 			main = new swc.DockPanel ();
 			content = new swc.DockPanel ();
-			menuHolder = new swc.ContentControl ();
-			toolBarHolder = new swc.ContentControl ();
+			menuHolder = new swc.ContentControl { IsTabStop = false };
+			toolBarHolder = new swc.ContentControl { IsTabStop = false };
 			content.Background = System.Windows.SystemColors.ControlBrush;
 			swc.DockPanel.SetDock (menuHolder, swc.Dock.Top);
 			swc.DockPanel.SetDock (toolBarHolder, swc.Dock.Top);
@@ -92,7 +99,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		void UpdateClientSize (Size size)
+		protected virtual void UpdateClientSize (Size size)
 		{
 			var xdiff = Control.ActualWidth - content.ActualWidth;
 			var ydiff = Control.ActualHeight - content.ActualHeight;
@@ -321,6 +328,11 @@ namespace Eto.Platform.Wpf.Forms
 					Control.Opacity = value;
 				}
 			}
+		}
+
+		public override bool HasFocus
+		{
+			get { return Control.IsActive && ((ApplicationHandler)Application.Instance.Handler).IsActive; }
 		}
 	}
 }

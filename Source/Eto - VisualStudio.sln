@@ -1,6 +1,6 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual C# Express 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2012 for Windows Desktop
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "Eto\Eto.csproj", "{16289D2F-044C-49EF-83E9-9391AFF8FD2B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Gtk", "Eto.Platform.Gtk\Eto.Platform.Gtk.csproj", "{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}"

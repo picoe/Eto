@@ -28,14 +28,14 @@ namespace Eto.Platform.Windows
 		}
 
 
-		public SWF.Control ContainerControl
+		public SWF.Control ContentContainer
 		{
 			get { return (SWF.Control)this.ContainerObject; }
 		}
 
 		public override Size ClientSize
 		{
-			get	{ return new Size(ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
+			get	{ return new Size(ContentContainer.ClientSize.Width, ContentContainer.ClientSize.Height); }
 			set { base.ClientSize = value; }
 		}
 

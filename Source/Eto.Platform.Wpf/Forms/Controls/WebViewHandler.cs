@@ -58,37 +58,29 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		void HookDocumentEvents (string newEvent = null)
-		{
-			var webEvents = WebEvents;
-			if (oldEventObject != null) {
-				foreach (var handler in delayedEvents)
-					RemoveEvent (webEvents, handler);
-			}
-			if (newEvent != null)
-				delayedEvents.Add (newEvent);
-			if (webEvents != null) {
-				foreach (var handler in delayedEvents)
-					AttachEvent (webEvents, handler);
-			}
-			oldEventObject = webEvents;
-		}
-
 		void RemoveEvent (SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
 		{
-			switch (handler) {
-				case WebView.DocumentTitleChangedEvent:
-					WebEvents.TitleChange -= WebEvents_TitleChange;
-					break;
+			switch (handler)
+			{
+			case WebView.DocumentTitleChangedEvent:
+				WebEvents.TitleChange -= WebEvents_TitleChange;
+				break;
+			case WebView.OpenNewWindowEvent:
+				WebEvents.NewWindow -= WebEvents_NewWindow;
+				break;
 			}
 		}
 
 		void AttachEvent (SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
 		{
-			switch (handler) {
-				case WebView.DocumentTitleChangedEvent:
-					WebEvents.TitleChange += WebEvents_TitleChange;
-					break;
+			switch (handler)
+			{
+			case WebView.DocumentTitleChangedEvent:
+				WebEvents.TitleChange += WebEvents_TitleChange;
+				break;
+			case WebView.OpenNewWindowEvent:
+				WebEvents.NewWindow += WebEvents_NewWindow;
+				break;
 			}
 		}
 
@@ -98,34 +90,63 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Widget.OnDocumentTitleChanged (args);
 		}
 
+		void WebEvents_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
+		{
+			var args = new WebViewNewWindowEventArgs (new Uri(URL), TargetFrameName);
+			Widget.OnOpenNewWindow (args);
+			Processed = args.Cancel;
+		}
+
 
 		public override void AttachEvent (string handler)
 		{
-			switch (handler) {
-				case WebView.DocumentLoadedEvent:
-					Control.LoadCompleted += delegate (object sender, swn.NavigationEventArgs e) {
-						var args = new WebViewLoadedEventArgs (e.Uri);
-						Widget.OnDocumentLoaded (args);
-						Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (this.DocumentTitle));
-						HookDocumentEvents ();
-					};
-					break;
-				case WebView.DocumentLoadingEvent:
-					Control.Navigating += delegate (object sender, swn.NavigatingCancelEventArgs e) {
-						var args = new WebViewLoadingEventArgs (e.Uri);
-						Widget.OnDocumentLoading (args);
-						e.Cancel = args.Cancel;
-						HookDocumentEvents ();
-					};
-					break;
-				case WebView.DocumentTitleChangedEvent:
-					HookDocumentEvents(handler);
-					break;
-				default:
-					base.AttachEvent (handler);
-					break;
+			switch (handler)
+			{
+			case WebView.DocumentLoadedEvent:
+				Control.LoadCompleted += delegate (object sender, swn.NavigationEventArgs e)
+				{
+					var args = new WebViewLoadedEventArgs (e.Uri);
+					Widget.OnDocumentLoaded (args);
+					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (this.DocumentTitle));
+					HookDocumentEvents ();
+				};
+				break;
+			case WebView.DocumentLoadingEvent:
+				Control.Navigating += delegate (object sender, swn.NavigatingCancelEventArgs e)
+				{
+					var args = new WebViewLoadingEventArgs (e.Uri, true);
+					Widget.OnDocumentLoading (args);
+					e.Cancel = args.Cancel;
+				};
+				break;
+			case WebView.OpenNewWindowEvent:
+			case WebView.DocumentTitleChangedEvent:
+				HookDocumentEvents (handler);
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
+
+		void HookDocumentEvents (string newEvent = null)
+		{
+			var webEvents = WebEvents;
+			if (oldEventObject != null)
+			{
+				foreach (var handler in delayedEvents)
+					RemoveEvent (webEvents, handler);
+			}
+			if (newEvent != null)
+				delayedEvents.Add (newEvent);
+			if (webEvents != null)
+			{
+				foreach (var handler in delayedEvents)
+					AttachEvent (webEvents, handler);
+			}
+			oldEventObject = webEvents;
+		}
+
 
 		public override Eto.Drawing.Color BackgroundColor
 		{
@@ -140,14 +161,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public Uri Url
 		{
-			get
-			{
-				return Control.Source;
-			}
-			set
-			{
-				Control.Source = value;
-			}
+			get { return Control.Source; }
+			set { Control.Source = value; }
 		}
 
 		HttpServer server;

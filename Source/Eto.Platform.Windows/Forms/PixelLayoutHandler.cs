@@ -9,7 +9,7 @@ namespace Eto.Platform.Windows
 	{
 		public override object Control {
 			get {
-				return Widget.Container.ControlObject;
+				return Widget.Container != null ? Widget.Container.ControlObject : null;
 			}
 			protected set {
 				base.Control = value;
@@ -19,7 +19,7 @@ namespace Eto.Platform.Windows
 		public void Add(Control child, int x, int y)
 		{
 			SWF.ScrollableControl parent = Widget.Container.ControlObject as SWF.ScrollableControl;
-			SWF.Control ctl = (SWF.Control)child.ControlObject;
+			SWF.Control ctl = child.GetContainerControl ();
 			SD.Point pt = new SD.Point(x, y);
 			if (parent != null) pt.Offset(parent.AutoScrollPosition);
 			ctl.Location = pt;
@@ -30,7 +30,7 @@ namespace Eto.Platform.Windows
 		public void Move(Control child, int x, int y)
 		{
 			SWF.ScrollableControl parent = Widget.Container.ControlObject as SWF.ScrollableControl;
-			SWF.Control ctl = ((SWF.Control)child.ControlObject);
+			SWF.Control ctl = child.GetContainerControl ();
 			SD.Point pt = new SD.Point(x, y);
 			if (parent != null) pt.Offset(parent.AutoScrollPosition);
 			ctl.Location = pt;
@@ -39,7 +39,7 @@ namespace Eto.Platform.Windows
 		public void Remove (Control child)
 		{
 			var parent = Widget.Container.ControlObject as SWF.ScrollableControl;
-			var ctl = (SWF.Control)child.ControlObject;
+			var ctl = child.GetContainerControl ();
 			if (parent != null) parent.Controls.Remove(ctl);
 			
 		}

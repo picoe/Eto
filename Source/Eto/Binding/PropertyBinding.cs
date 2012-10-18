@@ -77,6 +77,10 @@ namespace Eto
 		{
 			EnsureProperty (dataItem);
 			if (descriptor != null) {
+				if (value != null && !descriptor.PropertyType.IsAssignableFrom (value.GetType ()))
+				{
+					value = Convert.ChangeType (value, descriptor.PropertyType);
+				}
 				descriptor.SetValue (dataItem, value);
 			}
 		}

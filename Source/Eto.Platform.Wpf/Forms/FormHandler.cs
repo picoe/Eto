@@ -10,16 +10,18 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class FormHandler : WpfWindow<sw.Window, Form>, IForm
 	{
-		public FormHandler()
+		public override sw.Window CreateControl ()
 		{
-			Control = new sw.Window ();
-			Setup ();
+			return new sw.Window ();
 		}
 
 		public void Show()
 		{
 			Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
-			Control.Show();
+			if (ApplicationHandler.Instance.IsStarted)
+				Control.Show ();
+			else
+				ApplicationHandler.Instance.DelayShownWindows.Add (Control);
 		}
 	}
 }

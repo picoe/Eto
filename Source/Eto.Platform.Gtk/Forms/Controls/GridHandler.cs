@@ -15,6 +15,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		ContextMenu contextMenu;
 		Dictionary<int, int> columnMap = new Dictionary<int, int> ();
 
+		protected bool SkipSelectedChange { get; set; }
+
 		protected Gtk.TreeView Tree { get; private set; }
 
 		protected Dictionary<int, int> ColumnMap { get { return columnMap; } }
@@ -70,7 +72,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				break;
 			case Grid.SelectionChangedEvent:
 				Tree.Selection.Changed += delegate {
-					Widget.OnSelectionChanged (EventArgs.Empty);
+					if (!SkipSelectedChange)
+						Widget.OnSelectionChanged (EventArgs.Empty);
 				};
 				break;
 			default:
@@ -194,7 +197,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set { Tree.Selection.Mode = value ? Gtk.SelectionMode.Multiple : Gtk.SelectionMode.Browse; }
 		}
 
-		public IEnumerable<int> SelectedRows {
+		public virtual IEnumerable<int> SelectedRows {
 			get {
 				var rows = Tree.Selection.GetSelectedRows ();
 				foreach (var row in rows) {

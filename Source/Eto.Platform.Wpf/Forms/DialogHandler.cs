@@ -14,10 +14,15 @@ namespace Eto.Platform.Wpf.Forms
 		Button defaultButton;
 		Button abortButton;
 
-		public DialogHandler ()
+		public override sw.Window CreateControl ()
 		{
-			Control = new sw.Window { ShowInTaskbar = false };
-			Setup ();
+			return new sw.Window ();
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.ShowInTaskbar = false;
 			Resizable = false;
 		}
 
@@ -31,15 +36,34 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		public DialogDisplayMode DisplayMode { get; set; }
+
 		public DialogResult ShowDialog (Control parent)
 		{
 			var parentWindow = parent.ParentWindow;
 			if (parentWindow != null)
-				Control.Owner = ((IWpfWindow)parentWindow.Handler).Control;
+			{
+				var owner = ((IWpfWindow)parentWindow.Handler).Control;
+				Control.Owner = owner;
+				if (owner.Owner == null)
+					Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
+				else
+				{
+					Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
+					Control.SourceInitialized += HandleSourceInitialized;
+				}
+			}
 
-			Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			Control.ShowDialog ();
 			return Widget.DialogResult;
+		}
+
+		void HandleSourceInitialized (object sender, EventArgs e)
+		{
+			var owner = this.Control.Owner;
+			Control.Left = owner.Left + (owner.ActualWidth - Control.Width) / 2;
+			Control.Top = owner.Top + (owner.ActualHeight - Control.Height) / 2;
+			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 
 		public Button DefaultButton

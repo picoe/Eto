@@ -5,13 +5,12 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Drawing;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class MacImageData : NSObject, ICloneable
 	{
-		bool nodispose;
-
 		public  MacImageData ()
 		{
 		}
@@ -40,13 +39,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public NSString Text { get; set; }
 		
-		[Export("dealloc")]
-		public void Dealloc ()
-		{
-			if (nodispose)
-				Handle = IntPtr.Zero;
-		}
-
+		
 		public void SetItem (IListItem value)
 		{
 			var imgitem = value as IImageListItem;
@@ -54,12 +47,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 				this.Image = ((IImageSource)imgitem.Image.Handler).GetImage ();
 			this.Text = (NSString)value.Text;
 		}
+
+		static IntPtr selRetain = Selector.GetHandle ("retain");
 		
 		[Export("copyWithZone:")]
 		public virtual NSObject CopyWithZone (IntPtr zone)
 		{
-			var clone = (MacImageData)this.Clone ();
-			clone.nodispose = true;
+			var clone = this.Clone () as MacImageData;
+			Messaging.void_objc_msgSend(clone.Handle, selRetain);
 			return clone;
 		}
 		
@@ -76,12 +71,75 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class MacImageListItemCell : NSTextFieldCell
 	{
 		public const int ImagePadding = 2;
+		NSShadow textShadow;
+		NSShadow textHighlightShadow;
+		NSColor groupColor = NSColor.FromCalibratedRgba (0x6F / (float)0xFF, 0x7E / (float)0xFF, 0x8B / (float)0xFF, 1.0F);
+		//light shade: NSColor.FromCalibratedRgba (0x82 / (float)0xFF, 0x90 / (float)0xFF, 0x9D / (float)0xFF, 1.0F);
 		
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
 		
 		public MacImageListItemCell ()
 		{
+		}
+		
+		public NSColor GroupColor
+		{
+			get { return groupColor; }
+			set { groupColor = value; }
+		}
+		
+		public bool UseTextShadow
+		{
+			get; set;
+		}
+		
+		public void SetGroupItem (bool isGroupItem, NSTableView tableView, float? groupSize = null, float? normalSize = null)
+		{
+			if (isGroupItem)
+				this.Font = NSFont.BoldSystemFontOfSize (groupSize ?? NSFont.SystemFontSize);
+			else if (Highlighted)
+				Font = NSFont.BoldSystemFontOfSize (normalSize ?? NSFont.SystemFontSize);
+			else
+				Font = NSFont.SystemFontOfSize (normalSize ?? NSFont.SystemFontSize);
+			
+			if (Highlighted)
+				TextColor = NSColor.Highlight;
+			else if (!tableView.Window.IsKeyWindow)
+				TextColor = NSColor.DisabledControlText;
+			else if (isGroupItem)
+				TextColor = GroupColor;
+			else
+				TextColor = NSColor.ControlText;
+				
+		}
+		
+		public NSShadow TextShadow
+		{
+			get {
+				if (textShadow == null) {
+					textShadow = new NSShadow();
+					textShadow.ShadowColor = NSColor.FromDeviceWhite (1F, 0.5F);
+					textShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textShadow.ShadowBlurRadius = 0F;
+				}
+				return textShadow;
+			}
+			set { textShadow = value; }
+		}
+
+		public NSShadow TextHighlightShadow
+		{
+			get {
+				if (textHighlightShadow == null) {
+					textHighlightShadow = new NSShadow();
+					textHighlightShadow.ShadowColor = NSColor.FromDeviceWhite (0F, 0.5F);
+					textHighlightShadow.ShadowOffset = new SD.SizeF(0F, -1.0F);
+					textHighlightShadow.ShadowBlurRadius = 2F;
+				}
+				return textHighlightShadow;
+			}
+			set { textShadow = value; }
 		}
 		
 		public MacImageListItemCell (IntPtr handle)
@@ -102,7 +160,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			size.Width = Math.Min (size.Width, bounds.Width);
 			return size;
 		}
-		
+
 		public override void DrawInteriorWithFrame (SD.RectangleF cellFrame, NSView inView)
 		{
 			var data = ObjectValue as MacImageData;
@@ -131,6 +189,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 						cellFrame.X += newWidth + ImagePadding;
 					}
 				}
+			}
+			
+			if (UseTextShadow) {
+				var str = new NSMutableAttributedString(this.StringValue);
+				str.AddAttribute (NSAttributedString.ShadowAttributeName, this.Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
+				this.AttributedStringValue = str;
 			}
 			
 			base.DrawInteriorWithFrame (cellFrame, inView);

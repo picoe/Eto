@@ -9,7 +9,6 @@ using System.Collections.Generic;
 
 namespace Eto.Json
 {
-	
 	public class NamespaceManager
 	{
 		Dictionary<string, NamespaceInfo> namespaces = new Dictionary<string, NamespaceInfo>();
@@ -20,7 +19,7 @@ namespace Eto.Json
 		{
 			get { return namespaces;}
 		}
-		
+
 		public NamespaceInfo LookupNamespace (string prefix)
 		{
 			if (string.IsNullOrEmpty (prefix))
@@ -50,7 +49,5 @@ namespace Eto.Json
 			
 			return ns.FindType (typeName);
 		}
-		
 	}
-	
 }

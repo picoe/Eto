@@ -27,6 +27,11 @@ namespace Eto.Forms
 		{
 			base.Add (new ListItem{ Text = text });
 		}
+
+		public void Add (string text, string key)
+		{
+			base.Add (new ListItem { Text = text, Key = key });
+		}
 	}
 	
 #if XAML

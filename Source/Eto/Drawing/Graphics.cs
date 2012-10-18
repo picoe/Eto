@@ -75,6 +75,26 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
 		void FillRectangle (Color color, int x, int y, int width, int height);
+
+		/// <summary>
+		/// Fills an ellipse with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Fill color</param>
+		/// <param name="x">X co-ordinate of the left side of the ellipse</param>
+		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
+		/// <param name="width">Width of the ellipse</param>
+		/// <param name="height">Height of the ellipse</param>
+		void FillEllipse (Color color, int x, int y, int width, int height);
+
+		/// <summary>
+		/// Draws an outline of an ellipse with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Fill color</param>
+		/// <param name="x">X co-ordinate of the left side of the ellipse</param>
+		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
+		/// <param name="width">Width of the ellipse</param>
+		/// <param name="height">Height of the ellipse</param>
+		void DrawEllipse (Color color, int x, int y, int width, int height);
 		
 		/// <summary>
 		/// Fills the specified <paramref name="path"/>
@@ -172,17 +192,6 @@ namespace Eto.Drawing
 		ImageInterpolation ImageInterpolation { get; set; }
 	}
 
-	public abstract class Region
-	{
-		public abstract object ControlObject { get; }
-
-		public abstract void Exclude (Rectangle rect);
-
-		public abstract void Reset ();
-
-		public abstract void Set (Rectangle rect);
-	}
-	
 	/// <summary>
 	/// Graphics context object for drawing operations
 	/// </summary>
@@ -322,6 +331,26 @@ namespace Eto.Drawing
 			foreach (Rectangle rectangle in rectangles) {
 				handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 			}
+		}
+
+		/// <summary>
+		/// Fills an ellipse with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Fill color</param>
+		/// <param name="rectangle">Location for the ellipse</param>
+		public void FillEllipse (Color color, Rectangle rectangle)
+		{
+			handler.FillEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
+		/// Draws an ellipse outline with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color to outline the ellipse</param>
+		/// <param name="rectangle">Location for the ellipse</param>
+		public void DrawEllipse (Color color, Rectangle rectangle)
+		{
+			handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 		
 		/// <summary>

@@ -59,17 +59,10 @@ namespace Eto
 		}
 
 		#endregion
-
+	
 		/// <summary>
-		/// Gets the value from the object bound by this binding
+		/// Gets or sets the value of this binding
 		/// </summary>
-		/// <returns>value from the object bound by this binding</returns>
-		public abstract object GetValue ();
-		
-		/// <summary>
-		/// Sets the value of the object bound by this binding to the specified value
-		/// </summary>
-		/// <param name="value">value to set to the object bound by this binding</param>
-		public abstract void SetValue (object value);
+		public abstract object DataValue { get; set; }
 	}
 }

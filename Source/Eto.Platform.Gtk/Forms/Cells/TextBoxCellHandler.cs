@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp.Forms.Cells
 {
@@ -26,7 +27,10 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			{
 				if (Handler.FormattingEnabled)
 					Handler.Format(new GtkTextCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
-				base.Render (window, widget, background_area, cell_area, expose_area, flags);
+
+				// calling base crashes on windows
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererText.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref  cell_area, ref expose_area, flags);
+				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 		}
 

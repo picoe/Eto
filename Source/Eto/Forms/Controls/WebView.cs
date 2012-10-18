@@ -25,7 +25,7 @@ namespace Eto.Forms
 		
 		string ExecuteScript (string script);
 
-        void ShowPrintDialog();
+		void ShowPrintDialog();
 	}
 	
 	public class WebViewLoadedEventArgs : EventArgs
@@ -42,9 +42,12 @@ namespace Eto.Forms
 	{
 		public bool Cancel { get; set; }
 		
-		public WebViewLoadingEventArgs (Uri uri)
+		public bool IsMainFrame { get; set; }
+		
+		public WebViewLoadingEventArgs (Uri uri, bool isMainFrame)
 			: base(uri)
 		{
+			this.IsMainFrame = isMainFrame;
 		}
 	}
 	
@@ -55,6 +58,17 @@ namespace Eto.Forms
 		public WebViewTitleEventArgs (string title)
 		{
 			this.Title = title;
+		}
+	}
+	
+	public class WebViewNewWindowEventArgs : WebViewLoadingEventArgs
+	{
+		public string NewWindowName { get; private set; }
+		
+		public WebViewNewWindowEventArgs (Uri uri, string newWindowName)
+			: base (uri, false)
+		{
+			this.NewWindowName = newWindowName;
 		}
 	}
 	
@@ -108,6 +122,25 @@ namespace Eto.Forms
 			}
 			remove { documentTitleChanged -= value; }
 		}
+		
+		public const string OpenNewWindowEvent = "WebView.OpenNewWindow";
+
+		EventHandler<WebViewNewWindowEventArgs> _OpenNewWindow;
+
+		public event EventHandler<WebViewNewWindowEventArgs> OpenNewWindow {
+			add {
+				HandleEvent (OpenNewWindowEvent);
+				_OpenNewWindow += value;
+			}
+			remove { _OpenNewWindow -= value; }
+		}
+
+		public virtual void OnOpenNewWindow (WebViewNewWindowEventArgs e)
+		{
+			if (_OpenNewWindow != null)
+				_OpenNewWindow (this, e);
+		}
+		
 		
 		public virtual void OnDocumentTitleChanged (WebViewTitleEventArgs e)
 		{

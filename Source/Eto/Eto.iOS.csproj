@@ -258,6 +258,7 @@
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
+    <Compile Include="HandlerInvalidException.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

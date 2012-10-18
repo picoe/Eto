@@ -21,6 +21,7 @@ namespace Eto
 	public class ObjectBinding : DirectBinding
 	{
 		object dataValueChangedReference;
+		object dataItem;
 		
 		/// <summary>
 		/// Gets the binding used to get/set the values from the <see cref="DataItem"/>
@@ -30,7 +31,14 @@ namespace Eto
 		/// <summary>
 		/// Gets the object to get/set the values using the <see cref="InnerBinding"/>
 		/// </summary>
-		public object DataItem { get; private set; }
+		public object DataItem
+		{
+			get { return dataItem; }
+			set {
+				dataItem = value;
+				OnDataValueChanged (EventArgs.Empty);
+			}
+		}
 		
 		/// <summary>
 		/// Initializes a new instance of the ObjectBinding with the specified object and property for a <see cref="PropertyBinding"/>
@@ -67,29 +75,20 @@ namespace Eto
 		{
 			OnChanged (e);
 		}
-		
-		/// <summary>
-		/// Gets the value of this binding from the bound object
-		/// </summary>
-		/// <remarks>
-		/// This uses the <see cref="InnerBinding"/> on the <see cref="DataItem"/> to get the value
-		/// </remarks>
-		/// <returns>Value of the binding from the bound object</returns>
-		public override object GetValue ()
-		{
-			return InnerBinding.GetValue (DataItem);
-		}
 
 		/// <summary>
-		/// Sets the value of this binding on the bound object
+		/// Gets or sets the value of this binding on the bound object
 		/// </summary>
 		/// <remarks>
-		/// This uses the <see cref="InnerBinding"/> on the <see cref="DataItem"/> to set the value
+		/// This uses the <see cref="InnerBinding"/> on the <see cref="DataItem"/> to get/set the value
 		/// </remarks>
-		/// <param name="value"></param>
-		public override void SetValue (object value)
-		{
-			InnerBinding.SetValue (DataItem, value);
+		public override object DataValue {
+			get {
+				return InnerBinding.GetValue (DataItem);
+			}
+			set {
+				InnerBinding.SetValue (DataItem, value);
+			}
 		}
 		
 		/// <summary>

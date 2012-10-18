@@ -125,6 +125,12 @@ namespace Eto.Forms
 				}
 			}
 		}
+		
+		protected void SetInnerLayout (bool load)
+		{
+			if (Container != null)
+				Container.SetInnerLayout (load);
+		}
 
 		public virtual void BeginInit ()
 		{

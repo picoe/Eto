@@ -1,85 +1,63 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Windows
 {
-	public class TextAreaHandler : WindowsControl<System.Windows.Forms.TextBox, TextArea>, ITextArea
+	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea>, ITextArea
 	{
-		public class MyTextBox : SWF.TextBox
+		int? lastCaretIndex;
+		swf.Panel container;
+		public class MyTextBox : swf.RichTextBox
 		{
-			bool busy;
-			void CheckForScrollbars ()
-			{
-				if (!busy) {
-					busy = true;
+		}
 
-					/**/
-					var textSize = SWF.TextRenderer.MeasureText (Text, Font);
-					bool verticalScroll = ClientSize.Height < textSize.Height; // +Convert.ToInt32 (Font.Size);
-					bool horizontalScroll = ClientSize.Width < textSize.Width;
+		public override swf.Control ContainerControl
+		{
+			get { return container; }
+		}
 
-					if (verticalScroll && horizontalScroll)
-						ScrollBars = SWF.ScrollBars.Both;
-					else if (!verticalScroll && !horizontalScroll)
-						ScrollBars = SWF.ScrollBars.None;
-					else if (verticalScroll && !horizontalScroll)
-						ScrollBars = SWF.ScrollBars.Vertical;
-					else if (!verticalScroll && horizontalScroll)
-						ScrollBars = SWF.ScrollBars.Horizontal;
-					/**
-
-					bool scroll = false;
-					int lineCount = this.Lines.Length;
-					if (lineCount > 1) {
-						int pos0 = this.GetPositionFromCharIndex (this.GetFirstCharIndexFromLine (0)).Y;
-						if (pos0 >= 32768)
-							pos0 -= 65536;
-						int pos1 = this.GetPositionFromCharIndex (this.GetFirstCharIndexFromLine (1)).Y;
-						if (pos1 >= 32768)
-							pos1 -= 65536;
-						int h = pos1 - pos0;
-						scroll = lineCount * h > (this.ClientSize.Height - 6);  // 6 = padding
-					}
-					if (scroll != (this.ScrollBars == SWF.ScrollBars.Vertical || this.ScrollBars == SWF.ScrollBars.Both)) {
-
-						if (this.ScrollBars == SWF.ScrollBars.Both)
-							this.ScrollBars = scroll ? SWF.ScrollBars.Both : SWF.ScrollBars.Horizontal;
-						else
-							this.ScrollBars = scroll ? SWF.ScrollBars.Vertical : SWF.ScrollBars.None;
-							
-					}
-					/**/
-					busy = false;
-				}
-			}
-
-			/*
-			protected override void OnTextChanged (EventArgs e)
-			{
-				CheckForScrollbars ();
-				base.OnTextChanged (e);
-			}
-
-			protected override void OnSizeChanged (EventArgs e)
-			{
-				CheckForScrollbars ();
-				base.OnSizeChanged (e);
-			}
-			 */
-		}	
-		
 		public TextAreaHandler ()
 		{
-			Control = new MyTextBox ();
-			Control.Multiline = true;
-			Control.AcceptsReturn = true;
-			Control.AcceptsTab = true;
-			Control.ScrollBars = SWF.ScrollBars.Both;
-			Control.TextChanged += delegate {
-				Widget.OnTextChanged (EventArgs.Empty);
+			Control = new MyTextBox {
+				Multiline = true,
+				AcceptsTab = true,
+				Dock = swf.DockStyle.Fill,
+				BorderStyle = swf.BorderStyle.None,
+				ScrollBars = swf.RichTextBoxScrollBars.Both
 			};
+			container = new swf.Panel {
+				BorderStyle = swf.BorderStyle.FixedSingle,
+				Size = Generator.Convert (TextArea.DefaultSize)
+			};
+			container.Controls.Add (Control);
+		}
+
+		public override void AttachEvent (string handler)
+		{
+			switch (handler)
+			{
+			case TextArea.SelectionChangedEvent:
+				Control.SelectionChanged += (sender, e) => {
+					Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
+			case TextArea.CaretIndexChangedEvent:
+				Control.SelectionChanged += (sender, e) => {
+					var caretIndex = CaretIndex;
+					if (caretIndex != lastCaretIndex)
+					{
+						Widget.OnCaretIndexChanged (EventArgs.Empty);
+						lastCaretIndex = caretIndex;
+					}
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 		
 		public bool ReadOnly {
@@ -99,6 +77,34 @@ namespace Eto.Platform.Windows
 				Control.SelectionStart = Control.Text.Length;
 				Control.ScrollToCaret ();
 			}
+		}
+
+		public string SelectedText
+		{
+			get { return Control.SelectedText; }
+			set {
+				var start = Control.SelectionStart;
+				Control.SelectedText = value;
+				if (value != null)
+					Control.Select (start, value.Length);
+			}
+		}
+
+		public Range Selection
+		{
+			get { return new Range (Control.SelectionStart, Control.SelectionLength); }
+			set { Control.Select (value.Location, value.Length); }
+		}
+
+		public void SelectAll ()
+		{
+			Control.SelectAll ();
+		}
+
+		public int CaretIndex
+		{
+			get { return Control.SelectionStart; }
+			set { Control.Select (value, 0); }
 		}
 	}
 }

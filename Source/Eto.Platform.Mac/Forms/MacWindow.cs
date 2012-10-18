@@ -6,6 +6,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Forms.Controls;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -62,11 +63,35 @@ namespace Eto.Platform.Mac.Forms
 
 		NSWindow Control { get; }
 	}
-	
+
+	public class CustomFieldEditor : NSTextView
+	{
+		public Control Widget { get; set; }
+
+		public CustomFieldEditor ()
+		{
+			FieldEditor = true;
+		}
+
+		public CustomFieldEditor (IntPtr handle)
+			: base (handle)
+		{
+		}
+
+		public override void KeyDown (NSEvent theEvent)
+		{
+			if (!MacEventView.KeyDown (Widget, theEvent)) {
+				base.KeyDown (theEvent);
+			}
+		}
+	}
+		
+
 	public abstract class MacWindow<T, W> : MacObject<T, W>, IWindow, IMacContainer, IMacWindow
 		where T: MyWindow
 		where W: Eto.Forms.Window
 	{
+		CustomFieldEditor fieldEditor;
 		MenuBar menuBar;
 		Icon icon;
 		ToolBar toolBar;
@@ -162,7 +187,9 @@ namespace Eto.Platform.Mac.Forms
 				};
 				break;
 			case Eto.Forms.Control.HiddenEvent:
-				// handled by delegate
+				Control.DidResignKey += delegate {
+					Widget.OnHidden (EventArgs.Empty);
+				};
 				break;
 			case Eto.Forms.Control.KeyDownEvent:
 				// TODO
@@ -181,7 +208,7 @@ namespace Eto.Platform.Mac.Forms
 			} else
 				this.Control.ContentView.DiscardCursorRects ();
 		}
-		
+
 		protected void ConfigureWindow ()
 		{
 			Control.Handler = this;
@@ -192,8 +219,18 @@ namespace Eto.Platform.Mac.Forms
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
 			//Control.Delegate = new MacWindowDelegate{ Handler = this };
-			Control.WillReturnFieldEditor = (sender, client) => {
-				FieldEditorObject = client;
+			Control.WillReturnFieldEditor = (sender, forObject) => {
+				FieldEditorObject = forObject;
+				var control = forObject as IMacControl;
+				if (control != null) {
+					var handler = control.Handler as IMacViewHandler;
+					if (handler != null && handler.IsEventHandled(TextBox.KeyDownEvent)) {
+						if (fieldEditor == null)
+							fieldEditor = new CustomFieldEditor ();
+						fieldEditor.Widget = handler.Widget;
+						return fieldEditor;
+					}
+				}
 				return null;
 			};
 		}
@@ -223,7 +260,10 @@ namespace Eto.Platform.Mac.Forms
 				return Generator.ConvertF (Control.Frame.Size);
 			}
 			set {
-				Control.SetFrame (Generator.ConvertF (Control.Frame, value), true);
+				var oldFrame = Control.Frame;
+				var newFrame = Generator.ConvertF (oldFrame, value);
+				newFrame.Y = Math.Max (0, oldFrame.Y - (value.Height - oldFrame.Height));
+				Control.SetFrame (newFrame, true);
 				AutoSize = false;
 			}
 		}
@@ -271,7 +311,7 @@ namespace Eto.Platform.Mac.Forms
 			return !args.Cancel;
 		}
 
-		public void Close ()
+		public virtual void Close ()
 		{
 			Control.PerformClose (Control);
 		}
@@ -329,6 +369,9 @@ namespace Eto.Platform.Mac.Forms
 		public Size ClientSize {
 			get { return Generator.ConvertF (Control.ContentView.Frame.Size); }
 			set { 
+				var oldFrame = Control.Frame;
+				var oldSize = Control.ContentView.Frame;
+				Control.SetFrameOrigin(new SD.PointF(oldFrame.X, Math.Max (0, oldFrame.Y - (value.Height - oldSize.Height))));
 				Control.SetContentSize (Generator.ConvertF (value));
 				AutoSize = false;
 			}

@@ -81,11 +81,11 @@ namespace Eto
 	/// </example>
 	public static class Style
 	{
-		static Dictionary<string, IList<Action<InstanceWidget>>> styleMap;
+		static Dictionary<object, IList<Action<InstanceWidget>>> styleMap;
 
 		static Style ()
 		{
-			styleMap = new Dictionary<string, IList<Action<InstanceWidget>>> ();
+			styleMap = new Dictionary<object, IList<Action<InstanceWidget>>> ();
 		}
 
 		#region Events
@@ -110,6 +110,35 @@ namespace Eto
 			if (StyleWidget != null)
 				StyleWidget (widget);
 		}
+
+		internal static void OnStyleWidgetDefaults (InstanceWidget widget)
+		{
+			if (widget != null)
+			{
+				var styleHandlers = GetStyleList (widget.GetType (), false);
+				if (styleHandlers != null)
+				{
+					foreach (var styleHandler in styleHandlers)
+						styleHandler (widget);
+				}
+			}
+		}
+
+		internal static void OnStyleWidgetDefaults (IInstanceWidget handler)
+		{
+			if (handler != null)
+			{
+				var styleHandlers = GetStyleList (handler.GetType (), false);
+				if (styleHandlers != null)
+				{
+					var widget = handler.Widget as InstanceWidget;
+					if (widget != null)
+						foreach (var styleHandler in styleHandlers)
+							styleHandler (widget);
+				}
+			}
+		}
+
 
 		#endregion
 
@@ -140,7 +169,7 @@ namespace Eto
 		public static void Add<T> (string style, StyleWidgetHandler<T> handler)
 			where T: InstanceWidget
 		{
-			var list = GetStyleList (style);
+			var list = GetStyleList ((object)style ?? typeof (T));
 			list.Add (delegate (InstanceWidget widget) {
 				var control = widget as T;
 				if (control != null)
@@ -192,7 +221,7 @@ namespace Eto
 		public static void Add<H> (string style, StyleHandler<H> styleHandler)
 			where H: class, IWidget
 		{
-			var list = GetStyleList (style);
+			var list = GetStyleList ((object)style ?? typeof(H));
 			list.Add (delegate (InstanceWidget widget) {
 				var handler = widget.Handler as H;
 				if (handler != null)
@@ -200,7 +229,7 @@ namespace Eto
 			});
 		}
 
-		static IList<Action<InstanceWidget>> GetStyleList (string style, bool create = true)
+		static IList<Action<InstanceWidget>> GetStyleList (object style, bool create = true)
 		{
 			IList<Action<InstanceWidget>> styleHandlers;
 			if (!styleMap.TryGetValue (style, out styleHandlers) && create) {

@@ -31,8 +31,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public TextBoxCellHandler ()
 		{
-			Control = new EtoCell { Handler = this };
-			Control.Wraps = false;
+			Control = new EtoCell { 
+				Handler = this,
+				UsesSingleLineMode = true
+			};
 		}
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
@@ -64,10 +66,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			if (Widget.Binding != null) {
 				var val = Widget.Binding.GetValue (dataItem);
-				return val is string ? new NSString((string)val) : null;
+				return val != null ? new NSString(Convert.ToString (val)) : null;
 			}
 			else
-				return new NSString ();
+				return null;
 		}
 		
 		public override void SetObjectValue (object dataItem, NSObject val)

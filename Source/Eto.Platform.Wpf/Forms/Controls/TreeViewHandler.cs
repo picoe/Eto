@@ -6,17 +6,24 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
+using swk = System.Windows.Markup;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Collections;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
+using Eto.Drawing;
+using System.ComponentModel;
+using System.Reflection;
+using Eto.Platform.Wpf.CustomControls;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TreeViewHandler : WpfControl<swc.TreeView, TreeView>, ITreeView
+	public class TreeViewHandler : WpfControl<SelectableTreeView, TreeView>, ITreeView
 	{
 		ContextMenu contextMenu;
 		ITreeStore topNode;
+        ITreeItem selectedItem;
 
 		public class EtoTreeViewItem : swc.TreeViewItem
 		{
@@ -84,7 +91,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public class EtoTreeView : swc.TreeView
+		public class EtoTreeView : SelectableTreeView
 		{
 			protected override sw.DependencyObject GetContainerForItemOverride ()
 			{
@@ -97,6 +104,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+        static sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1,Eto<Eto.Forms.ITreeItem,Eto>.Expanded)");
+
 		public TreeViewHandler ()
 		{
 			Control = new EtoTreeView ();
@@ -105,27 +114,22 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			template.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
 			Control.ItemTemplate = template;
 
-			var style = new sw.Style (typeof (swc.TreeViewItem));
+            var style = new sw.Style (typeof (swc.TreeViewItem));
 			//style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Converter = new WpfTreeItemHelper.IsExpandedConverter (), Mode = swd.BindingMode.OneWay }));
-			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding ("Expanded") { Mode = swd.BindingMode.TwoWay }));
+			style.Setters.Add (new sw.Setter (swc.TreeViewItem.IsExpandedProperty, new swd.Binding { Path = expandedProperty, Mode = swd.BindingMode.TwoWay }));
 			Control.ItemContainerStyle = style;
 
-			Control.SelectedItemChanged += (sender, e) => {
-				Control.Dispatcher.BeginInvoke (new Action(() => {
-					Widget.OnSelectionChanged (EventArgs.Empty);
+			ITreeItem oldSelectedItem = null;
+			Control.CurrentItemChanged += (sender, e) => {
+				Control.Dispatcher.BeginInvoke (new Action (() => {
+					var newSelected = this.SelectedItem;
+					if (oldSelectedItem != newSelected)
+					{
+						Widget.OnSelectionChanged (EventArgs.Empty);
+						oldSelectedItem = newSelected;
+						this.RefreshData ();
+					}
 				}));
-			};
-
-			Control.KeyDown += (sender, e) => {
-				if (e.Key == sw.Input.Key.Enter) {
-					if (SelectedItem != null)
-						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
-				}
-			};
-			Control.MouseDoubleClick += delegate {
-				if (SelectedItem != null) {
-					Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
-				}
 			};
 		}
 
@@ -172,6 +176,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					}
 				}));
 				break;
+			case TreeView.ActivatedEvent:
+				Control.PreviewKeyDown += (sender, e) => {
+					if (e.Key == sw.Input.Key.Enter && SelectedItem != null) {
+						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+						e.Handled = true;
+					}
+				};
+				Control.PreviewMouseDoubleClick += (sender, e) => {
+					if (SelectedItem != null) {
+						Widget.OnActivated (new TreeViewItemEventArgs (this.SelectedItem));
+						e.Handled = true;
+					}
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -191,46 +209,30 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		static private bool SetSelected (swc.ItemsControl parent, object child)
-		{
-
-			if (parent == null || child == null) {
-				return false;
-			}
-
-			var childNode = parent.ItemContainerGenerator.ContainerFromItem (child) as swc.TreeViewItem;
-
-			if (childNode != null) {
-				childNode.Focus ();
-				return childNode.IsSelected = true;
-			}
-
-			if (parent.Items.Count > 0) {
-				foreach (object childItem in parent.Items) {
-					var childControl = parent.ItemContainerGenerator.ContainerFromItem (childItem) as swc.ItemsControl;
-
-					if (SetSelected (childControl, child)) {
-						return true;
-					}
-				}
-			}
-
-			return false;
-		}
-
 		public ITreeItem SelectedItem
 		{
-			get
-			{
-				return Control.SelectedItem as ITreeItem;
-			}
+			get { return selectedItem ?? Control.CurrentItem as ITreeItem; }
 			set
 			{
-				SetSelected (Control, value);
+				if (!Control.IsLoaded)
+				{
+					if (selectedItem == null && value != null)
+						Control.Loaded += HandleSelectedItemLoad;
+					selectedItem = value;
+				}
+				else
+					Control.CurrentItem = value;
 			}
 		}
 
-		public ContextMenu ContextMenu
+        public void HandleSelectedItemLoad(object sender, sw.RoutedEventArgs e)
+        {
+			Control.CurrentItem = selectedItem;
+            selectedItem = null;
+            Control.Loaded -= HandleSelectedItemLoad;
+        }
+
+        public ContextMenu ContextMenu
 		{
 			get { return contextMenu; }
 			set
@@ -241,6 +243,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				else
 					Control.ContextMenu = null;
 			}
+		}
+
+		public void RefreshData ()
+		{
+			Control.RefreshData ();
+		}
+
+		public void RefreshItem (ITreeItem item)
+		{
+			Control.RefreshData ();
 		}
 	}
 }

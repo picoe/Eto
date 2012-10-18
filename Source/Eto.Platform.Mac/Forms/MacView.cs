@@ -49,7 +49,7 @@ namespace Eto.Platform.Mac.Forms
 		Size GetPreferredSize ();
 		
 	}
-		
+
 	public interface IMacViewHandler : IMacAutoSizing
 	{
 		Size PositionOffset { get; }
@@ -61,6 +61,8 @@ namespace Eto.Platform.Mac.Forms
 		Control Widget { get; }
 		
 		Cursor Cursor { get; set; }
+
+		bool IsEventHandled (string eventName);
 
 	}
 	
@@ -353,12 +355,12 @@ namespace Eto.Platform.Mac.Forms
 			CreateTracking ();
 		}
 		
-		public void Invalidate ()
+		public virtual void Invalidate ()
 		{
 			Control.NeedsDisplay = true;
 		}
 
-		public void Invalidate (Rectangle rect)
+		public virtual void Invalidate (Rectangle rect)
 		{
 			var region = Generator.ConvertF (rect);
 			region.Y = Control.Frame.Height - region.Y - region.Height;

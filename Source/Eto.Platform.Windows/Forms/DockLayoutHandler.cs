@@ -19,7 +19,7 @@ namespace Eto.Platform.Windows
 		
 		public override object Control {
 			get {
-				return Widget.Container.ContainerObject;
+				return Widget.Container != null ? Widget.Container.ContainerObject : null;
 			}
 			protected set {
 				base.Control = value;
@@ -58,7 +58,7 @@ namespace Eto.Platform.Windows
 				SWF.Control childControl;
 
 				if (value != null) {
-					childControl = (SWF.Control)value.ControlObject;
+					childControl = value.GetContainerControl();
 					childControl.Dock = SWF.DockStyle.Fill;
 					//childControl.Margin = Generator.Convert (padding);
 					parent.Padding = Generator.Convert (padding);
@@ -68,7 +68,7 @@ namespace Eto.Platform.Windows
 				}
 	
 				if (this.child != null) {
-					childControl = (SWF.Control)this.child.ControlObject;
+					childControl = this.child.GetContainerControl ();
 					parent.Controls.Remove (childControl);
 				}
 	

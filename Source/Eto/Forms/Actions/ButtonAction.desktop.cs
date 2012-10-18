@@ -14,9 +14,9 @@ namespace Eto.Forms
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = this.Enabled;
+			if (Icon != null) mi.Icon = Icon;
 			if (!string.IsNullOrEmpty (MenuItemStyle))
 				mi.Style = MenuItemStyle;
-			if (Icon != null) mi.Icon = Icon;
 			new MenuConnector(this, mi);
 			return mi;
 		}

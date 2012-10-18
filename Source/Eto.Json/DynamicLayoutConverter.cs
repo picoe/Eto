@@ -51,7 +51,6 @@ namespace Eto.Json
 				}
 				else {
 					var type = Type.GetType ((string)container ["$type"]);
-					object target;
 					if (!typeof(DynamicItem).IsAssignableFrom (type)) {
 						var dynamicControl = new DynamicControl ();
 						dynamicControl.Control = serializer.Deserialize (container.CreateReader ()) as Control;

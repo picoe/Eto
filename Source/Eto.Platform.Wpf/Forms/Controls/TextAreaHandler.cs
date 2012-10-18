@@ -11,11 +11,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea>, ITextArea
 	{
+		int? lastCaretIndex;
+
 		public TextAreaHandler ()
 		{
 			Control = new swc.TextBox {
-				Width = 80,
-				Height = 24,
+				Width = TextArea.DefaultSize.Width,
+				Height = TextArea.DefaultSize.Height,
 				AcceptsReturn = true,
 				AcceptsTab = true,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
@@ -25,22 +27,42 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override void AttachEvent (string handler)
 		{
-			switch (handler) {
-				case TextArea.TextChangedEvent:
-					Control.TextChanged += delegate {
-						Widget.OnTextChanged (EventArgs.Empty);
-					};
-					break;
-				default:
-					base.AttachEvent (handler);
-					break;
+			switch (handler)
+			{
+			case TextArea.TextChangedEvent:
+				Control.TextChanged += (sender, e) => {
+					Widget.OnTextChanged (EventArgs.Empty);
+				};
+				break;
+			case TextArea.SelectionChangedEvent:
+				Control.SelectionChanged += (sender, e) => {
+					Widget.OnSelectionChanged (EventArgs.Empty);
+				};
+				break;
+			case TextArea.CaretIndexChangedEvent:
+				Control.SelectionChanged += (sender, e) => {
+					var caretIndex = Control.CaretIndex;
+					if (lastCaretIndex != caretIndex)
+					{
+						Widget.OnCaretIndexChanged (EventArgs.Empty);
+						lastCaretIndex = caretIndex;
+					}
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 
 		public bool ReadOnly
 		{
 			get { return Control.IsReadOnly; }
-			set { Control.IsReadOnly = value; }
+			set {
+				Control.IsReadOnly = value;
+				Control.AcceptsTab = !value;
+				Control.AcceptsReturn = !value;
+			}
 		}
 
 		public void Append (string text, bool scrollToCursor)
@@ -61,6 +83,29 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set	{
 				Control.TextWrapping = value ? sw.TextWrapping.Wrap : sw.TextWrapping.NoWrap;
 			}
+		}
+
+		public string SelectedText
+		{
+			get { return Control.SelectedText; }
+			set { Control.SelectedText = value; }
+		}
+
+		public Range Selection
+		{
+			get { return new Range (Control.SelectionStart, Control.SelectionLength); }
+			set { Control.Select (value.Location, value.Length); }
+		}
+
+		public void SelectAll ()
+		{
+			Control.SelectAll ();
+		}
+
+		public int CaretIndex
+		{
+			get { return Control.CaretIndex; }
+			set { Control.CaretIndex = value; }
 		}
 	}
 }

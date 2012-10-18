@@ -9,39 +9,6 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac.Drawing
 {
-	public class RegionHandler : Region
-	{
-		//Gdk.Region region;
-		//Gdk.Region original;
-		public RegionHandler ()
-		{
-			//this.original = region;
-			//this.region = region.Copy();
-		}
-
-		public override object ControlObject {
-			get { return null; }
-		}
-
-		public override void Exclude (Rectangle rect)
-		{
-			//Gdk.Region r = new Gdk.Region();
-			//r.UnionWithRect(Generator.Convert(rect));
-			//region.Subtract(r);
-		}
-
-		public override void Reset ()
-		{
-			//region = original;
-		}
-
-		public override void Set (Rectangle rect)
-		{
-			//region.Empty();
-			//region.UnionWithRect(Generator.Convert(rect));
-		}
-	}
-
 	public class GraphicsHandler : MacObject<NSGraphicsContext, Graphics>, IGraphics
 	{
 		CGContext context;
@@ -212,6 +179,11 @@ namespace Eto.Platform.Mac.Drawing
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
 			StartDrawing ();
+			if (startx == endx && starty == endy) {
+				// drawing a one pixel line in retina display draws more than just one pixel
+				DrawRectangle (color, startx, starty, 1, 1);
+				return;
+			}
 			context.SetStrokeColor (Generator.Convert (color));
 			context.SetLineCap (CGLineCap.Square);
 			context.SetLineWidth (1.0F);
@@ -244,6 +216,34 @@ namespace Eto.Platform.Mac.Drawing
 			
 			context.SetFillColor (Generator.Convert (color));
 			context.FillRect (TranslateView (new SD.RectangleF (x, y, width, height)));
+			EndDrawing ();
+		}
+
+		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		{
+			StartDrawing ();
+			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height));
+			rect.Offset (0.5f, 0.5f);
+			rect.Width -= 1f;
+			rect.Height -= 1f;
+			context.SetStrokeColor (Generator.Convert (color));
+			context.SetLineCap (CGLineCap.Square);
+			context.SetLineWidth (1.0F);
+			context.StrokeEllipseInRect (rect);
+			EndDrawing ();
+		}
+
+		public void FillEllipse (Color color, int x, int y, int width, int height)
+		{
+			StartDrawing ();
+			/*	if (width == 1 || height == 1)
+			{
+				DrawLine(color, x, y, x+width-1, y+height-1);
+				return;
+			}*/
+
+			context.SetFillColor (Generator.Convert (color));
+			context.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			EndDrawing ();
 		}
 		

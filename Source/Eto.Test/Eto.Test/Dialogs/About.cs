@@ -16,28 +16,29 @@ namespace Eto.Test.Dialogs
 			this.Resizable = true;
 #endif
 
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout (this, new Padding (20, 5), new Size(10, 10));
 
 			layout.AddCentered(new ImageView{
-				Image = Icon.FromResource ("Eto.Test.TestIcon.ico"),
-				Size = new Size(128, 128)
+				Image = Icon.FromResource ("Eto.Test.TestIcon.ico")
 			}, true, true);
 			
 			layout.Add (new Label{
 				Text = "Test Application",
-				Font = new Font(FontFamily.Sans, 16, FontStyle.Bold),
+				Font = new Font(SystemFont.Bold, 16),
 				HorizontalAlign = HorizontalAlign.Center
 			});
 
 			var version = Assembly.GetEntryAssembly ().GetName ().Version;
 			layout.Add (new Label {
 				Text = string.Format("Version {0}", version),
+				Font = new Font(SystemFont.Default, 8),
 				HorizontalAlign = HorizontalAlign.Center
 			});
 			
 			
 			layout.Add (new Label{
 				Text = "Copyright 2011 by Curtis Wensley aka Eto",
+				Font = new Font(SystemFont.Default, 8),
 				HorizontalAlign = HorizontalAlign.Center
 			});
 
@@ -46,9 +47,8 @@ namespace Eto.Test.Dialogs
 				
 		Control CloseButton()
 		{
-			var button = new Button{ 
-				Text = "Close",
-				Size = new Size(90, 26)
+			var button = new Button {
+				Text = "Close"
 			};
 			this.DefaultButton = button;
 			this.AbortButton = button;

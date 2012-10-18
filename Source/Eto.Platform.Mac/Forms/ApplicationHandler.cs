@@ -19,7 +19,19 @@ namespace Eto.Platform.Mac.Forms
 		public static ApplicationHandler Instance {
 			get { return Application.Instance.Handler as ApplicationHandler; }
 		}
-		
+
+		public string BadgeLabel
+		{
+			get {
+				var badgeLabel = Control.DockTile.BadgeLabel;
+				return string.IsNullOrEmpty(badgeLabel) ? null : badgeLabel;
+			}
+			set
+			{
+				Control.DockTile.BadgeLabel = value ?? string.Empty;
+			}
+		}
+
 		public ApplicationHandler ()
 		{
 			NSApplication.Init ();

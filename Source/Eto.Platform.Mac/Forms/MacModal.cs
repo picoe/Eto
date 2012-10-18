@@ -66,12 +66,23 @@ namespace Eto.Platform.Mac.Forms
 		{
 			public IntPtr Session { get; set; }
 			
+			public NSWindow Window { get; set; }
+			
 			public bool Stopped { get; private set; }
+			
+			public bool IsModal { get; set; }
+			
+			public bool IsSheet { get; set; }
 			
 			public void Stop ()
 			{
 				Stopped = true;
-				NSApplication.SharedApplication.StopModal ();
+				if (IsSheet) {
+					NSApplication.SharedApplication.EndSheet (Window);
+					Window.OrderOut (Window);
+				}
+				else if (IsModal)
+					NSApplication.SharedApplication.StopModal ();
 			}
 		}
 			
@@ -79,23 +90,52 @@ namespace Eto.Platform.Mac.Forms
 		{
 			var app = NSApplication.SharedApplication;
 			var session = app.BeginModalSession (theWindow);
-			helper = new ModalHelper { Session = session };
+			helper = new ModalHelper { Session = session, IsModal = true, Window = theWindow };
 			int result;
-
+			
 			// Loop until some result other than continues:
 			do {
 				// Run the window modally until there are no events to process:
 				result = app.RunModalSession (session);
 
 				// Give the main loop some time:
-				NSRunLoop.Current.LimitDateForMode (NSRunLoopMode.Default);
+				NSRunLoop.Current.RunUntil (NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);
 			}
 			while (result == (int)NSRun.ContinuesResponse || !helper.Stopped);
 			
-			Console.WriteLine ("Ending session {0}", session);
 			app.EndModalSession (session);
 		}
 
+		public static void RunSheet (NSWindow theWindow, out ModalHelper helper)
+		{
+			var app = NSApplication.SharedApplication;
+			var parent = theWindow.ParentWindow;
+			app.BeginSheet(theWindow, parent, delegate {
+				NSApplication.SharedApplication.StopModal();				
+			});
+			
+			var session = app.BeginModalSession (theWindow);
+			helper = new ModalHelper { Session = session, IsModal = true, IsSheet = true, Window = theWindow };
+			int result;
+			
+			// Loop until some result other than continues:
+			do {
+				// Run the window modally until there are no events to process:
+				result = app.RunModalSession (session);
+				
+				// Give the main loop some time:
+				NSRunLoop.Current.RunUntil (NSRunLoop.NSDefaultRunLoopMode, NSDate.DistantFuture);
+			}
+			while (result == (int)NSRun.ContinuesResponse || !helper.Stopped);
+			
+			app.EndModalSession (session);
+
+			/**
+			theWindow.OrderOut (null);
+			app.EndSheet (theWindow);
+			/**/
+		}
+		
 	}
 }
 

@@ -19,6 +19,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class TreeGridViewHandler : GridHandler<swc.DataGrid, TreeGridView>, ITreeGridView, ITreeHandler
 	{
 		TreeController controller;
+		ITreeGridItem lastSelected;
 
 		protected override IGridItem GetItemAtRow (int row)
 		{
@@ -65,6 +66,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			case TreeGridView.CollapsedEvent:
 				controller.Collapsed += (sender, e) => {
 					Widget.OnCollapsed (e);
+				};
+				break;
+			case TreeGridView.SelectedItemChangedEvent:
+				Control.SelectedCellsChanged += (sender, e) => {
+					var item = this.SelectedItem;
+					if (!object.ReferenceEquals(lastSelected, item))
+					{
+						Widget.OnSelectedItemChanged (EventArgs.Empty);
+						lastSelected = item;
+					}
 				};
 				break;
 			default:

@@ -26,22 +26,25 @@
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE;DESKTOP;XAML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Release\Eto.XML</DocumentationFile>
+    <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
+
     <FileAlignment>4096</FileAlignment>
     <Optimize>True</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <RegisterForComInterop>False</RegisterForComInterop>
     <RemoveIntegerChecks>False</RemoveIntegerChecks>
     <WarningLevel>4</WarningLevel>
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <GenerateDocumentation>True</GenerateDocumentation>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE;DESKTOP;XAML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Debug\Eto.XML</DocumentationFile>
+    <DefineConstants>TRACE;DEBUG;DESKTOP;XAML</DefineConstants>
+    <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
+
     <DebugSymbols>True</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <Optimize>False</Optimize>
@@ -76,6 +79,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\Colors.cs" />
+    <Compile Include="Drawing\ImageConverter.cs" />
+    <Compile Include="Drawing\Region.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,9 +104,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Generators.cs" />
+    <Compile Include="In32ArrayConverter.cs" />
     <Compile Include="InstanceWidget.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
@@ -355,6 +362,9 @@
     <Compile Include="Misc\Platform.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Xaml\EtoXamlSchemaContext.cs" />
+    <Compile Include="Xaml\Extensions\ResourceExtension.cs" />
+    <Compile Include="Xaml\XamlReader.cs" />
     <Compile Include="XmlExtensions.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -378,7 +388,6 @@
     <Compile Include="Forms\Controls\Slider.cs" />
     <Compile Include="Forms\Cursor.cs" />
     <Compile Include="Forms\Controls\Control.desktop.cs" />
-    <Compile Include="XamlReader.cs" />
     <Compile Include="Drawing\Bitmap.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -416,9 +425,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\RectangleF.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\ScreenBitmap.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\Size.cs">
@@ -467,10 +473,15 @@
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
     <Compile Include="Binding\BindingExtensions.cs" />
+
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="Widget.xaml.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
+    <Compile Include="HandlerInvalidException.cs" />
+    <Compile Include="Forms\Range.cs" />
+    <Compile Include="Xaml\Extensions\FileExtension.cs" />
+
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

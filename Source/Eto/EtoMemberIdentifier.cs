@@ -5,8 +5,16 @@ using System.Xaml;
 
 namespace Eto
 {
+	/// <summary>
+	/// Member identifier for attached properties
+	/// </summary>
 	public class EtoMemberIdentifier : AttachableMemberIdentifier
 	{
+		/// <summary>
+		/// Initializes a new instance of the EtoMemberIdentifier class
+		/// </summary>
+		/// <param name="declaringType">Type that the property is attached to</param>
+		/// <param name="memberName">Name of the member/property</param>
 		public EtoMemberIdentifier (Type declaringType, string memberName)
 			: base (declaringType, memberName)
 		{
@@ -14,6 +22,13 @@ namespace Eto
 	}
 
 #if !XAML
+	/// <summary>
+	/// Attachable member identifier for properties, when xaml is not present/available
+	/// </summary>
+	/// <remarks>
+	/// This is used to provide an alternate implementation of the AttachableMemberIdentifier
+	/// when compiling without XAML support.
+	/// </remarks>
 	public class AttachableMemberIdentifier : IEquatable<AttachableMemberIdentifier>
 	{
 		public Type DeclaringType { get; private set; }

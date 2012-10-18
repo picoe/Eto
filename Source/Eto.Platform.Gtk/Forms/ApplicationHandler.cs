@@ -3,11 +3,15 @@ using Eto.Forms;
 using System.Diagnostics;
 using System.Threading;
 using System.ComponentModel;
+using Eto.Platform.GtkSharp.Drawing;
+using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
 	{
+		Gtk.StatusIcon statusIcon;
+
 		public static int MainThreadID { get; set; }
 		
 		public void RunIteration ()
@@ -20,6 +24,40 @@ namespace Eto.Platform.GtkSharp
 			Gtk.Application.Quit ();
 
 			// TODO: restart!
+		}
+
+		string badgeLabel;
+
+		public string BadgeLabel
+		{
+			get { return badgeLabel; }
+			set
+			{
+				badgeLabel = value;
+				if (!string.IsNullOrEmpty (badgeLabel))
+				{
+					if (statusIcon == null)
+						statusIcon = new Gtk.StatusIcon ();
+					var bmp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
+					using (var graphics = new Graphics(new Bitmap (Widget.Generator, new BitmapHandler (bmp)))) {
+						DrawBadgeLabel (graphics, new Size (bmp.Width, bmp.Height), badgeLabel);
+					}
+					statusIcon.Pixbuf = bmp;
+					statusIcon.Visible = true;
+				}
+				else if (statusIcon != null)
+					statusIcon.Visible = false;
+			}
+		}
+
+		protected virtual void DrawBadgeLabel (Graphics graphics, Size size, string badgeLabel)
+		{
+			graphics.FillEllipse (Colors.Red, new Rectangle (size));
+			graphics.DrawEllipse (Colors.White, new Rectangle (size));
+			var font = new Font(SystemFont.Bold, 10);
+			var labelSize = graphics.MeasureString (font, badgeLabel);
+			graphics.DrawText (font, Colors.White, new Point ((int)((size.Width - labelSize.Width) / 2), (int)((size.Height - labelSize.Height) / 2)), badgeLabel);
+			graphics.Flush ();
 		}
 
 		public void Invoke (System.Action action)

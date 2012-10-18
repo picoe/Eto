@@ -46,7 +46,6 @@
     <Compile Include="DynamicLayoutConverter.cs" />
     <Compile Include="EtoBinder.cs" />
     <Compile Include="EtoContractResolver.cs" />
-    <Compile Include="EtoJsonSerializer.cs" />
     <Compile Include="EventValueProvider.cs" />
     <Compile Include="JsonReader.cs" />
     <Compile Include="NameConverter.cs" />
@@ -56,6 +55,8 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="DefaultNamespaceManager.cs" />
+    <Compile Include="ImageConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

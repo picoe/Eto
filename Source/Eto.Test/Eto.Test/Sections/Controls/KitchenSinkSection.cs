@@ -143,9 +143,23 @@ namespace Eto.Test.Sections.Controls
 		
 		Control WebView()
 		{
-			var control = new WebView { Size = new Size(-1, 100) };
-			control.LoadHtml("<html><head><title>Hello</title></head><body><h1>Web View</h1><p>This is a web view loaded with a html string</p></body>");
-			return control;
+			try {
+				var control = new WebView { Size = new Size(-1, 100) };
+				control.LoadHtml("<html><head><title>Hello</title></head><body><h1>Web View</h1><p>This is a web view loaded with a html string</p></body>");
+				return control;
+			}
+			catch (HandlerInvalidException) {
+				var control = new Label { 
+					Text = string.Format ("WebView not supported on this platform with the {0} generator", Generator.ID),
+					BackgroundColor = Colors.Red,
+					HorizontalAlign = HorizontalAlign.Center,
+					VerticalAlign = VerticalAlign.Middle,
+					TextColor = Colors.White
+				};
+				if (Generator.ID == Generators.Gtk)
+					Log.Write (this, "You must install webkit-sharp for WebView to work under GTK. Note that GTK does not support webkit-sharp on any platform other than Linux.");
+				return control;
+			}
 		}
 		
 		Control RightPane ()

@@ -25,21 +25,22 @@
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <DefineConstants>CAIRO;TRACE</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <Optimize>True</Optimize>
     <FileAlignment>4096</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
-    <DebugType>none</DebugType>
+    <DebugType>pdbonly</DebugType>
     <WarningLevel>4</WarningLevel>
+    <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>CAIRO;DEBUG;TRACE</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <FileAlignment>4096</FileAlignment>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -47,7 +48,7 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -59,28 +60,18 @@
     <Reference Include="System.Xml">
       <Name>System.Xml</Name>
     </Reference>
-    <Reference Include="gdk-sharp">
-      <Package>gtk-sharp-2.0</Package>
-    </Reference>
-    <Reference Include="glib-sharp">
-      <Package>glib-sharp-2.0</Package>
-    </Reference>
-    <Reference Include="gtk-sharp">
-      <Package>gtk-sharp-2.0</Package>
-    </Reference>
-    <Reference Include="atk-sharp">
-      <Package>gtk-sharp-2.0</Package>
-    </Reference>
-    <Reference Include="pango-sharp">
-      <Package>gtk-sharp-2.0</Package>
-    </Reference>
+    <Reference Include="gdk-sharp" />
+    <Reference Include="glib-sharp" />
+    <Reference Include="gtk-sharp" />
+    <Reference Include="atk-sharp" />
+    <Reference Include="pango-sharp" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
-    <Reference Include="webkit-sharp, Version=1.1.15.0, Culture=neutral, PublicKeyToken=eaa1d335d2e19745">
+    <Reference Include="System.Web" />
+    <Reference Include="webkit-sharp">
       <HintPath>..\..\Libraries\webkit-sharp\webkit-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="System.Web" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
@@ -112,9 +103,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\IndexedBitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\ScreenBitmapHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ApplicationHandler.cs">
@@ -249,6 +237,7 @@
     <Compile Include="Forms\Controls\GtkTreeModel.cs" />
     <Compile Include="MenuActionItemHandler.cs" />
     <Compile Include="Forms\Cells\GridCellFormattingEventArgs.cs" />
+    <Compile Include="EtoWebView.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

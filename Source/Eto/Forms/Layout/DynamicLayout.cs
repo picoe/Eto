@@ -246,16 +246,32 @@ namespace Eto.Forms
 				yscale = true;
 			currentItem.Add (new DynamicControl{ Control = control, XScale = xscale, YScale = yscale });
 		}
+
+		public DynamicRow AddSeparateRow (params Control[] controls)
+		{
+			var row = AddSeparateRow ();
+			row.Add (controls);
+			return row;
+		}
 		
-		public void AddRow (params Control[] controls)
+		public DynamicRow AddSeparateRow (Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		{
+			this.BeginVertical (padding, spacing, xscale, yscale);
+			var row = this.AddRow ();
+			this.EndVertical ();
+			return row;
+		}
+			
+		public DynamicRow AddRow (params Control[] controls)
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
 			if (controls == null) controls = new Control[] { null };
-			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
-			var row = new DynamicRow (items.Cast<DynamicItem>());
+			
+			var row = new DynamicRow (controls);
 			currentItem.AddRow (row);
 			currentItem.CurrentRow = null;
+			return row;
 		}
 
 		public void AddCentered (Control control, bool? xscale, bool? yscale = null)
@@ -310,6 +326,11 @@ namespace Eto.Forms
 			foreach (var control in controls)
 				Add (control);
 			EndVertical ();
+		}
+		
+		internal void SetBaseInnerLayout()
+		{
+			this.SetInnerLayout (false);
 		}
 		
 		/// <summary>

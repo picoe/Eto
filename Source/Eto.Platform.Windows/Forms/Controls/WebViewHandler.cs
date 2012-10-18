@@ -2,30 +2,70 @@ using System;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Platform.CustomControls;
+using System.Runtime.InteropServices;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class WebViewHandler : WindowsControl<SWF.WebBrowser, WebView>, IWebView
 	{
+		[ComImport, InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
+		[Guid ("6d5140c1-7436-11ce-8034-00aa006009fa")]
+		internal interface IServiceProvider
+		{
+			[return: MarshalAs (UnmanagedType.IUnknown)]
+			object QueryService (ref Guid guidService, ref Guid riid);
+		}
+
+		HashSet<string> delayedEvents = new HashSet<string> ();
+
+		SHDocVw.WebBrowser_V1 WebBrowserV1
+		{
+			get { return (SHDocVw.WebBrowser_V1)Control.ActiveXInstance; }
+		}
+
 		public WebViewHandler ()
 		{
 			this.Control = new SWF.WebBrowser { IsWebBrowserContextMenuEnabled = false };
+			this.Control.HandleCreated += (sender, e) => {
+				HookDocumentEvents ();
+			};
+		}
+
+		public void AttachEvent (SHDocVw.WebBrowser_V1 control, string handler)
+		{
+			switch (handler)
+			{
+			case WebView.OpenNewWindowEvent:
+				control.NewWindow += WebBrowserV1_NewWindow;
+				break;
+			}
+		}
+
+		void WebBrowserV1_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
+		{
+			var e = new WebViewNewWindowEventArgs (new Uri (URL), TargetFrameName);
+			Widget.OnOpenNewWindow (e);
+			Processed = e.Cancel;
 		}
 		
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
 			case WebView.DocumentLoadedEvent:
-				this.Control.DocumentCompleted += delegate(object sender, System.Windows.Forms.WebBrowserDocumentCompletedEventArgs e) {
+				this.Control.DocumentCompleted += (sender, e) => {
 					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (e.Url));
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
-				this.Control.Navigating += delegate(object sender, System.Windows.Forms.WebBrowserNavigatingEventArgs e) {
-					var args = new WebViewLoadingEventArgs (e.Url);
+				this.Control.Navigating += (sender, e) => {
+					var args = new WebViewLoadingEventArgs (e.Url, false);
 					Widget.OnDocumentLoading (args);
 					e.Cancel = args.Cancel;
 				};
+				break;
+			case WebView.OpenNewWindowEvent:
+				HookDocumentEvents (handler);
 				break;
 			case WebView.DocumentTitleChangedEvent:
 				this.Control.DocumentTitleChanged += delegate {
@@ -37,6 +77,18 @@ namespace Eto.Platform.Windows.Forms.Controls
 				break;
 			}
 			
+		}	
+
+		void HookDocumentEvents (string newEvent = null)
+		{
+			if (newEvent != null)
+				delayedEvents.Add (newEvent);
+			if (Control.ActiveXInstance != null)
+			{
+				foreach (var handler in delayedEvents)
+					AttachEvent (WebBrowserV1, handler);
+				delayedEvents.Clear ();
+			}
 		}
 
 		public Uri Url {

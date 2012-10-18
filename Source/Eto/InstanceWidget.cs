@@ -58,6 +58,7 @@ namespace Eto
 	{
 		IInstanceWidget handler;
 		string style;
+		object dataContext;
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
@@ -99,6 +100,47 @@ namespace Eto
 					style = value;
 					OnStyleChanged(EventArgs.Empty);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Event to handle when the <see cref="DataContext"/> has changed
+		/// </summary>
+		/// <remarks>
+		/// This may be fired in the event of a parent in the hierarchy setting the data context.
+		/// For example, the <see cref="Forms.Container"/> widget fires this event when it's event is fired.
+		/// </remarks>
+		public event EventHandler<EventArgs> DataContextChanged;
+
+		/// <summary>
+		/// Called to fire the <see cref="DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected internal virtual void OnDataContextChanged (EventArgs e)
+		{
+			if (DataContextChanged != null)
+				DataContextChanged (this, e);
+		}
+		
+		/// <summary>
+		/// Gets or sets the data context for this widget for binding
+		/// </summary>
+		/// <remarks>
+		/// Subclasses may override the standard behaviour so that hierarchy of widgets can be taken into account.
+		/// 
+		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
+		/// </remarks>
+		public virtual object DataContext
+		{
+			get { return dataContext; }
+			set {
+				dataContext = value;
+				OnDataContextChanged (EventArgs.Empty);
 			}
 		}
 
@@ -239,5 +281,22 @@ namespace Eto
 				HandleEvent (id);
 			}
 		}
+
+		/// <summary>
+		/// Initializes the widget handler
+		/// </summary>
+		/// <remarks>
+		/// This is typically called from the constructor after all of the logic is completed to construct
+		/// the object.
+		/// 
+		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
+		/// after all of its logic has finished.
+		/// </remarks>
+		protected new void Initialize ()
+		{
+			base.Initialize ();
+			Eto.Style.OnStyleWidgetDefaults (this);
+		}
+
 	}
 }

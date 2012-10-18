@@ -11,8 +11,7 @@
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
+    <DebugType>none</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>DEBUG;OSX;DESKTOP</DefineConstants>
@@ -73,9 +72,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\IndexedBitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\ScreenBitmapHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\DialogHandler.cs" />

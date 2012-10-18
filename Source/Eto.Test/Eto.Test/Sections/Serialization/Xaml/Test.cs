@@ -1,20 +1,22 @@
-﻿using System;
+﻿#if XAML
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using Eto.Xaml;
 
 namespace Eto.Test.Sections.Serialization.Xaml
 {
 	public class Test : Panel
 	{
-		protected CheckBox myCheckBox;
-		protected TextArea myTextArea;
+		protected CheckBox myCheckBox { get; set; }
+		protected TextArea myTextArea { get; set; }
 
 		public Test ()
 		{
-			// NOTE: this only works on MS.NET at the moment
-			// mono does not have a full implementation of Xaml as of yet
+			// NOTE: Only works in MS.NET or Mono 2.11 at the moment
 			XamlReader.Load (this);
 			
 			myCheckBox.Checked = true;
@@ -28,3 +30,5 @@ namespace Eto.Test.Sections.Serialization.Xaml
 
 	}
 }
+
+#endif

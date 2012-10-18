@@ -60,18 +60,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public TextBoxHandler Handler { get; set; }
 			
-			public override bool PerformKeyEquivalent (NSEvent theEvent)
-			{
-				if (Handler.Widget.HasFocus) {
-					MacEventView.KeyDown (Handler.Widget, theEvent);
-					return false;
-					/*return base.PerformKeyEquivalent (theEvent);
-					else
-						return false;*/
-				} else
-					return false;
-			}
-			
 		}
 		
 		public override bool HasFocus {
@@ -95,6 +83,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			//Control.BezelStyle = NSTextFieldBezelStyle.Square;
 			//Control.Bordered = true;
 			MaxLength = -1;
+		}
+
+		protected override Eto.Drawing.Size GetNaturalSize ()
+		{
+			var size = base.GetNaturalSize ();
+			size.Width = Math.Max (100, size.Height);
+			return size;
 		}
 		
 		public override void AttachEvent (string handler)
