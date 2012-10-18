@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using sw = System.Windows;
 using swm = System.Windows.Media;
+using swi = System.Windows.Input;
 
 namespace Eto.Platform.Wpf
 {
@@ -57,6 +58,21 @@ namespace Eto.Platform.Wpf
 			}
 
 			return foundChild;
+		}
+
+		public static bool HasFocus (this sw.DependencyObject control, sw.DependencyObject focusScope, bool checkChildren = true)
+		{
+			var current = swi.FocusManager.GetFocusedElement (focusScope) as sw.DependencyObject;
+			if (!checkChildren)
+				return current == control;
+
+			while (current != null)
+			{
+				if (current == control)
+					return true;
+				current = swm.VisualTreeHelper.GetParent (current);
+			}
+			return false;
 		}
 	}
 }

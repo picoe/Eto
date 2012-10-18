@@ -276,6 +276,14 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 			return false;
 		}
+
+		void ITreeHandler.PreResetTree ()
+		{
+		}
+
+		void ITreeHandler.PostResetTree ()
+		{
+		}
 	}
 }
 
