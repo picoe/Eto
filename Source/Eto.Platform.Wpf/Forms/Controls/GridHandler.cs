@@ -5,6 +5,7 @@ using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using swi = System.Windows.Input;
 using Eto.Forms;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -19,6 +20,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		where W: Grid
 	{
 		ContextMenu contextMenu;
+		bool hasFocus;
+		protected swc.DataGridColumn CurrentColumn { get; set; }
 
 		public GridHandler ()
 		{
@@ -177,7 +180,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (this.AllowMultipleSelection)
 					Control.SelectedItems.Add (list[row]);
 				else
+				{
+					SaveColumnFocus ();
 					Control.SelectedIndex = row;
+					RestoreColumnFocus ();
+				}
 			}
 		}
 
@@ -255,15 +262,37 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		public override bool HasFocus
+		{
+			get
+			{
+				if (Widget.ParentWindow != null)
+					return Control.HasFocus((sw.DependencyObject)Widget.ParentWindow.ControlObject);
+				else
+					return base.HasFocus;
+			}
+		}
+
+		public override void Focus ()
+		{
+			SaveColumnFocus ();
+			base.Focus ();
+			RestoreColumnFocus ();
+		}
+
 		public override void Invalidate ()
 		{
+			SaveColumnFocus ();
 			Control.Items.Refresh ();
+			RestoreColumnFocus ();
 			base.Invalidate ();
 		}
 
 		public override void Invalidate (Rectangle rect)
 		{
+			SaveColumnFocus ();
 			Control.Items.Refresh ();
+			RestoreColumnFocus ();
 			base.Invalidate (rect);
 		}
 
@@ -274,5 +303,33 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Widget.OnCellFormatting (new FormatEventArgs (column.Widget as GridColumn, gridcell, dataItem, row, element));
 			}
 		}
+
+		protected void SaveColumnFocus ()
+		{
+			CurrentColumn = Control.CurrentColumn;
+		}
+
+		protected void RestoreColumnFocus ()
+		{
+			Control.CurrentColumn = null;
+			Control.CurrentCell = new swc.DataGridCellInfo (Control.SelectedItem, CurrentColumn ?? Control.CurrentColumn ?? Control.Columns[0]);
+			CurrentColumn = null;
+		}
+
+		protected void SaveFocus ()
+		{
+			SaveColumnFocus ();
+			hasFocus = this.HasFocus;
+		}
+
+		protected void RestoreFocus ()
+		{
+			if (hasFocus)
+			{
+				this.Focus ();
+				RestoreColumnFocus ();
+			}
+		}
+
 	}
 }

@@ -115,5 +115,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			else
 				return defaultContent;
 		}
+
+		void ITreeHandler.PreResetTree ()
+		{
+			SaveFocus ();
+		}
+
+		void ITreeHandler.PostResetTree ()
+		{
+			RestoreFocus ();
+		}
 	}
 }
