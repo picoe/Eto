@@ -160,6 +160,7 @@
     <Compile Include="Sections\Drawing\InterpolationSection.cs" />
     <Compile Include="Sections\Serialization\Json\Test.cs" />
     <Compile Include="Sections\Serialization\JsonReadSection.cs" />
+    <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -8,39 +8,6 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Drawing
 {
-	public class RegionHandler : Region
-	{
-		//Gdk.Region region;
-		//Gdk.Region original;
-		public RegionHandler ()
-		{
-			//this.original = region;
-			//this.region = region.Copy();
-		}
-
-		public override object ControlObject {
-			get { return null; }
-		}
-
-		public override void Exclude (Rectangle rect)
-		{
-			//Gdk.Region r = new Gdk.Region();
-			//r.UnionWithRect(Generator.Convert(rect));
-			//region.Subtract(r);
-		}
-
-		public override void Reset ()
-		{
-			//region = original;
-		}
-
-		public override void Set (Rectangle rect)
-		{
-			//region.Empty();
-			//region.UnionWithRect(Generator.Convert(rect));
-		}
-	}
-
 	public class GraphicsHandler : WidgetHandler<object, Graphics>, IGraphics
 	{
 		CGContext context;
@@ -199,7 +166,38 @@ namespace Eto.Platform.iOS.Drawing
 			context.FillRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			UIGraphics.PopContext ();
 		}
+
+		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		{
+			UIGraphics.PushContext (this.context);
+			var rect = new System.Drawing.RectangleF (x, y, width, height);
+			context.SetStrokeColor (Generator.Convert (color));
+			//context.SetShouldAntialias(false);
+			context.SetLineWidth (1.0F);
+			context.StrokeEllipseInRect (TranslateView (rect));
+			UIGraphics.PopContext ();
+		}
 		
+		public void FillEllipse (Color color, int x, int y, int width, int height)
+		{
+			/*	if (width == 1 || height == 1)
+			{
+				DrawLine(color, x, y, x+width-1, y+height-1);
+				return;
+			}*/
+			
+			UIGraphics.PushContext (this.context);
+			//this.Control.CompositingOperation = NSComposite.SourceOver;
+			//this.Control.ColorRenderingIntent = NSColorRenderingIntent.Default;
+			//this.context.SetFillColorSpace(CGColorSpace.CreateCalibratedRGB(new float[] { 1.0F, 1.0, 1.0 }, new float[] { 0, 0, 0 }, new float[] { 1.0F, 1.0, 1.0 }, ));
+			//this.context.SetStrokeColorSpace(CGColorSpace.CreateDeviceCMYK());
+			//this.context.SetAlpha(1.0F);
+			context.SetFillColor (Generator.Convert (color));
+			//context.SetShouldAntialias(false);
+			context.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height)));
+			UIGraphics.PopContext ();
+		}
+
 		public void FillPath (Color color, GraphicsPath path)
 		{
 			throw new NotImplementedException ();
