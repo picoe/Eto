@@ -110,7 +110,6 @@
     <Compile Include="Drawing\PointF.cs" />
     <Compile Include="Drawing\Rectangle.cs" />
     <Compile Include="Drawing\RectangleF.cs" />
-    <Compile Include="Drawing\ScreenBitmap.cs" />
     <Compile Include="Drawing\Size.cs" />
     <Compile Include="Drawing\SizeF.cs" />
     <Compile Include="IO\DiskDirectoryInfo.cs" />
@@ -254,6 +253,11 @@
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="HandlerInvalidException.cs" />
+    <Compile Include="Drawing\ImageConverter.cs" />
+    <Compile Include="Drawing\Region.cs" />
+    <Compile Include="Forms\Range.cs" />
+    <Compile Include="NamespaceInfo.cs" />
+    <Compile Include="In32ArrayConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

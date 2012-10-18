@@ -230,7 +230,9 @@ namespace Eto.Test.Sections.Controls
 			};
 			control.Click += delegate {
 				var dialog = new Dialog();
+#if DESKTOP
 				dialog.MinimumSize = new Size(300, 0);
+#endif
 				var layout = new DynamicLayout(dialog);
 				var textBox = new TextBox { Text = "http://google.com" };
 				var goButton = new Button { Text = "Go" };
