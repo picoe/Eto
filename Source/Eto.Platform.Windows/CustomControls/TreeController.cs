@@ -14,6 +14,9 @@ namespace Eto.Platform.CustomControls
 		ITreeGridItem SelectedItem { get; }
 		void SelectRow (int row);
 		bool AllowMultipleSelection { get; }
+
+		void PreResetTree ();
+		void PostResetTree ();
 	}
 
 	public class TreeController : ITreeGridStore<ITreeGridItem>, IList, INotifyCollectionChanged
@@ -21,6 +24,7 @@ namespace Eto.Platform.CustomControls
 		Dictionary<int, ITreeGridItem> cache = new Dictionary<int, ITreeGridItem> ();
 		int? countCache;
 		List<TreeController> sections;
+		TreeController parent;
 
 		protected int StartRow { get; private set; }
 
@@ -74,13 +78,13 @@ namespace Eto.Platform.CustomControls
 					var item = Store[row];
 					if (item.Expanded) {
 						var children = (ITreeGridStore<ITreeGridItem>)item;
-						var section = new TreeController { StartRow = row, Handler = this.Handler };
+						var section = new TreeController { StartRow = row, Handler = this.Handler, parent = this };
 						section.InitializeItems (children);
 						Sections.Add (section);
 					}
 				}
 			}
-			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			ResetCollection ();
 		}
 
 		void ClearCache ()
@@ -252,7 +256,7 @@ namespace Eto.Platform.CustomControls
 			ITreeGridStore<ITreeGridItem> children = null;
 			if (sections == null || sections.Count == 0) {
 				children = (ITreeGridStore<ITreeGridItem>)Store [row];
-				var childController = new TreeController { StartRow = row, Store = children, Handler = this.Handler };
+				var childController = new TreeController { StartRow = row, Store = children, Handler = this.Handler, parent = this };
 				Sections.Add (childController);
 			}
 			else {
@@ -272,14 +276,14 @@ namespace Eto.Platform.CustomControls
 				}
 				if (addTop && row < Store.Count) {
 					children = (ITreeGridStore<ITreeGridItem>)Store [row];
-					var childController = new TreeController { StartRow = row, Store = children, Handler = this.Handler };
+					var childController = new TreeController { StartRow = row, Store = children, Handler = this.Handler, parent = this };
 					Sections.Add (childController);
 				}
 			}
 			Sections.Sort ((x, y) => x.StartRow.CompareTo (y.StartRow));
 			if (children != null) {
 				ClearCache ();
-				OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+				ResetCollection ();
 			}
 			return children;
 		}
@@ -297,6 +301,15 @@ namespace Eto.Platform.CustomControls
 			return false;
 		}
 
+		void ResetCollection ()
+		{
+			if (parent == null)
+				Handler.PreResetTree ();
+			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			if (parent == null)
+				Handler.PostResetTree ();
+		}
+
 		public bool CollapseRow (int row)
 		{
 			var args = new TreeGridViewItemCancelEventArgs (GetItemAtRow (row));
@@ -307,11 +320,11 @@ namespace Eto.Platform.CustomControls
 			args.Item.Expanded = false;
 			OnCollapsed (new TreeGridViewItemEventArgs (args.Item));
 			CollapseSection (row);
-			
+
+			ResetCollection ();
+
 			if (shouldSelect)
 				Handler.SelectRow (row);
-
-			OnTriggerCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 
 			return true;
 		}
