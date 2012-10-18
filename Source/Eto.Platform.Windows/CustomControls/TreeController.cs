@@ -307,7 +307,6 @@ namespace Eto.Platform.CustomControls
 			args.Item.Expanded = false;
 			OnCollapsed (new TreeGridViewItemEventArgs (args.Item));
 			CollapseSection (row);
-			ClearCache ();
 			
 			if (shouldSelect)
 				Handler.SelectRow (row);
@@ -342,6 +341,7 @@ namespace Eto.Platform.CustomControls
 				if (addTop && row < Store.Count)
 					Sections.RemoveAll (r => r.StartRow == row);
 			}
+			ClearCache ();
 		}
 
 		public int Count
