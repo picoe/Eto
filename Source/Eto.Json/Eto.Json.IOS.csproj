@@ -49,7 +49,6 @@
     <Compile Include="EventValueProvider.cs" />
     <Compile Include="JsonReader.cs" />
     <Compile Include="NameConverter.cs" />
-    <Compile Include="NamespaceInfo.cs" />
     <Compile Include="NamespaceManager.cs" />
     <Compile Include="PropertyStoreConverter.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">

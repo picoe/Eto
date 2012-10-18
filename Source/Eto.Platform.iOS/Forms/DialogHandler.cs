@@ -50,6 +50,11 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
+		public DialogDisplayMode DisplayMode {
+			get;
+			set;
+		}
+
 		public override string Title {
 			get { return Controller.Title; }
 			set { Controller.Title = value; }
