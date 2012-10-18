@@ -25,7 +25,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			protected override object GetFormattedValue (object value, int rowIndex, ref swf.DataGridViewCellStyle cellStyle, System.ComponentModel.TypeConverter valueTypeConverter, System.ComponentModel.TypeConverter formattedValueTypeConverter, swf.DataGridViewDataErrorContexts context)
 			{
 				var val = value as object[];
-				return base.GetFormattedValue (val[1], rowIndex, ref cellStyle, valueTypeConverter, formattedValueTypeConverter, context);
+				return base.GetFormattedValue ((val != null) ? val[1] : null, rowIndex, ref cellStyle, valueTypeConverter, formattedValueTypeConverter, context);
 			}
 
 			protected override sd.Size GetPreferredSize (sd.Graphics graphics, swf.DataGridViewCellStyle cellStyle, int rowIndex, sd.Size constraintSize)

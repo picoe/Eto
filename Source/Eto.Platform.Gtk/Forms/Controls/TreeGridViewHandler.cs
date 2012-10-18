@@ -13,6 +13,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> model;
 		CollectionHandler collection;
 		bool? selectCollapsingItem;
+		ITreeGridItem lastSelected;
 
 		public override void Initialize ()
 		{
@@ -154,7 +155,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
 					Widget.OnCollapsing (e);
 					args.RetVal = e.Cancel;
-					if (!e.Cancel) selectCollapsingItem = AllowMultipleSelection ? false : ChildIsSelected(e.Item);
+					if (!e.Cancel)
+					{
+						selectCollapsingItem = AllowMultipleSelection ? false : ChildIsSelected (e.Item);
+						SkipSelectedChange = true;
+					}
 				};
 				break;
 			case TreeGridView.CollapsedEvent:
@@ -162,14 +167,25 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
 					e.Item.Expanded = false;
 					Widget.OnCollapsed (e);
-					if (selectCollapsingItem == true) {
+					SkipSelectedChange = false;
+					if (selectCollapsingItem == true)
+					{
 						Tree.Selection.UnselectAll ();
 						Tree.Selection.SelectPath(args.Path);
 						selectCollapsingItem = null;
 					}
 				};
 				break;
-				
+			case TreeGridView.SelectedItemChangedEvent:
+				this.Tree.Selection.Changed += (o, args) => {
+					var item = this.SelectedItem;
+					if (!SkipSelectedChange && !object.ReferenceEquals (item, lastSelected))
+					{
+						Widget.OnSelectedItemChanged (EventArgs.Empty);
+						lastSelected = item;
+					}
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -200,6 +216,53 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			if (collection == null) return -1;
 			return collection.IndexOf (item);
+		}
+
+		int GetCount (Gtk.TreeIter parent, int upToIndex)
+		{
+			int rows = upToIndex == -1 ? model.IterNChildren(parent) : upToIndex;
+			int count = 0;
+			for (int i = 0; i < rows; i ++)
+			{
+				Gtk.TreeIter iter;
+				if (model.IterNthChild(out iter, parent, i)) {
+					var childPath = model.GetPath (iter);
+					
+					if (Tree.GetRowExpanded(childPath))
+					{
+						count += GetCount (iter, -1);
+					}
+				}
+				count++;
+			}
+			return count;
+		}
+
+		public override IEnumerable<int> SelectedRows
+		{
+			get
+			{
+				var rows = Tree.Selection.GetSelectedRows ();
+				foreach (var row in rows)
+				{
+					int count = 0;
+					Gtk.TreePath path = new Gtk.TreePath();
+					count += GetCount (Gtk.TreeIter.Zero, row.Indices[0]);
+					// slow but works for now
+					for (int i = 0; i < row.Indices.Length-1; i++)
+					{
+						path.AppendIndex (row.Indices[i]);
+						Gtk.TreeIter iter;
+						if (model.GetIter (out iter, path))
+							count += GetCount (iter, row.Indices[i+1]);
+					}
+					count += row.Indices.Length - 1;
+					//count += row.Indices[row.Indices.Length - 1];
+
+					yield return count;
+				}
+				
+			}
 		}
 
 

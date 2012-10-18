@@ -133,6 +133,27 @@ namespace Eto.Forms
 				_Collapsed (this, e);
 		}
 
+		public const string SelectedItemChangedEvent = "TreeGridView.SelectedItemChanged";
+
+		event EventHandler<EventArgs> _SelectedItemChanged;
+
+		public event EventHandler<EventArgs> SelectedItemChanged
+		{
+			add
+			{
+				_SelectedItemChanged += value;
+				HandleEvent (SelectedItemChangedEvent);
+			}
+			remove { _SelectedItemChanged -= value; }
+		}
+
+		public virtual void OnSelectedItemChanged (EventArgs e)
+		{
+			if (_SelectedItemChanged != null)
+				_SelectedItemChanged (this, e);
+		}
+
+
 		#endregion
 
 		public TreeGridView ()
@@ -149,7 +170,6 @@ namespace Eto.Forms
 		{
 			handler = (ITreeGridView)Handler;
 		}
-
 		
 		public ITreeGridItem SelectedItem {
 			get { return handler.SelectedItem; }

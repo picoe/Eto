@@ -56,16 +56,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return false;
 		}
 
-		
 		class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
 			public TreeGridViewHandler Handler { get; set; }
 
 			bool? collapsedItemIsSelected;
+			ITreeGridItem lastSelected;
+			bool skipSelectionChanged;
 			
 			public override void SelectionDidChange (NSNotification notification)
 			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+				if (!skipSelectionChanged) {
+					Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+					var item = Handler.SelectedItem;
+					if (!object.ReferenceEquals (item, lastSelected)) {
+						Handler.Widget.OnSelectedItemChanged (EventArgs.Empty);
+						lastSelected = item;
+					}
+				}
 			}
 			
 			public override void ItemDidCollapse (NSNotification notification)
@@ -77,6 +85,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					if (collapsedItemIsSelected == true) {
 						Handler.SelectedItem = myitem.Item;
 						collapsedItemIsSelected = null;
+						skipSelectionChanged = false;
 					}
 				}
 			}
@@ -98,8 +107,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null) {
 					var args = new TreeGridViewItemCancelEventArgs (myitem.Item);
 					Handler.Widget.OnCollapsing (args);
-					if (!args.Cancel && !Handler.AllowMultipleSelection)
+					if (!args.Cancel && !Handler.AllowMultipleSelection) {
 						collapsedItemIsSelected = Handler.ChildIsSelected (myitem.Item);
+						skipSelectionChanged = collapsedItemIsSelected ?? false;
+					}
 					else 
 						collapsedItemIsSelected = null;
 					return !args.Cancel;
@@ -212,6 +223,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			case TreeGridView.ExpandingEvent:
 			case TreeGridView.CollapsedEvent:
 			case TreeGridView.CollapsingEvent:
+			case TreeGridView.SelectedItemChangedEvent:
 			case Grid.SelectionChangedEvent:
 			case Grid.ColumnHeaderClickEvent:
 				// handled in delegate

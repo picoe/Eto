@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -75,7 +76,6 @@ namespace Eto.Test.Sections.Controls
 			return item;
 		}
 
-
 		Control ImagesAndMenu ()
 		{
 			var control = new TreeGridView {
@@ -110,29 +110,42 @@ namespace Eto.Test.Sections.Controls
 			control.Enabled = false;
 			return control;
 		}
-		
+
+
+		string GetDescription (ITreeGridItem item)
+		{
+			var treeItem = item as TreeGridItem;
+			if (treeItem != null)
+				return Convert.ToString (string.Join (", ", treeItem.Values.Select (r => Convert.ToString (r))));
+			else
+				return Convert.ToString (item);
+		}
+
 		void LogEvents (TreeGridView control)
 		{
 			control.Activated += (sender, e) => {
-				Log.Write (control, "Activated, Item: {0}", e.Item);
+				Log.Write (control, "Activated, Item: {0}", GetDescription (e.Item));
 			};
 			control.SelectionChanged += delegate {
-				Log.Write (control, "SelectionChanged, Item: {0}", control.SelectedItem != null ? Convert.ToString (control.SelectedItem) : "<none selected>");
+				Log.Write (control, "SelectionChanged, Rows: {0}", string.Join(", ", control.SelectedRows.Select(r => r.ToString())));
+			};
+			control.SelectedItemChanged += delegate {
+				Log.Write (control, "SelectedItemChanged, Item: {0}", control.SelectedItem != null ? GetDescription (control.SelectedItem) : "<none selected>");
 			};
 
 			control.Expanding += (sender, e) => {
-				Log.Write (control, "Expanding, Item: {0}", e.Item);
+				Log.Write (control, "Expanding, Item: {0}", GetDescription (e.Item));
 				e.Cancel = !(allowExpanding.Checked ?? true);
 			};
 			control.Expanded += (sender, e) => {
-				Log.Write (control, "Expanded, Item: {0}", e.Item);
+				Log.Write (control, "Expanded, Item: {0}", GetDescription (e.Item));
 			};
 			control.Collapsing += (sender, e) => {
-				Log.Write (control, "Collapsing, Item: {0}", e.Item);
+				Log.Write (control, "Collapsing, Item: {0}", GetDescription (e.Item));
 				e.Cancel = !(allowCollapsing.Checked ?? true);
 			};
 			control.Collapsed += (sender, e) => {
-				Log.Write (control, "Collapsed, Item: {0}", e.Item);
+				Log.Write (control, "Collapsed, Item: {0}", GetDescription (e.Item));
 			};
 			control.ColumnHeaderClick += delegate(object sender, GridColumnEventArgs e) {
 				Log.Write (control, "Column Header Clicked: {0}", e.Column);
