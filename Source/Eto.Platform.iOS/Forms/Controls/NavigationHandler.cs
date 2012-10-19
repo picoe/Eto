@@ -36,7 +36,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public NavigationHandler ()
 		{
-			Navigation = new RotatableNavigationController {
+			Navigation = new UINavigationController {
 				Delegate = new Delegate { Handler = this }
 			};
 		}

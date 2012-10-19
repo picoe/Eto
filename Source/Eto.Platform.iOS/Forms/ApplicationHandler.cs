@@ -20,7 +20,7 @@ namespace Eto.Platform.iOS.Forms
 		public ApplicationHandler ()
 		{
 			DelegateClassName = "EtoAppDelegate";
-			Control = UIApplication.SharedApplication;
+			UIApplication.CheckForIllegalCrossThreadCalls = false;
 		}
 				
 		public void Run (string[] args)
@@ -30,6 +30,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public void Initialize (UIApplicationDelegate appdelegate)
 		{
+			Control = UIApplication.SharedApplication;
 			this.AppDelegate = appdelegate;
 			
 			Widget.OnInitialized (EventArgs.Empty);
@@ -95,6 +96,8 @@ namespace Eto.Platform.iOS.Forms
 					int result;
 					if (Int32.TryParse (value, out result))
 						Control.ApplicationIconBadgeNumber = result;
+					else
+						Control.ApplicationIconBadgeNumber = 0;
 				}
 			}
 		}

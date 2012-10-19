@@ -29,17 +29,19 @@ namespace Eto.Platform.iOS.Forms
 			get { return padding; }
 			set {
 				padding = value;
-				SetChildFrame();
+				if (this.Widget.Loaded)
+					LayoutChildren ();
 			}
 		}
 		
 		public override Eto.Drawing.Size GetPreferredSize ()
 		{
-			return Size.Empty;
+			return child.GetPreferredSize ();
 		}
-		
-		void SetChildFrame()
+
+		public override void LayoutChildren ()
 		{
+			base.LayoutChildren ();
 			if (child == null) return;
 			
 			UIView parent = this.Control;
@@ -54,7 +56,15 @@ namespace Eto.Platform.iOS.Forms
 			
 			childControl.Frame = frame;
 		}
-		
+
+		public override void OnLoadComplete ()
+		{
+			base.OnLoadComplete ();
+			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
+				LayoutChildren ();
+			};
+		}
+
 		public Control Content {
 			get {
 				return child;
@@ -68,7 +78,8 @@ namespace Eto.Platform.iOS.Forms
 					child = value;
 					var childControl = (UIView)child.ControlObject;
 					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-					SetChildFrame();
+					if (this.Widget.Loaded)
+						LayoutChildren ();
 					UIView parent = this.Control;
 					parent.AddSubview(childControl);
 				}

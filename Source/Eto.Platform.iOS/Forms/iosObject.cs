@@ -55,7 +55,7 @@ namespace Eto.Platform.iOS.Forms
 			if (observers == null) observers = new List<ControlObserver>();
 			var observer = new ControlObserver{ Action = action, KeyPath = key, Control = this.Control };
 			observers.Add (observer);
-			Console.WriteLine ("{0}: 3. Adding observer! {1}, {2}", this.WidgetID, this.GetType (), Control.GetHashCode ());
+			//Console.WriteLine ("{0}: 3. Adding observer! {1}, {2}", this.WidgetID, this.GetType (), Control.GetHashCode ());
 			Control.AddObserver(observer, key, NSKeyValueObservingOptions.New, IntPtr.Zero);
 		}
 
@@ -63,7 +63,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 			if (observers != null) {
 				foreach (var observer in observers) {
-					Console.WriteLine ("{0}: 4. Removing observer! {1}, {2}", this.WidgetID, this.GetType (), observer.Control.GetHashCode ());
+					//Console.WriteLine ("{0}: 4. Removing observer! {1}, {2}", this.WidgetID, this.GetType (), observer.Control.GetHashCode ());
 					Control.RemoveObserver(observer, observer.KeyPath);
 				}
 				observers = null;
@@ -78,12 +78,8 @@ namespace Eto.Platform.iOS.Forms
 
 		protected override void Dispose (bool disposing)
 		{
-			if (disposing) {
-				/*if (!NSThread.Current.IsMainThread)
-					UIApplication.SharedApplication.InvokeOnMainThread (DisposeInternal);
-				else*/
-					DisposeInternal ();
-			}
+			if (disposing)
+				DisposeInternal ();
 
 			base.Dispose (disposing);
 		}

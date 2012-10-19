@@ -112,7 +112,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 		
 		public int SelectedIndex {
-			get	{ return Control.IndexPathForSelectedRow.Row; }
+			get	{ return Control.IndexPathForSelectedRow != null ? Control.IndexPathForSelectedRow.Row : -1; }
 			set { Control.SelectRow (NSIndexPath.FromRowSection (value, 0), true, UITableViewScrollPosition.Middle); }
 		}
 	}

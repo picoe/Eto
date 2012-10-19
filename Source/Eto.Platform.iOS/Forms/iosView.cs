@@ -61,7 +61,13 @@ namespace Eto.Platform.iOS.Forms
 
 		public virtual bool AutoSize { get; protected set; }
 		
-		public virtual Size? PreferredSize { get; set; }
+		public virtual Size? PreferredSize { get {
+				if (this.AutoSize)
+					return Generator.ConvertF (Control.SizeThatFits(UIView.UILayoutFittingCompressedSize));
+				else
+					return this.Size;
+			}
+		}
 		public virtual Size? MinimumSize { get; set; }
 
 		public virtual Size Size {

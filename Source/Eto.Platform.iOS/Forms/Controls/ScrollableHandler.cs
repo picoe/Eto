@@ -91,17 +91,19 @@ namespace Eto.Platform.iOS.Forms.Controls
 				Control.SetZoomScale (value, false);
 			}
 		}
-		
+
 		public ScrollableHandler ()
 		{
 			Child = new UIView ();
 
 			Control = new UIScrollView ();
+			Control.BackgroundColor = UIColor.White;
 			Control.ContentMode = UIViewContentMode.Center;
 			Control.ScrollEnabled = true;
 			Control.Delegate = new Delegate { Handler = this };
 			Control.AddSubview (Child);
-			
+
+
 			/*
 			foreach (var gestureRecognizer in Control.GestureRecognizers.OfType<UIPanGestureRecognizer>()) {
 				gestureRecognizer.MinimumNumberOfTouches = 2;

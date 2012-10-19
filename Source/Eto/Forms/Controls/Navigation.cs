@@ -54,6 +54,7 @@ namespace Eto.Forms
 		public virtual void Push (INavigationItem item)
 		{
 			var loaded = item.Content.Loaded;
+			item.Content.SetParent (this);
 			if (!loaded) {
 				item.Content.OnPreLoad (EventArgs.Empty);
 				item.Content.OnLoad (EventArgs.Empty);

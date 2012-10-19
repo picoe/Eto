@@ -253,11 +253,11 @@ namespace Eto
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && DisposeControl) {
-				Console.WriteLine ("{0}: 1. Disposing control {1}, {2}", this.WidgetID, this.Control.GetType (), this.GetType ());
+				//Console.WriteLine ("{0}: 1. Disposing control {1}, {2}", this.WidgetID, this.Control.GetType (), this.GetType ());
 				var control = this.Control as IDisposable;
 				if (control != null) control.Dispose();
 			}
-			Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
+			//Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
 			this.Control = default(T);
 			base.Dispose (disposing);
 		}

@@ -25,14 +25,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 		
-		public bool ThreeState {
-			get {
-				throw new NotImplementedException ();
-			}
-			set {
-				throw new NotImplementedException ();
-			}
-		}
+		public bool ThreeState { get; set; }
 
 		public bool? Checked
 		{

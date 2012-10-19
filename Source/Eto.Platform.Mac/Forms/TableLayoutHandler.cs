@@ -92,7 +92,7 @@ namespace Eto.Platform.Mac.Forms
 				for (int x=0; x<widths.Length; x++) {
 					var view = views [y, x];
 					if (view != null && view.Visible) {
-						var size = GetPreferredSize (view);
+						var size = view.GetPreferredSize ();
 						if (size.Width > widths [x]) { 
 							requiredx += size.Width - widths [x];
 							widths [x] = size.Width;
@@ -137,7 +137,7 @@ namespace Eto.Platform.Mac.Forms
 				for (int x=0; x<widths.Length; x++) {
 					var view = views [y, x];
 					if (view != null && view.Visible) {
-						var size = GetPreferredSize (view);
+						var size = view.GetPreferredSize ();
 						if (!xscaling [x] && widths [x] < size.Width) { 
 							requiredx += size.Width - widths [x];
 							widths [x] = size.Width;

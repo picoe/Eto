@@ -49,23 +49,6 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 		
-		public static Size GetPreferredSize(Control control)
-		{
-			var mh = control.Handler as IiosView;
-			if (mh != null) {
-				var size = mh.PreferredSize;
-				if (size != null)
-					return size.Value;
-			}
-
-			var c = control.ControlObject as UIControl;
-			if (c != null) {
-				c.SizeToFit ();
-				return Generator.ConvertF (c.Frame.Size);
-			}
-			return Size.Empty;
-		}
-		
 		public abstract Size GetPreferredSize ();
 		
 		public virtual void LayoutChildren()
@@ -86,16 +69,6 @@ namespace Eto.Platform.iOS.Forms
 				if (view != null) view.SetFrameSize (size);*/
 			}
 		}
-		
-		protected void AutoSize(Control view)
-		{
-			var mh = view.Handler as IiosView;
-			if (mh != null && !mh.AutoSize) return;
-			
-			var c = view.ControlObject as UIControl;
-			if (c != null) c.SizeToFit ();
-		}
-		
 
 	}
 }

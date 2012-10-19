@@ -40,11 +40,29 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			base.AttachEvent (handler);
 		}
+
+		public override Color BackgroundColor {
+			get {
+				return Generator.Convert (Control.Layer.BackgroundColor);
+			}
+			set {
+				Control.Layer.BackgroundColor = Generator.ConvertUI (value).CGColor;
+			}
+		}
 		
 		
 		public ButtonHandler ()
 		{
-			Control = UIButton.FromType(UIButtonType.RoundedRect); //new MyButton{ Handler = this };
+			/**
+			Control = UIButton.FromType(UIButtonType.Custom);
+			Control.SetTitleColor (UIColor.Black, UIControlState.Normal);
+			Control.BackgroundColor = UIColor.White;
+			Control.Layer.BorderColor = UIColor.Black.CGColor;
+			Control.Layer.BorderWidth = 0.5f;
+			Control.Layer.CornerRadius = 7f;
+			/**/
+			Control = UIButton.FromType(UIButtonType.RoundedRect);
+			/**/
 			Control.SetTitle(string.Empty, UIControlState.Normal);
 			//Control.ButtonType = UIButtonType.RoundedRect;
 			Control.SetFrameSize(Generator.ConvertF(Button.DefaultSize));

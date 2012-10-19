@@ -1,26 +1,50 @@
 using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
+using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class TextAreaHandler : iosControl<UITextField, TextArea>, ITextArea
+	public class TextAreaHandler : iosControl<UITextView, TextArea>, ITextArea
 	{
-		public TextAreaHandler ()
+
+		public class EtoTextView : UITextView
 		{
+
+			public override System.Drawing.SizeF SizeThatFits (System.Drawing.SizeF size)
+			{
+				var newSize = base.SizeThatFits (size);
+				newSize.Width = Math.Max (newSize.Width, TextArea.DefaultSize.Width);
+				newSize.Height = Math.Max (newSize.Height, TextArea.DefaultSize.Height);
+				return newSize;
+			}
 		}
 
-		public override UITextField CreateControl ()
+		public override UITextView CreateControl ()
 		{
-			return new UITextField();
+			return new EtoTextView();
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.Layer.BorderWidth = 1f;
+			Control.Layer.BorderColor = UIColor.Gray.CGColor;
+			Control.Layer.CornerRadius = 2f;
 		}
 
 		public void Append (string text, bool scrollToCursor)
 		{
+			Control.SelectedTextRange = Control.GetTextRange (Control.EndOfDocument, Control.EndOfDocument);
+			Control.InsertText (text);
+			if (scrollToCursor) {
+				Control.ScrollRangeToVisible(Control.SelectedRange);
+			}
 		}
 
 		public void SelectAll ()
 		{
+			Control.SelectAll (Control);
 		}
 
 		public string Text {
@@ -39,18 +63,25 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		public string SelectedText {
-			get;
-			set;
+			get { return Control.TextInRange (Control.SelectedTextRange); }
+			set { Control.ReplaceText (Control.SelectedTextRange, value); }
 		}
 
 		public Range Selection {
-			get;
-			set;
+			get { 
+				var range = Control.SelectedRange;
+				return new Range(range.Location, range.Length);
+			}
+			set {
+				Control.SelectedRange = new NSRange(value.Location, value.Length);
+			}
 		}
 
 		public int CaretIndex {
-			get;
-			set;
+			get { return Control.SelectedRange.Location; }
+			set {
+				Control.SelectedRange = new NSRange(value, 0);
+			}
 		}
 	}
 }

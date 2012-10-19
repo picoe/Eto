@@ -28,14 +28,13 @@ namespace Eto.Platform.iOS.Forms
 
 		public override Eto.Drawing.Size? PreferredSize {
 			get {
-				var layout = Widget.Layout.Handler as IiosLayout;
+				if (!this.AutoSize)
+					return this.Size;
+				var layout = Widget.Layout.InnerLayout.Handler as IiosLayout;
 				if (layout != null)
 					return layout.GetPreferredSize ();
 				else
 					return base.PreferredSize;
-			}
-			set {
-				base.PreferredSize = value;
 			}
 		}
 
@@ -70,7 +69,7 @@ namespace Eto.Platform.iOS.Forms
 
 		protected override void Dispose (bool disposing)
 		{
-			if (!disposed && Widget.Layout != null) {
+			if (!disposed && Widget != null && Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				foreach (var control in Widget.Controls.OfType <IDisposable>().Reverse ()) {
 					control.Dispose ();
 				}
