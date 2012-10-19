@@ -35,6 +35,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 				}
 			}
 		}
+
+		public override void AttachEvent (string handler)
+		{
+			base.AttachEvent (handler);
+		}
 		
 		
 		public ButtonHandler ()

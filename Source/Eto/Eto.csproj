@@ -78,19 +78,31 @@
     </Compile>
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
-    <Compile Include="Drawing\Region.cs" />
+    <Compile Include="Drawing\Region.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\Grid.cs" />
-    <Compile Include="Forms\Controls\PasswordBox.cs" />
-    <Compile Include="Forms\Controls\ProgressBar.cs" />
+    <Compile Include="Forms\Controls\Grid.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\PasswordBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\ProgressBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\TreeItem.cs" />
-    <Compile Include="Forms\Controls\TreeView.cs" />
-    <Compile Include="Forms\Controls\TreeView.desktop.cs" />
+    <Compile Include="Forms\Controls\TreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TreeView.desktop.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
@@ -101,7 +113,7 @@
     <Compile Include="Generators.cs" />
     <Compile Include="In32ArrayConverter.cs" />
     <Compile Include="InstanceWidget.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
@@ -112,28 +124,28 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Widget.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="WidgetHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Application.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Container.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Dialog.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Layout\DockLayout.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\FileDialog.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Form.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\GenerateActionArgs.cs">
       <SubType>Code</SubType>
@@ -142,34 +154,34 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Layout.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\MessageBox.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\OpenFileDialog.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Layout\PixelLayout.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\SaveFileDialog.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\SelectFolderDialog.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Layout\TableLayout.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\UITimer.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Window.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Window.desktop.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Actions\ActionCollection.cs">
       <SubType>Code</SubType>
@@ -211,115 +223,115 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Button.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\CheckBox.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ComboBox.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Control.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Drawable.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\GroupBox.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ImageView.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\KeyPressEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Label.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ListBox.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\ListControl.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\MouseEventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\NumericUpDown.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Panel.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\RadioButton.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Scrollable.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Splitter.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TabControl.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TabPage.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextArea.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextBox.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TextControl.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Controls\TreeGridView.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\CheckMenuItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\ImageMenuItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\Menu.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\MenuActionItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\MenuBar.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\MenuItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\RadioMenuItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\CheckToolBarButton.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\SeparatorToolBarItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBar.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBarButton.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBarActionItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBarItem.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="IO\DiskDirectoryInfo.cs">
       <SubType>Code</SubType>
@@ -340,7 +352,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IO\SystemIcons.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="IO\VirtualDirectoryInfo.cs">
       <SubType>Code</SubType>
@@ -366,43 +378,71 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Forms\Controls\WebView.cs" />
-    <Compile Include="Forms\Clipboard.cs" />
-    <Compile Include="Forms\Application.desktop.cs" />
-    <Compile Include="Forms\CommonDialog.cs" />
-    <Compile Include="Forms\ColorDialog.cs" />
-    <Compile Include="Forms\Controls\DateTimePicker.cs" />
+    <Compile Include="Forms\Controls\WebView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Clipboard.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Application.desktop.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\CommonDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\ColorDialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\DateTimePicker.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Style.cs" />
-    <Compile Include="Forms\Menu\ContextMenu.cs" />
+    <Compile Include="Forms\Menu\ContextMenu.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\Menu\SubMenu.cs" />
-    <Compile Include="Forms\Layout\DynamicLayout.cs" />
+    <Compile Include="Forms\Layout\DynamicLayout.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\Container.desktop.cs" />
-    <Compile Include="Forms\Controls\ListBox.desktop.cs" />
-    <Compile Include="Forms\Controls\CommonControl.cs" />
-    <Compile Include="Forms\Controls\Slider.cs" />
-    <Compile Include="Forms\Cursor.cs" />
-    <Compile Include="Forms\Controls\Control.desktop.cs" />
+    <Compile Include="Forms\Container.desktop.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\ListBox.desktop.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\CommonControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Slider.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Cursor.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\Control.desktop.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Drawing\Bitmap.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Drawing\Color.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\Font.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Drawing\Graphics.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Drawing\Icon.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Drawing\Image.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Drawing\IndexedBitmap.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Drawing\Padding.cs">
       <SubType>Code</SubType>
@@ -430,7 +470,9 @@
     </Compile>
     <Compile Include="Drawing\BitmapData.cs" />
     <Compile Include="Drawing\XmlExtensions.cs" />
-    <Compile Include="Drawing\GraphicsPath.cs" />
+    <Compile Include="Drawing\GraphicsPath.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Drawing\ColorHSB.cs" />
     <Compile Include="Drawing\ColorHSL.cs" />
     <Compile Include="Drawing\ColorCMYK.cs" />
@@ -442,22 +484,46 @@
     <Compile Include="Drawing\PointConverter.cs" />
     <Compile Include="Drawing\PointFConverter.cs" />
     <Compile Include="Drawing\PaddingConverter.cs" />
-    <Compile Include="Forms\Controls\GridView.cs" />
+    <Compile Include="Forms\Controls\GridView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\GridItem.cs" />
     <Compile Include="Forms\IDataStore.cs" />
     <Compile Include="CollectionChangedHandler.cs" />
-    <Compile Include="Forms\Controls\GridColumn.cs" />
-    <Compile Include="Forms\Cells\Cell.cs" />
-    <Compile Include="Forms\Cells\ComboBoxCell.cs" />
-    <Compile Include="Forms\Cells\ImageTextCell.cs" />
-    <Compile Include="Forms\Cells\SingleValueCell.cs" />
+    <Compile Include="Forms\Controls\GridColumn.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Cells\Cell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Cells\ComboBoxCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Cells\ImageTextCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Cells\SingleValueCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Forms\Controls\TreeGridItem.cs" />
-    <Compile Include="Forms\Cells\TextBoxCell.cs" />
-    <Compile Include="Forms\Cells\ImageViewCell.cs" />
-    <Compile Include="Forms\Controls\GridView.desktop.cs" />
-    <Compile Include="Forms\Controls\TreeGridView.desktop.cs" />
-    <Compile Include="Forms\Cells\CheckBoxCell.cs" />
-    <Compile Include="Forms\Controls\EnumComboBox.cs" />
+    <Compile Include="Forms\Cells\TextBoxCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Cells\ImageViewCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\GridView.desktop.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\TreeGridView.desktop.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Cells\CheckBoxCell.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Forms\Controls\EnumComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Binding\Binding.cs" />
     <Compile Include="Binding\BindingCollection.cs" />
     <Compile Include="Binding\BindingChangingEventArgs.cs" />
@@ -473,6 +539,8 @@
     <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Forms\Range.cs" />
     <Compile Include="Xaml\Extensions\FileExtension.cs" />
+    <Compile Include="Forms\Controls\Navigation.cs" />
+    <Compile Include="Forms\Controls\NavigationItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

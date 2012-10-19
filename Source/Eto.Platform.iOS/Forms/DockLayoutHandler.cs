@@ -10,6 +10,11 @@ namespace Eto.Platform.iOS.Forms
 	{
 		Control child;
 		Padding padding;
+
+		public DockLayoutHandler ()
+		{
+			DisposeControl = false;
+		}
 		
 		public override UIView Control {
 			get {
@@ -41,7 +46,7 @@ namespace Eto.Platform.iOS.Forms
 			
 			UIView childControl = (UIView)child.ControlObject;
 			var frame = parent.Frame;
-			
+
 			frame.Y = padding.Top;
 			frame.X = padding.Left;
 			frame.Width -= padding.Horizontal;

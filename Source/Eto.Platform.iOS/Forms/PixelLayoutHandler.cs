@@ -7,6 +7,10 @@ namespace Eto.Platform.iOS.Forms
 {
 	public class PixelLayoutHandler : iosLayout<UIView, PixelLayout>, IPixelLayout
 	{
+		public PixelLayoutHandler ()
+		{
+			DisposeControl = false;
+		}
 
 		public override UIView Control {
 			get {

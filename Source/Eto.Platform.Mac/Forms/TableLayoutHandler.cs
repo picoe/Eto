@@ -59,6 +59,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		public TableLayoutHandler ()
 		{
+			DisposeControl = false;
 		}
 		
 		public override void Initialize ()
@@ -138,14 +139,12 @@ namespace Eto.Platform.Mac.Forms
 					if (view != null && view.Visible) {
 						var size = GetPreferredSize (view);
 						if (!xscaling [x] && widths [x] < size.Width) { 
-						
-							widths [x] = size.Width;
 							requiredx += size.Width - widths [x];
+							widths [x] = size.Width;
 						}
 						if (!yscaling [y] && heights [y] < size.Height) { 
-						
-							heights [y] = size.Height;
 							requiredy += size.Height - heights [y];
+							heights [y] = size.Height;
 						}
 					}
 				}
@@ -188,7 +187,7 @@ namespace Eto.Platform.Mac.Forms
 #if OSX			
 			bool flipped = Control.IsFlipped;
 #elif IOS
-			bool flipped = Control.Layer.GeometryFlipped;
+			bool flipped = !Control.Layer.GeometryFlipped;
 #endif
 			float starty = Padding.Top;
 			for (int x=0; x<widths.Length; x++) {
@@ -285,8 +284,7 @@ namespace Eto.Platform.Mac.Forms
 			});
 #elif IOS
 			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
-				//Console.WriteLine ("Layout!");
-				Layout();
+				LayoutChildren ();
 			};
 #endif
 			

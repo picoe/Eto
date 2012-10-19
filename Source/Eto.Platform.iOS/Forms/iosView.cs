@@ -8,12 +8,14 @@ using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Forms
 {
+
 	public interface IiosView
 	{
 		Size PositionOffset { get; }
 		Size? PreferredSize { get; }
 		Size? MinimumSize { get; }
 		bool AutoSize { get; }
+		UIView ContainerControl { get; }
 	}
 	
 	public interface IiosViewController
@@ -21,10 +23,41 @@ namespace Eto.Platform.iOS.Forms
 		UIViewController Controller { get; }
 	}
 
+	public static class ViewExtensions
+	{
+		public static void AddSubView(this Container parent, Control control)
+		{
+
+			var parentViewController = parent.Handler as IiosViewController;
+			if (parentViewController != null) {
+				var viewController = control.Handler as IiosViewController;
+				if (viewController != null) {
+					parentViewController.Controller.AddChildViewController(viewController.Controller);
+					return;
+				}
+			}
+			var viewHandler = control.Handler as IiosView;
+			var view = viewHandler != null ? viewHandler.ContainerControl : control.ControlObject as UIView;
+
+			var parentView = parent.Handler as IiosContainer;
+			if (parentView != null && view != null) {
+				parentView.ContentControl.AddSubview (view);
+			}
+		}
+	}
+
+
 	public abstract class iosView<T, W> : iosObject<T, W>, IControl, IiosView
 		where T: UIView
 		where W: Control
 	{
+
+		public virtual UIViewController Controller { get { return null; } }
+
+		public virtual UIView ContainerControl
+		{
+			get { return (UIView)Control; }
+		}
 
 		public virtual bool AutoSize { get; protected set; }
 		

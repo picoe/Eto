@@ -8,7 +8,8 @@ using Eto.Drawing;
 namespace Eto.Platform.iOS.Forms
 {
 	public interface IiosLayout {
-		object LayoutObject { get; }		
+		object LayoutObject { get; }	
+		Size GetPreferredSize ();
 	}
 	
 	public abstract class iosLayout<T, W> : iosObject<T, W>, ILayout, IiosLayout
@@ -50,6 +51,18 @@ namespace Eto.Platform.iOS.Forms
 		
 		public static Size GetPreferredSize(Control control)
 		{
+			var mh = control.Handler as IiosView;
+			if (mh != null) {
+				var size = mh.PreferredSize;
+				if (size != null)
+					return size.Value;
+			}
+
+			var c = control.ControlObject as UIControl;
+			if (c != null) {
+				c.SizeToFit ();
+				return Generator.ConvertF (c.Frame.Size);
+			}
 			return Size.Empty;
 		}
 		
@@ -61,7 +74,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		protected void Layout()
 		{
-			
+			LayoutChildren ();
 		}
 		
 		public virtual void SetContainerSize(SD.SizeF size)

@@ -14,7 +14,7 @@ namespace Eto.Platform.iOS.Forms
 		public iosWindow ()
 		{
 		}
-		
+
 		public Point Location {
 			get {
 				return Generator.ConvertF(this.Control.Frame.Location);

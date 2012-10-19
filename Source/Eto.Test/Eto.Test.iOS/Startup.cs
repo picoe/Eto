@@ -16,15 +16,15 @@ namespace Eto.Test.iOS
 		{
 			// TODO: make desktop tests work in iOS
 			// This will require much more work on iOS port to implement required events and controls
-			//var app = new TestApplication (new Eto.Platform.iOS.Generator ());
-			//app.Run (args);
+			var app = new TestApplication (new Eto.Platform.iOS.Generator ());
+			app.Run (args);
 
+			/*
 			var app = new Application (new Eto.Platform.iOS.Generator ());
 			app.Initialized += delegate {
 				app.MainForm = new MainForm ();
 				app.MainForm.Show ();
-			};
-			app.Run (args);
+			};*/
 		}
 	}
 }

@@ -43,6 +43,9 @@ namespace Eto.Forms
 		void MapPlatformAction (string systemAction, BaseAction action);
 	}
 	
+	[ToolboxItem(true)]
+	[DesignTimeVisible(true)]
+	[DesignerCategory("Eto.Forms")]
 	public abstract partial class Control : InstanceWidget
 	{
 		IControl inner;

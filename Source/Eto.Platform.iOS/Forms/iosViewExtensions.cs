@@ -12,7 +12,7 @@ namespace Eto.Platform.iOS.Forms
 				return null;
 			var containerHandler = control.Handler as IiosContainer;
 			if (containerHandler != null)
-				return containerHandler.ContainerControl;
+				return containerHandler.ContentControl;
 			return control.ControlObject as UIView;
 		}
 	}

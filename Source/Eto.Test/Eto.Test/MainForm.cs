@@ -9,6 +9,7 @@ namespace Eto.Test
 	{
 		TextArea eventLog;
 		Panel contentContainer;
+		Navigation navigation;
 
 		public TextArea EventLog
 		{
@@ -25,25 +26,14 @@ namespace Eto.Test
 			}
 		}
 
-		Panel ContentContainer
-		{
-			get
-			{
-				if (contentContainer == null) {
-					contentContainer = new Panel ();
-				}
-				return contentContainer;
-			}
-		}
-
 		public MainForm ()
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
 #if DESKTOP
 			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
-#endif
 			this.ClientSize = new Size (900, 650);
+#endif
 			//this.Opacity = 0.5;
 
 #if DESKTOP
@@ -69,21 +59,38 @@ namespace Eto.Test
 
 		Control MainContent ()
 		{
-			var splitter = new Splitter {
-				Position = 200,
-				FixedPanel = SplitterFixedPanel.Panel1
-			};
+			contentContainer = new Panel ();
 
-			var sectionList = new SectionList (this.ContentContainer);
+			var sectionList = new SectionList ();
 			// set focus when the form is shown
 			this.Shown += delegate {
 				sectionList.Focus ();
 			};
+			sectionList.SelectedItemChanged += (sender, e) => {
+				var control = sectionList.SectionControl;
+				if (navigation != null) {
+					if (control != null)
+						navigation.Push (control, sectionList.SectionTitle);
+				}
+				else
+					contentContainer.AddDockedControl (control);
+			};
 
-			splitter.Panel1 = sectionList;
-			splitter.Panel2 = RightPane ();
+			if (Splitter.Supported) {
+				var splitter = new Splitter {
+					Position = 200,
+					FixedPanel = SplitterFixedPanel.Panel1,
+					Panel1 = sectionList,
+					Panel2 = RightPane ()
+				};
+				return splitter;
+			}
+			else if (Navigation.Supported) {
+				navigation = new Navigation(sectionList, "Eto.Test");
+				return navigation;
+			}
+			else throw new EtoException("Platform must support splitter or navigation");
 
-			return splitter;
 		}
 
 		Control RightPane ()
@@ -94,7 +101,7 @@ namespace Eto.Test
 				FixedPanel = SplitterFixedPanel.Panel2
 			};
 
-			splitter.Panel1 = this.ContentContainer;
+			splitter.Panel1 = contentContainer;
 			splitter.Panel2 = this.EventLogSection();
 
 			return splitter;

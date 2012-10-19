@@ -22,7 +22,7 @@ namespace Eto.Forms
 #if XAML
 	[ContentProperty("Layout")]
 #endif
-	public partial class Container : Control
+	public abstract partial class Container : Control
 	{
 		IContainer handler;
 		Layout layout;

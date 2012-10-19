@@ -12,7 +12,9 @@ namespace Eto.Forms
 	public class Navigation : Control
 	{
 		INavigation inner;
-		
+
+		public static bool Supported { get { return Generator.Current.Supports<INavigation> (); } }
+
 		public event EventHandler<EventArgs> ItemShown;
 		
 		public virtual void OnItemShown (EventArgs e)
@@ -51,7 +53,15 @@ namespace Eto.Forms
 		
 		public virtual void Push (INavigationItem item)
 		{
+			var loaded = item.Content.Loaded;
+			if (!loaded) {
+				item.Content.OnPreLoad (EventArgs.Empty);
+				item.Content.OnLoad (EventArgs.Empty);
+			}
+
 			inner.Push (item);
+			if (!loaded)
+				item.Content.OnLoadComplete (EventArgs.Empty);
 		}
 		
 		public virtual void Pop ()

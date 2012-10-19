@@ -63,11 +63,8 @@ namespace Eto.Test
 		
 	public class SectionList : TreeGridView
 	{
-		Container contentContainer;
-		
-		public SectionList (Container contentContainer)
+		public SectionList ()
 		{
-			this.contentContainer = contentContainer;
 			this.Style = "sectionList";
 			this.ShowHeader = false;
 
@@ -161,18 +158,28 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
 #endif
 		}
+
+		public Control SectionControl { get; private set; }
+
+		public string SectionTitle {
+			get {
+				var section = this.SelectedItem as Section;
+				if (section != null)
+					return section.Text;
+				return null;
+			}
+		}
 		
 		public override void OnSelectionChanged (EventArgs e)
 		{
-			base.OnSelectionChanged (e);
-			
 			var sectionGenerator = this.SelectedItem as ISectionGenerator;
 			
 			if (sectionGenerator != null) {
-				var control = sectionGenerator.GenerateControl ();
-				contentContainer.AddDockedControl (control);
+				SectionControl = sectionGenerator.GenerateControl ();
 			} else 
-				contentContainer.AddDockedControl (null);
+				SectionControl = null;
+
+			base.OnSelectionChanged (e);
 		}
 	}
 }

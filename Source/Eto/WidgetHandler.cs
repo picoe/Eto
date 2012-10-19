@@ -4,6 +4,13 @@ using System.Collections.Generic;
 
 namespace Eto
 {
+#if DEBUG
+	class Ref
+	{
+		public static int nextID = 0;
+	}
+#endif
+
 	/// <summary>
 	/// Base platform handler for widgets
 	/// </summary>
@@ -37,12 +44,17 @@ namespace Eto
 		{
 			Dispose(false);
 		}
+
+		protected int WidgetID { get; set; }
 		
 		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
 		/// </summary>
-		public WidgetHandler()
+		public WidgetHandler ()
 		{
+#if DEBUG
+			WidgetID = Ref.nextID++;
+#endif
 		}
 		
 		/// <summary>
@@ -103,7 +115,10 @@ namespace Eto
 		/// <param name="id">Identifier of the event</param>
 		public virtual void AttachEvent(string id)
 		{
+			// only use for desktop until mobile controls are working
+#if DESKTOP
 			throw new NotSupportedException (string.Format ("Event {0} not supported by this control", id));
+#endif
 		}
 		
 		/// <summary>
@@ -137,9 +152,9 @@ namespace Eto
 		/// Disposes the object
 		/// </summary>
 		/// <param name="disposing">True when disposed manually, false if disposed via the finalizer</param>
-	    protected virtual void Dispose(bool disposing)
-	    {
-	    }		
+		protected virtual void Dispose(bool disposing)
+		{
+		}		
 	}
 
 	/// <summary>
@@ -238,9 +253,11 @@ namespace Eto
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing && DisposeControl) {
+				Console.WriteLine ("{0}: 1. Disposing control {1}, {2}", this.WidgetID, this.Control.GetType (), this.GetType ());
 				var control = this.Control as IDisposable;
-		        if (control != null) control.Dispose();
+				if (control != null) control.Dispose();
 			}
+			Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
 			this.Control = default(T);
 			base.Dispose (disposing);
 		}

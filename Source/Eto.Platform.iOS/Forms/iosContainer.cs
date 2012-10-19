@@ -2,12 +2,13 @@ using System;
 using Eto.Platform.iOS.Forms.Controls;
 using MonoTouch.UIKit;
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.Platform.iOS.Forms
 {
 	public interface IiosContainer
 	{
-		UIView ContainerControl { get; }
+		UIView ContentControl { get; }
 
 		void SetContentSize (System.Drawing.SizeF size);
 	}
@@ -25,13 +26,26 @@ namespace Eto.Platform.iOS.Forms
 			
 		}
 
+		public override Eto.Drawing.Size? PreferredSize {
+			get {
+				var layout = Widget.Layout.Handler as IiosLayout;
+				if (layout != null)
+					return layout.GetPreferredSize ();
+				else
+					return base.PreferredSize;
+			}
+			set {
+				base.PreferredSize = value;
+			}
+		}
+
 		#region IContainer implementation
 		
 		public virtual void SetLayout (Layout layout)
 		{
 		}
 
-		public virtual UIView ContainerControl
+		public virtual UIView ContentControl
 		{
 			get { return Control; }
 		}
@@ -47,11 +61,27 @@ namespace Eto.Platform.iOS.Forms
 
 		public virtual object ContainerObject {
 			get {
-				return this.Control;
+				return this.ContentControl;
 			}
 		}
 		#endregion
 
+		bool disposed;
+
+		protected override void Dispose (bool disposing)
+		{
+			if (!disposed && Widget.Layout != null) {
+				foreach (var control in Widget.Controls.OfType <IDisposable>().Reverse ()) {
+					control.Dispose ();
+				}
+
+				var layout = Widget.Layout.InnerLayout.Handler as IDisposable;
+				if (layout != null)
+					layout.Dispose ();
+				disposed = true;
+			}
+			base.Dispose (disposing);
+		}
 	}
 }
 

@@ -10,6 +10,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			return true; 
 		}
+
+		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations ()
+		{
+			return UIInterfaceOrientationMask.All;
+		}
 	}
 	
 	public class NavigationHandler : iosControl<UIView, Navigation>, INavigation, IiosViewController
@@ -42,13 +47,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 		
-		#region INavigation implementation
-		
 		public void Push (INavigationItem item)
 		{
 			var view = item.Content.GetViewController ();
-			if (item.Text != null)
-				view.NavigationItem.Title = item.Text;
+			view.NavigationItem.Title = item.Text;
+			view.View.Frame = Control.Frame;
+			view.View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			Navigation.PushViewController (view, true);
 		}
 
@@ -56,8 +60,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			Navigation.PopViewControllerAnimated (true);
 		}
-		#endregion
-
 	}
 }
 

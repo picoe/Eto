@@ -99,6 +99,7 @@
     <Folder Include="Drawing\" />
     <Folder Include="Forms\" />
     <Folder Include="Forms\Controls\" />
+    <Folder Include="Forms\Cells\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generator.cs" />
@@ -158,6 +159,15 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\GridHandler.cs" />
+    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
+    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
+    <Compile Include="Forms\Cells\CellHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
+    <Compile Include="Forms\Controls\LabelHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">
