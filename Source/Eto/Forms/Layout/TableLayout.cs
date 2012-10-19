@@ -40,7 +40,7 @@ namespace Eto.Forms
 		ITableLayout inner;
 		Control[,] controls;
 		Size size;
-		IList<Control> children;
+		List<Control> children;
 		public static Size DefaultSpacing = new Size (5, 5);
 		public static Padding DefaultPadding = new Padding (5);
 		
@@ -51,12 +51,12 @@ namespace Eto.Forms
 				return controls.OfType<Control> ();
 			}
 		}
-		
-		public IList<Control> Children {
+
+		public List<Control> Children
+		{
 			get { 
-				if (children == null) {
+				if (children == null)
 					children = new List<Control> ();
-				}
 				return children; 
 			}
 		}
