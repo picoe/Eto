@@ -22,7 +22,7 @@ namespace Eto.Forms
 	public class PixelLayout : Layout
 	{
 		IPixelLayout inner;
-		IList<Control> children;
+		List<Control> children;
 		List<Control> controls = new List<Control> ();
 		
 		public override IEnumerable<Control> Controls {
@@ -31,11 +31,10 @@ namespace Eto.Forms
 			}
 		}
 
-		public IList<Control> Children {
+		public List<Control> Children {
 			get {
-				if (children == null) {
+				if (children == null)
 					children = new List<Control> ();
-				}
 				return children;
 			}
 		}

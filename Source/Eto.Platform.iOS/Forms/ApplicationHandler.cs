@@ -20,6 +20,7 @@ namespace Eto.Platform.iOS.Forms
 		public ApplicationHandler ()
 		{
 			DelegateClassName = "EtoAppDelegate";
+			Control = UIApplication.SharedApplication;
 		}
 				
 		public void Run (string[] args)
@@ -85,6 +86,17 @@ namespace Eto.Platform.iOS.Forms
 			get { return Key.Alt; }
 		}
 
-
+		public string BadgeLabel {
+			get { return Control.ApplicationIconBadgeNumber > 0 ? Convert.ToString (Control.ApplicationIconBadgeNumber) : null; }
+			set { 
+				if (string.IsNullOrEmpty (value))
+					Control.ApplicationIconBadgeNumber = 0;
+				else {
+					int result;
+					if (Int32.TryParse (value, out result))
+						Control.ApplicationIconBadgeNumber = result;
+				}
+			}
+		}
 	}
 }

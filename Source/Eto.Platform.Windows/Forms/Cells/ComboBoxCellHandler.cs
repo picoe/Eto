@@ -36,7 +36,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			protected override void OnMouseClick (swf.DataGridViewCellMouseEventArgs e)
 			{
-				if (!Handler.MouseClick (e, RowIndex))
+				if (!Handler.MouseClick (e, e.RowIndex))
 					base.OnMouseClick (e);
 			}
 

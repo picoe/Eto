@@ -161,6 +161,7 @@
     <Compile Include="Sections\Serialization\Json\Test.cs" />
     <Compile Include="Sections\Serialization\JsonReadSection.cs" />
     <Compile Include="Sections\Printing\PrintDialogSection.cs" />
+    <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
