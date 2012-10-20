@@ -36,7 +36,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 			Size size = Size.Empty;
 			foreach (var item in points) {
-				var frameSize = GetPreferredSize (item.Key);
+				var frameSize = item.Key.GetPreferredSize ();
 				size = Size.Max (size, frameSize + new Size (item.Value));
 			}
 			return size;
@@ -59,7 +59,7 @@ namespace Eto.Platform.Mac.Forms
 			var offset = ((IMacViewHandler)control.Handler).PositionOffset;
 			var childView = control.GetContainerView ();
 			
-			var preferredSize = GetPreferredSize (control);
+			var preferredSize = control.GetPreferredSize ();
 
 			SD.PointF origin;
 			if (flipped)

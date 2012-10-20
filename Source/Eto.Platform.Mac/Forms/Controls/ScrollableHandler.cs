@@ -37,6 +37,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public ScrollableHandler ()
 		{
 			Enabled = true;
+			ExpandContentHeight = ExpandContentWidth = true;
 			control = new EtoScrollView { Handler = this };
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
@@ -122,8 +123,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public void UpdateScrollSizes ()
 		{
-			var size = Generator.ConvertF (base.GetNaturalSize ());
-			InternalSetFrameSize (size);
+			var contentSize = base.GetNaturalSize ();
+
+			if (ExpandContentWidth)
+				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);
+			if (ExpandContentHeight)
+				contentSize.Height = Math.Max (this.ClientSize.Height, contentSize.Height);
+
+			InternalSetFrameSize (Generator.ConvertF(contentSize));
 		}
 		
 		public override Color BackgroundColor {
@@ -176,11 +183,45 @@ namespace Eto.Platform.Mac.Forms.Controls
 				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
 				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
 			}
+			if (ExpandContentWidth)
+				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);
+			if (ExpandContentHeight)
+				contentSize.Height = Math.Max (this.ClientSize.Height, contentSize.Height);
 			InternalSetFrameSize (contentSize);
+		}
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			UpdateScrollSizes ();
+			this.Widget.SizeChanged += (sender, ee) => {
+				UpdateScrollSizes ();
+			};
 		}
 		
 		public Rectangle VisibleRect {
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
+
+		#region IScrollable implementation
+
+		public bool ExpandContentWidth
+		{
+			get;
+			set;
+		}
+
+		public bool ExpandContentHeight
+		{
+			get;
+			set;
+		}
+
+		#endregion
 	}
 }

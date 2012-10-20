@@ -18,7 +18,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public override UIView Control {
 			get {
-				return (UIView)Widget.Container.ContainerObject;
+				return Widget.Container != null ? (UIView)Widget.Container.ContainerObject : null;
 			}
 			protected set {
 				base.Control = value;
@@ -30,7 +30,7 @@ namespace Eto.Platform.iOS.Forms
 			set {
 				padding = value;
 				if (this.Widget.Loaded)
-					LayoutChildren ();
+					Layout ();
 			}
 		}
 		
@@ -41,7 +41,6 @@ namespace Eto.Platform.iOS.Forms
 
 		public override void LayoutChildren ()
 		{
-			base.LayoutChildren ();
 			if (child == null) return;
 			
 			UIView parent = this.Control;
@@ -60,8 +59,10 @@ namespace Eto.Platform.iOS.Forms
 		public override void OnLoadComplete ()
 		{
 			base.OnLoadComplete ();
+			if (!this.Control.Frame.IsEmpty)
+				Layout ();
 			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
-				LayoutChildren ();
+				Layout ();
 			};
 		}
 
@@ -79,7 +80,7 @@ namespace Eto.Platform.iOS.Forms
 					var childControl = (UIView)child.ControlObject;
 					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
 					if (this.Widget.Loaded)
-						LayoutChildren ();
+						Layout ();
 					UIView parent = this.Control;
 					parent.AddSubview(childControl);
 				}

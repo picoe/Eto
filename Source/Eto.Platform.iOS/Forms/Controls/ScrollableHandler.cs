@@ -10,10 +10,30 @@ namespace Eto.Platform.iOS.Forms.Controls
 	public class ScrollableHandler : iosContainer<UIScrollView, Scrollable>, IScrollable
 	{
 		UIView Child { get; set; }
+		BorderType border;
 		
 		public BorderType Border {
-			get;
-			set;
+			get { return border; }
+			set {
+				border = value;
+				switch (border) {
+				case BorderType.Bezel:
+					Control.Layer.BorderWidth = 2.0f;
+					Control.Layer.BorderColor = UIColor.LightGray.CGColor;
+					Control.Layer.CornerRadius = 4f;
+					break;
+				case BorderType.Line:
+					Control.Layer.BorderWidth = 1.0f;
+					Control.Layer.BorderColor = UIColor.DarkGray.CGColor;
+					Control.Layer.CornerRadius = 0f;
+					break;
+				case BorderType.None:
+					Control.Layer.BorderWidth = 0f;
+					Control.Layer.BorderColor = UIColor.DarkGray.CGColor;
+					Control.Layer.CornerRadius = 0f;
+					break;
+				}
+			}
 		}
 		
 		class Delegate : UIScrollViewDelegate
@@ -102,7 +122,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.ScrollEnabled = true;
 			Control.Delegate = new Delegate { Handler = this };
 			Control.AddSubview (Child);
-
+			this.ExpandContentHeight = ExpandContentWidth = true;
 
 			/*
 			foreach (var gestureRecognizer in Control.GestureRecognizers.OfType<UIPanGestureRecognizer>()) {
@@ -113,20 +133,14 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public void UpdateScrollSizes ()
 		{
-			SD.SizeF size = SD.SizeF.Empty;
-			foreach (var c in Widget.Controls) {
-				var view = c.ControlObject as UIView;
-				if (view != null) {
-					var frame = view.Frame;
-					if (size.Width < frame.Right)
-						size.Width = frame.Right;
-					if (size.Height < frame.Bottom)
-						size.Height = frame.Bottom;
-				}
-			}
-			size = new System.Drawing.SizeF (size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
-			Control.ContentSize = size;
-			Child.SetFrameSize (size);
+			var contentSize = this.GetNaturalSize ();
+			
+			if (ExpandContentWidth)
+				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);
+			if (ExpandContentHeight)
+				contentSize.Height = Math.Max (this.ClientSize.Height, contentSize.Height);
+			Control.ContentSize = Generator.Convert (contentSize);
+			Child.SetFrameSize (Control.ContentSize);
 			Adjust ();
 		}
 
@@ -140,11 +154,27 @@ namespace Eto.Platform.iOS.Forms.Controls
 				Control.SetContentOffset (Generator.ConvertF ((PointF)value * Control.ZoomScale), false);
 			}
 		}
-		
-		public override void OnLoad (EventArgs e)
+
+		public override void LayoutStarted ()
 		{
-			base.OnLoad (e);
+			base.LayoutStarted ();
 			UpdateScrollSizes ();
+		}
+		
+		public override void LayoutComplete ()
+		{
+			base.LayoutComplete ();
+			UpdateScrollSizes ();
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			/*
+			Widget.SizeChanged += (sender, ee) => {
+				UpdateScrollSizes ();
+				Widget.Layout.Update ();
+			};*/
 		}
 
 		public Eto.Drawing.Size ScrollSize {
@@ -175,6 +205,16 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
+		#region IScrollable implementation
+		public bool ExpandContentWidth {
+			get;
+			set;
+		}
+		public bool ExpandContentHeight {
+			get;
+			set;
+		}
+		#endregion
 	}
 }
 

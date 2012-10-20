@@ -12,10 +12,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new UITextField ();
 		}
 
-		public override Eto.Drawing.Size? PreferredSize {
-			get {
-				return Size.Max (base.PreferredSize ?? Size.Empty, new Size(60, 0));
-			}
+		protected override Eto.Drawing.Size GetNaturalSize ()
+		{
+			return Size.Max (base.GetNaturalSize (), new Size(60, 0));
 		}
 
 		public override void Initialize ()

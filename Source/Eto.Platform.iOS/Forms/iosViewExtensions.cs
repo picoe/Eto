@@ -23,9 +23,7 @@ namespace Eto.Platform.iOS.Forms
 				return Size.Empty;
 			var mh = control.Handler as IiosView;
 			if (mh != null) {
-				var size = mh.PreferredSize;
-				if (size != null)
-					return size.Value;
+				return mh.GetPreferredSize ();
 			}
 			
 			var c = control.ControlObject as UIView;

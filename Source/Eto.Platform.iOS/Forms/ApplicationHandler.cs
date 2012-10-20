@@ -4,6 +4,7 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using SD = System.Drawing;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -96,8 +97,10 @@ namespace Eto.Platform.iOS.Forms
 					int result;
 					if (Int32.TryParse (value, out result))
 						Control.ApplicationIconBadgeNumber = result;
-					else
+					else {
+						Debug.WriteLine ("iOS: Application.BadgeLabel only supports numeric values");
 						Control.ApplicationIconBadgeNumber = 0;
+					}
 				}
 			}
 		}

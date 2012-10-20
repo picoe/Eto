@@ -11,6 +11,9 @@ namespace Eto.Platform.iOS.Forms
 		UIView ContentControl { get; }
 
 		void SetContentSize (System.Drawing.SizeF size);
+
+		void LayoutComplete ();
+		void LayoutStarted ();
 	}
 	
 	public class iosContainer<T, W> : iosControl<T, W>, IContainer, IiosContainer
@@ -25,17 +28,21 @@ namespace Eto.Platform.iOS.Forms
 		{
 			
 		}
+		protected override Eto.Drawing.Size GetNaturalSize ()
+		{
+			var layout = Widget.Layout.InnerLayout.Handler as IiosLayout;
+			if (layout != null)
+				return layout.GetPreferredSize ();
+			else
+				return base.GetNaturalSize ();
+		}
 
-		public override Eto.Drawing.Size? PreferredSize {
-			get {
-				if (!this.AutoSize)
-					return this.Size;
-				var layout = Widget.Layout.InnerLayout.Handler as IiosLayout;
-				if (layout != null)
-					return layout.GetPreferredSize ();
-				else
-					return base.PreferredSize;
-			}
+		public virtual void LayoutComplete ()
+		{
+		}
+
+		public virtual void LayoutStarted ()
+		{
 		}
 
 		#region IContainer implementation

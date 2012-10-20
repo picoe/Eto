@@ -12,7 +12,7 @@ namespace Eto.Platform.iOS.Forms
 	public interface IiosView
 	{
 		Size PositionOffset { get; }
-		Size? PreferredSize { get; }
+		Size GetPreferredSize ();
 		Size? MinimumSize { get; }
 		bool AutoSize { get; }
 		UIView ContainerControl { get; }
@@ -51,6 +51,7 @@ namespace Eto.Platform.iOS.Forms
 		where T: UIView
 		where W: Control
 	{
+		Size? naturalSize;
 
 		public virtual UIViewController Controller { get { return null; } }
 
@@ -60,20 +61,47 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 		public virtual bool AutoSize { get; protected set; }
-		
-		public virtual Size? PreferredSize { get {
-				if (this.AutoSize)
-					return Generator.ConvertF (Control.SizeThatFits(UIView.UILayoutFittingCompressedSize));
-				else
-					return this.Size;
+
+		public Size? PreferredSize { get; set; }
+
+		protected virtual Size GetNaturalSize ()
+		{
+			if (naturalSize != null) 
+				return naturalSize.Value;
+			var control = Control as UIView;
+			if (control != null) {
+				naturalSize = Generator.ConvertF (control.SizeThatFits(UIView.UILayoutFittingCompressedSize));
+				return naturalSize.Value;
 			}
+			return Size.Empty;
 		}
+		
+		public virtual Size GetPreferredSize ()
+		{
+			var size = GetNaturalSize ();
+			if (!AutoSize && PreferredSize != null) {
+				var preferredSize = PreferredSize.Value;
+				if (preferredSize.Width >= 0)
+					size.Width = preferredSize.Width;
+				if (preferredSize.Height >= 0)
+					size.Height = preferredSize.Height;
+			}
+			if (MinimumSize != null)
+				size = Size.Max (size, MinimumSize.Value);
+			if (MaximumSize != null)
+				size = Size.Min (size, MaximumSize.Value);
+			return size;
+		}
+
+
 		public virtual Size? MinimumSize { get; set; }
+		public virtual Size? MaximumSize { get; set; }
 
 		public virtual Size Size {
 			get { return Generator.ConvertF (Control.Frame.Size); }
 			set { 
 				if (value != this.Size) {
+					PreferredSize = value;
 					Control.SetFrameSize (Generator.ConvertF (value));
 					Widget.OnSizeChanged (EventArgs.Empty);
 					this.AutoSize = false;

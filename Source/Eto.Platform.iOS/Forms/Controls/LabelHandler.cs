@@ -44,6 +44,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				default:
 					throw new NotSupportedException();
 				}
+
 			}
 		}
 
@@ -53,13 +54,37 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		public WrapMode Wrap {
-			get;
-			set;
+			get { 
+				switch (Control.LineBreakMode) {
+				case UILineBreakMode.CharacterWrap:
+					return WrapMode.Character;
+				case UILineBreakMode.WordWrap:
+					return WrapMode.Word;
+				case UILineBreakMode.Clip:
+				default:
+					return WrapMode.None;
+				}
+			}
+			set {
+				switch (value) {
+				case WrapMode.Character:
+					Control.LineBreakMode = UILineBreakMode.CharacterWrap;
+					break;
+				case WrapMode.Word:
+					Control.LineBreakMode = UILineBreakMode.WordWrap;
+					break;
+				case WrapMode.None:
+					Control.LineBreakMode = UILineBreakMode.Clip;
+					break;
+				default:
+					throw new NotSupportedException ();
+				}
+			}
 		}
 
 		public Eto.Drawing.Color TextColor {
-			get;
-			set;
+			get { return Generator.Convert (Control.TextColor); }
+			set { Control.TextColor = Generator.ConvertUI (value); }
 		}
 	}
 }

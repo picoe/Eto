@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using MonoTouch.UIKit;
 using System.Linq;
+using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -9,59 +10,45 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		public UIViewController Controller { get { return SplitController; } }
 		
-		UISplitViewController SplitController { get; set; }
+		public MG.MGSplitViewController SplitController { get; set; }
 		UIViewController[] children;
 		Control panel1;
 		Control panel2;
 		int? position;
-		
-		class RotatableSplitViewController : UISplitViewController
+
+		public class Delegate : MG.MGSplitViewControllerDelegate
 		{
-			public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
-			{
-				return true; //return base.ShouldAutorotateToInterfaceOrientation (toInterfaceOrientation);
-			}
 		}
 		
 		public SplitterHandler()
 		{
-			SplitController = new RotatableSplitViewController();
+			SplitController = new MG.MGSplitViewController();
+			SplitController.Delegate = new MG.MGSplitViewControllerDelegate();
 			Control = Controller.View;
+			Control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			
 			children = new UIViewController[2];
 			children[0] = new UIViewController();
 			children[1] = new UIViewController();
 			SplitController.ViewControllers = children;
+
+			SplitController.AllowsDraggingDivider = true;
+			SplitController.DividerStyle = MG.MGSplitViewDividerStyle.PaneSplitter;
+			SplitController.SplitWidth = 10;
 		}
 		
 		public int Position
 		{
-			get { return position ?? 0; }
-			set {
-				position = value;
-				//var adjview = control.Subviews[0];
-				//adjview.SetFrameSize(new System.Drawing.SizeF(adjview.Frame.Height, (float)position));
-				//control.AdjustSubviews();
+			get { return (int)SplitController.SplitPosition; }
+			set { 
+				//SplitController.SplitPosition = value;
 			}
 		}
 		
 		public SplitterOrientation Orientation
 		{
-			get
-			{
-				//if (control.IsVertical) return SplitterOrientation.Vertical;
-				//else return SplitterOrientation.Horizontal;
-				return SplitterOrientation.Horizontal;
-			}
-			set
-			{
-				/*switch (value)
-				{
-					default:
-					case SplitterOrientation.Horizontal: control.IsVertical = false; break;
-					case SplitterOrientation.Vertical: control.IsVertical = true; break;
-				}*/
-			}
+			get { return SplitController.Vertical ? SplitterOrientation.Vertical : SplitterOrientation.Horizontal; }
+			set { SplitController.Vertical = value == SplitterOrientation.Vertical; }
 		}
 		
 		public SplitterFixedPanel FixedPanel {
@@ -80,7 +67,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				if (panel1 != value)
 				{
-					children[0] = (value != null) ? value.GetViewController() : new RotatableViewController();
+					children[0] = value.GetViewController() ?? new RotatableViewController();
 					SplitController.ViewControllers = children;
 					panel1 = value;
 				}
@@ -94,7 +81,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				if (panel2 != value)
 				{
-					children[1] = (value != null) ? value.GetViewController() : new RotatableViewController();
+					children[1] = value.GetViewController() ?? new RotatableViewController();
 					SplitController.ViewControllers = children;
 					panel2 = value;
 				}

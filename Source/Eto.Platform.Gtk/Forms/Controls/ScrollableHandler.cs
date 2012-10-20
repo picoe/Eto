@@ -159,5 +159,17 @@ namespace Eto.Platform.GtkSharp
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 
+		#region IScrollable implementation
+		public bool ExpandContentWidth
+		{
+			get;
+			set;
+		}
+		public bool ExpandContentHeight
+		{
+			get;
+			set;
+		}
+		#endregion
 	}
 }

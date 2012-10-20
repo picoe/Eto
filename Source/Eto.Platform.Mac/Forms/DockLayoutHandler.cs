@@ -37,7 +37,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 			if (child != null)
 			{
-				return GetPreferredSize (child) + Padding.Size;
+				return child.GetPreferredSize () + Padding.Size;
 			}
 			else return Size.Empty;
 		}

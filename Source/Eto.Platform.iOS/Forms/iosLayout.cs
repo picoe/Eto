@@ -39,6 +39,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public virtual void Update()
 		{
+			Layout ();
 		}
 
 		public virtual void AttachedToContainer ()
@@ -50,16 +51,18 @@ namespace Eto.Platform.iOS.Forms
 		}
 		
 		public abstract Size GetPreferredSize ();
-		
-		public virtual void LayoutChildren()
+
+		public virtual void Layout()
 		{
-		}
-		
-		protected void Layout()
-		{
+			var container = this.Widget.Container.Handler as IiosContainer;
+			container.LayoutStarted ();
 			LayoutChildren ();
+			container.LayoutComplete ();
 		}
-		
+
+		public abstract void LayoutChildren ();
+
+
 		public virtual void SetContainerSize(SD.SizeF size)
 		{
 			var container = Widget.Container.Handler as IiosContainer;

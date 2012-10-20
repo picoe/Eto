@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Eto.Test.Sections.Behaviors
 {
-	public class BadgeLabelSection : Panel
+	public class BadgeLabelSection : Scrollable
 	{
 		public BadgeLabelSection ()
 		{

@@ -89,21 +89,6 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
-		protected Size GetPreferredSize (Control view)
-		{
-			var mh = view.Handler as IMacAutoSizing;
-			if (mh != null) {
-				return mh.GetPreferredSize ();
-			}
-			
-			var c = view.ControlObject as NSControl;
-			if (c != null) {
-				c.SizeToFit ();
-				return Generator.ConvertF (c.Frame.Size);
-			}
-			return Size.Empty;
-		}
-		
 		public virtual void Update ()
 		{
 			LayoutChildren ();	
@@ -115,7 +100,9 @@ namespace Eto.Platform.Mac.Forms
 
 		public abstract Size GetPreferredSize ();
 		
-		public abstract void LayoutChildren ();
+		public virtual void LayoutChildren ()
+		{
+		}
 		
 		public void UpdateParentLayout (bool updateSize = true)
 		{

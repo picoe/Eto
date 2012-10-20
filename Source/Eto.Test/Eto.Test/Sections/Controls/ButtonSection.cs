@@ -4,10 +4,12 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class ButtonSection : Panel
+	public class ButtonSection : Scrollable
 	{
 		public ButtonSection ()
 		{
+			ExpandContentWidth = true;
+			ExpandContentHeight = true;
 			var layout = new DynamicLayout (this);
 			
 			//layout.SetColumnScale(0);

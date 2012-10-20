@@ -1,0 +1,28 @@
+using System;
+using Eto.Drawing;
+using Eto.Forms;
+using MonoMac.AppKit;
+
+namespace Eto.Platform.Mac.Forms
+{
+	public static class MacControlExtensions
+	{
+		public static Size GetPreferredSize (this Control view)
+		{
+			if (view == null)
+				return Size.Empty;
+			var mh = view.Handler as IMacAutoSizing;
+			if (mh != null) {
+				return mh.GetPreferredSize ();
+			}
+			
+			var c = view.ControlObject as NSControl;
+			if (c != null) {
+				c.SizeToFit ();
+				return Generator.ConvertF (c.Frame.Size);
+			}
+			return Size.Empty;
+		}
+	}
+}
+

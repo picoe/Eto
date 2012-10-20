@@ -284,8 +284,9 @@ namespace Eto.Platform.Mac.Forms
 			});
 #elif IOS
 			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
-				LayoutChildren ();
+				Layout ();
 			};
+			Layout ();
 #endif
 			
 			loaded = true;
