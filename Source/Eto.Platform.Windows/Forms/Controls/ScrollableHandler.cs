@@ -35,21 +35,32 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		/*
-		public override SWF.Control ContainerControl
+		public override Size DesiredSize
 		{
 			get
 			{
-				return content;
+				return base.DesiredSize;
 			}
-		}*/
+		}
 
-		public override object ContainerObject
+		protected override void CalculateMinimumSize ()
 		{
-			get
-			{
-				return content;
-			}
+			base.CalculateMinimumSize ();
+		}
+
+		public override void SetScale (bool xscale, bool yscale)
+		{
+			var layout = WindowsLayout;
+
+			if (layout != null)
+				layout.SetScale (false, false);
+
+			base.SetScale (xscale, yscale);
+		}
+
+		public override SWF.Control ContentContainer
+		{
+			get { return content; }
 		}
 		
 		public BorderType Border {
@@ -84,6 +95,7 @@ namespace Eto.Platform.Windows
 
 		public ScrollableHandler ()
 		{
+			SkipLayoutScale = true;
 			Control = new CustomScrollable{ Handler = this };
 			this.Control.Size = SD.Size.Empty;
 			this.Control.MinimumSize = SD.Size.Empty;

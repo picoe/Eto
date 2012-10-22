@@ -11,26 +11,62 @@ namespace Eto.Platform.Windows
 		where T: System.Windows.Forms.Control
 		where W: Container
 	{
+		Size? minimumSize;
+
+		protected IWindowsLayout WindowsLayout
+		{
+			get { return Widget.Layout != null && Widget.Layout.InnerLayout != null ? Widget.Layout.InnerLayout.Handler as IWindowsLayout : null; }
+		}
+
+		protected bool SkipLayoutScale { get; set; }
+
+		public override Size DesiredSize
+		{
+			get
+			{
+				var size = this.MinimumSize ?? Size.Empty;
+				var layout = WindowsLayout;
+
+				if (layout != null)
+				{
+					if (!SkipLayoutScale)
+						size = Size.Max (layout.DesiredSize, size);
+				}
+
+				size = Size.Max (base.DesiredSize, size);
+				return size;
+			}
+		}
+
+		public override void SetScale (bool xscale, bool yscale)
+		{
+			if (!SkipLayoutScale)
+			{
+				var layout = WindowsLayout;
+
+				if (layout != null)
+					layout.SetScale (xscale, yscale);
+			}
+			base.SetScale (xscale, yscale);
+		}
 		
 		public Size? MinimumSize {
-			get {
-				if (this.Control.MinimumSize == SD.Size.Empty)
-					return null;
-				else
-					return Generator.Convert(this.Control.MinimumSize);
-			}
+			get { return minimumSize; }
 			set {
-				if (value != null)
-					this.Control.MinimumSize = Generator.Convert (value.Value);
-				else
-					this.Control.MinimumSize = System.Drawing.Size.Empty;
+				minimumSize = value;
+				this.Control.MinimumSize = Generator.Convert (value ?? Size.Empty);
 			}
 		}
 
 
-		public SWF.Control ContentContainer
+		public virtual SWF.Control ContentContainer
 		{
-			get { return (SWF.Control)this.ContainerObject; }
+			get { return (SWF.Control)this.Control; }
+		}
+
+		public object ContainerObject
+		{
+			get { return this.ContentContainer; }
 		}
 
 		public override Size ClientSize
@@ -39,11 +75,6 @@ namespace Eto.Platform.Windows
 			set { base.ClientSize = value; }
 		}
 
-		
-		public virtual object ContainerObject
-		{
-			get	{ return Control; }
-		}
 		
 		public override void SuspendLayout ()
 		{
