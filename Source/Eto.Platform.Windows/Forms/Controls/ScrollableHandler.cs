@@ -8,6 +8,8 @@ namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
+		SWF.Panel content;
+
 		public class CustomScrollable : System.Windows.Forms.Panel
 		{
 			public ScrollableHandler Handler { get; set; }
@@ -30,6 +32,23 @@ namespace Eto.Platform.Windows
 				/*if (autoScrollToControl) return base.ScrollToControl(activeControl);
 				else return this.AutoScrollPosition;*/
 				return this.AutoScrollPosition;
+			}
+		}
+
+		/*
+		public override SWF.Control ContainerControl
+		{
+			get
+			{
+				return content;
+			}
+		}*/
+
+		public override object ContainerObject
+		{
+			get
+			{
+				return content;
 			}
 		}
 		
@@ -78,10 +97,28 @@ namespace Eto.Platform.Windows
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
+
 			//control.AutoScrollPosition = new SD.Point(0,0);
 			//control.AutoScrollMinSize = new System.Drawing.Size(500,500);
 			//control.DisplayRectangle = new System.Drawing.Rectangle(0,0,500,1000);
 			//control.BackColor = System.Drawing.Color.Black;
+			content = new SWF.Panel ();
+			content.AutoSize = true;
+			Control.Controls.Add (content);
+
+			/*
+			Control.SizeChanged += delegate
+			{
+				if (Widget.Layout != null)
+				{
+					var layout = Widget.Layout.InnerLayout.Handler as IWindowsLayout;
+					if (layout != null && layout.LayoutObject != null)
+					{
+						var c = layout.LayoutObject as SWF.Control;
+						c.MinimumSize = new SD.Size(Control.ClientSize.Width, 0);
+					}
+				}
+			};*/
 		}
 		
 		public override void AttachEvent (string handler)
