@@ -136,11 +136,13 @@ namespace Eto.Platform.GtkSharp
 					Control.Remove (old.GetContainerWidget ());
 			}
 
-			var blankWidget = blank[y, x];
+			var blankWidget = blank [y, x];
+			if (blankWidget != null) {
+				Control.Remove (blankWidget);
+				blank [y, x] = null;
+			}
 			if (child != null)
 			{
-				if (blankWidget != null)
-					Control.Remove (blankWidget);
 				controls[y, x] = child;
 				var widget = child.GetContainerWidget ();
 				if (widget.Parent is Gtk.Container)
@@ -151,10 +153,7 @@ namespace Eto.Platform.GtkSharp
 			else
 			{
 				controls[y, x] = null;
-				if (blankWidget != null)
-					Control.Remove (blankWidget);
-				if (blankWidget == null)
-					blankWidget = blank[y, x] = new Gtk.HBox ();
+				blankWidget = blank[y, x] = new Gtk.VBox ();
 				Control.Attach (blankWidget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions (x), GetRowOptions (y), 0, 0);
 			}
 			return false;
