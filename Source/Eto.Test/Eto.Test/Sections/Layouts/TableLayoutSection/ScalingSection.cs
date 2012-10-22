@@ -29,7 +29,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 			layout.Add (tableLayout.Container, yscale: true);
 
 			tableLayout = new TableLayout (new Panel { BackgroundColor = Colors.Blue, Size = size }, 3, 3);
-			tableLayout.Add (new Label { Text = "2x2, should scale", BackgroundColor = Colors.Red }, 1, 1, true, true);
+			tableLayout.Add (new Label { Text = "3x3, should scale", BackgroundColor = Colors.Red }, 1, 1, true, true);
 			layout.Add (tableLayout.Container, yscale: true);
 
 			tableLayout = new TableLayout (new Panel { BackgroundColor = Colors.Blue, Size = size }, 2, 2);
