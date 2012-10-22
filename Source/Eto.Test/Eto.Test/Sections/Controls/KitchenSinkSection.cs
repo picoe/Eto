@@ -65,7 +65,7 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout (new Panel ());
 			layout.DefaultPadding = Padding.Empty;
 			layout.BeginVertical ();
-			layout.AddRow (new Label { Text = "Label", VerticalAlign = VerticalAlign.Middle}, new Button{ Text = "Button Control"}, new ImageView { Image = icon1 }, null);
+			layout.AddRow (new Label { Text = "Label", VerticalAlign = VerticalAlign.Middle}, TableLayout.AutoSized(new Button{ Text = "Button Control"}, centered: true), new ImageView { Image = icon1 }, null);
 			layout.EndBeginVertical ();
 			layout.AddRow (new CheckBox { Text = "Check Box (/w three state)", ThreeState = true, Checked = null }, RadioButtons (), null);
 			layout.EndBeginVertical ();
