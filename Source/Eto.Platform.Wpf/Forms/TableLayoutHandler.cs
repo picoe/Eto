@@ -12,19 +12,25 @@ namespace Eto.Platform.Wpf.Forms
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout>, ITableLayout
 	{
 		Eto.Drawing.Size spacing;
-		bool lastColumnSet;
-		bool lastRowSet;
+		bool[] columnScale;
+		bool lastColumnScale;
+		bool[] rowScale;
+		bool lastRowScale;
 
 		public void CreateControl (int cols, int rows)
 		{
+			columnScale = new bool[cols];
+			rowScale = new bool[rows];
+			lastColumnScale = true;
+			lastRowScale = true;
 			Control = new swc.Grid {
 				SnapsToDevicePixels = true
 			};
 			for (int i = 0; i < cols; i++) Control.ColumnDefinitions.Add (new swc.ColumnDefinition {
-				Width = new System.Windows.GridLength (1, i == cols - 1 ? System.Windows.GridUnitType.Star : System.Windows.GridUnitType.Auto)
+				Width = GetColumnWidth(i)
 			});
 			for (int i = 0; i < rows; i++) Control.RowDefinitions.Add (new swc.RowDefinition {
-				Height = new System.Windows.GridLength (1, i == rows - 1 ? System.Windows.GridUnitType.Star : System.Windows.GridUnitType.Auto)
+				Height = GetRowHeight(i)
 			});
 			Spacing = TableLayout.DefaultSpacing;
 			Padding = TableLayout.DefaultPadding;
@@ -86,52 +92,61 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		sw.GridLength GetColumnWidth (int column)
+		{
+			var scale = columnScale[column];
+			if (column == columnScale.Length - 1)
+				scale |= lastColumnScale;
+			return new System.Windows.GridLength (1, scale ? sw.GridUnitType.Star : sw.GridUnitType.Auto);
+		}
+
+		sw.GridLength GetRowHeight (int row)
+		{
+			var scale = rowScale[row];
+			if (row == rowScale.Length - 1)
+				scale |= lastRowScale;
+			return new System.Windows.GridLength (1, scale ? sw.GridUnitType.Star : sw.GridUnitType.Auto);
+		}
+
 		public void SetColumnScale (int column, bool scale)
 		{
-			bool isLastColumn = column == Widget.Size.Width - 1;
-			Control.ColumnDefinitions[column].Width = new System.Windows.GridLength (1, scale ? System.Windows.GridUnitType.Star : System.Windows.GridUnitType.Auto);
-			if (scale) {
-				if (!lastColumnSet && !isLastColumn) {
-					SetColumnScale (Widget.Size.Width - 1, false);
-				}
-				else if (isLastColumn)
-					lastColumnSet = true;
-
+			columnScale[column] = scale;
+			var lastScale = columnScale.Length == 1 || columnScale.Take (columnScale.Length - 1).All (r => !r);
+			Control.ColumnDefinitions[column].Width = GetColumnWidth (column);
+			if (lastScale != lastColumnScale)
+			{
+				lastColumnScale = lastScale;
+				Control.ColumnDefinitions[columnScale.Length - 1].Width = GetColumnWidth (columnScale.Length - 1);
 			}
 			SetSizes ();
 		}
 
 		public bool GetColumnScale (int column)
 		{
-			return Control.ColumnDefinitions[column].Width.IsStar;
+			return columnScale[column];
 		}
 
 		public void SetRowScale (int row, bool scale)
 		{
-			Control.RowDefinitions[row].Height = new System.Windows.GridLength (1, scale ? System.Windows.GridUnitType.Star : System.Windows.GridUnitType.Auto);
-			if (scale) {
-				bool isLastRow = row == Widget.Size.Height - 1;
-				if (!lastRowSet && !isLastRow) {
-					SetRowScale (Widget.Size.Height - 1, false);
-				}
-				else if (isLastRow)
-					lastRowSet = true;
-
+			rowScale[row] = scale;
+			var lastScale = rowScale.Length == 1 || rowScale.Take (rowScale.Length - 1).All (r => !r);
+			Control.RowDefinitions[row].Height = GetRowHeight (row);
+			if (lastScale != lastRowScale)
+			{
+				lastRowScale = lastScale;
+				Control.RowDefinitions[rowScale.Length - 1].Height = GetRowHeight (rowScale.Length - 1);
 			}
 			SetSizes ();
 		}
 
 		public bool GetRowScale (int row)
 		{
-			return Control.RowDefinitions[row].Height.IsStar;
+			return rowScale[row];
 		}
 
 		public Eto.Drawing.Size Spacing
 		{
-			get
-			{
-				return spacing;
-			}
+			get { return spacing; }
 			set
 			{
 				spacing = value;

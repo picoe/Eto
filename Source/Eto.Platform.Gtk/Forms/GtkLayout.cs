@@ -5,11 +5,12 @@ namespace Eto.Platform.GtkSharp
 {
 	internal interface IGtkLayout
 	{
-		object ContainerObject { get; }
+		Gtk.Widget ContainerObject { get; }
 	}
 	
 	public abstract class GtkLayout<T, W> : WidgetHandler<T, W>, ILayout, IGtkLayout
 		where W: Layout
+		where T: Gtk.Widget
 	{
 		bool setlayout;
 		
@@ -25,8 +26,8 @@ namespace Eto.Platform.GtkSharp
 				setlayout = true;
 		}
 		
-		public virtual object ContainerObject {
-			get { return Control; }
+		public virtual Gtk.Widget ContainerObject {
+			get { return (Gtk.Widget)Control; }
 		}
 
 		public virtual void OnPreLoad ()

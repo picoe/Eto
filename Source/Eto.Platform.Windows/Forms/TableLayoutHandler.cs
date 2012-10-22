@@ -12,6 +12,10 @@ namespace Eto.Platform.Windows
 	{
 		Size spacing;
 		Control[,] views;
+		bool[] columnScale;
+		bool lastColumnScale;
+		bool[] rowScale;
+		bool lastRowScale;
 
 		public override object LayoutObject
 		{
@@ -145,58 +149,76 @@ namespace Eto.Platform.Windows
 		public void CreateControl(int cols, int rows)
 		{
 			views = new Control[cols, rows];
+			columnScale = new bool[cols];
+			lastColumnScale = true;
+			rowScale = new bool[rows];
+			lastRowScale = true;
 			Control.RowCount = rows;
 			Control.ColumnCount = cols;
 			Control.ColumnStyles.Clear();
 			Control.RowStyles.Clear();
 			for (int i = 0; i < cols; i++)
-			{
-				Control.ColumnStyles.Add(new SWF.ColumnStyle(System.Windows.Forms.SizeType.AutoSize));
-			}
+				Control.ColumnStyles.Add(GetColumnStyle(i));
 			for (int i = 0; i < rows; i++)
-			{
-				Control.RowStyles.Add(new SWF.RowStyle(System.Windows.Forms.SizeType.AutoSize));
-			}
-			if (cols == 1) Control.ColumnStyles[0] = new SWF.ColumnStyle(System.Windows.Forms.SizeType.Percent, 1F); 
-			if (rows == 1) Control.RowStyles[0] = new SWF.RowStyle(System.Windows.Forms.SizeType.Percent, 1F); 
+				Control.RowStyles.Add(GetRowStyle(i));
+		}
+
+		SWF.ColumnStyle GetColumnStyle (int column)
+		{
+			var scale = columnScale[column];
+			if (column == columnScale.Length - 1)
+				scale |= lastColumnScale;
+			if (scale)
+				return new SWF.ColumnStyle (SWF.SizeType.Percent, 1f);
+			else
+				return new SWF.ColumnStyle (SWF.SizeType.AutoSize);
+		}
+
+		SWF.RowStyle GetRowStyle (int row)
+		{
+			var scale = rowScale[row];
+			if (row == rowScale.Length - 1)
+				scale |= lastRowScale;
+			if (scale)
+				return new SWF.RowStyle (SWF.SizeType.Percent, 1f);
+			else
+				return new SWF.RowStyle (SWF.SizeType.AutoSize);
 		}
 
 		public void SetColumnScale(int column, bool scale)
 		{
-			if (scale || this.Control.ColumnCount == 1)
+			columnScale[column] = scale;
+			var lastScale = columnScale.Length == 1 || columnScale.Take (columnScale.Length - 1).All (r => !r);
+			Control.ColumnStyles[column] = GetColumnStyle (column);
+			if (lastScale != lastColumnScale)
 			{
-				Control.ColumnStyles[column].SizeType = SWF.SizeType.Percent;
-				Control.ColumnStyles[column].Width = 1F;
-			}
-			else
-			{
-				Control.ColumnStyles[column].SizeType = SWF.SizeType.AutoSize;
+				lastColumnScale = lastScale;
+				Control.ColumnStyles[columnScale.Length - 1] = GetColumnStyle (columnScale.Length - 1);
 			}
 			SetMinSize();
 		}
 
-		public bool GetColumnScale (int row)
+		public bool GetColumnScale (int column)
 		{
-			return Control.ColumnStyles[row].SizeType == SWF.SizeType.Percent;
+			return columnScale[column];
 		}
 
 		public void SetRowScale(int row, bool scale)
 		{
-			if (scale || this.Control.RowCount == 1)
+			rowScale[row] = scale;
+			var lastScale = rowScale[rowScale.Length - 1] || rowScale.Take (rowScale.Length - 1).All (r => !r);
+			Control.RowStyles[row] = GetRowStyle (row);
+			if (lastScale != lastRowScale)
 			{
-				Control.RowStyles[row].SizeType = SWF.SizeType.Percent;
-				Control.RowStyles[row].Height = 1F;
-			}
-			else
-			{
-				Control.RowStyles[row].SizeType = SWF.SizeType.AutoSize;
+				lastRowScale = lastScale;
+				Control.RowStyles[rowScale.Length - 1] = GetRowStyle (rowScale.Length - 1);
 			}
 			SetMinSize();
 		}
 
 		public bool GetRowScale (int row)
 		{
-			return Control.RowStyles[row].SizeType == SWF.SizeType.Percent;
+			return rowScale[row];
 		}
 	}
 }
