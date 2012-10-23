@@ -32,179 +32,66 @@
     <DefineConstants>DESKTOP;XAML</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Accessibility" />
-    <Reference Include="PresentationCore" />
-    <Reference Include="PresentationFramework" />
-    <Reference Include="PresentationUI, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Printing" />
-    <Reference Include="System.Xaml" />
-    <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider" />
-    <Reference Include="UIAutomationTypes" />
-    <Reference Include="WindowsBase" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Compile Include="Log.cs" />
-    <Compile Include="Sections\Behaviors\BadgeLabelSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\PasswordBoxSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\TreeViewSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Dialogs\ColorDialogSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Dialogs\SelectFolderSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Drawing\BitmapSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Drawing\AntialiasSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Drawing\DrawTextSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Drawing\FontsSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Drawing\PathSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="TestApplication.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="MainForm.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Dialogs\About.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
+    <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
+    <Compile Include="Sections\Controls\TreeViewSection.cs" />
+    <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
+    <Compile Include="Sections\Drawing\BitmapSection.cs" />
+    <Compile Include="Sections\Drawing\AntialiasSection.cs" />
+    <Compile Include="Sections\Drawing\DrawTextSection.cs" />
+    <Compile Include="Sections\Drawing\FontsSection.cs" />
+    <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
+    <Compile Include="TestApplication.cs" />
+    <Compile Include="MainForm.cs" />
+    <Compile Include="Dialogs\About.cs" />
     <Compile Include="Actions\About.cs" />
     <Compile Include="Actions\Quit.cs" />
     <Compile Include="Actions\Close.cs" />
-    <Compile Include="Sections\Controls\ButtonSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\CheckBoxSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\ComboBoxSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\DateTimePickerSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\DrawableSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Dialogs\FileDialogSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\GroupBoxSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\LabelSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\ListBoxSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\NumericUpDownSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\RadioButtonSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\ScrollableSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\SliderSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\TabControlSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\TextAreaSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\TreeGridViewSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\WebViewSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\TextBoxSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Behaviors\MouseEventsSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="SectionList.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Behaviors\AllControlsBase.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Behaviors\FocusEventsSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Behaviors\KeyEventsSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Behaviors\ContextMenuSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Drawing\IndexedBitmapSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\GridViewSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\ProgressBarSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\KitchenSinkSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Controls\GridCellFormattingSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Dialogs\CustomDialogSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Drawing\InterpolationSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Serialization\Xaml\Test.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Serialization\Json\Test.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Serialization\JsonReadSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="Sections\Serialization\XamlReadSection.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Sections\Controls\ButtonSection.cs" />
+    <Compile Include="Sections\Controls\CheckBoxSection.cs" />
+    <Compile Include="Sections\Controls\ComboBoxSection.cs" />
+    <Compile Include="Sections\Controls\DateTimePickerSection.cs" />
+    <Compile Include="Sections\Controls\DrawableSection.cs" />
+    <Compile Include="Sections\Dialogs\FileDialogSection.cs" />
+    <Compile Include="Sections\Controls\GroupBoxSection.cs" />
+    <Compile Include="Sections\Controls\LabelSection.cs" />
+    <Compile Include="Sections\Controls\ListBoxSection.cs" />
+    <Compile Include="Sections\Controls\NumericUpDownSection.cs" />
+    <Compile Include="Sections\Controls\RadioButtonSection.cs" />
+    <Compile Include="Sections\Controls\ScrollableSection.cs" />
+    <Compile Include="Sections\Controls\SliderSection.cs" />
+    <Compile Include="Sections\Controls\TabControlSection.cs" />
+    <Compile Include="Sections\Controls\TextAreaSection.cs" />
+    <Compile Include="Sections\Controls\TreeGridViewSection.cs" />
+    <Compile Include="Sections\Controls\WebViewSection.cs" />
+    <Compile Include="Sections\Controls\TextBoxSection.cs" />
+    <Compile Include="Sections\Behaviors\MouseEventsSection.cs" />
+    <Compile Include="SectionList.cs" />
+    <Compile Include="Sections\Behaviors\AllControlsBase.cs" />
+    <Compile Include="Sections\Behaviors\FocusEventsSection.cs" />
+    <Compile Include="Sections\Behaviors\KeyEventsSection.cs" />
+    <Compile Include="Sections\Behaviors\ContextMenuSection.cs" />
+    <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
+    <Compile Include="Sections\Controls\GridViewSection.cs" />
+    <Compile Include="Sections\Controls\ProgressBarSection.cs" />
+    <Compile Include="Sections\Controls\KitchenSinkSection.cs" />
+    <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
+    <Compile Include="Sections\Dialogs\CustomDialogSection.cs" />
+    <Compile Include="Sections\Drawing\InterpolationSection.cs" />
+    <Compile Include="Sections\Serialization\Xaml\Test.cs" />
+    <Compile Include="Sections\Serialization\Json\Test.cs" />
+    <Compile Include="Sections\Serialization\JsonReadSection.cs" />
+    <Compile Include="Sections\Serialization\XamlReadSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

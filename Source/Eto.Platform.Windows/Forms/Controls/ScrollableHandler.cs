@@ -8,6 +8,8 @@ namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
+		SWF.Panel content;
+
 		public class CustomScrollable : System.Windows.Forms.Panel
 		{
 			public ScrollableHandler Handler { get; set; }
@@ -31,6 +33,34 @@ namespace Eto.Platform.Windows
 				else return this.AutoScrollPosition;*/
 				return this.AutoScrollPosition;
 			}
+		}
+
+		public override Size DesiredSize
+		{
+			get
+			{
+				return base.DesiredSize;
+			}
+		}
+
+		protected override void CalculateMinimumSize ()
+		{
+			base.CalculateMinimumSize ();
+		}
+
+		public override void SetScale (bool xscale, bool yscale)
+		{
+			var layout = WindowsLayout;
+
+			if (layout != null)
+				layout.SetScale (false, false);
+
+			base.SetScale (xscale, yscale);
+		}
+
+		public override SWF.Control ContentContainer
+		{
+			get { return content; }
 		}
 		
 		public BorderType Border {
@@ -65,6 +95,7 @@ namespace Eto.Platform.Windows
 
 		public ScrollableHandler ()
 		{
+			SkipLayoutScale = true;
 			Control = new CustomScrollable{ Handler = this };
 			this.Control.Size = SD.Size.Empty;
 			this.Control.MinimumSize = SD.Size.Empty;
@@ -78,10 +109,28 @@ namespace Eto.Platform.Windows
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
+
 			//control.AutoScrollPosition = new SD.Point(0,0);
 			//control.AutoScrollMinSize = new System.Drawing.Size(500,500);
 			//control.DisplayRectangle = new System.Drawing.Rectangle(0,0,500,1000);
 			//control.BackColor = System.Drawing.Color.Black;
+			content = new SWF.Panel ();
+			content.AutoSize = true;
+			Control.Controls.Add (content);
+
+			/*
+			Control.SizeChanged += delegate
+			{
+				if (Widget.Layout != null)
+				{
+					var layout = Widget.Layout.InnerLayout.Handler as IWindowsLayout;
+					if (layout != null && layout.LayoutObject != null)
+					{
+						var c = layout.LayoutObject as SWF.Control;
+						c.MinimumSize = new SD.Size(Control.ClientSize.Width, 0);
+					}
+				}
+			};*/
 		}
 		
 		public override void AttachEvent (string handler)

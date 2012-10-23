@@ -130,7 +130,8 @@ namespace Eto.Test
 		IEnumerable<Section> TableLayoutsSection ()
 		{
 			yield return new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" };
-			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing & Scaling" };
+			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing" };
+			yield return new Section<Sections.Layouts.TableLayoutSection.ScalingSection> { Text = "Scaling" };
 		}
 
 		IEnumerable<Section> DialogsSection ()

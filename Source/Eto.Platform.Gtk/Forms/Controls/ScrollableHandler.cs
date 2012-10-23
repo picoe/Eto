@@ -7,6 +7,8 @@ namespace Eto.Platform.GtkSharp
 	public class ScrollableHandler : GtkContainer<Gtk.ScrolledWindow, Scrollable>, IScrollable
 	{
 		Gtk.Viewport vp;
+		Gtk.HBox hbox;
+		Gtk.VBox vbox;
 		BorderType border;
 		bool autoSize = true;
 		
@@ -24,16 +26,13 @@ namespace Eto.Platform.GtkSharp
 				border = value;
 				switch (border) {
 				case BorderType.Bezel:
-					vp.ShadowType = Gtk.ShadowType.In;
-					//vp.BorderWidth = 2;
+					Control.ShadowType = Gtk.ShadowType.In;
 					break;
 				case BorderType.Line:
-					vp.ShadowType = Gtk.ShadowType.In;
-					//vp.BorderWidth = 2;
+					Control.ShadowType = Gtk.ShadowType.In;
 					break;
 				case BorderType.None:
-					vp.ShadowType = Gtk.ShadowType.None;
-					//vp.BorderWidth = 0;
+					Control.ShadowType = Gtk.ShadowType.None;
 					break;
 				default:
 					throw new NotSupportedException ();
@@ -45,6 +44,10 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control = new Gtk.ScrolledWindow ();
 			vp = new Gtk.Viewport ();
+			hbox = new Gtk.HBox ();
+			vbox = new Gtk.VBox ();
+			vp.Add (vbox);
+			vbox.Add (hbox);
 			
 			// autosize the scrolled window to the size of the content
 			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
@@ -60,12 +63,11 @@ namespace Eto.Platform.GtkSharp
 				}
 			};
 
-			Border = BorderType.Bezel;
 			Control.VScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			Control.HScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
-			//vp.ShadowType = Gtk.ShadowType.None;
 			Control.Add (vp);
-			border = BorderType.Bezel;
+			vp.ShadowType = Gtk.ShadowType.None;
+			this.Border = BorderType.Bezel;
 		}
 		
 		public override void AttachEvent (string handler)
@@ -101,13 +103,11 @@ namespace Eto.Platform.GtkSharp
 		
 		public override void SetLayout (Layout inner)
 		{
-			if (vp.Children.Length > 0)
-				foreach (Gtk.Widget child in vp.Children)
-					vp.Remove (child);
+			foreach (Gtk.Widget child in hbox.Children)
+				hbox.Remove (child);
 			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			vp.Add ((Gtk.Widget)gtklayout.ContainerObject);
-			//control.Add((Gtk.Widget)layout.ControlObject);
-
+			hbox.PackStart (gtklayout.ContainerObject, false, true, 0);
+			//vp.Add ((Gtk.Widget)gtklayout.ContainerObject);
 		}
 
 		public override Color BackgroundColor {
