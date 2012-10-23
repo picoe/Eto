@@ -49,12 +49,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 				Control.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
-		
-		
-		public ButtonHandler ()
+
+		public override UIButton CreateControl ()
 		{
+			//return UIButton.FromType(UIButtonType.Custom);
+			return UIButton.FromType(UIButtonType.RoundedRect);
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
 			/**
-			Control = UIButton.FromType(UIButtonType.Custom);
 			Control.SetTitleColor (UIColor.Black, UIControlState.Normal);
 			Control.BackgroundColor = UIColor.White;
 			Control.Layer.BorderColor = UIColor.Black.CGColor;
