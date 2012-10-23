@@ -25,8 +25,6 @@ namespace Eto.Platform.iOS.Forms
 	{
 		List<NSObject> notifications;
 		List<ControlObserver> observers;
-		bool disposedHooked;
-		
 
 		public void AddMethod (IntPtr selector, Delegate action, string arguments, object control = null)
 		{

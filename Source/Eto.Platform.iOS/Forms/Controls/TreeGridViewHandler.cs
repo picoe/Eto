@@ -11,7 +11,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		Collection store;
 
-		public class TableDelegate : GridHandler<UITableView, TreeGridView>.TableDelegate
+		public class TreeGridTableDelegate : GridHandler<UITableView, TreeGridView>.TableDelegate
 		{
 			public TreeGridViewHandler TreeHandler { get; set; }
 
@@ -47,7 +47,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new TableDelegate { TreeHandler  = this };
+			return new TreeGridTableDelegate { TreeHandler  = this };
 		}
 
 		public TreeGridViewHandler ()
@@ -84,10 +84,15 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return string.Empty;
 			}
 
+			public const string CELL_ID = "GridView_Cell";
+
 			public override UITableViewCell GetCell (UITableView tableView, MonoTouch.Foundation.NSIndexPath indexPath)
 			{
+				var cell = tableView.DequeueReusableCell(CELL_ID);
+				if (cell == null)
+					cell = new UITableViewCell(UITableViewCellStyle.Default, CELL_ID);
+
 				var item = Handler.GetItem (indexPath);
-				var cell = new UITableViewCell();
 				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<IiOSCellHandler>())
 				{
 					column.Configure (item, cell);

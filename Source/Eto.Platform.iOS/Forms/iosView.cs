@@ -70,7 +70,7 @@ namespace Eto.Platform.iOS.Forms
 				return naturalSize.Value;
 			var control = Control as UIView;
 			if (control != null) {
-				naturalSize = Generator.ConvertF (control.SizeThatFits(UIView.UILayoutFittingCompressedSize));
+				naturalSize = control.SizeThatFits(UIView.UILayoutFittingCompressedSize).ToEtoSize ();
 				return naturalSize.Value;
 			}
 			return Size.Empty;
@@ -98,11 +98,11 @@ namespace Eto.Platform.iOS.Forms
 		public virtual Size? MaximumSize { get; set; }
 
 		public virtual Size Size {
-			get { return Generator.ConvertF (Control.Frame.Size); }
+			get { return Control.Frame.Size.ToEtoSize (); }
 			set { 
 				if (value != this.Size) {
 					PreferredSize = value;
-					Control.SetFrameSize (Generator.ConvertF (value));
+					Control.SetFrameSize (value.ToSDSizeF ());
 					Widget.OnSizeChanged (EventArgs.Empty);
 					this.AutoSize = false;
 					CreateTracking ();
@@ -187,8 +187,7 @@ namespace Eto.Platform.iOS.Forms
 
 		public virtual void Invalidate (Rectangle rect)
 		{
-			var region = Generator.ConvertF (rect);
-			Control.SetNeedsDisplayInRect (region);
+			Control.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
 		public Graphics CreateGraphics ()
@@ -210,8 +209,8 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Generator.Convert(Control.BackgroundColor); }
-			set { Control.BackgroundColor = Generator.ConvertUI (value); }
+			get { return Control.BackgroundColor.ToEtoColor (); }
+			set { Control.BackgroundColor = value.ToUIColor (); }
 		}
 
 		public virtual bool Enabled {
@@ -229,7 +228,7 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 		// TODO
-		public Font Font { 
+		public virtual Font Font { 
 			get; set;
 		}
 		

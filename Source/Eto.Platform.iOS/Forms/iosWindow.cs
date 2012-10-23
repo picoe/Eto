@@ -17,11 +17,11 @@ namespace Eto.Platform.iOS.Forms
 
 		public Point Location {
 			get {
-				return Generator.ConvertF(this.Control.Frame.Location);
+				return this.Control.Frame.Location.ToEtoPoint ();
 			}
 			set {
 				var frame = this.Control.Frame;
-				frame.Location = Generator.ConvertF (value);
+				frame.Location = value.ToSDPointF ();
 				this.Control.Frame = frame;
 			}
 		}
@@ -44,8 +44,6 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 		
-		#region IWindow implementation
-		
 		public virtual void Close ()
 		{
 		}
@@ -59,14 +57,7 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		#endregion
-
-		#region ITextControl implementation
-		
 		public abstract string Title { get; set; }
-
-		#endregion
-
 
 	}
 }

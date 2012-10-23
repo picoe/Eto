@@ -68,48 +68,29 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 			Control.ContentInset = inset;				
 		}
-		
-		public override object ContainerObject {
-			get {
-				return Child;
-			}
+
+		public override UIView ContentControl {
+			get { return Child; }
 		}
 		
 		public override bool Enabled {
-			get {
-				return Control.ScrollEnabled;
-			}
-			set {
-				Control.ScrollEnabled = value;
-				;
-			}
+			get { return Control.ScrollEnabled; }
+			set { Control.ScrollEnabled = value; }
 		}
 		
 		public float MinimumZoom {
-			get {
-				return Control.MinimumZoomScale;
-			}
-			set {
-				Control.MinimumZoomScale = value;
-			}
+			get { return Control.MinimumZoomScale; }
+			set { Control.MinimumZoomScale = value; }
 		}
 		
 		public float MaximumZoom {
-			get {
-				return Control.MaximumZoomScale;
-			}
-			set {
-				Control.MaximumZoomScale = value;
-			}
+			get { return Control.MaximumZoomScale; }
+			set { Control.MaximumZoomScale = value; }
 		}
 		
 		public float Zoom {
-			get {
-				return Control.ZoomScale;
-			}
-			set {
-				Control.SetZoomScale (value, false);
-			}
+			get { return Control.ZoomScale; }
+			set { Control.SetZoomScale (value, false); }
 		}
 
 		public ScrollableHandler ()
@@ -139,7 +120,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
 				contentSize.Height = Math.Max (this.ClientSize.Height, contentSize.Height);
-			Control.ContentSize = Generator.Convert (contentSize);
+			Control.ContentSize = contentSize.ToSDSizeF ();
 			Child.SetFrameSize (Control.ContentSize);
 			Adjust ();
 		}
@@ -151,7 +132,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return new Eto.Drawing.Point ((int)Math.Round ((offset.X + inset.Left) / Control.ZoomScale), (int)Math.Round ((offset.Y + inset.Top) / Control.ZoomScale));
 			}
 			set {
-				Control.SetContentOffset (Generator.ConvertF ((PointF)value * Control.ZoomScale), false);
+				Control.SetContentOffset (((PointF)value * Control.ZoomScale).ToSDPointF (), false);
 			}
 		}
 
@@ -182,7 +163,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return new Eto.Drawing.Size((int)Math.Round (Control.ContentSize.Width / Control.ZoomScale), (int)Math.Round (Control.ContentSize.Height / Control.ZoomScale));
 			}
 			set {
-				var size = Generator.ConvertF (value);
+				var size = value.ToSDSizeF();
 				size = new System.Drawing.SizeF (size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
 				Child.SetFrameSize (size);
 				Control.ContentSize = size;//new System.Drawing.SizeF(size.Width * Control.ZoomScale, size.Height * Control.ZoomScale);
@@ -197,24 +178,15 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
-		public bool AutoScrollToControl {
-			get {
-				return false;
-			}
-			set {
-			}
-		}
-
-		#region IScrollable implementation
 		public bool ExpandContentWidth {
 			get;
 			set;
 		}
+
 		public bool ExpandContentHeight {
 			get;
 			set;
 		}
-		#endregion
 	}
 }
 

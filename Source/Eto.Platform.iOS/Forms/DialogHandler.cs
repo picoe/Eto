@@ -14,6 +14,7 @@ namespace Eto.Platform.iOS.Forms
 			return UIInterfaceOrientationMask.All;
 		}
 
+		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true;
@@ -33,12 +34,13 @@ namespace Eto.Platform.iOS.Forms
 	public class DialogHandler : iosWindow<UIView, Dialog>, IDialog, IiosViewController
 	{
 		Button button;
+		UIViewController controller;
 
-		public UIViewController Controller { get; set; }
+		public override UIViewController Controller { get { return controller; } }
 
 		public DialogHandler ()
 		{
-			Controller = new RotatableViewController ();
+			controller = new RotatableViewController ();
 			Control = Controller.View;
 		}
 		

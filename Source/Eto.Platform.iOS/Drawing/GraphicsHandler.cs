@@ -39,8 +39,8 @@ namespace Eto.Platform.iOS.Drawing
 		}
 
 		public ImageInterpolation ImageInterpolation {
-			get { return Generator.ConvertCG (context.InterpolationQuality); }
-			set { context.InterpolationQuality = Generator.ConvertCG (value); }
+			get { return context.InterpolationQuality.ToEto (); }
+			set { context.InterpolationQuality = value.ToCG (); }
 		}
 
 		public GraphicsHandler (UIView view)
@@ -72,9 +72,9 @@ namespace Eto.Platform.iOS.Drawing
 			var uiimage = (UIImage)image.ControlObject;
 			var cgimage = uiimage.CGImage;
 			//var rep = nsimage.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
-			/*adjust = true;
+			//adjust = true;
 			Flipped = true;
-			this.height = cgimage.Height;*/
+			this.height =cgimage.Height;
 			context = new CGBitmapContext (handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
 			clean = true;
 			context.InterpolationQuality = CGInterpolationQuality.High;
@@ -128,7 +128,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
 			UIGraphics.PushContext (this.context);
-			context.SetStrokeColor (Generator.Convert (color));
+			context.SetStrokeColor (color.ToCGColor ());
 			//context.SetShouldAntialias(false);
 			context.SetLineCap (CGLineCap.Square);
 			context.SetLineWidth (1.0F);
@@ -140,7 +140,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			UIGraphics.PushContext (this.context);
 			var rect = new System.Drawing.RectangleF (x, y, width, height);
-			context.SetStrokeColor (Generator.Convert (color));
+			context.SetStrokeColor (color.ToCGColor ());
 			//context.SetShouldAntialias(false);
 			context.SetLineWidth (1.0F);
 			context.StrokeRect (TranslateView (rect));
@@ -161,7 +161,7 @@ namespace Eto.Platform.iOS.Drawing
 			//this.context.SetFillColorSpace(CGColorSpace.CreateCalibratedRGB(new float[] { 1.0F, 1.0, 1.0 }, new float[] { 0, 0, 0 }, new float[] { 1.0F, 1.0, 1.0 }, ));
 			//this.context.SetStrokeColorSpace(CGColorSpace.CreateDeviceCMYK());
 			//this.context.SetAlpha(1.0F);
-			context.SetFillColor (Generator.Convert (color));
+			context.SetFillColor (color.ToCGColor ());
 			//context.SetShouldAntialias(false);
 			context.FillRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			UIGraphics.PopContext ();
@@ -171,7 +171,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			UIGraphics.PushContext (this.context);
 			var rect = new System.Drawing.RectangleF (x, y, width, height);
-			context.SetStrokeColor (Generator.Convert (color));
+			context.SetStrokeColor (color.ToCGColor ());
 			//context.SetShouldAntialias(false);
 			context.SetLineWidth (1.0F);
 			context.StrokeEllipseInRect (TranslateView (rect));
@@ -192,7 +192,7 @@ namespace Eto.Platform.iOS.Drawing
 			//this.context.SetFillColorSpace(CGColorSpace.CreateCalibratedRGB(new float[] { 1.0F, 1.0, 1.0 }, new float[] { 0, 0, 0 }, new float[] { 1.0F, 1.0, 1.0 }, ));
 			//this.context.SetStrokeColorSpace(CGColorSpace.CreateDeviceCMYK());
 			//this.context.SetAlpha(1.0F);
-			context.SetFillColor (Generator.Convert (color));
+			context.SetFillColor (color.ToCGColor ());
 			//context.SetShouldAntialias(false);
 			context.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			UIGraphics.PopContext ();
@@ -256,11 +256,13 @@ namespace Eto.Platform.iOS.Drawing
 		public void DrawText (Font font, Color color, int x, int y, string text)
 		{
 			UIGraphics.PushContext (this.context);
-			
+
+			var uifont = font.ToUIFont ();
 			var str = new NSString (text);
-			var size = str.StringSize (font.ControlObject as UIFont);
+			var size = str.StringSize (uifont);
 			//context.SetShouldAntialias(true);
-			str.DrawString (new SD.PointF (x, height - y - size.Height), font.ControlObject as UIFont);
+			var pt = Flipped ? new SD.PointF (x, height - y - size.Height) : new SD.PointF(x, y);
+			str.DrawString (pt, uifont);
 			UIGraphics.PopContext ();
 		}
 
@@ -268,7 +270,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			UIGraphics.PushContext (this.context);
 			var str = new NSString (text);
-			var size = str.StringSize (font.ControlObject as UIFont);
+			var size = str.StringSize (font.ToUIFont ());
 			UIGraphics.PopContext ();
 			return new SizeF (size.Width, size.Height);
 		}

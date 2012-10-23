@@ -79,7 +79,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			public override void Draw (System.Drawing.RectangleF rect)
 			{
 				//Console.WriteLine ("Drawing {0}, {1}", rect, new System.Diagnostics.StackTrace ());
-				Handler.Update (Generator.ConvertF (rect));
+				Handler.Update (rect.ToEtoRectangle ());
 			}
 
 			public bool CanFocus { get; set; }

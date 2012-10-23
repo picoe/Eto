@@ -83,8 +83,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		public Eto.Drawing.Color TextColor {
-			get { return Generator.Convert (Control.TextColor); }
-			set { Control.TextColor = Generator.ConvertUI (value); }
+			get { return Control.TextColor.ToEtoColor (); }
+			set { Control.TextColor = value.ToUIColor (); }
 		}
 	}
 }

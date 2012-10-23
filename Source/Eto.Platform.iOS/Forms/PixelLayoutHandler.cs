@@ -74,7 +74,7 @@ namespace Eto.Platform.iOS.Forms
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 					);
 			
-			var frame = new sd.RectangleF (origin, Generator.Convert (preferredSize));
+			var frame = new sd.RectangleF (origin, preferredSize.ToSDSizeF());
 			if (frame != childView.Frame) {
 				childView.Frame = frame;
 			}

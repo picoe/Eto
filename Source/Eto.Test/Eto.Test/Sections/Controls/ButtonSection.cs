@@ -13,17 +13,12 @@ namespace Eto.Test.Sections.Controls
 			var layout = new DynamicLayout (this);
 			
 			//layout.SetColumnScale(0);
-			
-			layout.BeginVertical ();
-			layout.AddRow (null, NormalButton (), null);
-			layout.EndVertical ();
-			layout.BeginVertical ();
-			layout.AddRow (null, LongerButton (), null);
-			layout.EndVertical ();
-			layout.BeginVertical ();
-			layout.AddRow (null, ColourButton (), null);
-			layout.EndVertical ();
-			
+
+			layout.AddAutoSized (NormalButton (), centered: true);
+			layout.AddAutoSized (LongerButton (), centered: true);
+			layout.AddAutoSized (ColourButton (), centered: true);
+			layout.AddAutoSized (DisabledButton (), centered: true);
+
 			layout.Add (null);
 		}
 		
@@ -47,7 +42,14 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control);
 			return control;
 		}
-		
+
+		Control DisabledButton ()
+		{
+			var control = new Button{ Text = "Disabled Button", Enabled = false };
+			LogEvents(control);
+			return control;
+		}
+
 		void LogEvents(Button button)
 		{
 			button.Click += delegate {

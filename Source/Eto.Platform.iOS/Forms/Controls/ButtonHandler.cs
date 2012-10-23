@@ -43,10 +43,10 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public override Color BackgroundColor {
 			get {
-				return Generator.Convert (Control.Layer.BackgroundColor);
+				return Control.Layer.BackgroundColor.ToEtoColor ();
 			}
 			set {
-				Control.Layer.BackgroundColor = Generator.ConvertUI (value).CGColor;
+				Control.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
 		
@@ -65,7 +65,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			/**/
 			Control.SetTitle(string.Empty, UIControlState.Normal);
 			//Control.ButtonType = UIButtonType.RoundedRect;
-			Control.SetFrameSize(Generator.ConvertF(Button.DefaultSize));
+			Control.SetFrameSize(Button.DefaultSize.ToSDSizeF());
 			Control.TouchUpInside += delegate {
 				Widget.OnClick(EventArgs.Empty);
 			};

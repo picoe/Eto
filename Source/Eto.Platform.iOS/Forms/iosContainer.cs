@@ -45,8 +45,6 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
-		#region IContainer implementation
-		
 		public virtual void SetLayout (Layout layout)
 		{
 		}
@@ -57,20 +55,13 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 		public virtual Eto.Drawing.Size ClientSize {
-			get {
-				return this.Size;
-			}
-			set {
-				this.Size = value;
-			}
+			get { return this.Size; }
+			set { this.Size = value; }
 		}
 
-		public virtual object ContainerObject {
-			get {
-				return this.ContentControl;
-			}
+		public object ContainerObject {
+			get { return this.ContentControl; }
 		}
-		#endregion
 
 		bool disposed;
 

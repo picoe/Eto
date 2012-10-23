@@ -77,12 +77,12 @@ namespace Eto.Platform.iOS.Forms
 				if (value != null)
 				{
 					child = value;
-					var childControl = (UIView)child.ControlObject;
-					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
+					var childControl = child.GetContainerView ();
+					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 					if (this.Widget.Loaded)
 						Layout ();
-					UIView parent = this.Control;
-					parent.AddSubview(childControl);
+
+					Widget.Container.AddSubview (child, true);
 				}
 				
 			}
