@@ -27,15 +27,27 @@ namespace Eto.Platform.iOS.Forms
 			return control.ControlObject as UIView;
 		}
 
-		public static void AddSubview(this Control control, Control subView, bool useRoot = false)
+		public static void AddSubview (this Control control, Control subView, bool useRoot = false)
 		{
 			var parentController = control.GetViewController (false);
 			if (parentController != null) {
-				parentController.AddChildViewController(subView.GetViewController());
+				parentController.AddChildViewController (subView.GetViewController ());
 				return;
 			}
+			if (useRoot) {
+				var window = control.GetContainerView () as UIWindow;
+				if (window != null) {
+					window.RootViewController = subView.GetViewController ();
+					return;
+				}
+			}
 			var parentView = control.GetContentView ();
-			parentView.AddSubview (subView.GetContainerView ());
+			if (parentView != null) {
+				parentView.AddSubview (subView.GetContainerView ());
+				return;
+			}
+
+			throw new EtoException("Coult not add subview to parent");
 		}
 
 		public static Size GetPreferredSize(this Control control)
