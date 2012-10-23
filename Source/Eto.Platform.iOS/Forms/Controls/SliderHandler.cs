@@ -1,11 +1,14 @@
 using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
+using MonoTouch.CoreGraphics;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class SliderHandler : iosControl<UISlider, Slider>, ISlider
 	{
+		SliderOrientation orientation;
+
 		public override UISlider CreateControl ()
 		{
 			return new UISlider ();
@@ -43,8 +46,22 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		public SliderOrientation Orientation {
-			get;
-			set;
+			get { return orientation; }
+			set {
+				if (orientation != value) {
+					orientation = value;
+					switch (value) {
+					case SliderOrientation.Horizontal:
+						Control.Transform = new CGAffineTransform();
+						break;
+					case SliderOrientation.Vertical:
+						Control.Transform = CGAffineTransform.MakeRotation ((float)Math.PI * -0.5f);
+						break;
+					default:
+						throw new NotSupportedException ();
+					}
+				}
+			}
 		}
 	}
 }
