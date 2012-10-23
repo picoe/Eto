@@ -157,12 +157,19 @@ namespace Eto.Forms
 
 		#endregion
 
-		public static Control AutoSized (Control control, Padding? padding = null)
+		public static Control AutoSized (Control control, Padding? padding = null, bool centered = false)
 		{
-			var layout = new TableLayout(new Panel(), 2, 2);
+			var layout = new TableLayout(new Panel(), 3, 3);
 			layout.Padding = padding ?? Padding.Empty;
 			layout.Spacing = Size.Empty;
-			layout.Add (control, 0, 0);
+			if (centered)
+			{
+				layout.SetColumnScale (0);
+				layout.SetColumnScale (2);
+				layout.SetRowScale (0);
+				layout.SetRowScale (2);
+			}
+			layout.Add (control, 1, 1);
 			return layout.Container;
 		}
 		

@@ -7,6 +7,7 @@ using SWF = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Windows.Drawing;
+using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
@@ -17,6 +18,10 @@ namespace Eto.Platform.Windows
 		SWF.DockStyle DockStyle { get; }
 
 		SWF.Control ContainerControl { get; }
+
+		Size DesiredSize { get; }
+
+		void SetScale (bool xscale, bool yscale);
 	}
 
 	public static class WindowsControlExtensions
@@ -31,6 +36,18 @@ namespace Eto.Platform.Windows
 		}
 	}
 
+	public static class ControlExtensions
+	{
+		public static void SetScale (this Control control, bool xscale, bool yscale)
+		{
+			if (control == null)
+				return;
+			var handler = control.Handler as IWindowsControl;
+			if (handler != null)
+				handler.SetScale (xscale, yscale);
+		}
+	}
+
 	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
 		where T: System.Windows.Forms.Control
 		where W: Control
@@ -39,6 +56,11 @@ namespace Eto.Platform.Windows
 		Font font;
 		Cursor cursor;
 		string tooltip;
+		Size desiredSize;
+		protected bool XScale { get; set; }
+		protected bool YScale { get; set; }
+
+		public virtual Size DesiredSize { get { return desiredSize; } }
 
 		public virtual SWF.Control ContainerControl
 		{
@@ -48,13 +70,28 @@ namespace Eto.Platform.Windows
 		public override void Initialize ()
 		{
 			Control.TabIndex = 100;
+			XScale = true;
+			YScale = true;
 			this.Control.Margin = SWF.Padding.Empty;
 		}
 		
 		public virtual SWF.DockStyle DockStyle {
-			get {
-				return SWF.DockStyle.Fill;
-			}
+			get { return SWF.DockStyle.Fill; }
+		}
+
+		protected virtual void CalculateMinimumSize ()
+		{
+			var size = this.DesiredSize;
+			if (XScale) size.Width = 0;
+			if (YScale) size.Height = 0;
+			Control.MinimumSize = Generator.Convert (size);
+		}
+
+		public virtual void SetScale (bool xscale, bool yscale)
+		{
+			this.XScale = xscale;
+			this.YScale = yscale;
+			CalculateMinimumSize ();
 		}
 
 		public override void AttachEvent (string handler)
@@ -157,6 +194,8 @@ namespace Eto.Platform.Windows
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
 				ContainerControl.Size = Generator.Convert (value);
+				desiredSize = value;
+				CalculateMinimumSize ();
 			}
 		}
 

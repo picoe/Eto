@@ -3,19 +3,23 @@ using System.Collections;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
 	public class TableLayoutHandler : GtkLayout<Gtk.Table, TableLayout>, ITableLayout
 	{
-		const Gtk.AttachOptions ScaledOptions = Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
+		const Gtk.AttachOptions SCALED_OPTIONS = Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
 
 		Gtk.Alignment align;
-		Dictionary<int, Gtk.AttachOptions> columnOptions = new Dictionary<int, Gtk.AttachOptions> ();
-		Dictionary<int, Gtk.AttachOptions> rowOptions = new Dictionary<int, Gtk.AttachOptions> ();
+		bool[] columnScale;
+		bool lastColumnScale;
+		bool[] rowScale;
+		bool lastRowScale;
 		Control[,] controls;
+		Gtk.Widget[,] blank;
 		
-		public override object ContainerObject {
+		public override Gtk.Widget ContainerObject {
 			get {
 				return align;
 			}
@@ -31,7 +35,6 @@ namespace Eto.Platform.GtkSharp
 			set { 
 				Control.ColumnSpacing = (uint)value.Width;
 				Control.RowSpacing = (uint)value.Height;
-				
 			}
 		}
 		
@@ -60,35 +63,32 @@ namespace Eto.Platform.GtkSharp
 			Attach (child, x, y);
 		}
 
-		private Gtk.AttachOptions GetColumnOptions (int column)
+		Gtk.AttachOptions GetColumnOptions (int column)
 		{
-			if (controls.GetLength (1) == 1)
-				return Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
-			else if (columnOptions.ContainsKey (column))
-				return columnOptions [column];
-			else if (columnOptions.Count == 0 && column == controls.GetLength (1) - 1)
-				return Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
-			else
-				return Gtk.AttachOptions.Fill;
+			var scale = columnScale[column];
+			if (column == columnScale.Length - 1)
+				scale |= lastColumnScale;
+			return scale ? SCALED_OPTIONS : Gtk.AttachOptions.Fill;
 		}
 
-		private Gtk.AttachOptions GetRowOptions (int row)
+		Gtk.AttachOptions GetRowOptions (int row)
 		{
-			if (controls.GetLength (0) == 1)
-				return Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
-			else if (rowOptions.ContainsKey (row))
-				return rowOptions [row];
-			else if (rowOptions.Count == 0 && row == controls.GetLength (0) - 1)
-				return Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
-			else
-				return Gtk.AttachOptions.Fill;
+			var scale = rowScale[row];
+			if (row == rowScale.Length - 1)
+				scale |= lastRowScale;
+			return scale ? SCALED_OPTIONS : Gtk.AttachOptions.Fill;
 		}
 		
 		public void CreateControl (int cols, int rows)
 		{
+			columnScale = new bool[cols];
+			lastColumnScale = true;
+			rowScale = new bool[rows];
+			lastRowScale = true;
 			align = new Gtk.Alignment (0, 0, 1.0F, 1.0F);
 			Control = new Gtk.Table ((uint)rows, (uint)cols, false);
 			controls = new Control[rows, cols];
+			blank = new Gtk.Widget[rows, cols];
 			align.Add (Control);
 
 			this.Spacing = TableLayout.DefaultSpacing;
@@ -97,26 +97,36 @@ namespace Eto.Platform.GtkSharp
 
 		public void SetColumnScale (int column, bool scale)
 		{
-			Gtk.AttachOptions xopts = (scale) ? Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill : Gtk.AttachOptions.Fill;
-			columnOptions [column] = xopts;
-			bool found = false;
-			var x = column;
-			for (int y=0; y<controls.GetLength(0); y++) {
-				found |= Attach (controls [y, x], x, y);
-			}
-			if (scale && !found) {
-				Attach (new Panel (Widget.Generator), x, 0);
+			columnScale[column] = scale;
+			var lastScale = columnScale.Length == 1 || columnScale.Take (columnScale.Length - 1).All (r => !r);
+			AttachColumn (column);
+			if (lastScale != lastColumnScale && column < columnScale.Length - 1)
+			{
+				lastColumnScale = lastScale;
+				AttachColumn (columnScale.Length - 1);
 			}
 		}
 
 		public bool GetColumnScale (int column)
 		{
-			Gtk.AttachOptions val;
-			if (columnOptions.TryGetValue(column, out val))
-				return val == ScaledOptions;
-			return false;
+			return columnScale[column];
 		}
 
+		void AttachColumn (int column)
+		{
+			for (int y = 0; y < controls.GetLength (0); y++)
+			{
+				Attach (controls[y, column], column, y);
+			}
+		}
+
+		void AttachRow (int row)
+		{
+			for (int x = 0; x < controls.GetLength (1); x++)
+			{
+				Attach (controls[row, x], x, row);
+			}
+		}
 		
 		bool Attach (Control child, int x, int y)
 		{
@@ -125,16 +135,27 @@ namespace Eto.Platform.GtkSharp
 				if (old != null)
 					Control.Remove (old.GetContainerWidget ());
 			}
-			
-			if (child != null) {
-				controls [y, x] = child;
+
+			var blankWidget = blank [y, x];
+			if (blankWidget != null) {
+				Control.Remove (blankWidget);
+				blank [y, x] = null;
+			}
+			if (child != null)
+			{
+				controls[y, x] = child;
 				var widget = child.GetContainerWidget ();
 				if (widget.Parent is Gtk.Container)
-					((Gtk.Container)widget.Parent).Remove (widget); 
+					((Gtk.Container)widget.Parent).Remove (widget);
 				Control.Attach (widget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions (x), GetRowOptions (y), 0, 0);
 				return true;
-			} else
-				controls [y, x] = null;
+			}
+			else
+			{
+				controls[y, x] = null;
+				blankWidget = blank[y, x] = new Gtk.VBox ();
+				Control.Attach (blankWidget, (uint)x, (uint)x + 1, (uint)y, (uint)y + 1, GetColumnOptions (x), GetRowOptions (y), 0, 0);
+			}
 			return false;
 		}
 		
@@ -154,27 +175,22 @@ namespace Eto.Platform.GtkSharp
 			}
 			Control.Remove ((Gtk.Widget)child.ControlObject);
 		}
-		
+
 		public void SetRowScale (int row, bool scale)
 		{
-			Gtk.AttachOptions yopts = (scale) ? ScaledOptions : Gtk.AttachOptions.Fill;
-			rowOptions [row] = yopts;
-			bool found = false;
-			var y = row;
-			for (int x=0; x<controls.GetLength(1); x++) {
-				found |= Attach (controls [y, x], x, y);
-			}
-			if (scale && !found) {
-				Attach (new Panel (Widget.Generator), 0, y);
+			rowScale[row] = scale;
+			var lastScale = rowScale.Length == 1 || rowScale.Take (rowScale.Length - 1).All (r => !r);
+			AttachRow (row);
+			if (lastScale != lastRowScale && row < rowScale.Length - 1)
+			{
+				lastRowScale = lastScale;
+				AttachRow (rowScale.Length - 1);
 			}
 		}
 
 		public bool GetRowScale (int row)
 		{
-			Gtk.AttachOptions val;
-			if (rowOptions.TryGetValue(row, out val))
-				return val == ScaledOptions;
-			return false;
+			return rowScale[row];
 		}
 
 	}

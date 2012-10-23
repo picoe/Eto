@@ -79,8 +79,20 @@ namespace Eto.Platform.GtkSharp
 			}
 			set
 			{
-				Control.SetSizeRequest (-1, -1);
-				containerBox.SetSizeRequest (value.Width, value.Height);
+				if (Control.IsRealized) {
+					int width, height;
+					Control.GetSize (out width, out height);
+
+					var size = new Size(width, height);
+					containerBox.GetSizeRequest (out width, out height);
+					size -= new Size(width, height);
+					size += value;
+					Control.Resize (size.Width, size.Height);
+				}
+				else {
+					Control.SetSizeRequest (-1, -1);
+					containerBox.SetSizeRequest (value.Width, value.Height);
+				}
 			}
 		}
 

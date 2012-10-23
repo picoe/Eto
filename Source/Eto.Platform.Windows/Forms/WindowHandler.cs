@@ -24,13 +24,18 @@ namespace Eto.Platform.Windows
 		swf.Panel content;
 		swf.Panel toolbarHolder;
 		swf.ToolTip tooltips = new swf.ToolTip();
+
+		public override Size DesiredSize
+		{
+			get { return this.MinimumSize ?? this.Size; }
+		}
 		
 		public swf.ToolTip ToolTips
 		{
 			get { return tooltips; }
 		}
 
-		public override object ContainerObject
+		public override swf.Control ContentContainer
 		{
 			get { return content; }
 		}
@@ -39,11 +44,17 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				return Generator.Convert (Widget.Loaded ? content.MinimumSize : content.Size);
+				return Generator.Convert (Widget.Loaded ? content.Size : content.MinimumSize);
 			}
 			set
 			{
-				content.MinimumSize = Generator.Convert (value);
+				if (Widget.Loaded)
+				{
+					var size = Control.Size - content.Size;
+					Control.Size = new sd.Size(value.Width + size.Width, value.Height + size.Height);
+				}
+				else
+					content.MinimumSize = Generator.Convert (value);
 			}
 		}
 
@@ -70,6 +81,10 @@ namespace Eto.Platform.Windows
 				Dock = swf.DockStyle.Top
 			};
 			Control.Controls.Add (menuHolder);
+
+			Control.Load += (sender, e) => {
+				content.MinimumSize = sd.Size.Empty;
+			};
 
 			// Always handle closing because we want to send Application.Terminating event
 			HandleEvent (Window.ClosingEvent);
