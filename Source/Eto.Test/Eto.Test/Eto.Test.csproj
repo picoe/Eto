@@ -49,6 +49,7 @@
     <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
     <Compile Include="TestApplication.cs" />
     <Compile Include="MainForm.cs" />
@@ -116,7 +117,5 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Sections\Serialization\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

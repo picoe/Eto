@@ -312,10 +312,15 @@ namespace Eto.Forms
 			
 		}
 
-		public void AddAutoSized (Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		public void AddAutoSized (Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool centered = false)
 		{
 			this.BeginVertical (padding ?? Eto.Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
-			this.AddRow (control, null);
+			if (centered) {
+				this.Add (null);
+				this.AddRow (null, control, null);
+			}
+			else
+				this.AddRow (control, null);
 			this.Add (null);
 			this.EndVertical ();
 		}
