@@ -162,6 +162,7 @@
     <Compile Include="Sections\Serialization\JsonReadSection.cs" />
     <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
     <Compile Include="DynamicLayoutExtensions.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
