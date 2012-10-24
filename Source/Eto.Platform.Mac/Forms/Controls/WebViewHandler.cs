@@ -128,6 +128,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 					e.ResultListener.ChooseFilenames (openDlg.Filenames.ToArray ());
 				}
 			};
+			
+			// TODO: Remove when monomac handles this properly
+			Control.UIGetFrame = (sender) => {
+				return sender.Frame;
+			};
 		}
 
 		void SetUIPrintFrameView ()
@@ -226,7 +231,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public void LoadHtml (string html, Uri baseUri)
 		{
-			Control.MainFrame.LoadHtmlString (html, Generator.Convert (baseUri));
+			Control.MainFrame.LoadHtmlString (html, baseUri.ToNS ());
 		}
 		
 		public void Stop ()

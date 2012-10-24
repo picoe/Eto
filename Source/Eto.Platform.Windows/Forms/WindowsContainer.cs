@@ -54,7 +54,7 @@ namespace Eto.Platform.Windows
 			get { return minimumSize; }
 			set {
 				minimumSize = value;
-				this.Control.MinimumSize = Generator.Convert (value ?? Size.Empty);
+				this.Control.MinimumSize = (value ?? Size.Empty).ToSD ();
 			}
 		}
 

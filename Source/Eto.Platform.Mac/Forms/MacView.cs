@@ -102,7 +102,7 @@ namespace Eto.Platform.Mac.Forms
 		public virtual bool AutoSize { get; protected set; }
 
 		public virtual Size Size {
-			get { return Generator.ConvertF (ContainerControl.Frame.Size); }
+			get { return ContainerControl.Frame.Size.ToEtoSize (); }
 			set { 
 				var oldSize = GetPreferredSize ();
 				this.PreferredSize = value;
@@ -117,7 +117,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 			naturalSize = null;
 			if (Widget.Loaded) {
-				var oldSize = oldPreferredSize ?? Generator.ConvertF (ContainerControl.Frame.Size);
+				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize ();
 				var newSize = GetPreferredSize ();
 				if (newSize != oldSize || force) {
 					var layout = Widget.ParentLayout.Handler as IMacLayout;
@@ -157,7 +157,7 @@ namespace Eto.Platform.Mac.Forms
 			if (control != null) {
 				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
 				control.SizeToFit ();
-				naturalSize = Generator.ConvertF (control.Frame.Size);
+				naturalSize = control.Frame.Size.ToEtoSize ();
 				if (size != null)
 					control.SetFrameSize (size.Value);
 				return naturalSize.Value;
@@ -362,7 +362,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual void Invalidate (Rectangle rect)
 		{
-			var region = Generator.ConvertF (rect);
+			var region = rect.ToSDRectangleF ();
 			region.Y = Control.Frame.Height - region.Y - region.Height;
 			Control.SetNeedsDisplayInRect (region);
 		}
@@ -393,13 +393,13 @@ namespace Eto.Platform.Mac.Forms
 				if (!Control.WantsLayer) {
 					Control.WantsLayer = true;
 				}
-				return Generator.Convert (Control.Layer.BackgroundColor);
+				return Control.Layer.BackgroundColor.ToEtoColor ();
 			}
 			set {
 				if (!Control.WantsLayer) {
 					Control.WantsLayer = true;
 				}
-				Control.Layer.BackgroundColor = Generator.Convert (value);
+				Control.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
 

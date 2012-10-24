@@ -204,5 +204,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					break;
 			}
 		}
+
+
+		public bool ExpandContentWidth
+		{
+			get; set;
+		}
+
+		public bool ExpandContentHeight
+		{
+			get;
+			set;
+		}
 	}
 }

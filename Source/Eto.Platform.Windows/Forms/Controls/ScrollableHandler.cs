@@ -9,6 +9,7 @@ namespace Eto.Platform.Windows
 	public class ScrollableHandler : WindowsContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
 		SWF.Panel content;
+		
 
 		public class CustomScrollable : System.Windows.Forms.Panel
 		{
@@ -95,6 +96,7 @@ namespace Eto.Platform.Windows
 
 		public ScrollableHandler ()
 		{
+			ExpandContentHeight = ExpandContentWidth = true;
 			SkipLayoutScale = true;
 			Control = new CustomScrollable{ Handler = this };
 			this.Control.Size = SD.Size.Empty;
@@ -118,19 +120,24 @@ namespace Eto.Platform.Windows
 			content.AutoSize = true;
 			Control.Controls.Add (content);
 
-			/*
 			Control.SizeChanged += delegate
 			{
-				if (Widget.Layout != null)
+				if (ExpandContentWidth || ExpandContentHeight)
 				{
-					var layout = Widget.Layout.InnerLayout.Handler as IWindowsLayout;
-					if (layout != null && layout.LayoutObject != null)
+					if (Widget.Layout != null && Widget.Layout.InnerLayout != null)
 					{
-						var c = layout.LayoutObject as SWF.Control;
-						c.MinimumSize = new SD.Size(Control.ClientSize.Width, 0);
+						var layout = Widget.Layout.InnerLayout.Handler as IWindowsLayout;
+						if (layout != null && layout.LayoutObject != null)
+						{
+							var c = layout.LayoutObject as SWF.Control;
+							var minSize = Control.ClientSize;
+							if (!ExpandContentWidth) minSize.Width = 0;
+							if (!ExpandContentHeight) minSize.Height = 0;
+							c.MinimumSize = minSize;
+						}
 					}
 				}
-			};*/
+			};
 		}
 		
 		public override void AttachEvent (string handler)
@@ -155,17 +162,28 @@ namespace Eto.Platform.Windows
 		public Point ScrollPosition {
 			get { return new Point (-Control.AutoScrollPosition.X, -Control.AutoScrollPosition.Y); }
 			set { 
-				Control.AutoScrollPosition = Generator.Convert (value);
+				Control.AutoScrollPosition = value.ToSD ();
 			}
 		}
 
 		public Size ScrollSize {
-			get { return Generator.Convert (this.Control.DisplayRectangle.Size); }
-			set { Control.AutoScrollMinSize = Generator.Convert (value); }
+			get { return this.Control.DisplayRectangle.Size.ToEto (); }
+			set { Control.AutoScrollMinSize = value.ToSD (); }
 		}
 
 		public Rectangle VisibleRect {
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+		}
+
+
+		public bool ExpandContentWidth
+		{
+			get; set;
+		}
+
+		public bool ExpandContentHeight
+		{
+			get; set;
 		}
 	}
 }

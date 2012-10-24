@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 			TableLayout tableLayout;
 
 			var layout = new DynamicLayout (this);
-			var size = new Size (400, 100);
+			var size = new Size (-1, 100);
 
 			tableLayout = new TableLayout (new Panel { BackgroundColor = Colors.Blue, Size = size }, 1, 1);
 			tableLayout.Add (new Label { Text = "1x1, should scale to fill entire region (minus padding)", BackgroundColor = Colors.Red }, 0, 0, false, false);

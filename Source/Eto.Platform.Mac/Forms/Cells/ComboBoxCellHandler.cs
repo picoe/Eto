@@ -7,6 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Eto.Drawing;
 using MonoMac.CoreGraphics;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -43,7 +44,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var nscontext = NSGraphicsContext.CurrentContext;
 					var context = nscontext.GraphicsPort;
 
-					context.SetFillColor (Generator.ConvertNSToCG (BackgroundColor));
+					context.SetFillColor (BackgroundColor.ToCG ());
 					context.FillRect (cellFrame);
 				}
 
@@ -75,26 +76,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void SetBackgroundColor (NSCell cell, Color color)
 		{
 			var c = cell as EtoCell;
-			c.BackgroundColor = Generator.ConvertNS (color);
+			c.BackgroundColor = color.ToNS ();
 			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)
 		{
 			var c = cell as EtoCell;
-			return Generator.Convert (c.BackgroundColor);
+			return c.BackgroundColor.ToEto ();
 		}
 
 		public override void SetForegroundColor (NSCell cell, Color color)
 		{
 			var c = cell as EtoCell;
-			c.TextColor = Generator.ConvertNS (color);
+			c.TextColor = color.ToNS ();
 		}
 
 		public override Color GetForegroundColor (NSCell cell)
 		{
 			var c = cell as EtoCell;
-			return Generator.Convert (c.TextColor);
+			return c.TextColor.ToEto ();
 		}
 
 		IEnumerable<IListItem> GetItems ()

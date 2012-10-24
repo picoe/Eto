@@ -12,7 +12,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
-			Control = new SD.Font(Generator.Convert(family), size, Convert(style));
+			Control = new SD.Font (family.ToSD (), size, style.ToSD ());
 		}
 		
 		public void Create (SystemFont systemFont, float? size)
@@ -56,14 +56,6 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 		
-		System.Drawing.FontStyle Convert(FontStyle style)
-		{
-			SD.FontStyle ret = SD.FontStyle.Regular;
-			if ((style & FontStyle.Bold) != 0) ret |= SD.FontStyle.Bold;
-			if ((style & FontStyle.Italic) != 0) ret |= SD.FontStyle.Italic;
-			return ret;
-		}
-
 		public float Size
 		{
 			get { return this.Control.Size; }

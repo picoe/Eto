@@ -155,6 +155,10 @@
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\MacControlExtensions.cs" />
+    <Compile Include="Forms\MacBase.cs" />
+    <Compile Include="Conversions.sd.cs" />
+    <Compile Include="Conversions.cg.cs" />
+    <Compile Include="Conversions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

@@ -23,7 +23,7 @@ namespace Eto.Platform.Mac
 			var loc = view.ConvertPointFromView (theEvent.LocationInWindow, null);
 			if (!view.IsFlipped)
 				loc.Y = view.Frame.Height - loc.Y;
-			return Generator.ConvertF (loc);
+			return loc.ToEtoPoint ();
 		}
 		
 		public override IDisposable ThreadStart ()
@@ -31,122 +31,7 @@ namespace Eto.Platform.Mac
 			return new NSAutoreleasePool ();
 		}
 
-		public static System.Drawing.Size Convert (Size size)
-		{
-			return new System.Drawing.Size (size.Width, size.Height);
-		}
 
-		public static Size Convert (System.Drawing.Size size)
-		{
-			return new Size (size.Width, size.Height);
-		}
-
-		public static System.Drawing.Point Convert (Point point)
-		{
-			return new System.Drawing.Point (point.X, point.Y);
-		}
-
-		public static Point Convert (System.Drawing.Point point)
-		{
-			return new Point (point.X, point.Y);
-		}
-
-		public static System.Drawing.SizeF ConvertF (Size size)
-		{
-			return new System.Drawing.SizeF (size.Width, size.Height);
-		}
-
-		public static Size ConvertF (System.Drawing.SizeF size)
-		{
-			return new Size ((int)size.Width, (int)size.Height);
-		}
-		
-		public static System.Drawing.RectangleF ConvertF (System.Drawing.RectangleF frame, Size size)
-		{
-			frame.Size = ConvertF (size);
-			return frame;
-		}
-
-		public static Rectangle ConvertF (System.Drawing.RectangleF rect)
-		{
-			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-		}
-
-		public static System.Drawing.RectangleF ConvertF (Rectangle rect)
-		{
-			return new System.Drawing.RectangleF ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-		}
-		
-		public static Point ConvertF (System.Drawing.PointF point)
-		{
-			return new Point ((int)point.X, (int)point.Y);
-		}
-
-		public static System.Drawing.PointF ConvertF (Point point)
-		{
-			return new System.Drawing.PointF ((int)point.X, (int)point.Y);
-		}
-
-		public static NSRange Convert (Range range)
-		{
-			return new NSRange(range.Location, range.Length);
-		}
-		
-		public static Range Convert (NSRange range)
-		{
-			return new Range (range.Location, range.Length);
-		}
-
-		static CGColorSpace deviceRGB;
-
-		static CGColorSpace CreateDeviceRGB ()
-		{
-			if (deviceRGB != null)
-				return deviceRGB;
-			deviceRGB = CGColorSpace.CreateDeviceRGB ();
-			return deviceRGB;
-		}
-		
-		public static CGColor Convert (Color color)
-		{
-			return new CGColor (CreateDeviceRGB (), new float[] { color.R, color.G, color.B, color.A });
-		}
-
-		public static Color Convert (CGColor color)
-		{
-			return new Color (color.Components [0], color.Components [1], color.Components [2], color.Alpha);
-		}
-
-		public static NSColor ConvertNS (Color color)
-		{
-			return NSColor.FromDeviceRgba (color.R, color.G, color.B, color.A);
-		}
-
-		public static CGColor ConvertNSToCG (NSColor color)
-		{
-			var cs = NSColorSpace.DeviceRGBColorSpace;
-
-			var devColor = color.UsingColorSpace (cs);
-			float[] components;
-			devColor.GetComponents (out components);
-			return new CGColor(cs.ColorSpace, components);
-		}
-
-		public static Color Convert (NSColor color)
-		{
-			if (color == null)
-				return Colors.Black;
-			float red, green, blue, alpha;
-			color.GetRgba (out red, out green, out blue, out alpha);
-			return new Color (red, green, blue, alpha);
-		}
-		
-		public static NSUrl Convert (Uri uri)
-		{
-			if (uri == null) return null;
-			return new NSUrl(uri.AbsoluteUri);
-		}
-		
 		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent)
 		{
 			var pt = Generator.GetLocation (view, theEvent);

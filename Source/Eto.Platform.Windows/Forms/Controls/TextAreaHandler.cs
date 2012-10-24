@@ -30,7 +30,7 @@ namespace Eto.Platform.Windows
 			};
 			container = new swf.Panel {
 				BorderStyle = swf.BorderStyle.FixedSingle,
-				Size = Generator.Convert (TextArea.DefaultSize)
+				Size = TextArea.DefaultSize.ToSD ()
 			};
 			container.Controls.Add (Control);
 		}

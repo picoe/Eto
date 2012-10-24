@@ -84,7 +84,7 @@ namespace Eto.Platform.Windows
 			var size = this.DesiredSize;
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
-			Control.MinimumSize = Generator.Convert (size);
+			Control.MinimumSize = size.ToSD ();
 		}
 
 		public virtual void SetScale (bool xscale, bool yscale)
@@ -190,10 +190,10 @@ namespace Eto.Platform.Windows
 		}
 
 		public virtual Size Size {
-			get { return Generator.Convert (ContainerControl.Size); }
+			get { return ContainerControl.Size.ToEto (); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.Size = Generator.Convert (value);
+				ContainerControl.Size = value.ToSD ();
 				desiredSize = value;
 				CalculateMinimumSize ();
 			}
@@ -203,7 +203,7 @@ namespace Eto.Platform.Windows
 			get { return new Size (ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.ClientSize = Generator.Convert (value);
+				ContainerControl.ClientSize = value.ToSD ();
 			}
 		}
 
@@ -238,12 +238,12 @@ namespace Eto.Platform.Windows
 
 		public void Invalidate (Rectangle rect)
 		{
-			Control.Invalidate (Generator.Convert (rect), true);
+			Control.Invalidate (rect.ToSD (), true);
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Generator.Convert (Control.BackColor); }
-			set { Control.BackColor = Generator.Convert (value); }
+			get { return Control.BackColor.ToEto (); }
+			set { Control.BackColor = value.ToSD (); }
 		}
 
 		public Graphics CreateGraphics ()

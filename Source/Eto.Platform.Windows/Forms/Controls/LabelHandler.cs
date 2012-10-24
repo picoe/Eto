@@ -157,10 +157,10 @@ namespace Eto.Platform.Windows
 		
 		public Color TextColor {
 			get {
-				return Generator.Convert (Control.ForeColor);
+				return Control.ForeColor.ToEto ();
 			}
 			set {
-				Control.ForeColor = Generator.Convert (value);
+				Control.ForeColor = value.ToSD ();
 			}
 		}
 

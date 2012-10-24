@@ -5,6 +5,7 @@ using SD = System.Drawing;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -136,7 +137,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		void IControl.Invalidate (Eto.Drawing.Rectangle rect)
 		{
-			Control.View.SetNeedsDisplayInRect (Generator.ConvertF (rect));
+			Control.View.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
 		public Eto.Drawing.Graphics CreateGraphics ()
@@ -165,13 +166,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (!Control.View.WantsLayer) {
 					Control.View.WantsLayer = true;
 				}
-				return Generator.Convert (Control.View.Layer.BackgroundColor);
+				return Control.View.Layer.BackgroundColor.ToEtoColor ();
 			}
 			set {
 				if (!Control.View.WantsLayer) {
 					Control.View.WantsLayer = true;
 				}
-				Control.View.Layer.BackgroundColor = Generator.Convert (value);
+				Control.View.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
 

@@ -21,7 +21,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		void FillTable (TableLayout layout)
 		{
-			for (int y = 0; y < layout.Size.Height - 1; y++)
+			for (int y = 0; y < layout.Size.Height; y++)
 				for (int x = 0; x < layout.Size.Width; x++) {
 					var panel = new Panel { 
 						Size = SquareSize, 
@@ -33,17 +33,18 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		Control NoSpacing ()
 		{
-			var layout = new TableLayout (new Panel { BackgroundColor = Colors.Blue }, 3, 4);
+			var layout = new TableLayout (new Panel { BackgroundColor = Colors.Blue }, 3, 3);
 			layout.Padding = new Padding (10);
 			layout.Spacing = Size.Empty;
 			layout.SetColumnScale (1); // scale middle column
+			layout.SetRowScale (1); // scale middle row
 			FillTable (layout);
 			return layout.Container;
 		}
 
 		Control DifferentSizes ()
 		{
-			var layout = new TableLayout (new Panel { BackgroundColor = Colors.Blue }, 3, 5);
+			var layout = new TableLayout (new Panel { BackgroundColor = Colors.Blue }, 3, 4);
 			// row 1
 			layout.Add (new Panel { Size = new Size (10, 10), BackgroundColor = Colors.Lime }, 0, 0);
 			layout.Add (new Panel { Size = new Size (30, 10), BackgroundColor = Colors.Red }, 1, 0);
@@ -59,7 +60,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 			layout.Add (new Panel { Size = new Size (20, 20), BackgroundColor = Colors.Red }, 1, 2);
 			layout.Add (new Panel { Size = new Size (10, 10), BackgroundColor = Colors.Lime }, 2, 2);
 
-			// row 3
+			// row 4
 			layout.Add (new Panel { Size = new Size (10, 10), BackgroundColor = Colors.Red }, 0, 3);
 			layout.Add (new Panel { Size = new Size (20, 20), BackgroundColor = Colors.Lime }, 1, 3);
 			layout.Add (new Panel { Size = new Size (30, 30), BackgroundColor = Colors.Red }, 2, 3);
@@ -73,11 +74,15 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 
 		Control NoPadding ()
 		{
-			var layout = new TableLayout (new Panel { BackgroundColor = Colors.Blue }, 3, 4);
+			var layout = new TableLayout (new Panel { BackgroundColor = Colors.Blue }, 3, 3);
 			layout.Padding = Padding.Empty;
 			layout.Spacing = new Size (20, 20);
-			layout.SetColumnScale (0); // scale first and last column
-			layout.SetColumnScale (2); // scale first and last column
+			// scale first and last column
+			layout.SetColumnScale (0);
+			layout.SetColumnScale (2);
+			// scale first and last row
+			layout.SetRowScale (0);
+			layout.SetRowScale (2);
 			FillTable (layout);
 			return layout.Container;
 		}

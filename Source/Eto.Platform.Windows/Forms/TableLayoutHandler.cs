@@ -24,9 +24,7 @@ namespace Eto.Platform.Windows
 
 		public override Size DesiredSize
 		{
-			get { 
-				return Generator.Convert (Control.PreferredSize);
-			}
+			get { return Control.PreferredSize.ToEto (); }
 		}
 		
 		public TableLayoutHandler()
@@ -78,13 +76,8 @@ namespace Eto.Platform.Windows
 		}
 		
 		public Padding Padding {
-			get {
-				return Generator.Convert(Control.Padding);
-			}
-			set
-			{
-				Control.Padding = Generator.Convert(value);
-			}
+			get { return Control.Padding.ToEto (); }
+			set { Control.Padding = value.ToSWF (); }
 		}
 
 		void SetScale (Control control, int x, int y)

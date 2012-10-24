@@ -29,10 +29,17 @@ namespace Eto.Platform.Mac.Drawing
 				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
 		}
 
+#if IOS
 		public static UIFont ToUIFont (this Font font)
 		{
 			return ((FontHandler)font.Handler).Control;
 		}
+#elif OSX
+		public static NSFont ToNSFont (this Font font)
+		{
+			return ((FontHandler)font.Handler).Control;
+		}
+#endif
 	}
 
 	public class FontHandler : WidgetHandler<NSFont, Font>, IFont, IDisposable

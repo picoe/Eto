@@ -76,7 +76,7 @@ namespace Eto.Platform.Windows
 				//base.OnPaint(e);
 				Graphics graphics = new Graphics(handler.Widget.Generator, new GraphicsHandler(e.Graphics));
 
-				handler.Widget.OnPaint(new PaintEventArgs(graphics, Generator.Convert(e.ClipRectangle)));
+				handler.Widget.OnPaint(new PaintEventArgs(graphics, e.ClipRectangle.ToEto ()));
 			}
 			protected override void OnClick(EventArgs e)
 			{
@@ -109,8 +109,8 @@ namespace Eto.Platform.Windows
 
 		public override Size Size
 		{
-			get	{ return Generator.Convert(Control.Size); }
-			set { Control.Size = Generator.Convert(value); }
+			get	{ return Control.Size.ToEto (); }
+			set { Control.Size = value.ToSD (); }
 		}
 
 		public void Update(Rectangle rect)

@@ -19,7 +19,7 @@ namespace Eto.Platform.Mac.Forms
 			var c = view.ControlObject as NSControl;
 			if (c != null) {
 				c.SizeToFit ();
-				return Generator.ConvertF (c.Frame.Size);
+				return c.Frame.Size.ToEtoSize ();
 			}
 			return Size.Empty;
 		}

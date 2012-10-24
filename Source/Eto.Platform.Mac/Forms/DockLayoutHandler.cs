@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -118,7 +119,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public override void SetContainerSize (SD.SizeF size)
 		{
-			size += Generator.ConvertF (Padding.Size);
+			size += Padding.Size.ToSDSizeF ();
 			
 			base.SetContainerSize (size);
 		}

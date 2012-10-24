@@ -19,6 +19,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new UIImageView();
 		}
 
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.ContentMode = UIViewContentMode.ScaleAspectFit;
+		}
+
 		public Eto.Drawing.Image Image {
 			get { return image; }
 			set {

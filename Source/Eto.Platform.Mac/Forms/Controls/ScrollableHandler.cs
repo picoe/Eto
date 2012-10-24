@@ -5,6 +5,7 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.CoreAnimation;
 using MonoMac.Foundation;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -106,7 +107,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		Size GetBorderSize ()
 		{
-			return Generator.ConvertF (Control.Frame.Size) - Generator.ConvertF (Control.DocumentVisibleRect.Size);
+			return Control.Frame.Size.ToEtoSize () - Control.DocumentVisibleRect.Size.ToEtoSize ();
 		}
 		
 		protected override Size GetNaturalSize ()
@@ -130,15 +131,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (ExpandContentHeight)
 				contentSize.Height = Math.Max (this.ClientSize.Height, contentSize.Height);
 
-			InternalSetFrameSize (Generator.ConvertF(contentSize));
+			InternalSetFrameSize (contentSize.ToSDSizeF ());
 		}
 		
 		public override Color BackgroundColor {
 			get {
-				return Generator.Convert (Control.BackgroundColor);
+				return Control.BackgroundColor.ToEto ();
 			}
 			set {
-				Control.BackgroundColor = Generator.ConvertNS (value);
+				Control.BackgroundColor = value.ToNS ();
 			}
 		}
 		
@@ -146,13 +147,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { 
 				var loc = Control.ContentView.Bounds.Location;
 				if (view.IsFlipped)
-					return Generator.ConvertF (loc);
+					return loc.ToEtoPoint ();
 				else
 					return new Point ((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
 			}
 			set { 
 				if (view.IsFlipped)
-					Control.ContentView.ScrollToPoint (Generator.ConvertF (value));
+					Control.ContentView.ScrollToPoint (value.ToSDPointF ());
 				else
 					Control.ContentView.ScrollToPoint (new SD.PointF (value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
 				Control.ReflectScrolledClipView (Control.ContentView);
@@ -160,15 +161,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 
 		public Size ScrollSize {			
-			get { return Generator.ConvertF (view.Frame.Size); }
+			get { return view.Frame.Size.ToEtoSize (); }
 			set { 
-				InternalSetFrameSize (Generator.ConvertF (value));
+				InternalSetFrameSize (value.ToSDSizeF ());
 			}
 		}
 		
 		public override Size ClientSize {
 			get {
-				return Generator.ConvertF (Control.DocumentVisibleRect.Size);
+				return Control.DocumentVisibleRect.Size.ToEtoSize ();
 			}
 			set {
 				

@@ -24,7 +24,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return;
 				//if (!WantsLayer) {
 					dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
-					Drawable.Update (Generator.ConvertF (dirtyRect));
+					Drawable.Update (dirtyRect.ToEtoRectangle ());
 				/*} else {
 					var rects = GetRectsBeingDrawn??
 					//rect.Y = this.Frame.Height - rect.Y - rect.Height;

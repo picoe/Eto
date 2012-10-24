@@ -132,7 +132,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return new Eto.Drawing.Point ((int)Math.Round ((offset.X + inset.Left) / Control.ZoomScale), (int)Math.Round ((offset.Y + inset.Top) / Control.ZoomScale));
 			}
 			set {
-				Control.SetContentOffset (((PointF)value * Control.ZoomScale).ToSDPointF (), false);
+				Control.SetContentOffset (((PointF)value * Control.ZoomScale).ToSD (), false);
 			}
 		}
 

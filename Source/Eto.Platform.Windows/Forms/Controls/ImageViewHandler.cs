@@ -19,7 +19,7 @@ namespace Eto.Platform.Windows.Forms
 		{
 			Control = new SWF.PictureBox {
 				BorderStyle = SWF.BorderStyle.None,
-				SizeMode = SWF.PictureBoxSizeMode.CenterImage
+				SizeMode = SWF.PictureBoxSizeMode.Zoom
 			};
 		}
 

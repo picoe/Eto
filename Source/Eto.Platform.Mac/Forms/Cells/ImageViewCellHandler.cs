@@ -44,7 +44,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (DrawsBackground) {
 					var nscontext = NSGraphicsContext.CurrentContext;
 					var context = nscontext.GraphicsPort;
-					context.SetFillColor (Generator.Convert (BackgroundColor));
+					context.SetFillColor (BackgroundColor.ToCGColor ());
 					context.FillRect (cellFrame);
 				}
 

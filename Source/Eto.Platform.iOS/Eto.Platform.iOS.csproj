@@ -109,9 +109,6 @@
     <Compile Include="Drawing\BitmapHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Drawing\GraphicsHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Drawing\IconHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -171,7 +168,6 @@
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
-    <Compile Include="Drawing\DrawingExtensions.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
@@ -181,6 +177,20 @@
     </Compile>
     <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\Controls\SliderHandler.cs" />
+    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\GraphicsHandler.cs">
+      <Link>Drawing\GraphicsHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\GraphicsPathHandler.cs">
+      <Link>Drawing\GraphicsPathHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Conversions.sd.cs">
+      <Link>Conversions.sd.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Conversions.cg.cs">
+      <Link>Conversions.cg.cs</Link>
+    </Compile>
+    <Compile Include="Conversions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

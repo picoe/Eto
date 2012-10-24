@@ -35,7 +35,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override Eto.Drawing.Size ClientSize {
 			get {
 				var view = Control.ContentView as NSView;
-				return Generator.ConvertF (view.Frame.Size);
+				return view.Frame.Size.ToEtoSize ();
 			}
 			set {
 				Control.SetFrameFromContentFrame (new System.Drawing.RectangleF (0, 0, value.Width, value.Height));

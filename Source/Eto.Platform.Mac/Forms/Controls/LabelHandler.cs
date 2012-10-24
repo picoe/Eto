@@ -108,10 +108,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public Color TextColor {
 			get {
-				return Generator.Convert (Control.TextColor);
+				return Control.TextColor.ToEto ();
 			}
 			set {
-				Control.TextColor = Generator.ConvertNS (value);
+				Control.TextColor = value.ToNS ();
 			}
 		}
 		

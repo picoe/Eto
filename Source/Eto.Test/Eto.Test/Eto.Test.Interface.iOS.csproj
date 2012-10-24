@@ -163,6 +163,8 @@
     <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
     <Compile Include="DynamicLayoutExtensions.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\ExpandedSection.cs" />
+    <Compile Include="Sections\Controls\ImageViewSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

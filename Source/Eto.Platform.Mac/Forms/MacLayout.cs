@@ -5,6 +5,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -113,7 +114,7 @@ namespace Eto.Platform.Mac.Forms
 					if (!AutoSize) {
 						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
 							var size = child.GetPreferredSize ();
-							child.SetContentSize (Generator.ConvertF (size));
+							child.SetContentSize (size.ToSDSizeF ());
 						}
 						updateSize = false;
 					}
@@ -124,11 +125,11 @@ namespace Eto.Platform.Mac.Forms
 				if (updateSize) {
 					if (AutoSize) {
 						var size = GetPreferredSize ();
-						SetContainerSize (Generator.ConvertF (size));
+						SetContainerSize (size.ToSDSizeF ());
 					} else {
 						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
 							var size = child.GetPreferredSize ();
-							child.SetContentSize (Generator.ConvertF (size));
+							child.SetContentSize (size.ToSDSizeF ());
 						}
 					}
 				}

@@ -37,7 +37,7 @@ namespace Eto.Platform.Windows
 						return handler.DesiredSize;
 				}
 				var container = Widget.Container.GetContainerControl();
-				return container != null ? Generator.Convert (container.PreferredSize) : Size.Empty;
+				return container != null ? container.PreferredSize.ToEto () : Size.Empty;
 			}
 		}
 
@@ -56,7 +56,7 @@ namespace Eto.Platform.Windows
 				padding = value;
 				SWF.Control parent = Control;
 				if (parent != null) {
-					parent.Padding = Generator.Convert (padding);
+					parent.Padding = padding.ToSWF ();
 				}
 			}
 		}
@@ -79,7 +79,7 @@ namespace Eto.Platform.Windows
 					childControl = value.GetContainerControl();
 					childControl.Dock = SWF.DockStyle.Fill;
 					value.SetScale (XScale, YScale);
-					parent.Padding = Generator.Convert (padding);
+					parent.Padding = padding.ToSWF ();
 					parent.Controls.Add (childControl);
 				}
 	

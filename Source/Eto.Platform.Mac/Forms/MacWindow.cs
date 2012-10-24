@@ -7,6 +7,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Forms.Controls;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -255,11 +256,11 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual Size Size {
 			get {
-				return Generator.ConvertF (Control.Frame.Size);
+				return Control.Frame.Size.ToEtoSize ();
 			}
 			set {
 				var oldFrame = Control.Frame;
-				var newFrame = Generator.ConvertF (oldFrame, value);
+				var newFrame = oldFrame.SetSize (value);
 				newFrame.Y = Math.Max (0, oldFrame.Y - (value.Height - oldFrame.Height));
 				Control.SetFrame (newFrame, true);
 				AutoSize = false;
@@ -339,7 +340,7 @@ namespace Eto.Platform.Mac.Forms
 
 		void IControl.Invalidate (Rectangle rect)
 		{
-			Control.ContentView.SetNeedsDisplayInRect (Generator.ConvertF (rect));
+			Control.ContentView.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
 		public Graphics CreateGraphics ()
@@ -365,12 +366,12 @@ namespace Eto.Platform.Mac.Forms
 		public string Id { get; set; }
 
 		public Size ClientSize {
-			get { return Generator.ConvertF (Control.ContentView.Frame.Size); }
+			get { return Control.ContentView.Frame.Size.ToEtoSize (); }
 			set { 
 				var oldFrame = Control.Frame;
 				var oldSize = Control.ContentView.Frame;
 				Control.SetFrameOrigin(new SD.PointF(oldFrame.X, Math.Max (0, oldFrame.Y - (value.Height - oldSize.Height))));
-				Control.SetContentSize (Generator.ConvertF (value));
+				Control.SetContentSize (value.ToSDSizeF ());
 				AutoSize = false;
 			}
 		}
@@ -481,7 +482,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 			if (AutoSize) {
 				var size = this.GetPreferredSize ();
-				SetContentSize (Generator.ConvertF (size));
+				SetContentSize (size.ToSDSizeF ());
 				setInitialSize = true;
 
 				PositionWindow ();

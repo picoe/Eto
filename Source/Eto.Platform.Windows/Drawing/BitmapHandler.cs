@@ -102,9 +102,9 @@ namespace Eto.Platform.Windows.Drawing
 			{
 				var quantizer = new OctreeQuantizer (255, 8);
 				var yummygif = quantizer.Quantize(Control);
-				yummygif.Save(stream, Generator.Convert(format));
+				yummygif.Save(stream, format.ToSD ());
 			}
-			else  Control.Save(stream, Generator.Convert(format));
+			else  Control.Save(stream, format.ToSD ());
 		}
 
 

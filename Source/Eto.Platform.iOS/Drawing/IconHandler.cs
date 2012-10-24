@@ -48,18 +48,18 @@ namespace Eto.Platform.iOS.Drawing
 			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
 			SD.RectangleF destRect = graphics.TranslateView (destination.ToSDRectangleF (), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {
-				graphics.Context.SaveState ();
+				graphics.Control.SaveState ();
 				//graphics.Context.ClipToRect(destRect);
-				if (!graphics.Flipped) {
-					graphics.Context.TranslateCTM (0, nsimage.Size.Height);
-					graphics.Context.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
+				if (graphics.Flipped) {
+					graphics.Control.TranslateCTM (0, nsimage.Size.Height);
+					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
 				} else {
-					graphics.Context.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
+					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
 				}
-				graphics.Context.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
+				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
 				//nsimage.CGImage(destRect, CGBlendMode.Normal, 1);
 				
-				graphics.Context.RestoreState ();
+				graphics.Control.RestoreState ();
 				
 				//var imgportion = nsimage..CGImage.WithImageInRect(sourceRect);
 				/*graphics.Context.SaveState();
