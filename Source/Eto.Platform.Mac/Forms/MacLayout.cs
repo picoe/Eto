@@ -99,7 +99,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
-		public abstract Size GetPreferredSize ();
+		public abstract Size GetPreferredSize (Size availableSize);
 		
 		public virtual void LayoutChildren ()
 		{
@@ -113,7 +113,7 @@ namespace Eto.Platform.Mac.Forms
 				if (updateSize) {
 					if (!AutoSize) {
 						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
-							var size = child.GetPreferredSize ();
+							var size = child.GetPreferredSize (Size.MaxValue);
 							child.SetContentSize (size.ToSDSizeF ());
 						}
 						updateSize = false;
@@ -124,11 +124,11 @@ namespace Eto.Platform.Mac.Forms
 			} else {
 				if (updateSize) {
 					if (AutoSize) {
-						var size = GetPreferredSize ();
+						var size = GetPreferredSize (Size.MaxValue);
 						SetContainerSize (size.ToSDSizeF ());
 					} else {
 						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
-							var size = child.GetPreferredSize ();
+							var size = child.GetPreferredSize (Size.MaxValue);
 							child.SetContentSize (size.ToSDSizeF ());
 						}
 					}

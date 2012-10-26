@@ -61,7 +61,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			foreach (var tab in Widget.TabPages) {
 				var tabsizing = tab.Handler as IMacAutoSizing;
 				if (tabsizing != null)
-					size = Size.Max (size, tabsizing.GetPreferredSize ());
+					size = Size.Max (size, tabsizing.GetPreferredSize (Size.MaxValue));
 			}
 			return size;
 		}

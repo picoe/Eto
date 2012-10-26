@@ -34,11 +34,11 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
-		public override Size GetPreferredSize ()
+		public override Size GetPreferredSize (Size availableSize)
 		{
-			if (child != null)
+			if (child != null && Control != null)
 			{
-				return child.GetPreferredSize () + Padding.Size;
+				return child.GetPreferredSize (Control.Frame.Size.ToEtoSize ()) + Padding.Size;
 			}
 			else return Size.Empty;
 		}

@@ -154,7 +154,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Control.StringValue;
 			}
 			set {
-				var oldSize = GetPreferredSize ();
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				
 				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
 				if (match.Success) {

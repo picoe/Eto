@@ -104,12 +104,12 @@ namespace Eto.Platform.Mac.Forms
 		
 		public bool AutoSize { get; private set; }
 		
-		public virtual Size GetPreferredSize ()
+		public virtual Size GetPreferredSize (Size availableSize)
 		{
 			if (Widget.Layout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					return layout.GetPreferredSize ();
+					return layout.GetPreferredSize (availableSize);
 			}
 			return new Size (200, 200);
 		}
@@ -481,7 +481,7 @@ namespace Eto.Platform.Mac.Forms
 		public virtual void OnLoad (EventArgs e)
 		{
 			if (AutoSize) {
-				var size = this.GetPreferredSize ();
+				var size = this.GetPreferredSize (Size.MaxValue);
 				SetContentSize (size.ToSDSizeF ());
 				setInitialSize = true;
 

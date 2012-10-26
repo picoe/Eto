@@ -55,7 +55,7 @@ namespace Eto.Platform.Mac.Forms
 			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					size = layout.GetPreferredSize ();
+					size = layout.GetPreferredSize (Size.MaxValue);
 			}
 			return size;
 		}

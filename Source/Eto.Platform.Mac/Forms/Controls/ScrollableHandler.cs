@@ -109,7 +109,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			return Control.Frame.Size.ToEtoSize () - Control.DocumentVisibleRect.Size.ToEtoSize ();
 		}
-		
+
+		public override Size GetPreferredSize (Size availableSize)
+		{
+			return Size.Min (base.GetPreferredSize (availableSize), availableSize);
+		}
+
 		protected override Size GetNaturalSize ()
 		{
 			return base.GetNaturalSize () + GetBorderSize ();

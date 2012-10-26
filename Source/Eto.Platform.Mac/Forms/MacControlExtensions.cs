@@ -7,13 +7,13 @@ namespace Eto.Platform.Mac.Forms
 {
 	public static class MacControlExtensions
 	{
-		public static Size GetPreferredSize (this Control view)
+		public static Size GetPreferredSize (this Control view, Size availableSize)
 		{
 			if (view == null)
 				return Size.Empty;
 			var mh = view.Handler as IMacAutoSizing;
 			if (mh != null) {
-				return mh.GetPreferredSize ();
+				return mh.GetPreferredSize (availableSize);
 			}
 			
 			var c = view.ControlObject as NSControl;

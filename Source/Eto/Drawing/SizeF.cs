@@ -67,6 +67,16 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// SizeF with width and height with a maximum float value
+		/// </summary>
+		public static readonly Size MaxValue = new Size (float.MaxValue, float.MaxValue);
+		
+		/// <summary>
+		/// SizeF with width and height with a minimum float value
+		/// </summary>
+		public static readonly Size MinValue = new Size (float.MinValue, float.MinValue);
+
+		/// <summary>
 		/// Initializes a new SizeF class with the specified width and height
 		/// </summary>
 		/// <param name="width">Initial width of the size</param>
