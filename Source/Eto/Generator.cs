@@ -291,7 +291,7 @@ namespace Eto
 				}
 
 				exportedTypes = exportedTypes.Where (r => typeof (IWidget).IsAssignableFrom (r) && r.IsClass && !r.IsAbstract);
-				types.AddRange (exportedTypes);
+				types.InsertRange (0, exportedTypes);
 			}
 		}
 
