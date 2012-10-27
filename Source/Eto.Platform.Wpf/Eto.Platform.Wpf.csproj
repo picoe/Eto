@@ -60,6 +60,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Conversions.cs" />
     <Compile Include="CustomControls\GlassHelper.cs" />
     <Compile Include="CustomControls\HttpServer.cs" />
     <Compile Include="CustomControls\MultiSizeImage.cs" />

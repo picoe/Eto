@@ -124,11 +124,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get
 			{
 				var b = (System.Windows.Media.SolidColorBrush)text.Foreground;
-				return Generator.Convert (b.Color);
+				return b.Color.ToEto ();
 			}
 			set
 			{
-				text.Foreground = new System.Windows.Media.SolidColorBrush (Generator.Convert (value));
+				text.Foreground = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
 			}
 		}
 

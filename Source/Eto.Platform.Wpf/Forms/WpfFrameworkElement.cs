@@ -123,14 +123,14 @@ namespace Eto.Platform.Wpf.Forms
 			switch (handler) {
 				case Eto.Forms.Control.MouseMoveEvent:
 					Control.MouseMove += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseMove (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					Control.MouseDown += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseDown (args);
 						e.Handled = args.Handled;
 					};
@@ -138,14 +138,14 @@ namespace Eto.Platform.Wpf.Forms
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 					if (wpfcontrol != null)
 						wpfcontrol.MouseDoubleClick += (sender, e) => {
-							var args = Generator.ConvertMouseEvent (Control, e);
+							var args = e.ToEto (Control);
 							Widget.OnMouseDoubleClick (args);
 							e.Handled = args.Handled;
 						};
 					else
 						Control.MouseDown += (sender, e) => {
 							if (e.ClickCount == 2) {
-								var args = Generator.ConvertMouseEvent (Control, e);
+								var args = e.ToEto (Control);
 								Widget.OnMouseDoubleClick (args);
 								e.Handled = args.Handled;
 							}
@@ -153,28 +153,28 @@ namespace Eto.Platform.Wpf.Forms
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					Control.MouseUp += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseUp (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
 					Control.MouseEnter += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseEnter (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
 					Control.MouseLeave += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseLeave (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					Control.SizeChanged += (sender, e) => {
-						this.newSize = Generator.Convert (e.NewSize); // so we can report this back in Control.Size
+						this.newSize = e.NewSize.ToEto (); // so we can report this back in Control.Size
 						Widget.OnSizeChanged (EventArgs.Empty);
 						this.newSize = null;
 					};
@@ -189,7 +189,7 @@ namespace Eto.Platform.Wpf.Forms
 						}
 					};
 					Control.KeyDown += (sender, e) => {
-						var args = Generator.Convert (e);
+						var args = e.ToEto ();
 						Widget.OnKeyDown (args);
 						e.Handled = args.Handled;
 					};

@@ -15,14 +15,10 @@ namespace Eto.Platform.Wpf.Forms
 				ShowAlpha = false
 			};
 		}
-		
+
 		public Color Color {
-			get {
-				return Generator.Convert (this.Control.SelectedColor);
-			}
-			set {
-				this.Control.StartingColor = Generator.Convert (value);
-			}
+			get { return this.Control.SelectedColor.ToEto (); }
+			set { this.Control.StartingColor = value.ToWpf (); }
 		}
 
 		public DialogResult ShowDialog (Window parent)

@@ -33,12 +33,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get
 			{
 				var brush = virtualCanvas.Background as swm.SolidColorBrush;
-				if (brush != null) return Generator.Convert (brush.Color);
+				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
 			set
 			{
-				virtualCanvas.Background = new swm.SolidColorBrush (Generator.Convert (value));
+				virtualCanvas.Background = new swm.SolidColorBrush (value.ToWpf ());
 			}
 		}
 

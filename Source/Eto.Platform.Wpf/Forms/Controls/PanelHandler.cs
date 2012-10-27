@@ -36,12 +36,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get
 			{
 				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return Generator.Convert (brush.Color);
+				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
 			set
 			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (Generator.Convert (value));
+				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
 			}
 		}
 

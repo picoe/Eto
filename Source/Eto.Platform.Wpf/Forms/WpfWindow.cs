@@ -274,7 +274,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Rectangle? RestoreBounds
 		{
-			get { return Generator.Convert (Control.RestoreBounds); }
+			get { return Control.RestoreBounds.ToEto (); }
 		}
 
 

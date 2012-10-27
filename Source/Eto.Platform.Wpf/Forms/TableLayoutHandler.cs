@@ -17,6 +17,14 @@ namespace Eto.Platform.Wpf.Forms
 		bool[] rowScale;
 		bool lastRowScale;
 
+        public class EtoGrid : swc.Grid
+        {
+            protected override sw.Size MeasureOverride(sw.Size constraint)
+            {
+                return base.MeasureOverride(constraint);
+            }
+        }
+
 		public void CreateControl (int cols, int rows)
 		{
 			columnScale = new bool[cols];
@@ -179,8 +187,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Eto.Drawing.Padding Padding
 		{
-			get { return Generator.Convert (Control.Margin); }
-			set { Control.Margin = Generator.Convert (value); }
+			get { return Control.Margin.ToEto (); }
+			set { Control.Margin = value.ToWpf (); }
 		}
 
 		public void Add (Control child, int x, int y)
