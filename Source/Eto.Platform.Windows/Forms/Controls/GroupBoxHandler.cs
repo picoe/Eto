@@ -14,6 +14,7 @@ namespace Eto.Platform.Windows
 			Control = new SWF.GroupBox();
 			Control.SuspendLayout ();
 			content = new SWF.Panel();
+			content.Font = SD.SystemFonts.DefaultFont;
 			//container.DockPadding.Top = 16;
 			//container.DockPadding.Left = 8;
 			Control.AutoSize = true;
@@ -22,6 +23,14 @@ namespace Eto.Platform.Windows
 			content.AutoSize = true;
 			content.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
 			Control.Controls.Add(content);
+		}
+
+		public override Eto.Drawing.Size DesiredSize
+		{
+			get
+			{
+				return base.DesiredSize + Control.Size.ToEto () - Control.ClientSize.ToEto ();
+			}
 		}
 
 		public override void OnLoad (EventArgs e)
