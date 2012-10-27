@@ -94,6 +94,11 @@ namespace Eto.Platform.Windows
 			CalculateMinimumSize ();
 		}
 
+		public void SetScale ()
+		{
+			SetScale (XScale, YScale);
+		}
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {

@@ -3,12 +3,15 @@ using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
+using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
 		SWF.Panel content;
+		bool expandWidth = true;
+		bool expandHeight = true;
 		
 
 		public class CustomScrollable : System.Windows.Forms.Panel
@@ -96,7 +99,6 @@ namespace Eto.Platform.Windows
 
 		public ScrollableHandler ()
 		{
-			ExpandContentHeight = ExpandContentWidth = true;
 			SkipLayoutScale = true;
 			Control = new CustomScrollable{ Handler = this };
 			this.Control.Size = SD.Size.Empty;
@@ -106,17 +108,13 @@ namespace Eto.Platform.Windows
 			Control.AutoScroll = true;
 			
 			Control.AutoSize = true;
-			//Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 			Control.VerticalScroll.SmallChange = 5;
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
 
-			//control.AutoScrollPosition = new SD.Point(0,0);
-			//control.AutoScrollMinSize = new System.Drawing.Size(500,500);
-			//control.DisplayRectangle = new System.Drawing.Rectangle(0,0,500,1000);
-			//control.BackColor = System.Drawing.Color.Black;
 			content = new SWF.Panel ();
+			content.Size = SD.Size.Empty;
 			content.AutoSize = true;
 			Control.Controls.Add (content);
 
@@ -124,17 +122,16 @@ namespace Eto.Platform.Windows
 			{
 				if (ExpandContentWidth || ExpandContentHeight)
 				{
-					if (Widget.Layout != null && Widget.Layout.InnerLayout != null)
+					var layout = WindowsLayout;
+					if (layout != null && layout.LayoutObject != null)
 					{
-						var layout = Widget.Layout.InnerLayout.Handler as IWindowsLayout;
-						if (layout != null && layout.LayoutObject != null)
-						{
-							var c = layout.LayoutObject as SWF.Control;
-							var minSize = Control.ClientSize;
-							if (!ExpandContentWidth) minSize.Width = 0;
-							if (!ExpandContentHeight) minSize.Height = 0;
-							c.MinimumSize = minSize;
-						}
+						var c = layout.LayoutObject as SWF.Control;
+						var minSize = Control.ClientSize;
+						if (!ExpandContentWidth) minSize.Width = 0;
+						else minSize.Width = Math.Max (0, minSize.Width);
+						if (!ExpandContentHeight) minSize.Height = 0;
+						else minSize.Height = Math.Max (0, minSize.Height);
+						c.MinimumSize = minSize;
 					}
 				}
 			};
@@ -178,12 +175,28 @@ namespace Eto.Platform.Windows
 
 		public bool ExpandContentWidth
 		{
-			get; set;
+			get { return expandWidth; }
+			set
+			{
+				if (expandWidth != value)
+				{
+					expandWidth = value;
+					SetScale ();
+				}
+			}
 		}
 
 		public bool ExpandContentHeight
 		{
-			get; set;
+			get { return expandHeight; }
+			set
+			{
+				if (expandHeight != value)
+				{
+					expandHeight = value;
+					SetScale ();
+				}
+			}
 		}
 	}
 }
