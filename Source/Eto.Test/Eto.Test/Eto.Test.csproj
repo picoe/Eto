@@ -49,6 +49,7 @@
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
@@ -93,7 +94,7 @@
     <Compile Include="Sections\Serialization\Json\Test.cs" />
     <Compile Include="Sections\Serialization\JsonReadSection.cs" />
     <Compile Include="Sections\Serialization\XamlReadSection.cs" />
-    <Compile Include="Sections\Layouts\ScrollingLayouts\ExpandedSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

@@ -4,9 +4,9 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Layouts.ScrollingLayouts
 {
-	public class ExpandedSection : Panel
+	public class TableLayoutExpansion : Panel
 	{
-		public ExpandedSection ()
+		public TableLayoutExpansion ()
 		{
 			var layout = new DynamicLayout (this);
 

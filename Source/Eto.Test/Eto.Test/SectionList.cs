@@ -138,7 +138,8 @@ namespace Eto.Test
 
 		IEnumerable<Section> ScrollableLayoutSection ()
 		{
-			yield return new Section<Sections.Layouts.ScrollingLayouts.ExpandedSection> { Text = "Table Layout" };
+			yield return new Section<Sections.Layouts.ScrollingLayouts.TableLayoutExpansion> { Text = "Table Layout Expansion" };
+			yield return new Section<Sections.Layouts.ScrollingLayouts.DockLayoutExpansion> { Text = "Dock Layout Expansion" };
 		}
 
 		IEnumerable<Section> DialogsSection ()
