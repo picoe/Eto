@@ -13,7 +13,7 @@ namespace Eto.Platform.Mac
 		{
 			return NSColor.FromDeviceRgba (color.R, color.G, color.B, color.A);
 		}
-		
+
 		public static Color ToEto (this NSColor color)
 		{
 			if (color == null)
@@ -32,7 +32,7 @@ namespace Eto.Platform.Mac
 			devColor.GetComponents (out components);
 			return new CGColor(cs.ColorSpace, components);
 		}
-
+		
 		public static NSRange ToNS (this Range range)
 		{
 			return new NSRange(range.Location, range.Length);
@@ -43,10 +43,37 @@ namespace Eto.Platform.Mac
 			return new Range (range.Location, range.Length);
 		}
 		
-		public static NSUrl ToNS (this Uri uri)
+		public static NSImageInterpolation ToNS (this ImageInterpolation value)
 		{
-			if (uri == null) return null;
-			return new NSUrl(uri.AbsoluteUri);
+			switch (value) {
+			case ImageInterpolation.None:
+				return NSImageInterpolation.None;
+			case ImageInterpolation.Low:
+				return NSImageInterpolation.Low;
+			case ImageInterpolation.Medium:
+				return NSImageInterpolation.Medium;
+			case ImageInterpolation.High:
+				return NSImageInterpolation.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+		
+		public static ImageInterpolation ToEto (this NSImageInterpolation value)
+		{
+			switch (value) {
+			case NSImageInterpolation.None:
+				return ImageInterpolation.None;
+			case NSImageInterpolation.Low:
+				return ImageInterpolation.Low;
+			case NSImageInterpolation.Medium:
+				return ImageInterpolation.Medium;
+			case NSImageInterpolation.Default:
+			case NSImageInterpolation.High:
+				return ImageInterpolation.High;
+			default:
+				throw new NotSupportedException();
+			}
 		}
 	}
 }
