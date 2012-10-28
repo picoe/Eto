@@ -20,8 +20,8 @@ namespace Eto.Test.Sections.Controls
 		Control Default ()
 		{
 			var control = new GroupBox ();
-			
-			control.AddDockedControl (new CheckBoxSection ());
+
+			control.AddDockedControl (new CheckBoxSection { Border = BorderType.None });
 			return control;
 			
 		}
