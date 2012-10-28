@@ -438,13 +438,10 @@ namespace Microsoft.Sample.Controls
                 }
             }
 			if (double.IsInfinity(availableSize.Width))
-            {
-                return _extent;
-            }
-            else
-            {
-                return availableSize;
-            }
+                availableSize.Width = _extent.Width;
+			if (double.IsInfinity(availableSize.Height))
+				availableSize.Height = _extent.Height;
+			return availableSize;
 		}
 
         /// <summary>
