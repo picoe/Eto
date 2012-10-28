@@ -150,14 +150,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			var tileSize = 100;
 			var width = Control.Width / tileSize;
 			var height = Control.Height / tileSize;
+			int totalheight = 0;
 			for (int y = 0; y < height; y++) {
+				int totalwidth = 0;
 				for (int x = 0; x < width; x++) {
+					var xsize = Math.Min (tileSize, Control.Width - totalwidth);
+					var ysize = Math.Min (tileSize, Control.Height - totalheight);
 					var child = new EtoChild {
-						Bounds = new sw.Rect (x * tileSize, y * tileSize, tileSize, tileSize),
+						Bounds = new sw.Rect (x * tileSize, y * tileSize, xsize, ysize),
 						Handler = this
 					};
 					virtualChildren.Add (child);
+					totalwidth += tileSize;
 				}
+				totalheight += tileSize;
 			}
 		}
 
