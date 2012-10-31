@@ -30,7 +30,8 @@ namespace Eto.Platform.Windows
 			set
 			{
 				badgeLabel = value;
-				if (TaskbarManager.IsPlatformSupported)
+#if !__MonoCS__
+				if ((bool)TaskbarManager.IsPlatformSupported)
 				{
 					if (!string.IsNullOrEmpty (badgeLabel))
 					{
@@ -46,6 +47,7 @@ namespace Eto.Platform.Windows
 					else
 						TaskbarManager.Instance.SetOverlayIcon (null, null);
 				}
+#endif
 			}
 		}
 
