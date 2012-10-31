@@ -19,17 +19,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		HashSet<string> delayedEvents = new HashSet<string> ();
 
+#if !__MonoCS__
 		SHDocVw.WebBrowser_V1 WebBrowserV1
 		{
 			get { return (SHDocVw.WebBrowser_V1)Control.ActiveXInstance; }
-		}
-
-		public WebViewHandler ()
-		{
-			this.Control = new SWF.WebBrowser { IsWebBrowserContextMenuEnabled = false };
-			this.Control.HandleCreated += (sender, e) => {
-				HookDocumentEvents ();
-			};
 		}
 
 		public void AttachEvent (SHDocVw.WebBrowser_V1 control, string handler)
@@ -41,6 +34,16 @@ namespace Eto.Platform.Windows.Forms.Controls
 				break;
 			}
 		}
+#endif
+
+		public WebViewHandler ()
+		{
+			this.Control = new SWF.WebBrowser { IsWebBrowserContextMenuEnabled = false };
+			this.Control.HandleCreated += (sender, e) => {
+				HookDocumentEvents ();
+			};
+		}
+
 
 		void WebBrowserV1_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
 		{
@@ -85,8 +88,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 				delayedEvents.Add (newEvent);
 			if (Control.ActiveXInstance != null)
 			{
+#if !__MonoCS__
 				foreach (var handler in delayedEvents)
 					AttachEvent (WebBrowserV1, handler);
+#endif
 				delayedEvents.Clear ();
 			}
 		}
