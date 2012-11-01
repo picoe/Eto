@@ -33,7 +33,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Add (Control child, int x, int y)
 		{
-			var element = (W.UIElement)child.ControlObject;
+			var element = child.GetContainerControl ();
 			WC.Canvas.SetLeft (element, x);
 			WC.Canvas.SetTop (element, y);
 			/*Control.Width = Math.Max (x + child.Size.Width, Control.Width);
@@ -43,7 +43,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Move (Control child, int x, int y)
 		{
-			var element = (W.UIElement)child.ControlObject;
+			var element = child.GetContainerControl ();
 			WC.Canvas.SetLeft (element, x);
 			WC.Canvas.SetTop (element, y);
 			Control.Width = Math.Max (x + child.Size.Width, Control.Width);
@@ -52,7 +52,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Remove (Control child)
 		{
-			var element = (W.UIElement)child.ControlObject;
+			var element = child.GetContainerControl ();
 			Control.Children.Remove (element);
 		}
 	}

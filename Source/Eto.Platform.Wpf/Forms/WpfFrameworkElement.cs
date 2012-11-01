@@ -13,6 +13,19 @@ namespace Eto.Platform.Wpf.Forms
 	public interface IWpfFrameworkElement
 	{
 		Size? PreferredSize { get; }
+		sw.FrameworkElement ContainerControl { get; }
+	}
+
+	public static class ControlExtensions
+	{
+		public static sw.FrameworkElement GetContainerControl (this Control control)
+		{
+			var handler = control as IWpfFrameworkElement;
+			if (handler != null)
+				return handler.ContainerControl;
+			else
+				return control.ControlObject as sw.FrameworkElement;
+		}
 	}
 
 	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl, IWpfFrameworkElement
@@ -27,6 +40,11 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get;
 			set;
+		}
+
+		public virtual sw.FrameworkElement ContainerControl
+		{
+			get { return this.Control; }
 		}
 
 		public virtual Size Size

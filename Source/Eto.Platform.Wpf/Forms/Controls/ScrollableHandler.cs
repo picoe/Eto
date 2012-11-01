@@ -58,12 +58,31 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				SnapsToDevicePixels = true,
 				OrderControls = false
 			};
+            scroller.ScrollChanged += HandleChangedSize;
+            scroller.Loaded += HandleChangedSize;
 
 			scroller.Content = virtualCanvas;
 			Control.Child = scroller;
 			this.Border = BorderType.Bezel;
-			
+            ExpandContentWidth = ExpandContentHeight = true;
 		}
+
+        void HandleChangedSize(object sender, EventArgs e)
+        {
+            var c = virtualCanvas.Backdrop.Child as sw.FrameworkElement;
+            if (c != null)
+            {
+                if (this.ExpandContentWidth) {
+                    var margins = c.Margin.Left + c.Margin.Right;
+                    c.Width = Math.Max(0, Math.Max(virtualCanvas.ExtentWidth - margins, scroller.ViewportWidth - margins));
+                }
+                if (this.ExpandContentHeight)
+                {
+                    var margins = c.Margin.Top + c.Margin.Bottom;
+                    c.Height = Math.Max(0, Math.Max(virtualCanvas.ExtentHeight - margins, scroller.ViewportHeight - margins));
+                }
+            }
+        }
 
 		public override void OnLoadComplete (EventArgs e)
 		{
@@ -112,7 +131,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 			set
 			{
-				
+                virtualCanvas.Backdrop.MinHeight = value.Height;
+                virtualCanvas.Backdrop.MinWidth = value.Width;
 			}
 		}
 
