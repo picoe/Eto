@@ -135,11 +135,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (virtualChildren == null)
 				return;
 			UpdateCanvas ();
-			var parent = Control.GetParent<Microsoft.Sample.Controls.VirtualCanvas> ();
-			if (parent != null) {
-				parent.InvalidateArrange ();
-				//parent.InvalidateVisual ();
-			}
+            var parentScrollable = Widget.FindParent<Scrollable>();
+            var parentHandler = parentScrollable.Handler as ScrollableHandler;
+            if (parentHandler != null)
+            {
+
+                parentHandler.UpdateVisualChildren ();
+            }
 		}
 
 		void UpdateCanvas ()

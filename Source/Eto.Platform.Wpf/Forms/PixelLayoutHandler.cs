@@ -2,52 +2,50 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using WC = System.Windows.Controls;
-using W = System.Windows;
+using swc = System.Windows.Controls;
+using sw = System.Windows;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class PixelLayoutHandler : WpfLayout<WC.Canvas, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : WpfLayout<swc.Canvas, PixelLayout>, IPixelLayout
 	{
-		public PixelLayoutHandler ()
+		public override sw.Size PreferredSize
 		{
-			Control = new WC.Canvas {
-				SnapsToDevicePixels = true
-			};
+			get {
+				var size = new sw.Size ();
+				foreach (var control in Widget.Controls) {
+					var container = control.GetContainerControl ();
+					var preferredSize = control.GetPreferredSize ();
+					var left = swc.Canvas.GetLeft (container) + preferredSize.Width;
+					var top = swc.Canvas.GetTop (container) + preferredSize.Height;
+					if (size.Width < left) size.Width = left;
+					if (size.Height < top) size.Height = top;
+				}
+				return size;
+			}
 		}
 
-		public override void OnLoad ()
+		public PixelLayoutHandler ()
 		{
-			base.OnLoad ();
-			var size = new W.Size ();
-			foreach (var c in Control.Children.OfType<W.FrameworkElement>()) {
-				var left = WC.Canvas.GetLeft(c) + c.Width;
-				var top = WC.Canvas.GetTop (c) + c.Height;
-				if (size.Width < left) size.Width = left;
-				if (size.Height < top) size.Height = top;
-			}
-			this.Control.Width = size.Width;
-			this.Control.Height = size.Height;
+			Control = new swc.Canvas {
+				SnapsToDevicePixels = true
+			};
 		}
 
 		public void Add (Control child, int x, int y)
 		{
 			var element = child.GetContainerControl ();
-			WC.Canvas.SetLeft (element, x);
-			WC.Canvas.SetTop (element, y);
-			/*Control.Width = Math.Max (x + child.Size.Width, Control.Width);
-			Control.Height = Math.Max (y + child.Size.Height, Control.Height);*/
+			swc.Canvas.SetLeft (element, x);
+			swc.Canvas.SetTop (element, y);
 			Control.Children.Add (element);
 		}
 
 		public void Move (Control child, int x, int y)
 		{
 			var element = child.GetContainerControl ();
-			WC.Canvas.SetLeft (element, x);
-			WC.Canvas.SetTop (element, y);
-			Control.Width = Math.Max (x + child.Size.Width, Control.Width);
-			Control.Height = Math.Max (y + child.Size.Height, Control.Height);
+			swc.Canvas.SetLeft (element, x);
+			swc.Canvas.SetTop (element, y);
 		}
 
 		public void Remove (Control child)

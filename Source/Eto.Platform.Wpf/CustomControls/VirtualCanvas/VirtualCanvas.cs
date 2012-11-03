@@ -322,6 +322,14 @@ namespace Microsoft.Sample.Controls
             get { return _backdrop; }
         }
 
+		public void RecalculateExtent ()
+		{
+			_extent.Width = double.NaN;
+			_extent.Height = double.NaN;
+			InvalidateMeasure ();
+			InvalidateArrange ();
+		}
+
         /// <summary>
         /// Calculate the size needed to display all the virtual children.
         /// </summary>

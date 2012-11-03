@@ -10,17 +10,14 @@ namespace Eto.Platform.Wpf.Forms
 	public interface IWpfLayout
 	{
 		void AutoSize ();
+		sw.Size PreferredSize { get; }
 	}
 
-	public class WpfLayout<T, W> : WidgetHandler<T, W>, ILayout, IWpfLayout
+	public abstract class WpfLayout<T, W> : WidgetHandler<T, W>, ILayout, IWpfLayout
 		where T: System.Windows.FrameworkElement
 		where W: Layout
 	{
-
-        public virtual sw.Size MeasureOverride (sw.Size size)
-        {
-            return size;
-        }
+		public abstract sw.Size PreferredSize { get; }
 
 		public virtual void AutoSize ()
 		{

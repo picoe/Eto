@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,18 +9,22 @@ using msc = Microsoft.Sample.Controls;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public interface ISupportVirtualize
 	{
-		IEnumerable<msc.IVirtualChild> Children { get; }
+        IEnumerable<msc.IVirtualChild> Children { get; }
+
 		void ClearChildren ();
 	}
 
 	public class ScrollableHandler : WpfFrameworkElement<swc.Border, Scrollable>, IScrollable
 	{
 		BorderType borderType;
+		bool expandContentWidth = true;
+		bool expandContentHeight = true;
 		swc.ScrollViewer scroller;
 		msc.VirtualCanvas virtualCanvas;
 
@@ -64,41 +68,75 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			scroller.Content = virtualCanvas;
 			Control.Child = scroller;
 			this.Border = BorderType.Bezel;
-            ExpandContentWidth = ExpandContentHeight = true;
 		}
 
-        void HandleChangedSize(object sender, EventArgs e)
+        void HandleChangedSize (object sender, EventArgs e)
         {
-            var c = virtualCanvas.Backdrop.Child as sw.FrameworkElement;
-            if (c != null)
-            {
-                if (this.ExpandContentWidth) {
-                    var margins = c.Margin.Left + c.Margin.Right;
-                    c.Width = Math.Max(0, Math.Max(virtualCanvas.ExtentWidth - margins, scroller.ViewportWidth - margins));
+			UpdateSizes ();
+        }
+
+		void UpdateSizes ()
+		{
+			if (!Control.IsLoaded)
+				return;
+			var c = virtualCanvas.Backdrop;
+			if (c != null && Widget.Layout != null && Widget.Layout.InnerLayout != null) {
+				var layoutHandler = Widget.Layout.InnerLayout.Handler as IWpfLayout;
+				if (layoutHandler == null)
+					return;
+				var preferredSize = layoutHandler.PreferredSize;
+				if (this.ExpandContentWidth) {
+					var margins = c.Margin.Left + c.Margin.Right;
+					c.Width = Math.Max (0, Math.Max(c.MinWidth, Math.Max (preferredSize.Width, scroller.ViewportWidth)));
+				}
+				else
+					c.Width = preferredSize.Width;
+
+				if (this.ExpandContentHeight) {
+					var margins = c.Margin.Top + c.Margin.Bottom;
+					c.Height = Math.Max (0, Math.Max(c.MinHeight, Math.Max (preferredSize.Height, scroller.ViewportHeight)));
+				}
+				else
+					c.Height = preferredSize.Height;
+				virtualCanvas.RecalculateExtent ();
+			}
+		}
+
+        public override void OnLoadComplete (EventArgs e)
+        {
+            base.OnLoadComplete (e);
+            GetVirtualChildren ();
+            Control.InvalidateMeasure ();
+        }
+
+        public void UpdateVisualChildren ()
+        {
+            GetVirtualChildren ();
+            Control.InvalidateMeasure ();
+        }
+
+        void ScanChildren (ICollection<msc.IVirtualChild> virtualChildren, Container container)
+        {
+            foreach (var control in container.Controls) {
+                if (control.Handler is ScrollableHandler)
+                    continue;
+                var child = control.Handler as ISupportVirtualize;
+                if (child != null) {
+                    child.ClearChildren();
+                    foreach (var item in child.Children)
+                        virtualChildren.Add (item);
                 }
-                if (this.ExpandContentHeight)
-                {
-                    var margins = c.Margin.Top + c.Margin.Bottom;
-                    c.Height = Math.Max(0, Math.Max(virtualCanvas.ExtentHeight - margins, scroller.ViewportHeight - margins));
+                var childContainer = control as Container;
+                if (childContainer != null) {
+                    ScanChildren (virtualChildren, childContainer);
                 }
             }
         }
 
-		public override void OnLoadComplete (EventArgs e)
-		{
-			base.OnLoadComplete (e);
-			GetVirtualChildren ();
-			Control.InvalidateMeasure ();
-		}
-
 		void GetVirtualChildren ()
 		{
 			var virtualChildren = new ObservableCollection<msc.IVirtualChild> ();
-			foreach (var child in Widget.Children.Select (r => r.Handler).OfType<ISupportVirtualize> ()) {
-				child.ClearChildren ();
-				foreach (var item in child.Children)
-					virtualChildren.Add (item);
-			}
+            ScanChildren (virtualChildren, Widget);
 			virtualCanvas.VirtualChildren = virtualChildren;
 		}
 
@@ -108,6 +146,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (layout != null) layout.AutoSize ();
 			GetVirtualChildren ();
 			Control.InvalidateMeasure ();
+			UpdateSizes ();
 		}
 
 		public Eto.Drawing.Point ScrollPosition
@@ -133,6 +172,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
                 virtualCanvas.Backdrop.MinHeight = value.Height;
                 virtualCanvas.Backdrop.MinWidth = value.Width;
+				UpdateSizes ();
 			}
 		}
 
@@ -228,13 +268,26 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public bool ExpandContentWidth
 		{
-			get; set;
+			get { return expandContentWidth; }
+			set
+			{
+				if (expandContentWidth != value) {
+					expandContentWidth = value;
+					UpdateSizes ();
+				}
+			}
 		}
 
 		public bool ExpandContentHeight
 		{
-			get;
-			set;
+			get { return expandContentHeight; }
+			set
+			{
+				if (expandContentHeight != value) {
+					expandContentHeight = value;
+					UpdateSizes ();
+				}
+			}
 		}
 	}
 }

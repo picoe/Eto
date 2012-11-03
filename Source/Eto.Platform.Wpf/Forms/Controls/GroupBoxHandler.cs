@@ -6,22 +6,23 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using Eto.Forms;
+using Eto.Drawing;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class GroupBoxHandler : WpfControl<swc.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WpfContainer<swc.GroupBox, GroupBox>, IGroupBox
 	{
+		Font font;
+		
 		public GroupBoxHandler ()
 		{
 			Control = new swc.GroupBox ();
 		}
 		
-		public Eto.Drawing.Size ClientSize
+		public override Size ClientSize
 		{
-			get
-			{
-				return this.Size;
-			}
+			get { return this.Size; }
 			set
 			{
 				// TODO
@@ -29,17 +30,41 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public object ContainerObject
+		public override object ContainerObject
 		{
 			get { return Control; }
 		}
 
-		public void SetLayout (Layout layout)
+		public override void SetLayout (Layout layout)
 		{
 			Control.Content = (System.Windows.UIElement)layout.ControlObject;
 		}
 
-		public Eto.Drawing.Size? MinimumSize
+		public override Color BackgroundColor
+		{
+			get
+			{
+				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
+				if (brush != null) return brush.Color.ToEto ();
+				else return Colors.Black;
+			}
+			set
+			{
+				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
+			}
+		}
+
+		public Font Font
+		{
+			get { return font; }
+			set
+			{
+				font = value;
+				FontHandler.Apply (Control, font);
+			}
+		}
+
+		public override Size? MinimumSize
 		{
 			get
 			{

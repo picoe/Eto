@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public interface IWpfFrameworkElement
 	{
-		Size? PreferredSize { get; }
+		sw.Size PreferredSize { get; }
 		sw.FrameworkElement ContainerControl { get; }
 	}
 
@@ -20,12 +20,22 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		public static sw.FrameworkElement GetContainerControl (this Control control)
 		{
-			var handler = control as IWpfFrameworkElement;
+			var handler = control.Handler as IWpfFrameworkElement;
 			if (handler != null)
 				return handler.ContainerControl;
 			else
 				return control.ControlObject as sw.FrameworkElement;
 		}
+
+        public static sw.Size GetPreferredSize (this Control control)
+        {
+			if (control != null) {
+				var handler = control.Handler as IWpfFrameworkElement;
+				if (handler != null)
+					return handler.PreferredSize;
+			}
+			return sw.Size.Empty;
+        }
 	}
 
 	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl, IWpfFrameworkElement
@@ -33,6 +43,8 @@ namespace Eto.Platform.Wpf.Forms
 		where W : Control
 	{
 		Size? size;
+		double preferredWidth = double.NaN;
+		double preferredHeight = double.NaN;
 		Size? newSize;
 		Cursor cursor;
 
@@ -57,13 +69,24 @@ namespace Eto.Platform.Wpf.Forms
 			}
 			set {
 				size = value;
+				preferredWidth = value.Width == -1 ? double.NaN : (double)value.Width;
+				preferredHeight = value.Height == -1 ? double.NaN : (double)value.Height;
 				Generator.SetSize (Control, value); 
 			}
 		}
 
-		public Size? PreferredSize
+		public virtual sw.Size PreferredSize
 		{
-			get { return size; }
+			get {
+				if (double.IsNaN(preferredWidth) || double.IsNaN(preferredHeight)) {
+					ContainerControl.Measure (new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
+					if (double.IsNaN (preferredWidth))
+						preferredWidth = ContainerControl.DesiredSize.Width;
+					if (double.IsNaN (preferredHeight))
+						preferredHeight = ContainerControl.DesiredSize.Height;
+				}
+				return new sw.Size (preferredWidth, preferredHeight);
+			}
 		}
 
 		public bool Enabled

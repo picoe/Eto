@@ -13,13 +13,31 @@ namespace Eto.Platform.Wpf.Forms
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout>, ITableLayout
 	{
 		Eto.Drawing.Size spacing;
+		Control[,] controls;
 		bool[] columnScale;
 		bool lastColumnScale;
 		bool[] rowScale;
 		bool lastRowScale;
 
+		public override sw.Size PreferredSize
+		{
+			get {
+				double[] widths = new double[columnScale.Length];
+				double[] heights = new double[rowScale.Length];
+				for (int y = 0; y < heights.Length; y++)
+					for (int x = 0; x < widths.Length; x++) {
+						var preferredSize = controls[x,y].GetPreferredSize();
+						widths[x] = Math.Max (widths[x], preferredSize.Width);
+						heights[y] = Math.Max (heights[y], preferredSize.Height);
+					}
+
+				return new sw.Size (widths.Sum () + columnScale.Length * Spacing.Width + Padding.Vertical, heights.Sum () + rowScale.Length * Spacing.Height + Padding.Vertical);
+			}
+		}
+
 		public void CreateControl (int cols, int rows)
 		{
+			controls = new Control[cols, rows];
 			columnScale = new bool[cols];
 			rowScale = new bool[rows];
 			lastColumnScale = true;
@@ -199,15 +217,10 @@ namespace Eto.Platform.Wpf.Forms
 
         void Remove(int x, int y)
         {
-            foreach (sw.UIElement element in Control.Children)
-            {
-                var col = swc.Grid.GetColumn(element);
-                if (x != col) continue;
-                var row = swc.Grid.GetRow(element);
-                if (y != row) continue;
-                Control.Children.Remove(element);
-                break;
-            }
+			var control = controls[x, y];
+			controls[x, y] = null;
+			if (control != null)
+				Control.Children.Remove (control.GetContainerControl ());
         }
 
 		public void Add (Control child, int x, int y)
@@ -220,6 +233,7 @@ namespace Eto.Platform.Wpf.Forms
             else
             {
 				var control = child.GetContainerControl ();
+				controls[x, y] = child;
 				control.SetValue (swc.Grid.ColumnProperty, x);
 				control.SetValue (swc.Grid.RowProperty, y);
 				SetMargins (control, x, y);
@@ -242,6 +256,7 @@ namespace Eto.Platform.Wpf.Forms
 			SetSizes (control, x, y);
 			SetSizes (control, x, y);
 			Control.Children.Add (EmptyCell (oldx, oldy));
+			controls[x, y] = child;
 		}
 
 		public void Remove (Control child)
@@ -250,6 +265,7 @@ namespace Eto.Platform.Wpf.Forms
 			var x = swc.Grid.GetColumn (control);
 			var y = swc.Grid.GetRow (control);
 			Control.Children.Remove (control);
+			controls[x, y] = null;
 			Control.Children.Add (EmptyCell (x, y));
             SetSizes();
 		}

@@ -13,6 +13,14 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		Control content;
 
+		public override sw.Size PreferredSize
+		{
+			get { 
+				var preferredSize = content.GetPreferredSize ();
+				return new sw.Size (preferredSize.Width + Padding.Horizontal, preferredSize.Height + Padding.Vertical);
+			}
+		}
+
 		public DockLayoutHandler ()
 		{
 			Control = new swc.Border { 
