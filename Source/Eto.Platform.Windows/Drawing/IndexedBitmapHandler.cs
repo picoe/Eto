@@ -26,7 +26,7 @@ namespace Eto.Platform.Windows.Drawing
 		}
 	}
 
-	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap
+	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap, IWindowsImage
 	{
 
 		public IndexedBitmapHandler()
@@ -94,5 +94,10 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 
+
+		public SD.Image GetImageWithSize (int? size)
+		{
+			return Control;
+		}
 	}
 }
