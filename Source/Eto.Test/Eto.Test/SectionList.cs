@@ -140,6 +140,7 @@ namespace Eto.Test
 		{
 			yield return new Section<Sections.Layouts.ScrollingLayouts.TableLayoutExpansion> { Text = "Table Layout Expansion" };
 			yield return new Section<Sections.Layouts.ScrollingLayouts.DockLayoutExpansion> { Text = "Dock Layout Expansion" };
+			yield return new Section<Sections.Layouts.ScrollingLayouts.PixelLayoutExpansion> { Text = "Pixel Layout Expansion" };
 		}
 
 		IEnumerable<Section> DialogsSection ()
