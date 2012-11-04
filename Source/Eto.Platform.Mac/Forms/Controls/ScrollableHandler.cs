@@ -13,7 +13,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		NSScrollView control;
 		NSView view;
-		
+		bool expandContentWidth = true;
+		bool expandContentHeight = true;
+
 		class EtoScrollView : NSScrollView, IMacControl
 		{
 			object IMacControl.Handler { get { return Handler; } }
@@ -38,7 +40,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public ScrollableHandler ()
 		{
 			Enabled = true;
-			ExpandContentHeight = ExpandContentWidth = true;
 			control = new EtoScrollView { Handler = this };
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
@@ -214,20 +215,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 
-		#region IScrollable implementation
-
 		public bool ExpandContentWidth
 		{
-			get;
-			set;
+			get { return expandContentWidth; }
+			set {
+				if (expandContentWidth != value) {
+					expandContentWidth = value;
+					UpdateScrollSizes ();
+				}
+			}
 		}
 
 		public bool ExpandContentHeight
 		{
-			get;
-			set;
+			get { return expandContentHeight; }
+			set {
+				if (expandContentHeight != value) {
+					expandContentHeight = value;
+					UpdateScrollSizes ();
+				}
+			}
 		}
-
-		#endregion
 	}
 }
