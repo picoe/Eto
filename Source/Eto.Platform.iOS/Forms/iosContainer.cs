@@ -3,6 +3,7 @@ using Eto.Platform.iOS.Forms.Controls;
 using MonoTouch.UIKit;
 using Eto.Forms;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -32,7 +33,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 			var layout = Widget.Layout.InnerLayout.Handler as IiosLayout;
 			if (layout != null)
-				return layout.GetPreferredSize ();
+				return layout.GetPreferredSize (Size.MaxValue);
 			else
 				return base.GetNaturalSize ();
 		}

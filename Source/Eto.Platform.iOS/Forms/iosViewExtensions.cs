@@ -50,13 +50,13 @@ namespace Eto.Platform.iOS.Forms
 			throw new EtoException("Coult not add subview to parent");
 		}
 
-		public static Size GetPreferredSize(this Control control)
+		public static Size GetPreferredSize(this Control control, Size availableSize)
 		{
 			if (control == null)
 				return Size.Empty;
 			var mh = control.Handler as IiosView;
 			if (mh != null) {
-				return mh.GetPreferredSize ();
+				return mh.GetPreferredSize (availableSize);
 			}
 			
 			var c = control.ControlObject as UIView;

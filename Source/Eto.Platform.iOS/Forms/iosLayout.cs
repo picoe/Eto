@@ -9,7 +9,7 @@ namespace Eto.Platform.iOS.Forms
 {
 	public interface IiosLayout {
 		object LayoutObject { get; }	
-		Size GetPreferredSize ();
+		Size GetPreferredSize (Size availableSize);
 	}
 	
 	public abstract class iosLayout<T, W> : iosObject<T, W>, ILayout, IiosLayout
@@ -50,7 +50,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 		
-		public abstract Size GetPreferredSize ();
+		public abstract Size GetPreferredSize (Size availableSize);
 
 		public virtual void Layout()
 		{

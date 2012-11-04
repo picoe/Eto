@@ -34,9 +34,9 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 		
-		public override Eto.Drawing.Size GetPreferredSize ()
+		public override Eto.Drawing.Size GetPreferredSize (Size availableSize)
 		{
-			return child.GetPreferredSize ();
+			return child.GetPreferredSize (availableSize);
 		}
 
 		public override void LayoutChildren ()

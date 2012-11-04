@@ -12,7 +12,7 @@ namespace Eto.Platform.iOS.Forms
 	public interface IiosView
 	{
 		Size PositionOffset { get; }
-		Size GetPreferredSize ();
+		Size GetPreferredSize (Size availableSize);
 		Size? MinimumSize { get; }
 		bool AutoSize { get; }
 		UIView ContainerControl { get; }
@@ -76,7 +76,7 @@ namespace Eto.Platform.iOS.Forms
 			return Size.Empty;
 		}
 		
-		public virtual Size GetPreferredSize ()
+		public virtual Size GetPreferredSize (Size availableSize)
 		{
 			var size = GetNaturalSize ();
 			if (!AutoSize && PreferredSize != null) {
