@@ -81,7 +81,7 @@ namespace Eto.Test
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
 					Panel1 = sectionList,
-					Panel2 = contentContainer //RightPane ()
+					Panel2 = RightPane ()
 				};
 				return splitter;
 			}
