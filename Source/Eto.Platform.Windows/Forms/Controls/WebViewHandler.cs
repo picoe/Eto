@@ -38,7 +38,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public WebViewHandler ()
 		{
-			this.Control = new SWF.WebBrowser { IsWebBrowserContextMenuEnabled = false };
+			this.Control = new SWF.WebBrowser {
+				IsWebBrowserContextMenuEnabled = false,
+				WebBrowserShortcutsEnabled = false,
+				AllowWebBrowserDrop = false
+			};
 			this.Control.HandleCreated += (sender, e) => {
 				HookDocumentEvents ();
 			};
