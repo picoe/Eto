@@ -36,9 +36,9 @@ namespace Eto.Platform.Mac.Forms
 		
 		public override Size GetPreferredSize (Size availableSize)
 		{
-			if (child != null && Control != null)
+			if (child != null)
 			{
-				return child.GetPreferredSize (Control.Frame.Size.ToEtoSize ()) + Padding.Size;
+				return child.GetPreferredSize (availableSize) + Padding.Size;
 			}
 			else return Size.Empty;
 		}
