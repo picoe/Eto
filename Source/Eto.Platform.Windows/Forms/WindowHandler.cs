@@ -85,6 +85,7 @@ namespace Eto.Platform.Windows
 			Control.Load += (sender, e) => {
 				content.MinimumSize = sd.Size.Empty;
 			};
+			Control.Size = sd.Size.Empty;
 
 			// Always handle closing because we want to send Application.Terminating event
 			HandleEvent (Window.ClosingEvent);
