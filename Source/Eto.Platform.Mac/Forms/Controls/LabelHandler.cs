@@ -158,14 +158,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 				
 				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
 				if (match.Success) {
-					var str = new NSMutableAttributedString (value.Remove(match.Index, match.Length).Replace ("&&", "&"));
+					var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
+					var str = new NSMutableAttributedString (val);
 					
 					var matches = Regex.Matches (value, @"[&][&]");
 					var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
 					
 					// copy existing attributes
 					NSRange range;
-					var attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+					NSMutableDictionary attributes;
+					if (Control.AttributedStringValue.Length > 0)
+						attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+					else
+						attributes = new NSMutableDictionary();
+
 					if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
 						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
 					str.AddAttributes (attributes, new NSRange(0, str.Length));
