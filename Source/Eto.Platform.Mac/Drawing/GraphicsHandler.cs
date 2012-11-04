@@ -425,7 +425,7 @@ namespace Eto.Platform.iOS.Drawing
 			var size = str.StringSize (font.ToUIFont ());
 #endif
 			EndDrawing ();
-			return size.ToEto ();
+			return Eto.Platform.Conversions.ToEto (size);
 		}
 
 #if OSX
