@@ -56,7 +56,12 @@ namespace Eto.Platform
 		{
 			return new Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
 		}
-		
+
+		public static RectangleF ToEto (this sd.RectangleF rect)
+		{
+			return new RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
 		public static Rectangle ToEtoRectangle (this sd.RectangleF rect)
 		{
 			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
