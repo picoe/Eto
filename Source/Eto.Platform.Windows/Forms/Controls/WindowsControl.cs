@@ -56,7 +56,7 @@ namespace Eto.Platform.Windows
 		Font font;
 		Cursor cursor;
 		string tooltip;
-		Size desiredSize;
+		Size desiredSize = new Size(-1, -1);
 		protected bool XScale { get; set; }
 		protected bool YScale { get; set; }
 

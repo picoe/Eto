@@ -37,6 +37,14 @@ namespace Eto.Platform.Windows
 				else return this.AutoScrollPosition;*/
 				return this.AutoScrollPosition;
 			}
+
+			protected override void OnClientSizeChanged (EventArgs e)
+			{
+				base.OnClientSizeChanged (e);
+				if (Handler.Widget != null)
+					Handler.UpdateExpanded ();
+			}
+
 		}
 
 		public override Size DesiredSize
@@ -100,41 +108,39 @@ namespace Eto.Platform.Windows
 		public ScrollableHandler ()
 		{
 			SkipLayoutScale = true;
-			Control = new CustomScrollable{ Handler = this };
-			this.Control.Size = SD.Size.Empty;
-			this.Control.MinimumSize = SD.Size.Empty;
-			
-			Control.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			Control.AutoScroll = true;
-			
-			Control.AutoSize = true;
+			Control = new CustomScrollable{ 
+				Handler = this,
+				Size = SD.Size.Empty,
+				MinimumSize = SD.Size.Empty,
+				BorderStyle = SWF.BorderStyle.Fixed3D,
+				AutoScroll = true,
+				AutoSize = true
+			};
 			Control.VerticalScroll.SmallChange = 5;
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
 
-			content = new SWF.Panel ();
-			content.Size = SD.Size.Empty;
-			content.AutoSize = true;
-			Control.Controls.Add (content);
-
-			Control.SizeChanged += delegate
-			{
-				if (ExpandContentWidth || ExpandContentHeight)
-				{
-					var layout = WindowsLayout;
-					if (layout != null && layout.LayoutObject != null)
-					{
-						var c = layout.LayoutObject as SWF.Control;
-						var minSize = Control.ClientSize;
-						if (!ExpandContentWidth) minSize.Width = 0;
-						else minSize.Width = Math.Max (0, minSize.Width);
-						if (!ExpandContentHeight) minSize.Height = 0;
-						else minSize.Height = Math.Max (0, minSize.Height);
-						c.MinimumSize = minSize;
-					}
-				}
+			content = new SWF.Panel {
+				Size = SD.Size.Empty,
+				AutoSize = true
 			};
+			Control.Controls.Add (content);
+		}
+
+		void UpdateExpanded ()
+		{
+			var layout = WindowsLayout;
+			if (layout != null && layout.LayoutObject != null) {
+				var c = layout.LayoutObject as SWF.Control;
+				var minSize = Control.ClientSize;
+				if (!ExpandContentWidth) minSize.Width = 0;
+				else minSize.Width = Math.Max (0, minSize.Width);
+				if (!ExpandContentHeight) minSize.Height = 0;
+				else minSize.Height = Math.Max (0, minSize.Height);
+				c.MinimumSize = minSize;
+				Control.PerformLayout ();
+			}
 		}
 		
 		public override void AttachEvent (string handler)
@@ -182,6 +188,7 @@ namespace Eto.Platform.Windows
 				{
 					expandWidth = value;
 					SetScale ();
+					UpdateExpanded ();
 				}
 			}
 		}
@@ -195,6 +202,7 @@ namespace Eto.Platform.Windows
 				{
 					expandHeight = value;
 					SetScale ();
+					UpdateExpanded ();
 				}
 			}
 		}

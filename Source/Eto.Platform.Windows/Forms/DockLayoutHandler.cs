@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class DockLayoutHandler : WindowsLayout<SWF.Control, DockLayout>, IDockLayout
+	public class DockLayoutHandler : WindowsLayout<SWF.TableLayoutPanel, DockLayout>, IDockLayout
 	{
 		Control child;
 		Padding padding;
@@ -16,15 +16,22 @@ namespace Eto.Platform.Windows
 		public DockLayoutHandler ()
 		{
 			padding = DockLayout.DefaultPadding;
+			Control = new SWF.TableLayoutPanel {
+				Dock = SWF.DockStyle.Fill,
+				RowCount = 1,
+				ColumnCount = 1,
+				Size = SD.Size.Empty,
+				AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink,
+				AutoSize = true
+			};
+			Control.ColumnStyles.Add (new SWF.ColumnStyle (SWF.SizeType.Percent, 1));
+			Control.RowStyles.Add (new SWF.RowStyle (SWF.SizeType.Percent, 1));
+			Padding = DockLayout.DefaultPadding;
 		}
 
-		public override SWF.Control Control {
-			get {
-				return Widget.Container != null ? (SWF.Control)Widget.Container.ContainerObject : null;
-			}
-			protected set {
-				base.Control = value;
-			}
+		public override object LayoutObject
+		{
+			get { return Control; }
 		}
 
 		public override Size DesiredSize
@@ -44,34 +51,22 @@ namespace Eto.Platform.Windows
 		public override void SetScale (bool xscale, bool yscale)
 		{
 			base.SetScale (xscale, yscale);
-			child.SetScale (xscale, yscale);
+			if (child != null)
+				child.SetScale (xscale, yscale);
 		}
 
 
 		public Padding Padding {
-			get {
-				return padding;
-			}
-			set {
-				padding = value;
-				SWF.Control parent = Control;
-				if (parent != null) {
-					parent.Padding = padding.ToSWF ();
-				}
-			}
+			get { return Control.Padding.ToEto (); }
+			set { Control.Padding = value.ToSWF (); }
 		}
 		
 		public Control Content {
 			get { return (Widget.Container == null) ? childToAdd : this.child; }
 			set {
-				if (Widget.Container == null) {
-					childToAdd = value;
-					return;
-				}
 				if (child == value)
 					return;
-				SWF.Control parent = Control;
-				parent.SuspendLayout ();
+				Control.SuspendLayout ();
 	
 				SWF.Control childControl;
 
@@ -79,27 +74,18 @@ namespace Eto.Platform.Windows
 					childControl = value.GetContainerControl();
 					childControl.Dock = SWF.DockStyle.Fill;
 					value.SetScale (XScale, YScale);
-					parent.Padding = padding.ToSWF ();
-					parent.Controls.Add (childControl);
+					Control.Controls.Add (childControl, 0, 0);
 				}
 	
 				if (this.child != null) {
 					child.SetScale (false, false);
 					childControl = this.child.GetContainerControl ();
-					parent.Controls.Remove (childControl);
+					Control.Controls.Remove (childControl);
 				}
 	
 				this.child = value;
-				parent.ResumeLayout ();
+				Control.ResumeLayout ();
 			}
 		}
-
-		public override void AttachedToContainer ()
-		{
-			base.AttachedToContainer ();
-			if (childToAdd != null)
-				this.Content = childToAdd;
-		}
-
 	}
 }

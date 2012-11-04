@@ -1,4 +1,3 @@
-#define SWF_1_1
 using System;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
@@ -36,7 +35,7 @@ namespace Eto.Platform.Windows
 			this.Control.Size = SD.Size.Empty;
 			this.Control.MinimumSize = SD.Size.Empty;
 			this.Control.AutoSize = true;
-			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Control.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
 		}
