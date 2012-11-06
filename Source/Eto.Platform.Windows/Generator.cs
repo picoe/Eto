@@ -82,6 +82,11 @@ namespace Eto.Platform.Windows
 			return new SD.Size(size.Width, size.Height);
 		}
 
+		public static Size ConvertF (SD.SizeF size)
+		{
+			return new Size ((int)size.Width, (int)size.Height);
+		}
+
 		public static SizeF Convert(SD.SizeF size)
 		{
 			return new SizeF(size.Width, size.Height);
