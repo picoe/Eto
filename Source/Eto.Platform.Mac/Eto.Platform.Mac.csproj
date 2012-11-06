@@ -154,6 +154,7 @@
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
+    <Compile Include="Forms\FontDialogHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

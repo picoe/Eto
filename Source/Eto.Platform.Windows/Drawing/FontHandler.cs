@@ -7,8 +7,34 @@ using SWF = System.Windows.Forms;
 
 namespace Eto.Platform.Windows.Drawing
 {
+	public static class FontExtensions
+	{
+		public static SD.Font ToSD (this Font font)
+		{
+			if (font == null)
+				return null;
+			var handler = font.Handler as FontHandler;
+			return handler.Control;
+		}
+
+		public static Font ToEto (this SD.Font font, Eto.Generator generator)
+		{
+			if (font == null)
+				return null;
+			return new Font (generator, new FontHandler (font));
+		}
+	}
+
 	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, IFont
 	{
+		public FontHandler ()
+		{
+		}
+
+		public FontHandler (SD.Font font)
+		{
+			Control = font;
+		}
 
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
@@ -77,6 +103,11 @@ namespace Eto.Platform.Windows.Drawing
 		public bool Italic
 		{
 			get { return this.Control.Italic; }
+		}
+
+		public string FontName
+		{
+			get { return this.Control.FontFamily.Name; }
 		}
 	}
 }

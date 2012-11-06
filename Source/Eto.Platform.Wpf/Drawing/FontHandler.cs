@@ -6,9 +6,38 @@ using Eto.Drawing;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Wpf.Drawing
 {
+	public static class FontExtensions
+	{
+		public static sd.Font ToSD(this Font font)
+		{
+			if (font == null)
+				return null;
+			var handler = font.Handler as FontHandler;
+			return new sd.Font (handler.Family.Source, (float)handler.Size, ToSD (handler.FontStyle, handler.FontWeight), sd.GraphicsUnit.Point);
+		}
+
+		public static Font ToEto (this sd.Font font, Eto.Generator generator)
+		{
+			if (font == null)
+				return null;
+			return new Font (generator, new FontHandler (font));
+		}
+
+		public static sd.FontStyle ToSD(sw.FontStyle style, sw.FontWeight weight)
+		{
+			var val = sd.FontStyle.Regular;
+			if (style == sw.FontStyles.Italic)
+				val |= sd.FontStyle.Italic;
+			if (weight == sw.FontWeights.Bold)
+				val |= sd.FontStyle.Bold;
+			return val;
+		}
+	}
+
 	public class FontHandler : WidgetHandler<object, Font>, IFont
 	{
 
@@ -101,6 +130,18 @@ namespace Eto.Platform.Wpf.Drawing
 			get; set; 
 		}
 
+		public FontHandler ()
+		{
+		}
+
+		public FontHandler (sd.Font font)
+		{
+			this.Size = font.SizeInPoints;
+			this.FontWeight = font.Bold ? sw.FontWeights.Bold : sw.FontWeights.Normal;
+			this.FontStyle = font.Italic ? sw.FontStyles.Italic : sw.FontStyles.Normal;
+			this.Family = new swm.FontFamily(font.FontFamily.Name);
+		}
+
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
 			this.Family = new System.Windows.Media.FontFamily (Convert (family));
@@ -166,6 +207,11 @@ namespace Eto.Platform.Wpf.Drawing
 		float IFont.Size
 		{
 			get { return (float)this.Size; }
+		}
+
+		public string FontName
+		{
+			get { return Family.Source; }
 		}
 	}
 }

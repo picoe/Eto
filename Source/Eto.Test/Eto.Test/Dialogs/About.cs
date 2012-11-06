@@ -24,21 +24,21 @@ namespace Eto.Test.Dialogs
 			
 			layout.Add (new Label{
 				Text = "Test Application",
-				Font = new Font(SystemFont.Bold, 16),
+				Font = new Font(SystemFont.Bold, 20),
 				HorizontalAlign = HorizontalAlign.Center
 			});
 
 			var version = Assembly.GetEntryAssembly ().GetName ().Version;
 			layout.Add (new Label {
 				Text = string.Format("Version {0}", version),
-				Font = new Font(SystemFont.Default, 8),
+				Font = new Font(SystemFont.Default, 10),
 				HorizontalAlign = HorizontalAlign.Center
 			});
 			
 			
 			layout.Add (new Label{
 				Text = "Copyright 2011 by Curtis Wensley aka Eto",
-				Font = new Font(SystemFont.Default, 8),
+				Font = new Font(SystemFont.Default, 10),
 				HorizontalAlign = HorizontalAlign.Center
 			});
 

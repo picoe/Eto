@@ -32,10 +32,21 @@ namespace Eto.Platform.Mac.Drawing
 
 	public class FontHandler : WidgetHandler<NSFont, Font>, IFont, IDisposable
 	{
-		public const float FONT_SIZE_FACTOR = 1.3F;
+		public const float FONT_SIZE_FACTOR = 1.0F;
 		
 		bool bold;
 		bool italic;
+
+		public FontHandler()
+		{
+		}
+
+		public FontHandler (NSFont font, NSFontTraitMask traits)
+		{
+			this.Control = font;
+			this.bold = traits.HasFlag (NSFontTraitMask.Bold);
+			this.italic = traits.HasFlag (NSFontTraitMask.Italic);
+		}
 		
 		public void Create (SystemFont systemFont, float? fontSize)
 		{
@@ -149,6 +160,11 @@ namespace Eto.Platform.Mac.Drawing
 		public bool Italic
 		{
 			get { return italic; }
+		}
+
+		public string FontName
+		{
+			get { return Control.FontName; }
 		}
 
 	}

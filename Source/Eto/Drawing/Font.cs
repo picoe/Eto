@@ -141,6 +141,8 @@ namespace Eto.Drawing
 		/// Gets the size of the font in points
 		/// </summary>
 		float Size { get; }
+
+		string FontName { get; }
 	}
 	
 	/// <summary>
@@ -148,7 +150,7 @@ namespace Eto.Drawing
 	/// </summary>
 	public class Font : InstanceWidget
 	{
-		IFont inner;
+		new IFont Handler { get { return (IFont)base.Handler; } }
 
 		/// <summary>
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
@@ -171,8 +173,7 @@ namespace Eto.Drawing
 		public Font (Generator generator, FontFamily family, float size, FontStyle style = FontStyle.Normal)
 			: base(generator, typeof(IFont))
 		{
-			inner = (IFont)Handler;
-			inner.Create(family, size, style);
+			Handler.Create(family, size, style);
 		}
 
 		/// <summary>
@@ -202,16 +203,25 @@ namespace Eto.Drawing
 		public Font (Generator generator, SystemFont systemFont, float? size = null)
 			: base(generator, typeof(IFont))
 		{
-			inner = (IFont)Handler;
-			inner.Create(systemFont, size);
+			Handler.Create(systemFont, size);
 		}
-		
+
+		public Font (Generator generator, IFont handler)
+			: base (generator, handler, true)
+		{
+		}
+
+		public string FontName
+		{
+			get { return Handler.FontName; }
+		}
+
 		/// <summary>
 		/// Gets the size, in points, of this font
 		/// </summary>
 		public float Size
 		{
-			get { return inner.Size; }
+			get { return Handler.Size; }
 		}
 
 		/// <summary>
@@ -219,7 +229,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool Bold
 		{
-			get { return inner.Bold; }
+			get { return Handler.Bold; }
 		}
 
 		/// <summary>
@@ -227,7 +237,17 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool Italic
 		{
-			get { return inner.Italic; }
+			get { return Handler.Italic; }
+		}
+
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode ();
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("[Font: FontName={0}, Size={1}, Bold={2}, Italic={3}]", FontName, Size, Bold, Italic);
 		}
 	}
 }

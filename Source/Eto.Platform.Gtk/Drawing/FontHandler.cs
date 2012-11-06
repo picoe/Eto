@@ -5,7 +5,15 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class FontHandler : WidgetHandler<Pango.FontDescription, Font>, IFont
 	{
-		
+		public FontHandler ()
+		{
+		}
+
+		public FontHandler (string fontName)
+		{
+			Control = Pango.FontDescription.FromString (fontName);
+		}
+
 		public void Create (SystemFont systemFont, float? size)
 		{
 			switch (systemFont) {
@@ -86,6 +94,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return Control.Style == Pango.Style.Italic; }
 		}
 
+		public string FontName
+		{
+			get { return Control.Family; }
+		}
 
 	}
 }

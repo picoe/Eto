@@ -473,6 +473,7 @@
     <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Forms\Range.cs" />
     <Compile Include="Xaml\Extensions\FileExtension.cs" />
+    <Compile Include="Forms\FontDialog.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
