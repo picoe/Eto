@@ -95,7 +95,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			if (startx != endx || starty != endy) {
 				// to draw a line, it must move..
 				Control.MoveTo (startx + 0.5, starty + 0.5);
@@ -114,7 +114,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawRectangle (Color color, int x, int y, int width, int height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
 			Control.LineWidth = 1.0;
 			Control.Stroke ();
@@ -124,7 +124,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillRectangle (Color color, int x, int y, int width, int height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Rectangle (x, y, width, height);
 			Control.Fill ();
 			Control.Restore ();
@@ -133,7 +133,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawEllipse (Color color, int x, int y, int width, int height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
 			Control.LineWidth = 1.0;
 			Control.Stroke ();
@@ -143,7 +143,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillEllipse (Color color, int x, int y, int width, int height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
 			Control.Fill ();
 			Control.Restore ();
@@ -153,7 +153,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillPath (Color color, GraphicsPath path)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
 			Control.Fill ();
@@ -163,7 +163,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawPath (Color color, GraphicsPath path)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
 			Control.LineCap = Cairo.LineCap.Square;
@@ -215,7 +215,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					layout.FontDescription = (Pango.FontDescription)font.ControlObject;
 					layout.SetText (text);
 					Control.Save ();
-					Control.Color = Generator.ConvertC (color);
+					Control.Color = color.ToCairo ();
 					Control.MoveTo (x, y);
 					Pango.CairoHelper.LayoutPath (Control, layout);
 					Control.Fill ();

@@ -109,7 +109,7 @@ namespace Eto.Platform.GtkSharp
 			
 			Control.HideAll();
 
-			DialogResult response = Generator.Convert((Gtk.ResponseType)result);
+			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
 			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);
 			
 			return response;

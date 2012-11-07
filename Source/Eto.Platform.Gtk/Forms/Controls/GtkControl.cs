@@ -91,7 +91,7 @@ namespace Eto.Platform.GtkSharp
 		public virtual Size Size {
 			get {
 				if (ContainerControl.Visible)
-					return Generator.Convert (ContainerControl.Allocation.Size);
+					return ContainerControl.Allocation.Size.ToEto ();
 				else
 					return size; 
 			}
@@ -99,7 +99,7 @@ namespace Eto.Platform.GtkSharp
 				if (size != value) {
 					size = value;
 					var alloc = Control.Allocation;
-					alloc.Size = Generator.Convert (value);
+					alloc.Size = value.ToGdk ();
 					//Control.Allocation = alloc;
 					ContainerControl.SetSizeRequest (size.Width, size.Height);
 				}
@@ -130,11 +130,11 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Generator.Convert (ContainerControl.Style.Background (Gtk.StateType.Normal)); }
+			get { return ContainerControl.Style.Background (Gtk.StateType.Normal).ToEto (); }
 			set { 
 				var eb = ContainerControl as Gtk.EventBox;
 				if (eb != null) eb.VisibleWindow = value.A > 0;
-				ContainerControl.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value));
+				ContainerControl.ModifyBg (Gtk.StateType.Normal, value.ToGdk ());
 			}
 		}
 
@@ -367,9 +367,9 @@ namespace Eto.Platform.GtkSharp
 		
 		private void GtkControlObject_SizeAllocated (object o, Gtk.SizeAllocatedArgs args)
 		{
-			if (asize != Generator.Convert (args.Allocation.Size)) {
+			if (asize != args.Allocation.Size.ToEto ()) {
 				// only call when the size has actually changed, gtk likes to call anyway!!  grr.
-				this.asize = Generator.Convert (args.Allocation.Size);
+				this.asize = args.Allocation.Size.ToEto ();
 				Widget.OnSizeChanged (EventArgs.Empty);
 			}
 		}

@@ -122,8 +122,8 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public override Color BackgroundColor {
-			get { return Generator.Convert (vp.Style.Background (Gtk.StateType.Normal)); }
-			set { vp.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value)); }
+			get { return vp.Style.Background (Gtk.StateType.Normal).ToEto (); }
+			set { vp.ModifyBg (Gtk.StateType.Normal, value.ToGdk ()); }
 		}
 
 		public override Size ClientSize {

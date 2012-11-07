@@ -99,8 +99,8 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		public virtual Color TextColor {
-			get { return Generator.Convert (Control.Style.Foreground (Gtk.StateType.Normal)); }
-			set { Control.ModifyFg (Gtk.StateType.Normal, Generator.Convert (value)); }
+			get { return Control.Style.Foreground (Gtk.StateType.Normal).ToEto (); }
+			set { Control.ModifyFg (Gtk.StateType.Normal, value.ToGdk ()); }
 		}
 
 		public override string Text {

@@ -43,7 +43,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			var context = graphics.Control;
 			context.Save ();
-			context.Rectangle (Generator.ConvertC (destination));
+			context.Rectangle (destination.ToCairo ());
 			double scalex = 1;
 			double scaley = 1;
 			if (source.Width != destination.Width || source.Height != destination.Height) {
@@ -53,7 +53,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 			Gdk.CairoHelper.SetSourcePixbuf (context, Pixbuf, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
 			var pattern = context.Source as Cairo.SurfacePattern;
-			pattern.Filter = Generator.ConvertC (graphics.ImageInterpolation);
+			pattern.Filter = graphics.ImageInterpolation.ToCairo ();
 			context.Fill ();
 			context.Restore ();
 		}

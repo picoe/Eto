@@ -57,13 +57,13 @@ namespace Eto.Platform.GtkSharp
 		public override Size Size {
 			get {
 				if (Control.Visible)
-					return Generator.Convert (Control.Allocation.Size);
+					return Control.Allocation.Size.ToEto ();
 				else
-					return Generator.Convert (Control.DefaultSize);
+					return Control.DefaultSize.ToEto ();
 			}
 			set {
 				if (Control.Visible)
-					Control.Allocation = new Gdk.Rectangle (Control.Allocation.Location, Generator.Convert (value));
+					Control.Allocation = new Gdk.Rectangle (Control.Allocation.Location, value.ToGdk ());
 				else
 					Control.SetDefaultSize (value.Width, value.Height);
 			}

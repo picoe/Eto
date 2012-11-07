@@ -238,6 +238,7 @@
     <Compile Include="MenuActionItemHandler.cs" />
     <Compile Include="Forms\Cells\GridCellFormattingEventArgs.cs" />
     <Compile Include="EtoWebView.cs" />
+    <Compile Include="Conversions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
