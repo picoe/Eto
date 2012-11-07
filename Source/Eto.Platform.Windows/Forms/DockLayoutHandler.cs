@@ -10,7 +10,6 @@ namespace Eto.Platform.Windows
 	{
 		Control child;
 		Padding padding;
-		Control childToAdd;
 
 		
 		public DockLayoutHandler ()
@@ -62,7 +61,7 @@ namespace Eto.Platform.Windows
 		}
 		
 		public Control Content {
-			get { return (Widget.Container == null) ? childToAdd : this.child; }
+			get { return child; }
 			set {
 				if (child == value)
 					return;
