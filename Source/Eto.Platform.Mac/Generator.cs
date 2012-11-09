@@ -252,5 +252,29 @@ namespace Eto.Platform.Mac
 				throw new NotSupportedException();
 			}
 		}
+
+		public static NSFontTraitMask Convert (FontStyle style)
+		{
+			var traits = (NSFontTraitMask)0;
+			traits |= style.HasFlag (FontStyle.Bold) ? NSFontTraitMask.Bold : NSFontTraitMask.Unbold;
+			traits |= style.HasFlag (FontStyle.Italic) ? NSFontTraitMask.Italic : NSFontTraitMask.Unitalic;
+			//if (style.HasFlag (FontStyle.Condensed)) traits |= NSFontTraitMask.Condensed;
+			//if (style.HasFlag (FontStyle.Light)) traits |= NSFontTraitMask.Narrow;
+			return traits;
+		}
+
+		public static FontStyle Convert (NSFontTraitMask traits)
+		{
+			var style = FontStyle.Normal;
+			if (traits.HasFlag (NSFontTraitMask.Bold))
+				style |= FontStyle.Bold;
+			if (traits.HasFlag (NSFontTraitMask.Italic))
+				style |= FontStyle.Italic;
+			//if (traits.HasFlag (NSFontTraitMask.Condensed))
+			//	style |= FontStyle.Condensed;
+			//if (traits.HasFlag (NSFontTraitMask.Narrow))
+			//	style |= FontStyle.Light;
+			return style;
+		}
 	}
 }

@@ -239,6 +239,9 @@
     <Compile Include="MenuActionItemHandler.cs" />
     <Compile Include="Forms\Cells\GridCellFormattingEventArgs.cs" />
     <Compile Include="EtoWebView.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

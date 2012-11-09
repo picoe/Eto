@@ -27,6 +27,9 @@ namespace Eto.Platform.Windows.Drawing
 
 	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, IFont
 	{
+		FontTypeface typeface;
+		FontFamily family;
+
 		public FontHandler ()
 		{
 		}
@@ -36,9 +39,22 @@ namespace Eto.Platform.Windows.Drawing
 			Control = font;
 		}
 
+		public void Create (string fontName, float size, FontStyle style)
+		{
+			Control = new SD.Font (fontName, size, Generator.Convert(style));
+		}
+
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
-			Control = new SD.Font(Generator.Convert(family), size, Convert(style));
+			this.family = family;
+			var familyHandler = (FontFamilyHandler)family.Handler;
+			Control = new SD.Font (familyHandler.Control, size, Generator.Convert (style));
+		}
+
+		public void Create (FontTypeface typeface, float size)
+		{
+			this.typeface = typeface;
+			Control = new SD.Font (typeface.Family.Name, size, Generator.Convert (typeface.FontStyle));
 		}
 		
 		public void Create (SystemFont systemFont, float? size)
@@ -82,32 +98,47 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 		
-		System.Drawing.FontStyle Convert(FontStyle style)
-		{
-			SD.FontStyle ret = SD.FontStyle.Regular;
-			if ((style & FontStyle.Bold) != 0) ret |= SD.FontStyle.Bold;
-			if ((style & FontStyle.Italic) != 0) ret |= SD.FontStyle.Italic;
-			return ret;
-		}
-
 		public float Size
 		{
 			get { return this.Control.Size; }
 		}
 
-		public bool Bold
-		{
-			get { return this.Control.Bold; }
-		}
-
-		public bool Italic
-		{
-			get { return this.Control.Italic; }
-		}
-
-		public string FontName
+		public string FamilyName
 		{
 			get { return this.Control.FontFamily.Name; }
+		}
+
+
+		public FontStyle FontStyle
+		{
+			get { return Generator.Convert(Control.Style); }
+		}
+
+		public FontFamily Family
+		{
+			get
+			{
+				if (family == null) {
+					family = new FontFamily (Widget.Generator, new FontFamilyHandler (Control.FontFamily));
+				}
+				return family;
+			}
+		}
+
+		public FontTypeface Typeface
+		{
+			get
+			{
+				if (typeface == null) {
+					typeface = new FontTypeface (Family, new FontTypefaceHandler (Control.Style));
+				}
+				return typeface;
+			}
+		}
+
+		public SD.FontFamily WindowsFamily
+		{
+			get { return Control.FontFamily; }
 		}
 	}
 }

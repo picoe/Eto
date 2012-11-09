@@ -95,6 +95,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CustomControls\TreeController.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs">
       <SubType>Code</SubType>
     </Compile>

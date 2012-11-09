@@ -177,5 +177,18 @@ namespace Eto.Platform.Wpf
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static FontStyle Convert (sw.FontStyle fontStyle, sw.FontWeight fontWeight)
+		{
+			var style = FontStyle.Normal;
+			if (fontStyle == sw.FontStyles.Italic)
+				style |= FontStyle.Italic;
+			if (fontStyle == sw.FontStyles.Oblique)
+				style |= FontStyle.Italic;
+
+			if (fontWeight == sw.FontWeights.Bold)
+				style |= FontStyle.Bold;
+			return style;
+		}
 	}
 }

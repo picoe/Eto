@@ -112,12 +112,10 @@ namespace Eto.Platform.Mac.Forms
 			Manager.Target = FontDialogHelper.Instance;
 			Manager.Action = new Selector ("changeFont:");
 
-			bool isModal = false;
 			if (parentWindow != null) {
 				if (parentWindow == NSApplication.SharedApplication.ModalWindow)
 				{
 					NSNotificationCenter.DefaultCenter.AddObserver(FontDialogHelper.Instance, new Selector("modalClosed:"), new NSString("NSWindowWillCloseNotification"), parentWindow);
-					isModal = true;
 				}
 			}
 			

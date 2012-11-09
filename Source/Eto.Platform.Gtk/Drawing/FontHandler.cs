@@ -1,10 +1,15 @@
 using System;
 using Eto.Drawing;
+using System.Linq;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class FontHandler : WidgetHandler<Pango.FontDescription, Font>, IFont
 	{
+		FontFamily family;
+		FontTypeface face;
+		FontStyle? style;
+
 		public FontHandler ()
 		{
 		}
@@ -12,6 +17,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public FontHandler (string fontName)
 		{
 			Control = Pango.FontDescription.FromString (fontName);
+		}
+
+		public void Create (string fontName, float size, FontStyle style)
+		{
+			Control = Pango.FontDescription.FromString (fontName);
+			Size = size;
+			SetStyle (style);
 		}
 
 		public void Create (SystemFont systemFont, float? size)
@@ -62,41 +74,72 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
+			this.family = family;
 			Control = new Pango.FontDescription();
-			Control.Size = (int)(size * Pango.Scale.PangoScale);
+			SetStyle (style);
+			Size = size;
+
+			Control.Family = family.Name;
+		}
+
+		public void Create (FontTypeface face, float size)
+		{
+			this.face = face;
+			Control = ((FontTypefaceHandler)face.Handler).Control.Describe();
+			Size = size;
+		}
+
+		void SetStyle (FontStyle style)
+		{
 			if ((style & FontStyle.Bold) != 0) 
 				Control.Weight = Pango.Weight.Bold;
 			if ((style & FontStyle.Italic) != 0) 
 				Control.Style = Pango.Style.Italic;
-			
-			string fontFamily = string.Empty;
-			switch (family)
-			{
-				case FontFamily.Monospace: fontFamily = "monospace"; break;
-				default: case FontFamily.Sans: fontFamily = "sans"; break;
-				case FontFamily.Serif: fontFamily = "serif"; break;
-			}
-			Control.Family = fontFamily;
 		}
 
 		public float Size
 		{
 			get { return (float)(Control.Size / Pango.Scale.PangoScale); }
+			private set { Control.Size = (int)(value * Pango.Scale.PangoScale); }
 		}
 
-		public bool Bold
+		public FontStyle FontStyle
 		{
-			get { return Control.Weight == Pango.Weight.Bold; }
+			get {
+				if (style == null) {
+					style = FontStyle.Normal;
+					if (Control.Weight == Pango.Weight.Bold)
+						style |= FontStyle.Bold;
+					if (Control.Style == Pango.Style.Italic)
+						style |= FontStyle.Italic;
+				}
+				return style.Value;
+			}
 		}
 
-		public bool Italic
-		{
-			get { return Control.Style == Pango.Style.Italic; }
-		}
-
-		public string FontName
+		public string FamilyName
 		{
 			get { return Control.Family; }
+		}
+
+		public FontFamily Family
+		{
+			get {
+				if (family == null) {
+					family = new FontFamily (Widget.Generator, Control.Family);
+				}
+				return family;
+			}
+		}
+
+		public FontTypeface Typeface
+		{
+			get {
+				if (face == null) {
+					face = Family.Typefaces.FirstOrDefault(r => r.FontStyle == this.FontStyle);
+				}
+				return face;
+			}
 		}
 
 	}

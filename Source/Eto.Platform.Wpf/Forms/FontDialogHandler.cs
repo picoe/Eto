@@ -5,20 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using swf = System.Windows.Forms;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class FontDialogHandler : WidgetHandler<swf.FontDialog, FontDialog>, IFontDialog
+	public class FontDialogHandler : WidgetHandler<CustomControls.FontDialog.FontChooser, FontDialog>, IFontDialog
 	{
-		Font font;
-
-		public override swf.FontDialog CreateControl ()
+		public override CustomControls.FontDialog.FontChooser CreateControl ()
 		{
-			return new swf.FontDialog {
-				ShowEffects = false,
-				ShowColor = false
-			};
+			return new CustomControls.FontDialog.FontChooser ();
 		}
 
 		public override void AttachEvent (string id)
@@ -35,24 +30,32 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Font Font
 		{
-			get { return font; }
-			set
-			{
-				font = value;
-				Control.Font = font.ToSD();
-			}
+			get; set;
 		}
 
 		public DialogResult ShowDialog (Window parent)
 		{
-			var dr = Control.ShowDialog ();
-			if (dr == swf.DialogResult.OK) {
-				font = Control.Font.ToEto(Widget.Generator);
-				Widget.OnFontChanged (EventArgs.Empty);
-				return DialogResult.Ok;
+			if (parent != null) {
+				var owner = parent.ControlObject as sw.Window;
+				Control.Owner = owner;
+				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
-			else
-				return DialogResult.Cancel;
+			if (Font != null) {
+				var fontHandler = Font.Handler as FontHandler;
+				Control.SelectedFontFamily = fontHandler.WpfFamily;
+				Control.SelectedFontPointSize = fontHandler.Size;
+				Control.SelectedFontStyle = fontHandler.WpfFontStyle;
+				Control.SelectedFontWeight = fontHandler.WpfFontWeight;
+			}
+			var result = Control.ShowDialog ();
+
+			if (result == true) {
+				var fontHandler = new FontHandler (Widget.Generator, Control.SelectedFontFamily, Control.SelectedFontPointSize, Control.SelectedFontStyle, Control.SelectedFontWeight);
+				Font = new Font (Widget.Generator, fontHandler);
+				Widget.OnFontChanged (EventArgs.Empty);
+			}
+
+			return result != null && result.Value ? DialogResult.Ok : DialogResult.Cancel;
 		}
 	}
 }
