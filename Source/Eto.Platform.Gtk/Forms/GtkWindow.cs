@@ -9,6 +9,8 @@ namespace Eto.Platform.GtkSharp
 	public interface IGtkWindow
 	{
 		bool CloseWindow ();
+
+		Gtk.Window Control { get; }
 	}
 
 	public abstract class GtkWindow<T, W> : GtkContainer<T, W>, IWindow, IGtkWindow
@@ -340,5 +342,7 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.Opacity; }
 			set { Control.Opacity = value; }
 		}
+
+		Gtk.Window IGtkWindow.Control { get { return (Gtk.Window)Control; } }
 	}
 }

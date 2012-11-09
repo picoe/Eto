@@ -92,6 +92,7 @@
     <Compile Include="Sections\Serialization\Json\Test.cs" />
     <Compile Include="Sections\Serialization\JsonReadSection.cs" />
     <Compile Include="Sections\Serialization\XamlReadSection.cs" />
+    <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

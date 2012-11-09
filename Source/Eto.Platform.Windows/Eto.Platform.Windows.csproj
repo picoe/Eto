@@ -95,6 +95,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="CustomControls\TreeController.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -106,6 +109,7 @@
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
+    <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>

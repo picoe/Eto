@@ -143,6 +143,7 @@ namespace Eto.Test
 			yield return new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" };
 			yield return new Section<Sections.Dialogs.SelectFolderSection> { Text = "Select Folder Dialog" };
 			yield return new Section<Sections.Dialogs.CustomDialogSection> { Text = "Custom Dialog" };
+			yield return new Section<Sections.Dialogs.FontDialogSection> { Text = "Font Dialog" };
 		}
 
 		IEnumerable<Section> SerializationSection ()

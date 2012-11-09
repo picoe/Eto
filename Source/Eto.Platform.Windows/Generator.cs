@@ -144,24 +144,6 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static SD.FontFamily Convert(FontFamily type)
-		{
-			switch (type)
-			{
-				case FontFamily.Monospace: return SD.FontFamily.GenericMonospace;
-				default: case FontFamily.Sans: return SD.FontFamily.GenericSansSerif;
-				case FontFamily.Serif: return SD.FontFamily.GenericSerif;
-			}
-		}
-
-		public static FontFamily Convert(SD.FontFamily family)
-		{
-			if (family == SD.FontFamily.GenericMonospace) return FontFamily.Monospace;
-			else if (family == SD.FontFamily.GenericSansSerif) return FontFamily.Sans;
-			else if (family == SD.FontFamily.GenericSerif) return FontFamily.Serif;
-			else return FontFamily.Sans;
-		}
-
 		public static ImageInterpolation Convert (SD.Drawing2D.InterpolationMode value)
 		{
 			switch (value) {
@@ -199,6 +181,22 @@ namespace Eto.Platform.Windows
 			default:
 				throw new NotSupportedException();
 			}
+		}
+
+		public static FontStyle Convert (SD.FontStyle style)
+		{
+			var ret = FontStyle.Normal;
+			if (style.HasFlag(SD.FontStyle.Bold)) ret |= FontStyle.Bold;
+			if (style.HasFlag(SD.FontStyle.Italic)) ret |= FontStyle.Italic;
+			return ret;
+		}
+
+		public static SD.FontStyle Convert (FontStyle style)
+		{
+			var ret = SD.FontStyle.Regular;
+			if (style.HasFlag (FontStyle.Bold)) ret |= SD.FontStyle.Bold;
+			if (style.HasFlag (FontStyle.Italic)) ret |= SD.FontStyle.Italic;
+			return ret;
 		}
 	}
 }
