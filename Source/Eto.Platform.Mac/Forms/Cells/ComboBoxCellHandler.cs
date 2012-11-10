@@ -53,8 +53,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override System.Drawing.RectangleF DrawTitle (NSAttributedString title, System.Drawing.RectangleF frame, NSView controlView)
 			{
-				var nscontext = NSGraphicsContext.CurrentContext;
-				var context = nscontext.GraphicsPort;
 				if (TextColor != null) {
 					var newtitle = title.MutableCopy () as NSMutableAttributedString;
 					var range = new NSRange (0, title.Length);
