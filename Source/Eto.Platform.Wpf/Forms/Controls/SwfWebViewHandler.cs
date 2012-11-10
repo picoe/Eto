@@ -1,14 +1,21 @@
-using System;
-using SWF = System.Windows.Forms;
-using Eto.Forms;
-using Eto.Platform.CustomControls;
-using System.Runtime.InteropServices;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using swc = System.Windows.Controls;
+using swn = System.Windows.Navigation;
+using sw = System.Windows;
+using swf = System.Windows.Forms;
+using Eto.Forms;
+using System.Runtime.InteropServices;
+using Eto.Platform.CustomControls;
 
-namespace Eto.Platform.Windows.Forms.Controls
+namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class WebViewHandler : WindowsControl<SWF.WebBrowser, WebView>, IWebView
+	public class SwfWebViewHandler : WpfFrameworkElement<swf.Integration.WindowsFormsHost, WebView>, IWebView
 	{
+		public swf.WebBrowser Browser { get; private set; }
+
 		[ComImport, InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
 		[Guid ("6d5140c1-7436-11ce-8034-00aa006009fa")]
 		internal interface IServiceProvider
@@ -22,7 +29,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 #if !__MonoCS__
 		SHDocVw.WebBrowser_V1 WebBrowserV1
 		{
-			get { return (SHDocVw.WebBrowser_V1)Control.ActiveXInstance; }
+			get { return (SHDocVw.WebBrowser_V1)Browser.ActiveXInstance; }
 		}
 
 		public void AttachEvent (SHDocVw.WebBrowser_V1 control, string handler)
@@ -36,17 +43,20 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 #endif
 
-		public WebViewHandler ()
+		public SwfWebViewHandler ()
 		{
-			this.Control = new SWF.WebBrowser {
+			this.Control = new swf.Integration.WindowsFormsHost ();
+			this.Browser = new swf.WebBrowser {
 				IsWebBrowserContextMenuEnabled = false,
 				WebBrowserShortcutsEnabled = false,
 				AllowWebBrowserDrop = false,
 				ScriptErrorsSuppressed = true
 			};
-			this.Control.HandleCreated += (sender, e) => {
+			this.Browser.HandleCreated += (sender, e) => {
 				HookDocumentEvents ();
 			};
+
+			this.Control.Child = this.Browser;
 		}
 
 
@@ -61,12 +71,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			switch (handler) {
 			case WebView.DocumentLoadedEvent:
-				this.Control.DocumentCompleted += (sender, e) => {
+				this.Browser.DocumentCompleted += (sender, e) => {
 					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (e.Url));
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
-				this.Control.Navigating += (sender, e) => {
+				this.Browser.Navigating += (sender, e) => {
 					var args = new WebViewLoadingEventArgs (e.Url, false);
 					Widget.OnDocumentLoading (args);
 					e.Cancel = args.Cancel;
@@ -76,8 +86,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 				HookDocumentEvents (handler);
 				break;
 			case WebView.DocumentTitleChangedEvent:
-				this.Control.DocumentTitleChanged += delegate {
-					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (Control.DocumentTitle));
+				this.Browser.DocumentTitleChanged += delegate {
+					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (Browser.DocumentTitle));
 				};
 				break;
 			default:
@@ -91,7 +101,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			if (newEvent != null)
 				delayedEvents.Add (newEvent);
-			if (Control.ActiveXInstance != null)
+			if (Browser.ActiveXInstance != null)
 			{
 #if !__MonoCS__
 				foreach (var handler in delayedEvents)
@@ -102,51 +112,51 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 
 		public Uri Url {
-			get { return this.Control.Url; }
-			set { this.Control.Url = value; }
+			get { return this.Browser.Url; }
+			set { this.Browser.Url = value; }
 		}
 		
 		public string DocumentTitle {
 			get {
-				return this.Control.DocumentTitle;
+				return this.Browser.DocumentTitle;
 			}
 		}
 		
 		public string ExecuteScript (string script)
 		{
 			var fullScript = string.Format ("var fn = function() {{ {0} }}; fn();", script);
-			return Convert.ToString (Control.Document.InvokeScript ("eval", new object[] { fullScript }));
+			return Convert.ToString (Browser.Document.InvokeScript ("eval", new object[] { fullScript }));
 		}
 		
 		public void Stop ()
 		{
-			this.Control.Stop ();
+			this.Browser.Stop ();
 		}
 		
 		public void Reload ()
 		{
-			this.Control.Refresh ();
+			this.Browser.Refresh ();
 		}
 		
 		public void GoBack ()
 		{
-			this.Control.GoBack ();
+			this.Browser.GoBack ();
 		}
 		
 		public bool CanGoBack {
 			get {
-				return this.Control.CanGoBack;
+				return this.Browser.CanGoBack;
 			}
 		}
 		
 		public void GoForward ()
 		{
-			this.Control.GoForward ();
+			this.Browser.GoForward ();
 		}
 		
 		public bool CanGoForward {
 			get {
-				return this.Control.CanGoForward;
+				return this.Browser.CanGoForward;
 			}
 		}
 		
@@ -158,23 +168,28 @@ namespace Eto.Platform.Windows.Forms.Controls
 				if (server == null)
 					server = new HttpServer ();
 				server.SetHtml (html, baseUri != null ? baseUri.LocalPath : null);
-				Control.Navigate (server.Url);
+				Browser.Navigate (server.Url);
 			}
 			else
-				this.Control.DocumentText = html;
+				this.Browser.DocumentText = html;
 
 		}
 
         public void ShowPrintDialog ()
         {
-            this.Control.ShowPrintDialog();
+			this.Browser.ShowPrintDialog ();
         }
 
 		public bool BrowserContextMenuEnabled
 		{
-			get { return Control.IsWebBrowserContextMenuEnabled; }
-			set { Control.IsWebBrowserContextMenuEnabled = value; }
+			get { return Browser.IsWebBrowserContextMenuEnabled; }
+			set { Browser.IsWebBrowserContextMenuEnabled = value; }
+		}
+
+		public override Eto.Drawing.Color BackgroundColor
+		{
+			get { return Eto.Drawing.Colors.Transparent; }
+			set { }
 		}
 	}
 }
-

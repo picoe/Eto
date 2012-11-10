@@ -81,7 +81,6 @@ namespace Eto
 		/// </summary>
 		protected Generator ()
 		{
-			AddAssembly(this.GetType ().Assembly);
 		}
 
 		/// <summary>

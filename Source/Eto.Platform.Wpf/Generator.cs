@@ -46,6 +46,24 @@ namespace Eto.Platform.Wpf
 			};
 		}
 
+		public Generator ()
+		{
+			AddAssembly (typeof (Generator).Assembly);
+			
+			// by default, use WinForms web view (it has more features we can control)
+			UseSwfWebView ();
+		}
+
+		public void UseWpfWebView ()
+		{
+			Add (typeof (IWebView), typeof (Forms.Controls.WpfWebViewHandler));
+		}
+
+		public void UseSwfWebView ()
+		{
+			Add (typeof (IWebView), typeof (Forms.Controls.SwfWebViewHandler));
+		}
+
 		public static Size GetSize (sw.FrameworkElement element)
 		{
 			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))

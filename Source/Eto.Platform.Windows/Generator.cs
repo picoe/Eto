@@ -51,6 +51,11 @@ namespace Eto.Platform.Windows
 			};
 		}
 
+		public Generator ()
+		{
+			AddAssembly (typeof (Generator).Assembly);
+		}
+
 		
 		public static Padding Convert(SWF.Padding padding)
 		{

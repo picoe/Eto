@@ -17,6 +17,11 @@ namespace Eto.Platform.Mac
 		public override string ID {
 			get { return Generators.Mac; }
 		}
+
+		public Generator ()
+		{
+			AddAssembly (typeof (Generator).Assembly);
+		}
 		
 		public static Point GetLocation (NSView view, NSEvent theEvent)
 		{

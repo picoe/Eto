@@ -10,15 +10,15 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class WebViewHandler : MacView<MonoMac.WebKit.WebView, WebView>, IWebView
+	public class WebViewHandler : MacView<wk.WebView, WebView>, IWebView
 	{
 		NewWindowHandler newWindowHandler;
 		public WebViewHandler ()
 		{
 			Enabled = true;
-			Control = new MonoMac.WebKit.WebView ();
-			SetUIEvents ();
-			SetUIPrintFrameView ();
+			Control = new wk.WebView {
+				UIDelegate = new UIDelegate { Handler = this }
+			};
 			HandleEvent (WebView.OpenNewWindowEvent); // needed to provide default implementation
 			HandleEvent (WebView.DocumentLoadingEvent);
 		}
@@ -98,43 +98,51 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		void SetUIEvents ()
+		public class UIDelegate : wk.WebUIDelegate
 		{
-			Control.UIRunJavaScriptConfirmationPanel = (sender, message, withFrame) => {
-				return MessageBox.Show (Widget, message, MessageBoxButtons.YesNo) == DialogResult.Yes;
-			};
-
-			Control.UIRunJavaScriptAlertPanelMessage += (sender, e) => {
-				MessageBox.Show (Widget, e.WithMessage);
-			};
-
-			Control.UIRunJavaScriptTextInputPanelWithFrame = (sender, prompt, defaultText, initiatedByFrame) => {
-				var dialog = new PromptDialog (Widget.Generator) {
+			public WebViewHandler Handler { get; set; }
+			
+			public override void UIRunJavaScriptAlertPanelMessage (wk.WebView sender, string withMessage, wk.WebFrame initiatedByFrame)
+			{
+				MessageBox.Show (Handler.Widget, withMessage);
+			}
+			
+			public override bool UIRunJavaScriptConfirmationPanel (wk.WebView sender, string withMessage, wk.WebFrame initiatedByFrame)
+			{
+				return MessageBox.Show (Handler.Widget, withMessage, MessageBoxButtons.YesNo) == DialogResult.Yes;
+			}
+			
+			public override string UIRunJavaScriptTextInputPanelWithFrame (wk.WebView sender, string prompt, string defaultText, wk.WebFrame initiatedByFrame)
+			{
+				var dialog = new PromptDialog (Handler.Widget.Generator) {
 					Prompt = prompt,
 					Value = defaultText,
-					Title = this.DocumentTitle
+					Title = Handler.DocumentTitle
 				};
-				var result = dialog.ShowDialog (Widget);
+				var result = dialog.ShowDialog (Handler.Widget);
 				return (result == DialogResult.Ok) ? dialog.Value : string.Empty;
-			};
+			}
 			
-			Control.UIGetContextMenuItems = (sender, forElement, defaultMenuItems) => {
-				return defaultMenuItems;
-			};
-
-			Control.UIRunOpenPanelForFileButton += (sender, e) => {
+			public override NSMenuItem[] UIGetContextMenuItems (wk.WebView sender, NSDictionary forElement, NSMenuItem[] defaultMenuItems)
+			{
+				if (Handler.BrowserContextMenuEnabled)
+					return defaultMenuItems;
+				else
+					return null;
+			}
+			
+			public override void UIRunOpenPanelForFileButton (wk.WebView sender, wk.WebOpenPanelResultListener resultListener)
+			{
 				var openDlg = new OpenFileDialog ();
-				if (openDlg.ShowDialog (Widget.ParentWindow) == DialogResult.Ok) {
-					e.ResultListener.ChooseFilenames (openDlg.Filenames.ToArray ());
+				if (openDlg.ShowDialog (Handler.Widget.ParentWindow) == DialogResult.Ok) {
+					resultListener.ChooseFilenames (openDlg.Filenames.ToArray ());
 				}
-			};
-		}
-
-		void SetUIPrintFrameView ()
-		{
-			Control.UIPrintFrameView += (sender, e) => {
+			}
+			
+			public override void UIPrintFrameView (wk.WebView sender, wk.WebFrameView frameView)
+			{
 				var margin = 24f;
-				var printOperation = e.FrameView.GetPrintOperation (new MonoMac.AppKit.NSPrintInfo () {
+				var printOperation = frameView.GetPrintOperation (new MonoMac.AppKit.NSPrintInfo () {
 					VerticallyCentered = false,
 					LeftMargin = margin,
 					RightMargin = margin,
@@ -143,26 +151,28 @@ namespace Eto.Platform.Mac.Forms.Controls
 				});
 				printOperation.PrintPanel.Options = 
 					MonoMac.AppKit.NSPrintPanelOptions.ShowsCopies | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsOrientation | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPageRange | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPageSetupAccessory | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPaperSize | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPreview | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsPrintSelection | 
-					MonoMac.AppKit.NSPrintPanelOptions.ShowsScaling;
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsOrientation | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPageRange | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPageSetupAccessory | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPaperSize | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPreview | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsPrintSelection | 
+						MonoMac.AppKit.NSPrintPanelOptions.ShowsScaling;
 				printOperation.RunOperation ();
-			};
-			Control.UIGetHeaderHeight = new MonoMac.WebKit.WebViewGetFloat (x => {
-				return 0f; });
-			Control.UIGetFooterHeight = new MonoMac.WebKit.WebViewGetFloat (x => {
-				return 0f; });
+			}
+			
+			public override wk.WebView UICreateWebView (wk.WebView sender, NSUrlRequest request)
+			{
+				Handler.newWindowHandler = new NewWindowHandler { Handler = this.Handler };
+				return Handler.newWindowHandler.WebView;
+			}
 		}
 
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
 			case WebView.DocumentLoadedEvent:
-				this.Control.FinishedLoad += delegate(object sender, MonoMac.WebKit.WebFrameEventArgs e) {
+				this.Control.FinishedLoad += delegate(object sender, wk.WebFrameEventArgs e) {
 					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (this.Url));
 				};
 				break;
@@ -177,10 +187,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				};
 				break;
 			case WebView.OpenNewWindowEvent:
-				this.Control.UICreateWebView = new MonoMac.WebKit.CreateWebViewFromRequest((sender, e) => {
-					newWindowHandler = new NewWindowHandler { Handler = this };
-					return newWindowHandler.WebView;
-				});
 				this.Control.DecidePolicyForNewWindow += (sender, e) => {
 					var args = new WebViewNewWindowEventArgs (new Uri (e.Request.Url.AbsoluteString), e.NewFrameName);
 					Widget.OnOpenNewWindow (args);
@@ -190,7 +196,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				};
 				break;
 			case WebView.DocumentTitleChangedEvent:
-				this.Control.ReceivedTitle += delegate(object sender, MonoMac.WebKit.WebFrameTitleEventArgs e) {
+				this.Control.ReceivedTitle += delegate(object sender, wk.WebFrameTitleEventArgs e) {
 					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (e.Title));
 				};
 				break;
@@ -266,6 +272,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public void ShowPrintDialog ()
 		{
 			Control.Print (Control);
+		}
+
+		public bool BrowserContextMenuEnabled
+		{
+			get; set;
 		}
 	}
 }
