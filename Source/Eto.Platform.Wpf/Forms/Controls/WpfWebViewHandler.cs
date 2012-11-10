@@ -10,7 +10,7 @@ using Eto.Platform.CustomControls;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class WebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView>, IWebView
+	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView>, IWebView
 	{
 		[ComImport, InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
 		[Guid ("6d5140c1-7436-11ce-8034-00aa006009fa")]
@@ -50,7 +50,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		HashSet<string> delayedEvents = new HashSet<string> ();
 
-		public WebViewHandler ()
+		public WpfWebViewHandler ()
 		{
 			Control = new swc.WebBrowser ();
 			Control.Navigated += delegate {
@@ -242,5 +242,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
         {
             WebBrowser2.Document.execCommand("Print", true, null);
         }
+
+		// Note that this does not work for WPF
+		public bool BrowserContextMenuEnabled
+		{
+			get;
+			set;
+		}
 	}
 }

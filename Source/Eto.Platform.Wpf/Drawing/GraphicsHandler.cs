@@ -165,7 +165,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var fontHandler = font.Handler as FontHandler;
 			var brush = new swm.SolidColorBrush(color.ToWpf ());
-			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, fontHandler.PixelSize, brush);
+			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
 			Control.DrawText (formattedText, new sw.Point (x, y));
 		}
 
@@ -173,7 +173,8 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var fontHandler = font.Handler as FontHandler;
 			var brush = new swm.SolidColorBrush (swm.Colors.White);
-			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, fontHandler.PixelSize, brush);
+
+			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
 			return new SizeF ((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 		}
 

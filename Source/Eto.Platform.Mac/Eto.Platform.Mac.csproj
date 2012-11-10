@@ -160,6 +160,10 @@
     <Compile Include="Conversions.cg.cs" />
     <Compile Include="Conversions.cs" />
     <Compile Include="Conversions.ns.cs" />
+    <Compile Include="Forms\FontDialogHandler.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

@@ -236,12 +236,12 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void Invalidate ()
+		public virtual void Invalidate ()
 		{
 			Control.Invalidate (true);
 		}
 
-		public void Invalidate (Rectangle rect)
+		public virtual void Invalidate (Rectangle rect)
 		{
 			Control.Invalidate (rect.ToSD (), true);
 		}

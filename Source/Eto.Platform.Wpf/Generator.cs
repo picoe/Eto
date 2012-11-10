@@ -46,6 +46,24 @@ namespace Eto.Platform.Wpf
 			};
 		}
 
+		public Generator ()
+		{
+			AddAssembly (typeof (Generator).Assembly);
+			
+			// by default, use WinForms web view (it has more features we can control)
+			UseSwfWebView ();
+		}
+
+		public void UseWpfWebView ()
+		{
+			Add (typeof (IWebView), typeof (Forms.Controls.WpfWebViewHandler));
+		}
+
+		public void UseSwfWebView ()
+		{
+			Add (typeof (IWebView), typeof (Forms.Controls.SwfWebViewHandler));
+		}
+
 		public static Size GetSize (sw.FrameworkElement element)
 		{
 			if (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight))
@@ -58,6 +76,19 @@ namespace Eto.Platform.Wpf
 		{
 			element.Width = size.Width == -1 ? double.NaN : size.Width;
 			element.Height = size.Height == -1 ? double.NaN : size.Height;
+		}
+
+		public static FontStyle Convert (sw.FontStyle fontStyle, sw.FontWeight fontWeight)
+		{
+			var style = FontStyle.Normal;
+			if (fontStyle == sw.FontStyles.Italic)
+				style |= FontStyle.Italic;
+			if (fontStyle == sw.FontStyles.Oblique)
+				style |= FontStyle.Italic;
+
+			if (fontWeight == sw.FontWeights.Bold)
+				style |= FontStyle.Bold;
+			return style;
 		}
 	}
 }

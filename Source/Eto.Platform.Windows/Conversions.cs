@@ -58,25 +58,6 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static sd.FontFamily ToSD (this FontFamily type)
-		{
-			switch (type)
-			{
-			case FontFamily.Monospace: return sd.FontFamily.GenericMonospace;
-			default:
-			case FontFamily.Sans: return sd.FontFamily.GenericSansSerif;
-			case FontFamily.Serif: return sd.FontFamily.GenericSerif;
-			}
-		}
-
-		public static FontFamily ToEto (this sd.FontFamily family)
-		{
-			if (family == sd.FontFamily.GenericMonospace) return FontFamily.Monospace;
-			else if (family == sd.FontFamily.GenericSansSerif) return FontFamily.Sans;
-			else if (family == sd.FontFamily.GenericSerif) return FontFamily.Serif;
-			else return FontFamily.Sans;
-		}
-
 		public static ImageInterpolation ToEto (this sd.Drawing2D.InterpolationMode value)
 		{
 			switch (value)

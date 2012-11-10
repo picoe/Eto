@@ -23,16 +23,12 @@ namespace Eto.Platform.Wpf.Forms
 
 		public DialogResult ShowDialog (Window parent)
 		{
-			bool? result = null;
 			if (parent != null) {
 				var owner = parent.ControlObject as sw.Window;
 				Control.Owner = owner;
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
-				result = Control.ShowDialog ();
 			}
-			else {
-				result = Control.ShowDialog ();
-			}
+			var result = Control.ShowDialog ();
 			return result != null && result.Value ? DialogResult.Ok : DialogResult.Cancel;
 		}
 	}

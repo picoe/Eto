@@ -41,7 +41,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 			this.Control = new SWF.WebBrowser {
 				IsWebBrowserContextMenuEnabled = false,
 				WebBrowserShortcutsEnabled = false,
-				AllowWebBrowserDrop = false
+				AllowWebBrowserDrop = false,
+				ScriptErrorsSuppressed = true
 			};
 			this.Control.HandleCreated += (sender, e) => {
 				HookDocumentEvents ();
@@ -167,6 +168,12 @@ namespace Eto.Platform.Windows.Forms.Controls
         {
             this.Control.ShowPrintDialog();
         }
+
+		public bool BrowserContextMenuEnabled
+		{
+			get { return Control.IsWebBrowserContextMenuEnabled; }
+			set { Control.IsWebBrowserContextMenuEnabled = value; }
+		}
 	}
 }
 

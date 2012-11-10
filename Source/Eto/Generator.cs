@@ -81,7 +81,6 @@ namespace Eto
 		/// </summary>
 		protected Generator ()
 		{
-			AddAssembly(this.GetType ().Assembly);
 		}
 
 		/// <summary>
@@ -286,7 +285,11 @@ namespace Eto
 				}
 				catch (ReflectionTypeLoadException ex)
 				{
-					Debug.WriteLine (string.Format ("Could not load type(s) from assembly '{0}': {1}", assembly.FullName, ex.GetBaseException ()));
+					Debug.WriteLine ("Could not load type(s) from assembly '{0}': {1}", assembly.FullName, ex.GetBaseException ());
+					Debug.WriteLine ("Loader Exceptions:");
+					foreach (var loaderException in ex.LoaderExceptions) {
+						Debug.WriteLine ("{0}", loaderException.GetBaseException ());
+					}
 					exportedTypes = ex.Types;
 				}
 

@@ -103,12 +103,12 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
-		/// <param name="generator">Generator the widget handler was created with</param>
+		/// <param name="generator">Generator the widget handler was created with, or null to use <see cref="Generator.Current"/></param>
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
 		protected Widget (Generator generator, IWidget handler, bool initialize = true)
 		{
-			this.Generator = generator;
+			this.Generator = generator ?? Generator.Current;
 			this.Handler = handler;
 			this.Handler.Widget = this; // tell the handler who we are
 			if (initialize)
@@ -118,13 +118,13 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
-		/// <param name="generator">Generator the widget handler was created with</param>
+		/// <param name="generator">Generator to create the handler with, or null to use <see cref="Generator.Current"/></param>
 		/// <param name="type">Type of widget handler to create from the generator for this widget</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
 		protected Widget (Generator generator, Type type, bool initialize = true)
 		{
-			this.Generator = generator;
-			this.Handler = generator.CreateHandler (type, this);
+			this.Generator = generator ?? Generator.Current;
+			this.Handler = this.Generator.CreateHandler (type, this);
 			if (initialize)
 				Initialize ();
 		}

@@ -218,11 +218,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return font;
 			}
 			set {
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				font = value;
 				if (font != null)
 					Control.Font = ((FontHandler)font.Handler).Control;
 				else
 					Control.Font = NSFont.LabelFontOfSize (NSFont.LabelFontSize);
+				LayoutIfNeeded (oldSize);
 			}
 		}
 		
