@@ -61,6 +61,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public string DocumentTitle {
 			get { return null; }
 		}
+
+		public bool BrowserContextMenuEnabled
+		{
+			get;
+			set;
+		}
 	}
 }
 

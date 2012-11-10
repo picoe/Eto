@@ -2,6 +2,8 @@ using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
 using MonoTouch.Foundation;
+using Eto.Platform.iOS.Drawing;
+using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -60,6 +62,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public bool Wrap {
 			get;
 			set;
+		}
+
+		public override Font Font {
+			get { return base.Font; }
+			set {
+				base.Font = value;
+				if (value != null)
+					Control.Font = ((FontHandler)value.Handler).Control;
+				else
+					Control.Font = UIFont.SystemFontOfSize (UIFont.SmallSystemFontSize);
+			}
 		}
 
 		public string SelectedText {

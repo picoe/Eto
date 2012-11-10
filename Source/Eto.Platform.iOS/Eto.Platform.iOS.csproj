@@ -191,6 +191,11 @@
       <Link>Conversions.cg.cs</Link>
     </Compile>
     <Compile Include="Conversions.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\FontsHandler.cs">
+      <Link>Drawing\FontsHandler.cs</Link>
+    </Compile>
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

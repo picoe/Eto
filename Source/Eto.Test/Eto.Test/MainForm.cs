@@ -81,7 +81,12 @@ namespace Eto.Test
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
 					Panel1 = sectionList,
+#if MOBILE
+					// for now, don't show log in mobile
+					Panel2 = contentContainer
+#else
 					Panel2 = RightPane ()
+#endif
 				};
 				return splitter;
 			}

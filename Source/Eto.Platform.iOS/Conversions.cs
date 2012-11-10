@@ -1,6 +1,7 @@
 using System;
 using MonoTouch.UIKit;
 using Eto.Drawing;
+using Eto.Platform.iOS.Drawing;
 
 namespace Eto.Platform.iOS
 {
@@ -17,6 +18,12 @@ namespace Eto.Platform.iOS
 			color.GetRGBA (out red, out green, out blue, out alpha);
 			return new Color (red, green, blue, alpha);
 		}
+
+		public static UIFont ToUIFont (this Font font)
+		{
+			return ((FontHandler)font.Handler).Control;
+		}
+
 	}
 }
 

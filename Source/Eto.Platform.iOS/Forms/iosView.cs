@@ -227,7 +227,6 @@ namespace Eto.Platform.iOS.Forms
 			set { Control.Hidden = !value; }
 		}
 
-		// TODO
 		public virtual Font Font { 
 			get; set;
 		}

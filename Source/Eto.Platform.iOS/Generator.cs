@@ -15,6 +15,11 @@ namespace Eto.Platform.iOS
 		public override string ID {
 			get { return GeneratorID; }
 		}
+
+		public Generator ()
+		{
+			AddAssembly (typeof(Generator).Assembly);
+		}
 		
 		public override bool Supports<T> ()
 		{
