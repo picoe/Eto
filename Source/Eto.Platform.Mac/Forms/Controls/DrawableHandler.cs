@@ -27,7 +27,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					dirtyRect.Width += 1;
 				if (dirtyRect.Y % 1.0f > 0f)
 					dirtyRect.Height += 1;
-				Drawable.Update (Rectangle.Ceiling (dirtyRect.ToEto ()));
+				Drawable.Update (Rectangle.Ceiling (Eto.Platform.Conversions.ToEto (dirtyRect)));
 			}
 			
 			public bool CanFocus { get; set; }
