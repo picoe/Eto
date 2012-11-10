@@ -60,7 +60,21 @@ namespace Eto.Platform.Windows
 		protected bool XScale { get; set; }
 		protected bool YScale { get; set; }
 
-		public virtual Size DesiredSize { get { return desiredSize; } }
+		public virtual Size? DefaultSize { get { return null; } }
+
+		public virtual Size DesiredSize
+		{
+			get
+			{
+				var size = desiredSize;
+				var defSize = DefaultSize;
+				if (defSize != null) {
+					if (size.Width == -1) size.Width = defSize.Value.Width;
+					if (size.Height == -1) size.Height = defSize.Value.Height;
+				}
+				return size;
+			}
+		}
 
 		public virtual SWF.Control ContainerControl
 		{
