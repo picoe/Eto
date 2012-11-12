@@ -12,6 +12,10 @@ namespace Eto.Platform.Wpf.Drawing
 
 	public class FontFamilyHandler : WidgetHandler<swm.FontFamily, FontFamily>, IFontFamily
 	{
+		public FontFamilyHandler ()
+		{
+		}
+
 		public FontFamilyHandler (swm.FontFamily wpfFamily)
 		{
 			this.Control = wpfFamily;

@@ -21,6 +21,7 @@ namespace Eto.Test.Sections.Dialogs
 			layout.BeginVertical ();
 			layout.AddRow (null, PickFont (), null);
 			layout.AddRow (null, PickFontWithStartingFont (), null);
+			layout.AddRow (null, SetToFontFamily (), null);
 
 			layout.EndVertical ();
 
@@ -62,6 +63,17 @@ namespace Eto.Test.Sections.Dialogs
 				var result = dialog.ShowDialog (this.ParentWindow);
 				// do not get the font here, it may return immediately with a result of DialogResult.None on certain platforms
 				Log.Write (dialog, "Result: {0}", result);
+			};
+			return button;
+		}
+
+		Control SetToFontFamily ()
+		{
+			var button = new Button { Text = "Set to a specific font family (Times New Roman 20pt)" };
+			button.Click += delegate {
+				var family = new FontFamily ("Times New Roman");
+				var font = new Font (family, 20);
+				UpdatePreview (font);
 			};
 			return button;
 		}
