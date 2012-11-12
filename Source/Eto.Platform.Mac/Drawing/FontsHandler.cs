@@ -48,7 +48,11 @@ namespace Eto.Platform.iOS.Drawing
 				systemFamilyName = "Helvetica";
 				break;
 			case FontFamilies.SerifFamilyName:
+#if OSX
 				systemFamilyName = "Times";
+#elif IOS
+				systemFamilyName = "Times New Roman";
+#endif
 				break;
 			default:
 				throw new NotSupportedException ();
