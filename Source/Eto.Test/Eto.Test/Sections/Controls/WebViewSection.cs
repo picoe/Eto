@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class WebViewSection : Panel
+	public class WebViewSection : Scrollable
 	{
 		WebView webView;
 		Button goBack;

@@ -83,7 +83,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control FontStyles ()
 		{
-			fontStyles = new ListBox { Size = new Size (200, 100) };
+			fontStyles = new ListBox { Size = new Size (150, 100) };
 			fontStyles.SelectedIndexChanged += (sender, e) => {
 				if (updating)
 					return;

@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class PathSection : Panel
+	public class PathSection : Scrollable
 	{
 		public PathSection ()
 		{
