@@ -227,7 +227,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			public override Eto.Drawing.Font Font
 			{
-				get { return font; }
+				get {
+					if (font == null)
+						font = new Font (Column.Generator, new FontHandler (Column.Generator, Cell));
+					return font;
+				}
 				set
 				{
 					font = value;

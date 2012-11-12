@@ -35,21 +35,21 @@ namespace Eto.Platform.Mac.Drawing
 		public const float FONT_SIZE_FACTOR = 1.0F;
 		FontFamily family;
 		FontTypeface face;
+		FontStyle? style;
 		
 		public FontHandler()
 		{
 		}
 
+		public FontHandler (NSFont font)
+		{
+			this.Control = font;
+		}
+
 		public FontHandler (NSFont font, NSFontTraitMask traits)
 		{
 			this.Control = font;
-			FontStyle = Generator.Convert (traits);
-		}
-
-		public void Create (string fontName, float size, FontStyle style)
-		{
-			this.Control = NSFont.FromFontName(fontName, size);
-			this.FontStyle = style;
+			style = Generator.Convert (traits);
 		}
 
 		public void Create (FontTypeface face, float size)
@@ -57,20 +57,17 @@ namespace Eto.Platform.Mac.Drawing
 			this.face = face;
 			this.family = face.Family;
 			this.Control = ((FontTypefaceHandler)face.Handler).CreateFont(size);
-			this.FontStyle = face.FontStyle;
 		}
 		
 		public void Create (SystemFont systemFont, float? fontSize)
 		{
 			var size = fontSize;
 			if (fontSize != null) size = size.Value * FONT_SIZE_FACTOR;
-			FontStyle = FontStyle.Normal;
 			switch (systemFont) {
 			case SystemFont.Default:
 				Control = NSFont.SystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			case SystemFont.Bold:
-				FontStyle = FontStyle.Bold;
 				Control = NSFont.BoldSystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			case SystemFont.Label:
@@ -119,7 +116,7 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			
 #if OSX
-			this.FontStyle = style;
+			this.style = style;
 			this.family = family;
 
 			NSFontTraitMask traits = Generator.Convert (style);
@@ -180,7 +177,12 @@ namespace Eto.Platform.Mac.Drawing
 
 		public FontStyle FontStyle
 		{
-			get; set;
+			get
+			{
+				if (style == null)
+					style = Generator.Convert (NSFontManager.SharedFontManager.TraitsOfFont (Control));
+				return style.Value;
+			}
 		}
 
 	}

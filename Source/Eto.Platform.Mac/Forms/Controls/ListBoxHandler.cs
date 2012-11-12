@@ -121,17 +121,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 			scroll.BorderType = NSBorderType.BezelBorder;
 		}
 
-		public override Eto.Drawing.Font Font {
-			get { return font; }
+		public override Eto.Drawing.Font Font
+		{
+			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Font));
+				return font;
+			}
 			set {
 				font = value;
 				if (font != null) {
 					var fontHandler = (FontHandler)font.Handler;
 					cell.Font = fontHandler.Control;
 					Control.RowHeight = fontHandler.LineHeight;
-				}
-				else
-					cell.Font = NSFont.SystemFontOfSize(NSFont.SystemFontSize);
+				} else
+					cell.Font = NSFont.SystemFontOfSize (NSFont.SystemFontSize);
 			}
 		}
 

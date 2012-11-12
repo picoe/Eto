@@ -82,8 +82,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 
 			Font font;
-			public override Eto.Drawing.Font Font {
-				get { return font; }
+			public override Eto.Drawing.Font Font
+			{
+				get {
+					if (font == null)
+						font = new Font (Column.Generator, new FontHandler (Args.CellStyle.Font));
+					return font;
+				}
 				set {
 					font = value;
 					if (font != null)

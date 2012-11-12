@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp.Forms.Cells
 {
@@ -47,7 +48,11 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		}
 
 		public override Eto.Drawing.Font Font {
-			get { return font; }
+			get {
+				if (font == null)
+					return new Font (Column.Generator, new FontHandler (Renderer.FontDesc));
+				return font;
+			}
 			set {
 				font = value;
 				if (Font != null)

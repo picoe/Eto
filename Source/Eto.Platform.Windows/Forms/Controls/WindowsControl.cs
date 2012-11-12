@@ -368,8 +368,14 @@ namespace Eto.Platform.Windows
 		}
 		
 		public Font Font {
-			get { return font; }
-			set {
+			get
+			{
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Font));
+				return font;
+			}
+			set
+			{
 				font = value;
 				if (font != null)
 					this.Control.Font = font.ControlObject as System.Drawing.Font;

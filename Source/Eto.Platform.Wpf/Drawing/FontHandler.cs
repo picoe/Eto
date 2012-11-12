@@ -37,10 +37,18 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
-
 		public static double PointsToPixels (double points)
 		{
 			return points * (96.0 / 72.0);
+		}
+
+		public static double PixelsToPoints (double points, swc.Control control = null)
+		{
+			if (control != null) {
+				var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+				points /= m.M22;
+			}
+			return points * (72.0 / 96.0);
 		}
 
 		public static void Apply (swc.Control control, Font font)
@@ -78,6 +86,14 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public FontHandler ()
 		{
+		}
+
+		public FontHandler (Eto.Generator generator, swc.Control control)
+		{
+			this.Family = new FontFamily (generator, new FontFamilyHandler (control.FontFamily));
+			this.Size = PixelsToPoints (control.FontSize, control);
+			this.WpfFontStyle = control.FontStyle;
+			this.WpfFontWeight = control.FontWeight;
 		}
 
 		public FontHandler (Eto.Generator generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)

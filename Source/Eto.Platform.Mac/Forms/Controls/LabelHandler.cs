@@ -215,6 +215,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public Eto.Drawing.Font Font {
 			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Font));
 				return font;
 			}
 			set {

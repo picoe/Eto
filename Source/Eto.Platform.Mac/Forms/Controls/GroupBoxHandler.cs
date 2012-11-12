@@ -42,8 +42,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public Font Font {
+		public Font Font
+		{
 			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.TitleFont));
 				return font;
 			}
 			set {

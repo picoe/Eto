@@ -58,7 +58,6 @@ namespace Eto.Platform.Mac.Drawing
 			Weight = manager.WeightOfFont(font);
 			Traits = manager.TraitsOfFont (font);
 			name = (NSString)descriptor.FontAttributes[NSFontFaceAttribute];
-			Console.WriteLine ("Face: {0}, Weight: {1}, Traits: {2} - {3}", name, Weight, Traits, PostScriptName);
 		}
 
 		public FontTypefaceHandler (FontFamilyHandler family, string postScriptName, string name, NSFontTraitMask traits, int weight)

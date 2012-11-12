@@ -410,6 +410,8 @@ namespace Eto.Platform.GtkSharp
 		
 		public virtual Font Font {
 			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (FontControl));
 				return font;
 			}
 			set {

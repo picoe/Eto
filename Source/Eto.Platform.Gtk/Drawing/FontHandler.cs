@@ -14,16 +14,19 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 		}
 
+		public FontHandler (Gtk.Widget widget)
+			: this (widget.Style.FontDescription)
+		{
+		}
+
+		public FontHandler (Pango.FontDescription fontDescription)
+		{
+			Control = fontDescription;
+		}
+
 		public FontHandler (string fontName)
 		{
 			Control = Pango.FontDescription.FromString (fontName);
-		}
-
-		public void Create (string fontName, float size, FontStyle style)
-		{
-			Control = Pango.FontDescription.FromString (fontName);
-			Size = size;
-			SetStyle (style);
 		}
 
 		public void Create (SystemFont systemFont, float? size)

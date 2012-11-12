@@ -30,7 +30,12 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Font Font
 		{
-			get { return font; }
+			get
+			{
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Widget.Generator, Control));
+				return font;
+			}
 			set
 			{
 				font = value;

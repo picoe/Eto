@@ -7,8 +7,6 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public class DateTimePickerHandler : GtkControl<CustomControls.DateComboBox, DateTimePicker>, IDateTimePicker
 	{
-		Font font;
-
 		public DateTimePickerHandler ()
 		{
 			Control = new CustomControls.DateComboBox ();
@@ -23,17 +21,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			};
 		}
 
-		public override Font Font
+		protected override Gtk.Widget FontControl
 		{
-			get { return font; }
-			set
-			{
-				font = value;
-				if (font != null)
-					Control.Entry.ModifyFont (((FontHandler)font.Handler).Control);
-				else
-					Control.Entry.ModifyFont (null);
-			}
+			get { return Control.Entry; }
 		}
 
 		public DateTime? Value {
