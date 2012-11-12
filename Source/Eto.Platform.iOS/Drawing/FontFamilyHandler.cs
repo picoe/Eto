@@ -30,8 +30,9 @@ namespace Eto.Platform.iOS.Drawing
 
 		public UIFont CreateFont (float size, FontStyle style)
 		{
-			// scan!
-			var handler = Typefaces.First().Handler as FontTypefaceHandler;
+			var matched = Typefaces.FirstOrDefault (r => r.FontStyle == style);
+			if (matched == null) matched = Typefaces.First ();
+			var handler = matched.Handler as FontTypefaceHandler;
 			return handler.CreateFont(size);
 		}
 
