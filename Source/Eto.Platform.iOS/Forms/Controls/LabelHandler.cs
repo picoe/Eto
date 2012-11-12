@@ -1,6 +1,7 @@
 using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
+using Eto.Platform.iOS.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -53,6 +54,14 @@ namespace Eto.Platform.iOS.Forms.Controls
 			set;
 		}
 
+		public override Eto.Drawing.Font Font {
+			get { return base.Font; }
+			set {
+				base.Font = value;
+				Control.Font = value.ToUI ();
+			}
+		}
+
 		public WrapMode Wrap {
 			get { 
 				switch (Control.LineBreakMode) {
@@ -83,8 +92,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		public Eto.Drawing.Color TextColor {
-			get { return Control.TextColor.ToEtoColor (); }
-			set { Control.TextColor = value.ToUIColor (); }
+			get { return Control.TextColor.ToEto (); }
+			set { Control.TextColor = value.ToUI (); }
 		}
 	}
 }

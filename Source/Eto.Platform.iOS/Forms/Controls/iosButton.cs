@@ -25,7 +25,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			get { return font; }
 			set {
 				font = value;
-				Control.Font = font.ToUIFont ();
+				Control.Font = font.ToUI ();
 			}
 		}
 	}

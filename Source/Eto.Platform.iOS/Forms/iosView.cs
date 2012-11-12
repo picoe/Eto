@@ -209,8 +209,8 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Control.BackgroundColor.ToEtoColor (); }
-			set { Control.BackgroundColor = value.ToUIColor (); }
+			get { return Control.BackgroundColor.ToEto (); }
+			set { Control.BackgroundColor = value.ToUI (); }
 		}
 
 		public virtual bool Enabled {

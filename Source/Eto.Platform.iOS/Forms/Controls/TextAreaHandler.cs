@@ -68,10 +68,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			get { return base.Font; }
 			set {
 				base.Font = value;
-				if (value != null)
-					Control.Font = ((FontHandler)value.Handler).Control;
-				else
-					Control.Font = UIFont.SystemFontOfSize (UIFont.SmallSystemFontSize);
+				Control.Font = value.ToUI ();
 			}
 		}
 

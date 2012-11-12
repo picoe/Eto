@@ -399,7 +399,7 @@ namespace Eto.Platform.iOS.Drawing
 			str.DrawString (new SD.PointF (x, height - y - size.Height), dic);
 			//context.SetShouldAntialias(antialias);
 #elif IOS
-			var uifont = font.ToUIFont ();
+			var uifont = font.ToUI ();
 			var str = new NSString (text);
 			var size = str.StringSize (uifont);
 			//context.SetShouldAntialias(true);
@@ -422,7 +422,7 @@ namespace Eto.Platform.iOS.Drawing
 			var size = str.StringSize (dic);
 #elif IOS
 			var str = new NSString (text);
-			var size = str.StringSize (font.ToUIFont ());
+			var size = str.StringSize (font.ToUI ());
 #endif
 			EndDrawing ();
 			return Eto.Platform.Conversions.ToEto (size);
