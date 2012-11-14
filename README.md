@@ -6,7 +6,7 @@ Discussion
 ----------
 
 * Join the [forums](http://groups.google.com/group/eto-forms)
-* Chat in [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
+* Chat in [#eto-forms](http://jabbr.net/#/rooms/eto-forms) on JabbR.net or [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
 
 Description
 -----------
