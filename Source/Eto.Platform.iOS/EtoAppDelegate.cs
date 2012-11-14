@@ -13,7 +13,7 @@ namespace Eto.Platform.iOS
 		{
 		}
 
-		public override bool FinishedLaunching (UIApplication application, NSDictionary launcOptions)
+		public override bool WillFinishLaunching (UIApplication application, NSDictionary launchOptions)
 		{
 			ApplicationHandler.Instance.Initialize(this);
 			return true;

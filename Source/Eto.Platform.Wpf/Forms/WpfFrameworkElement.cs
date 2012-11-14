@@ -12,7 +12,30 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public interface IWpfFrameworkElement
 	{
-		Size? PreferredSize { get; }
+		sw.Size PreferredSize { get; }
+		sw.FrameworkElement ContainerControl { get; }
+	}
+
+	public static class ControlExtensions
+	{
+		public static sw.FrameworkElement GetContainerControl (this Control control)
+		{
+			var handler = control.Handler as IWpfFrameworkElement;
+			if (handler != null)
+				return handler.ContainerControl;
+			else
+				return control.ControlObject as sw.FrameworkElement;
+		}
+
+        public static sw.Size GetPreferredSize (this Control control)
+        {
+			if (control != null) {
+				var handler = control.Handler as IWpfFrameworkElement;
+				if (handler != null)
+					return handler.PreferredSize;
+			}
+			return sw.Size.Empty;
+        }
 	}
 
 	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl, IWpfFrameworkElement
@@ -20,6 +43,8 @@ namespace Eto.Platform.Wpf.Forms
 		where W : Control
 	{
 		Size? size;
+		double preferredWidth = double.NaN;
+		double preferredHeight = double.NaN;
 		Size? newSize;
 		Cursor cursor;
 
@@ -27,6 +52,11 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get;
 			set;
+		}
+
+		public virtual sw.FrameworkElement ContainerControl
+		{
+			get { return this.Control; }
 		}
 
 		public virtual Size Size
@@ -39,13 +69,24 @@ namespace Eto.Platform.Wpf.Forms
 			}
 			set {
 				size = value;
+				preferredWidth = value.Width == -1 ? double.NaN : (double)value.Width;
+				preferredHeight = value.Height == -1 ? double.NaN : (double)value.Height;
 				Generator.SetSize (Control, value); 
 			}
 		}
 
-		public Size? PreferredSize
+		public virtual sw.Size PreferredSize
 		{
-			get { return size; }
+			get {
+				if (double.IsNaN(preferredWidth) || double.IsNaN(preferredHeight)) {
+					ContainerControl.Measure (new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
+					if (double.IsNaN (preferredWidth))
+						preferredWidth = ContainerControl.DesiredSize.Width;
+					if (double.IsNaN (preferredHeight))
+						preferredHeight = ContainerControl.DesiredSize.Height;
+				}
+				return new sw.Size (preferredWidth, preferredHeight);
+			}
 		}
 
 		public bool Enabled
@@ -123,14 +164,14 @@ namespace Eto.Platform.Wpf.Forms
 			switch (handler) {
 				case Eto.Forms.Control.MouseMoveEvent:
 					Control.MouseMove += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseMove (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					Control.MouseDown += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseDown (args);
 						e.Handled = args.Handled;
 					};
@@ -138,14 +179,14 @@ namespace Eto.Platform.Wpf.Forms
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 					if (wpfcontrol != null)
 						wpfcontrol.MouseDoubleClick += (sender, e) => {
-							var args = Generator.ConvertMouseEvent (Control, e);
+							var args = e.ToEto (Control);
 							Widget.OnMouseDoubleClick (args);
 							e.Handled = args.Handled;
 						};
 					else
 						Control.MouseDown += (sender, e) => {
 							if (e.ClickCount == 2) {
-								var args = Generator.ConvertMouseEvent (Control, e);
+								var args = e.ToEto (Control);
 								Widget.OnMouseDoubleClick (args);
 								e.Handled = args.Handled;
 							}
@@ -153,28 +194,28 @@ namespace Eto.Platform.Wpf.Forms
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					Control.MouseUp += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseUp (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
 					Control.MouseEnter += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseEnter (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
 					Control.MouseLeave += (sender, e) => {
-						var args = Generator.ConvertMouseEvent (Control, e);
+						var args = e.ToEto (Control);
 						Widget.OnMouseLeave (args);
 						e.Handled = args.Handled;
 					};
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					Control.SizeChanged += (sender, e) => {
-						this.newSize = Generator.Convert (e.NewSize); // so we can report this back in Control.Size
+						this.newSize = e.NewSize.ToEto (); // so we can report this back in Control.Size
 						Widget.OnSizeChanged (EventArgs.Empty);
 						this.newSize = null;
 					};
@@ -189,7 +230,7 @@ namespace Eto.Platform.Wpf.Forms
 						}
 					};
 					Control.KeyDown += (sender, e) => {
-						var args = Generator.Convert (e);
+						var args = e.ToEto ();
 						Widget.OnKeyDown (args);
 						e.Handled = args.Handled;
 					};

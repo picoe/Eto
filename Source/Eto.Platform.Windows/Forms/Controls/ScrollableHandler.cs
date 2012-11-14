@@ -3,11 +3,17 @@ using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
+using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
+		SWF.Panel content;
+		bool expandWidth = true;
+		bool expandHeight = true;
+		
+
 		public class CustomScrollable : System.Windows.Forms.Panel
 		{
 			public ScrollableHandler Handler { get; set; }
@@ -31,6 +37,42 @@ namespace Eto.Platform.Windows
 				else return this.AutoScrollPosition;*/
 				return this.AutoScrollPosition;
 			}
+
+			protected override void OnClientSizeChanged (EventArgs e)
+			{
+				base.OnClientSizeChanged (e);
+				if (Handler.Widget != null)
+					Handler.UpdateExpanded ();
+			}
+
+		}
+
+		public override Size DesiredSize
+		{
+			get
+			{
+				return base.DesiredSize;
+			}
+		}
+
+		protected override void CalculateMinimumSize ()
+		{
+			base.CalculateMinimumSize ();
+		}
+
+		public override void SetScale (bool xscale, bool yscale)
+		{
+			var layout = WindowsLayout;
+
+			if (layout != null)
+				layout.SetScale (false, false);
+
+			base.SetScale (xscale, yscale);
+		}
+
+		public override SWF.Control ContentContainer
+		{
+			get { return content; }
 		}
 		
 		public BorderType Border {
@@ -65,23 +107,40 @@ namespace Eto.Platform.Windows
 
 		public ScrollableHandler ()
 		{
-			Control = new CustomScrollable{ Handler = this };
-			this.Control.Size = SD.Size.Empty;
-			this.Control.MinimumSize = SD.Size.Empty;
-			
-			Control.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-			Control.AutoScroll = true;
-			
-			Control.AutoSize = true;
-			//Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			SkipLayoutScale = true;
+			Control = new CustomScrollable{ 
+				Handler = this,
+				Size = SD.Size.Empty,
+				MinimumSize = SD.Size.Empty,
+				BorderStyle = SWF.BorderStyle.Fixed3D,
+				AutoScroll = true,
+				AutoSize = true
+			};
 			Control.VerticalScroll.SmallChange = 5;
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
-			//control.AutoScrollPosition = new SD.Point(0,0);
-			//control.AutoScrollMinSize = new System.Drawing.Size(500,500);
-			//control.DisplayRectangle = new System.Drawing.Rectangle(0,0,500,1000);
-			//control.BackColor = System.Drawing.Color.Black;
+
+			content = new SWF.Panel {
+				Size = SD.Size.Empty,
+				AutoSize = true
+			};
+			Control.Controls.Add (content);
+		}
+
+		void UpdateExpanded ()
+		{
+			var layout = WindowsLayout;
+			if (layout != null && layout.LayoutObject != null) {
+				var c = layout.LayoutObject as SWF.Control;
+				var minSize = Control.ClientSize;
+				if (!ExpandContentWidth) minSize.Width = 0;
+				else minSize.Width = Math.Max (0, minSize.Width);
+				if (!ExpandContentHeight) minSize.Height = 0;
+				else minSize.Height = Math.Max (0, minSize.Height);
+				c.MinimumSize = minSize;
+				Control.PerformLayout ();
+			}
 		}
 		
 		public override void AttachEvent (string handler)
@@ -106,17 +165,46 @@ namespace Eto.Platform.Windows
 		public Point ScrollPosition {
 			get { return new Point (-Control.AutoScrollPosition.X, -Control.AutoScrollPosition.Y); }
 			set { 
-				Control.AutoScrollPosition = Generator.Convert (value);
+				Control.AutoScrollPosition = value.ToSD ();
 			}
 		}
 
 		public Size ScrollSize {
-			get { return Generator.Convert (this.Control.DisplayRectangle.Size); }
-			set { Control.AutoScrollMinSize = Generator.Convert (value); }
+			get { return this.Control.DisplayRectangle.Size.ToEto (); }
+			set { Control.AutoScrollMinSize = value.ToSD (); }
 		}
 
 		public Rectangle VisibleRect {
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+		}
+
+
+		public bool ExpandContentWidth
+		{
+			get { return expandWidth; }
+			set
+			{
+				if (expandWidth != value)
+				{
+					expandWidth = value;
+					SetScale ();
+					UpdateExpanded ();
+				}
+			}
+		}
+
+		public bool ExpandContentHeight
+		{
+			get { return expandHeight; }
+			set
+			{
+				if (expandHeight != value)
+				{
+					expandHeight = value;
+					SetScale ();
+					UpdateExpanded ();
+				}
+			}
 		}
 	}
 }

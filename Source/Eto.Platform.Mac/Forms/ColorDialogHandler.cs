@@ -4,6 +4,7 @@ using Eto.Forms;
 using MonoMac.ObjCRuntime;
 using MonoMac.Foundation;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -22,7 +23,7 @@ namespace Eto.Platform.Mac.Forms
 		[Export("changeColor:")]
 		public void changeColor(NSColorPanel panel)
 		{
-			Handler.Color = Generator.Convert(panel.Color.UsingColorSpace (NSColorSpace.DeviceRGB));
+			Handler.Color = panel.Color.UsingColorSpace (NSColorSpace.DeviceRGB).ToEto ();
 			Handler.Widget.OnColorChanged(EventArgs.Empty);
 		}
 		
@@ -70,7 +71,7 @@ namespace Eto.Platform.Mac.Forms
 			Control.Delegate = ColorHandler.Instance;
 			Control.SetTarget (null);
 			Control.SetAction (null);
-			Control.Color = Generator.ConvertNS (this.Color);
+			Control.Color = this.Color.ToNS ();
 			
 			Control.SetTarget (ColorHandler.Instance);
 			Control.SetAction (new Selector("changeColor:"));

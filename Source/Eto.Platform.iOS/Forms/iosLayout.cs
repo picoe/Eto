@@ -8,7 +8,8 @@ using Eto.Drawing;
 namespace Eto.Platform.iOS.Forms
 {
 	public interface IiosLayout {
-		object LayoutObject { get; }		
+		object LayoutObject { get; }	
+		Size GetPreferredSize (Size availableSize);
 	}
 	
 	public abstract class iosLayout<T, W> : iosObject<T, W>, ILayout, IiosLayout
@@ -38,6 +39,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public virtual void Update()
 		{
+			Layout ();
 		}
 
 		public virtual void AttachedToContainer ()
@@ -48,22 +50,19 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 		
-		public static Size GetPreferredSize(Control control)
+		public abstract Size GetPreferredSize (Size availableSize);
+
+		public virtual void Layout()
 		{
-			return Size.Empty;
+			var container = this.Widget.Container.Handler as IiosContainer;
+			container.LayoutStarted ();
+			LayoutChildren ();
+			container.LayoutComplete ();
 		}
-		
-		public abstract Size GetPreferredSize ();
-		
-		public virtual void LayoutChildren()
-		{
-		}
-		
-		protected void Layout()
-		{
-			
-		}
-		
+
+		public abstract void LayoutChildren ();
+
+
 		public virtual void SetContainerSize(SD.SizeF size)
 		{
 			var container = Widget.Container.Handler as IiosContainer;
@@ -73,16 +72,6 @@ namespace Eto.Platform.iOS.Forms
 				if (view != null) view.SetFrameSize (size);*/
 			}
 		}
-		
-		protected void AutoSize(Control view)
-		{
-			var mh = view.Handler as IiosView;
-			if (mh != null && !mh.AutoSize) return;
-			
-			var c = view.ControlObject as UIControl;
-			if (c != null) c.SizeToFit ();
-		}
-		
 
 	}
 }

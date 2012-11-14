@@ -63,14 +63,15 @@ namespace Eto.Test
 		
 	public class SectionList : TreeGridView
 	{
-		Container contentContainer;
-		
-		public SectionList (Container contentContainer)
+		public SectionList ()
 		{
-			this.contentContainer = contentContainer;
 			this.Style = "sectionList";
 			this.ShowHeader = false;
+<<<<<<< HEAD
 			
+=======
+
+>>>>>>> develop
 			Columns.Add (new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
 			this.DataStore = new Section ("Top", TopNodes ());
@@ -113,6 +114,7 @@ namespace Eto.Test
 			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
 			yield return new Section<ProgressBarSection> { Text = "Progress Bar" };
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
+			yield return new Section<ImageViewSection> { Text = "Image View" };
 		}
 
 		IEnumerable<Section> DrawingSection ()
@@ -129,12 +131,21 @@ namespace Eto.Test
 		IEnumerable<Section> LayoutsSection ()
 		{
 			yield return new Section ("Table Layout", TableLayoutsSection ());
+			yield return new Section ("Scrollable Layout", ScrollableLayoutSection ());
 		}
 
 		IEnumerable<Section> TableLayoutsSection ()
 		{
 			yield return new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" };
-			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing & Scaling" };
+			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing" };
+			yield return new Section<Sections.Layouts.TableLayoutSection.ScalingSection> { Text = "Scaling" };
+		}
+
+		IEnumerable<Section> ScrollableLayoutSection ()
+		{
+			yield return new Section<Sections.Layouts.ScrollingLayouts.TableLayoutExpansion> { Text = "Table Layout Expansion" };
+			yield return new Section<Sections.Layouts.ScrollingLayouts.DockLayoutExpansion> { Text = "Dock Layout Expansion" };
+			yield return new Section<Sections.Layouts.ScrollingLayouts.PixelLayoutExpansion> { Text = "Pixel Layout Expansion" };
 		}
 
 		IEnumerable<Section> DialogsSection ()
@@ -143,6 +154,7 @@ namespace Eto.Test
 			yield return new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" };
 			yield return new Section<Sections.Dialogs.SelectFolderSection> { Text = "Select Folder Dialog" };
 			yield return new Section<Sections.Dialogs.CustomDialogSection> { Text = "Custom Dialog" };
+			yield return new Section<Sections.Dialogs.FontDialogSection> { Text = "Font Dialog" };
 		}
 
 		IEnumerable<Section> SerializationSection ()
@@ -168,18 +180,28 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
 #endif
 		}
+
+		public Control SectionControl { get; private set; }
+
+		public string SectionTitle {
+			get {
+				var section = this.SelectedItem as Section;
+				if (section != null)
+					return section.Text;
+				return null;
+			}
+		}
 		
 		public override void OnSelectionChanged (EventArgs e)
 		{
-			base.OnSelectionChanged (e);
-			
 			var sectionGenerator = this.SelectedItem as ISectionGenerator;
 			
 			if (sectionGenerator != null) {
-				var control = sectionGenerator.GenerateControl ();
-				contentContainer.AddDockedControl (control);
+				SectionControl = sectionGenerator.GenerateControl ();
 			} else 
-				contentContainer.AddDockedControl (null);
+				SectionControl = null;
+
+			base.OnSelectionChanged (e);
 		}
 	}
 }

@@ -322,6 +322,14 @@ namespace Microsoft.Sample.Controls
             get { return _backdrop; }
         }
 
+		public void RecalculateExtent ()
+		{
+			_extent.Width = double.NaN;
+			_extent.Height = double.NaN;
+			InvalidateMeasure ();
+			InvalidateArrange ();
+		}
+
         /// <summary>
         /// Calculate the size needed to display all the virtual children.
         /// </summary>
@@ -377,8 +385,8 @@ namespace Microsoft.Sample.Controls
 						_index.Insert (n, nrect);
                     }
                 }
-				if (!double.IsNaN (_backdrop.ActualWidth) && !double.IsNaN (_backdrop.ActualHeight))
-					_extent = Rect.Union (new Rect (_extent), new Rect (0, 0, _backdrop.ActualWidth, _backdrop.ActualWidth)).Size;
+				_backdrop.Measure (new Size (double.PositiveInfinity, double.PositiveInfinity));
+				_extent = Rect.Union (new Rect(_extent), new Rect (_backdrop.DesiredSize)).Size;
 			}
 
             // Make sure we honor the min width & height.
@@ -437,15 +445,12 @@ namespace Microsoft.Sample.Controls
                     child.Measure(bounds.Size);
                 }
             }
-            if (double.IsInfinity(availableSize.Width))
-            {
-                return _extent;
-            }
-            else
-            {
-                return availableSize;
-            }
-        }
+			if (double.IsInfinity(availableSize.Width))
+                availableSize.Width = _extent.Width;
+			if (double.IsInfinity(availableSize.Height))
+				availableSize.Height = _extent.Height;
+			return availableSize;
+		}
 
         /// <summary>
         /// WPF ArrangeOverride for laying out the control

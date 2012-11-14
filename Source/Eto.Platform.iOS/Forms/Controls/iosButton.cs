@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using MonoTouch.UIKit;
+using Eto.Platform.iOS.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -9,6 +10,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		where T: UIButton
 		where W: Control
 	{	
+		Font font;
 
 		public virtual string Text {
 			get {
@@ -19,6 +21,13 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
+		public override Eto.Drawing.Font Font {
+			get { return font; }
+			set {
+				font = value;
+				Control.Font = font.ToUI ();
+			}
+		}
 	}
 }
 

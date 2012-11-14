@@ -17,12 +17,8 @@ namespace Eto.Platform.Windows.Forms
 		}
 		
 		public Color Color {
-			get {
-				return Generator.Convert (this.Control.Color);
-			}
-			set {
-				this.Control.Color = Generator.Convert (value);
-			}
+			get { return this.Control.Color.ToEto (); }
+			set { this.Control.Color = value.ToSD (); }
 		}
 		
 		public DialogResult ShowDialog (Window parent)
@@ -41,7 +37,7 @@ namespace Eto.Platform.Windows.Forms
 			
 			customColors = this.Control.CustomColors;
 			
-			return Generator.Convert (result);
+			return result.ToEto ();
 		}
 	}
 }

@@ -43,6 +43,9 @@ namespace Eto.Forms
 		void MapPlatformAction (string systemAction, BaseAction action);
 	}
 	
+	[ToolboxItem(true)]
+	[DesignTimeVisible(true)]
+	[DesignerCategory("Eto.Forms")]
 	public abstract partial class Control : InstanceWidget
 	{
 		IControl inner;
@@ -358,6 +361,31 @@ namespace Eto.Forms
 		public Layout ParentLayout { get; private set; }
 		
 		public Control Parent { get; private set; }
+
+		public T FindParent<T> (string id)
+			where T: class
+		{
+			var control = this.Parent;
+			while (control != null) {
+				if (control is T && (string.IsNullOrEmpty (id) || control.ID == id)) {
+					return control as T;
+				}
+				control = control.Parent;
+			}
+			return default(T);
+		}
+
+		public T FindParent<T> ()
+			where T : class
+		{
+			var control = this.Parent;
+			while (control != null) {
+				if (control is T)
+					return control as T;
+				control = control.Parent;
+			}
+			return default (T);
+		}
 		
 		public void SetParent (Control parent)
 		{

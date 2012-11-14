@@ -34,7 +34,14 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			} catch (Exception ex) {
 				throw new EtoException ("GTK WebView is only supported on Linux, and requires webkit-sharp", ex);
 			}
-			
+			Control.PopulatePopup += (o, args) => {
+				if (BrowserContextMenuEnabled)
+					return;
+				// don't allow context menu by default
+				foreach (var child in args.Menu.Children) {
+					args.Menu.Remove (child);
+				}
+			};
 			scroll.Add (Control);
 			HandleEvent (WebView.DocumentLoadingEvent);
 		}
@@ -153,6 +160,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public void ShowPrintDialog ()
 		{
 			Control.ExecuteScript ("print();");
+		}
+
+		public bool BrowserContextMenuEnabled
+		{
+			get; set;
 		}
 	}
 }

@@ -4,6 +4,7 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using SD = System.Drawing;
 using System.Threading;
+using System.Diagnostics;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -20,7 +21,7 @@ namespace Eto.Platform.iOS.Forms
 		public ApplicationHandler ()
 		{
 			DelegateClassName = "EtoAppDelegate";
-			Control = UIApplication.SharedApplication;
+			UIApplication.CheckForIllegalCrossThreadCalls = false;
 		}
 				
 		public void Run (string[] args)
@@ -30,6 +31,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public void Initialize (UIApplicationDelegate appdelegate)
 		{
+			Control = UIApplication.SharedApplication;
 			this.AppDelegate = appdelegate;
 			
 			Widget.OnInitialized (EventArgs.Empty);
@@ -95,6 +97,10 @@ namespace Eto.Platform.iOS.Forms
 					int result;
 					if (Int32.TryParse (value, out result))
 						Control.ApplicationIconBadgeNumber = result;
+					else {
+						Debug.WriteLine ("iOS: Application.BadgeLabel only supports numeric values");
+						Control.ApplicationIconBadgeNumber = 0;
+					}
 				}
 			}
 		}

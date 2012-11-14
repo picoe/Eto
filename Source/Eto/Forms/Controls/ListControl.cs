@@ -37,7 +37,7 @@ namespace Eto.Forms
 #if XAML
 	[ContentProperty("Items")]
 #endif
-	public class ListControl : CommonControl
+	public abstract class ListControl : CommonControl
 	{
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 

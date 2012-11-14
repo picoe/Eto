@@ -3,27 +3,6 @@ using System;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Enumeration of the standard Font Families for a <see cref="Font"/>
-	/// </summary>
-	public enum FontFamily
-	{
-		/// <summary>
-		/// Font family with each character having the same width
-		/// </summary>
-		Monospace,
-
-		/// <summary>
-		/// Font family with no serifs (e.g. Arial, Helvetica, etc)
-		/// </summary>
-		Sans,
-
-		/// <summary>
-		/// Font family with serifs (e.g. Times New Roman, etc)
-		/// </summary>
-		Serif
-	}
-	
-	/// <summary>
 	/// Enumeration of the different system fonts for a <see cref="Font"/>
 	/// </summary>
 	/// <remarks>
@@ -104,7 +83,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Italic font style
 		/// </summary>
-		Italic = 1 << 1
+		Italic = 1 << 1,
 	}
 	
 	/// <summary>
@@ -127,28 +106,29 @@ namespace Eto.Drawing
 		/// <param name="size">Size of font to use, or null to use the system font's default size</param>
 		void Create(SystemFont systemFont, float? size);
 
-		/// <summary>
-		/// Gets a value indicating that this font has a bold style
-		/// </summary>
-		bool Bold { get; }
-
-		/// <summary>
-		/// Gets a value indicating that this font has an italic style
-		/// </summary>
-		bool Italic { get; }
+		void Create (FontTypeface fontFace, float size);
 
 		/// <summary>
 		/// Gets the size of the font in points
 		/// </summary>
 		float Size { get; }
+
+		string FamilyName { get; }
+
+		FontStyle FontStyle { get; }
+
+		FontFamily Family { get; }
+
+		FontTypeface Typeface { get; }
+
 	}
-	
+
 	/// <summary>
 	/// Defines a format for text
 	/// </summary>
 	public class Font : InstanceWidget
 	{
-		IFont inner;
+		new IFont Handler { get { return (IFont)base.Handler; } }
 
 		/// <summary>
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
@@ -171,8 +151,7 @@ namespace Eto.Drawing
 		public Font (Generator generator, FontFamily family, float size, FontStyle style = FontStyle.Normal)
 			: base(generator, typeof(IFont))
 		{
-			inner = (IFont)Handler;
-			inner.Create(family, size, style);
+			Handler.Create(family, size, style);
 		}
 
 		/// <summary>
@@ -202,8 +181,54 @@ namespace Eto.Drawing
 		public Font (Generator generator, SystemFont systemFont, float? size = null)
 			: base(generator, typeof(IFont))
 		{
-			inner = (IFont)Handler;
-			inner.Create(systemFont, size);
+			Handler.Create(systemFont, size);
+		}
+
+		public Font (string familyName, float size, FontStyle style = FontStyle.Normal)
+			: this (Generator.Current, familyName, size, style)
+		{
+		}
+
+		public Font (Generator generator, string familyName, float size, FontStyle style = FontStyle.Normal)
+			: base(generator, typeof(IFont))
+		{
+			Handler.Create(new FontFamily(generator, familyName), size, style);
+		}
+
+		public Font (FontTypeface fontFace, float size)
+			: this (null, fontFace, size)
+		{
+		}
+
+		public Font (Generator generator, FontTypeface fontFace, float size)
+			: base (generator, typeof (IFont))
+		{
+			Handler.Create (fontFace, size);
+		}
+
+		public Font (Generator generator, IFont handler)
+			: base (generator, handler, true)
+		{
+		}
+
+		public string FamilyName
+		{
+			get { return Handler.FamilyName; }
+		}
+
+		public FontStyle FontStyle
+		{
+			get { return Handler.FontStyle; }
+		}
+
+		public FontFamily Family
+		{
+			get { return Handler.Family; }
+		}
+
+		public FontTypeface Typeface
+		{
+			get { return Handler.Typeface; }
 		}
 		
 		/// <summary>
@@ -211,7 +236,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public float Size
 		{
-			get { return inner.Size; }
+			get { return Handler.Size; }
 		}
 
 		/// <summary>
@@ -219,7 +244,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool Bold
 		{
-			get { return inner.Bold; }
+			get { return FontStyle.HasFlag (FontStyle.Bold); }
 		}
 
 		/// <summary>
@@ -227,7 +252,17 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool Italic
 		{
-			get { return inner.Italic; }
+			get { return FontStyle.HasFlag (FontStyle.Italic); }
+		}
+
+		public override int GetHashCode ()
+		{
+			return base.GetHashCode ();
+		}
+
+		public override string ToString ()
+		{
+			return string.Format ("Family={0}, Typeface={1}, Size={2}, Style={3}", Family, Typeface, Size, FontStyle);
 		}
 	}
 }

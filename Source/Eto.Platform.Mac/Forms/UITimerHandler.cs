@@ -1,6 +1,10 @@
 using System;
-using MonoMac.Foundation;
 using Eto.Forms;
+#if IOS
+using MonoTouch.Foundation;
+#else
+using MonoMac.Foundation;
+#endif
 
 namespace Eto.Platform.Mac.Forms
 {

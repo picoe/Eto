@@ -108,10 +108,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public Color TextColor {
 			get {
-				return Generator.Convert (Control.TextColor);
+				return Control.TextColor.ToEto ();
 			}
 			set {
-				Control.TextColor = Generator.ConvertNS (value);
+				Control.TextColor = value.ToNS ();
 			}
 		}
 		
@@ -154,18 +154,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Control.StringValue;
 			}
 			set {
-				var oldSize = GetPreferredSize ();
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				
 				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
 				if (match.Success) {
-					var str = new NSMutableAttributedString (value.Remove(match.Index, match.Length).Replace ("&&", "&"));
+					var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
+					var str = new NSMutableAttributedString (val);
 					
 					var matches = Regex.Matches (value, @"[&][&]");
 					var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
 					
 					// copy existing attributes
 					NSRange range;
-					var attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+					NSMutableDictionary attributes;
+					if (Control.AttributedStringValue.Length > 0)
+						attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+					else
+						attributes = new NSMutableDictionary();
+
 					if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
 						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
 					str.AddAttributes (attributes, new NSRange(0, str.Length));
@@ -209,14 +215,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public Eto.Drawing.Font Font {
 			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Font));
 				return font;
 			}
 			set {
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				font = value;
 				if (font != null)
 					Control.Font = ((FontHandler)font.Handler).Control;
 				else
 					Control.Font = NSFont.LabelFontOfSize (NSFont.LabelFontSize);
+				LayoutIfNeeded (oldSize);
 			}
 		}
 		

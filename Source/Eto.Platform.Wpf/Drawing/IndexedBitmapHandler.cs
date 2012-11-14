@@ -58,7 +58,7 @@ namespace Eto.Platform.Wpf.Drawing
 				if (palette == null) {
 					palette = new Eto.Drawing.Palette ();
 					foreach (var col in Control.Palette.Colors) {
-						palette.Add (Generator.Convert (col));
+						palette.Add (col.ToEto ());
 					}
 				}
 				return palette;
@@ -72,7 +72,7 @@ namespace Eto.Platform.Wpf.Drawing
 				// re-create with new palette
 				var colors = new List<swm.Color> (numColors);
 				for (int i = 0; i < numColors; i++) {
-					colors.Add(Generator.Convert (palette[i]));
+					colors.Add(palette[i].ToWpf ());
 				}
 				Control = new swmi.WriteableBitmap (old.PixelWidth, old.PixelHeight, 96, 96, old.Format, new swmi.BitmapPalette (colors));
 				Control.CopyPixels (sw.Int32Rect.Empty, old.BackBuffer, old.BackBufferStride * old.PixelHeight, old.BackBufferStride);

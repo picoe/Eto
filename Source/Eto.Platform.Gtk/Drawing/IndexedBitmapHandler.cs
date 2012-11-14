@@ -133,7 +133,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			
 			var context = graphics.Control;
 			context.Save ();
-			context.Rectangle (Generator.ConvertC (destination));
+			context.Rectangle (destination.ToCairo ());
 			double scalex = 1;
 			double scaley = 1;
 			if (source.Width != destination.Width || source.Height != destination.Height) {

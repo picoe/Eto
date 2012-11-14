@@ -18,7 +18,7 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<T, W> : WpfControl<T, W>, IWindow, IWpfWindow
+	public abstract class WpfWindow<T, W> : WpfContainer<T, W>, IWindow, IWpfWindow
 		where T : sw.Window
 		where W : Window
 	{
@@ -180,7 +180,7 @@ namespace Eto.Platform.Wpf.Forms
 			Control.WindowState = sw.WindowState.Minimized;
 		}
 
-		public Size ClientSize
+		public override Size ClientSize
 		{
 			get
 			{
@@ -208,12 +208,12 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public object ContainerObject
+		public override object ContainerObject
 		{
 			get { return Control; }
 		}
 
-		public virtual void SetLayout (Layout layout)
+		public override void SetLayout (Layout layout)
 		{
 			content.Children.Clear ();
 			content.Children.Add ((sw.UIElement)layout.ControlObject);
@@ -274,11 +274,11 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Rectangle? RestoreBounds
 		{
-			get { return Generator.Convert (Control.RestoreBounds); }
+			get { return Control.RestoreBounds.ToEto (); }
 		}
 
 
-		public Size? MinimumSize
+		public override Size? MinimumSize
 		{
 			get
 			{
@@ -333,6 +333,20 @@ namespace Eto.Platform.Wpf.Forms
 		public override bool HasFocus
 		{
 			get { return Control.IsActive && ((ApplicationHandler)Application.Instance.Handler).IsActive; }
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
+				if (brush != null) return brush.Color.ToEto ();
+				else return Colors.Black;
+			}
+			set
+			{
+				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
+			}
 		}
 	}
 }

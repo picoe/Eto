@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class DrawTextSection : Panel
+	public class DrawTextSection : Scrollable
 	{
 		public DrawTextSection ()
 		{
@@ -32,21 +32,21 @@ namespace Eto.Test.Sections.Drawing
 			yield return new DrawInfo { Font = new Font (SystemFont.Default), Text = "System Font & Size" };
 			yield return new DrawInfo { Font = new Font (SystemFont.Default, 20), Text = "System Font, 20pt" };
 
-			yield return new DrawInfo { Font = new Font (FontFamily.Sans, 12), Text = "Sans, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Serif, 12), Text = "Serif, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Monospace, 12), Text = "Monospace, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Sans, 12), Text = "Sans, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Serif, 12), Text = "Serif, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Monospace, 12), Text = "Monospace, 12pt" };
 
-			yield return new DrawInfo { Font = new Font (FontFamily.Sans, 12, FontStyle.Bold), Text = "Sans Bold, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Serif, 12, FontStyle.Bold), Text = "Serif Bold, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Monospace, 12, FontStyle.Bold), Text = "Monospace Bold, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Sans, 12, FontStyle.Bold), Text = "Sans Bold, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Serif, 12, FontStyle.Bold), Text = "Serif Bold, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Monospace, 12, FontStyle.Bold), Text = "Monospace Bold, 12pt" };
 
-			yield return new DrawInfo { Font = new Font (FontFamily.Sans, 12, FontStyle.Italic), Text = "Sans Italic, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Serif, 12, FontStyle.Italic), Text = "Serif Italic, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Monospace, 12, FontStyle.Italic), Text = "Monospace Italic, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Sans, 12, FontStyle.Italic), Text = "Sans Italic, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Serif, 12, FontStyle.Italic), Text = "Serif Italic, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Monospace, 12, FontStyle.Italic), Text = "Monospace Italic, 12pt" };
 
-			yield return new DrawInfo { Font = new Font (FontFamily.Sans, 12, FontStyle.Bold | FontStyle.Italic), Text = "Sans Bold & Italic, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Serif, 12, FontStyle.Bold | FontStyle.Italic), Text = "Serif Bold & Italic, 12pt" };
-			yield return new DrawInfo { Font = new Font (FontFamily.Monospace, 12, FontStyle.Bold | FontStyle.Italic), Text = "Monospace Bold & Italic, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Sans, 12, FontStyle.Bold | FontStyle.Italic), Text = "Sans Bold & Italic, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Serif, 12, FontStyle.Bold | FontStyle.Italic), Text = "Serif Bold & Italic, 12pt" };
+			yield return new DrawInfo { Font = new Font (FontFamilies.Monospace, 12, FontStyle.Bold | FontStyle.Italic), Text = "Monospace Bold & Italic, 12pt" };
 		}
 
 		Control Default ()

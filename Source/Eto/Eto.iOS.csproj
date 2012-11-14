@@ -263,6 +263,11 @@
     <Compile Include="Forms\Range.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="In32ArrayConverter.cs" />
+    <Compile Include="Drawing\FontFamilies.cs" />
+    <Compile Include="Drawing\FontFamily.cs" />
+    <Compile Include="Drawing\Fonts.cs" />
+    <Compile Include="Drawing\FontTypeface.cs" />
+    <Compile Include="Forms\FontDialog.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

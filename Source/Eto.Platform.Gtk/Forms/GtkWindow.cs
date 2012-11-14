@@ -9,6 +9,8 @@ namespace Eto.Platform.GtkSharp
 	public interface IGtkWindow
 	{
 		bool CloseWindow ();
+
+		Gtk.Window Control { get; }
 	}
 
 	public abstract class GtkWindow<T, W> : GtkContainer<T, W>, IWindow, IGtkWindow
@@ -57,13 +59,13 @@ namespace Eto.Platform.GtkSharp
 		public override Size Size {
 			get {
 				if (Control.Visible)
-					return Generator.Convert (Control.Allocation.Size);
+					return Control.Allocation.Size.ToEto ();
 				else
-					return Generator.Convert (Control.DefaultSize);
+					return Control.DefaultSize.ToEto ();
 			}
 			set {
 				if (Control.Visible)
-					Control.Allocation = new Gdk.Rectangle (Control.Allocation.Location, Generator.Convert (value));
+					Control.Allocation = new Gdk.Rectangle (Control.Allocation.Location, value.ToGdk ());
 				else
 					Control.SetDefaultSize (value.Width, value.Height);
 			}
@@ -79,8 +81,20 @@ namespace Eto.Platform.GtkSharp
 			}
 			set
 			{
-				Control.SetSizeRequest (-1, -1);
-				containerBox.SetSizeRequest (value.Width, value.Height);
+				if (Control.IsRealized) {
+					int width, height;
+					Control.GetSize (out width, out height);
+
+					var size = new Size(width, height);
+					containerBox.GetSizeRequest (out width, out height);
+					size -= new Size(width, height);
+					size += value;
+					Control.Resize (size.Width, size.Height);
+				}
+				else {
+					Control.SetSizeRequest (-1, -1);
+					containerBox.SetSizeRequest (value.Width, value.Height);
+				}
 			}
 		}
 
@@ -328,5 +342,7 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.Opacity; }
 			set { Control.Opacity = value; }
 		}
+
+		Gtk.Window IGtkWindow.Control { get { return (Gtk.Window)Control; } }
 	}
 }

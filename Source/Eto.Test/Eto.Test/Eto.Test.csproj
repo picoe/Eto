@@ -39,6 +39,7 @@
   <ItemGroup>
     <Compile Include="Log.cs" />
     <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
+    <Compile Include="Sections\Controls\ImageViewSection.cs" />
     <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
     <Compile Include="Sections\Controls\TreeViewSection.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
@@ -48,7 +49,10 @@
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
     <Compile Include="Sections\Printing\PrintDialogSection.cs" />
     <Compile Include="TestApplication.cs" />
@@ -92,6 +96,8 @@
     <Compile Include="Sections\Serialization\Json\Test.cs" />
     <Compile Include="Sections\Serialization\JsonReadSection.cs" />
     <Compile Include="Sections\Serialization\XamlReadSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
+    <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
@@ -117,7 +123,6 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Sections\Serialization\" />
-  </ItemGroup>
+  <ItemGroup />
+  <ItemGroup />
 </Project>

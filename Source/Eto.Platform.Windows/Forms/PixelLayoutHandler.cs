@@ -2,18 +2,24 @@ using System;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class PixelLayoutHandler : WindowsLayout<object, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : WindowsLayout<SWF.Control, PixelLayout>, IPixelLayout
 	{
-		public override object Control {
+		public override SWF.Control Control {
 			get {
-				return Widget.Container != null ? Widget.Container.ControlObject : null;
+				return Widget.Container != null ? (SWF.Control)Widget.Container.ControlObject : null;
 			}
 			protected set {
 				base.Control = value;
 			}
+		}
+
+		public override Size DesiredSize
+		{
+			get { return Control.PreferredSize.ToEto (); }
 		}
 
 		public void Add(Control child, int x, int y)

@@ -54,6 +54,22 @@ namespace Eto.Platform.iOS.Drawing
 		public void Create (int width, int height, PixelFormat pixelFormat)
 		{			
 			switch (pixelFormat) {
+			case PixelFormat.Format32bppRgba:
+				{
+					int numComponents = 4;
+					int bitsPerComponent = 8;
+					int bitsPerPixel = numComponents * bitsPerComponent;
+					int bytesPerPixel = bitsPerPixel / 8;
+					bytesPerRow = bytesPerPixel * width;
+
+					Data = NSMutableData.FromLength (bytesPerRow * height);
+
+					provider = new CGDataProvider (Data.MutableBytes, (int)Data.Length, false);
+					cgimage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+					Control = UIImage.FromImage (cgimage);
+				
+					break;
+				}
 			case PixelFormat.Format32bppRgb:
 				{
 					int numComponents = 4;
@@ -61,10 +77,11 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
 					bytesPerRow = bytesPerPixel * width;
-					Data = new NSMutableData ((uint)(bytesPerRow * height));
+					Data = NSMutableData.FromLength (bytesPerRow * height);
+					//Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
 					provider = new CGDataProvider (Data.MutableBytes, (int)Data.Length, false);
-					cgimage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+					cgimage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.NoneSkipFirst, provider, null, true, CGColorRenderingIntent.Default);
 					Control = UIImage.FromImage (cgimage);
 				
 					break;
@@ -83,9 +100,6 @@ namespace Eto.Platform.iOS.Drawing
 					Control = UIImage.FromImage (cgimage);
 					break;
 				}
-			/*case PixelFormat.Format16bppRgb555:
-					control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
-					break;*/
 			default:
 				throw new ArgumentOutOfRangeException ("pixelFormat", pixelFormat, "Not supported");
 			}
@@ -127,13 +141,13 @@ namespace Eto.Platform.iOS.Drawing
 		}
 
 		public override Size Size {
-			get { return Generator.ConvertF (Control.Size); }
+			get { return Control.Size.ToEtoSize (); }
 		}
 		
 		public override void DrawImage (GraphicsHandler graphics, int x, int y)
 		{
 			var nsimage = this.Control;
-			var destRect = graphics.TranslateView (Generator.ConvertF (new Rectangle (x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height)), false);
+			var destRect = graphics.TranslateView (new SD.RectangleF (x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height), false);
 			nsimage.Draw (destRect, CGBlendMode.Normal, 1);
 		}
 
@@ -150,22 +164,22 @@ namespace Eto.Platform.iOS.Drawing
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
 			var nsimage = this.Control;
-			var sourceRect = Generator.ConvertF (source); 
+			var sourceRect = source.ToSDRectangleF (); 
 			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
-			SD.RectangleF destRect = graphics.TranslateView (Generator.ConvertF (destination), false);
+			SD.RectangleF destRect = graphics.TranslateView (destination.ToSDRectangleF (), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {
-				graphics.Context.SaveState ();
+				graphics.Control.SaveState ();
 				//graphics.Context.ClipToRect(destRect);
-				if (!graphics.Flipped) {
-					graphics.Context.TranslateCTM (0, nsimage.Size.Height);
-					graphics.Context.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
+				if (graphics.Flipped) {
+					graphics.Control.TranslateCTM (0, nsimage.Size.Height);
+					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
 				} else {
-					graphics.Context.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
+					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
 				}
-				graphics.Context.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
+				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
 				//nsimage.CGImage(destRect, CGBlendMode.Normal, 1);
 
-				graphics.Context.RestoreState ();
+				graphics.Control.RestoreState ();
 				
 				//var imgportion = nsimage..CGImage.WithImageInRect(sourceRect);
 				/*graphics.Context.SaveState();
@@ -199,6 +213,11 @@ namespace Eto.Platform.iOS.Drawing
 					Data = null;
 				}
 			}
+		}
+
+		public override UIImage GetUIImage ()
+		{
+			return this.Control;
 		}
 
 	}

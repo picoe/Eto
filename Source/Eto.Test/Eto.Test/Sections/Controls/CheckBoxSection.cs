@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class CheckBoxSection : Panel
+	public class CheckBoxSection : Scrollable
 	{
 		public CheckBoxSection ()
 		{

@@ -138,7 +138,7 @@ namespace Eto.Platform.Windows.Drawing
 				var icon = GetIconClosestToSize (size.Value);
 				return icon.ToBitmap ();
 			}
-			else return Control.ToBitmap ();
+			else return this.GetLargestIcon().ToBitmap ();
 		}
 	}
 }

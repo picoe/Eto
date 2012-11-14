@@ -5,18 +5,26 @@ using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class DockLayoutHandler : WpfLayout<swc.DockPanel, DockLayout>, IDockLayout
+	public class DockLayoutHandler : WpfLayout<swc.Border, DockLayout>, IDockLayout
 	{
 		Control content;
 
+		public override sw.Size PreferredSize
+		{
+			get { 
+				var preferredSize = content.GetPreferredSize ();
+				return new sw.Size (preferredSize.Width + Padding.Horizontal, preferredSize.Height + Padding.Vertical);
+			}
+		}
+
 		public DockLayoutHandler ()
 		{
-			Control = new swc.DockPanel { 
-				SnapsToDevicePixels = true,
-				LastChildFill = true
+			Control = new swc.Border { 
+				SnapsToDevicePixels = true
 			};
 			Control.SizeChanged += (sender, e) => {
 				if (content != null) {
@@ -27,10 +35,10 @@ namespace Eto.Platform.Wpf.Forms
 			};
 		}
 
-		public Eto.Drawing.Padding Padding
+		public Padding Padding
 		{
-			get { return Generator.Convert (Control.Margin); }
-			set { Control.Margin = Generator.Convert (value); }
+			get { return Control.Margin.ToEto (); }
+			set { Control.Margin = value.ToWpf (); }
 		}
 
 		public Control Content
@@ -38,14 +46,15 @@ namespace Eto.Platform.Wpf.Forms
 			get { return content; }
 			set
 			{
-				Control.Children.Clear ();
 				content = value;
 				if (content != null) {
-					var element = (sw.FrameworkElement)content.ControlObject;
+					var element = content.GetContainerControl();
 					element.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 					element.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
-					Control.Children.Add (element);
+					Control.Child = element;
 				}
+				else
+					Control.Child = null;
 			}
 		}
 

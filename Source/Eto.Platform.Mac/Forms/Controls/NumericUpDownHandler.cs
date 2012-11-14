@@ -3,6 +3,7 @@ using Eto.Forms;
 using SD = System.Drawing;
 using MonoMac.AppKit;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -127,6 +128,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Font Font {
 			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (text.Font));
 				return font;
 			}
 			set {

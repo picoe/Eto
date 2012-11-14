@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class BitmapSection : Panel
+	public class BitmapSection : Scrollable
 	{
 		public BitmapSection ()
 		{

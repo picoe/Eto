@@ -2,6 +2,7 @@ using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -15,10 +16,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override Color BackgroundColor {
 			get {
-				return Generator.Convert(Control.BackgroundColor);
+				return Control.BackgroundColor.ToEto ();
 			}
 			set {
-				Control.BackgroundColor = Generator.ConvertNS(value);
+				Control.BackgroundColor = value.ToNS ();
 			}
 		}
 		

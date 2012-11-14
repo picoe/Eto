@@ -8,7 +8,7 @@ namespace Eto.Platform.GtkSharp.Forms
 		
 		public void Create (CursorType cursor)
 		{
-			Control = new Gdk.Cursor(Generator.Convert (cursor));
+			Control = new Gdk.Cursor(cursor.ToGdk ());
 		}
 	}
 }

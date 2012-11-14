@@ -2,26 +2,33 @@ using System;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
 	public class GroupBoxHandler : WindowsContainer<SWF.GroupBox, GroupBox>, IGroupBox
 	{
-		SWF.Panel container;
+		SWF.Panel content;
 
 		public GroupBoxHandler()
 		{
-			Control = new SWF.GroupBox();
+			Control = new SWF.GroupBox {
+				AutoSize = true,
+				AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink
+			};
 			Control.SuspendLayout ();
-			container = new SWF.Panel();
-			//container.DockPadding.Top = 16;
-			//container.DockPadding.Left = 8;
-			Control.AutoSize = true;
-			Control.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
-			container.Dock = SWF.DockStyle.Fill;
-			container.AutoSize = true;
-			container.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
-			Control.Controls.Add(container);
+			content = new SWF.Panel {
+				Font = SD.SystemFonts.DefaultFont,
+				Dock = SWF.DockStyle.Fill,
+				AutoSize = true,
+				AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink
+			};
+			Control.Controls.Add(content);
+		}
+
+		public override Size DesiredSize
+		{
+			get { return Size.Max(Size.Empty, base.DesiredSize + Control.Size.ToEto () - Control.DisplayRectangle.Size.ToEto ()); }
 		}
 
 		public override void OnLoad (EventArgs e)
@@ -30,9 +37,9 @@ namespace Eto.Platform.Windows
 			Control.ResumeLayout ();
 		}
 
-		public override object ContainerObject
+		public override SWF.Control ContentContainer
 		{
-			get { return container; }
+			get { return content; }
 		}
 
 

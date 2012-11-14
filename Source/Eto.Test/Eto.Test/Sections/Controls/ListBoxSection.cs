@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class ListBoxSection : Panel
+	public class ListBoxSection : Scrollable
 	{
 		public ListBoxSection ()
 		{
