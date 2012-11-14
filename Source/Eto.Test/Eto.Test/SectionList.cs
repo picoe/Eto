@@ -67,11 +67,7 @@ namespace Eto.Test
 		{
 			this.Style = "sectionList";
 			this.ShowHeader = false;
-<<<<<<< HEAD
-			
-=======
 
->>>>>>> develop
 			Columns.Add (new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
 			this.DataStore = new Section ("Top", TopNodes ());

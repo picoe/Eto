@@ -46,7 +46,7 @@ namespace Eto.Platform.Windows.Forms.Printing
 				Control.PrintPage += (sender, e) => {
 					var graphics = new Graphics (Widget.Generator, new GraphicsHandler (e.Graphics));
 					
-					var args = new PrintPageEventArgs (graphics, this.PageSize, currentPage);
+					var args = new PrintPageEventArgs (graphics, e.PageBounds.Size.ToEto (), currentPage);
 					Widget.OnPrintPage (args);
 					currentPage++;
 					e.HasMorePages = currentPage < PageCount;
@@ -65,11 +65,6 @@ namespace Eto.Platform.Windows.Forms.Printing
 		}
 
 		public int PageCount
-		{
-			get; set;
-		}
-
-		public Size PageSize
 		{
 			get; set;
 		}

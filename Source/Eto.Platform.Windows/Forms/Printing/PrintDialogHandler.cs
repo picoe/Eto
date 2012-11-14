@@ -28,7 +28,7 @@ namespace Eto.Platform.Windows.Forms.Printing
 			else
 				result = Control.ShowDialog ();
 
-			return Generator.Convert (result);
+			return result.ToEto ();
 		}
 
 		public PrintSettings PrintSettings

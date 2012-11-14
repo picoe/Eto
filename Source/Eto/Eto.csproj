@@ -27,7 +27,6 @@
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE;DESKTOP;XAML</DefineConstants>
     <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
-
     <FileAlignment>4096</FileAlignment>
     <Optimize>True</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
@@ -44,7 +43,6 @@
     </ConfigurationOverrideFile>
     <DefineConstants>TRACE;DEBUG;DESKTOP;XAML</DefineConstants>
     <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
-
     <DebugSymbols>True</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <Optimize>False</Optimize>
@@ -355,7 +353,6 @@
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
     <Compile Include="Binding\BindingExtensions.cs" />
-
     <Compile Include="Forms\Printing\PrintDialog.cs" />
     <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="Widget.xaml.cs" />

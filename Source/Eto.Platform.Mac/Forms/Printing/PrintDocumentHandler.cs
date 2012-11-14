@@ -41,7 +41,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 				//var context = NSGraphicsContext.CurrentContext;
 
 				using (var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(context, this.Frame.Height))) {
-					Handler.Widget.OnPrintPage (new PrintPageEventArgs (graphics, Generator.ConvertF (operation.PrintInfo.PaperSize), operation.CurrentPage - 1));
+					Handler.Widget.OnPrintPage (new PrintPageEventArgs (graphics, operation.PrintInfo.PaperSize.ToEtoSize (), operation.CurrentPage - 1));
 				}
 			}
 
@@ -82,12 +82,6 @@ namespace Eto.Platform.Mac.Forms.Printing
 		public string Name { get; set; }
 
 		public int PageCount { get; set; }
-
-		public Size PageSize
-		{
-			get { return Generator.ConvertF (Control.Frame.Size); }
-			set { Control.SetFrameSize (Generator.Convert (value)); }
-		}
 
 		public PrintSettings PrintSettings {
 			get { return printSettings; }

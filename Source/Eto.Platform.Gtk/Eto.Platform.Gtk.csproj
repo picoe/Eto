@@ -243,6 +243,9 @@
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
+    <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
+    <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -254,4 +257,7 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Forms\Printing\" />
+  </ItemGroup>
 </Project>

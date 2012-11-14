@@ -40,15 +40,35 @@ namespace Eto.Test.Sections.Printing
 
 			control.Click += delegate {
 				var document = new PrintDocument ();
-				document.PageCount = 10;
+				var font = new Font(FontFamilies.Serif, 16);
+				var printTime = DateTime.Now;
 				document.PrintPage += (sender, e) => {
-					if (e.CurrentPage == 0) {
-						e.Graphics.DrawRectangle (Colors.Blue, new Rectangle(50, 50, 100, 100));
-						e.Graphics.DrawRectangle (Colors.Green, new Rectangle(new Point(e.PageSize) - new Size(150, 150), new Size(100, 100)));
+					// draw title
+					e.Graphics.DrawText (font, Colors.Black, new Point (50, 20), document.Name);
+
+					// draw page number
+					var text = string.Format ("page {0} of {1}", e.CurrentPage + 1, document.PageCount);
+					var textSize = e.Graphics.MeasureString(font, text);
+					e.Graphics.DrawText (font, Colors.Black, new Point (e.PageSize.Width - (int)textSize.Width - 50, 20), text);
+
+					// draw date
+					text = string.Format ("Printed on {0:f}", printTime);
+					textSize = e.Graphics.MeasureString (font, text);
+					e.Graphics.DrawText (font, Colors.Black, new Point (e.PageSize.Width - (int)textSize.Width - 50, e.PageSize.Height - (int)textSize.Height - 20), text);
+
+					// draw some rectangles
+					switch (e.CurrentPage) {
+					case 0:
+						e.Graphics.DrawRectangle (Colors.Blue, new Rectangle (50, 50, 100, 100));
+						e.Graphics.DrawRectangle (Colors.Green, new Rectangle (new Point (e.PageSize) - new Size (150, 150), new Size (100, 100)));
+						break;
+					case 1:
+						e.Graphics.DrawRectangle (Colors.Blue, new Rectangle (e.PageSize.Width - 150, 50, 100, 100));
+						e.Graphics.DrawRectangle (Colors.Green, new Rectangle (50, e.PageSize.Height - 150, 100, 100));
+						break;
 					}
 				};
 				document.PrintSettings = new PrintSettings ();
-				//document.PageSize = new Size (600, 800);
 				document.Name = "Name Of Document";
 				document.PageCount = 2;
 				document.Print ();

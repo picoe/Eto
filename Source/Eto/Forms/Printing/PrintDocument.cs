@@ -15,8 +15,6 @@ namespace Eto.Forms
 		PrintSettings PrintSettings { get; set; }
 
 		int PageCount { get; set; }
-
-		Size PageSize { get; set; }
 	}
 
 	public class PrintDocument : InstanceWidget
@@ -110,12 +108,5 @@ namespace Eto.Forms
 			get { return handler.PageCount; }
 			set { handler.PageCount = value; }
 		}
-
-		public Size PageSize
-		{
-			get { return handler.PageSize; }
-			set { handler.PageSize = value; }
-		}
-
 	}
 }

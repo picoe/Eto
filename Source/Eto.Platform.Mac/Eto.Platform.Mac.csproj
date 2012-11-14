@@ -154,7 +154,6 @@
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
-
     <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
     <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
@@ -168,7 +167,6 @@
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
-
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
