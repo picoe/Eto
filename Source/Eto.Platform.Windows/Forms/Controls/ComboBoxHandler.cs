@@ -38,7 +38,7 @@ namespace Eto.Platform.Windows
 				using (var graphics = Control.CreateGraphics ()) {
 					foreach (object item in Control.Items) {
 						var text = Control.GetItemText (item);
-						var itemSize = Generator.ConvertF (graphics.MeasureString (text, font));
+						var itemSize = graphics.MeasureString (text, font).ToEtoSize ();
 						// for drop down glyph and border
 						size = Size.Max (size, itemSize);
 					}

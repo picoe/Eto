@@ -6,15 +6,21 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	internal class RotatableNavigationController : UINavigationController
 	{
+		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true; 
+		}
+
+		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations ()
+		{
+			return UIInterfaceOrientationMask.All;
 		}
 	}
 	
 	public class NavigationHandler : iosControl<UIView, Navigation>, INavigation, IiosViewController
 	{
-		public UIViewController Controller { get { return Navigation; } }
+		public override UIViewController Controller { get { return Navigation; } }
 		
 		public UINavigationController Navigation { get; set; }
 		
@@ -31,7 +37,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public NavigationHandler ()
 		{
-			Navigation = new RotatableNavigationController {
+			Navigation = new UINavigationController {
 				Delegate = new Delegate { Handler = this }
 			};
 		}
@@ -42,13 +48,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 		
-		#region INavigation implementation
-		
 		public void Push (INavigationItem item)
 		{
 			var view = item.Content.GetViewController ();
-			if (item.Text != null)
-				view.NavigationItem.Title = item.Text;
+			view.NavigationItem.Title = item.Text;
+			view.View.Frame = Control.Frame;
+			view.View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			Navigation.PushViewController (view, true);
 		}
 
@@ -56,8 +61,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			Navigation.PopViewControllerAnimated (true);
 		}
-		#endregion
-
 	}
 }
 

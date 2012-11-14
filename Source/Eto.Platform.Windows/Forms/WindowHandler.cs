@@ -44,7 +44,7 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				return Generator.Convert (Widget.Loaded ? content.Size : content.MinimumSize);
+				return (Widget.Loaded ? content.Size : content.MinimumSize).ToEto ();
 			}
 			set
 			{
@@ -54,7 +54,7 @@ namespace Eto.Platform.Windows
 					Control.Size = new sd.Size(value.Width + size.Width, value.Height + size.Height);
 				}
 				else
-					content.MinimumSize = Generator.Convert (value);
+					content.MinimumSize = value.ToSD ();
 			}
 		}
 
@@ -241,10 +241,10 @@ namespace Eto.Platform.Windows
 		
 		public Point Location {
 			get {
-				return Generator.Convert (Control.Location);
+				return Control.Location.ToEto ();
 			}
 			set {
-				Control.Location = Generator.Convert (value);
+				Control.Location = value.ToSD ();
 				Control.StartPosition = swf.FormStartPosition.Manual;
 			}
 		}
@@ -282,7 +282,7 @@ namespace Eto.Platform.Windows
 		public Rectangle? RestoreBounds {
 			get {
 				if (this.State == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
-				else return Generator.Convert (Control.RestoreBounds);
+				else return Control.RestoreBounds.ToEto ();
 			}
 		}
 

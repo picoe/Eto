@@ -28,6 +28,12 @@ namespace Eto.Platform.Mac.Drawing
 			else
 				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
 		}
+#if OSX
+		public static NSFont ToNSFont (this Font font)
+		{
+			return ((FontHandler)font.Handler).Control;
+		}
+#endif
 	}
 
 	public class FontHandler : WidgetHandler<NSFont, Font>, IFont, IDisposable
@@ -46,10 +52,10 @@ namespace Eto.Platform.Mac.Drawing
 			this.Control = font;
 		}
 
-		public FontHandler (NSFont font, NSFontTraitMask traits)
+		public FontHandler (NSFont font, FontStyle style)
 		{
 			this.Control = font;
-			style = Generator.Convert (traits);
+			this.style = style;
 		}
 
 		public void Create (FontTypeface face, float size)
@@ -119,13 +125,15 @@ namespace Eto.Platform.Mac.Drawing
 			this.style = style;
 			this.family = family;
 
-			NSFontTraitMask traits = Generator.Convert (style);
+			NSFontTraitMask traits = style.ToNS ();
 			var font = NSFontManager.SharedFontManager.FontWithFamily(family.Name, traits, 5, size * FONT_SIZE_FACTOR);
 			if (font == null || font.Handle == IntPtr.Zero)
 				throw new Exception(string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
 			string suffix = string.Empty;
-			string italicString = "Italic";
+			var familyHandler = family.Handler as FontFamilyHandler;
+			var font = familyHandler.CreateFont (size, style);
+			/*
 			var familyString = new StringBuilder();
 			switch (family)
 			{
@@ -143,6 +151,7 @@ namespace Eto.Platform.Mac.Drawing
 			
 			familyString.Append (suffix);
 			var font = UIFont.FromName (familyString.ToString (), size);
+			*/
 #endif
 			Control = font;
 		}
@@ -180,7 +189,11 @@ namespace Eto.Platform.Mac.Drawing
 			get
 			{
 				if (style == null)
-					style = Generator.Convert (NSFontManager.SharedFontManager.TraitsOfFont (Control));
+#if OSX
+					style = NSFontManager.SharedFontManager.TraitsOfFont (Control).ToEto ();
+#elif IOS
+					style = Typeface.FontStyle;
+#endif
 				return style.Value;
 			}
 		}

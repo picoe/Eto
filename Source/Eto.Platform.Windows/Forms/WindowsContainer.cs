@@ -24,16 +24,19 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				var size = this.MinimumSize ?? Size.Empty;
+				var size = Size.Empty;
 				var layout = WindowsLayout;
 
 				if (layout != null)
-				{
-					if (!SkipLayoutScale)
-						size = Size.Max (layout.DesiredSize, size);
-				}
+					size = Size.Max (layout.DesiredSize, size);
 
-				size = Size.Max (base.DesiredSize, size);
+				var desired = base.DesiredSize;
+				if (desired.Width >= 0)
+					size.Width = desired.Width;
+				if (desired.Height >= 0)
+					size.Height = desired.Height;
+				if (this.MinimumSize != null)
+					size = Size.Max (this.MinimumSize.Value, size);
 				return size;
 			}
 		}
@@ -54,7 +57,7 @@ namespace Eto.Platform.Windows
 			get { return minimumSize; }
 			set {
 				minimumSize = value;
-				this.Control.MinimumSize = Generator.Convert (value ?? Size.Empty);
+				this.Control.MinimumSize = (value ?? Size.Empty).ToSD ();
 			}
 		}
 

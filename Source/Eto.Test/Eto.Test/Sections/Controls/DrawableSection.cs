@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class DrawableSection : Panel
+	public class DrawableSection : Scrollable
 	{
 		public DrawableSection ()
 		{
@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Controls
 		Control Default ()
 		{
 			var control = new Drawable {
-				Size = new Size (150, 50)
+				Size = new Size (50, 50)
 			};
 			control.Paint += delegate (object sender, PaintEventArgs pe) {
 				pe.Graphics.DrawLine (Colors.Black, Point.Empty, new Point (control.Size));
@@ -41,7 +41,7 @@ namespace Eto.Test.Sections.Controls
 		Control WithBackground ()
 		{
 			var control = new Drawable {
-				Size = new Size (150, 50),
+				Size = new Size (50, 50),
 				BackgroundColor = Colors.Lime
 			};
 			control.Paint += delegate (object sender, PaintEventArgs pe) {
@@ -76,7 +76,7 @@ namespace Eto.Test.Sections.Controls
 			LogEvents (control);
 
 			var layout = new PixelLayout (new Scrollable {
-				Size = new Size (450, 250)
+				Size = new Size (250, 250)
 			});
 			layout.Add (control, 25, 25);
 			return layout.Container;

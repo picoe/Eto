@@ -20,8 +20,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 			var font = sender.ConvertFont (NSFont.SystemFontOfSize (NSFont.SystemFontSize));
 			if (font != null) {
-				var traits = sender.TraitsOfFont (font);
-				Handler.Font = new Font (Handler.Widget.Generator, new FontHandler (font, traits));
+				Handler.Font = new Font (Handler.Widget.Generator, new FontHandler (font));
 			} else {
 				Handler.Font = null;
 			}

@@ -46,7 +46,7 @@ namespace Eto.Platform.Mac.Forms
 	{
 		bool AutoSize { get; }
 		
-		Size GetPreferredSize ();
+		Size GetPreferredSize (Size availableSize);
 		
 	}
 
@@ -102,9 +102,9 @@ namespace Eto.Platform.Mac.Forms
 		public virtual bool AutoSize { get; protected set; }
 
 		public virtual Size Size {
-			get { return Generator.ConvertF (ContainerControl.Frame.Size); }
+			get { return ContainerControl.Frame.Size.ToEtoSize (); }
 			set { 
-				var oldSize = GetPreferredSize ();
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				this.PreferredSize = value;
 				Generator.SetSizeWithAuto (ContainerControl, value);
 				this.AutoSize = false;
@@ -117,8 +117,8 @@ namespace Eto.Platform.Mac.Forms
 		{
 			naturalSize = null;
 			if (Widget.Loaded) {
-				var oldSize = oldPreferredSize ?? Generator.ConvertF (ContainerControl.Frame.Size);
-				var newSize = GetPreferredSize ();
+				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize ();
+				var newSize = GetPreferredSize (Size.MaxValue);
 				if (newSize != oldSize || force) {
 					var layout = Widget.ParentLayout.Handler as IMacLayout;
 					if (layout != null)
@@ -157,7 +157,7 @@ namespace Eto.Platform.Mac.Forms
 			if (control != null) {
 				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
 				control.SizeToFit ();
-				naturalSize = Generator.ConvertF (control.Frame.Size);
+				naturalSize = control.Frame.Size.ToEtoSize ();
 				if (size != null)
 					control.SetFrameSize (size.Value);
 				return naturalSize.Value;
@@ -165,7 +165,7 @@ namespace Eto.Platform.Mac.Forms
 			return Size.Empty;
 		}
 		
-		public virtual Size GetPreferredSize ()
+		public virtual Size GetPreferredSize (Size availableSize)
 		{
 			var size = GetNaturalSize ();
 			if (!AutoSize && PreferredSize != null) {
@@ -362,7 +362,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual void Invalidate (Rectangle rect)
 		{
-			var region = Generator.ConvertF (rect);
+			var region = rect.ToSDRectangleF ();
 			region.Y = Control.Frame.Height - region.Y - region.Height;
 			Control.SetNeedsDisplayInRect (region);
 		}
@@ -393,13 +393,13 @@ namespace Eto.Platform.Mac.Forms
 				if (!Control.WantsLayer) {
 					Control.WantsLayer = true;
 				}
-				return Generator.Convert (Control.Layer.BackgroundColor);
+				return Control.Layer.BackgroundColor.ToEtoColor ();
 			}
 			set {
 				if (!Control.WantsLayer) {
 					Control.WantsLayer = true;
 				}
-				Control.Layer.BackgroundColor = Generator.Convert (value);
+				Control.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
 
@@ -415,7 +415,7 @@ namespace Eto.Platform.Mac.Forms
 			get { return !Control.Hidden; }
 			set { 
 				if (Control.Hidden == value) {
-					var oldSize = this.GetPreferredSize ();
+					var oldSize = this.GetPreferredSize (Size.MaxValue);
 					Control.Hidden = !value;
 					LayoutIfNeeded (oldSize, true);
 				}

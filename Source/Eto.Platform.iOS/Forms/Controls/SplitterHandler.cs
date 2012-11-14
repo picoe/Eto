@@ -2,68 +2,87 @@ using System;
 using Eto.Forms;
 using MonoTouch.UIKit;
 using System.Linq;
+using MonoTouch.Foundation;
+using System.Diagnostics;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class SplitterHandler : iosControl<UIView, Splitter>, ISplitter, IiosViewController
 	{
-		public UIViewController Controller { get { return SplitController; } }
+		public override UIViewController Controller { get { return SplitController; } }
 		
-		UISplitViewController SplitController { get; set; }
+		public UISplitViewController SplitController { get; set; }
+
+		public MG.MGSplitViewController MGSplitController { get; set; }
+
 		UIViewController[] children;
 		Control panel1;
 		Control panel2;
-		int? position;
-		
-		class RotatableSplitViewController : UISplitViewController
+
+		public bool UseMGSplitViewController { get; set; }
+
+		public override UIView CreateControl ()
 		{
-			public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
-			{
-				return true; //return base.ShouldAutorotateToInterfaceOrientation (toInterfaceOrientation);
+			if (UseMGSplitViewController) {
+				MGSplitController = new MG.MGSplitViewController ();
+				return MGSplitController.View;
+			} else {
+				SplitController = new UISplitViewController ();
+				return SplitController.View;
 			}
 		}
 		
-		public SplitterHandler()
+		public SplitterHandler ()
 		{
-			SplitController = new RotatableSplitViewController();
-			Control = Controller.View;
+			UseMGSplitViewController = false;
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			//SplitController.Delegate = new MG.MGSplitViewControllerDelegate();
+			Control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 			
 			children = new UIViewController[2];
-			children[0] = new UIViewController();
-			children[1] = new UIViewController();
-			SplitController.ViewControllers = children;
+			children [0] = new UIViewController ();
+			children [1] = new UIViewController ();
+			SetViewControllers ();
+
+			if (UseMGSplitViewController) {
+				MGSplitController.AllowsDraggingDivider = true;
+				MGSplitController.DividerStyle = MG.MGSplitViewDividerStyle.PaneSplitter;
+				MGSplitController.SplitWidth = 10;
+			}
 		}
-		
-		public int Position
-		{
-			get { return position ?? 0; }
-			set {
-				position = value;
-				//var adjview = control.Subviews[0];
-				//adjview.SetFrameSize(new System.Drawing.SizeF(adjview.Frame.Height, (float)position));
-				//control.AdjustSubviews();
+
+		/**/
+		public int Position {
+			get { 
+				if (UseMGSplitViewController)
+					return (int)MGSplitController.SplitPosition;
+				else
+					return 0;
+			}
+			set { 
+				//SplitController.SplitPosition = value;
 			}
 		}
 		
-		public SplitterOrientation Orientation
-		{
-			get
-			{
-				//if (control.IsVertical) return SplitterOrientation.Vertical;
-				//else return SplitterOrientation.Horizontal;
-				return SplitterOrientation.Horizontal;
+		public SplitterOrientation Orientation {
+			get {
+				if (UseMGSplitViewController)
+					return MGSplitController.Vertical ? SplitterOrientation.Vertical : SplitterOrientation.Horizontal;
+				else
+					return SplitterOrientation.Horizontal;
 			}
-			set
-			{
-				/*switch (value)
-				{
-					default:
-					case SplitterOrientation.Horizontal: control.IsVertical = false; break;
-					case SplitterOrientation.Vertical: control.IsVertical = true; break;
-				}*/
+			set { 
+				if (UseMGSplitViewController)
+					MGSplitController.Vertical = value == SplitterOrientation.Vertical;
+				else if (value == SplitterOrientation.Vertical)
+					Debug.WriteLine ("UISplitViewController cannot set orientation to vertical");
 			}
 		}
-		
+
 		public SplitterFixedPanel FixedPanel {
 			get {
 				return SplitterFixedPanel.None;
@@ -73,29 +92,31 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
-		public Control Panel1
+		void SetViewControllers ()
 		{
+			if (UseMGSplitViewController)
+				MGSplitController.ViewControllers = children;
+			else
+				SplitController.ViewControllers = children;
+		}
+
+		public Control Panel1 {
 			get { return panel1; }
-			set
-			{
-				if (panel1 != value)
-				{
-					children[0] = (value != null) ? value.GetViewController() : new RotatableViewController();
-					SplitController.ViewControllers = children;
+			set {
+				if (panel1 != value) {
+					children [0] = value.GetViewController () ?? new RotatableViewController ();
+					SetViewControllers ();
 					panel1 = value;
 				}
 			}
 		}
 
-		public Control Panel2
-		{
+		public Control Panel2 {
 			get { return panel2; }
-			set
-			{
-				if (panel2 != value)
-				{
-					children[1] = (value != null) ? value.GetViewController() : new RotatableViewController();
-					SplitController.ViewControllers = children;
+			set {
+				if (panel2 != value) {
+					children [1] = value.GetViewController () ?? new RotatableViewController ();
+					SetViewControllers ();
 					panel2 = value;
 				}
 			}

@@ -13,7 +13,7 @@ namespace Eto.Platform.Windows
 		public ButtonHandler()
 		{
 			Control = new SWF.Button();
-			Control.MinimumSize = Generator.Convert(Button.DefaultSize);
+			Control.MinimumSize = Button.DefaultSize.ToSD ();
 			Control.AutoSize = true;
 			Control.Click += delegate {
 				Widget.OnClick(EventArgs.Empty);

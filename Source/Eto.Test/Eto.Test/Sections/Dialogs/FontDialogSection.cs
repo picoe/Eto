@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Eto.Test.Sections.Dialogs
 {
-	public class FontDialogSection : Panel
+	public class FontDialogSection : Scrollable
 	{
 		Font selectedFont;
 		TextArea preview;
@@ -82,7 +82,7 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			fontList = new ListBox { Size = new Size (300, 200) };
 			var lookup = Fonts.AvailableFontFamilies ().ToDictionary (r => r.Name);
-			fontList.Items.AddRange (lookup.Values.OrderBy (r => r.Name).Select (r => new ListItem { Text = r.Name, Key = r.Name }));
+			fontList.Items.AddRange (lookup.Values.OrderBy (r => r.Name).Select (r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
 			fontList.SelectedIndexChanged += (sender, e) => {
 				if (updating)
 					return;
@@ -95,7 +95,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control FontStyles ()
 		{
-			fontStyles = new ListBox { Size = new Size (100, 100) };
+			fontStyles = new ListBox { Size = new Size (150, 100) };
 			fontStyles.SelectedIndexChanged += (sender, e) => {
 				if (updating)
 					return;
@@ -137,7 +137,7 @@ namespace Eto.Test.Sections.Dialogs
 			var family = selectedFont.Family;
 			if (newFamily) {
 				fontStyles.Items.Clear ();
-				fontStyles.Items.AddRange (family.Typefaces.Select (r => new ListItem { Text = r.Name, Key = r.Name }));
+				fontStyles.Items.AddRange (family.Typefaces.Select (r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
 			}
 			fontStyles.SelectedKey = selectedFont.Typeface.Name;
 			fontList.SelectedKey = family.Name;

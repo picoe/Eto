@@ -2,6 +2,7 @@ using System;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
@@ -11,17 +12,23 @@ namespace Eto.Platform.Windows
 
 		public GroupBoxHandler()
 		{
-			Control = new SWF.GroupBox();
+			Control = new SWF.GroupBox {
+				AutoSize = true,
+				AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink
+			};
 			Control.SuspendLayout ();
-			content = new SWF.Panel();
-			//container.DockPadding.Top = 16;
-			//container.DockPadding.Left = 8;
-			Control.AutoSize = true;
-			Control.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
-			content.Dock = SWF.DockStyle.Fill;
-			content.AutoSize = true;
-			content.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
+			content = new SWF.Panel {
+				Font = SD.SystemFonts.DefaultFont,
+				Dock = SWF.DockStyle.Fill,
+				AutoSize = true,
+				AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink
+			};
 			Control.Controls.Add(content);
+		}
+
+		public override Size DesiredSize
+		{
+			get { return Size.Max(Size.Empty, base.DesiredSize + Control.Size.ToEto () - Control.DisplayRectangle.Size.ToEto ()); }
 		}
 
 		public override void OnLoad (EventArgs e)

@@ -6,19 +6,38 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
+using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms
 {
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout>, ITableLayout
 	{
 		Eto.Drawing.Size spacing;
+		Control[,] controls;
 		bool[] columnScale;
 		bool lastColumnScale;
 		bool[] rowScale;
 		bool lastRowScale;
 
+		public override sw.Size PreferredSize
+		{
+			get {
+				double[] widths = new double[columnScale.Length];
+				double[] heights = new double[rowScale.Length];
+				for (int y = 0; y < heights.Length; y++)
+					for (int x = 0; x < widths.Length; x++) {
+						var preferredSize = controls[x,y].GetPreferredSize();
+						widths[x] = Math.Max (widths[x], preferredSize.Width);
+						heights[y] = Math.Max (heights[y], preferredSize.Height);
+					}
+
+				return new sw.Size (widths.Sum () + columnScale.Length * Spacing.Width + Padding.Vertical, heights.Sum () + rowScale.Length * Spacing.Height + Padding.Vertical);
+			}
+		}
+
 		public void CreateControl (int cols, int rows)
 		{
+			controls = new Control[cols, rows];
 			columnScale = new bool[cols];
 			rowScale = new bool[rows];
 			lastColumnScale = true;
@@ -37,6 +56,19 @@ namespace Eto.Platform.Wpf.Forms
 			Control.SizeChanged += delegate {
 				SetSizes ();
 			};
+
+			for (int y = 0; y < rows; y++)
+				for (int x = 0; x < cols; x++)
+					Control.Children.Add (EmptyCell (x, y));
+		}
+
+		sw.FrameworkElement EmptyCell (int x, int y)
+		{
+			var empty = new swc.Control ();
+			swc.Grid.SetColumn (empty, x);
+			swc.Grid.SetRow (empty, y);
+			SetMargins (empty, x, y);
+			return empty;
 		}
 
 		void SetSizes ()
@@ -179,24 +211,29 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Eto.Drawing.Padding Padding
 		{
-			get { return Generator.Convert (Control.Margin); }
-			set { Control.Margin = Generator.Convert (value); }
+			get { return Control.Margin.ToEto (); }
+			set { Control.Margin = value.ToWpf (); }
 		}
+
+        void Remove(int x, int y)
+        {
+			var control = controls[x, y];
+			controls[x, y] = null;
+			if (control != null)
+				Control.Children.Remove (control.GetContainerControl ());
+        }
 
 		public void Add (Control child, int x, int y)
 		{
-			if (child == null) {
-				foreach (sw.UIElement element in Control.Children) {
-					var col = swc.Grid.GetColumn (element);
-					if (x != col) continue;
-					var row = swc.Grid.GetRow (element);
-					if (y != row) continue;
-					Control.Children.Remove (element);
-					break;
-				}
-			}
-			else {
-				var control = (sw.FrameworkElement)child.ControlObject;
+            Remove(x, y);
+            if (child == null)
+            {
+                Control.Children.Add(EmptyCell(x, y));
+            }
+            else
+            {
+				var control = child.GetContainerControl ();
+				controls[x, y] = child;
 				control.SetValue (swc.Grid.ColumnProperty, x);
 				control.SetValue (swc.Grid.RowProperty, y);
 				SetMargins (control, x, y);
@@ -207,18 +244,30 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Move (Control child, int x, int y)
 		{
-			var control = (sw.FrameworkElement)child.ControlObject;
-			control.SetValue (swc.Grid.ColumnProperty, x);
-			control.SetValue (swc.Grid.RowProperty, y);
-			SetMargins (control, x, y);
+			var control = child.GetContainerControl ();
+			var oldx = swc.Grid.GetColumn (control);
+			var oldy = swc.Grid.GetRow (control);
+
+			Remove (x, y);
+
+ 			control.SetValue (swc.Grid.ColumnProperty, x);
+ 			control.SetValue (swc.Grid.RowProperty, y);
+ 			SetMargins (control, x, y);
 			SetSizes (control, x, y);
+			SetSizes (control, x, y);
+			Control.Children.Add (EmptyCell (oldx, oldy));
+			controls[x, y] = child;
 		}
 
 		public void Remove (Control child)
 		{
-			var control = (System.Windows.UIElement)child.ControlObject;
+			var control = child.GetContainerControl ();
+			var x = swc.Grid.GetColumn (control);
+			var y = swc.Grid.GetRow (control);
 			Control.Children.Remove (control);
-			SetSizes ();
+			controls[x, y] = null;
+			Control.Children.Add (EmptyCell (x, y));
+            SetSizes();
 		}
 	}
 }

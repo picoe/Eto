@@ -54,6 +54,7 @@ namespace Eto.Platform.Windows.Drawing
 		public void Create (FontTypeface typeface, float size)
 		{
 			this.typeface = typeface;
+
 			Control = new SD.Font (typeface.Family.Name, size, Generator.Convert (typeface.FontStyle));
 		}
 		

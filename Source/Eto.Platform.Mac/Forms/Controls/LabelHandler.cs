@@ -108,10 +108,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public Color TextColor {
 			get {
-				return Generator.Convert (Control.TextColor);
+				return Control.TextColor.ToEto ();
 			}
 			set {
-				Control.TextColor = Generator.ConvertNS (value);
+				Control.TextColor = value.ToNS ();
 			}
 		}
 		
@@ -154,7 +154,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Control.StringValue;
 			}
 			set {
-				var oldSize = GetPreferredSize ();
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				
 				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
 				if (match.Success) {
@@ -220,7 +220,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return font;
 			}
 			set {
-				var oldSize = GetPreferredSize ();
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				font = value;
 				if (font != null)
 					Control.Font = ((FontHandler)font.Handler).Control;

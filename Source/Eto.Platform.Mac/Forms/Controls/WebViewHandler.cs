@@ -232,7 +232,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public void LoadHtml (string html, Uri baseUri)
 		{
-			Control.MainFrame.LoadHtmlString (html, Generator.Convert (baseUri));
+			Control.MainFrame.LoadHtmlString (html, baseUri.ToNS ());
 		}
 		
 		public void Stop ()

@@ -79,7 +79,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			public override void Draw (System.Drawing.RectangleF rect)
 			{
 				//Console.WriteLine ("Drawing {0}, {1}", rect, new System.Diagnostics.StackTrace ());
-				Handler.Update (Generator.ConvertF (rect));
+				Handler.Update (rect.ToEtoRectangle ());
 			}
 
 			public bool CanFocus { get; set; }
@@ -156,7 +156,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				//var oldCheck = UIApplication.CheckForIllegalCrossThreadCalls;
 				//UIApplication.CheckForIllegalCrossThreadCalls = false;
 				
-				using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.BaseFrame.Height, false))) {
+				using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.BaseFrame.Height, true))) {
 					Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}
 				//UIApplication.CheckForIllegalCrossThreadCalls = oldCheck;

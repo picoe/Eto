@@ -32,7 +32,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			Gdk.EventExpose ev = args.Event;
 			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window))) {
-				Rectangle rect = Generator.Convert (ev.Region.Clipbox);
+				Rectangle rect = ev.Region.Clipbox.ToEto ();
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}

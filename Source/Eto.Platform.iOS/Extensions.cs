@@ -3,6 +3,7 @@ using MonoTouch.UIKit;
 using System.Drawing;
 using Eto.Forms;
 using Eto.Platform.iOS.Forms;
+using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS
 {
@@ -21,25 +22,21 @@ namespace Eto.Platform.iOS
 			frame.Location = location;
 			view.Frame = frame;
 		}
-		
-		public static UIViewController GetViewController (this Control control)
+
+		public static NSUrl ToNSUrl (this Uri uri)
 		{
-			if (control == null)
+			if (uri == null)
 				return null;
-			
-			var controller = control.Handler as IiosViewController;
-			if (controller != null) {
-				return controller.Controller;
-			}
-			var view = control.ControlObject as UIView;
-			if (view != null) {
-				var viewcontroller = new RotatableViewController {
-					Control = control, 
-					View = view
-				};
-				return viewcontroller;
-			}
-			return null;
+			else
+				return new NSUrl(uri.AbsoluteUri);
+		}
+
+		public static Uri ToUri (this NSUrl url)
+		{
+			if (url == null)
+				return null;
+			else
+				return new Uri(url.AbsoluteString);
 		}
 	}
 }

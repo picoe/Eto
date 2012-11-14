@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class DrawTextSection : Panel
+	public class DrawTextSection : Scrollable
 	{
 		public DrawTextSection ()
 		{
@@ -20,7 +20,7 @@ namespace Eto.Test.Sections.Drawing
 
 			layout.Add (null);
 		}
-	
+
 		class DrawInfo
 		{
 			public Font Font { get; set; }

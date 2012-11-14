@@ -75,7 +75,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public FontStyle FontStyle
 		{
-			get { return Generator.Convert (Traits); }
+			get { return Traits.ToEto (); }
 		}
 
 		public NSFont CreateFont (float size)

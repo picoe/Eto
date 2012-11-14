@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class WebViewSection : Panel
+	public class WebViewSection : Scrollable
 	{
 		WebView webView;
 		Button goBack;
@@ -15,22 +15,24 @@ namespace Eto.Test.Sections.Controls
 		public WebViewSection ()
 		{
 			var layout = new DynamicLayout (this);
-			
-			webView = new WebView ();
+
+			var webContainer = WebView ();
 			layout.Add (Buttons ());
 			layout.AddSeparateRow (TitleLabel (), null, EnableContextMenu ());
-			layout.Add (WebView (), yscale: true);
+			layout.Add (webContainer, yscale: true);
 		}
 		
 		Control WebView ()
 		{
 			try {
+				webView = new WebView ();
+
 				webView.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
 					Log.Write (webView, "Document loading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
 					UpdateButtons ();
 					stopButton.Enabled = true;
 				};
-				webView.DocumentLoaded += delegate (object sender, WebViewLoadedEventArgs e) {
+				webView.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
 					Log.Write (webView, "Document loaded, Uri: {0}", e.Uri);
 					UpdateButtons ();
 					stopButton.Enabled = false;

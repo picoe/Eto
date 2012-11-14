@@ -49,7 +49,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 		}
 
-
 		void WebBrowserV1_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
 		{
 			var e = new WebViewNewWindowEventArgs (new Uri (URL), TargetFrameName);

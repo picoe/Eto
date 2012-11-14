@@ -93,19 +93,20 @@
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
+    <Reference Include="MGSplitViewController">
+      <HintPath>..\..\Libraries\MGSplitViewController\MGSplitViewController.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
     <Folder Include="Drawing\" />
     <Folder Include="Forms\" />
     <Folder Include="Forms\Controls\" />
+    <Folder Include="Forms\Cells\" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Generator.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Drawing\GraphicsHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\IconHandler.cs">
@@ -158,6 +159,43 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\GridHandler.cs" />
+    <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
+    <Compile Include="Forms\Controls\GridColumnHandler.cs" />
+    <Compile Include="Forms\Cells\CellHandler.cs" />
+    <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
+    <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\Controls\TextAreaHandler.cs" />
+    <Compile Include="Forms\Controls\LabelHandler.cs" />
+    <Compile Include="Forms\Controls\TextBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ImageViewHandler.cs" />
+    <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Forms\UITimerHandler.cs">
+      <Link>Forms\UITimerHandler.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\GridViewHandler.cs" />
+    <Compile Include="Forms\Controls\SliderHandler.cs" />
+    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\GraphicsHandler.cs">
+      <Link>Drawing\GraphicsHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\GraphicsPathHandler.cs">
+      <Link>Drawing\GraphicsPathHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Conversions.sd.cs">
+      <Link>Conversions.sd.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Conversions.cg.cs">
+      <Link>Conversions.cg.cs</Link>
+    </Compile>
+    <Compile Include="Conversions.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\FontsHandler.cs">
+      <Link>Drawing\FontsHandler.cs</Link>
+    </Compile>
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

@@ -26,7 +26,7 @@ namespace Eto.Platform.Windows.Drawing
 		}
 	}
 
-	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap
+	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap, IWindowsImage
 	{
 
 		public IndexedBitmapHandler()
@@ -80,7 +80,7 @@ namespace Eto.Platform.Windows.Drawing
 			get
 			{
 				SD.Imaging.ColorPalette cp = Control.Palette;
-				return new Palette(cp.Entries.Select(r => Generator.Convert (r)).ToList ());
+				return new Palette(cp.Entries.Select(r => r.ToEto ()).ToList ());
 			}
 			set
 			{
@@ -88,11 +88,16 @@ namespace Eto.Platform.Windows.Drawing
 				if (value.Count != cp.Entries.Length) throw new ArgumentException("Input palette must have the same colors as the output");
 				for (int i=0; i<value.Count; i++)
 				{
-					cp.Entries[i] = Generator.Convert(value[i]);
+					cp.Entries[i] = value[i].ToSD ();
 				}
 				Control.Palette = cp;
 			}
 		}
 
+
+		public SD.Image GetImageWithSize (int? size)
+		{
+			return Control;
+		}
 	}
 }

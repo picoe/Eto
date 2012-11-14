@@ -59,7 +59,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.Title = string.Empty;
 			Control.SetButtonType (NSButtonType.MomentaryPushIn);
 			Control.BezelStyle = NSBezelStyle.Rounded;
-			Control.SetFrameSize (Generator.ConvertF (Button.DefaultSize));
+			Control.SetFrameSize (Button.DefaultSize.ToSDSizeF ());
 			Control.Activated += delegate {
 				Widget.OnClick (EventArgs.Empty);
 			};

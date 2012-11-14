@@ -5,6 +5,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -89,21 +90,6 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
-		protected Size GetPreferredSize (Control view)
-		{
-			var mh = view.Handler as IMacAutoSizing;
-			if (mh != null) {
-				return mh.GetPreferredSize ();
-			}
-			
-			var c = view.ControlObject as NSControl;
-			if (c != null) {
-				c.SizeToFit ();
-				return Generator.ConvertF (c.Frame.Size);
-			}
-			return Size.Empty;
-		}
-		
 		public virtual void Update ()
 		{
 			LayoutChildren ();	
@@ -113,9 +99,11 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
-		public abstract Size GetPreferredSize ();
+		public abstract Size GetPreferredSize (Size availableSize);
 		
-		public abstract void LayoutChildren ();
+		public virtual void LayoutChildren ()
+		{
+		}
 		
 		public void UpdateParentLayout (bool updateSize = true)
 		{
@@ -125,8 +113,8 @@ namespace Eto.Platform.Mac.Forms
 				if (updateSize) {
 					if (!AutoSize) {
 						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
-							var size = child.GetPreferredSize ();
-							child.SetContentSize (Generator.ConvertF (size));
+							var size = child.GetPreferredSize (Size.MaxValue);
+							child.SetContentSize (size.ToSDSizeF ());
 						}
 						updateSize = false;
 					}
@@ -136,12 +124,12 @@ namespace Eto.Platform.Mac.Forms
 			} else {
 				if (updateSize) {
 					if (AutoSize) {
-						var size = GetPreferredSize ();
-						SetContainerSize (Generator.ConvertF (size));
+						var size = GetPreferredSize (Size.MaxValue);
+						SetContainerSize (size.ToSDSizeF ());
 					} else {
 						foreach (var child in Widget.Controls.Select (r => r.Handler).OfType<IMacContainer>()) {
-							var size = child.GetPreferredSize ();
-							child.SetContentSize (Generator.ConvertF (size));
+							var size = child.GetPreferredSize (Size.MaxValue);
+							child.SetContentSize (size.ToSDSizeF ());
 						}
 					}
 				}
