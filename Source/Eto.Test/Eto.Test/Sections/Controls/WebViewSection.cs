@@ -20,6 +20,8 @@ namespace Eto.Test.Sections.Controls
 			layout.Add (Buttons ());
 			layout.AddSeparateRow (TitleLabel (), null, EnableContextMenu ());
 			layout.Add (webContainer, yscale: true);
+
+			LoadHtml();
 		}
 		
 		Control WebView ()
@@ -43,7 +45,6 @@ namespace Eto.Test.Sections.Controls
 				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e) {
 					titleLabel.Text = e.Title;
 				};
-				LoadHtml();
 				return webView;
 
 			} catch (HandlerInvalidException) {
@@ -184,6 +185,7 @@ namespace Eto.Test.Sections.Controls
 
 		void LoadHtml()
 		{
+			if (webView == null) return;
 			webView.LoadHtml (@"<html>
 <head><title>Hello!</title></head>
 <body>

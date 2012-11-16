@@ -6,9 +6,22 @@ namespace Eto.Platform.GtkSharp
 {
 	public class DialogHandler : GtkWindow<Gtk.Dialog, Dialog>, IDialog
 	{
+		public class MyDialog : Gtk.Dialog
+		{
+#if GTK3
+			protected override void OnAdjustSizeAllocation (Gtk.Orientation orientation, out int minimum_size, out int natural_size, out int allocated_pos, out int allocated_size)
+			{
+				base.OnAdjustSizeAllocation (orientation, out minimum_size, out natural_size, out allocated_pos, out allocated_size);
+				if (orientation == Gtk.Orientation.Horizontal)
+					allocated_size = natural_size;
+			}
+
+#endif
+		}
+
 		public DialogHandler ()
 		{
-			Control = new Gtk.Dialog ();
+			Control = new MyDialog ();
 #if GTK2
 			Control.AllowShrink = false;
 			Control.AllowGrow = false;
@@ -17,6 +30,8 @@ namespace Eto.Platform.GtkSharp
 #else
 			Control.Resizable = false;
 			Control.HasResizeGrip = false;
+			Control.ActionArea.Add (actionvbox);
+			Control.ContentArea.Add (vbox);
 #endif
 		}
 		

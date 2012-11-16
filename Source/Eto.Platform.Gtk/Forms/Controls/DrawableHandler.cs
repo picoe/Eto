@@ -44,7 +44,7 @@ namespace Eto.Platform.GtkSharp
 #else
 		void HandleDrawn (object o, Gtk.DrawnArgs args)
 		{
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (args.Cr, Control.CreatePangoContext ()))) {
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (args.Cr, Control.CreatePangoContext (), false))) {
 				Rectangle rect = new Rectangle(this.Size); //ev.Region.Clipbox.ToEto ();
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}

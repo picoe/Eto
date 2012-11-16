@@ -33,11 +33,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 		}
 
-		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext)
+		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext, bool dispose)
 		{
 			this.Control = context;
 			this.pangoContext = pangoContext;
-			DisposeControl = false;
+			DisposeControl = dispose;
 		}
 
 		public Pango.Context PangoContext

@@ -18,6 +18,7 @@ namespace Eto.Platform.GtkSharp
 		where W: Window
 	{
 		protected Gtk.VBox vbox;
+		protected Gtk.VBox actionvbox;
 		Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
 		Gtk.Box containerBox;
@@ -32,6 +33,7 @@ namespace Eto.Platform.GtkSharp
 		public GtkWindow ()
 		{
 			vbox = new Gtk.VBox ();
+			actionvbox = new Gtk.VBox ();
 
 			menuBox = new Gtk.HBox ();
 			topToolbarBox = new Gtk.VBox ();
@@ -58,7 +60,7 @@ namespace Eto.Platform.GtkSharp
 #if GTK2
 				Control.AllowGrow = value;
 #else
-				Control.Resizable = value;
+				Control.Resizable = Control.HasResizeGrip = value;
 #endif
 			}
 		}
@@ -108,8 +110,8 @@ namespace Eto.Platform.GtkSharp
 		public override void Initialize ()
 		{
 			base.Initialize ();
-			vbox.PackStart (menuBox, false, false, 0);
-			vbox.PackStart (topToolbarBox, false, false, 0);
+			actionvbox.PackStart (menuBox, false, false, 0);
+			actionvbox.PackStart (topToolbarBox, false, false, 0);
 			vbox.PackStart (containerBox, true, true, 0);
 			vbox.PackStart (bottomToolbarBox, false, false, 0);
 			

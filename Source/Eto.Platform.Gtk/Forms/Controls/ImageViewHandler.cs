@@ -34,7 +34,7 @@ namespace Eto.Platform.GtkSharp
 #else
 		void HandleDrawn (object o, Gtk.DrawnArgs args)
 		{
-			var handler = new GraphicsHandler (args.Cr, Control.CreatePangoContext ());
+			var handler = new GraphicsHandler (args.Cr, Control.CreatePangoContext (), false);
 #endif
 			using (var graphics = new Graphics (Widget.Generator, handler)) {
 				var widgetSize = new Size(Control.Allocation.Width, Control.Allocation.Height);

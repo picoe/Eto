@@ -57,8 +57,11 @@ namespace Eto.Platform.GtkSharp
 			get {
 				if (Control.Visible) 
 					return Control.Allocation.Size.ToEto ();
-				else
-					return Control.SizeRequest ().ToEto (); 
+				else {
+					int width, height;
+					Control.GetSizeRequest (out width, out height);
+					return new Size(width, height);
+				}
 			}
 			set {
 				if (Control.Visible)
