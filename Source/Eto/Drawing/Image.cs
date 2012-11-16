@@ -66,12 +66,12 @@ namespace Eto.Drawing
 
         public int Width
         {
-            get { return inner.Width; }
+            get { return handler.Width; }
         }
 
         public int Height
         {
-            get { return inner.Height; }
+            get { return handler.Height; }
         }
 
         public new Widget Widget

@@ -12,6 +12,7 @@ namespace Eto.Drawing
 	[TypeConverter (typeof (PointFConverter))]
 	public struct PointF : IEquatable<PointF>
 	{
+<<<<<<< HEAD
 		float x;
 		float y;
 
@@ -48,6 +49,15 @@ namespace Eto.Drawing
 		/// <param name="point1">First point to calculate the distance from</param>
 		/// <param name="point2">Second point to calculate the distance to</param>
 		/// <returns>The distance between the two points</returns>
+=======
+		private float x;
+		private float y;
+
+        public bool IsEmpty { get { return this.Equals(Empty); } }
+
+		public static readonly PointF Empty = new PointF (0, 0);
+
+>>>>>>> Merge with Eto main, in progress.
 		public static double Distance (Point point1, Point point2)
 		{
 			return Math.Sqrt (Math.Abs (point1.X - point2.X) + Math.Abs (point1.Y - point2.Y));
@@ -83,6 +93,7 @@ namespace Eto.Drawing
 		public static PointF Abs (PointF point)
 		{
 			return new PointF (Math.Abs (point.X), Math.Abs (point.Y));
+<<<<<<< HEAD
 		}
 
 		/// <summary>
@@ -90,26 +101,17 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="x">Initial X value for the point</param>
 		/// <param name="y">Initial Y value for the point</param>
+=======
+		}
+
+>>>>>>> Merge with Eto main, in progress.
 		public PointF (float x, float y)
 		{
 			this.x = x;
 			this.y = y;
 		}
 
-        public static PointF UnitVectorAtAngle(double radians)
-        {
-            return new PointF(
-                (float)Math.Cos(radians),
-                (float)Math.Sin(radians));
-        }
-
-        public static PointF UnitVectorAtAngleD(double degrees)
-        {
-            return new PointF(
-                (float)MathUtil.CosD(degrees),
-                (float)MathUtil.SinD(degrees));
-        }
-
+<<<<<<< HEAD
 		/// <summary>
 		/// Initializes a new instance of a Point class with <see cref="X"/> and <see cref="Y"/> values corresponding to the <see cref="Size.Width"/> and <see cref="Size.Height"/> values 
 		/// of the specified <paramref name="size"/>, respecitively
@@ -126,6 +128,23 @@ namespace Eto.Drawing
 		/// </summary>
 		public float X
 		{
+=======
+        public static PointF UnitVectorAtAngle(double radians)
+        {
+            return new PointF(
+                (float)Math.Cos(radians),
+                (float)Math.Sin(radians));
+        }
+
+        public static PointF UnitVectorAtAngleD(double degrees)
+        {
+            return new PointF(
+                (float)MathUtil.CosD(degrees),
+                (float)MathUtil.SinD(degrees));
+        }
+
+		public float X {
+>>>>>>> Merge with Eto main, in progress.
 			get { return x; }
 			set { x = value; }
 		}
@@ -137,6 +156,67 @@ namespace Eto.Drawing
 		{
 			get { return y; }
 			set { y = value; }
+<<<<<<< HEAD
+		}
+
+		/// <summary>
+		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
+		/// </summary>
+		public bool IsZero
+		{
+			get { return x == 0 && y == 0; }
+		}
+
+		/// <summary>
+		/// Restricts the X and Y co-ordinates within the specified <paramref name="rectangle"/>
+		/// </summary>
+		/// <remarks>
+		/// This will update the X and Y co-ordinates to be within the specified <paramref name="rectangle"/>'s bounds.
+		/// The updated co-ordinates will be the closest to the original value as possible.
+		/// E.g. if the X co-ordinate is greater than the <see cref="Rectangle.Right"/> of the rectangle, it will be set
+		/// to be <see cref="Rectangle.Right"/> minus one, to be within the rectangle's bounds.
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to restrict the X and Y co-ordinates in</param>
+		public void Restrict (RectangleF rectangle)
+		{
+			if (x < rectangle.Left)
+				x = rectangle.Left;
+			if (x > rectangle.InnerRight)
+				x = rectangle.InnerRight;
+			if (y < rectangle.Top)
+				y = rectangle.Top;
+			if (y > rectangle.InnerBottom)
+				y = rectangle.InnerBottom;
+		}
+
+		/// <summary>
+		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
+		/// </summary>
+		/// <param name="x">Value to add to the X co-ordinate of this point</param>
+		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
+		public void Add (float x, float y)
+		{
+			this.x += x;
+			this.y += y;
+		}
+
+		/// <summary>
+		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
+		/// </summary>
+		/// <param name="point">Point with X and Y values to add to this point</param>
+		public void Add (PointF point)
+		{
+			this.Add (point.X, point.Y);
+		}
+
+		/// <summary>
+		/// Operator to return the difference between two points as a <see cref="Size"/>
+		/// </summary>
+		/// <param name="point1">Base point value</param>
+		/// <param name="point2">Point to subtract</param>
+		/// <returns>A new instance of a Size with the Width and Height equal to the difference of the X and Y co-ordinates, respectively</returns>
+		public static SizeF operator - (PointF point1, PointF point2)
+=======
 		}
 
         public double Magnitude
@@ -203,63 +283,8 @@ namespace Eto.Drawing
             return new PointF(-point1.x, -point1.y);
         }
 
-		/// <summary>
-		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
-		/// </summary>
-		public bool IsZero
-		{
-			get { return x == 0 && y == 0; }
-		}
-
-		/// <summary>
-		/// Restricts the X and Y co-ordinates within the specified <paramref name="rectangle"/>
-		/// </summary>
-		/// <remarks>
-		/// This will update the X and Y co-ordinates to be within the specified <paramref name="rectangle"/>'s bounds.
-		/// The updated co-ordinates will be the closest to the original value as possible.
-		/// E.g. if the X co-ordinate is greater than the <see cref="Rectangle.Right"/> of the rectangle, it will be set
-		/// to be <see cref="Rectangle.Right"/> minus one, to be within the rectangle's bounds.
-		/// </remarks>
-		/// <param name="rectangle">Rectangle to restrict the X and Y co-ordinates in</param>
-		public void Restrict (RectangleF rectangle)
-		{
-			if (x < rectangle.Left)
-				x = rectangle.Left;
-			if (x > rectangle.InnerRight)
-				x = rectangle.InnerRight;
-			if (y < rectangle.Top)
-				y = rectangle.Top;
-			if (y > rectangle.InnerBottom)
-				y = rectangle.InnerBottom;
-		}
-
-		/// <summary>
-		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
-		/// </summary>
-		/// <param name="x">Value to add to the X co-ordinate of this point</param>
-		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
-		public void Add (float x, float y)
-		{
-			this.x += x;
-			this.y += y;
-		}
-
-		/// <summary>
-		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
-		/// </summary>
-		/// <param name="point">Point with X and Y values to add to this point</param>
-		public void Add (PointF point)
-		{
-			this.Add (point.X, point.Y);
-		}
-
-		/// <summary>
-		/// Operator to return the difference between two points as a <see cref="Size"/>
-		/// </summary>
-		/// <param name="point1">Base point value</param>
-		/// <param name="point2">Point to subtract</param>
-		/// <returns>A new instance of a Size with the Width and Height equal to the difference of the X and Y co-ordinates, respectively</returns>
-		public static SizeF operator - (PointF point1, PointF point2)
+		public static PointF operator - (PointF point1, PointF point2)
+>>>>>>> Merge with Eto main, in progress.
 		{
 			return new SizeF (point1.x - point2.x, point1.y - point2.y);
 		}
@@ -295,6 +320,17 @@ namespace Eto.Drawing
 		public static PointF operator - (PointF point, Size size)
 		{
 			return new PointF (point.x - size.Width, point.y - size.Height);
+<<<<<<< HEAD
+		}
+
+		/// <summary>
+		/// Operator to add a <paramref name="value"/> to both the X and Y co-ordinates of a point
+		/// </summary>
+		/// <param name="point">Base point value</param>
+		/// <param name="value">Value to add to both the X and Y co-ordinates of the point</param>
+		/// <returns>A new instance of a point with the sum of the <paramref name="point"/>'s X and Y co-ordinates and the specified <paramref name="value"/></returns>
+		public static PointF operator + (PointF point, float value)
+=======
 		}
 
         public static PointF operator +(PointF point, SizeF size)
@@ -307,13 +343,8 @@ namespace Eto.Drawing
             return new PointF(point.x - size.Width, point.y - size.Height);
         }
 
-		/// <summary>
-		/// Operator to add a <paramref name="value"/> to both the X and Y co-ordinates of a point
-		/// </summary>
-		/// <param name="point">Base point value</param>
-		/// <param name="value">Value to add to both the X and Y co-ordinates of the point</param>
-		/// <returns>A new instance of a point with the sum of the <paramref name="point"/>'s X and Y co-ordinates and the specified <paramref name="value"/></returns>
-		public static PointF operator + (PointF point, float value)
+        public static PointF operator +(PointF point, float size)
+>>>>>>> Merge with Eto main, in progress.
 		{
 			return new PointF (point.x + value, point.y + value);
 		}
@@ -354,6 +385,7 @@ namespace Eto.Drawing
 		/// <returns>True if the two points are not equal, false if not</returns>
 		public static bool operator != (PointF point1, PointF point2)
 		{
+<<<<<<< HEAD
 			return point1.x != point2.x || point1.y != point2.y;
 		}
 
@@ -363,20 +395,18 @@ namespace Eto.Drawing
 		/// <param name="point">Base point value</param>
 		/// <param name="size">Size to multiply the X and Y co-ordinates with the Width and Height of the <paramref name="size"/>, respectively</param>
 		/// <returns>A new instance of a point with the product of the specified <paramref name="point"/> and <paramref name="size"/></returns>
+=======
+			return p1.x != p2.x || p1.y != p2.y;
+		}
+
+>>>>>>> Merge with Eto main, in progress.
 		public static PointF operator * (PointF point, SizeF size)
 		{
 			PointF result = point;
 			result.x *= size.Width;
 			result.y *= size.Height;
 			return result;
-		}
-
-        public static PointF operator *(PointF p1, PointF p2)
-        {
-            PointF result = p1;
-            result.x *= p2.X;
-            result.y *= p2.Y;
-            return result;
+<<<<<<< HEAD
 		}
 
 		/// <summary>
@@ -385,6 +415,18 @@ namespace Eto.Drawing
 		/// <param name="point">Base point value</param>
 		/// <param name="size">Size to divide the X and Y co-ordinates with the Width and Height of the <paramref name="size"/>, respectively</param>
 		/// <returns>A new instance of a point with the division of the specified <paramref name="point"/> and <paramref name="size"/></returns>
+=======
+		}
+
+        public static PointF operator *(PointF p1, PointF p2)
+        {
+            PointF result = p1;
+            result.x *= p2.X;
+            result.y *= p2.Y;
+            return result;
+        }
+
+>>>>>>> Merge with Eto main, in progress.
 		public static PointF operator / (PointF point, SizeF size)
 		{
 			PointF result = point;
@@ -401,9 +443,25 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a point with the product of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="value"/></returns>
 		public static PointF operator * (PointF point, float value)
 		{
-            var result = point;
+<<<<<<< HEAD
+			var result = point;
 			result.x *= value;
 			result.y *= value;
+			return result;
+		}
+
+		/// <summary>
+		/// Divides the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="value"/>
+		/// </summary>
+		/// <param name="point">Base point value</param>
+		/// <param name="value">Value to divide the X and Y co-ordinates with</param>
+		/// <returns>A new instance of a point with the division of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="value"/></returns>
+		public static PointF operator / (PointF point, float value)
+=======
+			var result = 
+                new PointF(
+                    point.X * size, 
+                    point.Y * size);
 			return result;
 		}
 
@@ -414,13 +472,8 @@ namespace Eto.Drawing
                 p.Y * value);
         }
 
-		/// <summary>
-		/// Divides the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="value"/>
-		/// </summary>
-		/// <param name="point">Base point value</param>
-		/// <param name="value">Value to divide the X and Y co-ordinates with</param>
-		/// <returns>A new instance of a point with the division of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="value"/></returns>
-		public static PointF operator / (PointF point, float value)
+		public static PointF operator / (PointF point, float size)
+>>>>>>> Merge with Eto main, in progress.
 		{
 			var result = point;
 			result.x /= value;
@@ -439,6 +492,24 @@ namespace Eto.Drawing
 		public static implicit operator PointF (Point point)
 		{
 			return new PointF (point.X, point.Y);
+<<<<<<< HEAD
+		}
+
+		/// <summary>
+		/// Returns a value indicating that the specified <paramref name="obj"/> is equal to this point
+		/// </summary>
+		/// <param name="obj">Object to compare</param>
+		/// <returns>True if the specified <paramref name="obj"/> is a Point and is equal to this instance, false otherwise</returns>
+		public override bool Equals (object obj)
+		{
+			return obj is PointF && (PointF)obj == this;
+		}
+
+		/// <summary>
+		/// Gets the hash code of this point
+		/// </summary>
+		/// <returns>Hash code for this point</returns>
+=======
 		}
 
 #if FALSE
@@ -524,20 +595,15 @@ namespace Eto.Drawing
             return new Point((int)X, (int)Y);
         }
 
-		/// <summary>
-		/// Returns a value indicating that the specified <paramref name="obj"/> is equal to this point
-		/// </summary>
-		/// <param name="obj">Object to compare</param>
-		/// <returns>True if the specified <paramref name="obj"/> is a Point and is equal to this instance, false otherwise</returns>
         public override bool Equals (object obj)
 		{
-			return obj is PointF && (PointF)obj == this;
+			if (!(obj is PointF))
+				return false;
+			PointF p = (PointF)obj;
+			return (x == p.x && y == p.y);
 		}
 
-		/// <summary>
-		/// Gets the hash code of this point
-		/// </summary>
-		/// <returns>Hash code for this point</returns>
+>>>>>>> Merge with Eto main, in progress.
 		public override int GetHashCode ()
 		{
 			return X.GetHashCode () ^ Y.GetHashCode ();

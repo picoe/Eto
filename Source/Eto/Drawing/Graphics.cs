@@ -243,12 +243,11 @@ namespace Eto.Drawing
 	{
 		IGraphics handler;
 
-		public Graphics (IGraphics handler) : base(Generator.Current, inner)
+		public Graphics (IGraphics handler) : base(Generator.Current, handler)
 		{
 			this.handler = handler;
 		}
 
-        public Graphics(Generator g, IGraphics inner)
 		/// <summary>
 		/// Initializes a new instance of the Graphics class with the specified platform <paramref name="handler"/>
 		/// </summary>
@@ -461,7 +460,7 @@ namespace Eto.Drawing
 
         public void DrawPath(Pen pen, GraphicsPath path)
         {
-            inner.DrawPath(pen, path);
+            handler.DrawPath(pen, path);
         }
 		
 		/// <summary>
@@ -493,7 +492,7 @@ namespace Eto.Drawing
 
         public void DrawImage(Image image, float x, float y, float width, float height)
         {
-            inner.DrawImage(image, x, y, width, height);
+            handler.DrawImage(image, x, y, width, height);
         }
 
 		/// <summary>
@@ -581,12 +580,12 @@ namespace Eto.Drawing
 
         public object CreateText(Font font, Color color, string text)
         {
-            return inner.CreateText(font, color, text);
+            return handler.CreateText(font, color, text);
         }
 
         public void DrawText(object o, float x, float y)
         {
-            inner.DrawText(o, x, y);
+            handler.DrawText(o, x, y);
         }
 
 		/// <summary>
@@ -612,9 +611,11 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
-		public ImageInterpolation ImageInterpolation {
-			get { return handler.ImageInterpolation; }
-			set { handler.ImageInterpolation = value; }
+        public ImageInterpolation ImageInterpolation
+        {
+            get { return handler.ImageInterpolation; }
+            set { handler.ImageInterpolation = value; }
+        }
 		
 		/// <summary>
 		/// Flushes the drawing (for some platforms)
@@ -634,12 +635,12 @@ namespace Eto.Drawing
 
         public void SetClip(RectangleF rect)
         {
-            inner.SetClip(rect);
+            handler.SetClip(rect);
         }
 
         public void TranslateTransform(float dx, float dy)
         {
-            inner.TranslateTransform(dx, dy);
+            handler.TranslateTransform(dx, dy);
         }
 
         public void CreateFromImage(Bitmap image)
@@ -650,17 +651,17 @@ namespace Eto.Drawing
 
         public void FillRectangle(Brush brush, RectangleF Rectangle)
         {
-            inner.FillRectangle(brush, Rectangle);
+            handler.FillRectangle(brush, Rectangle);
         }
 
         public void FillRectangle(Brush brush, float x, float y, float width, float height)
         {
-            inner.FillRectangle(brush, x, y, width, height);
+            handler.FillRectangle(brush, x, y, width, height);
         }
 
         public void FillPath(Brush brush, GraphicsPath path)
         {
-            inner.FillPath(brush, path);
+            handler.FillPath(brush, path);
         }
 
         public void DrawLines(Pen pen, PointF[] points)
@@ -686,49 +687,49 @@ namespace Eto.Drawing
 
         public double DpiX
         {
-            get { return inner.DpiX; }
+            get { return handler.DpiX; }
         }
 
         public double DpiY
         {
-            get { return inner.DpiY; }
+            get { return handler.DpiY; }
         }
 
         public RectangleF ClipBounds
         {
-            get { return inner.ClipBounds; }
+            get { return handler.ClipBounds; }
         }
 
         public Matrix Transform
         {
             get
             {
-                return inner.Transform;
+                return handler.Transform;
             }
             set
             {
-                inner.Transform = value;
+                handler.Transform = value;
             }
         }
 
         public void TranslateTransform(PointF p)
         {
-            inner.TranslateTransform(p.X, p.Y);
+            handler.TranslateTransform(p.X, p.Y);
         }
 
         public void RotateTransform(float angle)
         {
-            inner.RotateTransform(angle);
+            handler.RotateTransform(angle);
         }
 
         public void ScaleTransform(float sx, float sy)
         {
-            inner.ScaleTransform(sx, sy);
+            handler.ScaleTransform(sx, sy);
         }
 
         public void MultiplyTransform(Matrix matrix)
         {
-            inner.MultiplyTransform(matrix);
+            handler.MultiplyTransform(matrix);
         }
 
         public void Clear(Color color)
@@ -738,44 +739,44 @@ namespace Eto.Drawing
 
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
-            inner.DrawRectangle(pen, x, y, width, height);
+            handler.DrawRectangle(pen, x, y, width, height);
         }
 
         public void DrawLine(Pen pen, PointF pt1, PointF pt2)
         {
-            inner.DrawLine(pen, pt2, pt2);
+            handler.DrawLine(pen, pt2, pt2);
         }
 
         public void DrawImage(Image image, PointF pointF)
         {
-            inner.DrawImage(image, pointF);
+            handler.DrawImage(image, pointF);
         }
 
         public void DrawImage(Image image, RectangleF rect)
         {
-            inner.DrawImage(image, rect);
+            handler.DrawImage(image, rect);
         }
 
         #endregion
 
         public void DrawImage(Image image, RectangleF source, RectangleF destination)
         {
-            inner.DrawImage(image, source, destination);
+            handler.DrawImage(image, source, destination);
         }
 
         public void SetClip(Graphics graphics)
         {
-            inner.SetClip(graphics);
+            handler.SetClip(graphics);
         }
 
         public void SaveTransform()
         {
-            inner.SaveTransform();
+            handler.SaveTransform();
         }
 
         public void RestoreTransform()
         {
-            inner.RestoreTransform();
+            handler.RestoreTransform();
         }
     }
 }

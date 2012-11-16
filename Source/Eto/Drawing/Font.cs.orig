@@ -106,13 +106,17 @@ namespace Eto.Drawing
 		/// Bold font style
 		/// </summary>
 		Bold = 1 << 0,
+<<<<<<< HEAD
 
 		/// <summary>
 		/// Italic font style
+		/// </summary>
+		Italic = 1 << 1
+=======
 		Italic = 1 << 1,
         Underline = 1 << 2,
         Strikeout = 1 << 3,
-		/// </summary>
+>>>>>>> Merge with Eto main, in progress.
 	}
 	
 	/// <summary>
@@ -120,14 +124,14 @@ namespace Eto.Drawing
 	/// </summary>
 	public interface IFont : IInstanceWidget
 	{
-        void Create(string fontFamily, float sizeInPoints, FontStyle style);
+<<<<<<< HEAD
 		/// <summary>
 		/// Creates a new font object
 		/// </summary>
 		/// <param name="family">Type of font family</param>
 		/// <param name="size">Size of the font (in points)</param>
 		/// <param name="style">Style of the font</param>
-        void Create(FontFamily family, float size, FontStyle style);
+		void Create(FontFamily family, float size, FontStyle style);
 
 		/// <summary>
 		/// Creates a new font object with the specified <paramref name="systemFont"/> and optional size
@@ -139,11 +143,111 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a value indicating that this font has a bold style
 		/// </summary>
-        bool Bold { get; }
+		bool Bold { get; }
 
 		/// <summary>
 		/// Gets a value indicating that this font has an italic style
 		/// </summary>
+		bool Italic { get; }
+
+		/// <summary>
+		/// Gets the size of the font in points
+		/// </summary>
+		float Size { get; }
+	}
+	
+	/// <summary>
+	/// Defines a format for text
+	/// </summary>
+	public class Font : InstanceWidget
+	{
+		IFont inner;
+
+		/// <summary>
+		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
+		/// </summary>
+		/// <param name="family">Family of font to use</param>
+		/// <param name="size">Size of the font, in points</param>
+		/// <param name="style">Style of the font</param>
+		public Font(FontFamily family, float size, FontStyle style = FontStyle.Normal)
+			: this(Generator.Current, family, size, style)
+		{
+		}
+
+		/// <summary>
+		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
+		/// </summary>
+		/// <param name="generator">Generator to create the font for</param>
+		/// <param name="family">Family of font to use</param>
+		/// <param name="size">Size of the font, in points</param>
+		/// <param name="style">Style of the font</param>
+		public Font (Generator generator, FontFamily family, float size, FontStyle style = FontStyle.Normal)
+			: base(generator, typeof(IFont))
+		{
+			inner = (IFont)Handler;
+			inner.Create(family, size, style);
+		}
+
+		/// <summary>
+		/// Creates a new instance of the Font class with a specified <paramref name="systemFont"/> and optional custom <paramref name="size"/>
+		/// </summary>
+		/// <remarks>
+		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
+		/// given the <see cref="SystemFont"/> enumeration.
+		/// </remarks>
+		/// <param name="systemFont">Type of system font to create</param>
+		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
+		public Font(SystemFont systemFont, float? size = null)
+			: this(Generator.Current, systemFont, size)
+		{
+		}
+
+		/// <summary>
+		/// Creates a new instance of the Font class with a specified <paramref name="systemFont"/> and optional custom <paramref name="size"/>
+		/// </summary>
+		/// <remarks>
+		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
+		/// given the <see cref="SystemFont"/> enumeration.
+		/// </remarks>
+		/// <param name="generator">Generator to create the font for</param>
+		/// <param name="systemFont">Type of system font to create</param>
+		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
+		public Font (Generator generator, SystemFont systemFont, float? size = null)
+			: base(generator, typeof(IFont))
+		{
+			inner = (IFont)Handler;
+			inner.Create(systemFont, size);
+		}
+		
+		/// <summary>
+		/// Gets the size, in points, of this font
+		/// </summary>
+		public float Size
+		{
+			get { return inner.Size; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating that this font has a bold style
+		/// </summary>
+		public bool Bold
+		{
+			get { return inner.Bold; }
+		}
+
+		/// <summary>
+		/// Gets a value indicating that this font has an italic style
+		/// </summary>
+		public bool Italic
+		{
+			get { return inner.Italic; }
+		}
+	}
+=======
+        void Create(string fontFamily, float sizeInPoints, FontStyle style);
+        void Create(FontFamily family, float size, FontStyle style);
+		void Create(SystemFont systemFont, float? size);
+        bool Bold { get; }
         bool Italic { get; }
         bool Underline { get; }
         bool Strikeout { get; }
@@ -161,47 +265,26 @@ namespace Eto.Drawing
         void Create();
     }
 
-	/// <summary>
-	/// Defines a format for text
-	/// </summary>
     public class Font : InstanceWidget, ICloneable
     {
         IFont inner;
 
-		/// <summary>
-		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
-		/// </summary>
-		/// <param name="family">Family of font to use</param>
-		/// <param name="size">Size of the font, in points</param>
-		/// <param name="style">Style of the font</param>
         public string FontFamily 
         { 
             get { return inner.FontFamily; }            
         }
 
         public Font(
-            string fontFamily,
-            float sizeInPoints,
-            FontStyle style = FontStyle.Normal,
+            string fontFamily, 
+            float sizeInPoints, 
+            FontStyle style = FontStyle.Normal, 
             Generator g = null)
             : base(g ?? Generator.Current, typeof(IFont))
         {
             inner = (IFont)Handler;
             inner.Create(fontFamily, sizeInPoints, style);
-        }
-
-		/// <summary>
-		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
-		/// </summary>
-		/// <param name="generator">Generator to create the font for</param>
-		/// <param name="family">Family of font to use</param>
-		/// <param name="size">Size of the font, in points</param>
-		/// <param name="style">Style of the font</param>
-		public Font (Generator generator, FontFamily family, float size, FontStyle style = FontStyle.Normal)
-			: base(generator, typeof(IFont))
-        {
-            inner = (IFont)Handler;
-            inner.Create(family, size, style);
+            if (ControlObject == null)
+                throw new InvalidOperationException();
         }
 
         public Font(
@@ -210,35 +293,31 @@ namespace Eto.Drawing
             FontStyle style = FontStyle.Normal, 
             Generator g = null)
             : base(g ?? Generator.Current, typeof(IFont))
-		/// </remarks>
-		/// <param name="systemFont">Type of system font to create</param>
-		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
         {
             inner = (IFont)Handler;
             inner.Create(family, size, style);
+            if (ControlObject == null)
+                throw new InvalidOperationException();
         }
 
-		/// <summary>
-		/// Creates a new instance of the Font class with a specified <paramref name="systemFont"/> and optional custom <paramref name="size"/>
-		/// </summary>
-		/// <remarks>
-		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
-		/// given the <see cref="SystemFont"/> enumeration.
-		/// </remarks>
-		/// <param name="generator">Generator to create the font for</param>
-		/// <param name="systemFont">Type of system font to create</param>
-		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
-		public Font (Generator generator, SystemFont systemFont, float? size = null)
-			: base(generator, typeof(IFont))
+        public Font(
+            SystemFont systemFont, 
+            float? size = null, 
+            Generator g = null)
+            : base(g ?? Generator.Current, typeof(IFont))
         {
             inner = (IFont)Handler;
             inner.Create(systemFont, size);
+            if (ControlObject == null)
+                throw new InvalidOperationException();
         }
 
         public Font(IFont inner) :
             base(Generator.Current, inner)
         {
             this.inner = inner;
+            if (ControlObject == null)
+                throw new InvalidOperationException();
         }
 
         public Font() :
@@ -246,6 +325,8 @@ namespace Eto.Drawing
         {
             inner = (IFont)Handler;
             inner.Create();
+            if (ControlObject == null)
+                throw new InvalidOperationException();
         }
 
         public Font(string fontFamily, float sizeInPoints) :
@@ -253,6 +334,9 @@ namespace Eto.Drawing
         {
             this.inner = (IFont)Handler;
             inner.Create(fontFamily, sizeInPoints);
+
+            if (ControlObject == null)
+                throw new InvalidOperationException();
         }
         
         public float ExHeightInPixels
@@ -275,9 +359,6 @@ namespace Eto.Drawing
             get { return inner.HeightInPixels; }
         }
 
-        /// <summary>
-        /// Gets the size, in points, of this font
-        /// </summary>
         public float SizeInPoints
         {
             get { return inner.SizeInPoints; }
@@ -288,33 +369,21 @@ namespace Eto.Drawing
             get { return inner.SizeInPixels; }            
         }
 
-		/// <summary>
-		/// Gets a value indicating that this font has a bold style
-		/// </summary>
         public bool Bold
         {
             get { return inner.Bold; }            
         }
 
-		/// <summary>
-		/// Gets a value indicating that this font has an italic style
-		/// </summary>
         public bool Italic
         {
             get { return inner.Italic; }
         }
 
-        /// <summary>
-        /// Gets a value indicating that this font has an underline style
-        /// </summary>
         public bool Underline
         {
             get { return inner.Underline; }
         }
 
-        /// <summary>
-        /// Gets a value indicating that this font has a strikeout style
-        /// </summary>
         public bool Strikeout
         {
             get { return inner.Strikeout; }
@@ -339,7 +408,7 @@ namespace Eto.Drawing
         public Font Clone()
         {
             var result =
-                new Font(                    
+                new Font(
                     this.FontFamily, this.SizeInPoints, this.FontStyle);
 
             return result;
@@ -624,4 +693,5 @@ namespace Eto.Drawing
             return result;
         }
     }
+>>>>>>> Merge with Eto main, in progress.
 }

@@ -767,5 +767,28 @@ namespace Eto.Drawing
 		{
 			return other == this;
 		}
+
+        public bool IntersectsWith(RectangleF rect)
+        {
+            return
+                (rect.X < (X + Width) &&
+                (rect.X + rect.Width) >= X &&
+                rect.Y < (Y + Height) &&
+                (rect.Y + rect.Height) >= Y);
+        }
+
+        public static RectangleF FromLTRB(float left, float top, float right, float bottom)
+        {
+            return new RectangleF(left, top, right - left, bottom - top);
+        }
+
+        public bool Contains(RectangleF r)
+        {
+            return
+                this.Left <= r.Left &&
+                this.Top <= r.Top &&
+                this.Right >= r.Right &&
+                this.Bottom >= r.Bottom;
+        }
 	}
 }

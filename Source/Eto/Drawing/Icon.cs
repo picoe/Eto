@@ -77,22 +77,23 @@ namespace Eto.Drawing
 		{
 			if (assembly == null)
 				assembly = Assembly.GetCallingAssembly ();
-			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
-				if (stream == null)
-					throw new ResourceNotFoundException (assembly, resourceName);
+            using (var stream = assembly.GetManifestResourceStream(resourceName))
+            {
+                if (stream == null)
+                    throw new ResourceNotFoundException(assembly, resourceName);
 
-            // If the string is of the format
-            // embedded resources file name, 
-            // embedded resource name,
-            // call Icon.FromEmbeddedResource.
-            // Otherwise call Icon.FromResource
-            var s = resourceName.Split(',');
+                // If the string is of the format
+                // embedded resources file name, 
+                // embedded resource name,
+                // call Icon.FromEmbeddedResource.
+                // Otherwise call Icon.FromResource
+                var s = resourceName.Split(',');
 
-            if (s.Length == 2)
-                return FromEmbeddedResource(asm, s[0], s[1]);
+                if (s.Length == 2)
+                    return FromEmbeddedResource(assembly, s[0], s[1]);
 
-				return new Icon (stream);
-			}
+                return new Icon(stream);
+            }
 		}
 
         public static Icon FromEmbeddedResource(

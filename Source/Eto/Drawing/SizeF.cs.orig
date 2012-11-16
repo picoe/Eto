@@ -122,6 +122,16 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool IsEmpty {
 			get { return Width == 0 || Height == 0; }
+<<<<<<< HEAD
+		}
+
+		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of two sizes
+		/// </summary>
+		/// <param name="size1">First size to multiply</param>
+		/// <param name="size2">Second size to multiply</param>
+		/// <returns>A new instance of a SizeF struct with the product of both sizes</returns>
+=======
 		}
 
         public static SizeF operator -(SizeF size)
@@ -130,12 +140,7 @@ namespace Eto.Drawing
                 new SizeF(-size.Width, -size.Height);
         }
 		
-		/// <summary>
-		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of two sizes
-		/// </summary>
-		/// <param name="size1">First size to multiply</param>
-		/// <param name="size2">Second size to multiply</param>
-		/// <returns>A new instance of a SizeF struct with the product of both sizes</returns>
+>>>>>>> Merge with Eto main, in progress.
 		public static SizeF operator * (SizeF size1, SizeF size2)
 		{
 			SizeF result = size1;
@@ -198,6 +203,7 @@ namespace Eto.Drawing
 			result.Width = size1.Width + size2.Width;
 			result.Height = size1.Height + size2.Height;
 			return result;
+<<<<<<< HEAD
 		}
 
 		/// <summary>
@@ -221,6 +227,19 @@ namespace Eto.Drawing
 		/// <param name="value">Value to subtract from the width and height</param>
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size"/> minus <paramref name="value"/></returns>
 		public static SizeF operator - (SizeF size1, float value)
+=======
+		}
+
+        public static SizeF operator -(SizeF size1, SizeF size2)
+        {
+            SizeF result = size1;
+            result.Width = size1.Width - size2.Width;
+            result.Height = size1.Height - size2.Height;
+            return result;
+        }
+
+		public static SizeF operator - (SizeF size1, float amount)
+>>>>>>> Merge with Eto main, in progress.
 		{
 			return new SizeF (size1.Width - value, size1.Height - value);
 		}
