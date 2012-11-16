@@ -189,5 +189,46 @@ namespace Eto.Platform.GtkSharp.Drawing
 			return pixbuf;
 		}
 		#endregion
-	}
+
+        #region IBitmap Members
+
+
+        public void Create(int width, int height, Graphics graphics)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Create(Size size, PixelFormat pixelFormat)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IBitmap Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Create(int width, int height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Create(Image image)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+
+        public byte[] ToPNGByteArray()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

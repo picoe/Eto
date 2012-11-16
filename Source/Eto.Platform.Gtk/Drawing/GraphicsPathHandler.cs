@@ -20,7 +20,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		class Lines : Command
 		{
-			public Point[] Points { get; set; }
+			public PointF[] Points { get; set; }
 
 			public override void Apply (GraphicsHandler handler, bool first)
 			{
@@ -53,12 +53,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 		
 		#region IGraphicsPath implementation
-		
-		public void AddLines (IEnumerable<Point> points)
-		{
-			commands.Add (new Lines{ Points = points.ToArray () });
-		}
-		
+
+        public void AddLines(PointF[] points)
+        {
+            commands.Add(new Lines { Points = points });
+        }
+
 		public void MoveTo (Point point)
 		{
 			Add ((handler, first) => {
@@ -97,6 +97,105 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-	}
+
+        #region IGraphicsPath Members
+
+
+        public RectangleF GetBounds()
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IGraphicsPath Members
+
+
+        public void Translate(PointF point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IGraphicsPath Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddRectangle(RectangleF rectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CloseFigure()
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool IsEmpty
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void AddCurve(PointF[] points)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddLine(PointF point1, PointF point2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddPath(IGraphicsPathBase addingPath, bool connect)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        #region IGraphicsPath Members
+
+        public FillMode FillMode
+        {
+            set { throw new NotImplementedException(); }
+        }
+
+        public void Transform(Matrix matrix)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddBeziers(Point[] points)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddEllipse(RectangleF rect)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+        public void AddEllipse(float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public GraphicsPath ToGraphicsPath()
+        {
+            throw new NotImplementedException(); // should never get called
+        }
+    }
 }
 

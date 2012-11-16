@@ -388,15 +388,15 @@ namespace Eto.Platform.GtkSharp
 				KeyPressEventArgs kpea;
 				Key modifiers = (key & Key.ModifierMask);
 				if (args.Event.KeyValue <= 128 && ((modifiers & ~Key.Shift) == 0))
-					kpea = new KeyPressEventArgs (key, (char)args.Event.KeyValue);
+                    kpea = new KeyPressEventArgs(key, KeyType.KeyDown, (char)args.Event.KeyValue);
 				else
-					kpea = new KeyPressEventArgs (key);
+					kpea = new KeyPressEventArgs (key, KeyType.KeyDown);
 				Widget.OnKeyDown (kpea);
 				if (kpea.Handled)
 					args.RetVal = true;
 			} else if (args.Event.KeyValue <= 128) {
 				KeyPressEventArgs kpea;
-				kpea = new KeyPressEventArgs (key, (char)args.Event.KeyValue);
+                kpea = new KeyPressEventArgs(key, KeyType.KeyDown, (char)args.Event.KeyValue);
 				Widget.OnKeyDown (kpea);
 				if (kpea.Handled)
 					args.RetVal = true;
@@ -438,9 +438,48 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.TooltipText; }
 			set { Control.TooltipText = value; }
 		}
-		
+
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-	}
+        public Point ScreenToWorld(Point p)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Point WorldToScreen(Point p)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool Capture
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Point MousePosition
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+
+        public void SetControl(object control)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

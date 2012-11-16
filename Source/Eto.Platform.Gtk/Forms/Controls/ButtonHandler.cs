@@ -49,6 +49,22 @@ namespace Eto.Platform.GtkSharp
 				label.TextWithMnemonic = StringToMnuemonic(value);
 			}
 		}
-		
-	}
+
+
+        #region IButton Members
+
+        public Eto.Drawing.IImage Image
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        #endregion
+    }
 }

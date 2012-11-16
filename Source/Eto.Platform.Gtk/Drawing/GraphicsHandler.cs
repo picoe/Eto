@@ -121,7 +121,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 
-		public void FillRectangle (Color color, int x, int y, int width, int height)
+		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Color = Generator.ConvertC (color);
@@ -187,7 +187,27 @@ namespace Eto.Platform.GtkSharp.Drawing
 			((IImageHandler)image.Handler).DrawImage (this, source, destination);
 		}
 
-		public void DrawIcon (Icon icon, int x, int y, int width, int height)
+        public void DrawImage(Image image, PointF pointF)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawImage(Image image, RectangleF rect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawImage(Image image, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawImage(Image image, RectangleF source, RectangleF destination)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawIcon(Icon icon, int x, int y, int width, int height)
 		{
 			var iconHandler = ((IconHandler)icon.Handler);
 			var pixbuf = iconHandler.Pixbuf;
@@ -201,14 +221,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 		
-		public Region ClipRegion {
-			get { return null; }
-			set {
-				
-			}
-		}
-
-		public void DrawText (Font font, Color color, int x, int y, string text)
+		public void DrawText (Font font, Color color, float x, float y, string text)
 		{
 			if (widget != null) {
 				using (var layout = new Pango.Layout (widget.PangoContext)) {
@@ -246,5 +259,118 @@ namespace Eto.Platform.GtkSharp.Drawing
 			
 			base.Dispose (disposing);
 		}
-	}
+
+        #region IGraphics Members
+
+        public void SetClip(RectangleF rect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TranslateTransform(float dx, float dy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillRectangle(Brush brush, RectangleF Rectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillRectangle(Brush brush, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillPath(Brush brush, GraphicsPath path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double DpiX
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public double DpiY
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public RectangleF ClipBounds
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public Matrix Transform
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void RotateTransform(float angle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ScaleTransform(float sx, float sy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MultiplyTransform(Matrix matrix)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawPath(Pen pen, GraphicsPath path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetClip(Graphics graphics)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+
+        public void SaveTransform()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RestoreTransform()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public object CreateText(Font font, Color color, string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawText(object o, float x, float y)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

@@ -17,8 +17,9 @@ namespace Eto.Platform.GtkSharp
 	{
 		bool enabled = true;
 		
-		protected Gtk.Image Image { get; set; }
+		protected Gtk.Image GtkImage { get; set; }
 		Icon icon;
+        Image image;
 
 		public abstract void CreateControl(ToolBarHandler handler);
 		
@@ -35,11 +36,27 @@ namespace Eto.Platform.GtkSharp
 				
 				if (icon != null)
 				{
-					Image = new Gtk.Image((Gtk.IconSet)icon.ControlObject, Gtk.IconSize.Button);
+					GtkImage = new Gtk.Image((Gtk.IconSet)icon.ControlObject, Gtk.IconSize.Button);
 				}
-				else Image = null;
+				else GtkImage = null;
 			}
 		}
+
+        // ADDED
+        public Image Image
+        {
+            get { return image; }
+            set
+            {
+                this.image = value;
+
+                if (image != null)
+                {
+                    GtkImage = (Gtk.Image)(image.ControlObject);
+                }
+                else GtkImage = null;
+            }
+        }
 		
 
 		public bool Enabled 

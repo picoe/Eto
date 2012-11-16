@@ -48,5 +48,20 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public abstract void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination);
 
-	}
+
+        #region IImage Members
+
+
+        public int Width
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public int Height
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        #endregion
+    }
 }

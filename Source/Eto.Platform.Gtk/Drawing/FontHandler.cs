@@ -64,28 +64,92 @@ namespace Eto.Platform.GtkSharp.Drawing
 			string fontFamily = string.Empty;
 			switch (family)
 			{
-				case FontFamily.Monospace: fontFamily = "monospace"; break;
-				default: case FontFamily.Sans: fontFamily = "sans"; break;
-				case FontFamily.Serif: fontFamily = "serif"; break;
+				case Eto.Drawing.FontFamily.Monospace: fontFamily = "monospace"; break;
+				default: case Eto.Drawing.FontFamily.Sans: fontFamily = "sans"; break;
+                case Eto.Drawing.FontFamily.Serif: fontFamily = "serif"; break;
 			}
 			Control.Family = fontFamily;
-		}
-
-		public float Size
-		{
-			get { return (float)(Control.Size / Pango.Scale.PangoScale); }
 		}
 
 		public bool Bold
 		{
 			get { return Control.Weight == Pango.Weight.Bold; }
-		}
+        }
 
 		public bool Italic
 		{
 			get { return Control.Style == Pango.Style.Italic; }
-		}
+        }
+
+        public bool Underline
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool Strikeout
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float SizeInPoints
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public string FontFamily
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float EmHeightPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float AscentInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float DescentInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float HeightInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float SizeInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public IFont Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Create(string fontFamily, float sizeInPoints, FontStyle style)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float ExHeightInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Create(string fontFamily, float size)
+        {
+            throw new NotImplementedException();
+        }
 
 
-	}
+        public void Create()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

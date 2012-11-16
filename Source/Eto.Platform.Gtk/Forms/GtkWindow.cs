@@ -340,5 +340,17 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.Opacity; }
 			set { Control.Opacity = value; }
 		}
-	}
+
+
+        public void RemoveBorder()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void BringToFront()
+        {
+            // TODO
+        }
+    }
 }

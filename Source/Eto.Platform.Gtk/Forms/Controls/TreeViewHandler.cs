@@ -217,6 +217,24 @@ namespace Eto.Platform.GtkSharp.Forms
             }
 		}
 
+
+        public ITreeItem GetNodeAt(Point point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool LabelEdit
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
 		public GLib.Value GetColumnValue (ITreeItem item, int column, int row)
 		{
 			switch (column) {
@@ -242,6 +260,10 @@ namespace Eto.Platform.GtkSharp.Forms
 			if (collection == null) return -1;
 			return collection.IndexOf (item);
 		}
+        public bool IsExpanded(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
 
 		public void RefreshData ()
 		{
@@ -258,6 +280,43 @@ namespace Eto.Platform.GtkSharp.Forms
 				tree.Model.EmitRowChanged (path, iter);
 			}
 		}
-	}
+        public void Collapse(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddTo(ITreeItem dest, ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AllowDrop
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void Expand(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void SetImage(TreeItem item, Image image)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }
 
