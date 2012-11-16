@@ -44,5 +44,20 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			return Control;
 		}
-	}
+
+        #region IImage Members
+
+
+        public int Width
+        {
+            get { return 0;/* TODO */ }
+        }
+
+        public int Height
+        {
+            get { return 0;/* TODO */ }
+        }
+
+        #endregion
+    }
 }

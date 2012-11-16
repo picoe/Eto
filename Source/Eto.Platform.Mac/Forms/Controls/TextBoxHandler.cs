@@ -120,5 +120,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
 		}
-	}
+
+        public void SelectAll()
+        {
+            Control.SelectText(null);
+        }
+    }
 }

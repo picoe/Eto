@@ -455,6 +455,52 @@ namespace Eto.Platform.Mac.Forms
 		}
 		
 		#endregion
+
+
+        public Point ScreenToWorld(Point p)
+        {
+            return p; /* TODO */
+        }
+
+        public Point WorldToScreen(Point p)
+        {
+            return p; /* TODO */
+        }
+
+
+        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
+        {
+            return DragDropEffects.None; /* TODO */
+        }
+
+
+        public bool Capture
+        {
+            get
+            {
+                return false; /* TODO */
+            }
+            set
+            {
+                /* TODO */
+            }
+        }
+
+        public Point MousePosition
+        {
+            get { return Point.Empty; /* TODO */ }
+        }
+
+        public Point Location
+        {
+            get { return Point.Empty; /* TODO */ }
+        }
+
+
+        public void SetControl(object control)
+        {
+            /* TODO */
+        }
 		
 		static void TriggerSystemAction (IntPtr sender, IntPtr sel, IntPtr e)
 		{
@@ -542,6 +588,6 @@ namespace Eto.Platform.Mac.Forms
 				}
 			}
 		}
-	}
+    }
 }
 

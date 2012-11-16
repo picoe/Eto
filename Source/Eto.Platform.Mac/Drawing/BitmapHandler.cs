@@ -58,6 +58,16 @@ namespace Eto.Platform.Mac.Drawing
 			Control = image;
 		}
 
+        public override int Width
+        {
+            get { return 0; /* TODO */ }
+        }
+
+        public override int Height
+        {
+            get { return 0; /* TODO */ }
+        }
+
 		public void Create (string fileName)
 		{
 			if (!File.Exists (fileName))
@@ -141,6 +151,19 @@ namespace Eto.Platform.Mac.Drawing
 				throw new ArgumentOutOfRangeException ("pixelFormat", pixelFormat, "Not supported");
 			}
 		}
+
+        public void Create(int width, int height, Graphics graphics)
+        {
+            // TODO: eliminate if possible
+        }
+
+        public void Create(Size size, PixelFormat pixelFormat)
+        {
+            Create(
+                size.Width,
+                size.Height,
+                pixelFormat);
+        }
 
 		public void Resize (int width, int height)
 		{
@@ -249,5 +272,35 @@ namespace Eto.Platform.Mac.Drawing
 				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
-	}
+
+        #region IBitmap Members
+
+        public IBitmap Clone()
+        {
+            return null;/* TODO */
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            return default(Color);/* TODO */
+        }
+
+        public void Create(int width, int height)
+        {
+            /* TODO */
+        }
+
+        public void Create(Image image)
+        {
+            /* TODO */
+        }
+
+        #endregion
+
+
+        public byte[] ToPNGByteArray()
+        {
+            return null;/* TODO */
+        }
+    }
 }

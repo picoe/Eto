@@ -36,8 +36,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public EtoTreeItem (EtoTreeItem value)
 				: base (value)
 			{
-				this.Item = value.Item;
-				this.items = value.items;
+                if (value != null)
+                {
+                    this.Item = value.Item;
+                    this.items = value.items;
+                }
 			}
 
 			public ITreeItem Item {
@@ -61,8 +64,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override object Clone ()
 			{
 				return new EtoTreeItem (this);
-			}
-			
+			}			
 		}
 		
 		public class EtoOutlineDelegate : NSOutlineViewDelegate
@@ -150,19 +152,47 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Handler.cachedItems[item.Item] = item;
 					items[childIndex] = item;
 				}
+
+                if(false)
+                Console.WriteLine(
+                    "GetChild: childIndex {0} ofItem {1} returned {2}",
+                    childIndex,
+                    ofItem != null
+                    ? ofItem.ToString()
+                    : "<null>",
+                    item != null
+                    ? item.Text
+                    : "<null>");
+
 				return item;
 			}
 			
 			public override int GetChildrenCount (NSOutlineView outlineView, NSObject item)
 			{
-				if (Handler.top == null)
-					return 0;
-				
-				if (item == null)
-					return Handler.top.Count;
-				
-				var myitem = item as EtoTreeItem;
-				return myitem.Item.Count;
+                var result = 0;
+
+                if (item == null &&
+                    Handler.top != null)
+                {
+                    result = Handler.top.Count;
+                }
+                else
+                {
+                    var myitem = 
+                        item as EtoTreeItem;
+
+                    if (myitem != null &&
+                        myitem.Item != null)
+                        result =
+                            myitem.Item.Count;
+                }
+
+                if(false)
+                Console.WriteLine(
+                    "TreeViewHandler.GetChildrenCount:{0}",
+                    result);
+
+                return result;
 			}
 		}
 		
@@ -205,15 +235,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 		}
 		
-		public override void AttachEvent (string handler)
-		{
-			switch (handler) {
-			case TreeView.ExpandedEvent:
-			case TreeView.ExpandingEvent:
-			case TreeView.CollapsedEvent:
-			case TreeView.CollapsingEvent:
-				// handled in delegate
-				break;
+        public override void AttachEvent(string handler)
+        {
+            switch (handler)
+            {
+                case TreeView.ExpandedEvent:
+                case TreeView.ExpandingEvent:
+                case TreeView.CollapsedEvent:
+                case TreeView.CollapsingEvent:
+                    // handled in delegate
+                    break;
 			case TreeView.ActivatedEvent:
 				this.Widget.KeyDown += (sender, e) => {
 					if (e.KeyData == Key.Enter) {
@@ -224,11 +255,44 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Widget.OnActivated (new TreeViewItemEventArgs(this.SelectedItem));
 				};
 				break;
-			default:
-				base.AttachEvent (handler);
-				break;
-			}
-		}
+                case TreeView.AfterLabelEditEvent:
+                    /* TODO */
+                //    Control.AfterLabelEdit += (s, e) =>
+                //    {
+                //        this.Widget.OnAfterLabelEdit(
+                //            Generator.Convert(e));
+                //    };
+                    break;
+                case TreeView.BeforeLabelEditEvent:
+                    /* TODO */
+                //    Control.BeforeLabelEdit += (s, e) =>
+                //    {
+                //        this.Widget.OnBeforeLabelEdit(
+                //            Generator.Convert(e));
+                //    };
+                    break;
+                case TreeView.NodeMouseClickEvent:
+                    /* TODO */
+                //    Control.NodeMouseClick += (s, e) =>
+                //    {
+                //        this.Widget.OnNodeMouseClick(
+                //            Generator.Convert(e));
+                //    };
+                    break;
+                case TreeView.ItemDragEvent:
+                    /* TODO */
+                //    Control.ItemDrag += (s, e) =>
+                //    {
+                //        this.Widget.OnItemDrag(
+                //            Generator.Convert(e));
+                //    };
+                    break;
+
+                default:
+                    base.AttachEvent(handler);
+                    break;
+            }
+        }
 
 		public ITreeStore DataStore {
 			get { return top; }
@@ -418,6 +482,67 @@ namespace Eto.Platform.Mac.Forms.Controls
 					topitems.Remove (row);
 			}
 		}
-	}
+
+
+        public ITreeItem GetNodeAt(Eto.Drawing.Point point)
+        {
+            return null; /* TODO */
+        }
+
+        public bool LabelEdit
+        {
+            get
+            {
+                return false; /* TODO */
+            }
+            set
+            {
+                /* TODO */
+            }
+        }
+
+        public bool IsExpanded(ITreeItem item)
+        {
+            return false; /* TODO */
+        }
+
+        public void Collapse(ITreeItem item)
+        {
+            /* TODO */
+        }
+
+        public void AddTo(ITreeItem dest, ITreeItem item)
+        {
+            /* TODO */
+        }
+
+        public bool AllowDrop
+        {
+            get
+            {
+                return false; /* TODO */
+            }
+            set
+            {
+                /* TODO */
+            }
+        }
+
+        public void Expand(ITreeItem item)
+        {
+            /* TODO */
+        }
+
+        public void Remove(ITreeItem item)
+        {
+            /* TODO */
+        }
+
+
+        public void SetImage(TreeItem item, Eto.Drawing.Image image)
+        {
+            /* TODO */
+        }
+    }
 }
 

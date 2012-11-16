@@ -41,6 +41,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
+    <Compile Include="Drawing\MatrixHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Forms\Controls\MacTextControl.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />

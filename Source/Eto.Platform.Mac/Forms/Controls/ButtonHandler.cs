@@ -85,6 +85,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Control.SetNeedsDisplay ();
 			}
 		}
-		
-	}
+
+
+        #region IButton Members
+
+        public IImage Image
+        {
+            get
+            {
+                return null;/* TODO */
+            }
+            set
+            {
+                /* TODO */
+            }
+        }
+
+        #endregion
+    }
 }

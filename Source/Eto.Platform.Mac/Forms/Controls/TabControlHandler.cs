@@ -26,7 +26,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		#region ITabControl Members
 
 		public int SelectedIndex {
-			get { return Control.IndexOf (Control.Selected); }
+            get
+            {
+                return Control.Selected != null
+                    ? Control.IndexOf(Control.Selected)
+                    : -1;
+            }
 			set { Control.SelectAt (value); }
 		}
 		

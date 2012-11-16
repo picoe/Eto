@@ -141,7 +141,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Eto.Drawing.Graphics CreateGraphics ()
 		{
-			throw new NotImplementedException ();
+            return null;/* TODO */
 		}
 
 		public void SuspendLayout ()
@@ -182,19 +182,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Eto.Drawing.Size Size {
 			get {
-				throw new NotImplementedException ();
+                return Size.Empty; /* TODO */
 			}
 			set {
-				throw new NotImplementedException ();
+				/* TODO */
 			}
 		}
 
 		public Eto.Drawing.Size ClientSize {
 			get {
-				throw new NotImplementedException ();
+                return Size.Empty; /* TODO */
 			}
 			set {
-				throw new NotImplementedException ();
+				/* TODO */
 			}
 		}
 
@@ -203,7 +203,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return false;
 			}
 			set {
-				throw new NotImplementedException ();
+				/* TODO */
 			}
 		}
 
@@ -215,10 +215,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public bool Visible {
 			get {
-				throw new NotImplementedException ();
+                return false;/* TODO */
 			}
 			set {
-				throw new NotImplementedException ();
+				/* TODO */
 			}
 		}
 		#endregion
@@ -259,5 +259,49 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-	}
+
+        public Point ScreenToWorld(Point p)
+        {
+            return p; /* TODO */
+        }
+
+        public Point WorldToScreen(Point p)
+        {
+            return p; /* TODO */
+        }
+
+
+        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
+        {
+            return DragDropEffects.None; /* TODO */
+        }
+
+
+        public bool Capture
+        {
+            get
+            {
+                return false; /* TODO */
+            }
+            set
+            {
+                /* TODO */
+            }
+        }
+
+        public Point MousePosition
+        {
+            get { return Point.Empty; /* TODO */ }
+        }
+
+        public Point Location
+        {
+            get { return Point.Empty; /* TODO */ }
+        }
+
+        public void SetControl(object control)
+        {
+            /* TODO */
+        }
+    }
 }

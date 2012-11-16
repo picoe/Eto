@@ -47,7 +47,8 @@ namespace Eto.Platform.Mac
 		where W: ToolBarItem
 	{
 		Icon icon;
-
+        Image image;
+		bool enabled = true;
 		public virtual string Identifier { get; set; }
 		
 		public ToolBarItemHandler()
@@ -66,6 +67,9 @@ namespace Eto.Platform.Mac
 			Control.Target = new ToolBarItemHandlerTarget{ Handler = this };
 			Control.Action = new Selector("action");
 			Control.Autovalidates = false;
+			Control.Enabled = enabled;
+			Control.ToolTip = this.ToolTip ?? string.Empty;
+	
 			if (icon != null) Control.Image = (NSImage)icon.ControlObject;
 			Control.Label = this.Text;
 		}
@@ -101,13 +105,22 @@ namespace Eto.Platform.Mac
 					Control.Image = new NSImage(new sd.SizeF (1, 1));
 			}
 		}
+
+        public Image Image
+        {
+            get { return image; }
+            set
+            {
+                this.image = value;
+            }
+        }
 		
 		public virtual bool Enabled
 		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
+			get { return (Control != null) ? Control.Enabled : enabled; }
+			set { if (Control != null) Control.Enabled = value; enabled = value; }
 		}
-
+	
 		public virtual bool Selectable { get; set; }
 		
 		public void OnClick()

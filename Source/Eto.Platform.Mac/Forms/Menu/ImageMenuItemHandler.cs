@@ -12,6 +12,7 @@ namespace Eto.Platform.Mac
 	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem, IMenuActionHandler
 	{
 		Icon icon;
+        Image image;
 		
 		public static bool UseImages = false;
 
@@ -89,6 +90,16 @@ namespace Eto.Platform.Mac
 				}
 			}
 		}
+
+        public Image Image
+        {
+            get { return image; }
+            set
+            {
+                image = value;
+                // TODO
+            }
+        }
 
 		#endregion
 		

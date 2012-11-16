@@ -6,6 +6,7 @@ using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms;
+using MonoMac.CoreText;
 
 namespace Eto.Platform.Mac.Drawing
 {
@@ -46,10 +47,10 @@ namespace Eto.Platform.Mac.Drawing
 			context.SetAllowsSubpixelPositioning (false);
 		}
 
-		public GraphicsHandler (NSGraphicsContext gc, float height)
-		{
+		public GraphicsHandler (NSGraphicsContext gc, float height, bool flipped)
+		{ 
 			this.height = height;
-			this.Flipped = false;
+			this.Flipped = flipped;
 			this.Control = gc;
 			this.context = gc.GraphicsPort;
 			context.InterpolationQuality = CGInterpolationQuality.High;
@@ -191,7 +192,25 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawRectangle (Color color, int x, int y, int width, int height)
+        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
+        {
+            if (pen != null)
+            {
+                DrawLine(
+                    pen.Color,
+                    (int)pt1.X,
+                    (int)pt1.Y,
+                    (int)pt2.X,
+                    (int)pt2.Y); // BUGBUG: fix floats, pen width, brush
+            }                
+        }
+
+        public void DrawRectangle(Color color, int x, int y, int width, int height)
+        {
+            DrawRectangle(color, (float)x, (float)y, (float)width, (float)height);
+        }
+
+		public void DrawRectangle (Color color, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height));
@@ -205,7 +224,14 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 
-		public void FillRectangle (Color color, int x, int y, int width, int height)
+        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        {
+            /* TODO: other pen attributes */
+            if (pen != null)
+                DrawRectangle(pen.Color, x, y, width, height);
+        }
+
+		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			/*	if (width == 1 || height == 1)
@@ -246,7 +272,17 @@ namespace Eto.Platform.Mac.Drawing
 			context.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			EndDrawing ();
 		}
-		
+
+        public void FillRectangle(Brush brush, RectangleF Rectangle)
+        {
+            /* TODO */
+        }
+
+        public void FillRectangle(Brush brush, float x, float y, float width, float height)
+        {
+            /* TODO */
+        }
+
 		public void FillPath (Color color, GraphicsPath path)
 		{
 			StartDrawing ();
@@ -276,7 +312,18 @@ namespace Eto.Platform.Mac.Drawing
 			
 			EndDrawing ();
 		}
-		
+
+        public void DrawPath(Pen pen, GraphicsPath path)
+        {
+            if (pen != null &&
+                path != null)
+            {
+                DrawPath(
+                    pen.Color,
+                    path); /* TODO: Width, brush, etc*/
+            }
+        }
+
 		public void DrawImage (Image image, int x, int y)
 		{
 			StartDrawing ();
@@ -304,7 +351,41 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawIcon (Icon icon, int x, int y, int width, int height)
+        public void DrawImage(Image image, PointF p)
+        {
+            StartDrawing();
+
+            var handler = image.Handler as IImageHandler;
+            handler.DrawImage(this, (int)p.X, (int)p.Y);
+            EndDrawing();
+        }
+
+        public void DrawImage(Image image, RectangleF rect)
+        {
+            StartDrawing();
+
+            var r = rect.ToRectangle();
+
+            var handler = image.Handler as IImageHandler;
+            handler.DrawImage(this, r.X, r.Y, r.Width, r.Height);
+            EndDrawing();
+        }
+
+        public void DrawImage(Image image, float x, float y, float width, float height)
+        {
+            DrawImage(image, new RectangleF(x, y, width, height));
+        }
+
+        public void DrawImage(Image image, RectangleF source, RectangleF destination)
+        {
+            // BUGBUG: Fix integer conversion
+            DrawImage(
+                image,
+                source.ToRectangle(),
+                destination.ToRectangle());
+        }
+
+        public void DrawIcon(Icon icon, int x, int y, int width, int height)
 		{
 			StartDrawing ();
 
@@ -316,14 +397,53 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 
-		public Region ClipRegion {
-			get { return null; } //new RegionHandler(drawable.ClipRegion); }
-			set {
-				//gc.ClipRegion = (Gdk.Region)((RegionHandler)value).ControlObject;
-			}
-		}
+        public object CreateText(Font font, Color color, string text)
+        {
+            var fontHandler = font.Handler as FontHandler;
 
-		public void DrawText (Font font, Color color, int x, int y, string text)
+            var attributedString =
+                new NSAttributedString(
+                    text ?? "",
+                    new NSMutableDictionary
+                    { 
+                        { NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS(color) },
+                        { NSAttributedString.FontAttributeName, fontHandler.Control }
+                    });
+
+            // Create a new CTLine
+            var line =
+                new CTLine(
+                    attributedString);
+
+            return line;
+
+        }
+
+        public void DrawText(object o, float x, float y)
+        {
+            if (!Flipped)
+                throw new InvalidOperationException("DrawText: not flipped");
+
+            var line = o as CTLine;
+
+            if (line != null)
+            {
+                StartDrawing();
+
+                // set the text position
+                //context.TextPosition = new SD.PointF(x, y);
+                context.TextPosition = new SD.PointF();
+
+                context.TranslateCTM(x, y);
+
+                // Draw it            
+                line.Draw(context);
+
+                EndDrawing();
+            }
+        }
+
+        public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			StartDrawing ();
 			
@@ -362,5 +482,103 @@ namespace Eto.Platform.Mac.Drawing
 			base.Dispose (disposing);
 		}
 
-	}
+        public void SetClip(RectangleF rect)
+        {
+            /* TODO */
+        }
+
+        public void SetClip(Graphics graphics)
+        {
+            /* TODO */
+        }
+
+        public void FillPath(Brush brush, GraphicsPath path)
+        {
+            if (brush != null &&
+                path != null)
+            {
+                var h = brush.Handler as BrushHandler;
+                if (h != null)
+                    FillPath(
+                        h.Color,
+                        path);
+            }
+        }
+
+        public double DpiX
+        {
+            get { return 0d;/* TODO */ }
+        }
+
+        public double DpiY
+        {
+            get { return 0d;/* TODO */ }
+        }
+
+        public RectangleF ClipBounds
+        {
+            get { return Generator.Convert(context.GetClipBoundingBox()); }
+        }
+
+        public Matrix Transform
+        {
+            get
+            {
+                return Generator.Convert(context.GetCTM());
+            }
+            set
+            {
+                // BUGBUG: TODO: very inefficient!
+                // see http://stackoverflow.com/questions/469505
+                // get the current CTM
+
+
+                var temp = context.GetCTM();
+
+                var inverse = temp.Invert();
+
+                context.ConcatCTM(inverse);
+
+                var v = Generator.Convert(value);
+
+                context.ConcatCTM(v);
+            }
+        }
+
+        public void TranslateTransform(float dx, float dy)
+        {
+            context.TranslateCTM(
+                dx, 
+                // TODO: is this correct?
+                Flipped
+                ? dy
+                : -dy); 
+        }
+
+        public void RotateTransform(float angle)
+        {
+            context.RotateCTM(angle);
+        }
+
+        public void ScaleTransform(float sx, float sy)
+        {
+            context.ScaleCTM(sx, sy);
+        }
+
+        public void MultiplyTransform(Matrix matrix)
+        {
+            context.ConcatCTM((CGAffineTransform)matrix.ControlObject);
+        }
+
+
+        public void SaveTransform()
+        {
+            Control.SaveGraphicsState();
+        }
+
+        public void RestoreTransform()
+        {
+            Control.RestoreGraphicsState();
+        }
+    }
 }

@@ -81,7 +81,12 @@ namespace Eto.Platform.Mac.Forms
 		{
 			Control.ClearContents ();
 		}
-		
-	}
+
+
+        public string StringFormatName
+        {
+            get { return "";/* TODO */ }
+        }
+    }
 }
 

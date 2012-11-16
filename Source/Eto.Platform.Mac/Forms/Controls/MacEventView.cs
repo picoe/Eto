@@ -88,11 +88,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				//Console.WriteLine("\t\t{0} {1} {2}", key & Key.ModifierMask, key & Key.KeyMask, (NSKey)keyChar);
 				if (key != Key.None) {
 					if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
-						kpea = new KeyPressEventArgs (key, keyChar);
+                        kpea = new KeyPressEventArgs(key, KeyType.KeyDown, keyChar);
 					else
-						kpea = new KeyPressEventArgs (key);
+						kpea = new KeyPressEventArgs (key, KeyType.KeyDown);
 				} else {
-					kpea = new KeyPressEventArgs (key, keyChar);
+                    kpea = new KeyPressEventArgs(key, KeyType.KeyDown, keyChar);
 				}
 				control.OnKeyDown (kpea);
 				return kpea.Handled;

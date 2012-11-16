@@ -9,7 +9,7 @@ using NSFont = MonoTouch.UIKit.UIFont;
 namespace Eto.Platform.iOS.Drawing
 
 #elif OSX
-	
+
 using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Drawing
@@ -92,6 +92,16 @@ namespace Eto.Platform.Mac.Drawing
 				return Control.LineHeight ();
 			}
 		}
+
+        public void Create(string fontFamily, float sizeInPoints, FontStyle style)
+        {
+            Create(Eto.Drawing.FontFamily.Sans, sizeInPoints, FontStyle.Normal); // TODO
+        }
+
+        public void Create(string fontFamily, float size)
+        {
+            Create(Eto.Drawing.FontFamily.Sans, size, FontStyle.Normal); /* TODO */
+        }
 		
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
@@ -100,10 +110,10 @@ namespace Eto.Platform.Mac.Drawing
 			string familyString;
 			switch (family)
 			{
-			case FontFamily.Monospace: familyString = "Courier New"; break; 
+			case Eto.Drawing.FontFamily.Monospace: familyString = "Courier New"; break; 
 			default:
-			case FontFamily.Sans: familyString = "Helvetica"; break; 
-			case FontFamily.Serif: familyString = "Times"; break; 
+            case Eto.Drawing.FontFamily.Sans: familyString = "Helvetica"; break;
+            case Eto.Drawing.FontFamily.Serif: familyString = "Times"; break; 
 			}
 			bold = (style & FontStyle.Bold) != 0;
 
@@ -118,10 +128,10 @@ namespace Eto.Platform.Mac.Drawing
 			var familyString = new StringBuilder();
 			switch (family)
 			{
-			case FontFamily.Monospace: familyString.Append ("CourierNewPS"); suffix = "MT"; break; 
+			case Eto.Drawing.FontFamily.Monospace: familyString.Append ("CourierNewPS"); suffix = "MT"; break; 
 			default:
-			case FontFamily.Sans: familyString.Append ("Helvetica"); italicString = "Oblique"; break; 
-			case FontFamily.Serif: familyString.Append ("TimesNewRomanPS"); suffix = "MT"; break; 
+            case Eto.Drawing.FontFamily.Sans: familyString.Append("Helvetica"); italicString = "Oblique"; break;
+            case Eto.Drawing.FontFamily.Serif: familyString.Append("TimesNewRomanPS"); suffix = "MT"; break; 
 			}
 			bold = (style & FontStyle.Bold) != 0;
 			italic = (style & FontStyle.Italic) != 0;
@@ -136,11 +146,6 @@ namespace Eto.Platform.Mac.Drawing
 			Control = font;
 		}
 
-		public float Size
-		{
-			get { return Control.PointSize / FONT_SIZE_FACTOR; }
-		}
-
 		public bool Bold
 		{
 			get { return bold; }
@@ -149,7 +154,66 @@ namespace Eto.Platform.Mac.Drawing
 		public bool Italic
 		{
 			get { return italic; }
-		}
+        }
 
-	}
+        public bool Underline
+        {
+            get { return false;/* TODO */ }
+        }
+
+        public bool Strikeout
+        {
+            get { return false;/* TODO */ }
+        }
+
+        public float SizeInPoints
+        {
+            get { return 0f;/* TODO */ }
+        }
+
+        public string FontFamily
+        {
+            get { return "";/* TODO */ }
+        }
+
+        public float AscentInPixels
+        {
+            get { return 0f;/* TODO */ }
+        }
+
+        public float DescentInPixels
+        {
+            get { return 0f;/* TODO */ }
+        }
+
+        public float HeightInPixels
+        {
+            get { return 0f;/* TODO */ }
+        }
+
+        public float SizeInPixels
+        {
+            get { return Control.PointSize / FONT_SIZE_FACTOR; }
+        }
+
+        public IFont Clone()
+        {
+            return null;/* TODO */
+        }
+
+        #region IFont Members
+
+        public float ExHeightInPixels
+        {
+            get { return 0f;/* TODO */ }
+        }
+
+        #endregion
+
+
+        public void Create()
+        {
+            /* TODO */
+        }
+    }
 }

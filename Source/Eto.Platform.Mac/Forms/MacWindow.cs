@@ -558,5 +558,56 @@ namespace Eto.Platform.Mac.Forms
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-	}
+
+
+        public Point ScreenToWorld(Point p)
+        {
+            return p;/* TODO */
+        }
+
+        public Point WorldToScreen(Point p)
+        {
+            return p;/* TODO */
+        }
+
+
+        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
+        {
+            return default(DragDropEffects);/* TODO */
+        }
+
+
+        public bool Capture
+        {
+            get
+            {
+                return false;/* TODO */
+            }
+            set
+            {
+                /* TODO */
+            }
+        }
+
+        public Point MousePosition
+        {
+            get { return Point.Empty;/* TODO */ }
+        }
+
+        public void RemoveBorder()
+        {
+            /* TODO */
+        }
+
+        public void SetControl(object control)
+        {
+            /* TODO */
+        }
+
+
+        public void BringToFront()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

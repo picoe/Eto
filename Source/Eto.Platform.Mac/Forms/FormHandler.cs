@@ -41,6 +41,23 @@ namespace Eto.Platform.Mac.Forms
 				Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
 		}
 
-		
-	}
+        public Color TransparencyKey
+        {
+            get { return default(Color);/* TODO */ }
+            set { /* TODO */ }
+        }
+
+
+        public bool KeyPreview
+        {
+            get
+            {
+                return false;/* TODO */
+            }
+            set
+            {
+                /* TODO */
+            }
+        }
+    }
 }
