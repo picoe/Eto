@@ -191,8 +191,6 @@ namespace Eto.Drawing
         {
             inner = (IFont)Handler;
             inner.Create(fontFamily, sizeInPoints, style);
-            if (ControlObject == null)
-                throw new InvalidOperationException();
         }
 
         public Font(
@@ -207,8 +205,6 @@ namespace Eto.Drawing
         {
             inner = (IFont)Handler;
             inner.Create(family, size, style);
-            if (ControlObject == null)
-                throw new InvalidOperationException();
         }
 
 		/// <summary>
@@ -226,8 +222,6 @@ namespace Eto.Drawing
         {
             inner = (IFont)Handler;
             inner.Create(systemFont, size);
-            if (ControlObject == null)
-                throw new InvalidOperationException();
         }
 
 		/// <summary>
@@ -241,8 +235,6 @@ namespace Eto.Drawing
             base(Generator.Current, inner)
         {
             this.inner = inner;
-            if (ControlObject == null)
-                throw new InvalidOperationException();
         }
 
         public Font() :
@@ -250,8 +242,6 @@ namespace Eto.Drawing
         {
             inner = (IFont)Handler;
             inner.Create();
-            if (ControlObject == null)
-                throw new InvalidOperationException();
         }
 
         public Font(string fontFamily, float sizeInPoints) :
@@ -259,9 +249,6 @@ namespace Eto.Drawing
         {
             this.inner = (IFont)Handler;
             inner.Create(fontFamily, sizeInPoints);
-
-            if (ControlObject == null)
-                throw new InvalidOperationException();
         }
         
         public float ExHeightInPixels
