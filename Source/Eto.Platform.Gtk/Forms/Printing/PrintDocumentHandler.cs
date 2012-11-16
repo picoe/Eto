@@ -16,7 +16,12 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 
 		public void Print ()
 		{
-			Control.Run (Gtk.PrintOperationAction.PrintDialog, null);
+			var settingsHandler = (PrintSettingsHandler)this.PrintSettings.Handler;
+			Control.PrintSettings = settingsHandler.Control;
+				if (settingsHandler.ShowPreview)
+				Control.Run (Gtk.PrintOperationAction.Preview, null);
+			else
+				Control.Run (Gtk.PrintOperationAction.Print, null);
 		}
 
 		public override void AttachEvent (string id)
@@ -36,9 +41,9 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 			case PrintDocument.PrintPageEvent:
 				Control.DrawPage += (o, args) => {
 					using (var graphics = new Graphics(Widget.Generator, new GraphicsHandler(args.Context.CairoContext, args.Context.CreatePangoContext ()))) {
-						var width = args.Context.PageSetup.GetPageWidth(Gtk.Unit.Points);
-						var height = args.Context.PageSetup.GetPageHeight(Gtk.Unit.Points);
-						var e = new PrintPageEventArgs(graphics, new Size((int)width, (int)height), args.PageNr);
+						var width = args.Context.Width; //.PageSetup.GetPageWidth(Gtk.Unit.Points);
+						var height = args.Context.Height; //.PageSetup.GetPageHeight(Gtk.Unit.Points);
+						var e = new PrintPageEventArgs(graphics, new SizeF((float)width, (float)height), args.PageNr);
 						Widget.OnPrintPage (e);
 					}
 				};
@@ -55,13 +60,15 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 		}
 
 		public PrintSettings PrintSettings {
-			get { return settings; }
+			get {
+				if (settings == null)
+					settings = Control.PrintSettings.ToEto (Control.DefaultPageSetup, Widget.Generator);
+				return settings;
+			}
 			set {
 				settings = value;
-				if (settings != null)
-					Control.PrintSettings = ((PrintSettingsHandler)value.Handler).Control;
-				else
-					Control.PrintSettings = new Gtk.PrintSettings();
+				Control.DefaultPageSetup = settings.ToGtkPageSetup ();
+				Control.PrintSettings = settings.ToGtkPrintSettings ();
 			}
 		}
 

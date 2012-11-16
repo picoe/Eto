@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swf = System.Windows.Forms;
+using sdp = System.Drawing.Printing;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows.Forms.Printing
@@ -15,13 +16,16 @@ namespace Eto.Platform.Windows.Forms.Printing
 		{
 			Control = new swf.PrintDialog {
 				UseEXDialog = true,
-				AllowSomePages = true
+				AllowSomePages = true,
+				PrinterSettings = PrintSettingsHandler.DefaultSettings ()
 			};
 		}
 
 		public DialogResult ShowDialog (Window parent)
 		{
 			swf.DialogResult result;
+
+			Control.PrinterSettings = printSettings.ToSD ();
 
 			if (parent != null)
 				result = Control.ShowDialog (((IWindowHandler)parent.Handler).Win32Window);
@@ -33,11 +37,16 @@ namespace Eto.Platform.Windows.Forms.Printing
 
 		public PrintSettings PrintSettings
 		{
-			get { return printSettings; }
+			get
+			{
+				if (printSettings == null)
+					printSettings = Control.PrinterSettings.ToEto (Widget.Generator);
+				return printSettings;
+			}
 			set
 			{
 				printSettings = value;
-				Control.PrinterSettings = printSettings == null ? null : ((PrintSettingsHandler)printSettings.Handler).Control;
+				Control.PrinterSettings = value.ToSD ();
 			}
 		}
 

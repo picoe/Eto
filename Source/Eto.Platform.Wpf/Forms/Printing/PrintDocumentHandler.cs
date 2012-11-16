@@ -87,14 +87,14 @@ namespace Eto.Platform.Wpf.Forms.Printing
 		public void Print ()
 		{
 			var print = new swc.PrintDialog ();
-			if (print.ShowDialog () == true) {
-				Control.PageSize = new sw.Size (print.PrintableAreaWidth, print.PrintableAreaHeight);
-				var printCapabilities = print.PrintQueue.GetPrintCapabilities(print.PrintTicket);
-				var ia = printCapabilities.PageImageableArea;
-				Control.ImageableArea = new sw.Rect(ia.OriginWidth, ia.OriginHeight, ia.ExtentWidth, ia.ExtentHeight);
-				//printCapabilities.PageImageableArea.OriginWidth, printCapabilities.PageImageableArea.OriginHeight
-				print.PrintDocument (Control, this.Name);
-			}
+			print.SetEtoSettings(PrintSettings);
+
+			Control.PageSize = new sw.Size (print.PrintableAreaWidth, print.PrintableAreaHeight);
+			var printCapabilities = print.PrintQueue.GetPrintCapabilities(print.PrintTicket);
+			var ia = printCapabilities.PageImageableArea;
+			Control.ImageableArea = new sw.Rect(ia.OriginWidth, ia.OriginHeight, ia.ExtentWidth, ia.ExtentHeight);
+			//printCapabilities.PageImageableArea.OriginWidth, printCapabilities.PageImageableArea.OriginHeight
+			print.PrintDocument (Control, this.Name);
 		}
 
 

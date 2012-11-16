@@ -99,6 +99,30 @@ namespace Eto.Platform.Mac
 			//	style |= FontStyle.Light;
 			return style;
 		}
+
+		public static NSPrintingOrientation ToNS (this PageOrientation value)
+		{
+			switch (value) {
+			case PageOrientation.Landscape:
+				return NSPrintingOrientation.Landscape;
+			case PageOrientation.Portrait:
+				return NSPrintingOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PageOrientation ToEto (this NSPrintingOrientation value)
+		{
+			switch (value) {
+			case NSPrintingOrientation.Landscape:
+				return PageOrientation.Landscape;
+			case NSPrintingOrientation.Portrait:
+				return PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }
 

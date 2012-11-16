@@ -17,15 +17,14 @@ namespace Eto.Platform.Windows.Forms.Printing
 
 		public PrintDocumentHandler ()
 		{
-			Control = new sdp.PrintDocument ();
+			Control = new sdp.PrintDocument {
+				PrinterSettings = new sdp.PrinterSettings { MinimumPage = 1, MaximumPage = 1, FromPage = 1, ToPage = 1 }
+			};
 		}
 
 		public void Print ()
 		{
-			var dialog = new PrintDialog (Widget.Generator);
-			dialog.PrintSettings = this.PrintSettings;
-			if (dialog.ShowDialog (null) == DialogResult.Ok)
-				Control.Print ();
+			Control.Print ();
 		}
 
 		public override void AttachEvent (string id)
@@ -71,10 +70,14 @@ namespace Eto.Platform.Windows.Forms.Printing
 
 		public PrintSettings PrintSettings
 		{
-			get { return printSettings; }
+			get {
+				if (printSettings == null)
+					printSettings = Control.PrinterSettings.ToEto (Widget.Generator);
+				return printSettings;
+			}
 			set {
 				printSettings = value;
-				Control.PrinterSettings = printSettings == null ? null : ((PrintSettingsHandler)printSettings.Handler).Control;
+				Control.PrinterSettings = value.ToSD ();
 			}
 		}
 	}

@@ -7,11 +7,24 @@ namespace Eto.Forms
 {
 	public interface IPrintSettings : IInstanceWidget
 	{
+		int Copies { get; set; }
+
+		Range PageRange { get; set; }
+
+		PageOrientation Orientation { get; set; }
+
+		bool Collate { get; set; }
+	}
+
+	public enum PageOrientation
+	{
+		Portrait,
+		Landscape
 	}
 
 	public class PrintSettings : InstanceWidget
 	{
-		IPrintSettings handler;
+		new IPrintSettings Handler { get { return (IPrintSettings)base.Handler; } }
 
 		public PrintSettings ()
 			: this (Generator.Current)
@@ -21,7 +34,35 @@ namespace Eto.Forms
 		public PrintSettings (Generator generator)
 			: base (generator, typeof (IPrintSettings))
 		{
-			handler = (IPrintSettings)Handler;
+		}
+
+		public PrintSettings (Generator generator, IPrintSettings handler)
+			: base (generator, handler)
+		{
+		}
+
+		public int Copies
+		{
+			get { return Handler.Copies; }
+			set { Handler.Copies = value; }
+		}
+
+		public Range PageRange
+		{
+			get { return Handler.PageRange; }
+			set { Handler.PageRange = value; }
+		}
+
+		public PageOrientation Orientation
+		{
+			get { return Handler.Orientation; }
+			set { Handler.Orientation = value; }
+		}
+
+		public bool Collate
+		{
+			get { return Handler.Collate; }
+			set { Handler.Collate = value; }
 		}
 	}
 }

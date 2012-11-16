@@ -7,6 +7,7 @@ using Eto.Forms;
 using swi = System.Windows.Input;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using sp = System.Printing;
 using System.Text.RegularExpressions;
 
 namespace Eto.Platform.Wpf
@@ -130,5 +131,30 @@ namespace Eto.Platform.Wpf
                 throw new NotSupportedException ();
             }
         }
+
+		public static sp.PageOrientation ToSP (this PageOrientation value)
+		{
+			switch (value) {
+			case PageOrientation.Portrait:
+				return sp.PageOrientation.Portrait;
+			case PageOrientation.Landscape:
+				return sp.PageOrientation.Landscape;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PageOrientation ToEto (this sp.PageOrientation? value)
+		{
+			if (value == null) return PageOrientation.Portrait;
+			switch (value.Value) {
+			case sp.PageOrientation.Landscape:
+				return PageOrientation.Landscape;
+			case sp.PageOrientation.Portrait:
+				return PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
     }
 }

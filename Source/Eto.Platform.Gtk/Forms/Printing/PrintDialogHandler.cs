@@ -5,6 +5,8 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 {
 	public class PrintDialogHandler : WidgetHandler<Gtk.PrintUnixDialog, PrintDialog>, IPrintDialog
 	{
+		PrintSettings settings;
+
 		public PrintDialogHandler ()
 		{
 
@@ -21,23 +23,40 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 				Control.Modal = true;
 			}
 
-			var caps = Gtk.PrintCapabilities.Preview | Gtk.PrintCapabilities.Collate | Gtk.PrintCapabilities.GeneratePdf | Gtk.PrintCapabilities.Copies;
+			var caps = Gtk.PrintCapabilities.Preview
+					| Gtk.PrintCapabilities.Collate
+					| Gtk.PrintCapabilities.GeneratePdf
+					| Gtk.PrintCapabilities.Copies
+					| Gtk.PrintCapabilities.GeneratePs
+					| Gtk.PrintCapabilities.NumberUp
+					| Gtk.PrintCapabilities.Scale
+					| Gtk.PrintCapabilities.Reverse;
 			if (AllowPageRange)
 				caps |= Gtk.PrintCapabilities.PageSet;
+			Control.PageSetup = this.PrintSettings.ToGtkPageSetup ();
+			Control.PrintSettings = this.PrintSettings.ToGtkPrintSettings ();
 
 			Control.ManualCapabilities = caps;
 			Control.ShowAll ();
 			var response = (Gtk.ResponseType)Control.Run ();
-			Control.HideAll ();
-			
+			Control.Hide ();
+
+			var printSettingsHandler = (PrintSettingsHandler)this.PrintSettings.Handler;
+			printSettingsHandler.Set(Control.PrintSettings, Control.PageSetup);
+			if (response == Gtk.ResponseType.Apply) {
+				printSettingsHandler.ShowPreview = true;
+				return DialogResult.Ok;
+			}
+
 			return response.ToEto ();
 		}
 		public PrintSettings PrintSettings {
 			get {
-				throw new NotImplementedException ();
+				if (settings == null) settings = new PrintSettings(Widget.Generator);
+				return settings;
 			}
 			set {
-				throw new NotImplementedException ();
+				settings = value;
 			}
 		}
 

@@ -97,13 +97,25 @@ namespace Eto.Forms
 			handler.Print ();
 		}
 
+		public DialogResult ShowPrintDialog (Control parent)
+		{
+			var dialog = new PrintDialog (Generator);
+			this.PrintSettings.PageRange = new Range (1, PageCount);
+			dialog.PrintSettings = this.PrintSettings;
+			var result = dialog.ShowDialog (parent);
+			if (result == DialogResult.Ok) {
+				Print ();
+			}
+			return result;
+		}
+
 		public PrintSettings PrintSettings
 		{
 			get { return handler.PrintSettings; }
 			set { handler.PrintSettings = value; }
 		}
 
-		public int PageCount
+		public virtual int PageCount
 		{
 			get { return handler.PageCount; }
 			set { handler.PageCount = value; }

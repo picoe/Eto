@@ -41,7 +41,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 				//var context = NSGraphicsContext.CurrentContext;
 
 				using (var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(context, this.Frame.Height))) {
-					Handler.Widget.OnPrintPage (new PrintPageEventArgs (graphics, operation.PrintInfo.PaperSize.ToEtoSize (), operation.CurrentPage - 1));
+					Handler.Widget.OnPrintPage (new PrintPageEventArgs (graphics, Platform.Conversions.ToEto (operation.PrintInfo.PaperSize), operation.CurrentPage - 1));
 				}
 			}
 
@@ -74,8 +74,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 			var op = NSPrintOperation.FromView(Control);
 			if (printSettings != null)
 				op.PrintInfo = ((PrintSettingsHandler)printSettings.Handler).Control;
-			//var window = NSApplication.SharedApplication.KeyWindow;
-			//Control.RunOperationModal(window, new ModalReceiver { Handler = this }, new Selector("printOperationDidRun:success:contextInfo:"), IntPtr.Zero);
+			op.ShowsPrintPanel = false;
 			op.RunOperation ();
 		}
 
@@ -84,7 +83,11 @@ namespace Eto.Platform.Mac.Forms.Printing
 		public int PageCount { get; set; }
 
 		public PrintSettings PrintSettings {
-			get { return printSettings; }
+			get {
+				if (printSettings == null)
+					printSettings = new PrintSettings (Widget.Generator);
+				return printSettings;
+			}
 			set {
 				printSettings = value;
 				//Control.PrintInfo = printSettings == null ? null : ((PrintSettingsHandler)printSettings.Handler).Control;

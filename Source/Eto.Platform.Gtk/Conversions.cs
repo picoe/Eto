@@ -170,5 +170,29 @@ namespace Eto.Platform.GtkSharp
 				return Gtk.MessageType.Question;
 			}
 		}
+
+		public static Gtk.PageOrientation ToGtk (this PageOrientation value)
+		{
+			switch (value) {
+			case PageOrientation.Landscape:
+				return Gtk.PageOrientation.Landscape;
+			case PageOrientation.Portrait:
+				return Gtk.PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PageOrientation ToEto (this Gtk.PageOrientation value)
+		{
+			switch (value) {
+			case Gtk.PageOrientation.Landscape:
+				return PageOrientation.Landscape;
+			case Gtk.PageOrientation.Portrait:
+				return PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }

@@ -8,6 +8,8 @@ namespace Eto.Platform.Mac.Forms.Printing
 {
 	public class PrintDialogHandler : WidgetHandler<NSPrintPanel, PrintDialog>, IPrintDialog
 	{
+		PrintSettings settings;
+
 		public PrintDialogHandler ()
 		{
 			Control = NSPrintPanel.PrintPanel;
@@ -15,40 +17,40 @@ namespace Eto.Platform.Mac.Forms.Printing
 
 		class SheetHelper : NSObject
 		{
-			[Export("endSheet:")]
-			public void EndSheet (int result)
+			[Export("printPanelDidEnd:returnCode:contextInfo:")]
+			public void PrintPanelDidEnd(NSPrintPanel printPanel, int returnCode, IntPtr contextInfo)
 			{
-				NSApplication.SharedApplication.StopModalWithCode (result); 
+				NSApplication.SharedApplication.StopModalWithCode (returnCode); 
 			}
 		}
 
 		public DialogResult ShowDialog (Window parent)
 		{
 			int ret;
-			var printInfo = Control.PrintInfo ?? new NSPrintInfo();
+			var printInfo = settings.ToNS ();
 			if (parent != null) {
 				var parentHandler = parent.Handler as IMacWindow;
-
 				var closeSheet = new SheetHelper();
-				Control.BeginSheet (printInfo, parentHandler.Control, closeSheet, new Selector("endSheet:"), IntPtr.Zero);
+				Control.BeginSheet (printInfo, parentHandler.Control, closeSheet, new Selector("printPanelDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
 				ret = NSApplication.SharedApplication.RunModalForWindow (parentHandler.Control);
 			}
 			else
 				ret = Control.RunModalWithPrintInfo (printInfo);
 
+			Console.WriteLine (printInfo.PrintSettings);
 
 			return ret == 1 ? DialogResult.Ok : DialogResult.Cancel;
 		}
 
 		public PrintSettings PrintSettings
 		{
-			get
-			{
-				throw new NotImplementedException ();
+			get {
+				if (settings == null)
+					settings = Control.PrintInfo.ToEto (Widget.Generator);
+				return settings;
 			}
-			set
-			{
-				throw new NotImplementedException ();
+			set {
+				settings = value;
 			}
 		}
 

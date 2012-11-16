@@ -10,25 +10,38 @@ namespace Eto.Platform.Wpf.Forms.Printing
 {
 	public class PrintDialogHandler : WidgetHandler<swc.PrintDialog, PrintDialog>, IPrintDialog
 	{
+		PrintSettings settings;
 		public PrintDialogHandler ()
 		{
-			Control = new swc.PrintDialog ();
+			Control = new swc.PrintDialog {
+				UserPageRangeEnabled = true
+			};
 		}
 
 		public DialogResult ShowDialog (Window parent)
 		{
+			Control.SetEtoSettings (settings);
 			var result = Control.ShowDialog ();
-			return result == true ? DialogResult.Ok : DialogResult.Cancel;
+			if (result == true) {
+				settings = null;
+				return DialogResult.Ok;
+			}
+			else
+				return DialogResult.Cancel;
 		}
 
 		public PrintSettings PrintSettings
 		{
 			get
 			{
-				return null;
+				if (settings == null)
+					settings = Control.GetEtoSettings(Widget.Generator);
+				return settings;
 			}
 			set
 			{
+				settings = value;
+				Control.SetEtoSettings (settings);
 			}
 		}
 

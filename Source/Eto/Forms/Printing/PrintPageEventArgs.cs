@@ -7,13 +7,13 @@ namespace Eto.Forms
 	{
 		public Graphics Graphics { get; private set; }
 
-		public Size PageSize { get; private set; }
+		public SizeF PageSize { get; private set; }
 
 		public int CurrentPage { get; private set; }
 
 		public PageSettings PageSettings { get; private set; }
 
-		public PrintPageEventArgs (Graphics graphics, Size pageSize, int currentPage)
+		public PrintPageEventArgs (Graphics graphics, SizeF pageSize, int currentPage)
 		{
 			this.Graphics = graphics;
 			this.PageSize = pageSize;
