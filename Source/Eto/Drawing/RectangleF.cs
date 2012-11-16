@@ -730,6 +730,15 @@ namespace Eto.Drawing
 			return !(rect1 == rect2);
 		}
 
+        public Rectangle ToRectangle()
+        {
+            return new Rectangle(
+                (int)this.X,
+                (int)this.Y,
+                (int)this.Width,
+                (int)this.Height);
+        }
+
 		/// <summary>
 		/// Converts this rectangle to a string
 		/// </summary>
