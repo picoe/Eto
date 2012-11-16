@@ -258,6 +258,20 @@
     <Compile Include="Forms\Range.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="In32ArrayConverter.cs" />
+    <Compile Include="Interface\IDragDropInputSource.cs" />
+    <Compile Include="Interface\IKeyboardInputSource.cs" />
+    <Compile Include="Interface\IMouseInputSource.cs" />
+    <Compile Include="Drawing\Matrix.cs" />
+    <Compile Include="Drawing\Constants.cs" />
+    <Compile Include="Drawing\Brush.cs" />
+    <Compile Include="Drawing\Pen.cs" />
+    <Compile Include="Drawing\StringAlignment.cs" />
+    <Compile Include="Drawing\TextAlign.cs" />
+    <Compile Include="Drawing\VerticalMetrics.cs" />
+    <Compile Include="Forms\Controls\DragDrop.cs" />
+    <Compile Include="Forms\Controls\DragDropInputSource.cs" />
+    <Compile Include="Forms\Controls\DataObject.cs" />
+    <Compile Include="Math\MathUtil.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
