@@ -74,7 +74,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			this.ShowAll ();
 			this.Grab ();
 		}
-		
+
+#if GTK2
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
@@ -85,6 +86,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			
 			return false;
 		}
+#endif
 
 		void Close ()
 		{
@@ -212,7 +214,11 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			WindowPosition = Gtk.WindowPosition.CenterOnParent;
 			BorderWidth = 1;
 			Resizable = false;
+#if GTK2
 			AllowGrow = false;
+#else
+			Resizable = false;
+#endif
 			Decorated = false;
 			DestroyWithParent = true;
 			SkipPagerHint = true;
@@ -224,10 +230,10 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			};
 			
 			if (HasDate)
-				hbox.PackStart (CalendarControls ());
+				hbox.PackStart (CalendarControls (), true, true, 0);
 			
 			if (HasTime)
-				hbox.PackStart (ClockControls ());
+				hbox.PackStart (ClockControls (), true, true, 0);
 
 			this.Add (hbox);
 		}

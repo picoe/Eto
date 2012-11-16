@@ -9,7 +9,11 @@ namespace Eto.Platform.GtkSharp
 		public FormHandler()
 		{
 			Control = new Gtk.Window(Gtk.WindowType.Toplevel);
+#if GTK2
 			Control.AllowShrink = true;
+#else
+			Control.Resizable = true;
+#endif
 			Control.SetSizeRequest(100,100);
 			Control.SetPosition(Gtk.WindowPosition.Center);
 			Control.Add(vbox);

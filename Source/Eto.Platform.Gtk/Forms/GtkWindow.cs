@@ -48,11 +48,18 @@ namespace Eto.Platform.GtkSharp
 
 		public bool Resizable {
 			get {
-				return Control.AllowGrow/* && Control.AllowShrink*/;
+#if GTK2
+				return Control.AllowGrow;
+#else
+				return Control.Resizable;
+#endif
 			}
 			set {
+#if GTK2
 				Control.AllowGrow = value;
-				//Control.AllowShrink = value;
+#else
+				Control.Resizable = value;
+#endif
 			}
 		}
 		
@@ -65,7 +72,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			set {
 				if (Control.Visible)
-					Control.Allocation = new Gdk.Rectangle (Control.Allocation.Location, value.ToGdk ());
+					Control.SetAllocation (new Gdk.Rectangle (Control.Allocation.Location, value.ToGdk ()));
 				else
 					Control.SetDefaultSize (value.Width, value.Height);
 			}
@@ -179,7 +186,11 @@ namespace Eto.Platform.GtkSharp
 				// set accelerators
 				menuBar = value;
 				SetAccelerators (menuBar);
+#if GTK2
 				menuBox.PackStart ((Gtk.Widget)value.ControlObject); //, false, false, 0);
+#else
+				menuBox.PackStart ((Gtk.Widget)value.ControlObject, true, true, 0);
+#endif
 				((Gtk.Widget)value.ControlObject).ShowAll ();
 			}
 		}

@@ -13,7 +13,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			this.AppPaintable = true;
 			this.Build ();
 		}
-		
+
+#if GTK2
 		[GLib.ConnectBefore]
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
@@ -25,6 +26,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			}
 			return base.OnExposeEvent (evnt);
 		}
+#endif
 
 		public Entry Entry {
 			get {

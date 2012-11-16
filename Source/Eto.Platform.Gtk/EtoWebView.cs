@@ -52,8 +52,9 @@ namespace Eto.Platform.GtkSharp
 			}
 			return result;
 		}
-
+#if GTK2
 		[CDeclCallback]
+#endif
 		private delegate bool NewWindowPolicyDecisionRequestedVMDelegate (IntPtr webview,IntPtr frame,IntPtr request,IntPtr action,IntPtr decision);
 
 		private static NewWindowPolicyDecisionRequestedVMDelegate NewWindowPolicyDecisionRequestedVMCallback;

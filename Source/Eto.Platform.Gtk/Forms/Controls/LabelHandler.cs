@@ -22,7 +22,8 @@ namespace Eto.Platform.GtkSharp
 		public class EtoLabel : Gtk.Label
 		{
 			int wrapWidth = 0;
-			
+
+#if GTK2
 			protected override void OnSizeRequested (ref Gtk.Requisition requisition)
 			{
 				//base.OnSizeRequested (ref requisition);
@@ -31,6 +32,7 @@ namespace Eto.Platform.GtkSharp
 				requisition.Width = width;
 				requisition.Height = height;
 			}
+#endif
 			
 			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
 			{

@@ -6,19 +6,47 @@ namespace Eto.Platform.GtkSharp.Drawing
 	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, IGraphics
 	{
 		Gtk.Widget widget;
-		Gdk.Drawable drawable;
 		Image image;
 		Cairo.ImageSurface surface;
+		Pango.Context pangoContext;
+#if GTK2
+		Gdk.Drawable drawable;
 
-		public GraphicsHandler ()
-		{
-		}
-		
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable)
 		{
 			this.widget = widget;
 			this.drawable = drawable;
 			this.Control = Gdk.CairoHelper.Create (drawable);
+		}
+#else
+		Gdk.Window drawable;
+
+		public GraphicsHandler (Gtk.Widget widget, Gdk.Window drawable)
+		{
+			this.widget = widget;
+			this.drawable = drawable;
+			this.Control = Gdk.CairoHelper.Create (drawable);
+		}
+#endif
+
+		public GraphicsHandler ()
+		{
+		}
+
+		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext)
+		{
+			this.Control = context;
+			this.pangoContext = pangoContext;
+			DisposeControl = false;
+		}
+
+		public Pango.Context PangoContext
+		{
+			get {
+				if (pangoContext == null && widget != null)
+					pangoContext = widget.PangoContext;
+				return pangoContext;
+			}
 		}
 
 		public bool Antialias {
@@ -80,6 +108,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					handler.Unlock (bd);
 				}
 			}
+#if GTK2
 			if (Control != null)
 			{
 				((IDisposable)Control).Dispose();
@@ -90,6 +119,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					this.Control = Gdk.CairoHelper.Create (drawable);
 				}
 			}
+#endif
 		}
 
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
@@ -211,7 +241,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawText (Font font, Color color, int x, int y, string text)
 		{
 			if (widget != null) {
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
+				using (var layout = new Pango.Layout (PangoContext)) {
 					layout.FontDescription = (Pango.FontDescription)font.ControlObject;
 					layout.SetText (text);
 					Control.Save ();
@@ -228,7 +258,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			if (widget != null) {
 
-				Pango.Layout layout = new Pango.Layout (widget.PangoContext);
+				Pango.Layout layout = new Pango.Layout (PangoContext);
 				layout.FontDescription = (Pango.FontDescription)font.ControlObject;
 				layout.SetText (text);
 				int width, height;

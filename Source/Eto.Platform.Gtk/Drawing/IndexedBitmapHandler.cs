@@ -40,8 +40,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return size; }
 		}
 
-		#region IIndexedBitmap Members
-
 		public void Create (int width, int height, int bitsPerPixel)
 		{
 			rowStride = width * bitsPerPixel / 8;
@@ -87,8 +85,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		#endregion
-
+#if GTK2
 		private Gdk.RgbCmap GetPmap ()
 		{
 			return new Gdk.RgbCmap (colors);
@@ -106,6 +103,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 				
 			}
 		}
+#else
+		public override void SetImage (Gtk.Image imageView)
+		{
+		}
+#endif
 
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{

@@ -10,9 +10,11 @@ namespace Eto.Platform.GtkSharp
 {
 	public class Generator : Eto.Generator
 	{ 	
-		public override string ID {
-			get { return Generators.Gtk; }
-		}
+#if GTK2
+		public override string ID { get { return Generators.Gtk; } }
+#else
+		public override string ID { get { return Generators.Gtk3; } }
+#endif
 		
 		public Generator ()
 		{

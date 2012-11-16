@@ -18,7 +18,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			[GLib.Property("row")]
 			public int Row { get; set; }
 
-
+#if GTK2
 			public override void GetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
@@ -33,6 +33,20 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererCombo.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
+#else
+			protected override void OnGetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				base.OnGetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+				height = Math.Max(height, Handler.Source.RowHeight);
+			}
+			
+			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
+			{
+				if (Handler.FormattingEnabled)
+					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
+				base.OnRender (cr, widget, background_area, cell_area, flags);
+			}
+#endif
 		}
 
 		public ComboBoxCellHandler ()

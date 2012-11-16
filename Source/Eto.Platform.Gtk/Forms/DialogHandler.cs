@@ -9,12 +9,15 @@ namespace Eto.Platform.GtkSharp
 		public DialogHandler ()
 		{
 			Control = new Gtk.Dialog ();
+#if GTK2
 			Control.AllowShrink = false;
 			Control.AllowGrow = false;
-			//control.SetSizeRequest(100,100);
 			vbox = Control.VBox;
 			Control.HasSeparator = false;
-			//control.Resizable = true;
+#else
+			Control.Resizable = false;
+			Control.HasResizeGrip = false;
+#endif
 		}
 		
 		public Button AbortButton {
@@ -55,13 +58,17 @@ namespace Eto.Platform.GtkSharp
 
 			if (DefaultButton != null) {
 				var widget = DefaultButton.ControlObject as Gtk.Widget;
+#if GTK2
 				widget.SetFlag (Gtk.WidgetFlags.CanDefault);
+#else
+				widget.CanDefault = true;
+#endif
 				Control.Default = widget;
 			}
 			// TODO: implement cancel button somehow?
 			
 			Control.Run ();
-			Control.HideAll ();
+			Control.Hide ();
 									
 			return Widget.DialogResult; // Generator.Convert((Gtk.ResponseType)result);
 		}

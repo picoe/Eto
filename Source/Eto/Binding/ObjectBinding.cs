@@ -39,6 +39,24 @@ namespace Eto
 				OnDataValueChanged (EventArgs.Empty);
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the default value to use when setting the value for this binding when input value is null
+		/// </summary>
+		public object SettingNullValue
+		{
+			get;
+			set;
+		}
+
+		/// <summary>
+		/// Gets or sets the default value to use when getting the value for this binding when the <see cref="DataItem"/> or property value is null
+		/// </summary>
+		public object GettingNullValue
+		{
+			get;
+			set;
+		}
 		
 		/// <summary>
 		/// Initializes a new instance of the ObjectBinding with the specified object and property for a <see cref="PropertyBinding"/>
@@ -84,10 +102,10 @@ namespace Eto
 		/// </remarks>
 		public override object DataValue {
 			get {
-				return InnerBinding.GetValue (DataItem);
+				return InnerBinding.GetValue (DataItem) ?? GettingNullValue;
 			}
 			set {
-				InnerBinding.SetValue (DataItem, value);
+				InnerBinding.SetValue (DataItem, value ?? SettingNullValue);
 			}
 		}
 		

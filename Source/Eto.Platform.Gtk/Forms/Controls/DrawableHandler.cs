@@ -10,7 +10,11 @@ namespace Eto.Platform.GtkSharp
 		public void Create ()
 		{
 			Control = new Gtk.DrawingArea ();
+#if GTK2
 			Control.ExposeEvent += control_ExposeEvent;
+#else
+			Control.Drawn += HandleDrawn;
+#endif
 			Control.Events |= Gdk.EventMask.ExposureMask;
 			//Control.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(0, 0, 0));
 			//Control.DoubleBuffered = false;
@@ -18,7 +22,7 @@ namespace Eto.Platform.GtkSharp
 			Control.CanDefault = true;
 			
 		}
-		
+
 		public bool CanFocus {
 			get {
 				return Control.CanFocus;
@@ -28,6 +32,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+#if GTK2
 		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
@@ -36,6 +41,16 @@ namespace Eto.Platform.GtkSharp
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}
+#else
+		void HandleDrawn (object o, Gtk.DrawnArgs args)
+		{
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (args.Cr, Control.CreatePangoContext ()))) {
+				Rectangle rect = new Rectangle(this.Size); //ev.Region.Clipbox.ToEto ();
+				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+			}
+		}
+#endif
+
 
 		public void Update (Rectangle rect)
 		{

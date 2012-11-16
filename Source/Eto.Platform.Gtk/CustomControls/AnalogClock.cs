@@ -65,7 +65,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			minuteLength = allocation.Height / 3 / 1.20F;
 			secondLength = allocation.Height / 3 / 1.15F;
 		}
-		
+
+#if GTK2
 		protected override bool OnExposeEvent (EventExpose evnt)
 		{
 			base.OnExposeEvent (evnt);
@@ -109,6 +110,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			}
 			return true;			
 		}
+#endif
 	}
 }
 

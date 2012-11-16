@@ -9,16 +9,18 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			if (this.Child != null) {
-				this.Child.Allocation = allocation;
+				this.Child.SetAllocation (allocation);
 			}
 			base.OnSizeAllocated (allocation);
 		}
 
+#if GTK2
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
 			if (this.Child != null) {
 				requisition = this.Child.SizeRequest ();
 			}
 		}
+#endif
 	}
 }

@@ -23,6 +23,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Wpf", "Eto.Pla
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Wpf", "Eto.Test\Eto.Test.Wpf\Eto.Test.Wpf.csproj", "{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Gtk3", "Eto.Platform.Gtk\Eto.Platform.Gtk3.csproj", "{EECFE22F-A544-4498-AE2D-90C81BD2931A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk3", "Eto.Test\Eto.Test.Gtk3\Eto.Test.Gtk3.csproj", "{B2148BDC-7D98-419B-B329-FF580FB481DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Linux Debug|Any CPU = Linux Debug|Any CPU
@@ -31,6 +35,8 @@ Global
 		Mac Release|Any CPU = Mac Release|Any CPU
 		Windows Debug|Any CPU = Windows Debug|Any CPU
 		Windows Release|Any CPU = Windows Release|Any CPU
+		Release|Any CPU = Release|Any CPU
+		Debug|Any CPU = Debug|Any CPU
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -103,8 +109,23 @@ Global
 		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Linux Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Linux Release|Any CPU.Build.0 = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Mac Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Mac Release|Any CPU.Build.0 = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Release|Any CPU.Build.0 = Debug|Any CPU
 		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -132,6 +153,22 @@ Global
 		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
 		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Linux Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Linux Debug|Any CPU.Build.0 = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Linux Release|Any CPU.Build.0 = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Mac Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Mac Debug|Any CPU.Build.0 = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Windows Debug|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Windows Debug|Any CPU.Build.0 = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EECFE22F-A544-4498-AE2D-90C81BD2931A}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -146,7 +183,7 @@ Global
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Eto.Test\Eto.Test.Gtk\Eto.Test.Gtk.csproj
+		StartupItem = Eto.Test\Eto.Test.Gtk3\Eto.Test.Gtk3.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical

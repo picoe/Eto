@@ -53,6 +53,7 @@ namespace Eto.Platform.GtkSharp
 			vbox.PackStart (hbox, true, true, 0);
 			
 			// autosize the scrolled window to the size of the content
+#if GTK2
 			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
 				if (autoSize) {
 					args.Requisition = vp.SizeRequest ();
@@ -65,6 +66,7 @@ namespace Eto.Platform.GtkSharp
 					args.Requisition = size;
 				}
 			};
+#endif
 
 			Control.VScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			Control.HScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;

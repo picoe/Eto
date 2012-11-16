@@ -17,15 +17,26 @@ namespace Eto.Platform.GtkSharp
 				CanFocus = false,
 				CanDefault = true
 			};
+#if GTK2
 			control.ExposeEvent += control_ExposeEvent;
+#else
+			control.Drawn += HandleDrawn;
+#endif
 			control.Events |= Gdk.EventMask.ExposureMask;
 			return control;
 		}
 
+#if GTK2
 		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window))) {
+			var handler = new GraphicsHandler (Control, ev.Window);
+#else
+		void HandleDrawn (object o, Gtk.DrawnArgs args)
+		{
+			var handler = new GraphicsHandler (args.Cr, Control.CreatePangoContext ());
+#endif
+			using (var graphics = new Graphics (Widget.Generator, handler)) {
 				var widgetSize = new Size(Control.Allocation.Width, Control.Allocation.Height);
 				var imageSize = (SizeF)image.Size;
 				var scaleWidth = widgetSize.Width / imageSize.Width;

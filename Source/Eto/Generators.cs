@@ -31,6 +31,16 @@ namespace Eto
 		public const string GtkAssembly = "Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk";
 
 		/// <summary>
+		/// ID of the GTK 3.0 platform
+		/// </summary>
+		public const string Gtk3 = "gtk3";
+
+		/// <summary>
+		/// Assembly name of the GTK platform
+		/// </summary>
+		public const string Gtk3Assembly = "Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk3";
+
+		/// <summary>
 		/// ID of the Mac OS X platform
 		/// </summary>
 		public const string Mac = "mac";

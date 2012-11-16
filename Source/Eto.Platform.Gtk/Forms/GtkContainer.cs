@@ -29,6 +29,7 @@ namespace Eto.Platform.GtkSharp
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
+#if GTK2
 			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
 				if (MinimumSize != null) {
 					var alloc = args.Requisition;
@@ -37,6 +38,7 @@ namespace Eto.Platform.GtkSharp
 					args.Requisition = alloc;
 				}
 			};
+#endif
 			/*
 			Control.SizeAllocated += delegate(object o, Gtk.SizeAllocatedArgs args) {
 				if (MinimumSize != null) {
@@ -60,7 +62,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			set {
 				if (Control.Visible)
-					Control.Allocation = new Gdk.Rectangle(Control.Allocation.Location, value.ToGdk ());
+					Control.SetAllocation (new Gdk.Rectangle(Control.Allocation.Location, value.ToGdk ()));
 				else
 					Control.SetSizeRequest (value.Width, value.Height);
 			}

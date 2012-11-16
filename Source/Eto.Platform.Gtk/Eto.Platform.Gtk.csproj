@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
-    <DefineConstants>CAIRO;TRACE</DefineConstants>
+    <DefineConstants>CAIRO;TRACE;GTK2</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Optimize>True</Optimize>
@@ -38,7 +38,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <DebugSymbols>True</DebugSymbols>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>CAIRO;DEBUG;TRACE</DefineConstants>
+    <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <FileAlignment>4096</FileAlignment>
@@ -60,11 +60,21 @@
     <Reference Include="System.Xml">
       <Name>System.Xml</Name>
     </Reference>
-    <Reference Include="gdk-sharp" />
-    <Reference Include="glib-sharp" />
-    <Reference Include="gtk-sharp" />
-    <Reference Include="atk-sharp" />
-    <Reference Include="pango-sharp" />
+    <Reference Include="gdk-sharp">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="glib-sharp">
+      <Package>glib-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="gtk-sharp">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="atk-sharp">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
+    <Reference Include="pango-sharp">
+      <Package>gtk-sharp-2.0</Package>
+    </Reference>
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
@@ -243,6 +253,8 @@
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Gtk3Compatibility.cs" />
+
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

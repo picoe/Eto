@@ -19,7 +19,7 @@ namespace Eto.Platform.GtkSharp
 			Control = new Gtk.VBox();
 			tab = new Gtk.HBox();
 			label = new Gtk.Label();
-			tab.PackEnd (label);
+			tab.PackEnd (label, true, true, 0);
 			tab.ShowAll ();
 		}
 		
@@ -40,7 +40,7 @@ namespace Eto.Platform.GtkSharp
 					Control.Remove(child);
 			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
 			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
-			Control.PackStart(containerWidget);
+			Control.PackStart(containerWidget, true, true, 0);
 			containerWidget.ShowAll ();
 		}
 		
@@ -49,7 +49,7 @@ namespace Eto.Platform.GtkSharp
 			set {
 				if (gtkimage == null) {
 					gtkimage = new Gtk.Image();
-					tab.PackStart (gtkimage);
+					tab.PackStart (gtkimage, true, true, 0);
 				}
 				image = value;
 				if (image != null) {
