@@ -120,6 +120,11 @@ namespace Eto.Drawing
             this.inner.FillMode = fillMode;
         }
 
+		void IWidget.Initialize()
+		{
+			base.Initialize();
+		}
+
         public bool IsEmpty { get { return inner.IsEmpty; } }
 
 		/// <summary>

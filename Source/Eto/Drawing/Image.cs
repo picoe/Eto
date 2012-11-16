@@ -85,5 +85,10 @@ namespace Eto.Drawing
                 throw new NotImplementedException();
             }
         }
+
+		void IWidget.Initialize()
+		{
+			base.Initialize();
+		}
     }
 }
