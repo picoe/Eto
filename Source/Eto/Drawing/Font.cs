@@ -197,12 +197,27 @@ namespace Eto.Drawing
 		/// <param name="family">Family of font to use</param>
 		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
-		public Font (Generator generator, FontFamily family, float size, FontStyle style = FontStyle.Normal)
+		public Font (
+            Generator generator, 
+            FontFamily family, 
+            float size, 
+            FontStyle style = FontStyle.Normal)
 			: base(generator, typeof(IFont))
         {
             inner = (IFont)Handler;
             inner.Create(family, size, style);
         }
+
+        public Font(
+            SystemFont systemFont,
+            float? size = null,
+            Generator g = null)
+            : base(g ?? Generator.Current, typeof(IFont))
+        {
+            inner = (IFont)Handler;
+            inner.Create(systemFont, size);
+        }
+
 
         public Font(
             FontFamily family, 
