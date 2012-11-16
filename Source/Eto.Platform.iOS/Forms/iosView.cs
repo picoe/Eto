@@ -183,6 +183,43 @@ namespace Eto.Platform.iOS.Forms
 		public void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
+
+		#region IControl implementation
+
+		public Point ScreenToWorld (Point p)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public Point WorldToScreen (Point p)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public DragDropEffects DoDragDrop (object data, DragDropEffects allowedEffects)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void SetControl (object control)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public bool Capture {
+			get;
+			set;
+		}
+
+		public Point MousePosition {
+			get { throw new NotImplementedException(); }
+		}
+
+		public Point Location {
+			get { throw new NotImplementedException(); }
+		}
+
+		#endregion
 	}
 }
 

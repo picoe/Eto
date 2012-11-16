@@ -48,5 +48,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 			};
 		}
 		
+		#region IButton implementation
+		public IImage Image {
+			get {throw new NotImplementedException(); }
+			set {throw new NotImplementedException(); }
+		}
+		#endregion
 	}
 }

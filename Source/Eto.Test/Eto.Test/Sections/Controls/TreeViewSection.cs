@@ -108,6 +108,7 @@ namespace Eto.Test.Sections.Controls
                 Size = new Size(100, 150)
             };
 
+#if DESKTOP
             var menu = new ContextMenu();
             var item = new ImageMenuItem { Text = "Click Me!" };
             item.Click += (s, e) =>
@@ -133,7 +134,7 @@ namespace Eto.Test.Sections.Controls
             menu.MenuItems.Add(item);
 
             control.ContextMenu = menu;
-
+#endif
             LogEvents(control);
 
             if (false)
