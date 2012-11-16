@@ -254,5 +254,65 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control.RefreshData ();
 		}
-	}
+
+        public ITreeItem GetNodeAt(Eto.Drawing.Point point)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool LabelEdit
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public bool IsExpanded(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Collapse(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddTo(ITreeItem dest, ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public bool AllowDrop
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void Expand(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Remove(ITreeItem item)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void SetImage(TreeItem item, Eto.Drawing.Image image)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

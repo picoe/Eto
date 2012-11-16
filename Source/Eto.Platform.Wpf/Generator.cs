@@ -110,6 +110,10 @@ namespace Eto.Platform.Wpf
 			return new sw.Point (value.X, value.Y);
 		}
 
+        public static sw.Point Convert(PointF value)
+        {
+            return new sw.Point(value.X, value.Y);
+        }
 
 		public static string ConvertMneumonicToWPF (string value)
 		{
@@ -127,7 +131,7 @@ namespace Eto.Platform.Wpf
 		public static KeyPressEventArgs Convert (swi.KeyEventArgs e)
 		{
 			var key = KeyMap.Convert (e.Key, swi.Keyboard.Modifiers);
-			return new KeyPressEventArgs (key) {
+			return new KeyPressEventArgs (key, e.IsDown ? KeyType.KeyDown : KeyType.KeyUp) {
 				Handled = e.Handled
 			};
 		}
@@ -177,5 +181,5 @@ namespace Eto.Platform.Wpf
 				throw new NotSupportedException ();
 			}
 		}
-	}
+    }
 }

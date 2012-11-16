@@ -5,6 +5,7 @@ using System.Text;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -23,5 +24,24 @@ namespace Eto.Platform.Wpf.Forms
 			else
 				ApplicationHandler.Instance.DelayShownWindows.Add (Control);
 		}
-	}
+
+        public Color TransparencyKey
+        {
+            get { throw new NotImplementedException(); }
+            set { throw new NotImplementedException(); }
+        }
+
+
+        public bool KeyPreview
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+    }
 }

@@ -47,14 +47,24 @@ namespace Eto.Platform.Wpf.Forms
 				var max = Control.ColumnDefinitions[x].ActualWidth;
 				foreach (var child in ColumnControls (x)) {
 					if (!double.IsNaN(child.Width))
-						child.Width = max - child.Margin.Left - child.Margin.Right;
+						child.Width = 
+                            Math.Max(
+                                0,
+                                max 
+                                - child.Margin.Left 
+                                - child.Margin.Right);
 				}
 			}
 			for (int y = 0; y < Control.RowDefinitions.Count; y++) {
 				var max = Control.RowDefinitions[y].ActualHeight;
 				foreach (var child in RowControls (y)) {
 					if (!double.IsNaN (child.Height))
-						child.Height = max - child.Margin.Top - child.Margin.Bottom;
+						child.Height = 
+                            Math.Max(
+                                0,
+                                max 
+                                - child.Margin.Top 
+                                - child.Margin.Bottom);
 				}
 			}
 		}

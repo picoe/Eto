@@ -13,15 +13,16 @@ namespace Eto.Platform.Wpf.Forms
 	public class ToolBarButtonHandler : ToolBarItemHandler<swc.Button, ToolBarButton>, IToolBarButton
 	{
 		Icon icon;
-		swc.Image image;
+		swc.Image swcImage;
+        Image image;
 		swc.TextBlock label;
 		public ToolBarButtonHandler ()
 		{
 			Control = new swc.Button ();
-			image = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
+			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
 			label = new swc.TextBlock ();
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
-			panel.Children.Add (image);
+			panel.Children.Add (swcImage);
 			panel.Children.Add (label);
 			Control.Content = panel;
 			Control.Click += delegate {
@@ -48,11 +49,26 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				icon = value;
 				if (icon != null)
-					image.Source = ((IconHandler)icon.Handler).GetIconClosestToSize ((int)image.MaxWidth);
+					swcImage.Source = ((IconHandler)icon.Handler).GetIconClosestToSize ((int)swcImage.MaxWidth);
 				else
-					image.Source = null;
+					swcImage.Source = null;
 			}
 		}
+
+        public Image Image
+        {
+            get { return image; }
+            set
+            {
+                image = value;
+                /* TODO
+                if (image != null)
+                    image.Source = image.ControlObject as swm.ImageSource;
+                else
+                    image.Source = null;*/
+            }
+        }
+
 
 		public bool Enabled
 		{

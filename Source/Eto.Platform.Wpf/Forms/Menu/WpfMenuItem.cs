@@ -16,6 +16,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		where W : MenuActionItem
 	{
 		Eto.Drawing.Icon icon;
+        Eto.Drawing.Image image;
 		swi.RoutedCommand command = new swi.RoutedCommand ();
 		bool openingHandled;
 
@@ -42,6 +43,25 @@ namespace Eto.Platform.Wpf.Forms.Menu
 					Control.Icon = null;
 			}
 		}
+
+        public Eto.Drawing.Image Image
+        {
+            get { return image; }
+            set
+            {
+                image = value;
+                /* TODO
+                if (image != null)
+                    Control.Icon = new swc.Image
+                    {
+                        Source = ((IWpfImage)icon.Handler).GetIconClosestToSize(16),
+                        MaxWidth = 16,
+                        MaxHeight = 16
+                    };
+                else
+                    Control.Icon = null;*/
+            }
+        }
 
 		public string Text
 		{

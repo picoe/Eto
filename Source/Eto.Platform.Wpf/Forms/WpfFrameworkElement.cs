@@ -183,7 +183,7 @@ namespace Eto.Platform.Wpf.Forms
 					Control.TextInput += (sender, e) => {
 						foreach (var keyChar in e.Text) {
 							var key = Key.None;
-							var args = new KeyPressEventArgs (key, keyChar);
+                            var args = new KeyPressEventArgs(key, KeyType.KeyDown, keyChar);
 							Widget.OnKeyDown (args);
 							e.Handled |= args.Handled;
 						}
@@ -254,5 +254,55 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			
 		}
-	}
+        public Point ScreenToWorld(Point p)
+        {
+            // TODO: Is this correct?
+            return 
+                Generator.Convert(
+                    Control.PointFromScreen(
+                        Generator.Convert(p)));
+        }
+
+        public Point WorldToScreen(Point p)
+        {
+            return
+                Generator.Convert(
+                    Control.PointToScreen(
+                        Generator.Convert(p)));
+        }
+
+
+        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public bool Capture
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Point MousePosition
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public Point Location
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void SetControl(object control)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

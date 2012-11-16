@@ -61,11 +61,11 @@ namespace Eto.Platform.Wpf.Drawing
 		string Convert (FontFamily family)
 		{
 			switch (family) {
-				case FontFamily.Monospace:
+				case Eto.Drawing.FontFamily.Monospace:
 					return "Courier New";
-				case FontFamily.Sans:
+                case Eto.Drawing.FontFamily.Sans:
 					return "Verdana";
-				case FontFamily.Serif:
+                case Eto.Drawing.FontFamily.Serif:
 					return "Times New Roman";
 				default:
 					throw new NotSupportedException ();
@@ -161,11 +161,76 @@ namespace Eto.Platform.Wpf.Drawing
 		public bool Italic
 		{
 			get { return this.FontStyle == System.Windows.FontStyles.Italic; }
-		}
+        }
 
-		float IFont.Size
-		{
-			get { return (float)this.Size; }
-		}
-	}
+        public bool Underline
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public bool Strikeout
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float SizeInPoints
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public string FontFamily
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float AscentInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float DescentInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float HeightInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public float SizeInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public IFont Clone()
+        {
+            throw new NotImplementedException();
+        }
+
+        #region IFont Members
+
+        public void Create(string fontFamily, float sizeInPoints, FontStyle style)
+        {
+            throw new NotImplementedException();
+        }
+
+        public float ExHeightInPixels
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public void Create(string fontFamily, float size)
+        {
+            throw new NotImplementedException();
+        }
+
+        #endregion
+
+
+        public void Create()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

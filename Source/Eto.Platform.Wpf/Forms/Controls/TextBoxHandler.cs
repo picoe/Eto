@@ -62,5 +62,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return Control.Watermark as string; }
 			set { Control.Watermark = value; }
 		}
-	}
+
+        public void SelectAll()
+        {
+            Control.SelectAll();
+        }
+    }
 }

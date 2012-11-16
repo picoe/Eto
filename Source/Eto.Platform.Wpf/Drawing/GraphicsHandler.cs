@@ -84,7 +84,7 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.DrawLine (pen, new sw.Point (startx + t, starty + t), new sw.Point (endx + t, endy + t));
 		}
 
-		public void FillRectangle (Color color, int x, int y, int width, int height)
+		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
 			PushGuideLines (x, y, width, height);
 			var brush = new swm.SolidColorBrush (Generator.Convert (color));
@@ -153,6 +153,26 @@ namespace Eto.Platform.Wpf.Drawing
 				Control.Pop ();
 		}
 
+        public void DrawImage(Image image, PointF pointF)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawImage(Image image, RectangleF rect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawImage(Image image, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawImage(Image image, RectangleF source, RectangleF destination)
+        {
+            throw new NotImplementedException();
+        }
+
 		public void DrawIcon (Icon icon, int x, int y, int width, int height)
 		{
 			var src = ((IconHandler)icon.Handler).Control;
@@ -161,11 +181,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Pop ();
 		}
 
-		public void DrawText (Font font, Color color, int x, int y, string text)
+        public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			var fontHandler = font.Handler as FontHandler;
 			var brush = new swm.SolidColorBrush(Generator.Convert(color));
-			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, fontHandler.PixelSize, brush);
+			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, font.SizeInPixels, brush);
 			Control.DrawText (formattedText, new sw.Point (x, y));
 		}
 
@@ -173,13 +193,8 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var fontHandler = font.Handler as FontHandler;
 			var brush = new swm.SolidColorBrush (swm.Colors.White);
-			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, fontHandler.PixelSize, brush);
+            var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, font.SizeInPixels, brush);
 			return new SizeF ((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
-		}
-
-		public Region ClipRegion
-		{
-			get; set; 
 		}
 
 		public void Flush ()
@@ -237,5 +252,113 @@ namespace Eto.Platform.Wpf.Drawing
 				Close ();
 			base.Dispose (disposing);
 		}
-	}
+
+        public void SetClip(RectangleF rect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void TranslateTransform(float dx, float dy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillRectangle(Brush brush, RectangleF Rectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillRectangle(Brush brush, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillPath(Brush brush, GraphicsPath path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public double DpiX
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public double DpiY
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public RectangleF ClipBounds
+        {
+            get { throw new NotImplementedException(); }
+        }
+
+        public Matrix Transform
+        {
+            get
+            {
+                throw new NotImplementedException();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public void RotateTransform(float angle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void ScaleTransform(float sx, float sy)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void MultiplyTransform(Matrix matrix)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawPath(Pen pen, GraphicsPath path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetClip(Graphics graphics)
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void SaveTransform()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void RestoreTransform()
+        {
+            throw new NotImplementedException();
+        }
+
+        public object CreateText(Font font, Color color, string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawText(object o, float x, float y)
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

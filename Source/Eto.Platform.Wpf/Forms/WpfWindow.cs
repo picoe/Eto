@@ -334,5 +334,16 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get { return Control.IsActive && ((ApplicationHandler)Application.Instance.Handler).IsActive; }
 		}
-	}
+
+        public void RemoveBorder()
+        {
+            throw new NotImplementedException();
+        }
+
+
+        public void BringToFront()
+        {
+            // TODO
+        }
+    }
 }
