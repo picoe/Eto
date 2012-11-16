@@ -59,6 +59,16 @@ namespace Eto.Platform.Windows.Drawing
 			get { return new Size(Control.Width, Control.Height); }
 		}
 
+        public int Width
+        {
+            get { return Control.Width; }
+        }
+
+        public int Height
+        {
+            get { return Control.Height; }
+        }
+
 		public void Resize(int width, int height)
 		{
 			Control = new SD.Bitmap(Control, new SD.Size(width, height));

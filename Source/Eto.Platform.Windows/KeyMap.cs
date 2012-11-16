@@ -10,15 +10,43 @@ namespace Eto.Platform.Windows
 	{
 		static Dictionary<SWF.Keys, Key> keymap = new Dictionary<SWF.Keys, Key>();
 		static Dictionary<Key, SWF.Keys> inverse = new Dictionary<Key, SWF.Keys>();
-		
-		public static Key Find(SWF.Keys key)
+
+        public static Key Convert(SWF.Keys keyData)
+        {
+            // convert the modifiers
+            Key modifiers = Key.None;
+
+            // Shift
+            if ((keyData & SWF.Keys.Shift) == SWF.Keys.Shift)
+                modifiers |= Key.Shift;
+
+            // Control
+            if ((keyData & SWF.Keys.Control) == SWF.Keys.Control)
+                modifiers |= Key.Control;
+
+            // Alt
+            if ((keyData & SWF.Keys.Alt) == SWF.Keys.Alt)
+                modifiers |= Key.Alt;
+
+            var keyCode =
+                Find(keyData & ~(SWF.Keys.Shift | SWF.Keys.Control | SWF.Keys.Alt));
+
+            return keyCode | modifiers;
+        }
+
+		private static Key Find(SWF.Keys key)
 		{
 			Key mapped;
 			if (keymap.TryGetValue(key, out mapped)) return mapped;
 			else return Key.None;
 		}
 		
-		public static Key Convert(SWF.Keys key)
+        /// <summary>
+        /// Possibly obsolete
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+		private static Key Convert_(SWF.Keys key)
 		{
 			var keys = key.ToString()
                   .Split(new[] { ", " }, StringSplitOptions.None)
@@ -140,6 +168,8 @@ namespace Eto.Platform.Windows
 			keymap.Add(SWF.Keys.Divide, Key.Divide);
 			keymap.Add(SWF.Keys.Enter, Key.Enter);
 			keymap.Add(SWF.Keys.Insert, Key.Insert);
+            keymap.Add(SWF.Keys.OemPeriod, Key.Period);
+            keymap.Add(SWF.Keys.Tab, Key.Tab);
 			
 			foreach (var entry in keymap)
 			{

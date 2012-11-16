@@ -56,7 +56,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public override void SetParent (Control parent)
 		{
 			base.SetParent (parent);
-			tabcontrol = parent.ControlObject as SWF.TabControl;
+			
+            tabcontrol = 
+                parent != null
+                ? parent.ControlObject as SWF.TabControl
+                : null;
+
 			SetImage ();
 		}
 		

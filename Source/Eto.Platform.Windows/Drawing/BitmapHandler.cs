@@ -80,6 +80,16 @@ namespace Eto.Platform.Windows.Drawing
 			get { return new Size(Control.Width, Control.Height); }
 		}
 
+        public int Width
+        {
+            get { return Control.Width; }
+        }
+
+        public int Height
+        {
+            get { return Control.Height; }
+        }
+
 		public void Resize(int width, int height)
 		{
 			Control = new SD.Bitmap(Control, new SD.Size(width, height));
@@ -107,10 +117,74 @@ namespace Eto.Platform.Windows.Drawing
 			else  Control.Save(stream, Generator.Convert(format));
 		}
 
+        public byte[] ToPNGByteArray()
+        {
+            Byte[] result = null;
+
+            var bitmap = this.Control;
+
+            MemoryStream memoryStream = new MemoryStream();
+
+            if (bitmap != null)
+                bitmap.Save(memoryStream, SD.Imaging.ImageFormat.Png);
+            // Don't use MemoryBmp in the above line of code - see:
+            // https://connect.microsoft.com/VisualStudio/feedback/ViewFeedback.aspx?FeedbackID=98452
+
+            result = memoryStream.ToArray(); // we use ToArray() rather than GetBuffer() so that
+            // 1. We are sure the memory stream is no longer needed
+            // 2. The size is exactly enough.
+            return result;
+        }
 
 		public SD.Image GetImageWithSize (int? size)
 		{
 			return Control;
 		}
-	}
+
+        #region IBitmap Members
+
+
+        public void Create(int width, int height, Graphics graphics)
+        {
+            this.Control =
+                new SD.Bitmap(width, height,
+                    ((GraphicsHandler)graphics.Handler).Control);
+        }
+
+        public void Create(Size size, PixelFormat pixelFormat)
+        {
+            this.Control =
+                new SD.Bitmap(
+                    size.Width, size.Height,
+                    (SD.Imaging.PixelFormat)pixelFormat);
+        }
+
+        public IBitmap Clone()
+        {
+            return new BitmapHandler(
+                (SD.Bitmap)this.Control.Clone());
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            return 
+                Generator.Convert(
+                    this.Control.GetPixel(x, y));
+        }
+
+        public void Create(int width, int height)
+        {
+            this.Control =
+                new SD.Bitmap(width, height);
+        }
+
+        public void Create(Image image)
+        {
+            this.Control =
+                new SD.Bitmap(
+                    (SD.Image)image.ControlObject);
+        }
+
+        #endregion
+    }
 }

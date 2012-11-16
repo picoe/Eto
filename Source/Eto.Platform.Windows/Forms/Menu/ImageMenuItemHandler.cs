@@ -12,14 +12,19 @@ namespace Eto.Platform.Windows
 	public class ImageMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ImageMenuItem>, IImageMenuItem, IMenu
 	{
 		Icon icon;
+        Image image;
 		bool openedHandled;
 
 		public ImageMenuItemHandler()
 		{
 			Control = new SWF.ToolStripMenuItem();
+
+            Control.ImageScaling =
+                SWF.ToolStripItemImageScaling.None;
 			Control.Click += (sender, e) => {
 				Widget.OnClick (EventArgs.Empty);
 			};
+
 		}
 
 		void HandleDropDownOpened (object sender, EventArgs e)
@@ -73,6 +78,21 @@ namespace Eto.Platform.Windows
 				else Control.Image = null;
 			}
 		}
+
+        public Image Image
+        {
+            get { return image; }
+            set
+            {
+                image = value;
+
+                if (image != null) 
+                    Control.Image = 
+                        image.ControlObject as SD.Image;
+
+                else Control.Image = null;
+            }
+        }
 
 		#endregion
 

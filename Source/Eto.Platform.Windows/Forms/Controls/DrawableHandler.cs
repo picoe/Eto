@@ -9,28 +9,28 @@ namespace Eto.Platform.Windows
 {
 	public class DrawableHandler : WindowsControl<DrawableHandler.DrawableInternal, Drawable>, IDrawable
 	{
-
-		public class DrawableInternal : SWF.Control
+		public class DrawableInternal : SWF.UserControl
 		{
 			bool canFocus;
 
-			DrawableHandler handler;
-			public DrawableInternal(DrawableHandler handler)
+            public Drawable Drawable { get; set; }
+
+            public DrawableHandler Handler { get; set; }
+
+			public DrawableInternal(
+                DrawableHandler handler)
 			{
-				this.handler = handler;
-				this.SetStyle(SWF.ControlStyles.AllPaintingInWmPaint, true);
-				//this.SetStyle(SWF.ControlStyles.SupportsTransparentBackColor, true);
-				//this.SetStyle(SWF.ControlStyles.Selectable, true);
-				this.SetStyle(SWF.ControlStyles.StandardClick, true);
-				this.SetStyle(SWF.ControlStyles.StandardDoubleClick, true);
-				this.SetStyle(SWF.ControlStyles.ContainerControl, true);
-				this.SetStyle(SWF.ControlStyles.UserPaint, true);
-				this.SetStyle(SWF.ControlStyles.DoubleBuffer, true);
-				//this.SetStyle(SWF.ControlStyles.Opaque, true);
-				//this.SetStyle(SWF.ControlStyles., true);
-				//this.BackColor = SD.Color.Transparent;
-				//this.BackColor = SD.Color.Black;
-			}
+				this.Handler = handler;
+                this.SetStyle(SWF.ControlStyles.AllPaintingInWmPaint, true);
+                //this.SetStyle(SWF.ControlStyles.SupportsTransparentBackColor, true);
+                //this.SetStyle(SWF.ControlStyles.Selectable, true);
+                this.SetStyle(SWF.ControlStyles.StandardClick, true);
+                this.SetStyle(SWF.ControlStyles.StandardDoubleClick, true);
+                this.SetStyle(SWF.ControlStyles.ContainerControl, true);
+                this.SetStyle(SWF.ControlStyles.UserPaint, true);
+                this.SetStyle(SWF.ControlStyles.DoubleBuffer, true);
+                this.SetStyle(SWF.ControlStyles.ResizeRedraw, true);
+            }
 			
 			public bool CanFocusMe
 			{
@@ -57,7 +57,7 @@ namespace Eto.Platform.Windows
 				return e.Handled;
 			}
 			
-			protected override bool IsInputKey(System.Windows.Forms.Keys keyData)
+			protected override bool IsInputKey(SWF.Keys keyData)
 			{
 				switch (keyData)
 				{
@@ -65,18 +65,21 @@ namespace Eto.Platform.Windows
 					case SWF.Keys.Down:
 					case SWF.Keys.Left:
 					case SWF.Keys.Right:
+                    case SWF.Keys.Back:
 						return true;
 					default:
 						return base.IsInputKey(keyData);
 				}
 			}
 
-			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+			protected override void OnPaint(SWF.PaintEventArgs e)
 			{
-				//base.OnPaint(e);
-				Graphics graphics = new Graphics(handler.Widget.Generator, new GraphicsHandler(e.Graphics));
+				base.OnPaint(e);
 
-				handler.Widget.OnPaint(new PaintEventArgs(graphics, Generator.Convert(e.ClipRectangle)));
+                if (Handler != null &&
+                    Handler.Widget != null)
+                    Handler.Widget.OnPaint(
+                        Generator.Convert(e));
 			}
 			protected override void OnClick(EventArgs e)
 			{
@@ -91,7 +94,29 @@ namespace Eto.Platform.Windows
             }
 
 		}
-		
+
+        public DrawableHandler()
+        {
+        }
+
+        /// <summary>
+        /// This is to allow instantiating a DrawableHandler
+        /// from an existing control.
+        /// </summary>
+        public DrawableHandler(
+            DrawableInternal control) 
+        {
+            Control = control;
+            control.Handler = this; 
+
+            Control.Drawable =
+                new Eto.Forms.Drawable(
+                        Generator.Current,
+                        this);
+
+            Control.TabStop = true;
+        }
+
 		public void Create ()
 		{
 			Control = new DrawableInternal(this);

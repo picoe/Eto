@@ -55,6 +55,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case WebView.NavigatedEvent:
+				this.Control.Navigated += (s, e) => {
+					Widget.OnNavigated (new WebViewLoadedEventArgs (e.Url));
+				};
+				break;
 			case WebView.DocumentLoadedEvent:
 				this.Control.DocumentCompleted += (sender, e) => {
 					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (e.Url));

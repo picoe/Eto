@@ -24,6 +24,16 @@ namespace Eto.Platform.Windows.Drawing
 			get { return new Size (Control.Width, Control.Height); }
 		}
 
+        public int Width
+        {
+            get { return Control.Width; }
+        }
+
+        public int Height
+        {
+            get { return Control.Height; }
+        }
+
 		#region IIcon Members
 
 		public void Create (Stream stream)

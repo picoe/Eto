@@ -148,7 +148,39 @@ namespace Eto.Platform.Windows
 				}
 			}			
 		}
-		
+
+        static LabelHandler()
+        {
+            Style.Add<Label, SWF.Label>(
+                "docking_window_caption",
+                (widget,
+                    control) =>
+                {
+                    control.Dock = SWF.DockStyle.Top;
+                    control.AutoSize = true;
+                    control.BackColor = System.Drawing.SystemColors.GradientInactiveCaption;
+                    control.Dock = System.Windows.Forms.DockStyle.Left;
+                    control.ForeColor = System.Drawing.SystemColors.InactiveCaptionText;
+                    control.Location = new System.Drawing.Point(0, 0);
+                    control.Margin = new System.Windows.Forms.Padding(0);
+                });
+
+            Style.Add<Panel, SWF.Panel>(
+                "docking_window_caption_panel",
+                (widget,
+                    control) =>
+                {
+                    control.Dock = SWF.DockStyle.Top;
+                    control.Location = new System.Drawing.Point(0, 0);
+                    control.Margin = new SWF.Padding(0);
+                    control.Name = "CaptionPanel";
+                    control.Padding = new SWF.Padding(0, 0, 3, 0);
+                    control.Size = new System.Drawing.Size(292, 21);
+                    control.TabIndex = 1;
+                });
+
+        }
+
 		public LabelHandler ()
 		{
 			Control = new MyLabel { Handler = this };

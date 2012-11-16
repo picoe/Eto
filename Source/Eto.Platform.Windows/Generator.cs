@@ -64,12 +64,22 @@ namespace Eto.Platform.Windows
 
 		public static Color Convert(SD.Color color)
 		{
-			return new Color(color.R / 255f, color.G / 255f, color.B / 255f);
+			return new Color(
+                color.R / 255f, 
+                color.G / 255f, 
+                color.B / 255f,
+                color.A / 255f);
 		}
 
 		public static SD.Color Convert(Color color)
 		{
-			return SD.Color.FromArgb((byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
+			var result = SD.Color.FromArgb(
+                (byte)(color.A * 255),
+                (byte)(color.R * 255), 
+                (byte)(color.G * 255), 
+                (byte)(color.B * 255));
+
+            return result;
 		}
 
 		public static Size Convert(SD.Size size)
@@ -107,7 +117,17 @@ namespace Eto.Platform.Windows
 			return new SD.Point(point.X, point.Y);
 		}
 
-		public static Rectangle Convert(SD.Rectangle rect)
+        public static PointF Convert(SD.PointF point)
+        {
+            return new PointF(point.X, point.Y);
+        }
+
+        public static SD.PointF Convert(PointF point)
+        {
+            return new SD.PointF(point.X, point.Y);
+        }
+
+        public static Rectangle Convert(SD.Rectangle rect)
 		{
 			return new Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
 		}
@@ -116,6 +136,16 @@ namespace Eto.Platform.Windows
 		{
 			return new SD.Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
 		}
+
+        public static RectangleF Convert(SD.RectangleF rect)
+        {
+            return new RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
+        }
+
+        public static SD.RectangleF Convert(RectangleF rect)
+        {
+            return new SD.RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
+        }
 
 		public static DialogResult Convert(SWF.DialogResult result)
 		{
@@ -200,5 +230,241 @@ namespace Eto.Platform.Windows
 				throw new NotSupportedException();
 			}
 		}
-	}
+        internal static SD.Point[] Convert(Point[] points)
+        {
+            var result =
+                new SD.Point[points.Length];
+
+            for (var i = 0; 
+                i < points.Length; 
+                ++i)
+            {
+                var p = points[i];
+                result[i] = 
+                    new SD.Point(p.X, p.Y);
+            }
+
+            return result;
+        }
+
+        internal static SD.PointF[] Convert(PointF[] points)
+        {
+            var result =
+                new SD.PointF[points.Length];
+
+            for (var i = 0;
+                i < points.Length;
+                ++i)
+            {
+                var p = points[i];
+                result[i] =
+                    new SD.PointF(p.X, p.Y);
+            }
+
+            return result;
+        }
+
+        internal static PointF[] Convert(SD.PointF[] points)
+        {
+            var result =
+                new PointF[points.Length];
+
+            for (var i = 0;
+                i < points.Length;
+                ++i)
+            {
+                var p = points[i];
+                result[i] =
+                    new PointF(p.X, p.Y);
+            }
+
+            return result;
+        }
+
+        public static SD.Graphics Convert(Graphics graphics)
+        {
+            var h = (GraphicsHandler)graphics.Handler;
+            return h.Control;
+        }
+
+        public static SD.Drawing2D.GraphicsPath Convert(GraphicsPath graphicsPath)
+        {
+            var h = (GraphicsPathHandler)graphicsPath.Handler;
+            return h.Control;
+        }
+
+        public static SD.Image Convert(Image graphics)
+        {
+            var h = (BitmapHandler)graphics.Handler;
+            return h.Control;
+        }
+
+        public static SD.Font Convert(Font font)
+        {
+            var h = (FontHandler)font.Handler;
+            return h.Control;
+        }
+
+        internal static DragDropEffects Convert(SWF.DragDropEffects effects)
+        {
+            return (DragDropEffects)effects;
+        }
+
+        internal static SWF.DragDropEffects Convert(
+            DragDropEffects effects)
+        {
+            return (SWF.DragDropEffects)effects;
+        }
+
+        internal static DragEventArgs Convert(
+            SWF.DragEventArgs e)
+        {
+            var result =
+                new DragEventArgs(
+                    new DataObject(e.Data),
+                    e.X,
+                    e.Y,
+                    Convert(e.AllowedEffect),
+                    Convert(e.Effect));
+
+            return result;
+        }
+
+        internal static GiveFeedbackEventArgs Convert(SWF.GiveFeedbackEventArgs e)
+        {
+            return 
+                new GiveFeedbackEventArgs(
+                    Convert(e.Effect), 
+                    e.UseDefaultCursors);
+        }
+
+        internal static QueryContinueDragEventArgs Convert(SWF.QueryContinueDragEventArgs e)
+        {
+            return
+                new QueryContinueDragEventArgs(
+                    e.KeyState,
+                    e.EscapePressed,
+                    Convert(e.Action));
+        }
+
+        private static DragAction Convert(
+            SWF.DragAction dragAction)
+        {
+            return (DragAction)dragAction;
+        }
+
+        public static MouseEventArgs Convert(SWF.MouseEventArgs e)
+        {
+            var point = new Point(e.X, e.Y);
+            var buttons = Convert(e.Button);
+            var modifiers = KeyMap.Convert(SWF.Control.ModifierKeys);
+
+            var result = new MouseEventArgs(buttons, modifiers, point);
+
+            result.Delta = e.Delta;
+
+            return result;
+        }
+
+        private static MouseButtons Convert(SWF.MouseButtons button)
+        {
+            MouseButtons buttons = MouseButtons.None;
+
+            if ((button & SWF.MouseButtons.Left) != 0)
+                buttons |= MouseButtons.Primary;
+
+            if ((button & SWF.MouseButtons.Right) != 0)
+                buttons |= MouseButtons.Alternate;
+
+            if ((button & SWF.MouseButtons.Middle) != 0)
+                buttons |= MouseButtons.Middle;
+
+            return buttons;
+        }
+
+        public static Graphics Convert(SD.Graphics g)
+        {
+            return
+                new Graphics(
+                    new GraphicsHandler(
+                        g));
+        }
+
+        public static Eto.Forms.PaintEventArgs Convert(
+            SWF.PaintEventArgs e)
+        {
+            return
+                new Eto.Forms.PaintEventArgs(
+                    Eto.Platform.Windows.Generator.Convert(e.Graphics),
+                    Eto.Platform.Windows.Generator.Convert(e.ClipRectangle));
+        }
+
+        public static ITreeItem Convert(SWF.TreeNode treeNode)
+        {
+            return
+                treeNode != null
+                ? treeNode.Tag as ITreeItem
+                : null;
+        }
+
+        public static TreeNodeMouseClickEventArgs Convert(
+            SWF.TreeNodeMouseClickEventArgs e)
+        {
+            var mouseEventArgs = 
+                Convert((SWF.MouseEventArgs)e);
+
+            return new TreeNodeMouseClickEventArgs(
+                mouseEventArgs,
+                Convert(e.Node));
+        }
+
+        public static TreeViewItemEventArgs Convert(SWF.TreeViewEventArgs e)
+        {
+            return 
+                new TreeViewItemEventArgs(
+                    Convert(e.Node))
+                {
+                    Action = (Eto.Forms.TreeViewAction) e.Action,
+                };
+
+        }
+
+        public static TreeViewItemEventArgs Convert(SWF.NodeLabelEditEventArgs e)
+        {
+            return
+                new TreeViewItemEventArgs(
+                    Convert(e.Node))
+                    {
+                        CancelEdit = e.CancelEdit,
+                        Label = e.Label
+                    };
+
+        }
+
+        public static ItemDragEventArgs Convert(SWF.ItemDragEventArgs e)
+        {
+            return new ItemDragEventArgs()
+            {
+                Buttons = Convert(e.Button),
+                Item = Convert(e.Item as SWF.TreeNode)
+            };
+        }
+
+        public static SD.Drawing2D.Matrix Convert(Matrix m)
+        {
+            var h = (MatrixHandler)m.Handler;
+            return h.Control;
+        }
+
+        public static SD.Image Convert(IImage i)
+        {
+            SD.Image result = null;
+
+            if (i != null)
+                result = 
+                    i.ControlObject as SD.Image;
+
+            return result;
+        }
+    }
 }

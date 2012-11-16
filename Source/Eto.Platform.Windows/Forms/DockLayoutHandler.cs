@@ -80,6 +80,9 @@ namespace Eto.Platform.Windows
 					childControl.Dock = SWF.DockStyle.Fill;
 					value.SetScale (XScale, YScale);
 					parent.Padding = Generator.Convert (padding);
+
+                    // Clear the existing child controls
+                    parent.Controls.Clear();
 					parent.Controls.Add (childControl);
 				}
 	

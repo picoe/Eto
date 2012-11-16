@@ -28,7 +28,8 @@ namespace Eto.Platform.Windows
 		{
 			base.OnLoadComplete (e);
 			if (position != null) {
-				Control.SplitterDistance = position.Value;
+                // REMOVED: this messes up docking windows
+				// Control.SplitterDistance = position.Value;
 			}
 			Control.Panel1Collapsed = panel1 == null || !((IWindowsControl)panel1.Handler).InternalVisible;
 			Control.Panel2Collapsed = panel2 == null || !((IWindowsControl)panel2.Handler).InternalVisible;

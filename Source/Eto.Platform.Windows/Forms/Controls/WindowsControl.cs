@@ -48,6 +48,10 @@ namespace Eto.Platform.Windows
 		}
 	}
 
+    /*public class MouseEventSourceHandler : Eto.Interface.IMouseInputSource
+    {
+    }*/
+
 	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
 		where T: System.Windows.Forms.Control
 		where W: Control
@@ -96,9 +100,25 @@ namespace Eto.Platform.Windows
 
 		public override void AttachEvent (string handler)
 		{
+            Action<Action<DragEventArgs>, SWF.DragEventArgs>
+                handleDragEvent = (f, e) =>
+                {
+                    var e1 =
+                        Generator.Convert(e);
+
+                    // call the function
+                    f(e1);
+
+                    e.Effect =
+                        Generator.Convert(
+                            e1.Effect);
+                };
+
+
 			switch (handler) {
 			case Eto.Forms.Control.KeyDownEvent: 
 				Control.KeyDown += new SWF.KeyEventHandler (Control_KeyDown);
+				Control.KeyUp += new SWF.KeyEventHandler (Control_KeyUp);
 				Control.KeyPress += new System.Windows.Forms.KeyPressEventHandler (Control_KeyPress);
 				break;
 				
@@ -108,7 +128,10 @@ namespace Eto.Platform.Windows
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.SizeChanged += Control_SizeChanged;
 				break;
-			case Eto.Forms.Control.MouseDoubleClickEvent:
+            case Eto.Forms.Control.MouseClickEvent:
+                Control.MouseClick += Control_Click;
+                break;
+            case Eto.Forms.Control.MouseDoubleClickEvent:
 				Control.MouseDoubleClick += Control_DoubleClick;
 				break;
 			case Eto.Forms.Control.MouseEnterEvent:
@@ -126,7 +149,13 @@ namespace Eto.Platform.Windows
 			case Eto.Forms.Control.MouseMoveEvent:
 				Control.MouseMove += Control_MouseMove;
 				break;
-			case Eto.Forms.Control.GotFocusEvent:
+            case Eto.Forms.Control.MouseHoverEvent:
+                Control.MouseHover += Control_MouseHover;
+                break;
+            case Eto.Forms.Control.MouseWheelEvent:
+                Control.MouseWheel += Control_MouseWheel;
+                break;
+            case Eto.Forms.Control.GotFocusEvent:
 				Control.GotFocus += delegate {
 					Widget.OnGotFocus (EventArgs.Empty); 
 				};
@@ -136,8 +165,47 @@ namespace Eto.Platform.Windows
 					Widget.OnLostFocus (EventArgs.Empty);
 				};
 				break;
-			}
+            case Eto.Forms.DragDropInputSource.DragDropEvent:
+                Control.DragDrop += (s, e) =>
+                    handleDragEvent(
+                        Widget.DragDropInputSource.OnDragDrop,
+                        e);
+                break;
+            case Eto.Forms.DragDropInputSource.DragEnterEvent:
+                Control.DragEnter += (s, e) =>
+                    handleDragEvent(
+                        Widget.DragDropInputSource.OnDragEnter,
+                        e);
+                break;
+            case Eto.Forms.DragDropInputSource.DragOverEvent:
+                Control.DragOver += (s, e) =>
+                    handleDragEvent(
+                        Widget.DragDropInputSource.OnDragOver,
+                        e);
+                break;
+            case Eto.Forms.DragDropInputSource.GiveFeedbackEvent:
+                Control.GiveFeedback += (s, e) =>
+                    Widget.DragDropInputSource.OnGiveFeedback(
+                        Generator.Convert(e));
+                break;
+            case Eto.Forms.DragDropInputSource.QueryContinueDragEvent:
+                Control.QueryContinueDrag += (s, e) =>
+                    // TODO: convert the result back to SWF
+                    Widget.DragDropInputSource.OnQueryContinueDrag(
+                        Generator.Convert(e));
+                break;
+            }
 		}
+
+        void Control_MouseWheel(object sender, SWF.MouseEventArgs e)
+        {
+            Widget.OnMouseDoubleClick(Generator.Convert(e));
+        }
+
+        void Control_MouseHover(object sender, EventArgs e)
+        {
+            Widget.OnMouseHover(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), Point.Empty));
+        }
 
 		void HandleControlMouseLeave (object sender, EventArgs e)
 		{
@@ -149,39 +217,29 @@ namespace Eto.Platform.Windows
 			Widget.OnMouseEnter (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
 		}
 
-		void Control_DoubleClick (object sender, System.Windows.Forms.MouseEventArgs e)
+        void Control_Click(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            Widget.OnMouseClick(Generator.Convert(e));
+        }
+        
+        void Control_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-			Widget.OnMouseDoubleClick (GetMouseEvent (e));
-		}
-
-		MouseEventArgs GetMouseEvent (System.Windows.Forms.MouseEventArgs e)
-		{
-			Point point = new Point (e.X, e.Y);
-			MouseButtons buttons = MouseButtons.None;
-			if ((e.Button & SWF.MouseButtons.Left) != 0)
-				buttons |= MouseButtons.Primary;
-			if ((e.Button & SWF.MouseButtons.Right) != 0)
-				buttons |= MouseButtons.Alternate;
-			if ((e.Button & SWF.MouseButtons.Middle) != 0)
-				buttons |= MouseButtons.Middle;
-			Key modifiers = KeyMap.Convert (SWF.Control.ModifierKeys);
-			
-			return new MouseEventArgs (buttons, modifiers, point);
+            Widget.OnMouseDoubleClick(Generator.Convert(e));
 		}
 
 		void Control_MouseUp (Object sender, SWF.MouseEventArgs e)
 		{
-			Widget.OnMouseUp (GetMouseEvent (e));
+            Widget.OnMouseUp(Generator.Convert(e));
 		}
 
 		void Control_MouseMove (Object sender, SWF.MouseEventArgs e)
 		{
-			Widget.OnMouseMove (GetMouseEvent (e));
+            Widget.OnMouseMove(Generator.Convert(e));
 		}
 
 		void Control_MouseDown (object sender, SWF.MouseEventArgs e)
 		{
-			Widget.OnMouseDown (GetMouseEvent (e));
+            Widget.OnMouseDown(Generator.Convert(e));
 		}
 
 		public virtual string Text {
@@ -294,6 +352,10 @@ namespace Eto.Platform.Windows
 
 		public virtual void SetParent (Control parent)
 		{
+            // This is needed to
+            // detach docking windows.
+            if (parent == null)
+                Control.Parent = null;            
 		}
 
 		void Control_SizeChanged (object sender, EventArgs e)
@@ -332,11 +394,12 @@ namespace Eto.Platform.Windows
 		{
 			charPressed = false;
 			handled = true;
-			key = KeyMap.Convert (e.KeyCode) | KeyMap.Convert (e.Modifiers);
+			key = KeyMap.Convert (e.KeyData);
 
 			if (key != Key.None) {
-				KeyPressEventArgs kpea = new KeyPressEventArgs (key);
+				KeyPressEventArgs kpea = new KeyPressEventArgs (key, KeyType.KeyDown);
 				Widget.OnKeyDown (kpea);
+                e.SuppressKeyPress = kpea.SuppressKeyPress;
 				e.Handled = kpea.Handled;
 				handled = kpea.Handled;
 			} else
@@ -344,18 +407,44 @@ namespace Eto.Platform.Windows
 			if (!handled && charPressed) {
 				// this is when something in the event causes messages to be processed for some reason (e.g. show dialog box)
 				// we want the char event to come after the dialog is closed, and handled is set to true!
-				KeyPressEventArgs kpea = new KeyPressEventArgs (key, keyChar);
+                KeyPressEventArgs kpea = new KeyPressEventArgs(key, KeyType.KeyDown, keyChar);
 				Widget.OnKeyDown (kpea);
+                e.SuppressKeyPress = kpea.SuppressKeyPress;
 				e.Handled = kpea.Handled;
 			}
 		}
 
-		void Control_KeyPress (object sender, System.Windows.Forms.KeyPressEventArgs e)
+        void Control_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            charPressed = false;
+            handled = true;
+            key = KeyMap.Convert(e.KeyData);
+
+            if (key != Key.None)
+            {
+                KeyPressEventArgs kpea = new KeyPressEventArgs(key, KeyType.KeyUp);
+                Widget.OnKeyUp(kpea);
+                e.Handled = kpea.Handled;
+                handled = kpea.Handled;
+            }
+            else
+                handled = false;
+            if (!handled && charPressed)
+            {
+                // this is when something in the event causes messages to be processed for some reason (e.g. show dialog box)
+                // we want the char event to come after the dialog is closed, and handled is set to true!
+                KeyPressEventArgs kpea = new KeyPressEventArgs(key, KeyType.KeyUp, keyChar);
+                Widget.OnKeyUp(kpea);
+                e.Handled = kpea.Handled;
+            }
+        }
+        
+        void Control_KeyPress(object sender, System.Windows.Forms.KeyPressEventArgs e)
 		{
 			charPressed = true;
 			keyChar = e.KeyChar;
 			if (!handled) {
-				KeyPressEventArgs kpea = new KeyPressEventArgs (key, keyChar);
+                KeyPressEventArgs kpea = new KeyPressEventArgs(key, KeyType.KeyDown, keyChar);
 				Widget.OnKeyDown (kpea);
 				e.Handled = kpea.Handled;
 			} else
@@ -381,5 +470,58 @@ namespace Eto.Platform.Windows
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-	}
+
+        public virtual Point ScreenToWorld(Point p)
+        {
+            return 
+                this.Control.PointToClient(
+                    p.ToPoint()).ToPoint();
+        }
+
+        public virtual Point WorldToScreen(Point p)
+        {
+            return 
+                this.Control.PointToScreen(
+                    p.ToPoint()).ToPoint();
+        }
+
+        public DragDropEffects DoDragDrop(
+            object data, 
+            DragDropEffects allowedEffects)
+        {
+            return
+                Generator.Convert(
+                    this.Control.DoDragDrop(
+                    data,
+                    Generator.Convert(allowedEffects)));            
+        }
+
+
+        public bool Capture
+        {
+            get
+            {
+                return this.Control.Capture;
+            }
+            set
+            {
+                this.Control.Capture = value;
+            }
+        }
+
+        public Point MousePosition
+        {
+            get { return Generator.Convert(SWF.Control.MousePosition); }
+        }
+
+        public Point Location
+        {
+            get { return Generator.Convert(this.Control.Location); }
+        }
+
+        public void SetControl(object control)
+        {
+            this.Control = control as T;
+        }
+    }
 }

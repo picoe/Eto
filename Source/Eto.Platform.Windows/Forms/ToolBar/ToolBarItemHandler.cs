@@ -19,6 +19,7 @@ namespace Eto.Platform.Windows
 		where W: ToolBarItem
 	{
 		Icon icon;
+        Image image;
 				
 		public abstract void CreateControl(ToolBarHandler handler);
 
@@ -49,6 +50,17 @@ namespace Eto.Platform.Windows
 				else Control.Image = null;
 			}
 		}
+
+        public Image Image
+        {
+            get { return image; }
+            set
+            {
+                this.image = value;
+                if (image != null) Control.Image = (SD.Image)(image.ControlObject);
+                else Control.Image = null;
+            }
+        }
 		
 		public abstract bool Enabled { get; set; }
 
