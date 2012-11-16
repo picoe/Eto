@@ -33,7 +33,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label{ Text = "Simple" }, Default ());
 			
 			layout.AddRow (new Label{ Text = "With Images\n&& Context Menu" }, ImagesAndMenu ());
-			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
+            layout.AddRow(new Label { Text = "Dynamic via the Context Menu" }, Dynamic());
+            layout.AddRow(new Label { Text = "Disabled" }, Disabled());
 			
 			layout.Add (null, false, true);
 		}
@@ -99,6 +100,54 @@ namespace Eto.Test.Sections.Controls
 			LogEvents (control);
 			return control;
 		}
+
+        Control Dynamic()
+        {
+            var control = new TreeView
+            {
+                Size = new Size(100, 150)
+            };
+
+            var menu = new ContextMenu();
+            var item = new ImageMenuItem { Text = "Click Me!" };
+            item.Click += (s, e) =>
+            {
+                if (control.SelectedItem != null)
+                {
+                    var treeItem = 
+                        control.SelectedItem
+                            as TreeItem;
+
+                    if (treeItem != null)
+                        treeItem.Children.Add(
+                            new TreeItem
+                            {
+                                Text = "New Item"
+                            });
+
+                    Log.Write(item, "Click, Rows: {0}", control.SelectedItem.Text);
+                }
+                else
+                    Log.Write(item, "Click, no item selected");
+            };
+            menu.MenuItems.Add(item);
+
+            control.ContextMenu = menu;
+
+            LogEvents(control);
+
+            if (false)
+                control.DataStore = new TreeItem
+                {
+                    Text = "Root",
+                    Expanded = true
+                };
+            else
+                control.DataStore =
+                    CreateTreeItem(2, "Item", Image);
+
+            return control;
+        }
 		
 		Control Disabled ()
 		{
