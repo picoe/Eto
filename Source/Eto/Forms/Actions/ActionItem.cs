@@ -51,6 +51,8 @@ namespace Eto.Forms
 
 		public string Icon { get; set; }
 
+        public string Id { get; set; }
+
 		public string SubMenuText { get; set; }
 		
 		public ActionItemCollection Actions { get; private set; }

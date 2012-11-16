@@ -101,6 +101,18 @@ namespace Eto.Forms
 		{
 			handler = (IContainer)base.Handler;
 		}
+
+        /// <summary>
+        /// An overload to be used when the handler is set after
+        /// construction
+        /// </summary>
+        /// <param name="generator"></param>
+        protected Container(Generator generator, IContainer handler) :
+            base(generator, handler)
+        {
+            this.handler = handler;
+        }
+
 		
 		public object ContainerObject {
 			get { return handler.ContainerObject; }

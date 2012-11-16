@@ -139,7 +139,7 @@ namespace Eto
 		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
 		/// after all of its logic has finished.
 		/// </remarks>
-		protected void Initialize ()
+		public void Initialize ()
 		{
 			Handler.Initialize ();
 		}

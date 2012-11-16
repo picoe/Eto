@@ -73,18 +73,30 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Binding\ColumnBinding.cs" />
+    <Compile Include="Cache\BrushCache.cs" />
+    <Compile Include="Cache\PenCache.cs" />
     <Compile Include="CancelEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\Region.cs" />
+    <Compile Include="Drawing\Brush.cs" />
+    <Compile Include="Drawing\Constants.cs" />
+    <Compile Include="Drawing\Matrix.cs" />
+    <Compile Include="Drawing\Pen.cs" />
+    <Compile Include="Drawing\StringAlignment.cs" />
+    <Compile Include="Drawing\TextAlign.cs" />
+    <Compile Include="Drawing\VerticalMetrics.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\DataObject.cs" />
+    <Compile Include="Forms\Controls\DragDrop.cs" />
+    <Compile Include="Forms\Controls\DragDropInputSource.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
@@ -106,6 +118,10 @@
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
+    <Compile Include="Interface\IDragDropInputSource.cs" />
+    <Compile Include="Interface\IKeyboardInputSource.cs" />
+    <Compile Include="Interface\IMouseInputSource.cs" />
+    <Compile Include="Math\MathUtil.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="WeakEventHandler.cs">

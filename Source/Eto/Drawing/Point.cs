@@ -202,7 +202,12 @@ namespace Eto.Drawing
 		{
 			this.Add (point.X, point.Y);
 		}
-		
+
+        public static Point operator -(Point point1)
+        {
+            return new Point(-point1.x, -point1.y);
+        }
+
 		/// <summary>
 		/// Operator to return the difference between two points as a <see cref="Size"/>
 		/// </summary>
@@ -352,6 +357,23 @@ namespace Eto.Drawing
 			result.y /= value;
 			return result;
 		}
+
+        public void Offset(Point offset)
+        {
+            this.X += offset.X;
+            this.Y += offset.Y;
+        }
+
+        public void Offset(int x, int y)
+        {
+            this.X += x;
+            this.X += y;
+        }
+
+        public PointF ToPointF()
+        {
+            return new PointF(x, y);
+        }
 
 		/// <summary>
 		/// Returns a value indicating that the specified <paramref name="obj"/> is equal to this point

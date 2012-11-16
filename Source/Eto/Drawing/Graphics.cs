@@ -40,11 +40,31 @@ namespace Eto.Drawing
 	/// </summary>
 	public interface IGraphics : IInstanceWidget
 	{
+        Double DpiX { get; }
+
+        Double DpiY { get; }
+
+        RectangleF ClipBounds { get; }
+
+        void SetClip(RectangleF rect);
+
+        Matrix Transform { get; set; }
+
+        void TranslateTransform(float dx, float dy);
+
+        void RotateTransform(float angle);
+
+        void ScaleTransform(float sx, float sy);
+
+        void MultiplyTransform(Matrix matrix);
+
 		/// <summary>
 		/// Creates the graphics object for drawing on the specified <paramref name="image"/>
 		/// </summary>
 		/// <param name="image">Image to perform drawing operations on</param>
 		void CreateFromImage (Bitmap image);
+
+        void DrawRectangle(Pen pen, float x, float y, float width, float height);
 
 		/// <summary>
 		/// Draws a rectangle outline
@@ -66,6 +86,13 @@ namespace Eto.Drawing
 		/// <param name="endy">Y co-ordinate of the ending point</param>
 		void DrawLine (Color color, int startx, int starty, int endx, int endy);
 
+        void DrawLine(Pen pen, PointF pt1, PointF pt2);
+
+        void FillRectangle(Brush brush, RectangleF Rectangle);
+
+        void FillRectangle(Brush brush, float x, float y, float width, float height);
+
+        void FillRectangle(Color color, float x, float y, float width, float height);
 		/// <summary>
 		/// Fills a rectangle with the specified <paramref name="color"/>
 		/// </summary>
@@ -74,7 +101,6 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		void FillRectangle (Color color, int x, int y, int width, int height);
 
 		/// <summary>
 		/// Fills an ellipse with the specified <paramref name="color"/>
@@ -103,13 +129,21 @@ namespace Eto.Drawing
 		/// <param name="path">Path to fill</param>
 		void FillPath (Color color, GraphicsPath path);
 
+        void FillPath(Brush brush, GraphicsPath path);
+
 		/// <summary>
 		/// Draws the specified <paramref name="path"/>
 		/// </summary>
 		/// <param name="color">Draw color</param>
 		/// <param name="path">Path to draw</param>
 		void DrawPath (Color color, GraphicsPath path);
-		
+
+        void DrawPath(Pen pen, GraphicsPath path);
+
+        void DrawImage(Image image, PointF pointF);
+
+        void DrawImage(Image image, RectangleF rect);
+
 		/// <summary>
 		/// Draws the specified <paramref name="image"/> at a location with no scaling
 		/// </summary>
@@ -139,6 +173,10 @@ namespace Eto.Drawing
 		/// <param name="destination">Destination rectangle of where to draw the portion</param>
 		void DrawImage (Image image, Rectangle source, Rectangle destination);
 
+        void DrawImage(Image image, float x, float y, float width, float height);
+
+        void DrawImage(Image image, RectangleF source, RectangleF destination);
+
 		/// <summary>
 		/// Draws the <paramref name="icon"/> at the specified location and size
 		/// </summary>
@@ -147,7 +185,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the location to draw the icon</param>
 		/// <param name="width">Destination width of the icon</param>
 		/// <param name="height">Destination height of the icon</param>
-		void DrawIcon (Icon icon, int x, int y, int width, int height);
+        void DrawIcon(Icon icon, int x, int y, int width, int height);
 
 		/// <summary>
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
@@ -157,7 +195,7 @@ namespace Eto.Drawing
 		/// <param name="x">X co-ordinate of where to start drawing the text</param>
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		void DrawText (Font font, Color color, int x, int y, string text);
+        void DrawText(Font font, Color color, float x, float y, string text);
 
 		/// <summary>
 		/// Measures the string with the given <paramref name="font"/>
@@ -170,8 +208,6 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Not yet implemented
 		/// </summary>
-		Region ClipRegion { get; set; }
-
 		/// <summary>
 		/// Flushes the drawing (for some platforms)
 		/// </summary>
@@ -185,12 +221,17 @@ namespace Eto.Drawing
 		/// Gets or sets a value indicating that drawing operations will use antialiasing
 		/// </summary>
 		bool Antialias { get; set; }
+        void SetClip(Graphics graphics);
+        void SaveTransform();
 
-		/// <summary>
+        void RestoreTransform();
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
 		ImageInterpolation ImageInterpolation { get; set; }
-	}
+        object CreateText(Font font, Color color, string text);
+
+        void DrawText(object o, float x, float y);
+    }
 
 	/// <summary>
 	/// Graphics context object for drawing operations
@@ -202,15 +243,21 @@ namespace Eto.Drawing
 	{
 		IGraphics handler;
 
+		public Graphics (IGraphics handler) : base(Generator.Current, inner)
+		{
+			this.handler = handler;
+		}
+
+        public Graphics(Generator g, IGraphics inner)
 		/// <summary>
 		/// Initializes a new instance of the Graphics class with the specified platform <paramref name="handler"/>
 		/// </summary>
 		/// <param name="generator">Generator for this instance</param>
 		/// <param name="handler">Platform handler to use for this instance</param>
 		public Graphics (Generator generator, IGraphics handler) : base(generator, handler)
-		{
+        {
 			this.handler = handler;
-		}
+        }
 
 		/// <summary>
 		/// Initializes a new instance of the Generator class to draw on the given <paramref name="image"/>
@@ -321,6 +368,11 @@ namespace Eto.Drawing
 			handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
+        public void FillRectangle(Color color, RectangleF rectangle)
+        {
+            handler.FillRectangle(color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        }
+
 		/// <summary>
 		/// Fills the specified <paramref name="rectangles"/>
 		/// </summary>
@@ -358,7 +410,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Fill color</param>
 		/// <param name="points">Points of the polygon</param>
-		public void FillPolygon (Color color, IEnumerable<Point> points)
+		public void FillPolygon (Color color, PointF[] points)
 		{
 			var path = new GraphicsPath (Generator);
 			path.AddLines (points);
@@ -370,7 +422,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color to draw the polygon lines</param>
 		/// <param name="points">Points of the polygon</param>
-		public void DrawPolygon (Color color, IEnumerable<Point> points)
+		public void DrawPolygon (Color color, PointF[] points)
 		{
 			var path = new GraphicsPath (Generator);
 			path.AddLines (points);
@@ -403,10 +455,15 @@ namespace Eto.Drawing
 		/// <param name="image">Image to draw</param>
 		/// <param name="location">Location to draw the image</param>
 		public void DrawImage (Image image, Point location)
-		{
+        {
 			handler.DrawImage (image, location.X, location.Y);
-		}
+        }
 
+        public void DrawPath(Pen pen, GraphicsPath path)
+        {
+            inner.DrawPath(pen, path);
+        }
+		
 		/// <summary>
 		/// Draws the specified <paramref name="image"/> at a location with no scaling
 		/// </summary>
@@ -433,6 +490,11 @@ namespace Eto.Drawing
 		{
 			handler.DrawImage (image, x, y, width, height);
 		}
+
+        public void DrawImage(Image image, float x, float y, float width, float height)
+        {
+            inner.DrawImage(image, x, y, width, height);
+        }
 
 		/// <summary>
 		/// Draws the specified <paramref name="image"/> in a rectangle
@@ -500,7 +562,7 @@ namespace Eto.Drawing
 		/// <param name="x">X co-ordinate of where to start drawing the text</param>
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		public void DrawText (Font font, Color color, int x, int y, string text)
+        public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			handler.DrawText (font, color, x, y, text);
 		}
@@ -516,6 +578,16 @@ namespace Eto.Drawing
 		{
 			handler.DrawText (font, color, location.X, location.Y, text);
 		}
+
+        public object CreateText(Font font, Color color, string text)
+        {
+            return inner.CreateText(font, color, text);
+        }
+
+        public void DrawText(object o, float x, float y)
+        {
+            inner.DrawText(o, x, y);
+        }
 
 		/// <summary>
 		/// Measures the string with the given <paramref name="font"/>
@@ -538,21 +610,12 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Not yet implemented
-		/// </summary>
-		public Region ClipRegion {
-			get { return handler.ClipRegion; }
-			set { handler.ClipRegion = value; }
-		}
-
-		/// <summary>
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
 		public ImageInterpolation ImageInterpolation {
 			get { return handler.ImageInterpolation; }
 			set { handler.ImageInterpolation = value; }
-		}
-
+		
 		/// <summary>
 		/// Flushes the drawing (for some platforms)
 		/// </summary>
@@ -566,5 +629,153 @@ namespace Eto.Drawing
 		{
 			handler.Flush ();
 		}
-	}
+
+        #region IGraphics Members
+
+        public void SetClip(RectangleF rect)
+        {
+            inner.SetClip(rect);
+        }
+
+        public void TranslateTransform(float dx, float dy)
+        {
+            inner.TranslateTransform(dx, dy);
+        }
+
+        public void CreateFromImage(Bitmap image)
+        {
+            throw new InvalidOperationException(
+                "Use the Graphics(Image image) constructor instead");
+        }
+
+        public void FillRectangle(Brush brush, RectangleF Rectangle)
+        {
+            inner.FillRectangle(brush, Rectangle);
+        }
+
+        public void FillRectangle(Brush brush, float x, float y, float width, float height)
+        {
+            inner.FillRectangle(brush, x, y, width, height);
+        }
+
+        public void FillPath(Brush brush, GraphicsPath path)
+        {
+            inner.FillPath(brush, path);
+        }
+
+        public void DrawLines(Pen pen, PointF[] points)
+        {
+            if (points != null && 
+                points.Length > 1)
+            {
+                var p0 = points[0];
+
+                var i = 1;
+                while(i < points.Length)
+                {
+                    var p1 = points[i];
+
+                    DrawLine(pen, p0, p1);
+
+                    p0 = p1;
+
+                    i++;
+                }
+            }
+        }
+
+        public double DpiX
+        {
+            get { return inner.DpiX; }
+        }
+
+        public double DpiY
+        {
+            get { return inner.DpiY; }
+        }
+
+        public RectangleF ClipBounds
+        {
+            get { return inner.ClipBounds; }
+        }
+
+        public Matrix Transform
+        {
+            get
+            {
+                return inner.Transform;
+            }
+            set
+            {
+                inner.Transform = value;
+            }
+        }
+
+        public void TranslateTransform(PointF p)
+        {
+            inner.TranslateTransform(p.X, p.Y);
+        }
+
+        public void RotateTransform(float angle)
+        {
+            inner.RotateTransform(angle);
+        }
+
+        public void ScaleTransform(float sx, float sy)
+        {
+            inner.ScaleTransform(sx, sy);
+        }
+
+        public void MultiplyTransform(Matrix matrix)
+        {
+            inner.MultiplyTransform(matrix);
+        }
+
+        public void Clear(Color color)
+        {
+            FillRectangle(color, ClipBounds);
+        }
+
+        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        {
+            inner.DrawRectangle(pen, x, y, width, height);
+        }
+
+        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
+        {
+            inner.DrawLine(pen, pt2, pt2);
+        }
+
+        public void DrawImage(Image image, PointF pointF)
+        {
+            inner.DrawImage(image, pointF);
+        }
+
+        public void DrawImage(Image image, RectangleF rect)
+        {
+            inner.DrawImage(image, rect);
+        }
+
+        #endregion
+
+        public void DrawImage(Image image, RectangleF source, RectangleF destination)
+        {
+            inner.DrawImage(image, source, destination);
+        }
+
+        public void SetClip(Graphics graphics)
+        {
+            inner.SetClip(graphics);
+        }
+
+        public void SaveTransform()
+        {
+            inner.SaveTransform();
+        }
+
+        public void RestoreTransform()
+        {
+            inner.RestoreTransform();
+        }
+    }
 }

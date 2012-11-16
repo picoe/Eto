@@ -19,6 +19,7 @@ namespace Eto.Forms
 	public interface IImageMenuItem : IMenuActionItem, ISubMenu
 	{
 		Icon Icon { get; set; }
+        Image Image { get; set; }
 	}
 	
 	public class ImageMenuItem : MenuActionItem, ISubMenuWidget
@@ -49,6 +50,12 @@ namespace Eto.Forms
 			get { return handler.Icon; }
 			set { handler.Icon = value; }
 		}
+
+        public Image Image
+        {
+            get { return handler.Image; }
+            set { handler.Image = value; }
+        }
 		
 		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{

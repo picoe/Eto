@@ -2,32 +2,35 @@ using System;
 
 namespace Eto.Forms
 {
+    public enum KeyType
+    {
+        KeyDown,
+        KeyUp,
+    }
+
 	/// <summary>
 	/// Arguments for key press events
 	/// </summary>
 	public class KeyPressEventArgs : EventArgs
 	{
-		char? keyChar;
+        public KeyType KeyType { get; set; }
+
+        char? keyChar;
 		
 		/// <summary>
 		/// Initializes a new instance of the KeyPressEventArgs class for a character key press
 		/// </summary>
 		/// <param name="key">key and modifiers that were pressed</param>
 		/// <param name="keyChar">character equivalent</param>
-		public KeyPressEventArgs(Key key, char keyChar)
+		public KeyPressEventArgs(Key keyData, KeyType keyType, char? keyChar = null)
 		{
-			this.KeyData = key;
+            this.KeyData = keyData;
 			this.keyChar = keyChar;
-		}
-
+            this.KeyType = keyType;
 		/// <summary>
 		/// Initializes a new instance of the KeyPressEventArgs class for a non-character key press
 		/// </summary>
 		/// <param name="key">key and modifiers that were pressed</param>
-		public KeyPressEventArgs(Key key)
-		{
-			this.KeyData = key;
-			this.keyChar = null;
 		}
 
 		/// <summary>
@@ -68,15 +71,72 @@ namespace Eto.Forms
 		/// otherwise be handled as a shortcut in the menu or toolbar items.
 		/// </remarks>
 		public bool Handled { get; set; }
-		
+
+        /// Gets or sets a value indicating whether the key 
+        /// event should be passed on to the underlying control.
+        public bool SuppressKeyPress { get; set; } 
+
 		/// <summary>
 		/// Gets the key character corresponding to the key press (if <see cref="IsChar"/> is true)
 		/// </summary>
 		public char KeyChar
 		{
-			get { return keyChar.HasValue ? keyChar.Value : char.MaxValue; }
-		}
-		
-	}
+			get { return keyChar != null ? keyChar.Value : char.MaxValue; }
+        }
+
+        #region Predicates
+
+        public bool Shift
+        {
+            get { return (this.KeyData & Forms.Key.Shift) != 0; }
+        }
+
+        public bool Control
+        {
+            get { return (this.KeyData & Forms.Key.Control) != 0; }
+        }
+
+        public bool Alt
+        {
+            get { return (this.KeyData & Forms.Key.Alt) != 0; }
+        }
+
+        public bool IsKeyUp(Key key)
+        {
+            return
+                this.KeyType == KeyType.KeyUp &&
+                this.Key == key;
+        }
+
+        public bool IsControlKeyUp(Key key)
+        {
+            return
+                this.KeyType == KeyType.KeyUp &&
+                this.KeyData == (key | Key.Control);
+        }
+
+        public bool IsShiftKeyUp(Key key)
+        {
+            return
+                this.KeyType == KeyType.KeyUp &&
+                this.KeyData == (key | Key.Shift);
+        }
+
+        public bool IsAltKeyUp(Key key)
+        {
+            return
+                this.KeyType == KeyType.KeyUp &&
+                this.KeyData == (key | Key.Alt);
+        }
+
+        public bool IsAltShiftKeyUp(Key key)
+        {
+            return
+                this.KeyType == KeyType.KeyUp &&
+                this.KeyData == (key | Key.Alt | Key.Shift);
+        }
+
+        #endregion
+    }
 }
 

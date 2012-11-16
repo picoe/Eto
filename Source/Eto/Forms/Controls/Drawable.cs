@@ -41,6 +41,8 @@ namespace Eto.Forms
 
 		public event PaintEventHandler Paint;
 
+        public PaintEventHandler PaintHandler { get; set; }
+
 		public Drawable () : this(Generator.Current)
 		{
 		}
@@ -58,10 +60,19 @@ namespace Eto.Forms
 		}
 
 
+        public Drawable(Generator g, IDrawable handler) 
+            : base(g, handler)
+        {
+            this.handler = handler;
+        }
+
 		public virtual void OnPaint (PaintEventArgs pe)
 		{
 			if (Paint != null)
 				Paint (this, pe);
+
+            if (PaintHandler != null)
+                PaintHandler(this, pe);
 		}
 
 		public bool CanFocus {
@@ -73,6 +84,5 @@ namespace Eto.Forms
 		{
 			handler.Update (rect);
 		}
-
 	}
 }

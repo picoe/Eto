@@ -124,6 +124,12 @@ namespace Eto.Drawing
 			get { return Width == 0 || Height == 0; }
 		}
 
+        public static SizeF operator -(SizeF size)
+        {
+            return
+                new SizeF(-size.Width, -size.Height);
+        }
+		
 		/// <summary>
 		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of two sizes
 		/// </summary>
@@ -193,6 +199,14 @@ namespace Eto.Drawing
 			result.Height = size1.Height + size2.Height;
 			return result;
 		}
+
+        public static SizeF operator -(SizeF size1, SizeF size2)
+        {
+            SizeF result = size1;
+            result.Width = size1.Width - size2.Width;
+            result.Height = size1.Height - size2.Height;
+            return result;
+        }
 
 		/// <summary>
 		/// Subtracts the <see cref="Width"/> and <see cref="Height"/> value of one size from another

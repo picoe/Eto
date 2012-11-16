@@ -22,7 +22,11 @@ namespace Eto.Forms
 		WindowState State { get; set; }
 		
 		Rectangle? RestoreBounds { get; }
-	}
+
+        void RemoveBorder();
+
+        void BringToFront();
+    }
 	
 	public abstract partial class Window : Container
 	{
@@ -97,5 +101,15 @@ namespace Eto.Forms
 		{
 			handler.State = WindowState.Maximized;
 		}
+
+        public void RemoveBorder()
+        {
+            handler.RemoveBorder();
+        }
+
+        public void BringToFront()
+        {
+            handler.BringToFront();
+        }
 	}
 }

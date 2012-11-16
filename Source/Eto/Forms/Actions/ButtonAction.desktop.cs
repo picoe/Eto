@@ -17,6 +17,7 @@ namespace Eto.Forms
 			if (Icon != null) mi.Icon = Icon;
 			if (!string.IsNullOrEmpty (MenuItemStyle))
 				mi.Style = MenuItemStyle;
+            if (Image != null) mi.Image = Image;
 			new MenuConnector(this, mi);
 			return mi;
 		}

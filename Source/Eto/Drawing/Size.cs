@@ -134,6 +134,11 @@ namespace Eto.Drawing
 			get { return Width == 0 || Height == 0; }
 		}
 
+        public Point ToPoint()
+        {
+            return new Point(Width, Height);
+        }
+
 		/// <summary>
 		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of two sizes
 		/// </summary>
@@ -161,6 +166,14 @@ namespace Eto.Drawing
 			result.Height = size.Height * factor;
 			return result;
 		}
+
+        public static SizeF operator *(Size size1, float multiplier)
+        {
+            SizeF result = size1;
+            result.Width = size1.Width * multiplier;
+            result.Height = size1.Height * multiplier;
+            return result;
+        }
 
 		/// <summary>
 		/// Divides the <see cref="Width"/> and <see cref="Height"/> of two sizes

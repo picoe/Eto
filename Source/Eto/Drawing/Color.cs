@@ -1,6 +1,7 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
+using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
@@ -23,43 +24,36 @@ namespace Eto.Drawing
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete("Use Colors.Black")]
-		public static readonly Color Black = new Color (0, 0, 0);
 
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("User Colors.White")]
-		public static readonly Color White = new Color (1.0f, 1.0f, 1.0f);
 
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("User Colors.Gray")]
-		public static readonly Color Gray = new Color (0x77 / 255f, 0x77 / 255f, 0x77 / 255f);
 
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("User Colors.DarkGray")]
-		public static readonly Color LightGray = new Color (0xA8 / 255f, 0xA8 / 255f, 0xA8 / 255f);
 
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("User Colors.Red")]
-		public static readonly Color Red = new Color (1f, 0, 0);
 
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("User Colors.Lime")]
-		public static readonly Color Green = new Color (0, 1f, 0);
 
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("User Colors.Blue")]
-		public static readonly Color Blue = new Color (0, 0, 1f);
 
 		/// <summary>
 		/// Obsolete. Do not use.
@@ -134,11 +128,174 @@ namespace Eto.Drawing
 		/// </summary>
 		public float B { get; set; }
 
+        public static readonly Color InactiveCaption = new Color (191, 205, 219);
+        public static readonly Color InactiveCaptionText = new Color (67, 78, 84);
+        public static readonly Color Info = new Color (255, 255, 225);
+        public static readonly Color InfoText = new Color (0, 0, 0);
+        public static readonly Color Menu = new Color (240, 240, 240);
+        public static readonly Color MenuText = new Color (0, 0, 0);
+        public static readonly Color ScrollBar = new Color (200, 200, 200);
+        public static readonly Color Window = new Color (255, 255, 255);
+        public static readonly Color WindowFrame = new Color (100, 100, 100);
+        public static readonly Color WindowText = new Color (0, 0, 0);
+        public static readonly Color AliceBlue = new Color (240, 248, 255);
+        public static readonly Color AntiqueWhite = new Color (250, 235, 215);
+        public static readonly Color Aqua = new Color (0, 255, 255);
+        public static readonly Color Aquamarine = new Color (127, 255, 212);
+        public static readonly Color Azure = new Color (240, 255, 255);
+        public static readonly Color Beige = new Color (245, 245, 220);
+        public static readonly Color Bisque = new Color (255, 228, 196);
+        public static readonly Color Black = new Color (0, 0, 0);
+        public static readonly Color BlanchedAlmond = new Color (255, 235, 205);
+        public static readonly Color Blue = new Color (0, 0, 255);
+        public static readonly Color BlueViolet = new Color (138, 43, 226);
+        public static readonly Color Brown = new Color (165, 42, 42);
+        public static readonly Color BurlyWood = new Color (222, 184, 135);
+        public static readonly Color CadetBlue = new Color (95, 158, 160);
+        public static readonly Color Chartreuse = new Color (127, 255, 0);
+        public static readonly Color Chocolate = new Color (210, 105, 30);
+        public static readonly Color Coral = new Color (255, 127, 80);
+        public static readonly Color CornflowerBlue = new Color (100, 149, 237);
+        public static readonly Color Cornsilk = new Color (255, 248, 220);
+        public static readonly Color Crimson = new Color (220, 20, 60);
+        public static readonly Color Cyan = new Color (0, 255, 255);
+        public static readonly Color DarkBlue = new Color (0, 0, 139);
+        public static readonly Color DarkCyan = new Color (0, 139, 139);
+        public static readonly Color DarkGoldenrod = new Color (184, 134, 11);
+        public static readonly Color DarkGray = new Color (169, 169, 169);
+        public static readonly Color DarkGreen = new Color (0, 100, 0);
+        public static readonly Color DarkKhaki = new Color (189, 183, 107);
+        public static readonly Color DarkMagenta = new Color (139, 0, 139);
+        public static readonly Color DarkOliveGreen = new Color (85, 107, 47);
+        public static readonly Color DarkOrange = new Color (255, 140, 0);
+        public static readonly Color DarkOrchid = new Color (153, 50, 204);
+        public static readonly Color DarkRed = new Color (139, 0, 0);
+        public static readonly Color DarkSalmon = new Color (233, 150, 122);
+        public static readonly Color DarkSeaGreen = new Color (143, 188, 139);
+        public static readonly Color DarkSlateBlue = new Color (72, 61, 139);
+        public static readonly Color DarkSlateGray = new Color (47, 79, 79);
+        public static readonly Color DarkTurquoise = new Color (0, 206, 209);
+        public static readonly Color DarkViolet = new Color (148, 0, 211);
+        public static readonly Color DeepPink = new Color (255, 20, 147);
+        public static readonly Color DeepSkyBlue = new Color (0, 191, 255);
+        public static readonly Color DimGray = new Color (105, 105, 105);
+        public static readonly Color DodgerBlue = new Color (30, 144, 255);
+        public static readonly Color Firebrick = new Color (178, 34, 34);
+        public static readonly Color FloralWhite = new Color (255, 250, 240);
+        public static readonly Color ForestGreen = new Color (34, 139, 34);
+        public static readonly Color Fuchsia = new Color (255, 0, 255);
+        public static readonly Color Gainsboro = new Color (220, 220, 220);
+        public static readonly Color GhostWhite = new Color (248, 248, 255);
+        public static readonly Color Gold = new Color (255, 215, 0);
+        public static readonly Color Goldenrod = new Color (218, 165, 32);
+        public static readonly Color Gray = new Color (128, 128, 128);
+        public static readonly Color Green = new Color (0, 128, 0);
+        public static readonly Color GreenYellow = new Color (173, 255, 47);
+        public static readonly Color Honeydew = new Color (240, 255, 240);
+        public static readonly Color HotPink = new Color (255, 105, 180);
+        public static readonly Color IndianRed = new Color (205, 92, 92);
+        public static readonly Color Indigo = new Color (75, 0, 130);
+        public static readonly Color Ivory = new Color (255, 255, 240);
+        public static readonly Color Khaki = new Color (240, 230, 140);
+        public static readonly Color Lavender = new Color (230, 230, 250);
+        public static readonly Color LavenderBlush = new Color (255, 240, 245);
+        public static readonly Color LawnGreen = new Color (124, 252, 0);
+        public static readonly Color LemonChiffon = new Color (255, 250, 205);
+        public static readonly Color LightBlue = new Color (173, 216, 230);
+        public static readonly Color LightCoral = new Color (240, 128, 128);
+        public static readonly Color LightCyan = new Color (224, 255, 255);
+        public static readonly Color LightGoldenrodYellow = new Color (250, 250, 210);
+        public static readonly Color LightGray = new Color (211, 211, 211);
+        public static readonly Color LightGreen = new Color (144, 238, 144);
+        public static readonly Color LightPink = new Color (255, 182, 193);
+        public static readonly Color LightSalmon = new Color (255, 160, 122);
+        public static readonly Color LightSeaGreen = new Color (32, 178, 170);
+        public static readonly Color LightSkyBlue = new Color (135, 206, 250);
+        public static readonly Color LightSlateGray = new Color (119, 136, 153);
+        public static readonly Color LightSteelBlue = new Color (176, 196, 222);
+        public static readonly Color LightYellow = new Color (255, 255, 224);
+        public static readonly Color Lime = new Color (0, 255, 0);
+        public static readonly Color LimeGreen = new Color (50, 205, 50);
+        public static readonly Color Linen = new Color (250, 240, 230);
+        public static readonly Color Magenta = new Color (255, 0, 255);
+        public static readonly Color Maroon = new Color (128, 0, 0);
+        public static readonly Color MediumAquamarine = new Color (102, 205, 170);
+        public static readonly Color MediumBlue = new Color (0, 0, 205);
+        public static readonly Color MediumOrchid = new Color (186, 85, 211);
+        public static readonly Color MediumPurple = new Color (147, 112, 219);
+        public static readonly Color MediumSeaGreen = new Color (60, 179, 113);
+        public static readonly Color MediumSlateBlue = new Color (123, 104, 238);
+        public static readonly Color MediumSpringGreen = new Color (0, 250, 154);
+        public static readonly Color MediumTurquoise = new Color (72, 209, 204);
+        public static readonly Color MediumVioletRed = new Color (199, 21, 133);
+        public static readonly Color MidnightBlue = new Color (25, 25, 112);
+        public static readonly Color MintCream = new Color (245, 255, 250);
+        public static readonly Color MistyRose = new Color (255, 228, 225);
+        public static readonly Color Moccasin = new Color (255, 228, 181);
+        public static readonly Color NavajoWhite = new Color (255, 222, 173);
+        public static readonly Color Navy = new Color (0, 0, 128);
+        public static readonly Color OldLace = new Color (253, 245, 230);
+        public static readonly Color Olive = new Color (128, 128, 0);
+        public static readonly Color OliveDrab = new Color (107, 142, 35);
+        public static readonly Color Orange = new Color (255, 165, 0);
+        public static readonly Color OrangeRed = new Color (255, 69, 0);
+        public static readonly Color Orchid = new Color (218, 112, 214);
+        public static readonly Color PaleGoldenrod = new Color (238, 232, 170);
+        public static readonly Color PaleGreen = new Color (152, 251, 152);
+        public static readonly Color PaleTurquoise = new Color (175, 238, 238);
+        public static readonly Color PaleVioletRed = new Color (219, 112, 147);
+        public static readonly Color PapayaWhip = new Color (255, 239, 213);
+        public static readonly Color PeachPuff = new Color (255, 218, 185);
+        public static readonly Color Peru = new Color (205, 133, 63);
+        public static readonly Color Pink = new Color (255, 192, 203);
+        public static readonly Color Plum = new Color (221, 160, 221);
+        public static readonly Color PowderBlue = new Color (176, 224, 230);
+        public static readonly Color Purple = new Color (128, 0, 128);
+        public static readonly Color Red = new Color (255, 0, 0);
+        public static readonly Color RosyBrown = new Color (188, 143, 143);
+        public static readonly Color RoyalBlue = new Color (65, 105, 225);
+        public static readonly Color SaddleBrown = new Color (139, 69, 19);
+        public static readonly Color Salmon = new Color (250, 128, 114);
+        public static readonly Color SandyBrown = new Color (244, 164, 96);
+        public static readonly Color SeaGreen = new Color (46, 139, 87);
+        public static readonly Color SeaShell = new Color (255, 245, 238);
+        public static readonly Color Sienna = new Color (160, 82, 45);
+        public static readonly Color Silver = new Color (192, 192, 192);
+        public static readonly Color SkyBlue = new Color (135, 206, 235);
+        public static readonly Color SlateBlue = new Color (106, 90, 205);
+        public static readonly Color SlateGray = new Color (112, 128, 144);
+        public static readonly Color Snow = new Color (255, 250, 250);
+        public static readonly Color SpringGreen = new Color (0, 255, 127);
+        public static readonly Color SteelBlue = new Color (70, 130, 180);
+        public static readonly Color Tan = new Color (210, 180, 140);
+        public static readonly Color Teal = new Color (0, 128, 128);
+        public static readonly Color Thistle = new Color (216, 191, 216);
+        public static readonly Color Tomato = new Color (255, 99, 71);
+        public static readonly Color Turquoise = new Color (64, 224, 208);
+        public static readonly Color Violet = new Color (238, 130, 238);
+        public static readonly Color Wheat = new Color (245, 222, 179);
+        public static readonly Color White = new Color (255, 255, 255);
+        public static readonly Color WhiteSmoke = new Color (245, 245, 245);
+        public static readonly Color Yellow = new Color (255, 255, 0);
+        public static readonly Color YellowGreen = new Color (154, 205, 50);
+        public static readonly Color ButtonFace = new Color (240, 240, 240);
+        public static readonly Color ButtonHighlight = new Color (255, 255, 255);
+        public static readonly Color ButtonShadow = new Color (160, 160, 160);
+        public static readonly Color GradientActiveCaption = new Color (185, 209, 234);
+        public static readonly Color GradientInactiveCaption = new Color (215, 228, 242);
+        public static readonly Color MenuBar = new Color (240, 240, 240);
+        public static readonly Color MenuHighlight = new Color (51, 153, 255);
+
 		/// <summary>
 		/// Creates a Color from a 32-bit ARGB value
 		/// </summary>
 		/// <param name="argb">32-bit ARGB value with Alpha in the high byte</param>
 		/// <returns>A new instance of the Color object with the specified color</returns>
+        public static Color FromArgb(int r, int g, int b, int a = 255)
+        {
+            return new Color(alpha: a / 255f, red: r / 255f, green: g / 255f, blue: b / 255f);
+        }
+
 		public static Color FromArgb (uint argb)
 		{
 			return new Color (((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, (argb & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
@@ -306,6 +463,11 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="obj">Color to compare with</param>
 		/// <returns>True if the specified object is a Color and has the same ARGB components as this color, false otherwise</returns>
+        public int R_ { get { return (int)((R * 255) + 0.5); } }
+        public int G_ { get { return (int)((G * 255) + 0.5); } }
+        public int B_ { get { return (int)((B * 255) + 0.5); } }
+        public int A_ { get { return (int)((A * 255) + 0.5); } }
+
 		public override bool Equals (object obj)
 		{
 			return obj is Color && this == (Color)obj;
@@ -363,7 +525,11 @@ namespace Eto.Drawing
 		/// <returns>The 32-bit ARGB value that corresponds to this color</returns>
 		public uint ToArgb ()
 		{
-			return ((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
+			return (
+                (uint)(B * byte.MaxValue) | 
+                (uint)(G * byte.MaxValue) << 8 | 
+                (uint)(R * byte.MaxValue) << 16 | 
+                (uint)(A * byte.MaxValue) << 24);
 		}
 
 		/// <summary>
@@ -380,6 +546,8 @@ namespace Eto.Drawing
 				return string.Format ("#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
 			else
 				return string.Format ("#{0:X2}{1:X2}{2:X2}", (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+                (byte)(G * byte.MaxValue), 
+                (byte)(B * byte.MaxValue));
 		}
 
 		/// <summary>
@@ -392,7 +560,7 @@ namespace Eto.Drawing
 		public override string ToString ()
 		{
 			return ToHex ();
-		}
+        }
 
 		/// <summary>
 		/// Compares the specified color for equality
@@ -403,5 +571,115 @@ namespace Eto.Drawing
 		{
 			return other == this;
 		}
-	}
+        #region Element Id Colors
+
+        public static Color GetElementIdColor(int id)
+        {
+            var result = default(Color);
+
+            // This algorithm is from the SVG# code base:
+            // The counter is used to generate IDs in the range [0,2^24-1]
+            // The 24 bits of the counter are interpreted as follows:
+            // [red 7 bits | green 7 bits | blue 7 bits |shuffle term 3 bits]
+            // The shuffle term is used to define how the remaining high
+            // bit is set on each color. The colors are generated in the
+            // range [0,127] (7 bits) instead of [0,255]. Then the shuffle term
+            // is used to adjust them into the range [0,255].
+            // This algorithm has the feature that consecutive ids generate
+            // visually distinct colors.
+            int shuffleTerm = id & 7;
+
+            int r = 0x7f & (id >> 17);
+            int g = 0x7f & (id >> 10);
+            int b = 0x7f & (id >> 3);
+
+            if ((shuffleTerm & 1) == 1)
+                b |= 0x80;
+
+            if ((shuffleTerm & 2) == 2)
+                g |= 0x80;
+
+            if ((shuffleTerm & 4) == 4)
+                r |= 0x80;
+
+            /*
+            switch (shuffleTerm)
+            {
+                case 0: break;
+                case 1: b |= 0x80; break;
+                case 2: g |= 0x80; break;
+                case 3: g |= 0x80; b |= 0x80; break;
+                case 4: r |= 0x80; break;
+                case 5: r |= 0x80; b |= 0x80; break;
+                case 6: r |= 0x80; g |= 0x80; break;
+                case 7: r |= 0x80; g |= 0x80; b |= 0x80; break;
+            }*/
+
+            result = new Color(r, g, b);
+
+            return result;
+        }
+
+        public int ToElementId()
+        {
+            int result =
+                (this.R_ & 0x7f) << 17 |
+                (this.G_ & 0x7f) << 10 |
+                (this.B_ & 0x7f) << 3 |
+                ((this.R_ & 0x80) == 0x80 ? 4 : 0) |
+                ((this.G_ & 0x80) == 0x80 ? 2 : 0) |
+                ((this.B_ & 0x80) == 0x80 ? 1 : 0);
+
+            return result;
+        }
+
+        #endregion
+
+        #region Parse
+
+        private static Regex ColorRegexArgb =
+            new Regex(@"\#(\w\w)(\w\w)(\w\w)(\w\w)");
+
+        private static Regex ColorRegexRgb =
+            new Regex(@"\#(\w\w)(\w\w)(\w\w)");
+
+        public static Color? Parse(string value)
+        {
+            Color? color = null;
+
+            var matchArgb =
+                ColorRegexArgb.Match(
+                    value);
+
+            if (matchArgb.Success)
+            {
+                color =
+                    new Color(
+                        Convert.ToInt32(matchArgb.Groups[2].Value, 16), // R
+                        Convert.ToInt32(matchArgb.Groups[3].Value, 16), // G
+                        Convert.ToInt32(matchArgb.Groups[4].Value, 16), // B
+                        Convert.ToInt32(matchArgb.Groups[1].Value, 16)); // A
+            }
+            else
+            {
+
+                var match =
+                    ColorRegexRgb.Match(
+                        value);
+
+                if (match.Success)
+                {
+                    color =
+                        new Color(
+                            Convert.ToInt32(match.Groups[1].Value, 16),
+                            Convert.ToInt32(match.Groups[2].Value, 16),
+                            Convert.ToInt32(match.Groups[3].Value, 16));
+                }
+            }
+
+            return color;
+        }
+
+        #endregion
+    }
 }

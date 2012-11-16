@@ -31,7 +31,15 @@ namespace Eto.Forms
 		public bool Handled { get; set; }
 		
 		public float Pressure { get; set; }
-		
+
+        //
+        // Summary:
+        //     Gets a signed count of the number of detents the mouse wheel has rotated.
+        //     A detent is one notch of the mouse wheel.
+        //
+        // Returns:
+        //     A signed count of the number of detents the mouse wheel has rotated.
+        public int Delta { get; set; }
 	}
 }
 

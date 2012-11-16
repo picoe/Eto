@@ -91,7 +91,7 @@ namespace Eto.Forms
 			if (ShowLabel || actionItem.ShowLabel || toolBar.TextAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			//Console.WriteLine("Adding toolbar {0}", ToolBarText);
 			if (Icon != null) tbb.Icon = Icon;
-
+            if (Image != null) tbb.Image = Image;
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))
 				tbb.Style = ToolBarItemStyle;
 			new ToolBarConnector(this, tbb);

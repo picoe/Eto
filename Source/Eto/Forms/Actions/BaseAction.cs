@@ -77,6 +77,8 @@ namespace Eto.Forms
 		public bool ShowLabel { get; set; }
 		
 		public Icon Icon { get; set; }
+
+        public Image Image { get; set; }
 		
 		public Key Accelerator
 		{

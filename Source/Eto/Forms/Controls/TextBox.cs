@@ -9,6 +9,7 @@ namespace Eto.Forms
 
 		int MaxLength { get; set; }
 		
+        void SelectAll();
 		string PlaceholderText { get; set; }
 	}
 	
@@ -45,5 +46,10 @@ namespace Eto.Forms
 			get { return handler.PlaceholderText; }
 			set { handler.PlaceholderText = value; }
 		}
+
+        public void SelectAll()
+        {
+            handler.SelectAll();
+        }
 	}
 }

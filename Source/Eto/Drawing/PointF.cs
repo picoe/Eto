@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.ComponentModel;
 
 namespace Eto.Drawing
@@ -14,6 +14,9 @@ namespace Eto.Drawing
 	{
 		float x;
 		float y;
+
+        public bool IsEmpty { get { return this.Equals(Empty); } }
+
 
 		#region Obsolete
 
@@ -96,6 +99,20 @@ namespace Eto.Drawing
 			this.y = y;
 		}
 
+        public static PointF UnitVectorAtAngle(double radians)
+        {
+            return new PointF(
+                (float)Math.Cos(radians),
+                (float)Math.Sin(radians));
+        }
+
+        public static PointF UnitVectorAtAngleD(double degrees)
+        {
+            return new PointF(
+                (float)MathUtil.CosD(degrees),
+                (float)MathUtil.SinD(degrees));
+        }
+
 		/// <summary>
 		/// Initializes a new instance of a Point class with <see cref="X"/> and <see cref="Y"/> values corresponding to the <see cref="Size.Width"/> and <see cref="Size.Height"/> values 
 		/// of the specified <paramref name="size"/>, respecitively
@@ -124,6 +141,70 @@ namespace Eto.Drawing
 			get { return y; }
 			set { y = value; }
 		}
+
+        public double Magnitude
+        {
+            get
+            {
+                return Math.Sqrt(X * X + Y * Y);
+            }
+        }
+
+        public PointF Normal
+        {
+            get
+            {
+                return new PointF(-Y, X);
+            }
+        }
+
+        public PointF UnitVector
+        {
+            get
+            {
+                double magnitude = Magnitude;
+
+                var epsilon = 1e-6;
+
+                var x = X;
+                var y = Y;
+
+                // deal with very small points without blowing up.
+                int iterations = 0;
+                while (
+                    magnitude < epsilon &&
+                    iterations < 3)
+                {
+
+                    if (Math.Abs(x) > epsilon)
+                    {
+                        y = y * x;
+                        x = 1;
+                    }
+                    else if (Math.Abs(y) > epsilon)
+                    {
+                        x = x * y;
+                        y = 1;
+                    }
+
+                    magnitude = Math.Sqrt(x * x + y * y);
+
+                    iterations++;
+                }
+
+                if (iterations == 3)
+                    return new PointF(1, 0); // arbitrary
+
+                return new PointF(
+                    (float)(X / magnitude), 
+                    (float)(Y / magnitude));
+            }
+        }
+
+        public static PointF operator -(PointF point1)
+        {
+            return new PointF(-point1.x, -point1.y);
+        }
 
 		/// <summary>
 		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
@@ -219,6 +300,16 @@ namespace Eto.Drawing
 			return new PointF (point.x - size.Width, point.y - size.Height);
 		}
 
+        public static PointF operator +(PointF point, SizeF size)
+        {
+            return new PointF(point.x + size.Width, point.y + size.Height);
+        }
+
+        public static PointF operator -(PointF point, SizeF size)
+        {
+            return new PointF(point.x - size.Width, point.y - size.Height);
+        }
+
 		/// <summary>
 		/// Operator to add a <paramref name="value"/> to both the X and Y co-ordinates of a point
 		/// </summary>
@@ -283,6 +374,14 @@ namespace Eto.Drawing
 			return result;
 		}
 
+        public static PointF operator *(PointF p1, PointF p2)
+        {
+            PointF result = p1;
+            result.x *= p2.X;
+            result.y *= p2.Y;
+            return result;
+		}
+
 		/// <summary>
 		/// Divides the specified <paramref name="point"/> with a <paramref name="size"/>
 		/// </summary>
@@ -305,11 +404,18 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a point with the product of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="value"/></returns>
 		public static PointF operator * (PointF point, float value)
 		{
-			var result = point;
+			var result = 
 			result.x *= value;
 			result.y *= value;
 			return result;
 		}
+
+        public static PointF operator *(float value, PointF p)
+        {
+            return new PointF(
+                p.X * value,
+                p.Y * value);
+        }
 
 		/// <summary>
 		/// Divides the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="value"/>
@@ -338,12 +444,95 @@ namespace Eto.Drawing
 			return new PointF (point.X, point.Y);
 		}
 
+#if FALSE
+        public static implicit operator PointF(System.Drawing.Point point)
+        {
+            return new PointF(point.X, point.Y);
+        }
+
+        public static implicit operator PointF(System.Drawing.PointF point)
+        {
+            return new PointF(point.X, point.Y);
+        }
+
+        public static implicit operator System.Drawing.PointF(PointF point)
+        {
+            return new System.Drawing.PointF(point.X, point.Y);
+        }
+#endif
+
+        public float SquaredLength
+        {
+            get
+            {
+                return X * X + Y * Y;
+            }
+        }
+
+        public float Length
+        {
+            get
+            {
+                return (float)Math.Sqrt(X * X + Y * Y);
+            }
+        }
+
+        public float Dot(PointF p)
+        {
+            return x * p.x + y * p.y;
+        }
+
+        public void Offset(PointF offset)
+        {
+            this.x += offset.X;
+            this.y += offset.y;
+        }
+
+        public void Offset(float x, float y)
+        {
+            this.x += x;
+            this.y += y;
+        }
+
+        public PointF RotateD(double degrees)
+        {
+            return 
+                Rotate(
+                    degrees * MathUtil.DegreesToRadians);
+        }
+
+        /// <summary>
+        /// Treats the point as a vector and rotates it
+        /// clockwise by theta.
+        /// </summary>
+        /// <param name="radians"></param>
+        /// <returns></returns>
+        public PointF Rotate(double radians)
+        {
+            return
+                new PointF(
+                    // X
+                    (float)
+                    (this.X * Math.Cos(radians) -
+                     this.Y * Math.Sin(radians)),
+                    // Y
+                    (float)
+                    (this.X * Math.Sin(radians) +
+                     this.Y * Math.Cos(radians)));
+
+        }
+
+        public Point ToPoint()
+        {
+            return new Point((int)X, (int)Y);
+        }
+
 		/// <summary>
 		/// Returns a value indicating that the specified <paramref name="obj"/> is equal to this point
 		/// </summary>
 		/// <param name="obj">Object to compare</param>
 		/// <returns>True if the specified <paramref name="obj"/> is a Point and is equal to this instance, false otherwise</returns>
-		public override bool Equals (object obj)
+        public override bool Equals (object obj)
 		{
 			return obj is PointF && (PointF)obj == this;
 		}

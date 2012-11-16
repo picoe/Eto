@@ -9,6 +9,7 @@ namespace Eto.Forms
 		string Text { get; set; }
 		string ToolTip { get; set; }
 		Icon Icon { get; set; }
+        Image Image { get; set; }
 		bool Enabled { get; set; }
 	}
 	
@@ -39,6 +40,12 @@ namespace Eto.Forms
 			get { return inner.Icon; }
 			set { inner.Icon = value; }
 		}
+
+        public Image Image
+        {
+            get { return inner.Image; }
+            set { inner.Image = value; }
+        }
 		
 		public bool Enabled
 		{

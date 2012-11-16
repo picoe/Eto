@@ -1,3 +1,4 @@
+#if !MOBILE
 using System;
 
 namespace Eto.Forms
@@ -22,3 +23,4 @@ namespace Eto.Forms
 	}
 }
 
+#endif

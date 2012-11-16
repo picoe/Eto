@@ -6,10 +6,13 @@ namespace Eto.Forms
 {
 	public interface IButton : ITextControl
 	{
+        IImage Image { get; set; }
 	}
 	
 	public class Button : TextControl
 	{
+        IButton inner;
+
 		public static Size DefaultSize = new Size(80, 26);
 
 		EventHandler<EventArgs> click;
@@ -30,6 +33,8 @@ namespace Eto.Forms
 		
 		public Button(Generator g) : this (g, typeof(IButton))
 		{
+            inner = (IButton)base.Handler;
+
 			//this.Width = DefaultSize.Width;
 		}
 		
@@ -37,5 +42,11 @@ namespace Eto.Forms
 			: base (g, type, initialize)
 		{
 		}
+
+        public IImage Image
+        {
+            get { return inner.Image; }
+            set { inner.Image = value; }
+        }
 	}
 }
