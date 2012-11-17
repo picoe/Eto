@@ -194,5 +194,15 @@ namespace Eto.Platform.GtkSharp
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static Gtk.PageRange ToGtkPageRange (this Range range)
+		{
+			return new Gtk.PageRange { Start = range.Start, End = range.InnerEnd };
+		}
+
+		public static Range ToEto (this Gtk.PageRange range)
+		{
+			return new Range (range.Start, range.End);
+		}
 	}
 }

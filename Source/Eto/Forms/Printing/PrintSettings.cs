@@ -9,7 +9,9 @@ namespace Eto.Forms
 	{
 		int Copies { get; set; }
 
-		Range PageRange { get; set; }
+		Range MaximumPageRange { get; set; }
+
+		Range SelectedPageRange { get; set; }
 
 		PageOrientation Orientation { get; set; }
 
@@ -47,10 +49,16 @@ namespace Eto.Forms
 			set { Handler.Copies = value; }
 		}
 
-		public Range PageRange
+		public Range MaximumPageRange
 		{
-			get { return Handler.PageRange; }
-			set { Handler.PageRange = value; }
+			get { return Handler.MaximumPageRange; }
+			set { Handler.MaximumPageRange = value; }
+		}
+
+		public Range SelectedPageRange
+		{
+			get { return Handler.SelectedPageRange; }
+			set { Handler.SelectedPageRange = value; }
 		}
 
 		public PageOrientation Orientation

@@ -37,19 +37,19 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 		{
 			Control = new Gtk.PrintSettings();
 			PageSetup = new Gtk.PageSetup();
-			this.PageRange = new Range(1, 1);
+			MaximumPageRange = new Range(1, 1);
 		}
 
 		public PrintSettingsHandler (Gtk.PrintSettings settings, Gtk.PageSetup setup)
 		{
-			this.PageRange = new Range(1, 1);
+			MaximumPageRange = new Range(1, 1);
 			Set (settings, setup);
 		}
 
 		public void Set (Gtk.PrintSettings settings, Gtk.PageSetup setup)
 		{
 			Control = settings;
-			this.PageSetup = setup;
+			PageSetup = setup;
 		}
 
 		public int Copies {
@@ -57,8 +57,18 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 			set { Control.NCopies = value; }
 		}
 
-		public Range PageRange {
+		public Range MaximumPageRange {
 			get; set;
+		}
+
+		public Range SelectedPageRange {
+			get {
+				int num_ranges;
+				return Control.GetPageRanges (out num_ranges).ToEto ();
+			}
+			set {
+				Control.SetPageRanges(value.ToGtkPageRange (), 1);
+			}
 		}
 
 		public PageOrientation Orientation {

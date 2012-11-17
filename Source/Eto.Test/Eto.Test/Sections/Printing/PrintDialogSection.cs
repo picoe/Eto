@@ -116,8 +116,8 @@ namespace Eto.Test.Sections.Printing
 			layout.AddRow (new Label { Text = "Orientation" }, PageOrientation ());
 			layout.AddRow (new Label { Text = "Copies" }, Copies ());
 			layout.AddRow (null, Collate ());
-			layout.AddRow (new Label { Text = "Min Page" }, StartPage (), new Label { Text = "Page Count" }, PageCount ());
-			layout.AddRow (new Label { Text = "Start Page" }, StartPage (), new Label { Text = "End Page" }, PageCount ());
+			layout.AddRow (new Label { Text = "Maximum Start" }, MaximumStart (), new Label { Text = "Maximum End" }, MaximumEnd ());
+			layout.AddRow (new Label { Text = "Selected Start" }, SelectedStart (), new Label { Text = "Selected End" }, SelectedEnd ());
 
 			return layout.Container;
 		}
@@ -143,30 +143,58 @@ namespace Eto.Test.Sections.Printing
 			return control;
 		}
 
-		Control StartPage ()
+		Control MaximumStart ()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
-				control.Value = settings.PageRange.Location;
+				control.Value = settings.MaximumPageRange.Start;
 			};
 			control.ValueChanged += delegate {
-				var range = settings.PageRange;
-				range.Location = (int)control.Value;
-				settings.PageRange = range;
+				var range = settings.MaximumPageRange;
+				range.Start = (int)control.Value;
+				settings.MaximumPageRange = range;
 			};
 			return control;
 		}
 
-		Control PageCount ()
+		Control MaximumEnd ()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
-				control.Value = settings.PageRange.Length;
+				control.Value = settings.MaximumPageRange.InnerEnd;
 			};
 			control.ValueChanged += delegate {
-				var range = settings.PageRange;
-				range.Length = (int)control.Value;
-				settings.PageRange = range;
+				var range = settings.MaximumPageRange;
+				range.InnerEnd = (int)control.Value;
+				settings.MaximumPageRange = range;
+			};
+			return control;
+		}
+
+		Control SelectedStart ()
+		{
+			var control = new NumericUpDown { MinValue = 1 };
+			control.DataContextChanged += delegate {
+				control.Value = settings.SelectedPageRange.Start;
+			};
+			control.ValueChanged += delegate {
+				var range = settings.SelectedPageRange;
+				range.Start = (int)control.Value;
+				settings.SelectedPageRange = range;
+			};
+			return control;
+		}
+
+		Control SelectedEnd ()
+		{
+			var control = new NumericUpDown { MinValue = 1 };
+			control.DataContextChanged += delegate {
+				control.Value = settings.SelectedPageRange.InnerEnd;
+			};
+			control.ValueChanged += delegate {
+				var range = settings.SelectedPageRange;
+				range.InnerEnd = (int)control.Value;
+				settings.SelectedPageRange = range;
 			};
 			return control;
 		}

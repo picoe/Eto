@@ -67,7 +67,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			set { Control.CopyCount = value; }
 		}
 
-		public Range PageRange { get; set; }
+		public Range MaximumPageRange { get; set; }
 
 		public PageOrientation Orientation
 		{

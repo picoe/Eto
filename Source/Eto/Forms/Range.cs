@@ -4,15 +4,33 @@ namespace Eto.Forms
 {
 	public struct Range : IEquatable<Range>
 	{
-		public int Location { get; set; }
+		[Obsolete("Use Start instead")]
+		public int Location {
+			get { return Start; }
+			set { Start = value; }
+		}
+
+		public int Start { get; set; }
 
 		public int Length { get; set; }
 
-		public Range (int location, int length)
+		public Range (int start, int length)
 			: this ()
 		{
-			this.Location = location;
+			this.Start = start;
 			this.Length = length;
+		}
+
+		public int End {
+			get { return Start + Length; }
+			set {
+				Length = value - Start;
+			}
+		}
+
+		public int InnerEnd {
+			get { return Start + Length - 1; }
+			set { Length = value - Start + 1; }
 		}
 
 		public override bool Equals (object obj)
@@ -22,22 +40,22 @@ namespace Eto.Forms
 
 		public static bool operator == (Range value1, Range value2)
 		{
-			return (value1.Location == value2.Location) && (value1.Length == value2.Length);
+			return (value1.Start == value2.Start) && (value1.Length == value2.Length);
 		}
 
 		public static bool operator != (Range value1, Range value2)
 		{
-			return (value1.Location != value2.Location) || (value1.Length != value2.Length);
+			return (value1.Start != value2.Start) || (value1.Length != value2.Length);
 		}
 
 		public override int GetHashCode ()
 		{
-			return Location ^ Length;
+			return Start ^ Length;
 		}
 
 		public override string ToString ()
 		{
-			return string.Format ("Location={0}, Length={1}", Location, Length);
+			return string.Format ("Start={0}, Length={1}", Start, Length);
 		}
 
 		public bool Equals (Range other)

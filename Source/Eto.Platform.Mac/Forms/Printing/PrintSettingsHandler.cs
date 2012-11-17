@@ -30,14 +30,14 @@ namespace Eto.Platform.Mac.Forms.Printing
 		public PrintSettingsHandler ()
 		{
 			Control = new NSPrintInfo ();
-			PageRange = new Range(1, 1);
+			MaximumPageRange = new Range(1, 1);
 		}
 		public int Copies {
 			get { return (int)(NSNumber)Control.PrintSettings["com_apple_print_PrintSettings_PMCopies"]; }
 			set { Control.PrintSettings["com_apple_print_PrintSettings_PMCopies"] = new NSNumber(value); }
 		}
 
-		public Range PageRange {
+		public Range MaximumPageRange {
 			get {
 				var range = ((NSArray)Control.PrintSettings["com_apple_print_PrintSettings_PMPageRange"]);
 				var firstPage = new NSNumber(range.ValueAt (0)).Int32Value;
@@ -59,13 +59,13 @@ namespace Eto.Platform.Mac.Forms.Printing
 			set {
 				var firstPage = ((NSNumber)Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"]).Int32Value;
 
-				if (value.Location < firstPage) {
-					Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"] = new NSNumber (value.Location);
-					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.Location + value.Length - 1);
+				if (value.Start < firstPage) {
+					Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"] = new NSNumber (value.Start);
+					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.InnerEnd);
 				}
 				else {
-					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.Location + value.Length - 1);
-					Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"] = new NSNumber (value.Location);
+					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.InnerEnd);
+					Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"] = new NSNumber (value.Start);
 				}
 			}
 		}

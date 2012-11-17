@@ -49,7 +49,7 @@ namespace Eto.Platform.Windows.Forms.Printing
 			set { Control.Copies = (short)value; }
 		}
 
-		public Range PageRange
+		public Range MaximumPageRange
 		{
 			get { return new Range (Control.MinimumPage, Control.MaximumPage - Control.MinimumPage + 1); }
 			set
