@@ -45,7 +45,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 				return new Range(firstPage, lastPage - firstPage + 1);
 			}
 			set {
-				var array = NSArray.FromNSObjects(new NSNumber(value.Location), new NSNumber(value.Location + value.Length - 1));
+				var array = NSArray.FromNSObjects(new NSNumber(value.Start), new NSNumber(value.End));
 				Control.PrintSettings["com_apple_print_PrintSettings_PMPageRange"] = array;
 			}
 		}
@@ -61,10 +61,10 @@ namespace Eto.Platform.Mac.Forms.Printing
 
 				if (value.Start < firstPage) {
 					Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"] = new NSNumber (value.Start);
-					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.InnerEnd);
+					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.End);
 				}
 				else {
-					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.InnerEnd);
+					Control.PrintSettings["com_apple_print_PrintSettings_PMLastPage"] = new NSNumber (value.End);
 					Control.PrintSettings["com_apple_print_PrintSettings_PMFirstPage"] = new NSNumber (value.Start);
 				}
 			}
@@ -78,6 +78,18 @@ namespace Eto.Platform.Mac.Forms.Printing
 		public bool Collate {
 			get { return ((NSNumber)Control.PrintSettings["com_apple_print_PrintSettings_PMCopyCollate"]).BoolValue; }
 			set { Control.PrintSettings["com_apple_print_PrintSettings_PMCopyCollate"] = new NSNumber(value); }
+		}
+
+		public PrintSelection PrintSelection {
+			get; set;
+		}
+
+		public bool Reverse {
+			get { 
+				var order = (NSString)Control.PrintSettings["OutputOrder"];
+				return order != null && order == "Reverse";
+			}
+			set { Control.PrintSettings["OutputOrder"] = new NSString(value ? "Reverse" : "Normal"); }
 		}
 	}
 }

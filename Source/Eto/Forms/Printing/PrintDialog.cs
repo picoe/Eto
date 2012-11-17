@@ -15,7 +15,7 @@ namespace Eto.Forms
 
 	public class PrintDialog : CommonDialog
 	{
-		IPrintDialog handler;
+		new IPrintDialog Handler { get { return (IPrintDialog)base.Handler; } }
 
 		public PrintDialog ()
 			: this (Generator.Current)
@@ -25,13 +25,12 @@ namespace Eto.Forms
 		public PrintDialog (Generator generator)
 			: base (generator, typeof (IPrintDialog))
 		{
-			handler = (IPrintDialog)Handler;
 		}
 
 		public PrintSettings PrintSettings
 		{
-			get { return handler.PrintSettings; }
-			set { handler.PrintSettings = value; }
+			get { return Handler.PrintSettings; }
+			set { Handler.PrintSettings = value; }
 		}
 	}
 }

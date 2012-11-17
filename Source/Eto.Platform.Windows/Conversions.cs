@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
+using sdp = System.Drawing.Printing;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows
@@ -105,6 +106,30 @@ namespace Eto.Platform.Windows
 			if ((style & FontStyle.Bold) != 0) ret |= sd.FontStyle.Bold;
 			if ((style & FontStyle.Italic) != 0) ret |= sd.FontStyle.Italic;
 			return ret;
+		}
+
+		public static sdp.PrintRange ToSDP (this PrintSelection value)
+		{
+			switch (value) {
+			case PrintSelection.AllPages:
+				return sdp.PrintRange.AllPages;
+			case PrintSelection.SelectedPages:
+				return sdp.PrintRange.SomePages;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PrintSelection ToEto (this sdp.PrintRange value)
+		{
+			switch (value) {
+			case sdp.PrintRange.AllPages:
+				return PrintSelection.AllPages;
+			case sdp.PrintRange.SomePages:
+				return PrintSelection.SelectedPages;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 
 	}

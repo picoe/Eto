@@ -38,6 +38,7 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 			Control = new Gtk.PrintSettings();
 			PageSetup = new Gtk.PageSetup();
 			MaximumPageRange = new Range(1, 1);
+			Collate = true;
 		}
 
 		public PrintSettingsHandler (Gtk.PrintSettings settings, Gtk.PageSetup setup)
@@ -71,6 +72,11 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 			}
 		}
 
+		public PrintSelection PrintSelection {
+			get { return Control.PrintPages.ToEto (); }
+			set { Control.PrintPages = value.ToGtk (); }
+		}
+
 		public PageOrientation Orientation {
 			get { return PageSetup.Orientation.ToEto (); }
 			set { PageSetup.Orientation = value.ToGtk (); }
@@ -79,6 +85,11 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 		public bool Collate {
 			get { return Control.Collate; }
 			set { Control.Collate = value; }
+		}
+
+		public bool Reverse {
+			get { return Control.Reverse; }
+			set { Control.Reverse = value; }
 		}
 	}
 }

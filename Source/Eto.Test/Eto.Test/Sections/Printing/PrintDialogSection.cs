@@ -10,6 +10,10 @@ namespace Eto.Test.Sections.Printing
 	public class PrintDialogSection : Panel
 	{
 		PrintSettings settings = new PrintSettings();
+		NumericUpDown selectedStart;
+		NumericUpDown selectedEnd;
+		NumericUpDown maximumStart;
+		NumericUpDown maximumEnd;
 
 		public PrintDialogSection ()
 		{
@@ -20,7 +24,7 @@ namespace Eto.Test.Sections.Printing
 			layout.AddSeparateRow (null, ShowPrintDialog (), null);
 			layout.AddSeparateRow (null, PrintFromGraphicsWithDialog (), null);
 			layout.AddSeparateRow (null, PrintFromGraphics (), null);
-			layout.AddSeparateRow (null, Settings (), null);
+			layout.AddSeparateRow (null, PageRange (), Settings (), null);
 
 			layout.Add (null);
 		}
@@ -113,11 +117,35 @@ namespace Eto.Test.Sections.Printing
 		{
 			var layout = new DynamicLayout (new GroupBox { Text = "Settings" });
 
-			layout.AddRow (new Label { Text = "Orientation" }, PageOrientation ());
-			layout.AddRow (new Label { Text = "Copies" }, Copies ());
-			layout.AddRow (null, Collate ());
-			layout.AddRow (new Label { Text = "Maximum Start" }, MaximumStart (), new Label { Text = "Maximum End" }, MaximumEnd ());
-			layout.AddRow (new Label { Text = "Selected Start" }, SelectedStart (), new Label { Text = "Selected End" }, SelectedEnd ());
+			layout.AddRow (new Label { Text = "Orientation" }, TableLayout.AutoSized(PageOrientation ()));
+
+			layout.BeginHorizontal ();
+			layout.Add (new Label { Text = "Copies" });
+			layout.AddSeparateRow (Padding.Empty).Add (TableLayout.AutoSized (Copies ()), TableLayout.AutoSized (Collate ()));
+			layout.EndHorizontal ();
+
+			layout.BeginHorizontal ();
+			layout.Add (new Label { Text = "Maximum Pages" });
+			layout.AddSeparateRow (Padding.Empty).Add (MaximumStart (), new Label { Text = "to" }, MaximumEnd ());
+			layout.EndHorizontal ();
+
+			layout.AddRow (null, Reverse ());
+
+			return layout.Container;
+		}
+
+		Control PageRange ()
+		{
+			var layout = new DynamicLayout (new GroupBox { Text = "Page Range" });
+
+			layout.AddRow (new Label { Text = "Print Selection" }, TableLayout.AutoSized (PrintSelection ()));
+
+			layout.BeginHorizontal ();
+			layout.Add (new Label { Text = "Selected Start" });
+			layout.AddSeparateRow (Padding.Empty).Add (SelectedStart (), new Label { Text = "to" }, SelectedEnd ());
+			layout.EndHorizontal ();
+
+			layout.Add (null);
 
 			return layout.Container;
 		}
@@ -143,15 +171,26 @@ namespace Eto.Test.Sections.Printing
 			return control;
 		}
 
+		Control Reverse ()
+		{
+			var control = new CheckBox { Text = "Reverse" };
+			control.Bind ("Checked", "Reverse");
+			return control;
+		}
+
 		Control MaximumStart ()
 		{
-			var control = new NumericUpDown { MinValue = 1 };
+			var control = maximumStart = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
 				control.Value = settings.MaximumPageRange.Start;
 			};
 			control.ValueChanged += delegate {
 				var range = settings.MaximumPageRange;
+				var end = range.End;
 				range.Start = (int)control.Value;
+				range.End = Math.Max (end, range.Start);
+				maximumEnd.MinValue = control.Value;
+				maximumEnd.Value = range.End;
 				settings.MaximumPageRange = range;
 			};
 			return control;
@@ -159,13 +198,13 @@ namespace Eto.Test.Sections.Printing
 
 		Control MaximumEnd ()
 		{
-			var control = new NumericUpDown { MinValue = 1 };
+			var control = maximumEnd = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
-				control.Value = settings.MaximumPageRange.InnerEnd;
+				control.Value = settings.MaximumPageRange.End;
 			};
 			control.ValueChanged += delegate {
 				var range = settings.MaximumPageRange;
-				range.InnerEnd = (int)control.Value;
+				range.End = (int)control.Value;
 				settings.MaximumPageRange = range;
 			};
 			return control;
@@ -173,13 +212,17 @@ namespace Eto.Test.Sections.Printing
 
 		Control SelectedStart ()
 		{
-			var control = new NumericUpDown { MinValue = 1 };
+			var control = selectedStart = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
 				control.Value = settings.SelectedPageRange.Start;
 			};
 			control.ValueChanged += delegate {
 				var range = settings.SelectedPageRange;
+				var end = range.End;
 				range.Start = (int)control.Value;
+				range.End = Math.Max (range.Start, end);
+				selectedEnd.MinValue = control.Value;
+				selectedEnd.Value = range.End;
 				settings.SelectedPageRange = range;
 			};
 			return control;
@@ -187,15 +230,22 @@ namespace Eto.Test.Sections.Printing
 
 		Control SelectedEnd ()
 		{
-			var control = new NumericUpDown { MinValue = 1 };
+			var control = selectedEnd = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
-				control.Value = settings.SelectedPageRange.InnerEnd;
+				control.Value = settings.SelectedPageRange.End;
 			};
 			control.ValueChanged += delegate {
 				var range = settings.SelectedPageRange;
-				range.InnerEnd = (int)control.Value;
+				range.End = (int)control.Value;
 				settings.SelectedPageRange = range;
 			};
+			return control;
+		}
+
+		Control PrintSelection ()
+		{
+			var control = new EnumComboBox<PrintSelection> ();
+			control.Bind ("SelectedValue", "PrintSelection");
 			return control;
 		}
 

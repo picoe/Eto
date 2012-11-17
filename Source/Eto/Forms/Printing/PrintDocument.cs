@@ -19,7 +19,8 @@ namespace Eto.Forms
 
 	public class PrintDocument : InstanceWidget
 	{
-		IPrintDocument handler;
+		new IPrintDocument Handler { get { return (IPrintDocument)base.Handler; } }
+
 		#region Events
 
 		public const string BeginPrintEvent = "PrintDocument.BeginPrint";
@@ -83,18 +84,17 @@ namespace Eto.Forms
 		public PrintDocument (Generator generator)
 			: base (generator, typeof (IPrintDocument))
 		{
-			handler = (IPrintDocument)Handler;
 		}
 
 		public string Name
 		{
-			get { return handler.Name; }
-			set { handler.Name = value; }
+			get { return Handler.Name; }
+			set { Handler.Name = value; }
 		}
 
 		public void Print ()
 		{
-			handler.Print ();
+			Handler.Print ();
 		}
 
 		public DialogResult ShowPrintDialog (Control parent)
@@ -111,14 +111,14 @@ namespace Eto.Forms
 
 		public PrintSettings PrintSettings
 		{
-			get { return handler.PrintSettings; }
-			set { handler.PrintSettings = value; }
+			get { return Handler.PrintSettings; }
+			set { Handler.PrintSettings = value; }
 		}
 
 		public virtual int PageCount
 		{
-			get { return handler.PageCount; }
-			set { handler.PageCount = value; }
+			get { return Handler.PageCount; }
+			set { Handler.PageCount = value; }
 		}
 	}
 }

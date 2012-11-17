@@ -197,12 +197,36 @@ namespace Eto.Platform.GtkSharp
 
 		public static Gtk.PageRange ToGtkPageRange (this Range range)
 		{
-			return new Gtk.PageRange { Start = range.Start, End = range.InnerEnd };
+			return new Gtk.PageRange { Start = range.Start - 1, End = range.End - 1 };
 		}
 
 		public static Range ToEto (this Gtk.PageRange range)
 		{
-			return new Range (range.Start, range.End);
+			return new Range (range.Start + 1, range.End - range.Start + 1);
+		}
+
+		public static Gtk.PrintPages ToGtk (this PrintSelection value)
+		{
+			switch (value) {
+			case PrintSelection.AllPages:
+				return Gtk.PrintPages.All;
+			case PrintSelection.SelectedPages:
+				return Gtk.PrintPages.Ranges;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PrintSelection ToEto (this Gtk.PrintPages value)
+		{
+			switch (value) {
+			case Gtk.PrintPages.All:
+				return PrintSelection.AllPages;
+			case Gtk.PrintPages.Ranges:
+				return PrintSelection.SelectedPages;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

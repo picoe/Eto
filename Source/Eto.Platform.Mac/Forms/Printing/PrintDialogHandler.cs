@@ -3,6 +3,7 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using System.Diagnostics;
 
 namespace Eto.Platform.Mac.Forms.Printing
 {

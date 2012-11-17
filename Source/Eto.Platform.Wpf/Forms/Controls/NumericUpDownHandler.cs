@@ -16,6 +16,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public NumericUpDownHandler ()
 		{
 			Control = new mwc.DoubleUpDown ();
+			Control.ValueChanged += (sender, e) => {
+				Widget.OnValueChanged (EventArgs.Empty);
+			};
 		}
 
 		public bool ReadOnly

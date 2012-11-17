@@ -35,7 +35,7 @@ namespace Eto.Platform.Mac
 		
 		public static NSRange ToNS (this Range range)
 		{
-			return new NSRange(range.Location, range.Length);
+			return new NSRange(range.Start, range.Length);
 		}
 		
 		public static Range ToEto (this NSRange range)

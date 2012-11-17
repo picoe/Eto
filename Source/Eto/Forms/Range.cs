@@ -22,15 +22,10 @@ namespace Eto.Forms
 		}
 
 		public int End {
-			get { return Start + Length; }
-			set {
-				Length = value - Start;
-			}
-		}
-
-		public int InnerEnd {
 			get { return Start + Length - 1; }
-			set { Length = value - Start + 1; }
+			set {
+				Length = value - Start + 1;
+			}
 		}
 
 		public override bool Equals (object obj)

@@ -18,16 +18,19 @@ namespace Eto.Platform.Wpf.Forms.Printing
 				var handler = (PrintSettingsHandler)settings.Handler;
 				dialog.PrintQueue = handler.PrintQueue;
 				dialog.PrintTicket = handler.Control;
-				dialog.MinPage = (uint)handler.PageRange.Location;
-				dialog.MaxPage = (uint)(handler.PageRange.Location + handler.PageRange.Length - 1);
-				dialog.PageRange = handler.SelectedRange;
-				dialog.PageRangeSelection = handler.PageRangeSelection;
+				var maxPageRange = handler.MaximumPageRange;
+				dialog.MinPage = (uint)maxPageRange.Start;
+				dialog.MaxPage = (uint)maxPageRange.End;
+				dialog.PageRange = handler.SelectedPageRange.ToPageRange ();
+				dialog.PageRangeSelection = handler.PrintSelection.ToSWC ();
 			}
 			else {
 				dialog.PrintQueue = null;
 				dialog.PrintTicket = null;
 				dialog.MinPage = 1;
 				dialog.MaxPage = 1;
+				dialog.PageRangeSelection = swc.PageRangeSelection.AllPages;
+				dialog.PageRange = new swc.PageRange (1, 1);
 			}
 		}
 
@@ -40,25 +43,25 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 	public class PrintSettingsHandler : WidgetHandler<sp.PrintTicket, PrintSettings>, IPrintSettings
 	{
-		public swc.PageRange SelectedRange { get; set; }
-		public swc.PageRangeSelection PageRangeSelection { get; set; }
 		public sp.PrintQueue PrintQueue { get; set; }
 
 		public PrintSettingsHandler (swc.PrintDialog dialog)
 		{
 			Control = dialog.PrintTicket;
 			PrintQueue = dialog.PrintQueue;
-			PageRange = new Range ((int)dialog.MinPage, (int)(dialog.MaxPage - dialog.MinPage) + 1);
-			SelectedRange = dialog.PageRange;
-			PageRangeSelection = dialog.PageRangeSelection;
+			MaximumPageRange = new Range ((int)dialog.MinPage, (int)(dialog.MaxPage - dialog.MinPage) + 1);
+			SelectedPageRange = dialog.PageRange.ToEto ();
+			PrintSelection = dialog.PageRangeSelection.ToEto ();
 		}
 
 		public PrintSettingsHandler ()
 		{
 			Control = new sp.PrintTicket ();
 			PrintQueue = new swc.PrintDialog ().PrintQueue;
-			PageRange = new Range (1, 1);
-			SelectedRange = new swc.PageRange (1, 1);
+			MaximumPageRange = new Range (1, 1);
+			SelectedPageRange = new Range (1, 1);
+			Collate = true;
+			PrintSelection = PrintSelection.AllPages;
 		}
 
 		public int Copies
@@ -69,10 +72,26 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 		public Range MaximumPageRange { get; set; }
 
+		public Range SelectedPageRange { get; set; }
+
+		public bool Collate
+		{
+			get { return Control.Collation == sp.Collation.Collated; }
+			set { Control.Collation = value ? sp.Collation.Collated : sp.Collation.Uncollated; }
+		}
+
+		public PrintSelection PrintSelection { get; set; }
+
 		public PageOrientation Orientation
 		{
 			get { return Control.PageOrientation.ToEto (); }
 			set { Control.PageOrientation = value.ToSP (); }
+		}
+
+		public bool Reverse
+		{
+			get { return Control.PageOrder == sp.PageOrder.Reverse; }
+			set { Control.PageOrder = value ? sp.PageOrder.Reverse : sp.PageOrder.Standard; }
 		}
 	}
 }

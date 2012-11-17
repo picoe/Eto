@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -13,15 +14,25 @@ namespace Eto.Forms
 
 		Range SelectedPageRange { get; set; }
 
+		PrintSelection PrintSelection { get; set; }
+
 		PageOrientation Orientation { get; set; }
 
 		bool Collate { get; set; }
+
+		bool Reverse { get; set; }
 	}
 
 	public enum PageOrientation
 	{
 		Portrait,
 		Landscape
+	}
+
+	public enum PrintSelection
+	{
+		AllPages,
+		SelectedPages
 	}
 
 	public class PrintSettings : InstanceWidget
@@ -43,34 +54,41 @@ namespace Eto.Forms
 		{
 		}
 
-		public int Copies
-		{
+		[DefaultValue(1)]
+		public int Copies {
 			get { return Handler.Copies; }
 			set { Handler.Copies = value; }
 		}
 
-		public Range MaximumPageRange
-		{
+		public Range MaximumPageRange {
 			get { return Handler.MaximumPageRange; }
 			set { Handler.MaximumPageRange = value; }
 		}
 
-		public Range SelectedPageRange
-		{
+		public Range SelectedPageRange {
 			get { return Handler.SelectedPageRange; }
 			set { Handler.SelectedPageRange = value; }
 		}
 
-		public PageOrientation Orientation
-		{
+		public PageOrientation Orientation {
 			get { return Handler.Orientation; }
 			set { Handler.Orientation = value; }
 		}
 
-		public bool Collate
-		{
+		public PrintSelection PrintSelection {
+			get { return Handler.PrintSelection; }
+			set { Handler.PrintSelection = value; }
+		}
+
+		[DefaultValue(true)]
+		public bool Collate {
 			get { return Handler.Collate; }
 			set { Handler.Collate = value; }
+		}
+
+		public bool Reverse {
+			get { return Handler.Reverse; }
+			set { Handler.Reverse = value; }
 		}
 	}
 }

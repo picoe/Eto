@@ -35,7 +35,7 @@ namespace Eto.Platform.Windows.Forms.Printing
 
 		public static sdp.PrinterSettings DefaultSettings ()
 		{
-			return new sdp.PrinterSettings { MinimumPage = 1, MaximumPage = 1, FromPage = 1, ToPage = 1, Copies = 1 };
+			return new sdp.PrinterSettings { MinimumPage = 1, MaximumPage = 1, FromPage = 1, ToPage = 1, Copies = 1, Collate = true };
 		}
 
 		public PrintSettingsHandler ()
@@ -54,8 +54,18 @@ namespace Eto.Platform.Windows.Forms.Printing
 			get { return new Range (Control.MinimumPage, Control.MaximumPage - Control.MinimumPage + 1); }
 			set
 			{
-				Control.MinimumPage = value.Location;
-				Control.MaximumPage = value.Location + value.Length - 1;
+				Control.MinimumPage = value.Start;
+				Control.MaximumPage = value.End;
+			}
+		}
+
+		public Range SelectedPageRange
+		{
+			get { return new Range (Control.FromPage, Control.ToPage - Control.FromPage + 1); }
+			set
+			{
+				Control.FromPage = value.Start;
+				Control.ToPage = value.End;
 			}
 		}
 
@@ -65,10 +75,24 @@ namespace Eto.Platform.Windows.Forms.Printing
 			set { Control.DefaultPageSettings.Landscape = value == PageOrientation.Landscape; }
 		}
 
+		public PrintSelection PrintSelection
+		{
+			get { return Control.PrintRange.ToEto (); }
+			set { Control.PrintRange = value.ToSDP (); }
+		}
+
 		public bool Collate
 		{
 			get { return Control.Collate; }
 			set { Control.Collate = value; }
 		}
+
+		// not supported by winforms
+		public bool Reverse
+		{
+			get;
+			set;
+		}
+
 	}
 }
