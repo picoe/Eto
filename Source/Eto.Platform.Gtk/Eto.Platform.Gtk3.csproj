@@ -23,32 +23,30 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
-    <DefineConstants>CAIRO;TRACE</DefineConstants>
+    <DefineConstants>CAIRO;TRACE;GTK3</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Optimize>true</Optimize>
     <FileAlignment>4096</FileAlignment>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisIgnoreBuiltInRuleSets>true</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>true</CodeAnalysisIgnoreBuiltInRules>
     <DebugType>pdbonly</DebugType>
     <WarningLevel>4</WarningLevel>
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>CAIRO;DEBUG;TRACE</DefineConstants>
+    <DefineConstants>CAIRO;DEBUG;TRACE;GTK3</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <FileAlignment>4096</FileAlignment>
     <DebugType>full</DebugType>
-    <PlatformTarget>AnyCPU</PlatformTarget>
     <CodeAnalysisIgnoreBuiltInRuleSets>false</CodeAnalysisIgnoreBuiltInRuleSets>
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>4</WarningLevel>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">

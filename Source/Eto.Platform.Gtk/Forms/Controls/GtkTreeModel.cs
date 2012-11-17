@@ -19,16 +19,6 @@ namespace Eto.Platform.GtkSharp
 		{
 		}
 
-#if GTK3
-		// at least runs, but tree will not work
-		public static GLib.GType GType
-		{
-			get {
-				return GLib.GType.Object;
-			}
-		}
-#endif
-		
 		class Node
 		{
 			public T Item { get; set; }
