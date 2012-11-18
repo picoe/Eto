@@ -48,7 +48,7 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto\Source\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
+    <ProjectReference Include="..\..\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
       <Project>{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}</Project>
       <Name>Eto.Platform.Windows</Name>
     </ProjectReference>
