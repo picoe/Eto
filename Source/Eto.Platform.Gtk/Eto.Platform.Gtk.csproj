@@ -21,6 +21,12 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
+  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />  
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);CAIRO;</DefineConstants>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+  </PropertyGroup>  
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <DefineConstants>CAIRO;TRACE</DefineConstants>
