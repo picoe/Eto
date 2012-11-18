@@ -14,6 +14,8 @@ namespace Eto.Test.Sections.Printing
 		NumericUpDown selectedEnd;
 		NumericUpDown maximumStart;
 		NumericUpDown maximumEnd;
+		CheckBox allowPageRange;
+		CheckBox allowSelection;
 
 		public PrintDialogSection ()
 		{
@@ -24,9 +26,30 @@ namespace Eto.Test.Sections.Printing
 			layout.AddSeparateRow (null, ShowPrintDialog (), null);
 			layout.AddSeparateRow (null, PrintFromGraphicsWithDialog (), null);
 			layout.AddSeparateRow (null, PrintFromGraphics (), null);
+			layout.AddSeparateRow (null, PrintDialogOptions (), null);
 			layout.AddSeparateRow (null, PageRange (), Settings (), null);
 
 			layout.Add (null);
+		}
+
+		Control PrintDialogOptions ()
+		{
+			var layout = new DynamicLayout (new GroupBox { Text = "Print Dialog Options" });
+
+			layout.AddRow (null, AllowPageRange ());
+			layout.AddRow (null, AllowSelection ());
+
+			return layout.Container;
+		}
+
+		Control AllowPageRange ()
+		{
+			return allowPageRange = new CheckBox { Text = "Allow Page Range", Checked = new PrintDialog().AllowPageRange };
+		}
+
+		Control AllowSelection ()
+		{
+			return allowSelection = new CheckBox { Text = "Allow Selection", Checked = new PrintDialog().AllowSelection };
 		}
 
 		Control ShowPrintDialog ()
@@ -34,7 +57,11 @@ namespace Eto.Test.Sections.Printing
 			var control = new Button { Text = "Show Print Dialog" };
 
 			control.Click += delegate {
-				var print = new PrintDialog { PrintSettings = settings };
+				var print = new PrintDialog { 
+					PrintSettings = settings,
+					AllowSelection = allowSelection.Checked ?? false,
+					AllowPageRange = allowPageRange.Checked ?? false
+				};
 				var ret = print.ShowDialog (this.ParentWindow);
 				if (ret == DialogResult.Ok) {
 					this.DataContext = settings = print.PrintSettings;

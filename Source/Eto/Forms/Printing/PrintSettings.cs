@@ -32,6 +32,7 @@ namespace Eto.Forms
 	public enum PrintSelection
 	{
 		AllPages,
+		Selection,
 		SelectedPages
 	}
 

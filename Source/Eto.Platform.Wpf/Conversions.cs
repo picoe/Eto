@@ -165,7 +165,7 @@ namespace Eto.Platform.Wpf
 
 		public static Range ToEto (this swc.PageRange range)
 		{
-			return new Range (range.PageFrom, range.PageFrom - range.PageTo + 1);
+			return new Range (range.PageFrom, range.PageTo - range.PageFrom + 1);
 		}
 
 		public static swc.PageRangeSelection ToSWC (this PrintSelection value)

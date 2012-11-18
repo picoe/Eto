@@ -115,6 +115,8 @@ namespace Eto.Platform.Windows
 				return sdp.PrintRange.AllPages;
 			case PrintSelection.SelectedPages:
 				return sdp.PrintRange.SomePages;
+			case PrintSelection.Selection:
+				return sdp.PrintRange.Selection;
 			default:
 				throw new NotSupportedException ();
 			}
@@ -127,6 +129,8 @@ namespace Eto.Platform.Windows
 				return PrintSelection.AllPages;
 			case sdp.PrintRange.SomePages:
 				return PrintSelection.SelectedPages;
+			case sdp.PrintRange.Selection:
+				return PrintSelection.Selection;
 			default:
 				throw new NotSupportedException ();
 			}

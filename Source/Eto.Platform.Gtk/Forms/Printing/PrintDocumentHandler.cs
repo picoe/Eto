@@ -62,7 +62,7 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 		public PrintSettings PrintSettings {
 			get {
 				if (settings == null)
-					settings = Control.PrintSettings.ToEto (Control.DefaultPageSetup, Widget.Generator);
+					settings = Control.PrintSettings.ToEto (Control.DefaultPageSetup, false, Widget.Generator);
 				return settings;
 			}
 			set {

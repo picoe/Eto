@@ -43,6 +43,8 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 	public class PrintSettingsHandler : WidgetHandler<sp.PrintTicket, PrintSettings>, IPrintSettings
 	{
+		PrintSelection printSelection;
+
 		public sp.PrintQueue PrintQueue { get; set; }
 
 		public PrintSettingsHandler (swc.PrintDialog dialog)
@@ -80,7 +82,15 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			set { Control.Collation = value ? sp.Collation.Collated : sp.Collation.Uncollated; }
 		}
 
-		public PrintSelection PrintSelection { get; set; }
+		public PrintSelection PrintSelection
+		{
+			get { return printSelection; }
+			set
+			{
+				if (value != Eto.Forms.PrintSelection.Selection)
+					printSelection = value;
+			}
+		}
 
 		public PageOrientation Orientation
 		{

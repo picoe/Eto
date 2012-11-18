@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.ComponentModel;
 
 namespace Eto.Forms
 {
@@ -31,6 +32,17 @@ namespace Eto.Forms
 		{
 			get { return Handler.PrintSettings; }
 			set { Handler.PrintSettings = value; }
+		}
+
+		public bool AllowSelection {
+			get { return Handler.AllowSelection; }
+			set { Handler.AllowSelection = value; }
+		}
+
+		[DefaultValue(true)]
+		public bool AllowPageRange {
+			get { return Handler.AllowPageRange; }
+			set { Handler.AllowPageRange = value; }
 		}
 	}
 }

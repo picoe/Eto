@@ -5,11 +5,11 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 {
 	public static class PrintSettingsExtensions
 	{
-		public static PrintSettings ToEto (this Gtk.PrintSettings settings, Gtk.PageSetup setup, Eto.Generator generator)
+		public static PrintSettings ToEto (this Gtk.PrintSettings settings, Gtk.PageSetup setup, bool selectionOnly, Eto.Generator generator)
 		{
 			if (settings == null)
 				return null;
-			return new PrintSettings(generator, new PrintSettingsHandler (settings, setup));
+			return new PrintSettings(generator, new PrintSettingsHandler (settings, setup, selectionOnly));
 		}
 
 		public static Gtk.PrintSettings ToGtkPrintSettings (this PrintSettings settings)
@@ -29,6 +29,8 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 
 	public class PrintSettingsHandler : WidgetHandler<Gtk.PrintSettings, PrintSettings>, IPrintSettings
 	{
+		public bool SelectionOnly { get; set; }
+
 		public Gtk.PageSetup PageSetup { get; set; }
 
 		public bool ShowPreview { get; set; }
@@ -41,16 +43,17 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 			Collate = true;
 		}
 
-		public PrintSettingsHandler (Gtk.PrintSettings settings, Gtk.PageSetup setup)
+		public PrintSettingsHandler (Gtk.PrintSettings settings, Gtk.PageSetup setup, bool selectionOnly)
 		{
 			MaximumPageRange = new Range(1, 1);
-			Set (settings, setup);
+			Set (settings, setup, selectionOnly);
 		}
 
-		public void Set (Gtk.PrintSettings settings, Gtk.PageSetup setup)
+		public void Set (Gtk.PrintSettings settings, Gtk.PageSetup setup, bool selectionOnly)
 		{
 			Control = settings;
 			PageSetup = setup;
+			SelectionOnly = selectionOnly;
 		}
 
 		public int Copies {
@@ -73,8 +76,19 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 		}
 
 		public PrintSelection PrintSelection {
-			get { return Control.PrintPages.ToEto (); }
-			set { Control.PrintPages = value.ToGtk (); }
+			get {
+				if (SelectionOnly)
+					return PrintSelection.Selection;
+				return Control.PrintPages.ToEto ();
+			}
+			set {
+				if (value == Eto.Forms.PrintSelection.Selection)
+					SelectionOnly = true;
+				else {
+					Control.PrintPages = value.ToGtk ();
+					SelectionOnly = false;
+				}
+			}
 		}
 
 		public PageOrientation Orientation {

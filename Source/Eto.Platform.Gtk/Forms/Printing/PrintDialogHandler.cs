@@ -9,7 +9,18 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 
 		public PrintDialogHandler ()
 		{
+			AllowPageRange =true;
+		}
 
+		public class CustomOptions : Gtk.VBox {
+			public Gtk.CheckButton SelectionOnly { get; private set; }
+
+			public CustomOptions ()
+			{
+				this.Spacing = 10;
+				SelectionOnly = new Gtk.CheckButton { Label = "Selection Only" };
+				this.PackStart (SelectionOnly, false, false, 10);
+			}
 		}
 
 		public DialogResult ShowDialog (Window parent)
@@ -27,22 +38,27 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 					| Gtk.PrintCapabilities.Collate
 					| Gtk.PrintCapabilities.GeneratePdf
 					| Gtk.PrintCapabilities.Copies
+					| Gtk.PrintCapabilities.PageSet
 					| Gtk.PrintCapabilities.GeneratePs
-					| Gtk.PrintCapabilities.NumberUp
 					| Gtk.PrintCapabilities.Scale
+					| Gtk.PrintCapabilities.NumberUp
 					| Gtk.PrintCapabilities.Reverse;
-			if (AllowPageRange)
-				caps |= Gtk.PrintCapabilities.PageSet;
+			var printSettingsHandler = (PrintSettingsHandler)this.PrintSettings.Handler;
+
 			Control.PageSetup = this.PrintSettings.ToGtkPageSetup ();
 			Control.PrintSettings = this.PrintSettings.ToGtkPrintSettings ();
+			var customOptions = new CustomOptions();
+			customOptions.SelectionOnly.Active = printSettingsHandler.SelectionOnly;
+
+			if (AllowSelection)
+				Control.AddCustomTab (customOptions, new Gtk.Label { Text = "Other Options" });
 
 			Control.ManualCapabilities = caps;
 			Control.ShowAll ();
 			var response = (Gtk.ResponseType)Control.Run ();
 			Control.Hide ();
 
-			var printSettingsHandler = (PrintSettingsHandler)this.PrintSettings.Handler;
-			printSettingsHandler.Set(Control.PrintSettings, Control.PageSetup);
+			printSettingsHandler.Set(Control.PrintSettings, Control.PageSetup, customOptions.SelectionOnly.Active);
 			if (response == Gtk.ResponseType.Apply) {
 				printSettingsHandler.ShowPreview = true;
 				return DialogResult.Ok;
@@ -60,6 +76,7 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 			}
 		}
 
+		// not supported in gtk
 		public bool AllowPageRange {
 			get; set;
 		}

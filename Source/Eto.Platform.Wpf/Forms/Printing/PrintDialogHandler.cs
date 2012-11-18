@@ -51,6 +51,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			set { Control.UserPageRangeEnabled = value; }
 		}
 
+		// not supported in wpf
 		public bool AllowSelection
 		{
 			get; set;
