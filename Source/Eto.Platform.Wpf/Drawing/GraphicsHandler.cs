@@ -17,7 +17,7 @@ namespace Eto.Platform.Wpf.Drawing
 		ImageInterpolation imageInterpolation;
 
 		Bitmap image;
-		double? dpi;
+		sw.Size? dpi;
 
 		public GraphicsHandler ()
 		{
@@ -29,8 +29,8 @@ namespace Eto.Platform.Wpf.Drawing
 			
 			this.Control = context;
 
-			if (DPI != 1.0)
-				this.Control.PushTransform (new swm.ScaleTransform (DPI, DPI));
+			if (DPI != new sw.Size(1.0, 1.0))
+				this.Control.PushTransform (new swm.ScaleTransform (DPI.Width, DPI.Height));
 
 			if (clipRect != null)
 				this.Control.PushClip (new swm.RectangleGeometry (clipRect.Value));
@@ -48,13 +48,18 @@ namespace Eto.Platform.Wpf.Drawing
 			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
-		public double DPI
+		public sw.Size DPI
 		{
 			get
 			{
 				if (dpi == null) {
-					swm.Matrix m = sw.PresentationSource.FromVisual (visual).CompositionTarget.TransformToDevice;
-					dpi = 1 / m.M11;
+					var presentationSource = sw.PresentationSource.FromVisual (visual);
+					if (presentationSource != null) {
+						swm.Matrix m = presentationSource.CompositionTarget.TransformToDevice;
+						dpi = new sw.Size (1 / m.M11, 1 / m.M11);
+					}
+					else
+						dpi = new sw.Size (1.0, 1.0);
 				}
 				return dpi.Value;
 			}

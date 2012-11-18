@@ -11,6 +11,8 @@ namespace Eto.Platform.Windows
 	public interface IWindowHandler
 	{
 		swf.ToolTip ToolTips { get; }
+
+		swf.IWin32Window Win32Window { get; }
 	}
 
 	public abstract class WindowHandler<T, W> : WindowsContainer<T, W>, IWindow, IWindowHandler
@@ -33,6 +35,11 @@ namespace Eto.Platform.Windows
 		public swf.ToolTip ToolTips
 		{
 			get { return tooltips; }
+		}
+
+		public swf.IWin32Window Win32Window
+		{
+			get { return Control; }
 		}
 
 		public override swf.Control ContentContainer

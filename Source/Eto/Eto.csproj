@@ -95,6 +95,9 @@
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />
+    <Compile Include="Forms\Printing\PageSettings.cs" />
+    <Compile Include="Forms\Printing\PrintDocument.cs" />
+    <Compile Include="Forms\Printing\PrintSettings.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -350,6 +353,8 @@
     <Compile Include="Binding\ObjectBinding.cs" />
     <Compile Include="Binding\DualBinding.cs" />
     <Compile Include="Binding\BindingExtensions.cs" />
+    <Compile Include="Forms\Printing\PrintDialog.cs" />
+    <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
     <Compile Include="Widget.xaml.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
     <Compile Include="HandlerInvalidException.cs" />

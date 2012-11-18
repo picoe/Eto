@@ -35,7 +35,7 @@ namespace Eto.Platform.Mac
 		
 		public static NSRange ToNS (this Range range)
 		{
-			return new NSRange(range.Location, range.Length);
+			return new NSRange(range.Start, range.Length);
 		}
 		
 		public static Range ToEto (this NSRange range)
@@ -98,6 +98,30 @@ namespace Eto.Platform.Mac
 			//if (traits.HasFlag (NSFontTraitMask.Narrow))
 			//	style |= FontStyle.Light;
 			return style;
+		}
+
+		public static NSPrintingOrientation ToNS (this PageOrientation value)
+		{
+			switch (value) {
+			case PageOrientation.Landscape:
+				return NSPrintingOrientation.Landscape;
+			case PageOrientation.Portrait:
+				return NSPrintingOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PageOrientation ToEto (this NSPrintingOrientation value)
+		{
+			switch (value) {
+			case NSPrintingOrientation.Landscape:
+				return PageOrientation.Landscape;
+			case NSPrintingOrientation.Portrait:
+				return PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

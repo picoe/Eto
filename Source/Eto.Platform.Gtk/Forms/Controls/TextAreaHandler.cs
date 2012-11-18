@@ -121,8 +121,8 @@ namespace Eto.Platform.GtkSharp
 			}
 			set {
 				sendSelectionChanged = false;
-				var start = Control.Buffer.GetIterAtOffset(value.Location);
-				var end = Control.Buffer.GetIterAtOffset(value.Location + value.Length);
+				var start = Control.Buffer.GetIterAtOffset(value.Start);
+				var end = Control.Buffer.GetIterAtOffset(value.Start + value.Length);
 				Control.Buffer.SelectRange (start, end);
 				Widget.OnSelectionChanged (EventArgs.Empty);
 				sendSelectionChanged = true;

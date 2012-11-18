@@ -7,6 +7,8 @@ using Eto.Forms;
 using swi = System.Windows.Input;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using sp = System.Printing;
+using swc = System.Windows.Controls;
 using System.Text.RegularExpressions;
 
 namespace Eto.Platform.Wpf
@@ -130,5 +132,64 @@ namespace Eto.Platform.Wpf
                 throw new NotSupportedException ();
             }
         }
+
+		public static sp.PageOrientation ToSP (this PageOrientation value)
+		{
+			switch (value) {
+			case PageOrientation.Portrait:
+				return sp.PageOrientation.Portrait;
+			case PageOrientation.Landscape:
+				return sp.PageOrientation.Landscape;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PageOrientation ToEto (this sp.PageOrientation? value)
+		{
+			if (value == null) return PageOrientation.Portrait;
+			switch (value.Value) {
+			case sp.PageOrientation.Landscape:
+				return PageOrientation.Landscape;
+			case sp.PageOrientation.Portrait:
+				return PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swc.PageRange ToPageRange (this Range range)
+		{
+			return new swc.PageRange (range.Start, range.End);
+		}
+
+		public static Range ToEto (this swc.PageRange range)
+		{
+			return new Range (range.PageFrom, range.PageTo - range.PageFrom + 1);
+		}
+
+		public static swc.PageRangeSelection ToSWC (this PrintSelection value)
+		{
+			switch (value) {
+			case PrintSelection.AllPages:
+				return swc.PageRangeSelection.AllPages;
+			case PrintSelection.SelectedPages:
+				return swc.PageRangeSelection.UserPages;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PrintSelection ToEto (this swc.PageRangeSelection value)
+		{
+			switch (value) {
+			case swc.PageRangeSelection.AllPages:
+				return PrintSelection.AllPages;
+			case swc.PageRangeSelection.UserPages:
+				return PrintSelection.SelectedPages;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
     }
 }

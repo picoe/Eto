@@ -6,6 +6,7 @@ using MonoMac.Foundation;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Drawing;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -128,7 +129,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (focus) 
 				Focus ();
 		}
-		
+
+		public void Print (PrintSettings settings)
+		{
+			var op = NSPrintOperation.FromView(Control.View);
+			if (settings != null)
+				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
+			op.ShowsPrintPanel = false;
+			op.RunOperation ();
+		}
+
 		#region IControl implementation
 		public void Invalidate ()
 		{

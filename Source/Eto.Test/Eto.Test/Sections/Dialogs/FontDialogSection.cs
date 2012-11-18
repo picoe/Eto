@@ -150,7 +150,10 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			preview = new TextArea { Wrap = true, Size = new Size(-1, 100) };
 			preview.Text = "The quick brown fox jumps over the lazy dog";
-			return preview;
+
+			var box = new GroupBox { Text = "Preview" };
+			box.AddDockedControl (preview);
+			return box;
 		}
 	}
 }
