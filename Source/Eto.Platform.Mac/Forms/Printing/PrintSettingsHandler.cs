@@ -24,7 +24,6 @@ namespace Eto.Platform.Mac.Forms.Printing
 	{
 		int lastSelectedPage;
 		int firstSelectedPage;
-		bool allPages;
 
 		public PrintSettingsHandler (NSPrintInfo info)
 		{

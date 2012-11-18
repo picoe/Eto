@@ -9,6 +9,7 @@ using MonoMac.ObjCRuntime;
 using SD = System.Drawing;
 using Eto.Platform.Mac.Forms.Controls;
 using System.Collections.Generic;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -430,6 +431,15 @@ namespace Eto.Platform.Mac.Forms
 		public string ToolTip {
 			get { return Control.ToolTip; }
 			set { Control.ToolTip = value; }
+		}
+
+		public void Print (PrintSettings settings)
+		{
+			var op = NSPrintOperation.FromView(Control);
+			if (settings != null)
+				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
+			op.ShowsPrintPanel = false;
+			op.RunOperation ();
 		}
 		
 		public virtual void OnPreLoad (EventArgs e)

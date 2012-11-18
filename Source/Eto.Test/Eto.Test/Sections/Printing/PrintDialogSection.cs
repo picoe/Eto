@@ -23,10 +23,20 @@ namespace Eto.Test.Sections.Printing
 
 			var layout = new DynamicLayout (this);
 
+			layout.BeginVertical ();
+			layout.BeginHorizontal ();
+			layout.Add (null);
+			layout.BeginVertical (Padding.Empty);
 			layout.AddSeparateRow (null, ShowPrintDialog (), null);
 			layout.AddSeparateRow (null, PrintFromGraphicsWithDialog (), null);
 			layout.AddSeparateRow (null, PrintFromGraphics (), null);
-			layout.AddSeparateRow (null, PrintDialogOptions (), null);
+			layout.EndBeginVertical ();
+			layout.Add (PrintDialogOptions ());
+			layout.Add (null);
+			layout.EndVertical ();
+			layout.Add (null);
+			layout.EndHorizontal ();
+			layout.EndVertical ();
 			layout.AddSeparateRow (null, PageRange (), Settings (), null);
 
 			layout.Add (null);
@@ -52,16 +62,21 @@ namespace Eto.Test.Sections.Printing
 			return allowSelection = new CheckBox { Text = "Allow Selection", Checked = new PrintDialog().AllowSelection };
 		}
 
+		PrintDialog CreatePrintDialog ()
+		{
+			return new PrintDialog { 
+				PrintSettings = settings,
+				AllowSelection = allowSelection.Checked ?? false,
+				AllowPageRange = allowPageRange.Checked ?? false
+			};
+		}
+
 		Control ShowPrintDialog ()
 		{
 			var control = new Button { Text = "Show Print Dialog" };
 
 			control.Click += delegate {
-				var print = new PrintDialog { 
-					PrintSettings = settings,
-					AllowSelection = allowSelection.Checked ?? false,
-					AllowPageRange = allowPageRange.Checked ?? false
-				};
+				var print = CreatePrintDialog ();
 				var ret = print.ShowDialog (this.ParentWindow);
 				if (ret == DialogResult.Ok) {
 					this.DataContext = settings = print.PrintSettings;
@@ -133,7 +148,8 @@ namespace Eto.Test.Sections.Printing
 
 			control.Click += delegate {
 				var document = GetPrintDocument ();
-				document.ShowPrintDialog (this);
+				var dialog = CreatePrintDialog ();
+				dialog.ShowDialog (this, document);
 				this.DataContext = settings = document.PrintSettings;
 			};
 

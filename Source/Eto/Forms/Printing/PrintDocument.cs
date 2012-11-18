@@ -97,18 +97,6 @@ namespace Eto.Forms
 			Handler.Print ();
 		}
 
-		public DialogResult ShowPrintDialog (Control parent)
-		{
-			var dialog = new PrintDialog (Generator);
-			this.PrintSettings.MaximumPageRange = new Range (1, PageCount);
-			dialog.PrintSettings = this.PrintSettings;
-			var result = dialog.ShowDialog (parent);
-			if (result == DialogResult.Ok) {
-				Print ();
-			}
-			return result;
-		}
-
 		public PrintSettings PrintSettings
 		{
 			get { return Handler.PrintSettings; }

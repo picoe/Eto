@@ -8,6 +8,7 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Forms.Controls;
 using Eto.Platform.Mac.Drawing;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -515,6 +516,14 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
+		public void Print (PrintSettings settings)
+		{
+			var op = NSPrintOperation.FromView(Control.ContentView);
+			if (settings != null)
+				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
+			op.ShowsPrintPanel = false;
+			op.RunOperation ();
+		}
 
 		#region IMacContainer implementation
 		public void SetContentSize (SD.SizeF contentSize)

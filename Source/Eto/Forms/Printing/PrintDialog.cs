@@ -44,5 +44,17 @@ namespace Eto.Forms
 			get { return Handler.AllowPageRange; }
 			set { Handler.AllowPageRange = value; }
 		}
+
+		public DialogResult ShowDialog (Control parent, PrintDocument document)
+		{
+			this.PrintSettings.MaximumPageRange = new Range (1, document.PageCount);
+			this.PrintSettings = document.PrintSettings;
+			var result = this.ShowDialog (parent);
+			if (result == DialogResult.Ok) {
+				document.Print ();
+			}
+			return result;
+		}
+
 	}
 }
