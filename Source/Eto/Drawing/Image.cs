@@ -61,17 +61,17 @@ namespace Eto.Drawing
 		/// </summary>
 		public Size Size
 		{
-			get { return handler.Size; }
+            get { return handler != null ? handler.Size : Size.Empty; }
 		}
 
         public int Width
         {
-            get { return handler.Width; }
+            get { return handler != null ? handler.Width : 0; }
         }
 
         public int Height
         {
-            get { return handler.Height; }
+            get { return handler != null ? handler.Height : 0; }
         }
 
         public new Widget Widget
