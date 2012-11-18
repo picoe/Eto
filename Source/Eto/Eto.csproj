@@ -21,6 +21,51 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
+    <DefineConstants>TRACE;DEBUG;Windows;;DESKTOP;</DefineConstants>
+    <OutputRoot>..\..\..</OutputRoot>
+  </PropertyGroup>
+  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);DESKTOP;</DefineConstants>
+  </PropertyGroup>
+  <!--MSbuild determines the configurations by trolling all condition expressions.-->
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+    <OutputPath>$(OutputRoot)\bin\iPhoneSimulator\Debug</OutputPath>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
+    <OutputPath>$(OutputRoot)\bin\iPhoneSimulator\Release</OutputPath>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
+    <OutputPath>$(OutputRoot)\bin\iPhone\Debug</OutputPath>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
+    <OutputPath>$(OutputRoot)\bin\iPhone\Release</OutputPath>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Mac' ">
+    <OutputPath>$(OutputRoot)\bin\Mac\Debug</OutputPath>
+    <Optimize>false</Optimize>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Mac' ">
+    <OutputPath>$(OutputRoot)\bin\Mac\Release</OutputPath>
+    <DebugType>none</DebugType>
+    <WarningLevel>4</WarningLevel>
+    <Optimize>false</Optimize>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
@@ -53,6 +98,9 @@
     <DebugType>full</DebugType>
     <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
+  <ItemGroup Condition="'$(XTarget)' == 'x86' or $(XTarget) == 'AnyCPU'">
+    <Reference Include="System.Drawing" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>

@@ -213,21 +213,21 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to subtract</param>
-		/// <returns>A new instance of a Size with the Width and Height equal to the difference of the X and Y co-ordinates, respectively</returns>
-		public static Size operator - (Point point1, Point point2)
+		/// <returns>A new instance of a Size with the X and Y equal to the difference of the X and Y co-ordinates, respectively</returns>
+		public static Point operator - (Point point1, Point point2)
 		{
-			return new Size (point1.x - point2.x, point1.y - point2.y);
+			return new Point (point1.x - point2.x, point1.y - point2.y);
 		}
 
 		/// <summary>
-		/// Operator to return the addition of two points as a <see cref="Size"/>
+		/// Operator to return the addition of two points as a <see cref="Point"/>
 		/// </summary>
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to add</param>
-		/// <returns>A new instance of a Size with the Width and Height equal to the sum of the two point's X and Y co-ordinates, respectively</returns>
-		public static Size operator + (Point point1, Point point2)
+		/// <returns>A new instance of a Point with the X and Y equal to the sum of the two point's X and Y co-ordinates, respectively</returns>
+		public static Point operator + (Point point1, Point point2)
 		{
-			return new Size (point1.x + point2.x, point1.y + point2.y);
+			return new Point (point1.x + point2.x, point1.y + point2.y);
 		}
 
 		/// <summary>

@@ -176,6 +176,12 @@ namespace Eto.Drawing
 			this.location.Y += size.Height;
 		}
 
+        public void Offset(PointF point)
+        {
+            this.location.X += point.X;
+            this.location.Y += point.Y;
+        }
+
 		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="point"/> is within the bounds of this rectangle
 		/// </summary>
@@ -409,7 +415,17 @@ namespace Eto.Drawing
 			set { Top = value.Y; Right = value.X; }
 		}
 
-		/// <summary>
+        public PointF MiddleLeft
+        {
+            get { return new PointF(Left, MiddleY); }
+        }
+
+        public PointF MiddleRight
+        {
+            get { return new PointF(Right, MiddleY); }
+        }
+        
+        /// <summary>
 		/// Gets or sets the point at the <see cref="Bottom"/> and <see cref="Right"/> of the rectangle
 		/// </summary>
 		public PointF BottomRight
@@ -798,6 +814,16 @@ namespace Eto.Drawing
                 this.Top <= r.Top &&
                 this.Right >= r.Right &&
                 this.Bottom >= r.Bottom;
+        }
+
+        public RectangleF Union(RectangleF r)
+        {
+            var left = Math.Min(this.Left, r.Left);
+            var top = Math.Min(this.Top, r.Top);
+            var right = Math.Max(this.Right, r.Right);
+            var bottom = Math.Max(this.Bottom, r.Bottom);
+
+            return new RectangleF(left, top, right - left, bottom - top);
         }
 	}
 }

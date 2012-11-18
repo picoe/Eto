@@ -254,25 +254,25 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Operator to return the difference between two points as a <see cref="Size"/>
+		/// Operator to return the difference between two points as a <see cref="PointF"/>
 		/// </summary>
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to subtract</param>
-		/// <returns>A new instance of a Size with the Width and Height equal to the difference of the X and Y co-ordinates, respectively</returns>
-		public static SizeF operator - (PointF point1, PointF point2)
+		/// <returns>A new instance of a PointF with the X and Y equal to the difference of the X and Y co-ordinates, respectively</returns>
+		public static PointF operator - (PointF point1, PointF point2)
 		{
-			return new SizeF (point1.x - point2.x, point1.y - point2.y);
+            return new PointF(point1.x - point2.x, point1.y - point2.y);
 		}
 
 		/// <summary>
-		/// Operator to return the addition of two points as a <see cref="Size"/>
+		/// Operator to return the addition of two points as a <see cref="PointF"/>
 		/// </summary>
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to add</param>
-		/// <returns>A new instance of a Size with the Width and Height equal to the sum of the two point's X and Y co-ordinates, respectively</returns>
-		public static SizeF operator + (PointF point1, PointF point2)
+		/// <returns>A new instance of a PointF with the X and Y equal to the sum of the two point's X and Y co-ordinates, respectively</returns>
+		public static PointF operator + (PointF point1, PointF point2)
 		{
-			return new SizeF (point1.x + point2.x, point1.y + point2.y);
+			return new PointF (point1.x + point2.x, point1.y + point2.y);
 		}
 
 		/// <summary>

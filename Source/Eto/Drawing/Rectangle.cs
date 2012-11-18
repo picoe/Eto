@@ -196,6 +196,22 @@ namespace Eto.Drawing
 			this.location.Y += size.Height;
 		}
 
+        public void Offset(Point point)
+        {
+            this.location.X += point.X;
+            this.location.Y += point.Y;
+        }
+
+        public Rectangle Union(Rectangle r)
+        {
+            var left = Math.Min(this.Left, r.Left);
+            var top = Math.Min(this.Top, r.Top);
+            var right = Math.Max(this.Right, r.Right);
+            var bottom = Math.Max(this.Bottom, r.Bottom);
+
+            return new Rectangle(left, top, right - left, bottom - top);
+        }
+
 		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="point"/> is within the bounds of this rectangle
 		/// </summary>

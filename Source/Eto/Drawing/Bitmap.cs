@@ -88,7 +88,9 @@ namespace Eto.Drawing
 		/// <param name="height">Initial height of the bitmap</param>
 		/// <param name="pixelFormat">Format of each of the pixels in the bitmap</param>
 		void Create (int width, int height, PixelFormat pixelFormat);
-		
+
+        void Create(int width, int height, Graphics graphics);
+
 		/// <summary>
 		/// Resizes the image to the specified width and height
 		/// </summary>
@@ -125,6 +127,16 @@ namespace Eto.Drawing
 		/// <param name="stream">Stream to save the bitmap to</param>
 		/// <param name="format">Format to save as</param>
 		void Save (Stream stream, ImageFormat format);
+
+        IBitmap Clone();
+
+        Color GetPixel(int x, int y);
+
+        void Create(int width, int height);
+
+        void Create(Image image);
+
+        byte[] ToPNGByteArray();
 	}
 	
 	/// <summary>
@@ -217,7 +229,13 @@ namespace Eto.Drawing
 		{
 		}
 
-		/// <summary>
+        public Bitmap(int width, int height, Graphics graphics) :
+            this(Generator.Current)
+        {
+            handler.Create(width, height, graphics);
+        }
+
+        /// <summary>
 		/// Initializes a new instance of a Bitmap from a file
 		/// </summary>
 		/// <param name="generator">Generator to use to create the bitmap</param>
@@ -238,6 +256,11 @@ namespace Eto.Drawing
 		{
 			handler.Create (stream);
 		}
+
+        public Bitmap(byte[] bytes) :
+            this(new MemoryStream(bytes))
+        {
+        }
 
 		/// <summary>
 		/// Initializes a new instance of a Bitmap with the specified size and format
@@ -268,6 +291,18 @@ namespace Eto.Drawing
 		{
 			this.handler = (IBitmap)handler;
 		}
+
+        public Bitmap(int width, int height) :
+            this(Generator.Current)
+        {
+            handler.Create(width, height);
+        }
+
+        public Bitmap(Image image) :
+            this(Generator.Current)
+        {
+            handler.Create(image);
+        }
 
 		/// <summary>
 		/// Resizes the image to the specified width and height
@@ -328,7 +363,38 @@ namespace Eto.Drawing
 		public void Save (Stream stream, ImageFormat format)
 		{
 			handler.Save (stream, format);	
-		} 
+		}
 
-	}
+        public byte[] ToPNGByteArray()
+        {
+            return handler.ToPNGByteArray();
+        }
+
+        public string ToPNGBase64String()
+        {
+            string result = null;
+
+            var bytes = this.ToPNGByteArray();
+
+            if (bytes != null)
+                result =
+                    System.Convert.ToBase64String(
+                        bytes);
+
+            return result;
+        }
+
+        public Bitmap Clone()
+        {
+            return
+                new Bitmap(
+                    this.Generator,
+                    this.handler.Clone());
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            return handler.GetPixel(x, y);
+        }
+    }
 }

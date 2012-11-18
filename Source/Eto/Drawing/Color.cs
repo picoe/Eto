@@ -135,7 +135,12 @@ namespace Eto.Drawing
 		/// </summary>
 		public float B { get; set; }
 
-        public static readonly Color InactiveCaption = new Color (191, 205, 219);
+        public static readonly Color Control = new Color(51, 153, 255); // TODO: Fix
+        public static readonly Color Highlight = new Color(51, 153, 255);
+        public static readonly Color HighlightText = new Color(255, 255, 255);
+        public static readonly Color HotTrack = new Color(0, 102, 204);
+        public static readonly Color InactiveBorder = new Color(244, 247, 252);
+        public static readonly Color InactiveCaption = new Color(191, 205, 219);
         public static readonly Color InactiveCaptionText = new Color (67, 78, 84);
         public static readonly Color Info = new Color (255, 255, 225);
         public static readonly Color InfoText = new Color (0, 0, 0);
