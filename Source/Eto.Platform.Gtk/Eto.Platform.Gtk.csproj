@@ -21,7 +21,6 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
-  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />  
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);CAIRO;</DefineConstants>
     <Optimize>false</Optimize>
@@ -56,6 +55,10 @@
     <WarningLevel>4</WarningLevel>
     <Optimize>False</Optimize>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputRoot>..\..\..</OutputRoot>  
+  </PropertyGroup>
+  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />  
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>

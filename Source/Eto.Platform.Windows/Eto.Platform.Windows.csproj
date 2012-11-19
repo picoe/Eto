@@ -26,7 +26,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <FileAlignment>4096</FileAlignment>
   </PropertyGroup>
-  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
@@ -61,6 +60,10 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputRoot>..\..\..</OutputRoot>  
+  </PropertyGroup>
+  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.dll</HintPath>
