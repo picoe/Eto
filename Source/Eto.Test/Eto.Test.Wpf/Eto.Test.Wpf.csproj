@@ -38,7 +38,9 @@
   </PropertyGroup>
   <PropertyGroup>
     <ApplicationIcon>TestIcon.ico</ApplicationIcon>
+    <OutputRoot>..\..\..\..</OutputRoot>  
   </PropertyGroup>
+  <Import Condition = "Exists('../../../../Common.targets')" Project="../../../../Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />

@@ -29,6 +29,10 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputRoot>..\..\..</OutputRoot>  
+  </PropertyGroup>
+  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />
   <ItemGroup>
     <Reference Include="ColorPicker">
       <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
