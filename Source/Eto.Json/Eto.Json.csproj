@@ -29,6 +29,10 @@
     <ConsolePause>False</ConsolePause>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputRoot>..\..\..</OutputRoot>  
+  </PropertyGroup>
+  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />  
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Newtonsoft.Json">

@@ -10,6 +10,12 @@
     <RootNamespace>Eto.Test</RootNamespace>
     <AssemblyName>Eto.Test</AssemblyName>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputRoot>..\..\..\..</OutputRoot>  
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <DefineConstants>DESKTOP;XAML</DefineConstants>
+  </PropertyGroup>  
+  <Import Condition = "Exists('../../../../Common.targets')" Project="../../../../Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>

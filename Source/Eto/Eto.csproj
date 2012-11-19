@@ -21,13 +21,12 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x86'">
-    <DefineConstants>TRACE;DEBUG;Windows;;DESKTOP;</DefineConstants>
-    <OutputRoot>..\..\..</OutputRoot>
+  <PropertyGroup>
+    <OutputRoot>..\..\..</OutputRoot>  
   </PropertyGroup>
   <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);DESKTOP;</DefineConstants>
+    <DefineConstants>$(DefineConstants);DESKTOP;XAML</DefineConstants>
   </PropertyGroup>
   <!--MSbuild determines the configurations by trolling all condition expressions.-->
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
