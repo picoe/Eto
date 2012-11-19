@@ -90,9 +90,6 @@ namespace Eto
 		protected Generator ()
 		{
 			AddAssembly(this.GetType ().Assembly);
-#if Windows
-            AddAssembly(Assembly.LoadFrom("Eto2.Platform.Windows.dll"));
-#endif
         }
 
 		/// <summary>
