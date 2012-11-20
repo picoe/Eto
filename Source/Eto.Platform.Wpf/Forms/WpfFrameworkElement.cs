@@ -65,13 +65,13 @@ namespace Eto.Platform.Wpf.Forms
 				var newSize = this.newSize;
 				if (!Widget.Loaded && size != null) return size.Value;
 				else if (newSize != null) return newSize.Value;
-				else return Generator.GetSize (Control); 
+				else return Conversions.GetSize (Control); 
 			}
 			set {
 				size = value;
 				preferredWidth = value.Width == -1 ? double.NaN : (double)value.Width;
 				preferredHeight = value.Height == -1 ? double.NaN : (double)value.Height;
-				Generator.SetSize (Control, value); 
+				Conversions.SetSize (Control, value); 
 			}
 		}
 

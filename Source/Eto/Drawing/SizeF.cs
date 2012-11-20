@@ -149,16 +149,16 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="multiplier"/>
 		/// </summary>
 		/// <param name="size">Size to multiply</param>
-		/// <param name="factor">Factor to multiply both the Width and Height by</param>
-		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
-		public static SizeF operator * (SizeF size1, float multiplier)
+		/// <param name="multiplier">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="multiplier"/></returns>
+		public static SizeF operator * (SizeF size, float multiplier)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width * multiplier;
-			result.Height = size1.Height * multiplier;
+			SizeF result = size;
+			result.Width = size.Width * multiplier;
+			result.Height = size.Height * multiplier;
 			return result;
 		}
 
@@ -182,11 +182,11 @@ namespace Eto.Drawing
 		/// <param name="size">Size to divide</param>
 		/// <param name="factor">Factor to divide both the Width and Height by</param>
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size"/> divided by <paramref name="factor"/></returns>
-		public static SizeF operator / (SizeF size1, float factor)
+		public static SizeF operator / (SizeF size, float factor)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width / factor;
-			result.Height = size1.Height / factor;
+			SizeF result = size;
+			result.Width = size.Width / factor;
+			result.Height = size.Height / factor;
 			return result;
 		}
 
@@ -224,9 +224,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size to subtract from</param>
 		/// <param name="value">Value to subtract from the width and height</param>
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size"/> minus <paramref name="value"/></returns>
-		public static SizeF operator - (SizeF size1, float value)
+		public static SizeF operator - (SizeF size, float value)
 		{
-			return new SizeF (size1.Width - value, size1.Height - value);
+			return new SizeF (size.Width - value, size.Height - value);
 		}
 
 		/// <summary>
@@ -235,9 +235,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size to add to</param>
 		/// <param name="value">Value to add to the width and height</param>
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size"/> plus <paramref name="value"/></returns>
-		public static SizeF operator + (SizeF size1, float value)
+		public static SizeF operator + (SizeF size, float value)
 		{
-			return new SizeF (size1.Width + value, size1.Height + value);
+			return new SizeF (size.Width + value, size.Height + value);
 		}
 
 		/// <summary>

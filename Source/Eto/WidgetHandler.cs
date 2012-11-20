@@ -45,7 +45,9 @@ namespace Eto
 			Dispose(false);
 		}
 
+#if DEBUG
 		protected int WidgetID { get; set; }
+#endif
 		
 		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
@@ -61,6 +63,11 @@ namespace Eto
 		/// Gets the widget that this platform handler is attached to
 		/// </summary>
 		public W Widget { get; private set; }
+
+		/// <summary>
+		/// Gets the generator that was used to create this handler
+		/// </summary>
+		public Generator Generator { get; set; }
 		
 		#region IWidget Members
 

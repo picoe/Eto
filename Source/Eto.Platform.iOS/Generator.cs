@@ -33,31 +33,13 @@ namespace Eto.Platform.iOS
 			return base.Supports<T> ();
 		}
 		
-		public static Point GetLocation (UIView view, UIEvent theEvent)
-		{
-			var touches = theEvent.TouchesForView (view);
-			var touch = touches.ToArray<UITouch> ().FirstOrDefault ();
-			var loc = touch.LocationInView (view);
-			loc.Y = view.Frame.Height - loc.Y;
-			return loc.ToEtoPoint ();
-		}
-		
-		
+
 		public override IDisposable ThreadStart ()
 		{
 			return new NSAutoreleasePool ();
 		}
 		
 
-		public static MouseEventArgs ConvertMouse (UIView view, NSSet touches, UIEvent evt)
-		{
-			if (touches.Count > 0) {
-				UITouch touch = touches.ToArray<UITouch> () [0];
-				var location = touch.LocationInView (view);
-				return new MouseEventArgs (MouseButtons.Primary, Key.None, location.ToEtoPoint ());
-			}
-			return new MouseEventArgs (MouseButtons.Primary, Key.None, Point.Empty);
-		}
 
 	}
 }

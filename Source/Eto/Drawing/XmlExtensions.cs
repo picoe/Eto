@@ -31,7 +31,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Sets attributes on the specified <paramref name="element"/> with values from the <see cref="value"/>
+		/// Sets attributes on the specified <paramref name="element"/> with width and height attributes of the specified value
 		/// </summary>
 		/// <remarks>
 		/// This will write attributes with suffixes "-width" and "-height" prefixed by <paramref name="baseName"/>.
@@ -41,7 +41,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="element">Element to write the width and height attributes on</param>
 		/// <param name="baseName">Base attribute name prefix</param>
-		/// <returns>A size struct if both the width and height attributes are specified, or null otherwise</returns>
+		/// <param name="value">Value to set the width and height attributes, if not null</param>
 		public static void SetSizeAttributes (this XmlElement element, string baseName, Size? value)
 		{
 			if (value != null) {
@@ -72,8 +72,8 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// The child element must contain both "width" and "height" attributes for the value of the size.
 		/// </remarks>
-		/// <param name="element">Element to append the child element to if <paramref name="value"/> is not null</param>
-		/// <param name="elementName">Name of the element to append</param>
+		/// <param name="element">Element to read from</param>
+		/// <param name="elementName">Name of the element to read into the Size struct</param>
 		/// <returns>A new Size struct if the element exists, or null if not</returns>
 		public static Size? ReadChildSizeXml (this XmlElement element, string elementName)
 		{

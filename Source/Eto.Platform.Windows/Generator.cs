@@ -55,21 +55,5 @@ namespace Eto.Platform.Windows
 		{
 			AddAssembly (typeof (Generator).Assembly);
 		}
-		
-		public static FontStyle Convert (SD.FontStyle style)
-		{
-			var ret = FontStyle.Normal;
-			if (style.HasFlag(SD.FontStyle.Bold)) ret |= FontStyle.Bold;
-			if (style.HasFlag(SD.FontStyle.Italic)) ret |= FontStyle.Italic;
-			return ret;
-		}
-
-		public static SD.FontStyle Convert (FontStyle style)
-		{
-			var ret = SD.FontStyle.Regular;
-			if (style.HasFlag (FontStyle.Bold)) ret |= SD.FontStyle.Bold;
-			if (style.HasFlag (FontStyle.Italic)) ret |= SD.FontStyle.Italic;
-			return ret;
-		}
 	}
 }

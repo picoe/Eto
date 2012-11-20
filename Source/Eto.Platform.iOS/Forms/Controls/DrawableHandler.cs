@@ -46,7 +46,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			public override void TouchesBegan (NSSet touches, UIEvent evt)
 			{
-				var args = Generator.ConvertMouse (this, touches, evt);
+				var args = Conversions.ConvertMouse (this, touches, evt);
 				Handler.Widget.OnMouseDown (args);
 				if (!args.Handled)
 					base.TouchesBegan (touches, evt);
@@ -54,7 +54,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			
 			public override void TouchesEnded (NSSet touches, UIEvent evt)
 			{
-				var args = Generator.ConvertMouse (this, touches, evt);
+				var args = Conversions.ConvertMouse (this, touches, evt);
 				Handler.Widget.OnMouseUp (args);
 				if (!args.Handled)
 					base.TouchesEnded (touches, evt);
@@ -62,7 +62,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			
 			public override void TouchesMoved (NSSet touches, UIEvent evt)
 			{
-				var args = Generator.ConvertMouse (this, touches, evt);
+				var args = Conversions.ConvertMouse (this, touches, evt);
 				Handler.Widget.OnMouseMove (args);
 				if (!args.Handled)
 					base.TouchesMoved (touches, evt);

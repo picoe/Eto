@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class MessageBoxHandler : IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
 	{
 		Gtk.MessageDialog control;
 		
@@ -11,14 +11,8 @@ namespace Eto.Platform.GtkSharp
 
 		public string Caption { get; set; }
 
-		public Widget Widget { get; set; }
-
 		public MessageBoxType Type { get; set; }
 		
-		public void Initialize ()
-		{
-		}
-
 		public DialogResult ShowDialog (Control parent)
 		{
 			Gtk.Widget c = (parent == null) ? null : (Gtk.Widget)parent.ControlObject;

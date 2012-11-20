@@ -191,7 +191,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				return Generator.Convert (WpfFontStyle, WpfFontWeight);
+				return Conversions.Convert (WpfFontStyle, WpfFontWeight);
 			}
 		}
 

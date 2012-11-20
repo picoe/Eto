@@ -345,6 +345,7 @@ namespace Eto
 					widget.Handler = val;
 					val.Widget = widget;
 				}
+				val.Generator = this;
 				OnWidgetCreated (new WidgetCreatedArgs (val));
 				return val;
 			} catch (Exception e) {

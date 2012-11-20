@@ -136,5 +136,12 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+		public static FontStyle ToEto (this sd.FontStyle style)
+		{
+			var ret = FontStyle.Normal;
+			if (style.HasFlag (sd.FontStyle.Bold)) ret |= FontStyle.Bold;
+			if (style.HasFlag (sd.FontStyle.Italic)) ret |= FontStyle.Italic;
+			return ret;
+		}
 	}
 }

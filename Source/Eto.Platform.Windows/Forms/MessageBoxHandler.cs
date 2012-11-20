@@ -5,15 +5,8 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class MessageBoxHandler : IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
 	{
-		
-		public Widget Widget { get; set; }
-		
-		public void Initialize()
-		{
-		}
-		
 		public string Text { get; set; }
 
 		public string Caption { get; set; }

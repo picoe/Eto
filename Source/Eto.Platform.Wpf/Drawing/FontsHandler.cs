@@ -7,33 +7,27 @@ using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-	public class FontsHandler : IFonts
+	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
-		public Widget Widget { get; set; }
-
-		public void Initialize ()
-		{
-		}
-
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-			get { return swm.Fonts.SystemFontFamilies.Select (r => new FontFamily(Generator.Current, new FontFamilyHandler(r))); ; }
+			get { return swm.Fonts.SystemFontFamilies.Select (r => new FontFamily(Generator, new FontFamilyHandler(r))); ; }
 		}
 
 		public FontFamily GetFontFamily (string familyName)
 		{
-			return new FontFamily(Generator.Current, new FontFamilyHandler (new swm.FontFamily(familyName)));
+			return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily(familyName)));
 		}
 
 		public FontFamily GetSystemFontFamily (string systemFamilyName)
 		{
 			switch (systemFamilyName) {
 			case FontFamilies.MonospaceFamilyName:
-				return new FontFamily(Generator.Current, new FontFamilyHandler (new swm.FontFamily ("Courier New")));
+				return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily ("Courier New")));
 			case FontFamilies.SansFamilyName:
-				return new FontFamily(Generator.Current, new FontFamilyHandler (new swm.FontFamily ("Verdana")));
+				return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily ("Verdana")));
 			case FontFamilies.SerifFamilyName:
-				return new FontFamily(Generator.Current, new FontFamilyHandler (new swm.FontFamily ("Times New Roman")));
+				return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily ("Times New Roman")));
 			default:
 				throw new NotSupportedException ();
 			}
