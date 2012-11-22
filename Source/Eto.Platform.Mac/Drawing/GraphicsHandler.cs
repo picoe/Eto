@@ -397,52 +397,6 @@ namespace Eto.Platform.Mac.Drawing
 			EndDrawing ();
 		}
 
-        public object CreateText(Font font, Color color, string text)
-        {
-            var fontHandler = font.Handler as FontHandler;
-
-            var attributedString =
-                new NSAttributedString(
-                    text ?? "",
-                    new NSMutableDictionary
-                    { 
-                        { NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS(color) },
-                        { NSAttributedString.FontAttributeName, fontHandler.Control }
-                    });
-
-            // Create a new CTLine
-            var line =
-                new CTLine(
-                    attributedString);
-
-            return line;
-
-        }
-
-        public void DrawText(object o, float x, float y)
-        {
-            if (!Flipped)
-                throw new InvalidOperationException("DrawText: not flipped");
-
-            var line = o as CTLine;
-
-            if (line != null)
-            {
-                StartDrawing();
-
-                // set the text position
-                //context.TextPosition = new SD.PointF(x, y);
-                context.TextPosition = new SD.PointF();
-
-                context.TranslateCTM(x, y);
-
-                // Draw it            
-                line.Draw(context);
-
-                EndDrawing();
-            }
-        }
-
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			StartDrawing ();

@@ -228,9 +228,6 @@ namespace Eto.Drawing
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
 		ImageInterpolation ImageInterpolation { get; set; }
-        object CreateText(Font font, Color color, string text);
-
-        void DrawText(object o, float x, float y);
     }
 
 	/// <summary>
@@ -577,16 +574,6 @@ namespace Eto.Drawing
 		{
 			handler.DrawText (font, color, location.X, location.Y, text);
 		}
-
-        public object CreateText(Font font, Color color, string text)
-        {
-            return handler.CreateText(font, color, text);
-        }
-
-        public void DrawText(object o, float x, float y)
-        {
-            handler.DrawText(o, x, y);
-        }
 
 		/// <summary>
 		/// Measures the string with the given <paramref name="font"/>

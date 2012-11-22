@@ -361,16 +361,5 @@ namespace Eto.Platform.GtkSharp.Drawing
         {
             throw new NotImplementedException();
         }
-
-
-        public object CreateText(Font font, Color color, string text)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DrawText(object o, float x, float y)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

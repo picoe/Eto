@@ -176,32 +176,6 @@ namespace Eto.Platform.Windows.Drawing
 			Control.DrawIcon ((SD.Icon)icon.ControlObject, new SD.Rectangle (x, y, width, height));
 		}
 
-        class TextFontColor
-        {
-            public Font Font { get; set; }
-            public Color Color { get; set; }
-            public string Text { get; set; }
-        }
-
-        public object CreateText(Font font, Color color, string text)
-        {
-            return new TextFontColor
-            {
-                Font = font,
-                Color = color,
-                Text = text
-            };
-        }
-
-        public void DrawText(object o, float x, float y)
-        {
-            var t = o as TextFontColor;
-
-            if (t != null)
-                DrawText(
-                    t.Font, t.Color, x, y, t.Text);
-        }
-
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
             var brush =
