@@ -131,7 +131,6 @@
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\GenerateActionArgs.cs" />
     <Compile Include="Forms\Key.cs" />
-    <Compile Include="Forms\Layout.cs" />
     <Compile Include="Forms\MessageBox.cs" />
     <Compile Include="Forms\OpenFileDialog.cs" />
     <Compile Include="Forms\SaveFileDialog.cs" />
@@ -268,6 +267,8 @@
     <Compile Include="Drawing\Fonts.cs" />
     <Compile Include="Drawing\FontTypeface.cs" />
     <Compile Include="Forms\FontDialog.cs" />
+    <Compile Include="Forms\Layout\Layout.cs" />
+    <Compile Include="ContentProperty.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
