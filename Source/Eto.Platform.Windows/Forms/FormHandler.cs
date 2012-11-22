@@ -121,48 +121,6 @@ namespace Eto.Platform.Windows
 			};
 		}
 
-        static FormHandler()
-        {
-            Style.Add<Form, swf.Form>(
-                "SizableToolWindow",
-                (widget, control) =>
-                    control.FormBorderStyle =
-                        swf.FormBorderStyle.SizableToolWindow
-                );
-
-            Style.Add<Form, swf.Form>(
-                "TopMost",
-                (widget, control) =>
-                    control.TopMost = true
-                );
-
-            Style.Add<Form, swf.Form>(
-                "RemoveFromTaskBar",
-                (widget, control) =>
-                    control.ShowInTaskbar = false
-                );
-
-            Style.Add<Form, swf.Form>(
-                "NoTitleBar",
-                (widget, control) =>
-                {
-                    control.ControlBox = false;
-                    control.Text = "";
-                });
-
-            Style.Add<Form, MyForm>(
-                "HideFromAltTab",
-                (widget, control) =>
-                    control.HideFromAltTab = true
-                );
-
-            Style.Add<Form, MyForm>(
-                "ShowWithoutActivation",
-                (widget, control) =>                
-                    control.ShouldShowWithoutActivation = true
-            );
-        }
-
         public void Show()
 		{
 			Control.Show();

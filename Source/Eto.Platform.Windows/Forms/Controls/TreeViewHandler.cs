@@ -10,54 +10,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class TreeViewHandler : WindowsControl<swf.TreeView, TreeView>, ITreeView
 	{
-        static TreeViewHandler()
-        {
-            Style.Add<TreeView, swf.TreeView>(
-                "FullRowSelect",
-                (widget,
-                    control) =>
-                {
-                    control.FullRowSelect =
-                        true;
-                });
-
-            Style.Add<TreeView, swf.TreeView>(
-                "HideLines",
-                (widget,
-                    control) =>
-                {
-                    control.ShowLines =
-                        false;
-                });
-
-            Style.Add<TreeView, swf.TreeView>(
-                "ShowSelection",
-                (widget,
-                    control) =>
-                {
-                    control.HideSelection =
-                        false;
-                });
-
-            Style.Add<TreeView, swf.TreeView>(
-                "HidePlusMinus",
-                (widget,
-                    control) =>
-                {
-                    control.ShowPlusMinus =
-                        false;
-                });
-
-            Style.Add<TreeView, swf.TreeView>(
-                "NoBorder",
-                (widget,
-                    control) =>
-                {
-                    control.BorderStyle = 
-                        swf.BorderStyle.None;
-                });
-        }
-
 		ITreeStore top;
 		ContextMenu contextMenu;
 		Dictionary<Image, string> images = new Dictionary<Image, string> ();

@@ -22,9 +22,9 @@
     </FileUpgradeFlags>
   </PropertyGroup>
   <PropertyGroup>
-    <OutputRoot>..\..\..</OutputRoot>  
+    <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />
+  <Import Condition="Exists('../../../Common.targets')" Project="../../../Common.targets" />
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);DESKTOP;XAML</DefineConstants>
   </PropertyGroup>
@@ -126,6 +126,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Drawing\Colors.cs" />
+    <Compile Include="Cache\FontCache.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Brush.cs" />

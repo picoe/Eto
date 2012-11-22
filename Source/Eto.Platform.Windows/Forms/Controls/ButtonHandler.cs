@@ -18,63 +18,6 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-        static ButtonHandler()
-        {
-            Style.Add<Button, SWF.Button>(
-                "flatbutton",
-                (widget,
-                    control) =>
-                {
-                    control.FlatStyle = SWF.FlatStyle.Flat;
-                    control.FlatAppearance.BorderSize = 0;
-                    control.UseVisualStyleBackColor = true;
-                });
-
-            Style.Add<Button, SWF.Button>(
-                "right",
-                (widget,
-                    control) =>
-                {
-                    control.Dock = SWF.DockStyle.Right;
-                });
-
-            Style.Add<Button, SWF.Button>(
-                "fixed_size",
-                (widget,
-                    control) =>
-                {
-                    control.AutoSize = false;
-                });
-
-            Style.Add<Button, SWF.Button>(
-                "tabbutton",
-                (widget,
-                    control) =>
-                {
-                    control.FlatStyle = 
-                        SWF.FlatStyle.Flat;
-
-                    control.AutoSize = true;
-
-                    control.Dock =
-                        SWF.DockStyle.Left;
-
-                    control.Image =
-                        null;//DockingWindows.Properties.Resources.Debugger,
-
-                    control.BackColor =
-                        SD.SystemColors.ButtonFace;
-
-                    control.ImageAlign =
-                        SD.ContentAlignment.MiddleLeft;
-
-                    control.TextImageRelation = 
-                        SWF.TextImageRelation.ImageBeforeText;
-
-                    control.FlatAppearance.BorderSize = 0;
-                });
-        }
-
 		public ButtonHandler()
 		{
 			Control = new SWF.Button();
