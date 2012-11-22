@@ -441,23 +441,6 @@ namespace Eto.Drawing
 			return new PointF (point.X, point.Y);
 		}
 
-#if FALSE
-        public static implicit operator PointF(System.Drawing.Point point)
-        {
-            return new PointF(point.X, point.Y);
-        }
-
-        public static implicit operator PointF(System.Drawing.PointF point)
-        {
-            return new PointF(point.X, point.Y);
-        }
-
-        public static implicit operator System.Drawing.PointF(PointF point)
-        {
-            return new System.Drawing.PointF(point.X, point.Y);
-        }
-#endif
-
         public float SquaredLength
         {
             get
