@@ -393,7 +393,6 @@ namespace Eto.Drawing
 
         #endregion
 
-
         #region Equals
 
         public override bool Equals(object obj)
@@ -461,7 +460,7 @@ namespace Eto.Drawing
 
         public static Font ComputeFont(
             string fontFamily,
-            Drawing.FontStyle fontStyle,
+            FontStyle fontStyle,
             float fontSizePixels,
             ActualFontCache actualFontCache)
         {
@@ -484,7 +483,7 @@ namespace Eto.Drawing
                 in fontFamilies)
             {
                 var translatedFontFamily =
-                    Eto.Drawing.Font.TranslateFontFamily(
+                    Font.TranslateFontFamily(
                         singleFontFamily);
 
                 var fontKey =
@@ -506,7 +505,7 @@ namespace Eto.Drawing
                         out result))
                 {
                     result =
-                        Eto.Drawing.FontCache.GetFont(
+                        FontCache.GetFont(
                             translatedFontFamily,
                             fontSizePixels,
                             fontStyle);
@@ -527,11 +526,11 @@ namespace Eto.Drawing
             /// This function never returns null
             if (result == null)
                 result =
-                    Eto.Drawing.FontCache.GetFont(
-                        Eto.Drawing.Font.TranslateFontFamily(
+                    FontCache.GetFont(
+                        Font.TranslateFontFamily(
                             "serif"),
                         Font.DefaultFontSizePixels,
-                        Eto.Drawing.FontStyle.Normal);
+                        FontStyle.Normal);
 
             return result;
         }
@@ -547,7 +546,7 @@ namespace Eto.Drawing
 
         public const float DefaultFontSizePixels =
             DefaultFontSizePoints *
-            Eto.Drawing.Constants.PointsToPixels;
+            Constants.PointsToPixels;
 
         #endregion
     }
