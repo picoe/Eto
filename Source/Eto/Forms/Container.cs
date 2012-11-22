@@ -19,9 +19,7 @@ namespace Eto.Forms
 		void SetLayout (Layout layout);
 	}
 	
-#if XAML
 	[ContentProperty("Layout")]
-#endif
 	public abstract partial class Container : Control
 	{
 		IContainer handler;

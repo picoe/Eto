@@ -32,9 +32,7 @@ namespace Eto.Forms
 		Padding Padding { get; set; }
 	}
 
-#if XAML
 	[ContentProperty("Children")]
-#endif
 	public class TableLayout : Layout
 	{
 		ITableLayout inner;

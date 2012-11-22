@@ -64,9 +64,9 @@ namespace Eto.Drawing
 		Gif
 	}
 
-	/// <summary>
-	/// Handler interface for the <see cref="Bitmap"/> class
-	/// </summary>
+		/// <summary>
+		/// Handler interface for the <see cref="Bitmap"/> class
+		/// </summary>
 	public interface IBitmap : IImage
 	{
 		/// <summary>
@@ -74,13 +74,13 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="fileName">File to load as a bitmap</param>
 		void Create (string fileName);
-		
+
 		/// <summary>
 		/// Create a bitmap from a specified stream
 		/// </summary>
 		/// <param name="stream">Stream to load from the bitmap</param>
 		void Create (Stream stream);
-		
+
 		/// <summary>
 		/// Creates a new bitmap in-memory with the specified format
 		/// </summary>
@@ -88,7 +88,7 @@ namespace Eto.Drawing
 		/// <param name="height">Initial height of the bitmap</param>
 		/// <param name="pixelFormat">Format of each of the pixels in the bitmap</param>
 		void Create (int width, int height, PixelFormat pixelFormat);
-		
+
 		/// <summary>
 		/// Resizes the image to the specified width and height
 		/// </summary>
@@ -108,7 +108,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <returns>A <see cref="BitmapData"/> object with information about the locked data</returns>
 		BitmapData Lock ();
-		
+
 		/// <summary>
 		/// Unlocks the previously locked data
 		/// </summary>
@@ -118,7 +118,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="bitmapData">The data previously locked via the <see cref="Lock"/> method</param>
 		void Unlock (BitmapData bitmapData);
-		
+
 		/// <summary>
 		/// Saves the bitmap to a stream in the specified format
 		/// </summary>
@@ -135,7 +135,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	public class Bitmap : Image
 	{
-		IBitmap handler;
+		new IBitmap Handler { get { return (IBitmap)base.Handler; } }
 
 		/// <summary>
 		/// Loads a bitmap from the specified resource in the caller's assembly
@@ -175,7 +175,7 @@ namespace Eto.Drawing
 			using (var stream = asm.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (asm, resourceName);
-				handler.Create (stream);
+				Handler.Create (stream);
 			}
 		}
 
@@ -225,7 +225,7 @@ namespace Eto.Drawing
 		public Bitmap (Generator generator, string fileName)
 			: this (generator)
 		{
-			handler.Create (fileName);
+			Handler.Create (fileName);
 		}
 
 		/// <summary>
@@ -236,7 +236,7 @@ namespace Eto.Drawing
 		public Bitmap (Generator generator, Stream stream)
 			: this (generator)
 		{
-			handler.Create (stream);
+			Handler.Create (stream);
 		}
 
 		/// <summary>
@@ -249,13 +249,12 @@ namespace Eto.Drawing
 		public Bitmap (Generator generator, int width, int height, PixelFormat pixelFormat)
 			: this(generator)
 		{
-			handler.Create (width, height, pixelFormat);
+			Handler.Create (width, height, pixelFormat);
 		}
 		
 		private Bitmap (Generator generator)
 			: base(generator, typeof(IBitmap))
 		{
-			handler = (IBitmap)Handler;
 		}
 
 		/// <summary>
@@ -266,7 +265,6 @@ namespace Eto.Drawing
 		public Bitmap (Generator generator, IBitmap handler)
 			: base(generator, handler)
 		{
-			this.handler = (IBitmap)handler;
 		}
 
 		/// <summary>
@@ -279,7 +277,7 @@ namespace Eto.Drawing
 		/// <param name="height">New height for the resized image</param>
 		public void Resize (int width, int height)
 		{
-			handler.Resize (width, height);
+			Handler.Resize (width, height);
 		}
 
 		/// <summary>
@@ -292,7 +290,7 @@ namespace Eto.Drawing
 		/// <returns>A <see cref="BitmapData"/> object with information about the locked data</returns>
 		public BitmapData Lock ()
 		{
-			return handler.Lock ();
+			return Handler.Lock ();
 		}
 
 		/// <summary>
@@ -305,7 +303,7 @@ namespace Eto.Drawing
 		/// <param name="bitmapData">The data previously locked via the <see cref="Lock"/> method</param>
 		public void Unlock (BitmapData bitmapData)
 		{
-			handler.Unlock (bitmapData);
+			Handler.Unlock (bitmapData);
 		}
 
 		/// <summary>
@@ -327,7 +325,7 @@ namespace Eto.Drawing
 		/// <param name="format">Format to save as</param>
 		public void Save (Stream stream, ImageFormat format)
 		{
-			handler.Save (stream, format);	
+			Handler.Save (stream, format);	
 		} 
 
 	}

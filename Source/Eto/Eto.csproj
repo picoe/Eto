@@ -76,6 +76,7 @@
     <Compile Include="CancelEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\Region.cs" />
@@ -128,7 +129,7 @@
     <Compile Include="Forms\Key.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Layout.cs" />
+    <Compile Include="Forms\Layout\Layout.cs" />
     <Compile Include="Forms\MessageBox.cs">
       <SubType>Code</SubType>
     </Compile>

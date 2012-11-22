@@ -13,9 +13,7 @@ namespace Eto.Forms
 		string Key { get; }
 	}
 	
-#if XAML
 	[ContentProperty("Text")]
-#endif
 	public class ListItem : IListItem
 	{
 		string key;
@@ -35,9 +33,7 @@ namespace Eto.Forms
 		public Image Image { get; set; }
 	}
 	
-#if XAML
 	[ContentProperty("Item")]
-#endif
 	public class ObjectListItem : IListItem
 	{
 		public object Item { get; set; }

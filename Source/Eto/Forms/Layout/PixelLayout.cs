@@ -16,9 +16,7 @@ namespace Eto.Forms
 	{
 	}
 
-#if XAML
 	[ContentProperty ("Children")]
-#endif
 	public class PixelLayout : Layout
 	{
 		IPixelLayout inner;

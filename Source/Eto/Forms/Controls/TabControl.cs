@@ -19,9 +19,7 @@ namespace Eto.Forms
 		void RemoveTab (int index, TabPage page);
 	}
 	
-#if XAML
 	[ContentProperty("TabPages")]
-#endif
 	public class TabControl : Control
 	{
 		TabPageCollection pages;

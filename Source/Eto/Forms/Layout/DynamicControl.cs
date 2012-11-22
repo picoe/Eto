@@ -8,9 +8,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-#if XAML
 	[ContentProperty("Control")]
-#endif
 	public class DynamicControl : DynamicItem
 	{
 		public override Control Generate (DynamicLayout layout)

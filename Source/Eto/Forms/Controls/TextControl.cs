@@ -10,9 +10,7 @@ namespace Eto.Forms
 		string Text { get; set; }
 	}
 	
-#if XAML
 	[ContentProperty("Text")]
-#endif
 	public abstract class TextControl : CommonControl
 	{
 		ITextControl handler;
