@@ -66,62 +66,61 @@ namespace Eto.Drawing
     }
 
     // Summary:
-    //     Specifies the alignment of a System.Drawing.Pen object in relation to the
+    //     Specifies the alignment of a Pen in relation to the
     //     theoretical, zero-width line.
     public enum PenAlignment
     {
         // Summary:
-        //     Specifies that the System.Drawing.Pen object is centered over the theoretical
-        //     line.
+        //     The Pen object is centered over the theoretical line.
         Center = 0,
         //
         // Summary:
-        //     Specifies that the System.Drawing.Pen is positioned on the inside of the
+        //     The Pen is positioned on the inside of the
         //     theoretical line.
         Inset = 1,
         //
         // Summary:
-        //     Specifies the System.Drawing.Pen is positioned on the outside of the theoretical
+        //     The Pen is positioned on the outside of the theoretical
         //     line.
         Outset = 2,
         //
         // Summary:
-        //     Specifies the System.Drawing.Pen is positioned to the left of the theoretical
+        //     The Pen is positioned to the left of the theoretical
         //     line.
         Left = 3,
         //
         // Summary:
-        //     Specifies the System.Drawing.Pen is positioned to the right of the theoretical
+        //     The Pen is positioned to the right of the theoretical
         //     line.
         Right = 4,
     }
 
     // Summary:
-    //     Specifies the style of dashed lines drawn with a System.Drawing.Pen object.
+    //     Specifies the style of dashed lines drawn with a Pen.
     public enum DashStyle
     {
         // Summary:
-        //     Specifies a solid line.
+        //     A solid line.
         Solid = 0,
         //
         // Summary:
-        //     Specifies a line consisting of dashes.
+        //     A line consisting of dashes.
         Dash = 1,
         //
         // Summary:
-        //     Specifies a line consisting of dots.
+        //     A line consisting of dots.
         Dot = 2,
         //
         // Summary:
-        //     Specifies a line consisting of a repeating pattern of dash-dot.
+        //     A line consisting of a repeating pattern of dash-dot.
         DashDot = 3,
         //
         // Summary:
-        //     Specifies a line consisting of a repeating pattern of dash-dot-dot.
+        //     A line consisting of a repeating pattern of dash-dot-dot.
         DashDotDot = 4,
         //
         // Summary:
-        //     Specifies a user-defined custom dash style.
+        //     A user-defined custom dash style.
         Custom = 5,
     }
 }
