@@ -135,29 +135,6 @@ namespace Eto.Drawing
 		/// </summary>
 		public float B { get; set; }
 
-        public static readonly Color Control = new Color(51, 153, 255); // TODO: Fix
-        public static readonly Color Highlight = new Color(51, 153, 255);
-        public static readonly Color HighlightText = new Color(255, 255, 255);
-        public static readonly Color HotTrack = new Color(0, 102, 204);
-        public static readonly Color InactiveBorder = new Color(244, 247, 252);
-        public static readonly Color InactiveCaption = new Color(191, 205, 219);
-        public static readonly Color InactiveCaptionText = new Color (67, 78, 84);
-        public static readonly Color Info = new Color (255, 255, 225);
-        public static readonly Color InfoText = new Color (0, 0, 0);
-        public static readonly Color Menu = new Color (240, 240, 240);
-        public static readonly Color MenuText = new Color (0, 0, 0);
-        public static readonly Color ScrollBar = new Color (200, 200, 200);
-        public static readonly Color Window = new Color (255, 255, 255);
-        public static readonly Color WindowFrame = new Color (100, 100, 100);
-        public static readonly Color WindowText = new Color (0, 0, 0);
-        public static readonly Color ButtonFace = new Color (240, 240, 240);
-        public static readonly Color ButtonHighlight = new Color (255, 255, 255);
-        public static readonly Color ButtonShadow = new Color (160, 160, 160);
-        public static readonly Color GradientActiveCaption = new Color (185, 209, 234);
-        public static readonly Color GradientInactiveCaption = new Color (215, 228, 242);
-        public static readonly Color MenuBar = new Color (240, 240, 240);
-        public static readonly Color MenuHighlight = new Color (51, 153, 255);
-
 		/// <summary>
 		/// Creates a Color from a 32-bit ARGB value
 		/// </summary>
