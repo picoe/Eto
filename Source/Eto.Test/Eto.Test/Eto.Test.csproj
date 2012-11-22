@@ -20,7 +20,7 @@
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
     <DefineConstants>DEBUG;DESKTOP;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -30,7 +30,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>False</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="Log.cs" />
     <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
+    <Compile Include="Sections\Controls\ImageViewSection.cs" />
     <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
     <Compile Include="Sections\Controls\TreeViewSection.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
@@ -54,9 +55,12 @@
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
+    <Compile Include="Sections\Printing\PrintDialogSection.cs" />
     <Compile Include="TestApplication.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="Dialogs\About.cs" />
@@ -98,6 +102,8 @@
     <Compile Include="Sections\Serialization\Json\Test.cs" />
     <Compile Include="Sections\Serialization\JsonReadSection.cs" />
     <Compile Include="Sections\Serialization\XamlReadSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
+    <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
@@ -121,6 +127,7 @@
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />
   </ItemGroup>
+  <ItemGroup />
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />

@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class InterpolationSection : Panel
+	public class InterpolationSection : Scrollable
 	{
 		public InterpolationSection ()
 		{

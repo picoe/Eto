@@ -9,9 +9,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-#if XAML
 	[ContentProperty("Items")]
-#endif
 	public class DynamicRow
 	{
 		List<DynamicItem> items = new List<DynamicItem> ();
@@ -44,13 +42,11 @@ namespace Eto.Forms
 			if (controls == null)
 				return;
 			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
-			Items.AddRange ((IEnumerable<DynamicItem>)items);
+			Items.AddRange (items.OfType<DynamicItem>());
 		}
 	}
 
-#if XAML
 	[ContentProperty("Rows")]
-#endif
 	public class DynamicTable : DynamicItem
 	{
 		List<DynamicRow> rows = new List<DynamicRow> ();

@@ -281,7 +281,7 @@ namespace Eto.Drawing
 		/// <param name="point">Base point value</param>
 		/// <param name="size">Size to add to the point's X and Y co-ordinates</param>
 		/// <returns>A new point with the sum of the specified <paramref name="point"/>'s X and Y components and the <paramref name="size"/></returns>
-		public static PointF operator + (PointF point, Size size)
+		public static PointF operator + (PointF point, SizeF size)
 		{
 			return new PointF (point.x + size.Width, point.y + size.Height);
 		}
@@ -292,7 +292,7 @@ namespace Eto.Drawing
 		/// <param name="point">Base point value</param>
 		/// <param name="size">Size to subtract to the point's X and Y co-ordinates</param>
 		/// <returns>A new point with the sum of the specified <paramref name="point"/>'s X and Y components and the <paramref name="size"/></returns>
-		public static PointF operator - (PointF point, Size size)
+		public static PointF operator - (PointF point, SizeF size)
 		{
 			return new PointF (point.x - size.Width, point.y - size.Height);
 		}

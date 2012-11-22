@@ -35,9 +35,7 @@ namespace Eto.Platform.Mac.Drawing
 		#endregion
 		
 		public Size Size {
-			get {
-				return Generator.ConvertF(Control.Size);
-			}
+			get { return Control.Size.ToEtoSize (); }
 		}
 
 		public NSImage GetImage ()

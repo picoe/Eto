@@ -30,7 +30,7 @@ namespace Eto.Drawing
 	[TypeConverter(typeof(ImageConverter))]
 	public abstract class Image : InstanceWidget, IImage
 	{
-		IImage handler;
+		new IImage Handler { get { return (IImage)base.Handler; } }
 
 		/// <summary>
 		/// Initializes a new instance of an image with the specified type
@@ -39,7 +39,6 @@ namespace Eto.Drawing
 		/// <param name="type">Type of the handler to create (must be derived from <see cref="IImage"/>)</param>
 		protected Image(Generator generator, Type type) : base(generator, type)
 		{
-			handler = (IImage)Handler;
 		}
 
 		/// <summary>
@@ -53,7 +52,6 @@ namespace Eto.Drawing
 		/// <param name="handler">Instance of the handler to attach to this instance</param>
 		protected Image(Generator generator, IImage handler) : base(generator, handler)
 		{
-			handler = (IImage)Handler;
 		}
 				
 		/// <summary>
@@ -61,17 +59,17 @@ namespace Eto.Drawing
 		/// </summary>
 		public Size Size
 		{
-            get { return handler != null ? handler.Size : Size.Empty; }
+            get { return Handler != null ? handler.Size : Size.Empty; }
 		}
 
         public int Width
         {
-            get { return handler != null ? handler.Width : 0; }
+            get { return Handler != null ? handler.Width : 0; }
         }
 
         public int Height
         {
-            get { return handler != null ? handler.Height : 0; }
+            get { return Handler != null ? handler.Height : 0; }
         }
 
         public new Widget Widget

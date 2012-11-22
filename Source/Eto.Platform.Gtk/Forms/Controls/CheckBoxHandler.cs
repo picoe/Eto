@@ -41,7 +41,11 @@ namespace Eto.Platform.GtkSharp
 
 		public override Font Font
 		{
-			get { return font; }
+			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Child));
+				return font;
+			}
 			set
 			{
 				font = value;

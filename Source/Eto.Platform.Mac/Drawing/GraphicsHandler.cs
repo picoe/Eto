@@ -2,22 +2,40 @@ using System;
 using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
+#if OSX
+using Eto.Platform.Mac.Forms;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
-using Eto.Platform.Mac.Forms;
-using MonoMac.CoreText;
+#elif IOS
+using Eto.Platform.iOS.Forms;
+using MonoTouch.CoreGraphics;
+using MonoTouch.UIKit;
+using MonoTouch.Foundation;
+using NSView = MonoTouch.UIKit.UIView;
+#endif
 
+#if OSX
 namespace Eto.Platform.Mac.Drawing
+#elif IOS
+namespace Eto.Platform.iOS.Drawing
+#endif
 {
-	public class GraphicsHandler : MacObject<NSGraphicsContext, Graphics>, IGraphics
+	public class GraphicsHandler : 
+#if OSX
+		MacBase<CGContext, Graphics>, IGraphics
+#else
+		WidgetHandler<CGContext, Graphics>, IGraphics
+#endif
 	{
-		CGContext context;
+#if OSX
+		NSGraphicsContext graphicsContext;
+#endif
 		NSView view;
 		float height;
 		bool needsLock;
 		
-		bool Flipped {
+		public bool Flipped {
 			get;
 			set;
 		}
@@ -29,33 +47,54 @@ namespace Eto.Platform.Mac.Drawing
 		public GraphicsHandler (NSView view)
 		{
 			this.view = view;
-			this.needsLock = true;
-			this.Control = NSGraphicsContext.FromWindow (view.Window);
-			this.context = this.Control.GraphicsPort;
-			context.SaveState ();
-			context.ClipToRect (view.ConvertRectToView (view.VisibleRect (), null));
+#if OSX
+			needsLock = true;
+			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
+			Control = graphicsContext.GraphicsPort;
+			Control.SaveState ();
+			Control.ClipToRect (view.ConvertRectToView (view.VisibleRect (), null));
 			AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
 				var handler = e.Widget.Handler as GraphicsHandler;
 				var innerview = handler.view;
-				var innercontext = handler.Control.GraphicsPort;
+				var innercontext = handler.Control;
 				innercontext.RestoreState ();
 				innercontext.ClipToRect (innerview.ConvertRectToView (innerview.VisibleRect (), null));
 				innercontext.SaveState ();
 			}, view);
 			this.Flipped = view.IsFlipped;
-			context.InterpolationQuality = CGInterpolationQuality.High;
-			context.SetAllowsSubpixelPositioning (false);
+#elif IOS
+			this.Control = UIGraphics.GetCurrentContext ();
+			this.Flipped = !view.Layer.GeometryFlipped;
+#endif
+			Control.InterpolationQuality = CGInterpolationQuality.High;
+			Control.SetAllowsSubpixelPositioning (false);
 		}
 
-		public GraphicsHandler (NSGraphicsContext gc, float height, bool flipped)
+#if OSX
+		public GraphicsHandler (NSGraphicsContext graphicsContext, float height)
 		{ 
 			this.height = height;
 			this.Flipped = flipped;
-			this.Control = gc;
-			this.context = gc.GraphicsPort;
-			context.InterpolationQuality = CGInterpolationQuality.High;
-			context.SetAllowsSubpixelPositioning (false);
+			this.graphicsContext = graphicsContext;
+			this.Control = graphicsContext.GraphicsPort;
+			Control.InterpolationQuality = CGInterpolationQuality.High;
+			Control.SetAllowsSubpixelPositioning (false);
 		}
+#elif IOS
+		public GraphicsHandler (CGContext context, float height, bool flipped)
+		{
+			this.height = height;
+			if (height > 0) {
+				this.Flipped = flipped;
+			}
+			//this.Control = gc;
+			this.Control = context;
+			Control.InterpolationQuality = CGInterpolationQuality.High;
+			//context.ScaleCTM(1, -1);
+			Control.SetAllowsSubpixelPositioning (false);
+		}
+
+#endif
 		
 		bool antialias;
 
@@ -65,26 +104,31 @@ namespace Eto.Platform.Mac.Drawing
 			}
 			set {
 				antialias = value;
-				context.SetShouldAntialias (value);
+				Control.SetShouldAntialias (value);
 			}
 		}
 
 		public ImageInterpolation ImageInterpolation {
-			get { return Generator.ConvertCG (context.InterpolationQuality); }
-			set { context.InterpolationQuality = Generator.ConvertCG (value); }
+			get { return Control.InterpolationQuality.ToEto (); }
+			set { Control.InterpolationQuality = value.ToCG (); }
 		}
 
 		public void CreateFromImage (Bitmap image)
 		{
-			NSImage nsimage = (NSImage)image.ControlObject;
-			
-			var rep = nsimage.Representations ().OfType<NSBitmapImageRep> ().FirstOrDefault ();
-			Control = NSGraphicsContext.FromBitmap (rep);
-			context = Control.GraphicsPort;
-			this.Flipped = false;
+			var handler = image.Handler as BitmapHandler;
+#if OSX
+			var rep = handler.Control.Representations ().OfType<NSBitmapImageRep> ().FirstOrDefault ();
+			graphicsContext = NSGraphicsContext.FromBitmap (rep);
+			Control = graphicsContext.GraphicsPort;
+#elif IOS
+			var cgimage = handler.Control.CGImage;
+			Control = new CGBitmapContext (handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
+#endif
+
+			Flipped = false;
 			this.height = image.Size.Height;
-			context.InterpolationQuality = CGInterpolationQuality.High;
-			context.SetAllowsSubpixelPositioning (false);
+			Control.InterpolationQuality = CGInterpolationQuality.High;
+			Control.SetAllowsSubpixelPositioning (false);
 		}
 
 		public void Commit ()
@@ -106,7 +150,9 @@ namespace Eto.Platform.Mac.Drawing
 				//view.UnlockFocus ();
 				needsLock = true;
 			}
-			Control.FlushGraphics ();
+#if OSX
+			graphicsContext.FlushGraphics ();
+#endif
 		}
 		
 		float ViewHeight {
@@ -168,13 +214,21 @@ namespace Eto.Platform.Mac.Drawing
 		void StartDrawing ()
 		{
 			Lock ();
+#if OSX
 			NSGraphicsContext.GlobalSaveGraphicsState ();
-			NSGraphicsContext.CurrentContext = this.Control;
+			NSGraphicsContext.CurrentContext = this.graphicsContext;
+#elif IOS
+			UIGraphics.PushContext (this.Control);
+#endif
 		}
 		
 		void EndDrawing ()
 		{
+#if OSX
 			NSGraphicsContext.GlobalRestoreGraphicsState ();
+#elif IOS
+			UIGraphics.PopContext ();
+#endif
 		}
 		
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
@@ -185,10 +239,10 @@ namespace Eto.Platform.Mac.Drawing
 				DrawRectangle (color, startx, starty, 1, 1);
 				return;
 			}
-			context.SetStrokeColor (Generator.Convert (color));
-			context.SetLineCap (CGLineCap.Square);
-			context.SetLineWidth (1.0F);
-			context.StrokeLineSegments (new SD.PointF[] { TranslateView (new SD.PointF (startx, starty), true), TranslateView (new SD.PointF (endx, endy), true) });
+			Control.SetStrokeColor (color.ToCGColor ());
+			Control.SetLineCap (CGLineCap.Square);
+			Control.SetLineWidth (1.0F);
+			Control.StrokeLineSegments (new SD.PointF[] { TranslateView (new SD.PointF (startx, starty), true), TranslateView (new SD.PointF (endx, endy), true) });
 			EndDrawing ();
 		}
 
@@ -217,10 +271,10 @@ namespace Eto.Platform.Mac.Drawing
 			rect.Offset (0.5f, 0.5f);
 			rect.Width -= 1f;
 			rect.Height -= 1f;
-			context.SetStrokeColor (Generator.Convert (color));
-			context.SetLineCap (CGLineCap.Square);
-			context.SetLineWidth (1.0F);
-			context.StrokeRect (rect);
+			Control.SetStrokeColor (color.ToCGColor ());
+			Control.SetLineCap (CGLineCap.Square);
+			Control.SetLineWidth (1.0F);
+			Control.StrokeRect (rect);
 			EndDrawing ();
 		}
 
@@ -240,8 +294,8 @@ namespace Eto.Platform.Mac.Drawing
 				return;
 			}*/
 			
-			context.SetFillColor (Generator.Convert (color));
-			context.FillRect (TranslateView (new SD.RectangleF (x, y, width, height)));
+			Control.SetFillColor (color.ToCGColor ());
+			Control.FillRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			EndDrawing ();
 		}
 
@@ -252,10 +306,10 @@ namespace Eto.Platform.Mac.Drawing
 			rect.Offset (0.5f, 0.5f);
 			rect.Width -= 1f;
 			rect.Height -= 1f;
-			context.SetStrokeColor (Generator.Convert (color));
-			context.SetLineCap (CGLineCap.Square);
-			context.SetLineWidth (1.0F);
-			context.StrokeEllipseInRect (rect);
+			Control.SetStrokeColor (color.ToCGColor ());
+			Control.SetLineCap (CGLineCap.Square);
+			Control.SetLineWidth (1.0F);
+			Control.StrokeEllipseInRect (rect);
 			EndDrawing ();
 		}
 
@@ -268,8 +322,8 @@ namespace Eto.Platform.Mac.Drawing
 				return;
 			}*/
 
-			context.SetFillColor (Generator.Convert (color));
-			context.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height)));
+			Control.SetFillColor (color.ToCGColor ());
+			Control.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height)));
 			EndDrawing ();
 		}
 
@@ -288,12 +342,12 @@ namespace Eto.Platform.Mac.Drawing
 			StartDrawing ();
 
 			if (!Flipped)
-				context.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
-			context.BeginPath ();
-			context.AddPath (path.ControlObject as CGPath);
-			context.ClosePath ();
-			context.SetFillColor (Generator.Convert (color));
-			context.FillPath ();
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+			Control.BeginPath ();
+			Control.AddPath (path.ControlObject as CGPath);
+			Control.ClosePath ();
+			Control.SetFillColor (color.ToCGColor ());
+			Control.FillPath ();
 			EndDrawing ();
 		}
 
@@ -302,13 +356,13 @@ namespace Eto.Platform.Mac.Drawing
 			StartDrawing ();
 			
 			if (!Flipped)
-				context.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
-			context.SetLineCap (CGLineCap.Square);
-			context.SetLineWidth (1.0F);
-			context.BeginPath ();
-			context.AddPath (((GraphicsPathHandler)path.Handler).Control);
-			context.SetStrokeColor (Generator.Convert (color));
-			context.StrokePath ();
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+			Control.SetLineCap (CGLineCap.Square);
+			Control.SetLineWidth (1.0F);
+			Control.BeginPath ();
+			Control.AddPath (((GraphicsPathHandler)path.Handler).Control);
+			Control.SetStrokeColor (color.ToCGColor ());
+			Control.StrokePath ();
 			
 			EndDrawing ();
 		}
@@ -389,10 +443,16 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			StartDrawing ();
 
+#if OSX
 			var nsimage = icon.ControlObject as NSImage;
 			var sourceRect = Translate (new SD.RectangleF (0, 0, nsimage.Size.Width, nsimage.Size.Height), nsimage.Size.Height);
 			var destRect = TranslateView (new SD.RectangleF (x, y, width, height), false);
 			nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
+#elif IOS
+			var nsimage = icon.ControlObject as UIImage;
+			var destRect = this.TranslateView (new SD.RectangleF (x, y, width, height), false);
+			nsimage.Draw (destRect, CGBlendMode.Copy, 1);
+#endif
 			
 			EndDrawing ();
 		}
@@ -400,41 +460,57 @@ namespace Eto.Platform.Mac.Drawing
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			StartDrawing ();
-			
+
+#if OSX
 			var str = new NSString (text);
 			var fontHandler = font.Handler as FontHandler;
 			var dic = new NSMutableDictionary ();
-			dic.Add (NSAttributedString.ForegroundColorAttributeName, Generator.ConvertNS (color));
+			dic.Add (NSAttributedString.ForegroundColorAttributeName, color.ToNS ());
 			dic.Add (NSAttributedString.FontAttributeName, fontHandler.Control);
 			var size = str.StringSize (dic);
 			//context.SetShouldAntialias(true);
 			str.DrawString (new SD.PointF (x, height - y - size.Height), dic);
 			//context.SetShouldAntialias(antialias);
-			
+#elif IOS
+			var uifont = font.ToUI ();
+			var str = new NSString (text);
+			var size = str.StringSize (uifont);
+			//context.SetShouldAntialias(true);
+			Control.SetFillColor(color.ToCGColor ());
+			var pt = !Flipped ? new SD.PointF (x, height - y - size.Height) : new SD.PointF(x, y);
+			str.DrawString (pt, uifont);
+#endif
+
 			EndDrawing ();
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
 			StartDrawing ();
+#if OSX
 			var fontHandler = font.Handler as FontHandler;
 			var dic = new NSMutableDictionary ();
 			dic.Add (NSAttributedString.FontAttributeName, fontHandler.Control);
 			var str = new NSString (text);
 			var size = str.StringSize (dic);
-			var result = new SizeF (size.Width, size.Height);
+#elif IOS
+			var str = new NSString (text);
+			var size = str.StringSize (font.ToUI ());
+#endif
 			EndDrawing ();
-			return result;
+			return Eto.Platform.Conversions.ToEto (size);
 		}
-		
+
+#if OSX
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
-				if (Control != null)
-					Control.FlushGraphics ();
+				if (graphicsContext != null)
+					graphicsContext.FlushGraphics ();
 			}
 			base.Dispose (disposing);
 		}
+#endif
 
         public void SetClip(RectangleF rect)
         {

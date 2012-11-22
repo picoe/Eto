@@ -7,8 +7,12 @@ namespace Eto.Platform.GtkSharp
 {
 	public class ButtonHandler : GtkControl<Gtk.Button, Button>, IButton
 	{
-		Font font;
 		Gtk.AccelLabel label;
+
+		protected override Gtk.Widget FontControl
+		{
+			get { return label; }
+		}
 
 		public ButtonHandler()
 		{
@@ -27,19 +31,6 @@ namespace Eto.Platform.GtkSharp
 				}
 			};
 			//Control.SetSizeRequest(Button.DefaultSize.Width, Button.DefaultSize.Height);
-		}
-
-		public override Eto.Drawing.Font Font
-		{
-			get { return font; }
-			set
-			{
-				font = value;
-				if (font != null)
-					label.ModifyFont (((FontHandler)font.Handler).Control);
-				else
-					label.ModifyFont (null);
-			}
 		}
 
 		public override string Text

@@ -5,6 +5,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, IGraphics
 	{
+		Pango.Context pangoContext;
 		Gtk.Widget widget;
 		Gdk.Drawable drawable;
 		Image image;
@@ -12,6 +13,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public GraphicsHandler ()
 		{
+		}
+
+		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext)
+		{
+			this.Control = context;
+			this.pangoContext = pangoContext;
 		}
 		
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable)
@@ -33,6 +40,16 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public ImageInterpolation ImageInterpolation {
 			get; set;
+		}
+
+		public Pango.Context PangoContext
+		{
+			get {
+				if (pangoContext == null && widget != null) {
+					pangoContext = widget.PangoContext;
+				}
+				return pangoContext;
+			}
 		}
 
 		public void CreateFromImage (Bitmap image)
@@ -57,7 +74,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			if (image != null) {
 				var handler = (BitmapHandler)image.Handler;
-				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
+				Gdk.Pixbuf pb = handler.GetPixbuf (Size.MaxValue);
 				if (pb != null) {
 
 					surface.Flush ();
@@ -95,7 +112,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			if (startx != endx || starty != endy) {
 				// to draw a line, it must move..
 				Control.MoveTo (startx + 0.5, starty + 0.5);
@@ -114,7 +131,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawRectangle (Color color, int x, int y, int width, int height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
 			Control.LineWidth = 1.0;
 			Control.Stroke ();
@@ -124,7 +141,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Rectangle (x, y, width, height);
 			Control.Fill ();
 			Control.Restore ();
@@ -133,7 +150,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawEllipse (Color color, int x, int y, int width, int height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
 			Control.LineWidth = 1.0;
 			Control.Stroke ();
@@ -143,7 +160,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillEllipse (Color color, int x, int y, int width, int height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
 			Control.Fill ();
 			Control.Restore ();
@@ -153,7 +170,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillPath (Color color, GraphicsPath path)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
 			Control.Fill ();
@@ -163,7 +180,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawPath (Color color, GraphicsPath path)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
+			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
 			Control.LineCap = Cairo.LineCap.Square;
@@ -223,33 +240,27 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		public void DrawText (Font font, Color color, float x, float y, string text)
 		{
-			if (widget != null) {
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
-					layout.FontDescription = (Pango.FontDescription)font.ControlObject;
-					layout.SetText (text);
-					Control.Save ();
-					Control.Color = Generator.ConvertC (color);
-					Control.MoveTo (x, y);
-					Pango.CairoHelper.LayoutPath (Control, layout);
-					Control.Fill ();
-					Control.Restore ();
-				}
+			using (var layout = new Pango.Layout (PangoContext)) {
+				layout.FontDescription = ((FontHandler)font.Handler).Control;
+				layout.SetText (text);
+				Control.Save ();
+				Control.Color = color.ToCairo ();
+				Control.MoveTo (x, y);
+				Pango.CairoHelper.LayoutPath (Control, layout);
+				Control.Fill ();
+				Control.Restore ();
 			}
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			if (widget != null) {
-
-				Pango.Layout layout = new Pango.Layout (widget.PangoContext);
-				layout.FontDescription = (Pango.FontDescription)font.ControlObject;
-				layout.SetText (text);
-				int width, height;
-				layout.GetPixelSize (out width, out height);
-				layout.Dispose ();
-				return new SizeF (width, height);
-			}
-			return new SizeF ();
+			Pango.Layout layout = new Pango.Layout (PangoContext);
+			layout.FontDescription = ((FontHandler)font.Handler).Control;
+			layout.SetText (text);
+			int width, height;
+			layout.GetPixelSize (out width, out height);
+			layout.Dispose ();
+			return new SizeF (width, height);
 		}
 
 		protected override void Dispose (bool disposing)

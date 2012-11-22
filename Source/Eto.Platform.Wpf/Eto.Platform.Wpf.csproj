@@ -13,9 +13,9 @@
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>true</DebugSymbols>
+    <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -23,7 +23,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>True</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -40,8 +40,11 @@
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
+    <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Printing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -64,6 +67,15 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Conversions.cs" />
+    <Compile Include="CustomControls\FontDialog\fontchooser.xaml.cs">
+      <DependentUpon>fontchooser.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="CustomControls\FontDialog\fontfamilylistitem.cs" />
+    <Compile Include="CustomControls\FontDialog\fontsizelistitem.cs" />
+    <Compile Include="CustomControls\FontDialog\namedictionaryhelper.cs" />
+    <Compile Include="CustomControls\FontDialog\typefacelistitem.cs" />
+    <Compile Include="CustomControls\FontDialog\typographicfeaturelistitem.cs" />
     <Compile Include="CustomControls\GlassHelper.cs" />
     <Compile Include="CustomControls\HttpServer.cs" />
     <Compile Include="CustomControls\MultiSizeImage.cs" />
@@ -83,10 +95,13 @@
     <Compile Include="CustomControls\VirtualCanvas\VirtualCanvas.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
     <Compile Include="Drawing\FontHandler.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
@@ -97,6 +112,7 @@
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
@@ -122,18 +138,23 @@
     <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\TreeGridViewHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
-    <Compile Include="Forms\Controls\WebViewHandler.cs" />
+    <Compile Include="Forms\Controls\WpfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
+    <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\WpfMenuItem.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs" />
+    <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
+    <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
+    <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\SaveFileDialogHandler.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
     <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
+    <Compile Include="Forms\WpfContainer.cs" />
     <Compile Include="Forms\WpfFileDialog.cs" />
     <Compile Include="Forms\WpfCommonDialog.cs" />
     <Compile Include="Forms\DialogHandler.cs" />
@@ -158,6 +179,11 @@
     <Compile Include="Generator.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Properties\FontDialogResources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>FontDialogResources.resx</DependentUpon>
+    </Compile>
     <Compile Include="PropertyPathHelper.cs" />
     <Compile Include="WpfExtensions.cs" />
   </ItemGroup>
@@ -189,9 +215,18 @@
     <EmbeddedResource Include="..\..\Libraries\WPFToolkit.Extended\WPFToolkit.Extended.dll">
       <Link>CustomControls\Assemblies\WPFToolkit.Extended.dll</Link>
     </EmbeddedResource>
+    <EmbeddedResource Include="Properties\FontDialogResources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>FontDialogResources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
+    <Page Include="CustomControls\FontDialog\fontchooser.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
     <Page Include="CustomControls\OverlayIcon.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -201,6 +236,10 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="themes\classic.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="themes\aero2.normalcolor.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>

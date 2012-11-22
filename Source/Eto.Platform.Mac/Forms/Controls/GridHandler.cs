@@ -69,7 +69,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		public override Font Font {
-			get { return font; }
+			get {
+				if (font == null)
+					font = new Font (CellHandler.Generator, new FontHandler (Cell.Font));
+				return font;
+			}
 			set {
 				font = value;
 				if (font != null)

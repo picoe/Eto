@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class WebViewSection : Panel
+	public class WebViewSection : Scrollable
 	{
 		WebView webView;
 		Button goBack;
@@ -14,37 +14,38 @@ namespace Eto.Test.Sections.Controls
 		
 		public WebViewSection ()
 		{
-			var layout = new TableLayout (this, 1, 3);
-			
-			int row = 0;
-			layout.Add (Buttons (), 0, row++);
-			layout.Add (TitleLabel (), 0, row++);
-			layout.Add (WebView (), 0, row++, true, true);
+			var layout = new DynamicLayout (this);
+
+			var webContainer = WebView ();
+			layout.Add (Buttons ());
+			layout.AddSeparateRow (TitleLabel (), null, EnableContextMenu ());
+			layout.Add (webContainer, yscale: true);
+
+			LoadHtml();
 		}
 		
 		Control WebView ()
 		{
 			try {
-				var control = webView = new WebView ();
-			
-				control.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
-					Log.Write (control, "Document loading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
+				webView = new WebView ();
+
+				webView.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
+					Log.Write (webView, "Document loading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
 					UpdateButtons ();
 					stopButton.Enabled = true;
 				};
-				control.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
-					Log.Write (control, "Document loaded, Uri: {0}", e.Uri);
+				webView.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
+					Log.Write (webView, "Document loaded, Uri: {0}", e.Uri);
 					UpdateButtons ();
 					stopButton.Enabled = false;
 				};
-				control.OpenNewWindow += (sender, e) => {
-					Log.Write (control, "Open new window with name '{0}', Url: {1}", e.NewWindowName, e.Uri);
+				webView.OpenNewWindow += (sender, e) => {
+					Log.Write (webView, "Open new window with name '{0}', Url: {1}", e.NewWindowName, e.Uri);
 				};
-				control.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e) {
+				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e) {
 					titleLabel.Text = e.Title;
 				};
-				LoadHtml();
-				return control;
+				return webView;
 
 			} catch (HandlerInvalidException) {
 				var control = new Label { 
@@ -66,6 +67,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			titleLabel = new Label{};
 			return titleLabel;
+		}
+
+		Control EnableContextMenu ()
+		{
+			var control = new CheckBox { Text = "Enable Context Menu" };
+			control.Bind ("Checked", this.webView, "BrowserContextMenuEnabled");
+			return control;
 		}
 		
 		void UpdateButtons ()

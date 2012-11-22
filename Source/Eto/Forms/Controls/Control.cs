@@ -58,12 +58,15 @@ namespace Eto.Forms
         void SetControl(object control);
     }
 	
+	[ToolboxItem(true)]
+	[DesignTimeVisible(true)]
+	[DesignerCategory("Eto.Forms")]
 	public abstract partial class Control : 
         InstanceWidget, 
         IMouseInputSource,
         IKeyboardInputSource
 	{
-		IControl inner;
+		new IControl Handler { get { return (IControl)base.Handler; } }
 		
 		public bool Loaded { get; private set; }
 
@@ -490,7 +493,7 @@ namespace Eto.Forms
 		{
 			if (PreLoad != null)
 				PreLoad (this, e);
-			inner.OnPreLoad (e);
+			Handler.OnPreLoad (e);
 		}
 
 		public event EventHandler<EventArgs> Load;
@@ -502,7 +505,7 @@ namespace Eto.Forms
 			Loaded = true;
 			if (Load != null)
 				Load (this, e);
-			inner.OnLoad (e);
+			Handler.OnLoad (e);
 		}
 
 		public event EventHandler<EventArgs> LoadComplete;
@@ -511,7 +514,7 @@ namespace Eto.Forms
 		{
 			if (LoadComplete != null)
 				LoadComplete (this, e);
-			inner.OnLoadComplete (e);
+			Handler.OnLoadComplete (e);
 		}
         #endregion
 
@@ -531,7 +534,6 @@ namespace Eto.Forms
 		protected Control (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			this.inner = (IControl)base.Handler;
 		}
 
         // Provided as a means of wrapping a WinForms control
@@ -554,27 +556,27 @@ namespace Eto.Forms
 
 		public void Invalidate ()
 		{
-			inner.Invalidate ();
+			Handler.Invalidate ();
 		}
 
 		public void Invalidate (Rectangle rect)
 		{
-			inner.Invalidate (rect);
+			Handler.Invalidate (rect);
 		}
 
 		public virtual Size Size {
-			get { return inner.Size; }
-			set { inner.Size = value; }
+			get { return Handler.Size; }
+			set { Handler.Size = value; }
 		}
 
 		public virtual bool Enabled {
-			get { return inner.Enabled; }
-			set { inner.Enabled = value; }
+			get { return Handler.Enabled; }
+			set { Handler.Enabled = value; }
 		}
 
 		public virtual bool Visible {
-			get { return inner.Visible; }
-			set { inner.Visible = value; }
+			get { return Handler.Visible; }
+			set { Handler.Visible = value; }
 		}
 		
 		public override object DataContext {
@@ -585,48 +587,73 @@ namespace Eto.Forms
 		public Layout ParentLayout { get; private set; }
 		
 		public Control Parent { get; private set; }
+
+		public T FindParent<T> (string id)
+			where T: class
+		{
+			var control = this.Parent;
+			while (control != null) {
+				if (control is T && (string.IsNullOrEmpty (id) || control.ID == id)) {
+					return control as T;
+				}
+				control = control.Parent;
+			}
+			return default(T);
+		}
+
+		public T FindParent<T> ()
+			where T : class
+		{
+			var control = this.Parent;
+			while (control != null) {
+				if (control is T)
+					return control as T;
+				control = control.Parent;
+			}
+			return default (T);
+		}
 		
 		public void SetParent (Control parent)
 		{
 			this.Parent = parent;
 			OnDataContextChanged (EventArgs.Empty);
-			inner.SetParent (parent);
+			Handler.SetParent (parent);
 		}
 
 		public void SetParentLayout (Layout layout)
 		{
 			this.ParentLayout = layout;
-			inner.SetParentLayout (layout);
+			Handler.SetParentLayout (layout);
 			this.SetParent (layout != null ? layout.Container : null);
 		}
 
 		public Color BackgroundColor {
-			get { return inner.BackgroundColor; }
-			set { inner.BackgroundColor = value; }
+			get { return Handler.BackgroundColor; }
+			set { Handler.BackgroundColor = value; }
 		}
 		
 		public virtual bool HasFocus {
-			get { return inner.HasFocus; }
+			get { return Handler.HasFocus; }
 		}
 		
 		public Graphics CreateGraphics ()
 		{
-			return inner.CreateGraphics ();
+			return Handler.CreateGraphics ();
 		}
 		
 		public virtual void Focus ()
 		{
-			inner.Focus ();
+			Handler.Focus ();
 		}
 		
 		public virtual void SuspendLayout ()
 		{
-			inner.SuspendLayout ();
+			Handler.SuspendLayout ();
 		}
 
 		public virtual void ResumeLayout ()
 		{
-			inner.ResumeLayout ();
+			Handler.ResumeLayout ();
 		}
 
 		public Window ParentWindow {
@@ -643,7 +670,7 @@ namespace Eto.Forms
 		
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
-			inner.MapPlatformAction(systemAction, action);
+			Handler.MapPlatformAction(systemAction, action);
 		}
 
         /// <summary>

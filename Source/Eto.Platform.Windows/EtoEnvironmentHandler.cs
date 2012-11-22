@@ -5,7 +5,7 @@ using System.IO;
 
 namespace Eto.Platform.Windows
 {
-	public class EtoEnvironmentHandler : IEtoEnvironment
+	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
 		
 		Environment.SpecialFolder Convert (EtoSpecialFolder folder)
@@ -30,16 +30,6 @@ namespace Eto.Platform.Windows
 				return Environment.GetFolderPath (Convert (folder));
 			}
 		}
-		
-		#region IWidget implementation
-		
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
-		
-		#endregion
 	}
 }
 

@@ -60,11 +60,25 @@ namespace Eto.Platform.Windows
 		Font font;
 		Cursor cursor;
 		string tooltip;
-		Size desiredSize;
+		Size desiredSize = new Size(-1, -1);
 		protected bool XScale { get; set; }
 		protected bool YScale { get; set; }
 
-		public virtual Size DesiredSize { get { return desiredSize; } }
+		public virtual Size? DefaultSize { get { return null; } }
+
+		public virtual Size DesiredSize
+		{
+			get
+			{
+				var size = desiredSize;
+				var defSize = DefaultSize;
+				if (defSize != null) {
+					if (size.Width == -1) size.Width = defSize.Value.Width;
+					if (size.Height == -1) size.Height = defSize.Value.Height;
+				}
+				return size;
+			}
+		}
 
 		public virtual SWF.Control ContainerControl
 		{
@@ -88,7 +102,7 @@ namespace Eto.Platform.Windows
 			var size = this.DesiredSize;
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
-			Control.MinimumSize = Generator.Convert (size);
+			Control.MinimumSize = size.ToSD ();
 		}
 
 		public virtual void SetScale (bool xscale, bool yscale)
@@ -96,6 +110,11 @@ namespace Eto.Platform.Windows
 			this.XScale = xscale;
 			this.YScale = yscale;
 			CalculateMinimumSize ();
+		}
+
+		public void SetScale ()
+		{
+			SetScale (XScale, YScale);
 		}
 
 		public override void AttachEvent (string handler)
@@ -248,10 +267,10 @@ namespace Eto.Platform.Windows
 		}
 
 		public virtual Size Size {
-			get { return Generator.Convert (ContainerControl.Size); }
+			get { return ContainerControl.Size.ToEto (); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.Size = Generator.Convert (value);
+				ContainerControl.Size = value.ToSD ();
 				desiredSize = value;
 				CalculateMinimumSize ();
 			}
@@ -261,7 +280,7 @@ namespace Eto.Platform.Windows
 			get { return new Size (ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.ClientSize = Generator.Convert (value);
+				ContainerControl.ClientSize = value.ToSD ();
 			}
 		}
 
@@ -289,19 +308,19 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void Invalidate ()
+		public virtual void Invalidate ()
 		{
 			Control.Invalidate (true);
 		}
 
-		public void Invalidate (Rectangle rect)
+		public virtual void Invalidate (Rectangle rect)
 		{
-			Control.Invalidate (Generator.Convert (rect), true);
+			Control.Invalidate (rect.ToSD (), true);
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Generator.Convert (Control.BackColor); }
-			set { Control.BackColor = Generator.Convert (value); }
+			get { return Control.BackColor.ToEto (); }
+			set { Control.BackColor = value.ToSD (); }
 		}
 
 		public Graphics CreateGraphics ()
@@ -457,8 +476,14 @@ namespace Eto.Platform.Windows
 		}
 		
 		public Font Font {
-			get { return font; }
-			set {
+			get
+			{
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Font));
+				return font;
+			}
+			set
+			{
 				font = value;
 				if (font != null)
 					this.Control.Font = font.ControlObject as System.Drawing.Font;

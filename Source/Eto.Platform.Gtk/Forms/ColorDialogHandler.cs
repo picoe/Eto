@@ -11,18 +11,11 @@ namespace Eto.Platform.GtkSharp.Forms
 			
 		}
 
-		#region IColorDialog implementation
 		public Eto.Drawing.Color Color {
-			get {
-				return Generator.Convert (Control.ColorSelection.CurrentColor);
-			}
-			set {
-				Control.ColorSelection.CurrentColor = Generator.Convert (value);
-			}
+			get { return Control.ColorSelection.CurrentColor.ToEto (); }
+			set { Control.ColorSelection.CurrentColor = value.ToGdk (); }
 		}
-		#endregion
 
-		#region ICommonDialog implementation
 		public DialogResult ShowDialog (Window parent)
 		{
 			if (parent != null)
@@ -38,10 +31,8 @@ namespace Eto.Platform.GtkSharp.Forms
 			if (response == Gtk.ResponseType.Ok) {
 				Widget.OnColorChanged(EventArgs.Empty);
 			}
-			return Generator.Convert (response);
+			return response.ToEto ();
 		}
-		#endregion
-
 	}
 }
 

@@ -22,7 +22,7 @@ namespace Eto.Platform.Windows.Drawing
 		
 		public void LineTo (Point point)
 		{
-			this.Control.AddLine (Generator.Convert (position), Generator.Convert (point));
+			this.Control.AddLine (position.ToSD (), point.ToSD ());
             position = point;
 		}
 		
@@ -33,7 +33,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void AddLine (Point point1, Point point2)
 		{
-			this.Control.AddLine (Generator.Convert (point1), Generator.Convert (point2));
+			this.Control.AddLine (point1.ToSD (), point2.ToSD ());
 			position = point2;
 		}
 

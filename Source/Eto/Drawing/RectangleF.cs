@@ -44,12 +44,12 @@ namespace Eto.Drawing
 		public static readonly RectangleF Empty = new RectangleF (0, 0, 0, 0);
 
 		/// <summary>
-		/// Restricts the rectangle to be within the specified <paramref name="location"/> and <paramref name="size"/>
+		/// Restricts the rectangle to be within the specified <paramref name="point"/> and <paramref name="size"/>
 		/// </summary>
 		/// <remarks>
-		/// This is a shortcut for <seealso cref="Restrict(Rectangle)"/>
+		/// This is a shortcut for <seealso cref="Restrict(RectangleF)"/>
 		/// </remarks>
-		/// <param name="location">Minimum location for the rectangle</param>
+		/// <param name="point">Minimum location for the rectangle</param>
 		/// <param name="size">Maximum size for the rectangle</param>
 		public void Restrict (PointF point, SizeF size)
 		{
@@ -60,7 +60,7 @@ namespace Eto.Drawing
 		/// Restricts the rectangle to be within the specified <paramref name="size"/> at an X,Y location of 0, 0
 		/// </summary>
 		/// <remarks>
-		/// This is a shortcut for <seealso cref="Restrict(Rectangle)"/>
+		/// This is a shortcut for <seealso cref="Restrict(RectangleF)"/>
 		/// </remarks>
 		/// <param name="size">Maxiumum size for the rectangle</param>
 		public void Restrict (SizeF size)

@@ -26,8 +26,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return Generator.ConvertMneumonicFromWPF(Control.Content); }
-			set { Control.Content = Generator.ConvertMneumonicToWPF(value); }
+			get { return Conversions.ConvertMneumonicFromWPF (Control.Content); }
+			set { Control.Content = value.ToWpfMneumonic (); }
 		}
 
 		public IImage Image

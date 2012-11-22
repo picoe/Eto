@@ -38,9 +38,7 @@ namespace Eto.Forms
 		}
 	}
 	
-#if XAML
 	[ContentProperty("Children")]
-#endif
 	public class TreeGridItem : GridItem, ITreeGridItem, ITreeGridStore<ITreeGridItem>
 	{
 		TreeGridItemCollection children;

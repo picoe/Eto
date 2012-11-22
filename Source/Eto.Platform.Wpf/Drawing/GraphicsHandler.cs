@@ -17,7 +17,7 @@ namespace Eto.Platform.Wpf.Drawing
 		ImageInterpolation imageInterpolation;
 
 		Bitmap image;
-		double? dpi;
+		sw.Size? dpi;
 
 		public GraphicsHandler ()
 		{
@@ -29,8 +29,8 @@ namespace Eto.Platform.Wpf.Drawing
 			
 			this.Control = context;
 
-			if (DPI != 1.0)
-				this.Control.PushTransform (new swm.ScaleTransform (DPI, DPI));
+			if (DPI != new sw.Size(1.0, 1.0))
+				this.Control.PushTransform (new swm.ScaleTransform (DPI.Width, DPI.Height));
 
 			if (clipRect != null)
 				this.Control.PushClip (new swm.RectangleGeometry (clipRect.Value));
@@ -48,13 +48,18 @@ namespace Eto.Platform.Wpf.Drawing
 			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
-		public double DPI
+		public sw.Size DPI
 		{
 			get
 			{
 				if (dpi == null) {
-					swm.Matrix m = sw.PresentationSource.FromVisual (visual).CompositionTarget.TransformToDevice;
-					dpi = 1 / m.M11;
+					var presentationSource = sw.PresentationSource.FromVisual (visual);
+					if (presentationSource != null) {
+						swm.Matrix m = presentationSource.CompositionTarget.TransformToDevice;
+						dpi = new sw.Size (1 / m.M11, 1 / m.M11);
+					}
+					else
+						dpi = new sw.Size (1.0, 1.0);
 				}
 				return dpi.Value;
 			}
@@ -62,7 +67,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		swm.Pen GetPen (Color color, double thickness = 1)
 		{
-			return new swm.Pen (new swm.SolidColorBrush (Generator.Convert (color)), thickness);
+			return new swm.Pen (new swm.SolidColorBrush (color.ToWpf ()), thickness);
 		}
 
 		void PushGuideLines (double x, double y, double width, double height)
@@ -87,7 +92,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
 			PushGuideLines (x, y, width, height);
-			var brush = new swm.SolidColorBrush (Generator.Convert (color));
+			var brush = new swm.SolidColorBrush (color.ToWpf ());
 			Control.DrawRectangle (brush, null, new sw.Rect (x, y, width, height));
 			Control.Pop ();
 		}
@@ -102,7 +107,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void FillEllipse (Color color, int x, int y, int width, int height)
 		{
 			PushGuideLines (x, y, width, height);
-			var brush = new swm.SolidColorBrush (Generator.Convert (color));
+			var brush = new swm.SolidColorBrush (color.ToWpf ());
 			Control.DrawEllipse (brush, null, new sw.Point (x + width / 2.0, y + height / 2.0), width / 2.0, height / 2.0);
 			Control.Pop ();
 		}
@@ -110,7 +115,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void FillPath (Color color, GraphicsPath path)
 		{
 			var geometry = ((GraphicsPathHandler)path.Handler).Control;
-			var brush = new swm.SolidColorBrush (Generator.Convert (color));
+			var brush = new swm.SolidColorBrush (color.ToWpf ());
 			Control.DrawGeometry (brush, null, geometry);
 		}
 
@@ -137,7 +142,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
 			var src = image.ControlObject as swm.ImageSource;
-			Control.PushClip (new swm.RectangleGeometry (Generator.Convert (destination)));
+			Control.PushClip (new swm.RectangleGeometry (destination.ToWpf ()));
 			bool scaled = false;
 			double scalex = 1.0;
 			double scaley = 1.0;
@@ -184,8 +189,8 @@ namespace Eto.Platform.Wpf.Drawing
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			var fontHandler = font.Handler as FontHandler;
-			var brush = new swm.SolidColorBrush(Generator.Convert(color));
-			var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, font.SizeInPixels, brush);
+			var brush = new swm.SolidColorBrush(color.ToWpf ());
+			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
 			Control.DrawText (formattedText, new sw.Point (x, y));
 		}
 
@@ -193,7 +198,8 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var fontHandler = font.Handler as FontHandler;
 			var brush = new swm.SolidColorBrush (swm.Colors.White);
-            var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.Typeface, font.SizeInPixels, brush);
+
+			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
 			return new SizeF ((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
 		}
 
@@ -242,7 +248,7 @@ namespace Eto.Platform.Wpf.Drawing
 			get { return imageInterpolation; }
 			set {
 				imageInterpolation = value;
-				swm.RenderOptions.SetBitmapScalingMode (visual, Generator.Convert (value));
+				swm.RenderOptions.SetBitmapScalingMode (visual, value.ToWpf ());
 			}
 		}
 

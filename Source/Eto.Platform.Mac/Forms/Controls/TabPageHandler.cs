@@ -5,6 +5,8 @@ using SD = System.Drawing;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Drawing;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -127,7 +129,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (focus) 
 				Focus ();
 		}
-		
+
+		public void Print (PrintSettings settings)
+		{
+			var op = NSPrintOperation.FromView(Control.View);
+			if (settings != null)
+				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
+			op.ShowsPrintPanel = false;
+			op.RunOperation ();
+		}
+
 		#region IControl implementation
 		public void Invalidate ()
 		{
@@ -136,7 +147,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		void IControl.Invalidate (Eto.Drawing.Rectangle rect)
 		{
-			Control.View.SetNeedsDisplayInRect (Generator.ConvertF (rect));
+			Control.View.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
 		public Eto.Drawing.Graphics CreateGraphics ()
@@ -165,13 +176,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (!Control.View.WantsLayer) {
 					Control.View.WantsLayer = true;
 				}
-				return Generator.Convert (Control.View.Layer.BackgroundColor);
+				return Control.View.Layer.BackgroundColor.ToEtoColor ();
 			}
 			set {
 				if (!Control.View.WantsLayer) {
 					Control.View.WantsLayer = true;
 				}
-				Control.View.Layer.BackgroundColor = Generator.Convert (value);
+				Control.View.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
 
@@ -234,12 +245,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set;
 		}
 		
-		public virtual Size GetPreferredSize ()
+		public virtual Size GetPreferredSize (Size availableSize)
 		{
 			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					return layout.GetPreferredSize ();
+					return layout.GetPreferredSize (availableSize);
 			}
 			return Size.Empty;
 		}

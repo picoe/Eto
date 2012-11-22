@@ -7,8 +7,12 @@ namespace Eto.Platform.GtkSharp
 {
 	public class RadioButtonHandler : GtkControl<Gtk.RadioButton, RadioButton>, IRadioButton
 	{
-		Font font;
 		Gtk.AccelLabel label;
+
+		protected override Gtk.Widget FontControl
+		{
+			get { return label; }
+		}
 		
 		public void Create(RadioButton controller)
 		{
@@ -22,19 +26,6 @@ namespace Eto.Platform.GtkSharp
 		void control_Toggled(Object sender, EventArgs e)
 		{
 			Widget.OnCheckedChanged(e);
-		}
-
-		public override Font Font
-		{
-			get { return font; }
-			set
-			{
-				font = value;
-				if (font != null)
-					Control.Child.ModifyFont (((FontHandler)font.Handler).Control);
-				else
-					Control.Child.ModifyFont (null);
-			}
 		}
 
 		public override string Text

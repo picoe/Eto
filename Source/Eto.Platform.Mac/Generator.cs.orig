@@ -1,0 +1,197 @@
+using System;
+using System.Runtime.InteropServices;
+using Eto.Drawing;
+using Eto.Forms;
+using Eto.IO;
+using MonoMac.AppKit;
+using Eto.Platform.Mac.Drawing;
+using MonoMac.CoreGraphics;
+using MonoMac.Foundation;
+using Eto.Platform.Mac.IO;
+using System.Threading;
+using SD = System.Drawing;
+
+namespace Eto.Platform.Mac
+{
+	public class Generator : Eto.Generator
+	{ 	
+		public override string ID {
+			get { return Generators.Mac; }
+		}
+<<<<<<< HEAD
+		
+		public static Point GetLocation (NSView view, NSEvent theEvent)
+		{
+			var loc = view.ConvertPointFromView (theEvent.LocationInWindow, null);
+			if (!view.IsFlipped)
+				loc.Y = view.Frame.Height - loc.Y;
+			return Generator.ConvertF (loc);
+		}
+		
+		public override IDisposable ThreadStart ()
+		{
+			return new NSAutoreleasePool ();
+		}
+
+		public static System.Drawing.Size Convert (Size size)
+		{
+			return new System.Drawing.Size (size.Width, size.Height);
+		}
+
+		public static Size Convert (System.Drawing.Size size)
+		{
+			return new Size (size.Width, size.Height);
+		}
+
+        public static RectangleF Convert(System.Drawing.RectangleF rect)
+        {
+            return new RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
+        }
+
+		public static System.Drawing.Point Convert (Point point)
+		{
+			return new System.Drawing.Point (point.X, point.Y);
+		}
+
+		public static Point Convert (System.Drawing.Point point)
+		{
+			return new Point (point.X, point.Y);
+		}
+
+		public static System.Drawing.SizeF ConvertF (Size size)
+		{
+			return new System.Drawing.SizeF (size.Width, size.Height);
+		}
+
+		public static Size ConvertF (System.Drawing.SizeF size)
+		{
+			return new Size ((int)size.Width, (int)size.Height);
+		}
+		
+		public static System.Drawing.RectangleF ConvertF (System.Drawing.RectangleF frame, Size size)
+		{
+			frame.Size = ConvertF (size);
+			return frame;
+		}
+
+		public static Rectangle ConvertF (System.Drawing.RectangleF rect)
+		{
+			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
+
+		public static System.Drawing.RectangleF ConvertF (Rectangle rect)
+		{
+			return new System.Drawing.RectangleF ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
+
+        public static System.Drawing.RectangleF Convert(RectangleF rect)
+        {
+            return new System.Drawing.RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
+        }
+		
+		public static Point ConvertF (System.Drawing.PointF point)
+		{
+			return new Point ((int)point.X, (int)point.Y);
+		}
+
+		public static System.Drawing.PointF ConvertF (Point point)
+		{
+			return new System.Drawing.PointF ((int)point.X, (int)point.Y);
+		}
+
+        public static System.Drawing.PointF Convert(PointF point)
+        {
+            return new System.Drawing.PointF(point.X, point.Y);
+        }
+
+        public static PointF Convert(System.Drawing.PointF point)
+        {
+            return new PointF(point.X, point.Y);
+        }
+		
+		public static NSRange Convert (Range range)
+		{
+			return new NSRange(range.Location, range.Length);
+		}
+		
+		public static Range Convert (NSRange range)
+		{
+			return new Range (range.Location, range.Length);
+		}
+=======
+>>>>>>> cff29a2c6097785551bb68efb48b3d4a19eeaf6e
+
+		public Generator ()
+		{
+			AddAssembly (typeof (Generator).Assembly);
+		}
+		
+		
+		public override IDisposable ThreadStart ()
+		{
+<<<<<<< HEAD
+			switch (value) {
+			case CGInterpolationQuality.Default:
+				return ImageInterpolation.Default;
+			case CGInterpolationQuality.None:
+				return ImageInterpolation.None;
+			case CGInterpolationQuality.Low:
+				return ImageInterpolation.Low;
+			case CGInterpolationQuality.Medium:
+				return ImageInterpolation.Medium;
+			case CGInterpolationQuality.High:
+				return ImageInterpolation.High;
+			default:
+				throw new NotSupportedException();
+			}
+		}
+
+        internal static Matrix Convert(
+            CGAffineTransform t)
+        {
+            return new Matrix(
+                t.xx,
+                t.yx,
+                t.xy,
+                t.yy,
+                t.x0,
+                t.y0);
+        }
+
+        internal static SD.PointF[] Convert(PointF[] points)
+        {
+            var result =
+                new SD.PointF[points.Length];
+
+            for (var i = 0;
+                i < points.Length;
+                ++i)
+            {
+                var p = points[i];
+                result[i] =
+                    new SD.PointF(p.X, p.Y);
+            }
+
+            return result;
+        }
+
+        internal static CGAffineTransform Convert(
+            Matrix m)
+        {
+            var e = m.Elements;
+
+            return new CGAffineTransform(
+                e[0],
+                e[1],
+                e[2],
+                e[3],
+                e[4],
+                e[5]);
+        }
+    }
+=======
+			return new NSAutoreleasePool ();
+		}
+	}
+>>>>>>> cff29a2c6097785551bb68efb48b3d4a19eeaf6e
+}

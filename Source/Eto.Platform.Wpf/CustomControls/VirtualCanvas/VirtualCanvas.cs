@@ -322,6 +322,14 @@ namespace Microsoft.Sample.Controls
             get { return _backdrop; }
         }
 
+		public void RecalculateExtent ()
+		{
+			_extent.Width = double.NaN;
+			_extent.Height = double.NaN;
+			InvalidateMeasure ();
+			InvalidateArrange ();
+		}
+
         /// <summary>
         /// Calculate the size needed to display all the virtual children.
         /// </summary>
@@ -438,13 +446,10 @@ namespace Microsoft.Sample.Controls
                 }
             }
 			if (double.IsInfinity(availableSize.Width))
-            {
-                return _extent;
-            }
-            else
-            {
-                return availableSize;
-            }
+                availableSize.Width = _extent.Width;
+			if (double.IsInfinity(availableSize.Height))
+				availableSize.Height = _extent.Height;
+			return availableSize;
 		}
 
         /// <summary>

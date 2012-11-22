@@ -19,7 +19,7 @@ namespace Eto.Platform.Windows.Forms
 		{
 			Control = new SWF.PictureBox {
 				BorderStyle = SWF.BorderStyle.None,
-				SizeMode = SWF.PictureBoxSizeMode.CenterImage
+				SizeMode = SWF.PictureBoxSizeMode.Zoom
 			};
 		}
 
@@ -33,30 +33,34 @@ namespace Eto.Platform.Windows.Forms
 			{
 				base.Size = value;
 				sizeSet = true;
+				SetImage ();
 			}
 		}
+		void SetImage ()
+		{
+			if (image != null) {
+				var handler = image.Handler as IWindowsImage;
+				if (handler != null)
+					Control.Image = handler.GetImageWithSize (null);
+				else
+					Control.Image = null;
+			}
+			else
+				Control.Image = null;
 
-		#region IImageView implementation
+			if (!sizeSet && Control.Image != null)
+				Control.Size = Control.Image.Size;
+		}
+
 		public Image Image {
 			get {
 				return image;
 			}
 			set {
 				image = value;
-				var sdimage = image.ControlObject as SD.Image;
-				if (sdimage != null) Control.Image = sdimage;
-				else
-				{
-					var icon = image.Handler as IconHandler;
-					Control.Image = icon.GetLargestIcon().ToBitmap();
-				}
-				if (!sizeSet && Control.Image != null)
-					Control.Size = Control.Image.Size;
+				SetImage ();
 			}
 		}
-		#endregion
-		
-
 	}
 }
 

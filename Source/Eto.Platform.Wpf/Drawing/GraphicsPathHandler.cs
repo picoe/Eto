@@ -20,7 +20,7 @@ namespace Eto.Platform.Wpf.Drawing
 		void StartNewFigure (Point startPoint)
 		{
 			figure = new swm.PathFigure ();
-			figure.StartPoint = Generator.Convert (startPoint);
+			figure.StartPoint = startPoint.ToWpf ();
 			figure.Segments = new swm.PathSegmentCollection ();
 			Control.Figures.Add (figure);
 		}
@@ -45,11 +45,7 @@ namespace Eto.Platform.Wpf.Drawing
 
             while (enumerator.MoveNext())
             {
-                figure.Segments.Add(
-                    new swm.LineSegment(
-                        Generator.Convert(
-                            (PointF)enumerator.Current),
-                        true));
+				figure.Segments.Add (new swm.LineSegment (enumerator.Current.ToWpf (), true));
             }
         }
 
@@ -57,12 +53,12 @@ namespace Eto.Platform.Wpf.Drawing
 		public void AddLine (Point point1, Point point2)
 		{
 			StartNewFigure (point1);
-			figure.Segments.Add (new swm.LineSegment (Generator.Convert(point2), true));
+			figure.Segments.Add (new swm.LineSegment (point2.ToWpf (), true));
 		}
 
 		public void LineTo (Point point)
 		{
-			figure.Segments.Add (new swm.LineSegment (Generator.Convert (point), true));
+			figure.Segments.Add (new swm.LineSegment (point.ToWpf (), true));
 		}
 
 		public void MoveTo (Point point)

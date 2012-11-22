@@ -1,0 +1,89 @@
+using System;
+using MonoTouch.UIKit;
+using Eto.Forms;
+using System.Linq;
+
+namespace Eto.Platform.iOS.Forms
+{
+	public class FormHandler : iosWindow<UIWindow, Form>, IForm
+	{
+		public FormHandler ()
+		{
+			Control = new UIWindow(UIScreen.MainScreen.Bounds);
+			Control.AutosizesSubviews = true;
+			Control.RootViewController = new RotatableViewController();
+			Control.RootViewController.View.AutosizesSubviews = true;
+			Control.RootViewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+		}
+
+		public override UIView ContentControl {
+			get { return Control.RootViewController.View; }
+		}
+
+
+		public override string Title {
+			get { return null; }
+			set { }
+		}
+		
+		public override void Close ()
+		{
+			Control.RemoveFromSuperview();
+			/*
+			var viewControllers = Controller.NavigationController.ViewControllers.ToList();
+			int index = viewControllers.IndexOf(Controller);
+			if (index > 1) Controller.NavigationController.PopToViewController(viewControllers[index-1], true);
+			*/
+		}
+		
+		public void Show ()
+		{
+			Control.MakeKeyAndVisible();
+			//ApplicationHandler.Instance.Navigation.PushViewController(Controller, true);
+		}
+<<<<<<< HEAD
+		
+		#endregion
+
+		#region IControl implementation
+
+		public Eto.Drawing.Point ScreenToWorld (Eto.Drawing.Point p)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public Eto.Drawing.Point WorldToScreen (Eto.Drawing.Point p)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public DragDropEffects DoDragDrop (object data, DragDropEffects allowedEffects)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void SetControl (object control)
+		{
+			throw new NotImplementedException ();
+		}
+
+		#endregion
+
+		#region IForm implementation
+
+		public Eto.Drawing.Color TransparencyKey {
+			get;
+			set;
+		}
+
+		public bool KeyPreview {
+			get;
+			set;
+		}
+
+		#endregion
+=======
+>>>>>>> cff29a2c6097785551bb68efb48b3d4a19eeaf6e
+	}
+}
+

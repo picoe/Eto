@@ -28,27 +28,52 @@ namespace Eto.Platform.Mac.Drawing
 			else
 				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
 		}
+#if OSX
+		public static NSFont ToNSFont (this Font font)
+		{
+			return ((FontHandler)font.Handler).Control;
+		}
+#endif
 	}
 
 	public class FontHandler : WidgetHandler<NSFont, Font>, IFont, IDisposable
 	{
-		public const float FONT_SIZE_FACTOR = 1.3F;
+		public const float FONT_SIZE_FACTOR = 1.0F;
+		FontFamily family;
+		FontTypeface face;
+		FontStyle? style;
 		
-		bool bold;
-		bool italic;
+		public FontHandler()
+		{
+		}
+
+		public FontHandler (NSFont font)
+		{
+			this.Control = font;
+		}
+
+		public FontHandler (NSFont font, FontStyle style)
+		{
+			this.Control = font;
+			this.style = style;
+		}
+
+		public void Create (FontTypeface face, float size)
+		{
+			this.face = face;
+			this.family = face.Family;
+			this.Control = ((FontTypefaceHandler)face.Handler).CreateFont(size);
+		}
 		
 		public void Create (SystemFont systemFont, float? fontSize)
 		{
 			var size = fontSize;
 			if (fontSize != null) size = size.Value * FONT_SIZE_FACTOR;
-			bold = false;
-			italic = false;
 			switch (systemFont) {
 			case SystemFont.Default:
 				Control = NSFont.SystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			case SystemFont.Bold:
-				bold = true;
 				Control = NSFont.BoldSystemFontOfSize(size ?? NSFont.SystemFontSize);
 				break;
 			case SystemFont.Label:
@@ -107,24 +132,18 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			
 #if OSX
-			string familyString;
-			switch (family)
-			{
-			case Eto.Drawing.FontFamily.Monospace: familyString = "Courier New"; break; 
-			default:
-            case Eto.Drawing.FontFamily.Sans: familyString = "Helvetica"; break;
-            case Eto.Drawing.FontFamily.Serif: familyString = "Times"; break; 
-			}
-			bold = (style & FontStyle.Bold) != 0;
+			this.style = style;
+			this.family = family;
 
-			NSFontTraitMask traits = (bold) ? NSFontTraitMask.Bold : NSFontTraitMask.Unbold;
-			italic = (style & FontStyle.Italic) != 0;
-			traits |= (italic) ? NSFontTraitMask.Italic : NSFontTraitMask.Unitalic;
-			var font = NSFontManager.SharedFontManager.FontWithFamily(familyString, traits, 3, size * FONT_SIZE_FACTOR);
-			if (font == null || font.Handle == IntPtr.Zero) throw new Exception(string.Format("Could not allocate font with family {0}, traits {1}, size {2}", familyString, traits, size));
+			NSFontTraitMask traits = style.ToNS ();
+			var font = NSFontManager.SharedFontManager.FontWithFamily(family.Name, traits, 5, size * FONT_SIZE_FACTOR);
+			if (font == null || font.Handle == IntPtr.Zero)
+				throw new Exception(string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
 			string suffix = string.Empty;
-			string italicString = "Italic";
+			var familyHandler = family.Handler as FontFamilyHandler;
+			var font = familyHandler.CreateFont (size, style);
+			/*
 			var familyString = new StringBuilder();
 			switch (family)
 			{
@@ -142,18 +161,46 @@ namespace Eto.Platform.Mac.Drawing
 			
 			familyString.Append (suffix);
 			var font = UIFont.FromName (familyString.ToString (), size);
+			*/
 #endif
 			Control = font;
 		}
 
-		public bool Bold
+		public string FamilyName
 		{
-			get { return bold; }
+			get { return Control.FamilyName; }
 		}
 
-		public bool Italic
+		public FontFamily Family
 		{
-			get { return italic; }
+			get {
+				if (family == null)
+					family = new FontFamily(Widget.Generator, new FontFamilyHandler(Control.FamilyName));
+				return family;
+			}
+		}
+
+		public FontTypeface Typeface
+		{
+			get {
+				if (face == null)
+					face = ((FontFamilyHandler)Family.Handler).GetFace (Control);
+				return face;
+			}
+		}
+
+		public FontStyle FontStyle
+		{
+			get
+			{
+				if (style == null)
+#if OSX
+					style = NSFontManager.SharedFontManager.TraitsOfFont (Control).ToEto ();
+#elif IOS
+					style = Typeface.FontStyle;
+#endif
+				return style.Value;
+			}
         }
 
         public bool Underline
