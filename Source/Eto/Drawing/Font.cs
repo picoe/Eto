@@ -274,17 +274,6 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the Font class with the specified family name, size and style
-		/// </summary>
-		/// <param name="familyName">Name of the font family to create</param>
-		/// <param name="sizeInPoints">Size of the font (in points)</param>
-		/// <param name="style">Style to apply to the font (if available for that family)</param>
-		public Font (string familyName, float sizeInPoints, FontStyle style = FontStyle.Normal)
-			: this (Generator.Current, familyName, sizeInPoints, style)
-		{
-		}
-
-		/// <summary>
 		/// Initializes a new instance of the Font class with the specified <paramref name="familyName"/>, <paramref name="sizeInPoints"/>, and <paramref name="style"/>
 		/// </summary>
 		/// <param name="generator">Generator to create the font handler</param>
