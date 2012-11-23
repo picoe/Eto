@@ -8,12 +8,18 @@ namespace Eto.Platform.iOS.Forms
 	internal class RotatableViewController : UIViewController
 	{
 		public object Control { get; set; }
-		
+
+		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations ()
+		{
+			return UIInterfaceOrientationMask.All;
+		}
+
+		[Obsolete]
 		public override bool ShouldAutorotateToInterfaceOrientation (UIInterfaceOrientation toInterfaceOrientation)
 		{
 			return true;
 		}
-		
+
 		protected override void Dispose (bool disposing)
 		{
 			var c = Control as IDisposable;
@@ -21,7 +27,6 @@ namespace Eto.Platform.iOS.Forms
 				c.Dispose ();
 				c = null;
 			}
-			
 			base.Dispose (disposing);
 		}
 	}
@@ -29,12 +34,13 @@ namespace Eto.Platform.iOS.Forms
 	public class DialogHandler : iosWindow<UIView, Dialog>, IDialog, IiosViewController
 	{
 		Button button;
+		UIViewController controller;
 
-		public UIViewController Controller { get; set; }
+		public override UIViewController Controller { get { return controller; } }
 
 		public DialogHandler ()
 		{
-			Controller = new RotatableViewController ();
+			controller = new RotatableViewController ();
 			Control = Controller.View;
 		}
 		

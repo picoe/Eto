@@ -34,7 +34,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				base.OnRender (dc);
 				if (Handler.virtualChildren == null) {
 					var rect = new Rectangle (Handler.Widget.Size);
-					var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, Generator.Convert(rect)));
+					var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, rect.ToWpf ()));
 					Handler.Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}
 			}
@@ -51,7 +51,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var rect = new sw.Rect (Child.Bounds.X, Child.Bounds.Y, Child.Bounds.Width + 0.5, Child.Bounds.Height + 0.5);
 				var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, rect));
 				dc.PushGuidelineSet(new swm.GuidelineSet(new double[] { Child.Bounds.Left, Child.Bounds.Right }, new double[] { Child.Bounds.Top, Child.Bounds.Bottom }));
-				Handler.Widget.OnPaint (new PaintEventArgs (graphics, Generator.Convert (Child.Bounds)));
+				Handler.Widget.OnPaint (new PaintEventArgs (graphics, Child.Bounds.ToEto ()));
 			}
 		}
 
@@ -135,11 +135,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (virtualChildren == null)
 				return;
 			UpdateCanvas ();
-			var parent = Control.GetParent<Microsoft.Sample.Controls.VirtualCanvas> ();
-			if (parent != null) {
-				parent.InvalidateArrange ();
-				//parent.InvalidateVisual ();
-			}
+            var parentScrollable = Widget.FindParent<Scrollable>();
+            var parentHandler = parentScrollable.Handler as ScrollableHandler;
+            if (parentHandler != null)
+            {
+
+                parentHandler.UpdateVisualChildren ();
+            }
 		}
 
 		void UpdateCanvas ()
@@ -150,14 +152,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			var tileSize = 100;
 			var width = Control.Width / tileSize;
 			var height = Control.Height / tileSize;
+			int totalheight = 0;
 			for (int y = 0; y < height; y++) {
+				int totalwidth = 0;
 				for (int x = 0; x < width; x++) {
+					var xsize = Math.Min (tileSize, Control.Width - totalwidth);
+					var ysize = Math.Min (tileSize, Control.Height - totalheight);
 					var child = new EtoChild {
-						Bounds = new sw.Rect (x * tileSize, y * tileSize, tileSize, tileSize),
+						Bounds = new sw.Rect (x * tileSize, y * tileSize, xsize, ysize),
 						Handler = this
 					};
 					virtualChildren.Add (child);
+					totalwidth += tileSize;
 				}
+				totalheight += tileSize;
 			}
 		}
 
@@ -179,7 +187,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (virtualChildren != null) {
 				foreach (var child in virtualChildren) {
 					var visual = child.Visual;
-					if (visual != null && rect.Intersects (Generator.Convert (child.Bounds)))
+					if (visual != null && rect.Intersects (child.Bounds.ToEto ()))
 						visual.InvalidateVisual ();
 				}
 			}

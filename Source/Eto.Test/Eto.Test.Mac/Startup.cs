@@ -7,6 +7,7 @@ using Eto.Platform.Mac.Forms.Controls;
 using Eto.Platform.Mac.Forms;
 using Eto.Platform.Mac;
 using Eto.Drawing;
+using System.Diagnostics;
 
 namespace Eto.Test.Mac
 {
@@ -14,6 +15,9 @@ namespace Eto.Test.Mac
 	{
 		static void Main (string [] args)
 		{
+#if DEBUG
+			Debug.Listeners.Add (new ConsoleTraceListener());
+#endif
 			AddStyles ();
 			
 			var generator = new Eto.Platform.Mac.Generator ();

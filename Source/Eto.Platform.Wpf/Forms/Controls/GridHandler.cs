@@ -227,7 +227,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			public override Eto.Drawing.Font Font
 			{
-				get { return font; }
+				get {
+					if (font == null)
+						font = new Font (Column.Generator, new FontHandler (Column.Generator, Cell));
+					return font;
+				}
 				set
 				{
 					font = value;
@@ -240,12 +244,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				get
 				{
 					var brush = Cell.Background as swm.SolidColorBrush;
-					if (brush != null) return Generator.Convert (brush.Color);
+					if (brush != null) return brush.Color.ToEto ();
 					else return Colors.White;
 				}
 				set
 				{
-					Cell.Background = new swm.SolidColorBrush (Generator.Convert (value));
+					Cell.Background = new swm.SolidColorBrush (value.ToWpf ());
 				}
 			}
 
@@ -254,12 +258,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				get
 				{
 					var brush = Cell.Foreground as swm.SolidColorBrush;
-					if (brush != null) return Generator.Convert (brush.Color);
+					if (brush != null) return brush.Color.ToEto ();
 					else return Colors.Black;
 				}
 				set
 				{
-					Cell.Foreground = new swm.SolidColorBrush (Generator.Convert (value));
+					Cell.Foreground = new swm.SolidColorBrush (value.ToWpf ());
 				}
 			}
 		}

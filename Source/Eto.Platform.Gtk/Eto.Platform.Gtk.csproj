@@ -93,6 +93,7 @@
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
+    <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Generator.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -247,6 +248,13 @@
     <Compile Include="MenuActionItemHandler.cs" />
     <Compile Include="Forms\Cells\GridCellFormattingEventArgs.cs" />
     <Compile Include="EtoWebView.cs" />
+    <Compile Include="Conversions.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Forms\Printing\PrintDialogHandler.cs" />
+    <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
+    <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -258,4 +266,7 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Forms\Printing\" />
+  </ItemGroup>
 </Project>

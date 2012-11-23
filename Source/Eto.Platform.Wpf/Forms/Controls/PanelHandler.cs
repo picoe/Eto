@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class PanelHandler : WpfFrameworkElement<System.Windows.Controls.Border, Panel>, IPanel
+	public class PanelHandler : WpfContainer<System.Windows.Controls.Border, Panel>, IPanel
 	{
 		public PanelHandler ()
 		{
@@ -15,18 +15,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			//Control.Background = System.Windows.SystemColors.ControlBrush;
 		}
 
-		public Size ClientSize
+		public override Size ClientSize
 		{
 			get { return this.Size; }
 			set { this.Size = value; }
 		}
 
-		public object ContainerObject
+		public override object ContainerObject
 		{
 			get { return Control; }
 		}
 
-		public virtual void SetLayout (Layout layout)
+		public override void SetLayout (Layout layout)
 		{
 			Control.Child = (System.Windows.UIElement)layout.ControlObject;
 		}
@@ -36,16 +36,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get
 			{
 				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return Generator.Convert (brush.Color);
+				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
 			set
 			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (Generator.Convert (value));
+				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
 			}
 		}
 
-		public Size? MinimumSize
+		public override Size? MinimumSize
 		{
 			get
 			{

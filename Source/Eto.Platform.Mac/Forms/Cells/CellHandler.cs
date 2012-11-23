@@ -10,6 +10,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public interface ICellHandler
 	{
 		NSCell Control { get; }
+
+		Eto.Generator Generator { get; }
 		
 		IDataColumnHandler ColumnHandler { get; set; }
 
@@ -53,6 +55,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public virtual NSObject GetObjectValue (object dataItem)
 		{
 			return null;
+		}
+
+		Eto.Generator ICellHandler.Generator
+		{
+			get { return Widget.Generator; }
 		}
 
 		public abstract void SetBackgroundColor (NSCell cell, Color color);

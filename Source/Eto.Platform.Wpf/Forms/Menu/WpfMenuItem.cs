@@ -65,8 +65,8 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public string Text
 		{
-			get { return Generator.ConvertMneumonicFromWPF (Control.Header); }
-			set { Control.Header = Generator.ConvertMneumonicToWPF (value); }
+			get { return Conversions.ConvertMneumonicFromWPF (Control.Header); }
+			set { Control.Header = value.ToWpfMneumonic (); }
 		}
 
 		public string ToolTip

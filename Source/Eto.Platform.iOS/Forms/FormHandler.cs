@@ -11,8 +11,16 @@ namespace Eto.Platform.iOS.Forms
 		{
 			Control = new UIWindow(UIScreen.MainScreen.Bounds);
 			Control.AutosizesSubviews = true;
+			Control.RootViewController = new RotatableViewController();
+			Control.RootViewController.View.AutosizesSubviews = true;
+			Control.RootViewController.View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 		}
-		
+
+		public override UIView ContentControl {
+			get { return Control.RootViewController.View; }
+		}
+
+
 		public override string Title {
 			get { return null; }
 			set { }
@@ -28,15 +36,11 @@ namespace Eto.Platform.iOS.Forms
 			*/
 		}
 		
-		#region IForm implementation
-		
 		public void Show ()
 		{
 			Control.MakeKeyAndVisible();
 			//ApplicationHandler.Instance.Navigation.PushViewController(Controller, true);
 		}
-		
-		#endregion
 
 		#region IControl implementation
 

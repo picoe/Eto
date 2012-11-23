@@ -185,15 +185,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return (GridColumn)Widget; }
 		}
 
-		public Font Font {
-			get { return font; }
+		public Font Font
+		{
+			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.DataCell.Font));
+				return font;
+			}
 			set {
 				font = value;
 				if (font != null) {
 					var fontHandler = (FontHandler)font.Handler;
 					Control.DataCell.Font = fontHandler.Control;
-				}
-				else
+				} else
 					Control.DataCell.Font = null;
 			}
 		}

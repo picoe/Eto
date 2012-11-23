@@ -39,9 +39,7 @@ namespace Eto.Forms
 	{
 		ISplitter handler;
 		
-		public static bool Supported {
-			get { return Generator.Current.Supports<ISplitter> (); }
-		}
+		public static bool Supported { get { return Generator.Current.Supports<ISplitter> (); } }
 		
 		public Splitter () : this (Generator.Current)
 		{

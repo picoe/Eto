@@ -6,18 +6,19 @@ using Eto.Drawing;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Wpf.Drawing
 {
 	public class FontHandler : WidgetHandler<object, Font>, IFont
 	{
+		FontTypeface typeface;
 
 		public void Apply (swc.Control control)
 		{
-			control.FontFamily = Family;
-
-			control.FontStyle = FontStyle;
-			control.FontWeight = FontWeight;
+			control.FontFamily = WpfFamily;
+			control.FontStyle = WpfFontStyle;
+			control.FontWeight = WpfFontWeight;
 
 			control.FontSize = this.PixelSize;
 		}
@@ -26,8 +27,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				if (sw.Application.Current.MainWindow != null)
-				{
+				if (sw.Application.Current.MainWindow != null) {
 					// adjust font size for DPI settings
 					var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
 					return PointsToPixels (Size * m.M22);
@@ -37,10 +37,18 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
-
 		public static double PointsToPixels (double points)
 		{
 			return points * (96.0 / 72.0);
+		}
+
+		public static double PixelsToPoints (double points, swc.Control control = null)
+		{
+			if (control != null) {
+				var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+				points /= m.M22;
+			}
+			return points * (72.0 / 96.0);
 		}
 
 		public static void Apply (swc.Control control, Font font)
@@ -58,39 +66,13 @@ namespace Eto.Platform.Wpf.Drawing
 
 		}
 
-		string Convert (FontFamily family)
+		public sw.FontStyle WpfFontStyle
 		{
-			switch (family) {
-				case Eto.Drawing.FontFamily.Monospace:
-					return "Courier New";
-                case Eto.Drawing.FontFamily.Sans:
-					return "Verdana";
-                case Eto.Drawing.FontFamily.Serif:
-					return "Times New Roman";
-				default:
-					throw new NotSupportedException ();
-			}
+			get;
+			set;
 		}
 
-		public swm.Typeface Typeface
-		{
-			get
-			{
-				return new swm.Typeface (Family, FontStyle, FontWeight, sw.FontStretches.Normal);
-			}
-		}
-
-		public System.Windows.Media.FontFamily Family
-		{
-			get; set;
-		}
-
-		public System.Windows.FontStyle FontStyle
-		{
-			get; set;
-		}
-
-		public System.Windows.FontWeight FontWeight
+		public sw.FontWeight WpfFontWeight
 		{
 			get;
 			set;
@@ -98,69 +80,129 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public double Size
 		{
-			get; set; 
+			get;
+			set;
+		}
+
+		public FontHandler ()
+		{
+		}
+
+		public FontHandler (Eto.Generator generator, swc.Control control)
+		{
+			this.Family = new FontFamily (generator, new FontFamilyHandler (control.FontFamily));
+			this.Size = PixelsToPoints (control.FontSize, control);
+			this.WpfFontStyle = control.FontStyle;
+			this.WpfFontWeight = control.FontWeight;
+		}
+
+		public FontHandler (Eto.Generator generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
+		{
+			this.Family = new FontFamily(generator, new FontFamilyHandler (family));
+			this.Size = size;
+			this.WpfFontStyle = style;
+			this.WpfFontWeight = weight;
 		}
 
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
-			this.Family = new System.Windows.Media.FontFamily (Convert (family));
+			this.Family = family;
 			this.Size = size;
-			if ((style & Eto.Drawing.FontStyle.Bold) != 0) this.FontWeight = System.Windows.FontWeights.Bold;
-			else this.FontWeight = System.Windows.FontWeights.Normal;
+			SetStyle (style);
+		}
 
-			if ((style & Eto.Drawing.FontStyle.Italic) != 0) this.FontStyle = System.Windows.FontStyles.Italic;
-			else this.FontStyle = System.Windows.FontStyles.Normal;
+		public void Create (FontTypeface typeface, float size)
+		{
+			this.typeface = typeface;
+			this.Family = typeface.Family;
+			this.Size = size;
+			this.WpfFontWeight = WpfTypeface.Weight;
+			this.WpfFontStyle = WpfTypeface.Style;
+		}
+
+		void SetStyle (FontStyle style)
+		{
+			if ((style & Eto.Drawing.FontStyle.Bold) != 0) this.WpfFontWeight = System.Windows.FontWeights.Bold;
+			else this.WpfFontWeight = System.Windows.FontWeights.Normal;
+
+			if ((style & Eto.Drawing.FontStyle.Italic) != 0) this.WpfFontStyle = System.Windows.FontStyles.Italic;
+			else this.WpfFontStyle = System.Windows.FontStyles.Normal;
 		}
 
 		public void Create (SystemFont systemFont, float? size)
 		{
-			
+
 			switch (systemFont) {
-				case SystemFont.Label:
-				case SystemFont.Default:
-				case SystemFont.Message:
-				case SystemFont.Palette:
-				case SystemFont.TitleBar:
-				case SystemFont.ToolTip:
-					Family = System.Windows.SystemFonts.MessageFontFamily;
-					FontStyle = System.Windows.SystemFonts.MessageFontStyle;
-					FontWeight = System.Windows.SystemFonts.MessageFontWeight;
-					Size = System.Windows.SystemFonts.MessageFontSize;
-					break;
-				case SystemFont.Bold:
-					Family = System.Windows.SystemFonts.MessageFontFamily;
-					FontStyle = System.Windows.SystemFonts.MessageFontStyle;
-					FontWeight = System.Windows.FontWeights.Bold;
-					Size = System.Windows.SystemFonts.MessageFontSize;
-					break;
-				case SystemFont.MenuBar:
-				case SystemFont.Menu:
-					Family = System.Windows.SystemFonts.MenuFontFamily;
-					FontStyle = System.Windows.SystemFonts.MenuFontStyle;
-					FontWeight = System.Windows.SystemFonts.MenuFontWeight;
-					Size = System.Windows.SystemFonts.MenuFontSize;
-					break;
-				case SystemFont.StatusBar:
-					Family = System.Windows.SystemFonts.StatusFontFamily;
-					FontStyle = System.Windows.SystemFonts.StatusFontStyle;
-					FontWeight = System.Windows.SystemFonts.StatusFontWeight;
-					Size = System.Windows.SystemFonts.StatusFontSize;
-					break;
-				default:
-					throw new NotSupportedException ();
+			case SystemFont.Label:
+			case SystemFont.Default:
+			case SystemFont.Message:
+			case SystemFont.Palette:
+			case SystemFont.TitleBar:
+			case SystemFont.ToolTip:
+				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.MessageFontFamily));
+				WpfFontStyle = System.Windows.SystemFonts.MessageFontStyle;
+				WpfFontWeight = System.Windows.SystemFonts.MessageFontWeight;
+				Size = System.Windows.SystemFonts.MessageFontSize;
+				break;
+			case SystemFont.Bold:
+				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.MessageFontFamily));
+				WpfFontStyle = System.Windows.SystemFonts.MessageFontStyle;
+				WpfFontWeight = System.Windows.FontWeights.Bold;
+				Size = System.Windows.SystemFonts.MessageFontSize;
+				break;
+			case SystemFont.MenuBar:
+			case SystemFont.Menu:
+				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.MenuFontFamily));
+				WpfFontStyle = System.Windows.SystemFonts.MenuFontStyle;
+				WpfFontWeight = System.Windows.SystemFonts.MenuFontWeight;
+				Size = System.Windows.SystemFonts.MenuFontSize;
+				break;
+			case SystemFont.StatusBar:
+				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.StatusFontFamily));
+				WpfFontStyle = System.Windows.SystemFonts.StatusFontStyle;
+				WpfFontWeight = System.Windows.SystemFonts.StatusFontWeight;
+				Size = System.Windows.SystemFonts.StatusFontSize;
+				break;
+			default:
+				throw new NotSupportedException ();
 			}
 			if (size != null) Size = size.Value;
 		}
 
 
-		public bool Bold
+		public FontFamily Family
 		{
-			get { return this.FontWeight == System.Windows.FontWeights.Bold; }
+			get;
+			set;
 		}
 
-		public bool Italic
+		public FontTypeface Typeface
 		{
-			get { return this.FontStyle == System.Windows.FontStyles.Italic; }
+			get
+			{
+				if (typeface == null) {
+					typeface = new FontTypeface(Family, new FontTypefaceHandler(new swm.Typeface (WpfFamily, WpfFontStyle, WpfFontWeight, sw.FontStretches.Normal)));
+				}
+				return typeface;
+			}
+		}
+
+		public FontStyle FontStyle
+		{
+			get
+			{
+				return Conversions.Convert (WpfFontStyle, WpfFontWeight);
+			}
+		}
+
+		public swm.FontFamily WpfFamily
+		{
+			get { return ((FontFamilyHandler)Family.Handler).Control; }
+		}
+
+		public swm.Typeface WpfTypeface
+		{
+			get { return ((FontTypefaceHandler)Typeface.Handler).Control; }
         }
 
         public bool Underline
@@ -232,5 +274,10 @@ namespace Eto.Platform.Wpf.Drawing
         {
             throw new NotImplementedException();
         }
+
+		public string FamilyName
+		{
+			get { return Family.Name; }
+		}
     }
 }

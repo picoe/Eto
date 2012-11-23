@@ -7,16 +7,37 @@ using SWF = System.Windows.Forms;
 
 namespace Eto.Platform.Windows.Drawing
 {
+	public static class FontExtensions
+	{
+		public static SD.Font ToSD (this Font font)
+		{
+			if (font == null)
+				return null;
+			var handler = font.Handler as FontHandler;
+			return handler.Control;
+		}
+
+		public static Font ToEto (this SD.Font font, Eto.Generator generator)
+		{
+			if (font == null)
+				return null;
+			return new Font (generator, new FontHandler (font));
+		}
+	}
+
 	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, IFont
 	{
-        public FontHandler()
-        {
-        }
+		FontTypeface typeface;
+		FontFamily family;
 
-        public FontHandler(SD.Font font)
-        {
-            this.Control = font;
-        }
+		public FontHandler ()
+		{
+		}
+
+		public FontHandler (SD.Font font)
+		{
+			Control = font;
+		}
 
         public void Create()
         {
@@ -28,14 +49,23 @@ namespace Eto.Platform.Windows.Drawing
             Control = new SD.Font(fontFamily, sizeInPoints);
         }
 
-        public void Create(string fontFamily, float sizeInPoints, FontStyle style)
-        {
-            Control = new SD.Font(fontFamily, sizeInPoints, (SD.FontStyle)style);
-        }
-
-        public void Create(FontFamily family, float size, FontStyle style)
+        public void Create(string fontName, float size, FontStyle style)
 		{
-			Control = new SD.Font(Generator.Convert(family), size, Convert(style));
+			Control = new SD.Font (fontName, size, style.ToSD ());
+		}
+
+		public void Create (FontFamily family, float size, FontStyle style)
+		{
+			this.family = family;
+			var familyHandler = (FontFamilyHandler)family.Handler;
+			Control = new SD.Font (familyHandler.Control, size, style.ToSD ());
+		}
+
+		public void Create (FontTypeface typeface, float size)
+		{
+			this.typeface = typeface;
+
+			Control = new SD.Font (typeface.Family.Name, size, typeface.FontStyle.ToSD ());
 		}
 		
 		public void Create (SystemFont systemFont, float? size)
@@ -79,124 +109,49 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 		
-		System.Drawing.FontStyle Convert(FontStyle style)
+		public float Size
 		{
-			SD.FontStyle ret = SD.FontStyle.Regular;
-			if ((style & FontStyle.Bold) != 0) ret |= SD.FontStyle.Bold;
-			if ((style & FontStyle.Italic) != 0) ret |= SD.FontStyle.Italic;
-			return ret;
+			get { return this.Control.Size; }
 		}
 
-        private System.Drawing.Font font = null;
-        public override System.Drawing.Font Control
-        {
-            get
-            {
-                if (this.font == null)
-                {
-                    var fontFamily = FontFamily;
-
-                    var messageBoxFont =
-                        SD.SystemFonts.MessageBoxFont;
-
-                    // font family
-                    if (string.IsNullOrEmpty(
-                            fontFamily))
-                        fontFamily =
-                            messageBoxFont.FontFamily.Name;
-
-                    // font size
-                    var fontSize =
-                        sizeInPixels != null
-                        ? sizeInPixels.Value
-                        : SD.SystemFonts.MessageBoxFont.SizeInPoints *
-                            Constants.PointsToPixels;
-
-                    var fontStyle = System.Drawing.FontStyle.Regular;
-
-                    if (Bold)
-                        fontStyle |= System.Drawing.FontStyle.Bold;
-
-                    if (Italic)
-                        fontStyle |= System.Drawing.FontStyle.Italic;
-
-                    if (Underline)
-                        fontStyle |= System.Drawing.FontStyle.Underline;
-
-                    if (Strikeout)
-                        fontStyle |= System.Drawing.FontStyle.Strikeout;
-
-                    // call the setter
-                    this.font =
-                        new System.Drawing.Font(
-                            fontFamily,
-                            fontSize,
-                            fontStyle,
-                            // we always save fonts in pixel sizes.
-                            SD.GraphicsUnit.Pixel);
-                }
-
-                return this.font;
-            }
-            protected set
-            {
-                if (value != null)
-                {
-                    // Font family - resets this.font.
-                    this.fontFamily =
-                        value.FontFamily.Name;
-
-                    // FontSizePixels - resets this.font.
-                    this.sizeInPixels =
-                        value.SizeInPoints
-                        * Constants.PointsToPixels;
-
-                    // Bold - resets this.font.
-                    this.bold =
-                        (value.Style &
-                         System.Drawing.FontStyle.Bold) ==
-                         System.Drawing.FontStyle.Bold;
-
-                    // Italic - resets this.font.
-                    this.italic =
-                        (value.Style &
-                        System.Drawing.FontStyle.Italic) ==
-                        System.Drawing.FontStyle.Italic;
-
-                    // Underline - resets this.font.
-                    this.underline =
-                        (value.Style &
-                        System.Drawing.FontStyle.Underline) ==
-                        System.Drawing.FontStyle.Underline;
-
-                    // Strikeout - resets this.font.
-                    this.strikeout =
-                        (value.Style &
-                        System.Drawing.FontStyle.Strikeout) ==
-                        System.Drawing.FontStyle.Strikeout;
-                }
-
-                this.font =
-                    value;
-            }
-        }
+		public string FamilyName
+		{
+			get { return this.Control.FontFamily.Name; }
+		}
 
 
-        private string fontFamily;
+		public FontStyle FontStyle
+		{
+			get { return Control.Style.ToEto (); }
+		}
 
-        public string FontFamily { get { return fontFamily; } }
+		public FontFamily Family
+		{
+			get
+			{
+				if (family == null) {
+					family = new FontFamily (Widget.Generator, new FontFamilyHandler (Control.FontFamily));
+				}
+				return family;
+			}
+		}
 
-        private bool bold;
-        public bool Bold { get { return this.bold; } }
+		public FontTypeface Typeface
+		{
+			get
+			{
+				if (typeface == null) {
+					typeface = new FontTypeface (Family, new FontTypefaceHandler (Control.Style));
+				}
+				return typeface;
+			}
+		}
 
-        private bool italic;
-        public bool Italic { get { return this.italic; } }
+		public SD.FontFamily WindowsFamily
+		{
+			get { return Control.FontFamily; }
+		}
 
-        private bool underline;
-        public bool Underline { get { return this.underline; } }
-
-        private bool strikeout;
-        public bool Strikeout { get { return this.strikeout; } }
 
         public float ExHeightInPixels
         {
@@ -327,19 +282,7 @@ namespace Eto.Platform.Windows.Drawing
 
         public IFont Clone()
         {
-            FontHandler font = new FontHandler();
-            font.fontFamily = FontFamily;
-            font.sizeInPixels = SizeInPixels;
-            font.bold = Bold;
-            font.italic = Italic;
-            font.underline = Underline;
-            font.strikeout = Strikeout;
-
-            // Assigned last since
-            // the previous setters reset it.
-            font.Control = Control;
-
-            return font;
+            throw new NotImplementedException();
         }
     }
 }

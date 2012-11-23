@@ -252,12 +252,22 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Forms\Printing\PageSettings.cs" />
+    <Compile Include="Forms\Printing\PrintDialog.cs" />
+    <Compile Include="Forms\Printing\PrintDocument.cs" />
+    <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
+    <Compile Include="Forms\Printing\PrintSettings.cs" />
     <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Forms\Range.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="In32ArrayConverter.cs" />
+    <Compile Include="Drawing\FontFamilies.cs" />
+    <Compile Include="Drawing\FontFamily.cs" />
+    <Compile Include="Drawing\Fonts.cs" />
+    <Compile Include="Drawing\FontTypeface.cs" />
+    <Compile Include="Forms\FontDialog.cs" />
     <Compile Include="Interface\IDragDropInputSource.cs" />
     <Compile Include="Interface\IKeyboardInputSource.cs" />
     <Compile Include="Interface\IMouseInputSource.cs" />

@@ -38,12 +38,16 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public WebViewHandler ()
 		{
-			this.Control = new SWF.WebBrowser { IsWebBrowserContextMenuEnabled = false };
+			this.Control = new SWF.WebBrowser {
+				IsWebBrowserContextMenuEnabled = false,
+				WebBrowserShortcutsEnabled = false,
+				AllowWebBrowserDrop = false,
+				ScriptErrorsSuppressed = true
+			};
 			this.Control.HandleCreated += (sender, e) => {
 				HookDocumentEvents ();
 			};
 		}
-
 
 		void WebBrowserV1_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
 		{
@@ -169,6 +173,12 @@ namespace Eto.Platform.Windows.Forms.Controls
         {
             this.Control.ShowPrintDialog();
         }
+
+		public bool BrowserContextMenuEnabled
+		{
+			get { return Control.IsWebBrowserContextMenuEnabled; }
+			set { Control.IsWebBrowserContextMenuEnabled = value; }
+		}
 	}
 }
 

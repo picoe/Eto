@@ -7,6 +7,8 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Forms.Controls;
+using Eto.Platform.Mac.Drawing;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -60,6 +62,8 @@ namespace Eto.Platform.Mac.Forms
 		Size? MinimumSize { get; }
 		
 		bool CloseWindow ();
+
+		NSWindow Control { get; }
 	}
 
 	public class CustomFieldEditor : NSTextView
@@ -103,12 +107,12 @@ namespace Eto.Platform.Mac.Forms
 		
 		public bool AutoSize { get; private set; }
 		
-		public virtual Size GetPreferredSize ()
+		public virtual Size GetPreferredSize (Size availableSize)
 		{
 			if (Widget.Layout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					return layout.GetPreferredSize ();
+					return layout.GetPreferredSize (availableSize);
 			}
 			return new Size (200, 200);
 		}
@@ -255,11 +259,11 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual Size Size {
 			get {
-				return Generator.ConvertF (Control.Frame.Size);
+				return Control.Frame.Size.ToEtoSize ();
 			}
 			set {
 				var oldFrame = Control.Frame;
-				var newFrame = Generator.ConvertF (oldFrame, value);
+				var newFrame = oldFrame.SetSize (value);
 				newFrame.Y = Math.Max (0, oldFrame.Y - (value.Height - oldFrame.Height));
 				Control.SetFrame (newFrame, true);
 				AutoSize = false;
@@ -339,7 +343,7 @@ namespace Eto.Platform.Mac.Forms
 
 		void IControl.Invalidate (Rectangle rect)
 		{
-			Control.ContentView.SetNeedsDisplayInRect (Generator.ConvertF (rect));
+			Control.ContentView.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
 		public Graphics CreateGraphics ()
@@ -365,12 +369,12 @@ namespace Eto.Platform.Mac.Forms
 		public string Id { get; set; }
 
 		public Size ClientSize {
-			get { return Generator.ConvertF (Control.ContentView.Frame.Size); }
+			get { return Control.ContentView.Frame.Size.ToEtoSize (); }
 			set { 
 				var oldFrame = Control.Frame;
 				var oldSize = Control.ContentView.Frame;
 				Control.SetFrameOrigin(new SD.PointF(oldFrame.X, Math.Max (0, oldFrame.Y - (value.Height - oldSize.Height))));
-				Control.SetContentSize (Generator.ConvertF (value));
+				Control.SetContentSize (value.ToSDSizeF ());
 				AutoSize = false;
 			}
 		}
@@ -480,8 +484,8 @@ namespace Eto.Platform.Mac.Forms
 		public virtual void OnLoad (EventArgs e)
 		{
 			if (AutoSize) {
-				var size = this.GetPreferredSize ();
-				SetContentSize (Generator.ConvertF (size));
+				var size = this.GetPreferredSize (Size.MaxValue);
+				SetContentSize (size.ToSDSizeF ());
 				setInitialSize = true;
 
 				PositionWindow ();
@@ -512,6 +516,14 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
+		public void Print (PrintSettings settings)
+		{
+			var op = NSPrintOperation.FromView(Control.ContentView);
+			if (settings != null)
+				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
+			op.ShowsPrintPanel = false;
+			op.RunOperation ();
+		}
 
 		#region IMacContainer implementation
 		public void SetContentSize (SD.SizeF contentSize)
@@ -549,10 +561,13 @@ namespace Eto.Platform.Mac.Forms
 		}
 
 		Eto.Forms.Window IMacWindow.Widget {
-			get {
-				return this.Widget;
-			}
+			get { return this.Widget; }
 		}
+
+		NSWindow IMacWindow.Control {
+			get { return this.Control; }
+		}
+
 		#endregion
 		
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)

@@ -19,9 +19,7 @@ namespace Eto.Platform.Windows
 
 		public override Size DesiredSize
 		{
-			get {
-				return Generator.Convert (Control.PreferredSize);
-			}
+			get { return Control.PreferredSize.ToEto (); }
 		}
 
 		public void Add(Control child, int x, int y)

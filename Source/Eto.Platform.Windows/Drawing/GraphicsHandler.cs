@@ -70,7 +70,7 @@ namespace Eto.Platform.Windows.Drawing
 			get { return imageInterpolation; }
 			set {
 				imageInterpolation = value;
-				Control.InterpolationMode = Generator.Convert (value);
+				Control.InterpolationMode = value.ToSD ();
 			}
 		}
 
@@ -89,40 +89,40 @@ namespace Eto.Platform.Windows.Drawing
 		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
 		{
 			if (startx == endx && starty == endy) {
-				this.Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), startx, starty, 1, 1);
+				this.Control.FillRectangle (new SD.SolidBrush (color.ToSD ()), startx, starty, 1, 1);
 			}
 			else 
-				this.Control.DrawLine (new SD.Pen (Generator.Convert (color)), startx, starty, endx, endy);
+				this.Control.DrawLine (new SD.Pen (color.ToSD ()), startx, starty, endx, endy);
 		}
 
 		public void DrawRectangle (Color color, int x, int y, int width, int height)
 		{
-			Control.DrawRectangle (new SD.Pen (Generator.Convert (color)), x, y, width-1, height-1);
+			Control.DrawRectangle (new SD.Pen (color.ToSD ()), x, y, width-1, height-1);
 		}
 
 		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
-			Control.FillRectangle (new SD.SolidBrush (Generator.Convert (color)), x - 0.5f, y - 0.5f, width, height);
+			Control.FillRectangle (new SD.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
 		}
 
 		public void DrawEllipse (Color color, int x, int y, int width, int height)
 		{
-			Control.DrawEllipse (new SD.Pen (Generator.Convert (color)), x, y, width - 1, height - 1);
+			Control.DrawEllipse (new SD.Pen (color.ToSD ()), x, y, width - 1, height - 1);
 		}
 
 		public void FillEllipse (Color color, int x, int y, int width, int height)
 		{
-			Control.FillEllipse (new SD.SolidBrush (Generator.Convert (color)), x - 0.5f, y - 0.5f, width, height);
+			Control.FillEllipse (new SD.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
 		}
 		
 		public void FillPath (Color color, GraphicsPath path)
 		{
-			Control.FillPath (new SD.SolidBrush (Generator.Convert (color)), path.ControlObject as SD.Drawing2D.GraphicsPath);
+			Control.FillPath (new SD.SolidBrush (color.ToSD ()), path.ControlObject as SD.Drawing2D.GraphicsPath);
 		}
 		
 		public void DrawPath (Color color, GraphicsPath path)
 		{
-			Control.DrawPath (new SD.Pen(Generator.Convert (color)), path.ControlObject as SD.Drawing2D.GraphicsPath);
+			Control.DrawPath (new SD.Pen(color.ToSD ()), path.ControlObject as SD.Drawing2D.GraphicsPath);
 		}
 		
 
@@ -138,21 +138,21 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void DrawImage (Image image, Rectangle source, Rectangle destination)
 		{
-			this.Control.DrawImage ((SD.Image)image.ControlObject, Generator.Convert (destination), Generator.Convert (source), SD.GraphicsUnit.Pixel);
+			this.Control.DrawImage ((SD.Image)image.ControlObject, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
 		}
 
         public void DrawImage(Image image, PointF point)
         {
             this.Control.DrawImage(
                 (SD.Image)image.ControlObject,
-                Generator.Convert(point));
+                point.ToSD());
         }
 
         public void DrawImage(Image image, RectangleF rect)
         {
             this.Control.DrawImage(
                 (SD.Image)image.ControlObject,
-                Generator.Convert(rect));
+                rect.ToSD());
         }
 
         public void DrawImage(Image image, float x, float y, float width, float height)
@@ -166,8 +166,8 @@ namespace Eto.Platform.Windows.Drawing
         {
             this.Control.DrawImage(
                 (SD.Image)image.ControlObject,
-                Generator.Convert(destination), // Note that dest is before source
-                Generator.Convert(source),
+                destination.ToSD(), // Note that dest is before source
+                source.ToSD(),
                 SD.GraphicsUnit.Pixel);
         }
 
@@ -198,7 +198,10 @@ namespace Eto.Platform.Windows.Drawing
 #if FALSE
 			/* BAD (but not really!?)
 			 */
-			return Generator.Convert(this.Control.MeasureString(text, (SD.Font)font.ControlObject, SD.PointF.Empty, StringFormat));
+			var format = new SD.StringFormat (SD.StringFormat.GenericTypographic);
+			format.FormatFlags = SD.StringFormatFlags.MeasureTrailingSpaces | SD.StringFormatFlags.NoWrap; 
+
+			return this.Control.MeasureString(text, (SD.Font)font.ControlObject, SD.PointF.Empty, format).ToEto ();
 			/**
 			if (string.IsNullOrEmpty(text)) return Size.Empty;
 			
@@ -223,8 +226,7 @@ namespace Eto.Platform.Windows.Drawing
                 !string.IsNullOrEmpty(text))
             {
                 var sdFont =
-                    Eto.Platform.Windows.Generator.Convert(
-                        font);
+                    font.ToSD();
 
                 var graphics = this.Control;
 
@@ -239,7 +241,7 @@ namespace Eto.Platform.Windows.Drawing
                 var regions =
                     graphics.MeasureCharacterRanges(
                         text,
-                        Eto.Platform.Windows.Generator.Convert(font),
+                        sdFont,
                         new SD.Rectangle(0, 0, 10000, 10000),
                         StringFormat);
 
@@ -306,7 +308,7 @@ namespace Eto.Platform.Windows.Drawing
             get
             {
                 return new Matrix(
-                    Generator.Current,
+                    Eto.Platform.Windows.Generator.Current,
                     new MatrixHandler(
                         this.Control.Transform));
             }
@@ -362,7 +364,7 @@ namespace Eto.Platform.Windows.Drawing
 
         public void SetClip(Graphics graphics)
         {
-            this.Control.SetClip(Generator.Convert(graphics));
+            this.Control.SetClip(graphics.ToSD());
         }
 
 

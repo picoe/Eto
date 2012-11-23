@@ -22,14 +22,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				if (Widget == null)
 					return;
-				//if (!WantsLayer) {
-					dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
-					Drawable.Update (Generator.ConvertF (dirtyRect));
-				/*} else {
-					var rects = GetRectsBeingDrawn??
-					//rect.Y = this.Frame.Height - rect.Y - rect.Height;
-					//Drawable.Update (Generator.ConvertF (rect));
-				}*/
+				dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
+				if (dirtyRect.X % 1.0f > 0f)
+					dirtyRect.Width += 1;
+				if (dirtyRect.Y % 1.0f > 0f)
+					dirtyRect.Height += 1;
+				Drawable.Update (Rectangle.Ceiling (Eto.Platform.Conversions.ToEto (dirtyRect)));
 			}
 			
 			public bool CanFocus { get; set; }

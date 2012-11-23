@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Eto.Drawing;
+using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Drawing
 {
@@ -83,6 +84,7 @@ namespace Eto.Platform.iOS.Drawing
 			IntPtr ptr = bitmapData.Data;
 			Marshal.Copy(ptr, Control, 0, Control.Length);
 			Marshal.FreeHGlobal(ptr);
+			UpdateBitmap (new Rectangle(this.Size));
 		}
 
 		public Palette Palette
@@ -104,7 +106,7 @@ namespace Eto.Platform.iOS.Drawing
 		}
 
 
-		public override void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		void UpdateBitmap (Rectangle source, bool flipped = false)
 		{
 			var bd = bmp.Lock();
 			
@@ -115,7 +117,7 @@ namespace Eto.Platform.iOS.Drawing
 					var dest = (byte*)bd.Data;
 					var src = pSrc;
 					var scany = rowStride;
-					if (graphics.Flipped)
+					if (flipped)
 					{
 						src += Control.Length - scany;
 						scany = -scany;
@@ -123,7 +125,7 @@ namespace Eto.Platform.iOS.Drawing
 					
 					dest += source.Top * bd.ScanWidth;
 					dest += source.Left * sizeof(uint);
-
+					
 					src += source.Top * scany;
 					src += source.Left;
 					
@@ -145,7 +147,10 @@ namespace Eto.Platform.iOS.Drawing
 				}
 			}
 			bmp.Unlock(bd);
+		}
 
+		public override void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		{
 			bmp.DrawImage(graphics, source, destination);
 		}
 		
@@ -157,6 +162,11 @@ namespace Eto.Platform.iOS.Drawing
 				bmp.Dispose();
 				bmp = null;
 			}
+		}
+
+		public override UIImage GetUIImage ()
+		{
+			return bmp.GetUIImage ();
 		}
 	}
 }

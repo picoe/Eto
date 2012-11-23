@@ -112,9 +112,9 @@ namespace Eto.Platform.Windows.Drawing
 			{
 				var quantizer = new OctreeQuantizer (255, 8);
 				var yummygif = quantizer.Quantize(Control);
-				yummygif.Save(stream, Generator.Convert(format));
+				yummygif.Save(stream, format.ToSD ());
 			}
-			else  Control.Save(stream, Generator.Convert(format));
+			else  Control.Save(stream, format.ToSD ());
 		}
 
         public byte[] ToPNGByteArray()
@@ -168,8 +168,7 @@ namespace Eto.Platform.Windows.Drawing
         public Color GetPixel(int x, int y)
         {
             return 
-                Generator.Convert(
-                    this.Control.GetPixel(x, y));
+                this.Control.GetPixel(x, y).ToEto();
         }
 
         public void Create(int width, int height)

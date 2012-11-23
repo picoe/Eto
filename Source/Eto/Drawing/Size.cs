@@ -75,7 +75,17 @@ namespace Eto.Drawing
 		{
 			return new Size (Math.Abs (size.Width), Math.Abs (size.Height));
 		}
-		
+
+		/// <summary>
+		/// Size with width and height with a maximum int value
+		/// </summary>
+		public static readonly Size MaxValue = new Size (Int32.MaxValue, Int32.MaxValue);
+
+		/// <summary>
+		/// Size with width and height with a minimum int value
+		/// </summary>
+		public static readonly Size MinValue = new Size (Int32.MinValue, Int32.MinValue);
+
 		/// <summary>
 		/// Initializes a new Size class with the specified width and height
 		/// </summary>

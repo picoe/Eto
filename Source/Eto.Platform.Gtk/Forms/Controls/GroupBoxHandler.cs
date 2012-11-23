@@ -7,11 +7,14 @@ namespace Eto.Platform.GtkSharp
 {
 	public class GroupBoxHandler : GtkContainer<Gtk.Frame, GroupBox>, IGroupBox
 	{
-		Font font;
-
 		public GroupBoxHandler ()
 		{
 			Control = new Gtk.Frame ();
+		}
+
+		protected override Gtk.Widget FontControl
+		{
+			get { return Control.LabelWidget; }
 		}
 
 		public override object ContainerObject {
@@ -26,7 +29,7 @@ namespace Eto.Platform.GtkSharp
 		public override Size ClientSize {
 			get {
 				if (Control.Visible && Control.Child != null)
-					return Generator.Convert (Control.Child.Allocation.Size);
+					return Control.Child.Allocation.Size.ToEto ();
 				else {
 					var label = Control.LabelWidget;
 					var size = base.Size;
@@ -41,18 +44,6 @@ namespace Eto.Platform.GtkSharp
 				size.Height += label.Allocation.Height + 10;
 				size.Width += 10;
 				base.Size = size;
-			}
-		}
-
-		public override Eto.Drawing.Font Font {
-			get { return font; }
-			set {
-				font = value;
-				if (font != null) {
-					var fontHandler = (FontHandler)font.Handler;
-					Control.LabelWidget.ModifyFont (fontHandler.Control);
-				} else 
-					Control.LabelWidget.ModifyFont (null);
 			}
 		}
 

@@ -60,11 +60,25 @@ namespace Eto.Platform.Windows
 		Font font;
 		Cursor cursor;
 		string tooltip;
-		Size desiredSize;
+		Size desiredSize = new Size(-1, -1);
 		protected bool XScale { get; set; }
 		protected bool YScale { get; set; }
 
-		public virtual Size DesiredSize { get { return desiredSize; } }
+		public virtual Size? DefaultSize { get { return null; } }
+
+		public virtual Size DesiredSize
+		{
+			get
+			{
+				var size = desiredSize;
+				var defSize = DefaultSize;
+				if (defSize != null) {
+					if (size.Width == -1) size.Width = defSize.Value.Width;
+					if (size.Height == -1) size.Height = defSize.Value.Height;
+				}
+				return size;
+			}
+		}
 
 		public virtual SWF.Control ContainerControl
 		{
@@ -88,7 +102,7 @@ namespace Eto.Platform.Windows
 			var size = this.DesiredSize;
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
-			Control.MinimumSize = Generator.Convert (size);
+			Control.MinimumSize = size.ToSD ();
 		}
 
 		public virtual void SetScale (bool xscale, bool yscale)
@@ -98,20 +112,24 @@ namespace Eto.Platform.Windows
 			CalculateMinimumSize ();
 		}
 
+		public void SetScale ()
+		{
+			SetScale (XScale, YScale);
+		}
+
 		public override void AttachEvent (string handler)
 		{
             Action<Action<DragEventArgs>, SWF.DragEventArgs>
                 handleDragEvent = (f, e) =>
                 {
                     var e1 =
-                        Generator.Convert(e);
+                        e.ToEto();
 
                     // call the function
                     f(e1);
 
                     e.Effect =
-                        Generator.Convert(
-                            e1.Effect);
+                        e1.Effect.ToSWF();
                 };
 
 
@@ -186,20 +204,20 @@ namespace Eto.Platform.Windows
             case Eto.Forms.DragDropInputSource.GiveFeedbackEvent:
                 Control.GiveFeedback += (s, e) =>
                     Widget.DragDropInputSource.OnGiveFeedback(
-                        Generator.Convert(e));
+                        e.ToEto());
                 break;
             case Eto.Forms.DragDropInputSource.QueryContinueDragEvent:
                 Control.QueryContinueDrag += (s, e) =>
                     // TODO: convert the result back to SWF
                     Widget.DragDropInputSource.OnQueryContinueDrag(
-                        Generator.Convert(e));
+                        e.ToEto());
                 break;
             }
 		}
 
         void Control_MouseWheel(object sender, SWF.MouseEventArgs e)
         {
-            Widget.OnMouseDoubleClick(Generator.Convert(e));
+            Widget.OnMouseDoubleClick(e.ToEto());
         }
 
         void Control_MouseHover(object sender, EventArgs e)
@@ -219,27 +237,27 @@ namespace Eto.Platform.Windows
 
         void Control_Click(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            Widget.OnMouseClick(Generator.Convert(e));
+            Widget.OnMouseClick(e.ToEto());
         }
         
         void Control_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-            Widget.OnMouseDoubleClick(Generator.Convert(e));
+            Widget.OnMouseDoubleClick(e.ToEto());
 		}
 
 		void Control_MouseUp (Object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseUp(Generator.Convert(e));
+            Widget.OnMouseUp(e.ToEto());
 		}
 
 		void Control_MouseMove (Object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseMove(Generator.Convert(e));
+            Widget.OnMouseMove(e.ToEto());
 		}
 
 		void Control_MouseDown (object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseDown(Generator.Convert(e));
+            Widget.OnMouseDown(e.ToEto());
 		}
 
 		public virtual string Text {
@@ -248,10 +266,10 @@ namespace Eto.Platform.Windows
 		}
 
 		public virtual Size Size {
-			get { return Generator.Convert (ContainerControl.Size); }
+			get { return ContainerControl.Size.ToEto (); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.Size = Generator.Convert (value);
+				ContainerControl.Size = value.ToSD ();
 				desiredSize = value;
 				CalculateMinimumSize ();
 			}
@@ -261,7 +279,7 @@ namespace Eto.Platform.Windows
 			get { return new Size (ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.ClientSize = Generator.Convert (value);
+				ContainerControl.ClientSize = value.ToSD ();
 			}
 		}
 
@@ -289,19 +307,19 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void Invalidate ()
+		public virtual void Invalidate ()
 		{
 			Control.Invalidate (true);
 		}
 
-		public void Invalidate (Rectangle rect)
+		public virtual void Invalidate (Rectangle rect)
 		{
-			Control.Invalidate (Generator.Convert (rect), true);
+			Control.Invalidate (rect.ToSD (), true);
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Generator.Convert (Control.BackColor); }
-			set { Control.BackColor = Generator.Convert (value); }
+			get { return Control.BackColor.ToEto (); }
+			set { Control.BackColor = value.ToSD (); }
 		}
 
 		public Graphics CreateGraphics ()
@@ -457,8 +475,14 @@ namespace Eto.Platform.Windows
 		}
 		
 		public Font Font {
-			get { return font; }
-			set {
+			get
+			{
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Font));
+				return font;
+			}
+			set
+			{
 				font = value;
 				if (font != null)
 					this.Control.Font = font.ControlObject as System.Drawing.Font;
@@ -489,11 +513,10 @@ namespace Eto.Platform.Windows
             object data, 
             DragDropEffects allowedEffects)
         {
-            return
-                Generator.Convert(
-                    this.Control.DoDragDrop(
-                    data,
-                    Generator.Convert(allowedEffects)));            
+            return                
+                this.Control.DoDragDrop(
+                data,
+                allowedEffects.ToSWF()).ToEto();
         }
 
 
@@ -511,12 +534,12 @@ namespace Eto.Platform.Windows
 
         public Point MousePosition
         {
-            get { return Generator.Convert(SWF.Control.MousePosition); }
+            get { return SWF.Control.MousePosition.ToEto(); }
         }
 
         public Point Location
         {
-            get { return Generator.Convert(this.Control.Location); }
+            get { return this.Control.Location.ToEto(); }
         }
 
         public void SetControl(object control)

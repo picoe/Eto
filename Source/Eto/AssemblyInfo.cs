@@ -8,7 +8,7 @@ using System.Windows.Markup;
 [assembly: AssemblyDescription("Eto.Forms class libraries")]
 
 #if XAML
-[assembly: XmlnsDefinition ("http://schema.picoe.ca/eto.forms", "Eto.Forms")]
-[assembly: XmlnsDefinition ("http://schema.picoe.ca/eto.forms", "Eto.Xaml.Extensions")]
-[assembly: XmlnsPrefix ("http://schema.picoe.ca/eto.forms", "eto")]
+[assembly: XmlnsDefinition (Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Forms")]
+[assembly: XmlnsDefinition (Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Xaml.Extensions")]
+[assembly: XmlnsPrefix (Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "eto")]
 #endif

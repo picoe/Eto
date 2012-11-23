@@ -22,7 +22,7 @@ namespace Eto.Platform.Windows.Drawing
 		
 		public void LineTo (Point point)
 		{
-			this.Control.AddLine (Generator.Convert (position), Generator.Convert (point));
+			this.Control.AddLine (position.ToSD (), point.ToSD ());
             position = point;
 		}
 		
@@ -33,7 +33,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void AddLine (Point point1, Point point2)
 		{
-			this.Control.AddLine (Generator.Convert (point1), Generator.Convert (point2));
+			this.Control.AddLine (point1.ToSD (), point2.ToSD ());
 			position = point2;
 		}
 
@@ -46,7 +46,7 @@ namespace Eto.Platform.Windows.Drawing
         {
             this.Control.Transform(
                 ToTranslationMatrix(
-                    Generator.Convert(point)));
+                    point.ToSD()));
         }
 
         public static SD.Drawing2D.Matrix ToTranslationMatrix(SD.PointF p)
@@ -88,13 +88,13 @@ namespace Eto.Platform.Windows.Drawing
 
         public void AddCurve(PointF[] points)
         {
-            this.Control.AddCurve(Generator.Convert(points));
+            this.Control.AddCurve(points.ToSD());
         }
 
         public void AddLines(PointF[] points)
         {
             this.Control.AddLines(
-                Generator.Convert(points));
+                points.ToSD());
         }
 
         public void AddLine(PointF point1, PointF point2)
@@ -138,17 +138,17 @@ namespace Eto.Platform.Windows.Drawing
 
         public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
         {
-            Control.AddArc(Generator.Convert(rect), startAngle, sweepAngle);
+            Control.AddArc(rect.ToSD(), startAngle, sweepAngle);
         }
 
         public void AddBeziers(Point[] points)
         {
-            Control.AddBeziers(Generator.Convert(points));
+            Control.AddBeziers(points.ToSD());
         }
 
         public void AddEllipse(RectangleF rect)
         {
-            Control.AddEllipse(Generator.Convert(rect));
+            Control.AddEllipse(rect.ToSD());
         }
 
         public void AddEllipse(float x, float y, float width, float height)

@@ -27,7 +27,7 @@ namespace Eto
 				widget,
 				widgetPropertyName,
 				mode
-			);
+				);
 			widget.Bindings.Add (binding);
 			return binding;
 		}
@@ -46,7 +46,7 @@ namespace Eto
 				sourceBinding,
 				new ObjectBinding(widget, widgetPropertyName),
 				mode
-			);
+				);
 			widget.Bindings.Add (binding);
 			return binding;
 		}
@@ -63,11 +63,15 @@ namespace Eto
 		/// <param name="widgetPropertyName">Property on the widget to update</param>
 		/// <param name="dataContextPropertyName">Property on the widget's <see cref="InstanceWidget.DataContext"/> to bind to the widget</param>
 		/// <param name="mode">Mode of the binding</param>
+		/// <param name="defaultWidgetValue">Default value to set to the widget when the value from the DataContext is null</param>
+		/// <param name="defaultContextValue">Default value to set to the DataContext property when the widget value is null</param>
 		/// <returns>A new instance of the DualBinding class that is used to control the binding</returns>
-		public static DualBinding Bind (this InstanceWidget widget, string widgetPropertyName, string dataContextPropertyName, DualBindingMode mode = DualBindingMode.TwoWay)
+		public static DualBinding Bind (this InstanceWidget widget, string widgetPropertyName, string dataContextPropertyName, DualBindingMode mode = DualBindingMode.TwoWay, object defaultWidgetValue = null, object defaultContextValue = null)
 		{
 			var contextBinding = new ObjectBinding(widget, "DataContext");
 			var valueBinding = new ObjectBinding(contextBinding.DataValue, dataContextPropertyName);
+			valueBinding.GettingNullValue = defaultWidgetValue;
+			valueBinding.SettingNullValue = defaultContextValue;
 			contextBinding.DataValueChanged += delegate {
 				valueBinding.DataItem = contextBinding.DataValue;
 			};

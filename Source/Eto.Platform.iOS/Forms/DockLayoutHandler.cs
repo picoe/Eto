@@ -10,10 +10,15 @@ namespace Eto.Platform.iOS.Forms
 	{
 		Control child;
 		Padding padding;
+
+		public DockLayoutHandler ()
+		{
+			DisposeControl = false;
+		}
 		
 		public override UIView Control {
 			get {
-				return (UIView)Widget.Container.ContainerObject;
+				return Widget.Container != null ? (UIView)Widget.Container.ContainerObject : null;
 			}
 			protected set {
 				base.Control = value;
@@ -24,16 +29,17 @@ namespace Eto.Platform.iOS.Forms
 			get { return padding; }
 			set {
 				padding = value;
-				SetChildFrame();
+				if (this.Widget.Loaded)
+					Layout ();
 			}
 		}
 		
-		public override Eto.Drawing.Size GetPreferredSize ()
+		public override Eto.Drawing.Size GetPreferredSize (Size availableSize)
 		{
-			return Size.Empty;
+			return child.GetPreferredSize (availableSize);
 		}
-		
-		void SetChildFrame()
+
+		public override void LayoutChildren ()
 		{
 			if (child == null) return;
 			
@@ -41,7 +47,7 @@ namespace Eto.Platform.iOS.Forms
 			
 			UIView childControl = (UIView)child.ControlObject;
 			var frame = parent.Frame;
-			
+
 			frame.Y = padding.Top;
 			frame.X = padding.Left;
 			frame.Width -= padding.Horizontal;
@@ -49,7 +55,17 @@ namespace Eto.Platform.iOS.Forms
 			
 			childControl.Frame = frame;
 		}
-		
+
+		public override void OnLoadComplete ()
+		{
+			base.OnLoadComplete ();
+			if (!this.Control.Frame.IsEmpty)
+				Layout ();
+			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
+				Layout ();
+			};
+		}
+
 		public Control Content {
 			get {
 				return child;
@@ -61,11 +77,12 @@ namespace Eto.Platform.iOS.Forms
 				if (value != null)
 				{
 					child = value;
-					var childControl = (UIView)child.ControlObject;
-					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleWidth | UIViewAutoresizing.FlexibleHeight;
-					SetChildFrame();
-					UIView parent = this.Control;
-					parent.AddSubview(childControl);
+					var childControl = child.GetContainerView ();
+					childControl.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+					if (this.Widget.Loaded)
+						Layout ();
+
+					Widget.Container.AddSubview (child, true);
 				}
 				
 			}

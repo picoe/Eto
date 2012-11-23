@@ -6,9 +6,15 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class PanelHandler : iosContainer<UIView, Panel>, IPanel
 	{
-		public PanelHandler ()
+		public override UIView CreateControl ()
 		{
-			Control = new UIView();
+			return new UIView();
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+			Control.BackgroundColor = UIColor.White;
 		}
 	}
 }

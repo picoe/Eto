@@ -239,7 +239,7 @@ namespace Eto.Platform.Mac.Drawing
 				if (rep != null)
 					return new Size(rep.PixelsWide, rep.PixelsHigh);
 				else
-					return Generator.ConvertF (Control.Size);
+					return Control.Size.ToEtoSize();
 			}
 		}
 		
@@ -264,8 +264,8 @@ namespace Eto.Platform.Mac.Drawing
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
 			var nsimage = this.Control;
-			var sourceRect = graphics.Translate (Generator.ConvertF (source), nsimage.Size.Height);
-			var destRect = graphics.TranslateView (Generator.ConvertF (destination), false);
+			var sourceRect = graphics.Translate (source.ToSDRectangleF (), nsimage.Size.Height);
+			var destRect = graphics.TranslateView (destination.ToSDRectangleF (), false);
 			if (alpha)
 				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
 			else

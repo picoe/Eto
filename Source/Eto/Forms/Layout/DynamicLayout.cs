@@ -8,9 +8,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-#if XAML
 	[ContentProperty("Rows")]
-#endif
 	public class DynamicLayout : Layout
 	{
 		DynamicTable topTable;

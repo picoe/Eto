@@ -7,9 +7,19 @@ using System.Text;
 
 namespace Eto.Drawing
 {
+	/// <summary>
+	/// Converter to convert a string to an <see cref="Image"/>
+	/// </summary>
 	public class ImageConverter : TypeConverter
 	{
+		/// <summary>
+		/// Prefix to use to load an image from a resource of an assembly
+		/// </summary>
 		public const string ResourcePrefix = "resource:";
+
+		/// <summary>
+		/// Prefix to use to load an image from a file path
+		/// </summary>
 		public const string FilePrefix = "file:";
 
 		static bool IsIcon (string fileName)
@@ -17,6 +27,12 @@ namespace Eto.Drawing
 			return fileName.EndsWith (".ico");
 		}
 
+		/// <summary>
+		/// Gets a value indicating that this converter can convert from the source type to an image
+		/// </summary>
+		/// <param name="context">Conversion context</param>
+		/// <param name="sourceType">Type to convert from</param>
+		/// <returns>True if this converter can handle converting from the specified <paramref name="sourceType"/> to an image</returns>
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)
 		{
 			return sourceType == typeof (string) || sourceType == typeof(NamespaceInfo) || sourceType == typeof(Stream) || base.CanConvertFrom (context, sourceType);
@@ -59,6 +75,13 @@ namespace Eto.Drawing
 			}
 		}
 
+		/// <summary>
+		/// Performs the conversion from the given <paramref name="value"/> to an <see cref="Image"/> object
+		/// </summary>
+		/// <param name="context">Conversion context</param>
+		/// <param name="culture">Culture to perform the conversion</param>
+		/// <param name="value">Value to convert to an image</param>
+		/// <returns>A new instance of an image, or null if it cannot be converted</returns>
 		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
 		{
 			var ns = value as NamespaceInfo;

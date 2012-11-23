@@ -5,7 +5,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS
 {
-	public class EtoEnvironmentHandler : IEtoEnvironment
+	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
 		void Convert (EtoSpecialFolder folder, out NSSearchPathDirectory dir, out NSSearchPathDomain domain)
 		{
@@ -34,12 +34,6 @@ namespace Eto.Platform.iOS
 			var path = manager.GetUrl(dir, domain, null, false, out error);
 			return path.Path;
 		}
-
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
 	}
 }
 

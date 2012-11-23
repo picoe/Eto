@@ -35,14 +35,12 @@ namespace Eto.Platform.Windows.Drawing
             get
             {
                 return 
-                    Generator.Convert(
-                        this.Control.Color);
+                    this.Control.Color.ToEto();
             }
             set
             {
                 this.Control.Color =
-                    Generator.Convert(
-                        value);
+                    value.ToSD();
             }
         }
 
@@ -63,7 +61,7 @@ namespace Eto.Platform.Windows.Drawing
         {
             this.Control =
                 new SD.Pen(
-                    Generator.Convert(color),
+                    color.ToSD(),
                     width);
 
             this.Control.Alignment = (SD.Drawing2D.PenAlignment)alignment;

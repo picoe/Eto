@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class TextBoxSection : Panel
+	public class TextBoxSection : Scrollable
 	{
 		public TextBoxSection ()
 		{
@@ -15,6 +15,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label { Text = "Read Only" }, ReadOnly ());
 			layout.AddRow (new Label { Text = "Disabled" }, Disabled ());
 			layout.AddRow (new Label { Text = "Placeholder" }, Placeholder ());
+			layout.AddRow (new Label { Text = "Limit Length" }, LimitLength ());
 
 			// growing space at end is blank!
 			layout.Add (null);
@@ -43,8 +44,15 @@ namespace Eto.Test.Sections.Controls
 
 		Control Disabled ()
 		{
-			var control = Default ();
-			control.Enabled = false;
+			var control = new TextBox { Text = "Disabled Text", Enabled = false };
+			LogEvents (control);
+			return control;
+		}
+
+		Control LimitLength ()
+		{
+			var control = new TextBox { Text = "Limited to 30 characters", MaxLength = 30 };
+			LogEvents (control);
 			return control;
 		}
 

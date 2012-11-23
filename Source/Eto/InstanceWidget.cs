@@ -56,7 +56,7 @@ namespace Eto
 #endif
 	public abstract class InstanceWidget : Widget
 	{
-		IInstanceWidget handler;
+		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
 		string style;
 		object dataContext;
 
@@ -65,8 +65,8 @@ namespace Eto
 		/// </summary>
 		public string ID
 		{
-			get { return handler.ID; }
-			set { handler.ID = value; }
+			get { return Handler.ID; }
+			set { Handler.ID = value; }
 		}
 		
 		/// <summary>
@@ -171,7 +171,6 @@ namespace Eto
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
-			this.handler = (IInstanceWidget)Handler;
 		}
 
 		/// <summary>
@@ -183,7 +182,6 @@ namespace Eto
 		protected InstanceWidget (Generator generator, Type handlerType, bool initialize = true)
 			: base(generator, handlerType, initialize)
 		{
-			this.handler = (IInstanceWidget)Handler;
 		}
 
 		/// <summary>
@@ -199,7 +197,7 @@ namespace Eto
 		/// </remarks>
 		public object ControlObject
 		{
-			get { return handler.ControlObject; }
+			get { return Handler.ControlObject; }
 		}
 
 		/// <summary>
@@ -234,7 +232,7 @@ namespace Eto
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
 		public void HandleEvent (string id)
 		{
-			handler.HandleEvent (id);
+			Handler.HandleEvent (id);
 		}
 
 		/// <summary>

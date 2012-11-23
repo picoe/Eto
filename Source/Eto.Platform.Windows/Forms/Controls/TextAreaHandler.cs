@@ -3,15 +3,21 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Runtime.InteropServices;
+using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
 	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea>, ITextArea
 	{
 		int? lastCaretIndex;
-		swf.Panel container;
+		swf.TableLayoutPanel container;
 		public class MyTextBox : swf.RichTextBox
 		{
+		}
+
+		public override Size? DefaultSize
+		{
+			get { return TextArea.DefaultSize; }
 		}
 
 		public override swf.Control ContainerControl
@@ -28,11 +34,12 @@ namespace Eto.Platform.Windows
 				BorderStyle = swf.BorderStyle.None,
 				ScrollBars = swf.RichTextBoxScrollBars.Both
 			};
-			container = new swf.Panel {
-				BorderStyle = swf.BorderStyle.FixedSingle,
-				Size = Generator.Convert (TextArea.DefaultSize)
+			container = new swf.TableLayoutPanel {
+				BorderStyle = swf.BorderStyle.FixedSingle
 			};
-			container.Controls.Add (Control);
+			container.ColumnStyles.Add (new swf.ColumnStyle (swf.SizeType.AutoSize, 1));
+			container.RowStyles.Add (new swf.RowStyle (swf.SizeType.AutoSize, 1));
+			container.Controls.Add (Control, 0, 0);
 		}
 
 		public override void AttachEvent (string handler)
@@ -93,7 +100,7 @@ namespace Eto.Platform.Windows
 		public Range Selection
 		{
 			get { return new Range (Control.SelectionStart, Control.SelectionLength); }
-			set { Control.Select (value.Location, value.Length); }
+			set { Control.Select (value.Start, value.Length); }
 		}
 
 		public void SelectAll ()

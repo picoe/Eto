@@ -6,21 +6,15 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public class MessageBoxHandler : IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
 	{
 		NSAlert alert;
      
 		public string Text { get; set; }
 
 		public string Caption { get; set; }
-
-		public Widget Widget { get; set; }
 		
 		public MessageBoxType Type { get; set; }
-     
-		public void Initialize ()
-		{
-		}
      
 		void Ended ()
 		{

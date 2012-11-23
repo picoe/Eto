@@ -177,8 +177,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Range Selection
 		{
-			get { return Generator.Convert (Control.SelectedRange); }
-			set { Control.SelectedRange = Generator.Convert (value); }
+			get { return Control.SelectedRange.ToEto (); }
+			set { Control.SelectedRange = value.ToNS (); }
 		}
 
 		public void SelectAll ()

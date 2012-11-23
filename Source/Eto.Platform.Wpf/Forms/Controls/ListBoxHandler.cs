@@ -56,7 +56,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public int SelectedIndex
 		{
 			get { return Control.SelectedIndex; }
-			set { Control.SelectedIndex = value; }
+			set { 
+				Control.SelectedIndex = value;
+				if (value >= 0) {
+					var item = store.AsEnumerable ().Skip (value).FirstOrDefault ();
+					Control.ScrollIntoView(item);
+				}
+			}
 		}
 
 		public ContextMenu ContextMenu

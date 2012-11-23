@@ -3,18 +3,21 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
 	public interface IWpfLayout
 	{
 		void AutoSize ();
+		sw.Size PreferredSize { get; }
 	}
 
-	public class WpfLayout<T, W> : WidgetHandler<T, W>, ILayout, IWpfLayout
+	public abstract class WpfLayout<T, W> : WidgetHandler<T, W>, ILayout, IWpfLayout
 		where T: System.Windows.FrameworkElement
 		where W: Layout
 	{
+		public abstract sw.Size PreferredSize { get; }
 
 		public virtual void AutoSize ()
 		{

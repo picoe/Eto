@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class TreeGridViewSection : Panel
+	public class TreeGridViewSection : Scrollable
 	{
 		int expanded;
 		CheckBox allowCollapsing;

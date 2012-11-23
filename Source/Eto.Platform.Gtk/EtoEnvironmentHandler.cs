@@ -5,9 +5,8 @@ using System.IO;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class EtoEnvironmentHandler : IEtoEnvironment, IWidget
+	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
-		
 		Environment.SpecialFolder Convert (EtoSpecialFolder folder)
 		{
 			switch (folder) {
@@ -18,7 +17,6 @@ namespace Eto.Platform.GtkSharp
 			default:
 				throw new NotSupportedException ();
 			}
-
 		}
 
 		public string GetFolderPath (EtoSpecialFolder folder)
@@ -30,16 +28,6 @@ namespace Eto.Platform.GtkSharp
 				return Environment.GetFolderPath (Convert (folder));
 			}
 		}
-
-		#region IWidget implementation
-		
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
-		
-		#endregion
 	}
 }
 
