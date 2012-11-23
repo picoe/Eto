@@ -217,12 +217,7 @@ namespace Eto.Platform.Wpf.Drawing
 
         public float SizeInPoints
         {
-            get { throw new NotImplementedException(); }
-        }
-
-        public string FontFamily
-        {
-            get { throw new NotImplementedException(); }
+            get { return (float) Size; }
         }
 
         public float AscentInPixels
@@ -242,7 +237,7 @@ namespace Eto.Platform.Wpf.Drawing
 
         public float SizeInPixels
         {
-            get { throw new NotImplementedException(); }
+            get { return (float) PointsToPixels(SizeInPoints); }
         }
 
         public IFont Clone()
