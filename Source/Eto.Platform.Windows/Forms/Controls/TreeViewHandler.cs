@@ -103,28 +103,28 @@ namespace Eto.Platform.Windows.Forms.Controls
                     Control.AfterLabelEdit += (s, e) =>
                     {
                         this.Widget.OnAfterLabelEdit(
-                            Generator.Convert(e));
+                            e.ToEto());
                     };
                     break;
                 case TreeView.BeforeLabelEditEvent:
                     Control.BeforeLabelEdit += (s, e) =>
                     {
                         this.Widget.OnBeforeLabelEdit(
-                            Generator.Convert(e));
+                            e.ToEto());
                     };
                     break;
                 case TreeView.NodeMouseClickEvent:
                     Control.NodeMouseClick += (s, e) =>
                     {
                         this.Widget.OnNodeMouseClick(
-                            Generator.Convert(e));
+                            e.ToEto());
                     };
                     break;
                 case TreeView.ItemDragEvent:
                     Control.ItemDrag += (s, e) =>
                     {
                         this.Widget.OnItemDrag(
-                            Generator.Convert(e));
+                            e.ToEto());
                     };
                     break;
                     
@@ -213,9 +213,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 
         public ITreeItem GetNodeAt(Point targetPoint)
         {
-            return Generator.Convert(
+            return 
                 this.Control.GetNodeAt(
-                    Generator.Convert(targetPoint)));
+                    targetPoint.ToSD())
+                    .ToEto();
         }
 
 

@@ -39,7 +39,17 @@ namespace Eto.Platform.Windows.Drawing
 			Control = font;
 		}
 
-		public void Create (string fontName, float size, FontStyle style)
+        public void Create()
+        {
+            var f = this.Control; // this creates the font, bizarrely
+        }
+
+        public void Create(string fontFamily, float sizeInPoints)
+        {
+            Control = new SD.Font(fontFamily, sizeInPoints);
+        }
+
+        public void Create(string fontName, float size, FontStyle style)
 		{
 			Control = new SD.Font (fontName, size, style.ToSD ());
 		}
@@ -141,5 +151,138 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get { return Control.FontFamily; }
 		}
-	}
+
+
+        public float ExHeightInPixels
+        {
+            get
+            {
+#if DEBUG
+                // Hard code Ahem font characteristics
+                // for testability.
+                if (Control != null &&
+                    Control.FontFamily != null &&
+                    Control.FontFamily.Name == "Ahem")
+                    return
+                        SizeInPixels * 0.8f;
+#endif
+                return
+                    SizeInPixels * 0.5f;
+            }
+        }
+
+        /// <summary>
+        /// Gets the ascent of the font
+        /// </summary>
+        /// <param name="f"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Font metrics from http://msdn.microsoft.com/en-us/library/xwf9s90b(VS.71).aspx
+        /// </remarks>
+        private float? ascentInPixels;
+        public float AscentInPixels
+        {
+            get
+            {
+                if (ascentInPixels == null)
+                    ascentInPixels =
+                        Control != null
+                        ? SizeInPixels
+                        * Control.FontFamily.GetCellAscent(
+                            Control.Style)
+                        / Control.FontFamily.GetEmHeight(
+                            Control.Style)
+                        : 0f;
+
+                return
+                    ascentInPixels == null
+                    ? 0f
+                    : ascentInPixels.Value;
+            }
+        }
+
+        /// <summary>
+        /// Gets the descent of the font
+        /// </summary>
+        /// <param name="f"></param>
+        /// <returns></returns>
+        /// <remarks>
+        /// Font metrics from http://msdn.microsoft.com/en-us/library/xwf9s90b(VS.71).aspx
+        /// </remarks>
+        private float? descentInPixels;
+        public float DescentInPixels
+        {
+            get
+            {
+                if (descentInPixels == null)
+                    descentInPixels =
+                        Control != null
+                        ? SizeInPixels
+                        * Control.FontFamily.GetCellDescent(
+                            Control.Style)
+                        / Control.FontFamily.GetEmHeight(
+                            Control.Style)
+                        : 0f;
+
+                return
+                    descentInPixels == null
+                    ? 0f
+                    : descentInPixels.Value;
+            }
+        }
+
+        private float? heightInPixels;
+        public float HeightInPixels
+        {
+            get
+            {
+                if (heightInPixels == null &&
+                    Control != null)
+                    heightInPixels = Control.Height;
+
+                return
+                    heightInPixels == null
+                    ? 0f
+                    : heightInPixels.Value;
+            }
+        }
+
+        private float? sizeInPoints;
+        public float SizeInPoints
+        {
+            get
+            {
+                if (sizeInPoints == null &&
+                    Control != null)
+                    sizeInPoints =
+                        Control.SizeInPoints;
+
+                return sizeInPoints == null
+                    ? 0f
+                    : sizeInPoints.Value;
+            }
+        }
+
+        private float? sizeInPixels;
+        public float SizeInPixels
+        {
+            get
+            {
+                if (sizeInPixels == null &&
+                    Control != null)
+                    sizeInPixels =
+                        Control.SizeInPoints
+                        * Constants.PointsToPixels;
+
+                return sizeInPixels == null
+                    ? 0f
+                    : sizeInPixels.Value;
+            }
+        }
+
+        public IFont Clone()
+        {
+            throw new NotImplementedException();
+        }
+    }
 }

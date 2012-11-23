@@ -145,14 +145,14 @@ namespace Eto.Platform.Windows.Drawing
         {
             this.Control.DrawImage(
                 (SD.Image)image.ControlObject,
-                Generator.Convert(point));
+                point.ToSD());
         }
 
         public void DrawImage(Image image, RectangleF rect)
         {
             this.Control.DrawImage(
                 (SD.Image)image.ControlObject,
-                Generator.Convert(rect));
+                rect.ToSD());
         }
 
         public void DrawImage(Image image, float x, float y, float width, float height)
@@ -166,8 +166,8 @@ namespace Eto.Platform.Windows.Drawing
         {
             this.Control.DrawImage(
                 (SD.Image)image.ControlObject,
-                Generator.Convert(destination), // Note that dest is before source
-                Generator.Convert(source),
+                destination.ToSD(), // Note that dest is before source
+                source.ToSD(),
                 SD.GraphicsUnit.Pixel);
         }
 
@@ -226,8 +226,7 @@ namespace Eto.Platform.Windows.Drawing
                 !string.IsNullOrEmpty(text))
             {
                 var sdFont =
-                    Eto.Platform.Windows.Generator.Convert(
-                        font);
+                    font.ToSD();
 
                 var graphics = this.Control;
 
@@ -242,7 +241,7 @@ namespace Eto.Platform.Windows.Drawing
                 var regions =
                     graphics.MeasureCharacterRanges(
                         text,
-                        Eto.Platform.Windows.Generator.Convert(font),
+                        sdFont,
                         new SD.Rectangle(0, 0, 10000, 10000),
                         StringFormat);
 
@@ -309,7 +308,7 @@ namespace Eto.Platform.Windows.Drawing
             get
             {
                 return new Matrix(
-                    Generator.Current,
+                    Eto.Platform.Windows.Generator.Current,
                     new MatrixHandler(
                         this.Control.Transform));
             }
@@ -365,7 +364,7 @@ namespace Eto.Platform.Windows.Drawing
 
         public void SetClip(Graphics graphics)
         {
-            this.Control.SetClip(Generator.Convert(graphics));
+            this.Control.SetClip(graphics.ToSD());
         }
 
 

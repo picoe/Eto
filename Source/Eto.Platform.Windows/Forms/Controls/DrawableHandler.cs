@@ -79,7 +79,7 @@ namespace Eto.Platform.Windows
                 if (Handler != null &&
                     Handler.Widget != null)
                     Handler.Widget.OnPaint(
-                        new PaintEventArgs(graphics, e.ClipRectangle.ToEto ()));
+                        e.ToEto());
 			}
 			protected override void OnClick(EventArgs e)
 			{
@@ -111,7 +111,7 @@ namespace Eto.Platform.Windows
 
             Control.Drawable =
                 new Eto.Forms.Drawable(
-                        Generator.Current,
+                        Eto.Platform.Windows.Generator.Current,
                         this);
 
             Control.TabStop = true;

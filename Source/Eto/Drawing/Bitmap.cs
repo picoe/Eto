@@ -232,7 +232,7 @@ namespace Eto.Drawing
         public Bitmap(int width, int height, Graphics graphics) :
             this(Generator.Current)
         {
-            handler.Create(width, height, graphics);
+            Handler.Create(width, height, graphics);
         }
 
         /// <summary>
@@ -293,13 +293,13 @@ namespace Eto.Drawing
         public Bitmap(int width, int height) :
             this(Generator.Current)
         {
-            handler.Create(width, height);
+            Handler.Create(width, height);
         }
 
         public Bitmap(Image image) :
             this(Generator.Current)
         {
-            handler.Create(image);
+            Handler.Create(image);
         }
 
 		/// <summary>
@@ -365,7 +365,7 @@ namespace Eto.Drawing
 
         public byte[] ToPNGByteArray()
         {
-            return handler.ToPNGByteArray();
+            return Handler.ToPNGByteArray();
         }
 
         public string ToPNGBase64String()
@@ -387,12 +387,12 @@ namespace Eto.Drawing
             return
                 new Bitmap(
                     this.Generator,
-                    this.handler.Clone());
+                    this.Handler.Clone());
         }
 
         public Color GetPixel(int x, int y)
         {
-            return handler.GetPixel(x, y);
+            return Handler.GetPixel(x, y);
         }
     }
 }

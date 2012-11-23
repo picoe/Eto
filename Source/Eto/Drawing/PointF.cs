@@ -297,16 +297,6 @@ namespace Eto.Drawing
 			return new PointF (point.x - size.Width, point.y - size.Height);
 		}
 
-        public static PointF operator +(PointF point, SizeF size)
-        {
-            return new PointF(point.x + size.Width, point.y + size.Height);
-        }
-
-        public static PointF operator -(PointF point, SizeF size)
-        {
-            return new PointF(point.x - size.Width, point.y - size.Height);
-        }
-
 		/// <summary>
 		/// Operator to add a <paramref name="value"/> to both the X and Y co-ordinates of a point
 		/// </summary>

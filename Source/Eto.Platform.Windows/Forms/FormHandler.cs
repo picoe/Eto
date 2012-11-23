@@ -128,8 +128,8 @@ namespace Eto.Platform.Windows
 
         public Color TransparencyKey
         {
-            get { return Generator.Convert(Control.TransparencyKey); }
-            set { Control.TransparencyKey = Generator.Convert(value); }
+            get { return Control.TransparencyKey.ToEto(); }
+            set { Control.TransparencyKey = value.ToSD(); }
         }
 
 

@@ -388,6 +388,18 @@ namespace Eto.Drawing
 
             return result;
         }
+
+        public new Generator Generator
+        {
+            get
+            {
+                return base.Generator;
+            }
+            set
+            {
+                throw new InvalidOperationException();
+            }
+        }
     }
 
     // Summary:

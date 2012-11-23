@@ -123,14 +123,13 @@ namespace Eto.Platform.Windows
                 handleDragEvent = (f, e) =>
                 {
                     var e1 =
-                        Generator.Convert(e);
+                        e.ToEto();
 
                     // call the function
                     f(e1);
 
                     e.Effect =
-                        Generator.Convert(
-                            e1.Effect);
+                        e1.Effect.ToSWF();
                 };
 
 
@@ -205,20 +204,20 @@ namespace Eto.Platform.Windows
             case Eto.Forms.DragDropInputSource.GiveFeedbackEvent:
                 Control.GiveFeedback += (s, e) =>
                     Widget.DragDropInputSource.OnGiveFeedback(
-                        Generator.Convert(e));
+                        e.ToEto());
                 break;
             case Eto.Forms.DragDropInputSource.QueryContinueDragEvent:
                 Control.QueryContinueDrag += (s, e) =>
                     // TODO: convert the result back to SWF
                     Widget.DragDropInputSource.OnQueryContinueDrag(
-                        Generator.Convert(e));
+                        e.ToEto());
                 break;
             }
 		}
 
         void Control_MouseWheel(object sender, SWF.MouseEventArgs e)
         {
-            Widget.OnMouseDoubleClick(Generator.Convert(e));
+            Widget.OnMouseDoubleClick(e.ToEto());
         }
 
         void Control_MouseHover(object sender, EventArgs e)
@@ -238,27 +237,27 @@ namespace Eto.Platform.Windows
 
         void Control_Click(object sender, System.Windows.Forms.MouseEventArgs e)
         {
-            Widget.OnMouseClick(Generator.Convert(e));
+            Widget.OnMouseClick(e.ToEto());
         }
         
         void Control_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
-            Widget.OnMouseDoubleClick(Generator.Convert(e));
+            Widget.OnMouseDoubleClick(e.ToEto());
 		}
 
 		void Control_MouseUp (Object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseUp(Generator.Convert(e));
+            Widget.OnMouseUp(e.ToEto());
 		}
 
 		void Control_MouseMove (Object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseMove(Generator.Convert(e));
+            Widget.OnMouseMove(e.ToEto());
 		}
 
 		void Control_MouseDown (object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseDown(Generator.Convert(e));
+            Widget.OnMouseDown(e.ToEto());
 		}
 
 		public virtual string Text {
@@ -514,11 +513,10 @@ namespace Eto.Platform.Windows
             object data, 
             DragDropEffects allowedEffects)
         {
-            return
-                Generator.Convert(
-                    this.Control.DoDragDrop(
-                    data,
-                    Generator.Convert(allowedEffects)));            
+            return                
+                this.Control.DoDragDrop(
+                data,
+                allowedEffects.ToSWF()).ToEto();
         }
 
 
@@ -536,12 +534,12 @@ namespace Eto.Platform.Windows
 
         public Point MousePosition
         {
-            get { return Generator.Convert(SWF.Control.MousePosition); }
+            get { return SWF.Control.MousePosition.ToEto(); }
         }
 
         public Point Location
         {
-            get { return Generator.Convert(this.Control.Location); }
+            get { return this.Control.Location.ToEto(); }
         }
 
         public void SetControl(object control)

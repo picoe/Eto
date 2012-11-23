@@ -168,8 +168,7 @@ namespace Eto.Platform.Windows.Drawing
         public Color GetPixel(int x, int y)
         {
             return 
-                Generator.Convert(
-                    this.Control.GetPixel(x, y));
+                this.Control.GetPixel(x, y).ToEto();
         }
 
         public void Create(int width, int height)

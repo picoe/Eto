@@ -28,7 +28,7 @@ namespace Eto.Drawing
 	/// any Image-derived object.
 	/// </remarks>
 	[TypeConverter(typeof(ImageConverter))]
-	public abstract class Image : InstanceWidget, IImage
+	public abstract class Image : InstanceWidget
 	{
 		new IImage Handler { get { return (IImage)base.Handler; } }
 
@@ -59,34 +59,17 @@ namespace Eto.Drawing
 		/// </summary>
 		public Size Size
 		{
-            get { return Handler != null ? handler.Size : Size.Empty; }
+            get { return Handler != null ? Handler.Size : Size.Empty; }
 		}
 
         public int Width
         {
-            get { return Handler != null ? handler.Width : 0; }
+            get { return Handler != null ? Handler.Width : 0; }
         }
 
         public int Height
         {
-            get { return Handler != null ? handler.Height : 0; }
+            get { return Handler != null ? Handler.Height : 0; }
         }
-
-        public new Widget Widget
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-		void IWidget.Initialize()
-		{
-			base.Initialize();
-		}
     }
 }

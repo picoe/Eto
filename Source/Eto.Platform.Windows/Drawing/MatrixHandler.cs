@@ -66,7 +66,7 @@ namespace Eto.Platform.Windows.Drawing
         public void Multiply(Matrix m, MatrixOrder matrixOrder)
         {
             this.Control.Multiply(
-                Generator.Convert(m),
+                m.ToSD(),
                 (SD2D.MatrixOrder)matrixOrder);
         }
 
@@ -91,20 +91,20 @@ namespace Eto.Platform.Windows.Drawing
 
         public PointF TransformPoint(Point p)
         {
-            var px = new SD.Point[] {Generator.Convert(p)};
+            var px = new SD.Point[] {p.ToSD()};
             
             this.Control.TransformPoints(px);
 
-            return Generator.Convert(px[0]);
+            return px[0].ToEto();
         }
 
         public PointF TransformPoint(PointF p)
         {
-            var px = new SD.PointF[] { Generator.Convert(p) };
+            var px = new SD.PointF[] { p.ToSD() };
 
             this.Control.TransformPoints(px);
 
-            return Generator.Convert(px[0]);
+            return px[0].ToEto();
         }
     }
 }

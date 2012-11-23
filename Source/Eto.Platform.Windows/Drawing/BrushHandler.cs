@@ -4,6 +4,7 @@ using System.Text;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
+using Eto;
 
 namespace Eto.Platform.Windows.Drawing
 {
@@ -24,9 +25,9 @@ namespace Eto.Platform.Windows.Drawing
         {
             this.Control =
                 new SD.Drawing2D.LinearGradientBrush(
-                    Generator.Convert(rectangle),
-                    Generator.Convert(c1),
-                    Generator.Convert(c2),
+                    rectangle.ToSD(),
+                    c1.ToSD(),
+                    c2.ToSD(),
                     angle);
         }
 
@@ -41,27 +42,27 @@ namespace Eto.Platform.Windows.Drawing
         {
             this.Control = 
                 new SD.SolidBrush(
-                    Generator.Convert(color));
+                    color.ToSD());
         }
 
         public void Create(Point point1, Point point2, Color color1, Color color2)
         {
             this.Control =
                 new SD.Drawing2D.LinearGradientBrush(
-                    Generator.Convert(point1),
-                    Generator.Convert(point2),
-                    Generator.Convert(color1),
-                    Generator.Convert(color2));
+                    point1.ToSD(),
+                    point2.ToSD(),
+                    color1.ToSD(),
+                    color2.ToSD());
         }
 
         public void Create(PointF point1, PointF point2, Color color1, Color color2)
         {
             this.Control =
                 new SD.Drawing2D.LinearGradientBrush(
-                    Generator.Convert(point1),
-                    Generator.Convert(point2),
-                    Generator.Convert(color1),
-                    Generator.Convert(color2));
+                    point1.ToSD(),
+                    point2.ToSD(),
+                    color1.ToSD(),
+                    color2.ToSD());
         }
 
         public void TranslateTransform(float x, float y)

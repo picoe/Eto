@@ -86,7 +86,7 @@ namespace Eto.Test.Sections.Dialogs
 				if (updating)
 					return;
 				var family = lookup[fontList.SelectedKey];
-				UpdatePreview (new Font (family.Typefaces.First (), selectedFont.Size));
+				UpdatePreview (new Font (family.Typefaces.First (), selectedFont.SizeInPoints));
 			};
 
 			return fontList;
@@ -100,7 +100,7 @@ namespace Eto.Test.Sections.Dialogs
 					return;
 				var face = selectedFont.Family.Typefaces.FirstOrDefault (r => r.Name == fontStyles.SelectedKey);
 				if (face != null) {
-					UpdatePreview (new Font (face, selectedFont.Size));
+					UpdatePreview (new Font (face, selectedFont.SizeInPoints));
 				}
 			};
 			return fontStyles;
@@ -155,7 +155,7 @@ namespace Eto.Test.Sections.Dialogs
 			}
 			fontStyles.SelectedKey = selectedFont.Typeface.Name;
 			fontList.SelectedKey = family.Name;
-			fontSizes.SelectedKey = font.Size.ToString ();
+			fontSizes.SelectedKey = font.SizeInPoints.ToString ();
 
 			updating = false;
 		}

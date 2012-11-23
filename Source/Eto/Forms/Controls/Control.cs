@@ -94,7 +94,7 @@ namespace Eto.Forms
             object data, 
             DragDropEffects dragDropEffects)
         {
-            return inner.DoDragDrop(data, dragDropEffects);
+            return Handler.DoDragDrop(data, dragDropEffects);
         }
 
         #endregion
@@ -528,7 +528,6 @@ namespace Eto.Forms
         protected Control(Generator generator, IControl inner) :
             base(generator, inner)
         {
-            this.inner = inner;
         }
 
 		protected Control (Generator generator, Type type, bool initialize = true)
@@ -551,7 +550,7 @@ namespace Eto.Forms
 
         public void SetControl(object control)
         {
-            inner.SetControl(control);
+            Handler.SetControl(control);
         }
 
 		public void Invalidate ()
@@ -682,34 +681,34 @@ namespace Eto.Forms
         /// </summary>
         public Point ScreenToWorld(Point p)
         {
-            return inner.ScreenToWorld(p);
+            return Handler.ScreenToWorld(p);
         }
 
         public Point WorldToScreen(Point p)
         {
-            return inner.WorldToScreen(p);
+            return Handler.WorldToScreen(p);
         }
 
         public bool Capture
         {
             get
             {
-                return inner.Capture;
+                return Handler.Capture;
             }
             set
             {
-                inner.Capture = value;
+                Handler.Capture = value;
             }
         }
 
         public Point MousePosition
         {
-            get { return inner.MousePosition; }
+            get { return Handler.MousePosition; }
         }
 
         public Point Location
         {
-            get { return inner.Location; }
+            get { return Handler.Location; }
         }
     }
 	
