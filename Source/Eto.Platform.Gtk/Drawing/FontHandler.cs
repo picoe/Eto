@@ -100,8 +100,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control.Style = Pango.Style.Italic;
 		}
 
-			private set { Control.Size = (int)(value * Pango.Scale.PangoScale); }
-		public FontStyle FontStyle
+        public float Size
+        {
+            get { return (float)(Control.Size / Pango.Scale.PangoScale); }
+            private set { Control.Size = (int)(value * Pango.Scale.PangoScale); }
+        }
+
+        public FontStyle FontStyle
 		{
 			get {
 				if (style == null) {
