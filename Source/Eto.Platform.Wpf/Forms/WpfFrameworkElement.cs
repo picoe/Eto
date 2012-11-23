@@ -230,7 +230,7 @@ namespace Eto.Platform.Wpf.Forms
 						}
 					};
 					Control.KeyDown += (sender, e) => {
-						var args = e.ToEto ();
+						var args = e.ToEto (KeyType.KeyDown);
 						Widget.OnKeyDown (args);
 						e.Handled = args.Handled;
 					};
@@ -299,17 +299,16 @@ namespace Eto.Platform.Wpf.Forms
         {
             // TODO: Is this correct?
             return 
-                Generator.Convert(
-                    Control.PointFromScreen(
-                        Generator.Convert(p)));
+                Control.PointFromScreen(
+                    p.ToWpf())
+                .ToEto();
         }
 
         public Point WorldToScreen(Point p)
         {
             return
-                Generator.Convert(
-                    Control.PointToScreen(
-                        Generator.Convert(p)));
+                Control.PointToScreen(
+                    p.ToWpf()).ToEto();
         }
 
 

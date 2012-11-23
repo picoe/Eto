@@ -65,7 +65,11 @@ namespace Eto.Platform.Wpf
             return new sw.Point (value.X, value.Y);
         }
 
-
+        public static sw.Point ToWpf(this PointF value)
+        {
+            return new sw.Point(value.X, value.Y);
+        }
+			
         public static string ToWpfMneumonic (this string value)
         {
             if (value == null) return null;
@@ -79,10 +83,11 @@ namespace Eto.Platform.Wpf
             return Regex.Replace (value, "(?<![_])[_]", (match) => { if (match.Value == "__") return "_"; else return "&"; });
         }
 
-        public static KeyPressEventArgs ToEto (this swi.KeyEventArgs e)
+        public static KeyPressEventArgs ToEto(this swi.KeyEventArgs e, KeyType keyType)
         {
-            var key = KeyMap.Convert (e.Key, swi.Keyboard.Modifiers);
-            return new KeyPressEventArgs (key) {
+            var key = KeyMap.Convert(e.Key, swi.Keyboard.Modifiers);
+            return new KeyPressEventArgs(key, keyType)
+            {
                 Handled = e.Handled
             };
         }

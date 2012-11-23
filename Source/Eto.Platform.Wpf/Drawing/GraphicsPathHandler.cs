@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using swm = System.Windows.Media;
 using Eto.Drawing;
+using Eto;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -28,7 +29,7 @@ namespace Eto.Platform.Wpf.Drawing
         void StartNewFigure(PointF startPoint)
         {
             figure = new swm.PathFigure();
-            figure.StartPoint = Generator.Convert(startPoint);
+            figure.StartPoint = startPoint.ToWpf();
             figure.Segments = new swm.PathSegmentCollection();
             Control.Figures.Add(figure);
         }
@@ -45,7 +46,10 @@ namespace Eto.Platform.Wpf.Drawing
 
             while (enumerator.MoveNext())
             {
-				figure.Segments.Add (new swm.LineSegment (enumerator.Current.ToWpf (), true));
+                figure.Segments.Add(
+                    new swm.LineSegment(
+                        ((PointF)enumerator.Current).ToWpf(),
+                        true));
             }
         }
 

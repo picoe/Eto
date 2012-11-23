@@ -54,11 +54,6 @@ namespace Eto.Platform.Wpf
 			UseSwfWebView ();
 		}
 
-        public static sw.Point Convert(PointF value)
-        {
-            return new sw.Point(value.X, value.Y);
-        }
-			
 		public void UseWpfWebView ()
 		{
 			Add (typeof (IWebView), typeof (Forms.Controls.WpfWebViewHandler));
