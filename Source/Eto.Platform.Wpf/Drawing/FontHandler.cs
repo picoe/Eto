@@ -120,6 +120,29 @@ namespace Eto.Platform.Wpf.Drawing
 			this.WpfFontStyle = WpfTypeface.Style;
 		}
 
+        public void Create(
+            string fontFamily, 
+            float sizeInPoints, 
+            FontStyle style)
+        {
+            Create(
+                new FontFamily(fontFamily),
+                sizeInPoints,
+                FontStyle);
+        }
+
+        public void Create(
+            string fontFamily,
+            float sizeInPoints)
+        {
+            Create(fontFamily, sizeInPoints, FontStyle.Normal);
+        }
+
+        public void Create()
+        {
+            throw new NotImplementedException();
+        }
+
 		void SetStyle (FontStyle style)
 		{
 			if ((style & Eto.Drawing.FontStyle.Bold) != 0) this.WpfFontWeight = System.Windows.FontWeights.Bold;
@@ -169,7 +192,6 @@ namespace Eto.Platform.Wpf.Drawing
 			if (size != null) Size = size.Value;
 		}
 
-
 		public FontFamily Family
 		{
 			get;
@@ -205,64 +227,52 @@ namespace Eto.Platform.Wpf.Drawing
 			get { return ((FontTypefaceHandler)Typeface.Handler).Control; }
         }
 
-        public bool Underline
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public bool Strikeout
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public float SizeInPoints
         {
             get { return (float) Size; }
         }
 
+        private float? ascentInPixels;
         public float AscentInPixels
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                if (ascentInPixels == null)
+                {
+                    ascentInPixels = SizeInPixels / 2f; // BUGBUG: fix                        
+                }
+
+                return ascentInPixels ?? 0f;
+            }
         }
 
+        private float? descentInPixels;
         public float DescentInPixels
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                if (descentInPixels == null)
+                {
+                    descentInPixels = SizeInPixels / 2f; // BUGBUG: fix                        
+                }
+
+                return descentInPixels ?? 0f;
+            }
         }
 
         public float HeightInPixels
         {
-            get { throw new NotImplementedException(); }
+            get { return SizeInPixels; } // BUGBUG: fix
+        }
+
+        public float ExHeightInPixels
+        {
+            get { return SizeInPixels / 2f; } // BUGBUG: fix
         }
 
         public float SizeInPixels
         {
             get { return (float) PointsToPixels(SizeInPoints); }
-        }
-
-        #region IFont Members
-
-        public void Create(string fontFamily, float sizeInPoints, FontStyle style)
-        {
-            throw new NotImplementedException();
-        }
-
-        public float ExHeightInPixels
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Create(string fontFamily, float size)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-
-        public void Create()
-        {
-            throw new NotImplementedException();
         }
 
 		public string FamilyName
