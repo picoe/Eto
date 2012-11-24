@@ -75,46 +75,63 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.PushGuidelineSet(new swm.GuidelineSet(new double[] { x, x+width}, new double[] { y, y+height }));
 		}
 
-		public void DrawRectangle (Color color, int x, int y, int width, int height)
+        // Helper method
+        private void DrawRectangle(swm.Pen pen, float x, float y, float width, float height)
+        {
+            double t = pen.Thickness / 2;
+            Control.DrawRectangle(null, pen, new sw.Rect(x + t, y + t, width - 1, height - 1));
+        }
+
+        public void DrawRectangle(Color color, int x, int y, int width, int height)
 		{
-			var pen = GetPen(color);
-			double t = pen.Thickness / 2;
-			Control.DrawRectangle (null, pen, new sw.Rect (x + t, y + t, width - 1, height - 1));
+            DrawRectangle(GetPen(color), x, y, width, height);
 		}
 
-		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
+        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        {
+            DrawRectangle(pen.ControlObject as swm.Pen, x, y, width, height);            
+        }
+
+        // Helper method
+        private void DrawLine(swm.Pen pen, float startx, float starty, float endx, float endy)
+        {
+            double t = pen.Thickness / 2;
+            Control.DrawLine(pen, new sw.Point(startx + t, starty + t), new sw.Point(endx + t, endy + t));
+        }
+
+        public void DrawLine(Color color, int startx, int starty, int endx, int endy)
 		{
 			var pen = GetPen (color);
-			double t = pen.Thickness / 2;
-			Control.DrawLine (pen, new sw.Point (startx + t, starty + t), new sw.Point (endx + t, endy + t));
+            DrawLine(pen, startx, starty, endx, endy);
 		}
 
         public void DrawLine(Pen pen, PointF pt1, PointF pt2)
         {
-            throw new NotImplementedException();
+            DrawLine(pen.ControlObject as swm.Pen, pt1.X, pt1.Y, pt2.X, pt2.Y);
         }
 
-        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        // Helper method
+        private void FillRectangle(swm.Brush brush, float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            PushGuideLines(x, y, width, height);
+            Control.DrawRectangle(brush, null, new sw.Rect(x, y, width, height));
+            Control.Pop();
         }
 
         public void FillRectangle(Color color, float x, float y, float width, float height)
 		{
-			PushGuideLines (x, y, width, height);
-			var brush = new swm.SolidColorBrush (color.ToWpf ());
-			Control.DrawRectangle (brush, null, new sw.Rect (x, y, width, height));
-			Control.Pop ();
+            var brush = new swm.SolidColorBrush(color.ToWpf());
+            FillRectangle(brush, x, y, width, height);
 		}
 
-        public void FillRectangle(Brush brush, RectangleF Rectangle)
+        public void FillRectangle(Brush brush, RectangleF rect)
         {
-            throw new NotImplementedException();
+            FillRectangle(brush.ControlObject as swm.Brush, rect.X, rect.Y, rect.Width, rect.Height);
         }
 
         public void FillRectangle(Brush brush, float x, float y, float width, float height)
         {
-            throw new NotImplementedException();
+            FillRectangle(brush.ControlObject as swm.Brush, x, y, width, height);
         }
 
 		public void DrawEllipse (Color color, int x, int y, int width, int height)
@@ -132,28 +149,40 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Pop ();
 		}
 
-		public void FillPath (Color color, GraphicsPath path)
+        // Helper method
+        private void FillPath(swm.Brush brush, GraphicsPath path)
+        {
+            var geometry = ((GraphicsPathHandler)path.Handler).Control;
+            Control.DrawGeometry(brush, null, geometry);
+        }
+
+        public void FillPath(Color color, GraphicsPath path)
 		{
-			var geometry = ((GraphicsPathHandler)path.Handler).Control;
-			var brush = new swm.SolidColorBrush (color.ToWpf ());
-			Control.DrawGeometry (brush, null, geometry);
+            var brush = new swm.SolidColorBrush(color.ToWpf());
+            FillPath(brush, path);
 		}
 
         public void FillPath(Brush brush, GraphicsPath path)
         {
-            throw new NotImplementedException();
+            FillPath(brush.ControlObject as swm.Brush, path);
         }
 
-		public void DrawPath (Color color, GraphicsPath path)
+        // Helper method
+        private void DrawPath(swm.Pen pen, GraphicsPath path)
+        {
+            var geometry = ((GraphicsPathHandler)path.Handler).Control;
+            Control.DrawGeometry(null, pen, geometry);
+        }
+
+        public void DrawPath(Color color, GraphicsPath path)
 		{
-			var geometry = ((GraphicsPathHandler)path.Handler).Control;
-			var pen = GetPen (color);
-			Control.DrawGeometry (null, pen, geometry);
+            var pen = GetPen(color);
+            DrawPath(pen, path);
 		}
 
         public void DrawPath(Pen pen, GraphicsPath path)
         {
-            throw new NotImplementedException();
+            DrawPath(pen.ControlObject as swm.Pen, path);
         }
 
         public void DrawImage(Image image, int x, int y)

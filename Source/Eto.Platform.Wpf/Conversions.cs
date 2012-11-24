@@ -224,5 +224,33 @@ namespace Eto.Platform.Wpf
 			return style;
 		}
 
+        public static swm.DashStyle ToWpf(this DashStyle d)
+        {
+            if (d == DashStyle.Dash)
+                return swm.DashStyles.Dash;
+            else if (d == DashStyle.DashDot)
+                return swm.DashStyles.DashDot;
+            else if (d == DashStyle.DashDotDot)
+                return swm.DashStyles.DashDotDot;
+            else if (d == DashStyle.Dot)
+                return swm.DashStyles.Dot;
+            else 
+                return swm.DashStyles.Solid;
+        }
+
+        public static DashStyle ToEto(this swm.DashStyle d)
+        {
+            if (object.ReferenceEquals(d, swm.DashStyles.Dash))
+                return DashStyle.Dash;
+            else if (object.ReferenceEquals(d, swm.DashStyles.DashDot))
+                return DashStyle.DashDot;
+            else if (object.ReferenceEquals(d, swm.DashStyles.DashDotDot))
+                return DashStyle.DashDotDot;
+            else if (object.ReferenceEquals(d, swm.DashStyles.Dot))
+                return DashStyle.Dot;
+            else 
+                return DashStyle.Solid;
+        }
+
     }
 }
