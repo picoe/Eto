@@ -150,8 +150,6 @@ namespace Eto.Drawing
         /// </summary>
         float SizeInPoints { get; }
         
-        IFont Clone();
-
         void Create(string fontFamily, float sizeInPoints);
         
         void Create();
@@ -197,7 +195,7 @@ namespace Eto.Drawing
 	/// You can get a list of <see cref="FontFamily"/> objects available in the current system using
 	/// <see cref="Fonts.AvailableFontFamilies"/>, which can then be used to create an instance of a font.
 	/// </remarks>
-    public class Font : InstanceWidget, ICloneable
+    public class Font : InstanceWidget
     {
 		new IFont Handler { get { return (IFont)base.Handler; } }
 
@@ -446,20 +444,6 @@ namespace Eto.Drawing
         public override string ToString()
         {
             return string.Format("Family={0}, Typeface={1}, Size={2}pt, Style={3}", Family, Typeface, SizeInPoints, FontStyle);
-        }
-
-        public Font Clone()
-        {
-            var result =
-                new Font(                    
-                    this.FamilyName, this.SizeInPoints, this.FontStyle);
-
-            return result;
-        }
-
-        object ICloneable.Clone()
-        {
-            return this.Clone();
         }
 
         #region Equals

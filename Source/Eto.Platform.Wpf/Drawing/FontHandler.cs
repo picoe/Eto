@@ -240,11 +240,6 @@ namespace Eto.Platform.Wpf.Drawing
             get { return (float) PointsToPixels(SizeInPoints); }
         }
 
-        public IFont Clone()
-        {
-            throw new NotImplementedException();
-        }
-
         #region IFont Members
 
         public void Create(string fontFamily, float sizeInPoints, FontStyle style)

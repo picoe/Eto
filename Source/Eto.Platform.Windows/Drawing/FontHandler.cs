@@ -279,10 +279,5 @@ namespace Eto.Platform.Windows.Drawing
                     : sizeInPixels.Value;
             }
         }
-
-        public IFont Clone()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -179,11 +179,6 @@ namespace Eto.Platform.GtkSharp.Drawing
             get { throw new NotImplementedException(); }
         }
 
-        public IFont Clone()
-        {
-            throw new NotImplementedException();
-        }
-
         public void Create(string fontFamily, float sizeInPoints, FontStyle style)
         {
             throw new NotImplementedException();

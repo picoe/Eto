@@ -243,11 +243,6 @@ namespace Eto.Platform.Mac.Drawing
             get { return Control.PointSize / FONT_SIZE_FACTOR; }
         }
 
-        public IFont Clone()
-        {
-            return null;/* TODO */
-        }
-
         #region IFont Members
 
         public float ExHeightInPixels
