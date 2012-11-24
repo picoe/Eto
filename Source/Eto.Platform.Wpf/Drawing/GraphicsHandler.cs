@@ -89,7 +89,17 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.DrawLine (pen, new sw.Point (startx + t, starty + t), new sw.Point (endx + t, endy + t));
 		}
 
-		public void FillRectangle (Color color, float x, float y, float width, float height)
+        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillRectangle(Color color, float x, float y, float width, float height)
 		{
 			PushGuideLines (x, y, width, height);
 			var brush = new swm.SolidColorBrush (color.ToWpf ());
@@ -129,6 +139,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.DrawGeometry (brush, null, geometry);
 		}
 
+        public void FillPath(Brush brush, GraphicsPath path)
+        {
+            throw new NotImplementedException();
+        }
+
 		public void DrawPath (Color color, GraphicsPath path)
 		{
 			var geometry = ((GraphicsPathHandler)path.Handler).Control;
@@ -136,7 +151,12 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.DrawGeometry (null, pen, geometry);
 		}
 
-		public void DrawImage (Image image, int x, int y)
+        public void DrawPath(Pen pen, GraphicsPath path)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void DrawImage(Image image, int x, int y)
 		{
 			DrawImage (image, x, y, image.Size.Width, image.Size.Height);
 		}
@@ -281,12 +301,7 @@ namespace Eto.Platform.Wpf.Drawing
             throw new NotImplementedException();
         }
 
-        public void TranslateTransform(float dx, float dy)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void FillPath(Brush brush, GraphicsPath path)
+        public void SetClip(Graphics graphics)
         {
             throw new NotImplementedException();
         }
@@ -300,7 +315,7 @@ namespace Eto.Platform.Wpf.Drawing
         {
             get
             {
-                throw new NotImplementedException();
+                return new Matrix();
             }
             set
             {
@@ -308,50 +323,88 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
+        private void Push(ref swm.Matrix m)
+        {
+            var t = new swm.MatrixTransform(m);
+
+            Control.PushTransform(t);
+
+            if (popCount != null)
+                popCount++;
+        }
+
+        public void TranslateTransform(float dx, float dy)
+        {
+            var m = new swm.Matrix();
+            m.Translate(dx, dy);
+            Push(ref m);
+        }
+
         public void RotateTransform(float angle)
         {
-            throw new NotImplementedException();
+            var m = new swm.Matrix();
+            m.Rotate(angle);
+            Push(ref m);
         }
 
         public void ScaleTransform(float sx, float sy)
         {
-            throw new NotImplementedException();
+            var m = new swm.Matrix();
+            m.Scale(sx, sy);
+            Push(ref m);
         }
 
         public void MultiplyTransform(Matrix matrix)
         {
-            throw new NotImplementedException();
+            var m = (swm.Matrix)matrix.ControlObject;
+
+            Push(ref m);
         }
 
-        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
-        {
-            throw new NotImplementedException();
-        }
+        private Stack<int> savedTransforms;
 
-        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DrawPath(Pen pen, GraphicsPath path)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SetClip(Graphics graphics)
-        {
-            throw new NotImplementedException();
-        }
-
+        int? popCount = 0;
 
         public void SaveTransform()
         {
-            throw new NotImplementedException();
+            if (savedTransforms == null)
+                savedTransforms =
+                    new Stack<int>();
+
+            // If there is an existing
+            // popcount, push it
+            if (popCount != null)
+                savedTransforms.Push(
+                    popCount.Value);
+
+            // start a new count
+            popCount = 0;
         }
 
         public void RestoreTransform()
         {
-            throw new NotImplementedException();
+            var t = 0;
+
+            // If there is a current popCount
+            // use it.
+            if (popCount != null)
+                t = popCount.Value;
+
+            // Otherwise if the stack is nonempty
+            // pop the value.
+            else if (
+                savedTransforms != null &&
+                savedTransforms.Count > 0)
+                t = savedTransforms.Pop();
+
+            while (t > 0)
+            {
+                Control.Pop();
+
+                t--;
+            }
+            
+            popCount = null;
         }
     }
 }

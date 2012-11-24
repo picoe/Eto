@@ -9,6 +9,16 @@ namespace Eto.Platform.Wpf.Drawing
 {
     public class MatrixHandler : WidgetHandler<swm.Matrix, Matrix>, IMatrix
     {
+        public MatrixHandler()
+        {
+            this.Control = swm.Matrix.Identity;
+        }
+
+        public MatrixHandler(swm.Matrix m)
+        {
+            this.Control = m;
+        }
+
         public float[] Elements
         {
             get
