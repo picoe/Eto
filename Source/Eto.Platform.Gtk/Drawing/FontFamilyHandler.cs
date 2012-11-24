@@ -25,8 +25,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void Create (string familyName)
 		{
-			Control = FontsHandler.Context.Families.First (r => string.Equals (r.Name, familyName, StringComparison.InvariantCultureIgnoreCase));
+            Control = GetFontFamily(familyName);
 		}
+
+        public static Pango.FontFamily GetFontFamily(string familyName)
+        {
+            return FontsHandler.Context.Families.First(r => string.Equals(r.Name, familyName, StringComparison.InvariantCultureIgnoreCase));
+        }
 	}
 }
 

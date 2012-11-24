@@ -21,12 +21,12 @@ namespace Eto.Platform.Windows.Drawing
 			return new FontFamily (Generator, new FontFamilyHandler (new sd.FontFamily (familyName)));
 		}
 
-		public FontFamily GetSystemFontFamily (string systemFamilyName)
+		public IFontFamily GetSystemFontFamily (string systemFamilyName)
 		{
 			switch (systemFamilyName) {
-			case FontFamilies.MonospaceFamilyName: return new FontFamily (Generator, new FontFamilyHandler (sd.FontFamily.GenericMonospace));
-			case FontFamilies.SansFamilyName: return new FontFamily (Generator, new FontFamilyHandler (sd.FontFamily.GenericSansSerif));
-			case FontFamilies.SerifFamilyName: return new FontFamily (Generator, new FontFamilyHandler (sd.FontFamily.GenericSerif));
+			case FontFamilies.MonospaceFamilyName: return new FontFamilyHandler (sd.FontFamily.GenericMonospace);
+			case FontFamilies.SansFamilyName: return new FontFamilyHandler (sd.FontFamily.GenericSansSerif);
+			case FontFamilies.SerifFamilyName: return new FontFamilyHandler (sd.FontFamily.GenericSerif);
 			default:
 				throw new NotSupportedException ();
 			}

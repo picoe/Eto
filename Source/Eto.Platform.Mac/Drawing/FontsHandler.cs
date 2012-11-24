@@ -30,7 +30,7 @@ namespace Eto.Platform.iOS.Drawing
 			return new FontFamily(Generator, new FontFamilyHandler (familyName));
 		}
 
-		public FontFamily GetSystemFontFamily (string systemFamilyName)
+		public IFontFamily GetSystemFontFamily (string systemFamilyName)
 		{
 			switch (systemFamilyName) {
 			case FontFamilies.MonospaceFamilyName:

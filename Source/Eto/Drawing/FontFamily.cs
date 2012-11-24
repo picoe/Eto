@@ -43,9 +43,11 @@ namespace Eto.Drawing
 		new IFontFamily Handler { get { return (IFontFamily)base.Handler; } }
 
 		/// <summary>
-		/// Gets the name of this font family
+		/// Gets the name of this font family.
+        /// 
+        /// This can differ from the name returned by the handler.
 		/// </summary>
-		public string Name { get { return Handler.Name; } }
+        public string Name { get; set; }
 
 		/// <summary>
 		/// Gets an enumeration of the one or more supported typefaces for this font family
@@ -78,9 +80,10 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="generator">Generator for this instance</param>
 		/// <param name="handler">Handler to use</param>
-		public FontFamily (Generator generator, IFontFamily handler)
+		public FontFamily (Generator generator, IFontFamily handler, string name = null)
 			: base (generator, handler, true)
 		{
+            this.Name = name ?? handler.Name;
 		}
 
 		/// <summary>
@@ -90,6 +93,7 @@ namespace Eto.Drawing
 		public FontFamily (string familyName)
 			: this (null, familyName)
 		{
+            this.Name = familyName;
 		}
 
 		/// <summary>
@@ -100,8 +104,79 @@ namespace Eto.Drawing
 		public FontFamily (Generator generator, string familyName)
 			: base (generator, typeof(IFontFamily), true)
 		{
+            this.Name = familyName;
+
 			Handler.Create (familyName);
 		}
+
+        private static IFontFamily CreateSystemFontFamilyHandler(
+            string systemFontFamilyName, 
+            Generator generator)
+        {
+            IFontFamily handler = null;
+
+            var fonts = generator.CreateHandler<IFonts>();
+
+            handler = fonts.GetSystemFontFamily(FontFamilies.SerifFamilyName);
+
+            return handler;
+        }
+
+        /// <summary>
+        /// If the family name is "serif", "sans-serif", "monospace",
+        /// "cursive" or "fantasy", returns a font family with the
+        /// same name whose handler uses a system-dependent font.
+        /// </summary>
+        /// <param name="familyName"></param>
+        /// <param name="generator"></param>
+        /// <returns></returns>
+        public static FontFamily CreateWebFontFamily(
+            string familyName, 
+            Generator generator = null)
+        {
+            IFontFamily handler = null;
+
+            var temp = generator ?? Generator.Current;
+
+            switch (familyName.ToLowerInvariant())
+            {
+                case "serif":
+                    handler = CreateSystemFontFamilyHandler(
+                        FontFamilies.SerifFamilyName,
+                        temp);
+                    break;
+
+                case "sans-serif":
+                    handler = CreateSystemFontFamilyHandler(
+                        FontFamilies.SansFamilyName,
+                        temp);
+                    break;
+
+                case "monospace":
+                    handler = CreateSystemFontFamilyHandler(
+                        FontFamilies.MonospaceFamilyName,
+                        temp);
+                    break;
+            }
+
+            FontFamily result = null;
+
+            if (handler != null)
+                result =                     
+                    new FontFamily(
+                    generator, 
+                    handler, 
+                    // keep the original family name, e.g. sans, and
+                    // allow the underlying handler to keep its own                    
+                    familyName);
+            else
+                result =
+                    new FontFamily(
+                        generator ?? Generator.Current, 
+                        familyName);
+
+            return result;
+        }
 
 		/// <summary>
 		/// Tests this instance for equality with another font family

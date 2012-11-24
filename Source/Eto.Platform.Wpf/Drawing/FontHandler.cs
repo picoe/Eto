@@ -131,13 +131,6 @@ namespace Eto.Platform.Wpf.Drawing
                 FontStyle);
         }
 
-        public void Create(
-            string fontFamily,
-            float sizeInPoints)
-        {
-            Create(fontFamily, sizeInPoints, FontStyle.Normal);
-        }
-
         public void Create()
         {
             throw new NotImplementedException();

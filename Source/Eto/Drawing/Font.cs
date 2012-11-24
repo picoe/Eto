@@ -109,6 +109,8 @@ namespace Eto.Drawing
 	public interface IFont : 
         IInstanceWidget
 	{
+        void Create();
+
         void Create(string fontFamily, float sizeInPoints, FontStyle style);
 		/// <summary>
 		/// Creates a new font object
@@ -149,11 +151,7 @@ namespace Eto.Drawing
         /// Gets the size of the font in points
         /// </summary>
         float SizeInPoints { get; }
-        
-        void Create(string fontFamily, float sizeInPoints);
-        
-        void Create();
-
+                
 		/// <summary>
 		/// Gets the name of the family of this font
 		/// </summary>
@@ -198,6 +196,23 @@ namespace Eto.Drawing
     public class Font : InstanceWidget
     {
 		new IFont Handler { get { return (IFont)base.Handler; } }
+
+
+        public Font(IFont inner) :
+            base(Generator.Current, inner)
+        {
+        }
+
+        public Font() :
+            base(Generator.Current, typeof(IFont))
+        {
+            Handler.Create();
+        }
+
+        public Font(string fontFamily, float sizeInPoints) :
+            this(FontFamily.CreateWebFontFamily(fontFamily), sizeInPoints)
+        {
+        }
 
 		/// <summary>
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
@@ -353,23 +368,6 @@ namespace Eto.Drawing
 		public FontTypeface Typeface
 		{
 			get { return Handler.Typeface; }
-        }
-
-        public Font(IFont inner) :
-            base(Generator.Current, inner)
-        {
-        }
-
-        public Font() :
-            base(Generator.Current, typeof(IFont))
-        {
-            Handler.Create();
-        }
-
-        public Font(string fontFamily, float sizeInPoints) :
-            base(Generator.Current, typeof(IFont))
-        {
-            Handler.Create(fontFamily, sizeInPoints);
         }
         
         public float ExHeightInPixels

@@ -24,7 +24,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="systemFontFamily">A system font family to get</param>
 		/// <returns>A new instance of a system font family</returns>
-		FontFamily GetSystemFontFamily (string systemFontFamily);
+		IFontFamily GetSystemFontFamily (string systemFontFamily);
 	}
 
 	/// <summary>
@@ -60,7 +60,7 @@ namespace Eto.Drawing
 		{
 			generator = generator ?? Generator.Current;
 			var fonts = generator.CreateHandler<IFonts>();
-			return fonts.GetSystemFontFamily(systemFontFamily);
+			return new FontFamily(generator, fonts.GetSystemFontFamily(systemFontFamily));
 		}
 	}
 }

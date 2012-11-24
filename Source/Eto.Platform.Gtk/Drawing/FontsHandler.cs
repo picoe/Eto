@@ -25,7 +25,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return Context.Families.Select (r => new FontFamily(Generator, new FontFamilyHandler(r))); }
 		}
 
-		public FontFamily GetSystemFontFamily (string systemFamilyName)
+		public IFontFamily GetSystemFontFamily (string systemFamilyName)
 		{
 			switch (systemFamilyName) {
 			case FontFamilies.MonospaceFamilyName:
@@ -40,7 +40,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			default:
 				throw new NotSupportedException ();
 			}
-			return new FontFamily (Generator, systemFamilyName);
+
+			return new FontFamilyHandler (FontFamilyHandler.GetFontFamily(systemFamilyName));
 		}
 	}
 }
