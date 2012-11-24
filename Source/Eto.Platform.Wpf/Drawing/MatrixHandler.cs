@@ -11,57 +11,72 @@ namespace Eto.Platform.Wpf.Drawing
     {
         public float[] Elements
         {
-            get { throw new NotImplementedException(); }
+            get
+            {
+                return new float[] {
+                (float)Control.M11, 
+                (float)Control.M12, 
+                (float)Control.M21, 
+                (float)Control.M22, 
+                (float)Control.OffsetX, 
+                (float)Control.OffsetY};
+            }
         }
 
         public float OffsetX
         {
-            get { throw new NotImplementedException(); }
+            get { return (float)Control.OffsetX; }
         }
 
         public float OffsetY
         {
-            get { throw new NotImplementedException(); }
+            get { return (float)Control.OffsetY; }
         }
 
         public void Rotate(float angle)
         {
-            throw new NotImplementedException();
+            Control.Rotate(angle);
         }
 
         public void Translate(float x, float y)
         {
-            throw new NotImplementedException();
+            Control.Translate(x, y);
         }
 
         public void Scale(float sx, float sy)
         {
-            throw new NotImplementedException();
+            Control.Scale(sx, sy);
         }
 
         public void Multiply(Matrix m, MatrixOrder matrixOrder)
         {
-            throw new NotImplementedException();
+            var m2 = (swm.Matrix) m.ControlObject;
+
+            if (matrixOrder == MatrixOrder.Prepend)
+                Control.Prepend(m2);
+            else
+                Control.Append(m2);
         }
 
         public void Create(float m11, float m12, float m21, float m22, float dx, float dy)
         {
-            throw new NotImplementedException();
+            this.Control =
+                new swm.Matrix(m11, m12, m21, m22, dx, dy);
         }
 
         public void Invert()
         {
-            throw new NotImplementedException();
+            this.Control.Invert();
         }
 
         public PointF TransformPoint(Point p)
         {
-            throw new NotImplementedException();
+            return Control.Transform(p.ToWpf()).ToEto();
         }
 
         public PointF TransformPoint(PointF p)
         {
-            throw new NotImplementedException();
+            return Control.Transform(p.ToWpf()).ToEto();
         }
     }
 }
