@@ -288,16 +288,6 @@ namespace Eto.Platform.Windows.Drawing
                 (SD.Drawing2D.GraphicsPath)path.ControlObject);
         }
 
-        public double DpiX
-        {
-            get { return this.Control.DpiX; }
-        }
-
-        public double DpiY
-        {
-            get { return this.Control.DpiY; }
-        }
-
         public RectangleF ClipBounds
         {
             get { return this.Control.ClipBounds.ToRectangleF(); }

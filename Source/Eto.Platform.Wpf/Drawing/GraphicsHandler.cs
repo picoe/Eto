@@ -97,6 +97,16 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Pop ();
 		}
 
+        public void FillRectangle(Brush brush, RectangleF Rectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void FillRectangle(Brush brush, float x, float y, float width, float height)
+        {
+            throw new NotImplementedException();
+        }
+
 		public void DrawEllipse (Color color, int x, int y, int width, int height)
 		{
 			var pen = GetPen (color);
@@ -197,10 +207,17 @@ namespace Eto.Platform.Wpf.Drawing
 		public SizeF MeasureString (Font font, string text)
 		{
 			var fontHandler = font.Handler as FontHandler;
-			var brush = new swm.SolidColorBrush (swm.Colors.White);
+            
+            var result = SizeF.Empty;
 
-			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
-			return new SizeF ((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
+            if (fontHandler != null)
+            {
+                var brush = new swm.SolidColorBrush(swm.Colors.White);
+                var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
+                result = new SizeF((float)formattedText.WidthIncludingTrailingWhitespace, (float)formattedText.Height);
+            }
+
+            return result;
 		}
 
 		public void Flush ()
@@ -269,29 +286,9 @@ namespace Eto.Platform.Wpf.Drawing
             throw new NotImplementedException();
         }
 
-        public void FillRectangle(Brush brush, RectangleF Rectangle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void FillRectangle(Brush brush, float x, float y, float width, float height)
-        {
-            throw new NotImplementedException();
-        }
-
         public void FillPath(Brush brush, GraphicsPath path)
         {
             throw new NotImplementedException();
-        }
-
-        public double DpiX
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public double DpiY
-        {
-            get { throw new NotImplementedException(); }
         }
 
         public RectangleF ClipBounds

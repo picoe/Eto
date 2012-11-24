@@ -118,11 +118,6 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
-        public void Create(string fontFamily, float sizeInPoints, FontStyle style)
-        {
-            Create(Eto.Drawing.FontFamily.Sans, sizeInPoints, FontStyle.Normal); // TODO
-        }
-
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
 			

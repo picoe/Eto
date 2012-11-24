@@ -27,7 +27,8 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				if (sw.Application.Current.MainWindow != null) {
+                if (sw.Application.Current != null &&
+                    sw.Application.Current.MainWindow != null) {
 					// adjust font size for DPI settings
 					var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
 					return PointsToPixels (Size * m.M22);
@@ -119,17 +120,6 @@ namespace Eto.Platform.Wpf.Drawing
 			this.WpfFontWeight = WpfTypeface.Weight;
 			this.WpfFontStyle = WpfTypeface.Style;
 		}
-
-        public void Create(
-            string fontFamily, 
-            float sizeInPoints, 
-            FontStyle style)
-        {
-            Create(
-                new FontFamily(fontFamily),
-                sizeInPoints,
-                FontStyle);
-        }
 
         public void Create()
         {

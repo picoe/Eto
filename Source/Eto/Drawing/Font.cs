@@ -111,7 +111,6 @@ namespace Eto.Drawing
 	{
         void Create();
 
-        void Create(string fontFamily, float sizeInPoints, FontStyle style);
 		/// <summary>
 		/// Creates a new font object
 		/// </summary>
@@ -209,11 +208,6 @@ namespace Eto.Drawing
             Handler.Create();
         }
 
-        public Font(string fontFamily, float sizeInPoints) :
-            this(FontFamily.CreateWebFontFamily(fontFamily), sizeInPoints)
-        {
-        }
-
 		/// <summary>
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
 		/// </summary>
@@ -225,9 +219,8 @@ namespace Eto.Drawing
             float sizeInPoints,
             FontStyle style = FontStyle.Normal,
             Generator generator = null)
-            : base(generator ?? Generator.Current, typeof(IFont))
+            : this(FontFamily.CreateWebFontFamily(fontFamily), sizeInPoints, style, generator)
         {
-            Handler.Create(fontFamily, sizeInPoints, style);
         }
 
 		/// <summary>

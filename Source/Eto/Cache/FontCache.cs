@@ -35,9 +35,10 @@ namespace Eto.Drawing
             {
                 result =
                     new Font(
-                    fontFamily,
-                    fontSizePixels / Constants.PointsToPixels, // convert to points
-                    (FontStyle)(int)fontStyle);
+                        generator,
+                        fontFamily,
+                        fontSizePixels / Constants.PointsToPixels, // convert to points
+                        (FontStyle)(int)fontStyle);
 
                 fonts[key] = result;
             }

@@ -535,16 +535,6 @@ namespace Eto.Platform.iOS.Drawing
             }
         }
 
-        public double DpiX
-        {
-            get { return 0d;/* TODO */ }
-        }
-
-        public double DpiY
-        {
-            get { return 0d;/* TODO */ }
-        }
-
         public RectangleF ClipBounds
         {
             get { return Generator.Convert(context.GetClipBoundingBox()); }

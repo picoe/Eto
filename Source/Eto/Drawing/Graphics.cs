@@ -40,10 +40,6 @@ namespace Eto.Drawing
 	/// </summary>
 	public interface IGraphics : IInstanceWidget
 	{
-        Double DpiX { get; }
-
-        Double DpiY { get; }
-
         RectangleF ClipBounds { get; }
 
         void SetClip(RectangleF rect);
@@ -670,16 +666,6 @@ namespace Eto.Drawing
                     i++;
                 }
             }
-        }
-
-        public double DpiX
-        {
-            get { return handler.DpiX; }
-        }
-
-        public double DpiY
-        {
-            get { return handler.DpiY; }
         }
 
         public RectangleF ClipBounds

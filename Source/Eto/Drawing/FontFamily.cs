@@ -117,7 +117,7 @@ namespace Eto.Drawing
 
             var fonts = generator.CreateHandler<IFonts>();
 
-            handler = fonts.GetSystemFontFamily(FontFamilies.SerifFamilyName);
+            handler = fonts.GetSystemFontFamily(systemFontFamilyName);
 
             return handler;
         }

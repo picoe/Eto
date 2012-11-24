@@ -298,16 +298,6 @@ namespace Eto.Platform.GtkSharp.Drawing
             throw new NotImplementedException();
         }
 
-        public double DpiX
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public double DpiY
-        {
-            get { throw new NotImplementedException(); }
-        }
-
         public RectangleF ClipBounds
         {
             get { throw new NotImplementedException(); }

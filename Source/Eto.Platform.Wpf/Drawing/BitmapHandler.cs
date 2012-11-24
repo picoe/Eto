@@ -141,23 +141,15 @@ namespace Eto.Platform.Wpf.Drawing
 			return Control;
 		}
 
-        #region IImage Members
-
-
         public int Width
         {
-            get { throw new NotImplementedException(); }
+            get { return Size.Width; }
         }
 
         public int Height
         {
-            get { throw new NotImplementedException(); }
+            get { return Size.Height; }
         }
-
-        #endregion
-
-        #region IBitmap Members
-
 
         public void Create(int width, int height, Graphics graphics)
         {
@@ -188,9 +180,6 @@ namespace Eto.Platform.Wpf.Drawing
         {
             throw new NotImplementedException();
         }
-
-        #endregion
-
 
         public byte[] ToPNGByteArray()
         {
