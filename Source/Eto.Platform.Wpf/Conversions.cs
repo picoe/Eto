@@ -45,7 +45,12 @@ namespace Eto.Platform.Wpf
             return new sw.Rect (value.X, value.Y, value.Width, value.Height);
         }
 
-        public static Size ToEto (this sw.Size value)
+        public static sw.Rect ToWpf(this RectangleF value)
+        {
+            return new sw.Rect(value.X, value.Y, value.Width, value.Height);
+        }
+
+        public static Size ToEto(this sw.Size value)
         {
             return new Size ((int)value.Width, (int)value.Height);
         }

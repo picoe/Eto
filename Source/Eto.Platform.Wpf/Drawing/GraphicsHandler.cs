@@ -327,28 +327,31 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void SetClip(RectangleF rect)
         {
-            throw new NotImplementedException();
+            drawingVisual.Clip =
+                new swm.RectangleGeometry(rect.ToWpf());
         }
 
         public void SetClip(Graphics graphics)
         {
-            throw new NotImplementedException();
+            drawingVisual.Clip = 
+                (graphics.ControlObject as GraphicsHandler)
+                .drawingVisual.Clip;
         }
 
         public RectangleF ClipBounds
         {
-            get { throw new NotImplementedException(); }
+            get { return drawingVisual.Clip.Bounds.ToEto(); }
         }
 
         public Matrix Transform
         {
             get
             {
-                return new Matrix();
+                return new Matrix(); // BUGBUG
             }
             set
             {
-                throw new NotImplementedException();
+                MultiplyTransform(value);
             }
         }
 
