@@ -211,8 +211,8 @@ namespace Eto.Drawing
             string fontFamily,
             float sizeInPoints,
             FontStyle style = FontStyle.Normal,
-            Generator g = null)
-            : base(g ?? Generator.Current, typeof(IFont))
+            Generator generator = null)
+            : base(generator ?? Generator.Current, typeof(IFont))
         {
             Handler.Create(fontFamily, sizeInPoints, style);
         }
@@ -237,8 +237,8 @@ namespace Eto.Drawing
         public Font(
             SystemFont systemFont,
             float? sizeInPoints = null,
-            Generator g = null)
-            : base(g ?? Generator.Current, typeof(IFont))
+            Generator generator = null)
+            : base(generator ?? Generator.Current, typeof(IFont))
         {
             Handler.Create(systemFont, sizeInPoints);
         }
@@ -470,6 +470,9 @@ namespace Eto.Drawing
 
             return
                 n != null &&
+                // this allows fonts from different generators
+                // to be used within a single app
+                object.ReferenceEquals(this.Generator, n.Generator) &&
                 this.Family.Equals(n.Family) &&
                 this.SizeInPixels.Equals(n.SizeInPixels) &&
                 this.FontStyle.Equals(n.FontStyle);
@@ -481,6 +484,9 @@ namespace Eto.Drawing
                 (this.Family != null
                  ? this.Family.GetHashCode()
                  : 0)^
+                (this.Generator != null
+                 ? this.Generator.GetHashCode()
+                 : 0) ^
                 this.SizeInPixels.GetHashCode() ^
                 this.FontStyle.GetHashCode();
 
@@ -522,7 +528,8 @@ namespace Eto.Drawing
             string fontFamily,
             FontStyle fontStyle,
             float fontSizePixels,
-            ActualFontCache actualFontCache)
+            ActualFontCache actualFontCache,
+            Generator generator = null)
         {
             Font result = null;
 
@@ -549,6 +556,9 @@ namespace Eto.Drawing
                 var fontKey =
                     new FontKey()
                     {
+                        Generator =
+                            generator,
+
                         FontFamily =
                             translatedFontFamily,
 
@@ -568,7 +578,8 @@ namespace Eto.Drawing
                         FontCache.GetFont(
                             translatedFontFamily,
                             fontSizePixels,
-                            fontStyle);
+                            fontStyle,
+                            generator);
 
                     if (result != null &&
                         actualFontCache != null)
@@ -590,7 +601,8 @@ namespace Eto.Drawing
                         Font.TranslateFontFamily(
                             "serif"),
                         Font.DefaultFontSizePixels,
-                        FontStyle.Normal);
+                        FontStyle.Normal,
+                        generator);
 
             return result;
         }

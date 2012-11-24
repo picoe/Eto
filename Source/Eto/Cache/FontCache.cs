@@ -16,12 +16,14 @@ namespace Eto.Drawing
         public static Font GetFont(
             string fontFamily,
             float fontSizePixels,
-            FontStyle fontStyle)
+            FontStyle fontStyle,
+            Generator generator)
         {
             Font result = null;
 
             var key = new FontKey()
             {
+                Generator = generator,
                 FontFamily = fontFamily,
                 FontSizePixels = fontSizePixels,
                 FontStyle = fontStyle
@@ -46,6 +48,7 @@ namespace Eto.Drawing
 
     public class FontKey
     {
+        public Generator Generator { get; set; }
         public string FontFamily { get; set; }
         public float FontSizePixels { get; set; }
         public FontStyle FontStyle { get; set; }
@@ -53,6 +56,9 @@ namespace Eto.Drawing
         public override int GetHashCode()
         {
             return
+                (this.Generator != null
+                 ? this.Generator.GetHashCode()
+                 : 0) ^
                 (this.FontFamily != null
                  ? this.FontFamily.GetHashCode()
                  : 0) ^
@@ -66,6 +72,9 @@ namespace Eto.Drawing
 
             var result =
                 o != null &&
+                // this allows fonts from different generators
+                // to be used within a single app
+                SafeEquals(this.Generator, o.Generator) &&
                 SafeEquals(this.FontFamily, o.FontFamily) &&
                 this.FontSizePixels.Equals(o.FontSizePixels) &&
                 this.FontStyle.Equals(o.FontStyle);

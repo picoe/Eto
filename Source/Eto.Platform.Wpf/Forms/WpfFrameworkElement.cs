@@ -7,6 +7,7 @@ using Eto.Drawing;
 using sw = System.Windows;
 using swi = System.Windows.Input;
 using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -124,9 +125,23 @@ namespace Eto.Platform.Wpf.Forms
 			Control.InvalidateVisual ();
 		}
 
-		public Graphics CreateGraphics ()
+		public virtual Graphics CreateGraphics ()
 		{
-			throw new NotImplementedException ();
+            var drawingVisual = new swm.DrawingVisual();
+
+            var dc = drawingVisual.RenderOpen();
+
+            var graphics = 
+                new Graphics(
+                    Widget.Generator, 
+                    new Eto.Platform.Wpf.Drawing.GraphicsHandler(
+                        drawingVisual, 
+                        dc, 
+                        new Rectangle(
+                            Point.Empty,
+                            this.Size).ToWpf()));
+
+            return graphics;
 		}
 
 		public void SuspendLayout ()

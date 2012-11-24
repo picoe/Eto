@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Drawing
 {
-    public class BrushHandler : IBrush
+    public class BrushHandler : WidgetHandler<Brush>, IBrush
     {
         public Color Color { get; set; }
 
@@ -38,24 +38,6 @@ namespace Eto.Platform.Mac.Drawing
         public void TranslateTransform(float x, float y)
         {
             
-        }
-
-        public string ID { get; set; }
-
-        public object ControlObject
-        {
-            get { return null; }
-        }
-
-        public void HandleEvent(string handler)
-        {
-            
-        }
-
-        public Widget Widget { get; set; }
-
-        public void Initialize()
-        {            
         }
     }
 }

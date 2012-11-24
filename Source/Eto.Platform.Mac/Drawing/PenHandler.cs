@@ -60,5 +60,7 @@ namespace Eto.Platform.Mac.Drawing
         public void Initialize()
         {            
         }
+
+        public Eto.Generator Generator { get; set; }
     }
 }
