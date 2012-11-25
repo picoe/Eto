@@ -54,6 +54,8 @@ namespace Eto.Drawing
 
         void MultiplyTransform(Matrix matrix);
 
+        bool IsRetainedMode { get; }
+
 		/// <summary>
 		/// Creates the graphics object for drawing on the specified <paramref name="image"/>
 		/// </summary>
@@ -236,7 +238,8 @@ namespace Eto.Drawing
 	{
 		IGraphics handler;
 
-		public Graphics (IGraphics handler) : base(Generator.Current, handler)
+        #region Constructors
+        public Graphics (IGraphics handler) : base(Generator.Current, handler)
 		{
 			this.handler = handler;
 		}
@@ -272,7 +275,16 @@ namespace Eto.Drawing
 			this.handler.CreateFromImage (image);
 		}
 
-		/// <summary>
+        public void CreateFromImage(Bitmap image)
+        {
+            throw new InvalidOperationException(
+                "Use the Graphics(Image image) constructor instead");
+        }
+
+        #endregion
+
+        #region DrawLine
+        /// <summary>
 		/// Draws a line with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color for the outline</param>
@@ -296,7 +308,35 @@ namespace Eto.Drawing
 			handler.DrawLine (color, startx, starty, endx, endy);
 		}
 
-		/// <summary>
+        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
+        {
+            handler.DrawLine(pen, pt2, pt2);
+        }
+
+        public void DrawLines(Pen pen, PointF[] points)
+        {
+            if (points != null &&
+                points.Length > 1)
+            {
+                var p0 = points[0];
+
+                var i = 1;
+                while (i < points.Length)
+                {
+                    var p1 = points[i];
+
+                    DrawLine(pen, p0, p1);
+
+                    p0 = p1;
+
+                    i++;
+                }
+            }
+        }
+        #endregion
+
+        #region DrawRectangle
+        /// <summary>
 		/// Draws a rectangle
 		/// </summary>
 		/// <param name="color">Color for the outline</param>
@@ -318,7 +358,12 @@ namespace Eto.Drawing
 		{
 			handler.DrawRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
-		
+
+        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
+        {
+            handler.DrawRectangle(pen, x, y, width, height);
+        }
+
 		/// <summary>
 		/// Draws an rectangle with colors on the top/left and bottom/right with the given <paramref name="width"/>
 		/// </summary>
@@ -337,7 +382,10 @@ namespace Eto.Drawing
 			}
 		}
 
-		/// <summary>
+        #endregion
+
+        #region FillRectangle
+        /// <summary>
 		/// Fills a rectangle with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Fill color</param>
@@ -365,7 +413,17 @@ namespace Eto.Drawing
             handler.FillRectangle(color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
         }
 
-		/// <summary>
+        public void FillRectangle(Brush brush, RectangleF Rectangle)
+        {
+            handler.FillRectangle(brush, Rectangle);
+        }
+
+        public void FillRectangle(Brush brush, float x, float y, float width, float height)
+        {
+            handler.FillRectangle(brush, x, y, width, height);
+        }
+
+        /// <summary>
 		/// Fills the specified <paramref name="rectangles"/>
 		/// </summary>
 		/// <param name="color">Color to fill the rectangles</param>
@@ -377,7 +435,10 @@ namespace Eto.Drawing
 			}
 		}
 
-		/// <summary>
+        #endregion
+
+        #region Ellipse
+        /// <summary>
 		/// Fills an ellipse with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Fill color</param>
@@ -396,8 +457,11 @@ namespace Eto.Drawing
 		{
 			handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
-		
-		/// <summary>
+        #endregion
+
+        #region Polygon
+
+        /// <summary>
 		/// Fills a polygon defined by <paramref name="points"/> with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Fill color</param>
@@ -420,18 +484,10 @@ namespace Eto.Drawing
 			path.AddLines (points);
 			DrawPath (color, path);
 		}
+        #endregion
 
-		/// <summary>
-		/// Fills the specified <paramref name="path"/>
-		/// </summary>
-		/// <param name="color">Fill color</param>
-		/// <param name="path">Path to fill</param>
-		public void FillPath (Color color, GraphicsPath path)
-		{
-			handler.FillPath (color, path);
-		}
-
-		/// <summary>
+        #region DrawPath
+        /// <summary>
 		/// Draws the specified <paramref name="path"/>
 		/// </summary>
 		/// <param name="color">Draw color</param>
@@ -441,22 +497,41 @@ namespace Eto.Drawing
 			handler.DrawPath (color, path);
 		}
 
-		/// <summary>
-		/// Draws the specified <paramref name="image"/> at a location with no scaling
-		/// </summary>
-		/// <param name="image">Image to draw</param>
-		/// <param name="location">Location to draw the image</param>
-		public void DrawImage (Image image, Point location)
-        {
-			handler.DrawImage (image, location.X, location.Y);
-        }
-
         public void DrawPath(Pen pen, GraphicsPath path)
         {
             handler.DrawPath(pen, path);
         }
-		
-		/// <summary>
+        #endregion
+
+        #region FillPath
+        /// <summary>
+        /// Fills the specified <paramref name="path"/>
+        /// </summary>
+        /// <param name="color">Fill color</param>
+        /// <param name="path">Path to fill</param>
+        public void FillPath(Color color, GraphicsPath path)
+        {
+            handler.FillPath(color, path);
+        }
+
+        public void FillPath(Brush brush, GraphicsPath path)
+        {
+            handler.FillPath(brush, path);
+        }
+        #endregion
+
+        #region DrawImage
+        /// <summary>
+        /// Draws the specified <paramref name="image"/> at a location with no scaling
+        /// </summary>
+        /// <param name="image">Image to draw</param>
+        /// <param name="location">Location to draw the image</param>
+        public void DrawImage(Image image, Point location)
+        {
+            handler.DrawImage(image, location.X, location.Y);
+        }
+
+        /// <summary>
 		/// Draws the specified <paramref name="image"/> at a location with no scaling
 		/// </summary>
 		/// <param name="image">Image to draw</param>
@@ -523,7 +598,25 @@ namespace Eto.Drawing
 			handler.DrawImage (image, source, destination);
 		}
 
-		/// <summary>
+        public void DrawImage(Image image, PointF pointF)
+        {
+            handler.DrawImage(image, pointF);
+        }
+
+        public void DrawImage(Image image, RectangleF rect)
+        {
+            handler.DrawImage(image, rect);
+        }
+
+        public void DrawImage(Image image, RectangleF source, RectangleF destination)
+        {
+            handler.DrawImage(image, source, destination);
+        }
+
+        #endregion
+
+        #region DrawIcon
+        /// <summary>
 		/// Draws the <paramref name="icon"/> at the specified location and size
 		/// </summary>
 		/// <param name="icon">Icon to draw</param>
@@ -545,8 +638,10 @@ namespace Eto.Drawing
 		{
 			handler.DrawIcon (icon, x, y, width, height);
 		}
+        #endregion
 
-		/// <summary>
+        #region DrawText
+        /// <summary>
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
 		/// </summary>
 		/// <param name="font">Font to draw the text with</param>
@@ -570,8 +665,10 @@ namespace Eto.Drawing
 		{
 			handler.DrawText (font, color, location.X, location.Y, text);
 		}
+        #endregion
 
-		/// <summary>
+        #region MeasureString
+        /// <summary>
 		/// Measures the string with the given <paramref name="font"/>
 		/// </summary>
 		/// <param name="font">Font to measure with</param>
@@ -582,7 +679,10 @@ namespace Eto.Drawing
 			return handler.MeasureString (font, text);
 		}
 
-		/// <summary>
+        #endregion
+
+        #region Properties
+        /// <summary>
 		/// Gets or sets a value indicating that drawing operations will use antialiasing
 		/// </summary>
 		public bool Antialias
@@ -591,7 +691,12 @@ namespace Eto.Drawing
 			set { handler.Antialias = value; }
 		}
 
-		/// <summary>
+        public bool IsRetainedMode
+        {
+            get { return handler.IsRetainedMode; }
+        }
+
+        /// <summary>
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
         public ImageInterpolation ImageInterpolation
@@ -599,8 +704,10 @@ namespace Eto.Drawing
             get { return handler.ImageInterpolation; }
             set { handler.ImageInterpolation = value; }
         }
-		
-		/// <summary>
+        #endregion
+
+        #region Flush
+        /// <summary>
 		/// Flushes the drawing (for some platforms)
 		/// </summary>
 		/// <remarks>
@@ -613,65 +720,28 @@ namespace Eto.Drawing
 		{
 			handler.Flush ();
 		}
+        #endregion
 
-        #region IGraphics Members
+        #region Clip
 
         public void SetClip(RectangleF rect)
         {
             handler.SetClip(rect);
         }
 
-        public void TranslateTransform(float dx, float dy)
+        public void SetClip(Graphics graphics)
         {
-            handler.TranslateTransform(dx, dy);
-        }
-
-        public void CreateFromImage(Bitmap image)
-        {
-            throw new InvalidOperationException(
-                "Use the Graphics(Image image) constructor instead");
-        }
-
-        public void FillRectangle(Brush brush, RectangleF Rectangle)
-        {
-            handler.FillRectangle(brush, Rectangle);
-        }
-
-        public void FillRectangle(Brush brush, float x, float y, float width, float height)
-        {
-            handler.FillRectangle(brush, x, y, width, height);
-        }
-
-        public void FillPath(Brush brush, GraphicsPath path)
-        {
-            handler.FillPath(brush, path);
-        }
-
-        public void DrawLines(Pen pen, PointF[] points)
-        {
-            if (points != null && 
-                points.Length > 1)
-            {
-                var p0 = points[0];
-
-                var i = 1;
-                while(i < points.Length)
-                {
-                    var p1 = points[i];
-
-                    DrawLine(pen, p0, p1);
-
-                    p0 = p1;
-
-                    i++;
-                }
-            }
+            handler.SetClip(graphics);
         }
 
         public RectangleF ClipBounds
         {
             get { return handler.ClipBounds; }
         }
+
+        #endregion
+
+        #region Transform
 
         public Matrix Transform
         {
@@ -683,6 +753,11 @@ namespace Eto.Drawing
             {
                 handler.Transform = value;
             }
+        }
+
+        public void TranslateTransform(float dx, float dy)
+        {
+            handler.TranslateTransform(dx, dy);
         }
 
         public void TranslateTransform(PointF p)
@@ -705,43 +780,6 @@ namespace Eto.Drawing
             handler.MultiplyTransform(matrix);
         }
 
-        public void Clear(Color color)
-        {
-            FillRectangle(color, ClipBounds);
-        }
-
-        public void DrawRectangle(Pen pen, float x, float y, float width, float height)
-        {
-            handler.DrawRectangle(pen, x, y, width, height);
-        }
-
-        public void DrawLine(Pen pen, PointF pt1, PointF pt2)
-        {
-            handler.DrawLine(pen, pt2, pt2);
-        }
-
-        public void DrawImage(Image image, PointF pointF)
-        {
-            handler.DrawImage(image, pointF);
-        }
-
-        public void DrawImage(Image image, RectangleF rect)
-        {
-            handler.DrawImage(image, rect);
-        }
-
-        #endregion
-
-        public void DrawImage(Image image, RectangleF source, RectangleF destination)
-        {
-            handler.DrawImage(image, source, destination);
-        }
-
-        public void SetClip(Graphics graphics)
-        {
-            handler.SetClip(graphics);
-        }
-
         public void SaveTransform()
         {
             handler.SaveTransform();
@@ -751,5 +789,13 @@ namespace Eto.Drawing
         {
             handler.RestoreTransform();
         }
+        #endregion
+
+        #region Clear
+        public void Clear(Color color)
+        {
+            FillRectangle(color, ClipBounds);
+        }
+        #endregion
     }
 }

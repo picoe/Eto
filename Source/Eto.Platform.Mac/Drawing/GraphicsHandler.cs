@@ -96,6 +96,8 @@ namespace Eto.Platform.iOS.Drawing
 
 #endif
 		
+        public bool IsRetainedMode { get { return false; } }
+
 		bool antialias;
 
 		public bool Antialias {

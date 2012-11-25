@@ -37,6 +37,8 @@ namespace Eto.Platform.Wpf.Drawing
 			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
+        public bool IsRetainedMode { get { return true; } }
+
 		public void CreateFromImage (Bitmap image)
 		{
 			this.image = image;
@@ -327,20 +329,23 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void SetClip(RectangleF rect)
         {
-            drawingVisual.Clip =
-                new swm.RectangleGeometry(rect.ToWpf());
+            // should not be called since Wpf is retained mode.
+            throw new InvalidOperationException(); 
         }
 
         public void SetClip(Graphics graphics)
         {
-            drawingVisual.Clip = 
-                (graphics.ControlObject as GraphicsHandler)
-                .drawingVisual.Clip;
+            // should not be called since Wpf is retained mode.
+            throw new InvalidOperationException();
         }
 
         public RectangleF ClipBounds
         {
-            get { return drawingVisual.Clip.Bounds.ToEto(); }
+            get
+            {             
+                // should not be called since Wpf is retained mode.
+                throw new InvalidOperationException();
+            }
         }
 
         public Matrix Transform

@@ -28,6 +28,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 
+        public bool IsRetainedMode { get { return false; } }
+
 		public bool Antialias {
 			get { return Control.Antialias != Cairo.Antialias.None; }
 			set {

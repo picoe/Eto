@@ -11,6 +11,8 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
+        public bool IsRetainedMode { get { return false; } }
+
         private static StringFormat StringFormat { get; set; }
         static GraphicsHandler()
         {
