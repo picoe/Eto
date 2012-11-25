@@ -346,7 +346,7 @@ namespace Eto.Platform.Wpf.Drawing
         {
             get
             {
-                return new Matrix(); // BUGBUG
+                return new Matrix(this.Generator); // BUGBUG
             }
             set
             {
