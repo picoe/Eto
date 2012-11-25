@@ -39,12 +39,17 @@ namespace Eto.Platform.Wpf.Drawing
             get { return Control.IsEmpty(); }
         }
 
-        void StartNewFigure(sw.Point startPoint)
+        void ConnectTo(sw.Point startPoint, bool startNewFigure = false)
         {
-            figure = new swm.PathFigure();
-            figure.StartPoint = startPoint;
-            figure.Segments = new swm.PathSegmentCollection();
-            Control.Figures.Add(figure);
+            if (startNewFigure || figure == null)
+            {
+                figure = new swm.PathFigure();
+                figure.StartPoint = startPoint;
+                figure.Segments = new swm.PathSegmentCollection();
+                Control.Figures.Add(figure);
+            }
+            else
+                figure.Segments.Add(new swm.LineSegment(startPoint, true));
         }
 
         public void CloseFigure()
@@ -59,8 +64,7 @@ namespace Eto.Platform.Wpf.Drawing
             if (!enumerator.MoveNext())
                 return;
 
-            StartNewFigure(
-                ((PointF)enumerator.Current).ToWpf());
+            ConnectTo(((PointF)enumerator.Current).ToWpf());
 
             while (enumerator.MoveNext())
             {
@@ -73,19 +77,21 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void AddLine(Point point1, Point point2)
         {
-            StartNewFigure(point1.ToWpf());
-            figure.Segments.Add(new swm.LineSegment(point2.ToWpf(), true));
+            ConnectTo(point1.ToWpf());
+            figure.Segments.Add(
+                new swm.LineSegment(point2.ToWpf(), true));
         }
 
         public void AddLine(PointF point1, PointF point2)
         {
-            StartNewFigure(point1.ToWpf());
+            ConnectTo(point1.ToWpf());
             figure.Segments.Add(new swm.LineSegment(point2.ToWpf(), true));
         }
 
         public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
         {
-            StartNewFigure(pt1.ToWpf());
+            ConnectTo(pt1.ToWpf());
+
             figure.Segments.Add(
                 new swm.BezierSegment(pt2.ToWpf(), pt3.ToWpf(), pt4.ToWpf(),
                 isStroked: true));
@@ -142,7 +148,7 @@ namespace Eto.Platform.Wpf.Drawing
             var endPoint = new sw.Point(x2, y2);
 
             if (figure == null)
-                StartNewFigure(startPoint);
+                ConnectTo(startPoint);
             else
                 LineTo(startPoint); // connect the existing figure
 
@@ -175,7 +181,7 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void MoveTo(Point point)
         {
-            StartNewFigure(point.ToWpf());
+            ConnectTo(point.ToWpf(), startNewFigure: true);
         }
 
         public RectangleF GetBounds()
