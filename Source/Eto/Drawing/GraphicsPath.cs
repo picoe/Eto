@@ -47,8 +47,6 @@ namespace Eto.Drawing
 
         void AddEllipse(RectangleF rect);
 
-        void AddEllipse(float x, float y, float width, float height);
-
 		/// <summary>
 		/// Adds a single line to the path
 		/// </summary>
@@ -238,7 +236,7 @@ namespace Eto.Drawing
 
         public void AddEllipse(float x, float y, float width, float height)
         {
-            inner.AddEllipse(x, y, width, height);
+            AddEllipse(new RectangleF(x, y, width, height));
         }
 
         FillMode IGraphicsPath.FillMode

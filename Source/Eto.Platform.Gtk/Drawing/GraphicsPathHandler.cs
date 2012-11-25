@@ -187,11 +187,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 
         #endregion
 
-        public void AddEllipse(float x, float y, float width, float height)
-        {
-            throw new NotImplementedException();
-        }
-
         public GraphicsPath ToGraphicsPath()
         {
             throw new NotImplementedException(); // should never get called

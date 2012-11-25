@@ -183,14 +183,6 @@ namespace Eto.Platform.iOS.Drawing
                     Generator.Convert(rect));
         }
 
-        public void AddEllipse(float x, float y, float width, float height)
-        {
-            if (Control != null)
-                Control.AddElipseInRect(
-                    new SD.RectangleF(x, y, width, height));
-
-        }
-
         public void Translate(PointF p)
         {
             Transform(

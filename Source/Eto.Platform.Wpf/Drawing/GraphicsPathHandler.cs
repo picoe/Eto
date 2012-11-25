@@ -18,6 +18,16 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Figures = new swm.PathFigureCollection ();
 		}
 
+        private GraphicsPathHandler(swm.PathGeometry p)
+        {
+            Control = p;
+        }
+
+        public bool IsEmpty
+        {
+            get { return Control.IsEmpty(); }
+        }
+
 		void StartNewFigure (Point startPoint)
 		{
 			figure = new swm.PathFigure ();
@@ -32,6 +42,11 @@ namespace Eto.Platform.Wpf.Drawing
             figure.StartPoint = startPoint.ToWpf();
             figure.Segments = new swm.PathSegmentCollection();
             Control.Figures.Add(figure);
+        }
+
+        public void CloseFigure()
+        {
+            figure.IsClosed = true;
         }
 
         public void AddLines(PointF[] points)
@@ -53,12 +68,50 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
-
 		public void AddLine (Point point1, Point point2)
 		{
 			StartNewFigure (point1);
 			figure.Segments.Add (new swm.LineSegment (point2.ToWpf (), true));
 		}
+
+        public void AddLine(PointF point1, PointF point2)
+        {
+            StartNewFigure(point1);
+            figure.Segments.Add(new swm.LineSegment(point2.ToWpf(), true));
+        }
+
+        public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
+        {
+            StartNewFigure(pt1);
+            figure.Segments.Add(
+                new swm.BezierSegment(pt2.ToWpf(), pt3.ToWpf(), pt4.ToWpf(), 
+                isStroked: true));
+        }
+
+        public void AddBeziers(Point[] points)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddPath(IGraphicsPathBase addingPath, bool connect)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddRectangle(RectangleF rectangle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void AddEllipse(RectangleF rect)
+        {
+            throw new NotImplementedException();
+        }
 
 		public void LineTo (Point point)
 		{
@@ -70,17 +123,9 @@ namespace Eto.Platform.Wpf.Drawing
 			StartNewFigure (point);
 		}
 
-        #region IGraphicsPath Members
-
-
         public RectangleF GetBounds()
         {
-            throw new NotImplementedException();
-        }
-
-        public bool IsEmpty
-        {
-            get { throw new NotImplementedException(); }
+            return Control.Bounds.ToEtoF();
         }
 
         public void AddCurve(PointF[] points)
@@ -88,76 +133,41 @@ namespace Eto.Platform.Wpf.Drawing
             throw new NotImplementedException();
         }
 
-        public void AddLine(PointF point1, PointF point2)
+        public FillMode FillMode
         {
-            throw new NotImplementedException();
-        }
-
-        public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddPath(IGraphicsPathBase addingPath, bool connect)
-        {
-            throw new NotImplementedException();
+            set { Control.FillRule = value.ToWpf(); }
         }
 
         public void Translate(PointF point)
         {
-            throw new NotImplementedException();
-        }
-
-        public IGraphicsPath Clone()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddRectangle(RectangleF rectangle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void CloseFigure()
-        {
-            throw new NotImplementedException();
-        }
-
-        public FillMode FillMode
-        {
-            set { throw new NotImplementedException(); }
+            var m = new swm.Matrix();
+            m.Translate(point.X, point.Y);
+            Transform(m);
         }
 
         public void Transform(Matrix matrix)
         {
-            throw new NotImplementedException();
+            Transform((swm.Matrix)matrix.ControlObject);
         }
 
-        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
+        // Helper method
+        private void Transform(swm.Matrix m)
         {
-            throw new NotImplementedException();
-        }
-
-        public void AddBeziers(Point[] points)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddEllipse(RectangleF rect)
-        {
-            throw new NotImplementedException();
-        }
-
-        #endregion
-
-        public void AddEllipse(float x, float y, float width, float height)
-        {
-            throw new NotImplementedException();
+            var g = Control.Clone(); // clone the geometry
+            var t = new swm.MatrixTransform(m);
+            g.Transform = t; // apply the transform
+            this.Control = g.GetFlattenedPathGeometry();
         }
 
         public GraphicsPath ToGraphicsPath()
         {
             throw new NotImplementedException(); // should never get called
+        }
+
+        public IGraphicsPath Clone()
+        {
+            return new GraphicsPathHandler(
+                Control.Clone());
         }
     }
 }

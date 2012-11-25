@@ -40,7 +40,12 @@ namespace Eto.Platform.Wpf
             return new Rectangle ((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
         }
 
-        public static sw.Rect ToWpf (this Rectangle value)
+        public static RectangleF ToEtoF(this sw.Rect value)
+        {
+            return new RectangleF((float)value.X, (float)value.Y, (float)value.Width, (float)value.Height);
+        }
+
+        public static sw.Rect ToWpf(this Rectangle value)
         {
             return new sw.Rect (value.X, value.Y, value.Width, value.Height);
         }
@@ -255,6 +260,22 @@ namespace Eto.Platform.Wpf
                 return DashStyle.Dot;
             else 
                 return DashStyle.Solid;
+        }
+
+        public static FillMode ToEto(this swm.FillRule f)
+        {
+            return
+                f == swm.FillRule.EvenOdd
+                ? FillMode.Alternate
+                : FillMode.Winding;
+        }
+
+        public static swm.FillRule ToWpf(this FillMode f)
+        {
+            return
+                f == FillMode.Alternate
+                ? swm.FillRule.EvenOdd
+                : swm.FillRule.Nonzero;
         }
 
     }

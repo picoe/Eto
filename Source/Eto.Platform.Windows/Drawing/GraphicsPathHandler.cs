@@ -151,11 +151,6 @@ namespace Eto.Platform.Windows.Drawing
             Control.AddEllipse(rect.ToSD());
         }
 
-        public void AddEllipse(float x, float y, float width, float height)
-        {
-            Control.AddEllipse(x, y, width, height);
-        }
-
         public GraphicsPath ToGraphicsPath()
         {
             throw new NotImplementedException(); // should never get called
