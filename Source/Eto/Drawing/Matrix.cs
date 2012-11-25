@@ -48,13 +48,15 @@ namespace Eto.Drawing
             inner = (IMatrix)this.Handler;
         }
 
-        public Matrix(float m11,
-	                  float m12,
-	                  float m21,
-	                  float m22,
-	                  float dx,
-	                  float dy)
-            :this(Generator.Current)
+        public Matrix(
+            float m11,
+	        float m12,
+	        float m21,
+	        float m22,
+	        float dx,
+	        float dy,
+            Generator g = null)
+            :this(g ?? Generator.Current)
         {
             inner.Create(m11, m12, m21, m22, dx, dy);
         }
