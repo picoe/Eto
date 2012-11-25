@@ -18,22 +18,12 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void Create(Color color)
         {
-            throw new NotImplementedException();
-        }
-
-        public void Create(Point point1, Point point2, Color color1, Color color2)
-        {
-            throw new NotImplementedException();
+            Control = new swm.SolidColorBrush(color.ToWpf());
         }
 
         public void Create(PointF point1, PointF point2, Color color1, Color color2)
         {
-            throw new NotImplementedException();
-        }
-
-        public void TranslateTransform(float x, float y)
-        {
-            throw new NotImplementedException();
+            Control = new swm.LinearGradientBrush(color1.ToWpf(), color2.ToWpf(), point1.ToWpf(), point2.ToWpf());
         }
     }
 }

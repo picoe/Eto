@@ -25,19 +25,9 @@ namespace Eto.Platform.Mac.Drawing
             Color = color;
         }
 
-        public void Create(Point point1, Point point2, Color color1, Color color2)
-        {
-            Color = color1; // TODO   
-        }
-
         public void Create(PointF point1, PointF point2, Color color1, Color color2)
         {
             Color = color1; // TODO
-        }
-
-        public void TranslateTransform(float x, float y)
-        {
-            
         }
     }
 }

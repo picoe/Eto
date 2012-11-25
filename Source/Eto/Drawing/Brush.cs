@@ -13,11 +13,7 @@ namespace Eto.Drawing
 
         void Create(Color color);
 
-        void Create(Point point1, Point point2, Color color1, Color color2);
-
         void Create(PointF point1, PointF point2, Color color1, Color color2);
-
-        void TranslateTransform(float x, float y);
     }
 	
 	public class Brush : InstanceWidget
@@ -58,24 +54,6 @@ namespace Eto.Drawing
         {
             inner = (IBrush)Handler;
             inner.Create(color);
-        }
-
-        /// <summary>
-        /// Valid only for texture brushes.
-        /// </summary>
-        public void TranslateTransform(float x, float y)
-        {
-            inner.TranslateTransform(x, y);
-        }
-
-        /// <summary>
-        /// Linear Gradient 
-        /// </summary>
-        public Brush(
-            Point point1, Point point2, Color color1, Color color2)
-            : this(Generator.Current)
-        {
-            inner.Create(point1, point2, color1, color2);
         }
 
         /// <summary>

@@ -45,16 +45,6 @@ namespace Eto.Platform.Windows.Drawing
                     color.ToSD());
         }
 
-        public void Create(Point point1, Point point2, Color color1, Color color2)
-        {
-            this.Control =
-                new SD.Drawing2D.LinearGradientBrush(
-                    point1.ToSD(),
-                    point2.ToSD(),
-                    color1.ToSD(),
-                    color2.ToSD());
-        }
-
         public void Create(PointF point1, PointF point2, Color color1, Color color2)
         {
             this.Control =
@@ -63,11 +53,6 @@ namespace Eto.Platform.Windows.Drawing
                     point2.ToSD(),
                     color1.ToSD(),
                     color2.ToSD());
-        }
-
-        public void TranslateTransform(float x, float y)
-        {
-            ((SD.TextureBrush)this.Control).TranslateTransform(x, y);
         }
 
         #endregion
