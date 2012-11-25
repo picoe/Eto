@@ -13,6 +13,16 @@ namespace Eto.Platform.Wpf.Drawing
     {
         swm.PathFigure figure;
 
+        swm.PathFigure LastFigure
+        {
+            get
+            {
+                return Control != null && Control.Figures.Count > 0
+                    ? Control.Figures[Control.Figures.Count - 1]
+                    : null;
+            }
+        }
+
         public GraphicsPathHandler()
         {
             Control = new swm.PathGeometry();
@@ -39,7 +49,7 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void CloseFigure()
         {
-            figure.IsClosed = true;
+            LastFigure.IsClosed = true;
         }
 
         public void AddLines(PointF[] points)
@@ -88,7 +98,13 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void AddPath(IGraphicsPathBase addingPath, bool connect)
         {
-            throw new NotImplementedException();
+            var path =
+                (swm.PathGeometry)
+                    ((IGraphicsPath)addingPath).ControlObject;
+
+            if (!path.IsEmpty())
+                this.Control.AddGeometry(
+                    path);
         }
 
         public void AddRectangle(RectangleF rectangle)
