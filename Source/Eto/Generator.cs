@@ -167,7 +167,35 @@ namespace Eto
 				return current;
 			}
 		}
-		       
+
+        /// <summary>
+        /// Can be used by apps that switch between generators.
+        /// 
+        /// Set this property at the start of a block of code.
+        /// All objects created after that point are verified to
+        /// use this generator.
+        /// 
+        /// If null, no validation is performed.
+        /// </summary>
+        public static Generator ValidateGenerator { get; set; }
+
+        /// <summary>
+        /// Called by handlers to make sure they use the generator
+        /// specified by ValidateGenerator
+        /// </summary>
+        /// <param name="generator"></param>
+        public static void Validate(Generator generator)
+        {
+            if (ValidateGenerator != null &&
+                !object.ReferenceEquals(
+                generator,
+                ValidateGenerator))
+            {
+                throw new EtoException(
+                    string.Format("Expected to use generator {0}", ValidateGenerator));
+            }
+        }
+
 		/// <summary>
 		/// Initializes this generator as the current generator
 		/// </summary>

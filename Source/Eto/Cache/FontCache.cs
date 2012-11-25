@@ -21,9 +21,12 @@ namespace Eto.Drawing
         {
             Font result = null;
 
+            var temp = generator ?? 
+                Generator.Current;
+
             var key = new FontKey()
             {
-                Generator = generator,
+                Generator = temp,
                 FontFamily = fontFamily,
                 FontSizePixels = fontSizePixels,
                 FontStyle = fontStyle
@@ -35,7 +38,7 @@ namespace Eto.Drawing
             {
                 result =
                     new Font(
-                        generator,
+                        temp,
                         fontFamily,
                         fontSizePixels / Constants.PointsToPixels, // convert to points
                         (FontStyle)(int)fontStyle);

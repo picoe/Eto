@@ -67,7 +67,21 @@ namespace Eto
 		/// <summary>
 		/// Gets the generator that was used to create this handler
 		/// </summary>
-		public Generator Generator { get; set; }
+        private Generator generator;
+        public Generator Generator
+        {
+            get
+            {
+                return generator;
+            }
+            set
+            {
+                generator = value;
+
+                // validate the generator
+                Eto.Generator.Validate(generator);
+            }
+        }
 		
 		#region IWidget Members
 
