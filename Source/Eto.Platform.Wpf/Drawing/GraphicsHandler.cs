@@ -344,26 +344,20 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
+        swm.Matrix current = swm.Matrix.Identity;
+
         public Matrix Transform
         {
             get
             {
-                return new Matrix(this.Generator); // BUGBUG
+                return new Matrix(
+                    this.Generator, 
+                    new MatrixHandler(current)); 
             }
             set
             {
                 MultiplyTransform(value);
             }
-        }
-
-        private void Push(ref swm.Matrix m)
-        {
-            var t = new swm.MatrixTransform(m);
-
-            Control.PushTransform(t);
-
-            if (popCount != null)
-                popCount++;
         }
 
         public void TranslateTransform(float dx, float dy)
@@ -394,50 +388,71 @@ namespace Eto.Platform.Wpf.Drawing
             Push(ref m);
         }
 
-        private Stack<int> savedTransforms;
+        private Stack<StackEntry> stack;
 
-        int? popCount = 0;
+        class StackEntry
+        {
+            public int popCount;
+            public swm.Matrix matrix;
+        }
+
+        StackEntry s = null;
+
+        private void Push(ref swm.Matrix m)
+        {
+            var t = new swm.MatrixTransform(m);
+
+            if (s != null)
+                s.popCount++;
+
+            // compute the new matrix by prepending
+            current.Prepend(m);
+
+            Control.PushTransform(t);
+        }
 
         public void SaveTransform()
         {
-            if (savedTransforms == null)
-                savedTransforms =
-                    new Stack<int>();
+            if (stack == null) 
+                stack = new Stack<StackEntry>();
 
             // If there is an existing
-            // popcount, push it
-            if (popCount != null)
-                savedTransforms.Push(
-                    popCount.Value);
+            // entry, push it
+            if (s != null)
+                stack.Push(s);
 
             // start a new count
-            popCount = 0;
+            s = new StackEntry
+            {
+                popCount = 0,
+                matrix = current
+            };
         }
 
         public void RestoreTransform()
         {
-            var t = 0;
+            // If there is a current entry, use it.
+            var t = s;
 
-            // If there is a current popCount
-            // use it.
-            if (popCount != null)
-                t = popCount.Value;
-
-            // Otherwise if the stack is nonempty
+            // otherwise if the stack is nonempty
             // pop the value.
-            else if (
-                savedTransforms != null &&
-                savedTransforms.Count > 0)
-                t = savedTransforms.Pop();
+            if (t == null &&
+                stack != null && stack.Count > 0)
+                t = stack.Pop();
 
-            while (t > 0)
+            while (
+                t != null &&
+                t.popCount > 0)
             {
                 Control.Pop();
 
-                t--;
+                t.popCount = t.popCount - 1;
             }
-            
-            popCount = null;
+
+            // restore the transform
+            current = t.matrix;
+
+            s = null;
         }
 
         public void Clear(Color color)
