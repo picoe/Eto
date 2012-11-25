@@ -214,19 +214,22 @@ namespace Eto.Platform.Wpf.Drawing
 				scaled = true;
 			}
 			Control.DrawImage (src, new sw.Rect((destination.X / scalex) - source.X, (destination.Y / scaley) - source.Y, destination.Width / scalex, destination.Height / scaley));
+            // pop once for PushClip
 			Control.Pop ();
+            // pop again for PushTransform
 			if (scaled)
 				Control.Pop ();
 		}
 
         public void DrawImage(Image image, PointF pointF)
         {
-            throw new NotImplementedException();
+            //throw new NotImplementedException();
         }
 
         public void DrawImage(Image image, RectangleF rect)
         {
-            throw new NotImplementedException();
+            // TODO: Fix
+            DrawImage(image, (int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
         }
 
 		public void DrawIcon (Icon icon, int x, int y, int width, int height)
@@ -378,6 +381,10 @@ namespace Eto.Platform.Wpf.Drawing
             Push(ref m);
         }
 
+        /// <summary>
+        /// Each entry is created during Save
+        /// and pushed during the next Save
+        /// </summary>
         private Stack<StackEntry> stack;
 
         class StackEntry
@@ -392,17 +399,21 @@ namespace Eto.Platform.Wpf.Drawing
         {
             var t = new swm.MatrixTransform(m);
 
+            // If we're in a SaveTransform block,
+            // increment the pop count.
             if (s != null)
                 s.popCount++;
 
             // compute the new matrix by prepending
             current.Prepend(m);
 
+            // push the transform
             Control.PushTransform(t);
         }
 
         public void SaveTransform()
         {
+            // Create a stack the first time.
             if (stack == null) 
                 stack = new Stack<StackEntry>();
 
@@ -411,7 +422,7 @@ namespace Eto.Platform.Wpf.Drawing
             if (s != null)
                 stack.Push(s);
 
-            // start a new count
+            // start a new entry
             s = new StackEntry
             {
                 popCount = 0,
@@ -424,25 +435,28 @@ namespace Eto.Platform.Wpf.Drawing
             // If there is a current entry, use it.
             var t = s;
 
-            // otherwise if the stack is nonempty
-            // pop the value.
-            if (t == null &&
-                stack != null && stack.Count > 0)
-                t = stack.Pop();
+            if (t == null)
+                throw new EtoException("RestoreTransform called without SaveTransform");
 
+            // Pop the drawing context
+            // popCount times
             while (
                 t != null &&
-                t.popCount > 0)
-            {
+                t.popCount-- > 0)
                 Control.Pop();
-
-                t.popCount = t.popCount - 1;
-            }
 
             // restore the transform
             current = t.matrix;
 
+            // reset the current entry always
             s = null;
+
+            // otherwise if the stack is nonempty
+            // pop the value.
+            if (stack != null && 
+                stack.Count > 0)
+                s = stack.Pop();
+
         }
 
         public void Clear(Color color)
