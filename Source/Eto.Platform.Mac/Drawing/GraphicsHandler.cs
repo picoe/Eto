@@ -427,11 +427,6 @@ namespace Eto.Platform.iOS.Drawing
             EndDrawing();
         }
 
-        public void DrawImage(Image image, float x, float y, float width, float height)
-        {
-            DrawImage(image, new RectangleF(x, y, width, height));
-        }
-
         public void DrawImage(Image image, RectangleF source, RectangleF destination)
         {
             // BUGBUG: Fix integer conversion

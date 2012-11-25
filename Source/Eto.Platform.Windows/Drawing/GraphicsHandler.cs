@@ -157,13 +157,6 @@ namespace Eto.Platform.Windows.Drawing
                 rect.ToSD());
         }
 
-        public void DrawImage(Image image, float x, float y, float width, float height)
-        {
-            this.Control.DrawImage(
-                (SD.Image)image.ControlObject,
-                x, y, width, height);
-        }
-
         public void DrawImage(Image image, RectangleF source, RectangleF destination)
         {
             this.Control.DrawImage(

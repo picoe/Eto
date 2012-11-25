@@ -229,11 +229,6 @@ namespace Eto.Platform.Wpf.Drawing
             throw new NotImplementedException();
         }
 
-        public void DrawImage(Image image, float x, float y, float width, float height)
-        {
-            throw new NotImplementedException();
-        }
-
         public void DrawImage(Image image, RectangleF source, RectangleF destination)
         {
             throw new NotImplementedException();
