@@ -138,7 +138,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.DrawImage ((SD.Image)image.ControlObject, x, y, width, height);
 		}
 
-		public void DrawImage (Image image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
 			this.Control.DrawImage ((SD.Image)image.ControlObject, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
 		}
@@ -155,15 +155,6 @@ namespace Eto.Platform.Windows.Drawing
             this.Control.DrawImage(
                 (SD.Image)image.ControlObject,
                 rect.ToSD());
-        }
-
-        public void DrawImage(Image image, RectangleF source, RectangleF destination)
-        {
-            this.Control.DrawImage(
-                (SD.Image)image.ControlObject,
-                destination.ToSD(), // Note that dest is before source
-                source.ToSD(),
-                SD.GraphicsUnit.Pixel);
         }
 
         public void DrawIcon(Icon icon, int x, int y, int width, int height)

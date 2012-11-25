@@ -152,6 +152,7 @@ namespace Eto.Drawing
         #endregion
 
         #region DrawImage
+
         void DrawImage(Image image, PointF pointF);
 
         void DrawImage(Image image, RectangleF rect);
@@ -183,8 +184,6 @@ namespace Eto.Drawing
 		/// <param name="image">Image to draw</param>
 		/// <param name="source">Source rectangle of the image portion to draw</param>
 		/// <param name="destination">Destination rectangle of where to draw the portion</param>
-		void DrawImage (Image image, Rectangle source, Rectangle destination);
-
         void DrawImage(Image image, RectangleF source, RectangleF destination);
 
         #endregion

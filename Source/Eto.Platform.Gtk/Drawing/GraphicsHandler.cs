@@ -201,7 +201,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			((IImageHandler)image.Handler).DrawImage (this, x, y, width, height);
 		}
 
-		public void DrawImage (Image image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, source, destination);
 		}
@@ -212,11 +212,6 @@ namespace Eto.Platform.GtkSharp.Drawing
         }
 
         public void DrawImage(Image image, RectangleF rect)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DrawImage(Image image, RectangleF source, RectangleF destination)
         {
             throw new NotImplementedException();
         }

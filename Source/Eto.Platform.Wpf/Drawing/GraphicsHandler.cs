@@ -200,7 +200,7 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Pop ();
 		}
 
-		public void DrawImage (Image image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
 			var src = image.ControlObject as swm.ImageSource;
 			Control.PushClip (new swm.RectangleGeometry (destination.ToWpf ()));
@@ -225,11 +225,6 @@ namespace Eto.Platform.Wpf.Drawing
         }
 
         public void DrawImage(Image image, RectangleF rect)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void DrawImage(Image image, RectangleF source, RectangleF destination)
         {
             throw new NotImplementedException();
         }

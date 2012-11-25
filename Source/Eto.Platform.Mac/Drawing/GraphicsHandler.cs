@@ -398,7 +398,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawImage (Image image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
 			StartDrawing ();
 
@@ -425,15 +425,6 @@ namespace Eto.Platform.iOS.Drawing
             var handler = image.Handler as IImageHandler;
             handler.DrawImage(this, r.X, r.Y, r.Width, r.Height);
             EndDrawing();
-        }
-
-        public void DrawImage(Image image, RectangleF source, RectangleF destination)
-        {
-            // BUGBUG: Fix integer conversion
-            DrawImage(
-                image,
-                source.ToRectangle(),
-                destination.ToRectangle());
         }
 
         public void DrawIcon(Icon icon, int x, int y, int width, int height)
