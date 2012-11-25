@@ -181,7 +181,7 @@ namespace Eto.Platform.Windows.Drawing
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
             var brush =
-                BrushCache.GetBrush(color);
+                BrushCache.GetBrush(font.Generator, color);
 
             SD.Brush b = null;
 

@@ -8,18 +8,33 @@ namespace Eto.Cache
     /// </summary>
     public static class BrushCache
     {
-        private static Dictionary<Color, Brush> brushes =
-            new Dictionary<Color, Brush>();
+        struct CacheKey
+        {
+            public Color Color;
+            public Generator Generator;
+        }
 
-        public static Brush GetBrush(Color color)
+        private static Dictionary<CacheKey, Brush> brushes =
+            new Dictionary<CacheKey, Brush>();
+
+        public static Brush GetBrush(
+            Generator generator,
+            Color color)
         {
             Brush result = null;
 
+            var key =
+                new CacheKey
+                {
+                    Generator = generator ?? Generator.Current,
+                    Color = color,
+                };
+
             if (brushes != null &&
-                !brushes.TryGetValue(color, out result))
+                !brushes.TryGetValue(key, out result))
             {
                 result = new Brush(color);
-                brushes[color] = result;
+                brushes[key] = result;
             }
 
             return result;
