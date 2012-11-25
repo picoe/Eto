@@ -86,35 +86,33 @@ namespace Eto.Platform.Wpf.Drawing
 
         public Color GetPixel(int x, int y)
         {
-            var b = (BitmapFrame)Control;
-
             var rect = new sw.Int32Rect(x, y, 1, 1);
 
-            var stride = (rect.Width * b.Format.BitsPerPixel + 7) / 8;
+            var stride = (rect.Width * Control.Format.BitsPerPixel + 7) / 8;
 
-            var pixels = new byte[rect.Height];
+            var pixels = new byte[stride * rect.Height];
 
-            b.CopyPixels(
+            Control.CopyPixels(
                 rect,
                 pixels,
                 stride: stride,
                 offset: 0);
           
-            if (b.Format == swm.PixelFormats.Rgb24)
+            if (Control.Format == swm.PixelFormats.Rgb24)
             {
                 return Color.FromArgb(
                     r: pixels[0],
                     g: pixels[1],
                     b: pixels[2]);
             }
-            else if (b.Format == swm.PixelFormats.Bgr32)
+            else if (Control.Format == swm.PixelFormats.Bgr32)
             {
                 return Color.FromArgb(
                     b: pixels[0],
                     g: pixels[1],
                     r: pixels[2]);
             }
-            else if (b.Format == swm.PixelFormats.Pbgra32)
+            else if (Control.Format == swm.PixelFormats.Pbgra32)
             {
                 return Color.FromArgb(
                     b: pixels[0],
