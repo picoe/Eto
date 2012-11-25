@@ -39,29 +39,43 @@ namespace Eto.Drawing
 	/// Platform handler interface for the <see cref="Graphics"/> class
 	/// </summary>
 	public interface IGraphics : IInstanceWidget
-	{
-        RectangleF ClipBounds { get; }
-
-        void SetClip(RectangleF rect);
-
-        Matrix Transform { get; set; }
-
-        void TranslateTransform(float dx, float dy);
-
-        void RotateTransform(float angle);
-
-        void ScaleTransform(float sx, float sy);
-
-        void MultiplyTransform(Matrix matrix);
+    {
+        #region Properties
+        /// <summary>
+        /// Gets or sets a value indicating that drawing operations will use antialiasing
+        /// </summary>
+        bool Antialias { get; set; }
 
         bool IsRetainedMode { get; }
 
-		/// <summary>
+        /// Gets or sets the interpolation mode for drawing images
+        /// </summary>
+        ImageInterpolation ImageInterpolation { get; set; }
+        #endregion
+
+        #region Create
+        /// <summary>
 		/// Creates the graphics object for drawing on the specified <paramref name="image"/>
 		/// </summary>
 		/// <param name="image">Image to perform drawing operations on</param>
 		void CreateFromImage (Bitmap image);
+        #endregion
 
+        #region DrawLine
+        /// <summary>
+        /// Draws a line with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Color for the outline</param>
+        /// <param name="startx">X co-ordinate of the starting point</param>
+        /// <param name="starty">Y co-ordinate of the starting point</param>
+        /// <param name="endx">X co-ordinate of the ending point</param>
+        /// <param name="endy">Y co-ordinate of the ending point</param>
+        void DrawLine(Color color, int startx, int starty, int endx, int endy);
+
+        void DrawLine(Pen pen, PointF pt1, PointF pt2);
+        #endregion
+
+        #region DrawRectangle
         void DrawRectangle(Pen pen, float x, float y, float width, float height);
 
 		/// <summary>
@@ -73,25 +87,19 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
 		void DrawRectangle (Color color, int x, int y, int width, int height);
+        #endregion
 
-		/// <summary>
-		/// Draws a line with the specified <paramref name="color"/>
-		/// </summary>
-		/// <param name="color">Color for the outline</param>
-		/// <param name="startx">X co-ordinate of the starting point</param>
-		/// <param name="starty">Y co-ordinate of the starting point</param>
-		/// <param name="endx">X co-ordinate of the ending point</param>
-		/// <param name="endy">Y co-ordinate of the ending point</param>
-		void DrawLine (Color color, int startx, int starty, int endx, int endy);
-
-        void DrawLine(Pen pen, PointF pt1, PointF pt2);
-
+        #region FillRectangle
         void FillRectangle(Brush brush, RectangleF Rectangle);
 
         void FillRectangle(Brush brush, float x, float y, float width, float height);
 
         void FillRectangle(Color color, float x, float y, float width, float height);
-		/// <summary>
+
+        #endregion
+
+        #region Ellipse
+        /// <summary>
 		/// Fills a rectangle with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Fill color</param>
@@ -119,8 +127,10 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the ellipse</param>
 		/// <param name="height">Height of the ellipse</param>
 		void DrawEllipse (Color color, int x, int y, int width, int height);
-		
-		/// <summary>
+        #endregion
+
+        #region FillPath
+        /// <summary>
 		/// Fills the specified <paramref name="path"/>
 		/// </summary>
 		/// <param name="color">Fill color</param>
@@ -128,8 +138,10 @@ namespace Eto.Drawing
 		void FillPath (Color color, GraphicsPath path);
 
         void FillPath(Brush brush, GraphicsPath path);
+        #endregion
 
-		/// <summary>
+        #region DrawPath
+        /// <summary>
 		/// Draws the specified <paramref name="path"/>
 		/// </summary>
 		/// <param name="color">Draw color</param>
@@ -137,7 +149,9 @@ namespace Eto.Drawing
 		void DrawPath (Color color, GraphicsPath path);
 
         void DrawPath(Pen pen, GraphicsPath path);
+        #endregion
 
+        #region DrawImage
         void DrawImage(Image image, PointF pointF);
 
         void DrawImage(Image image, RectangleF rect);
@@ -175,7 +189,10 @@ namespace Eto.Drawing
 
         void DrawImage(Image image, RectangleF source, RectangleF destination);
 
-		/// <summary>
+        #endregion
+
+        #region DrawIcon
+        /// <summary>
 		/// Draws the <paramref name="icon"/> at the specified location and size
 		/// </summary>
 		/// <param name="icon">Icon to draw</param>
@@ -185,7 +202,10 @@ namespace Eto.Drawing
 		/// <param name="height">Destination height of the icon</param>
         void DrawIcon(Icon icon, int x, int y, int width, int height);
 
-		/// <summary>
+        #endregion
+
+        #region DrawText
+        /// <summary>
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
 		/// </summary>
 		/// <param name="font">Font to draw the text with</param>
@@ -194,16 +214,20 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
         void DrawText(Font font, Color color, float x, float y, string text);
+        #endregion
 
-		/// <summary>
+        #region MeasureString
+        /// <summary>
 		/// Measures the string with the given <paramref name="font"/>
 		/// </summary>
 		/// <param name="font">Font to measure with</param>
 		/// <param name="text">Text string to measure</param>
 		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
 		SizeF MeasureString (Font font, string text);
+        #endregion
 
-		/// <summary>
+        #region Flush
+        /// <summary>
 		/// Not yet implemented
 		/// </summary>
 		/// <summary>
@@ -214,21 +238,33 @@ namespace Eto.Drawing
 		/// a lot of drawing, you may want to flush the changed periodically so that the user does not think the UI is unresponsive.
 		/// </remarks>
 		void Flush ();
-		
-		/// <summary>
-		/// Gets or sets a value indicating that drawing operations will use antialiasing
-		/// </summary>
-		bool Antialias { get; set; }
+        #endregion
+
+        #region Clip
+        RectangleF ClipBounds { get; }
+
+        void SetClip(RectangleF rect);
+        #endregion
+
+        #region Transform
+        Matrix Transform { get; set; }
+
+        void TranslateTransform(float dx, float dy);
+
+        void RotateTransform(float angle);
+
+        void ScaleTransform(float sx, float sy);
+
+        void MultiplyTransform(Matrix matrix);
 
         void SaveTransform();
 
         void RestoreTransform();
+        #endregion
 
-		/// Gets or sets the interpolation mode for drawing images
-		/// </summary>
-		ImageInterpolation ImageInterpolation { get; set; }
-
+        #region Clear
         void Clear(Color color);
+        #endregion
     }
 
 	/// <summary>
