@@ -55,6 +55,11 @@ namespace Eto.Platform.Windows.Drawing
                     color2.ToSD());
         }
 
+        public void TranslateTransform(float x, float y)
+        {
+            ((SD.TextureBrush)this.Control).TranslateTransform(x, y);
+        }
+
         #endregion
     }
 }

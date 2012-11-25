@@ -25,5 +25,10 @@ namespace Eto.Platform.Wpf.Drawing
         {
             Control = new swm.LinearGradientBrush(color1.ToWpf(), color2.ToWpf(), point1.ToWpf(), point2.ToWpf());
         }
+
+        public void TranslateTransform(float x, float y)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

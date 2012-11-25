@@ -29,5 +29,10 @@ namespace Eto.Platform.Mac.Drawing
         {
             Color = color1; // TODO
         }
+
+        public void TranslateTransform(float x, float y)
+        {
+            
+        }
     }
 }
