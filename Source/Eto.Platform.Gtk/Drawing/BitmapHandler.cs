@@ -213,11 +213,6 @@ namespace Eto.Platform.GtkSharp.Drawing
             throw new NotImplementedException();
         }
 
-        public void Create(Image image)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
 

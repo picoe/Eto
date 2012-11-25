@@ -167,12 +167,5 @@ namespace Eto.Platform.Windows.Drawing
             return 
                 this.Control.GetPixel(x, y).ToEto();
         }
-
-        public void Create(Image image)
-        {
-            this.Control =
-                new SD.Bitmap(
-                    (SD.Image)image.ControlObject);
-        }
     }
 }

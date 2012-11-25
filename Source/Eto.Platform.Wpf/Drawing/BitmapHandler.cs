@@ -42,11 +42,6 @@ namespace Eto.Platform.Wpf.Drawing
 			Control = BitmapFrame.Create (stream);
 		}
 
-        public void Create(Image image)
-        {
-            throw new NotImplementedException();
-        }
-
 		public void Create (int width, int height, PixelFormat pixelFormat)
 		{
 			swm.PixelFormat format;

@@ -81,8 +81,6 @@ namespace Eto.Drawing
 		/// <param name="stream">Stream to load from the bitmap</param>
 		void Create (Stream stream);
 
-        void Create(Image image);
-
 		/// <summary>
 		/// Creates a new bitmap in-memory with the specified format
 		/// </summary>
@@ -288,12 +286,6 @@ namespace Eto.Drawing
 			: base(generator, handler)
 		{
 		}
-
-        public Bitmap(Image image) :
-            this(Generator.Current)
-        {
-            Handler.Create(image);
-        }
 
 		/// <summary>
 		/// Resizes the image to the specified width and height

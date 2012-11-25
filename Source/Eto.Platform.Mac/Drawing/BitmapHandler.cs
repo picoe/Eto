@@ -282,11 +282,6 @@ namespace Eto.Platform.Mac.Drawing
             return default(Color);/* TODO */
         }
 
-        public void Create(Image image)
-        {
-            /* TODO */
-        }
-
         public byte[] ToPNGByteArray()
         {
             return null;/* TODO */
