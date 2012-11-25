@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sw = System.Windows;
 using swm = System.Windows.Media;
 using Eto.Drawing;
 using Eto;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-	public class GraphicsPathHandler : WidgetHandler<swm.PathGeometry, GraphicsPath>, IGraphicsPath
-	{
-		swm.PathFigure figure;
+    public class GraphicsPathHandler : WidgetHandler<swm.PathGeometry, GraphicsPath>, IGraphicsPath
+    {
+        swm.PathFigure figure;
 
-		public GraphicsPathHandler ()
-		{
-			Control = new swm.PathGeometry ();
-			Control.Figures = new swm.PathFigureCollection ();
-		}
+        public GraphicsPathHandler()
+        {
+            Control = new swm.PathGeometry();
+            Control.Figures = new swm.PathFigureCollection();
+        }
 
         private GraphicsPathHandler(swm.PathGeometry p)
         {
@@ -28,18 +29,10 @@ namespace Eto.Platform.Wpf.Drawing
             get { return Control.IsEmpty(); }
         }
 
-		void StartNewFigure (Point startPoint)
-		{
-			figure = new swm.PathFigure ();
-			figure.StartPoint = startPoint.ToWpf ();
-			figure.Segments = new swm.PathSegmentCollection ();
-			Control.Figures.Add (figure);
-		}
-
-        void StartNewFigure(PointF startPoint)
+        void StartNewFigure(sw.Point startPoint)
         {
             figure = new swm.PathFigure();
-            figure.StartPoint = startPoint.ToWpf();
+            figure.StartPoint = startPoint;
             figure.Segments = new swm.PathSegmentCollection();
             Control.Figures.Add(figure);
         }
@@ -57,7 +50,7 @@ namespace Eto.Platform.Wpf.Drawing
                 return;
 
             StartNewFigure(
-                (PointF)enumerator.Current);
+                ((PointF)enumerator.Current).ToWpf());
 
             while (enumerator.MoveNext())
             {
@@ -68,23 +61,23 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
-		public void AddLine (Point point1, Point point2)
-		{
-			StartNewFigure (point1);
-			figure.Segments.Add (new swm.LineSegment (point2.ToWpf (), true));
-		}
+        public void AddLine(Point point1, Point point2)
+        {
+            StartNewFigure(point1.ToWpf());
+            figure.Segments.Add(new swm.LineSegment(point2.ToWpf(), true));
+        }
 
         public void AddLine(PointF point1, PointF point2)
         {
-            StartNewFigure(point1);
+            StartNewFigure(point1.ToWpf());
             figure.Segments.Add(new swm.LineSegment(point2.ToWpf(), true));
         }
 
         public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
         {
-            StartNewFigure(pt1);
+            StartNewFigure(pt1.ToWpf());
             figure.Segments.Add(
-                new swm.BezierSegment(pt2.ToWpf(), pt3.ToWpf(), pt4.ToWpf(), 
+                new swm.BezierSegment(pt2.ToWpf(), pt3.ToWpf(), pt4.ToWpf(),
                 isStroked: true));
         }
 
@@ -103,25 +96,71 @@ namespace Eto.Platform.Wpf.Drawing
             throw new NotImplementedException();
         }
 
+        const double DegreesToRadians = Math.PI / 180d;
+
         public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
         {
-            throw new NotImplementedException();
+            // sweep direction
+            var sweepDir =
+                sweepAngle < 0
+                ? swm.SweepDirection.Counterclockwise
+                : swm.SweepDirection.Clockwise;
+
+            bool isLargeArc = Math.Abs(sweepAngle) > 180;
+
+            // angles in radians
+            var startRadians = startAngle * DegreesToRadians;
+            var sweepRadians = sweepAngle * DegreesToRadians;
+
+            double cx = rect.Width / 2;
+            double cy = rect.Height / 2;
+
+            //start point
+            double x1 = rect.X + cx + (Math.Cos(startRadians) * cx);
+            double y1 = rect.Y + cy + (Math.Sin(startRadians) * cy);
+            var startPoint = new sw.Point(x1, y1);
+
+            //end point
+            double x2 = rect.X + cx + (Math.Cos(startRadians + sweepRadians) * cx);
+            double y2 = rect.Y + cy + (Math.Sin(startRadians + sweepRadians) * cy);
+            var endPoint = new sw.Point(x2, y2);
+
+            if (figure == null)
+                StartNewFigure(startPoint);
+            else
+                LineTo(startPoint); // connect the existing figure
+
+            // Add a new arc segment
+            figure.Segments.Add(
+                new swm.ArcSegment(
+                    endPoint,
+                    new sw.Size(cx, cy),
+                    0,
+                    isLargeArc,
+                    sweepDir,
+                    isStroked: true));
         }
 
         public void AddEllipse(RectangleF rect)
         {
-            throw new NotImplementedException();
+            AddArc(rect, 0, 360);
         }
 
-		public void LineTo (Point point)
-		{
-			figure.Segments.Add (new swm.LineSegment (point.ToWpf (), true));
-		}
+        public void LineTo(Point point)
+        {
+            var p = point.ToWpf();
+            LineTo(p);
+        }
 
-		public void MoveTo (Point point)
-		{
-			StartNewFigure (point);
-		}
+        private void LineTo(sw.Point p)
+        {
+            figure.Segments.Add(new swm.LineSegment(p, true));
+        }
+
+        public void MoveTo(Point point)
+        {
+            StartNewFigure(point.ToWpf());
+        }
 
         public RectangleF GetBounds()
         {

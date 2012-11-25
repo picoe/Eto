@@ -65,7 +65,12 @@ namespace Eto.Platform.Wpf
             return new sw.Size (value.Width, value.Height);
         }
 
-        public static Point ToEto (this sw.Point value)
+        public static sw.Size ToWpf(this SizeF value)
+        {
+            return new sw.Size(value.Width, value.Height);
+        }
+
+        public static Point ToEto(this sw.Point value)
         {
             return new Point ((int)value.X, (int)value.Y);
         }
