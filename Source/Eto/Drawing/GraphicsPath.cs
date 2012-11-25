@@ -276,6 +276,7 @@ namespace Eto.Drawing
         /// <param name="swRadius">Radius of the south west corner</param>
         /// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
         public static GraphicsPath GetRoundRect(
+            Generator g,
             RectangleF rect,
             float nwRadius,
             float neRadius,
@@ -287,7 +288,7 @@ namespace Eto.Drawing
             ///  |       |
             ///  SW-----SE
 
-            var result = new GraphicsPath();
+            var result = new GraphicsPath(g);
 
             nwRadius *= 2;
             neRadius *= 2;
