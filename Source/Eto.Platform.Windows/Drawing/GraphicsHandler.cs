@@ -354,12 +354,6 @@ namespace Eto.Platform.Windows.Drawing
                 (SD.Drawing2D.GraphicsPath)path.ControlObject);
         }
 
-        public void SetClip(Graphics graphics)
-        {
-            this.Control.SetClip(graphics.ToSD());
-        }
-
-
         private Stack<SD.Drawing2D.Matrix> savedTransforms;
 
         public void SaveTransform()

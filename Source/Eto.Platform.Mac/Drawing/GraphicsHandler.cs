@@ -519,11 +519,6 @@ namespace Eto.Platform.iOS.Drawing
             /* TODO */
         }
 
-        public void SetClip(Graphics graphics)
-        {
-            /* TODO */
-        }
-
         public void FillPath(Brush brush, GraphicsPath path)
         {
             if (brush != null &&

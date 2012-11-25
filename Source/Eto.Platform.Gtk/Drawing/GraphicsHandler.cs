@@ -347,11 +347,6 @@ namespace Eto.Platform.GtkSharp.Drawing
             throw new NotImplementedException();
         }
 
-        public void SetClip(Graphics graphics)
-        {
-            throw new NotImplementedException();
-        }
-
         #endregion
 
 

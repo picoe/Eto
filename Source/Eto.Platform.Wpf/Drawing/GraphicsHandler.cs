@@ -333,12 +333,6 @@ namespace Eto.Platform.Wpf.Drawing
             throw new InvalidOperationException(); 
         }
 
-        public void SetClip(Graphics graphics)
-        {
-            // should not be called since Wpf is retained mode.
-            throw new InvalidOperationException();
-        }
-
         public RectangleF ClipBounds
         {
             get

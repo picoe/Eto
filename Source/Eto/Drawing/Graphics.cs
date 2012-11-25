@@ -219,7 +219,7 @@ namespace Eto.Drawing
 		/// Gets or sets a value indicating that drawing operations will use antialiasing
 		/// </summary>
 		bool Antialias { get; set; }
-        void SetClip(Graphics graphics);
+
         void SaveTransform();
 
         void RestoreTransform();
@@ -727,11 +727,6 @@ namespace Eto.Drawing
         public void SetClip(RectangleF rect)
         {
             handler.SetClip(rect);
-        }
-
-        public void SetClip(Graphics graphics)
-        {
-            handler.SetClip(graphics);
         }
 
         public RectangleF ClipBounds
