@@ -111,8 +111,8 @@ namespace Eto.Platform.Windows.Drawing
 			if (format == ImageFormat.Gif)
 			{
 				var quantizer = new OctreeQuantizer (255, 8);
-				var yummygif = quantizer.Quantize(Control);
-				yummygif.Save(stream, format.ToSD ());
+				var gif = quantizer.Quantize(Control);
+				gif.Save(stream, format.ToSD ());
 			}
 			else  Control.Save(stream, format.ToSD ());
 		}
@@ -141,9 +141,6 @@ namespace Eto.Platform.Windows.Drawing
 			return Control;
 		}
 
-        #region IBitmap Members
-
-
         public void Create(int width, int height, Graphics graphics)
         {
             this.Control =
@@ -171,19 +168,11 @@ namespace Eto.Platform.Windows.Drawing
                 this.Control.GetPixel(x, y).ToEto();
         }
 
-        public void Create(int width, int height)
-        {
-            this.Control =
-                new SD.Bitmap(width, height);
-        }
-
         public void Create(Image image)
         {
             this.Control =
                 new SD.Bitmap(
                     (SD.Image)image.ControlObject);
         }
-
-        #endregion
     }
 }

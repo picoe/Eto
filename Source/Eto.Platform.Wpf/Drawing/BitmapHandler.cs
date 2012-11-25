@@ -6,6 +6,7 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
+using BitmapFrame = System.Windows.Media.Imaging.BitmapFrame;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -33,18 +34,18 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Create (string fileName)
 		{
-			Control = swm.Imaging.BitmapFrame.Create (new Uri (fileName));
+			Control = BitmapFrame.Create (new Uri (fileName));
 		}
 
 		public void Create (System.IO.Stream stream)
 		{
-			Control = swm.Imaging.BitmapFrame.Create (stream);
+			Control = BitmapFrame.Create (stream);
 		}
 
-		public void SetBitmap (swm.Imaging.BitmapSource bitmap)
-		{
-			this.Control = bitmap;
-		}
+        public void Create(Image image)
+        {
+            throw new NotImplementedException();
+        }
 
 		public void Create (int width, int height, PixelFormat pixelFormat)
 		{
@@ -72,6 +73,59 @@ namespace Eto.Platform.Wpf.Drawing
 			Control = bf;
 			
 		}
+
+        public void Create(int width, int height, Graphics graphics)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void SetBitmap(swm.Imaging.BitmapSource bitmap)
+        {
+            this.Control = bitmap;
+        }
+
+        public Color GetPixel(int x, int y)
+        {
+            var b = (BitmapFrame)Control;
+
+            var rect = new sw.Int32Rect(x, y, 1, 1);
+
+            var stride = (rect.Width * b.Format.BitsPerPixel + 7) / 8;
+
+            var pixels = new byte[rect.Height];
+
+            b.CopyPixels(
+                rect,
+                pixels,
+                stride: stride,
+                offset: 0);
+          
+            if (b.Format == swm.PixelFormats.Rgb24)
+            {
+                return Color.FromArgb(
+                    r: pixels[0],
+                    g: pixels[1],
+                    b: pixels[2]);
+            }
+            else if (b.Format == swm.PixelFormats.Bgr32)
+            {
+                return Color.FromArgb(
+                    b: pixels[0],
+                    g: pixels[1],
+                    r: pixels[2]);
+            }
+            else if (b.Format == swm.PixelFormats.Pbgra32)
+            {
+                return Color.FromArgb(
+                    b: pixels[0],
+                    g: pixels[1],
+                    r: pixels[2],
+                    a: pixels[3]);
+            }
+            else
+                throw new NotSupportedException();
+        }
+
 
 		public void Resize (int width, int height)
 		{
@@ -126,7 +180,7 @@ namespace Eto.Platform.Wpf.Drawing
 				default:
 					throw new NotSupportedException ();
 			}
-			encoder.Frames.Add (swm.Imaging.BitmapFrame.Create (Control));
+			encoder.Frames.Add (BitmapFrame.Create (Control));
 			encoder.Save (stream);
 		}
 
@@ -151,34 +205,11 @@ namespace Eto.Platform.Wpf.Drawing
             get { return Size.Height; }
         }
 
-        public void Create(int width, int height, Graphics graphics)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Create(Size size, PixelFormat pixelFormat)
-        {
-            throw new NotImplementedException();
-        }
-
         public IBitmap Clone()
         {
-            throw new NotImplementedException();
-        }
-
-        public Color GetPixel(int x, int y)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Create(int width, int height)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Create(Image image)
-        {
-            throw new NotImplementedException();
+            var result = new BitmapHandler();
+            result.SetBitmap(Control.Clone());
+            return result;
         }
 
         public byte[] ToPNGByteArray()

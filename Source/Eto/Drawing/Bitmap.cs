@@ -81,6 +81,8 @@ namespace Eto.Drawing
 		/// <param name="stream">Stream to load from the bitmap</param>
 		void Create (Stream stream);
 
+        void Create(Image image);
+
 		/// <summary>
 		/// Creates a new bitmap in-memory with the specified format
 		/// </summary>
@@ -131,10 +133,6 @@ namespace Eto.Drawing
         IBitmap Clone();
 
         Color GetPixel(int x, int y);
-
-        void Create(int width, int height);
-
-        void Create(Image image);
 
         byte[] ToPNGByteArray();
 	}
@@ -214,7 +212,8 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the bitmap to create</param>
 		/// <param name="pixelFormat">Format of each pixel</param>
-		public Bitmap (Size size, PixelFormat pixelFormat) : this(size.Width, size.Height, pixelFormat)
+		public Bitmap (Size size, PixelFormat pixelFormat) 
+            : this(size.Width, size.Height, pixelFormat)
 		{
 		}
 
@@ -289,12 +288,6 @@ namespace Eto.Drawing
 			: base(generator, handler)
 		{
 		}
-
-        public Bitmap(int width, int height) :
-            this(Generator.Current)
-        {
-            Handler.Create(width, height);
-        }
 
         public Bitmap(Image image) :
             this(Generator.Current)

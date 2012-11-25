@@ -272,9 +272,6 @@ namespace Eto.Platform.Mac.Drawing
 				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
-
-        #region IBitmap Members
-
         public IBitmap Clone()
         {
             return null;/* TODO */
@@ -285,18 +282,10 @@ namespace Eto.Platform.Mac.Drawing
             return default(Color);/* TODO */
         }
 
-        public void Create(int width, int height)
-        {
-            /* TODO */
-        }
-
         public void Create(Image image)
         {
             /* TODO */
         }
-
-        #endregion
-
 
         public byte[] ToPNGByteArray()
         {
