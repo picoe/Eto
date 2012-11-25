@@ -20,8 +20,13 @@ namespace Eto.Platform.GtkSharp
 		{
 			return new Cairo.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
-		
-		public static Rectangle ToEto (this Cairo.Rectangle rectangle)
+
+        public static Cairo.Rectangle ToCairo(this RectangleF rectangle)
+        {
+            return new Cairo.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+        }
+
+        public static Rectangle ToEto(this Cairo.Rectangle rectangle)
 		{
 			return new Rectangle ((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
 		}

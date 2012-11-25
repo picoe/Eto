@@ -119,7 +119,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			 * */
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var context = graphics.Control;
 			context.Save ();
