@@ -146,19 +146,19 @@ namespace Eto
 				if (current != null)
 					return current;
 #if MOBILE
-				current = Generator.GetGenerator (Generators.IosAssembly, true);
+				Initialize(Generator.GetGenerator (Generators.IosAssembly, true));
 #elif DESKTOP
 			
 				if (EtoEnvironment.Platform.IsMac)
-					current = Generator.GetGenerator (Generators.MacAssembly, true);
+					Initialize(Generator.GetGenerator (Generators.MacAssembly, true));
 				else if (EtoEnvironment.Platform.IsWindows) {
-					current = Generator.GetGenerator (Generators.WpfAssembly, true);
+					Initialize(Generator.GetGenerator (Generators.WpfAssembly, true));
 					if (current == null)
-						current = Generator.GetGenerator (Generators.WinAssembly, true);
+						Initialize(Generator.GetGenerator (Generators.WinAssembly, true));
 				}
 
 				if (current == null && EtoEnvironment.Platform.IsUnix)
-					current = Generator.GetGenerator (Generators.GtkAssembly, true);
+					Initialize(Generator.GetGenerator (Generators.GtkAssembly, true));
 #endif
 				
 				if (current == null)
@@ -167,7 +167,7 @@ namespace Eto
 				return current;
 			}
 		}
-		
+		       
 		/// <summary>
 		/// Initializes this generator as the current generator
 		/// </summary>
