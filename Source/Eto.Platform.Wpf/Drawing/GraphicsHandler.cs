@@ -250,17 +250,19 @@ namespace Eto.Platform.Wpf.Drawing
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			var fontHandler = font.Handler as FontHandler;
-			var brush = new swm.SolidColorBrush(color.ToWpf ());
-			var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
-			Control.DrawText (formattedText, new sw.Point (x, y));
+            if (fontHandler != null)
+            {
+                var brush = new swm.SolidColorBrush(color.ToWpf());
+                var formattedText = new swm.FormattedText(text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
+                Control.DrawText(formattedText, new sw.Point(x, y));
+            }
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			var fontHandler = font.Handler as FontHandler;
-            
             var result = SizeF.Empty;
 
+            var fontHandler = font.Handler as FontHandler;            
             if (fontHandler != null)
             {
                 var brush = new swm.SolidColorBrush(swm.Colors.White);
