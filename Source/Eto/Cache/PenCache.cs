@@ -5,6 +5,7 @@ namespace Eto.Cache
 {
     struct PenKey
     {
+        public Generator Generator { get; set; }
         public float Width { get; set; }
         public Color Color { get; set; }
         public PenAlignment PenAlignment { get; set; }
@@ -19,9 +20,12 @@ namespace Eto.Cache
         private static Dictionary<PenKey, Pen> pens =
             new Dictionary<PenKey, Pen>();
 
-        public static Pen GetPen(Color color)
+        public static Pen GetPen(
+            Generator g, 
+            Color color)
         {
             return GetPen(
+                g,
                 color,
                 1f,
                 PenAlignment.Center,
@@ -29,10 +33,12 @@ namespace Eto.Cache
         }
 
         public static Pen GetPen(
+            Generator g, 
             Color color,
             float width)
         {
             return GetPen(
+                g,
                 color,
                 width,
                 PenAlignment.Center,
@@ -40,6 +46,7 @@ namespace Eto.Cache
         }
 
         public static Pen GetPen(
+            Generator g,
             Color color,
             float width,
             PenAlignment alignment,
@@ -47,8 +54,12 @@ namespace Eto.Cache
         {
             Pen result = null;
 
+            var generator =
+                g ?? Generator.Current;
+
             var key = new PenKey()
             {
+                Generator = generator,
                 Color = color,
                 Width = width,
                 DashStyle = dashStyle,
@@ -58,7 +69,8 @@ namespace Eto.Cache
             if (pens != null &&
                 !pens.TryGetValue(key, out result))
             {
-                result = new Pen(Generator.Current, color, width, alignment, dashStyle);
+                result = new 
+                    Pen(generator, color, width, alignment, dashStyle);
 
                 pens[key] = result;
             }
