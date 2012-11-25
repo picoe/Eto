@@ -223,9 +223,12 @@ namespace Eto.Drawing
         void SaveTransform();
 
         void RestoreTransform();
+
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
 		ImageInterpolation ImageInterpolation { get; set; }
+
+        void Clear(Color color);
     }
 
 	/// <summary>
@@ -789,7 +792,7 @@ namespace Eto.Drawing
         #region Clear
         public void Clear(Color color)
         {
-            FillRectangle(color, ClipBounds);
+            handler.Clear(color);
         }
         #endregion
     }

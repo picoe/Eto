@@ -273,8 +273,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 			base.Dispose (disposing);
 		}
 
-        #region IGraphics Members
-
         public void SetClip(RectangleF rect)
         {
             throw new NotImplementedException();
@@ -347,15 +345,17 @@ namespace Eto.Platform.GtkSharp.Drawing
             throw new NotImplementedException();
         }
 
-        #endregion
-
-
         public void SaveTransform()
         {
             throw new NotImplementedException();
         }
 
         public void RestoreTransform()
+        {
+            throw new NotImplementedException();
+        }
+
+        public void Clear(Color color)
         {
             throw new NotImplementedException();
         }

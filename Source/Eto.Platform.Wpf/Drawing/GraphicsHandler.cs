@@ -437,5 +437,10 @@ namespace Eto.Platform.Wpf.Drawing
             
             popCount = null;
         }
+
+        public void Clear(Color color)
+        {
+            // TODO
+        }
     }
 }

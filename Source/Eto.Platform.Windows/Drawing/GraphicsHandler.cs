@@ -380,5 +380,10 @@ namespace Eto.Platform.Windows.Drawing
                 t.Dispose();
             }
         }
+
+        public void Clear(Color color)
+        {
+            Control.Clear(color.ToSD());
+        }
     }
 }

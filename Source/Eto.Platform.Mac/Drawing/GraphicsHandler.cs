@@ -597,5 +597,10 @@ namespace Eto.Platform.iOS.Drawing
         {
             Control.RestoreGraphicsState();
         }
+
+        public void Clear(Color color)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
