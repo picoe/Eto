@@ -33,7 +33,7 @@ namespace Eto.Cache
             if (brushes != null &&
                 !brushes.TryGetValue(key, out result))
             {
-                result = new Brush(color);
+                result = new Brush(generator, color);
                 brushes[key] = result;
             }
 

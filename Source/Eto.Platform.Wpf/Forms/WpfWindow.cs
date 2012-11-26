@@ -10,6 +10,7 @@ using swc = System.Windows.Controls;
 using System.Runtime.InteropServices;
 using Eto.Platform.Wpf.CustomControls;
 using Eto.Platform.Wpf.Forms.Menu;
+using Eto.Cache;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -349,14 +350,14 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get
 			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
+				var brush = Control.Background as swm.SolidColorBrush;
 				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
 			set
 			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+                Control.Background = BrushCache.GetBrush(this.Generator, value).ControlObject as swm.Brush;
+            }
 		}
     }
 }

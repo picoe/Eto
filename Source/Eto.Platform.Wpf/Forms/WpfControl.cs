@@ -5,6 +5,8 @@ using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
+using Eto.Cache;
+using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -18,14 +20,14 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get
 			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
+				var brush = Control.Background as swm.SolidColorBrush;
                 if (brush != null) return brush.Color.ToEto ();
                 else return Colors.Black;
 			}
 			set
 			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+                Control.Background = BrushCache.GetBrush(this.Generator, value).ControlObject as swm.Brush;
+            }
 		}
 
 		public Font Font

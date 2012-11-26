@@ -52,7 +52,12 @@ namespace Eto.Drawing
         }
 
         public Brush(Color color)
-            : this(Generator.Current)
+            : this(Generator.Current, color)
+        {
+        }
+
+        public Brush(Generator g, Color color)
+            : this(g)
         {
             inner = (IBrush)Handler;
             inner.Create(color);
