@@ -71,7 +71,7 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void Create(int width, int height, Graphics graphics)
         {
-            throw new NotImplementedException();
+            Create(width, height, PixelFormat.Format32bppRgba);
         }
 
         public void SetBitmap(swm.Imaging.BitmapSource bitmap)

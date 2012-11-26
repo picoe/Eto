@@ -115,7 +115,9 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void AddRectangle(RectangleF rectangle)
         {
-            throw new NotImplementedException();
+            Control.AddGeometry(new swm.RectangleGeometry(rectangle.ToWpf()));
+
+            figure = null;
         }
 
         const double DegreesToRadians = Math.PI / 180d;
