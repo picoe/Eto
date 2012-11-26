@@ -143,9 +143,12 @@ namespace Eto.Platform.Windows.Drawing
 
         public void Create(int width, int height, Graphics graphics)
         {
-            this.Control =
-                new SD.Bitmap(width, height,
-                    ((GraphicsHandler)graphics.Handler).Control);
+            var handler = graphics.Handler as GraphicsHandler;
+
+            if (handler != null)
+                this.Control =
+                    new SD.Bitmap(width, height,
+                        handler.Control);
         }
 
         public void Create(Size size, PixelFormat pixelFormat)
