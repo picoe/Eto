@@ -221,9 +221,9 @@ namespace Eto.Platform.Wpf.Drawing
 				Control.Pop ();
 		}
 
-        public void DrawImage(Image image, PointF pointF)
+        public void DrawImage(Image image, PointF p)
         {
-            //throw new NotImplementedException();
+            DrawImage(image, (int)p.X, (int)p.Y); // TODO: fix
         }
 
         public void DrawImage(Image image, RectangleF rect)
