@@ -139,7 +139,7 @@ namespace Eto.Platform.Windows
 				}
 			}			
 		}
-		
+
 		public LabelHandler ()
 		{
 			Control = new MyLabel { Handler = this };

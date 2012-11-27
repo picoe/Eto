@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;

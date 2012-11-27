@@ -51,9 +51,9 @@ namespace Eto.Platform.Windows
 			};
 		}
 
-		public Generator ()
-		{
-			AddAssembly (typeof (Generator).Assembly);
-		}
-	}
+        public Generator()
+        {
+            AddAssembly(typeof(Generator).Assembly);
+        }
+    }
 }
