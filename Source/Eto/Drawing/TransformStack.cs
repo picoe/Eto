@@ -31,6 +31,10 @@ namespace Eto.Drawing
 
                 return current; 
             }
+            set
+            {
+                current = value;
+            }
         }
 
         Eto.Generator generator;
