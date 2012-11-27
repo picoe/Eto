@@ -19,12 +19,18 @@ namespace Eto.Drawing
 
         Eto.Generator generator;
         Action<Matrix> push;
-        Action pop;
+        Action<Matrix> pop;
 
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="generator"></param>
+        /// <param name="push">A callback that should prepend the specified value to the current matrix </param>
+        /// <param name="pop">A callback that should either pop the matrix stack or set the current matrix to the specified value</param>
         public TransformStack(
             Eto.Generator generator,
             Action<Matrix> push,
-            Action pop)
+            Action<Matrix> pop)
         {
             this.generator = generator;
             this.push = push;
@@ -124,15 +130,15 @@ namespace Eto.Drawing
             if (t == null)
                 throw new EtoException("RestoreTransform called without SaveTransform");
 
+            // restore the transform
+            current = t.matrix;
+
             // Pop the drawing context
             // popCount times
             while (
                 t != null &&
                 t.popCount-- > 0)
-                pop();
-
-            // restore the transform
-            current = t.matrix;
+                pop(current);
 
             // reset the current entry always
             s = null;

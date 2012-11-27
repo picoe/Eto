@@ -361,7 +361,10 @@ namespace Eto.Platform.Wpf.Drawing
                             Control.PushTransform(mt);
 
                         },
-                        () => Control.Pop());
+                        // we ignore the m parameter below
+                        // since wpf only supports popping
+                        // the stack
+                        m => Control.Pop());
 
                 return transformStack;
             }
