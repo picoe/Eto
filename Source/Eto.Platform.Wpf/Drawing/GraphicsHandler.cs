@@ -337,126 +337,76 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
-        swm.Matrix current = swm.Matrix.Identity;
+        private TransformStack transformStack;
+
+        private TransformStack TransformStack
+        {
+            get
+            {
+                if (transformStack == null)
+                    transformStack = new TransformStack(
+                        this.Generator,
+                        m =>
+                        {
+                            var matrixHandler =
+                                m.Handler as MatrixHandler;
+
+                            var matrix =
+                                (swm.Matrix)
+                                matrixHandler.Control;
+
+                            var mt = new swm.MatrixTransform(
+                                matrix);
+
+                            Control.PushTransform(mt);
+
+                        },
+                        () => Control.Pop());
+
+                return transformStack;
+            }
+        }
 
         public Matrix Transform
         {
             get
             {
-                return new Matrix(
-                    this.Generator, 
-                    new MatrixHandler(current)); 
+                return TransformStack.Current;
             }
             set
             {
-                MultiplyTransform(value);
+                TransformStack.Transform = value;
             }
         }
 
         public void TranslateTransform(float dx, float dy)
         {
-            var m = new swm.Matrix();
-            m.Translate(dx, dy);
-            Push(ref m);
+            TransformStack.TranslateTransform(dx, dy);
         }
 
         public void RotateTransform(float angle)
         {
-            var m = new swm.Matrix();
-            m.Rotate(angle);
-            Push(ref m);
+            TransformStack.RotateTransform(angle);
         }
 
         public void ScaleTransform(float sx, float sy)
         {
-            var m = new swm.Matrix();
-            m.Scale(sx, sy);
-            Push(ref m);
+            TransformStack.ScaleTransform(sx, sy);            
         }
 
         public void MultiplyTransform(Matrix matrix)
         {
-            var m = (swm.Matrix)matrix.ControlObject;
-
-            Push(ref m);
-        }
-
-        /// <summary>
-        /// Each entry is created during Save
-        /// and pushed during the next Save
-        /// </summary>
-        private Stack<StackEntry> stack;
-
-        class StackEntry
-        {
-            public int popCount;
-            public swm.Matrix matrix;
-        }
-
-        StackEntry s = null;
-
-        private void Push(ref swm.Matrix m)
-        {
-            var t = new swm.MatrixTransform(m);
-
-            // If we're in a SaveTransform block,
-            // increment the pop count.
-            if (s != null)
-                s.popCount++;
-
-            // compute the new matrix by prepending
-            current.Prepend(m);
-
-            // push the transform
-            Control.PushTransform(t);
+            TransformStack.MultiplyTransform(matrix);
         }
 
         public void SaveTransform()
         {
-            // Create a stack the first time.
-            if (stack == null) 
-                stack = new Stack<StackEntry>();
-
-            // If there is an existing
-            // entry, push it
-            if (s != null)
-                stack.Push(s);
-
-            // start a new entry
-            s = new StackEntry
-            {
-                popCount = 0,
-                matrix = current
-            };
+            TransformStack.SaveTransform();
         }
 
         public void RestoreTransform()
         {
-            // If there is a current entry, use it.
-            var t = s;
-
-            if (t == null)
-                throw new EtoException("RestoreTransform called without SaveTransform");
-
-            // Pop the drawing context
-            // popCount times
-            while (
-                t != null &&
-                t.popCount-- > 0)
-                Control.Pop();
-
-            // restore the transform
-            current = t.matrix;
-
-            // reset the current entry always
-            s = null;
-
-            // otherwise if the stack is nonempty
-            // pop the value.
-            if (stack != null && 
-                stack.Count > 0)
-                s = stack.Pop();
-
+            TransformStack.RestoreTransform();
         }
 
         public void Clear(Color color)

@@ -137,6 +137,7 @@
     <Compile Include="Drawing\Pen.cs" />
     <Compile Include="Drawing\StringAlignment.cs" />
     <Compile Include="Drawing\TextAlign.cs" />
+    <Compile Include="Drawing\TransformStack.cs" />
     <Compile Include="Drawing\VerticalMetrics.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
