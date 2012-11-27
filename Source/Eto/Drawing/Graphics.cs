@@ -6,7 +6,7 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Platform handler interface for the <see cref="Graphics"/> class
 	/// </summary>
-	public interface IGraphics : IInstanceWidget
+	public interface IGraphics : IWidget
     {
         #region Properties
         /// <summary>
