@@ -288,6 +288,7 @@ namespace Eto.Drawing
         protected Graphics(Generator generator, Type handlerType)
             :base(generator, handlerType)
         {
+            this.handler = (IGraphics)Handler;
         }
 
         public void CreateFromImage(Bitmap image)
