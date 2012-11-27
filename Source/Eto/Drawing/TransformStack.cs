@@ -65,7 +65,22 @@ namespace Eto.Drawing
             }
             set
             {
-                MultiplyTransform(value); // BUGBUG: this this correct?
+                // fast exit
+                if (!object.ReferenceEquals(
+                    current,
+                    value))
+                {
+                    // compute the inverse of the
+                    // current, then premultiply
+                    // by it and then premultiply
+                    var currentInverse = Current.Clone();
+                    currentInverse.Invert();
+                    MultiplyTransform(currentInverse);
+                    MultiplyTransform(value);
+
+                    // result = value * currentInverse * current
+                    // which is value
+                }
             }
         }
 
