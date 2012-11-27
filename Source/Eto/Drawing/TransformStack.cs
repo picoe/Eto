@@ -17,9 +17,17 @@ namespace Eto.Drawing
             get 
             {
                 if (current == null)
+                {
                     current =
                         new Matrix(
                             this.generator);
+                    
+                    if (current.Handler == null)
+                        throw new EtoException();
+                }
+
+                if (current.Handler == null)
+                    throw new EtoException();
 
                 return current; 
             }
@@ -49,7 +57,7 @@ namespace Eto.Drawing
         {
             get
             {
-                return Current;
+                return Current.Clone();
             }
             set
             {
@@ -126,7 +134,7 @@ namespace Eto.Drawing
             s = new StackEntry
             {
                 popCount = 0,
-                matrix = Current
+                matrix = Current.Clone()
             };
         }
 
@@ -146,7 +154,9 @@ namespace Eto.Drawing
             while (
                 t != null &&
                 t.popCount-- > 0)
-                pop(Current);
+                // return a cloned matrix
+                // since the caller may dispose it.
+                pop(Current.Clone());
 
             // reset the current entry always
             s = null;
