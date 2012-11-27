@@ -75,7 +75,7 @@ namespace Eto.Drawing
                     // compute the inverse of the
                     // current, then premultiply
                     // by it and then premultiply
-                    var currentInverse = current.Clone();
+                    var currentInverse = Current.Clone();
                     currentInverse.Invert();
                     MultiplyTransform(currentInverse);
                     MultiplyTransform(value);
