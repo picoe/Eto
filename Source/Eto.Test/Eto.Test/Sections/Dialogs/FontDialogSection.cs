@@ -126,14 +126,14 @@ namespace Eto.Test.Sections.Dialogs
 		Control BoldFont ()
 		{
 			var control = new CheckBox { Text = "Bold", Enabled = false };
-			control.Bind ("Checked", "Bold");
+			control.Bind (r => r.Checked, (Font f) => f.Bold);
 			return control;
 		}
 
 		Control ItalicFont ()
 		{
 			var control = new CheckBox { Text = "Italic", Enabled = false };
-			control.Bind ("Checked", "Italic");
+			control.Bind (r => r.Checked, (Font f) => f.Italic);
 			return control;
 		}
 

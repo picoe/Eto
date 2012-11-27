@@ -29,14 +29,14 @@ namespace Eto.Test.Sections.Layouts.ScrollingLayouts
 		Control ExpandContentWidth ()
 		{
 			var control = new CheckBox { Text = "ExpandContentWidth" };
-			control.Bind ("Checked", defaultScrollable, "ExpandContentWidth");
+			control.Bind (r => r.Checked, defaultScrollable, s => s.ExpandContentWidth);
 			return control;
 		}
 
 		Control ExpandContentHeight ()
 		{
 			var control = new CheckBox { Text = "ExpandContentHeight" };
-			control.Bind ("Checked", defaultScrollable, "ExpandContentHeight");
+			control.Bind (r => r.Checked, defaultScrollable, s => s.ExpandContentHeight);
 			return control;
 		}
 
