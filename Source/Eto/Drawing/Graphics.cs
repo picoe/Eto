@@ -4,38 +4,6 @@ using System.Collections.Generic;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Interpolation modes when drawing images using the <see cref="Graphics"/> object
-	/// </summary>
-	/// <seealso cref="Graphics.ImageInterpolation"/>
-	public enum ImageInterpolation
-	{
-		/// <summary>
-		/// Default interplation mode - usually a balance between quality vs. performance
-		/// </summary>
-		Default,
-
-		/// <summary>
-		/// No interpolation (also known as nearest neighbour)
-		/// </summary>
-		None,
-
-		/// <summary>
-		/// Low interpolation quality (usually fastest)
-		/// </summary>
-		Low,
-
-		/// <summary>
-		/// Medium interpolation quality slower than <see cref="Low"/>, but better quality
-		/// </summary>
-		Medium,
-
-		/// <summary>
-		/// Highest interpolation quality - slowest but best quality
-		/// </summary>
-		High
-	}
-
-	/// <summary>
 	/// Platform handler interface for the <see cref="Graphics"/> class
 	/// </summary>
 	public interface IGraphics : IInstanceWidget
@@ -311,6 +279,17 @@ namespace Eto.Drawing
 			this.handler.CreateFromImage (image);
 		}
 
+        /// <summary>
+        /// Initializes a new instance of the Graphics with the specified handler type.
+        /// Allows derived types to change the handler.
+        /// </summary>
+        /// <param name="generator">Generator to create this graphics context for</param>
+        /// <param name="handlerType"></param>
+        protected Graphics(Generator generator, Type handlerType)
+            :base(generator, handlerType)
+        {
+        }
+
         public void CreateFromImage(Bitmap image)
         {
             throw new InvalidOperationException(
@@ -429,7 +408,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		public void FillRectangle (Color color, int x, int y, int width, int height)
+        public void FillRectangle(Color color, float x, float y, float width, float height)
 		{
 			handler.FillRectangle (color, x, y, width, height);
 		}
@@ -484,6 +463,19 @@ namespace Eto.Drawing
 			handler.FillEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
+        /// <summary>
+        /// Fills an ellipse with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Fill color</param>
+        /// <param name="x">X co-ordinate</param>
+        /// <param name="y">Y co-ordinate</param>
+        /// <param name="width">Width of the ellipse</param>
+        /// <param name="height">Height of the ellipse</param>
+        public void FillEllipse(Color color, int x, int y, int width, int height)
+        {
+            handler.FillEllipse(color, x, y, width, height);
+        }
+
 		/// <summary>
 		/// Draws an ellipse outline with the specified <paramref name="color"/>
 		/// </summary>
@@ -493,6 +485,20 @@ namespace Eto.Drawing
 		{
 			handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
+
+        /// <summary>
+        /// Draws an ellipse with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Fill color</param>
+        /// <param name="x">X co-ordinate</param>
+        /// <param name="y">Y co-ordinate</param>
+        /// <param name="width">Width of the ellipse</param>
+        /// <param name="height">Height of the ellipse</param>
+        public void DrawEllipse(Color color, int x, int y, int width, int height)
+        {
+            handler.DrawEllipse(color, x, y, width, height);
+        }
+
         #endregion
 
         #region Polygon
