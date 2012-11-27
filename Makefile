@@ -63,8 +63,7 @@ zip: debug-bin release-bin
 define process-release
 	cd $1; \
 	rm -f *.mdb; \
-	rm -f Eto.Test.*.mdb; \
-	rm -f Eto.Test.*.pdb; \
+	rm -f Eto.Test*.pdb; \
 	rm -f *.vshost.exe*; \
 	rm -f Newtonsoft.Json.pdb; \
 	rm -f Newtonsoft.Json.xml;
