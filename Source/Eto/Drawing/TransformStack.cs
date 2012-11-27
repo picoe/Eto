@@ -11,10 +11,18 @@ namespace Eto.Drawing
     /// </summary>
     public class TransformStack
     {
-        Matrix current = new Matrix();
+        Matrix current;
         public Matrix Current
         {
-            get { return current; }
+            get 
+            {
+                if (current == null)
+                    current =
+                        new Matrix(
+                            this.generator);
+
+                return current; 
+            }
         }
 
         Eto.Generator generator;
@@ -41,7 +49,7 @@ namespace Eto.Drawing
         {
             get
             {
-                return current;
+                return Current;
             }
             set
             {
@@ -97,7 +105,7 @@ namespace Eto.Drawing
                 s.popCount++;
 
             // compute the new matrix by prepending
-            current.Multiply(m, MatrixOrder.Prepend);
+            Current.Multiply(m, MatrixOrder.Prepend);
 
             // push the transform
             push(m);
@@ -118,7 +126,7 @@ namespace Eto.Drawing
             s = new StackEntry
             {
                 popCount = 0,
-                matrix = current
+                matrix = Current
             };
         }
 
@@ -138,7 +146,7 @@ namespace Eto.Drawing
             while (
                 t != null &&
                 t.popCount-- > 0)
-                pop(current);
+                pop(Current);
 
             // reset the current entry always
             s = null;
