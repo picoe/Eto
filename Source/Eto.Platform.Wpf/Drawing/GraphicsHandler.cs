@@ -374,7 +374,7 @@ namespace Eto.Platform.Wpf.Drawing
         {
             get
             {
-                return TransformStack.Current;
+                return TransformStack.Transform;
             }
             set
             {

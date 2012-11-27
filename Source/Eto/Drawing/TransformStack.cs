@@ -12,7 +12,7 @@ namespace Eto.Drawing
     public class TransformStack
     {
         Matrix current;
-        public Matrix Current
+        private Matrix Current
         {
             get 
             {
@@ -30,10 +30,6 @@ namespace Eto.Drawing
                     throw new EtoException();
 
                 return current; 
-            }
-            set
-            {
-                current = value;
             }
         }
 
@@ -57,6 +53,12 @@ namespace Eto.Drawing
             this.pop = pop;
         }
 
+        public void Initialize(
+            Matrix matrix)
+        {
+            current = matrix.Clone();
+        }
+
         public Matrix Transform
         {
             get
@@ -73,7 +75,7 @@ namespace Eto.Drawing
                     // compute the inverse of the
                     // current, then premultiply
                     // by it and then premultiply
-                    var currentInverse = Current.Clone();
+                    var currentInverse = current;
                     currentInverse.Invert();
                     MultiplyTransform(currentInverse);
                     MultiplyTransform(value);
