@@ -50,6 +50,7 @@
     <WarningLevel>4</WarningLevel>
     <Optimize>False</Optimize>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>

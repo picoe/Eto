@@ -36,6 +36,7 @@
   <PropertyGroup>
     <ApplicationIcon>TestIcon.ico</ApplicationIcon>
   </PropertyGroup>
+  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Data" />

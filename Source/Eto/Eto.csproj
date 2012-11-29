@@ -21,6 +21,7 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>

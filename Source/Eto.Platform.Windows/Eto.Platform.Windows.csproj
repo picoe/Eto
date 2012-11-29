@@ -55,6 +55,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.dll</HintPath>

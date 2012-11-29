@@ -29,6 +29,7 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="ColorPicker">
       <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>

@@ -10,6 +10,7 @@
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>

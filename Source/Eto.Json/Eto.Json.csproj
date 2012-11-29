@@ -29,6 +29,7 @@
     <ConsolePause>False</ConsolePause>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Newtonsoft.Json">

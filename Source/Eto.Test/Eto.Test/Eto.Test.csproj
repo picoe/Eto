@@ -10,6 +10,7 @@
     <RootNamespace>Eto.Test</RootNamespace>
     <AssemblyName>Eto.Test</AssemblyName>
   </PropertyGroup>
+  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
