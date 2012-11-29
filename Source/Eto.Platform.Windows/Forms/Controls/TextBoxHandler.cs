@@ -53,9 +53,10 @@ namespace Eto.Platform.Windows
 			set { Control.WatermarkText = value; }
 		}
 
-        public void SelectAll()
-        {
-            this.Control.SelectAll();
-        }
+		public void SelectAll ()
+		{
+			this.Control.Focus ();
+			this.Control.SelectAll ();
+		}
 	}
 }

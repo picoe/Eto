@@ -96,13 +96,11 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-        public void SelectAll()
-        {
-            if (!string.IsNullOrEmpty(
-                Control.Text))
-                Control.SelectRegion(
-                    0, 
-                    Control.Text.Length - 1);
-        }
+		public void SelectAll()
+		{
+			Control.GrabFocus ();
+			if (!string.IsNullOrEmpty(Control.Text))
+				Control.SelectRegion(0, Control.Text.Length);
+		}
     }
 }

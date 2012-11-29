@@ -196,28 +196,28 @@ namespace Eto.Test.Sections.Printing
 		Control PageOrientation ()
 		{
 			var control = new EnumComboBox<PageOrientation> ();
-			control.Bind ("SelectedValue", "Orientation");
+			control.Bind (r => r.SelectedValue, (PrintSettings s) => s.Orientation);
 			return control;
 		}
 
 		Control Copies ()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
-			control.Bind ("Value", "Copies", defaultWidgetValue: 1);
+			control.Bind (r => r.Value, (PrintSettings s) => s.Copies, defaultWidgetValue: 1);
 			return control;
 		}
 
 		Control Collate ()
 		{
 			var control = new CheckBox { Text = "Collate" };
-			control.Bind ("Checked", "Collate");
+			control.Bind (r => r.Checked, (PrintSettings s) => s.Collate);
 			return control;
 		}
 
 		Control Reverse ()
 		{
 			var control = new CheckBox { Text = "Reverse" };
-			control.Bind ("Checked", "Reverse");
+			control.Bind (r => r.Checked, (PrintSettings s) => s.Reverse);
 			return control;
 		}
 
@@ -288,7 +288,7 @@ namespace Eto.Test.Sections.Printing
 		Control PrintSelection ()
 		{
 			var control = new EnumComboBox<PrintSelection> ();
-			control.Bind ("SelectedValue", "PrintSelection");
+			control.Bind (r => r.SelectedValue, (PrintSettings s) => s.PrintSelection);
 			return control;
 		}
 

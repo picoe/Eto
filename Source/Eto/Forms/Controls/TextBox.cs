@@ -9,13 +9,14 @@ namespace Eto.Forms
 
 		int MaxLength { get; set; }
 		
-        void SelectAll();
+		void SelectAll();
+
 		string PlaceholderText { get; set; }
 	}
 	
 	public class TextBox : TextControl
 	{
-		ITextBox handler;
+		new ITextBox Handler { get { return (ITextBox)base.Handler; }}
 		
 		public TextBox () : this(Generator.Current)
 		{
@@ -29,27 +30,26 @@ namespace Eto.Forms
 		protected TextBox (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (ITextBox)base.Handler;
 		}
 
 		public bool ReadOnly {
-			get { return handler.ReadOnly; }
-			set { handler.ReadOnly = value; }
+			get { return Handler.ReadOnly; }
+			set { Handler.ReadOnly = value; }
 		}
 		
 		public int MaxLength {
-			get { return handler.MaxLength; }
-			set { handler.MaxLength = value; }
+			get { return Handler.MaxLength; }
+			set { Handler.MaxLength = value; }
 		}
 		
 		public string PlaceholderText {
-			get { return handler.PlaceholderText; }
-			set { handler.PlaceholderText = value; }
+			get { return Handler.PlaceholderText; }
+			set { Handler.PlaceholderText = value; }
 		}
 
-        public void SelectAll()
-        {
-            handler.SelectAll();
-        }
+		public void SelectAll()
+		{
+			Handler.SelectAll();
+		}
 	}
 }

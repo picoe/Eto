@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -63,9 +63,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Watermark = value; }
 		}
 
-        public void SelectAll()
-        {
-            Control.SelectAll();
-        }
+		public void SelectAll ()
+		{
+			Control.Focus ();
+			Control.SelectAll ();
+		}
     }
 }

@@ -44,6 +44,11 @@ namespace Eto.Platform.Windows.Drawing
             var f = this.Control; // this creates the font, bizarrely
         }
 
+		public void Create (string fontName, float size, FontStyle style)
+		{
+			Control = new SD.Font (fontName, size, style.ToSD ());
+		}
+
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
 			this.family = family;

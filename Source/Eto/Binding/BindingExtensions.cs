@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Linq.Expressions;
 
 namespace Eto
 {
@@ -84,5 +85,22 @@ namespace Eto
 			widget.Bindings.Add (binding);
 			return binding;
 		}
+
+		public static DualBinding Bind<W,WP,S,SP> (this W widget, Expression<Func<W,WP>> widgetProperty, S source, Expression<Func<S, SP>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay)
+			where W: InstanceWidget
+		{
+			var widgetExpression = (MemberExpression)widgetProperty.Body;
+			var sourceExpression = (MemberExpression)sourceProperty.Body;
+			return Bind (widget, widgetExpression.Member.Name, source, sourceExpression.Member.Name, mode);
+		}
+
+		public static DualBinding Bind<W, WP, SP, DC> (this W widget, Expression<Func<W, WP>> widgetProperty, Expression<Func<DC, SP>> sourceProperty, DualBindingMode mode = DualBindingMode.TwoWay, object defaultWidgetValue = null, object defaultContextValue = null)
+			where W : InstanceWidget
+		{
+			var widgetExpression = (MemberExpression)widgetProperty.Body;
+			var sourceExpression = (MemberExpression)sourceProperty.Body;
+			return Bind (widget, widgetExpression.Member.Name, sourceExpression.Member.Name, mode, defaultWidgetValue, defaultContextValue);
+		}
+
 	}
 }

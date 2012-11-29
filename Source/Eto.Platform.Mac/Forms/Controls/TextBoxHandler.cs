@@ -121,9 +121,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
 		}
 
-        public void SelectAll()
-        {
-            Control.SelectText(null);
-        }
+		public void SelectAll()
+		{
+			Control.SelectText (Control);
+		}
     }
 }

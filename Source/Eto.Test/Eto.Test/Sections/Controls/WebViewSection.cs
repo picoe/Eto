@@ -72,7 +72,7 @@ namespace Eto.Test.Sections.Controls
 		Control EnableContextMenu ()
 		{
 			var control = new CheckBox { Text = "Enable Context Menu" };
-			control.Bind ("Checked", this.webView, "BrowserContextMenuEnabled");
+			control.Bind (r => r.Checked, this.webView, w => w.BrowserContextMenuEnabled);
 			return control;
 		}
 		

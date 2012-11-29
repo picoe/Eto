@@ -25,7 +25,16 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new TextBox { Text = "Some Text" };
 			LogEvents (control);
-			return control;
+
+			var selectAll = new Button { Text = "Select All" };
+			selectAll.Click += (object sender, EventArgs e) => {
+				control.SelectAll ();
+			};
+
+			var layout = new DynamicLayout (new Panel (), Padding.Empty);
+			layout.Add (control);
+			layout.AddSeparateRow (null, selectAll, null);
+			return layout.Container;
 		}
 		
 		Control DifferentSize ()

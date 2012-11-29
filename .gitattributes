@@ -1,2 +1,2 @@
 /Resources/MacAppTemplate.app/Contents/MacOS/* eol=lf
-
+*.sh eol=lf
