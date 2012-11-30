@@ -170,6 +170,32 @@ namespace Eto.Drawing
                     e[5])
                 : "empty matrix";
         }
+
+        public override bool Equals(object obj)
+        {
+            var m = obj as Matrix;
+
+            var result = false;
+
+            if (obj != null)
+            {
+                var e1 = this.Elements;
+                var e2 = m.Elements;
+                result =
+                    e1 != null &&
+                    e2 != null &&
+                    e1.Length == 6 &&
+                    e2.Length == 6 &&
+                    e1[0] == e2[0] &&
+                    e1[1] == e2[1] &&
+                    e1[2] == e2[2] &&
+                    e1[3] == e2[3] &&
+                    e1[4] == e2[4] &&
+                    e1[5] == e2[5];
+            }
+
+            return result;
+        }
     }
 
     // Summary:
