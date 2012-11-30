@@ -12,7 +12,7 @@ namespace Eto.Drawing
     public class TransformStack
     {
         Matrix current;
-        private Matrix Current
+        public Matrix Current
         {
             get 
             {
@@ -77,11 +77,20 @@ namespace Eto.Drawing
                     // by it and then premultiply
                     var currentInverse = Current.Clone();
                     currentInverse.Invert();
+                    currentInverse.Multiply(value);
                     MultiplyTransform(currentInverse);
-                    MultiplyTransform(value);
 
                     // result = value * currentInverse * current
                     // which is value
+
+                    // current has been changed by the calls to
+                    // MultiplyTransform
+                    var temp = Current; 
+
+                    // this should not be needed but prevents
+                    // floating errors from accumulating
+                    current = value;
+
                 }
             }
         }
