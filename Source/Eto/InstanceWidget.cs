@@ -37,6 +37,23 @@ namespace Eto
 		/// <param name="id">ID of the event to handle</param>
 		void HandleEvent (string id);
 	}
+
+	/// <summary>
+	/// Generic implementation of <see cref="IInstanceWidget"/> to provide a statically typed control parameter
+	/// </summary>
+	/// <remarks>
+	/// This interface can be used on platform handlers so that we can get the platform-specific control
+	/// of a widget without having to know its implementation details.
+	/// </remarks>
+	/// <typeparam name="T">Platform-specific control used for the widget</typeparam>
+	/// <typeparam name="W">Widget type</typeparam>
+	public interface IInstanceWidget<out T, W> : IInstanceWidget
+	{
+		/// <summary>
+		/// Gets the platform-specific control used for the widget
+		/// </summary>
+		T Control { get; }
+	}
 	
 
 	/// <summary>
