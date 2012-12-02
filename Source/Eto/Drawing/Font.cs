@@ -133,7 +133,7 @@ namespace Eto.Drawing
 		/// <param name="sizeInPoints">Size of the font to create</param>
 		void Create (FontTypeface typeface, float sizeInPoints);
 
-        float ExHeightInPixels { get; }
+        float XHeightInPixels { get; }
         
         float AscentInPixels { get; }
         
@@ -363,9 +363,9 @@ namespace Eto.Drawing
 			get { return Handler.Typeface; }
         }
         
-        public float ExHeightInPixels
+        public float XHeightInPixels
         {
-            get { return Handler.ExHeightInPixels; }
+            get { return Handler.XHeightInPixels; }
         }
 
         public float AscentInPixels

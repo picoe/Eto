@@ -235,7 +235,7 @@ namespace Eto.Platform.Mac.Drawing
 
         #region IFont Members
 
-        public float ExHeightInPixels
+        public float XHeightInPixels
         {
             get { return 0f;/* TODO */ }
         }

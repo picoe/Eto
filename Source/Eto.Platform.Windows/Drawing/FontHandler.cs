@@ -148,7 +148,7 @@ namespace Eto.Platform.Windows.Drawing
 		}
 
 
-        public float ExHeightInPixels
+        public float XHeightInPixels
         {
             get
             {

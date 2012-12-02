@@ -248,7 +248,7 @@ namespace Eto.Platform.Wpf.Drawing
             get { return SizeInPixels; } // BUGBUG: fix
         }
 
-        public float ExHeightInPixels
+        public float XHeightInPixels
         {
             get { return SizeInPixels / 2f; } // BUGBUG: fix
         }

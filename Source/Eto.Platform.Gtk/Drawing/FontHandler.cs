@@ -179,7 +179,7 @@ namespace Eto.Platform.GtkSharp.Drawing
             get { throw new NotImplementedException(); }
         }
 
-        public float ExHeightInPixels
+        public float XHeightInPixels
         {
             get { throw new NotImplementedException(); }
         }
