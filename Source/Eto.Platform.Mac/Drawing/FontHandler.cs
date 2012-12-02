@@ -223,7 +223,7 @@ namespace Eto.Platform.Mac.Drawing
             get { return 0f;/* TODO */ }
         }
 
-        public float HeightInPixels
+        public float LineHeightInPixels
         {
             get { return 0f;/* TODO */ }
         }

@@ -243,7 +243,7 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
-        public float HeightInPixels
+        public float LineHeightInPixels
         {
             get { return SizeInPixels; } // BUGBUG: fix
         }

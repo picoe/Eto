@@ -139,7 +139,7 @@ namespace Eto.Drawing
         
         float DescentInPixels { get; }
         
-        float HeightInPixels { get; }
+        float LineHeightInPixels { get; }
 
         /// <summary>
         /// Gets the size of the font in pixels
@@ -380,7 +380,7 @@ namespace Eto.Drawing
 
         public float HeightInPixels
         {
-            get { return Handler.HeightInPixels; }
+            get { return Handler.LineHeightInPixels; }
         }
 
         /// <summary>

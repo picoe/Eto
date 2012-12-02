@@ -226,19 +226,19 @@ namespace Eto.Platform.Windows.Drawing
             }
         }
 
-        private float? heightInPixels;
-        public float HeightInPixels
+        private float? lineHeightInPixels;
+        public float LineHeightInPixels
         {
             get
             {
-                if (heightInPixels == null &&
+                if (lineHeightInPixels == null &&
                     Control != null)
-                    heightInPixels = Control.Height;
+                    lineHeightInPixels = Control.Height;
 
                 return
-                    heightInPixels == null
+                    lineHeightInPixels == null
                     ? 0f
-                    : heightInPixels.Value;
+                    : lineHeightInPixels.Value;
             }
         }
 
