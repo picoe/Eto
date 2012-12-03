@@ -279,22 +279,6 @@ namespace Eto.Platform.Windows.Drawing
             get { return this.Control.ClipBounds.ToRectangleF(); }
         }
 
-        public Matrix Transform
-        {
-            get
-            {
-                return new Matrix(
-                    Eto.Platform.Windows.Generator.Current,
-                    new MatrixHandler(
-                        this.Control.Transform));
-            }
-            set
-            {
-                this.Control.Transform =
-                    (SD.Drawing2D.Matrix)value.ControlObject;
-            }
-        }
-
         public void TranslateTransform(float dx, float dy)
         {
             this.Control.TranslateTransform(dx, dy);

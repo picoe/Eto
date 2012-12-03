@@ -523,31 +523,6 @@ namespace Eto.Platform.iOS.Drawing
             get { return Generator.Convert(context.GetClipBoundingBox()); }
         }
 
-        public Matrix Transform
-        {
-            get
-            {
-                return Generator.Convert(context.GetCTM());
-            }
-            set
-            {
-                // BUGBUG: TODO: very inefficient!
-                // see http://stackoverflow.com/questions/469505
-                // get the current CTM
-
-
-                var temp = context.GetCTM();
-
-                var inverse = temp.Invert();
-
-                context.ConcatCTM(inverse);
-
-                var v = Generator.Convert(value);
-
-                context.ConcatCTM(v);
-            }
-        }
-
         public void TranslateTransform(float dx, float dy)
         {
             context.TranslateCTM(

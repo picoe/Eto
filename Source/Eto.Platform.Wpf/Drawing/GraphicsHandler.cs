@@ -370,18 +370,6 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
-        public Matrix Transform
-        {
-            get
-            {
-                return TransformStack.Transform;
-            }
-            set
-            {
-                TransformStack.Transform = value;
-            }
-        }
-
         public void TranslateTransform(float dx, float dy)
         {
             TransformStack.TranslateTransform(dx, dy);

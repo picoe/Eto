@@ -212,7 +212,6 @@ namespace Eto.Drawing
         #endregion
 
         #region Transform
-        Matrix Transform { get; set; }
 
         void TranslateTransform(float dx, float dy);
 
@@ -780,18 +779,6 @@ namespace Eto.Drawing
         #endregion
 
         #region Transform
-
-        public Matrix Transform
-        {
-            get
-            {
-                return handler.Transform;
-            }
-            set
-            {
-                handler.Transform = value;
-            }
-        }
 
         public void TranslateTransform(float dx, float dy)
         {

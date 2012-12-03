@@ -293,18 +293,6 @@ namespace Eto.Platform.GtkSharp.Drawing
             get { throw new NotImplementedException(); }
         }
 
-        public Matrix Transform
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
         public void RotateTransform(float angle)
         {
             throw new NotImplementedException();
