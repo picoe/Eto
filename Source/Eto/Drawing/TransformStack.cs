@@ -11,31 +11,9 @@ namespace Eto.Drawing
     /// </summary>
     public class TransformStack
     {
-        Matrix current;
-        public Matrix Current
-        {
-            get 
-            {
-                if (current == null)
-                {
-                    current =
-                        new Matrix(
-                            this.generator);
-                    
-                    if (current.Handler == null)
-                        throw new EtoException();
-                }
-
-                if (current.Handler == null)
-                    throw new EtoException();
-
-                return current; 
-            }
-        }
-
         Eto.Generator generator;
         Action<Matrix> push;
-        Action<Matrix> pop;
+        Action pop;
 
         /// <summary>
         /// 
@@ -46,53 +24,11 @@ namespace Eto.Drawing
         public TransformStack(
             Eto.Generator generator,
             Action<Matrix> push,
-            Action<Matrix> pop)
+            Action pop)
         {
             this.generator = generator;
             this.push = push;
             this.pop = pop;
-        }
-
-        public void Initialize(
-            Matrix matrix)
-        {
-            current = matrix.Clone();
-        }
-
-        public Matrix Transform
-        {
-            get
-            {
-                return Current.Clone();
-            }
-            set
-            {
-                // fast exit
-                if (!object.ReferenceEquals(
-                    current,
-                    value))
-                {
-                    // compute the inverse of the
-                    // current, then premultiply
-                    // by it and then premultiply
-                    var currentInverse = Current.Clone();
-                    currentInverse.Invert();
-                    currentInverse.Multiply(value);
-                    MultiplyTransform(currentInverse);
-
-                    // result = value * currentInverse * current
-                    // which is value
-
-                    // current has been changed by the calls to
-                    // MultiplyTransform
-                    var temp = Current; 
-
-                    // this should not be needed but prevents
-                    // floating errors from accumulating
-                    current = value;
-
-                }
-            }
         }
 
         public void TranslateTransform(float dx, float dy)
@@ -130,7 +66,6 @@ namespace Eto.Drawing
         class StackEntry
         {
             public int popCount;
-            public Matrix matrix;
         }
 
         StackEntry s = null;
@@ -141,9 +76,6 @@ namespace Eto.Drawing
             // increment the pop count.
             if (s != null)
                 s.popCount++;
-
-            // compute the new matrix by prepending
-            Current.Multiply(m, MatrixOrder.Prepend);
 
             // push the transform
             push(m);
@@ -164,7 +96,6 @@ namespace Eto.Drawing
             s = new StackEntry
             {
                 popCount = 0,
-                matrix = Current.Clone()
             };
         }
 
@@ -176,9 +107,6 @@ namespace Eto.Drawing
             if (t == null)
                 throw new EtoException("RestoreTransform called without SaveTransform");
 
-            // restore the transform
-            current = t.matrix;
-
             // Pop the drawing context
             // popCount times
             while (
@@ -186,7 +114,7 @@ namespace Eto.Drawing
                 t.popCount-- > 0)
                 // return a cloned matrix
                 // since the caller may dispose it.
-                pop(Current.Clone());
+                pop();
 
             // reset the current entry always
             s = null;

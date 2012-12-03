@@ -364,7 +364,7 @@ namespace Eto.Platform.Wpf.Drawing
                         // we ignore the m parameter below
                         // since wpf only supports popping
                         // the stack
-                        m => Control.Pop());
+                        () => Control.Pop());
 
                 return transformStack;
             }
