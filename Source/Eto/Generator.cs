@@ -219,6 +219,10 @@ namespace Eto
 		}
 
 
+        // A static dictionary of generator instances.
+        static Dictionary<Type, Generator> GeneratorInstances = 
+            new Dictionary<Type, Generator>();
+
 		static Generator GetGenerator (string generatorType, bool allowNull)
 		{
 			Type type = Type.GetType (generatorType);
@@ -230,7 +234,16 @@ namespace Eto
 			}
 			try
 			{
-				return (Generator)Activator.CreateInstance(type);
+                Generator result = null;
+
+                if (!GeneratorInstances.TryGetValue(type, out result) ||
+                    result == null)
+                {
+                    result = (Generator)Activator.CreateInstance(type);
+                    GeneratorInstances[type] = result;
+                }
+
+                return result;
 			}
 			catch (TargetInvocationException e)
 			{
