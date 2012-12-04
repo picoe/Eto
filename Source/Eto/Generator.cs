@@ -26,14 +26,6 @@ namespace Eto
 			this.Instance = instance;
 		}
 	}
-
-    public enum GeneratorType
-    {
-        Gtk,
-        Mac,
-        Windows,
-        Wpf,
-    }
 	
 	/// <summary>
 	/// Base generator class for each platform
@@ -115,20 +107,22 @@ namespace Eto
 		/// This will be used when creating controls, unless explicitly passed through the constructor of the
 		/// control. This allows you to use multiple generators at one time.
 		/// </remarks>
-		public static Generator Current {
-			get {
+        public static Generator Current
+        {
+            get
+            {
                 if (current == null)
                 {
-                    Generator.Initialize(GeneratorType.Windows);
+                    Initialize(Generators.WinAssembly);
                     //throw new ApplicationException("Generator has not been initialized");
                 }
-				return current;
-			}
-		}
+                return current;
+            }
+        }
 
-        public static void Initialize(GeneratorType generatorType)
+        public static void Initialize(string assembly)
         {
-            Initialize(GetGenerator(generatorType));
+            Initialize(GetGenerator(assembly));
         }
 		
 		/// <summary>
@@ -250,39 +244,6 @@ namespace Eto
 				throw e.InnerException;
 			}
 		}
-
-        public static Generator GetGenerator(
-            GeneratorType generatorType)
-        {
-            if (generatorType == GeneratorType.Gtk)
-            {
-                return
-                    GetGenerator(
-                        "Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk");
-            }
-            else if (
-                generatorType == GeneratorType.Mac)
-            {
-                return
-                    GetGenerator(
-                        "Eto.Platform.Mac.Generator, Eto.Platform.Mac");
-            }
-            else if (
-                generatorType == GeneratorType.Windows)
-            {
-                return
-                    GetGenerator(
-                        "Eto.Platform.Windows.Generator, Eto.Platform.Windows"); 
-            }
-            else if (
-                generatorType == GeneratorType.Wpf)
-            {
-                return
-                    GetGenerator("Eto.Platform.Wpf.Generator, Eto.Platform.Wpf");
-            }
-            throw new InvalidOperationException(
-                    "Unknown generator type");
-        }
 
 		/// <summary>
 		/// Adds the specified handler type to this generator
