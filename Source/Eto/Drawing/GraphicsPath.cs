@@ -3,35 +3,32 @@ using System.Collections.Generic;
 
 namespace Eto.Drawing
 {
-	/// <summary>
-	/// Platform handler interface for the <see cref="GraphicsPath"/> class
-	/// </summary>
 	public interface IGraphicsPath : IInstanceWidget
 	{
-		/// <summary>
-		/// Adds the <paramref name="lines"/> to the path 
-		/// </summary>
-		/// <param name="lines"></param>
-		void AddLines (IEnumerable<Point> lines);
-
 		/// <summary>
 		/// Adds a single line to the path
 		/// </summary>
 		/// <param name="point1">Starting point for the line</param>
 		/// <param name="point2">Ending point for the line</param>
-		void AddLine (Point point1, Point point2);
-		
+		void AddLine (PointF point1, PointF point2);
+
+		/// <summary>
+		/// Adds the <paramref name="points"/> to the path 
+		/// </summary>
+		/// <param name="points"></param>
+		void AddLines (PointF[] points);
+
 		/// <summary>
 		/// Adds a line to the specified <paramref name="point"/> from the last location
 		/// </summary>
 		/// <param name="point">Ending point for the line</param>
-		void LineTo (Point point);
-		
+		void LineTo (PointF point);
+
 		/// <summary>
 		/// Moves the current position to the specified <paramref name="point"/>, without adding anything to the path
 		/// </summary>
 		/// <param name="point">Location to move the current position</param>
-		void MoveTo (Point point);
+		void MoveTo (PointF point);
 	}
 	
 	/// <summary>
@@ -39,8 +36,8 @@ namespace Eto.Drawing
 	/// </summary>
 	public class GraphicsPath : InstanceWidget
 	{
-		IGraphicsPath inner;
-		
+		new IGraphicsPath Handler { get { return (IGraphicsPath)base.Handler; } }
+
 		/// <summary>
 		/// Initializes a new instance of the GraphicsPath class
 		/// </summary>
@@ -56,7 +53,10 @@ namespace Eto.Drawing
 		public GraphicsPath (Generator generator)
 			: base(generator, typeof(IGraphicsPath))
 		{
-			inner = (IGraphicsPath)Handler;
+		}
+
+		public GraphicsPath (Generator g, IGraphicsPath handler) : base(g, handler)
+		{
 		}
 
 		/// <summary>
@@ -65,7 +65,7 @@ namespace Eto.Drawing
 		/// <param name="point">Location to move the current position</param>
 		public void MoveTo (Point point)
 		{
-			inner.MoveTo (point);
+			Handler.MoveTo (point);
 		}
 
 		/// <summary>
@@ -74,7 +74,7 @@ namespace Eto.Drawing
 		/// <param name="point">Ending point for the line</param>
 		public void LineTo (Point point)
 		{
-			inner.LineTo (point);
+			Handler.LineTo (point);
 		}
 
 		/// <summary>
@@ -84,16 +84,16 @@ namespace Eto.Drawing
 		/// <param name="point2">Ending point for the line</param>
 		public void AddLine (Point point1, Point point2)
 		{
-			inner.AddLine (point1, point2);
+			Handler.AddLine (point1, point2);
 		}
 
 		/// <summary>
-		/// Adds the <paramref name="lines"/> to the path 
+		/// Adds the <paramref name="points"/> to the path 
 		/// </summary>
-		/// <param name="lines"></param>
-		public void AddLines (IEnumerable<Point> lines)
+		/// <param name="points"></param>
+		public void AddLines (params PointF[] points)
 		{
-			inner.AddLines (lines);
+			Handler.AddLines (points);
 		}
 	}
 }

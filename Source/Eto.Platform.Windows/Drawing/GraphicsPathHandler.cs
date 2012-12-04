@@ -8,33 +8,38 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class GraphicsPathHandler : WidgetHandler<SD.Drawing2D.GraphicsPath, GraphicsPath>, IGraphicsPath
 	{
-		Point position;
+		PointF position;
 
 		public GraphicsPathHandler ()
 		{
 			Control = new SD.Drawing2D.GraphicsPath ();
 		}
-		
-		public void LineTo (Point point)
+
+		private GraphicsPathHandler (SD.Drawing2D.GraphicsPath control)
+		{
+			Control = control;
+		}
+
+		public void LineTo (PointF point)
 		{
 			this.Control.AddLine (position.ToSD (), point.ToSD ());
-            position = point;
+			position = point;
 		}
-		
-		public void MoveTo (Point point)
+
+		public void MoveTo (PointF point)
 		{
 			position = point;
 		}
 
-		public void AddLine (Point point1, Point point2)
+		public void AddLine (PointF point1, PointF point2)
 		{
 			this.Control.AddLine (point1.ToSD (), point2.ToSD ());
 			position = point2;
 		}
 
-		public void AddLines (IEnumerable<Point> points)
+		public void AddLines (PointF[] points)
 		{
-			var sdlines = from p in points select p.ToSDPointF();
+			var sdlines = from p in points select p.ToSD ();
 			this.Control.AddLines (sdlines.ToArray ());
 			position = points.Last ();
 		}

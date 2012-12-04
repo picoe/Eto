@@ -20,7 +20,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		
 		class Lines : Command
 		{
-			public Point[] Points { get; set; }
+			public PointF[] Points { get; set; }
 
 			public override void Apply (GraphicsHandler handler, bool first)
 			{
@@ -53,27 +53,27 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 		
 		#region IGraphicsPath implementation
-		
-		public void AddLines (IEnumerable<Point> points)
-		{
-			commands.Add (new Lines{ Points = points.ToArray () });
-		}
-		
-		public void MoveTo (Point point)
+
+        public void AddLines(PointF[] points)
+        {
+            commands.Add(new Lines { Points = points });
+        }
+
+		public void MoveTo (PointF point)
 		{
 			Add ((handler, first) => {
 				handler.Control.MoveTo (point.X, point.Y);
 			});
 		}
 		
-		public void LineTo (Point point)
+		public void LineTo (PointF point)
 		{
 			Add ((handler, first) => {
 				handler.Control.LineTo (point.X, point.Y);
 			});
 		}
 		
-		public void AddLine (Point point1, Point point2)
+		public void AddLine (PointF point1, PointF point2)
 		{
 			Add ((handler, first) => {
 				handler.Control.MoveTo (point1.X, point1.Y);

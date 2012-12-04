@@ -238,16 +238,15 @@ namespace Eto.Platform.Mac.Drawing
 		}
 		*/
 		
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var nsimage = this.Control;
-			var sourceRect = graphics.Translate (source.ToSDRectangleF (), nsimage.Size.Height);
-			var destRect = graphics.TranslateView (destination.ToSDRectangleF (), false);
+			var sourceRect = graphics.Translate (source.ToSD (), nsimage.Size.Height);
+			var destRect = graphics.TranslateView (destination.ToSD (), true, true);
 			if (alpha)
 				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
 			else
 				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
-
 	}
 }

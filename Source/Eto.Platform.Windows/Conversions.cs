@@ -1,12 +1,11 @@
-﻿using Eto.Drawing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using swf = System.Windows.Forms;
+using Eto.Drawing;
+using Eto.Forms;
+using Eto.Platform.Windows.Drawing;
 using sd = System.Drawing;
 using sdp = System.Drawing.Printing;
-using Eto.Forms;
+using sd2 = System.Drawing.Drawing2D;
+using swf = System.Windows.Forms;
 
 namespace Eto.Platform.Windows
 {
@@ -24,12 +23,12 @@ namespace Eto.Platform.Windows
 
 		public static Color ToEto (this sd.Color color)
 		{
-			return new Color (color.R / 255f, color.G / 255f, color.B / 255f);
+			return new Color (color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
 		}
 
 		public static sd.Color ToSD (this Color color)
 		{
-			return sd.Color.FromArgb ((byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
+			return sd.Color.FromArgb ((byte)(color.A * 255), (byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
 		}
 
 		public static DialogResult ToEto (this swf.DialogResult result)
@@ -48,8 +47,7 @@ namespace Eto.Platform.Windows
 
 		public static sd.Imaging.ImageFormat ToSD (this ImageFormat format)
 		{
-			switch (format)
-			{
+			switch (format) {
 			case ImageFormat.Jpeg: return sd.Imaging.ImageFormat.Jpeg;
 			case ImageFormat.Bitmap: return sd.Imaging.ImageFormat.Bmp;
 			case ImageFormat.Gif: return sd.Imaging.ImageFormat.Gif;
@@ -61,8 +59,7 @@ namespace Eto.Platform.Windows
 
 		public static ImageInterpolation ToEto (this sd.Drawing2D.InterpolationMode value)
 		{
-			switch (value)
-			{
+			switch (value) {
 			case sd.Drawing2D.InterpolationMode.NearestNeighbor:
 				return ImageInterpolation.None;
 			case sd.Drawing2D.InterpolationMode.Low:
@@ -83,8 +80,7 @@ namespace Eto.Platform.Windows
 
 		public static sd.Drawing2D.InterpolationMode ToSD (this ImageInterpolation value)
 		{
-			switch (value)
-			{
+			switch (value) {
 			case ImageInterpolation.Default:
 				return sd.Drawing2D.InterpolationMode.Default;
 			case ImageInterpolation.None:
@@ -142,6 +138,200 @@ namespace Eto.Platform.Windows
 			if (style.HasFlag (sd.FontStyle.Bold)) ret |= FontStyle.Bold;
 			if (style.HasFlag (sd.FontStyle.Italic)) ret |= FontStyle.Italic;
 			return ret;
+		}
+
+		public static PointF ToEto (this sd.PointF point)
+		{
+			return new PointF (point.X, point.Y);
+		}
+
+		public static sd.PointF ToSD (this PointF point)
+		{
+			return new sd.PointF (point.X, point.Y);
+		}
+
+		public static sd.Point ToSDPoint (this PointF point)
+		{
+			return new sd.Point ((int)point.X, (int)point.Y);
+		}
+
+		public static Size ToEto (this sd.Size size)
+		{
+			return new Size (size.Width, size.Height);
+		}
+
+		public static sd.Size ToSD (this Size size)
+		{
+			return new sd.Size (size.Width, size.Height);
+		}
+
+		public static Size ToEtoF (this sd.SizeF size)
+		{
+			return new Size ((int)size.Width, (int)size.Height);
+		}
+
+		public static SizeF ToEto (this sd.SizeF size)
+		{
+			return new SizeF (size.Width, size.Height);
+		}
+
+		public static sd.SizeF ToSD (this SizeF size)
+		{
+			return new sd.SizeF (size.Width, size.Height);
+		}
+
+		public static RectangleF ToEto (this sd.RectangleF rect)
+		{
+			return new RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static sd.RectangleF ToSD (this RectangleF rect)
+		{
+			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static sd.Rectangle ToSDRectangle (this RectangleF rect)
+		{
+			return new sd.Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
+
+		internal static sd.Point[] ToSD (this Point[] points)
+		{
+			var result =
+				new sd.Point[points.Length];
+
+			for (var i = 0;
+				i < points.Length;
+				++i) {
+				var p = points[i];
+				result[i] =
+					new sd.Point (p.X, p.Y);
+			}
+
+			return result;
+		}
+
+		internal static sd.PointF[] ToSD (this PointF[] points)
+		{
+			var result =
+				new sd.PointF[points.Length];
+
+			for (var i = 0;
+				i < points.Length;
+				++i) {
+				var p = points[i];
+				result[i] =
+					new sd.PointF (p.X, p.Y);
+			}
+
+			return result;
+		}
+
+		internal static PointF[] ToEto (this sd.PointF[] points)
+		{
+			var result =
+				new PointF[points.Length];
+
+			for (var i = 0;
+				i < points.Length;
+				++i) {
+				var p = points[i];
+				result[i] =
+					new PointF (p.X, p.Y);
+			}
+
+			return result;
+		}
+
+		public static sd.Graphics ToSD (this Graphics graphics)
+		{
+			var h = (GraphicsHandler)graphics.Handler;
+			return h.Control;
+		}
+
+		public static sd.Drawing2D.GraphicsPath ToSD (this GraphicsPath graphicsPath)
+		{
+			var h = (GraphicsPathHandler)graphicsPath.Handler;
+			return h.Control;
+		}
+
+		public static sd.Image ToSD (this Image graphics)
+		{
+			var h = (BitmapHandler)graphics.Handler;
+			return h.Control;
+		}
+
+		public static sd.Font ToSD (this Font font)
+		{
+			var h = (FontHandler)font.Handler;
+			return h.Control;
+		}
+
+		public static MouseEventArgs ToEto (this swf.MouseEventArgs e)
+		{
+			var point = new Point (e.X, e.Y);
+			var buttons = ToEto (e.Button);
+			var modifiers = KeyMap.Convert (swf.Control.ModifierKeys);
+
+			var result = new MouseEventArgs (buttons, modifiers, point);
+
+			return result;
+		}
+
+		private static MouseButtons ToEto (this swf.MouseButtons button)
+		{
+			MouseButtons buttons = MouseButtons.None;
+
+			if ((button & swf.MouseButtons.Left) != 0)
+				buttons |= MouseButtons.Primary;
+
+			if ((button & swf.MouseButtons.Right) != 0)
+				buttons |= MouseButtons.Alternate;
+
+			if ((button & swf.MouseButtons.Middle) != 0)
+				buttons |= MouseButtons.Middle;
+
+			return buttons;
+		}
+
+		public static Graphics ToEto (this sd.Graphics g, Eto.Generator generator)
+		{
+			return new Graphics (generator, new GraphicsHandler (g));
+		}
+
+		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
+		{
+			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
+		}
+
+		public static sd.Image ToSD (this IImage image)
+		{
+			if (image == null) return null;
+			else return image.ControlObject as sd.Image;
+		}
+
+		public static sd2.PixelOffsetMode ToSD (this PixelOffsetMode mode)
+		{
+			switch (mode) {
+			case PixelOffsetMode.None:
+				return sd2.PixelOffsetMode.None;
+			case PixelOffsetMode.Half:
+				return sd2.PixelOffsetMode.Half;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PixelOffsetMode ToEto (this sd2.PixelOffsetMode mode)
+		{
+			switch (mode) {
+			case sd2.PixelOffsetMode.None:
+				return PixelOffsetMode.None;
+			case sd2.PixelOffsetMode.Half:
+				return PixelOffsetMode.Half;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

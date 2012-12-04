@@ -43,8 +43,6 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
 		{
-			var nsimage = this.Control;
-			var sourceRect = source.ToSDRectangleF (); 
 			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
 			SD.RectangleF destRect = graphics.TranslateView (destination.ToSDRectangleF (), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {

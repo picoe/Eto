@@ -62,6 +62,11 @@ namespace Eto.Platform
 			return new RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
+		public static sd.RectangleF ToSD (this RectangleF rect)
+		{
+			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
 		public static Rectangle ToEtoRectangle (this sd.RectangleF rect)
 		{
 			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
@@ -91,5 +96,19 @@ namespace Eto.Platform
 		{
 			return new sd.PointF (point.X, point.Y);
 		}
+
+		internal static sd.PointF[] ToSD (this PointF[] points)
+		{
+			var result = new sd.PointF[points.Length];
+			
+			for (var i = 0; i < points.Length; ++i)
+			{
+				var p = points[i];
+				result[i] = new sd.PointF(p.X, p.Y);
+			}
+			
+			return result;
+		}
+
 	}
 }

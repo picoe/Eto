@@ -99,5 +99,20 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			return Control;
 		}
+
+		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			graphics.Control.DrawImage (Control, source.ToSD (), destination.ToSD (), SD.GraphicsUnit.Pixel);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y)
+		{
+			graphics.Control.DrawImage (Control, x, y);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			graphics.Control.DrawImage (Control, x, y, width, height);
+		}
 	}
 }

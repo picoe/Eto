@@ -41,11 +41,6 @@ namespace Eto.Platform.Wpf.Drawing
 			Control = swm.Imaging.BitmapFrame.Create (stream);
 		}
 
-		public void SetBitmap (swm.Imaging.BitmapSource bitmap)
-		{
-			this.Control = bitmap;
-		}
-
 		public void Create (int width, int height, PixelFormat pixelFormat)
 		{
 			swm.PixelFormat format;
@@ -72,6 +67,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control = bf;
 			
 		}
+
+        public void SetBitmap(swm.Imaging.BitmapSource bitmap)
+        {
+            this.Control = bitmap;
+        }
 
 		public void Resize (int width, int height)
 		{
@@ -140,5 +140,5 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			return Control;
 		}
-	}
+    }
 }

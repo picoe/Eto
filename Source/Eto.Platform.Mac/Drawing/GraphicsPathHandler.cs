@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
-using sd = System.Drawing;
+using SD = System.Drawing;
 
 #if OSX
 using MonoMac.CoreGraphics;
@@ -20,25 +20,30 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			Control = new CGPath ();
 		}
-		
-		public void MoveTo (Point point)
+
+		public GraphicsPathHandler(CGPath path)
 		{
-			Control.MoveToPoint (point.ToSDPointF ());
+			Control = path;
 		}
 		
-		public void LineTo (Point point)
+		public void MoveTo (PointF point)
 		{
-			Control.AddLineToPoint (point.ToSDPointF ());
+			Control.MoveToPoint (point.ToSD ());
 		}
 		
-		public void AddLine (Point point1, Point point2)
+		public void LineTo (PointF point)
 		{
-			Control.AddLines (new sd.PointF[] { point1.ToSDPointF (), point2.ToSDPointF () });
+			Control.AddLineToPoint (point.ToSD ());
 		}
 		
-		public void AddLines (IEnumerable<Point> points)
+		public void AddLine (PointF point1, PointF point2)
 		{
-			var sdpoints = from p in points select p.ToSDPointF ();
+			Control.AddLines (new SD.PointF[] { point1.ToSD (), point2.ToSD () });
+		}
+		
+		public void AddLines (PointF[] points)
+		{
+			var sdpoints = from p in points select p.ToSD ();
 			Control.AddLines (sdpoints.ToArray ());
 		}
 	}

@@ -140,5 +140,22 @@ namespace Eto.Platform.Windows.Drawing
 			}
 			else return this.GetLargestIcon().ToBitmap ();
 		}
+
+
+		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			var image = GetImageWithSize((int)Math.Max(destination.Width, destination.Height));
+			graphics.Control.DrawImage (image, source.ToSD (), destination.ToSD (), SD.GraphicsUnit.Pixel);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y)
+		{
+			graphics.Control.DrawIcon (Control, (int)x, (int)y);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			graphics.Control.DrawIcon (Control, new SD.Rectangle ((int)x, (int)y, (int)width, (int)height));
+		}
 	}
 }

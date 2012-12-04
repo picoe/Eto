@@ -39,10 +39,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 			imageView.Pixbuf = Pixbuf;
 		}
 		
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var context = graphics.Control;
 			context.Save ();
+			destination.X += (float)graphics.InverseOffset;
+			destination.Y += (float)graphics.InverseOffset;
 			context.Rectangle (destination.ToCairo ());
 			double scalex = 1;
 			double scaley = 1;

@@ -80,6 +80,8 @@
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
+    <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>

@@ -10,6 +10,27 @@ namespace Eto.Platform.GtkSharp.Drawing
 		Gdk.Drawable drawable;
 		Image image;
 		Cairo.ImageSurface surface;
+		double offset = 0.5;
+		double inverseoffset = 0;
+		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
+
+		public PixelOffsetMode PixelOffsetMode {
+			get { return pixelOffsetMode; }
+			set {
+				pixelOffsetMode = value;
+				offset = value == PixelOffsetMode.None ? 0.5 : 0;
+				inverseoffset = value == PixelOffsetMode.None ? 0 : 0.5;
+			}
+		}
+
+		public double Offset { get { return offset; } }
+
+		public double InverseOffset { get { return inverseoffset; } }
+
+		float DegreeToRadian (float angle)
+		{
+			return (float)Math.PI * angle / 180.0f;
+		}
 
 		public GraphicsHandler ()
 		{
@@ -28,6 +49,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 
+		public bool IsRetained { get { return false; } }
+
 		public bool Antialias {
 			get { return Control.Antialias != Cairo.Antialias.None; }
 			set {
@@ -39,11 +62,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 
 		public ImageInterpolation ImageInterpolation {
-			get; set;
+			get;
+			set;
 		}
 
-		public Pango.Context PangoContext
-		{
+		public Pango.Context PangoContext {
 			get {
 				if (pangoContext == null && widget != null) {
 					pangoContext = widget.PangoContext;
@@ -86,7 +109,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 							uint* src = (uint*)srcrow;
 							uint* dest = (uint*)destrow;
 							for (int x=0; x<image.Size.Width; x++) {
-								*dest = bd.TranslateArgbToData(*src);
+								*dest = bd.TranslateArgbToData (*src);
 								dest++;
 								src++;
 							}
@@ -97,26 +120,24 @@ namespace Eto.Platform.GtkSharp.Drawing
 					handler.Unlock (bd);
 				}
 			}
-			if (Control != null)
-			{
-				((IDisposable)Control).Dispose();
+			if (Control != null) {
+				((IDisposable)Control).Dispose ();
 				if (surface != null) {
 					this.Control = new Cairo.Context (surface);
-				}
-				else if (drawable != null) {
+				} else if (drawable != null) {
 					this.Control = Gdk.CairoHelper.Create (drawable);
 				}
 			}
 		}
 
-		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
+		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
 		{
 			Control.Save ();
 			Control.Color = color.ToCairo ();
 			if (startx != endx || starty != endy) {
 				// to draw a line, it must move..
-				Control.MoveTo (startx + 0.5, starty + 0.5);
-				Control.LineTo (endx + 0.5, endy + 0.5);
+				Control.MoveTo (startx + offset, starty + offset);
+				Control.LineTo (endx + offset, endy + offset);
 				Control.LineCap = Cairo.LineCap.Square;
 				Control.LineWidth = 1.0;
 				Control.Stroke ();
@@ -128,48 +149,92 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 
-		public void DrawRectangle (Color color, int x, int y, int width, int height)
+		public void DrawRectangle (Color color, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Color = color.ToCairo ();
-			Control.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
+			Control.Rectangle (x + offset, y + offset, width, height);
 			Control.LineWidth = 1.0;
 			Control.Stroke ();
 			Control.Restore ();
 		}
 
-		public void FillRectangle (Color color, int x, int y, int width, int height)
+		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Color = color.ToCairo ();
-			Control.Rectangle (x, y, width, height);
+			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
 			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		public void DrawEllipse (Color color, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Color = color.ToCairo ();
-			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
+			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
 			Control.LineWidth = 1.0;
 			Control.Stroke ();
 			Control.Restore ();
 		}
 
-		public void FillEllipse (Color color, int x, int y, int width, int height)
+		public void FillEllipse (Color color, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Color = color.ToCairo ();
-			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
+			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
 			Control.Fill ();
 			Control.Restore ();
 		}
 
-		
+		public void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			Control.Save ();
+			Control.Color = color.ToCairo ();
+			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			Control.Arc (0, 0, radius, DegreeToRadian (startAngle), DegreeToRadian (startAngle + sweepAngle));
+			Control.LineWidth = 1.0;
+			Control.Stroke ();
+			Control.Restore ();
+		}
+
+		public void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			Control.Save ();
+			Control.Color = color.ToCairo ();
+			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			Control.Arc (0, 0, radius, DegreeToRadian (startAngle), DegreeToRadian (startAngle + sweepAngle));
+			Control.LineTo (0, 0);
+			Control.Fill ();
+			Control.Restore ();
+		}
+
 		public void FillPath (Color color, GraphicsPath path)
 		{
 			Control.Save ();
+			Control.Translate (inverseoffset, inverseoffset);
 			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
@@ -180,6 +245,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawPath (Color color, GraphicsPath path)
 		{
 			Control.Save ();
+			Control.Translate (offset, offset);
 			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
@@ -188,51 +254,32 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Stroke ();
 			Control.Restore ();
 		}
-		
-		public void DrawImage (Image image, int x, int y)
+
+		public void DrawImage (Image image, float x, float y)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y);
 		}
 
-		public void DrawImage (Image image, int x, int y, int width, int height)
+		public void DrawImage (Image image, float x, float y, float width, float height)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y, width, height);
 		}
 
-		public void DrawImage (Image image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, source, destination);
 		}
 
-		public void DrawIcon (Icon icon, int x, int y, int width, int height)
-		{
-			var iconHandler = ((IconHandler)icon.Handler);
-			var pixbuf = iconHandler.Pixbuf;
-			Control.Save ();
-			Gdk.CairoHelper.SetSourcePixbuf(Control, pixbuf, 0, 0);
-			if (width != pixbuf.Width || height != pixbuf.Height) {
-				Control.Scale ((double)width / (double)pixbuf.Width, (double)height / (double)pixbuf.Height);
-			}
-			Control.Rectangle (x, y, width, height);
-			Control.Fill ();
-			Control.Restore ();
-		}
-		
-		public Region ClipRegion {
-			get { return null; }
-			set {
-				
-			}
-		}
-
-		public void DrawText (Font font, Color color, int x, int y, string text)
+		public void DrawText (Font font, Color color, float x, float y, string text)
 		{
 			using (var layout = new Pango.Layout (PangoContext)) {
 				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
+				int width, height;
+				layout.GetPixelSize (out width, out height);
 				Control.Save ();
 				Control.Color = color.ToCairo ();
-				Control.MoveTo (x, y);
+				Control.MoveTo (x, y + height / 2);
 				Pango.CairoHelper.LayoutPath (Control, layout);
 				Control.Fill ();
 				Control.Restore ();
