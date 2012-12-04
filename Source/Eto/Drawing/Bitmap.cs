@@ -233,6 +233,15 @@ namespace Eto.Drawing
         }
 
         /// <summary>
+		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
+		/// </summary>
+		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
+		public Bitmap (byte[] bytes)
+			: this (Generator.Current, bytes)
+		{
+		}
+
+        /// <summary>
 		/// Initializes a new instance of a Bitmap from a file
 		/// </summary>
 		/// <param name="generator">Generator to use to create the bitmap</param>
@@ -254,8 +263,13 @@ namespace Eto.Drawing
 			Handler.Create (stream);
 		}
 
-        public Bitmap(byte[] bytes) :
-            this(new MemoryStream(bytes))
+		/// <summary>
+		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
+		/// </summary>
+		/// <param name="generator">Generator to use to create the bitmap</param>
+		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
+        public Bitmap(Generator generator, byte[] bytes)
+            : this(generator, new MemoryStream(bytes))
         {
         }
 
@@ -272,7 +286,7 @@ namespace Eto.Drawing
 			Handler.Create (width, height, pixelFormat);
 		}
 		
-		private Bitmap (Generator generator)
+		Bitmap (Generator generator)
 			: base(generator, typeof(IBitmap))
 		{
 		}
@@ -280,6 +294,9 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Initializes a new instance of a Bitmap with the specified handler
 		/// </summary>
+		/// <remarks>
+		/// This is intended to be used by platform specific code to return bitmap instances with a particular handler
+		/// </remarks>
 		/// <param name="generator">Generator the handler is created from</param>
 		/// <param name="handler">Platform handler to use for this instance</param>
 		public Bitmap (Generator generator, IBitmap handler)
@@ -348,6 +365,21 @@ namespace Eto.Drawing
 			Handler.Save (stream, format);	
 		}
 
+		/// <summary>
+		/// Saves the bitmap to an image of the specified <paramref name="imageFormat"/> into a byte array
+		/// </summary>
+		/// <remarks>
+		/// This is merely a helper to save to a byte array instead of a stream.
+		/// </remarks>
+		/// <param name="imageFormat"></param>
+		/// <returns></returns>
+		public byte[] ToByteArray (ImageFormat imageFormat)
+		{
+			using (var memoryStream = new MemoryStream ()) {
+				this.Save (memoryStream, imageFormat);
+				return memoryStream.ToArray ();
+			}
+		}
         public byte[] ToPNGByteArray()
         {
             return Handler.ToPNGByteArray();

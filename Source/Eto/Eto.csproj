@@ -130,6 +130,7 @@
     <Compile Include="Cache\FontCache.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Brush.cs" />
     <Compile Include="Drawing\Constants.cs" />

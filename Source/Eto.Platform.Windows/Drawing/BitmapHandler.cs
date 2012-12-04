@@ -10,6 +10,12 @@ namespace Eto.Platform.Windows.Drawing
 	public interface IWindowsImage
 	{
 		SD.Image GetImageWithSize (int? size);
+
+		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
+
+		void DrawImage (GraphicsHandler graphics, float x, float y);
+
+		void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height);
 	}
 
 
@@ -135,7 +141,6 @@ namespace Eto.Platform.Windows.Drawing
             // 2. The size is exactly enough.
             return result;
         }
-
 		public SD.Image GetImageWithSize (int? size)
 		{
 			return Control;
@@ -170,5 +175,19 @@ namespace Eto.Platform.Windows.Drawing
             return 
                 this.Control.GetPixel(x, y).ToEto();
         }
+		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			graphics.Control.DrawImage (Control, source.ToSD (), destination.ToSD (), SD.GraphicsUnit.Pixel);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y)
+		{
+			graphics.Control.DrawImage (Control, x, y);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			graphics.Control.DrawImage (Control, x, y, width, height);
+		}
     }
 }

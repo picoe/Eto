@@ -1,9 +1,8 @@
 using System;
 using Eto.Drawing;
-using SD = System.Drawing;
-using SDD = System.Drawing.Drawing2D;
-using SWF = System.Windows.Forms;
-using StringFormat = System.Drawing.StringFormat;
+using sd = System.Drawing;
+using sdd = System.Drawing.Drawing2D;
+using swf = System.Windows.Forms;
 using System.Collections.Generic;
 using Eto.Cache;
 
@@ -11,24 +10,22 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
-        public bool IsRetainedMode { get { return false; } }
+		public bool IsRetained { get { return false; } }
 
-        private static StringFormat StringFormat { get; set; }
-        static GraphicsHandler()
-        {
-            // Set the StringFormat
-            StringFormat =
-                new StringFormat(
-                    StringFormat.GenericTypographic);
-            if (StringFormat != null)
-            {
-                StringFormat.FormatFlags |=
-                    SD.StringFormatFlags.MeasureTrailingSpaces |
-                    SD.StringFormatFlags.NoWrap |
-                    SD.StringFormatFlags.NoClip;
-            }
-        }
-        public override SD.Graphics Control
+		static sd.StringFormat defaultStringFormat;
+
+		static GraphicsHandler ()
+		{
+			// Set the StringFormat
+			defaultStringFormat = new sd.StringFormat (sd.StringFormat.GenericTypographic);
+			defaultStringFormat.FormatFlags |= 
+				sd.StringFormatFlags.MeasureTrailingSpaces
+				| sd.StringFormatFlags.NoWrap
+				| sd.StringFormatFlags.NoClip;
+		}
+
+
+        public override sd.Graphics Control
         {
             get
             {
@@ -39,11 +36,11 @@ namespace Eto.Platform.Windows.Drawing
                 base.Control = value;
                 if (Control != null)
                 {
-                    Control.PixelOffsetMode = SDD.PixelOffsetMode.Half; // was: None
-                    //this.Control.CompositingMode = SDD.CompositingMode.SourceCopy;
-                    //this.Control.SmoothingMode = SDD.SmoothingMode.HighQuality;
-                    this.Control.SmoothingMode = SDD.SmoothingMode.AntiAlias;
-                    Control.InterpolationMode = SDD.InterpolationMode.HighQualityBilinear; //.NearestNeighbor;
+                    Control.PixelOffsetMode = sdd.PixelOffsetMode.Half; // was: None
+                    //this.Control.CompositingMode = sdd.CompositingMode.SourceCopy;
+                    //this.Control.SmoothingMode = sdd.SmoothingMode.HighQuality;
+                    this.Control.SmoothingMode = sdd.SmoothingMode.AntiAlias;
+                    Control.InterpolationMode = sdd.InterpolationMode.HighQualityBilinear; //.NearestNeighbor;
                 }
             }
         }
@@ -53,7 +50,7 @@ namespace Eto.Platform.Windows.Drawing
 		{
 		}
 
-		public GraphicsHandler (SD.Graphics graphics)
+		public GraphicsHandler (sd.Graphics graphics)
 		{
 			this.Control = graphics;			
 		}
@@ -63,8 +60,10 @@ namespace Eto.Platform.Windows.Drawing
 				return (this.Control.SmoothingMode == System.Drawing.Drawing2D.SmoothingMode.AntiAlias);
 			}
 			set {
-				if (value) this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-				else this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
+				if (value)
+					this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
+				else
+					this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.None;
 			}
 		}
 
@@ -76,135 +75,209 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 
+		public PixelOffsetMode PixelOffsetMode {
+			get { return Control.PixelOffsetMode.ToEto (); }
+			set { Control.PixelOffsetMode = value.ToSD (); }
+		}
+
 		public void CreateFromImage (Bitmap image)
 		{
-			Control = SD.Graphics.FromImage ((SD.Image)image.ControlObject);
-			Control.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.None;
-			this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
-			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
+			Control = sd.Graphics.FromImage ((sd.Image)image.ControlObject);
+		}
+
+		public override void Initialize ()
+		{
+			base.Initialize ();
+
+			Control.PixelOffsetMode = sdd.PixelOffsetMode.None;
+			Control.SmoothingMode = sdd.SmoothingMode.AntiAlias;
+			Control.InterpolationMode = sdd.InterpolationMode.HighQualityBilinear;
 		}
 
 		public void Commit ()
 		{
 		}
 
-		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
+		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
 		{
-			if (startx == endx && starty == endy) {
-				this.Control.FillRectangle (new SD.SolidBrush (color.ToSD ()), startx, starty, 1, 1);
-			}
-			else 
-				this.Control.DrawLine (new SD.Pen (color.ToSD ()), startx, starty, endx, endy);
+			if (startx == endx && starty == endy)
+				this.Control.FillRectangle (new sd.SolidBrush (color.ToSD ()), startx, starty, 1, 1);
+			else
+				this.Control.DrawLine (new sd.Pen (color.ToSD ()), startx, starty, endx, endy);
 		}
 
-		public void DrawRectangle (Color color, int x, int y, int width, int height)
+		public void DrawRectangle (Color color, float x, float y, float width, float height)
 		{
-			Control.DrawRectangle (new SD.Pen (color.ToSD ()), x, y, width-1, height-1);
+			Control.DrawRectangle (new sd.Pen (color.ToSD ()), x, y, width, height);
 		}
 
 		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
-			Control.FillRectangle (new SD.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
+			Control.FillRectangle (new sd.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
 		}
 
-		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		public void DrawEllipse (Color color, float x, float y, float width, float height)
 		{
-			Control.DrawEllipse (new SD.Pen (color.ToSD ()), x, y, width - 1, height - 1);
+			Control.DrawEllipse (new sd.Pen (color.ToSD ()), x, y, width, height);
 		}
 
-		public void FillEllipse (Color color, int x, int y, int width, int height)
+		public void FillEllipse (Color color, float x, float y, float width, float height)
 		{
-			Control.FillEllipse (new SD.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
+			Control.FillEllipse (new sd.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
+		}
+
+		public float GetConvertedAngle (float initialAngle, float majorRadius, float minorRadius, bool circularToElliptical)
+		{
+			var angle = initialAngle;
+			while (angle < 0)
+				angle += 360.0f;
+			var modAngle = angle % 360.0f;
+			angle %= 90.0f;
+			if (angle == 0)
+				return initialAngle;
+			var quadrant2 = (modAngle > 90 && modAngle <= 180);
+			var quadrant3 = (modAngle > 180 && modAngle <= 270);
+			var quadrant4 = (modAngle > 270 && modAngle <= 360);
+			if (quadrant2 || quadrant4)
+				angle = 90.0f - angle;
+			angle = DegreeToRadian (angle);
+			double functionReturnValue = 0;
+
+			double dTan = 0;
+			dTan = Math.Tan (angle);
+
+			if (Math.Abs (dTan) < 1E-10 | Math.Abs (dTan) > 10000000000.0) {
+				functionReturnValue = angle;
+
+			} else if (circularToElliptical) {
+				functionReturnValue = Math.Atan (dTan * majorRadius / minorRadius);
+			} else {
+				functionReturnValue = Math.Atan (dTan * minorRadius / majorRadius);
+			}
+
+			if (functionReturnValue < 0) {
+				functionReturnValue = functionReturnValue + 2 * Math.PI;
+			}
+			var ret = RadianToDegree ((float)functionReturnValue);
+
+			// convert back to right quadrant
+			if (quadrant2)
+				ret = 180.0f - ret;
+			else if (quadrant4)
+				ret = 360.0f - ret;
+			else if (quadrant3)
+				ret += 180.0f;
+
+			// get in the same range
+			while (initialAngle < 0) {
+				initialAngle += 360.0f;
+				ret -= 360.0f;
+			}
+			while (initialAngle > 360) {
+				initialAngle -= 360.0f;
+				ret += 360.0f;
+			}
+
+			return ret;	
+		}
+
+        public void FillPath(Color color, GraphicsPath path)
+        {
+            var old = Control.PixelOffsetMode;
+            Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
+            Control.FillPath(new sd.SolidBrush(color.ToSD()), GraphicsPathHandler.GetControl(path));
+            Control.PixelOffsetMode = old;
+        }
+
+        public void DrawPath(Color color, GraphicsPath path)
+        {
+            Control.DrawPath(new sd.Pen(color.ToSD()), GraphicsPathHandler.GetControl(path));
+        }
+
+		float DegreeToRadian (float angle)
+		{
+			return (float)Math.PI * angle / 180.0f;
+		}
+
+		float RadianToDegree (float radians)
+		{
+			return radians * 180.0f / (float)Math.PI;
+		}
+
+		public void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			if (width != height) {
+				var endAngle = startAngle + sweepAngle;
+				startAngle = GetConvertedAngle (startAngle, width / 2, height / 2, false);
+				endAngle = GetConvertedAngle (endAngle, width / 2, height / 2, false);
+				sweepAngle = endAngle - startAngle;
+			}
+			Control.DrawArc (new sd.Pen (color.ToSD ()), x, y, width, height, startAngle, sweepAngle);
+		}
+
+		public void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			if (width != height) {
+				var endAngle = startAngle + sweepAngle;
+				startAngle = GetConvertedAngle (startAngle, width / 2, height / 2, false);
+				endAngle = GetConvertedAngle (endAngle, width / 2, height / 2, false);
+				sweepAngle = endAngle - startAngle;
+			}
+			Control.FillPie (new sd.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
 		}
 		
-		public void FillPath (Color color, GraphicsPath path)
-		{
-			Control.FillPath (new SD.SolidBrush (color.ToSD ()), path.ControlObject as SD.Drawing2D.GraphicsPath);
-		}
-		
-		public void DrawPath (Color color, GraphicsPath path)
-		{
-			Control.DrawPath (new SD.Pen(color.ToSD ()), path.ControlObject as SD.Drawing2D.GraphicsPath);
-		}
-		
-
-		public void DrawImage (Image image, int x, int y)
-		{
-			Control.DrawImageUnscaled ((SD.Image)image.ControlObject, x, y);
-		}
-
-		public void DrawImage (Image image, int x, int y, int width, int height)
-		{
-			Control.DrawImage ((SD.Image)image.ControlObject, x, y, width, height);
-		}
-
 		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
-			this.Control.DrawImage ((SD.Image)image.ControlObject, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
+            var handler = image.Handler as IWindowsImage;
+            handler.DrawImage(this, source, destination);
 		}
 
         public void DrawImage(Image image, PointF point)
         {
             this.Control.DrawImage(
-                (SD.Image)image.ControlObject,
+                (sd.Image)image.ControlObject,
                 point.ToSD());
         }
 
         public void DrawImage(Image image, RectangleF rect)
         {
             this.Control.DrawImage(
-                (SD.Image)image.ControlObject,
+                (sd.Image)image.ControlObject,
                 rect.ToSD());
         }
-
-        public void DrawIcon(Icon icon, int x, int y, int width, int height)
-		{
-			Control.DrawIcon ((SD.Icon)icon.ControlObject, new SD.Rectangle (x, y, width, height));
-		}
 
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
             var brush =
                 BrushCache.GetBrush(font.Generator, color);
 
-            SD.Brush b = null;
+            sd.Brush b = null;
 
             if (brush != null)
                 b = brush.ControlObject
-                    as SD.Brush;
+                    as sd.Brush;
 
             if (b != null)
-                Control.DrawString(
-                    text, 
-                    (SD.Font)font.ControlObject, b, x, y, StringFormat);
+                Control.DrawString(text, (sd.Font)font.ControlObject, b, x, y, defaultStringFormat);
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
 #if FALSE
 			/* BAD (but not really!?)
-			 */
-			var format = new SD.StringFormat (SD.StringFormat.GenericTypographic);
-			format.FormatFlags = SD.StringFormatFlags.MeasureTrailingSpaces | SD.StringFormatFlags.NoWrap; 
+			 *
+			return this.Control.MeasureString (text, FontHandler.GetControl (font), sd.PointF.Empty, defaultStringFormat).ToEto ();
+			/*
 
-			return this.Control.MeasureString(text, (SD.Font)font.ControlObject, SD.PointF.Empty, format).ToEto ();
-			/**
-			if (string.IsNullOrEmpty(text)) return Size.Empty;
-			
-			var format = new SD.StringFormat (SD.StringFormat.GenericTypographic);
-			SD.CharacterRange[] ranges = { new SD.CharacterRange (0, text.Length) };
-		
-			format.FormatFlags = SD.StringFormatFlags.MeasureTrailingSpaces | SD.StringFormatFlags.NoWrap; 
-			format.SetMeasurableCharacterRanges (ranges);
-		
-			var sdfont = (SD.Font)font.ControlObject;
-			var regions = this.Control.MeasureCharacterRanges (text, sdfont, SD.Rectangle.Empty, format);
+				return Size.Empty;
+			sd.CharacterRange[] ranges = { new sd.CharacterRange (0, text.Length) };
+			defaultStringFormat.SetMeasurableCharacterRanges (ranges);
+
+			var regions = this.Control.MeasureCharacterRanges (text, FontHandler.GetControl (font), sd.Rectangle.Empty, defaultStringFormat);
 			var rect = regions [0].GetBounds (this.Control);
-			
-			return Generator.Convert (rect.Size);
-			//s.Width += 4;
-			//return s;
-			/**/
+
+			return rect.Size.ToEto ();
+			*/
 #else
             var result = SizeF.Empty;
 
@@ -216,20 +289,20 @@ namespace Eto.Platform.Windows.Drawing
 
                 var graphics = this.Control;
 
-                SD.CharacterRange[] characterRanges = 
+                sd.CharacterRange[] characterRanges = 
                 { 
-                    new SD.CharacterRange(0, text.Length) 
+                    new sd.CharacterRange(0, text.Length) 
                 };
 
-                StringFormat.SetMeasurableCharacterRanges(
+                defaultStringFormat.SetMeasurableCharacterRanges(
                     characterRanges);
 
                 var regions =
                     graphics.MeasureCharacterRanges(
                         text,
                         sdFont,
-                        new SD.Rectangle(0, 0, 10000, 10000),
-                        StringFormat);
+                        new sd.Rectangle(0, 0, 10000, 10000),
+                        defaultStringFormat);
 
                 if (regions != null &&
                     regions.Length > 0)
@@ -249,9 +322,8 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Flush ()
 		{
-			// no need to flush
+			Control.Flush ();
 		}
-
         public void SetClip(RectangleF rect)
         {
             this.Control.SetClip(rect.ToRectangleF());
@@ -259,21 +331,20 @@ namespace Eto.Platform.Windows.Drawing
 
         public void FillRectangle(Brush brush, RectangleF Rectangle)
         {
-            this.Control.FillRectangle((SD.Brush)brush.ControlObject, Rectangle.ToRectangleF());
+            this.Control.FillRectangle((sd.Brush)brush.ControlObject, Rectangle.ToRectangleF());
         }
 
         public void FillRectangle(Brush brush, float x, float y, float width, float height)
         {
-            this.Control.FillRectangle((SD.Brush)brush.ControlObject, x, y, width, height);
+            this.Control.FillRectangle((sd.Brush)brush.ControlObject, x, y, width, height);
         }
 
         public void FillPath(Brush brush, GraphicsPath path)
         {
             this.Control.FillPath(
-                (SD.Brush)brush.ControlObject, 
-                (SD.Drawing2D.GraphicsPath)path.ControlObject);
+                (sd.Brush)brush.ControlObject, 
+                (sd.Drawing2D.GraphicsPath)path.ControlObject);
         }
-
         public RectangleF ClipBounds
         {
             get { return this.Control.ClipBounds.ToRectangleF(); }
@@ -297,20 +368,20 @@ namespace Eto.Platform.Windows.Drawing
         public void MultiplyTransform(Matrix matrix)
         {
             this.Control.MultiplyTransform(
-                (SD.Drawing2D.Matrix)matrix.ControlObject);
+                (sd.Drawing2D.Matrix)matrix.ControlObject);
         }
 
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
             this.Control.DrawRectangle(
-                (SD.Pen)pen.ControlObject,
+                (sd.Pen)pen.ControlObject,
                 x, y, width, height);
         }
 
         public void DrawLine(Pen pen, PointF pt1, PointF pt2)
         {
             this.Control.DrawLine(
-                (SD.Pen)pen.ControlObject,
+                (sd.Pen)pen.ControlObject,
                 pt1.ToPointF(),
                 pt2.ToPointF());
         }
@@ -318,17 +389,17 @@ namespace Eto.Platform.Windows.Drawing
         public void DrawPath(Pen pen, GraphicsPath path)
         {
             this.Control.DrawPath(
-                (SD.Pen)pen.ControlObject,
-                (SD.Drawing2D.GraphicsPath)path.ControlObject);
+                (sd.Pen)pen.ControlObject,
+                (sd.Drawing2D.GraphicsPath)path.ControlObject);
         }
 
-        private Stack<SD.Drawing2D.Matrix> savedTransforms;
+        private Stack<sd.Drawing2D.Matrix> savedTransforms;
 
         public void SaveTransform()
         {
             if (savedTransforms == null)
                 savedTransforms =
-                    new Stack<SD.Drawing2D.Matrix>();
+                    new Stack<sd.Drawing2D.Matrix>();
 
             savedTransforms.Push(
                 Control.Transform);

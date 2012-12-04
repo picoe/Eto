@@ -52,13 +52,6 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="point1">Starting point for the line</param>
 		/// <param name="point2">Ending point for the line</param>
-        void AddLine(Point point1, Point point2);
-
-		/// <summary>
-		/// Adds a single line to the path
-		/// </summary>
-		/// <param name="point1">Starting point for the line</param>
-		/// <param name="point2">Ending point for the line</param>
         void AddLine(PointF point1, PointF point2);
 
         void AddRectangle(RectangleF rectangle);
@@ -67,13 +60,13 @@ namespace Eto.Drawing
 		/// Adds a line to the specified <paramref name="point"/> from the last location
 		/// </summary>
 		/// <param name="point">Ending point for the line</param>
-        void LineTo(Point point);
+		void LineTo (PointF point);
 
 		/// <summary>
 		/// Moves the current position to the specified <paramref name="point"/>, without adding anything to the path
 		/// </summary>
 		/// <param name="point">Location to move the current position</param>
-        void MoveTo(Point point);
+		void MoveTo (PointF point);
 
         void Translate(PointF point);
 
@@ -87,7 +80,7 @@ namespace Eto.Drawing
 	/// Defines primitives that can be used to draw or fill a path on a <see cref="Graphics"/> object
 	/// </summary>
 	{
-		IGraphicsPath inner;
+		new IGraphicsPath Handler { get { return (IGraphicsPath)base.Handler; } }
 
 		/// <summary>
 		/// Initializes a new instance of the GraphicsPath class
@@ -104,18 +97,16 @@ namespace Eto.Drawing
 		public GraphicsPath (Generator generator)
 			: base(generator, typeof(IGraphicsPath))
 		{
-			inner = (IGraphicsPath)Handler;
 		}
 
-        public GraphicsPath(Generator g, IGraphicsPath inner) : base(g, inner)
-        {
-            this.inner = inner;
-        }
+		public GraphicsPath (Generator g, IGraphicsPath handler) : base(g, handler)
+		{
+		}
 
         public GraphicsPath(FillMode fillMode)
             : this()
         {
-            this.inner.FillMode = fillMode;
+            this.Handler.FillMode = fillMode;
         }
 
 		void IWidget.Initialize()
@@ -123,29 +114,29 @@ namespace Eto.Drawing
 			base.Initialize();
 		}
 
-        public bool IsEmpty { get { return inner.IsEmpty; } }
+        public bool IsEmpty { get { return Handler.IsEmpty; } }
 
 		/// <summary>
 		/// Moves the current position to the specified <paramref name="point"/>, without adding anything to the path
 		/// </summary>
 		/// <param name="point">Location to move the current position</param>
-		public void MoveTo (Point point)
+		public void MoveTo (PointF point)
 		{
-			inner.MoveTo (point);
+			Handler.MoveTo (point);
 		}
 
 		/// <summary>
 		/// Adds a line to the specified <paramref name="point"/> from the last location
 		/// </summary>
 		/// <param name="point">Ending point for the line</param>
-		public void LineTo (Point point)
+		public void LineTo (PointF point)
 		{
-			inner.LineTo (point);
+			Handler.LineTo (point);
 		}
 
         public void AddCurve(PointF[] points)
         {
-            inner.AddCurve(points);
+            Handler.AddCurve(points);
         }
 
 		/// <summary>
@@ -155,26 +146,26 @@ namespace Eto.Drawing
 		/// <param name="point2">Ending point for the line</param>
         public void AddLine(Point point1, Point point2)
 		{
-			inner.AddLine (point1, point2);
+			Handler.AddLine (point1, point2);
 		}
 
         public void AddLine(PointF point1, PointF point2)
         {
-            inner.AddLine(point1, point2);
+            Handler.AddLine(point1, point2);
         }
 		
 		/// <summary>
-		/// Adds the <paramref name="lines"/> to the path 
+		/// Adds the <paramref name="points"/> to the path 
 		/// </summary>
-		/// <param name="lines"></param>
-        public void AddLines(params PointF[] points)
+		/// <param name="points"></param>
+		public void AddLines (params PointF[] points)
         {
-            inner.AddLines(points);
+			Handler.AddLines (points);
         }
 
         public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
         {
-            inner.AddBezier(
+            Handler.AddBezier(
                 pt1,
                 pt2,
                 pt3,
@@ -183,12 +174,12 @@ namespace Eto.Drawing
 
         public void AddPath(GraphicsPath addingPath, bool connect)
         {
-            inner.AddPath(addingPath, connect);
+            Handler.AddPath(addingPath, connect);
         }
 
         public RectangleF GetBounds()
         {
-            return inner.GetBounds();
+            return Handler.GetBounds();
         }
 
         public IGraphicsPath Clone()
@@ -196,42 +187,42 @@ namespace Eto.Drawing
             return 
                 new GraphicsPath(
                     this.Generator,
-                    inner.Clone());
+                    Handler.Clone());
         }
 
         public void Translate(PointF point)
         {
-            inner.Translate(point);
+            Handler.Translate(point);
         }
 
         public void AddRectangle(RectangleF rectangle)
         {
-            inner.AddRectangle(rectangle);
+            Handler.AddRectangle(rectangle);
         }
 
         public void CloseFigure()
         {
-            inner.CloseFigure();
+            Handler.CloseFigure();
         }
 
         public void Transform(Matrix matrix)
         {
-            inner.Transform(matrix);
+            Handler.Transform(matrix);
         }
 
         public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
         {
-            inner.AddArc(rect, startAngle, sweepAngle);
+            Handler.AddArc(rect, startAngle, sweepAngle);
         }
 
         public void AddBeziers(Point[] points)
         {
-            inner.AddBeziers(points);
+            Handler.AddBeziers(points);
         }
 
         public void AddEllipse(RectangleF rect)
         {
-            inner.AddEllipse(rect);
+            Handler.AddEllipse(rect);
         }
 
         public void AddEllipse(float x, float y, float width, float height)
@@ -241,12 +232,12 @@ namespace Eto.Drawing
 
         FillMode IGraphicsPath.FillMode
         {
-            set { inner.FillMode = value; }
+            set { Handler.FillMode = value; }
         }
 
         public void AddPath(IGraphicsPathBase addingPath, bool connect)
         {
-            inner.AddPath(addingPath, connect);
+            Handler.AddPath(addingPath, connect);
         }
 
         public GraphicsPath ToGraphicsPath()

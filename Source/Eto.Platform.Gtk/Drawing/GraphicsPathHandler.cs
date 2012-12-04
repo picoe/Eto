@@ -59,21 +59,21 @@ namespace Eto.Platform.GtkSharp.Drawing
             commands.Add(new Lines { Points = points });
         }
 
-		public void MoveTo (Point point)
+		public void MoveTo (PointF point)
 		{
 			Add ((handler, first) => {
 				handler.Control.MoveTo (point.X, point.Y);
 			});
 		}
 		
-		public void LineTo (Point point)
+		public void LineTo (PointF point)
 		{
 			Add ((handler, first) => {
 				handler.Control.LineTo (point.X, point.Y);
 			});
 		}
 		
-		public void AddLine (Point point1, Point point2)
+		public void AddLine (PointF point1, PointF point2)
 		{
 			Add ((handler, first) => {
 				handler.Control.MoveTo (point1.X, point1.Y);
@@ -137,11 +137,6 @@ namespace Eto.Platform.GtkSharp.Drawing
         }
 
         public void AddCurve(PointF[] points)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddLine(PointF point1, PointF point2)
         {
             throw new NotImplementedException();
         }

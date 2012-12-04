@@ -170,7 +170,7 @@ namespace Eto.Platform.Wpf.Drawing
             AddArc(rect, 0, 360);
         }
 
-        public void LineTo(Point point)
+        public void LineTo(PointF point)
         {
             var p = point.ToWpf();
             LineTo(p);
@@ -181,7 +181,7 @@ namespace Eto.Platform.Wpf.Drawing
             figure.Segments.Add(new swm.LineSegment(p, true));
         }
 
-        public void MoveTo(Point point)
+        public void MoveTo(PointF point)
         {
             ConnectTo(point.ToWpf(), startNewFigure: true);
         }

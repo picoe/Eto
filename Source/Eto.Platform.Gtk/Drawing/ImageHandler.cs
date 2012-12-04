@@ -48,7 +48,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public abstract void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
 
-
         #region IImage Members
 
 

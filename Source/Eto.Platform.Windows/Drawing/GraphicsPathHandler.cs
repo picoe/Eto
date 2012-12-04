@@ -8,30 +8,30 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class GraphicsPathHandler : WidgetHandler<SD.Drawing2D.GraphicsPath, GraphicsPath>, IGraphicsPath
 	{
-		Point position;
+		PointF position;
 
 		public GraphicsPathHandler ()
 		{
 			Control = new SD.Drawing2D.GraphicsPath ();
 		}
 
-        private GraphicsPathHandler(SD.Drawing2D.GraphicsPath control)
-        {
-            Control = control;
-        }
-		
-		public void LineTo (Point point)
+		private GraphicsPathHandler (SD.Drawing2D.GraphicsPath control)
+		{
+			Control = control;
+		}
+
+		public void LineTo (PointF point)
 		{
 			this.Control.AddLine (position.ToSD (), point.ToSD ());
-            position = point;
+			position = point;
 		}
-		
-		public void MoveTo (Point point)
+
+		public void MoveTo (PointF point)
 		{
 			position = point;
 		}
 
-		public void AddLine (Point point1, Point point2)
+		public void AddLine (PointF point1, PointF point2)
 		{
 			this.Control.AddLine (point1.ToSD (), point2.ToSD ());
 			position = point2;
@@ -93,16 +93,9 @@ namespace Eto.Platform.Windows.Drawing
 
         public void AddLines(PointF[] points)
         {
-            this.Control.AddLines(
-                points.ToSD());
-        }
-
-        public void AddLine(PointF point1, PointF point2)
-        {
-            this.Control.AddLines(
-                new SD.PointF[] {
-                    point1.ToPointF(), 
-                    point2.ToPointF()});
+			var sdlines = from p in points select p.ToSD ();
+			this.Control.AddLines (sdlines.ToArray ());
+			position = points.Last ();
         }
 
         public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)

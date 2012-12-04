@@ -4,6 +4,7 @@ using Eto.Forms;
 using Eto.Platform.Windows.Drawing;
 using sd = System.Drawing;
 using sdp = System.Drawing.Printing;
+using sd2 = System.Drawing.Drawing2D;
 using swf = System.Windows.Forms;
 
 namespace Eto.Platform.Windows
@@ -150,130 +151,202 @@ namespace Eto.Platform.Windows
             if (style.HasFlag(sd.FontStyle.Bold)) ret |= FontStyle.Bold;
             if (style.HasFlag(sd.FontStyle.Italic)) ret |= FontStyle.Italic;
             return ret;
-        }
+		}
 
-        public static PointF ToEto(this sd.PointF point)
-        {
-            return new PointF(point.X, point.Y);
-        }
+		public static PointF ToEto (this sd.PointF point)
+		{
+			return new PointF (point.X, point.Y);
+		}
 
-        public static sd.PointF ToSD(this PointF point)
-        {
-            return new sd.PointF(point.X, point.Y);
-        }
+		public static sd.PointF ToSD (this PointF point)
+		{
+			return new sd.PointF (point.X, point.Y);
+		}
 
-        #region Size, SizeF
+		public static sd.Point ToSDPoint (this PointF point)
+		{
+			return new sd.Point ((int)point.X, (int)point.Y);
+		}
 
-        public static Size ToEto(this sd.Size size)
-        {
-            return new Size(size.Width, size.Height);
-        }
+		public static Size ToEto (this sd.Size size)
+		{
+			return new Size (size.Width, size.Height);
+		}
 
-        public static sd.Size ToSD(this Size size)
-        {
-            return new sd.Size(size.Width, size.Height);
-        }
+		public static sd.Size ToSD (this Size size)
+		{
+			return new sd.Size (size.Width, size.Height);
+		}
 
-        public static Size ToEtoF(this sd.SizeF size)
-        {
-            return new Size((int)size.Width, (int)size.Height);
-        }
+		public static Size ToEtoF (this sd.SizeF size)
+		{
+			return new Size ((int)size.Width, (int)size.Height);
+		}
 
-        public static SizeF ToEto(this sd.SizeF size)
-        {
-            return new SizeF(size.Width, size.Height);
-        }
+		public static SizeF ToEto (this sd.SizeF size)
+		{
+			return new SizeF (size.Width, size.Height);
+		}
 
-        public static sd.SizeF ToSD(this SizeF size)
-        {
-            return new sd.SizeF(size.Width, size.Height);
-        }
+		public static sd.SizeF ToSD (this SizeF size)
+		{
+			return new sd.SizeF (size.Width, size.Height);
+		}
 
-        #endregion
+		public static RectangleF ToEto (this sd.RectangleF rect)
+		{
+			return new RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
 
-        public static RectangleF ToEto(this sd.RectangleF rect)
-        {
-            return new RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
-        }
+		public static sd.RectangleF ToSD (this RectangleF rect)
+		{
+			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
 
-        public static sd.RectangleF ToSD(this RectangleF rect)
-        {
-            return new sd.RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
-        }
+		public static sd.Rectangle ToSDRectangle (this RectangleF rect)
+		{
+			return new sd.Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
 
-        internal static sd.Point[] ToSD(this Point[] points)
-        {
-            var result =
-                new sd.Point[points.Length];
+		internal static sd.Point[] ToSD (this Point[] points)
+		{
+			var result =
+				new sd.Point[points.Length];
 
-            for (var i = 0;
-                i < points.Length;
-                ++i)
-            {
-                var p = points[i];
-                result[i] =
-                    new sd.Point(p.X, p.Y);
-            }
+			for (var i = 0;
+				i < points.Length;
+				++i) {
+				var p = points[i];
+				result[i] =
+					new sd.Point (p.X, p.Y);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        internal static sd.PointF[] ToSD(this PointF[] points)
-        {
-            var result =
-                new sd.PointF[points.Length];
+		internal static sd.PointF[] ToSD (this PointF[] points)
+		{
+			var result =
+				new sd.PointF[points.Length];
 
-            for (var i = 0;
-                i < points.Length;
-                ++i)
-            {
-                var p = points[i];
-                result[i] =
-                    new sd.PointF(p.X, p.Y);
-            }
+			for (var i = 0;
+				i < points.Length;
+				++i) {
+				var p = points[i];
+				result[i] =
+					new sd.PointF (p.X, p.Y);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        internal static PointF[] ToEto(this sd.PointF[] points)
-        {
-            var result =
-                new PointF[points.Length];
+		internal static PointF[] ToEto (this sd.PointF[] points)
+		{
+			var result =
+				new PointF[points.Length];
 
-            for (var i = 0;
-                i < points.Length;
-                ++i)
-            {
-                var p = points[i];
-                result[i] =
-                    new PointF(p.X, p.Y);
-            }
+			for (var i = 0;
+				i < points.Length;
+				++i) {
+				var p = points[i];
+				result[i] =
+					new PointF (p.X, p.Y);
+			}
 
-            return result;
-        }
+			return result;
+		}
 
-        public static sd.Graphics ToSD(this Graphics graphics)
-        {
-            var h = (GraphicsHandler)graphics.Handler;
-            return h.Control;
-        }
+		public static sd.Graphics ToSD (this Graphics graphics)
+		{
+			var h = (GraphicsHandler)graphics.Handler;
+			return h.Control;
+		}
 
-        public static sd.Drawing2D.GraphicsPath ToSD(this GraphicsPath graphicsPath)
-        {
-            var h = (GraphicsPathHandler)graphicsPath.Handler;
-            return h.Control;
-        }
+		public static sd.Drawing2D.GraphicsPath ToSD (this GraphicsPath graphicsPath)
+		{
+			var h = (GraphicsPathHandler)graphicsPath.Handler;
+			return h.Control;
+		}
 
-        public static sd.Image ToSD(this Image graphics)
-        {
-            var h = (BitmapHandler)graphics.Handler;
-            return h.Control;
-        }
+		public static sd.Image ToSD (this Image graphics)
+		{
+			var h = (BitmapHandler)graphics.Handler;
+			return h.Control;
+		}
 
-        public static sd.Font ToSD(this Font font)
-        {
-            var h = (FontHandler)font.Handler;
-            return h.Control;
+		public static sd.Font ToSD (this Font font)
+		{
+			var h = (FontHandler)font.Handler;
+			return h.Control;
+		}
+
+		public static MouseEventArgs ToEto (this swf.MouseEventArgs e)
+		{
+			var point = new Point (e.X, e.Y);
+			var buttons = ToEto (e.Button);
+			var modifiers = KeyMap.Convert (swf.Control.ModifierKeys);
+
+			var result = new MouseEventArgs (buttons, modifiers, point);
+
+            result.Delta = e.Delta;
+
+			return result;
+		}
+
+		private static MouseButtons ToEto (this swf.MouseButtons button)
+		{
+			MouseButtons buttons = MouseButtons.None;
+
+			if ((button & swf.MouseButtons.Left) != 0)
+				buttons |= MouseButtons.Primary;
+
+			if ((button & swf.MouseButtons.Right) != 0)
+				buttons |= MouseButtons.Alternate;
+
+			if ((button & swf.MouseButtons.Middle) != 0)
+				buttons |= MouseButtons.Middle;
+
+			return buttons;
+		}
+
+		public static Graphics ToEto (this sd.Graphics g, Eto.Generator generator)
+		{
+			return new Graphics (generator, new GraphicsHandler (g));
+		}
+
+		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
+		{
+			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
+		}
+
+		public static sd.Image ToSD (this IImage image)
+		{
+			if (image == null) return null;
+			else return image.ControlObject as sd.Image;
+		}
+
+		public static sd2.PixelOffsetMode ToSD (this PixelOffsetMode mode)
+		{
+			switch (mode) {
+			case PixelOffsetMode.None:
+				return sd2.PixelOffsetMode.None;
+			case PixelOffsetMode.Half:
+				return sd2.PixelOffsetMode.Half;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PixelOffsetMode ToEto (this sd2.PixelOffsetMode mode)
+		{
+			switch (mode) {
+			case sd2.PixelOffsetMode.None:
+				return PixelOffsetMode.None;
+			case sd2.PixelOffsetMode.Half:
+				return PixelOffsetMode.Half;
+			default:
+				throw new NotSupportedException ();
+			}
         }
 
         internal static DragDropEffects ToEto(this swf.DragDropEffects effects)
@@ -324,36 +397,6 @@ namespace Eto.Platform.Windows
             swf.DragAction dragAction)
         {
             return (DragAction)dragAction;
-        }
-
-        public static MouseEventArgs ToEto(
-            this swf.MouseEventArgs e)
-        {
-            var point = new Point(e.X, e.Y);
-            var buttons = ToEto(e.Button);
-            var modifiers = KeyMap.Convert(swf.Control.ModifierKeys);
-
-            var result = new MouseEventArgs(buttons, modifiers, point);
-
-            result.Delta = e.Delta;
-
-            return result;
-        }
-
-        private static MouseButtons ToEto(this swf.MouseButtons button)
-        {
-            MouseButtons buttons = MouseButtons.None;
-
-            if ((button & swf.MouseButtons.Left) != 0)
-                buttons |= MouseButtons.Primary;
-
-            if ((button & swf.MouseButtons.Right) != 0)
-                buttons |= MouseButtons.Alternate;
-
-            if ((button & swf.MouseButtons.Middle) != 0)
-                buttons |= MouseButtons.Middle;
-
-            return buttons;
         }
 
         public static Graphics ToEto(this sd.Graphics g)
@@ -428,17 +471,6 @@ namespace Eto.Platform.Windows
         {
             var h = (MatrixHandler)m.Handler;
             return h.Control;
-        }
-
-        public static sd.Image ToSD(this IImage i)
-        {
-            sd.Image result = null;
-
-            if (i != null)
-                result =
-                    i.ControlObject as sd.Image;
-
-            return result;
         }
     }
 }

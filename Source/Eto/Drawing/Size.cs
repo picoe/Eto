@@ -133,14 +133,16 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets a value indicating that both the <see cref="Width"/> and <see cref="Height"/> are zero
 		/// </summary>
-		public bool IsZero {
+		public bool IsZero
+		{
 			get { return Width == 0 && Height == 0; }
 		}
 		
 		/// <summary>
 		/// Gets a value indicating that either the <see cref="Width"/> or <see cref="Height"/> are zero
 		/// </summary>
-		public bool IsEmpty {
+		public bool IsEmpty
+		{
 			get { return Width == 0 || Height == 0; }
 		}
 
@@ -150,6 +152,16 @@ namespace Eto.Drawing
         }
 
 		/// <summary>
+		/// Negates the Width and Height of the specified <paramref name="size"/> value
+		/// </summary>		
+		/// <param name="size">Size to negate</param>
+		/// <returns>A new size that has a negative value of each of the Width and Height</returns>
+		public static Size operator - (Size size)
+		{
+			return new Size (-size.Width, -size.Height);
+		}
+
+		/// <summary>
 		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of two sizes
 		/// </summary>
 		/// <param name="size1">First size to multiply</param>
@@ -157,10 +169,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with the product of both sizes</returns>
 		public static Size operator * (Size size1, Size size2)
 		{
-			Size result = size1;
-			result.Width = size1.Width * size2.Width;
-			result.Height = size1.Height * size2.Height;
-			return result;
+			return new Size (size1.Width * size2.Width, size1.Height * size2.Height);
 		}
 
 		/// <summary>
@@ -171,10 +180,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
 		public static Size operator * (Size size, int factor)
 		{
-			Size result = size;
-			result.Width = size.Width * factor;
-			result.Height = size.Height * factor;
-			return result;
+			return new Size (size.Width * factor, size.Height * factor);
 		}
 
         public static SizeF operator *(Size size1, float multiplier)
@@ -193,10 +199,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with the division of <paramref name="size1"/> by <paramref name="size2"/></returns>
 		public static Size operator / (Size size1, Size size2)
 		{
-			Size result = size1;
-			result.Width = size1.Width / size2.Width;
-			result.Height = size1.Height / size2.Height;
-			return result;
+			return new Size (size1.Width / size2.Width, size1.Height / size2.Height);
 		}
 
 		/// <summary>
@@ -207,10 +210,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with the width and height of <paramref name="size"/> divided by <paramref name="factor"/></returns>
 		public static Size operator / (Size size, int factor)
 		{
-			Size result = size;
-			result.Width = size.Width / factor;
-			result.Height = size.Height / factor;
-			return result;
+			return new Size (size.Width / factor, size.Height / factor);
 		}
 
 		/// <summary>
@@ -221,10 +221,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with the addition of the width and height of both sizes</returns>
 		public static Size operator + (Size size1, Size size2)
 		{
-			Size result = size1;
-			result.Width = size1.Width + size2.Width;
-			result.Height = size1.Height + size2.Height;
-			return result;
+			return new Size (size1.Width + size2.Width, size1.Height + size2.Height);
 		}
 
 		/// <summary>
@@ -235,10 +232,29 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with the width and height of <paramref name="size1"/> minus <paramref name="size2"/></returns>
 		public static Size operator - (Size size1, Size size2)
 		{
-			Size result = size1;
-			result.Width = size1.Width - size2.Width;
-			result.Height = size1.Height - size2.Height;
-			return result;
+			return new Size (size1.Width - size2.Width, size1.Height - size2.Height);
+		}
+
+		/// <summary>
+		/// Adds the <see cref="Point.X"/> and <see cref="Point.Y"/> value to the <see cref="Width"/> and <see cref="Height"/> of a size
+		/// </summary>
+		/// <param name="size">Size to add to</param>
+		/// <param name="point">Point with values to add</param>
+		/// <returns>A new instance of a Size struct with the width and height of <paramref name="size"/> plus <paramref name="point"/></returns>
+		public static Size operator + (Size size, Point point)
+		{
+			return new Size (size.Width + point.X, size.Height + point.Y);
+		}
+
+		/// <summary>
+		/// Subtracts the <see cref="Point.X"/> and <see cref="Point.Y"/> value from the <see cref="Width"/> and <see cref="Height"/> of a size
+		/// </summary>
+		/// <param name="size">Size to subtract from</param>
+		/// <param name="point">Point with values to subtract</param>
+		/// <returns>A new instance of a Size struct with the width and height of <paramref name="size"/> minus <paramref name="point"/></returns>
+		public static Size operator - (Size size, Point point)
+		{
+			return new Size (size.Width - point.X, size.Height - point.Y);
 		}
 
 		/// <summary>
@@ -283,6 +299,16 @@ namespace Eto.Drawing
 		public static bool operator != (Size size1, Size size2)
 		{
 			return (size1.Width != size2.Width || size1.Height != size2.Height);
+		}
+
+		/// <summary>
+		/// Explicit conversion from a <paramref name="point"/> to a Size with a Width and Height of the X and Y values of the point, respectively
+		/// </summary>
+		/// <param name="point">Point to convert</param>
+		/// <returns>A new size with the width and height of the X and Y values of the point, respectively</returns>
+		public static explicit operator Size (Point point)
+		{
+			return new Size (point);
 		}
 
 		/// <summary>

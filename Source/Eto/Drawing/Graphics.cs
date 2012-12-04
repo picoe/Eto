@@ -14,8 +14,11 @@ namespace Eto.Drawing
         /// </summary>
         bool Antialias { get; set; }
 
-        bool IsRetainedMode { get; }
+        bool IsRetained { get; }
 
+        PixelOffsetMode PixelOffsetMode { get; set; }
+
+        /// <summary>
         /// Gets or sets the interpolation mode for drawing images
         /// </summary>
         ImageInterpolation ImageInterpolation { get; set; }
@@ -38,27 +41,37 @@ namespace Eto.Drawing
         /// <param name="starty">Y co-ordinate of the starting point</param>
         /// <param name="endx">X co-ordinate of the ending point</param>
         /// <param name="endy">Y co-ordinate of the ending point</param>
-        void DrawLine(Color color, int startx, int starty, int endx, int endy);
+        void DrawLine(Color color, float startx, float starty, float endx, float endy);
 
         void DrawLine(Pen pen, PointF pt1, PointF pt2);
         #endregion
 
         #region DrawRectangle
+
+        /// <summary>
+        /// Draws a rectangle outline
+        /// </summary>
+        /// <param name="color">Color for the outline</param>
+        /// <param name="x">X co-ordinate</param>
+        /// <param name="y">Y co-ordinate</param>
+        /// <param name="width">Width of the rectangle</param>
+        /// <param name="height">Height of the rectangle</param>
+        void DrawRectangle(Color color, float x, float y, float width, float height);
+
+        /// <summary>
+        /// Draws a rectangle outline
+        /// </summary>
+        /// <param name="color">Color for the outline</param>
+        /// <param name="x">X co-ordinate</param>
+        /// <param name="y">Y co-ordinate</param>
+        /// <param name="width">Width of the rectangle</param>
+        /// <param name="height">Height of the rectangle</param>
         void DrawRectangle(Pen pen, float x, float y, float width, float height);
 
-		/// <summary>
-		/// Draws a rectangle outline
-		/// </summary>
-		/// <param name="color">Color for the outline</param>
-		/// <param name="x">X co-ordinate</param>
-		/// <param name="y">Y co-ordinate</param>
-		/// <param name="width">Width of the rectangle</param>
-		/// <param name="height">Height of the rectangle</param>
-		void DrawRectangle (Color color, int x, int y, int width, int height);
         #endregion
 
         #region FillRectangle
-        void FillRectangle(Brush brush, RectangleF Rectangle);
+        void FillRectangle(Brush brush, RectangleF rectangle);
 
         void FillRectangle(Brush brush, float x, float y, float width, float height);
 
@@ -84,17 +97,48 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
 		/// <param name="width">Width of the ellipse</param>
 		/// <param name="height">Height of the ellipse</param>
-		void FillEllipse (Color color, int x, int y, int width, int height);
+		void FillEllipse (Color color, float x, float y, float width, float height);
 
 		/// <summary>
 		/// Draws an outline of an ellipse with the specified <paramref name="color"/>
 		/// </summary>
-		/// <param name="color">Fill color</param>
+		/// <param name="color">Line color</param>
 		/// <param name="x">X co-ordinate of the left side of the ellipse</param>
 		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
 		/// <param name="width">Width of the ellipse</param>
 		/// <param name="height">Height of the ellipse</param>
-		void DrawEllipse (Color color, int x, int y, int width, int height);
+		void DrawEllipse (Color color, float x, float y, float width, float height);
+        #endregion
+
+        #region Arc
+
+        /// <summary>
+        /// Draws an arc with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Color of the arc</param>
+        /// <param name="x">X co-ordinate of the upper left corner of the arc</param>
+        /// <param name="y">Y co-ordinate of the upper left corner of the arc</param>
+        /// <param name="width">Width of the arc</param>
+        /// <param name="height">Height of the arc</param>
+        /// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the arc</param>
+        /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
+        void DrawArc(Color color, float x, float y, float width, float height, float startAngle, float sweepAngle);
+
+        #endregion
+
+        #region Pie
+        /// <summary>
+        /// Fills a pie with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Fill color</param>
+        /// <param name="x">X co-ordinate of the upper left corner of the pie</param>
+        /// <param name="y">Y co-ordinate of the upper left corner of the pie</param>
+        /// <param name="width">Width of the pie</param>
+        /// <param name="height">Height of the pie</param>
+        /// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the pie</param>
+        /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
+        void FillPie(Color color, float x, float y, float width, float height, float startAngle, float sweepAngle);
+
         #endregion
 
         #region FillPath
@@ -121,30 +165,22 @@ namespace Eto.Drawing
 
         #region DrawImage
 
-        void DrawImage(Image image, PointF pointF);
+        /// <summary>
+        /// Draws the specified <paramref name="image"/> at a location with no scaling
+        /// </summary>
+        /// <param name="image">Image to draw</param>
+        /// <param name="point">Location</param>
+        void DrawImage(Image image, PointF point);
 
+        /// <summary>
+        /// Draws the specified <paramref name="image"/> in a rectangle
+        /// </summary>
+        /// <remarks>
+        /// This will scale the image to the specified width and height using the <see cref="ImageInterpolation"/> mode
+        /// </remarks>
+        /// <param name="image">Image to draw</param>
+        /// <param name="rect">Destination location and size of the image</param>
         void DrawImage(Image image, RectangleF rect);
-
-		/// <summary>
-		/// Draws the specified <paramref name="image"/> at a location with no scaling
-		/// </summary>
-		/// <param name="image">Image to draw</param>
-		/// <param name="x">X co-ordinate</param>
-		/// <param name="y">Y co-ordinate</param>
-		void DrawImage (Image image, int x, int y);
-
-		/// <summary>
-		/// Draws the specified <paramref name="image"/> in a rectangle
-		/// </summary>
-		/// <remarks>
-		/// This will scale the image to the specified width and height using the <see cref="ImageInterpolation"/> mode
-		/// </remarks>
-		/// <param name="image">Image to draw</param>
-		/// <param name="x">X co-ordinate</param>
-		/// <param name="y">Y co-ordinate</param>
-		/// <param name="width">Destination width of the image to draw</param>
-		/// <param name="height">Destination height of the image to draw</param>
-		void DrawImage (Image image, int x, int y, int width, int height);
 
 		/// <summary>
 		/// Draws the <paramref name="source"/> portion of an <paramref name="image"/>, scaling to the specified <paramref name="destination"/>
@@ -153,19 +189,6 @@ namespace Eto.Drawing
 		/// <param name="source">Source rectangle of the image portion to draw</param>
 		/// <param name="destination">Destination rectangle of where to draw the portion</param>
         void DrawImage(Image image, RectangleF source, RectangleF destination);
-
-        #endregion
-
-        #region DrawIcon
-        /// <summary>
-		/// Draws the <paramref name="icon"/> at the specified location and size
-		/// </summary>
-		/// <param name="icon">Icon to draw</param>
-		/// <param name="x">X co-ordinate of the location to draw the icon</param>
-		/// <param name="y">Y co-ordinate of the location to draw the icon</param>
-		/// <param name="width">Destination width of the icon</param>
-		/// <param name="height">Destination height of the icon</param>
-        void DrawIcon(Icon icon, int x, int y, int width, int height);
 
         #endregion
 
@@ -239,22 +262,20 @@ namespace Eto.Drawing
 	/// </remarks>
 	public class Graphics : InstanceWidget
 	{
-		IGraphics handler;
+        new IGraphics Handler { get { return (IGraphics)base.Handler; } }
 
         #region Constructors
-        public Graphics (IGraphics handler) : base(Generator.Current, handler)
+        public Graphics (IGraphics Handler) : base(Generator.Current, Handler)
 		{
-			this.handler = handler;
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the Graphics class with the specified platform <paramref name="handler"/>
+		/// Initializes a new instance of the Graphics class with the specified platform <paramref name="Handler"/>
 		/// </summary>
 		/// <param name="generator">Generator for this instance</param>
-		/// <param name="handler">Platform handler to use for this instance</param>
-		public Graphics (Generator generator, IGraphics handler) : base(generator, handler)
+		/// <param name="Handler">Platform Handler to use for this instance</param>
+		public Graphics (Generator generator, IGraphics Handler) : base(generator, Handler)
         {
-			this.handler = handler;
         }
 
 		/// <summary>
@@ -274,26 +295,19 @@ namespace Eto.Drawing
 		public Graphics (Generator generator, Bitmap image)
 			: base (generator, typeof (IGraphics))
 		{
-			this.handler = (IGraphics)Handler;
-			this.handler.CreateFromImage (image);
+			Handler.CreateFromImage (image);
+            Initialize();
 		}
 
         /// <summary>
-        /// Initializes a new instance of the Graphics with the specified handler type.
-        /// Allows derived types to change the handler.
+        /// Initializes a new instance of the Graphics with the specified Handler type.
+        /// Allows derived types to change the Handler.
         /// </summary>
         /// <param name="generator">Generator to create this graphics context for</param>
         /// <param name="handlerType"></param>
         protected Graphics(Generator generator, Type handlerType)
             :base(generator, handlerType)
         {
-            this.handler = (IGraphics)Handler;
-        }
-
-        public void CreateFromImage(Bitmap image)
-        {
-            throw new InvalidOperationException(
-                "Use the Graphics(Image image) constructor instead");
         }
 
         #endregion
@@ -305,9 +319,9 @@ namespace Eto.Drawing
 		/// <param name="color">Color for the outline</param>
 		/// <param name="start">Starting location</param>
 		/// <param name="end">Ending location</param>
-		public void DrawLine (Color color, Point start, Point end)
+		public void DrawLine (Color color, PointF start, PointF end)
 		{
-			handler.DrawLine (color, start.X, start.Y, end.X, end.Y);
+			Handler.DrawLine (color, start.X, start.Y, end.X, end.Y);
 		}
 
 		/// <summary>
@@ -318,14 +332,14 @@ namespace Eto.Drawing
 		/// <param name="starty">Y co-ordinate of the starting point</param>
 		/// <param name="endx">X co-ordinate of the ending point</param>
 		/// <param name="endy">Y co-ordinate of the ending point</param>
-		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
+		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
 		{
-			handler.DrawLine (color, startx, starty, endx, endy);
+			Handler.DrawLine (color, startx, starty, endx, endy);
 		}
 
         public void DrawLine(Pen pen, PointF pt1, PointF pt2)
         {
-            handler.DrawLine(pen, pt2, pt2);
+            Handler.DrawLine(pen, pt2, pt2);
         }
 
         public void DrawLines(Pen pen, PointF[] points)
@@ -351,32 +365,33 @@ namespace Eto.Drawing
         #endregion
 
         #region DrawRectangle
+
         /// <summary>
-		/// Draws a rectangle
-		/// </summary>
-		/// <param name="color">Color for the outline</param>
-		/// <param name="x">X co-ordinate</param>
-		/// <param name="y">Y co-ordinate</param>
-		/// <param name="width">Width of the rectangle</param>
-		/// <param name="height">Height of the rectangle</param>
-		public void DrawRectangle (Color color, int x, int y, int width, int height)
-		{
-			handler.DrawRectangle (color, x, y, width, height);
-		}
+        /// Draws a rectangle
+        /// </summary>
+        /// <param name="color">Color for the outline</param>
+        /// <param name="x">X co-ordinate</param>
+        /// <param name="y">Y co-ordinate</param>
+        /// <param name="width">Width of the rectangle</param>
+        /// <param name="height">Height of the rectangle</param>
+        public void DrawRectangle(Color color, float x, float y, float width, float height)
+        {
+            Handler.DrawRectangle(color, x, y, width, height);
+        }
 
 		/// <summary>
 		/// Draws a rectangle
 		/// </summary>
 		/// <param name="color">Color for the outline</param>
 		/// <param name="rectangle">Where to draw the rectangle</param>
-		public void DrawRectangle (Color color, Rectangle rectangle)
+		public void DrawRectangle (Color color, RectangleF rectangle)
 		{
-			handler.DrawRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			Handler.DrawRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
-            handler.DrawRectangle(pen, x, y, width, height);
+            Handler.DrawRectangle(pen, x, y, width, height);
         }
 
 		/// <summary>
@@ -386,7 +401,7 @@ namespace Eto.Drawing
 		/// <param name="bottomRightColor">Color for bottom/right edges</param>
 		/// <param name="rectangle">Outside of inset rectangle to draw</param>
 		/// <param name="width">Width of the rectangle, in pixels</param>
-		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, Rectangle rectangle, int width = 1)
+		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, RectangleF rectangle, int width = 1)
 		{
 			for (int i = 0; i < width; i++) {
 				DrawLine (topLeftColor, rectangle.TopLeft, rectangle.InnerTopRight);
@@ -410,7 +425,7 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle</param>
         public void FillRectangle(Color color, float x, float y, float width, float height)
 		{
-			handler.FillRectangle (color, x, y, width, height);
+			Handler.FillRectangle (color, x, y, width, height);
 		}
 
 		/// <summary>
@@ -418,24 +433,19 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Fill color</param>
 		/// <param name="rectangle">Location for the rectangle</param>
-		public void FillRectangle (Color color, Rectangle rectangle)
+		public void FillRectangle (Color color, RectangleF rectangle)
 		{
-			handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			Handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
-        public void FillRectangle(Color color, RectangleF rectangle)
+        public void FillRectangle(Brush brush, RectangleF rectangle)
         {
-            handler.FillRectangle(color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-        }
-
-        public void FillRectangle(Brush brush, RectangleF Rectangle)
-        {
-            handler.FillRectangle(brush, Rectangle);
+            Handler.FillRectangle(brush, rectangle);
         }
 
         public void FillRectangle(Brush brush, float x, float y, float width, float height)
         {
-            handler.FillRectangle(brush, x, y, width, height);
+            Handler.FillRectangle(brush, x, y, width, height);
         }
 
         /// <summary>
@@ -443,10 +453,10 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color to fill the rectangles</param>
 		/// <param name="rectangles">Enumeration of rectangles to fill</param>
-		public void FillRectangles (Color color, IEnumerable<Rectangle> rectangles)
+		public void FillRectangles (Color color, IEnumerable<RectangleF> rectangles)
 		{
-			foreach (Rectangle rectangle in rectangles) {
-				handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			foreach (var rectangle in rectangles) {
+				Handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 			}
 		}
 
@@ -458,9 +468,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Fill color</param>
 		/// <param name="rectangle">Location for the ellipse</param>
-		public void FillEllipse (Color color, Rectangle rectangle)
+		public void FillEllipse (Color color, RectangleF rectangle)
 		{
-			handler.FillEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			Handler.FillEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
         /// <summary>
@@ -471,9 +481,9 @@ namespace Eto.Drawing
         /// <param name="y">Y co-ordinate</param>
         /// <param name="width">Width of the ellipse</param>
         /// <param name="height">Height of the ellipse</param>
-        public void FillEllipse(Color color, int x, int y, int width, int height)
+        public void FillEllipse(Color color, float x, float y, float width, float height)
         {
-            handler.FillEllipse(color, x, y, width, height);
+            Handler.FillEllipse(color, x, y, width, height);
         }
 
 		/// <summary>
@@ -481,9 +491,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color to outline the ellipse</param>
 		/// <param name="rectangle">Location for the ellipse</param>
-		public void DrawEllipse (Color color, Rectangle rectangle)
+		public void DrawEllipse (Color color, RectangleF rectangle)
 		{
-			handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			Handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
         /// <summary>
@@ -494,9 +504,40 @@ namespace Eto.Drawing
         /// <param name="y">Y co-ordinate</param>
         /// <param name="width">Width of the ellipse</param>
         /// <param name="height">Height of the ellipse</param>
-        public void DrawEllipse(Color color, int x, int y, int width, int height)
+        public void DrawEllipse(Color color, float x, float y, float width, float height)
         {
-            handler.DrawEllipse(color, x, y, width, height);
+            Handler.DrawEllipse(color, x, y, width, height);
+        }
+
+        #endregion
+
+        #region Arc
+
+        /// <summary>
+        /// Draws an arc with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Color of the arc</param>
+        /// <param name="rectangle">Location of the arc</param>
+        /// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the arc</param>
+        /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
+        public void DrawArc(Color color, RectangleF rectangle, float startAngle, float sweepAngle)
+        {
+            Handler.DrawArc(color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
+        }
+
+        /// <summary>
+        /// Draws an arc with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Color of the arc</param>
+        /// <param name="x">X co-ordinate of the upper left corner of the arc</param>
+        /// <param name="y">Y co-ordinate of the upper left corner of the arc</param>
+        /// <param name="width">Width of the arc</param>
+        /// <param name="height">Height of the arc</param>
+        /// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the arc</param>
+        /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
+        public void DrawArc(Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+        {
+            Handler.DrawArc(color, x, y, width, height, startAngle, sweepAngle);
         }
 
         #endregion
@@ -508,7 +549,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Fill color</param>
 		/// <param name="points">Points of the polygon</param>
-		public void FillPolygon (Color color, PointF[] points)
+		public void FillPolygon (Color color, params PointF[] points)
 		{
 			var path = new GraphicsPath (Generator);
 			path.AddLines (points);
@@ -520,12 +561,42 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color to draw the polygon lines</param>
 		/// <param name="points">Points of the polygon</param>
-		public void DrawPolygon (Color color, PointF[] points)
+		public void DrawPolygon (Color color, params PointF[] points)
 		{
 			var path = new GraphicsPath (Generator);
 			path.AddLines (points);
 			DrawPath (color, path);
 		}
+        #endregion
+
+        #region Pie
+        /// <summary>
+        /// Fills a pie with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Fill color</param>
+        /// <param name="rectangle">Location of the pie</param>
+        /// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the pie</param>
+        /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
+        public void FillPie(Color color, RectangleF rectangle, float startAngle, float sweepAngle)
+        {
+            Handler.FillPie(color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
+        }
+
+        /// <summary>
+        /// Fills a pie with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Fill color</param>
+        /// <param name="x">X co-ordinate of the upper left corner of the pie</param>
+        /// <param name="y">Y co-ordinate of the upper left corner of the pie</param>
+        /// <param name="width">Width of the pie</param>
+        /// <param name="height">Height of the pie</param>
+        /// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the pie</param>
+        /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
+        public void FillPie(Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+        {
+            Handler.FillPie(color, x, y, width, height, startAngle, sweepAngle);
+        }
+
         #endregion
 
         #region DrawPath
@@ -536,12 +607,12 @@ namespace Eto.Drawing
 		/// <param name="path">Path to draw</param>
 		public void DrawPath (Color color, GraphicsPath path)
 		{
-			handler.DrawPath (color, path);
+			Handler.DrawPath (color, path);
 		}
 
         public void DrawPath(Pen pen, GraphicsPath path)
         {
-            handler.DrawPath(pen, path);
+            Handler.DrawPath(pen, path);
         }
         #endregion
 
@@ -553,12 +624,12 @@ namespace Eto.Drawing
         /// <param name="path">Path to fill</param>
         public void FillPath(Color color, GraphicsPath path)
         {
-            handler.FillPath(color, path);
+            Handler.FillPath(color, path);
         }
 
         public void FillPath(Brush brush, GraphicsPath path)
         {
-            handler.FillPath(brush, path);
+            Handler.FillPath(brush, path);
         }
         #endregion
 
@@ -568,9 +639,9 @@ namespace Eto.Drawing
         /// </summary>
         /// <param name="image">Image to draw</param>
         /// <param name="location">Location to draw the image</param>
-        public void DrawImage(Image image, Point location)
+        public void DrawImage(Image image, PointF location)
         {
-            handler.DrawImage(image, location.X, location.Y);
+            Handler.DrawImage(image, location);
         }
 
         /// <summary>
@@ -579,9 +650,9 @@ namespace Eto.Drawing
 		/// <param name="image">Image to draw</param>
 		/// <param name="x">X co-ordinate</param>
 		/// <param name="y">Y co-ordinate</param>
-		public void DrawImage (Image image, int x, int y)
+		public void DrawImage (Image image, float x, float y)
 		{
-			handler.DrawImage (image, x, y);
+			DrawImage (image, new PointF(x, y));
 		}
 
 		/// <summary>
@@ -595,15 +666,10 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Destination width of the image to draw</param>
 		/// <param name="height">Destination height of the image to draw</param>
-		public void DrawImage (Image image, int x, int y, int width, int height)
+		public void DrawImage (Image image, float x, float y, float width, float height)
 		{
-			handler.DrawImage (image, x, y, width, height);
+			Handler.DrawImage (image, new RectangleF(x, y, width, height));
 		}
-
-        public void DrawImage(Image image, float x, float y, float width, float height)
-        {
-            DrawImage(image, new RectangleF(x, y, width, height));
-        }
 
 		/// <summary>
 		/// Draws the specified <paramref name="image"/> in a rectangle
@@ -613,9 +679,9 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="image">Image to draw</param>
 		/// <param name="rectangle">Where to draw the image</param>
-		public void DrawImage (Image image, Rectangle rectangle)
+		public void DrawImage (Image image, RectangleF rectangle)
 		{
-			handler.DrawImage (image, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			Handler.DrawImage (image, rectangle);
 		}
 
 		/// <summary>
@@ -624,9 +690,9 @@ namespace Eto.Drawing
 		/// <param name="image">Image to draw</param>
 		/// <param name="source">Source rectangle of the image portion to draw</param>
 		/// <param name="destination">Destination rectangle of where to draw the portion</param>
-		public void DrawImage (Image image, Rectangle source, Point destination)
+		public void DrawImage (Image image, RectangleF source, PointF destination)
 		{
-			handler.DrawImage (image, source, new Rectangle (destination, source.Size));
+			Handler.DrawImage (image, source, new RectangleF (destination, source.Size));
 		}
 
 		/// <summary>
@@ -635,51 +701,11 @@ namespace Eto.Drawing
 		/// <param name="image">Image to draw</param>
 		/// <param name="source">Source rectangle of the image portion to draw</param>
 		/// <param name="destination">Destination rectangle of where to draw the portion</param>
-		public void DrawImage (Image image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
-			handler.DrawImage (image, source, destination);
+			Handler.DrawImage (image, source, destination);
 		}
 
-        public void DrawImage(Image image, PointF pointF)
-        {
-            handler.DrawImage(image, pointF);
-        }
-
-        public void DrawImage(Image image, RectangleF rect)
-        {
-            handler.DrawImage(image, rect);
-        }
-
-        public void DrawImage(Image image, RectangleF source, RectangleF destination)
-        {
-            handler.DrawImage(image, source, destination);
-        }
-
-        #endregion
-
-        #region DrawIcon
-        /// <summary>
-		/// Draws the <paramref name="icon"/> at the specified location and size
-		/// </summary>
-		/// <param name="icon">Icon to draw</param>
-		/// <param name="rectangle">Where to draw the icon</param>
-		public void DrawIcon (Icon icon, Rectangle rectangle)
-		{
-			handler.DrawIcon (icon, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-		}
-
-		/// <summary>
-		/// Draws the <paramref name="icon"/> at the specified location and size
-		/// </summary>
-		/// <param name="icon">Icon to draw</param>
-		/// <param name="x">X co-ordinate of the location to draw the icon</param>
-		/// <param name="y">Y co-ordinate of the location to draw the icon</param>
-		/// <param name="width">Destination width of the icon</param>
-		/// <param name="height">Destination height of the icon</param>
-		public void DrawIcon (Icon icon, int x, int y, int width, int height)
-		{
-			handler.DrawIcon (icon, x, y, width, height);
-		}
         #endregion
 
         #region DrawText
@@ -693,7 +719,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
-			handler.DrawText (font, color, x, y, text);
+			Handler.DrawText (font, color, x, y, text);
 		}
 
 		/// <summary>
@@ -703,9 +729,9 @@ namespace Eto.Drawing
 		/// <param name="color">Color of the text</param>
 		/// <param name="location">Location of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		public void DrawText (Font font, Color color, Point location, string text)
+		public void DrawText (Font font, Color color, PointF location, string text)
 		{
-			handler.DrawText (font, color, location.X, location.Y, text);
+			Handler.DrawText (font, color, location.X, location.Y, text);
 		}
         #endregion
 
@@ -718,7 +744,7 @@ namespace Eto.Drawing
 		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
 		public SizeF MeasureString (Font font, string text)
 		{
-			return handler.MeasureString (font, text);
+			return Handler.MeasureString (font, text);
 		}
 
         #endregion
@@ -729,13 +755,13 @@ namespace Eto.Drawing
 		/// </summary>
 		public bool Antialias
 		{
-			get { return handler.Antialias; }
-			set { handler.Antialias = value; }
+			get { return Handler.Antialias; }
+			set { Handler.Antialias = value; }
 		}
 
-        public bool IsRetainedMode
+        public bool IsRetained
         {
-            get { return handler.IsRetainedMode; }
+            get { return Handler.IsRetained; }
         }
 
         /// <summary>
@@ -743,8 +769,17 @@ namespace Eto.Drawing
 		/// </summary>
         public ImageInterpolation ImageInterpolation
         {
-            get { return handler.ImageInterpolation; }
-            set { handler.ImageInterpolation = value; }
+            get { return Handler.ImageInterpolation; }
+            set { Handler.ImageInterpolation = value; }
+        }
+
+        /// <summary>
+        /// Gets or sets the offset mode for drawing operations
+        /// </summary>
+        public PixelOffsetMode PixelOffsetMode
+        {
+            get { return Handler.PixelOffsetMode; }
+            set { Handler.PixelOffsetMode = value; }
         }
         #endregion
 
@@ -760,7 +795,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		public void Flush ()
 		{
-			handler.Flush ();
+			Handler.Flush ();
 		}
         #endregion
 
@@ -768,12 +803,12 @@ namespace Eto.Drawing
 
         public void SetClip(RectangleF rect)
         {
-            handler.SetClip(rect);
+            Handler.SetClip(rect);
         }
 
         public RectangleF ClipBounds
         {
-            get { return handler.ClipBounds; }
+            get { return Handler.ClipBounds; }
         }
 
         #endregion
@@ -782,44 +817,44 @@ namespace Eto.Drawing
 
         public void TranslateTransform(float dx, float dy)
         {
-            handler.TranslateTransform(dx, dy);
+            Handler.TranslateTransform(dx, dy);
         }
 
         public void TranslateTransform(PointF p)
         {
-            handler.TranslateTransform(p.X, p.Y);
+            Handler.TranslateTransform(p.X, p.Y);
         }
 
         public void RotateTransform(float angle)
         {
-            handler.RotateTransform(angle);
+            Handler.RotateTransform(angle);
         }
 
         public void ScaleTransform(float sx, float sy)
         {
-            handler.ScaleTransform(sx, sy);
+            Handler.ScaleTransform(sx, sy);
         }
 
         public void MultiplyTransform(Matrix matrix)
         {
-            handler.MultiplyTransform(matrix);
+            Handler.MultiplyTransform(matrix);
         }
 
         public void SaveTransform()
         {
-            handler.SaveTransform();
+            Handler.SaveTransform();
         }
 
         public void RestoreTransform()
         {
-            handler.RestoreTransform();
+            Handler.RestoreTransform();
         }
         #endregion
 
         #region Clear
         public void Clear(Color color)
         {
-            handler.Clear(color);
+            Handler.Clear(color);
         }
         #endregion
     }

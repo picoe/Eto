@@ -163,9 +163,9 @@ namespace Eto.Platform.Mac.Drawing
 			
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			CopyTo (bmp, source);
+			CopyTo (bmp, Rectangle.Truncate (source));
 			bmp.DrawImage (graphics, source, destination);
 		}
 		

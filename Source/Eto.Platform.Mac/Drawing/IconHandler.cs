@@ -6,7 +6,7 @@ using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Drawing
 {
-	public class IconHandler : WidgetHandler<NSImage, Icon>, IIcon, IImageSource
+	public class IconHandler : ImageHandler<NSImage, Icon>, IIcon
 	{
 		public IconHandler()
 		{
@@ -17,8 +17,6 @@ namespace Eto.Platform.Mac.Drawing
 			Control = image;
 		}
 		
-		#region IIcon Members
-
 		public void Create (Stream stream)
 		{
 			var data = NSData.FromStream(stream);
@@ -31,20 +29,25 @@ namespace Eto.Platform.Mac.Drawing
 				throw new FileNotFoundException ("Icon not found", fileName);
 			Control = new NSImage (fileName);
 		}
-
-		#endregion
 		
-		public Size Size {
+		public override Size Size {
 			get { return Control.Size.ToEtoSize (); }
 		}
 
-		public NSImage GetImage ()
+		public override NSImage GetImage ()
 		{
 			return Control;
 		}
 
-        #region IImage Members
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			var nsimage = this.Control;
+			var sourceRect = graphics.Translate (source.ToSD (), nsimage.Size.Height);
+			var destRect = graphics.TranslateView (destination.ToSD (), false);
+			nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
+		}
 
+        #region IImage Members
 
         public int Width
         {
