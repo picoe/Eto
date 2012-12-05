@@ -26,10 +26,6 @@ namespace Eto.Platform.Mac.Drawing
 
 		public abstract Size Size { get; }
 
-        public abstract int Width { get; }
-
-        public abstract int Height { get; }
-
 		public abstract NSImage GetImage ();
 
 		public virtual void DrawImage (GraphicsHandler graphics, float x, float y)

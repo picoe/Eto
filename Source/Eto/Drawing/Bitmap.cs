@@ -131,8 +131,6 @@ namespace Eto.Drawing
         IBitmap Clone();
 
         Color GetPixel(int x, int y);
-
-        byte[] ToPNGByteArray();
 	}
 	
 	/// <summary>
@@ -380,24 +378,6 @@ namespace Eto.Drawing
 				return memoryStream.ToArray ();
 			}
 		}
-        public byte[] ToPNGByteArray()
-        {
-            return Handler.ToPNGByteArray();
-        }
-
-        public string ToPNGBase64String()
-        {
-            string result = null;
-
-            var bytes = this.ToPNGByteArray();
-
-            if (bytes != null)
-                result =
-                    System.Convert.ToBase64String(
-                        bytes);
-
-            return result;
-        }
 
         public Bitmap Clone()
         {

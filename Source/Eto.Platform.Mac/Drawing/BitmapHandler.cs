@@ -58,16 +58,6 @@ namespace Eto.Platform.Mac.Drawing
 			Control = image;
 		}
 
-        public override int Width
-        {
-            get { return 0; /* TODO */ }
-        }
-
-        public override int Height
-        {
-            get { return 0; /* TODO */ }
-        }
-
 		public void Create (string fileName)
 		{
 			if (!File.Exists (fileName))
@@ -279,11 +269,6 @@ namespace Eto.Platform.Mac.Drawing
         public Color GetPixel(int x, int y)
         {
             return default(Color);/* TODO */
-        }
-
-        public byte[] ToPNGByteArray()
-        {
-            return null;/* TODO */
         }
     }
 }
