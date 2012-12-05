@@ -76,7 +76,12 @@ namespace Eto.Platform
 		{
 			return new Point ((int)point.X, (int)point.Y);
 		}
-		
+
+		public static PointF ToEto (this sd.PointF point)
+		{
+			return new PointF (point.X, point.Y);
+		}
+
 		public static sd.PointF ToSDPointF (this Point point)
 		{
 			return new sd.PointF ((int)point.X, (int)point.Y);

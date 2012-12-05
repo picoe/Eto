@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Drawing
 {
-    public class BrushHandler : WidgetHandler<Brush>, IBrush
+    public class BrushHandler : WidgetHandler<object, Brush>, IBrush
     {
         public Color Color { get; set; }
 

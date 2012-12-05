@@ -53,8 +53,7 @@ namespace Eto.Platform.iOS.Drawing
 
         public RectangleF GetBounds()
         {
-            return Generator.Convert(
-                Control.BoundingBox);
+            return Control.BoundingBox.ToEto ();
         }
 
         public FillMode FillMode
@@ -77,25 +76,6 @@ namespace Eto.Platform.iOS.Drawing
             /* TODO */ // currently only used for testing
         }
 
-        public void AddLines(PointF[] points)
-        {
-            if(Control != null)
-                Control.AddLines(
-                    Generator.Convert(points));
-        }
-
-        public void AddLine(PointF point1, PointF point2)
-        {
-            if (Control != null)
-            {
-                Control.MoveToPoint(
-                    Generator.Convert(point1));
-
-                Control.AddLineToPoint(
-                    Generator.Convert(point2));
-            }
-        }
-
         public void AddBezier(
             PointF pt1, 
             PointF pt2, 
@@ -105,16 +85,11 @@ namespace Eto.Platform.iOS.Drawing
             if (Control != null)
             {
                 if (Control.IsEmpty)
-                    Control.MoveToPoint(
-                        Generator.Convert(pt1));
+                    Control.MoveToPoint(pt1.ToSD ());
                 else
-                    Control.AddLineToPoint(
-                        Generator.Convert(pt1));
+					Control.AddLineToPoint(pt1.ToSD ());
 
-                Control.AddCurveToPoint(
-                    Generator.Convert(pt2),
-                    Generator.Convert(pt3),
-                    Generator.Convert(pt4));
+				Control.AddCurveToPoint(pt2.ToSD (), pt3.ToSD (), pt4.ToSD ());
             }
         }
 
@@ -139,7 +114,7 @@ namespace Eto.Platform.iOS.Drawing
         public void Transform(Matrix matrix)
         {
             Transform(
-                Generator.Convert(
+                Mac.Generator.Convert(
                     matrix));
         }
 
@@ -164,8 +139,7 @@ namespace Eto.Platform.iOS.Drawing
             var result =
                 new CGPath();
 
-            result.AddRect(
-                Generator.Convert(rect));
+            result.AddRect(rect.ToSD ());
 
             // BUGBUG: FIXFIX: start and sweep angle
 
@@ -180,8 +154,7 @@ namespace Eto.Platform.iOS.Drawing
         public void AddEllipse(RectangleF rect)
         {
             if (Control != null)
-                Control.AddElipseInRect(
-                    Generator.Convert(rect));
+                Control.AddElipseInRect(rect.ToSD ());
         }
 
         public void Translate(PointF p)
@@ -203,8 +176,7 @@ namespace Eto.Platform.iOS.Drawing
         public void AddRectangle(RectangleF rect)
         {
             if(Control != null)
-                Control.AddRect(
-                    Generator.Convert(rect));
+                Control.AddRect(rect.ToSD ());
         }
 
         public void CloseFigure()

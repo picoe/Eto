@@ -41,15 +41,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				return CanFocus;
 			}
-
-            public EtoDrawableView()
-            {
-                Flipped = true;
-            }
-
-            public bool Flipped { get; set; }
-            public override bool IsFlipped { get { return Flipped; } }
-			
 		}
 	
 		public override bool Enabled { get; set; }
@@ -74,13 +65,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null) {
 
-                var graphics =
-                    new Graphics(
-                        Widget.Generator,
-                        new GraphicsHandler(
-                            context, 
-                            Control.Frame.Height,
-                            context.IsFlipped));
+				var graphics = new Graphics(Widget.Generator, new GraphicsHandler(context, Control.Frame.Height));
 
 				if (BackgroundColor.A != 0) {
 					graphics.FillRectangle (BackgroundColor, rect);

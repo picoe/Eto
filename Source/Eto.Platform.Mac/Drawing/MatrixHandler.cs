@@ -102,18 +102,12 @@ namespace Eto.Platform.Mac.Drawing
 
         public PointF TransformPoint(Point p)
         {
-            return
-                Generator.ConvertF(
-                    this.Control.TransformPoint(
-                        new SD.PointF(p.X, p.Y)));
+            return this.Control.TransformPoint(new SD.PointF(p.X, p.Y)).ToEto ();
         }
 
         public PointF TransformPoint(PointF p)
         {
-            return
-                Generator.Convert(
-                    this.Control.TransformPoint(
-                        new SD.PointF(p.X, p.Y)));
+            return this.Control.TransformPoint(new SD.PointF(p.X, p.Y)).ToEto();
         }
     }
 }
