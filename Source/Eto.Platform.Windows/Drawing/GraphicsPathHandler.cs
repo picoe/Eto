@@ -37,6 +37,13 @@ namespace Eto.Platform.Windows.Drawing
 			position = point2;
 		}
 
+        public void AddLines(PointF[] points)
+        {
+            var sdlines = from p in points select p.ToSD();
+            this.Control.AddLines(sdlines.ToArray());
+            position = points.Last();
+        }
+
         public RectangleF GetBounds()
         {
             return this.Control.GetBounds().ToRectangleF();
@@ -89,13 +96,6 @@ namespace Eto.Platform.Windows.Drawing
         public void AddCurve(PointF[] points)
         {
             this.Control.AddCurve(points.ToSD());
-        }
-
-        public void AddLines(PointF[] points)
-        {
-			var sdlines = from p in points select p.ToSD ();
-			this.Control.AddLines (sdlines.ToArray ());
-			position = points.Last ();
         }
 
         public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
