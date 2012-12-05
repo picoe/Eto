@@ -8,19 +8,7 @@ namespace Eto.Drawing
 	/// </summary>
 	public interface IGraphics : IWidget
     {
-        /// <summary>
-        /// Gets or sets a value indicating that drawing operations will use antialiasing
-        /// </summary>
-        bool Antialias { get; set; }
-
-        bool IsRetained { get; }
-
         PixelOffsetMode PixelOffsetMode { get; set; }
-
-        /// <summary>
-        /// Gets or sets the interpolation mode for drawing images
-        /// </summary>
-        ImageInterpolation ImageInterpolation { get; set; }
 
         /// <summary>
 		/// Creates the graphics object for drawing on the specified <paramref name="image"/>
@@ -66,9 +54,6 @@ namespace Eto.Drawing
 
         void FillRectangle(Brush brush, float x, float y, float width, float height);
 
-        void FillRectangle(Color color, float x, float y, float width, float height);
-
-
         /// <summary>
 		/// Fills a rectangle with the specified <paramref name="color"/>
 		/// </summary>
@@ -77,6 +62,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
+        void FillRectangle(Color color, float x, float y, float width, float height);
 
 		/// <summary>
 		/// Fills an ellipse with the specified <paramref name="color"/>
@@ -188,9 +174,6 @@ namespace Eto.Drawing
 		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
 		SizeF MeasureString (Font font, string text);
 
-        /// <summary>
-		/// Not yet implemented
-		/// </summary>
 		/// <summary>
 		/// Flushes the drawing (for some platforms)
 		/// </summary>
@@ -199,6 +182,25 @@ namespace Eto.Drawing
 		/// a lot of drawing, you may want to flush the changed periodically so that the user does not think the UI is unresponsive.
 		/// </remarks>
 		void Flush ();
+
+        /// <summary>
+        /// Gets or sets a value indicating that drawing operations will use antialiasing
+        /// </summary>
+        bool Antialias { get; set; }
+
+        /// <summary>
+        /// Gets or sets the interpolation mode for drawing images
+        /// </summary>
+        ImageInterpolation ImageInterpolation { get; set; }
+
+        /// <summary>
+        /// Gets a value indicating the graphics sub-system is a retained system (e.g. WPF)
+        /// </summary>
+        /// <remarks>
+        /// Retained mode systems may have different behaviour characteristics, which may impact how often the screen is updated
+        /// or other code.
+        /// </remarks>
+        bool IsRetained { get; }
 
         RectangleF ClipBounds { get; }
 
@@ -495,32 +497,6 @@ namespace Eto.Drawing
             Handler.DrawArc(color, x, y, width, height, startAngle, sweepAngle);
         }
 
-
-
-        /// <summary>
-		/// Fills a polygon defined by <paramref name="points"/> with the specified <paramref name="color"/>
-		/// </summary>
-		/// <param name="color">Fill color</param>
-		/// <param name="points">Points of the polygon</param>
-		public void FillPolygon (Color color, params PointF[] points)
-		{
-			var path = new GraphicsPath (Generator);
-			path.AddLines (points);
-			FillPath (color, path);
-		}
-
-		/// <summary>
-		/// Draws a polygon with the specified <paramref name="points"/>
-		/// </summary>
-		/// <param name="color">Color to draw the polygon lines</param>
-		/// <param name="points">Points of the polygon</param>
-		public void DrawPolygon (Color color, params PointF[] points)
-		{
-			var path = new GraphicsPath (Generator);
-			path.AddLines (points);
-			DrawPath (color, path);
-		}
-
         /// <summary>
         /// Fills a pie with the specified <paramref name="color"/>
         /// </summary>
@@ -548,6 +524,29 @@ namespace Eto.Drawing
             Handler.FillPie(color, x, y, width, height, startAngle, sweepAngle);
         }
 
+        /// <summary>
+        /// Fills a polygon defined by <paramref name="points"/> with the specified <paramref name="color"/>
+        /// </summary>
+        /// <param name="color">Fill color</param>
+        /// <param name="points">Points of the polygon</param>
+        public void FillPolygon(Color color, params PointF[] points)
+        {
+            var path = new GraphicsPath(Generator);
+            path.AddLines(points);
+            FillPath(color, path);
+        }
+
+        /// <summary>
+        /// Draws a polygon with the specified <paramref name="points"/>
+        /// </summary>
+        /// <param name="color">Color to draw the polygon lines</param>
+        /// <param name="points">Points of the polygon</param>
+        public void DrawPolygon(Color color, params PointF[] points)
+        {
+            var path = new GraphicsPath(Generator);
+            path.AddLines(points);
+            DrawPath(color, path);
+        }
 
         /// <summary>
 		/// Draws the specified <paramref name="path"/>
@@ -698,11 +697,6 @@ namespace Eto.Drawing
 			set { Handler.Antialias = value; }
 		}
 
-        public bool IsRetained
-        {
-            get { return Handler.IsRetained; }
-        }
-
         /// <summary>
 		/// Gets or sets the interpolation mode for drawing images
 		/// </summary>
@@ -722,6 +716,18 @@ namespace Eto.Drawing
         }
 
         /// <summary>
+        /// Gets a value indicating the graphics sub-system is a retained system (e.g. WPF)
+        /// </summary>
+        /// <remarks>
+        /// Retained mode systems may have different behaviour characteristics, which may impact how often the screen is updated
+        /// or other code.
+        /// </remarks>
+        public bool IsRetained
+        {
+            get { return Handler.IsRetained; }
+        }
+
+        /// <summary>
 		/// Flushes the drawing (for some platforms)
 		/// </summary>
 		/// <remarks>
@@ -735,6 +741,34 @@ namespace Eto.Drawing
 			Handler.Flush ();
 		}
 
+        #region Obsolete
+
+        /// <summary>
+        /// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, RectangleF)"/> instead.
+        /// </summary>
+        /// <param name="icon">Icon to draw</param>
+        /// <param name="rectangle">Where to draw the icon</param>
+        [Obsolete("Use DrawImage instead")]
+        public void DrawIcon(Icon icon, RectangleF rectangle)
+        {
+            Handler.DrawImage(icon, rectangle);
+        }
+
+        /// <summary>
+        /// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, float, float, float, float)"/> instead.
+        /// </summary>
+        /// <param name="icon">Icon to draw</param>
+        /// <param name="x">X co-ordinate of the location to draw the icon</param>
+        /// <param name="y">Y co-ordinate of the location to draw the icon</param>
+        /// <param name="width">Destination width of the icon</param>
+        /// <param name="height">Destination height of the icon</param>
+        [Obsolete("Use DrawImage instead")]
+        public void DrawIcon(Icon icon, float x, float y, float width, float height)
+        {
+            Handler.DrawImage(icon, new RectangleF(x, y, width, height));
+        }
+
+        #endregion
 
         public void SetClip(RectangleF rect)
         {
