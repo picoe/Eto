@@ -8,7 +8,6 @@ namespace Eto.Drawing
 	/// </summary>
 	public interface IGraphics : IWidget
     {
-        #region Properties
         /// <summary>
         /// Gets or sets a value indicating that drawing operations will use antialiasing
         /// </summary>
@@ -22,17 +21,13 @@ namespace Eto.Drawing
         /// Gets or sets the interpolation mode for drawing images
         /// </summary>
         ImageInterpolation ImageInterpolation { get; set; }
-        #endregion
 
-        #region Create
         /// <summary>
 		/// Creates the graphics object for drawing on the specified <paramref name="image"/>
 		/// </summary>
 		/// <param name="image">Image to perform drawing operations on</param>
 		void CreateFromImage (Bitmap image);
-        #endregion
 
-        #region DrawLine
         /// <summary>
         /// Draws a line with the specified <paramref name="color"/>
         /// </summary>
@@ -44,9 +39,7 @@ namespace Eto.Drawing
         void DrawLine(Color color, float startx, float starty, float endx, float endy);
 
         void DrawLine(Pen pen, PointF pt1, PointF pt2);
-        #endregion
 
-        #region DrawRectangle
 
         /// <summary>
         /// Draws a rectangle outline
@@ -68,18 +61,14 @@ namespace Eto.Drawing
         /// <param name="height">Height of the rectangle</param>
         void DrawRectangle(Pen pen, float x, float y, float width, float height);
 
-        #endregion
 
-        #region FillRectangle
         void FillRectangle(Brush brush, RectangleF rectangle);
 
         void FillRectangle(Brush brush, float x, float y, float width, float height);
 
         void FillRectangle(Color color, float x, float y, float width, float height);
 
-        #endregion
 
-        #region Ellipse
         /// <summary>
 		/// Fills a rectangle with the specified <paramref name="color"/>
 		/// </summary>
@@ -108,9 +97,7 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the ellipse</param>
 		/// <param name="height">Height of the ellipse</param>
 		void DrawEllipse (Color color, float x, float y, float width, float height);
-        #endregion
 
-        #region Arc
 
         /// <summary>
         /// Draws an arc with the specified <paramref name="color"/>
@@ -124,9 +111,7 @@ namespace Eto.Drawing
         /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
         void DrawArc(Color color, float x, float y, float width, float height, float startAngle, float sweepAngle);
 
-        #endregion
 
-        #region Pie
         /// <summary>
         /// Fills a pie with the specified <paramref name="color"/>
         /// </summary>
@@ -139,9 +124,7 @@ namespace Eto.Drawing
         /// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
         void FillPie(Color color, float x, float y, float width, float height, float startAngle, float sweepAngle);
 
-        #endregion
 
-        #region FillPath
         /// <summary>
 		/// Fills the specified <paramref name="path"/>
 		/// </summary>
@@ -150,9 +133,7 @@ namespace Eto.Drawing
 		void FillPath (Color color, GraphicsPath path);
 
         void FillPath(Brush brush, GraphicsPath path);
-        #endregion
 
-        #region DrawPath
         /// <summary>
 		/// Draws the specified <paramref name="path"/>
 		/// </summary>
@@ -161,9 +142,7 @@ namespace Eto.Drawing
 		void DrawPath (Color color, GraphicsPath path);
 
         void DrawPath(Pen pen, GraphicsPath path);
-        #endregion
 
-        #region DrawImage
 
         /// <summary>
         /// Draws the specified <paramref name="image"/> at a location with no scaling
@@ -190,9 +169,7 @@ namespace Eto.Drawing
 		/// <param name="destination">Destination rectangle of where to draw the portion</param>
         void DrawImage(Image image, RectangleF source, RectangleF destination);
 
-        #endregion
 
-        #region DrawText
         /// <summary>
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
 		/// </summary>
@@ -202,9 +179,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
         void DrawText(Font font, Color color, float x, float y, string text);
-        #endregion
 
-        #region MeasureString
         /// <summary>
 		/// Measures the string with the given <paramref name="font"/>
 		/// </summary>
@@ -212,9 +187,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to measure</param>
 		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
 		SizeF MeasureString (Font font, string text);
-        #endregion
 
-        #region Flush
         /// <summary>
 		/// Not yet implemented
 		/// </summary>
@@ -226,15 +199,11 @@ namespace Eto.Drawing
 		/// a lot of drawing, you may want to flush the changed periodically so that the user does not think the UI is unresponsive.
 		/// </remarks>
 		void Flush ();
-        #endregion
 
-        #region Clip
         RectangleF ClipBounds { get; }
 
         void SetClip(RectangleF rect);
-        #endregion
 
-        #region Transform
 
         void TranslateTransform(float dx, float dy);
 
@@ -247,11 +216,8 @@ namespace Eto.Drawing
         void SaveTransform();
 
         void RestoreTransform();
-        #endregion
 
-        #region Clear
         void Clear(Color color);
-        #endregion
     }
 
 	/// <summary>
@@ -264,7 +230,6 @@ namespace Eto.Drawing
 	{
         new IGraphics Handler { get { return (IGraphics)base.Handler; } }
 
-        #region Constructors
         public Graphics (IGraphics Handler) : base(Generator.Current, Handler)
 		{
 		}
@@ -293,7 +258,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create this graphics context for</param>
 		/// <param name="image">Image to draw on using this graphics context</param>
 		public Graphics (Generator generator, Bitmap image)
-			: base (generator, typeof (IGraphics))
+			: base (generator, typeof (IGraphics), false)
 		{
 			Handler.CreateFromImage (image);
             Initialize();
@@ -310,9 +275,7 @@ namespace Eto.Drawing
         {
         }
 
-        #endregion
 
-        #region DrawLine
         /// <summary>
 		/// Draws a line with the specified <paramref name="color"/>
 		/// </summary>
@@ -362,9 +325,7 @@ namespace Eto.Drawing
                 }
             }
         }
-        #endregion
 
-        #region DrawRectangle
 
         /// <summary>
         /// Draws a rectangle
@@ -412,9 +373,7 @@ namespace Eto.Drawing
 			}
 		}
 
-        #endregion
 
-        #region FillRectangle
         /// <summary>
 		/// Fills a rectangle with the specified <paramref name="color"/>
 		/// </summary>
@@ -460,9 +419,7 @@ namespace Eto.Drawing
 			}
 		}
 
-        #endregion
 
-        #region Ellipse
         /// <summary>
 		/// Fills an ellipse with the specified <paramref name="color"/>
 		/// </summary>
@@ -509,9 +466,7 @@ namespace Eto.Drawing
             Handler.DrawEllipse(color, x, y, width, height);
         }
 
-        #endregion
 
-        #region Arc
 
         /// <summary>
         /// Draws an arc with the specified <paramref name="color"/>
@@ -540,9 +495,7 @@ namespace Eto.Drawing
             Handler.DrawArc(color, x, y, width, height, startAngle, sweepAngle);
         }
 
-        #endregion
 
-        #region Polygon
 
         /// <summary>
 		/// Fills a polygon defined by <paramref name="points"/> with the specified <paramref name="color"/>
@@ -567,9 +520,7 @@ namespace Eto.Drawing
 			path.AddLines (points);
 			DrawPath (color, path);
 		}
-        #endregion
 
-        #region Pie
         /// <summary>
         /// Fills a pie with the specified <paramref name="color"/>
         /// </summary>
@@ -597,9 +548,7 @@ namespace Eto.Drawing
             Handler.FillPie(color, x, y, width, height, startAngle, sweepAngle);
         }
 
-        #endregion
 
-        #region DrawPath
         /// <summary>
 		/// Draws the specified <paramref name="path"/>
 		/// </summary>
@@ -614,9 +563,7 @@ namespace Eto.Drawing
         {
             Handler.DrawPath(pen, path);
         }
-        #endregion
 
-        #region FillPath
         /// <summary>
         /// Fills the specified <paramref name="path"/>
         /// </summary>
@@ -631,9 +578,7 @@ namespace Eto.Drawing
         {
             Handler.FillPath(brush, path);
         }
-        #endregion
 
-        #region DrawImage
         /// <summary>
         /// Draws the specified <paramref name="image"/> at a location with no scaling
         /// </summary>
@@ -706,9 +651,7 @@ namespace Eto.Drawing
 			Handler.DrawImage (image, source, destination);
 		}
 
-        #endregion
 
-        #region DrawText
         /// <summary>
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
 		/// </summary>
@@ -733,9 +676,7 @@ namespace Eto.Drawing
 		{
 			Handler.DrawText (font, color, location.X, location.Y, text);
 		}
-        #endregion
 
-        #region MeasureString
         /// <summary>
 		/// Measures the string with the given <paramref name="font"/>
 		/// </summary>
@@ -747,9 +688,7 @@ namespace Eto.Drawing
 			return Handler.MeasureString (font, text);
 		}
 
-        #endregion
 
-        #region Properties
         /// <summary>
 		/// Gets or sets a value indicating that drawing operations will use antialiasing
 		/// </summary>
@@ -781,9 +720,7 @@ namespace Eto.Drawing
             get { return Handler.PixelOffsetMode; }
             set { Handler.PixelOffsetMode = value; }
         }
-        #endregion
 
-        #region Flush
         /// <summary>
 		/// Flushes the drawing (for some platforms)
 		/// </summary>
@@ -797,9 +734,7 @@ namespace Eto.Drawing
 		{
 			Handler.Flush ();
 		}
-        #endregion
 
-        #region Clip
 
         public void SetClip(RectangleF rect)
         {
@@ -810,10 +745,6 @@ namespace Eto.Drawing
         {
             get { return Handler.ClipBounds; }
         }
-
-        #endregion
-
-        #region Transform
 
         public void TranslateTransform(float dx, float dy)
         {
@@ -849,13 +780,10 @@ namespace Eto.Drawing
         {
             Handler.RestoreTransform();
         }
-        #endregion
 
-        #region Clear
         public void Clear(Color color)
         {
             Handler.Clear(color);
         }
-        #endregion
     }
 }
