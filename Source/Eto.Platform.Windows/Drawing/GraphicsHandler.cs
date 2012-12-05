@@ -52,7 +52,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public GraphicsHandler (sd.Graphics graphics)
 		{
-			this.Control = graphics;			
+			this.Control = graphics;
 		}
 		
 		public bool Antialias {
@@ -181,19 +181,6 @@ namespace Eto.Platform.Windows.Drawing
 			return ret;	
 		}
 
-        public void FillPath(Color color, GraphicsPath path)
-        {
-            var old = Control.PixelOffsetMode;
-            Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
-            Control.FillPath(new sd.SolidBrush(color.ToSD()), GraphicsPathHandler.GetControl(path));
-            Control.PixelOffsetMode = old;
-        }
-
-        public void DrawPath(Color color, GraphicsPath path)
-        {
-            Control.DrawPath(new sd.Pen(color.ToSD()), GraphicsPathHandler.GetControl(path));
-        }
-
 		float DegreeToRadian (float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;
@@ -225,8 +212,21 @@ namespace Eto.Platform.Windows.Drawing
 			}
 			Control.FillPie (new sd.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
 		}
-		
-		public void DrawImage (Image image, RectangleF source, RectangleF destination)
+
+        public void FillPath(Color color, GraphicsPath path)
+        {
+            var old = Control.PixelOffsetMode;
+            Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
+            Control.FillPath(new sd.SolidBrush(color.ToSD()), GraphicsPathHandler.GetControl(path));
+            Control.PixelOffsetMode = old;
+        }
+
+        public void DrawPath(Color color, GraphicsPath path)
+        {
+            Control.DrawPath(new sd.Pen(color.ToSD()), GraphicsPathHandler.GetControl(path));
+        }
+
+        public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
             var handler = image.Handler as IWindowsImage;
             handler.DrawImage(this, source, destination);
