@@ -6,7 +6,7 @@ namespace Eto.Forms
 {
 	public interface IButton : ITextControl
 	{
-        IImage Image { get; set; }
+        Image Image { get; set; }
 	}
 	
 	public class Button : TextControl
@@ -43,7 +43,7 @@ namespace Eto.Forms
 		{
 		}
 
-        public IImage Image
+        public Image Image
         {
             get { return inner.Image; }
             set { inner.Image = value; }

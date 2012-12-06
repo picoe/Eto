@@ -10,7 +10,7 @@ namespace Eto.Platform.Windows
 {
 	public class ButtonHandler : WindowsControl<System.Windows.Forms.Button, Button>, IButton
 	{
-        IImage image;
+        Image image;
 
 		public override SWF.DockStyle DockStyle {
 			get {
@@ -28,7 +28,7 @@ namespace Eto.Platform.Windows
 			};
 		}
                 //this.Control.MaximumSize = Generator.Convert(value);
-        public IImage Image
+        public Image Image
         {
             get
             {

@@ -44,7 +44,7 @@ namespace Eto.Platform.GtkSharp
 
         #region IButton Members
 
-        public Eto.Drawing.IImage Image
+        public Eto.Drawing.Image Image
         {
             get
             {

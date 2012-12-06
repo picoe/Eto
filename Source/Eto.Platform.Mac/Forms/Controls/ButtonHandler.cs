@@ -89,7 +89,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
         #region IButton Members
 
-        public IImage Image
+        public Image Image
         {
             get
             {

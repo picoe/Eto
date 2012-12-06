@@ -9,7 +9,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ButtonHandler : WpfControl<System.Windows.Controls.Button, Button>, IButton
 	{
-        IImage image;
+        Image image;
 
 		public ButtonHandler ()
 		{
@@ -30,7 +30,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Content = value.ToWpfMneumonic (); }
 		}
 
-		public IImage Image
+		public Image Image
 		{
 			get { return image; }
 			set
