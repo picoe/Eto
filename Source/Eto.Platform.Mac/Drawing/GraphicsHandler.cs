@@ -87,7 +87,6 @@ namespace Eto.Platform.iOS.Drawing
 		public GraphicsHandler (NSGraphicsContext graphicsContext, float height)
 		{ 
 			this.height = height;
-			this.Flipped = flipped;
 			this.graphicsContext = graphicsContext;
 			this.Control = graphicsContext.GraphicsPort;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
@@ -290,11 +289,6 @@ namespace Eto.Platform.iOS.Drawing
         }
 
 		public void DrawRectangle (Color color, float x, float y, float width, float height)
-        {
-            DrawRectangle(color, (float)x, (float)y, (float)width, (float)height);
-        }
-
-		public void DrawRectangle (Color color, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
@@ -462,26 +456,6 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-        public void DrawImage(Image image, PointF p)
-        {
-            StartDrawing();
-
-            var handler = image.Handler as IImageHandler;
-            handler.DrawImage(this, (int)p.X, (int)p.Y);
-            EndDrawing();
-        }
-
-        public void DrawImage(Image image, RectangleF rect)
-        {
-            StartDrawing();
-
-            var r = rect.ToRectangle();
-
-            var handler = image.Handler as IImageHandler;
-            handler.DrawImage(this, r.X, r.Y, r.Width, r.Height);
-            EndDrawing();
-        }
-
         public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			StartDrawing ();
@@ -556,12 +530,12 @@ namespace Eto.Platform.iOS.Drawing
 
         public RectangleF ClipBounds
         {
-            get { return Generator.Convert(context.GetClipBoundingBox()); }
+            get { return Control.GetClipBoundingBox ().ToEto (); }
         }
 
         public void TranslateTransform(float dx, float dy)
         {
-            context.TranslateCTM(
+            Control.TranslateCTM(
                 dx, 
                 // TODO: is this correct?
                 Flipped
@@ -571,28 +545,28 @@ namespace Eto.Platform.iOS.Drawing
 
         public void RotateTransform(float angle)
         {
-            context.RotateCTM(angle);
+			Control.RotateCTM(angle);
         }
 
         public void ScaleTransform(float sx, float sy)
         {
-            context.ScaleCTM(sx, sy);
+			Control.ScaleCTM(sx, sy);
         }
 
         public void MultiplyTransform(Matrix matrix)
         {
-            context.ConcatCTM((CGAffineTransform)matrix.ControlObject);
+			Control.ConcatCTM((CGAffineTransform)matrix.ControlObject);
         }
 
 
         public void SaveTransform()
         {
-            Control.SaveGraphicsState();
+			graphicsContext.SaveGraphicsState();
         }
 
         public void RestoreTransform()
         {
-            Control.RestoreGraphicsState();
+			graphicsContext.RestoreGraphicsState();
         }
 
         public void Clear(Color color)

@@ -49,7 +49,7 @@ namespace Eto.Platform.iOS.Drawing
 			default:
 				throw new NotSupportedException ();
 			}
-			return new FontFamily(Generator, new FontFamilyHandler (systemFamilyName));
+			return new FontFamilyHandler (systemFamilyName);
 		}
 	}
 }
