@@ -12,12 +12,8 @@ namespace Eto.Drawing
 		/// Gets the size of the image, in pixels
 		/// </summary>
 		Size Size { get; }
+	}
 
-        int Width { get; }
-
-        int Height { get; }
-    }
-	
 	/// <summary>
 	/// Base class for images
 	/// </summary>
@@ -28,7 +24,7 @@ namespace Eto.Drawing
 	/// any Image-derived object.
 	/// </remarks>
 	[TypeConverter(typeof(ImageConverter))]
-	public abstract class Image : InstanceWidget, IImage
+	public abstract class Image : InstanceWidget
 	{
 		new IImage Handler { get { return (IImage)base.Handler; } }
 
@@ -59,21 +55,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public Size Size
 		{
-            get { return Handler != null ? Handler.Size : Size.Empty; }
+			get { return Handler.Size; }
 		}
-
-        public int Width
-        {
-            get { return Handler != null ? Handler.Width : 0; }
-        }
-
-        public int Height
-        {
-            get { return Handler != null ? Handler.Height : 0; }
-        }
-
-        public new Widget Widget { get; set; }
-
-        public new Generator Generator { get; set; }
-    }
+	}
 }

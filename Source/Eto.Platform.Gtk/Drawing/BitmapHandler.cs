@@ -217,10 +217,5 @@ namespace Eto.Platform.GtkSharp.Drawing
 
         #endregion
 
-
-        public byte[] ToPNGByteArray()
-        {
-            throw new NotImplementedException();
-        }
     }
 }

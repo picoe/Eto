@@ -48,16 +48,6 @@ namespace Eto.Platform.Mac.Drawing
 			get { return size; }
 		}
 
-        public override int Width
-        {
-            get { return 0;/* TODO */ }
-        }
-
-        public override int Height
-        {
-            get { return 0;/* TODO */ }
-        }
-
 		public void Create (int width, int height, int bitsPerPixel)
 		{
 			bytesPerRow = width * bitsPerPixel / 8;

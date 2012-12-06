@@ -188,26 +188,11 @@ namespace Eto.Platform.Wpf.Drawing
 			return Control;
 		}
 
-        public int Width
-        {
-            get { return Size.Width; }
-        }
-
-        public int Height
-        {
-            get { return Size.Height; }
-        }
-
         public IBitmap Clone()
         {
             var result = new BitmapHandler();
             result.SetBitmap(Control.Clone());
             return result;
-        }
-
-        public byte[] ToPNGByteArray()
-        {
-            throw new NotImplementedException();
         }
     }
 }
