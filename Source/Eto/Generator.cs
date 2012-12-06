@@ -112,10 +112,7 @@ namespace Eto
             get
             {
                 if (current == null)
-                {
-                    Initialize(Generators.WinAssembly);
-                    //throw new ApplicationException("Generator has not been initialized");
-                }
+                    throw new ApplicationException("Generator has not been initialized");
                 return current;
             }
         }
