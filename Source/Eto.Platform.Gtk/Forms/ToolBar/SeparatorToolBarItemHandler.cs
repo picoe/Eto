@@ -13,8 +13,11 @@ namespace Eto.Platform.GtkSharp
 		
 		public override void CreateControl (ToolBarHandler handler)
 		{
+			Gtk.Toolbar tb = handler.Control;
 			Control = new Gtk.SeparatorToolItem();
 			Control.Expand = expand;
+			tb.Insert(Control, -1);
+			if (tb.Visible) Control.ShowAll();
 		}
 		
 		
