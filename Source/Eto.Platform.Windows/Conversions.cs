@@ -163,7 +163,12 @@ namespace Eto.Platform.Windows
 			return new sd.PointF (point.X, point.Y);
 		}
 
-		public static sd.Point ToSDPoint (this PointF point)
+        public static sd.Point ToSD(this Point point)
+        {
+            return new sd.Point(point.X, point.Y);
+        }
+       
+        public static sd.Point ToSDPoint(this PointF point)
 		{
 			return new sd.Point ((int)point.X, (int)point.Y);
 		}
