@@ -43,7 +43,7 @@ namespace Eto
 	/// </remarks>
 	public abstract class Generator
 	{
-		Dictionary<string, ConstructorInfo> constructorMap = new Dictionary<string, ConstructorInfo> ();
+		Dictionary<Type, Type> typeMap = new Dictionary<Type, Type> ();
 		List<Type> types = new List<Type>();
 		HashSet<Assembly> typeAssemblies = new HashSet<Assembly>();
 
@@ -89,7 +89,6 @@ namespace Eto
 		/// <typeparam name="T">type to test for</typeparam>
 		/// <returns>true if the specified type is supported, false otherwise</returns>
 		public virtual bool Supports<T> ()
-			where T: IWidget
 		{
 			return Find<T> () != null;
 		}
@@ -209,24 +208,42 @@ namespace Eto
 		/// </example>
 		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
 		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
-		/// <returns>An instance of the constructor info used to create instances of this type</returns>
-		public ConstructorInfo Add<T> (Type handlerType)
-			where T: IWidget
+		[Obsolete("Use Add<T, H>() instead")]
+		public void Add<T> (Type handlerType)
 		{
-			return Add (typeof(T), handlerType);
+			Add (typeof(T), handlerType);
+		}
+
+		/// <summary>
+		/// Adds the specified handler type to this generator
+		/// </summary>
+		/// <remarks>
+		/// This can be used to add a single handler to this generator.  Typically you would do this
+		/// before running your application.
+		/// </remarks>
+		/// <example>
+		/// <code><![CDATA[
+		/// var generator = Generator.Detect;
+		///	generator.Add<IMyControl>(typeof(MyControlHandler));
+		/// ]]></code>
+		/// </example>
+		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
+		/// <typeparam name="H">Type of the backend handler type that implements the interface</typeparam>
+		public void Add<T, H> ()
+		{
+			Add (typeof (T), typeof (H));
 		}
 		
 		/// <summary>
 		/// Finds the constructor info for the specified type
 		/// </summary>
 		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <returns>An instance of the constructor info used to create instances of this type</returns>
-		protected ConstructorInfo Find<T> ()
-			where T: IWidget
+		/// <returns>The handler type to use for the specified type</returns>
+		protected Type Find<T> ()
 		{
 			return Find (typeof(T));
 		}
-		
+
 		/// <summary>
 		/// Creates a new instance of the handler of the specified type
 		/// </summary>
@@ -234,7 +251,6 @@ namespace Eto
 		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
 		public T CreateHandler<T> (Widget widget = null)
-			where T: IWidget
 		{
 			return (T)CreateHandler (typeof (T), widget);
 		}
@@ -253,15 +269,9 @@ namespace Eto
 		/// ]]></code></example>
 		/// <param name="type">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</param>
 		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
-		/// <returns>An instance of the constructor info used to create instances of this type</returns>
-		public ConstructorInfo Add (Type type, Type handlerType)
+		public void Add (Type type, Type handlerType)
 		{
-			ConstructorInfo constructor = handlerType.GetConstructor (new Type[] { });
-			if (constructor == null) 
-				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
-
-			constructorMap[type.Name] = constructor;
-			return constructor;
+			typeMap [type] = handlerType;
 		}
 
 		/// <summary>
@@ -298,12 +308,12 @@ namespace Eto
 			}
 		}
 
-		ConstructorInfo Find (Type type)
+		Type Find (Type type)
 		{
 			lock (this) {
-				ConstructorInfo info;
-				if (constructorMap.TryGetValue (type.Name, out info))
-					return info;
+				Type handlerType;
+				if (typeMap.TryGetValue (type, out handlerType))
+					return handlerType;
 
 				List<Type > removalTypes = null;
 				foreach (Type foundType in types) {
@@ -312,7 +322,8 @@ namespace Eto
 							if (removalTypes != null)
 								foreach (var t in removalTypes)
 									types.Remove (t);
-							return Add (type, foundType);
+							Add (type, foundType);
+							return foundType;
 						}
 					} catch (Exception e) {
 						Debug.WriteLine (string.Format ("Could not instantiate type '{0}'\n{1}", type, e));
@@ -334,20 +345,25 @@ namespace Eto
 		/// <param name="type">Type of handler to create</param>
 		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
-		public IWidget CreateHandler (Type type, Widget widget)
+		public object CreateHandler (Type type, Widget widget)
 		{
-			var constructor = Find (type);
-			if (constructor == null)
-				throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
 			try {
-				var val = constructor.Invoke (new object[] { }) as IWidget;
-				if (widget != null) {
-					widget.Handler = val;
-					val.Widget = widget;
+				var handlerType = Find (type);
+				if (handlerType == null)
+					throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
+
+				var handler = Activator.CreateInstance (handlerType);
+
+				var widgetHandler = handler as IWidget;
+				if (widgetHandler != null) {
+					if (widget != null) {
+						widget.Handler = widgetHandler;
+						widgetHandler.Widget = widget;
+					}
+					widgetHandler.Generator = this;
+					OnWidgetCreated (new WidgetCreatedArgs (widgetHandler));
 				}
-				val.Generator = this;
-				OnWidgetCreated (new WidgetCreatedArgs (val));
-				return val;
+				return handler;
 			} catch (Exception e) {
 				throw new HandlerInvalidException (string.Format ("Could not create instance of type {0}", type), e);
 			}
