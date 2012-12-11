@@ -222,17 +222,17 @@ namespace Eto.Platform.Windows
 
         void Control_MouseHover(object sender, EventArgs e)
         {
-            Widget.OnMouseHover(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), Point.Empty));
+            Widget.OnMouseHover(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto()));
         }
 
 		void HandleControlMouseLeave (object sender, EventArgs e)
 		{
-			Widget.OnMouseLeave (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
+            Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto()));
 		}
 
 		void HandleControlMouseEnter (object sender, EventArgs e)
 		{
-			Widget.OnMouseEnter (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), Point.Empty));
+            Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto()));
 		}
 
         void Control_Click(object sender, System.Windows.Forms.MouseEventArgs e)
