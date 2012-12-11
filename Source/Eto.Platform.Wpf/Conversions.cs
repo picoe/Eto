@@ -10,6 +10,7 @@ using sw = System.Windows;
 using sp = System.Printing;
 using swc = System.Windows.Controls;
 using System.Text.RegularExpressions;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf
 {
@@ -246,5 +247,13 @@ namespace Eto.Platform.Wpf
 			return style;
 		}
 
+		public static swm.ImageSource ToWpf (this Image image, int? width = null)
+		{
+			var imageHandler = image.Handler as IWpfImage;
+			if (imageHandler != null)
+				return imageHandler.GetImageClosestToSize (width.Value);
+			else
+				return image.ControlObject as swm.ImageSource;
+		}
 	}
 }

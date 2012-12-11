@@ -84,7 +84,7 @@ namespace Eto.Platform.Wpf.Drawing
 			get { return new Size (Control.PixelWidth, Control.PixelHeight); }
 		}
 
-		public swm.ImageSource GetIconClosestToSize (int width)
+		public swm.ImageSource GetImageClosestToSize (int? width)
 		{
 			return Control;
 		}

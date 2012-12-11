@@ -19,7 +19,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (Widget.ImageBinding != null) {
 				var image = Widget.ImageBinding.GetValue (dataItem) as Image;
 				if (image != null)
-					return ((IWpfImage)image.Handler).GetIconClosestToSize (16);
+					return ((IWpfImage)image.Handler).GetImageClosestToSize (16);
 			}
 			return null;
 		}

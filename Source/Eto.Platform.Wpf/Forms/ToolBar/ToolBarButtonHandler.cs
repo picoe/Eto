@@ -48,7 +48,7 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				icon = value;
 				if (icon != null)
-					image.Source = ((IconHandler)icon.Handler).GetIconClosestToSize ((int)image.MaxWidth);
+					image.Source = ((IconHandler)icon.Handler).GetImageClosestToSize ((int)image.MaxWidth);
 				else
 					image.Source = null;
 			}

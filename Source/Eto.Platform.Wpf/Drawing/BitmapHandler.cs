@@ -136,7 +136,7 @@ namespace Eto.Platform.Wpf.Drawing
 		}
 
 
-		public swm.ImageSource GetIconClosestToSize (int width)
+		public swm.ImageSource GetImageClosestToSize (int? width)
 		{
 			return Control;
 		}

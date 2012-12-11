@@ -11,7 +11,7 @@ namespace Eto.Platform.Wpf.Drawing
 {
 	public interface IWpfImage
 	{
-		swm.ImageSource GetIconClosestToSize (int width);
+		swm.ImageSource GetImageClosestToSize (int? width);
 	}
 
 	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, IIcon, IWpfImage
@@ -56,7 +56,11 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public Size Size
 		{
-			get { return new Size(Control.PixelWidth, Control.PixelHeight); }
+			get
+			{
+				var largest = GetLargestIcon ();
+				return new Size ((int)largest.Width, (int)largest.Height);
+			}
 		}
 
 		public swm.ImageSource GetLargestIcon ()
@@ -69,16 +73,18 @@ namespace Eto.Platform.Wpf.Drawing
 			return curicon;
 		}
 
-		public swm.ImageSource GetIconClosestToSize (int width)
+		public swm.ImageSource GetImageClosestToSize (int? width)
 		{
+			if (width == null)
+				return GetLargestIcon ();
 			var curicon = icons[0];
-			if (curicon.Width == width)
+			if (curicon.Width == width.Value)
 				return curicon;
 			foreach (var icon in icons) {
-				if (icon.Width > width && icon.Width - width < curicon.Width - width)
+				if (icon.Width > width && icon.Width - width.Value < curicon.Width - width.Value)
 					curicon = icon;
 			}
-			return curicon;
+			return GetLargestIcon ();
 		}
 
 		private const int sICONDIR = 6;            // sizeof(ICONDIR) 
@@ -132,7 +138,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public swm.ImageSource GetImageWithSize (int? size)
 		{
 			if (size != null) {
-				return GetIconClosestToSize (size.Value);
+				return GetImageClosestToSize (size.Value);
 			}
 			else return Control;
 		}
