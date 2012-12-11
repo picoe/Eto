@@ -371,6 +371,8 @@
     <Compile Include="Drawing\FontTypeface.cs" />
     <Compile Include="Drawing\Fonts.cs" />
     <Compile Include="Drawing\FontFamilies.cs" />
+    <Compile Include="Forms\Cursors.cs" />
+    <Compile Include="ObjectCache.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
