@@ -123,6 +123,17 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Creates a new instance of a RectangleF with a specified <paramref name="center"/> and <paramref name="size"/>
+		/// </summary>
+		/// <param name="center">Center of the rectangle</param>
+		/// <param name="size">Size of the rectangle</param>
+		/// <returns>A new instance of a RectangleF with the specified center and size</returns>
+		public static RectangleF FromCenter (PointF center, SizeF size)
+		{
+			return new RectangleF (center - size / 2, size);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the Rectangle class with two points
 		/// </summary>
 		/// <param name="start">Starting point of the rectangle</param>
