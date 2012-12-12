@@ -17,13 +17,13 @@ namespace Eto.Platform.Windows
 	
 		public SeparatorToolBarItemType Type {
 			get {
-				if (this.Control.AutoSize) return SeparatorToolBarItemType.FlexibleSpace;
-				else return SeparatorToolBarItemType.Divider;
+				if (this.Control.AutoSize) return SeparatorToolBarItemType.Divider;
+				else return SeparatorToolBarItemType.FlexibleSpace;
 			}
 			set {
 				switch (value)
 				{
-					case SeparatorToolBarItemType.FlexibleSpace:
+					case SeparatorToolBarItemType.Divider:
 						this.Control.AutoSize = true;
 						break;
 				default:
@@ -35,7 +35,7 @@ namespace Eto.Platform.Windows
 		
 		public void CreateControl (ToolBarHandler handler)
 		{
-			
+			handler.Control.Items.Add(Control);
 		}
 
 	}

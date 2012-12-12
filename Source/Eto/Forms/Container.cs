@@ -100,13 +100,14 @@ namespace Eto.Forms
 			handler = (IContainer)base.Handler;
 		}
 
-        /// <summary>
-        /// An overload to be used when the handler is set after
-        /// construction
-        /// </summary>
-        /// <param name="generator"></param>
-        protected Container(Generator generator, IContainer handler) :
-            base(generator, handler)
+		/// <summary>
+		/// Initializes a new instance of the Container with the specified handler
+		/// </summary>
+		/// <param name="generator">Generator for the widget</param>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		protected Container (Generator generator, IContainer handler, bool initialize = true)
+			: base(generator, handler, initialize)
         {
             this.handler = handler;
         }

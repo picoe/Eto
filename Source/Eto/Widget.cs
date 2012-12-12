@@ -132,7 +132,7 @@ namespace Eto
 		{
 			if (generator == null)
 				generator = Generator.Current;
-			this.Handler = generator.CreateHandler (type, this);
+			this.Handler = generator.CreateHandler (type, this) as IWidget;
 			if (initialize)
 				Initialize ();
 		}

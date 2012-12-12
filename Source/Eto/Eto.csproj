@@ -104,9 +104,6 @@
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
-    <Reference Include="System.Data">
-      <Name>System.Data</Name>
-    </Reference>
     <Reference Include="System.Xml">
       <Name>System.Xml</Name>
     </Reference>
@@ -435,6 +432,8 @@
     <Compile Include="Drawing\FontTypeface.cs" />
     <Compile Include="Drawing\Fonts.cs" />
     <Compile Include="Drawing\FontFamilies.cs" />
+    <Compile Include="Forms\Cursors.cs" />
+    <Compile Include="ObjectCache.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

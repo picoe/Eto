@@ -261,6 +261,12 @@ namespace Eto.Platform.Wpf.Drawing
             DrawPath(pen.ControlObject as swm.Pen, path);
         }
 
+		public void DrawImage (Image image, float x, float y)
+		{
+			var size = image.Size;
+			DrawImage (image, x, y, size.Width, size.Height);
+        }
+
         public void DrawImage(Image image, PointF p)
         {
             DrawImage(image, p.X, p.Y, image.Size.Width, image.Size.Height);
@@ -281,7 +287,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
-			var src = image.ControlObject as swm.ImageSource;
+			var src = image.ToWpf ();
 			Control.PushClip (new swm.RectangleGeometry (destination.ToWpf ()));
 			bool scaled = false;
 			double scalex = 1.0;

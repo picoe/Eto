@@ -78,9 +78,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 					width = Math.Max (Control.HeaderCell.CellSize.Width, width);
 					
 				if (dataCell != null) {
+					/* Auto size based on visible cells only
 					var rect = handler.GetVisibleRect ();
 					var range = handler.Table.RowsInRect (rect);
-					//var range = new NSRange(0, handler.RowCount);
+					*/
+					var range = new NSRange(0, handler.RowCount);
+
 					var cellSize = Control.DataCell.CellSize;
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (int i = range.Location; i < range.Location + range.Length; i++) {

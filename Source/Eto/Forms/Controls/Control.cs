@@ -529,9 +529,19 @@ namespace Eto.Forms
             base(generator, inner)
         {
         }
-
 		protected Control (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
+		{
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Container with the specified handler
+		/// </summary>
+		/// <param name="generator">Generator for the widget</param>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		protected Control (Generator generator, IControl handler, bool initialize = true)
+			: base (generator, handler, initialize)
 		{
 		}
 

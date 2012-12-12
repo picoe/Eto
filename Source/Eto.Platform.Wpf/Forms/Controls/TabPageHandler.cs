@@ -44,7 +44,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				image = value;
 				if (image != null)
-					headerImage.Source = ((IWpfImage)image.Handler).GetIconClosestToSize (16);
+					headerImage.Source = ((IWpfImage)image.Handler).GetImageClosestToSize (16);
 				else
 					headerImage.Source = null;
 			}
