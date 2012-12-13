@@ -4,6 +4,8 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Threading;
 
 namespace Eto
 {
@@ -43,9 +45,11 @@ namespace Eto
 	/// </remarks>
 	public abstract class Generator
 	{
-		Dictionary<Type, Type> typeMap = new Dictionary<Type, Type> ();
-		List<Type> types = new List<Type>();
-		HashSet<Assembly> typeAssemblies = new HashSet<Assembly>();
+		Dictionary<Type, Func<object>> typeMap = new Dictionary<Type, Func<object>> ();
+		List<Type> types = new List<Type> ();
+		HashSet<Assembly> typeAssemblies = new HashSet<Assembly> ();
+		ReaderWriterLockSlim mapLock = new ReaderWriterLockSlim ();
+		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
 
 		#region Events
 
@@ -106,8 +110,10 @@ namespace Eto
 		/// This will be used when creating controls, unless explicitly passed through the constructor of the
 		/// control. This allows you to use multiple generators at one time.
 		/// </remarks>
-		public static Generator Current {
-			get {
+		public static Generator Current
+		{
+			get
+			{
 				if (current == null)
 					throw new ApplicationException ("Generator has not been initialized");
 				return current;
@@ -124,8 +130,10 @@ namespace Eto
 		/// Mac OS X will prefer the Mac platform.
 		/// Other unix-based platforms will prefer GTK.
 		/// </remarks>
-		public static Generator Detect {
-			get {
+		public static Generator Detect
+		{
+			get
+			{
 				if (current != null)
 					return current;
 #if MOBILE
@@ -173,7 +181,6 @@ namespace Eto
 			return GetGenerator (generatorType, false);
 		}
 
-
 		static Generator GetGenerator (string generatorType, bool allowNull)
 		{
 			Type type = Type.GetType (generatorType);
@@ -183,12 +190,9 @@ namespace Eto
 				else
 					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
 			}
-			try
-			{
-				return (Generator)Activator.CreateInstance(type);
-			}
-			catch (TargetInvocationException e)
-			{
+			try {
+				return (Generator)Activator.CreateInstance (type);
+			} catch (TargetInvocationException e) {
 				throw e.InnerException;
 			}
 		}
@@ -231,17 +235,17 @@ namespace Eto
 		/// <typeparam name="H">Type of the backend handler type that implements the interface</typeparam>
 		public void Add<T, H> ()
 		{
-			Add (typeof (T), typeof (H));
+			Add (typeof(T), typeof(H));
 		}
 		
 		/// <summary>
-		/// Finds the constructor info for the specified type
+		/// Finds the activator to create instances of the specified type
 		/// </summary>
 		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
 		/// <returns>The handler type to use for the specified type</returns>
-		protected Type Find<T> ()
+		public Func<object> Find<T> ()
 		{
-			return Find (typeof(T));
+			return Find (typeof (T));
 		}
 
 		/// <summary>
@@ -252,7 +256,17 @@ namespace Eto
 		/// <returns>A new instance of a handler</returns>
 		public T CreateHandler<T> (Widget widget = null)
 		{
-			return (T)CreateHandler (typeof (T), widget);
+			return (T)CreateHandler (typeof(T), widget);
+		}
+
+		public T CreateSharedHandler<T> ()
+		{
+			object instance;
+			if (!sharedInstances.TryGetValue (typeof(T), out instance)) {
+				instance = CreateHandler<T>();
+				sharedInstances[typeof(T)] = instance;
+			}
+			return (T)instance;
 		}
 
 		/// <summary>
@@ -271,7 +285,27 @@ namespace Eto
 		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
 		public void Add (Type type, Type handlerType)
 		{
-			typeMap [type] = handlerType;
+			AddDetected (type, handlerType);
+		}
+
+		Func<object> AddDetected (Type type, Type handlerType)
+		{
+			var constructor = handlerType.GetConstructor (Type.EmptyTypes);
+
+			var newExp = Expression.New (constructor);
+			var lambda = Expression.Lambda (typeof (Func<object>), newExp, null);
+			var activator = (Func<object>)lambda.Compile ();
+			lock (typeMap) {
+				typeMap[type] = activator;
+			}
+			return activator;
+		}
+
+		public void Add<T> (Func<object> activator)
+		{
+			lock (typeMap) {
+				typeMap[typeof(T)] = activator;
+			}
 		}
 
 		/// <summary>
@@ -285,16 +319,12 @@ namespace Eto
 		/// <param name="assembly">Assembly with handler implementations to add</param>
 		public void AddAssembly (Assembly assembly)
 		{
-			if (!typeAssemblies.Contains (assembly))
-			{
+			if (!typeAssemblies.Contains (assembly)) {
 				typeAssemblies.Add (assembly);
 				IEnumerable<Type> exportedTypes;
-				try
-				{
+				try {
 					exportedTypes = assembly.GetTypes ();
-				}
-				catch (ReflectionTypeLoadException ex)
-				{
+				} catch (ReflectionTypeLoadException ex) {
 					Debug.WriteLine ("Could not load type(s) from assembly '{0}': {1}", assembly.FullName, ex.GetBaseException ());
 					Debug.WriteLine ("Loader Exceptions:");
 					foreach (var loaderException in ex.LoaderExceptions) {
@@ -303,27 +333,29 @@ namespace Eto
 					exportedTypes = ex.Types;
 				}
 
-				exportedTypes = exportedTypes.Where (r => typeof (IWidget).IsAssignableFrom (r) && r.IsClass && !r.IsAbstract);
+				exportedTypes = exportedTypes.Where (r => typeof(IWidget).IsAssignableFrom (r) && r.IsClass && !r.IsAbstract);
 				types.InsertRange (0, exportedTypes);
 			}
 		}
 
-		Type Find (Type type)
+		public Func<object> Find (Type type)
 		{
-			lock (this) {
-				Type handlerType;
-				if (typeMap.TryGetValue (type, out handlerType))
-					return handlerType;
+			//lock (typeMap)
+			{
+				Func<object> activator;
+				if (typeMap.TryGetValue (type, out activator))
+					return activator;
+			}
 
-				List<Type > removalTypes = null;
+			lock (this) {
+				List<Type> removalTypes = null;
 				foreach (Type foundType in types) {
 					try {
 						if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom (foundType)) {
 							if (removalTypes != null)
 								foreach (var t in removalTypes)
 									types.Remove (t);
-							Add (type, foundType);
-							return foundType;
+							return AddDetected (type, foundType);
 						}
 					} catch (Exception e) {
 						Debug.WriteLine (string.Format ("Could not instantiate type '{0}'\n{1}", type, e));
@@ -348,11 +380,11 @@ namespace Eto
 		public object CreateHandler (Type type, Widget widget)
 		{
 			try {
-				var handlerType = Find (type);
-				if (handlerType == null)
+				var activator = Find (type);
+				if (activator == null)
 					throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
 
-				var handler = Activator.CreateInstance (handlerType);
+				var handler = activator ();
 
 				var widgetHandler = handler as IWidget;
 				if (widgetHandler != null) {

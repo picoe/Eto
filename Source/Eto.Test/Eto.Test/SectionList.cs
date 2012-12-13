@@ -18,7 +18,7 @@ namespace Eto.Test
 	public class Section : List<Section>, ITreeGridItem<Section>
 	{
 		public string Text { get; set; }
-		
+
 		public bool Expanded { get; set; }
 
 		public bool Expandable { get { return Count > 0; } }
@@ -58,7 +58,7 @@ namespace Eto.Test
 				return null;
 			}
 		}
-	}
+    }
 	
 		
 	public class SectionList : TreeGridView
@@ -123,6 +123,7 @@ namespace Eto.Test
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 			yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
+			yield return new Section<TransformSection> { Text = "Transform" };
 		}
 
 		IEnumerable<Section> LayoutsSection ()

@@ -10,6 +10,7 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using System.Reflection;
 using System.IO;
+using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf
 {
@@ -49,19 +50,23 @@ namespace Eto.Platform.Wpf
 		public Generator ()
 		{
 			AddAssembly (typeof (Generator).Assembly);
-			
+			//Add<IMatrixHandler, MatrixHandler> ();
+			Add<IMatrixHandler> (() => new MatrixHandler ());
+
 			// by default, use WinForms web view (it has more features we can control)
 			UseSwfWebView ();
 		}
 
 		public void UseWpfWebView ()
 		{
-			Add (typeof (IWebView), typeof (Forms.Controls.WpfWebViewHandler));
+			//Add<IWebView, Forms.Controls.WpfWebViewHandler> ();
+			Add<IWebView> (() => new Forms.Controls.WpfWebViewHandler ());
 		}
 
 		public void UseSwfWebView ()
 		{
-			Add (typeof (IWebView), typeof (Forms.Controls.SwfWebViewHandler));
+			//Add<IWebView, Forms.Controls.SwfWebViewHandler> ();
+			Add<IWebView> (() => new Forms.Controls.SwfWebViewHandler ());
 		}
-    }
+	}
 }

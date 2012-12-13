@@ -54,6 +54,7 @@ namespace Eto.Platform.Windows
         public Generator()
         {
             AddAssembly(typeof(Generator).Assembly);
+			Add<IMatrixHandler, MatrixHandler> ();
         }
     }
 }

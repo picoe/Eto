@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -27,12 +27,12 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				if (sw.Application.Current.MainWindow != null) {
+				/*if (sw.Application.Current.MainWindow != null) {
 					// adjust font size for DPI settings
 					var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
 					return PointsToPixels (Size * m.M22);
 				}
-				else
+				else*/
 					return PointsToPixels (Size);
 			}
 		}

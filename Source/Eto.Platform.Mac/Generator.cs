@@ -21,6 +21,8 @@ namespace Eto.Platform.Mac
 		public Generator ()
 		{
 			AddAssembly (typeof (Generator).Assembly);
+			//Add <IMatrixHandler> (args => new MatrixHandler ());
+			Add <IMatrixHandler, MatrixHandler> ();
 		}
 		
 		

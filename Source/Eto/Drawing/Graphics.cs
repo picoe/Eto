@@ -178,6 +178,18 @@ namespace Eto.Drawing
 		/// or other code.
 		/// </remarks>
 		bool IsRetained { get; }
+
+		void TranslateTransform (float dx, float dy);
+
+		void RotateTransform (float angle);
+
+		void ScaleTransform (float sx, float sy);
+
+		void MultiplyTransform (IMatrix matrix);
+
+		void SaveTransform ();
+
+		void RestoreTransform ();
 	}
 
 	/// <summary>
@@ -636,6 +648,51 @@ namespace Eto.Drawing
 			Handler.Flush ();
 		}
 
+		public void TranslateTransform (float dx, float dy)
+		{
+			Handler.TranslateTransform (dx, dy);
+		}
+
+		public void TranslateTransform (PointF point)
+		{
+			Handler.TranslateTransform (point.X, point.Y);
+		}
+
+		public void RotateTransform (float angle)
+		{
+			Handler.RotateTransform (angle);
+		}
+
+		public void ScaleTransform (SizeF scale)
+		{
+			Handler.ScaleTransform (scale.Width, scale.Height);
+		}
+
+		public void ScaleTransform (float scaleX, float scaleY)
+		{
+			Handler.ScaleTransform (scaleX, scaleY);
+		}
+
+		public void ScaleTransform (float scale)
+		{
+			Handler.ScaleTransform (scale, scale);
+		}
+
+		public void MultiplyTransform (IMatrix matrix)
+		{
+			Handler.MultiplyTransform (matrix);
+		}
+
+		public void SaveTransform ()
+		{
+			Handler.SaveTransform ();
+		}
+
+		public void RestoreTransform ()
+		{
+			Handler.RestoreTransform ();
+		}
+
 		#region Obsolete
 
 		/// <summary>
@@ -648,7 +705,7 @@ namespace Eto.Drawing
 		{
 			Handler.DrawImage (icon, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
-		
+
 		/// <summary>
 		/// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, float, float, float, float)"/> instead.
 		/// </summary>

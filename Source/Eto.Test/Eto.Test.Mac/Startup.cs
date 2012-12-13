@@ -8,6 +8,7 @@ using Eto.Platform.Mac.Forms;
 using Eto.Platform.Mac;
 using Eto.Drawing;
 using System.Diagnostics;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Test.Mac
 {
@@ -23,6 +24,39 @@ namespace Eto.Test.Mac
 			var generator = new Eto.Platform.Mac.Generator ();
 			
 			var app = new TestApplication (generator);
+
+
+			var sw = new Stopwatch();
+			var count = 1000000;
+
+			var activator = Matrix.Instantiator ();
+			var matrixActivator = Matrix.MatrixInstantiator ();
+			sw.Start();
+			for (var i = 0; i < count; ++i)
+			{
+				//var matrix = activator();
+				var matrix = matrixActivator();
+				//matrix.Scale (10, 10);
+			}
+			
+			var e1 = sw.Elapsed;
+
+			sw.Restart();
+			
+			for (var i = 0; i < count; ++i)
+			{
+				var matrix = activator();
+				//CGAffineTransform m;
+				//var m = CGAffineTransform.MakeIdentity();
+				//matrix.Scale (10, 10);
+				// alternately var m = System.Windows.Media.Matrix.Identity();
+			}
+			
+			var e2 = sw.Elapsed;
+
+			Console.WriteLine ("Time: eto: {0}, direct: {1}, Diff: {2}", e1.TotalMilliseconds, e2.TotalMilliseconds, (e1.TotalSeconds / e2.TotalSeconds));
+
+
 
 			// use this to use your own app delegate:
 			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();

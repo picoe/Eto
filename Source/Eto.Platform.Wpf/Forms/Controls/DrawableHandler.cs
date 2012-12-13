@@ -48,9 +48,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			protected override void OnRender (swm.DrawingContext dc)
 			{
-				var rect = new sw.Rect (Child.Bounds.X, Child.Bounds.Y, Child.Bounds.Width + 0.5, Child.Bounds.Height + 0.5);
-				var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, rect));
-				dc.PushGuidelineSet(new swm.GuidelineSet(new double[] { Child.Bounds.Left, Child.Bounds.Right }, new double[] { Child.Bounds.Top, Child.Bounds.Bottom }));
+				var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, Child.Bounds));
 				Handler.Widget.OnPaint (new PaintEventArgs (graphics, Child.Bounds.ToEto ()));
 			}
 		}
