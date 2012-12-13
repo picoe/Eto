@@ -155,6 +155,9 @@ namespace Eto.Forms
 		public Control Content {
 			get { return Handler.Content; }
 			set {
+                if (value.ControlObject is Control)
+                    value = value.ControlObject as Control;
+
 				control = value;
 				if (control != null) {
 					control.SetParentLayout (this);

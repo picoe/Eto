@@ -132,6 +132,10 @@ namespace Eto.Forms
 		protected Layout (Generator g, Container container, Type type, bool initialize = true)
 			: base(g, type, false)
 		{
+            if (container != null &&
+                container.ControlObject is Container)
+                container = container.ControlObject as Container;
+
 			this.container = container;
 			if (initialize) {
 				Initialize ();
