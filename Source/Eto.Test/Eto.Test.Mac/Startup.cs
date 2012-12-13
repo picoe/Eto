@@ -29,13 +29,14 @@ namespace Eto.Test.Mac
 			var sw = new Stopwatch();
 			var count = 1000000;
 
-			var activator = Matrix.Instantiator ();
-			var matrixActivator = Matrix.MatrixInstantiator ();
+			var instantiator = Matrix.Instantiator ();
+			var matrixInstantiator = Matrix.MatrixInstantiator ();
 			sw.Start();
 			for (var i = 0; i < count; ++i)
 			{
-				//var matrix = activator();
-				var matrix = matrixActivator();
+				//var matrix = instantiator ();
+				var matrix = matrixInstantiator();
+				//var matrix = new Matrix ();
 				//matrix.Scale (10, 10);
 			}
 			
@@ -45,9 +46,10 @@ namespace Eto.Test.Mac
 			
 			for (var i = 0; i < count; ++i)
 			{
-				var matrix = activator();
+				//var matrix = activator();
+				//var matrix = instantiator ();
 				//CGAffineTransform m;
-				//var m = CGAffineTransform.MakeIdentity();
+				var matrix = CGAffineTransform.MakeIdentity();
 				//matrix.Scale (10, 10);
 				// alternately var m = System.Windows.Media.Matrix.Identity();
 			}
