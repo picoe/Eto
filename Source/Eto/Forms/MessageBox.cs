@@ -51,7 +51,7 @@ namespace Eto.Forms
 		
 		public static DialogResult Show(Generator g, Control parent, string text, string caption = null, MessageBoxType type = MessageBoxType.Information)
 		{
-			var mb = g.CreateHandler<IMessageBox>();
+			var mb = g.Create<IMessageBox>();
 			mb.Text = text;
 			mb.Caption = caption;
 			mb.Type = type;
@@ -85,7 +85,7 @@ namespace Eto.Forms
 
 		public static DialogResult Show (Generator g, Control parent, string text, string caption, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information)
 		{
-			var mb = g.CreateHandler<IMessageBox> ();
+			var mb = g.Create<IMessageBox> ();
 			mb.Text = text;
 			mb.Caption = caption;
 			mb.Type = type;

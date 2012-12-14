@@ -4,9 +4,6 @@ using Eto.Misc;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Diagnostics;
-using Eto.Platform.Wpf.Drawing;
-using System.Threading;
-using System.Collections.Generic;
 
 namespace Eto.Test.Wpf
 {

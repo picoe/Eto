@@ -45,11 +45,8 @@ namespace Eto
 	/// </remarks>
 	public abstract class Generator
 	{
-		Dictionary<Type, Func<object>> typeMap = new Dictionary<Type, Func<object>> ();
-		List<Type> types = new List<Type> ();
-		HashSet<Assembly> typeAssemblies = new HashSet<Assembly> ();
-		ReaderWriterLockSlim mapLock = new ReaderWriterLockSlim ();
-		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
+		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>> ();
+		static Generator current;
 
 		#region Events
 
@@ -97,8 +94,6 @@ namespace Eto
 		{
 			return Find<T> () != null;
 		}
-
-		static Generator current;
 
 		/// <summary>
 		/// Gets the current generator
@@ -199,35 +194,48 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Adds the specified handler type to this generator
+		/// Add the <paramref name="instantiator"/> for the specified handler type of <typeparamref name="T"/>
 		/// </summary>
-		/// <remarks>
-		/// This can be used to add a single handler to this generator.  Typically you would do this
-		/// before running your application.
-		/// </remarks>
-		/// <example>
-		/// <code><![CDATA[
-		/// var generator = Generator.Detect;
-		///	generator.Add<IMyControl>(typeof(MyControlHandler));
-		/// ]]></code>
-		/// </example>
-		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
-		[Obsolete("Use Add<T>(Func<T>) instead")]
-		public void Add<T> (Type handlerType)
+		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
+		/// <typeparam name="T">The handler type to add the instantiator for (usually an interface derived from <see cref="IWidget"/>)</typeparam>
+		public void Add<T> (Func<T> instantiator)
+			where T: class
 		{
-			Add (typeof(T), handlerType);
+			Add (typeof(T), instantiator);
 		}
-
+		
 		/// <summary>
-		/// Finds the activator to create instances of the specified type
+		/// Add the specified type and instantiator.
 		/// </summary>
-		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <returns>The handler type to use for the specified type</returns>
+		/// <param name="type">Type of the handler (usually an interface derived from <see cref="IWidget"/>)</param>
+		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
+		public void Add (Type type, Func<object> instantiator)
+		{
+			instantiatorMap [type] = instantiator;
+		}
+		
+		/// <summary>
+		/// Finds the delegate to create instances of the specified type
+		/// </summary>
+		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="IWidget"/> or another type)</typeparam>
+		/// <returns>The delegate to use to create instances of the specified type</returns>
 		public Func<T> Find<T> ()
 			where T: class
 		{
-			return (Func<T>)Find (typeof (T));
+			return (Func<T>)Find (typeof(T));
+		}
+
+		/// <summary>
+		/// Find the delegate to create instances of the specified <paramref name="type"/>
+		/// </summary>
+		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="IWidget"/> or another type)</param>
+		public Func<object> Find (Type type)
+		{
+			Func<object> activator;
+			if (instantiatorMap.TryGetValue (type, out activator))
+				return activator;
+			else
+				return null;
 		}
 
 		/// <summary>
@@ -236,127 +244,9 @@ namespace Eto
 		/// <typeparam name="T">Type of handler to create</typeparam>
 		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
-		public T CreateHandler<T> (Widget widget = null)
+		public T Create<T> (Widget widget = null)
 		{
-			return (T)CreateHandler (typeof(T), widget);
-		}
-
-		public T CreateSharedHandler<T> ()
-		{
-			object instance;
-			if (!sharedInstances.TryGetValue (typeof(T), out instance)) {
-				instance = CreateHandler<T>();
-				sharedInstances[typeof(T)] = instance;
-			}
-			return (T)instance;
-		}
-
-		/// <summary>
-		/// Adds the specified handler type to this generator
-		/// </summary>
-		/// <remarks>
-		/// This can be used to add a single handler to this generator.  Typically you would do this
-		/// before running your application.
-		/// </remarks>
-		/// <example>
-		/// <code><![CDATA[
-		/// var generator = Generator.Detect;
-		///	generator.Add<IMyControl>(typeof(MyControlHandler));
-		/// ]]></code></example>
-		/// <param name="type">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</param>
-		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
-		public void Add (Type type, Type handlerType)
-		{
-			AddDetected (type, handlerType);
-		}
-
-		Func<object> AddDetected (Type type, Type handlerType)
-		{
-			var constructor = handlerType.GetConstructor (Type.EmptyTypes);
-
-			var newExp = Expression.New (constructor);
-			var lambda = Expression.Lambda (typeof (Func<object>), newExp, null);
-			var activator = (Func<object>)lambda.Compile ();
-			lock (typeMap) {
-				typeMap[type] = activator;
-			}
-			return activator;
-		}
-
-		public void Add<T> (Func<T> instantiator)
-			where T: class
-		{
-			Add (typeof (T), instantiator);
-		}
-
-		void Add (Type type, Func<object> instantiator)
-		{
-			lock (typeMap) {
-				typeMap[type] = instantiator;
-			}
-		}
-
-		/// <summary>
-		/// Adds the specified assembly to scan for handler impelementations
-		/// </summary>
-		/// <remarks>
-		/// If you create your own controls with custom handlers, you can use this method
-		/// to add the assembly to the list of assemblies that will be scanned for the handler
-		/// implementations.
-		/// </remarks>
-		/// <param name="assembly">Assembly with handler implementations to add</param>
-		public void AddAssembly (Assembly assembly)
-		{
-			if (!typeAssemblies.Contains (assembly)) {
-				typeAssemblies.Add (assembly);
-				IEnumerable<Type> exportedTypes;
-				try {
-					exportedTypes = assembly.GetTypes ();
-				} catch (ReflectionTypeLoadException ex) {
-					Debug.WriteLine ("Could not load type(s) from assembly '{0}': {1}", assembly.FullName, ex.GetBaseException ());
-					Debug.WriteLine ("Loader Exceptions:");
-					foreach (var loaderException in ex.LoaderExceptions) {
-						Debug.WriteLine ("{0}", loaderException.GetBaseException ());
-					}
-					exportedTypes = ex.Types;
-				}
-
-				exportedTypes = exportedTypes.Where (r => typeof(IWidget).IsAssignableFrom (r) && r.IsClass && !r.IsAbstract);
-				types.InsertRange (0, exportedTypes);
-			}
-		}
-
-		public Func<object> Find (Type type)
-		{
-			lock (typeMap)
-			{
-				Func<object> activator;
-				if (typeMap.TryGetValue (type, out activator))
-					return activator;
-			}
-
-			lock (this) {
-				List<Type> removalTypes = null;
-				foreach (Type foundType in types) {
-					try {
-						if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom (foundType)) {
-							if (removalTypes != null)
-								foreach (var t in removalTypes)
-									types.Remove (t);
-							return AddDetected (type, foundType);
-						}
-					} catch (Exception e) {
-						Debug.WriteLine (string.Format ("Could not instantiate type '{0}'\n{1}", type, e));
-						if (removalTypes == null)
-							removalTypes = new List<Type> ();
-						removalTypes.Add (foundType);
-					}
-				}
-				if (removalTypes != null)
-					foreach (var t in removalTypes)
-						types.Remove (t);
-				return null;
-			}
+			return (T)Create (typeof(T), widget);
 		}
 
 		/// <summary>
@@ -365,14 +255,14 @@ namespace Eto
 		/// <param name="type">Type of handler to create</param>
 		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
-		public object CreateHandler (Type type, Widget widget)
+		public object Create (Type type, Widget widget)
 		{
 			try {
-				var activator = Find (type);
-				if (activator == null)
+				var instantiator = Find (type);
+				if (instantiator == null)
 					throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
 
-				var handler = activator ();
+				var handler = instantiator ();
 
 				var widgetHandler = handler as IWidget;
 				if (widgetHandler != null) {

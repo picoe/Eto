@@ -14,10 +14,10 @@ namespace Eto.Test.Mac
 {
 	class Startup
 	{
-		static void Main (string [] args)
+		static void Main (string[] args)
 		{
 #if DEBUG
-			Debug.Listeners.Add (new ConsoleTraceListener());
+			Debug.Listeners.Add (new ConsoleTraceListener ());
 #endif
 			AddStyles ();
 			

@@ -147,7 +147,7 @@ namespace Eto.Drawing
 
 		public static IMatrix Create (Generator generator = null)
 		{
-			var handler = (generator ?? Generator.Current).CreateHandler<IMatrixHandler> ();
+			var handler = (generator ?? Generator.Current).Create<IMatrixHandler> ();
 			handler.Create ();
 			return handler;
 		}
@@ -158,14 +158,14 @@ namespace Eto.Drawing
 				throw new ArgumentNullException ("elements");
 			if (elements.Length != 6)
 				throw new ArgumentOutOfRangeException ("elements", elements, "Elements must be an array with a length of 6");
-			var handler = (generator ?? Generator.Current).CreateHandler<IMatrixHandler> ();
+			var handler = (generator ?? Generator.Current).Create<IMatrixHandler> ();
 			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 			return handler;
 		}
 
 		public static IMatrix Create (float xx, float yx, float xy, float yy, float x0, float y0, Generator generator = null)
 		{
-			var handler = (generator ?? Generator.Current).CreateHandler<IMatrixHandler> ();
+			var handler = (generator ?? Generator.Current).Create<IMatrixHandler> ();
 			handler.Create (xx, yx, xy, yy, x0, y0);
 			return handler;
 		}

@@ -121,7 +121,7 @@ namespace Eto.Platform.Wpf
 			
 			// Forms
 			Add <IApplication> (() => new ApplicationHandler ());
-			Add <IClipboard> (() => new ClipboardHandler ());
+			//Add <IClipboard> (() => new ClipboardHandler ());
 			Add <IColorDialog> (() => new ColorDialogHandler ());
 			Add <ICursor> (() => new CursorHandler ());
 			Add <IDialog> (() => new DialogHandler ());
@@ -137,7 +137,7 @@ namespace Eto.Platform.Wpf
 			Add <IUITimer> (() => new UITimerHandler ());
 			
 			// IO
-			Add <ISystemIcons> (() => new SystemIconsHandler ());
+			//Add <ISystemIcons> (() => new SystemIconsHandler ());
 			
 			// General
 			Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
@@ -148,14 +148,12 @@ namespace Eto.Platform.Wpf
 
 		public void UseWpfWebView ()
 		{
-			//Add<IWebView, Forms.Controls.WpfWebViewHandler> ();
-			Add<IWebView> (() => new Forms.Controls.WpfWebViewHandler ());
+			Add<IWebView> (() => new WpfWebViewHandler ());
 		}
 
 		public void UseSwfWebView ()
 		{
-			//Add<IWebView, Forms.Controls.SwfWebViewHandler> ();
-			Add<IWebView> (() => new Forms.Controls.SwfWebViewHandler ());
+			Add<IWebView> (() => new SwfWebViewHandler ());
 		}
 	}
 }

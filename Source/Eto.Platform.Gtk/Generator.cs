@@ -21,10 +21,6 @@ namespace Eto.Platform.GtkSharp
 		
 		public Generator ()
 		{
-			/*
-			AddAssembly (typeof(Generator).Assembly);
-			Add<IMatrixHandler, MatrixHandler> ();
-			*/
 			// Drawing
 			Add <IBitmap> (() => new BitmapHandler ());
 			Add <IFontFamily> (() => new FontFamilyHandler ());
@@ -89,7 +85,7 @@ namespace Eto.Platform.GtkSharp
 			Add <ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
 			Add <IToolBarButton> (() => new ToolBarButtonHandler ());
 			Add <IToolBar> (() => new ToolBarHandler ());
-			
+
 			// Forms
 			Add <IApplication> (() => new ApplicationHandler ());
 			Add <IClipboard> (() => new ClipboardHandler ());
@@ -109,10 +105,11 @@ namespace Eto.Platform.GtkSharp
 			
 			// IO
 			Add <ISystemIcons> (() => new SystemIconsHandler ());
-			
+
+			// General
 			Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
 
-			
+
 			if (EtoEnvironment.Platform.IsWindows && Environment.Is64BitProcess)
 				throw new NotSupportedException("Please compile/run GTK in x86 mode (32-bit) on windows");
 			Gtk.Application.Init();

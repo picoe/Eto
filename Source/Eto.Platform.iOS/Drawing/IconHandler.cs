@@ -41,20 +41,20 @@ namespace Eto.Platform.iOS.Drawing
 			return this.Control;
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
-			SD.RectangleF destRect = graphics.TranslateView (destination.ToSDRectangleF (), false);
-			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {
+			var sourceRect = source.ToSD (); //graphics.Translate(source.ToSD (), nsimage.Size.Height);
+			SD.RectangleF destRect = graphics.TranslateView (destination.ToSD (), false);
+			if (source.TopLeft != Point.Empty || sourceRect.Size != Control.Size) {
 				graphics.Control.SaveState ();
 				//graphics.Context.ClipToRect(destRect);
 				if (graphics.Flipped) {
-					graphics.Control.TranslateCTM (0, nsimage.Size.Height);
-					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
+					graphics.Control.TranslateCTM (0, Control.Size.Height);
+					graphics.Control.ScaleCTM (Control.Size.Width / destRect.Width, -(Control.Size.Height / destRect.Height));
 				} else {
-					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
+					graphics.Control.ScaleCTM (Control.Size.Width / destRect.Width, Control.Size.Height / destRect.Height);
 				}
-				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
+				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), Control.CGImage);
 				//nsimage.CGImage(destRect, CGBlendMode.Normal, 1);
 				
 				graphics.Control.RestoreState ();
@@ -78,7 +78,7 @@ namespace Eto.Platform.iOS.Drawing
 			} else {
 				//graphics.Context.DrawImage(destRect, nsimage.CGImage);
 				//Console.WriteLine("drawing full image");	
-				nsimage.Draw (destRect, CGBlendMode.Normal, 1);
+				Control.Draw (destRect, CGBlendMode.Normal, 1);
 			}
 		}
 	}

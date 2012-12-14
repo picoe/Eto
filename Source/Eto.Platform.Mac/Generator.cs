@@ -112,8 +112,7 @@ namespace Eto.Platform.Mac
 			// General
 			Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
 		}
-		
-		
+
 		public override IDisposable ThreadStart ()
 		{
 			return new NSAutoreleasePool ();

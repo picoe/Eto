@@ -21,7 +21,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow (TitleLabel (), null, EnableContextMenu ());
 			layout.Add (webContainer, yscale: true);
 
-			LoadHtml();
+			if (webView != null)
+				LoadHtml();
 		}
 		
 		Control WebView ()
