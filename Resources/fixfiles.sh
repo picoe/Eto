@@ -5,8 +5,11 @@ function tounix () {
 	do
 		echo "Processing $f"
 		# remove BOM
-		awk '{if(NR==1)sub(/^\xef\xbb\xbf/,"");print}' "$f" >> /dev/null
-		
+		if [[ -f "$f" && `head -c 3 "$f"` == $'\xef\xbb\xbf' ]]; then
+			# file exists and has UTF-8 BOM
+			tail -c +4 "$f" > "$f.bak" && mv "$f.bak" "$f"
+		fi
+  		
 		# CRLF to LF
 		perl -pi -e 's/\r\n/\n/g' "$f"
 	
@@ -18,7 +21,10 @@ function towindows () {
 	do
 		echo "Processing $f"
 		# remove BOM
-		awk '{if(NR==1)sub(/^\xef\xbb\xbf/,"");print}' "$f" >> /dev/null
+		if [[ -f "$f" && `head -c 3 "$f"` == $'\xef\xbb\xbf' ]]; then
+			# file exists and has UTF-8 BOM
+			tail -c +4 "$f" > "$f.bak" && mv "$f.bak" "$f"
+		fi
 		
 		# LF to CRLF
 		perl -pi -e 's/\r\n/\n/g' "$f"
