@@ -33,7 +33,8 @@ namespace Eto.Platform.Mac
 			Add <IGraphicsPath> (() => new GraphicsPathHandler ());
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
-
+			Add <IMatrixHandler> (() => new MatrixHandler ());
+			
 			// Forms.Cells
 			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
 			Add <IComboBoxCell> (() => new ComboBoxCellHandler ());

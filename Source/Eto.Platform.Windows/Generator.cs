@@ -57,8 +57,6 @@ namespace Eto.Platform.Windows
 
 		public Generator()
 		{
-            //AddAssembly(typeof(Generator).Assembly);
-
 			// Drawing
 			Add <IBitmap> (() => new BitmapHandler ());
 			Add <IFontFamily> (() => new FontFamilyHandler ());
@@ -68,7 +66,7 @@ namespace Eto.Platform.Windows
 			Add <IGraphicsPath> (() => new GraphicsPathHandler ());
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
-			//Add <IMatrixHandler> (() => new MatrixHandler ());
+			Add <IMatrixHandler> (() => new MatrixHandler ());
 			
 			// Forms.Cells
 			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());

@@ -269,6 +269,7 @@
     <Compile Include="Forms\FontDialog.cs" />
     <Compile Include="Forms\Layout\Layout.cs" />
     <Compile Include="ContentProperty.cs" />
+    <Compile Include="Drawing\Matrix.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
     <Compile Include="Drawing\PixelOffsetMode.cs" />
   </ItemGroup>

@@ -14,7 +14,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		public class EtoDrawableView : MacEventView
 		{
-			Drawable Drawable {
+			Drawable Drawable
+			{
 				get { return Widget as Drawable; }
 			}
 			
@@ -46,8 +47,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 	
 		public override bool Enabled { get; set; }
 		
-		public override Color BackgroundColor {
-			get; set;
+		public override Color BackgroundColor
+		{
+			get;
+			set;
 		}
 		
 		public void Create ()
@@ -56,7 +59,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoDrawableView{ Handler = this };
 		}
 		
-		public bool CanFocus {
+		public bool CanFocus
+		{
 			get { return Control.CanFocus; }
 			set { Control.CanFocus = value; }
 		}
@@ -65,7 +69,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null) {
-				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height));
+				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height, Control.IsFlipped));
 				if (BackgroundColor.A != 0) {
 					graphics.FillRectangle (BackgroundColor, rect);
 				}

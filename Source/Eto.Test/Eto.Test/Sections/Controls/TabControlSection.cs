@@ -56,7 +56,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Panel ();
 			
-			control.AddDockedControl (new TextAreaSection());
+			control.AddDockedControl (new TextAreaSection { Border = BorderType.None });
 			
 			return control;
 		}

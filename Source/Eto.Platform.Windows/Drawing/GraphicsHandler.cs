@@ -9,6 +9,8 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
+		Stack<sd.Drawing2D.Matrix> savedTransforms;
+
 		public bool IsRetained { get { return false; } }
 
 		static sd.StringFormat defaultStringFormat;
@@ -31,7 +33,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public GraphicsHandler (sd.Graphics graphics)
 		{
-			this.Control = graphics;
+			this.Control = graphics;			
 		}
 		
 		public bool Antialias {
@@ -207,23 +209,23 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void DrawImage (Image image, float x, float y)
 		{
-			var handler = image.Handler as IWindowsImage;
+            var handler = image.Handler as IWindowsImage;
 			handler.DrawImage (this, x, y);
 		}
 
 		public void DrawImage (Image image, float x, float y, float width, float height)
-		{
+        {
 			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage (this, x, y, width, height);
-		}
+        }
 
 		public void DrawImage (Image image, RectangleF source, RectangleF destination)
-		{
+        {
 			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage (this, source, destination);
-		}
+        }
 
-		public void DrawText (Font font, Color color, float x, float y, string text)
+        public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			sd.Brush brush = new sd.SolidBrush (color.ToSD ());
 			Control.DrawString (text, (sd.Font)font.ControlObject, brush, x, y, defaultStringFormat);
@@ -246,11 +248,51 @@ namespace Eto.Platform.Windows.Drawing
 
 			return rect.Size.ToEto ();
 			/**/
-		}
+        }
 
 		public void Flush ()
 		{
 			Control.Flush ();
 		}
-	}
+
+        public void TranslateTransform(float dx, float dy)
+        {
+            this.Control.TranslateTransform(dx, dy);
+        }
+
+        public void RotateTransform(float angle)
+        {
+            this.Control.RotateTransform(angle);
+        }
+
+        public void ScaleTransform(float sx, float sy)
+        {
+            this.Control.ScaleTransform(sx, sy);
+        }
+
+        public void MultiplyTransform(IMatrix matrix)
+        {
+            this.Control.MultiplyTransform((sd.Drawing2D.Matrix)matrix.ControlObject);
+        }
+
+        public void SaveTransform()
+        {
+            if (savedTransforms == null)
+                savedTransforms = new Stack<sd.Drawing2D.Matrix>();
+
+            savedTransforms.Push(Control.Transform);
+        }
+
+        public void RestoreTransform()
+        {
+            if (savedTransforms != null && savedTransforms.Count > 0)
+            {
+                var t = savedTransforms.Pop();
+
+				Control.Transform = t;
+
+                t.Dispose();
+            }
+        }
+    }
 }

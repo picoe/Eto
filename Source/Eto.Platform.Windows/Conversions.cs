@@ -34,26 +34,40 @@ namespace Eto.Platform.Windows
 		public static DialogResult ToEto (this swf.DialogResult result)
 		{
 			DialogResult ret = DialogResult.None;
-			if (result == swf.DialogResult.OK) ret = DialogResult.Ok;
-			else if (result == swf.DialogResult.Cancel) ret = DialogResult.Cancel;
-			else if (result == swf.DialogResult.Yes) ret = DialogResult.Yes;
-			else if (result == swf.DialogResult.No) ret = DialogResult.No;
-			else if (result == swf.DialogResult.Abort) ret = DialogResult.Cancel;
-			else if (result == swf.DialogResult.Ignore) ret = DialogResult.Ignore;
-			else if (result == swf.DialogResult.Retry) ret = DialogResult.Retry;
-			else if (result == swf.DialogResult.None) ret = DialogResult.None;
+			if (result == swf.DialogResult.OK)
+				ret = DialogResult.Ok;
+			else if (result == swf.DialogResult.Cancel)
+				ret = DialogResult.Cancel;
+			else if (result == swf.DialogResult.Yes)
+				ret = DialogResult.Yes;
+			else if (result == swf.DialogResult.No)
+				ret = DialogResult.No;
+			else if (result == swf.DialogResult.Abort)
+				ret = DialogResult.Cancel;
+			else if (result == swf.DialogResult.Ignore)
+				ret = DialogResult.Ignore;
+			else if (result == swf.DialogResult.Retry)
+				ret = DialogResult.Retry;
+			else if (result == swf.DialogResult.None)
+				ret = DialogResult.None;
 			return ret;
 		}
 
 		public static sd.Imaging.ImageFormat ToSD (this ImageFormat format)
 		{
 			switch (format) {
-			case ImageFormat.Jpeg: return sd.Imaging.ImageFormat.Jpeg;
-			case ImageFormat.Bitmap: return sd.Imaging.ImageFormat.Bmp;
-			case ImageFormat.Gif: return sd.Imaging.ImageFormat.Gif;
-			case ImageFormat.Tiff: return sd.Imaging.ImageFormat.Tiff;
-			case ImageFormat.Png: return sd.Imaging.ImageFormat.Png;
-			default: throw new Exception ("Invalid format specified");
+			case ImageFormat.Jpeg:
+				return sd.Imaging.ImageFormat.Jpeg;
+			case ImageFormat.Bitmap:
+				return sd.Imaging.ImageFormat.Bmp;
+			case ImageFormat.Gif:
+				return sd.Imaging.ImageFormat.Gif;
+			case ImageFormat.Tiff:
+				return sd.Imaging.ImageFormat.Tiff;
+			case ImageFormat.Png:
+				return sd.Imaging.ImageFormat.Png;
+			default:
+				throw new Exception ("Invalid format specified");
 			}
 		}
 
@@ -99,8 +113,10 @@ namespace Eto.Platform.Windows
 		public static sd.FontStyle ToSD (this FontStyle style)
 		{
 			sd.FontStyle ret = sd.FontStyle.Regular;
-			if ((style & FontStyle.Bold) != 0) ret |= sd.FontStyle.Bold;
-			if ((style & FontStyle.Italic) != 0) ret |= sd.FontStyle.Italic;
+			if ((style & FontStyle.Bold) != 0)
+				ret |= sd.FontStyle.Bold;
+			if ((style & FontStyle.Italic) != 0)
+				ret |= sd.FontStyle.Italic;
 			return ret;
 		}
 
@@ -135,8 +151,10 @@ namespace Eto.Platform.Windows
 		public static FontStyle ToEto (this sd.FontStyle style)
 		{
 			var ret = FontStyle.Normal;
-			if (style.HasFlag (sd.FontStyle.Bold)) ret |= FontStyle.Bold;
-			if (style.HasFlag (sd.FontStyle.Italic)) ret |= FontStyle.Italic;
+			if (style.HasFlag (sd.FontStyle.Bold))
+				ret |= FontStyle.Bold;
+			if (style.HasFlag (sd.FontStyle.Italic))
+				ret |= FontStyle.Italic;
 			return ret;
 		}
 
@@ -203,8 +221,8 @@ namespace Eto.Platform.Windows
 			for (var i = 0;
 				i < points.Length;
 				++i) {
-				var p = points[i];
-				result[i] =
+				var p = points [i];
+				result [i] =
 					new sd.Point (p.X, p.Y);
 			}
 
@@ -219,8 +237,8 @@ namespace Eto.Platform.Windows
 			for (var i = 0;
 				i < points.Length;
 				++i) {
-				var p = points[i];
-				result[i] =
+				var p = points [i];
+				result [i] =
 					new sd.PointF (p.X, p.Y);
 			}
 
@@ -235,8 +253,8 @@ namespace Eto.Platform.Windows
 			for (var i = 0;
 				i < points.Length;
 				++i) {
-				var p = points[i];
-				result[i] =
+				var p = points [i];
+				result [i] =
 					new PointF (p.X, p.Y);
 			}
 
@@ -274,7 +292,6 @@ namespace Eto.Platform.Windows
 			var modifiers = KeyMap.Convert (swf.Control.ModifierKeys);
 
 			var result = new MouseEventArgs (buttons, modifiers, point);
-
 			return result;
 		}
 
@@ -306,8 +323,10 @@ namespace Eto.Platform.Windows
 
 		public static sd.Image ToSD (this IImage image)
 		{
-			if (image == null) return null;
-			else return image.ControlObject as sd.Image;
+			if (image == null)
+				return null;
+			else
+				return image.ControlObject as sd.Image;
 		}
 
 		public static sd2.PixelOffsetMode ToSD (this PixelOffsetMode mode)
@@ -332,6 +351,16 @@ namespace Eto.Platform.Windows
 			default:
 				throw new NotSupportedException ();
 			}
+		}
+
+		public static sd.Drawing2D.Matrix ToSD (this IMatrix m)
+		{
+			return (sd.Drawing2D.Matrix)m.ControlObject;
+		}
+
+		public static float DegreesToRadians (float angle)
+		{
+			return (float)Math.PI * angle / 180.0f;
 		}
 	}
 }

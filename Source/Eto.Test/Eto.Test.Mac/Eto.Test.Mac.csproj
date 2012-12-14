@@ -10,7 +10,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <AssemblyName>Eto.Test.Mac</AssemblyName>
-    <LastXamMacNagTime>14/12/2012 4:51:08 AM</LastXamMacNagTime>
+    <LastXamMacNagTime>14/12/2012 1:15:16 AM</LastXamMacNagTime>
     <SuppressXamMacMigration>True</SuppressXamMacMigration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -73,6 +73,10 @@
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
       <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
       <Name>Eto.Test</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">
+      <Project>{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}</Project>
+      <Name>Eto.Json</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

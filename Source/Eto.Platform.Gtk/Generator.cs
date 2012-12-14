@@ -30,7 +30,8 @@ namespace Eto.Platform.GtkSharp
 			Add <IGraphicsPath> (() => new GraphicsPathHandler ());
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
-
+			Add <IMatrixHandler> (() => new MatrixHandler ());
+			
 			// Forms.Cells
 			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
 			Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
@@ -84,7 +85,7 @@ namespace Eto.Platform.GtkSharp
 			Add <ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
 			Add <IToolBarButton> (() => new ToolBarButtonHandler ());
 			Add <IToolBar> (() => new ToolBarHandler ());
-			
+
 			// Forms
 			Add <IApplication> (() => new ApplicationHandler ());
 			Add <IClipboard> (() => new ClipboardHandler ());

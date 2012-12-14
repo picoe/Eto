@@ -80,6 +80,7 @@
     <Compile Include="Drawing\ImageInterpolation.cs" />
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
+    <Compile Include="Drawing\Matrix.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>

@@ -8,6 +8,7 @@ using Eto.Platform.Mac.Forms;
 using Eto.Platform.Mac;
 using Eto.Drawing;
 using System.Diagnostics;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Test.Mac
 {

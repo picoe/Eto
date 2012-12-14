@@ -36,11 +36,7 @@ namespace Eto.Platform.Mac.Drawing
 			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
 		}
 
-		public override bool Flipped {
-			get {
-				return false;
-			}
-		}
+		public override bool Flipped { get { return false; } }
 	}
 
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, IBitmap
@@ -240,13 +236,20 @@ namespace Eto.Platform.Mac.Drawing
 		
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate (source.ToSD (), nsimage.Size.Height);
+			var sourceRect = graphics.Translate (source.ToSD (), Control.Size.Height);
 			var destRect = graphics.TranslateView (destination.ToSD (), true, true);
+			if (!graphics.Flipped) {
+				graphics.Control.SaveState ();
+				graphics.Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, graphics.ViewHeight));
+				destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
+			}
 			if (alpha)
-				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+				Control.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
 			else
-				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
+				Control.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
+			
+			if (!graphics.Flipped)
+				graphics.Control.RestoreState ();
 		}
 	}
 }
