@@ -208,7 +208,7 @@ namespace Eto.Platform.Wpf.Drawing
             Transform(m);
         }
 
-        public void Transform(Matrix matrix)
+        public void Transform(IMatrix matrix)
         {
             Transform((swm.Matrix)matrix.ControlObject);
         }
