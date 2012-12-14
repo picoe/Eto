@@ -78,7 +78,7 @@ Global
 		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Linux Release|Any CPU.ActiveCfg = Debug|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
 		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
