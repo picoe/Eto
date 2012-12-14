@@ -170,14 +170,9 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 
-		public IMatrixHandler CloneHandler ()
-		{
-			return new MatrixHandler (control.Clone ());
-		}
-
 		public IMatrix Clone ()
 		{
-			return CloneHandler ();
+			return new MatrixHandler (control.Clone ());
 		}
 	}
 }

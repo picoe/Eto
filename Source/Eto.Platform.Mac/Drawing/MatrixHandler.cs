@@ -126,14 +126,9 @@ namespace Eto.Platform.Mac.Drawing
 			get { return control; }
 		}
 
-		public IMatrixHandler CloneHandler ()
-		{
-			return new MatrixHandler (control);
-		}
-
 		public IMatrix Clone ()
 		{
-			return this.CloneHandler ();
+			return new MatrixHandler (control);
 		}
 	}
 }

@@ -10,11 +10,11 @@ using Eto.Platform.Wpf.Forms.Menu;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class GridHandler : GridHandler<swc.DataGrid, GridView>, IGridView
+	public class GridViewHandler : GridHandler<swc.DataGrid, GridView>, IGridView
 	{
 		IGridStore store;
 
-		public GridHandler ()
+		public GridViewHandler ()
 		{
 		}
 

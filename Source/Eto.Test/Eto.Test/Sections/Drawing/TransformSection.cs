@@ -36,7 +36,7 @@ namespace Eto.Test.Sections.Drawing
 			layout.AddRow (new Label { Text = "Direct" }, drawable);
 			layout.Add (null);
 
-			var m = new Matrix();
+			var m = Matrix.Create ();
 			m.Scale (100, 100);
 			var m2 = m.Clone ();
 			m2.Translate (10, 10);
@@ -49,16 +49,14 @@ namespace Eto.Test.Sections.Drawing
 		{
 			// test matrix RotateAt
 			DrawRotatedLines (g, Colors.SkyBlue, rotatedLineCenter, (center, angle) => {
-				// using IMatrix directly
-				var m = new Matrix ();
+				var m = Matrix.Create ();
 				m.RotateAt (angle, center);
 				g.MultiplyTransform (m);
 			});
 
 			// test matrix scale/translate/rotate
 			DrawRotatedLines (g, Colors.Salmon, rotatedLineCenter, (center, angle) => {
-				// use Matrix struct
-				var m = new Matrix ();
+				var m = Matrix.Create ();
 				m.Scale (.4f);
 				m.Translate (-center);
 				m.Rotate (angle);
@@ -68,14 +66,14 @@ namespace Eto.Test.Sections.Drawing
 
 			// test rotating arcs
 			DrawRotatedArcs (g, Colors.LightBlue, rotatedLineCenter, (center, angle) => {
-				var m = new Matrix ();
+				var m = Matrix.Create ();
 				m.RotateAt (angle, center);
 				g.MultiplyTransform (m);
 			});
 
 			// test transformed text
 			DrawRotatedText (g, Colors.Lime, rotatedTextCenter, (center, angle) => {
-				var m = new Matrix ();
+				var m = Matrix.Create ();
 				m.RotateAt (angle, center - 40);
 				g.MultiplyTransform (m);
 			});
@@ -86,7 +84,7 @@ namespace Eto.Test.Sections.Drawing
 				g.MultiplyTransform (Matrix.FromScaleAt (new SizeF (1, -1), imageScaleLocation + image.Size / 2));
 				g.DrawImage (image, imageScaleLocation);
 
-				var m = new Matrix ();
+				var m = Matrix.Create ();
 				m.ScaleAt (0.3f, imageScaleLocation + image.Size / 2);
 				m.Translate (0, -50);
 				g.MultiplyTransform (m);
@@ -97,7 +95,7 @@ namespace Eto.Test.Sections.Drawing
 			// test skewing
 			{
 				g.SaveTransform ();
-				var m = new Matrix ();
+				var m = Matrix.Create ();
 				m.Skew (20, 20);
 				g.MultiplyTransform (m);
 				var textSize = g.MeasureString (font, "Skewed Text");
@@ -110,7 +108,7 @@ namespace Eto.Test.Sections.Drawing
 			// test more drawing operations
 			{
 				g.SaveTransform ();
-				var m = new Matrix ();
+				var m = Matrix.Create ();
 				m.Rotate (90);
 				m.Scale (0.4f);
 				m.Translate (480, 20);

@@ -93,6 +93,7 @@ namespace Eto
 		/// <typeparam name="T">type to test for</typeparam>
 		/// <returns>true if the specified type is supported, false otherwise</returns>
 		public virtual bool Supports<T> ()
+			where T: class
 		{
 			return Find<T> () != null;
 		}
@@ -212,40 +213,21 @@ namespace Eto
 		/// </example>
 		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
 		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
-		[Obsolete("Use Add<T, H>() instead")]
+		[Obsolete("Use Add<T>(Func<T>) instead")]
 		public void Add<T> (Type handlerType)
 		{
 			Add (typeof(T), handlerType);
 		}
 
 		/// <summary>
-		/// Adds the specified handler type to this generator
-		/// </summary>
-		/// <remarks>
-		/// This can be used to add a single handler to this generator.  Typically you would do this
-		/// before running your application.
-		/// </remarks>
-		/// <example>
-		/// <code><![CDATA[
-		/// var generator = Generator.Detect;
-		///	generator.Add<IMyControl>(typeof(MyControlHandler));
-		/// ]]></code>
-		/// </example>
-		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <typeparam name="H">Type of the backend handler type that implements the interface</typeparam>
-		public void Add<T, H> ()
-		{
-			Add (typeof(T), typeof(H));
-		}
-		
-		/// <summary>
 		/// Finds the activator to create instances of the specified type
 		/// </summary>
 		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
 		/// <returns>The handler type to use for the specified type</returns>
-		public Func<object> Find<T> ()
+		public Func<T> Find<T> ()
+			where T: class
 		{
-			return Find (typeof (T));
+			return (Func<T>)Find (typeof (T));
 		}
 
 		/// <summary>
@@ -301,10 +283,16 @@ namespace Eto
 			return activator;
 		}
 
-		public void Add<T> (Func<object> activator)
+		public void Add<T> (Func<T> instantiator)
+			where T: class
+		{
+			Add (typeof (T), instantiator);
+		}
+
+		void Add (Type type, Func<object> instantiator)
 		{
 			lock (typeMap) {
-				typeMap[typeof(T)] = activator;
+				typeMap[type] = instantiator;
 			}
 		}
 
@@ -340,7 +328,7 @@ namespace Eto
 
 		public Func<object> Find (Type type)
 		{
-			//lock (typeMap)
+			lock (typeMap)
 			{
 				Func<object> activator;
 				if (typeMap.TryGetValue (type, out activator))

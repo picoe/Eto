@@ -118,14 +118,9 @@ namespace Eto.Platform.Wpf.Drawing
 			return control.Transform (p.ToWpf ()).ToEto ();
 		}
 
-		public IMatrixHandler CloneHandler ()
-		{
-			return new MatrixHandler (control);
-		}
-
 		public IMatrix Clone ()
 		{
-			return CloneHandler ();
+			return new MatrixHandler (control);
 		}
 	}
 }

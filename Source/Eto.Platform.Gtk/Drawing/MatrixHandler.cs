@@ -133,15 +133,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return control; }
 		}
 
-		public IMatrixHandler CloneHandler ()
+		public IMatrix Clone ()
 		{
 			var matrix = new Cairo.Matrix(control.Xx, control.Yx, control.Xy, control.Yy, control.X0, control.Y0);
 			return new MatrixHandler (matrix);
-		}
-		
-		public IMatrix Clone ()
-		{
-			return this.CloneHandler ();
 		}
 	}
 }
