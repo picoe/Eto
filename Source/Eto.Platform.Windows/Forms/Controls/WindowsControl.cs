@@ -26,27 +26,59 @@ namespace Eto.Platform.Windows
 
 	public static class WindowsControlExtensions
 	{
-		public static SWF.Control GetContainerControl (this Control control)
-		{
-			var wc = control.Handler as IWindowsControl;
-			if (wc != null)
-				return wc.ContainerControl;
-			else
-				return control.ControlObject as SWF.Control;
-		}
-	}
+        public static IWindowsControl GetWindowsControl(this Control control)
+        {
+            IWindowsControl result = null;
+
+            if (control == null)
+                return result;
+
+            result = control.Handler as IWindowsControl;
+
+            // recurse
+            if (result == null &&
+                control.ControlObject is Control)
+                result = (control.ControlObject as Control).GetWindowsControl();
+
+            return result;
+        }
+
+        public static SWF.Control GetSwfControl(this Control control)
+        {
+            var result = control.ControlObject as SWF.Control;
+
+            if (result == null)
+            {
+                var c = control.ControlObject as Control;
+
+                // recurse
+                if (c != null)
+                    result = c.GetSwfControl();
+            }
+
+            return result;
+        }
+
+        public static SWF.Control GetContainerControl(this Control control)
+        {
+            var wc = control.GetWindowsControl();
+            if (wc != null)
+                return wc.ContainerControl;
+            else
+                return control.GetSwfControl();
+        }
+    }
 
 	public static class ControlExtensions
 	{
-		public static void SetScale (this Control control, bool xscale, bool yscale)
-		{
-			if (control == null)
-				return;
-			var handler = control.Handler as IWindowsControl;
-			if (handler != null)
-				handler.SetScale (xscale, yscale);
-		}
-	}
+        public static void SetScale(this Control control, bool xscale, bool yscale)
+        {
+            var handler = control.GetWindowsControl();
+
+            if (handler != null)
+                handler.SetScale(xscale, yscale);
+        }
+    }
 
 	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
 		where T: System.Windows.Forms.Control
