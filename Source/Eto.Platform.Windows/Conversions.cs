@@ -64,6 +64,7 @@ namespace Eto.Platform.Windows
         public static sd.Imaging.ImageFormat ToSD(this ImageFormat format)
         {
             switch (format)
+			{
 			case ImageFormat.Jpeg:
 				return sd.Imaging.ImageFormat.Jpeg;
 			case ImageFormat.Bitmap:
@@ -498,12 +499,6 @@ namespace Eto.Platform.Windows
                 Buttons = ToEto(e.Button),
                 Item = ToEto(e.Item as swf.TreeNode)
             };
-        }
-
-        public static sd.Drawing2D.Matrix ToSD(this Matrix m)
-        {
-            var h = (MatrixHandler)m.Handler;
-            return h.Control;
         }
     }
 }

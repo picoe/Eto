@@ -124,7 +124,7 @@ namespace Eto.Platform.Windows.Drawing
             set { Control.FillMode = (SD.Drawing2D.FillMode)value; }
         }
 
-        public void Transform(Matrix matrix)
+        public void Transform(IMatrix matrix)
         {
             Control.Transform((SD.Drawing2D.Matrix)matrix.ControlObject);
         }

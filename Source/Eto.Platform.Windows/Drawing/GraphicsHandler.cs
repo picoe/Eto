@@ -326,6 +326,47 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			Control.Flush ();
 		}
+
+		public void TranslateTransform(float dx, float dy)
+		{
+			this.Control.TranslateTransform(dx, dy);
+		}
+
+		public void RotateTransform(float angle)
+		{
+			this.Control.RotateTransform(angle);
+		}
+
+		public void ScaleTransform(float sx, float sy)
+		{
+			this.Control.ScaleTransform(sx, sy);
+		}
+
+		public void MultiplyTransform(IMatrix matrix)
+		{
+			this.Control.MultiplyTransform((sd.Drawing2D.Matrix)matrix.ControlObject);
+		}
+
+		public void SaveTransform()
+		{
+			if (savedTransforms == null)
+				savedTransforms = new Stack<sd.Drawing2D.Matrix>();
+
+			savedTransforms.Push(Control.Transform);
+		}
+
+		public void RestoreTransform()
+		{
+			if (savedTransforms != null && savedTransforms.Count > 0)
+			{
+				var t = savedTransforms.Pop();
+
+				Control.Transform = t;
+
+				t.Dispose();
+			}
+		}
+
         public void SetClip(RectangleF rect)
         {
             this.Control.SetClip(rect.ToRectangleF());
@@ -352,26 +393,6 @@ namespace Eto.Platform.Windows.Drawing
             get { return this.Control.ClipBounds.ToRectangleF(); }
         }
 
-        public void TranslateTransform(float dx, float dy)
-        {
-            this.Control.TranslateTransform(dx, dy);
-        }
-
-        public void RotateTransform(float angle)
-        {
-            this.Control.RotateTransform(angle);
-        }
-
-        public void ScaleTransform(float sx, float sy)
-        {
-            this.Control.ScaleTransform(sx, sy);
-        }
-
-        public void MultiplyTransform(Matrix matrix)
-        {
-            this.Control.MultiplyTransform((sd.Drawing2D.Matrix)matrix.ControlObject);
-        }
-
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
             this.Control.DrawRectangle(
@@ -392,28 +413,6 @@ namespace Eto.Platform.Windows.Drawing
             this.Control.DrawPath(
                 (sd.Pen)pen.ControlObject,
                 (sd.Drawing2D.GraphicsPath)path.ControlObject);
-        }
-
-        private Stack<sd.Drawing2D.Matrix> savedTransforms;
-
-        public void SaveTransform()
-        {
-            if (savedTransforms == null)
-                savedTransforms = new Stack<sd.Drawing2D.Matrix>();
-
-            savedTransforms.Push(Control.Transform);
-        }
-
-        public void RestoreTransform()
-        {
-            if (savedTransforms != null && savedTransforms.Count > 0)
-            {
-                var t = savedTransforms.Pop();
-
-				Control.Transform = t;
-
-                t.Dispose();
-            }
         }
 
         public void Clear(Color color)
