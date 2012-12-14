@@ -160,7 +160,7 @@ namespace Eto.Platform.GtkSharp.Drawing
             set { throw new NotImplementedException(); }
         }
 
-        public void Transform(Matrix matrix)
+        public void Transform(IMatrix matrix)
         {
             throw new NotImplementedException();
         }

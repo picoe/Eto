@@ -353,16 +353,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 
-        public void SetClip(RectangleF rect)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void TranslateTransform(float dx, float dy)
-        {
-            throw new NotImplementedException();
-        }
-
         public void FillRectangle(Brush brush, RectangleF Rectangle)
         {
             throw new NotImplementedException();
@@ -378,26 +368,6 @@ namespace Eto.Platform.GtkSharp.Drawing
             throw new NotImplementedException();
         }
 
-        public RectangleF ClipBounds
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void RotateTransform(float angle)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void ScaleTransform(float sx, float sy)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MultiplyTransform(Matrix matrix)
-        {
-            throw new NotImplementedException();
-        }
-
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
         {
             throw new NotImplementedException();
@@ -409,16 +379,6 @@ namespace Eto.Platform.GtkSharp.Drawing
         }
 
         public void DrawPath(Pen pen, GraphicsPath path)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void SaveTransform()
-        {
-            throw new NotImplementedException();
-        }
-
-        public void RestoreTransform()
         {
             throw new NotImplementedException();
         }
