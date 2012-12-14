@@ -204,6 +204,8 @@ namespace Eto.Drawing
 
         RectangleF ClipBounds { get; }
 
+		void SetClip(RectangleF rect);
+
 		void TranslateTransform (float dx, float dy);
 
 		void RotateTransform (float angle);
@@ -820,41 +822,6 @@ namespace Eto.Drawing
         public RectangleF ClipBounds
         {
             get { return Handler.ClipBounds; }
-        }
-
-        public void TranslateTransform(float dx, float dy)
-        {
-            Handler.TranslateTransform(dx, dy);
-        }
-
-        public void TranslateTransform(PointF p)
-        {
-            Handler.TranslateTransform(p.X, p.Y);
-        }
-
-        public void RotateTransform(float angle)
-        {
-            Handler.RotateTransform(angle);
-        }
-
-        public void ScaleTransform(float sx, float sy)
-        {
-            Handler.ScaleTransform(sx, sy);
-        }
-
-        public void MultiplyTransform(Matrix matrix)
-        {
-            Handler.MultiplyTransform(matrix);
-        }
-
-        public void SaveTransform()
-        {
-            Handler.SaveTransform();
-        }
-
-        public void RestoreTransform()
-        {
-            Handler.RestoreTransform();
         }
 
         public void Clear(Color color)

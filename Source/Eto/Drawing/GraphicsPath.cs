@@ -30,7 +30,7 @@ namespace Eto.Drawing
 		/// <param name="lines"></param>
         void AddLines(PointF[] pointF);
 
-        void Transform(Matrix matrix);
+        void Transform(IMatrix matrix);
     };
 
 	public interface IGraphicsPath : IInstanceWidget, IGraphicsPathBase
@@ -205,7 +205,7 @@ namespace Eto.Drawing
             Handler.CloseFigure();
         }
 
-        public void Transform(Matrix matrix)
+        public void Transform(IMatrix matrix)
         {
             Handler.Transform(matrix);
         }

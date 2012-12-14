@@ -234,6 +234,7 @@ namespace Eto
                 }
 
                 return result;
+				} catch (TargetInvocationException e) {
 				throw e.InnerException;
 			}
 		}
