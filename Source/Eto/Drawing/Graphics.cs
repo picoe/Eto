@@ -204,20 +204,17 @@ namespace Eto.Drawing
 
         RectangleF ClipBounds { get; }
 
-        void SetClip(RectangleF rect);
+		void TranslateTransform (float dx, float dy);
 
+		void RotateTransform (float angle);
 
-        void TranslateTransform(float dx, float dy);
+		void ScaleTransform (float sx, float sy);
 
-        void RotateTransform(float angle);
+		void MultiplyTransform (IMatrix matrix);
 
-        void ScaleTransform(float sx, float sy);
+		void SaveTransform ();
 
-        void MultiplyTransform(Matrix matrix);
-
-        void SaveTransform();
-
-        void RestoreTransform();
+		void RestoreTransform ();
 
         void Clear(Color color);
     }
@@ -739,6 +736,51 @@ namespace Eto.Drawing
 		public void Flush ()
 		{
 			Handler.Flush ();
+		}
+
+		public void TranslateTransform (float dx, float dy)
+		{
+			Handler.TranslateTransform (dx, dy);
+		}
+
+		public void TranslateTransform (PointF point)
+		{
+			Handler.TranslateTransform (point.X, point.Y);
+		}
+
+		public void RotateTransform (float angle)
+		{
+			Handler.RotateTransform (angle);
+		}
+
+		public void ScaleTransform (SizeF scale)
+		{
+			Handler.ScaleTransform (scale.Width, scale.Height);
+		}
+
+		public void ScaleTransform (float scaleX, float scaleY)
+		{
+			Handler.ScaleTransform (scaleX, scaleY);
+		}
+
+		public void ScaleTransform (float scale)
+		{
+			Handler.ScaleTransform (scale, scale);
+		}
+
+		public void MultiplyTransform (IMatrix matrix)
+		{
+			Handler.MultiplyTransform (matrix);
+		}
+
+		public void SaveTransform ()
+		{
+			Handler.SaveTransform ();
+		}
+
+		public void RestoreTransform ()
+		{
+			Handler.RestoreTransform ();
 		}
 
         #region Obsolete

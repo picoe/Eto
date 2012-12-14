@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -33,7 +33,7 @@ namespace Eto.Platform.Wpf.Drawing
 					var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
 					return PointsToPixels (Size * m.M22);
 				}
-				else
+				else*/
 					return PointsToPixels (Size);
 			}
 		}

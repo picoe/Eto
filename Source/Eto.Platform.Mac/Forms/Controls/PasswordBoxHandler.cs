@@ -8,14 +8,14 @@ using MonoMac.ObjCRuntime;
 namespace Eto.Platform.Mac.Forms.Controls
 {
 
-	public class PasswordHandler : MacText<NSTextField, PasswordBox>, IPasswordBox, ITextBoxWithMaxLength
+	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox>, IPasswordBox, ITextBoxWithMaxLength
 	{
 
 		class EtoTextField : NSSecureTextField, IMacControl
 		{
 			object IMacControl.Handler { get { return Handler; } }
 
-			public PasswordHandler Handler { get; set; }
+			public PasswordBoxHandler Handler { get; set; }
 		}
 		
 		public override bool HasFocus {
@@ -26,7 +26,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public PasswordHandler ()
+		public PasswordBoxHandler ()
 		{
 			Control = new EtoTextField{ Handler = this };
 			Control.Bezeled = true;

@@ -8,103 +8,171 @@ using SWF = System.Windows.Forms;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public class MatrixHandler : WidgetHandler<SD2D.Matrix, Matrix>, IMatrix
+	public class MatrixHandler : IMatrixHandler, IDisposable
 	{
-        public MatrixHandler()
-        {
-            this.Control = new SD2D.Matrix();
-        }
+		SD2D.Matrix control;
 
-        public MatrixHandler(SD2D.Matrix matrix)
-        {
-            this.Control = matrix;
-        }
+		public SD2D.Matrix Control { get { return control; } }
 
-        #region IMatrix Members
+		object IMatrix.ControlObject { get { return control; } }
 
-        public float[] Elements
-        {
-            get { return Control.Elements; }
-        }
+		public MatrixHandler ()
+		{
+		}
 
-        public float OffsetX
-        {
-            get
-            {
-                return Control.OffsetX;
-            }
-        }
+		public MatrixHandler (SD2D.Matrix matrix)
+		{
+			control = matrix;
+		}
 
-        public float OffsetY
-        {
-            get
-            {
-                return Control.OffsetY;
-            }
-        }
+		public float[] Elements { get { return Control.Elements; } }
 
-        #endregion
+		public float Xx
+		{
+			get { return control.Elements [0]; }
+			set
+			{
+				var e = control.Elements;
+				control = new SD2D.Matrix (value, e [1], e [2], e [3], e [4], e [5]);
+			}
+		}
 
-        #region IMatrix Members
+		public float Xy
+		{
+			get { return control.Elements [1]; }
+			set
+			{
+				var e = control.Elements;
+				control = new SD2D.Matrix (e [0], value, e [2], e [3], e [4], e [5]);
+			}
+		}
 
+		public float Yx
+		{
+			get { return control.Elements [2]; }
+			set
+			{
+				var e = control.Elements;
+				control = new SD2D.Matrix (e [0], e [1], value, e [3], e [4], e [5]);
+			}
+		}
 
-        public void Rotate(float angle)
-        {
-            this.Control.Rotate(angle);
-        }
+		public float Yy
+		{
+			get { return control.Elements [3]; }
+			set
+			{
+				var e = control.Elements;
+				control = new SD2D.Matrix (e [0], e [1], e [2], value, e [4], e [5]);
+			}
+		}
 
-        public void Translate(float x, float y)
-        {
-            this.Control.Translate(x, y);
-        }
+		public float X0
+		{
+			get { return Control.OffsetX; }
+			set
+			{
+				var e = control.Elements;
+				control = new SD2D.Matrix (e [0], e [1], e [2], e [3], value, e [5]);
+			}
+		}
 
-        public void Scale(float sx, float sy)
-        {
-            this.Control.Scale(sx, sy);
-        }
+		public float Y0
+		{
+			get { return Control.OffsetY; }
+			set
+			{
+				var e = control.Elements;
+				control = new SD2D.Matrix (e [0], e [1], e [2], e [3], e [4], value);
+			}
+		}
 
-        public void Multiply(Matrix m, MatrixOrder matrixOrder)
-        {
-            this.Control.Multiply(
-                m.ToSD(),
-                (SD2D.MatrixOrder)matrixOrder);
-        }
+		public void Rotate (float angle)
+		{
+			this.Control.Rotate (angle, SD2D.MatrixOrder.Append);
+		}
 
-        #endregion
+		public void RotateAt (float angle, float centerX, float centerY)
+		{
+			this.Control.RotateAt (angle, new SD.PointF (centerX, centerY), SD2D.MatrixOrder.Append);
+		}
 
-        #region IMatrix Members
+		public void Translate (float x, float y)
+		{
+			this.Control.Translate (x, y, SD2D.MatrixOrder.Append);
+		}
 
+		public void Scale (float scaleX, float scaleY)
+		{
+			this.Control.Scale (scaleX, scaleY, SD2D.MatrixOrder.Append);
+		}
 
-        public void Create(float m11, float m12, float m21, float m22, float dx, float dy)
-        {
-            this.Control =
-                new SD2D.Matrix(m11, m12, m21, m22, dx, dy);
-        }
+		public void ScaleAt (float scaleX, float scaleY, float centerX, float centerY)
+		{
+			var m = new SD2D.Matrix (scaleX, 0, 0, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
+			this.Control.Multiply (m, SD2D.MatrixOrder.Append);
+		}
 
-        #endregion
+		public void Skew (float skewX, float skewY)
+		{
+			var m = new SD2D.Matrix (1, (float)Math.Tan(Conversions.DegreesToRadians(skewX)), (float)Math.Tan(Conversions.DegreesToRadians(skewY)), 1, 0, 0);
+			this.Control.Multiply (m, SD2D.MatrixOrder.Append);
+		}
 
+		public void Append (IMatrix matrix)
+		{
+			this.Control.Multiply (matrix.ToSD (), SD2D.MatrixOrder.Append);
+		}
 
-        public void Invert()
-        {
-            this.Control.Invert();
-        }
+		public void Prepend (IMatrix matrix)
+		{
+			this.Control.Multiply (matrix.ToSD (), SD2D.MatrixOrder.Prepend);
+		}
 
-        public PointF TransformPoint(Point p)
-        {
-            var px = new SD.Point[] {p.ToSD()};
-            
-            this.Control.TransformPoints(px);
+		public void Create ()
+		{
+			control = new SD2D.Matrix ();
+		}
 
-            return px[0].ToEto();
-        }
+		public void Create (float m11, float m12, float m21, float m22, float dx, float dy)
+		{
+			control = new SD2D.Matrix (m11, m12, m21, m22, dx, dy);
+		}
 
-        public PointF TransformPoint(PointF p)
-        {
-            var px = new SD.PointF[] { p.ToSD() };
+		public void Invert ()
+		{
+			this.Control.Invert ();
+		}
 
-            this.Control.TransformPoints(px);
+		public PointF TransformPoint (Point p)
+		{
+			var px = new SD.Point[] { p.ToSD () };
 
-            return px[0].ToEto();
-        }
-    }
+			this.Control.TransformPoints (px);
+
+			return px [0].ToEto ();
+		}
+
+		public PointF TransformPoint (PointF p)
+		{
+			var px = new SD.PointF[] { p.ToSD () };
+
+			this.Control.TransformPoints (px);
+
+			return px [0].ToEto ();
+		}
+
+		public void Dispose ()
+		{
+			if (control != null) {
+				control.Dispose ();
+				control = null;
+			}
+		}
+
+		public IMatrix Clone ()
+		{
+			return new MatrixHandler (control.Clone ());
+		}
+	}
 }

@@ -3,6 +3,7 @@ using System.IO;
 using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Drawing
 {
@@ -41,10 +42,17 @@ namespace Eto.Platform.Mac.Drawing
 
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate (source.ToSD (), nsimage.Size.Height);
-			var destRect = graphics.TranslateView (destination.ToSD (), false);
-			nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
+			var sourceRect = graphics.Translate (source.ToSD (), Control.Size.Height);
+			var destRect = graphics.TranslateView (destination.ToSD (), true, true);
+			if (!graphics.Flipped) {
+				graphics.Control.SaveState ();
+				graphics.Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, graphics.ViewHeight));
+				destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
+			}
+			Control.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+
+			if (!graphics.Flipped)
+				graphics.Control.RestoreState ();
 		}
 
         #region IImage Members
@@ -60,5 +68,5 @@ namespace Eto.Platform.Mac.Drawing
         }
 
         #endregion
-    }
+	}
 }

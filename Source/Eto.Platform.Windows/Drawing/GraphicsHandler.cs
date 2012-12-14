@@ -10,6 +10,8 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
+		Stack<sd.Drawing2D.Matrix> savedTransforms;
+
 		public bool IsRetained { get { return false; } }
 
 		static sd.StringFormat defaultStringFormat;
@@ -52,7 +54,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public GraphicsHandler (sd.Graphics graphics)
 		{
-			this.Control = graphics;
+			this.Control = graphics;			
 		}
 		
 		public bool Antialias {
@@ -367,8 +369,7 @@ namespace Eto.Platform.Windows.Drawing
 
         public void MultiplyTransform(Matrix matrix)
         {
-            this.Control.MultiplyTransform(
-                (sd.Drawing2D.Matrix)matrix.ControlObject);
+            this.Control.MultiplyTransform((sd.Drawing2D.Matrix)matrix.ControlObject);
         }
 
         public void DrawRectangle(Pen pen, float x, float y, float width, float height)
@@ -398,23 +399,18 @@ namespace Eto.Platform.Windows.Drawing
         public void SaveTransform()
         {
             if (savedTransforms == null)
-                savedTransforms =
-                    new Stack<sd.Drawing2D.Matrix>();
+                savedTransforms = new Stack<sd.Drawing2D.Matrix>();
 
-            savedTransforms.Push(
-                Control.Transform);
+            savedTransforms.Push(Control.Transform);
         }
 
         public void RestoreTransform()
         {
-            if (savedTransforms != null &&
-                savedTransforms.Count > 0)
+            if (savedTransforms != null && savedTransforms.Count > 0)
             {
-                var t =
-                    savedTransforms.Pop();
+                var t = savedTransforms.Pop();
 
-                Control.Transform =
-                    t;
+				Control.Transform = t;
 
                 t.Dispose();
             }

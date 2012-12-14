@@ -4,6 +4,7 @@ using MonoMac.CoreGraphics;
 using Eto.Drawing;
 using MonoMac.Foundation;
 using Eto.Forms;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -30,12 +31,12 @@ namespace Eto.Platform.Mac
 			var devColor = color.UsingColorSpace (cs);
 			float[] components;
 			devColor.GetComponents (out components);
-			return new CGColor(cs.ColorSpace, components);
+			return new CGColor (cs.ColorSpace, components);
 		}
 		
 		public static NSRange ToNS (this Range range)
 		{
-			return new NSRange(range.Start, range.Length);
+			return new NSRange (range.Start, range.Length);
 		}
 		
 		public static Range ToEto (this NSRange range)
@@ -55,7 +56,7 @@ namespace Eto.Platform.Mac
 			case ImageInterpolation.High:
 				return NSImageInterpolation.High;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 		
@@ -72,7 +73,7 @@ namespace Eto.Platform.Mac
 			case NSImageInterpolation.High:
 				return ImageInterpolation.High;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -149,6 +150,17 @@ namespace Eto.Platform.Mac
 				newSize.Height = size.Height;
 			view.SetFrameSize (newSize);
 		}
+
+		public static CGAffineTransform ToCG (this IMatrix matrix)
+		{
+			return (CGAffineTransform)matrix.ControlObject;
+		}
+
+		public static float DegreesToRadians (float angle)
+		{
+			return (float)Math.PI * angle / 180.0f;
+		}
+
 	}
 }
 

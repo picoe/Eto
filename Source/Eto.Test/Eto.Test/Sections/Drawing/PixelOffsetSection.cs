@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
@@ -9,8 +9,8 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class PixelOffsetSection : Scrollable
 	{
-		Image image = Bitmap.FromResource ("Eto.Test.TestImage.png");
-		Size canvasSize = new Size(500, 221);
+		static Image image = Bitmap.FromResource ("Eto.Test.TestImage.png");
+		Size canvasSize = new Size(501, 221);
 
 
 		public PixelOffsetSection ()
@@ -19,22 +19,23 @@ namespace Eto.Test.Sections.Drawing
 
 			var drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
-				pe.Graphics.FillRectangle (Colors.Black, new RectangleF (canvasSize));
+				pe.Graphics.FillRectangle (Colors.Black, pe.ClipRectangle);
 				pe.Graphics.PixelOffsetMode = PixelOffsetMode.None;
-				Draw (pe.Graphics, pe.ClipRectangle);
+				Draw (pe.Graphics);
 			};
 			layout.AddRow (new Label { Text = "None (Default)" }, drawable);
 
 			drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
-				pe.Graphics.FillRectangle (Colors.Black, new RectangleF (canvasSize));
+				pe.Graphics.FillRectangle (Colors.Black, pe.ClipRectangle);
 				pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
-				Draw (pe.Graphics, pe.ClipRectangle);
+				Draw (pe.Graphics);
 			};
 			layout.AddRow (new Label { Text = "Half" }, drawable);
+			layout.Add (null);
 		}
 
-		void Draw (Graphics g, Rectangle clip)
+		public static void Draw (Graphics g)
 		{
 			// lines
 			g.DrawLine (Colors.White, 0, 1, 99, 100);
@@ -60,7 +61,7 @@ namespace Eto.Test.Sections.Drawing
 
 			g.DrawImage (image, 100, 1, 100, 100);
 
-			g.DrawText (new Font (FontFamilies.Sans, 12), Colors.White, 0, 100, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+			g.DrawText (new Font (FontFamilies.Sans, 12), Colors.White, 0, 104, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
 
 			// filled
 			g.FillRectangle (Colors.White, 101, 120, 100, 100);

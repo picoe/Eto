@@ -14,9 +14,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		double inverseoffset = 0;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 
-		public PixelOffsetMode PixelOffsetMode {
+		public PixelOffsetMode PixelOffsetMode
+		{
 			get { return pixelOffsetMode; }
-			set {
+			set
+			{
 				pixelOffsetMode = value;
 				offset = value == PixelOffsetMode.None ? 0.5 : 0;
 				inverseoffset = value == PixelOffsetMode.None ? 0 : 0.5;
@@ -51,9 +53,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public bool IsRetained { get { return false; } }
 
-		public bool Antialias {
+		public bool Antialias
+		{
 			get { return Control.Antialias != Cairo.Antialias.None; }
-			set {
+			set
+			{
 				if (value)
 					Control.Antialias = Cairo.Antialias.Default;
 				else
@@ -61,13 +65,16 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public ImageInterpolation ImageInterpolation {
+		public ImageInterpolation ImageInterpolation
+		{
 			get;
 			set;
 		}
 
-		public Pango.Context PangoContext {
-			get {
+		public Pango.Context PangoContext
+		{
+			get
+			{
 				if (pangoContext == null && widget != null) {
 					pangoContext = widget.PangoContext;
 				}
@@ -279,7 +286,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 				layout.GetPixelSize (out width, out height);
 				Control.Save ();
 				Control.Color = color.ToCairo ();
-				Control.MoveTo (x, y + height / 2);
+				Control.MoveTo (x, y);
 				Pango.CairoHelper.LayoutPath (Control, layout);
 				Control.Fill ();
 				Control.Restore ();
@@ -288,13 +295,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			Pango.Layout layout = new Pango.Layout (PangoContext);
-			layout.FontDescription = ((FontHandler)font.Handler).Control;
-			layout.SetText (text);
-			int width, height;
-			layout.GetPixelSize (out width, out height);
-			layout.Dispose ();
-			return new SizeF (width, height);
+			using (var layout = new Pango.Layout (PangoContext)) {
+				layout.FontDescription = ((FontHandler)font.Handler).Control;
+				layout.SetText (text);
+				int width, height;
+				layout.GetPixelSize (out width, out height);
+				layout.Dispose ();
+				return new SizeF (width, height);
+			}
 		}
 
 		protected override void Dispose (bool disposing)
@@ -303,6 +311,46 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Flush ();
 			
 			base.Dispose (disposing);
+		}
+
+		public void SetClip (RectangleF rect)
+		{
+			throw new NotImplementedException ();
+		}
+
+		public void TranslateTransform (float dx, float dy)
+		{
+			Control.Translate (dx, dy);
+		}
+
+		public RectangleF ClipBounds
+		{
+			get { throw new NotImplementedException (); }
+		}
+
+		public void RotateTransform (float angle)
+		{
+			Control.Rotate (Conversions.DegreesToRadians (angle));
+		}
+
+		public void ScaleTransform (float sx, float sy)
+		{
+			Control.Scale (sx, sy);
+		}
+
+		public void MultiplyTransform (IMatrix matrix)
+		{
+			Control.Transform ((Cairo.Matrix)matrix.ControlObject);
+		}
+
+		public void SaveTransform ()
+		{
+			Control.Save ();
+		}
+
+		public void RestoreTransform ()
+		{
+			Control.Restore ();
 		}
 
         public void SetClip(RectangleF rect)

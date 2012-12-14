@@ -48,13 +48,20 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public bool ReadOnly {
 			get; set;
 		}
+
 		public int MaxLength {
 			get;
 			set;
 		}
+
 		public string PlaceholderText {
 			get { return Control.Placeholder; }
 			set { Control.Placeholder = value; }
+		}
+
+		public void SelectAll ()
+		{
+			Control.SelectAll ();
 		}
 	}
 }

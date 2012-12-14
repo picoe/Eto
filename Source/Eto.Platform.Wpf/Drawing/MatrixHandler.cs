@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,86 +7,120 @@ using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-    public class MatrixHandler : WidgetHandler<swm.Matrix, Matrix>, IMatrix
-    {
-        public MatrixHandler()
-        {
-            this.Control = swm.Matrix.Identity;
-        }
+	public class MatrixHandler : IMatrixHandler
+	{
+		swm.Matrix control;
 
-        public MatrixHandler(swm.Matrix m)
-        {
-            this.Control = m;
-        }
+		public swm.Matrix Control { get { return control; } }
 
-        public float[] Elements
-        {
-            get
-            {
-                return new float[] {
-                (float)Control.M11, 
-                (float)Control.M12, 
-                (float)Control.M21, 
-                (float)Control.M22, 
-                (float)Control.OffsetX, 
-                (float)Control.OffsetY};
-            }
-        }
+		public object ControlObject { get { return control; } }
 
-        public float OffsetX
-        {
-            get { return (float)Control.OffsetX; }
-        }
+		public MatrixHandler ()
+		{
+		}
 
-        public float OffsetY
-        {
-            get { return (float)Control.OffsetY; }
-        }
+		public MatrixHandler (swm.Matrix matrix)
+		{
+			control = matrix;
+		}
 
-        public void Rotate(float angle)
-        {
-            Control.Rotate(angle);
-        }
+		public float[] Elements
+		{
+			get
+			{
+				return new float[] {
+					(float)control.M11,
+					(float)control.M12,
+					(float)control.M21,
+					(float)control.M22,
+					(float)control.OffsetX,
+					(float)control.OffsetY
+				};
+			}
+		}
 
-        public void Translate(float x, float y)
-        {
-            Control.Translate(x, y);
-        }
+		public float Xx { get { return (float)control.M11; } set { control.M11 = value; } }
 
-        public void Scale(float sx, float sy)
-        {
-            Control.Scale(sx, sy);
-        }
+		public float Xy { get { return (float)control.M12; } set { control.M12 = value; } }
 
-        public void Multiply(Matrix m, MatrixOrder matrixOrder)
-        {
-            var m2 = (swm.Matrix) m.ControlObject;
+		public float Yx { get { return (float)control.M21; } set { control.M21 = value; } }
 
-            if (matrixOrder == MatrixOrder.Prepend)
-                Control.Prepend(m2);
-            else
-                Control.Append(m2);
-        }
+		public float Yy { get { return (float)control.M22; } set { control.M22 = value; } }
 
-        public void Create(float m11, float m12, float m21, float m22, float dx, float dy)
-        {
-            this.Control =
-                new swm.Matrix(m11, m12, m21, m22, dx, dy);
-        }
+		public float X0 { get { return (float)control.OffsetX; } set { control.OffsetX = value; } }
 
-        public void Invert()
-        {
-            this.Control.Invert();
-        }
+		public float Y0 { get { return (float)control.OffsetY; } set { control.OffsetY = value; } }
 
-        public PointF TransformPoint(Point p)
-        {
-            return Control.Transform(p.ToWpf()).ToEto();
-        }
+		public void Rotate (float angle)
+		{
+			control.Rotate (angle);
+		}
 
-        public PointF TransformPoint(PointF p)
-        {
-            return Control.Transform(p.ToWpf()).ToEto();
-        }
-    }
+		public void RotateAt (float angle, float centerX, float centerY)
+		{
+			control.RotateAt (angle, centerX, centerY);
+		}
+
+		public void Translate (float x, float y)
+		{
+			control.Translate (x, y);
+		}
+
+		public void Scale (float scaleX, float scaleY)
+		{
+			control.Scale (scaleX, scaleY);
+		}
+
+		public void ScaleAt (float scaleX, float scaleY, float centerX, float centerY)
+		{
+			control.ScaleAt (scaleX, scaleY, centerX, centerY);
+		}
+
+		public void Skew (float skewX, float skewY)
+		{
+			control.Skew (skewX, skewY);
+		}
+
+		public void Append (IMatrix matrix)
+		{
+			var m2 = (swm.Matrix)matrix.ControlObject;
+			control.Append (m2);
+		}
+
+		public void Prepend (IMatrix matrix)
+		{
+			var m2 = (swm.Matrix)matrix.ControlObject;
+			control.Prepend (m2);
+		}
+
+		public void Create ()
+		{
+			control = swm.Matrix.Identity;
+		}
+
+		public void Create (float m11, float m12, float m21, float m22, float dx, float dy)
+		{
+			control = new swm.Matrix (m11, m12, m21, m22, dx, dy);
+		}
+
+		public void Invert ()
+		{
+			control.Invert ();
+		}
+
+		public PointF TransformPoint (Point p)
+		{
+			return control.Transform (p.ToWpf ()).ToEto ();
+		}
+
+		public PointF TransformPoint (PointF p)
+		{
+			return control.Transform (p.ToWpf ()).ToEto ();
+		}
+
+		public IMatrix Clone ()
+		{
+			return new MatrixHandler (control);
+		}
+	}
 }

@@ -106,10 +106,9 @@ namespace Eto.Platform
 		{
 			var result = new sd.PointF[points.Length];
 			
-			for (var i = 0; i < points.Length; ++i)
-			{
-				var p = points[i];
-				result[i] = new sd.PointF(p.X, p.Y);
+			for (var i = 0; i < points.Length; ++i) {
+				var p = points [i];
+				result [i] = new sd.PointF (p.X, p.Y);
 			}
 			
 			return result;

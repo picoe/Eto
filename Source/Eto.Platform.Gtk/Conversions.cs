@@ -21,12 +21,12 @@ namespace Eto.Platform.GtkSharp
 			return new Cairo.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
-        public static Cairo.Rectangle ToCairo(this RectangleF rectangle)
-        {
-            return new Cairo.Rectangle(rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-        }
-
-        public static Rectangle ToEto(this Cairo.Rectangle rectangle)
+		public static Cairo.Rectangle ToCairo (this RectangleF rectangle)
+		{
+			return new Cairo.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+		
+		public static Rectangle ToEto (this Cairo.Rectangle rectangle)
 		{
 			return new Rectangle ((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
 		}
@@ -45,7 +45,7 @@ namespace Eto.Platform.GtkSharp
 			case ImageInterpolation.Medium:
 				return  Cairo.Filter.Good;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 		
@@ -133,16 +133,24 @@ namespace Eto.Platform.GtkSharp
 		public static Gdk.CursorType ToGdk (this CursorType cursor)
 		{
 			switch (cursor) {
-			case CursorType.Arrow: return Gdk.CursorType.Arrow;
-			case CursorType.Crosshair: return Gdk.CursorType.Crosshair;
-			case CursorType.Default: return Gdk.CursorType.Arrow;
-			case CursorType.HorizontalSplit: return Gdk.CursorType.SbHDoubleArrow;
-			case CursorType.VerticalSplit: return Gdk.CursorType.SbVDoubleArrow;
-			case CursorType.IBeam: return Gdk.CursorType.Xterm;
-			case CursorType.Move: return Gdk.CursorType.Fleur;
-			case CursorType.Pointer: return Gdk.CursorType.Hand2;
+			case CursorType.Arrow:
+				return Gdk.CursorType.Arrow;
+			case CursorType.Crosshair:
+				return Gdk.CursorType.Crosshair;
+			case CursorType.Default:
+				return Gdk.CursorType.Arrow;
+			case CursorType.HorizontalSplit:
+				return Gdk.CursorType.SbHDoubleArrow;
+			case CursorType.VerticalSplit:
+				return Gdk.CursorType.SbVDoubleArrow;
+			case CursorType.IBeam:
+				return Gdk.CursorType.Xterm;
+			case CursorType.Move:
+				return Gdk.CursorType.Fleur;
+			case CursorType.Pointer:
+				return Gdk.CursorType.Hand2;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -232,6 +240,11 @@ namespace Eto.Platform.GtkSharp
 			default:
 				throw new NotSupportedException ();
 			}
+		}
+
+		public static float DegreesToRadians (float angle)
+		{
+			return (float)Math.PI * angle / 180.0f;
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -43,11 +43,21 @@ namespace Eto.Platform.Wpf.Drawing
 			
 			this.Control = context;
 
-			if (DPI != new sw.Size(1.0, 1.0))
-				this.Control.PushTransform (new swm.ScaleTransform (DPI.Width, DPI.Height));
+			//if (DPI != new sw.Size(1.0, 1.0))
+			//	this.Control.PushTransform (new swm.ScaleTransform (DPI.Width, DPI.Height));
+			var dpi = DPI;
+			//offset = dpi.Width / 2;
+			//this.Control.PushTransform (new swm.TranslateTransform (0, -0.5));
+			if (clipRect != null) {
+				var r = clipRect.Value;
+				
+				//PushGuideLines (r.X, r.Y, r.Width, r.Height);
+				//r = new sw.Rect (r.X, r.Y, r.Width + 0.5, r.Height + 0.5);
+				//this.Control.PushClip (new swm.RectangleGeometry (r));
+				this.Control.PushClip (new swm.RectangleGeometry (new sw.Rect (r.X - 0.5, r.Y - 0.5, r.Width + 1, r.Height + 1)));
 
-			if (clipRect != null)
-				this.Control.PushClip (new swm.RectangleGeometry (clipRect.Value));
+				this.Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { r.Left, r.Right }, new double[] { r.Top, r.Y + r.Bottom }));
+			}
 			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
@@ -72,7 +82,7 @@ namespace Eto.Platform.Wpf.Drawing
 					var presentationSource = sw.PresentationSource.FromVisual (visual);
 					if (presentationSource != null) {
 						swm.Matrix m = presentationSource.CompositionTarget.TransformToDevice;
-						dpi = new sw.Size (1 / m.M11, 1 / m.M11);
+						dpi = new sw.Size (m.M11, m.M11);
 					} else
 						dpi = new sw.Size (1.0, 1.0);
 				}
@@ -94,7 +104,9 @@ namespace Eto.Platform.Wpf.Drawing
         void DrawRectangle(swm.Pen pen, float x, float y, float width, float height)
         {
             double t = pen.Thickness * offset;
+			PushGuideLines (x, y, width, height);
             Control.DrawRectangle(null, pen, new sw.Rect(x + t, y + t, width, height));
+			Control.Pop ();
         }
 
         public void DrawRectangle(Color color, float x, float y, float width, float height)
@@ -111,7 +123,9 @@ namespace Eto.Platform.Wpf.Drawing
         private void DrawLine(swm.Pen pen, float startx, float starty, float endx, float endy)
         {
             double t = pen.Thickness / 2;
+			Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { startx, endx }, new double[] { starty, endy }));
             Control.DrawLine(pen, new sw.Point(startx + t, starty + t), new sw.Point(endx + t, endy + t));
+			Control.Pop ();
         }
 
         public void DrawLine(Color color, float startx, float starty, float endx, float endy)
@@ -158,10 +172,10 @@ namespace Eto.Platform.Wpf.Drawing
 
         public void FillEllipse(Color color, float x, float y, float width, float height)
         {
-            PushGuideLines(x, y, width, height);
+            //PushGuideLines(x, y, width, height);
             var brush = new swm.SolidColorBrush(color.ToWpf());
             Control.DrawEllipse(brush, null, new sw.Point(x + width / 2.0 + inverseoffset, y + height / 2.0 + inverseoffset), width / 2.0, height / 2.0);
-            Control.Pop();
+            //Control.Pop();
         }
 
         static swm.Geometry CreateArcDrawing(sw.Rect rect, double startDegrees, double sweepDegrees, bool closed)
@@ -279,10 +293,10 @@ namespace Eto.Platform.Wpf.Drawing
 
         private void DrawImage(Image image, float x, float y, float width, float height)
 		{
-			var src = image.ControlObject as swm.ImageSource;
-			Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { x , x  + width }, new double[] { y , y + height }));
+			var src = image.ToWpf ((int)Math.Max(width, height));
+			//Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { x , x  + width }, new double[] { y , y + height }));
 			Control.DrawImage (src, new sw.Rect (x, y, width, height));
-			Control.Pop ();
+			//Control.Pop ();
 		}
 
 		public void DrawImage (Image image, RectangleF source, RectangleF destination)
@@ -397,7 +411,6 @@ namespace Eto.Platform.Wpf.Drawing
 				Close ();
 			base.Dispose (disposing);
 		}
-
         public void SetClip(RectangleF rect)
         {
             // should not be called since Wpf is retained mode.
@@ -413,9 +426,9 @@ namespace Eto.Platform.Wpf.Drawing
             }
         }
 
-        private TransformStack transformStack;
+        TransformStack transformStack;
 
-        private TransformStack TransformStack
+        TransformStack TransformStack
         {
             get
             {
@@ -424,15 +437,9 @@ namespace Eto.Platform.Wpf.Drawing
                         this.Generator,
                         m =>
                         {
-                            var matrixHandler =
-                                m.Handler as MatrixHandler;
+                            var matrix = (swm.Matrix)m.ControlObject;
 
-                            var matrix =
-                                (swm.Matrix)
-                                matrixHandler.Control;
-
-                            var mt = new swm.MatrixTransform(
-                                matrix);
+                            var mt = new swm.MatrixTransform(matrix);
 
                             Control.PushTransform(mt);
 
@@ -461,7 +468,7 @@ namespace Eto.Platform.Wpf.Drawing
             TransformStack.ScaleTransform(sx, sy);            
         }
 
-        public void MultiplyTransform(Matrix matrix)
+        public void MultiplyTransform(IMatrix matrix)
         {
             TransformStack.MultiplyTransform(matrix);
         }

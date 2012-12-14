@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -258,17 +258,23 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				switch (value) {
-					case WindowState.Maximized:
-						Control.WindowState = sw.WindowState.Maximized;
-						break;
-					case WindowState.Minimized:
-						Control.WindowState = sw.WindowState.Minimized;
-						break;
-					case WindowState.Normal:
-						Control.WindowState = sw.WindowState.Normal;
-						break;
-					default:
-						throw new NotSupportedException ();
+				case WindowState.Maximized:
+					Control.WindowState = sw.WindowState.Maximized;
+					if (!Control.IsLoaded)
+						Control.SizeToContent = sw.SizeToContent.Manual;
+					break;
+				case WindowState.Minimized:
+					Control.WindowState = sw.WindowState.Minimized;
+					if (!Control.IsLoaded)
+						Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+					break;
+				case WindowState.Normal:
+					Control.WindowState = sw.WindowState.Normal;
+					if (!Control.IsLoaded)
+						Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+					break;
+				default:
+					throw new NotSupportedException ();
 				}
 			}
 		}

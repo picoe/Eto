@@ -81,16 +81,22 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
+			if (!Flipped)
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+			Control.SaveState ();
 		}
 
 #if OSX
-		public GraphicsHandler (NSGraphicsContext graphicsContext, float height)
+		public GraphicsHandler (NSGraphicsContext graphicsContext, float height, bool flipped)
 		{ 
 			this.height = height;
 			this.graphicsContext = graphicsContext;
 			this.Control = graphicsContext.GraphicsPort;
+			this.Flipped = flipped;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
+			if (!Flipped)
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 		}
 #elif IOS
 		public GraphicsHandler (CGContext context, float height, bool flipped)
@@ -143,6 +149,8 @@ namespace Eto.Platform.iOS.Drawing
 			this.height = image.Size.Height;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
+			if (!Flipped)
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 		}
 
 		public void Commit ()
@@ -169,7 +177,7 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 		}
 		
-		float ViewHeight {
+		public float ViewHeight {
 			get {
 				if (view != null)
 					return view.Bounds.Height;
@@ -178,7 +186,7 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
-		public SD.PointF TranslateView (SD.PointF point, bool halfers = false, bool inverse = false)
+		public SD.PointF TranslateView (SD.PointF point, bool halfers = false, bool inverse = false, float elementHeight = 0)
 		{
 			if (halfers) {
 				if (inverse) {
@@ -191,11 +199,8 @@ namespace Eto.Platform.iOS.Drawing
 				}
 			}
 			if (view != null) {
-				if (!Flipped)
-					point.Y = view.Bounds.Height - point.Y;
 				point = view.ConvertPointToView (point, null);
-			} else if (!Flipped)
-				point.Y = this.height - point.Y;
+			}
 			return point;
 		}
 		
@@ -213,17 +218,15 @@ namespace Eto.Platform.iOS.Drawing
 			}
 
 			if (view != null) {
-				if (!Flipped)
-					rect.Y = view.Bounds.Height - rect.Y - rect.Height;
 				rect = view.ConvertRectToView (rect, null);
-			} else if (!Flipped)
-				rect.Y = this.height - rect.Y - rect.Height;
+			}
 			return rect;
 		}
 
 		public SD.RectangleF Translate (SD.RectangleF rect, float height)
 		{
-			rect.Y = height - rect.Y - rect.Height;
+			if (!Flipped)
+				rect.Y = height - rect.Y - rect.Height;
 			return rect;
 		}
 
@@ -243,6 +246,7 @@ namespace Eto.Platform.iOS.Drawing
 			NSGraphicsContext.CurrentContext = this.graphicsContext;
 #elif IOS
 			UIGraphics.PushContext (this.Control);
+			this.Control.SaveState ();
 #endif
 		}
 		
@@ -251,13 +255,9 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 			NSGraphicsContext.GlobalRestoreGraphicsState ();
 #elif IOS
+			this.Control.RestoreState ();
 			UIGraphics.PopContext ();
 #endif
-		}
-
-		float DegreeToRadian(float angle)
-		{
-			return (float)Math.PI * angle / 180.0f;
 		}
 
 		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
@@ -349,12 +349,11 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing ();
 
-			startAngle = 360.0f - startAngle;
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
 			Control.SetStrokeColor (color.ToCGColor ());
 			var yscale = rect.Height / rect.Width;
 			Control.ScaleCTM (1.0f, yscale);
-			Control.AddArc (rect.GetMidX(), rect.GetMidY() / yscale, rect.Width / 2, DegreeToRadian (startAngle), DegreeToRadian (startAngle - sweepAngle), true);
+			Control.AddArc (rect.GetMidX(), rect.GetMidY() / yscale, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), false);
 			Control.StrokePath ();
 			EndDrawing ();
 		}
@@ -363,13 +362,12 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing ();
 
-			startAngle = 360.0f - startAngle;
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true, true);
 			Control.SetFillColor (color.ToCGColor ());
 			var yscale = rect.Height / rect.Width;
 			Control.ScaleCTM (1.0f, yscale);
 			Control.MoveTo (rect.GetMidX(), rect.GetMidY() / yscale);
-			Control.AddArc (rect.GetMidX(), rect.GetMidY() / yscale, rect.Width / 2, DegreeToRadian (startAngle), DegreeToRadian (startAngle - sweepAngle), true);
+			Control.AddArc (rect.GetMidX(), rect.GetMidY() / yscale, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), false);
 			Control.AddLineToPoint (rect.GetMidX(), rect.GetMidY() / yscale);
 			Control.ClosePath ();
 			Control.FillPath ();
@@ -390,8 +388,6 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing ();
 
-			if (!Flipped)
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 			Control.TranslateCTM (inverseoffset, inverseoffset);
 			Control.BeginPath ();
 			Control.AddPath (path.ControlObject as CGPath);
@@ -405,8 +401,6 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing ();
 			
-			if (!Flipped)
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 			Control.TranslateCTM (offset, offset);
 			Control.SetLineCap (CGLineCap.Square);
 			Control.SetLineWidth (1.0F);
@@ -456,19 +450,21 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-        public void DrawText(Font font, Color color, float x, float y, string text)
+		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
 			StartDrawing ();
-
 #if OSX
 			var str = new NSString (text);
-			var fontHandler = font.Handler as FontHandler;
 			var dic = new NSMutableDictionary ();
 			dic.Add (NSAttributedString.ForegroundColorAttributeName, color.ToNS ());
-			dic.Add (NSAttributedString.FontAttributeName, fontHandler.Control);
+			dic.Add (NSAttributedString.FontAttributeName, FontHandler.GetControl (font));
 			var size = str.StringSize (dic);
 			//context.SetShouldAntialias(true);
-			str.DrawString (new SD.PointF (x, height - y - size.Height), dic);
+			if (!Flipped) {
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+				y = ViewHeight - y - size.Height;
+			}
+			str.DrawString (TranslateView (new SD.PointF(x, y)), dic);
 			//context.SetShouldAntialias(antialias);
 #elif IOS
 			var uifont = font.ToUI ();
@@ -476,8 +472,7 @@ namespace Eto.Platform.iOS.Drawing
 			var size = str.StringSize (uifont);
 			//context.SetShouldAntialias(true);
 			Control.SetFillColor(color.ToCGColor ());
-			var pt = !Flipped ? new SD.PointF (x, height - y - size.Height) : new SD.PointF(x, y);
-			str.DrawString (pt, uifont);
+			str.DrawString (TranslateView (new SD.PointF(x, y), elementHeight: size.Height), uifont);
 #endif
 
 			EndDrawing ();
@@ -545,6 +540,7 @@ namespace Eto.Platform.iOS.Drawing
 
         public void RotateTransform(float angle)
         {
+			angle = Conversions.DegreesToRadians (angle);
 			Control.RotateCTM(angle);
         }
 
@@ -561,17 +557,17 @@ namespace Eto.Platform.iOS.Drawing
 
         public void SaveTransform()
         {
-			graphicsContext.SaveGraphicsState();
+			Control.SaveState ();
         }
 
         public void RestoreTransform()
         {
-			graphicsContext.RestoreGraphicsState();
+			Control.RestoreState ();
         }
 
         public void Clear(Color color)
         {
             throw new NotImplementedException();
         }
-    }
+	}
 }

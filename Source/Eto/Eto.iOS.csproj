@@ -272,6 +272,8 @@
     <Compile Include="Interface\IDragDropInputSource.cs" />
     <Compile Include="Interface\IKeyboardInputSource.cs" />
     <Compile Include="Interface\IMouseInputSource.cs" />
+    <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Matrix.cs" />
     <Compile Include="Drawing\Constants.cs" />
     <Compile Include="Drawing\Brush.cs" />

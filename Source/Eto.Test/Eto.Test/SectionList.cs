@@ -130,6 +130,7 @@ namespace Eto.Test
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 			yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
+			yield return new Section<TransformSection> { Text = "Transform" };
 		}
 
 		IEnumerable<Section> LayoutsSection ()

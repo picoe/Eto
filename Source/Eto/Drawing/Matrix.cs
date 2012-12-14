@@ -1,213 +1,220 @@
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 
 namespace Eto.Drawing
 {
-    public interface IMatrix : IInstanceWidget
+	public interface IMatrix
 	{
-        float[] Elements { get; }
+		float[] Elements { get; }
 
-        float OffsetX { get; }
+		float Xx { get; set; }
 
-        float OffsetY { get; }
+		float Xy { get; set; }
 
-        void Rotate(float angle);
+		float Yx { get; set; }
 
-        void Translate(float x, float y);
+		float Yy { get; set; }
 
-        void Scale(float sx, float sy);
+		float X0 { get; set; }
 
-        void Multiply(Matrix m, MatrixOrder matrixOrder);
+		float Y0 { get; set; }
 
-        void Create(float m11, float m12, float m21, float m22, float dx, float dy);
+		void Rotate (float angle);
 
-        void Invert();
+		void RotateAt (float angle, float centerX, float centerY);
 
-        PointF TransformPoint(Point p);
+		void Translate (float x, float y);
 
-        PointF TransformPoint(PointF p);
-    }
+		void Scale (float scaleX, float scaleY);
 
-    public class Matrix : InstanceWidget
+		void ScaleAt (float scaleX, float scaleY, float centerX, float centerY);
+
+		void Skew (float skewX, float skewY);
+
+		void Append (IMatrix matrix);
+
+		void Prepend (IMatrix matrix);
+
+		void Invert ();
+
+		PointF TransformPoint (Point point);
+
+		PointF TransformPoint (PointF point);
+
+		object ControlObject { get; }
+
+		IMatrix Clone ();
+	}
+
+	public interface IMatrixHandler : IMatrix
 	{
-		IMatrix inner;
+		void Create ();
+
+		void Create (float xx, float yx, float xy, float yy, float x0, float y0);
+	}
+
+	public static class Matrix
+	{
+		public static IMatrix Multiply (IMatrix matrix, params IMatrix[] matrices)
+		{
+			matrix = matrix.Clone ();
+			for (int i = 0; i < matrices.Length; i++)
+				matrix.Append (matrices [i]);
+			return matrix;
+		}
+
+		public static IMatrix FromScale (SizeF scale, Generator generator = null)
+		{
+			return FromScale (scale.Width, scale.Height, generator);
+		}
 		
-        public Matrix(): this(Generator.Current)
-        {
-        }
+		public static IMatrix FromScale (float scaleX, float scaleY, Generator generator = null)
+		{
+			return Matrix.Create (scaleX, 0, 0, scaleY, 0, 0, generator);
+		}
+		
+		public static IMatrix FromScaleAt (SizeF scale, PointF center, Generator generator = null)
+		{
+			return FromScaleAt (scale.Width, scale.Height, center.X, center.Y, generator);
+		}
+		
+		public static IMatrix FromScaleAt (float scaleX, float scaleY, float centerX, float centerY, Generator generator = null)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.ScaleAt (scaleX, scaleY, centerX, centerY);
+			return matrix;
+		}
+		
+		public static IMatrix FromTranslation (PointF point, Generator generator = null)
+		{
+			return FromTranslation (point.X, point.Y, generator);
+		}
+		
+		public static IMatrix FromTranslation (float x, float y, Generator generator = null)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.Translate (x, y);
+			return matrix;
+		}
+		
+		public static IMatrix FromRotation (float angle, Generator generator = null)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.Rotate (angle);
+			return matrix;
+		}
+		
+		public static IMatrix FromRotationAt (float angle, PointF center, Generator generator = null)
+		{
+			return FromRotationAt (angle, center.X, center.Y, generator);
+		}
+		
+		public static IMatrix FromRotationAt (float angle, float centerX, float centerY, Generator generator = null)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.RotateAt (angle, centerX, centerY);
+			return matrix;
+		}
 
-        public Matrix(Generator g, IMatrix inner) : base(g, inner)
-        {
-            this.inner = inner;
-        }
+		public static IMatrix FromSkew (float skewX, float skewY, Generator generator = null)
+		{
+			var matrix = Matrix.Create (generator);
+			matrix.Skew (skewX, skewY);
+			return matrix;
+		}
 
-        public Matrix(Generator g)
-            : base(g, typeof(IMatrix))
-        {
-            inner = (IMatrix)this.Handler;
-        }
+		public static Func<IMatrix> Instantiator (Generator generator = null)
+		{
+			var activator = (generator ?? Generator.Current).Find<IMatrixHandler> ();
+			return () => {
+				var matrix = activator ();
+				matrix.Create ();
+				return matrix;
+			};
+		}
 
-        public Matrix(
-            float m11,
-	        float m12,
-	        float m21,
-	        float m22,
-	        float dx,
-	        float dy,
-            Generator g = null)
-            :this(g ?? Generator.Current)
-        {
-            inner.Create(m11, m12, m21, m22, dx, dy);
-        }
+		public static Func<float, float, float, float, float, float, IMatrix> InstantiatorWithElements (Generator generator = null)
+		{
+			var activator = (generator ?? Generator.Current).Find<IMatrixHandler> ();
+			return (xx, yx, xy, yy, x0, y0) => {
+				var matrix = activator ();
+				matrix.Create (xx, yx, xy, yy, x0, y0);
+				return matrix;
+			};
+		}
 
-        public Matrix Clone()
-        {
-            var e = this.Elements;
+		public static IMatrix Create (Generator generator = null)
+		{
+			var handler = (generator ?? Generator.Current).Create<IMatrixHandler> ();
+			handler.Create ();
+			return handler;
+		}
 
-            return new Matrix(
-                e[0], e[1], e[2], e[3], e[4], e[5],
-                this.Generator);
-        }
+		public static IMatrix Create (float[] elements, Generator generator = null)
+		{
+			if (elements == null)
+				throw new ArgumentNullException ("elements");
+			if (elements.Length != 6)
+				throw new ArgumentOutOfRangeException ("elements", elements, "Elements must be an array with a length of 6");
+			var handler = (generator ?? Generator.Current).Create<IMatrixHandler> ();
+			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
+			return handler;
+		}
 
-        public float OffsetX { 
-            get { return inner.OffsetX; }
-        }
+		public static IMatrix Create (float xx, float yx, float xy, float yy, float x0, float y0, Generator generator = null)
+		{
+			var handler = (generator ?? Generator.Current).Create<IMatrixHandler> ();
+			handler.Create (xx, yx, xy, yy, x0, y0);
+			return handler;
+		}
 
-        public float OffsetY
-        {
-            get { return inner.OffsetY; }
-        }
+		public static void RotateAt (this IMatrix matrix, float angle, PointF center)
+		{
+			matrix.RotateAt (angle, center.X, center.Y);
+		}
 
-        public float[] Elements { get { return inner.Elements; } }
+		public static void Translate (this IMatrix matrix, PointF translate)
+		{
+			matrix.Translate (translate.X, translate.Y);
+		}
+		
+		public static void Scale (this IMatrix matrix, SizeF scale)
+		{
+			matrix.Scale (scale.Width, scale.Height);
+		}
+		
+		public static void Scale (this IMatrix matrix, float scale)
+		{
+			matrix.Scale (scale, scale);
+		}
+		
+		public static void ScaleAt (this IMatrix matrix, SizeF scale, PointF center)
+		{
+			matrix.ScaleAt (scale.Width, scale.Height, center.X, center.Y);
+		}
+		
+		public static void ScaleAt (this IMatrix matrix, float scale, PointF center)
+		{
+			matrix.ScaleAt (scale, scale, center.X, center.Y);
+		}
+		
+		public static void ScaleAt (this IMatrix matrix, float scale, float centerX, float centerY)
+		{
+			matrix.ScaleAt (scale, scale, centerX, centerY);
+		}
 
-        public void Rotate(float angle)
-        {
-            inner.Rotate(angle);
-        }
+		public static void Append (this IMatrix matrix, params IMatrix[] matrices)
+		{
+			for (int i = 0; i < matrices.Length; i++)
+				matrix.Append (matrices [i]);
+		}
 
-        public void Translate(PointF p)
-        {
-            inner.Translate(p.X, p.Y);
-        }
-
-        public void Translate(float x, float y)
-        {
-            inner.Translate(x, y);
-        }
-
-        public void Scale(float sx, float sy)
-        {
-            inner.Scale(sx, sy);
-        }
-
-        public void Multiply(Matrix m, MatrixOrder matrixOrder = MatrixOrder.Prepend)
-        {
-            inner.Multiply(m, matrixOrder);
-        }
-
-        public void Invert()
-        {
-            inner.Invert();
-        }
-
-        public Matrix Append(params Matrix[] matrices)
-        {
-            foreach (
-                var m 
-                in matrices)
-                Multiply(m, MatrixOrder.Append);
-
-            return this; // to allow chaining
-        }
-
-        public PointF TransformPoint(Point p)
-        {
-            return inner.TransformPoint(p);
-        }
-
-        public PointF TransformPoint(PointF p)
-        {
-            return inner.TransformPoint(p);
-        }
-
-        public static Matrix FromScale(float sx, float sy)
-        {
-            var result = new Matrix();
-
-            result.Scale(sx, sy);
-
-            return result;
-        }
-
-
-        public static Matrix FromTranslation(PointF p)
-        {
-            var result = new Matrix();
-
-            result.Translate(p);
-
-            return result;
-        }
-
-
-        public override string ToString()
-        {
-            var e =
-                this.Elements;
-
-
-            return 
-                e != null &&
-                e.Length == 6
-                ? string.Format(
-                    "{{ {0} {1} {2} {3} {4} {5} }}",
-                    e[0],
-                    e[1],
-                    e[2],
-                    e[3],
-                    e[4],
-                    e[5])
-                : "empty matrix";
-        }
-
-        public override bool Equals(object obj)
-        {
-            var m = obj as Matrix;
-
-            var result = false;
-
-            if (obj != null)
-            {
-                var e1 = this.Elements;
-                var e2 = m.Elements;
-                result =
-                    e1 != null &&
-                    e2 != null &&
-                    e1.Length == 6 &&
-                    e2.Length == 6 &&
-                    e1[0] == e2[0] &&
-                    e1[1] == e2[1] &&
-                    e1[2] == e2[2] &&
-                    e1[3] == e2[3] &&
-                    e1[4] == e2[4] &&
-                    e1[5] == e2[5];
-            }
-
-            return result;
-        }
-    }
-
-    // Summary:
-    //     Specifies the order for matrix transform operations.
-    public enum MatrixOrder
-    {
-        // Summary:
-        //     The new operation is applied before the old operation.
-        Prepend = 0,
-        //
-        // Summary:
-        //     The new operation is applied after the old operation.
-        Append = 1,
-    }
+		public static void Prepend (this IMatrix matrix, params IMatrix[] matrices)
+		{
+			for (int i = 0; i < matrices.Length; i++)
+				matrix.Prepend (matrices [i]);
+		}
+	}
 }
