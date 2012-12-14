@@ -244,6 +244,7 @@ namespace Eto.Platform.iOS.Drawing
 			NSGraphicsContext.CurrentContext = this.graphicsContext;
 #elif IOS
 			UIGraphics.PushContext (this.Control);
+			this.Control.SaveState ();
 #endif
 		}
 		
@@ -252,6 +253,7 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 			NSGraphicsContext.GlobalRestoreGraphicsState ();
 #elif IOS
+			this.Control.RestoreState ();
 			UIGraphics.PopContext ();
 #endif
 		}

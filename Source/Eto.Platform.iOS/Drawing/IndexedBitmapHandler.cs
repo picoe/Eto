@@ -149,7 +149,7 @@ namespace Eto.Platform.iOS.Drawing
 			bmp.Unlock(bd);
 		}
 
-		public override void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			bmp.DrawImage(graphics, source, destination);
 		}

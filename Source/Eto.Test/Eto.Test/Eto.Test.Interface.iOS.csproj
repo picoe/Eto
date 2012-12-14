@@ -169,6 +169,7 @@
     <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
+    <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
