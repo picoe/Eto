@@ -84,7 +84,7 @@ namespace Eto
 		/// <returns>Path of the specified folder</returns>
 		public static string GetFolderPath (Generator g, EtoSpecialFolder folder)
 		{
-			var handler = g.CreateHandler<IEtoEnvironment>();
+			var handler = g.Create<IEtoEnvironment>();
 			return handler.GetFolderPath(folder);
 		}
 	}

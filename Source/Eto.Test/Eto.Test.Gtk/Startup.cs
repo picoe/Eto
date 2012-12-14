@@ -16,7 +16,7 @@ namespace Eto.Test.Gtk
 #if DEBUG
 			Debug.Listeners.Add (new ConsoleTraceListener());
 #endif
-			var generator = Generator.GetGenerator ("Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk");
+			var generator = new Eto.Platform.GtkSharp.Generator ();
 			
 			var app = new TestApplication (generator);
 			app.Run (args);

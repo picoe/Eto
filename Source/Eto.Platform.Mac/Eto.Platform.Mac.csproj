@@ -82,7 +82,6 @@
     <Compile Include="Forms\MessageBoxHandler.cs" />
     <Compile Include="Forms\OpenFileDialog.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
-    <Compile Include="Forms\SaveFileDialog.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
     <Compile Include="Forms\MacLayout.cs" />
     <Compile Include="Forms\MacView.cs" />
@@ -170,6 +169,7 @@
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Forms\SaveFileDialogHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

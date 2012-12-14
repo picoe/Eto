@@ -10,6 +10,8 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
     <AssemblyName>Eto.Test.Mac</AssemblyName>
+    <LastXamMacNagTime>14/12/2012 4:51:08 AM</LastXamMacNagTime>
+    <SuppressXamMacMigration>True</SuppressXamMacMigration>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
