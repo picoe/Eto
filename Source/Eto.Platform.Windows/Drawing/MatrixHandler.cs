@@ -89,28 +89,28 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Rotate (float angle)
 		{
-			this.Control.Rotate (angle, SD2D.MatrixOrder.Append);
+			this.Control.Rotate(angle, SD2D.MatrixOrder.Prepend);
 		}
 
 		public void RotateAt (float angle, float centerX, float centerY)
 		{
-			this.Control.RotateAt (angle, new SD.PointF (centerX, centerY), SD2D.MatrixOrder.Append);
+			this.Control.RotateAt(angle, new SD.PointF(centerX, centerY), SD2D.MatrixOrder.Prepend);
 		}
 
 		public void Translate (float x, float y)
 		{
-			this.Control.Translate (x, y, SD2D.MatrixOrder.Append);
+			this.Control.Translate(x, y, SD2D.MatrixOrder.Prepend);
 		}
 
 		public void Scale (float scaleX, float scaleY)
 		{
-			this.Control.Scale (scaleX, scaleY, SD2D.MatrixOrder.Append);
+			this.Control.Scale(scaleX, scaleY, SD2D.MatrixOrder.Prepend);
 		}
 
 		public void ScaleAt (float scaleX, float scaleY, float centerX, float centerY)
 		{
 			var m = new SD2D.Matrix (scaleX, 0, 0, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
-			this.Control.Multiply (m, SD2D.MatrixOrder.Append);
+			this.Control.Multiply (m, SD2D.MatrixOrder.Prepend);
 		}
 
 		public void Skew (float skewX, float skewY)
