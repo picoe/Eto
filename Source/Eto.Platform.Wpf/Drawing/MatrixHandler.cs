@@ -122,5 +122,10 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			return new MatrixHandler (control);
 		}
+
+		public void Dispose()
+		{
+			// nothing to do
+		}
 	}
 }

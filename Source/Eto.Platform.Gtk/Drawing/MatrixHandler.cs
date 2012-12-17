@@ -138,6 +138,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 			var matrix = new Cairo.Matrix(control.Xx, control.Yx, control.Xy, control.Yy, control.X0, control.Y0);
 			return new MatrixHandler (matrix);
 		}
+
+		public void Dispose()
+		{
+			// do nothing
+		}
 	}
 }
 

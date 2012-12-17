@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Eto.Drawing
 {
-	public interface IMatrix
+	public interface IMatrix : IDisposable
 	{
 		float[] Elements { get; }
 
