@@ -72,6 +72,8 @@ namespace Eto.Platform.Wpf
 			g.Add <IIcon> (() => new IconHandler ());
 			g.Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			g.Add <IMatrixHandler> (() => new MatrixHandler ());
+			g.Add <IPen>(() => new PenHandler());
+			g.Add <IBrush>(() => new BrushHandler());
 			
 			// Forms.Cells
 			g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());

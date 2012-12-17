@@ -57,6 +57,7 @@ namespace Eto.Platform.Windows
 
 		public Generator()
 		{
+			AddTo(this);
 		}
 
 		public static void AddTo(Eto.Generator g)
@@ -71,6 +72,8 @@ namespace Eto.Platform.Windows
 			g.Add <IIcon> (() => new IconHandler ());
 			g.Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			g.Add <IMatrixHandler> (() => new MatrixHandler ());
+			g.Add <IPen>(() => new PenHandler());
+			g.Add <IBrush>(() => new BrushHandler());
 			
 			// Forms.Cells
 			g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
