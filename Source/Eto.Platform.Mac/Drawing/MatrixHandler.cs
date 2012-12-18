@@ -1,12 +1,19 @@
 using System;
 using System.IO;
 using Eto.Drawing;
+using SD = System.Drawing;
+
+#if OSX
 using MonoMac.AppKit;
 using MonoMac.CoreGraphics;
 using MonoMac.Foundation;
-using SD = System.Drawing;
 
 namespace Eto.Platform.Mac.Drawing
+#elif IOS
+using MonoTouch.CoreGraphics;
+
+namespace Eto.Platform.iOS.Drawing
+#endif
 {
 	public class MatrixHandler : IMatrixHandler
 	{

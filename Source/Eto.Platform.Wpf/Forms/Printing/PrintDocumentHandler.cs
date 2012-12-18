@@ -32,7 +32,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 				var graphicsHandler = new GraphicsHandler (this, dc, null);
 				var graphics = new Graphics (Handler.Widget.Generator, graphicsHandler);
 				// needed to set size properly for some reason.. ??
-				graphics.DrawRectangle (Colors.Transparent, rect);
+				graphics.DrawRectangle (Pen.Create(Colors.Transparent), rect);
 
 				var args = new PrintPageEventArgs (graphics, rect.Size, PageNumber);
 				Handler.Widget.OnPrintPage (args);

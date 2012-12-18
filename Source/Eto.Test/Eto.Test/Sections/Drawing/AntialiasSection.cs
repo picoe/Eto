@@ -29,7 +29,7 @@ namespace Eto.Test.Sections.Drawing
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
 				e.Graphics.Antialias = true;
-				e.Graphics.DrawPath (Colors.White, path);
+				e.Graphics.DrawPath (Pens.White (), path);
 			};
 
 			return control;
@@ -42,7 +42,7 @@ namespace Eto.Test.Sections.Drawing
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
 				e.Graphics.Antialias = false;
-				e.Graphics.DrawPath (Colors.White, path);
+				e.Graphics.DrawPath (Pens.White (), path);
 			};
 
 			return control;

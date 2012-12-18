@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
-				e.Graphics.DrawPath (Colors.White, path);
+				e.Graphics.DrawPath (Pens.White (), path);
 			};
 
 			return control;
@@ -40,7 +40,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var path = CreatePath ();
 			control.Paint += (sender, e) => {
-				e.Graphics.FillPath (Colors.White, path);
+				e.Graphics.FillPath (Brushes.White (), path);
 			};
 
 			return control;

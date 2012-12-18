@@ -67,7 +67,9 @@ namespace Eto.Platform.Windows
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			Add <IMatrixHandler> (() => new MatrixHandler ());
-			
+			Add <IPenHandler> (() => new PenHandler ()); 
+			Add <ISolidBrushHandler> (() => new SolidBrushHandler ());
+
 			// Forms.Cells
 			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
 			Add <IComboBoxCell> (() => new ComboBoxCellHandler ());

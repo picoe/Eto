@@ -171,6 +171,9 @@
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Forms\SaveFileDialogHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

@@ -248,6 +248,9 @@
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
+    <Compile Include="Drawing\SolidBrushHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

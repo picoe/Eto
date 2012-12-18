@@ -47,6 +47,33 @@ namespace Eto
 	{
 		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>> ();
 		static Generator current;
+		Dictionary<object, object> properties;
+		object propertiesLock = new object ();
+
+		internal T GetSharedProperty<T> (object key, Func<T> instantiator)
+		{
+			if (properties == null) {
+				lock (propertiesLock) {
+					if (properties == null)
+						properties = new Dictionary<object, object> ();
+				}
+			}
+
+			object value;
+			lock (propertiesLock) {
+				if (!properties.TryGetValue (key, out value)) {
+					value = instantiator ();
+					properties [key] = value;
+				}
+			}
+			return (T)value;
+		}
+
+		internal Dictionary<K, V> Cache<K, V> (object cacheKey)
+		{
+			return GetSharedProperty <Dictionary<K, V>> (cacheKey, () => new Dictionary<K, V> ());
+		}
+
 
 		#region Events
 

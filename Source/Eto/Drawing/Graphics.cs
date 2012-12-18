@@ -24,7 +24,7 @@ namespace Eto.Drawing
 		/// <param name="starty">Y co-ordinate of the starting point</param>
 		/// <param name="endx">X co-ordinate of the ending point</param>
 		/// <param name="endy">Y co-ordinate of the ending point</param>
-		void DrawLine (Color color, float startx, float starty, float endx, float endy);
+		void DrawLine (IPen pen, float startx, float starty, float endx, float endy);
 
 		/// <summary>
 		/// Draws a rectangle outline
@@ -34,17 +34,17 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		void DrawRectangle (Color color, float x, float y, float width, float height);
+		void DrawRectangle (IPen pen, float x, float y, float width, float height);
 
 		/// <summary>
 		/// Fills a rectangle with the specified <paramref name="color"/>
 		/// </summary>
-		/// <param name="color">Fill color</param>
+		/// <param name="brush">Brush to fill with</param>
 		/// <param name="x">X co-ordinate</param>
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		void FillRectangle (Color color, float x, float y, float width, float height);
+		void FillRectangle (IBrush brush, float x, float y, float width, float height);
 
 		/// <summary>
 		/// Fills an ellipse with the specified <paramref name="color"/>
@@ -54,7 +54,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
 		/// <param name="width">Width of the ellipse</param>
 		/// <param name="height">Height of the ellipse</param>
-		void FillEllipse (Color color, float x, float y, float width, float height);
+		void FillEllipse (IBrush brush, float x, float y, float width, float height);
 
 		/// <summary>
 		/// Draws an outline of an ellipse with the specified <paramref name="color"/>
@@ -64,7 +64,7 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
 		/// <param name="width">Width of the ellipse</param>
 		/// <param name="height">Height of the ellipse</param>
-		void DrawEllipse (Color color, float x, float y, float width, float height);
+		void DrawEllipse (IPen pen, float x, float y, float width, float height);
 
 		/// <summary>
 		/// Draws an arc with the specified <paramref name="color"/>
@@ -76,7 +76,7 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the arc</param>
 		/// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the arc</param>
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
-		void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle);
+		void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle);
 
 		/// <summary>
 		/// Fills a pie with the specified <paramref name="color"/>
@@ -88,21 +88,21 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the pie</param>
 		/// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the pie</param>
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
-		void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle);
+		void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle);
 
 		/// <summary>
 		/// Fills the specified <paramref name="path"/>
 		/// </summary>
 		/// <param name="color">Fill color</param>
 		/// <param name="path">Path to fill</param>
-		void FillPath (Color color, GraphicsPath path);
+		void FillPath (IBrush brush, GraphicsPath path);
 
 		/// <summary>
 		/// Draws the specified <paramref name="path"/>
 		/// </summary>
 		/// <param name="color">Draw color</param>
 		/// <param name="path">Path to draw</param>
-		void DrawPath (Color color, GraphicsPath path);
+		void DrawPath (IPen pen, GraphicsPath path);
 
 		/// <summary>
 		/// Draws the specified <paramref name="image"/> at a location with no scaling
@@ -244,27 +244,53 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Draws a line with the specified <paramref name="color"/>
+		/// Draws a 1 pixel wide line with the specified <paramref name="color"/>
 		/// </summary>
-		/// <param name="color">Color for the outline</param>
+		/// <param name="color">Color of the line to draw</param>
 		/// <param name="start">Starting location</param>
 		/// <param name="end">Ending location</param>
 		public void DrawLine (Color color, PointF start, PointF end)
 		{
-			Handler.DrawLine (color, start.X, start.Y, end.X, end.Y);
+			using (var pen = Pen.Create(color, 1f, this.Generator))
+				Handler.DrawLine (pen, start.X, start.Y, end.X, end.Y);
 		}
 
 		/// <summary>
-		/// Draws a line with the specified <paramref name="color"/>
+		/// Draws a line with the specified <paramref name="pen"/>
 		/// </summary>
-		/// <param name="color">Color for the outline</param>
+		/// <param name="pen">Pen to draw the line with</param>
+		/// <param name="start">Starting location</param>
+		/// <param name="end">Ending location</param>
+		public void DrawLine (IPen pen, PointF start, PointF end)
+		{
+			Handler.DrawLine (pen, start.X, start.Y, end.X, end.Y);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide line with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color of the line</param>
 		/// <param name="startx">X co-ordinate of the starting point</param>
 		/// <param name="starty">Y co-ordinate of the starting point</param>
 		/// <param name="endx">X co-ordinate of the ending point</param>
 		/// <param name="endy">Y co-ordinate of the ending point</param>
 		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
 		{
-			Handler.DrawLine (color, startx, starty, endx, endy);
+			using (var pen = Pen.Create (color, 1f, this.Generator))
+				Handler.DrawLine (pen, startx, starty, endx, endy);
+		}
+
+		/// <summary>
+		/// Draws a line with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to draw the line with</param>
+		/// <param name="startx">X co-ordinate of the starting point</param>
+		/// <param name="starty">Y co-ordinate of the starting point</param>
+		/// <param name="endx">X co-ordinate of the ending point</param>
+		/// <param name="endy">Y co-ordinate of the ending point</param>
+		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
+		{
+			Handler.DrawLine (pen, startx, starty, endx, endy);
 		}
 
 		/// <summary>
@@ -275,9 +301,20 @@ namespace Eto.Drawing
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
 		/// <param name="height">Height of the rectangle</param>
-		public void DrawRectangle (Color color, float x, float y, float width, float height)
+		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
 		{
-			Handler.DrawRectangle (color, x, y, width, height);
+			Handler.DrawRectangle (pen, x, y, width, height);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide  outline of a rectangle with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color for the outline</param>
+		/// <param name="rectangle">Where to draw the rectangle</param>
+		public void DrawRectangle (Color color, RectangleF rectangle)
+		{
+			using (var pen = Pen.Create (color, 1f, this.Generator))
+				Handler.DrawRectangle (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
 		/// <summary>
@@ -285,9 +322,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color for the outline</param>
 		/// <param name="rectangle">Where to draw the rectangle</param>
-		public void DrawRectangle (Color color, RectangleF rectangle)
+		public void DrawRectangle (IPen pen, RectangleF rectangle)
 		{
-			Handler.DrawRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			Handler.DrawRectangle (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
 		/// <summary>
@@ -299,11 +336,13 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the rectangle, in pixels</param>
 		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, RectangleF rectangle, int width = 1)
 		{
+			using (var topLeftPen = Pen.Create(topLeftColor))
+			using (var bottomRightPen = Pen.Create(bottomRightColor))
 			for (int i = 0; i < width; i++) {
-				DrawLine (topLeftColor, rectangle.TopLeft, rectangle.InnerTopRight);
-				DrawLine (topLeftColor, rectangle.TopLeft, rectangle.InnerBottomLeft);
-				DrawLine (bottomRightColor, rectangle.InnerBottomLeft, rectangle.InnerBottomRight);
-				DrawLine (bottomRightColor, rectangle.InnerTopRight, rectangle.InnerBottomRight);
+				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerTopRight);
+				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerBottomLeft);
+				DrawLine (bottomRightPen, rectangle.InnerBottomLeft, rectangle.InnerBottomRight);
+				DrawLine (bottomRightPen, rectangle.InnerTopRight, rectangle.InnerBottomRight);
 				rectangle.Inflate (-1, -1);
 			}
 		}
@@ -318,7 +357,21 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle</param>
 		public void FillRectangle (Color color, float x, float y, float width, float height)
 		{
-			Handler.FillRectangle (color, x, y, width, height);
+			using (var brush = SolidBrush.Create (color, Generator))
+				Handler.FillRectangle (brush, x, y, width, height);
+		}
+
+		/// <summary>
+		/// Fills a rectangle with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the rectangle</param>
+		/// <param name="x">X co-ordinate</param>
+		/// <param name="y">Y co-ordinate</param>
+		/// <param name="width">Width of the rectangle</param>
+		/// <param name="height">Height of the rectangle</param>
+		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
+		{
+			Handler.FillRectangle (brush, x, y, width, height);
 		}
 
 		/// <summary>
@@ -328,7 +381,18 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Location for the rectangle</param>
 		public void FillRectangle (Color color, RectangleF rectangle)
 		{
-			Handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			using (var brush = SolidBrush.Create (color, Generator))
+				Handler.FillRectangle (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
+		/// Fills a rectangle with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the rectangle</param>
+		/// <param name="rectangle">Location for the rectangle</param>
+		public void FillRectangle (IBrush brush, RectangleF rectangle)
+		{
+			Handler.FillRectangle (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
 		/// <summary>
@@ -338,8 +402,19 @@ namespace Eto.Drawing
 		/// <param name="rectangles">Enumeration of rectangles to fill</param>
 		public void FillRectangles (Color color, IEnumerable<RectangleF> rectangles)
 		{
+			using (var brush = SolidBrush.Create (color, Generator))
+				FillRectangles (brush, rectangles);
+		}
+
+		/// <summary>
+		/// Fills the specified <paramref name="rectangles"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the rectangles</param>
+		/// <param name="rectangles">Enumeration of rectangles to fill</param>
+		public void FillRectangles (IBrush brush, IEnumerable<RectangleF> rectangles)
+		{
 			foreach (var rectangle in rectangles) {
-				Handler.FillRectangle (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+				Handler.FillRectangle (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 			}
 		}
 
@@ -350,7 +425,18 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Location for the ellipse</param>
 		public void FillEllipse (Color color, RectangleF rectangle)
 		{
-			Handler.FillEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			using (var brush = SolidBrush.Create (color, Generator))
+				Handler.FillEllipse (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
+		/// Fills an ellipse with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the ellipse</param>
+		/// <param name="rectangle">Location for the ellipse</param>
+		public void FillEllipse (IBrush brush, RectangleF rectangle)
+		{
+			Handler.FillEllipse (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
 		/// <summary>
@@ -363,21 +449,46 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the ellipse</param>
 		public void FillEllipse (Color color, float x, float y, float width, float height)
 		{
-			Handler.FillEllipse (color, x, y, width, height);
+			using (var brush = SolidBrush.Create (color, Generator))
+				Handler.FillEllipse (brush, x, y, width, height);
 		}
 
 		/// <summary>
-		/// Draws an ellipse outline with the specified <paramref name="color"/>
+		/// Fills an ellipse with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the ellipse</param>
+		/// <param name="x">X co-ordinate</param>
+		/// <param name="y">Y co-ordinate</param>
+		/// <param name="width">Width of the ellipse</param>
+		/// <param name="height">Height of the ellipse</param>
+		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
+		{
+			Handler.FillEllipse (brush, x, y, width, height);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide ellipse outline with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color to outline the ellipse</param>
 		/// <param name="rectangle">Location for the ellipse</param>
 		public void DrawEllipse (Color color, RectangleF rectangle)
 		{
-			Handler.DrawEllipse (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+			using (var pen = Pen.Create (color, 1f, Generator))
+				Handler.DrawEllipse (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
 		/// <summary>
-		/// Draws an ellipse with the specified <paramref name="color"/>
+		/// Draws an ellipse outline with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="color">Pen to outline the ellipse</param>
+		/// <param name="rectangle">Location for the ellipse</param>
+		public void DrawEllipse (IPen pen, RectangleF rectangle)
+		{
+			Handler.DrawEllipse (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide ellipse outline with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Fill color</param>
 		/// <param name="x">X co-ordinate</param>
@@ -386,11 +497,25 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the ellipse</param>
 		public void DrawEllipse (Color color, float x, float y, float width, float height)
 		{
-			Handler.DrawEllipse (color, x, y, width, height);
+			using (var pen = Pen.Create (color, 1f, Generator))
+				Handler.DrawEllipse (pen, x, y, width, height);
 		}
 
 		/// <summary>
-		/// Draws an arc with the specified <paramref name="color"/>
+		/// Draws an ellipse with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to outline the ellipse</param>
+		/// <param name="x">X co-ordinate</param>
+		/// <param name="y">Y co-ordinate</param>
+		/// <param name="width">Width of the ellipse</param>
+		/// <param name="height">Height of the ellipse</param>
+		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
+		{
+			Handler.DrawEllipse (pen, x, y, width, height);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide arc with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color of the arc</param>
 		/// <param name="rectangle">Location of the arc</param>
@@ -398,11 +523,24 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
 		public void DrawArc (Color color, RectangleF rectangle, float startAngle, float sweepAngle)
 		{
-			Handler.DrawArc (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
+			using (var pen = Pen.Create (color, 1f, Generator))
+				Handler.DrawArc (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
 		}
 
 		/// <summary>
-		/// Draws an arc with the specified <paramref name="color"/>
+		/// Draws an arc with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to draw the arc</param>
+		/// <param name="rectangle">Location of the arc</param>
+		/// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the arc</param>
+		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
+		public void DrawArc (IPen pen, RectangleF rectangle, float startAngle, float sweepAngle)
+		{
+			Handler.DrawArc (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide arc with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color of the arc</param>
 		/// <param name="x">X co-ordinate of the upper left corner of the arc</param>
@@ -413,7 +551,23 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
 		public void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			Handler.DrawArc (color, x, y, width, height, startAngle, sweepAngle);
+			using (var pen = Pen.Create (color, 1f, Generator))
+				Handler.DrawArc (pen, x, y, width, height, startAngle, sweepAngle);
+		}
+
+		/// <summary>
+		/// Draws an arc with the specified <paramref name="pen"/>
+		/// </summary>
+		/// <param name="pen">Pen to draw the arc</param>
+		/// <param name="x">X co-ordinate of the upper left corner of the arc</param>
+		/// <param name="y">Y co-ordinate of the upper left corner of the arc</param>
+		/// <param name="width">Width of the arc</param>
+		/// <param name="height">Height of the arc</param>
+		/// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the arc</param>
+		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the arc</param>
+		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			Handler.DrawArc (pen, x, y, width, height, startAngle, sweepAngle);
 		}
 
 		/// <summary>
@@ -425,7 +579,20 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
 		public void FillPie (Color color, RectangleF rectangle, float startAngle, float sweepAngle)
 		{
-			Handler.FillPie (color, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
+			using (var brush = SolidBrush.Create (color, Generator))
+				Handler.FillPie (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
+		}
+
+		/// <summary>
+		/// Fills a pie with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the pie</param>
+		/// <param name="rectangle">Location of the pie</param>
+		/// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the pie</param>
+		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
+		public void FillPie (IBrush brush, RectangleF rectangle, float startAngle, float sweepAngle)
+		{
+			Handler.FillPie (brush, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height, startAngle, sweepAngle);
 		}
 
 		/// <summary>
@@ -440,7 +607,23 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
 		public void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			Handler.FillPie (color, x, y, width, height, startAngle, sweepAngle);
+			using (var brush = SolidBrush.Create (color, Generator))
+				Handler.FillPie (brush, x, y, width, height, startAngle, sweepAngle);
+		}
+
+		/// <summary>
+		/// Fills a pie with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the pie</param>
+		/// <param name="x">X co-ordinate of the upper left corner of the pie</param>
+		/// <param name="y">Y co-ordinate of the upper left corner of the pie</param>
+		/// <param name="width">Width of the pie</param>
+		/// <param name="height">Height of the pie</param>
+		/// <param name="startAngle">Elliptical (skewed) angle in degrees from the x-axis to the starting point of the pie</param>
+		/// <param name="sweepAngle">Angle in degrees from the <paramref name="startAngle"/> to the ending point of the pie</param>
+		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			Handler.FillPie (brush, x, y, width, height, startAngle, sweepAngle);
 		}
 
 		/// <summary>
@@ -452,11 +635,24 @@ namespace Eto.Drawing
 		{
 			var path = new GraphicsPath (Generator);
 			path.AddLines (points);
-			FillPath (color, path);
+			using (var brush = SolidBrush.Create (color, Generator))
+				FillPath (brush, path);
 		}
 
 		/// <summary>
-		/// Draws a polygon with the specified <paramref name="points"/>
+		/// Fills a polygon defined by <paramref name="points"/> with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the polygon</param>
+		/// <param name="points">Points of the polygon</param>
+		public void FillPolygon (IBrush brush, params PointF[] points)
+		{
+			var path = new GraphicsPath (Generator);
+			path.AddLines (points);
+			FillPath (brush, path);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide outline of a polygon with the specified <paramref name="points"/>
 		/// </summary>
 		/// <param name="color">Color to draw the polygon lines</param>
 		/// <param name="points">Points of the polygon</param>
@@ -464,17 +660,41 @@ namespace Eto.Drawing
 		{
 			var path = new GraphicsPath (Generator);
 			path.AddLines (points);
-			DrawPath (color, path);
+			using (var pen = Pen.Create (color, 1f, Generator))
+				DrawPath (pen, path);
 		}
 
 		/// <summary>
-		/// Draws the specified <paramref name="path"/>
+		/// Draws an outline of a polygon with the specified <paramref name="points"/>
+		/// </summary>
+		/// <param name="pen">Color to draw the polygon lines</param>
+		/// <param name="points">Points of the polygon</param>
+		public void DrawPolygon (IPen pen, params PointF[] points)
+		{
+			var path = new GraphicsPath (Generator);
+			path.AddLines (points);
+			DrawPath (pen, path);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel outline of the specified <paramref name="path"/>
 		/// </summary>
 		/// <param name="color">Draw color</param>
 		/// <param name="path">Path to draw</param>
 		public void DrawPath (Color color, GraphicsPath path)
 		{
-			Handler.DrawPath (color, path);
+			using (var pen = Pen.Create (color, 1f, Generator))
+				Handler.DrawPath (pen, path);
+		}
+
+		/// <summary>
+		/// Draws the specified <paramref name="path"/>
+		/// </summary>
+		/// <param name="pen">Pen to outline the path</param>
+		/// <param name="path">Path to draw</param>
+		public void DrawPath (IPen pen, GraphicsPath path)
+		{
+			Handler.DrawPath (pen, path);
 		}
 
 		/// <summary>
@@ -484,7 +704,18 @@ namespace Eto.Drawing
 		/// <param name="path">Path to fill</param>
 		public void FillPath (Color color, GraphicsPath path)
 		{
-			Handler.FillPath (color, path);
+			using (var brush = SolidBrush.Create (color, Generator))
+				Handler.FillPath (brush, path);
+		}
+
+		/// <summary>
+		/// Fills the specified <paramref name="path"/>
+		/// </summary>
+		/// <param name="brush">Brush to fill the path</param>
+		/// <param name="path">Path to fill</param>
+		public void FillPath (IBrush brush, GraphicsPath path)
+		{
+			Handler.FillPath (brush, path);
 		}
 
 		/// <summary>

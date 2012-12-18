@@ -9,6 +9,7 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using sp = System.Printing;
 using swc = System.Windows.Controls;
+using swmi = System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Eto.Platform.Wpf.Drawing;
 
@@ -247,13 +248,79 @@ namespace Eto.Platform.Wpf
 			return style;
 		}
 
-		public static swm.ImageSource ToWpf (this Image image, int? width = null)
+		public static swmi.BitmapSource ToWpf (this Image image, int? width = null)
 		{
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
 				return imageHandler.GetImageClosestToSize (width.Value);
 			else
-				return image.ControlObject as swm.ImageSource;
+				return image.ControlObject as swmi.BitmapSource;
+		}
+
+		public static swm.Pen ToWpf (this IPen pen)
+		{
+			return (swm.Pen)pen.ControlObject;
+		}
+
+		public static swm.PenLineJoin ToWpf (this PenLineJoin value)
+		{
+			switch (value) {
+			case PenLineJoin.Miter:
+				return swm.PenLineJoin.Miter;
+			case PenLineJoin.Bevel:
+				return swm.PenLineJoin.Bevel;
+			case PenLineJoin.Round:
+				return swm.PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineJoin ToEto (this swm.PenLineJoin value)
+		{
+			switch (value) {
+			case swm.PenLineJoin.Bevel:
+				return PenLineJoin.Bevel;
+			case swm.PenLineJoin.Miter:
+				return PenLineJoin.Miter;
+			case swm.PenLineJoin.Round:
+				return PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swm.PenLineCap ToWpf (this PenLineCap value)
+		{
+			switch (value) {
+			case PenLineCap.Butt:
+				return swm.PenLineCap.Flat;
+			case PenLineCap.Round:
+				return swm.PenLineCap.Round;
+			case PenLineCap.Square:
+				return swm.PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineCap ToEto (this swm.PenLineCap value)
+		{
+			switch (value) {
+			case swm.PenLineCap.Flat:
+				return PenLineCap.Butt;
+			case swm.PenLineCap.Round:
+				return PenLineCap.Round;
+			case swm.PenLineCap.Square:
+				return PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swm.Brush ToWpf (this IBrush brush)
+		{
+			return (swm.Brush)brush.ControlObject;
 		}
 	}
 }

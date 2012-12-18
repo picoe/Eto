@@ -71,40 +71,40 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static ImageInterpolation ToEto (this sd.Drawing2D.InterpolationMode value)
+		public static ImageInterpolation ToEto (this sd2.InterpolationMode value)
 		{
 			switch (value) {
-			case sd.Drawing2D.InterpolationMode.NearestNeighbor:
+			case sd2.InterpolationMode.NearestNeighbor:
 				return ImageInterpolation.None;
-			case sd.Drawing2D.InterpolationMode.Low:
+			case sd2.InterpolationMode.Low:
 				return ImageInterpolation.Low;
-			case sd.Drawing2D.InterpolationMode.High:
+			case sd2.InterpolationMode.High:
 				return ImageInterpolation.Medium;
-			case sd.Drawing2D.InterpolationMode.HighQualityBilinear:
+			case sd2.InterpolationMode.HighQualityBilinear:
 				return ImageInterpolation.High;
-			case sd.Drawing2D.InterpolationMode.Default:
+			case sd2.InterpolationMode.Default:
 				return ImageInterpolation.Default;
-			case sd.Drawing2D.InterpolationMode.HighQualityBicubic:
-			case sd.Drawing2D.InterpolationMode.Bicubic:
-			case sd.Drawing2D.InterpolationMode.Bilinear:
+			case sd2.InterpolationMode.HighQualityBicubic:
+			case sd2.InterpolationMode.Bicubic:
+			case sd2.InterpolationMode.Bilinear:
 			default:
 				throw new NotSupportedException ();
 			}
 		}
 
-		public static sd.Drawing2D.InterpolationMode ToSD (this ImageInterpolation value)
+		public static sd2.InterpolationMode ToSD (this ImageInterpolation value)
 		{
 			switch (value) {
 			case ImageInterpolation.Default:
-				return sd.Drawing2D.InterpolationMode.Default;
+				return sd2.InterpolationMode.Default;
 			case ImageInterpolation.None:
-				return sd.Drawing2D.InterpolationMode.NearestNeighbor;
+				return sd2.InterpolationMode.NearestNeighbor;
 			case ImageInterpolation.Low:
-				return sd.Drawing2D.InterpolationMode.Low;
+				return sd2.InterpolationMode.Low;
 			case ImageInterpolation.Medium:
-				return sd.Drawing2D.InterpolationMode.High;
+				return sd2.InterpolationMode.High;
 			case ImageInterpolation.High:
-				return sd.Drawing2D.InterpolationMode.HighQualityBilinear;
+				return sd2.InterpolationMode.HighQualityBilinear;
 			default:
 				throw new NotSupportedException ();
 			}
@@ -267,7 +267,7 @@ namespace Eto.Platform.Windows
 			return h.Control;
 		}
 
-		public static sd.Drawing2D.GraphicsPath ToSD (this GraphicsPath graphicsPath)
+		public static sd2.GraphicsPath ToSD (this GraphicsPath graphicsPath)
 		{
 			var h = (GraphicsPathHandler)graphicsPath.Handler;
 			return h.Control;
@@ -353,14 +353,80 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static sd.Drawing2D.Matrix ToSD (this IMatrix m)
+		public static sd2.Matrix ToSD (this IMatrix m)
 		{
-			return (sd.Drawing2D.Matrix)m.ControlObject;
+			return (sd2.Matrix)m.ControlObject;
 		}
 
 		public static float DegreesToRadians (float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;
+		}
+
+		public static sd.Pen ToSD (this IPen pen)
+		{
+			return (sd.Pen)pen.ControlObject;
+		}
+
+		public static sd.Brush ToSD (this IBrush brush)
+		{
+			return (sd.Brush)brush.ControlObject;
+		}
+
+		public static sd2.LineJoin ToSD (this PenLineJoin value)
+		{
+			switch (value) {
+			case PenLineJoin.Miter:
+				return sd2.LineJoin.Miter;
+			case PenLineJoin.Bevel:
+				return sd2.LineJoin.Bevel;
+			case PenLineJoin.Round:
+				return sd2.LineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineJoin ToEto (this sd2.LineJoin value)
+		{
+			switch (value) {
+			case sd2.LineJoin.Bevel:
+				return PenLineJoin.Bevel;
+			case sd2.LineJoin.Miter:
+				return PenLineJoin.Miter;
+			case sd2.LineJoin.Round:
+				return PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static sd2.LineCap ToSD (this PenLineCap value)
+		{
+			switch (value) {
+			case PenLineCap.Butt:
+				return sd2.LineCap.Flat;
+			case PenLineCap.Round:
+				return sd2.LineCap.Round;
+			case PenLineCap.Square:
+				return sd2.LineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineCap ToEto (this sd2.LineCap value)
+		{
+			switch (value) {
+			case sd2.LineCap.Flat:
+				return PenLineCap.Butt;
+			case sd2.LineCap.Round:
+				return PenLineCap.Round;
+			case sd2.LineCap.Square:
+				return PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

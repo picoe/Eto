@@ -150,17 +150,6 @@ namespace Eto.Platform.Mac
 				newSize.Height = size.Height;
 			view.SetFrameSize (newSize);
 		}
-
-		public static CGAffineTransform ToCG (this IMatrix matrix)
-		{
-			return (CGAffineTransform)matrix.ControlObject;
-		}
-
-		public static float DegreesToRadians (float angle)
-		{
-			return (float)Math.PI * angle / 180.0f;
-		}
-
 	}
 }
 

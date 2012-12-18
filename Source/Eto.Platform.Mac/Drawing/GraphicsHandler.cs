@@ -260,33 +260,24 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 		}
 
-		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
+		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
 		{
 			StartDrawing ();
-			if (startx == endx && starty == endy) {
-				// drawing a one pixel line in retina display draws more than just one pixel
-				DrawRectangle (color, startx, starty, 1, 1);
-				return;
-			}
-			Control.SetStrokeColor (color.ToCGColor ());
-			Control.SetLineCap (CGLineCap.Square);
-			Control.SetLineWidth (1.0F);
+			pen.Apply (this);
 			Control.StrokeLineSegments (new SD.PointF[] { TranslateView (new SD.PointF (startx, starty), true), TranslateView (new SD.PointF (endx, endy), true) });
 			EndDrawing ();
 		}
 
-		public void DrawRectangle (Color color, float x, float y, float width, float height)
+		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
-			Control.SetStrokeColor (color.ToCGColor ());
-			Control.SetLineCap (CGLineCap.Square);
-			Control.SetLineWidth (1.0F);
+			pen.Apply (this);
 			Control.StrokeRect (rect);
 			EndDrawing ();
 		}
 
-		public void FillRectangle (Color color, float x, float y, float width, float height)
+		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			/*	if (width == 1 || height == 1)
@@ -294,24 +285,22 @@ namespace Eto.Platform.iOS.Drawing
 				DrawLine(color, x, y, x+width-1, y+height-1);
 				return;
 			}*/
-			
-			Control.SetFillColor (color.ToCGColor ());
+
+			brush.Apply (this);
 			Control.FillRect (TranslateView (new SD.RectangleF (x, y, width, height), true, true));
 			EndDrawing ();
 		}
 
-		public void DrawEllipse (Color color, float x, float y, float width, float height)
+		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
-			Control.SetStrokeColor (color.ToCGColor ());
-			Control.SetLineCap (CGLineCap.Square);
-			Control.SetLineWidth (1.0F);
+			pen.Apply (this);
 			Control.StrokeEllipseInRect (rect);
 			EndDrawing ();
 		}
 
-		public void FillEllipse (Color color, float x, float y, float width, float height)
+		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			/*	if (width == 1 || height == 1)
@@ -320,17 +309,17 @@ namespace Eto.Platform.iOS.Drawing
 				return;
 			}*/
 
-			Control.SetFillColor (color.ToCGColor ());
+			brush.Apply (this);
 			Control.FillEllipseInRect (TranslateView (new SD.RectangleF (x, y, width, height), true, true));
 			EndDrawing ();
 		}
 
-		public void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			StartDrawing ();
 
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
-			Control.SetStrokeColor (color.ToCGColor ());
+			pen.Apply (this);
 			var yscale = rect.Height / rect.Width;
 			Control.ScaleCTM (1.0f, yscale);
 			Control.AddArc (rect.GetMidX(), rect.GetMidY() / yscale, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), false);
@@ -338,12 +327,12 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			StartDrawing ();
 
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true, true);
-			Control.SetFillColor (color.ToCGColor ());
+			brush.Apply (this);
 			var yscale = rect.Height / rect.Width;
 			Control.ScaleCTM (1.0f, yscale);
 			Control.MoveTo (rect.GetMidX(), rect.GetMidY() / yscale);
@@ -354,7 +343,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void FillPath (Color color, GraphicsPath path)
+		public void FillPath (IBrush brush, GraphicsPath path)
 		{
 			StartDrawing ();
 
@@ -362,21 +351,19 @@ namespace Eto.Platform.iOS.Drawing
 			Control.BeginPath ();
 			Control.AddPath (path.ControlObject as CGPath);
 			Control.ClosePath ();
-			Control.SetFillColor (color.ToCGColor ());
+			brush.Apply (this);
 			Control.FillPath ();
 			EndDrawing ();
 		}
 
-		public void DrawPath (Color color, GraphicsPath path)
+		public void DrawPath (IPen pen, GraphicsPath path)
 		{
 			StartDrawing ();
 			
 			Control.TranslateCTM (offset, offset);
-			Control.SetLineCap (CGLineCap.Square);
-			Control.SetLineWidth (1.0F);
+			pen.Apply (this);
 			Control.BeginPath ();
 			Control.AddPath (((GraphicsPathHandler)path.Handler).Control);
-			Control.SetStrokeColor (color.ToCGColor ());
 			Control.StrokePath ();
 			
 			EndDrawing ();

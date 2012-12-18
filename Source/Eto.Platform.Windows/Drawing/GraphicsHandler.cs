@@ -79,32 +79,29 @@ namespace Eto.Platform.Windows.Drawing
 		{
 		}
 
-		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
+		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
 		{
-			if (startx == endx && starty == endy)
-				this.Control.FillRectangle (new sd.SolidBrush (color.ToSD ()), startx, starty, 1, 1);
-			else
-				this.Control.DrawLine (new sd.Pen (color.ToSD ()), startx, starty, endx, endy);
+			this.Control.DrawLine (pen.ToSD (), startx, starty, endx, endy);
 		}
 
-		public void DrawRectangle (Color color, float x, float y, float width, float height)
+		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
 		{
-			Control.DrawRectangle (new sd.Pen (color.ToSD ()), x, y, width, height);
+			Control.DrawRectangle (pen.ToSD (), x, y, width, height);
 		}
 
-		public void FillRectangle (Color color, float x, float y, float width, float height)
+		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
 		{
-			Control.FillRectangle (new sd.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
+			Control.FillRectangle (brush.ToSD (), x - 0.5f, y - 0.5f, width, height);
 		}
 
-		public void DrawEllipse (Color color, float x, float y, float width, float height)
+		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
 		{
-			Control.DrawEllipse (new sd.Pen (color.ToSD ()), x, y, width, height);
+			Control.DrawEllipse (pen.ToSD (), x, y, width, height);
 		}
 
-		public void FillEllipse (Color color, float x, float y, float width, float height)
+		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
 		{
-			Control.FillEllipse (new sd.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height);
+			Control.FillEllipse (brush.ToSD (), x - 0.5f, y - 0.5f, width, height);
 		}
 
 		public float GetConvertedAngle (float initialAngle, float majorRadius, float minorRadius, bool circularToElliptical)
@@ -172,7 +169,7 @@ namespace Eto.Platform.Windows.Drawing
 			return radians * 180.0f / (float)Math.PI;
 		}
 
-		public void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			if (width != height) {
 				var endAngle = startAngle + sweepAngle;
@@ -180,10 +177,10 @@ namespace Eto.Platform.Windows.Drawing
 				endAngle = GetConvertedAngle (endAngle, width / 2, height / 2, false);
 				sweepAngle = endAngle - startAngle;
 			}
-			Control.DrawArc (new sd.Pen (color.ToSD ()), x, y, width, height, startAngle, sweepAngle);
+			Control.DrawArc (pen.ToSD (), x, y, width, height, startAngle, sweepAngle);
 		}
 
-		public void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			if (width != height) {
 				var endAngle = startAngle + sweepAngle;
@@ -191,20 +188,20 @@ namespace Eto.Platform.Windows.Drawing
 				endAngle = GetConvertedAngle (endAngle, width / 2, height / 2, false);
 				sweepAngle = endAngle - startAngle;
 			}
-			Control.FillPie (new sd.SolidBrush (color.ToSD ()), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
+			Control.FillPie (brush.ToSD (), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
 		}
 		
-		public void FillPath (Color color, GraphicsPath path)
+		public void FillPath (IBrush brush, GraphicsPath path)
 		{
 			var old = Control.PixelOffsetMode;
 			Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
-			Control.FillPath (new sd.SolidBrush (color.ToSD ()), GraphicsPathHandler.GetControl (path));
+			Control.FillPath (brush.ToSD (), GraphicsPathHandler.GetControl (path));
 			Control.PixelOffsetMode = old;
 		}
 
-		public void DrawPath (Color color, GraphicsPath path)
+		public void DrawPath (IPen pen, GraphicsPath path)
 		{
-			Control.DrawPath (new sd.Pen (color.ToSD ()), GraphicsPathHandler.GetControl (path));
+			Control.DrawPath (pen.ToSD (), GraphicsPathHandler.GetControl (path));
 		}
 
 		public void DrawImage (Image image, float x, float y)

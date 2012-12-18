@@ -39,8 +39,8 @@ namespace Eto.Test.Sections.Drawing
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics (image)) {
-				graphics.DrawLine (Colors.Blue, Point.Empty, new Point (image.Size));
-				graphics.DrawRectangle (Colors.Blue, new Rectangle (image.Size - 1));
+				graphics.DrawLine (Pens.Blue (), Point.Empty, new Point (image.Size));
+				graphics.DrawRectangle (Pens.Blue (), new Rectangle (image.Size - 1));
 			}
 
 			return new ImageView { Image = image };
@@ -52,8 +52,8 @@ namespace Eto.Test.Sections.Drawing
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics (image)) {
-				graphics.DrawLine (Colors.Blue, Point.Empty, new Point (image.Size));
-				graphics.DrawRectangle (Colors.Black, new Rectangle (image.Size - 1));
+				graphics.DrawLine (Pens.Blue (), Point.Empty, new Point (image.Size));
+				graphics.DrawRectangle (Pens.Black (), new Rectangle (image.Size - 1));
 			}
 
 			return new ImageView { Image = image };

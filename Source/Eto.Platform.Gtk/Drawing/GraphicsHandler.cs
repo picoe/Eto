@@ -137,16 +137,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
+		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
 		{
 			Control.Save ();
-			Control.Color = color.ToCairo ();
+			pen.Apply (this);
 			if (startx != endx || starty != endy) {
 				// to draw a line, it must move..
 				Control.MoveTo (startx + offset, starty + offset);
 				Control.LineTo (endx + offset, endy + offset);
-				Control.LineCap = Cairo.LineCap.Square;
-				Control.LineWidth = 1.0;
 				Control.Stroke ();
 			} else {
 				// to draw one pixel, we must fill it
@@ -156,29 +154,28 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 
-		public void DrawRectangle (Color color, float x, float y, float width, float height)
+		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			Control.Color = color.ToCairo ();
+			pen.Apply (this);
 			Control.Rectangle (x + offset, y + offset, width, height);
-			Control.LineWidth = 1.0;
 			Control.Stroke ();
 			Control.Restore ();
 		}
 
-		public void FillRectangle (Color color, float x, float y, float width, float height)
+		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			Control.Color = color.ToCairo ();
+			brush.Apply (this);
 			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
 			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawEllipse (Color color, float x, float y, float width, float height)
+		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			Control.Color = color.ToCairo ();
+			pen.Apply (this);
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -186,15 +183,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 			else
 				Control.Scale (width / height, 1.0);
 			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
-			Control.LineWidth = 1.0;
 			Control.Stroke ();
 			Control.Restore ();
 		}
 
-		public void FillEllipse (Color color, float x, float y, float width, float height)
+		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			Control.Color = color.ToCairo ();
+			brush.Apply (this);
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -206,10 +202,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 
-		public void DrawArc (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
-			Control.Color = color.ToCairo ();
+			pen.Apply (this);
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -217,15 +213,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 			else
 				Control.Scale (width / height, 1.0);
 			Control.Arc (0, 0, radius, DegreeToRadian (startAngle), DegreeToRadian (startAngle + sweepAngle));
-			Control.LineWidth = 1.0;
 			Control.Stroke ();
 			Control.Restore ();
 		}
 
-		public void FillPie (Color color, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
-			Control.Color = color.ToCairo ();
+			brush.Apply (this);
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -238,26 +233,24 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 
-		public void FillPath (Color color, GraphicsPath path)
+		public void FillPath (IBrush brush, GraphicsPath path)
 		{
 			Control.Save ();
+			brush.Apply (this);
 			Control.Translate (inverseoffset, inverseoffset);
-			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
 			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawPath (Color color, GraphicsPath path)
+		public void DrawPath (IPen pen, GraphicsPath path)
 		{
 			Control.Save ();
+			pen.Apply (this);
 			Control.Translate (offset, offset);
-			Control.Color = color.ToCairo ();
 			var pathHandler = path.Handler as GraphicsPathHandler;
 			pathHandler.Apply (this);
-			Control.LineCap = Cairo.LineCap.Square;
-			Control.LineWidth = 1.0;
 			Control.Stroke ();
 			Control.Restore ();
 		}

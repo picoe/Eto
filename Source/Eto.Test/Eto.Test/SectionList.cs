@@ -58,8 +58,8 @@ namespace Eto.Test
 				return null;
 			}
 		}
-    }
-	
+	}
+
 		
 	public class SectionList : TreeGridView
 	{
@@ -122,6 +122,9 @@ namespace Eto.Test
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
+			yield return new Section<PenThicknessSection> { Text = "Pen Thickness" };
+			yield return new Section<PenLineJoinSection> { Text = "Pen Line Join" };
+			yield return new Section<PenLineCapSection> { Text = "Pen Line Cap" };
 			yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
 			yield return new Section<TransformSection> { Text = "Transform" };
 		}

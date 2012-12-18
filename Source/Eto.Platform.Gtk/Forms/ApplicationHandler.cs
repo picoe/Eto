@@ -52,8 +52,8 @@ namespace Eto.Platform.GtkSharp
 
 		protected virtual void DrawBadgeLabel (Graphics graphics, Size size, string badgeLabel)
 		{
-			graphics.FillEllipse (Colors.Red, new Rectangle (size));
-			graphics.DrawEllipse (Colors.White, new Rectangle (size));
+			graphics.FillEllipse (Brushes.Red (), new Rectangle (size));
+			graphics.DrawEllipse (Pens.White (), new Rectangle (size));
 			var font = new Font(SystemFont.Bold, 10);
 			var labelSize = graphics.MeasureString (font, badgeLabel);
 			graphics.DrawText (font, Colors.White, new Point ((int)((size.Width - labelSize.Width) / 2), (int)((size.Height - labelSize.Height) / 2)), badgeLabel);

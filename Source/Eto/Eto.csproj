@@ -78,6 +78,7 @@
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\PenLineJoin.cs" />
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Matrix.cs" />
@@ -371,6 +372,12 @@
     <Compile Include="Drawing\FontFamilies.cs" />
     <Compile Include="Forms\Cursors.cs" />
     <Compile Include="ObjectCache.cs" />
+    <Compile Include="Drawing\Pen.cs" />
+    <Compile Include="Drawing\Pens.cs" />
+    <Compile Include="Drawing\Brushes.cs" />
+    <Compile Include="Drawing\SolidBrush.cs" />
+    <Compile Include="Drawing\Brush.cs" />
+    <Compile Include="Drawing\PenLineCap.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

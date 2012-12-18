@@ -12,6 +12,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class DrawableHandler : MacView<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
+		IBrush backgroundBrush;
+		Color backgroundColor;
+
 		public class EtoDrawableView : MacEventView
 		{
 			Drawable Drawable
@@ -49,8 +52,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override Color BackgroundColor
 		{
-			get;
-			set;
+			get { return backgroundColor; }
+			set 
+			{
+				backgroundColor = value;
+				if (backgroundColor.A > 0)
+					backgroundBrush = SolidBrush.Create (backgroundColor, Widget.Generator);
+				else
+					backgroundBrush = null;
+			}
 		}
 		
 		public void Create ()
@@ -70,8 +80,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null) {
 				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height, Control.IsFlipped));
-				if (BackgroundColor.A != 0) {
-					graphics.FillRectangle (BackgroundColor, rect);
+				if (backgroundBrush != null) {
+					graphics.FillRectangle (backgroundBrush, rect);
 				}
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}

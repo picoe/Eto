@@ -196,6 +196,18 @@
     </Compile>
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\PenHandler.cs">
+      <Link>Drawing\PenHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\SolidBrushHandler.cs">
+      <Link>Drawing\SolidBrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\BrushHandler.cs">
+      <Link>Drawing\BrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\MatrixHandler.cs">
+      <Link>Drawing\MatrixHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">
