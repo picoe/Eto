@@ -123,7 +123,7 @@ namespace Eto.Platform.Wpf
 			
 			// Forms
 			Add <IApplication> (() => new ApplicationHandler ());
-			//Add <IClipboard> (() => new ClipboardHandler ());
+			Add <IClipboard> (() => new ClipboardHandler ());
 			Add <IColorDialog> (() => new ColorDialogHandler ());
 			Add <ICursor> (() => new CursorHandler ());
 			Add <IDialog> (() => new DialogHandler ());
