@@ -208,6 +208,11 @@
     <Compile Include="..\Eto.Platform.Mac\Drawing\MatrixHandler.cs">
       <Link>Drawing\MatrixHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
+    <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

@@ -147,7 +147,6 @@
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
-    <Compile Include="Sections\Drawing\PathSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
     <Compile Include="Dialogs\About.cs" />
@@ -174,6 +173,7 @@
     <Compile Include="Sections\Drawing\PenThicknessSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\PenLineCapSection.cs" />
+    <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

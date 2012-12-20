@@ -6,42 +6,22 @@ using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class ComboBoxHandler : MacControl<UIButton, ComboBox>, IComboBox
+	public class ComboBoxHandler : iosControl<UILabel, ComboBox>, IComboBox
 	{
 		
 		public ComboBoxHandler()
 		{
-			Control = new NSPopUpButton();
-			Control.Activated += delegate {
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
-			};
-			
-			/*Control.Changed += delegate {
-				Widget.OnSelectedIndexChanged(EventArgs.Empty);
-			};
-			Control.Editable = false;*/
-		}
-
-		public void AddItem(object item)
-		{
-			Control.AddItem(Convert.ToString(item));
-		}
-
-		public void RemoveItem(object item)
-		{
-			Control.RemoveItem(Convert.ToString(item));
+			Control = new UILabel();
 		}
 
 		public int SelectedIndex
 		{
-			get	{ return Control.IndexOfSelectedItem; }
-			set { Control.SelectItem(value); }
+			get	{ return 0; }
+			set {  }
 		}
 
-		public void RemoveAll()
-		{
-			Control.RemoveAllItems();
+		public IListStore DataStore {
+			get; set;
 		}
-
 	}
 }
