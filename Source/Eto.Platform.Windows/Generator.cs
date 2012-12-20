@@ -63,7 +63,7 @@ namespace Eto.Platform.Windows
 			Add <IFont> (() => new FontHandler ());
 			Add <IFonts> (() => new FontsHandler ());
 			Add <IGraphics> (() => new GraphicsHandler ());
-			Add <IGraphicsPath> (() => new GraphicsPathHandler ());
+			Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			Add <IMatrixHandler> (() => new MatrixHandler ());

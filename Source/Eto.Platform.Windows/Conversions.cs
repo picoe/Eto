@@ -267,12 +267,6 @@ namespace Eto.Platform.Windows
 			return h.Control;
 		}
 
-		public static sd2.GraphicsPath ToSD (this GraphicsPath graphicsPath)
-		{
-			var h = (GraphicsPathHandler)graphicsPath.Handler;
-			return h.Control;
-		}
-
 		public static sd.Image ToSD (this Image graphics)
 		{
 			var h = (BitmapHandler)graphics.Handler;
@@ -427,6 +421,11 @@ namespace Eto.Platform.Windows
 			default:
 				throw new NotSupportedException ();
 			}
+		}
+
+		public static sd2.GraphicsPath ToSD (this IGraphicsPath path)
+		{
+			return (sd2.GraphicsPath)path.ControlObject;
 		}
 	}
 }

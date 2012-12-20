@@ -93,16 +93,16 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Fills the specified <paramref name="path"/>
 		/// </summary>
-		/// <param name="color">Fill color</param>
+		/// <param name="brush">Brush to fill the path</param>
 		/// <param name="path">Path to fill</param>
-		void FillPath (IBrush brush, GraphicsPath path);
+		void FillPath (IBrush brush, IGraphicsPath path);
 
 		/// <summary>
 		/// Draws the specified <paramref name="path"/>
 		/// </summary>
-		/// <param name="color">Draw color</param>
+		/// <param name="pen">Pen to outline the path</param>
 		/// <param name="path">Path to draw</param>
-		void DrawPath (IPen pen, GraphicsPath path);
+		void DrawPath (IPen pen, IGraphicsPath path);
 
 		/// <summary>
 		/// Draws the specified <paramref name="image"/> at a location with no scaling
@@ -633,7 +633,7 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void FillPolygon (Color color, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = GraphicsPath.Create (Generator);
 			path.AddLines (points);
 			using (var brush = SolidBrush.Create (color, Generator))
 				FillPath (brush, path);
@@ -646,7 +646,7 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void FillPolygon (IBrush brush, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = GraphicsPath.Create (Generator);
 			path.AddLines (points);
 			FillPath (brush, path);
 		}
@@ -658,7 +658,7 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void DrawPolygon (Color color, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = GraphicsPath.Create (Generator);
 			path.AddLines (points);
 			using (var pen = Pen.Create (color, 1f, Generator))
 				DrawPath (pen, path);
@@ -671,7 +671,7 @@ namespace Eto.Drawing
 		/// <param name="points">Points of the polygon</param>
 		public void DrawPolygon (IPen pen, params PointF[] points)
 		{
-			var path = new GraphicsPath (Generator);
+			var path = GraphicsPath.Create (Generator);
 			path.AddLines (points);
 			DrawPath (pen, path);
 		}
@@ -681,7 +681,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Draw color</param>
 		/// <param name="path">Path to draw</param>
-		public void DrawPath (Color color, GraphicsPath path)
+		public void DrawPath (Color color, IGraphicsPath path)
 		{
 			using (var pen = Pen.Create (color, 1f, Generator))
 				Handler.DrawPath (pen, path);
@@ -692,7 +692,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="pen">Pen to outline the path</param>
 		/// <param name="path">Path to draw</param>
-		public void DrawPath (IPen pen, GraphicsPath path)
+		public void DrawPath (IPen pen, IGraphicsPath path)
 		{
 			Handler.DrawPath (pen, path);
 		}
@@ -702,7 +702,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Fill color</param>
 		/// <param name="path">Path to fill</param>
-		public void FillPath (Color color, GraphicsPath path)
+		public void FillPath (Color color, IGraphicsPath path)
 		{
 			using (var brush = SolidBrush.Create (color, Generator))
 				Handler.FillPath (brush, path);
@@ -713,7 +713,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="brush">Brush to fill the path</param>
 		/// <param name="path">Path to fill</param>
-		public void FillPath (IBrush brush, GraphicsPath path)
+		public void FillPath (IBrush brush, IGraphicsPath path)
 		{
 			Handler.FillPath (brush, path);
 		}

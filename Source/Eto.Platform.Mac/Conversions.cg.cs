@@ -158,6 +158,16 @@ namespace Eto.Platform.iOS
 		{
 			brush.ToHandler ().Apply (graphics);
 		}
+
+		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)
+		{
+			return (GraphicsPathHandler)path.ControlObject;
+		}
+
+		public static CGPath ToCG (this IGraphicsPath path)
+		{
+			return path.ToHandler ().Control;
+		}
 	}
 }
 

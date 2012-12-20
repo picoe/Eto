@@ -58,6 +58,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Platform.Windows\CustomControls\TreeController.cs">
       <Link>CustomControls\TreeGridView\TreeController.cs</Link>
     </Compile>

@@ -322,5 +322,20 @@ namespace Eto.Platform.Wpf
 		{
 			return (swm.Brush)brush.ControlObject;
 		}
+
+		public static swm.Matrix ToWpf (this IMatrix matrix)
+		{
+			return (swm.Matrix)matrix.ControlObject;
+		}
+
+		public static swm.Transform ToWpfTransform (this IMatrix matrix)
+		{
+			return new swm.MatrixTransform (matrix.ToWpf ());
+		}
+
+		public static swm.PathGeometry ToWpf (this IGraphicsPath path)
+		{
+			return (swm.PathGeometry)path.ControlObject;
+		}
 	}
 }

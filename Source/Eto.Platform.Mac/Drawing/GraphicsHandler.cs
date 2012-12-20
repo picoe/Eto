@@ -321,8 +321,9 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
 			pen.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			Control.ScaleCTM (1.0f, yscale);
-			Control.AddArc (rect.GetMidX(), rect.GetMidY() / yscale, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), false);
+			var centerY = rect.GetMidY();
+			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
+			Control.AddArc (rect.GetMidX(), centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
 			Control.StrokePath ();
 			EndDrawing ();
 		}
@@ -334,36 +335,37 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true, true);
 			brush.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			Control.ScaleCTM (1.0f, yscale);
-			Control.MoveTo (rect.GetMidX(), rect.GetMidY() / yscale);
-			Control.AddArc (rect.GetMidX(), rect.GetMidY() / yscale, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), false);
-			Control.AddLineToPoint (rect.GetMidX(), rect.GetMidY() / yscale);
+			var centerY = rect.GetMidY();
+			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
+			Control.MoveTo (rect.GetMidX(), centerY);
+			Control.AddArc (rect.GetMidX(), centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddLineToPoint (rect.GetMidX(), centerY);
 			Control.ClosePath ();
 			Control.FillPath ();
 			EndDrawing ();
 		}
 
-		public void FillPath (IBrush brush, GraphicsPath path)
+		public void FillPath (IBrush brush, IGraphicsPath path)
 		{
 			StartDrawing ();
 
 			Control.TranslateCTM (inverseoffset, inverseoffset);
 			Control.BeginPath ();
-			Control.AddPath (path.ControlObject as CGPath);
+			Control.AddPath (path.ToCG ());
 			Control.ClosePath ();
 			brush.Apply (this);
 			Control.FillPath ();
 			EndDrawing ();
 		}
 
-		public void DrawPath (IPen pen, GraphicsPath path)
+		public void DrawPath (IPen pen, IGraphicsPath path)
 		{
 			StartDrawing ();
 			
 			Control.TranslateCTM (offset, offset);
 			pen.Apply (this);
 			Control.BeginPath ();
-			Control.AddPath (((GraphicsPathHandler)path.Handler).Control);
+			Control.AddPath (path.ToCG ());
 			Control.StrokePath ();
 			
 			EndDrawing ();
@@ -451,9 +453,9 @@ namespace Eto.Platform.iOS.Drawing
 			base.Dispose (disposing);
 		}
 #endif
-		public void TranslateTransform (float dx, float dy)
+		public void TranslateTransform (float offsetX, float offsetY)
 		{
-			Control.TranslateCTM (dx, dy);
+			Control.TranslateCTM (offsetX, offsetY);
 		}
 		
 		public void RotateTransform (float angle)
@@ -462,9 +464,9 @@ namespace Eto.Platform.iOS.Drawing
 			Control.RotateCTM (angle);
 		}
 		
-		public void ScaleTransform(float sx, float sy)
+		public void ScaleTransform(float scaleX, float scaleY)
 		{
-			Control.ScaleCTM(sx, sy);
+			Control.ScaleCTM(scaleX, scaleY);
 		}
 		
 		public void MultiplyTransform (IMatrix matrix)

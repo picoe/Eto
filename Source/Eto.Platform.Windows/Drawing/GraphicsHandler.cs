@@ -36,11 +36,14 @@ namespace Eto.Platform.Windows.Drawing
 			this.Control = graphics;			
 		}
 		
-		public bool Antialias {
-			get {
+		public bool Antialias
+		{
+			get
+			{
 				return (this.Control.SmoothingMode == System.Drawing.Drawing2D.SmoothingMode.AntiAlias);
 			}
-			set {
+			set
+			{
 				if (value)
 					this.Control.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.AntiAlias;
 				else
@@ -48,15 +51,18 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 
-		public ImageInterpolation ImageInterpolation {
+		public ImageInterpolation ImageInterpolation
+		{
 			get { return imageInterpolation; }
-			set {
+			set
+			{
 				imageInterpolation = value;
 				Control.InterpolationMode = value.ToSD ();
 			}
 		}
 
-		public PixelOffsetMode PixelOffsetMode {
+		public PixelOffsetMode PixelOffsetMode
+		{
 			get { return Control.PixelOffsetMode.ToEto (); }
 			set { Control.PixelOffsetMode = value.ToSD (); }
 		}
@@ -191,38 +197,38 @@ namespace Eto.Platform.Windows.Drawing
 			Control.FillPie (brush.ToSD (), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
 		}
 		
-		public void FillPath (IBrush brush, GraphicsPath path)
+		public void FillPath (IBrush brush, IGraphicsPath path)
 		{
 			var old = Control.PixelOffsetMode;
 			Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
-			Control.FillPath (brush.ToSD (), GraphicsPathHandler.GetControl (path));
+			Control.FillPath (brush.ToSD (), path.ToSD ());
 			Control.PixelOffsetMode = old;
 		}
 
-		public void DrawPath (IPen pen, GraphicsPath path)
+		public void DrawPath (IPen pen, IGraphicsPath path)
 		{
-			Control.DrawPath (pen.ToSD (), GraphicsPathHandler.GetControl (path));
+			Control.DrawPath (pen.ToSD (), path.ToSD ());
 		}
 
 		public void DrawImage (Image image, float x, float y)
 		{
-            var handler = image.Handler as IWindowsImage;
+			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage (this, x, y);
 		}
 
 		public void DrawImage (Image image, float x, float y, float width, float height)
-        {
+		{
 			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage (this, x, y, width, height);
-        }
+		}
 
 		public void DrawImage (Image image, RectangleF source, RectangleF destination)
-        {
+		{
 			var handler = image.Handler as IWindowsImage;
 			handler.DrawImage (this, source, destination);
-        }
+		}
 
-        public void DrawText(Font font, Color color, float x, float y, string text)
+		public void DrawText (Font font, Color color, float x, float y, string text)
 		{
 			sd.Brush brush = new sd.SolidBrush (color.ToSD ());
 			Control.DrawString (text, (sd.Font)font.ControlObject, brush, x, y, defaultStringFormat);
@@ -245,51 +251,50 @@ namespace Eto.Platform.Windows.Drawing
 
 			return rect.Size.ToEto ();
 			/**/
-        }
+		}
 
 		public void Flush ()
 		{
 			Control.Flush ();
 		}
 
-        public void TranslateTransform(float dx, float dy)
-        {
-            this.Control.TranslateTransform(dx, dy);
-        }
+		public void TranslateTransform (float offsetX, float offsetY)
+		{
+			this.Control.TranslateTransform (offsetX, offsetY);
+		}
 
-        public void RotateTransform(float angle)
-        {
-            this.Control.RotateTransform(angle);
-        }
+		public void RotateTransform (float angle)
+		{
+			this.Control.RotateTransform (angle);
+		}
 
-        public void ScaleTransform(float sx, float sy)
-        {
-            this.Control.ScaleTransform(sx, sy);
-        }
+		public void ScaleTransform (float scaleX, float scaleY)
+		{
+			this.Control.ScaleTransform (scaleX, scaleY);
+		}
 
-        public void MultiplyTransform(IMatrix matrix)
-        {
-            this.Control.MultiplyTransform((sd.Drawing2D.Matrix)matrix.ControlObject);
-        }
+		public void MultiplyTransform (IMatrix matrix)
+		{
+			this.Control.MultiplyTransform ((sd.Drawing2D.Matrix)matrix.ControlObject);
+		}
 
-        public void SaveTransform()
-        {
-            if (savedTransforms == null)
-                savedTransforms = new Stack<sd.Drawing2D.Matrix>();
+		public void SaveTransform ()
+		{
+			if (savedTransforms == null)
+				savedTransforms = new Stack<sd.Drawing2D.Matrix> ();
 
-            savedTransforms.Push(Control.Transform);
-        }
+			savedTransforms.Push (Control.Transform);
+		}
 
-        public void RestoreTransform()
-        {
-            if (savedTransforms != null && savedTransforms.Count > 0)
-            {
-                var t = savedTransforms.Pop();
+		public void RestoreTransform ()
+		{
+			if (savedTransforms != null && savedTransforms.Count > 0) {
+				var t = savedTransforms.Pop ();
 
 				Control.Transform = t;
 
-                t.Dispose();
-            }
-        }
-    }
+				t.Dispose ();
+			}
+		}
+	}
 }

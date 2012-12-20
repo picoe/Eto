@@ -251,6 +251,9 @@
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

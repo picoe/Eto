@@ -117,7 +117,7 @@ namespace Eto.Test
 		{
 			yield return new Section<BitmapSection> { Text = "Bitmap" };
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
-			yield return new Section<PathSection> { Text = "Line Path" };
+			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };

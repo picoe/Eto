@@ -49,7 +49,7 @@
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
-    <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenLineJoinSection.cs" />
     <Compile Include="Sections\Drawing\PenThicknessSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />

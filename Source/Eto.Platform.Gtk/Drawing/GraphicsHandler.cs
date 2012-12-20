@@ -29,11 +29,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public double InverseOffset { get { return inverseoffset; } }
 
-		float DegreeToRadian (float angle)
-		{
-			return (float)Math.PI * angle / 180.0f;
-		}
-
 		public GraphicsHandler ()
 		{
 		}
@@ -212,7 +207,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control.Scale (1.0, height / width);
 			else
 				Control.Scale (width / height, 1.0);
-			Control.Arc (0, 0, radius, DegreeToRadian (startAngle), DegreeToRadian (startAngle + sweepAngle));
+			if (sweepAngle < 0)
+				Control.ArcNegative(0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+			else
+				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
 			Control.Stroke ();
 			Control.Restore ();
 		}
@@ -227,30 +225,31 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control.Scale (1.0, height / width);
 			else
 				Control.Scale (width / height, 1.0);
-			Control.Arc (0, 0, radius, DegreeToRadian (startAngle), DegreeToRadian (startAngle + sweepAngle));
+			if (sweepAngle < 0)
+				Control.ArcNegative(0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+			else
+				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
 			Control.LineTo (0, 0);
 			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void FillPath (IBrush brush, GraphicsPath path)
+		public void FillPath (IBrush brush, IGraphicsPath path)
 		{
 			Control.Save ();
 			brush.Apply (this);
 			Control.Translate (inverseoffset, inverseoffset);
-			var pathHandler = path.Handler as GraphicsPathHandler;
-			pathHandler.Apply (this);
+			path.ToHandler ().Apply (Control);
 			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawPath (IPen pen, GraphicsPath path)
+		public void DrawPath (IPen pen, IGraphicsPath path)
 		{
 			Control.Save ();
 			pen.Apply (this);
 			Control.Translate (offset, offset);
-			var pathHandler = path.Handler as GraphicsPathHandler;
-			pathHandler.Apply (this);
+			path.ToHandler ().Apply (Control);
 			Control.Stroke ();
 			Control.Restore ();
 		}
@@ -311,9 +310,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			throw new NotImplementedException ();
 		}
 
-		public void TranslateTransform (float dx, float dy)
+		public void TranslateTransform (float offsetX, float offsetY)
 		{
-			Control.Translate (dx, dy);
+			Control.Translate (offsetX, offsetY);
 		}
 
 		public RectangleF ClipBounds
@@ -326,14 +325,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Rotate (Conversions.DegreesToRadians (angle));
 		}
 
-		public void ScaleTransform (float sx, float sy)
+		public void ScaleTransform (float scaleX, float scaleY)
 		{
-			Control.Scale (sx, sy);
+			Control.Scale (scaleX, scaleY);
 		}
 
 		public void MultiplyTransform (IMatrix matrix)
 		{
-			Control.Transform ((Cairo.Matrix)matrix.ControlObject);
+			Control.Transform (matrix.ToCairo ());
 		}
 
 		public void SaveTransform ()

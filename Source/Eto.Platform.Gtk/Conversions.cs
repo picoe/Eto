@@ -323,5 +323,25 @@ namespace Eto.Platform.GtkSharp
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static Cairo.PointD ToCairo (this PointF point)
+		{
+			return new Cairo.PointD(point.X, point.Y);
+		}
+
+		public static PointF ToEto (this Cairo.PointD point)
+		{
+			return new PointF ((float)point.X, (float)point.Y);
+		}
+
+		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)
+		{
+			return (GraphicsPathHandler)path.ControlObject;
+		}
+
+		public static Cairo.Matrix ToCairo (this IMatrix matrix)
+		{
+			return (Cairo.Matrix)matrix.ControlObject;
+		}
 	}
 }
