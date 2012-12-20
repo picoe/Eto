@@ -6,6 +6,8 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Platform handler interface for the <see cref="Graphics"/> class
 	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IGraphics : IInstanceWidget
 	{
 		PixelOffsetMode PixelOffsetMode { get; set; }
@@ -17,9 +19,9 @@ namespace Eto.Drawing
 		void CreateFromImage (Bitmap image);
 
 		/// <summary>
-		/// Draws a line with the specified <paramref name="color"/>
+		/// Draws a line with the specified <paramref name="pen"/>
 		/// </summary>
-		/// <param name="color">Color for the outline</param>
+		/// <param name="pen">Pen to draw the line</param>
 		/// <param name="startx">X co-ordinate of the starting point</param>
 		/// <param name="starty">Y co-ordinate of the starting point</param>
 		/// <param name="endx">X co-ordinate of the ending point</param>
@@ -29,7 +31,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Draws a rectangle outline
 		/// </summary>
-		/// <param name="color">Color for the outline</param>
+		/// <param name="pen">Pen to draw the rectangle</param>
 		/// <param name="x">X co-ordinate</param>
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
@@ -47,9 +49,9 @@ namespace Eto.Drawing
 		void FillRectangle (IBrush brush, float x, float y, float width, float height);
 
 		/// <summary>
-		/// Fills an ellipse with the specified <paramref name="color"/>
+		/// Fills an ellipse with the specified <paramref name="brush"/>
 		/// </summary>
-		/// <param name="color">Fill color</param>
+		/// <param name="brush">Brush to fill the ellipse</param>
 		/// <param name="x">X co-ordinate of the left side of the ellipse</param>
 		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
 		/// <param name="width">Width of the ellipse</param>
@@ -57,9 +59,9 @@ namespace Eto.Drawing
 		void FillEllipse (IBrush brush, float x, float y, float width, float height);
 
 		/// <summary>
-		/// Draws an outline of an ellipse with the specified <paramref name="color"/>
+		/// Draws an outline of an ellipse with the specified <paramref name="pen"/>
 		/// </summary>
-		/// <param name="color">Line color</param>
+		/// <param name="pen">Pen to outline the ellipse</param>
 		/// <param name="x">X co-ordinate of the left side of the ellipse</param>
 		/// <param name="y">Y co-ordinate of the top of the ellipse</param>
 		/// <param name="width">Width of the ellipse</param>
@@ -67,9 +69,9 @@ namespace Eto.Drawing
 		void DrawEllipse (IPen pen, float x, float y, float width, float height);
 
 		/// <summary>
-		/// Draws an arc with the specified <paramref name="color"/>
+		/// Draws an arc with the specified <paramref name="pen"/>
 		/// </summary>
-		/// <param name="color">Color of the arc</param>
+		/// <param name="pen">Pen to outline the arc</param>
 		/// <param name="x">X co-ordinate of the upper left corner of the arc</param>
 		/// <param name="y">Y co-ordinate of the upper left corner of the arc</param>
 		/// <param name="width">Width of the arc</param>
@@ -79,9 +81,9 @@ namespace Eto.Drawing
 		void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle);
 
 		/// <summary>
-		/// Fills a pie with the specified <paramref name="color"/>
+		/// Fills a pie with the specified <paramref name="brush"/>
 		/// </summary>
-		/// <param name="color">Fill color</param>
+		/// <param name="brush">Brush to fill the pie</param>
 		/// <param name="x">X co-ordinate of the upper left corner of the pie</param>
 		/// <param name="y">Y co-ordinate of the upper left corner of the pie</param>
 		/// <param name="width">Width of the pie</param>
@@ -179,16 +181,47 @@ namespace Eto.Drawing
 		/// </remarks>
 		bool IsRetained { get; }
 
-		void TranslateTransform (float dx, float dy);
+		/// <summary>
+		/// Translates the origin of the co-ordinate system by the given offset
+		/// </summary>
+		/// <param name="offsetX">Offset to translate the X co-ordinate</param>
+		/// <param name="offsetY">Offset to translate the Y co-ordinate</param>
+		void TranslateTransform (float offsetX, float offsetY);
 
+		/// <summary>
+		/// Rotates the co-ordinate system by the given <paramref name="angle"/>
+		/// </summary>
+		/// <param name="angle">Angle in degrees to rotate the co-ordinates</param>
 		void RotateTransform (float angle);
 
-		void ScaleTransform (float sx, float sy);
+		/// <summary>
+		/// Scales the co-ordinate system by a factor
+		/// </summary>
+		/// <param name="scaleX">Amount to scale the horizontal axis</param>
+		/// <param name="scaleY">Amount to scale the vertical axis</param>
+		void ScaleTransform (float scaleX, float scaleY);
 
+		/// <summary>
+		/// Multiplies the co-ordinate system with the given <paramref name="matrix"/>
+		/// </summary>
+		/// <param name="matrix">Matrix to multiply the co-ordinate system with</param>
 		void MultiplyTransform (IMatrix matrix);
 
+		/// <summary>
+		/// Saves the current transform state
+		/// </summary>
+		/// <remarks>
+		/// This saves the current transform state that can be changed by any of the transform calls, which can
+		/// then be restored using <see cref="RestoreTransform"/>
+		/// </remarks>
 		void SaveTransform ();
 
+		/// <summary>
+		/// Restores the transform state
+		/// </summary>
+		/// <remarks>
+		/// This restores the transform state from a previous <see cref="SaveTransform"/> call.
+		/// </remarks>
 		void RestoreTransform ();
 	}
 
@@ -198,6 +231,8 @@ namespace Eto.Drawing
 	/// <remarks>
 	/// This class allows you to draw on either a <see cref="Bitmap"/> or a <see cref="T:Eto.Forms.Drawable"/> control.
 	/// </remarks>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class Graphics : InstanceWidget
 	{
 		new IGraphics Handler { get { return (IGraphics)base.Handler; } }
@@ -296,7 +331,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Draws a rectangle
 		/// </summary>
-		/// <param name="color">Color for the outline</param>
+		/// <param name="pen">Pen to outline the rectangle</param>
 		/// <param name="x">X co-ordinate</param>
 		/// <param name="y">Y co-ordinate</param>
 		/// <param name="width">Width of the rectangle</param>
@@ -320,7 +355,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Draws a rectangle
 		/// </summary>
-		/// <param name="color">Color for the outline</param>
+		/// <param name="pen">Pen to outline the rectangle</param>
 		/// <param name="rectangle">Where to draw the rectangle</param>
 		public void DrawRectangle (IPen pen, RectangleF rectangle)
 		{
@@ -480,7 +515,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Draws an ellipse outline with the specified <paramref name="pen"/>
 		/// </summary>
-		/// <param name="color">Pen to outline the ellipse</param>
+		/// <param name="pen">Pen to outline the ellipse</param>
 		/// <param name="rectangle">Location for the ellipse</param>
 		public void DrawEllipse (IPen pen, RectangleF rectangle)
 		{
@@ -879,46 +914,89 @@ namespace Eto.Drawing
 			Handler.Flush ();
 		}
 
-		public void TranslateTransform (float dx, float dy)
+		/// <summary>
+		/// Translates the origin of the co-ordinate system by the given offset
+		/// </summary>
+		/// <param name="offsetX">Offset to translate the X co-ordinate</param>
+		/// <param name="offsetY">Offset to translate the Y co-ordinate</param>
+		public void TranslateTransform (float offsetX, float offsetY)
 		{
-			Handler.TranslateTransform (dx, dy);
+			Handler.TranslateTransform (offsetX, offsetY);
 		}
 
-		public void TranslateTransform (PointF point)
+		/// <summary>
+		/// Translates the origin of the co-ordinate system by the given offset
+		/// </summary>
+		/// <param name="offset">Offset to translate the co-ordinate system by</param>
+		public void TranslateTransform (PointF offset)
 		{
-			Handler.TranslateTransform (point.X, point.Y);
+			Handler.TranslateTransform (offset.X, offset.Y);
 		}
 
+		/// <summary>
+		/// Rotates the co-ordinate system by the given <paramref name="angle"/>
+		/// </summary>
+		/// <param name="angle">Angle in degrees to rotate the co-ordinates</param>
 		public void RotateTransform (float angle)
 		{
 			Handler.RotateTransform (angle);
 		}
 
+		/// <summary>
+		/// Scales the co-ordinate system by a factor
+		/// </summary>
+		/// <param name="scale">Amount to scale in the horizontal and vertical axis</param>
 		public void ScaleTransform (SizeF scale)
 		{
 			Handler.ScaleTransform (scale.Width, scale.Height);
 		}
 
+		/// <summary>
+		/// Scales the co-ordinate system by a factor
+		/// </summary>
+		/// <param name="scaleX">Amount to scale the horizontal axis</param>
+		/// <param name="scaleY">Amount to scale the vertical axis</param>
 		public void ScaleTransform (float scaleX, float scaleY)
 		{
 			Handler.ScaleTransform (scaleX, scaleY);
 		}
 
+		/// <summary>
+		/// Scales the co-ordinate system by a factor
+		/// </summary>
+		/// <param name="scale">Amount to scale in both the horizontal and vertical axis</param>
 		public void ScaleTransform (float scale)
 		{
 			Handler.ScaleTransform (scale, scale);
 		}
 
+		/// <summary>
+		/// Multiplies the co-ordinate system with the given <paramref name="matrix"/>
+		/// </summary>
+		/// <param name="matrix">Matrix to multiply the co-ordinate system with</param>
 		public void MultiplyTransform (IMatrix matrix)
 		{
 			Handler.MultiplyTransform (matrix);
 		}
 
+		/// <summary>
+		/// Saves the current transform state
+		/// </summary>
+		/// <remarks>
+		/// This saves the current transform state that can be changed by any of the transform calls, which can
+		/// then be restored using <see cref="RestoreTransform"/>
+		/// </remarks>
 		public void SaveTransform ()
 		{
 			Handler.SaveTransform ();
 		}
 
+		/// <summary>
+		/// Restores the transform state
+		/// </summary>
+		/// <remarks>
+		/// This restores the transform state from a previous <see cref="SaveTransform"/> call.
+		/// </remarks>
 		public void RestoreTransform ()
 		{
 			Handler.RestoreTransform ();

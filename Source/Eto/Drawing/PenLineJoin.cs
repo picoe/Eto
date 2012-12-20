@@ -1,14 +1,27 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Drawing
 {
+	/// <summary>
+	/// Specifies how lines are joined for a <see cref="IPen"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public enum PenLineJoin
 	{
+		/// <summary>
+		/// Uses a miter to join lines, usually within a certain limit specified by <see cref="IPen.MiterLimit"/>
+		/// </summary>
 		Miter,
+
+		/// <summary>
+		/// Uses a bevel along the angle of the join
+		/// </summary>
 		Bevel,
+
+		/// <summary>
+		/// Uses a rounded edge to join lines
+		/// </summary>
 		Round
 	}
 }
