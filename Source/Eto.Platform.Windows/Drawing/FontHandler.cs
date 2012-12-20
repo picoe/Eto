@@ -41,21 +41,21 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Create (string fontName, float size, FontStyle style)
 		{
-			Control = new SD.Font (fontName, size, Generator.Convert(style));
+			Control = new SD.Font (fontName, size, style.ToSD ());
 		}
 
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
 			this.family = family;
 			var familyHandler = (FontFamilyHandler)family.Handler;
-			Control = new SD.Font (familyHandler.Control, size, Generator.Convert (style));
+			Control = new SD.Font (familyHandler.Control, size, style.ToSD ());
 		}
 
 		public void Create (FontTypeface typeface, float size)
 		{
 			this.typeface = typeface;
 
-			Control = new SD.Font (typeface.Family.Name, size, Generator.Convert (typeface.FontStyle));
+			Control = new SD.Font (typeface.Family.Name, size, typeface.FontStyle.ToSD ());
 		}
 		
 		public void Create (SystemFont systemFont, float? size)
@@ -112,7 +112,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public FontStyle FontStyle
 		{
-			get { return Generator.Convert(Control.Style); }
+			get { return Control.Style.ToEto (); }
 		}
 
 		public FontFamily Family

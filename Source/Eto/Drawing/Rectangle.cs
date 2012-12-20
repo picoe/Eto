@@ -10,12 +10,11 @@ namespace Eto.Drawing
 	/// A rectangle is defined by a location (X, Y) and a size (Width, Height).
 	/// The width and/or height can be negative.
 	/// </remarks>
-	[TypeConverter (typeof (RectangleConverter))]
+	[TypeConverter (typeof(RectangleConverter))]
 	public struct Rectangle : IEquatable<Rectangle>
 	{
 		Point location;
 		Size size;
-
 		const int InnerOffset = 1;
 
 		/// <summary>
@@ -98,10 +97,14 @@ namespace Eto.Drawing
 		/// <param name="rectangle"></param>
 		public void Restrict (Rectangle rectangle)
 		{
-			if (Left < rectangle.Left) Left = rectangle.Left;
-			if (Top < rectangle.Top) Top = rectangle.Top;
-			if (Right > rectangle.Right) Right = rectangle.Right;
-			if (Bottom > rectangle.Bottom) Bottom = rectangle.Bottom;
+			if (Left < rectangle.Left)
+				Left = rectangle.Left;
+			if (Top < rectangle.Top)
+				Top = rectangle.Top;
+			if (Right > rectangle.Right)
+				Right = rectangle.Right;
+			if (Bottom > rectangle.Bottom)
+				Bottom = rectangle.Bottom;
 		}
 
 		/// <summary>
@@ -127,12 +130,32 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Creates a new instance of a RectangleF from the values of the <paramref name="left"/>, <paramref name="top"/>, <paramref name="right"/> and <paramref name="bottom"/> sides
+		/// </summary>
+		/// <param name="left">Left side of the rectangle to create</param>
+		/// <param name="top">Top of the rectangle to create</param>
+		/// <param name="right">Right side of the rectangle to create</param>
+		/// <param name="bottom">Bottom of the rectangle to create</param>
+		/// <returns>A new instance of a RectangleF with values for the Left, Top, Right, and Bottom sides</returns>
+		public static Rectangle FromSides (int left, int top, int right, int bottom)
+		{
+			return new Rectangle (left, top, right - left, bottom - top);
+		}
+
+		/// <summary>
+		/// Creates a new instance of a Rectangle with a specified <paramref name="center"/> and <paramref name="size"/>
+		/// </summary>
+		/// <param name="center">Center of the rectangle</param>
+		/// <param name="size">Size of the rectangle</param>
+		/// <returns>A new instance of a Rectangle with the specified center and size</returns>
+		public static Rectangle FromCenter (Point center, Size size)
+		{
+			return new Rectangle (center - size / 2, size);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the Rectangle class with two points
 		/// </summary>
-		/// <remarks>
-		/// This will always create a normalized rect, in that the location will be the minimum of the X and Y co-ordinates of the supplied
-		/// points.
-		/// </remarks>
 		/// <param name="start">Starting point of the rectangle</param>
 		/// <param name="end">Ending point of the rectangle</param>
 		public Rectangle (Point start, Point end)
@@ -197,6 +220,16 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Offsets the location of the rectangle by the X and Y values of the specified <paramref name="point"/>
+		/// </summary>
+		/// <param name="point">Point with values to offset the rectangle</param>
+		public void Offset (Point point)
+		{
+			this.location.X += point.X;
+			this.location.Y += point.Y;
+		}
+
+		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="point"/> is within the bounds of this rectangle
 		/// </summary>
 		/// <param name="point">Point to test</param>
@@ -214,8 +247,18 @@ namespace Eto.Drawing
 		/// <returns>True if the rectangle contains the x and y co-ordinates, false otherwise</returns>
 		public bool Contains (int x, int y)
 		{
-			if (Width == 0 || Height == 0) return false;
+			if (Width == 0 || Height == 0)
+				return false;
 			return (x >= Left && x <= InnerRight && y >= Top && y <= InnerBottom);
+		}
+
+		/// <summary>
+		/// Gets a value indicating that the specified <paramref name="rectangle"/> is entirely contained within the bounds of this rectangle
+		/// </summary>
+		/// <param name="rectangle">Rectangle to test if it is contained within this instance</param>
+		public bool Contains (Rectangle rectangle)
+		{
+			return this.Left <= rectangle.Left && this.Top <= rectangle.Top && this.Right >= rectangle.Right && this.Bottom >= rectangle.Bottom;
 		}
 
 		/// <summary>
@@ -343,9 +386,11 @@ namespace Eto.Drawing
 				if (Height >= 0) {
 					Height += Y - value;
 					Y = value;
-					if (Height < 0) Height = 0;
+					if (Height < 0)
+						Height = 0;
+				} else {
+					Height = value - Y;
 				}
-				else { Height = value - Y; }
 			}
 		}
 
@@ -358,10 +403,13 @@ namespace Eto.Drawing
 			set
 			{
 				if (Width >= 0) {
-					Width += X - value; X = value;
-					if (Width < 0) Width = 0;
+					Width += X - value;
+					X = value;
+					if (Width < 0)
+						Width = 0;
+				} else {
+					Width = value - X;
 				}
-				else { Width = value - X; }
 			}
 		}
 
@@ -379,9 +427,11 @@ namespace Eto.Drawing
 			{
 				if (Width >= 0) {
 					Width = value - X;
-					if (Width < 0) { X += Width; Width = 0; }
-				}
-				else {
+					if (Width < 0) {
+						X += Width;
+						Width = 0;
+					}
+				} else {
 					Width += Right - value;
 					X = value - 1;
 				}
@@ -402,9 +452,11 @@ namespace Eto.Drawing
 			{
 				if (Height >= 0) {
 					Height = value - Y;
-					if (Height < 0) { Y += Height; Height = 0; }
-				}
-				else {
+					if (Height < 0) {
+						Y += Height;
+						Height = 0;
+					}
+				} else {
 					Height += Bottom - value;
 					Y = value - 1;
 				}
@@ -445,6 +497,42 @@ namespace Eto.Drawing
 		{
 			get { return new Point (Left, Bottom); }
 			set { Bottom = value.Y; Left = value.X; }
+		}
+
+		/// <summary>
+		/// Gets or sets the point at the <see cref="Left"/> and <see cref="MiddleY"/> of the rectangle
+		/// </summary>
+		public Point MiddleLeft
+		{
+			get { return new Point (Left, MiddleY); }
+			set { Left = value.X; MiddleY = value.Y; }
+		}
+		
+		/// <summary>
+		/// Gets or sets the point at the <see cref="Right"/> and <see cref="MiddleY"/> of the rectangle
+		/// </summary>
+		public Point MiddleRight
+		{
+			get { return new Point (Right, MiddleY); }
+			set { Right = value.X; MiddleY = value.Y; }
+		}
+		
+		/// <summary>
+		/// Gets or sets the point at the <see cref="MiddleX"/> and <see cref="Top"/> of the rectangle
+		/// </summary>
+		public Point MiddleTop
+		{
+			get { return new Point (MiddleX, Top); }
+			set { MiddleX = value.X; Top = value.Y; }
+		}
+		
+		/// <summary>
+		/// Gets or sets the point at the <see cref="MiddleX"/> and <see cref="Bottom"/> of the rectangle
+		/// </summary>
+		public Point MiddleBottom
+		{
+			get { return new Point (MiddleX, Bottom); }
+			set { MiddleX = value.X; Bottom = value.Y; }
 		}
 
 		#endregion
@@ -500,9 +588,14 @@ namespace Eto.Drawing
 			{
 				if (Height >= 0) {
 					Height = value - Y + InnerOffset;
-					if (Height < 0) { Y += Height - InnerOffset; Height = 0; }
+					if (Height < 0) {
+						Y += Height - InnerOffset;
+						Height = 0;
+					}
+				} else {
+					Height += Y - value;
+					Y = value;
 				}
-				else { Height += Y - value; Y = value; }
 			}
 		}
 
@@ -519,9 +612,14 @@ namespace Eto.Drawing
 			{
 				if (Width >= 0) {
 					Width = value - X + InnerOffset;
-					if (Width < 0) { X += Width - InnerOffset; Width = 0; }
+					if (Width < 0) {
+						X += Width - InnerOffset;
+						Width = 0;
+					}
+				} else {
+					Width += X - value;
+					X = value;
 				}
-				else { Width += X - value; X = value; }
 			}
 		}
 
@@ -536,11 +634,7 @@ namespace Eto.Drawing
 		public Point Center
 		{
 			get { return new Point (MiddleX, MiddleY); }
-			set
-			{
-				MiddleX = value.X;
-				MiddleY = value.Y;
-			}
+			set { MiddleX = value.X; MiddleY = value.Y; }
 		}
 
 		/// <summary>
@@ -592,8 +686,7 @@ namespace Eto.Drawing
 			if (Width >= 0) {
 				this.X -= width;
 				this.Width += width * 2;
-			}
-			else {
+			} else {
 				this.X += width;
 				this.Width -= width * 2;
 			}
@@ -601,8 +694,7 @@ namespace Eto.Drawing
 			if (Height >= 0) {
 				this.Y -= height;
 				this.Height += height * 2;
-			}
-			else {
+			} else {
 				this.Y += height;
 				this.Height -= height * 2;
 			}
@@ -664,12 +756,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Rectangle with the product of the specified <paramref name="rectangle"/> and the <paramref name="factor"/></returns>
 		public static Rectangle operator * (Rectangle rectangle, int factor)
 		{
-			var rect2 = rectangle;
-			rect2.X *= factor;
-			rect2.Y *= factor;
-			rect2.Width *= factor;
-			rect2.Height *= factor;
-			return rect2;
+			return new Rectangle (rectangle.X * factor, rectangle.Y * factor, rectangle.Width * factor, rectangle.Height * factor);
 		}
 
 		/// <summary>
@@ -680,12 +767,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Rectangle with the value of <paramref name="rectangle"/> divided by a <paramref name="factor"/></returns>
 		public static Rectangle operator / (Rectangle rectangle, int factor)
 		{
-			var rect2 = rectangle;
-			rect2.X /= factor;
-			rect2.Y /= factor;
-			rect2.Width /= factor;
-			rect2.Height /= factor;
-			return rect2;
+			return new Rectangle (rectangle.X / factor, rectangle.Y / factor, rectangle.Width / factor, rectangle.Height / factor);
 		}
 
 		/// <summary>
@@ -700,12 +782,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Rectangle with the product of the <paramref name="rectangle"/> and <paramref name="size"/></returns>
 		public static Rectangle operator * (Rectangle rectangle, Size size)
 		{
-			var rect2 = rectangle;
-			rect2.X *= size.Width;
-			rect2.Y *= size.Height;
-			rect2.Width *= size.Width;
-			rect2.Height *= size.Height;
-			return rect2;
+			return new Rectangle (rectangle.X * size.Width, rectangle.Y * size.Height, rectangle.Width * size.Width, rectangle.Height * size.Height);
 		}
 
 		/// <summary>
@@ -720,12 +797,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Rectangle with the value of <paramref name="rectangle"/> divided by <paramref name="size"/></returns>
 		public static Rectangle operator / (Rectangle rectangle, Size size)
 		{
-			var rect2 = rectangle;
-			rect2.X /= size.Width;
-			rect2.Y /= size.Height;
-			rect2.Width /= size.Width;
-			rect2.Height /= size.Height;
-			return rect2;
+			return new Rectangle (rectangle.X / size.Width, rectangle.Y / size.Height, rectangle.Width / size.Width, rectangle.Height / size.Height);
 		}
 
 		/// <summary>

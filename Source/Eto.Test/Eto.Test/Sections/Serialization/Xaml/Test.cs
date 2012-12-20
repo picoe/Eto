@@ -1,4 +1,4 @@
-﻿#if XAML
+#if XAML
 
 using System;
 using System.Collections.Generic;

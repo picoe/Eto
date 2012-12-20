@@ -12,9 +12,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class DrawableHandler : MacView<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
+		IBrush backgroundBrush;
+		Color backgroundColor;
+
 		public class EtoDrawableView : MacEventView
 		{
-			Drawable Drawable {
+			Drawable Drawable
+			{
 				get { return Widget as Drawable; }
 			}
 			
@@ -46,8 +50,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 	
 		public override bool Enabled { get; set; }
 		
-		public override Color BackgroundColor {
-			get; set;
+		public override Color BackgroundColor
+		{
+			get { return backgroundColor; }
+			set 
+			{
+				backgroundColor = value;
+				if (backgroundColor.A > 0)
+					backgroundBrush = SolidBrush.Create (backgroundColor, Widget.Generator);
+				else
+					backgroundBrush = null;
+			}
 		}
 		
 		public void Create ()
@@ -56,7 +69,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoDrawableView{ Handler = this };
 		}
 		
-		public bool CanFocus {
+		public bool CanFocus
+		{
 			get { return Control.CanFocus; }
 			set { Control.CanFocus = value; }
 		}
@@ -65,9 +79,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null) {
-				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height));
-				if (BackgroundColor.A != 0) {
-					graphics.FillRectangle (BackgroundColor, rect);
+				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height, Control.IsFlipped));
+				if (backgroundBrush != null) {
+					graphics.FillRectangle (backgroundBrush, rect);
 				}
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}

@@ -48,6 +48,9 @@ namespace Eto.Forms
 		{
 			handler.Show (relativeTo);
 		}
+
+		IWidget ISubMenuWidget.Handler { get { return this.Handler; } }
+
 	}
 }
 

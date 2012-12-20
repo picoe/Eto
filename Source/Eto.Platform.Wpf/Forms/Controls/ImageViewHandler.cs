@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +31,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new Eto.Platform.Wpf.CustomControls.MultiSizeImage {
 				Stretch = swm.Stretch.Uniform,
-				StretchDirection = swc.StretchDirection.DownOnly
+				StretchDirection = swc.StretchDirection.Both
 			};
 		}
 

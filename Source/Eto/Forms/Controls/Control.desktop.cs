@@ -12,13 +12,13 @@ namespace Eto.Forms
 	public partial class Control
 	{
 		public virtual Cursor Cursor {
-			get { return inner.Cursor; }
-			set { inner.Cursor = value; }
+			get { return Handler.Cursor; }
+			set { Handler.Cursor = value; }
 		}
 		
 		public virtual string ToolTip {
-			get { return inner.ToolTip; }
-			set { inner.ToolTip = value; }
+			get { return Handler.ToolTip; }
+			set { Handler.ToolTip = value; }
 		}
 		
 	}

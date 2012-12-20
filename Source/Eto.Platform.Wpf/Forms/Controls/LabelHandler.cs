@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
+using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -123,12 +124,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				var b = (System.Windows.Media.SolidColorBrush)text.Foreground;
+				var b = (swm.SolidColorBrush)text.Foreground;
 				return b.Color.ToEto ();
 			}
 			set
 			{
-				text.Foreground = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
+				text.Foreground = new swm.SolidColorBrush (value.ToWpf ());
 			}
 		}
 

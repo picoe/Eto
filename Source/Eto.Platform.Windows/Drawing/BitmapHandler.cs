@@ -10,6 +10,12 @@ namespace Eto.Platform.Windows.Drawing
 	public interface IWindowsImage
 	{
 		SD.Image GetImageWithSize (int? size);
+
+		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
+
+		void DrawImage (GraphicsHandler graphics, float x, float y);
+
+		void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height);
 	}
 
 
@@ -101,16 +107,31 @@ namespace Eto.Platform.Windows.Drawing
 			if (format == ImageFormat.Gif)
 			{
 				var quantizer = new OctreeQuantizer (255, 8);
-				var yummygif = quantizer.Quantize(Control);
-				yummygif.Save(stream, format.ToSD ());
+				var gif = quantizer.Quantize(Control);
+				gif.Save(stream, format.ToSD ());
 			}
 			else  Control.Save(stream, format.ToSD ());
 		}
-
 
 		public SD.Image GetImageWithSize (int? size)
 		{
 			return Control;
 		}
-	}
+
+		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			graphics.Control.DrawImage (Control, source.ToSD (), destination.ToSD (), SD.GraphicsUnit.Pixel);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y)
+		{
+			graphics.Control.DrawImage (Control, x, y);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			graphics.Control.DrawImage (Control, x, y, width, height);
+		}
+
+    }
 }

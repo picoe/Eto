@@ -109,32 +109,34 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 #endif
 
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			// copy to a surface
-			var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, source.Width, source.Height);
+			var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, (int)source.Width, (int)source.Height);
 			unsafe {
 				byte* destrow = (byte*)surface.DataPtr;
 				fixed (byte* srcdata = this.Control) {
-					byte* srcrow = srcdata + (source.Top * rowStride) + source.Left;
-					for (int y = source.Top; y < source.Bottom; y++) {
+					byte* srcrow = srcdata + ((int)source.Top * rowStride) + (int)source.Left;
+					for (int y = (int)source.Top; y < (int)source.Bottom; y++) {
 						byte* src = (byte*)srcrow;
 						uint* dest = (uint*)destrow;
-						for (int x = source.Left; x < source.Right; x++) {
+						for (int x = (int)source.Left; x < (int)source.Right; x++) {
 							*
-							dest = colors [*src];
+							dest = colors[*src];
 							src++;
 							dest++;
 						}
-						
+
 						srcrow += rowStride;
 						destrow += surface.Stride;
 					}
 				}
 			}
-			
+
 			var context = graphics.Control;
 			context.Save ();
+			destination.X += (float)graphics.InverseOffset;
+			destination.Y += (float)graphics.InverseOffset;
 			context.Rectangle (destination.ToCairo ());
 			double scalex = 1;
 			double scaley = 1;
@@ -143,11 +145,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 				scaley = (double)destination.Height / (double)source.Height;
 				context.Scale (scalex, scaley);
 			}
-			context.SetSourceSurface (surface, destination.Left, destination.Top);
+			context.SetSourceSurface (surface, (int)destination.Left, (int)destination.Top);
 			context.Fill ();
 			context.Restore ();
-			
-			
+
+
 			/*
 			if (graphics == null || graphics.Control == null || graphics.GC == null) 
 				throw new Exception("WHAA?");

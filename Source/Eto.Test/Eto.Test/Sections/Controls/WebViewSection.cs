@@ -21,7 +21,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow (TitleLabel (), null, EnableContextMenu ());
 			layout.Add (webContainer, yscale: true);
 
-			LoadHtml();
+			if (webView != null)
+				LoadHtml();
 		}
 		
 		Control WebView ()
@@ -72,7 +73,7 @@ namespace Eto.Test.Sections.Controls
 		Control EnableContextMenu ()
 		{
 			var control = new CheckBox { Text = "Enable Context Menu" };
-			control.Bind ("Checked", this.webView, "BrowserContextMenuEnabled");
+			control.Bind (r => r.Checked, this.webView, w => w.BrowserContextMenuEnabled);
 			return control;
 		}
 		
@@ -185,7 +186,6 @@ namespace Eto.Test.Sections.Controls
 
 		void LoadHtml()
 		{
-			if (webView == null) return;
 			webView.LoadHtml (@"<html>
 <head><title>Hello!</title></head>
 <body>

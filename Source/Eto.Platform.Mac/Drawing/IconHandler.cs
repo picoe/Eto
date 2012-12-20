@@ -3,10 +3,11 @@ using System.IO;
 using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Drawing
 {
-	public class IconHandler : WidgetHandler<NSImage, Icon>, IIcon, IImageSource
+	public class IconHandler : ImageHandler<NSImage, Icon>, IIcon
 	{
 		public IconHandler()
 		{
@@ -17,8 +18,6 @@ namespace Eto.Platform.Mac.Drawing
 			Control = image;
 		}
 		
-		#region IIcon Members
-
 		public void Create (Stream stream)
 		{
 			var data = NSData.FromStream(stream);
@@ -31,16 +30,29 @@ namespace Eto.Platform.Mac.Drawing
 				throw new FileNotFoundException ("Icon not found", fileName);
 			Control = new NSImage (fileName);
 		}
-
-		#endregion
 		
-		public Size Size {
+		public override Size Size {
 			get { return Control.Size.ToEtoSize (); }
 		}
 
-		public NSImage GetImage ()
+		public override NSImage GetImage ()
 		{
 			return Control;
+		}
+
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			var sourceRect = graphics.Translate (source.ToSD (), Control.Size.Height);
+			var destRect = graphics.TranslateView (destination.ToSD (), true, true);
+			if (!graphics.Flipped) {
+				graphics.Control.SaveState ();
+				graphics.Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, graphics.ViewHeight));
+				destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
+			}
+			Control.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+
+			if (!graphics.Flipped)
+				graphics.Control.RestoreState ();
 		}
 	}
 }

@@ -1,6 +1,7 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -17,6 +18,11 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		public static Cairo.Rectangle ToCairo (this Rectangle rectangle)
+		{
+			return new Cairo.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		public static Cairo.Rectangle ToCairo (this RectangleF rectangle)
 		{
 			return new Cairo.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
@@ -40,7 +46,7 @@ namespace Eto.Platform.GtkSharp
 			case ImageInterpolation.Medium:
 				return  Cairo.Filter.Good;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 		
@@ -128,16 +134,24 @@ namespace Eto.Platform.GtkSharp
 		public static Gdk.CursorType ToGdk (this CursorType cursor)
 		{
 			switch (cursor) {
-			case CursorType.Arrow: return Gdk.CursorType.Arrow;
-			case CursorType.Crosshair: return Gdk.CursorType.Crosshair;
-			case CursorType.Default: return Gdk.CursorType.Arrow;
-			case CursorType.HorizontalSplit: return Gdk.CursorType.SbHDoubleArrow;
-			case CursorType.VerticalSplit: return Gdk.CursorType.SbVDoubleArrow;
-			case CursorType.IBeam: return Gdk.CursorType.Xterm;
-			case CursorType.Move: return Gdk.CursorType.Fleur;
-			case CursorType.Pointer: return Gdk.CursorType.Hand2;
+			case CursorType.Arrow:
+				return Gdk.CursorType.Arrow;
+			case CursorType.Crosshair:
+				return Gdk.CursorType.Crosshair;
+			case CursorType.Default:
+				return Gdk.CursorType.Arrow;
+			case CursorType.HorizontalSplit:
+				return Gdk.CursorType.SbHDoubleArrow;
+			case CursorType.VerticalSplit:
+				return Gdk.CursorType.SbVDoubleArrow;
+			case CursorType.IBeam:
+				return Gdk.CursorType.Xterm;
+			case CursorType.Move:
+				return Gdk.CursorType.Fleur;
+			case CursorType.Pointer:
+				return Gdk.CursorType.Hand2;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -169,6 +183,165 @@ namespace Eto.Platform.GtkSharp
 			case MessageBoxType.Question:
 				return Gtk.MessageType.Question;
 			}
+		}
+
+		public static Gtk.PageOrientation ToGtk (this PageOrientation value)
+		{
+			switch (value) {
+			case PageOrientation.Landscape:
+				return Gtk.PageOrientation.Landscape;
+			case PageOrientation.Portrait:
+				return Gtk.PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PageOrientation ToEto (this Gtk.PageOrientation value)
+		{
+			switch (value) {
+			case Gtk.PageOrientation.Landscape:
+				return PageOrientation.Landscape;
+			case Gtk.PageOrientation.Portrait:
+				return PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Gtk.PageRange ToGtkPageRange (this Range range)
+		{
+			return new Gtk.PageRange { Start = range.Start - 1, End = range.End - 1 };
+		}
+
+		public static Range ToEto (this Gtk.PageRange range)
+		{
+			return new Range (range.Start + 1, range.End - range.Start + 1);
+		}
+
+		public static Gtk.PrintPages ToGtk (this PrintSelection value)
+		{
+			switch (value) {
+			case PrintSelection.AllPages:
+				return Gtk.PrintPages.All;
+			case PrintSelection.SelectedPages:
+				return Gtk.PrintPages.Ranges;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PrintSelection ToEto (this Gtk.PrintPages value)
+		{
+			switch (value) {
+			case Gtk.PrintPages.All:
+				return PrintSelection.AllPages;
+			case Gtk.PrintPages.Ranges:
+				return PrintSelection.SelectedPages;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static float DegreesToRadians (float angle)
+		{
+			return (float)Math.PI * angle / 180.0f;
+		}
+
+		public static PenHandler ToHandler (this IPen pen)
+		{
+			return (PenHandler)pen.ControlObject;
+		}
+
+		public static void Apply (this IPen pen, GraphicsHandler graphics)
+		{
+			pen.ToHandler ().Apply (graphics);
+		}
+
+		public static BrushHandler ToHandler (this IBrush brush)
+		{
+			return (BrushHandler)brush.ControlObject;
+		}
+		
+		public static void Apply (this IBrush brush, GraphicsHandler graphics)
+		{
+			brush.ToHandler ().Apply (graphics);
+		}
+
+		public static Cairo.LineJoin ToCairo (this PenLineJoin value)
+		{
+			switch (value) {
+			case PenLineJoin.Miter:
+				return Cairo.LineJoin.Miter;
+			case PenLineJoin.Bevel:
+				return Cairo.LineJoin.Bevel;
+			case PenLineJoin.Round:
+				return Cairo.LineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineJoin ToEto (this Cairo.LineJoin value)
+		{
+			switch (value) {
+			case Cairo.LineJoin.Bevel:
+				return PenLineJoin.Bevel;
+			case Cairo.LineJoin.Miter:
+				return PenLineJoin.Miter;
+			case Cairo.LineJoin.Round:
+				return PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Cairo.LineCap ToCairo (this PenLineCap value)
+		{
+			switch (value) {
+			case PenLineCap.Butt:
+				return Cairo.LineCap.Butt;
+			case PenLineCap.Round:
+				return Cairo.LineCap.Round;
+			case PenLineCap.Square:
+				return Cairo.LineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+		
+		public static PenLineCap ToEto (this Cairo.LineCap value)
+		{
+			switch (value) {
+			case Cairo.LineCap.Butt:
+				return PenLineCap.Butt;
+			case Cairo.LineCap.Round:
+				return PenLineCap.Round;
+			case Cairo.LineCap.Square:
+				return PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Cairo.PointD ToCairo (this PointF point)
+		{
+			return new Cairo.PointD(point.X, point.Y);
+		}
+
+		public static PointF ToEto (this Cairo.PointD point)
+		{
+			return new PointF ((float)point.X, (float)point.Y);
+		}
+
+		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)
+		{
+			return (GraphicsPathHandler)path.ControlObject;
+		}
+
+		public static Cairo.Matrix ToCairo (this IMatrix matrix)
+		{
+			return (Cairo.Matrix)matrix.ControlObject;
 		}
 	}
 }

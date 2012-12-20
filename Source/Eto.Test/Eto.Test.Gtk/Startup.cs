@@ -10,13 +10,13 @@ namespace Eto.Test.Gtk
 {
 	class Startup
 	{
-		[STAThread]
+		//[STAThread]
 		static void Main (string [] args)
 		{
-#if DEBUG	
+#if DEBUG
 			Debug.Listeners.Add (new ConsoleTraceListener());
 #endif
-			var generator = Generator.GetGenerator (Generators.GtkAssembly);
+			var generator = new Eto.Platform.GtkSharp.Generator ();
 			
 			var app = new TestApplication (generator);
 			app.Run (args);

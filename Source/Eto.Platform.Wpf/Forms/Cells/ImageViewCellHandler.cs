@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -21,7 +21,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (Widget.Binding != null) {
 				var image = Widget.Binding.GetValue (dataItem) as Image;
 				if (image != null)
-					return ((IWpfImage)image.Handler).GetIconClosestToSize (ImageSize);
+					return ((IWpfImage)image.Handler).GetImageClosestToSize (ImageSize);
 			}
 			return null;
 		}

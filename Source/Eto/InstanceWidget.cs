@@ -37,6 +37,23 @@ namespace Eto
 		/// <param name="id">ID of the event to handle</param>
 		void HandleEvent (string id);
 	}
+
+	/// <summary>
+	/// Generic implementation of <see cref="IInstanceWidget"/> to provide a statically typed control parameter
+	/// </summary>
+	/// <remarks>
+	/// This interface can be used on platform handlers so that we can get the platform-specific control
+	/// of a widget without having to know its implementation details.
+	/// </remarks>
+	/// <typeparam name="T">Platform-specific control used for the widget</typeparam>
+	/// <typeparam name="W">Widget type</typeparam>
+	public interface IInstanceWidget<out T, W> : IInstanceWidget
+	{
+		/// <summary>
+		/// Gets the platform-specific control used for the widget
+		/// </summary>
+		T Control { get; }
+	}
 	
 
 	/// <summary>
@@ -56,7 +73,7 @@ namespace Eto
 #endif
 	public abstract class InstanceWidget : Widget
 	{
-		IInstanceWidget handler;
+		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
 		string style;
 		object dataContext;
 
@@ -65,8 +82,8 @@ namespace Eto
 		/// </summary>
 		public string ID
 		{
-			get { return handler.ID; }
-			set { handler.ID = value; }
+			get { return Handler.ID; }
+			set { Handler.ID = value; }
 		}
 		
 		/// <summary>
@@ -171,7 +188,6 @@ namespace Eto
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
-			this.handler = (IInstanceWidget)Handler;
 		}
 
 		/// <summary>
@@ -183,7 +199,6 @@ namespace Eto
 		protected InstanceWidget (Generator generator, Type handlerType, bool initialize = true)
 			: base(generator, handlerType, initialize)
 		{
-			this.handler = (IInstanceWidget)Handler;
 		}
 
 		/// <summary>
@@ -199,7 +214,7 @@ namespace Eto
 		/// </remarks>
 		public object ControlObject
 		{
-			get { return handler.ControlObject; }
+			get { return Handler.ControlObject; }
 		}
 
 		/// <summary>
@@ -234,7 +249,7 @@ namespace Eto
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
 		public void HandleEvent (string id)
 		{
-			handler.HandleEvent (id);
+			Handler.HandleEvent (id);
 		}
 
 		/// <summary>

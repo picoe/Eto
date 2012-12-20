@@ -35,6 +35,28 @@ namespace Eto.Drawing
 			get { return x == 0 && y == 0; }
 		}
 
+		/// <summary>
+		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
+		/// </summary>
+		/// <param name="x">Value to add to the X co-ordinate of this point</param>
+		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
+		[Obsolete("Use Offset() instead")]
+		public void Add (int x, int y)
+		{
+			this.x += x;
+			this.y += y;
+		}
+		
+		/// <summary>
+		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
+		/// </summary>
+		/// <param name="point">Point with X and Y values to add to this point</param>
+		[Obsolete("Use Offset() instead")]
+		public void Add (Point point)
+		{
+			this.Add (point.X, point.Y);
+		}
+
 		#endregion
 
 		/// <summary>
@@ -140,7 +162,8 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets the X co-ordinate of this point
 		/// </summary>
-		public int X {
+		public int X
+		{
 			get { return x; }
 			set { x = value; }
 		}
@@ -148,9 +171,18 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets the Y co-ordinate of this point
 		/// </summary>
-		public int Y {
+		public int Y
+		{
 			get { return y; }
 			set { y = value; }
+		}
+
+		/// <summary>
+		/// Gets the magnitude of this point from 0,0 using Pythagoras' theorem
+		/// </summary>
+		public double Magnitude
+		{
+			get { return Math.Sqrt (X * X + Y * Y); }
 		}
 
 		/// <summary>
@@ -184,34 +216,43 @@ namespace Eto.Drawing
 		}
 		
 		/// <summary>
-		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
+		/// Offsets the X and Y co-ordinates of this point by the specified <paramref name="x"/> and <paramref name="y"/> values
 		/// </summary>
 		/// <param name="x">Value to add to the X co-ordinate of this point</param>
 		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
-		public void Add (int x, int y)
+		public void Offset (int x, int y)
 		{
 			this.x += x;
 			this.y += y;
 		}
-
+		
 		/// <summary>
-		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
+		/// Offsets the X and Y co-ordinates of this point by the values from the specified <paramref name="point"/>
 		/// </summary>
 		/// <param name="point">Point with X and Y values to add to this point</param>
-		public void Add (Point point)
+		public void Offset (Point point)
 		{
-			this.Add (point.X, point.Y);
+			this.Offset (point.X, point.Y);
 		}
-		
+
+		/// <summary>
+		/// Returns a new Point with negative x and y values of the specified <paramref name="point"/>
+		/// </summary>
+		/// <param name="point">Point to negate</param>
+		public static Point operator - (Point point)
+		{
+			return new Point (-point.x, -point.y);
+		}
+
 		/// <summary>
 		/// Operator to return the difference between two points as a <see cref="Size"/>
 		/// </summary>
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to subtract</param>
 		/// <returns>A new instance of a Size with the Width and Height equal to the difference of the X and Y co-ordinates, respectively</returns>
-		public static Size operator - (Point point1, Point point2)
+		public static Point operator - (Point point1, Point point2)
 		{
-			return new Size (point1.x - point2.x, point1.y - point2.y);
+			return new Point (point1.x - point2.x, point1.y - point2.y);
 		}
 
 		/// <summary>
@@ -220,9 +261,9 @@ namespace Eto.Drawing
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to add</param>
 		/// <returns>A new instance of a Size with the Width and Height equal to the sum of the two point's X and Y co-ordinates, respectively</returns>
-		public static Size operator + (Point point1, Point point2)
+		public static Point operator + (Point point1, Point point2)
 		{
-			return new Size (point1.x + point2.x, point1.y + point2.y);
+			return new Point (point1.x + point2.x, point1.y + point2.y);
 		}
 
 		/// <summary>
@@ -305,10 +346,15 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a point with the product of the specified <paramref name="point"/> and <paramref name="size"/></returns>
 		public static Point operator * (Point point, Size size)
 		{
-			var result = point;
-			result.x *= size.Width;
-			result.y *= size.Height;
-			return result;
+			return new Point (point.X * size.Width, point.Y * size.Height);
+		}
+
+		/// <summary>Multiplies the X and Y co-ordinates of the two specified point values</summary>
+		/// <param name="point1">First point to multiply</param>
+		/// <param name="point2">Secont point to multiply</param>
+		public static Point operator * (Point point1, Point point2)
+		{
+			return new Point (point1.X * point2.X, point1.Y * point2.Y);
 		}
 
 		/// <summary>
@@ -319,10 +365,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a point with the division of the specified <paramref name="point"/> and <paramref name="size"/></returns>
 		public static Point operator / (Point point, Size size)
 		{
-			var result = point;
-			result.x /= size.Width;
-			result.y /= size.Height;
-			return result;
+			return new Point (point.X / size.Width, point.Y / size.Height);
 		}
 
 		/// <summary>
@@ -333,10 +376,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a point with the product of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="value"/></returns>
 		public static Point operator * (Point point, int value)
 		{
-			var result = point;
-			result.x *= value;
-			result.y *= value;
-			return result;
+			return new Point (point.X * value, point.Y * value);
 		}
 
 		/// <summary>
@@ -347,10 +387,17 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a point with the division of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="value"/></returns>
 		public static Point operator / (Point point, int value)
 		{
-			var result = point;
-			result.x /= value;
-			result.y /= value;
-			return result;
+			return new Point (point.X / value, point.Y / value);
+		}
+
+		/// <summary>
+		/// Explicit conversion from a <paramref name="size"/> to a Point with a X and Y of the Width and Height values of the size, respectively
+		/// </summary>
+		/// <param name="size">Size to convert</param>
+		/// <returns>A new size with the width and height of the X and Y values of the point, respectively</returns>
+		public static explicit operator Point (Size size)
+		{
+			return new Point (size);
 		}
 
 		/// <summary>

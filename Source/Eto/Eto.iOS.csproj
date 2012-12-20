@@ -131,7 +131,6 @@
     <Compile Include="Forms\Form.cs" />
     <Compile Include="Forms\GenerateActionArgs.cs" />
     <Compile Include="Forms\Key.cs" />
-    <Compile Include="Forms\Layout.cs" />
     <Compile Include="Forms\MessageBox.cs" />
     <Compile Include="Forms\OpenFileDialog.cs" />
     <Compile Include="Forms\SaveFileDialog.cs" />
@@ -252,6 +251,11 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>GlobalAssemblyInfo.cs</Link>
     </Compile>
+    <Compile Include="Forms\Printing\PageSettings.cs" />
+    <Compile Include="Forms\Printing\PrintDialog.cs" />
+    <Compile Include="Forms\Printing\PrintDocument.cs" />
+    <Compile Include="Forms\Printing\PrintPageEventArgs.cs" />
+    <Compile Include="Forms\Printing\PrintSettings.cs" />
     <Compile Include="HandlerInvalidException.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\Region.cs" />
@@ -263,6 +267,18 @@
     <Compile Include="Drawing\Fonts.cs" />
     <Compile Include="Drawing\FontTypeface.cs" />
     <Compile Include="Forms\FontDialog.cs" />
+    <Compile Include="Forms\Layout\Layout.cs" />
+    <Compile Include="ContentProperty.cs" />
+    <Compile Include="Drawing\Matrix.cs" />
+    <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\PixelOffsetMode.cs" />
+    <Compile Include="Drawing\Brush.cs" />
+    <Compile Include="Drawing\Brushes.cs" />
+    <Compile Include="Drawing\PenLineJoin.cs" />
+    <Compile Include="Drawing\Pens.cs" />
+    <Compile Include="Drawing\Pen.cs" />
+    <Compile Include="Drawing\SolidBrush.cs" />
+    <Compile Include="Drawing\PenLineCap.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

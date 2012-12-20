@@ -16,9 +16,7 @@ namespace Eto.Forms
 	{
 	}
 
-#if XAML
 	[ContentProperty ("Children")]
-#endif
 	public class PixelLayout : Layout
 	{
 		IPixelLayout inner;
@@ -67,6 +65,7 @@ namespace Eto.Forms
 
 		public void Add (Control control, int x, int y)
 		{
+			control.Properties[LocationProperty] = new Point (x, y);
 			controls.Add (control);
 			control.SetParentLayout (this);
 			var load = Loaded && !control.Loaded;
@@ -86,6 +85,7 @@ namespace Eto.Forms
 		
 		public void Move (Control child, int x, int y)
 		{
+			child.Properties[LocationProperty] = new Point (x, y);
 			inner.Move (child, x, y);
 		}
 		

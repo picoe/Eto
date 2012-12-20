@@ -100,7 +100,7 @@ namespace Eto.Platform.Windows
 		public Range Selection
 		{
 			get { return new Range (Control.SelectionStart, Control.SelectionLength); }
-			set { Control.Select (value.Location, value.Length); }
+			set { Control.Select (value.Start, value.Length); }
 		}
 
 		public void SelectAll ()

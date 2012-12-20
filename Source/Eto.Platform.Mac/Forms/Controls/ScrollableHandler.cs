@@ -29,7 +29,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			
 		}
-		
+
 		class FlippedView : NSView
 		{
 			public override bool IsFlipped {
@@ -43,6 +43,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			control = new EtoScrollView { Handler = this };
 			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
 			control.BorderType = NSBorderType.BezelBorder;
+			control.DrawsBackground = false;
 			control.HasVerticalScroller = true;
 			control.HasHorizontalScroller = true;
 			control.AutohidesScrollers = true;

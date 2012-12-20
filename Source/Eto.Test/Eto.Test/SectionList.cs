@@ -18,7 +18,7 @@ namespace Eto.Test
 	public class Section : List<Section>, ITreeGridItem<Section>
 	{
 		public string Text { get; set; }
-		
+
 		public bool Expanded { get; set; }
 
 		public bool Expandable { get { return Count > 0; } }
@@ -59,7 +59,7 @@ namespace Eto.Test
 			}
 		}
 	}
-	
+
 		
 	public class SectionList : TreeGridView
 	{
@@ -81,6 +81,7 @@ namespace Eto.Test
 			yield return new Section ("Controls", ControlSection ());
 			yield return new Section ("Layouts", LayoutsSection ());
 			yield return new Section ("Dialogs", DialogsSection ());
+			yield return new Section ("Printing", PrintingSection ());
 			yield return new Section ("Serialization", SerializationSection ());
 		}
 		
@@ -116,11 +117,16 @@ namespace Eto.Test
 		{
 			yield return new Section<BitmapSection> { Text = "Bitmap" };
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
-			yield return new Section<PathSection> { Text = "Line Path" };
+			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
+			yield return new Section<PenThicknessSection> { Text = "Pen Thickness" };
+			yield return new Section<PenLineJoinSection> { Text = "Pen Line Join" };
+			yield return new Section<PenLineCapSection> { Text = "Pen Line Cap" };
+			yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
+			yield return new Section<TransformSection> { Text = "Transform" };
 		}
 
 		IEnumerable<Section> LayoutsSection ()
@@ -159,6 +165,12 @@ namespace Eto.Test
 			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
 #endif
 		}
+
+		IEnumerable<Section> PrintingSection ()
+		{
+			yield return new Section<Sections.Printing.PrintDialogSection> { Text = "Print Dialog" };
+		}
+
 		IEnumerable<Section> BehaviorsSection ()
 		{
 			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };

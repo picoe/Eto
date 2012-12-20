@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;

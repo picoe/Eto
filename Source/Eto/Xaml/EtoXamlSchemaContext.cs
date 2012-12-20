@@ -1,4 +1,4 @@
-﻿#if XAML
+#if XAML
 
 using System;
 using System.Collections.Generic;
@@ -24,29 +24,6 @@ namespace Eto.Xaml
 
 		const string clr_namespace = "clr-namespace:";
 		const string clr_assembly = "assembly=";
-
-		public override bool TryGetCompatibleXamlNamespace (string xamlNamespace, out string compatibleNamespace)
-		{
-			var val = base.TryGetCompatibleXamlNamespace (xamlNamespace, out compatibleNamespace);
-			return val;
-		}
-
-		public override IEnumerable<string> GetAllXamlNamespaces ()
-		{
-			foreach (var ns in base.GetAllXamlNamespaces ())
-				yield return ns;
-			yield return "clr-namespace:Eto.Forms;assembly=Eto";
-		}
-
-		public override ICollection<XamlType> GetAllXamlTypes (string xamlNamespace)
-		{
-			return base.GetAllXamlTypes (xamlNamespace);
-		}
-
-		protected override Assembly OnAssemblyResolve (string assemblyName)
-		{
-			return base.OnAssemblyResolve (assemblyName);
-		}
 
 		protected override XamlType GetXamlType (string xamlNamespace, string name, params XamlType[] typeArguments)
 		{

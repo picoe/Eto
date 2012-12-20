@@ -17,7 +17,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		public FontDialogSection ()
 		{
-			var layout = new DynamicLayout (this, new Size (20, 20));
+			var layout = new DynamicLayout (this, new Size (5, 5));
 			layout.BeginVertical ();
 			layout.AddRow (null, PickFont (), null);
 			layout.AddRow (null, PickFontWithStartingFont (), null);
@@ -26,9 +26,8 @@ namespace Eto.Test.Sections.Dialogs
 			layout.EndVertical ();
 
 			layout.AddSeparateRow (null, FontList (), FontStyles (), FontSizes (), null);
-			layout.AddSeparateRow (Preview ());
-
-			layout.Add (null);
+			layout.AddSeparateRow (null, new Label { Text = "Style:"}, BoldFont (), ItalicFont (), null);
+			layout.Add (Preview (), yscale: true);
 			UpdatePreview (new Font(FontFamilies.Serif, 18, FontStyle.Bold));
 		}
 
@@ -80,7 +79,7 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control FontList ()
 		{
-			fontList = new ListBox { Size = new Size (300, 200) };
+			fontList = new ListBox { Size = new Size (300, 180) };
 			var lookup = Fonts.AvailableFontFamilies ().ToDictionary (r => r.Name);
 			fontList.Items.AddRange (lookup.Values.OrderBy (r => r.Name).Select (r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
 			fontList.SelectedIndexChanged += (sender, e) => {
@@ -124,6 +123,20 @@ namespace Eto.Test.Sections.Dialogs
 			return fontSizes;
 		}
 
+		Control BoldFont ()
+		{
+			var control = new CheckBox { Text = "Bold", Enabled = false };
+			control.Bind (r => r.Checked, (Font f) => f.Bold);
+			return control;
+		}
+
+		Control ItalicFont ()
+		{
+			var control = new CheckBox { Text = "Italic", Enabled = false };
+			control.Bind (r => r.Checked, (Font f) => f.Italic);
+			return control;
+		}
+
 		void UpdatePreview (Font font)
 		{
 			if (updating)
@@ -131,6 +144,7 @@ namespace Eto.Test.Sections.Dialogs
 			updating = true;
 			var newFamily = selectedFont == null || selectedFont.Family != font.Family;
 			selectedFont = font;
+			DataContext = selectedFont;
 			preview.Font = selectedFont;
 			preview.Invalidate ();
 
@@ -150,7 +164,10 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			preview = new TextArea { Wrap = true, Size = new Size(-1, 100) };
 			preview.Text = "The quick brown fox jumps over the lazy dog";
-			return preview;
+
+			var box = new GroupBox { Text = "Preview" };
+			box.AddDockedControl (preview, new Padding(10));
+			return box;
 		}
 	}
 }

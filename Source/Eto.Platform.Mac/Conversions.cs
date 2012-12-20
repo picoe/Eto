@@ -4,6 +4,7 @@ using MonoMac.CoreGraphics;
 using Eto.Drawing;
 using MonoMac.Foundation;
 using Eto.Forms;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -30,12 +31,12 @@ namespace Eto.Platform.Mac
 			var devColor = color.UsingColorSpace (cs);
 			float[] components;
 			devColor.GetComponents (out components);
-			return new CGColor(cs.ColorSpace, components);
+			return new CGColor (cs.ColorSpace, components);
 		}
 		
 		public static NSRange ToNS (this Range range)
 		{
-			return new NSRange(range.Location, range.Length);
+			return new NSRange (range.Start, range.Length);
 		}
 		
 		public static Range ToEto (this NSRange range)
@@ -55,7 +56,7 @@ namespace Eto.Platform.Mac
 			case ImageInterpolation.High:
 				return NSImageInterpolation.High;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 		
@@ -72,7 +73,7 @@ namespace Eto.Platform.Mac
 			case NSImageInterpolation.High:
 				return ImageInterpolation.High;
 			default:
-				throw new NotSupportedException();
+				throw new NotSupportedException ();
 			}
 		}
 
@@ -98,6 +99,56 @@ namespace Eto.Platform.Mac
 			//if (traits.HasFlag (NSFontTraitMask.Narrow))
 			//	style |= FontStyle.Light;
 			return style;
+		}
+
+		public static NSPrintingOrientation ToNS (this PageOrientation value)
+		{
+			switch (value) {
+			case PageOrientation.Landscape:
+				return NSPrintingOrientation.Landscape;
+			case PageOrientation.Portrait:
+				return NSPrintingOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PageOrientation ToEto (this NSPrintingOrientation value)
+		{
+			switch (value) {
+			case NSPrintingOrientation.Landscape:
+				return PageOrientation.Landscape;
+			case NSPrintingOrientation.Portrait:
+				return PageOrientation.Portrait;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Point GetLocation (NSView view, NSEvent theEvent)
+		{
+			var loc = view.ConvertPointFromView (theEvent.LocationInWindow, null);
+			if (!view.IsFlipped)
+				loc.Y = view.Frame.Height - loc.Y;
+			return loc.ToEtoPoint ();
+		}
+
+		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent)
+		{
+			var pt = Conversions.GetLocation (view, theEvent);
+			Key modifiers = KeyMap.GetModifiers (theEvent);
+			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
+			return new MouseEventArgs (buttons, modifiers, pt);
+		}
+
+		public static void SetSizeWithAuto (NSView view, Size size)
+		{
+			var newSize = view.Frame.Size;
+			if (size.Width >= 0)
+				newSize.Width = size.Width;
+			if (size.Height >= 0)
+				newSize.Height = size.Height;
+			view.SetFrameSize (newSize);
 		}
 	}
 }

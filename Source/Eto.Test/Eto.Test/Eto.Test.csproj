@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,25 +10,26 @@
     <RootNamespace>Eto.Test</RootNamespace>
     <AssemblyName>Eto.Test</AssemblyName>
   </PropertyGroup>
+  <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
     <DefineConstants>DEBUG;DESKTOP;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>DESKTOP;XAML</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
@@ -48,12 +49,16 @@
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
-    <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
+    <Compile Include="Sections\Drawing\PenLineJoinSection.cs" />
+    <Compile Include="Sections\Drawing\PenThicknessSection.cs" />
+    <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
+    <Compile Include="Sections\Printing\PrintDialogSection.cs" />
     <Compile Include="TestApplication.cs" />
     <Compile Include="MainForm.cs" />
     <Compile Include="Dialogs\About.cs" />
@@ -97,6 +102,8 @@
     <Compile Include="Sections\Serialization\XamlReadSection.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
+    <Compile Include="Sections\Drawing\TransformSection.cs" />
+    <Compile Include="Sections\Drawing\PenLineCapSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

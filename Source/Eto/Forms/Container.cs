@@ -19,9 +19,7 @@ namespace Eto.Forms
 		void SetLayout (Layout layout);
 	}
 	
-#if XAML
 	[ContentProperty("Layout")]
-#endif
 	public abstract partial class Container : Control
 	{
 		IContainer handler;
@@ -101,6 +99,19 @@ namespace Eto.Forms
 		{
 			handler = (IContainer)base.Handler;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the Container with the specified handler
+		/// </summary>
+		/// <param name="generator">Generator for the widget</param>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		protected Container (Generator generator, IContainer handler, bool initialize = true)
+			: base(generator, handler, initialize)
+        {
+            this.handler = handler;
+        }
+
 		
 		public object ContainerObject {
 			get { return handler.ContainerObject; }

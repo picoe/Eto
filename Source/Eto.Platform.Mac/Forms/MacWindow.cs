@@ -8,6 +8,7 @@ using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Forms.Controls;
 using Eto.Platform.Mac.Drawing;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -61,6 +62,8 @@ namespace Eto.Platform.Mac.Forms
 		Size? MinimumSize { get; }
 		
 		bool CloseWindow ();
+
+		NSWindow Control { get; }
 	}
 
 	public class CustomFieldEditor : NSTextView
@@ -513,6 +516,14 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
+		public void Print (PrintSettings settings)
+		{
+			var op = NSPrintOperation.FromView(Control.ContentView);
+			if (settings != null)
+				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
+			op.ShowsPrintPanel = false;
+			op.RunOperation ();
+		}
 
 		#region IMacContainer implementation
 		public void SetContentSize (SD.SizeF contentSize)
@@ -550,10 +561,13 @@ namespace Eto.Platform.Mac.Forms
 		}
 
 		Eto.Forms.Window IMacWindow.Widget {
-			get {
-				return this.Widget;
-			}
+			get { return this.Widget; }
 		}
+
+		NSWindow IMacWindow.Control {
+			get { return this.Control; }
+		}
+
 		#endregion
 		
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)

@@ -9,6 +9,7 @@ using MonoMac.ObjCRuntime;
 using SD = System.Drawing;
 using Eto.Platform.Mac.Forms.Controls;
 using System.Collections.Generic;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -21,13 +22,13 @@ namespace Eto.Platform.Mac.Forms
 		[Export("mouseMoved:")]
 		public void MouseMoved (NSEvent theEvent)
 		{
-			Widget.OnMouseMove (Generator.GetMouseEvent (View, theEvent));
+			Widget.OnMouseMove (Conversions.GetMouseEvent (View, theEvent));
 		}
 		
 		[Export("mouseEntered:")]
 		public void MouseEntered (NSEvent theEvent)
 		{
-			Widget.OnMouseEnter (Generator.GetMouseEvent (View, theEvent));
+			Widget.OnMouseEnter (Conversions.GetMouseEvent (View, theEvent));
 		}
 
 		[Export("cursorUpdate::")]
@@ -38,7 +39,7 @@ namespace Eto.Platform.Mac.Forms
 		[Export("mouseExited:")]
 		public void MouseExited (NSEvent theEvent)
 		{
-			Widget.OnMouseLeave (Generator.GetMouseEvent (View, theEvent));
+			Widget.OnMouseLeave (Conversions.GetMouseEvent (View, theEvent));
 		}
 	}
 	
@@ -106,7 +107,7 @@ namespace Eto.Platform.Mac.Forms
 			set { 
 				var oldSize = GetPreferredSize (Size.MaxValue);
 				this.PreferredSize = value;
-				Generator.SetSizeWithAuto (ContainerControl, value);
+				Conversions.SetSizeWithAuto (ContainerControl, value);
 				this.AutoSize = false;
 				CreateTracking ();
 				LayoutIfNeeded (oldSize);
@@ -312,7 +313,7 @@ namespace Eto.Platform.Mac.Forms
 			var obj = Runtime.GetNSObject (sender);
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			var theEvent = new NSEvent (e);
-			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
 			if (theEvent.ClickCount >= 2)
 				handler.Widget.OnMouseDoubleClick (args);
 			
@@ -330,7 +331,7 @@ namespace Eto.Platform.Mac.Forms
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 
 			var theEvent = new NSEvent (e);
-			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
 			handler.Widget.OnMouseUp (args);
 			if (!args.Handled) {
 				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
@@ -343,7 +344,7 @@ namespace Eto.Platform.Mac.Forms
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			
 			var theEvent = new NSEvent (e);
-			var args = Generator.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
 			handler.Widget.OnMouseMove (args);
 			if (!args.Handled) {
 				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
@@ -430,6 +431,15 @@ namespace Eto.Platform.Mac.Forms
 		public string ToolTip {
 			get { return Control.ToolTip; }
 			set { Control.ToolTip = value; }
+		}
+
+		public void Print (PrintSettings settings)
+		{
+			var op = NSPrintOperation.FromView(Control);
+			if (settings != null)
+				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
+			op.ShowsPrintPanel = false;
+			op.RunOperation ();
 		}
 		
 		public virtual void OnPreLoad (EventArgs e)

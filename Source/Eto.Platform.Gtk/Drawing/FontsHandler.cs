@@ -6,7 +6,7 @@ using System.Linq;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
-	public class FontsHandler : IFonts
+	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
 		static Pango.Context context;
 		public static Pango.Context Context
@@ -20,16 +20,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
-
-
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-			get { return Context.Families.Select (r => new FontFamily(Generator.Current, new FontFamilyHandler(r))); }
+			get { return Context.Families.Select (r => new FontFamily(Generator, new FontFamilyHandler(r))); }
 		}
 
 		public FontFamily GetSystemFontFamily (string systemFamilyName)
@@ -47,7 +40,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			default:
 				throw new NotSupportedException ();
 			}
-			return new FontFamily (Generator.Current, systemFamilyName);
+			return new FontFamily (Generator, systemFamilyName);
 		}
 	}
 }

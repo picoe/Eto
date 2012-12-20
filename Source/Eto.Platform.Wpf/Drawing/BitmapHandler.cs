@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
 
@@ -31,6 +32,15 @@ namespace Eto.Platform.Wpf.Drawing
 	{
 		int stride;
 
+		public BitmapHandler ()
+		{
+		}
+
+		public BitmapHandler (swm.Imaging.BitmapSource source)
+		{
+			this.Control = source;
+		}
+
 		public void Create (string fileName)
 		{
 			Control = swm.Imaging.BitmapFrame.Create (new Uri (fileName));
@@ -39,11 +49,6 @@ namespace Eto.Platform.Wpf.Drawing
 		public void Create (System.IO.Stream stream)
 		{
 			Control = swm.Imaging.BitmapFrame.Create (stream);
-		}
-
-		public void SetBitmap (swm.Imaging.BitmapSource bitmap)
-		{
-			this.Control = bitmap;
 		}
 
 		public void Create (int width, int height, PixelFormat pixelFormat)
@@ -72,6 +77,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control = bf;
 			
 		}
+
+        public void SetBitmap(swm.Imaging.BitmapSource bitmap)
+        {
+            this.Control = bitmap;
+        }
 
 		public void Resize (int width, int height)
 		{
@@ -136,9 +146,9 @@ namespace Eto.Platform.Wpf.Drawing
 		}
 
 
-		public swm.ImageSource GetIconClosestToSize (int width)
+		public swmi.BitmapSource GetImageClosestToSize (int? width)
 		{
 			return Control;
 		}
-	}
+    }
 }

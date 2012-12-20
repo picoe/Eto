@@ -45,7 +45,9 @@ namespace Eto
 			Dispose(false);
 		}
 
+#if DEBUG
 		protected int WidgetID { get; set; }
+#endif
 		
 		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
@@ -61,6 +63,11 @@ namespace Eto
 		/// Gets the widget that this platform handler is attached to
 		/// </summary>
 		public W Widget { get; private set; }
+
+		/// <summary>
+		/// Gets the generator that was used to create this handler
+		/// </summary>
+		public Generator Generator { get; set; }
 		
 		#region IWidget Members
 
@@ -177,7 +184,7 @@ namespace Eto
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="T">Type of the platform-specific object</typeparam>
 	/// <typeparam name="W">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, W> : WidgetHandler<W>, IInstanceWidget
+	public abstract class WidgetHandler<T, W> : WidgetHandler<W>, IInstanceWidget<T, W>
 		where W: InstanceWidget
 	{
 		/// <summary>
@@ -260,6 +267,29 @@ namespace Eto
 			//Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
 			this.Control = default(T);
 			base.Dispose (disposing);
+		}
+
+		/// <summary>
+		/// Gets the platform-specific control object of the specified widget using this handler
+		/// </summary>
+		/// <remarks>
+		/// The widget must be using a handler that returns the same control.
+		/// 
+		/// This can be used very easily by platform code:
+		/// <code>
+		///		MyControl mycontrol;
+		///		var platformControl = MyControlHandler.GetControl(mycontrol);
+		/// </code>
+		/// 
+		/// Note that even if the specified handler is used, the control might not actually be using that
+		/// handler.  This method will still work as long as the handler implements using the same base platform-specific control.
+		/// </remarks>
+		/// <param name="widget">The widget to get the platform-specific control from</param>
+		/// <returns>The platform-specific control used for the specified widget</returns>
+		public static T GetControl (W widget)
+		{
+			var handler = (IInstanceWidget<T, W>)widget.Handler;
+			return handler.Control;
 		}
 	}
 }

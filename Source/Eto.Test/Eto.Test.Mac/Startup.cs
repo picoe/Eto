@@ -8,15 +8,16 @@ using Eto.Platform.Mac.Forms;
 using Eto.Platform.Mac;
 using Eto.Drawing;
 using System.Diagnostics;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Test.Mac
 {
 	class Startup
 	{
-		static void Main (string [] args)
+		static void Main (string[] args)
 		{
 #if DEBUG
-			Debug.Listeners.Add (new ConsoleTraceListener());
+			Debug.Listeners.Add (new ConsoleTraceListener ());
 #endif
 			AddStyles ();
 			
@@ -26,8 +27,8 @@ namespace Eto.Test.Mac
 
 			// use this to use your own app delegate:
 			// ApplicationHandler.Instance.AppDelegate = new MyAppDelegate();
+
 			app.Run (args);
-			
 		}
 
 		static void AddStyles ()

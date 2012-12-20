@@ -14,16 +14,8 @@ using MonoTouch.Foundation;
 namespace Eto.Platform.iOS.Drawing
 #endif
 {
-	public class FontsHandler : IFonts
+	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
-
-		public Generator Generator { get; set; }
-
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
 #if OSX
@@ -35,7 +27,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public FontFamily GetFontFamily (string familyName)
 		{
-			return new FontFamily(Generator.Current, new FontFamilyHandler (familyName));
+			return new FontFamily(Generator, new FontFamilyHandler (familyName));
 		}
 
 		public FontFamily GetSystemFontFamily (string systemFamilyName)
@@ -57,7 +49,7 @@ namespace Eto.Platform.iOS.Drawing
 			default:
 				throw new NotSupportedException ();
 			}
-			return new FontFamily(Generator.Current, new FontFamilyHandler (systemFamilyName));
+			return new FontFamily(Generator, new FontFamilyHandler (systemFamilyName));
 		}
 	}
 }

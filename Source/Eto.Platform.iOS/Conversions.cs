@@ -2,6 +2,9 @@ using System;
 using MonoTouch.UIKit;
 using Eto.Drawing;
 using Eto.Platform.iOS.Drawing;
+using Eto.Forms;
+using MonoTouch.Foundation;
+using System.Linq;
 
 namespace Eto.Platform.iOS
 {
@@ -24,6 +27,25 @@ namespace Eto.Platform.iOS
 			if (font == null)
 				return null;
 			return ((FontHandler)font.Handler).Control;
+		}
+
+		public static Point GetLocation (UIView view, UIEvent theEvent)
+		{
+			var touches = theEvent.TouchesForView (view);
+			var touch = touches.ToArray<UITouch> ().FirstOrDefault ();
+			var loc = touch.LocationInView (view);
+			loc.Y = view.Frame.Height - loc.Y;
+			return loc.ToEtoPoint ();
+		}
+		
+		public static MouseEventArgs ConvertMouse (UIView view, NSSet touches, UIEvent evt)
+		{
+			if (touches.Count > 0) {
+				UITouch touch = touches.ToArray<UITouch> () [0];
+				var location = touch.LocationInView (view);
+				return new MouseEventArgs (MouseButtons.Primary, Key.None, location.ToEtoPoint ());
+			}
+			return new MouseEventArgs (MouseButtons.Primary, Key.None, Point.Empty);
 		}
 
 	}

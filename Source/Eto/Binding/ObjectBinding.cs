@@ -27,7 +27,7 @@ namespace Eto
 		/// Gets the binding used to get/set the values from the <see cref="DataItem"/>
 		/// </summary>
 		public IndirectBinding InnerBinding { get; private set; }
-
+		
 		/// <summary>
 		/// Gets the object to get/set the values using the <see cref="InnerBinding"/>
 		/// </summary>
@@ -39,7 +39,7 @@ namespace Eto
 				OnDataValueChanged (EventArgs.Empty);
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets or sets the default value to use when setting the value for this binding when input value is null
 		/// </summary>
@@ -48,7 +48,7 @@ namespace Eto
 			get;
 			set;
 		}
-
+		
 		/// <summary>
 		/// Gets or sets the default value to use when getting the value for this binding when the <see cref="DataItem"/> or property value is null
 		/// </summary>
@@ -83,17 +83,17 @@ namespace Eto
 			this.InnerBinding.Changed += HandleInnerBindingChanged;
 			this.InnerBinding.Changing += HandleInnerBindingChanging;
 		}
-
+		
 		void HandleInnerBindingChanging (object sender, BindingChangingEventArgs e)
 		{
 			OnChanging (e);
 		}
-
+		
 		void HandleInnerBindingChanged (object sender, BindingChangedEventArgs e)
 		{
 			OnChanged (e);
 		}
-
+		
 		/// <summary>
 		/// Gets or sets the value of this binding on the bound object
 		/// </summary>
@@ -120,7 +120,7 @@ namespace Eto
 					dataValueChangedReference = InnerBinding.AddValueChangedHandler (
 						DataItem,
 						new EventHandler<EventArgs>(HandleChangedEvent)
-					);
+						);
 				break;
 			default:
 				base.HandleEvent (handler);
@@ -139,7 +139,7 @@ namespace Eto
 					InnerBinding.RemoveValueChangedHandler (
 						dataValueChangedReference,
 						new EventHandler<EventArgs>(HandleChangedEvent)
-					);
+						);
 					dataValueChangedReference = null;
 				}
 				break;
@@ -155,7 +155,7 @@ namespace Eto
 		public override void Unbind ()
 		{
 			base.Unbind ();
-
+			
 			RemoveEvent (DataValueChangedEvent);
 			InnerBinding.Unbind ();
 		}

@@ -11,6 +11,7 @@ namespace Eto.Forms
 		/// Default cursor, which is usually an arrow but may be different depending on the control
 		/// </summary>
 		Default,
+
 		/// <summary>
 		/// Standard arrow cursor
 		/// </summary>
@@ -52,7 +53,7 @@ namespace Eto.Forms
 	/// </summary>
 	public interface ICursor : IInstanceWidget
 	{
-		void Create(CursorType cursor);
+		void Create (CursorType cursor);
 	}
 	
 	/// <summary>
@@ -64,7 +65,7 @@ namespace Eto.Forms
 	/// </remarks>
 	public class Cursor : InstanceWidget
 	{
-		ICursor handler;
+		new ICursor Handler { get { return (ICursor)base.Handler; } }
 		
 		public Cursor (CursorType cursor)
 			: this (Generator.Current, cursor)
@@ -72,9 +73,10 @@ namespace Eto.Forms
 		}
 		
 		public Cursor (Generator generator, CursorType cursor)
-			: this (generator)
+			: base (generator, typeof(ICursor), false)
 		{
-			handler.Create (cursor);
+			Handler.Create (cursor);
+			Initialize ();
 		}
 		
 		protected Cursor (Generator generator)
@@ -82,12 +84,10 @@ namespace Eto.Forms
 		{
 		}
 		
-		protected Cursor (Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
+		protected Cursor (Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
-			handler = (ICursor)Handler;
 		}
-		
 	}
 }
 

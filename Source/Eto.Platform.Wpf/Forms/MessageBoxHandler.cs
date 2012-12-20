@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,16 +6,11 @@ using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class MessageBoxHandler : IMessageBox
+	public class MessageBoxHandler : WidgetHandler<Widget>, IMessageBox
 	{
 		public string Text
 		{
 			get; set;
-		}
-
-		public Widget Widget
-		{
-			get; set; 
 		}
 
 		public string Caption
@@ -28,10 +23,6 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get;
 			set;
-		}
-
-		public void Initialize ()
-		{
 		}
 
 		public DialogResult ShowDialog (Control parent)

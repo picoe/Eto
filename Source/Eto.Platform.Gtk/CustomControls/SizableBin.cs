@@ -9,7 +9,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
 			if (this.Child != null) {
-				this.Child.SetAllocation (allocation);
+				this.Child.SizeAllocate (allocation);
 			}
 			base.OnSizeAllocated (allocation);
 		}

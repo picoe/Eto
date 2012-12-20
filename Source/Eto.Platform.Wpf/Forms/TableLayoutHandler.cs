@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -64,7 +64,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		sw.FrameworkElement EmptyCell (int x, int y)
 		{
-			var empty = new swc.Control ();
+			var empty = new swc.Control { IsTabStop = false };
 			swc.Grid.SetColumn (empty, x);
 			swc.Grid.SetRow (empty, y);
 			SetMargins (empty, x, y);

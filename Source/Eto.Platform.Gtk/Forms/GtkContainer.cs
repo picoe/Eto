@@ -65,7 +65,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			set {
 				if (Control.Visible)
-					Control.SetAllocation (new Gdk.Rectangle(Control.Allocation.Location, value.ToGdk ()));
+					Control.SizeAllocate (new Gdk.Rectangle(Control.Allocation.Location, value.ToGdk ()));
 				else
 					Control.SetSizeRequest (value.Width, value.Height);
 			}

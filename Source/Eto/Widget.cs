@@ -25,6 +25,11 @@ namespace Eto
 		/// then call this manually (via <see cref="M:Widget.Initialize()"/>
 		/// </remarks>
 		void Initialize ();
+
+		/// <summary>
+		/// Gets the generator this widget was created with
+		/// </summary>
+		Generator Generator { get; set; }
 	}
 
 	/// <summary>
@@ -65,7 +70,7 @@ namespace Eto
 		/// The generator is typically either passed to the constructor of the control, or the
 		/// <see cref="P:Generator.Current"/> is used.
 		/// </remarks>
-		public Generator Generator { get; private set; }
+		public Generator Generator { get { return Handler.Generator; } }
 		
 		/// <summary>
 		/// Gets the collection of bindings that are attached to this widget
@@ -103,13 +108,15 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
-		/// <param name="generator">Generator the widget handler was created with, or null to use <see cref="Generator.Current"/></param>
+		/// <param name="generator">Generator the widget handler was created with, or null to use <see cref="Eto.Generator.Current"/></param>
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
 		protected Widget (Generator generator, IWidget handler, bool initialize = true)
 		{
-			this.Generator = generator ?? Generator.Current;
+			if (generator == null)
+				generator = Generator.Current;
 			this.Handler = handler;
+			this.Handler.Generator = generator;
 			this.Handler.Widget = this; // tell the handler who we are
 			if (initialize)
 				Initialize ();
@@ -118,13 +125,14 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
-		/// <param name="generator">Generator to create the handler with, or null to use <see cref="Generator.Current"/></param>
+		/// <param name="generator">Generator to create the handler with, or null to use <see cref="Eto.Generator.Current"/></param>
 		/// <param name="type">Type of widget handler to create from the generator for this widget</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
 		protected Widget (Generator generator, Type type, bool initialize = true)
 		{
-			this.Generator = generator ?? Generator.Current;
-			this.Handler = this.Generator.CreateHandler (type, this);
+			if (generator == null)
+				generator = Generator.Current;
+			this.Handler = generator.Create (type, this) as IWidget;
 			if (initialize)
 				Initialize ();
 		}

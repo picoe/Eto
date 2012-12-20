@@ -144,7 +144,7 @@ namespace Eto.Platform.iOS.Drawing
 			get { return Control.Size.ToEtoSize (); }
 		}
 		
-		public override void DrawImage (GraphicsHandler graphics, int x, int y)
+		public override void DrawImage (GraphicsHandler graphics, float x, float y)
 		{
 			var nsimage = this.Control;
 			var destRect = graphics.TranslateView (new SD.RectangleF (x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height), false);
@@ -161,12 +161,12 @@ namespace Eto.Platform.iOS.Drawing
 		}
 		*/
 		
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var nsimage = this.Control;
-			var sourceRect = source.ToSDRectangleF (); 
+			var sourceRect = source.ToSD (); 
 			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
-			SD.RectangleF destRect = graphics.TranslateView (destination.ToSDRectangleF (), false);
+			SD.RectangleF destRect = graphics.TranslateView (destination.ToSD(), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {
 				graphics.Control.SaveState ();
 				//graphics.Context.ClipToRect(destRect);
