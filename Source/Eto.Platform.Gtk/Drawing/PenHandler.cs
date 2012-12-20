@@ -13,10 +13,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public PenLineCap LineCap { get; set; }
 
+		public float MiterLimit { get; set; }
+
 		public void Create (Color color, float thickness)
 		{
 			this.Color = color;
 			this.Thickness = thickness;
+			this.MiterLimit = 10f;
 		}
 
 		public void Dispose ()
@@ -29,8 +32,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			graphics.Control.Color = Color.ToCairo ();
 			graphics.Control.LineWidth = this.Thickness;
-			graphics.Control.LineCap = Cairo.LineCap.Square;
+			graphics.Control.LineCap = LineCap.ToCairo ();
 			graphics.Control.LineJoin = LineJoin.ToCairo ();
+			graphics.Control.MiterLimit = MiterLimit;
 		}
 	}
 }

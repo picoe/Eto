@@ -14,6 +14,7 @@ namespace Eto.Platform.Windows.Drawing
 		public void Create (Color color, float thickness)
 		{
 			pen = new sd.Pen (color.ToSD (), thickness);
+			pen.MiterLimit = 10f;
 		}
 
 		public Color Color
@@ -38,6 +39,12 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get { return pen.StartCap.ToEto (); }
 			set { pen.StartCap = pen.EndCap = value.ToSD (); }
+		}
+
+		public float MiterLimit
+		{
+			get { return pen.MiterLimit; }
+			set { pen.MiterLimit = value; }
 		}
 
 		public object ControlObject

@@ -30,6 +30,15 @@ namespace Eto.Drawing
 		PenLineCap LineCap { get; set; }
 
 		/// <summary>
+		/// Gets or sets the miter limit for the pen
+		/// </summary>
+		/// <remarks>
+		/// The miter limit specifies the maximum allowed ratio of miter lenth to stroke length in which a 
+		/// miter will be converted to a bevel.  The default miter limit is 10.
+		/// </remarks>
+		float MiterLimit { get; set; }
+
+		/// <summary>
 		/// Gets the platform-specific control for this pen
 		/// </summary>
 		object ControlObject { get; }

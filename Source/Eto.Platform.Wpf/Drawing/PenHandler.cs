@@ -16,6 +16,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			brush = new swm.SolidColorBrush (color.ToWpf ());
 			pen = new swm.Pen (brush, thickness);
+			pen.MiterLimit = 10f;
 		}
 
 		public Color Color
@@ -40,6 +41,12 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get { return pen.EndLineCap.ToEto (); }
 			set { pen.EndLineCap = pen.StartLineCap = value.ToWpf (); }
+		}
+
+		public float MiterLimit
+		{
+			get { return (float)pen.MiterLimit; }
+			set { pen.MiterLimit = value; }
 		}
 
 		public object ControlObject

@@ -23,10 +23,13 @@ namespace Eto.Platform.iOS.Drawing
 
 		public PenLineCap LineCap { get; set; }
 
+		public float MiterLimit { get; set; }
+
 		public void Create (Color color, float thickness)
 		{
 			this.Color = color;
 			this.Thickness = thickness;
+			this.MiterLimit = 10f;
 		}
 
 		public void Dispose ()
@@ -42,6 +45,7 @@ namespace Eto.Platform.iOS.Drawing
 			graphics.Control.SetLineCap (LineCap.ToCG ());
 			graphics.Control.SetLineJoin (LineJoin.ToCG ());
 			graphics.Control.SetLineWidth (Thickness);
+			graphics.Control.SetMiterLimit (MiterLimit);
 		}
 	}
 }
