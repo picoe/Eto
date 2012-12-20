@@ -4,8 +4,11 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using System.IO;
+using sw = System.Windows;
+using swi = System.Windows.Interop;
 using swm = System.Windows.Media;
 using swmi = System.Windows.Media.Imaging;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -17,6 +20,22 @@ namespace Eto.Platform.Wpf.Drawing
 	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, IIcon, IWpfImage
 	{
 		swmi.BitmapSource[] icons;
+
+		public IconHandler ()
+		{
+		}
+
+		public IconHandler (sd.Icon icon)
+		{
+			var rect = new sw.Int32Rect (0, 0, icon.Width, icon.Height);
+			var img = swi.Imaging.CreateBitmapSourceFromHIcon (icon.Handle, rect, swmi.BitmapSizeOptions.FromEmptyOptions ());
+			Control = swmi.BitmapFrame.Create (img);
+		}
+
+		public IconHandler (swmi.BitmapFrame control)
+		{
+			this.Control = control;
+		}
 
 		public static void CopyStream (Stream input, Stream output)
 		{
