@@ -16,41 +16,15 @@ using Eto.Platform.Wpf.Forms.Controls;
 using Eto.Platform.Wpf.Forms.Printing;
 using Eto.Platform.Wpf.Forms;
 using Eto.IO;
+using Eto.Platform.Wpf.IO;
 
 namespace Eto.Platform.Wpf
 {
 	public class Generator : Eto.Generator
 	{
-		public override string ID
-		{
-			get { return Generators.Wpf; }
-		}
+		public override string ID { get { return Generators.Wpf; } }
 
-		static Dictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly> ();
-
-		static Generator ()
-		{
-			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
-				var assemblyName = new AssemblyName (args.Name);
-				if (assemblyName.Name.EndsWith (".resources")) return null;
-
-				string resourceName = "Eto.Platform.Wpf.CustomControls.Assemblies." + assemblyName.Name + ".dll";
-				Assembly assembly = null;
-				lock (loadedAssemblies) {
-					if (!loadedAssemblies.TryGetValue (resourceName, out assembly)) {
-						using (var stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream (resourceName)) {
-							if (stream != null) {
-								using (var binaryReader = new BinaryReader (stream)) {
-									assembly = Assembly.Load (binaryReader.ReadBytes ((int)stream.Length));
-									loadedAssemblies.Add (resourceName, assembly);
-								}
-							}
-						}
-					}
-				}
-				return assembly;
-			};
-		}
+		static EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register ("Eto.Platform.Wpf.CustomControls.Assemblies");
 
 		public Generator ()
 		{

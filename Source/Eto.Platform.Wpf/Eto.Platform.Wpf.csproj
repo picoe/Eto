@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -25,7 +25,7 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;WPF</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -191,6 +191,12 @@
     <Compile Include="PropertyPathHelper.cs" />
     <Compile Include="WpfExtensions.cs" />
     <Compile Include="Drawing\TransformStack.cs" />
+    <Compile Include="..\Eto.Platform.Windows\IO\ShellIcon.cs">
+      <Link>IO\ShellIcon.cs</Link>
+    </Compile>
+    <Compile Include="IO\SystemIcons.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
@@ -273,4 +279,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Folder Include="IO\" />
+  </ItemGroup>
 </Project>

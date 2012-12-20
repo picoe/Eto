@@ -82,6 +82,7 @@
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
     <Compile Include="Drawing\Matrix.cs" />
+    <Compile Include="EmbeddedAssemblyLoader.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>

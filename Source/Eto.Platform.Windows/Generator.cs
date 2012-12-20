@@ -17,43 +17,9 @@ namespace Eto.Platform.Windows
 {
 	public class Generator : Eto.Generator
 	{
-		public override string ID {
-			get {
-				return Generators.Windows;
-			}
-		}
+		public override string ID { get { return Generators.Windows; } }
 
-		static Dictionary<string, Assembly> loadedAssemblies = new Dictionary<string, Assembly> ();
-
-		static Generator ()
-		{
-			AppDomain.CurrentDomain.AssemblyResolve += (sender, args) => {
-				var assemblyName = new AssemblyName (args.Name);
-				if (assemblyName.Name.EndsWith (".resources"))
-					return null;
-
-				string resourceName = "Eto.Platform.Windows.CustomControls.Assemblies." + assemblyName.Name + ".dll";
-				Assembly assembly = null;
-				lock (loadedAssemblies)
-				{
-					if (!loadedAssemblies.TryGetValue (resourceName, out assembly))
-					{
-						using (var stream = Assembly.GetExecutingAssembly ().GetManifestResourceStream (resourceName))
-						{
-							if (stream != null)
-							{
-								using (var binaryReader = new BinaryReader (stream))
-								{
-									assembly = Assembly.Load (binaryReader.ReadBytes ((int)stream.Length));
-									loadedAssemblies.Add (resourceName, assembly);
-								}
-							}
-						}
-					}
-				}
-				return assembly;
-			};
-		}
+		static EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register ("Eto.Platform.Windows.CustomControls.Assemblies");
 
 		public Generator()
 		{
