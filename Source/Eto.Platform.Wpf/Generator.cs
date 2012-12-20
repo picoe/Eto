@@ -113,7 +113,7 @@ namespace Eto.Platform.Wpf
 			Add <IUITimer> (() => new UITimerHandler ());
 			
 			// IO
-			//Add <ISystemIcons> (() => new SystemIconsHandler ());
+			Add <ISystemIcons> (() => new SystemIconsHandler ());
 			
 			// General
 			Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
