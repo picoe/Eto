@@ -249,7 +249,7 @@ namespace Eto.Platform.Windows
 
         void Control_MouseWheel(object sender, SWF.MouseEventArgs e)
         {
-            Widget.OnMouseDoubleClick(e.ToEto());
+            Widget.OnMouseWheel(e.ToEto());
         }
 
         void Control_MouseHover(object sender, EventArgs e)

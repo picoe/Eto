@@ -14,12 +14,13 @@ namespace Eto.Forms
 	
 	public class MouseEventArgs : EventArgs
 	{
-		public MouseEventArgs(MouseButtons buttons, Key modifiers, Point location)
+		public MouseEventArgs(MouseButtons buttons, Key modifiers, Point location,  int delta = 0)
 		{
 			this.Modifiers = modifiers;
 			this.Buttons = buttons;
 			this.Location = location;
 			this.Pressure = 1.0f;
+			this.Delta = delta;
 		}
 		
 		public Key Modifiers { get; private set; }

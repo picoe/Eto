@@ -138,7 +138,7 @@ namespace Eto
 		{
 			// only use for desktop until mobile controls are working
 #if DESKTOP
-			// throw new NotSupportedException (string.Format ("Event {0} not supported by this control", id));
+			throw new NotSupportedException (string.Format ("Event {0} not supported by this control", id));
 #endif
 		}
 		
