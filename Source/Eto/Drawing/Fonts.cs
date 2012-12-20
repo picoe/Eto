@@ -39,8 +39,7 @@ namespace Eto.Drawing
 		/// <returns>An enumeration of font family objects that this system supports</returns>
 		public static IEnumerable<FontFamily> AvailableFontFamilies (Generator generator = null)
 		{
-			generator = generator ?? Generator.Current;
-			var fonts = generator.Create<IFonts>();
+			var fonts = generator.CreateShared<IFonts>();
 			return fonts.AvailableFontFamilies;
 		}
 
@@ -58,8 +57,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a system font family</returns>
 		public static FontFamily GetSystemFontFamily (string systemFontFamily, Generator generator = null)
 		{
-			generator = generator ?? Generator.Current;
-			var fonts = generator.Create<IFonts>();
+			var fonts = generator.CreateShared<IFonts>();
 			return fonts.GetSystemFontFamily(systemFontFamily);
 		}
 	}

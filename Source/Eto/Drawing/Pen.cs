@@ -74,7 +74,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the pen for</param>
 		public static IPen Create (Color color, float thickness = 1f, Generator generator = null)
 		{
-			var handler = (generator ?? Generator.Current).Create<IPenHandler> ();
+			var handler = generator.Create<IPenHandler> ();
 			handler.Create (color, thickness);
 			return handler;
 		}

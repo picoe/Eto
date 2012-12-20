@@ -38,7 +38,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a solid brush with the specified color</returns>
 		public static ISolidBrush Create (Color color, Generator generator = null)
 		{
-			var handler = (generator ?? Generator.Current).Create<ISolidBrushHandler> ();
+			var handler = generator.Create<ISolidBrushHandler> ();
 			handler.Create (color);
 			return handler;
 		}

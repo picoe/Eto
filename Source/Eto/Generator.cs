@@ -12,6 +12,8 @@ namespace Eto
 	/// <summary>
 	/// Arguments for when a widget is created
 	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class WidgetCreatedArgs : EventArgs
 	{
 		/// <summary>
@@ -28,6 +30,48 @@ namespace Eto
 			this.Instance = instance;
 		}
 	}
+
+	/// <summary>
+	/// Extensions for the <see cref="Generator"/> class
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public static class GeneratorExtensions
+	{
+		/// <summary>
+		/// Creates a new instance of the handler of the specified type of <typeparamref name="T"/>
+		/// </summary>
+		/// <remarks>
+		/// This extension should be used when creating instances of a fixed type.
+		/// This is a helper so that you can use a null generator variable to create instances with the current
+		/// generator without having to do the extra check
+		/// </remarks>
+		/// <typeparam name="T">Type of handler to create</typeparam>
+		/// <param name="generator">Generator to create the instance, or null to use the current generator</param>
+		/// <param name="widget">Widget instance to attach to the handler</param>
+		/// <returns>A new instance of a handler</returns>
+		public static T Create<T> (this Generator generator, Widget widget = null)
+		{
+			return (T)(generator ?? Generator.Current).Create (typeof (T), widget);
+		}
+
+		/// <summary>
+		/// Creates a shared singleton instance of the specified type of <typeparamref name="T"/>
+		/// </summary>
+		/// <remarks>
+		/// This extension should be used when creating shared instances of a fixed type.
+		/// This is a helper so that you can use a null generator variable to create instances with the current
+		/// generator without having to do the extra check
+		/// </remarks>
+		/// <param name="generator">Generator to create or get the shared instance, or null to use the current generator</param>
+		/// <param name="widgetCreator">Delegate to create a <see cref="Widget"/> instance to attach to the handler</param>
+		/// <typeparam name="T">The type of handler to get a shared instance for</typeparam>
+		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
+		public static T CreateShared<T> (this Generator generator, Func<Widget> widgetCreator = null)
+		{
+			return (T)(generator ?? Generator.Current).CreateShared (typeof(T), widget);
+		}
+	}
 	
 	/// <summary>
 	/// Base generator class for each platform
@@ -36,31 +80,26 @@ namespace Eto
 	/// The generator takes care of creating the platform-specific implementations of each
 	/// control. Typically, the types are automatically found from the platform assembly, however
 	/// you can also create your own platform-specific controls by adding the types manually via
-	/// <see cref="Generator.Add"/>, or <see cref="Generator.AddAssembly"/>.
+	/// <see cref="Generator.Add"/>
 	/// 
 	/// The types are found by the interface of the control.  For example the <see cref="Forms.Label"/> control
 	/// uses the <see cref="Forms.ILabel"/> interface for its platform implementation.  The generator
 	/// will automatically scan an assembly for a class that directly implements this interface
 	/// for its platform implementation (if it hasn't been added manually).
 	/// </remarks>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Generator
 	{
 		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>> ();
+		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object> ();
+		Dictionary<object, object> properties = new Dictionary<object, object> ();
 		static Generator current;
-		Dictionary<object, object> properties;
-		object propertiesLock = new object ();
 
 		internal T GetSharedProperty<T> (object key, Func<T> instantiator)
 		{
-			if (properties == null) {
-				lock (propertiesLock) {
-					if (properties == null)
-						properties = new Dictionary<object, object> ();
-				}
-			}
-
 			object value;
-			lock (propertiesLock) {
+			lock (properties) {
 				if (!properties.TryGetValue (key, out value)) {
 					value = instantiator ();
 					properties [key] = value;
@@ -268,17 +307,6 @@ namespace Eto
 		/// <summary>
 		/// Creates a new instance of the handler of the specified type
 		/// </summary>
-		/// <typeparam name="T">Type of handler to create</typeparam>
-		/// <param name="widget">Widget instance to attach to the handler</param>
-		/// <returns>A new instance of a handler</returns>
-		public T Create<T> (Widget widget = null)
-		{
-			return (T)Create (typeof(T), widget);
-		}
-
-		/// <summary>
-		/// Creates a new instance of the handler of the specified type
-		/// </summary>
 		/// <param name="type">Type of handler to create</param>
 		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
@@ -304,6 +332,25 @@ namespace Eto
 			} catch (Exception e) {
 				throw new HandlerInvalidException (string.Format ("Could not create instance of type {0}", type), e);
 			}
+		}
+
+		/// <summary>
+		/// Creates a shared singleton instance of the specified type of <paramref name="type"/>
+		/// </summary>
+		/// <param name="type">The type of handler to get a shared instance for</param>
+		/// <param name="widgetCreator">Delegate to create a <see cref="Widget"/> instance to attach to the handler</param>
+		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
+		public object CreateShared (Type type, Func<Widget> widgetCreator = null)
+		{
+			object instance;
+			lock (sharedInstances) {
+				if (!sharedInstances.TryGetValue (type, out instance)) {
+					var widget = widgetCreator != null ? widgetCreator () : null;
+					instance = Create (type, widget);
+					sharedInstances[type] = instance;
+				}
+			}
+			return instance;
 		}
 
 		/// <summary>
