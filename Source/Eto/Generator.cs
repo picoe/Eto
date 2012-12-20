@@ -69,7 +69,23 @@ namespace Eto
 		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
 		public static T CreateShared<T> (this Generator generator, Func<Widget> widgetCreator = null)
 		{
-			return (T)(generator ?? Generator.Current).CreateShared (typeof(T), widget);
+			return (T)(generator ?? Generator.Current).CreateShared (typeof(T), widgetCreator);
+		}
+
+		/// <summary>
+		/// Finds the delegate to create instances of the specified type
+		/// </summary>
+		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="IWidget"/> or another type)</typeparam>
+		/// <returns>The delegate to use to create instances of the specified type</returns>
+		public static Func<T> Find<T> (this Generator generator)
+			where T: class
+		{
+			return (Func<T>)(generator ?? Generator.Current).Find (typeof(T));
+		}
+
+		internal static Dictionary<K, V> Cache<K, V> (this Generator generator, object cacheKey)
+		{
+			return (generator ?? Generator.Current).GetSharedProperty <Dictionary<K, V>> (cacheKey, () => new Dictionary<K, V> ());
 		}
 	}
 	
@@ -107,12 +123,6 @@ namespace Eto
 			}
 			return (T)value;
 		}
-
-		internal Dictionary<K, V> Cache<K, V> (object cacheKey)
-		{
-			return GetSharedProperty <Dictionary<K, V>> (cacheKey, () => new Dictionary<K, V> ());
-		}
-
 
 		#region Events
 
@@ -280,17 +290,6 @@ namespace Eto
 			instantiatorMap [type] = instantiator;
 		}
 		
-		/// <summary>
-		/// Finds the delegate to create instances of the specified type
-		/// </summary>
-		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <returns>The delegate to use to create instances of the specified type</returns>
-		public Func<T> Find<T> ()
-			where T: class
-		{
-			return (Func<T>)Find (typeof(T));
-		}
-
 		/// <summary>
 		/// Find the delegate to create instances of the specified <paramref name="type"/>
 		/// </summary>

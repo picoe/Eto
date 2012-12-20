@@ -12,83 +12,110 @@ namespace Eto.Forms
 	/// </remarks>
 	public static class Cursors
 	{
-		static ObjectCache<CursorType, Cursor> cursorCache = new ObjectCache<CursorType, Cursor> ();
+		static object cursorCache = new object();
+
+		static Cursor GetCursor (CursorType type, Generator generator = null)
+		{
+			var cache = generator.Cache<CursorType, Cursor> (cursorCache);
+			Cursor cursor;
+			lock (cache) {
+				if (!cache.TryGetValue (type, out cursor)) {
+					cursor = new Cursor (generator, type);
+					cache [type] = cursor;
+				}
+			}
+			return cursor;
+		}
 
 		/// <summary>
 		/// Gets a cached cursor with the specified <paramref name="type"/>
 		/// </summary>
-		/// <remarks>
-		/// This is a preferred method of getting a cursor (or one of the static properties of this class)
-		/// </remarks>
-		/// <param name="generator">Generator to get the cursor for</param>
 		/// <param name="type">Type of cursor to get</param>
-		public static Cursor GetCursor (Generator generator, CursorType type)
+		/// <param name="generator">Generator to get the cached pen for</param>
+		/// <returns>A cached instance of the specified cursor</returns>
+		public static Cursor Cached (CursorType type, Generator generator = null)
 		{
-			return cursorCache.Get (generator, type, () => new Cursor (generator, type));
+			return GetCursor (type, generator);
+		}
+		
+		/// <summary>
+		/// Clears the cursor cache
+		/// </summary>
+		/// <remarks>
+		/// This is useful if you are using the <see cref="Cached"/> method to cache pens and want to clear it
+		/// to conserve memory or resources.
+		/// </remarks>
+		/// <param name="generator">Generator to clear the pen cache for</param>
+		public static void ClearCache (Generator generator = null)
+		{
+			var cache = generator.Cache<CursorType, Cursor> (cursorCache);
+			lock (cache) {
+				cache.Clear ();
+			}
 		}
 
 		/// <summary>
 		/// Default cursor, which is usually an arrow but may be different depending on the control
 		/// </summary>
-		public static Cursor Default
+		public static Cursor Default (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.Default); }
+			return GetCursor (CursorType.Default, generator);
 		}
 
 		/// <summary>
 		/// Standard arrow cursor
 		/// </summary>
-		public static Cursor Arrow
+		public static Cursor Arrow (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.Arrow); }
+			return GetCursor (CursorType.Arrow, generator);
 		}
 
 		/// <summary>
 		/// Cursor with a cross hair
 		/// </summary>
-		public static Cursor Crosshair
+		public static Cursor Crosshair (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.Crosshair); }
+			return GetCursor (CursorType.Crosshair, generator);
 		}
 
 		/// <summary>
 		/// Pointer cursor, which is usually a hand
 		/// </summary>
-		public static Cursor Pointer
+		public static Cursor Pointer (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.Pointer); }
+			return GetCursor (CursorType.Pointer, generator);
 		}
 
 		/// <summary>
 		/// All direction move cursor
 		/// </summary>
-		public static Cursor Move
+		public static Cursor Move (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.Move); }
+			return GetCursor (CursorType.Move, generator);
 		}
 
 		/// <summary>
 		/// I-beam cursor for selecting text or placing the text cursor
 		/// </summary>
-		public static Cursor IBeam
+		public static Cursor IBeam (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.IBeam); }
+			return GetCursor (CursorType.IBeam, generator);
 		}
 		
 		/// <summary>
 		/// Vertical sizing cursor
 		/// </summary>
-		public static Cursor VerticalSplit
+		public static Cursor VerticalSplit (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.VerticalSplit); }
+			return GetCursor (CursorType.VerticalSplit, generator);
 		}
 		
 		/// <summary>
 		/// Horizontal sizing cursor
 		/// </summary>
-		public static Cursor HorizontalSplit
+		public static Cursor HorizontalSplit (Generator generator = null)
 		{
-			get { return GetCursor (null, CursorType.HorizontalSplit); }
+			return GetCursor (CursorType.HorizontalSplit, generator);
 		}
 	}
 }

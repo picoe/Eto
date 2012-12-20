@@ -372,7 +372,6 @@
     <Compile Include="Drawing\Fonts.cs" />
     <Compile Include="Drawing\FontFamilies.cs" />
     <Compile Include="Forms\Cursors.cs" />
-    <Compile Include="ObjectCache.cs" />
     <Compile Include="Drawing\Pen.cs" />
     <Compile Include="Drawing\Pens.cs" />
     <Compile Include="Drawing\Brushes.cs" />

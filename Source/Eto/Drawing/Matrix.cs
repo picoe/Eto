@@ -127,7 +127,7 @@ namespace Eto.Drawing
 
 		public static Func<IMatrix> Instantiator (Generator generator = null)
 		{
-			var activator = (generator ?? Generator.Current).Find<IMatrixHandler> ();
+			var activator = generator.Find<IMatrixHandler> ();
 			return () => {
 				var matrix = activator ();
 				matrix.Create ();
@@ -137,7 +137,7 @@ namespace Eto.Drawing
 
 		public static Func<float, float, float, float, float, float, IMatrix> InstantiatorWithElements (Generator generator = null)
 		{
-			var activator = (generator ?? Generator.Current).Find<IMatrixHandler> ();
+			var activator = generator.Find<IMatrixHandler> ();
 			return (xx, yx, xy, yy, x0, y0) => {
 				var matrix = activator ();
 				matrix.Create (xx, yx, xy, yy, x0, y0);

@@ -15,7 +15,7 @@ namespace Eto.Drawing
 
 		static IBrush GetBrush (Color color, Generator generator)
 		{
-			var cache = (generator ?? Generator.Current).Cache<BrushKey, IBrush>(cacheKey);
+			var cache = generator.Cache<BrushKey, IBrush>(cacheKey);
 			IBrush brush;
 			lock (cache) {
 				var key = new BrushKey (color.ToArgb (), generator);
@@ -45,7 +45,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to clear the brush cache for</param>
 		static void ClearCache (Generator generator = null)
 		{
-			var cache = (generator ?? Generator.Current).Cache<BrushKey, IBrush>(cacheKey);
+			var cache = generator.Cache<BrushKey, IBrush>(cacheKey);
 			lock (cache) {
 				cache.Clear ();
 			}

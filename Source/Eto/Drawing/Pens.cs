@@ -15,7 +15,7 @@ namespace Eto.Drawing
 
 		static IPen GetPen (Generator generator, Color color, float thickness = 1f)
 		{
-			var cache = (generator ?? Generator.Current).Cache<PenKey, IPen> (cacheKey);
+			var cache = generator.Cache<PenKey, IPen> (cacheKey);
 			IPen pen;
 			lock (cache) {
 				var key = new PenKey (color.ToArgb (), thickness, generator);
@@ -48,7 +48,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to clear the pen cache for</param>
 		public static void ClearCache (Generator generator = null)
 		{
-			var cache = (generator ?? Generator.Current).Cache<PenKey, IPen> (cacheKey);
+			var cache = generator.Cache<PenKey, IPen> (cacheKey);
 			lock (cache) {
 				cache.Clear ();
 			}
