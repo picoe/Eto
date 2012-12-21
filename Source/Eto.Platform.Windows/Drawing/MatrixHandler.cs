@@ -2,17 +2,21 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using Eto.Drawing;
-using SD = System.Drawing;
-using SD2D = System.Drawing.Drawing2D;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using sd2 = System.Drawing.Drawing2D;
 
 namespace Eto.Platform.Windows.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IMatrix"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class MatrixHandler : IMatrixHandler, IDisposable
 	{
-		SD2D.Matrix control;
+		sd2.Matrix control;
 
-		public SD2D.Matrix Control { get { return control; } }
+		public sd2.Matrix Control { get { return control; } }
 
 		object IMatrix.ControlObject { get { return control; } }
 
@@ -20,7 +24,7 @@ namespace Eto.Platform.Windows.Drawing
 		{
 		}
 
-		public MatrixHandler (SD2D.Matrix matrix)
+		public MatrixHandler (sd2.Matrix matrix)
 		{
 			control = matrix;
 		}
@@ -33,7 +37,7 @@ namespace Eto.Platform.Windows.Drawing
 			set
 			{
 				var e = control.Elements;
-				control = new SD2D.Matrix (value, e [1], e [2], e [3], e [4], e [5]);
+				control = new sd2.Matrix (value, e [1], e [2], e [3], e [4], e [5]);
 			}
 		}
 
@@ -43,7 +47,7 @@ namespace Eto.Platform.Windows.Drawing
 			set
 			{
 				var e = control.Elements;
-				control = new SD2D.Matrix (e [0], value, e [2], e [3], e [4], e [5]);
+				control = new sd2.Matrix (e [0], value, e [2], e [3], e [4], e [5]);
 			}
 		}
 
@@ -53,7 +57,7 @@ namespace Eto.Platform.Windows.Drawing
 			set
 			{
 				var e = control.Elements;
-				control = new SD2D.Matrix (e [0], e [1], value, e [3], e [4], e [5]);
+				control = new sd2.Matrix (e [0], e [1], value, e [3], e [4], e [5]);
 			}
 		}
 
@@ -63,7 +67,7 @@ namespace Eto.Platform.Windows.Drawing
 			set
 			{
 				var e = control.Elements;
-				control = new SD2D.Matrix (e [0], e [1], e [2], value, e [4], e [5]);
+				control = new sd2.Matrix (e [0], e [1], e [2], value, e [4], e [5]);
 			}
 		}
 
@@ -73,7 +77,7 @@ namespace Eto.Platform.Windows.Drawing
 			set
 			{
 				var e = control.Elements;
-				control = new SD2D.Matrix (e [0], e [1], e [2], e [3], value, e [5]);
+				control = new sd2.Matrix (e [0], e [1], e [2], e [3], value, e [5]);
 			}
 		}
 
@@ -83,60 +87,60 @@ namespace Eto.Platform.Windows.Drawing
 			set
 			{
 				var e = control.Elements;
-				control = new SD2D.Matrix (e [0], e [1], e [2], e [3], e [4], value);
+				control = new sd2.Matrix (e [0], e [1], e [2], e [3], e [4], value);
 			}
 		}
 
 		public void Rotate (float angle)
 		{
-			this.Control.Rotate (angle, SD2D.MatrixOrder.Append);
+			this.Control.Rotate (angle, sd2.MatrixOrder.Prepend);
 		}
 
 		public void RotateAt (float angle, float centerX, float centerY)
 		{
-			this.Control.RotateAt (angle, new SD.PointF (centerX, centerY), SD2D.MatrixOrder.Append);
+			this.Control.RotateAt (angle, new sd.PointF (centerX, centerY), sd2.MatrixOrder.Prepend);
 		}
 
 		public void Translate (float x, float y)
 		{
-			this.Control.Translate (x, y, SD2D.MatrixOrder.Append);
+			this.Control.Translate (x, y, sd2.MatrixOrder.Prepend);
 		}
 
 		public void Scale (float scaleX, float scaleY)
 		{
-			this.Control.Scale (scaleX, scaleY, SD2D.MatrixOrder.Append);
+			this.Control.Scale (scaleX, scaleY, sd2.MatrixOrder.Prepend);
 		}
 
 		public void ScaleAt (float scaleX, float scaleY, float centerX, float centerY)
 		{
-			var m = new SD2D.Matrix (scaleX, 0, 0, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
-			this.Control.Multiply (m, SD2D.MatrixOrder.Append);
+			var m = new sd2.Matrix (scaleX, 0, 0, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
+			this.Control.Multiply (m, sd2.MatrixOrder.Prepend);
 		}
 
 		public void Skew (float skewX, float skewY)
 		{
-			var m = new SD2D.Matrix (1, (float)Math.Tan(Conversions.DegreesToRadians(skewX)), (float)Math.Tan(Conversions.DegreesToRadians(skewY)), 1, 0, 0);
-			this.Control.Multiply (m, SD2D.MatrixOrder.Append);
+			var m = new sd2.Matrix (1, (float)Math.Tan(Conversions.DegreesToRadians(skewX)), (float)Math.Tan(Conversions.DegreesToRadians(skewY)), 1, 0, 0);
+			this.Control.Multiply (m, sd2.MatrixOrder.Prepend);
 		}
 
 		public void Append (IMatrix matrix)
 		{
-			this.Control.Multiply (matrix.ToSD (), SD2D.MatrixOrder.Append);
+			this.Control.Multiply (matrix.ToSD (), sd2.MatrixOrder.Append);
 		}
 
 		public void Prepend (IMatrix matrix)
 		{
-			this.Control.Multiply (matrix.ToSD (), SD2D.MatrixOrder.Prepend);
+			this.Control.Multiply (matrix.ToSD (), sd2.MatrixOrder.Prepend);
 		}
 
 		public void Create ()
 		{
-			control = new SD2D.Matrix ();
+			control = new sd2.Matrix ();
 		}
 
 		public void Create (float m11, float m12, float m21, float m22, float dx, float dy)
 		{
-			control = new SD2D.Matrix (m11, m12, m21, m22, dx, dy);
+			control = new sd2.Matrix (m11, m12, m21, m22, dx, dy);
 		}
 
 		public void Invert ()
@@ -146,7 +150,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public PointF TransformPoint (Point p)
 		{
-			var px = new SD.Point[] { p.ToSD () };
+			var px = new sd.Point[] { p.ToSD () };
 
 			this.Control.TransformPoints (px);
 
@@ -155,7 +159,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public PointF TransformPoint (PointF p)
 		{
-			var px = new SD.PointF[] { p.ToSD () };
+			var px = new sd.PointF[] { p.ToSD () };
 
 			this.Control.TransformPoints (px);
 
