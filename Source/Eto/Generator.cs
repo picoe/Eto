@@ -168,7 +168,7 @@ namespace Eto
 		public virtual bool Supports<T> ()
 			where T: class
 		{
-			return Find<T> () != null;
+			return this.Find<T> () != null;
 		}
 
 		/// <summary>
