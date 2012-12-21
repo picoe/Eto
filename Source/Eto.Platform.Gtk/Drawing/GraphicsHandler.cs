@@ -170,7 +170,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			pen.Apply (this);
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -178,6 +177,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			else
 				Control.Scale (width / height, 1.0);
 			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
+			Control.Restore ();
+			Control.Save ();
+			pen.Apply (this);
 			Control.Stroke ();
 			Control.Restore ();
 		}
@@ -185,7 +187,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			brush.Apply (this);
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -193,6 +194,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			else
 				Control.Scale (width / height, 1.0);
 			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
+			Control.Restore ();
+			Control.Save ();
+			brush.Apply (this);
 			Control.Fill ();
 			Control.Restore ();
 		}
@@ -200,7 +204,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
-			pen.Apply (this);
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -211,6 +214,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control.ArcNegative(0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
 			else
 				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+			Control.Restore ();
+			Control.Save ();
+			pen.Apply (this);
 			Control.Stroke ();
 			Control.Restore ();
 		}
@@ -218,7 +224,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
-			brush.Apply (this);
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
 			double radius = Math.Max (width / 2.0, height / 2.0);
 			if (width > height)
@@ -230,6 +235,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			else
 				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
 			Control.LineTo (0, 0);
+			Control.Restore ();
+			Control.Save ();
+			brush.Apply (this);
 			Control.Fill ();
 			Control.Restore ();
 		}
