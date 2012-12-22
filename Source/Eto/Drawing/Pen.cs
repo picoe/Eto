@@ -42,6 +42,11 @@ namespace Eto.Drawing
 		/// Gets the platform-specific control for this pen
 		/// </summary>
 		object ControlObject { get; }
+
+		/// <summary>
+		/// Gets or sets the dash style for this pen
+		/// </summary>
+		DashStyle DashStyle { get; set; }
 	}
 
 	/// <summary>

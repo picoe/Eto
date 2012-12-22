@@ -39,9 +39,9 @@ namespace Eto.Test.Sections.Drawing
 		{
 			// lines
 			var whitePen = Pens.White ();
-			g.DrawLine (whitePen, 0, 1, 99, 100);
-			g.DrawLine (whitePen, 50, 1, 50, 100);
-			g.DrawLine (whitePen, 0, 51, 99, 51);
+			g.DrawLine (whitePen, 1, 1, 99, 99);
+			g.DrawLine (whitePen, 50, 1, 50, 99);
+			g.DrawLine (whitePen, 1, 51, 99, 51);
 
 			g.DrawRectangle (Pens.White (), 101, 1, 100, 100);
 			g.DrawRectangle (Pens.White (), 101, 1, 10, 10);
