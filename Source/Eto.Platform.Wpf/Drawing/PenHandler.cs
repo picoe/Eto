@@ -7,15 +7,22 @@ using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
 {
+	/// <summary>
+	/// Pen handler
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class PenHandler : IPenHandler
 	{
 		swm.Pen pen;
 		swm.SolidColorBrush brush;
+		DashStyle dashStyle;
 
 		public void Create (Color color, float thickness)
 		{
 			brush = new swm.SolidColorBrush (color.ToWpf ());
 			pen = new swm.Pen (brush, thickness);
+			LineCap = PenLineCap.Square;
 			pen.MiterLimit = 10f;
 		}
 
@@ -40,7 +47,11 @@ namespace Eto.Platform.Wpf.Drawing
 		public PenLineCap LineCap
 		{
 			get { return pen.EndLineCap.ToEto (); }
-			set { pen.EndLineCap = pen.StartLineCap = value.ToWpf (); }
+			set
+			{
+				pen.EndLineCap = pen.StartLineCap = pen.DashCap = value.ToWpf ();
+				SetDashStyle ();
+			}
 		}
 
 		public float MiterLimit
@@ -52,6 +63,43 @@ namespace Eto.Platform.Wpf.Drawing
 		public object ControlObject
 		{
 			get { return pen; }
+		}
+
+		public DashStyle DashStyle
+		{
+			get { return dashStyle; }
+			set
+			{
+				dashStyle = value;
+				SetDashStyle ();
+			}
+		}
+
+		void SetDashStyle ()
+		{
+			if (dashStyle == null || dashStyle.IsSolid)
+				pen.DashStyle = swm.DashStyles.Solid;
+			else {
+				var dashes = dashStyle.Dashes;
+				double[] wpfdashes;
+				if (pen.DashCap == swm.PenLineCap.Flat)
+					wpfdashes = Array.ConvertAll (dashStyle.Dashes, x => (double)x);
+				else {
+					wpfdashes = new double[dashes.Length];
+					for (int i = 0; i < wpfdashes.Length; i++) {
+						var dash = (double)dashes[i];
+						if ((i % 2) == 1) {
+							// gap must include square/round thickness
+							dash += 1;
+						} else {
+							// dash must exclude square/round thickness
+							dash -= 1;
+						}
+						wpfdashes[i] = dash;
+					}
+				}
+				pen.DashStyle = new swm.DashStyle (wpfdashes, dashStyle.Offset);
+			}
 		}
 
 		public void Dispose ()

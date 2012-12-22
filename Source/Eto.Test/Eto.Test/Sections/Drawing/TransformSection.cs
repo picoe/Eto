@@ -57,10 +57,10 @@ namespace Eto.Test.Sections.Drawing
 			// test matrix scale/translate/rotate
 			DrawRotatedLines (g, Colors.Salmon, rotatedLineCenter, (center, angle) => {
 				var m = Matrix.Create ();
-				m.Scale (.4f);
-				m.Translate (-center);
-				m.Rotate (angle);
 				m.Translate (center);
+				m.Rotate (angle);
+				m.Translate (-center);
+				m.Scale (.4f);
 				g.MultiplyTransform (m);
 			});
 
@@ -85,8 +85,8 @@ namespace Eto.Test.Sections.Drawing
 				g.DrawImage (image, imageScaleLocation);
 
 				var m = Matrix.Create ();
-				m.ScaleAt (0.3f, imageScaleLocation + image.Size / 2);
 				m.Translate (0, -50);
+				m.ScaleAt (0.3f, imageScaleLocation + image.Size / 2);
 				g.MultiplyTransform (m);
 				g.DrawImage (image, imageScaleLocation);
 				g.RestoreTransform ();
@@ -109,9 +109,9 @@ namespace Eto.Test.Sections.Drawing
 			{
 				g.SaveTransform ();
 				var m = Matrix.Create ();
-				m.Rotate (90);
-				m.Scale (0.4f);
 				m.Translate (480, 20);
+				m.Scale (0.4f);
+				m.Rotate (90);
 				g.MultiplyTransform (m);
 				PixelOffsetSection.Draw (g);
 				g.RestoreTransform ();

@@ -3,6 +3,11 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IMatrix"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class MatrixHandler : IMatrixHandler
 	{
 		Cairo.Matrix control;
@@ -55,9 +60,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void Rotate (float angle)
 		{
-			var matrix = new Cairo.Matrix ();
-			matrix.InitRotate (Conversions.DegreesToRadians (angle));
-			control = Cairo.Matrix.Multiply (control, matrix);
+			control.Rotate (Conversions.DegreesToRadians (angle));
 		}
 
 		public void RotateAt (float angle, float centerX, float centerY)
@@ -66,33 +69,29 @@ namespace Eto.Platform.GtkSharp.Drawing
 			var sina = Math.Sin (angle);
 			var cosa = Math.Cos (angle);
 			var matrix = new Cairo.Matrix (cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);;
-			control = Cairo.Matrix.Multiply (control, matrix);
+			control = Cairo.Matrix.Multiply (matrix, control);
 		}
 
 		public void Translate (float x, float y)
 		{
-			var matrix = new Cairo.Matrix ();
-			matrix.InitTranslate (x, y);	
-			control = Cairo.Matrix.Multiply (control, matrix);
+			control.Translate (x, y);
 		}
 
 		public void Scale (float scaleX, float scaleY)
 		{
-			var matrix = new Cairo.Matrix ();
-			matrix.InitScale (scaleX, scaleY);
-			control = Cairo.Matrix.Multiply (control, matrix);
+			control.Scale (scaleX, scaleY);
 		}
 
 		public void ScaleAt (float scaleX, float scaleY, float centerX, float centerY)
 		{
 			var matrix = new Cairo.Matrix (scaleX, 0, 0, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
-			control = Cairo.Matrix.Multiply (control, matrix);
+			control = Cairo.Matrix.Multiply (matrix, control);
 		}
 
 		public void Skew (float skewX, float skewY)
 		{
 			var matrix = new Cairo.Matrix (1, Math.Tan (Conversions.DegreesToRadians (skewX)), Math.Tan (Conversions.DegreesToRadians (skewY)), 1, 0, 0);
-			control = Cairo.Matrix.Multiply (control, matrix);
+			control = Cairo.Matrix.Multiply (matrix, control);
 		}
 
 		public void Append (IMatrix matrix)

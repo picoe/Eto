@@ -15,6 +15,11 @@ using MonoTouch.CoreGraphics;
 namespace Eto.Platform.iOS.Drawing
 #endif
 {
+	/// <summary>
+	/// Handler for <see cref="IMatrix"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class MatrixHandler : IMatrixHandler
 	{
 		CGAffineTransform control;
@@ -69,7 +74,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public void Rotate (float angle)
 		{
-			control.Rotate (Conversions.DegreesToRadians (angle));
+			control = CGAffineTransform.Multiply (CGAffineTransform.MakeRotation (Conversions.DegreesToRadians (angle)), control);
 		}
 
 		public void RotateAt (float angle, float centerX, float centerY)
@@ -77,27 +82,30 @@ namespace Eto.Platform.iOS.Drawing
 			angle = Conversions.DegreesToRadians (angle);
 			var sina = (float)Math.Sin (angle);
 			var cosa = (float)Math.Cos (angle);
-			control.Multiply(new CGAffineTransform(cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa));
+			var matrix = new CGAffineTransform(cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);
+			control = CGAffineTransform.Multiply (matrix, control);
 		}
 
 		public void Translate (float x, float y)
 		{
-			control.Translate (x, y);
+			control = CGAffineTransform.Multiply (CGAffineTransform.MakeTranslation (x, y), control);
 		}
 
 		public void Scale (float scaleX, float scaleY)
 		{
-			control.Scale (scaleX, scaleY);
+			control = CGAffineTransform.Multiply (CGAffineTransform.MakeScale (scaleX, scaleY), control);
 		}
 
 		public void ScaleAt (float scaleX, float scaleY, float centerX, float centerY)
 		{
-			control.Multiply (new CGAffineTransform(scaleX, 0, 0, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY));
+			var matrix = new CGAffineTransform(scaleX, 0f, 0f, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
+			control = CGAffineTransform.Multiply (matrix, control);
 		}
 
 		public void Skew (float skewX, float skewY)
 		{
-			control.Multiply (new CGAffineTransform (1, (float)Math.Tan (Conversions.DegreesToRadians (skewX)), (float)Math.Tan (Conversions.DegreesToRadians (skewY)), 1, 0, 0));
+			var matrix = new CGAffineTransform (1, (float)Math.Tan (Conversions.DegreesToRadians (skewX)), (float)Math.Tan (Conversions.DegreesToRadians (skewY)), 1, 0, 0);
+			control = CGAffineTransform.Multiply (matrix, control);
 		}
 
 		public void Append (IMatrix matrix)
@@ -109,8 +117,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void Prepend (IMatrix matrix)
 		{
 			var affineMatrix = (CGAffineTransform)matrix.ControlObject;
-			affineMatrix.Multiply (control);
-			control = affineMatrix;
+			control = CGAffineTransform.Multiply (affineMatrix, control);
 		}
 
 		public void Invert ()

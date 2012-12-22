@@ -76,6 +76,8 @@
     </Compile>
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
+    <Compile Include="Drawing\DashStyle.cs" />
+    <Compile Include="Drawing\DashStyles.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
     <Compile Include="Drawing\PenLineJoin.cs" />

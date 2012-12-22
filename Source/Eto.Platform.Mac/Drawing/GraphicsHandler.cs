@@ -37,6 +37,9 @@ namespace Eto.Platform.iOS.Drawing
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
 		float inverseoffset = 0f;
+
+		public float Offset { get { return offset; } }
+		public float InverseOffset { get { return inverseoffset; } }
 		
 		public bool Flipped {
 			get;
