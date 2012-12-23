@@ -279,6 +279,8 @@
     <Compile Include="Drawing\Pen.cs" />
     <Compile Include="Drawing\SolidBrush.cs" />
     <Compile Include="Drawing\PenLineCap.cs" />
+    <Compile Include="Drawing\DashStyle.cs" />
+    <Compile Include="Drawing\DashStyles.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

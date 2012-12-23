@@ -169,11 +169,9 @@
     <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
-    <Compile Include="Sections\Drawing\PenLineJoinSection.cs" />
-    <Compile Include="Sections\Drawing\PenThicknessSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
-    <Compile Include="Sections\Drawing\PenLineCapSection.cs" />
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
+    <Compile Include="Sections\Drawing\PenSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

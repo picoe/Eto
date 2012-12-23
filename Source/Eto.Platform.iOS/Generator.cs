@@ -69,7 +69,8 @@ namespace Eto.Platform.iOS
 			Add <ITreeGridView> (() => new TreeGridViewHandler ());
 			//Add <ITreeView> (() => new TreeViewHandler ());
 			Add <IWebView> (() => new WebViewHandler ());
-			
+			Add <INavigation> (() => new NavigationHandler ());
+
 			// Forms.Menu
 			//Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
 			//Add <IContextMenu> (() => new ContextMenuHandler ());
