@@ -162,9 +162,13 @@ namespace Eto.Platform.GtkSharp
 		public bool Visible {
 			get { return Control.Visible; }
 			set { 
-				Control.Visible = value; 
+				Control.Visible = value;
 				if (!value)
 					Control.NoShowAll = true;
+				if (value && Widget.Loaded) {
+					Control.NoShowAll = false;
+					Control.ShowAll ();
+				}
 			}
 		}
 
