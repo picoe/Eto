@@ -148,8 +148,8 @@ namespace Eto.Test.Sections.Drawing
 			// test adding child paths and transforms
 			var childPath = CreatePath();
 			var matrix = Matrix.Create();
-			matrix.Scale(0.25f);
 			matrix.Translate (240, 120);
+			matrix.Scale(0.25f);
 			childPath.Transform(matrix);
 			path.AddPath (childPath, ConnectPath);
 
