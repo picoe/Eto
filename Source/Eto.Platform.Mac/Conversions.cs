@@ -5,6 +5,7 @@ using Eto.Drawing;
 using MonoMac.Foundation;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
+using MonoMac.ImageIO;
 
 namespace Eto.Platform.Mac
 {
@@ -149,6 +150,19 @@ namespace Eto.Platform.Mac
 			if (size.Height >= 0)
 				newSize.Height = size.Height;
 			view.SetFrameSize (newSize);
+		}
+
+		public static CGImage ToCG (this Image image)
+		{
+			using (var imageSource = CGImageSource.FromData (image.ToNS ().AsTiff ())) {
+				return imageSource.CreateImage (0, null);
+			}
+		}
+
+		public static NSImage ToNS (this Image image)
+		{
+			var source = image.Handler as IImageSource;
+			return source != null ? source.GetImage () : null;
 		}
 	}
 }

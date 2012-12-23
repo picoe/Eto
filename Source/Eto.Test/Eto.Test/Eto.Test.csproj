@@ -102,6 +102,7 @@
     <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
+    <Compile Include="Sections\Drawing\BrushSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

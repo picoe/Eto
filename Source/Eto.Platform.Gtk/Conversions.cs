@@ -343,5 +343,19 @@ namespace Eto.Platform.GtkSharp
 		{
 			return (Cairo.Matrix)matrix.ControlObject;
 		}
+
+		public static Gdk.Pixbuf ToGdk (this Image image)
+		{
+			var handler = image.Handler as IGtkPixbuf;
+			if (handler != null)
+				return handler.Pixbuf;
+			else
+				return null;
+		}
+
+		public static void SetCairoSurface (this Image image, Cairo.Context context, float x, float y)
+		{
+			Gdk.CairoHelper.SetSourcePixbuf (context, image.ToGdk (), x, y);
+		}
 	}
 }

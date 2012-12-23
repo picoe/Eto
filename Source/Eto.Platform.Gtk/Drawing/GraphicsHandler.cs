@@ -160,9 +160,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
 		{
+			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
 			Control.Save ();
 			brush.Apply (this);
-			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
 			Control.Fill ();
 			Control.Restore ();
 		}
@@ -245,9 +245,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void FillPath (IBrush brush, IGraphicsPath path)
 		{
 			Control.Save ();
-			brush.Apply (this);
 			Control.Translate (inverseoffset, inverseoffset);
 			path.ToHandler ().Apply (Control);
+			Control.Restore ();
+			Control.Save ();
+			brush.Apply (this);
 			Control.Fill ();
 			Control.Restore ();
 		}
@@ -255,9 +257,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void DrawPath (IPen pen, IGraphicsPath path)
 		{
 			Control.Save ();
-			pen.Apply (this);
 			Control.Translate (offset, offset);
 			path.ToHandler ().Apply (Control);
+			Control.Restore ();
+			Control.Save ();
+			pen.Apply (this);
 			Control.Stroke ();
 			Control.Restore ();
 		}

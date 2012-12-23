@@ -36,6 +36,7 @@ namespace Eto.Platform.Mac
 			Add <IMatrixHandler> (() => new MatrixHandler ());
 			Add <IPenHandler> (() => new PenHandler ());
 			Add <ISolidBrushHandler> (() => new SolidBrushHandler ());
+			Add <ITextureBrushHandler> (() => new TextureBrushHandler ());
 
 			// Forms.Cells
 			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());

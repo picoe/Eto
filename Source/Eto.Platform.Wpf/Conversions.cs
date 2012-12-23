@@ -252,7 +252,7 @@ namespace Eto.Platform.Wpf
 		{
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
-				return imageHandler.GetImageClosestToSize (width.Value);
+				return imageHandler.GetImageClosestToSize (width);
 			else
 				return image.ControlObject as swmi.BitmapSource;
 		}
@@ -331,6 +331,11 @@ namespace Eto.Platform.Wpf
 		public static swm.Transform ToWpfTransform (this IMatrix matrix)
 		{
 			return new swm.MatrixTransform (matrix.ToWpf ());
+		}
+
+		public static IMatrix ToEtoMatrix (this swm.Transform transform)
+		{
+			return new MatrixHandler (transform.Value);
 		}
 
 		public static swm.PathGeometry ToWpf (this IGraphicsPath path)

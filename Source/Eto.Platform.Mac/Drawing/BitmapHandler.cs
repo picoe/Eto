@@ -5,7 +5,8 @@ using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
-using SD = System.Drawing;
+using sd = System.Drawing;
+using MonoMac.ImageIO;
 
 namespace Eto.Platform.Mac.Drawing
 {
@@ -61,7 +62,7 @@ namespace Eto.Platform.Mac.Drawing
 			Control = new NSImage (fileName);
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new SD.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create (Stream stream)
@@ -69,7 +70,7 @@ namespace Eto.Platform.Mac.Drawing
 			Control = new NSImage (NSData.FromStream (stream));
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new SD.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create (int width, int height, PixelFormat pixelFormat)

@@ -75,6 +75,7 @@ namespace Eto.Platform.iOS
 
 		public static CGAffineTransform ToCG (this IMatrix matrix)
 		{
+			if (matrix == null) return CGAffineTransform.MakeIdentity();
 			return (CGAffineTransform)matrix.ControlObject;
 		}
 		
