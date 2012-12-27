@@ -20,14 +20,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			int? _selected;
 
+			public EtoComboBox ()
+			{
+				Loaded += ComboBoxEx_Loaded;
+			}
+
 			public override void OnApplyTemplate ()
 			{
 				base.OnApplyTemplate ();
 
 				_selected = SelectedIndex;
 				SelectedIndex = -1;
-
-				Loaded += ComboBoxEx_Loaded;
 			}
 
 			protected override void OnSelectionChanged (swc.SelectionChangedEventArgs e)
