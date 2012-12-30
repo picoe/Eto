@@ -197,13 +197,18 @@ namespace Eto.Drawing
 		{
 		}
 
-		Color (Color val)
+		/// <summary>
+		/// Initializes a new instance of the Color object as a copy of the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color to copy</param>
+		/// <param name="alpha">Alpha to use for the new color, or null to use the alpha component from <paramref name="color"/></param>
+		public Color (Color color, float? alpha = null)
 			: this ()
 		{
-			R = val.R;
-			G = val.G;
-			B = val.B;
-			A = val.A;
+			R = color.R;
+			G = color.G;
+			B = color.B;
+			A = alpha ?? color.A;
 		}
 
 		/// <summary>
