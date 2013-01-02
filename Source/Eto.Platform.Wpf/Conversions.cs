@@ -114,12 +114,16 @@ namespace Eto.Platform.Wpf
 		public static MouseEventArgs ToEto (this swi.MouseEventArgs e, sw.IInputElement control)
 		{
 			var buttons = MouseButtons.None;
-			if (e.LeftButton == swi.MouseButtonState.Pressed)
-				buttons |= MouseButtons.Primary;
-			if (e.RightButton == swi.MouseButtonState.Pressed)
-				buttons |= MouseButtons.Alternate;
-			if (e.MiddleButton == swi.MouseButtonState.Pressed)
-				buttons |= MouseButtons.Middle;
+			if (e is swi.MouseButtonEventArgs)
+			{
+				var b = ((swi.MouseButtonEventArgs)e).ChangedButton;
+				if (b == swi.MouseButton.Left)
+					buttons |= MouseButtons.Primary;
+				if (b == swi.MouseButton.Right)
+					buttons |= MouseButtons.Alternate;
+				if (b == swi.MouseButton.Middle)
+					buttons |= MouseButtons.Middle;
+			}
 			var modifiers = Key.None;
 			var location = e.GetPosition (control).ToEto ();
 
@@ -294,7 +298,7 @@ namespace Eto.Platform.Wpf
 		public static swm.ImageSource ToWpf (this Image image, int? width = null)
 		{
 			var imageHandler = image.Handler as IWpfImage;
-			if (imageHandler != null)
+			if (imageHandler != null && width != null)
 				return imageHandler.GetImageClosestToSize (width.Value);
 			else
 				return image.ControlObject as swm.ImageSource;

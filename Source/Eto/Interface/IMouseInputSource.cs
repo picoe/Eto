@@ -12,7 +12,6 @@ namespace Eto.Interface
         event MouseEventHandler MouseMove;
         event MouseEventHandler MouseLeave;
         event MouseEventHandler MouseDown;
-        event MouseEventHandler MouseClick;
         event MouseEventHandler MouseDoubleClick;
         event MouseEventHandler MouseWheel;
     }

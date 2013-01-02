@@ -178,9 +178,6 @@ namespace Eto.Platform.Windows
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.SizeChanged += Control_SizeChanged;
 				break;
-            case Eto.Forms.Control.MouseClickEvent:
-                Control.MouseClick += Control_Click;
-                break;
             case Eto.Forms.Control.MouseDoubleClickEvent:
 				Control.MouseDoubleClick += Control_DoubleClick;
 				break;
@@ -267,11 +264,6 @@ namespace Eto.Platform.Windows
             Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto()));
 		}
 
-        void Control_Click(object sender, System.Windows.Forms.MouseEventArgs e)
-        {
-            Widget.OnMouseClick(e.ToEto());
-        }
-        
         void Control_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
 		{
             Widget.OnMouseDoubleClick(e.ToEto());

@@ -338,29 +338,6 @@ namespace Eto.Forms
 
         #endregion
 
-        #region MouseClick
-        public const string MouseClickEvent = "Control.MouseClick";
-
-        EventHandler<MouseEventArgs> mouseClick;
-
-        public event EventHandler<MouseEventArgs> MouseClick
-        {
-            add
-            {
-                HandleEvent(MouseClickEvent);
-                mouseClick += value;
-            }
-            remove { mouseClick -= value; }
-        }
-
-        public virtual void OnMouseClick(MouseEventArgs e)
-        {
-            if (mouseClick != null)
-                mouseClick(this, e);
-        }
-
-        #endregion
-
         #region MouseWheel
         public const string MouseWheelEvent = "Control.MouseWheel";
 
