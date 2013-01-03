@@ -29,7 +29,7 @@ namespace Eto.Platform.Mac
 		}
 
 
-		public static void AddTo(Generator g)
+		public static void AddTo(Eto.Generator g)
 		{
 			// Drawing
 			g.Add <IBitmap> (() => new BitmapHandler ());
