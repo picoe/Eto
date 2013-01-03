@@ -3,6 +3,7 @@ using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
 using SD = System.Drawing;
+using Eto.Platform.Mac;
 
 #if OSX
 using MonoMac.CoreGraphics;
@@ -111,11 +112,9 @@ namespace Eto.Platform.iOS.Drawing
             }
         }
 
-        public void Transform(Matrix matrix)
+        public void Transform(IMatrix matrix)
         {
-            Transform(
-                Mac.Generator.Convert(
-                    matrix));
+            Transform(matrix.ToCG());
         }
 
         private void Transform(CGAffineTransform transform)

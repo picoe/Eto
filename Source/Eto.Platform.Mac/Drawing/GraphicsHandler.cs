@@ -549,11 +549,10 @@ namespace Eto.Platform.iOS.Drawing
 			Control.ScaleCTM(sx, sy);
         }
 
-        public void MultiplyTransform(Matrix matrix)
+        public void MultiplyTransform(IMatrix matrix)
         {
-			Control.ConcatCTM((CGAffineTransform)matrix.ControlObject);
+			Control.ConcatCTM(matrix.ToCG());
         }
-
 
         public void SaveTransform()
         {

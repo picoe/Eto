@@ -10,7 +10,6 @@
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup>
     <DefineConstants>$(DefineConstants);Mac;DESKTOP;</DefineConstants>
     <Optimize>false</Optimize>
@@ -38,6 +37,10 @@
     <DefineConstants>OSX;DESKTOP</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputRoot>..\..\..</OutputRoot>
+  </PropertyGroup>
+  <Import Condition="Exists('../../../Common.targets')" Project="../../../Common.targets" />  
   <ItemGroup>
     <Reference Include="MonoMac">
       <HintPath>..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
