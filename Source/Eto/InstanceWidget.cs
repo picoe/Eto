@@ -71,7 +71,7 @@ namespace Eto
 	// Doesn't work in mono yet:
 	// [RuntimeNameProperty("ID")]
 #endif
-	public abstract class InstanceWidget : Widget
+	public abstract class InstanceWidget : Widget, IControlObjectSource
 	{
 		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
 		string style;

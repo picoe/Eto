@@ -19,13 +19,13 @@ namespace Eto
 		/// <summary>
 		/// Gets the instance of the widget that was created
 		/// </summary>
-		public IWidget Instance { get; private set; }
+		public object Instance { get; private set; }
 		
 		/// <summary>
 		/// Initializes a new instance of the WidgetCreatedArgs class
 		/// </summary>
 		/// <param name="instance">Instance of the widget that was created</param>
-		public WidgetCreatedArgs (IWidget instance)
+		public WidgetCreatedArgs (object instance)
 		{
 			this.Instance = instance;
 		}
@@ -48,11 +48,10 @@ namespace Eto
 		/// </remarks>
 		/// <typeparam name="T">Type of handler to create</typeparam>
 		/// <param name="generator">Generator to create the instance, or null to use the current generator</param>
-		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
-		public static T Create<T> (this Generator generator, Widget widget = null)
+		public static T Create<T> (this Generator generator)
 		{
-			return (T)(generator ?? Generator.Current).Create (typeof (T), widget);
+			return (T)(generator ?? Generator.Current).Create (typeof (T));
 		}
 
 		/// <summary>
@@ -64,12 +63,11 @@ namespace Eto
 		/// generator without having to do the extra check
 		/// </remarks>
 		/// <param name="generator">Generator to create or get the shared instance, or null to use the current generator</param>
-		/// <param name="widgetCreator">Delegate to create a <see cref="Widget"/> instance to attach to the handler</param>
 		/// <typeparam name="T">The type of handler to get a shared instance for</typeparam>
 		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
-		public static T CreateShared<T> (this Generator generator, Func<Widget> widgetCreator = null)
+		public static T CreateShared<T> (this Generator generator)
 		{
-			return (T)(generator ?? Generator.Current).CreateShared (typeof(T), widgetCreator);
+			return (T)(generator ?? Generator.Current).CreateShared (typeof(T));
 		}
 
 		/// <summary>
@@ -307,9 +305,8 @@ namespace Eto
 		/// Creates a new instance of the handler of the specified type
 		/// </summary>
 		/// <param name="type">Type of handler to create</param>
-		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
-		public object Create (Type type, Widget widget)
+		public object Create (Type type)
 		{
 			try {
 				var instantiator = Find (type);
@@ -317,16 +314,7 @@ namespace Eto
 					throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
 
 				var handler = instantiator ();
-
-				var widgetHandler = handler as IWidget;
-				if (widgetHandler != null) {
-					if (widget != null) {
-						widget.Handler = widgetHandler;
-						widgetHandler.Widget = widget;
-					}
-					widgetHandler.Generator = this;
-					OnWidgetCreated (new WidgetCreatedArgs (widgetHandler));
-				}
+				OnWidgetCreated (new WidgetCreatedArgs (handler));
 				return handler;
 			} catch (Exception e) {
 				throw new HandlerInvalidException (string.Format ("Could not create instance of type {0}", type), e);
@@ -337,15 +325,13 @@ namespace Eto
 		/// Creates a shared singleton instance of the specified type of <paramref name="type"/>
 		/// </summary>
 		/// <param name="type">The type of handler to get a shared instance for</param>
-		/// <param name="widgetCreator">Delegate to create a <see cref="Widget"/> instance to attach to the handler</param>
 		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
-		public object CreateShared (Type type, Func<Widget> widgetCreator = null)
+		public object CreateShared (Type type)
 		{
 			object instance;
 			lock (sharedInstances) {
 				if (!sharedInstances.TryGetValue (type, out instance)) {
-					var widget = widgetCreator != null ? widgetCreator () : null;
-					instance = Create (type, widget);
+					instance = Create (type);
 					sharedInstances[type] = instance;
 				}
 			}

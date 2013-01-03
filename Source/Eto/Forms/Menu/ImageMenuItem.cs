@@ -56,7 +56,5 @@ namespace Eto.Forms
 				ai.Generate (this);
 			}
 		}
-
-		IWidget ISubMenuWidget.Handler { get { return this.Handler; } }
 	}
 }

@@ -11,13 +11,8 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGraphicsPath : IDisposable
+	public interface IGraphicsPath : IDisposable, IControlObjectSource
 	{
-		/// <summary>
-		/// Gets the platform-specific control object
-		/// </summary>
-		object ControlObject { get; }
-
 		/// <summary>
 		/// Gets the bounding rectangle for this path
 		/// </summary>
@@ -296,7 +291,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsPath : IGraphicsPath
+	public class GraphicsPath : IGraphicsPath, IHandlerSource
 	{
 		IGraphicsPath Handler { get; set; }
 
@@ -329,6 +324,21 @@ namespace Eto.Drawing
 		{
 			get { return Handler.CurrentPoint; }
 		}
+
+		/// <summary>
+		/// Creates a delegate that can be used to create instances of the <see cref="IGraphicsPath"/>
+		/// </summary>
+		/// <remarks>
+		/// This is useful when creating a very large number of graphics path objects
+		/// </remarks>
+		/// <param name="generator">Generator used to create the graphics path objects</param>
+		public static Func<IGraphicsPath> Instantiator (Generator generator = null)
+		{
+			var instantiator = generator.Find<IGraphicsPathHandler>();
+			return () => {
+				return instantiator ();
+			};
+		}
 		
 		/// <summary>
 		/// Creates a new instance of the IGraphicsPath for the specified generator
@@ -336,7 +346,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
 		public static IGraphicsPath Create (Generator generator = null)
 		{
-			return generator.Create<IGraphicsPathHandler>();
+			return generator.Create<IGraphicsPathHandler> ();
 		}
 
 		/// <summary>
@@ -534,9 +544,14 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>
-		object IGraphicsPath.ControlObject
+		object IControlObjectSource.ControlObject
 		{
 			get { return Handler.ControlObject; }
+		}
+
+		object IHandlerSource.Handler
+		{
+			get { throw new NotImplementedException (); }
 		}
 	}
 }
