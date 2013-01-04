@@ -269,22 +269,20 @@
     <Compile Include="Forms\FontDialog.cs" />
     <Compile Include="Forms\Layout\Layout.cs" />
     <Compile Include="ContentProperty.cs" />
-    <Compile Include="Interface\IDragDropInputSource.cs" />
-    <Compile Include="Interface\IKeyboardInputSource.cs" />
-    <Compile Include="Interface\IMouseInputSource.cs" />
+    <Compile Include="Drawing\Matrix.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
     <Compile Include="Drawing\PixelOffsetMode.cs" />
-    <Compile Include="Drawing\Matrix.cs" />
-    <Compile Include="Drawing\Constants.cs" />
     <Compile Include="Drawing\Brush.cs" />
+    <Compile Include="Drawing\Brushes.cs" />
+    <Compile Include="Drawing\PenLineJoin.cs" />
+    <Compile Include="Drawing\Pens.cs" />
     <Compile Include="Drawing\Pen.cs" />
-    <Compile Include="Drawing\StringAlignment.cs" />
-    <Compile Include="Drawing\TextAlign.cs" />
-    <Compile Include="Drawing\VerticalMetrics.cs" />
-    <Compile Include="Forms\Controls\DragDrop.cs" />
-    <Compile Include="Forms\Controls\DragDropInputSource.cs" />
-    <Compile Include="Forms\Controls\DataObject.cs" />
-    <Compile Include="Math\MathUtil.cs" />
+    <Compile Include="Drawing\SolidBrush.cs" />
+    <Compile Include="Drawing\PenLineCap.cs" />
+    <Compile Include="Drawing\DashStyle.cs" />
+    <Compile Include="Drawing\DashStyles.cs" />
+    <Compile Include="Drawing\TextureBrush.cs" />
+    <Compile Include="Drawing\LinearGradientBrush.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

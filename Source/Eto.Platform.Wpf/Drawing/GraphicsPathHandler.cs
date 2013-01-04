@@ -9,228 +9,204 @@ using Eto;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-    public class GraphicsPathHandler : WidgetHandler<swm.PathGeometry, GraphicsPath>, IGraphicsPath
-    {
-        swm.PathFigure figure;
+	/// <summary>
+	/// Handler for <see cref="IGraphicsPath"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class GraphicsPathHandler : IGraphicsPathHandler
+	{
+		swm.PathGeometry Control { get; set; }
+		swm.PathFigure figure;
 
-        swm.PathFigure LastFigure
-        {
-            get
-            {
-                return Control != null && Control.Figures.Count > 0
-                    ? Control.Figures[Control.Figures.Count - 1]
-                    : null;
-            }
-        }
 
-        public GraphicsPathHandler()
-        {
-            Control = new swm.PathGeometry();
-            Control.Figures = new swm.PathFigureCollection();
-        }
+		public GraphicsPathHandler ()
+		{
+			Control = new swm.PathGeometry ();
+			Control.Figures = new swm.PathFigureCollection ();
+		}
 
-        private GraphicsPathHandler(swm.PathGeometry p)
-        {
-            Control = p;
-        }
+		public bool IsEmpty
+		{
+			get { return Control.IsEmpty (); }
+		}
 
-        public bool IsEmpty
-        {
-            get { return Control.IsEmpty(); }
-        }
+		public PointF CurrentPoint
+		{
+			get;
+			private set;
+		}
 
-        void ConnectTo(sw.Point startPoint, bool startNewFigure = false)
-        {
-            if (startNewFigure || figure == null)
-            {
-                figure = new swm.PathFigure();
-                figure.StartPoint = startPoint;
-                figure.Segments = new swm.PathSegmentCollection();
-                Control.Figures.Add(figure);
-            }
-            else
-                figure.Segments.Add(new swm.LineSegment(startPoint, true));
-        }
+		void ConnectTo (double startX, double startY, bool startNewFigure = false)
+		{
+			ConnectTo (new sw.Point (startX, startY), startNewFigure);
+		}
 
-        public void CloseFigure()
-        {
-            LastFigure.IsClosed = true;
-        }
+		void ConnectTo (sw.Point startPoint, bool startNewFigure = false)
+		{
+			if (startNewFigure || figure == null) {
+				figure = new swm.PathFigure ();
+				figure.StartPoint = startPoint;
+				figure.Segments = new swm.PathSegmentCollection ();
+				Control.Figures.Add (figure);
+			} else
+				figure.Segments.Add (new swm.LineSegment (startPoint, true));
+		}
 
-        public void AddLines(PointF[] points)
-        {
-            var enumerator = points.GetEnumerator();
+		public void CloseFigure ()
+		{
+			if (figure != null) {
+				if (!(figure.Segments.Count == 1 && figure.Segments[0] is swm.LineSegment))
+					figure.IsClosed = true;
+			}
+			figure = null;
+		}
 
-            if (!enumerator.MoveNext())
-                return;
+		public void StartFigure ()
+		{
+			figure = null;
+		}
 
-            ConnectTo(((PointF)enumerator.Current).ToWpf());
+		public void AddLines (IEnumerable<PointF> points)
+		{
+			var pointsList = points as IList<PointF> ?? points.ToArray ();
+			ConnectTo (pointsList.First ().ToWpf ());
 
-            while (enumerator.MoveNext())
-            {
-                figure.Segments.Add(
-                    new swm.LineSegment(
-                        ((PointF)enumerator.Current).ToWpf(),
-                        true));
-            }
-        }
+			var wpfPoints = from p in pointsList select p.ToWpf ();
+			figure.Segments.Add (new swm.PolyLineSegment (wpfPoints, true));
+			CurrentPoint = pointsList.Last ();
+		}
 
-        public void AddLine(Point point1, Point point2)
-        {
-            ConnectTo(point1.ToWpf());
-            figure.Segments.Add(
-                new swm.LineSegment(point2.ToWpf(), true));
-        }
+		public void AddLine (float startX, float startY, float endX, float endY)
+		{
+			ConnectTo (startX, startY);
+			figure.Segments.Add (new swm.LineSegment (new sw.Point (endX, endY), true));
+			CurrentPoint = new PointF (endX, endY);
+		}
 
-        public void AddLine(PointF point1, PointF point2)
-        {
-            ConnectTo(point1.ToWpf());
-            figure.Segments.Add(new swm.LineSegment(point2.ToWpf(), true));
-        }
+		public void AddRectangle (float x, float y, float width, float height)
+		{
+			Control.AddGeometry (new swm.RectangleGeometry (new sw.Rect (x, y, width, height)));
+			figure = null;
+		}
 
-        public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
-        {
-            ConnectTo(pt1.ToWpf());
+		public void LineTo (float x, float y)
+		{
+			ConnectTo (x, y);
+			CurrentPoint = new PointF (x, y);
+		}
 
-            figure.Segments.Add(
-                new swm.BezierSegment(pt2.ToWpf(), pt3.ToWpf(), pt4.ToWpf(),
-                isStroked: true));
-        }
+		public void MoveTo (float x, float y)
+		{
+			ConnectTo (new sw.Point (x, y), startNewFigure: true);
+			CurrentPoint = new PointF (x, y);
+		}
 
-        public void AddBeziers(Point[] points)
-        {
-            throw new NotImplementedException();
-        }
+		public void AddArc (float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			// degrees to radians conversion
+			double startRadians = startAngle * Math.PI / 180.0;
+			double sweepRadians = sweepAngle * Math.PI / 180.0;
 
-        public void AddPath(IGraphicsPathBase addingPath, bool connect)
-        {
-            var path =
-                (swm.PathGeometry)
-                    ((IGraphicsPath)addingPath).ControlObject;
+			// x and y radius
+			double dx = width / 2;
+			double dy = height / 2;
 
-            if (!path.IsEmpty())
-                this.Control.AddGeometry(
-                    path);
-        }
+			// determine the start point 
+			double xs = x + dx + (Math.Cos (startRadians) * dx);
+			double ys = y + dy + (Math.Sin (startRadians) * dy);
 
-        public void AddRectangle(RectangleF rectangle)
-        {
-            Control.AddGeometry(new swm.RectangleGeometry(rectangle.ToWpf()));
+			// determine the end point 
+			double xe = x + dx + (Math.Cos (startRadians + sweepRadians) * dx);
+			double ye = y + dy + (Math.Sin (startRadians + sweepRadians) * dy);
 
-            figure = null;
-        }
+			var centerPoint = new sw.Point (x + width / 2, y + height / 2);
 
-        const double DegreesToRadians = Math.PI / 180d;
+			bool isLargeArc = Math.Abs (sweepAngle) > 180;
+			var sweepDirection = sweepAngle < 0 ? swm.SweepDirection.Counterclockwise : swm.SweepDirection.Clockwise;
 
-        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
-        {
-            // sweep direction
-            var sweepDir =
-                sweepAngle < 0
-                ? swm.SweepDirection.Counterclockwise
-                : swm.SweepDirection.Clockwise;
+			ConnectTo (new sw.Point (xs, ys));
+			figure.Segments.Add (new swm.ArcSegment (new sw.Point (xe, ye), new sw.Size (dx, dy), 0, isLargeArc, sweepDirection, true));
+			CurrentPoint = new PointF ((float)xe, (float)ye);
+		}
 
-            bool isLargeArc = Math.Abs(sweepAngle) > 180;
+		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
+		{
+			ConnectTo (start.ToWpf ());
+			figure.Segments.Add (new swm.BezierSegment (control1.ToWpf (), control2.ToWpf (), end.ToWpf (), true));
+			CurrentPoint = end;
+		}
 
-            // angles in radians
-            var startRadians = startAngle * DegreesToRadians;
-            var sweepRadians = sweepAngle * DegreesToRadians;
+		public void AddPath (IGraphicsPath path, bool connect)
+		{
+			if (path.IsEmpty)
+				return;
 
-            double cx = rect.Width / 2;
-            double cy = rect.Height / 2;
+			var wpfPath = path.ToWpf ();
+			if (!wpfPath.Transform.Value.IsIdentity) {
+				var newpath = new swm.PathGeometry ();
+				newpath.AddGeometry (wpfPath);
+				wpfPath = newpath;
+			}
+			var en = wpfPath.Figures.GetEnumerator ();
+			if (connect) {
+				// merge current figure (if any) and first figure of new path, if they are not closed paths
+				if (figure != null && !figure.IsClosed && en.MoveNext ()) {
+					var firstFigure = en.Current;
+					if (!firstFigure.IsClosed) {
+						figure.Segments.Add (new swm.LineSegment (firstFigure.StartPoint, true));
+						foreach (var seg in firstFigure.Segments)
+							figure.Segments.Add (seg);
+					} else {
+						Control.Figures.Add (firstFigure);
+					}
+				}
+			}
+			swm.PathFigure pathFigure = null;
+			while (en.MoveNext ()) {
+				pathFigure = en.Current;
+				Control.Figures.Add (pathFigure);
+			}
+			
+			// continue with last figure of new path if not closed
+			if (pathFigure != null && !pathFigure.IsClosed)
+				figure = pathFigure;
+			else
+				figure = null;
+		}
 
-            //start point
-            double x1 = rect.X + cx + (Math.Cos(startRadians) * cx);
-            double y1 = rect.Y + cy + (Math.Sin(startRadians) * cy);
-            var startPoint = new sw.Point(x1, y1);
+		public RectangleF Bounds
+		{
+			get { return Control.Bounds.ToEto (); }
+		}
 
-            //end point
-            double x2 = rect.X + cx + (Math.Cos(startRadians + sweepRadians) * cx);
-            double y2 = rect.Y + cy + (Math.Sin(startRadians + sweepRadians) * cy);
-            var endPoint = new sw.Point(x2, y2);
+		public void Transform (IMatrix matrix)
+		{
+			Control.Transform = matrix.ToWpfTransform ();
+		}
 
-            if (figure == null)
-                ConnectTo(startPoint);
-            else
-                LineTo(startPoint); // connect the existing figure
+		public void AddEllipse (float x, float y, float width, float height)
+		{
+			Control.AddGeometry (new swm.EllipseGeometry (new sw.Rect (x, y, width, height)));
+			figure = null;
+		}
 
-            // Add a new arc segment
-            figure.Segments.Add(
-                new swm.ArcSegment(
-                    endPoint,
-                    new sw.Size(cx, cy),
-                    0,
-                    isLargeArc,
-                    sweepDir,
-                    isStroked: true));
-        }
+		public void AddCurve (IEnumerable<PointF> points, float tension)
+		{
+			points = SplineHelper.SplineCurve (points, tension);
+			var swpoints = (from p in points select p.ToWpf ()).ToArray();
+			ConnectTo (swpoints.First ());
+			figure.Segments.Add (new swm.PolyBezierSegment (swpoints, true));
+			CurrentPoint = swpoints.Last ().ToEto ();
+		}
 
-        public void AddEllipse(RectangleF rect)
-        {
-            AddArc(rect, 0, 360);
-        }
+		public object ControlObject
+		{
+			get { return Control; }
+		}
 
-        public void LineTo(PointF point)
-        {
-            var p = point.ToWpf();
-            LineTo(p);
-        }
-
-        private void LineTo(sw.Point p)
-        {
-            figure.Segments.Add(new swm.LineSegment(p, true));
-        }
-
-        public void MoveTo(PointF point)
-        {
-            ConnectTo(point.ToWpf(), startNewFigure: true);
-        }
-
-        public RectangleF GetBounds()
-        {
-            return Control.Bounds.ToEtoF();
-        }
-
-        public void AddCurve(PointF[] points)
-        {
-            throw new NotImplementedException();
-        }
-
-        public FillMode FillMode
-        {
-            set { Control.FillRule = value.ToWpf(); }
-        }
-
-        public void Translate(PointF point)
-        {
-            var m = new swm.Matrix();
-            m.Translate(point.X, point.Y);
-            Transform(m);
-        }
-
-        public void Transform(IMatrix matrix)
-        {
-            Transform((swm.Matrix)matrix.ControlObject);
-        }
-
-        // Helper method
-        private void Transform(swm.Matrix m)
-        {
-            var g = Control.Clone(); // clone the geometry
-            var t = new swm.MatrixTransform(m);
-            g.Transform = t; // apply the transform
-            this.Control = g.GetFlattenedPathGeometry();
-        }
-
-        public GraphicsPath ToGraphicsPath()
-        {
-            throw new NotImplementedException(); // should never get called
-        }
-
-        public IGraphicsPath Clone()
-        {
-            return new GraphicsPathHandler(
-                Control.Clone());
-        }
-    }
+		public void Dispose ()
+		{
+		}
+	}
 }

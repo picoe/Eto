@@ -12,14 +12,8 @@ namespace Eto.Forms
 		void Clear ();
 	}
 	
-	public interface ISubMenuWidget
+	public interface ISubMenuWidget : IControlObjectSource, IHandlerSource, IGeneratorSource
 	{
-		Generator Generator { get; }
-		
-		IWidget Handler { get; }
-		
-		object ControlObject { get; }
-		
 		MenuItemCollection MenuItems { get; }
 		
 		void GenerateActions (IEnumerable<IActionItem> actionItems);

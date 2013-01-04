@@ -11,11 +11,11 @@
     <AssemblyName>Eto.Test</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
-    <OutputRoot>..\..\..\..</OutputRoot>  
+    <OutputRoot>..\..\..\..</OutputRoot>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>DESKTOP;XAML</DefineConstants>
-  </PropertyGroup>  
-  <Import Condition = "Exists('../../../../Common.targets')" Project="../../../../Common.targets" />
+  </PropertyGroup>
+  <Import Condition="Exists('../../../../Common.targets')" Project="../../../../Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <DebugType>full</DebugType>
@@ -25,7 +25,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -34,8 +33,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>DESKTOP;XAML</DefineConstants>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -54,7 +51,8 @@
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
-    <Compile Include="Sections\Drawing\PathSection.cs" />
+    <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
+    <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
@@ -106,6 +104,7 @@
     <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
+    <Compile Include="Sections\Drawing\BrushSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

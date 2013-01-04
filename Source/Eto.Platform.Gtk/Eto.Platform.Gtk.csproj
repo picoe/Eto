@@ -25,12 +25,11 @@
     <DefineConstants>$(DefineConstants);CAIRO;</DefineConstants>
     <Optimize>false</Optimize>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-  </PropertyGroup>  
+  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <DefineConstants>CAIRO;TRACE</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <Optimize>True</Optimize>
     <FileAlignment>4096</FileAlignment>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -45,7 +44,6 @@
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>CAIRO;DEBUG;TRACE</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <FileAlignment>4096</FileAlignment>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -53,12 +51,11 @@
     <CodeAnalysisIgnoreBuiltInRules>false</CodeAnalysisIgnoreBuiltInRules>
     <CodeAnalysisFailOnMissingRules>false</CodeAnalysisFailOnMissingRules>
     <WarningLevel>4</WarningLevel>
-    <Optimize>False</Optimize>
   </PropertyGroup>
   <PropertyGroup>
-    <OutputRoot>..\..\..</OutputRoot>  
+    <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />  
+  <Import Condition="Exists('../../../Common.targets')" Project="../../../Common.targets" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -256,6 +253,14 @@
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
+    <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
+    <Compile Include="Drawing\TextureBrushHandler.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -267,7 +272,5 @@
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Forms\Printing\" />
-  </ItemGroup>
+  <ItemGroup />
 </Project>

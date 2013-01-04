@@ -531,14 +531,14 @@ namespace Eto.Platform.Windows
         {
             return 
                 this.Control.PointToClient(
-                    p.ToPoint()).ToPoint();
+                    p.ToSD()).ToEto();
         }
 
         public virtual Point WorldToScreen(Point p)
         {
             return 
                 this.Control.PointToScreen(
-                    p.ToPoint()).ToPoint();
+                    p.ToSD()).ToEto();
         }
 
         public DragDropEffects DoDragDrop(

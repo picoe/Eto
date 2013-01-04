@@ -76,10 +76,8 @@ namespace Eto.Platform.Windows
 			{
 				base.OnPaint(e);
 
-                if (Handler != null &&
-                    Handler.Widget != null)
-                    Handler.Widget.OnPaint(
-                        e.ToEto());
+                if (Handler != null && Handler.Widget != null)
+                    Handler.Widget.OnPaint(e.ToEto(Handler.Generator));
 			}
 			protected override void OnClick(EventArgs e)
 			{

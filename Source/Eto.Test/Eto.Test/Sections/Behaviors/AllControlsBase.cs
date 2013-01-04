@@ -108,7 +108,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var control = new Drawable { Size = new Size (100, 30), CanFocus = true };
 			control.Paint += delegate(object sender, PaintEventArgs pe) {
-				pe.Graphics.FillRectangle (Colors.Blue, pe.ClipRectangle);
+				pe.Graphics.FillRectangle (Brushes.Blue (), pe.ClipRectangle);
 			};
 			LogEvents (control);
 			return control;

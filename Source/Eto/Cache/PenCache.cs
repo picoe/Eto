@@ -8,7 +8,6 @@ namespace Eto.Cache
         public Generator Generator { get; set; }
         public float Width { get; set; }
         public Color Color { get; set; }
-        public PenAlignment PenAlignment { get; set; }
         public DashStyle DashStyle { get; set; }
     }
 
@@ -28,8 +27,7 @@ namespace Eto.Cache
                 g,
                 color,
                 1f,
-                PenAlignment.Center,
-                DashStyle.Solid);
+                DashStyles.Solid);
         }
 
         public static Pen GetPen(
@@ -41,15 +39,13 @@ namespace Eto.Cache
                 g,
                 color,
                 width,
-                PenAlignment.Center,
-                DashStyle.Solid);
+                DashStyles.Solid);
         }
 
         public static Pen GetPen(
             Generator g,
             Color color,
             float width,
-            PenAlignment alignment,
             DashStyle dashStyle)
         {
             Pen result = null;
@@ -62,15 +58,14 @@ namespace Eto.Cache
                 Generator = generator,
                 Color = color,
                 Width = width,
-                DashStyle = dashStyle,
-                PenAlignment = alignment
+                DashStyle = dashStyle
             };
 
             if (pens != null &&
                 !pens.TryGetValue(key, out result))
             {
-                result = new 
-                    Pen(generator, color, width, alignment, dashStyle);
+                result = new Pen(color, width, generator);
+				result.DashStyle = dashStyle;
 
                 pens[key] = result;
             }
