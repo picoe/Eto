@@ -58,14 +58,6 @@ namespace Eto.Forms
 			if (AddValue != null) AddValue (this, e);
 		}
 
-		public event EventHandler<EventArgs> SelectedValueChanged;
-
-		protected virtual void OnSelectedValueChanged (EventArgs e)
-		{
-			if (SelectedValueChanged != null)
-				SelectedValueChanged (this, e);
-		}
-
 		#endregion
 
 		/// <summary>
@@ -92,12 +84,6 @@ namespace Eto.Forms
 		protected EnumComboBox (Generator generator)
 			: base (generator)
 		{
-		}
-
-		public override void OnSelectedIndexChanged (EventArgs e)
-		{
-			base.OnSelectedIndexChanged (e);
-			OnSelectedValueChanged (EventArgs.Empty);
 		}
 
 		protected override ListItemCollection CreateDefaultItems ()
