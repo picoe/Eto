@@ -7,41 +7,41 @@ using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-	public class TextureBrushHandler : ITextureBrushHandler
+	/// <summary>
+	/// Handler for <see cref="ITextureBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class TextureBrushHandler : ITextureBrush
 	{
-		Image image;
-		swm.ImageBrush Control { get; set; }
-
-		public void Create (Image image)
+		public IMatrix GetTransform (TextureBrush widget)
 		{
-			Control = new swm.ImageBrush(image.ToWpf());
-			Control.TileMode = swm.TileMode.Tile;
-			Control.Stretch = swm.Stretch.None;
-			Control.ViewboxUnits = swm.BrushMappingMode.Absolute;
-			Control.Viewbox = new System.Windows.Rect (0, 0, image.Size.Width, image.Size.Height);
-			Control.ViewportUnits = swm.BrushMappingMode.Absolute;
-			Control.Viewport = Control.Viewbox;
-			this.image = image;
+			return ((swm.ImageBrush)widget.ControlObject).Transform.ToEtoMatrix ();
 		}
 
-		public Image Image
+		public void SetTransform (TextureBrush widget, IMatrix transform)
 		{
-			get { return image; }
+			((swm.ImageBrush)widget.ControlObject).Transform = transform.ToWpfTransform ();
 		}
 
-		public IMatrix Transform
+		public object Create (Image image, float opacity)
 		{
-			get { return Control.Transform.ToEtoMatrix (); }
-			set { Control.Transform = value.ToWpfTransform (); }
+			var rect = new System.Windows.Rect (0, 0, image.Size.Width, image.Size.Height);
+			return new swm.ImageBrush (image.ToWpf ()) {
+				TileMode = swm.TileMode.Tile,
+				Opacity = opacity,
+				Stretch = swm.Stretch.None,
+				ViewboxUnits = swm.BrushMappingMode.Absolute,
+				Viewbox = rect,
+				ViewportUnits = swm.BrushMappingMode.Absolute,
+				Viewport = rect
+			};
 		}
 
-		public object ControlObject
-		{
-			get { return Control; }
-		}
 
-		public void Dispose ()
+		public void SetOpacity (TextureBrush widget, float opacity)
 		{
+			((swm.ImageBrush)widget.ControlObject).Opacity = opacity;
 		}
 	}
 }

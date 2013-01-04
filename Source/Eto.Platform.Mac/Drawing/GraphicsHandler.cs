@@ -21,6 +21,11 @@ namespace Eto.Platform.Mac.Drawing
 namespace Eto.Platform.iOS.Drawing
 #endif
 {
+	/// <summary>
+	/// Handler for the <see cref="IGraphics"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsHandler : 
 #if OSX
 		MacBase<CGContext, Graphics>, IGraphics
@@ -263,7 +268,7 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 		}
 
-		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
+		public void DrawLine (Pen pen, float startx, float starty, float endx, float endy)
 		{
 			StartDrawing ();
 			pen.Apply (this);
@@ -271,7 +276,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
+		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
@@ -280,7 +285,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
+		public void FillRectangle (Brush brush, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			/*	if (width == 1 || height == 1)
@@ -294,7 +299,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
+		public void DrawEllipse (Pen pen, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
@@ -303,7 +308,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
+		public void FillEllipse (Brush brush, float x, float y, float width, float height)
 		{
 			StartDrawing ();
 			/*	if (width == 1 || height == 1)
@@ -317,7 +322,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc (Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			StartDrawing ();
 
@@ -331,7 +336,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void FillPie (Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			StartDrawing ();
 
@@ -348,7 +353,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void FillPath (IBrush brush, IGraphicsPath path)
+		public void FillPath (Brush brush, IGraphicsPath path)
 		{
 			StartDrawing ();
 
@@ -361,7 +366,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawPath (IPen pen, IGraphicsPath path)
+		public void DrawPath (Pen pen, IGraphicsPath path)
 		{
 			StartDrawing ();
 			

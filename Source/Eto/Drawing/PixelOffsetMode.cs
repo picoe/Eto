@@ -10,7 +10,7 @@ namespace Eto.Drawing
 	/// </summary>
 	/// <remarks>
 	/// The pixel offset mode usually applies to all graphics operations such as 
-	/// <see cref="Graphics.DrawLine"/>, <see cref="Graphics.DrawRectangle"/>, etc.
+	/// <see cref="Graphics.DrawLine(Pen,PointF,PointF)"/>, <see cref="Graphics.DrawRectangle(Pen,RectangleF)"/>, etc.
 	/// </remarks>
 	public enum PixelOffsetMode
 	{

@@ -32,8 +32,9 @@ namespace Eto.Platform.iOS
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			Add <IMatrixHandler> (() => new MatrixHandler ());
-			Add <IPenHandler> (() => new PenHandler ());
-			Add <ISolidBrushHandler> (() => new SolidBrushHandler ());
+			Add <IPen> (() => new PenHandler ());
+			Add <ISolidBrush> (() => new SolidBrushHandler ());
+			Add <ITextureBrush> (() => new TextureBrushHandler ());
 
 			// Forms.Cells
 			//Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());

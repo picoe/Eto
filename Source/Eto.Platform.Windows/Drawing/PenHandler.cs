@@ -9,89 +9,99 @@ using sd2 = System.Drawing.Drawing2D;
 namespace Eto.Platform.Windows.Drawing
 {
 	/// <summary>
-	/// Pen handler
+	/// Handler for <see cref="IPen"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class PenHandler : IPenHandler
+	public class PenHandler : IPen
 	{
-		sd.Pen pen;
-		DashStyle dashStyle;
-
-		public void Create (Color color, float thickness)
+		public object Create (Color color, float thickness)
 		{
-			pen = new sd.Pen (color.ToSD (), thickness);
-			LineCap = PenLineCap.Square;
+			var pen = new sd.Pen (color.ToSD (), thickness);
+			pen.StartCap = pen.EndCap = PenLineCap.Square.ToSD ();
+			pen.DashCap = sd2.DashCap.Flat;
 			pen.MiterLimit = 10f;
+			return pen;
 		}
 
-		public Color Color
+		public Color GetColor (Pen widget)
 		{
-			get { return pen.Color.ToEto (); }
-			set { pen.Color = value.ToSD (); }
+			return widget.ToSD ().Color.ToEto ();
 		}
 
-		public float Thickness
+		public void SetColor (Pen widget, Color color)
 		{
-			get { return pen.Width; }
-			set { pen.Width = value; }
+			widget.ToSD ().Color = color.ToSD ();
 		}
 
-		public PenLineJoin LineJoin
+		public float GetThickness (Pen widget)
 		{
-			get { return pen.LineJoin.ToEto (); }
-			set { pen.LineJoin = value.ToSD (); }
+			return widget.ToSD ().Width;
 		}
 
-		public PenLineCap LineCap
+		public void SetThickness (Pen widget, float thickness)
 		{
-			get { return pen.StartCap.ToEto (); }
-			set
-			{
-				pen.StartCap = pen.EndCap = value.ToSD ();
-				pen.DashCap = value == PenLineCap.Round ? sd2.DashCap.Round : sd2.DashCap.Flat;
-				SetDashStyle ();
+			widget.ToSD ().Width = thickness;
+		}
+
+		public PenLineJoin GetLineJoin (Pen widget)
+		{
+			return widget.ToSD ().LineJoin.ToEto ();
+		}
+
+		public void SetLineJoin (Pen widget, PenLineJoin lineJoin)
+		{
+			widget.ToSD ().LineJoin = lineJoin.ToSD ();
+		}
+
+		public PenLineCap GetLineCap (Pen widget)
+		{
+			return widget.ToSD ().StartCap.ToEto ();
+		}
+
+		public void SetLineCap (Pen widget, PenLineCap lineCap)
+		{
+			var pen = widget.ToSD ();
+			pen.StartCap = pen.EndCap = lineCap.ToSD ();
+			pen.DashCap = lineCap == PenLineCap.Round ? sd2.DashCap.Round : sd2.DashCap.Flat;
+			SetDashStyle (widget, widget.DashStyle);
+		}
+
+		public float GetMiterLimit (Pen widget)
+		{
+			return widget.ToSD ().MiterLimit;
+		}
+
+		public void SetMiterLimit (Pen widget, float miterLimit)
+		{
+			widget.ToSD ().MiterLimit = miterLimit;
+		}
+
+		public DashStyle GetDashStyle (Pen widget)
+		{
+			var pen = widget.ToSD ();
+			if (pen.DashStyle == sd2.DashStyle.Solid)
+				return DashStyles.Solid;
+			else {
+				var offset = pen.StartCap == sd2.LineCap.Square ? pen.DashOffset - 0.5f : pen.DashOffset;
+				return new DashStyle (offset, pen.DashPattern);
 			}
 		}
 
-		public float MiterLimit
+		public void SetDashStyle (Pen widget, DashStyle dashStyle)
 		{
-			get { return pen.MiterLimit; }
-			set { pen.MiterLimit = value; }
-		}
+			var pen = widget.ToSD ();
 
-		public DashStyle DashStyle
-		{
-			get { return dashStyle; }
-			set
-			{
-				dashStyle = value;
-				SetDashStyle ();
-			}
-		}
-
-		void SetDashStyle ()
-		{
 			if (dashStyle == null || dashStyle.IsSolid)
 				pen.DashStyle = sd2.DashStyle.Solid;
 			else {
 				pen.DashStyle = sd2.DashStyle.Custom;
 				pen.DashPattern = dashStyle.Dashes;
 				pen.DashOffset = dashStyle.Offset;
-				if (LineCap == PenLineCap.Square) {
+				if (pen.StartCap == sd2.LineCap.Square) {
 					pen.DashOffset += 0.5f;
 				}
 			}
-		}
-
-		public object ControlObject
-		{
-			get { return pen; }
-		}
-
-		public void Dispose ()
-		{
-			pen.Dispose ();
 		}
 	}
 }

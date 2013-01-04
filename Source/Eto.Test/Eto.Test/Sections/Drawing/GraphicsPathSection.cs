@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class GraphicsPathSection : Scrollable
 	{
-		IGraphicsPath path;
+		GraphicsPath path;
 
 		public bool StartFigures { get; set; }
 
@@ -17,7 +17,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public bool ConnectPath { get; set; }
 
-		public int PenThickness { get; set; }
+		public float PenThickness { get; set; }
 
 		public PenLineJoin LineJoin { get; set; }
 
@@ -118,7 +118,7 @@ namespace Eto.Test.Sections.Drawing
 			var control = new Drawable { Size = new Size (550, 200) };
 
 			control.Paint += (sender, e) => {
-				var pen = Pen.Create (Colors.Black, PenThickness);
+				var pen = new Pen (Colors.Black, PenThickness);
 				pen.LineJoin = LineJoin;
 				pen.LineCap = LineCap;
 				e.Graphics.DrawPath (pen, path);
@@ -138,7 +138,7 @@ namespace Eto.Test.Sections.Drawing
 			return control;
 		}
 
-		IGraphicsPath CreateMainPath ()
+		GraphicsPath CreateMainPath ()
 		{
 			var path = CreatePath ();
 
@@ -158,9 +158,9 @@ namespace Eto.Test.Sections.Drawing
 			return path;
 		}
 
-		IGraphicsPath CreatePath ()
+		GraphicsPath CreatePath ()
 		{
-			var path = GraphicsPath.Create ();
+			var path = new GraphicsPath ();
 			var start = StartFigures;
 			var close = CloseFigures;
 

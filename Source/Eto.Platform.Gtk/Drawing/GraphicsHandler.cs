@@ -132,42 +132,28 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
+		public void DrawLine (Pen pen, float startx, float starty, float endx, float endy)
 		{
-			Control.Save ();
+			Control.MoveTo (startx + offset, starty + offset);
+			Control.LineTo (endx + offset, endy + offset);
 			pen.Apply (this);
-			if (startx != endx || starty != endy) {
-				// to draw a line, it must move..
-				Control.MoveTo (startx + offset, starty + offset);
-				Control.LineTo (endx + offset, endy + offset);
-				Control.Stroke ();
-			} else {
-				// to draw one pixel, we must fill it
-				Control.Rectangle (startx, starty, 1, 1);
-				Control.Fill ();
-			}
-			Control.Restore ();
 		}
 
-		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
+		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
 		{
-			Control.Save ();
-			pen.Apply (this);
 			Control.Rectangle (x + offset, y + offset, width, height);
-			Control.Stroke ();
-			Control.Restore ();
+			pen.Apply (this);
 		}
 
-		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
+		public void FillRectangle (Brush brush, float x, float y, float width, float height)
 		{
 			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
 			Control.Save ();
 			brush.Apply (this);
-			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
+		public void DrawEllipse (Pen pen, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
@@ -178,13 +164,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control.Scale (width / height, 1.0);
 			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
 			Control.Restore ();
-			Control.Save ();
 			pen.Apply (this);
-			Control.Stroke ();
-			Control.Restore ();
 		}
 
-		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
+		public void FillEllipse (Brush brush, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
@@ -197,11 +180,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 			Control.Save ();
 			brush.Apply (this);
-			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc (Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
@@ -215,13 +197,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			else
 				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
 			Control.Restore ();
-			Control.Save ();
 			pen.Apply (this);
-			Control.Stroke ();
-			Control.Restore ();
 		}
 
-		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void FillPie (Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
@@ -238,32 +217,27 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 			Control.Save ();
 			brush.Apply (this);
-			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void FillPath (IBrush brush, IGraphicsPath path)
+		public void FillPath (Brush brush, IGraphicsPath path)
 		{
 			Control.Save ();
 			Control.Translate (inverseoffset, inverseoffset);
-			path.ToHandler ().Apply (Control);
+			path.Apply (Control);
 			Control.Restore ();
 			Control.Save ();
 			brush.Apply (this);
-			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawPath (IPen pen, IGraphicsPath path)
+		public void DrawPath (Pen pen, IGraphicsPath path)
 		{
 			Control.Save ();
 			Control.Translate (offset, offset);
-			path.ToHandler ().Apply (Control);
+			path.Apply (Control);
 			Control.Restore ();
-			Control.Save ();
 			pen.Apply (this);
-			Control.Stroke ();
-			Control.Restore ();
 		}
 
 		public void DrawImage (Image image, float x, float y)

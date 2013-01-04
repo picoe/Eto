@@ -1,74 +1,113 @@
 using System;
 using Eto.Drawing;
-using MonoMac.CoreGraphics;
 using sd = System.Drawing;
+
+#if DESKTOP
+using MonoMac.CoreGraphics;
 using MonoMac.ImageIO;
 
 namespace Eto.Platform.Mac.Drawing
+#else
+using MonoTouch.CoreGraphics;
+using MonoTouch.ImageIO;
+
+namespace Eto.Platform.iOS.Drawing
+#endif
 {
-	public class TextureBrushHandler : BrushHandler, ITextureBrushHandler
+	/// <summary>
+	/// Handler for <see cref="ITextureBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class TextureBrushHandler : BrushHandler, ITextureBrush
 	{
-		CGImage cgimage;
-		Image image;
-		IMatrix transform;
-		float [] alpha = new float[] { 1f };
-		CGPattern pattern;
-
-		public void Create (Image image)
+		class BrushObject
 		{
-			this.Image = image;
-		}
+			CGImage image;
+			CGAffineTransform transform;
+			float [] alpha = new float[] { 1f };
+			CGPattern pattern;
 
-		void DrawPattern (CGContext context)
-		{
-			var destRect = new sd.RectangleF(0, 0, cgimage.Width, cgimage.Height);
-			context.TranslateCTM (0, cgimage.Height / 2);
-			context.ScaleCTM (1f, -1f);
-			context.TranslateCTM (0, -cgimage.Height / 2);
-			context.DrawImage (destRect, cgimage);
-		}
-
-		public override void Apply (GraphicsHandler graphics)
-		{
-			using (var patternSpace = CGColorSpace.CreatePattern (null)) {
-				graphics.Control.SetFillColorSpace (patternSpace);
-			}
-			graphics.Control.SetFillPattern (pattern, alpha);
-		}
-
-		public Image Image
-		{
-			get { return image; }
-			set
+			public void Apply (GraphicsHandler graphics)
 			{
-				image = value;
-				cgimage = null;
-				SetPattern ();
+				using (var patternSpace = CGColorSpace.CreatePattern (null)) {
+					graphics.Control.SetFillColorSpace (patternSpace);
+				}
+				graphics.Control.SetFillPattern (pattern, alpha);
+			}
+			
+			public CGImage Image
+			{
+				get { return image; }
+				set
+				{
+					image = value;
+					SetPattern ();
+				}
+			}
+
+			public float Opacity
+			{
+				get { return alpha[0]; }
+				set { alpha[0] = value; }
+			}
+			
+			public CGAffineTransform Transform
+			{
+				get { return transform; }
+				set {
+					transform = value;
+					transform.Scale (1f, -1f);
+					SetPattern ();
+				}
+			}
+
+			void DrawPattern (CGContext context)
+			{
+				var destRect = new sd.RectangleF(0, 0, image.Width, image.Height);
+				context.TranslateCTM (0, image.Height / 2);
+				context.ScaleCTM (1f, -1f);
+				context.TranslateCTM (0, -image.Height / 2);
+				context.DrawImage (destRect, image);
+			}
+
+			void SetPattern ()
+			{
+				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), transform, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 			}
 		}
 
-		public IMatrix Transform
+		public object Create (Image image, float opacity)
 		{
-			get { return transform; }
-			set {
-				transform = value;
-				SetPattern ();
-			}
+			return new BrushObject {
+				Image = image.ToCG (),
+				Opacity = opacity
+			};
 		}
 
-		void SetPattern ()
+		public IMatrix GetTransform (TextureBrush widget)
 		{
-			if (cgimage == null)
-				cgimage = Image.ToCG ();
-			var transform = Transform.ToCG ();
-			// we want angle and height transforms to be clockwise and top down
-			transform.Scale (1f, -1f);
-
-			pattern = new CGPattern(new sd.RectangleF(0, 0, cgimage.Width, cgimage.Height), transform, cgimage.Width, cgimage.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
+			return ((BrushObject)widget.ControlObject).Transform.ToEto ();
 		}
 
-		public void Dispose ()
+		public void SetTransform (TextureBrush widget, IMatrix transform)
 		{
+			((BrushObject)widget.ControlObject).Transform = transform.ToCG ();
+		}
+
+		public override void Apply (object control, GraphicsHandler graphics)
+		{
+			((BrushObject)control).Apply (graphics);
+		}
+
+		public float GetOpacity (TextureBrush widget)
+		{
+			return ((BrushObject)widget.ControlObject).Opacity;
+		}
+
+		public void SetOpacity (TextureBrush widget, float opacity)
+		{
+			((BrushObject)widget.ControlObject).Opacity = opacity;
 		}
 	}
 }

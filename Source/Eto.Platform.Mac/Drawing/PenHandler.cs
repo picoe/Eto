@@ -16,103 +16,159 @@ namespace Eto.Platform.iOS.Drawing
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class PenHandler : IPenHandler
+	public class PenHandler : IPen
 	{
-		CGColor cgcolor;
-		float[] cgdashes;
-		DashStyle dashStyle;
-		PenLineCap lineCap;
-		float thickness;
-		float cgoffset;
+		class PenControl {
+			float[] cgdashes;
+			DashStyle dashStyle;
+			CGLineCap lineCap;
+			float thickness;
+			float cgoffset;
 
-		public Color Color { get; set; }
-
-		public float Thickness
-		{
-			get { return thickness; }
-			set {
-				thickness = value;
-				SetDashStyle ();
+			public CGColor Color { get; set; }
+			
+			public float Thickness
+			{
+				get { return thickness; }
+				set {
+					thickness = value;
+					SetDashStyle ();
+				}
 			}
-		}
-
-		public PenLineJoin LineJoin { get; set; }
-
-		public PenLineCap LineCap
-		{
-			get { return lineCap; }
-			set {
-				lineCap = value;
-				SetDashStyle ();
+			
+			public CGLineJoin LineJoin { get; set; }
+			
+			public CGLineCap LineCap
+			{
+				get { return lineCap; }
+				set {
+					lineCap = value;
+					SetDashStyle ();
+				}
 			}
-		}
-
-		public float MiterLimit { get; set; }
-
-		public DashStyle DashStyle
-		{
-			get { return dashStyle; }
-			set {
-				dashStyle = value;
-				SetDashStyle ();
+			
+			public float MiterLimit { get; set; }
+			
+			public DashStyle DashStyle
+			{
+				get { return dashStyle; }
+				set {
+					dashStyle = value;
+					SetDashStyle ();
+				}
 			}
-		}
-
-		void SetDashStyle ()
-		{
-			if (DashStyle == null || DashStyle.IsSolid) {
-				cgdashes = null;
-			} else {
-				// TODO: this is not quite perfect for Square/Round for small thicknesses
-
-				var dashes = DashStyle.Dashes;
-				cgoffset = DashStyle.Offset * Thickness;
-
-				if (LineCap == PenLineCap.Butt)
-					cgdashes = Array.ConvertAll (dashes, x => x * Thickness);
-				else {
-					if (Thickness == 1)
-						cgoffset += Thickness / 2;
-					cgdashes = new float[dashes.Length];
-					for (int i = 0; i < cgdashes.Length; i++) {
-						var dash = dashes [i] * Thickness;
-						if ((i % 2) == 1) {
-							// gap must include square/round thickness
-							dash += Thickness;
-						} else {
-							// dash must exclude square/round thickness
-							dash -= Thickness;
+			
+			void SetDashStyle ()
+			{
+				if (DashStyle == null || DashStyle.IsSolid) {
+					cgdashes = null;
+				} else {
+					// TODO: this is not quite perfect for Square/Round for small thicknesses
+					
+					var dashes = DashStyle.Dashes;
+					cgoffset = DashStyle.Offset * Thickness;
+					
+					if (LineCap == CGLineCap.Butt)
+						cgdashes = Array.ConvertAll (dashes, x => x * Thickness);
+					else {
+						if (Thickness == 1)
+							cgoffset += Thickness / 2;
+						cgdashes = new float[dashes.Length];
+						for (int i = 0; i < cgdashes.Length; i++) {
+							var dash = dashes [i] * Thickness;
+							if ((i % 2) == 1) {
+								// gap must include square/round thickness
+								dash += Thickness;
+							} else {
+								// dash must exclude square/round thickness
+								dash -= Thickness;
+							}
+							cgdashes [i] = dash;
 						}
-						cgdashes [i] = dash;
 					}
 				}
 			}
+
+			public void Apply (GraphicsHandler graphics)
+			{
+				graphics.Control.SetStrokeColor (Color);
+				graphics.Control.SetLineCap (LineCap);
+				graphics.Control.SetLineJoin (LineJoin);
+				graphics.Control.SetLineWidth (Thickness);
+				graphics.Control.SetMiterLimit (MiterLimit);
+				if (cgdashes != null)
+					graphics.Control.SetLineDash (cgoffset, cgdashes);
+			}
 		}
 
-		public void Create (Color color, float thickness)
+		public object Create (Color color, float thickness)
 		{
-			this.Color = color;
-			this.Thickness = thickness;
-			this.MiterLimit = 10f;
-			this.LineCap = PenLineCap.Square;
+			return new PenControl {
+				Color = color.ToCGColor (),
+				Thickness = thickness,
+				MiterLimit = 10f,
+				LineCap = PenLineCap.Square.ToCG ()
+			};
 		}
 
-		public void Dispose ()
+		public Color GetColor (Pen widget)
 		{
+			return ((PenControl)widget.ControlObject).Color.ToEtoColor ();
 		}
 
-		public object ControlObject { get { return this; } }
-
-		public void Apply (GraphicsHandler graphics)
+		public void SetColor (Pen widget, Color color)
 		{
-			cgcolor = cgcolor ?? Color.ToCGColor ();
-			graphics.Control.SetStrokeColor (cgcolor);
-			graphics.Control.SetLineCap (LineCap.ToCG ());
-			graphics.Control.SetLineJoin (LineJoin.ToCG ());
-			graphics.Control.SetLineWidth (Thickness);
-			graphics.Control.SetMiterLimit (MiterLimit);
-			if (cgdashes != null)
-				graphics.Control.SetLineDash (cgoffset, cgdashes);
+			((PenControl)widget.ControlObject).Color = color.ToCGColor ();
+		}
+
+		public float GetThickness (Pen widget)
+		{
+			return ((PenControl)widget.ControlObject).Thickness;
+		}
+
+		public void SetThickness (Pen widget, float thickness)
+		{
+			((PenControl)widget.ControlObject).Thickness = thickness;
+		}
+
+		public PenLineJoin GetLineJoin (Pen widget)
+		{
+			return ((PenControl)widget.ControlObject).LineJoin.ToEto ();
+		}
+
+		public void SetLineJoin (Pen widget, PenLineJoin lineJoin)
+		{
+			((PenControl)widget.ControlObject).LineJoin = lineJoin.ToCG ();
+		}
+
+		public PenLineCap GetLineCap (Pen widget)
+		{
+			return ((PenControl)widget.ControlObject).LineCap.ToEto ();
+		}
+
+		public void SetLineCap (Pen widget, PenLineCap lineCap)
+		{
+			((PenControl)widget.ControlObject).LineCap = lineCap.ToCG ();
+		}
+
+		public float GetMiterLimit (Pen widget)
+		{
+			return ((PenControl)widget.ControlObject).MiterLimit;
+		}
+
+		public void SetMiterLimit (Pen widget, float miterLimit)
+		{
+			((PenControl)widget.ControlObject).MiterLimit = miterLimit;
+		}
+
+		public void SetDashStyle (Pen widget, DashStyle dashStyle)
+		{
+			((PenControl)widget.ControlObject).DashStyle = dashStyle;
+		}
+
+		public void Apply (Pen widget, GraphicsHandler graphics)
+		{
+			((PenControl)widget.ControlObject).Apply (graphics);
 		}
 	}
 }

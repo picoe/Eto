@@ -4,12 +4,21 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
+	/// <summary>
+	/// Test for different brushes and options
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BrushSection : Scrollable
 	{
 		Image image = Bitmap.FromResource ("Eto.Test.TestImage.png");
 		Drawable drawable;
-		IBrush brush;
+		Brush brush;
+		LinearGradientBrush gradientBrush;
+		Brush textureBrush;
+		Brush solidBrush;
 		DynamicRow matrixRow;
+		DynamicRow gradientRow;
 
 		public float Rotation { get; set; }
 
@@ -21,12 +30,18 @@ namespace Eto.Test.Sections.Drawing
 
 		public float OffsetY { get; set; }
 
+		public GradientWrapMode GradientWrap { get; set; }
+
 		public BrushSection ()
 		{
 			var layout = new DynamicLayout (this);
-			brush = Brushes.Black ();
-			ScaleX = 1f;
-			ScaleY = 1f;
+			brush = solidBrush = Brushes.LightSkyBlue ();
+			gradientBrush = new LinearGradientBrush (Colors.AliceBlue, Colors.Black, new PointF (0, 0), new PointF (100f, 100f));
+			//gradientBrush = new LinearGradientBrush (new RectangleF (0, 0, 50, 50), Colors.AliceBlue, Colors.Black, 10);
+			gradientBrush.Wrap = GradientWrapMode.Repeat;
+			textureBrush = new TextureBrush (image, 0.5f);
+			ScaleX = 100f;
+			ScaleY = 100f;
 
 			drawable = new Drawable { Size = new Size (600, 200) };
 
@@ -37,27 +52,33 @@ namespace Eto.Test.Sections.Drawing
 			layout.AddSeparateRow (null, BrushControl (), null);
 			matrixRow = layout.AddSeparateRow (null, new Label { Text = "Rot" }, RotationControl (), new Label { Text = "Sx"}, ScaleXControl (), new Label { Text = "Sy"}, ScaleYControl (), new Label { Text = "Ox"}, OffsetXControl (), new Label { Text = "Oy"}, OffsetYControl (), null);
 			matrixRow.Table.Visible = false;
+			gradientRow = layout.AddSeparateRow (null, GradientWrapControl (), null);
+			gradientRow.Table.Visible = false;
 			layout.AddRow (drawable);
 			layout.Add (null);
 		}
 
 		class BrushItem : ListItem
 		{
-			public IBrush Brush { get; set; }
+			public Brush Brush { get; set; }
 
 			public bool SupportsMatrix { get; set; }
+
+			public bool SupportsGradient { get; set; }
 		}
 
 		Control BrushControl ()
 		{
 			var control = new ComboBox ();
-			control.Items.Add (new BrushItem { Text = "Solid", Brush = Brushes.Black () });
-			control.Items.Add (new BrushItem { Text = "Texture", Brush = TextureBrush.Create (image), SupportsMatrix = true });
+			control.Items.Add (new BrushItem { Text = "Solid", Brush = solidBrush });
+			control.Items.Add (new BrushItem { Text = "Texture", Brush = textureBrush, SupportsMatrix = true });
+			control.Items.Add (new BrushItem { Text = "Gradient", Brush = gradientBrush, SupportsMatrix = true, SupportsGradient = true });
 			control.SelectedIndex = 0;
 			control.SelectedValueChanged += (sender, e) => {
 				var item = (BrushItem)control.SelectedValue;
 				this.brush = item.Brush;
 				matrixRow.Table.Visible = item.SupportsMatrix;
+				gradientRow.Table.Visible = item.SupportsGradient;
 
 			};
 			control.SelectedValueChanged += Refresh;
@@ -66,7 +87,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control ScaleXControl ()
 		{
-			var control = new NumericUpDown { MinValue = 0, MaxValue = 20 };
+			var control = new NumericUpDown { MinValue = 1, MaxValue = 1000 };
 			control.Bind (c => c.Value, this, c => c.ScaleX);
 			control.ValueChanged += Refresh;
 			return control;
@@ -74,7 +95,7 @@ namespace Eto.Test.Sections.Drawing
 		
 		Control ScaleYControl ()
 		{
-			var control = new NumericUpDown { MinValue = 0, MaxValue = 20 };
+			var control = new NumericUpDown { MinValue = 1, MaxValue = 1000 };
 			control.Bind (c => c.Value, this, c => c.ScaleY);
 			control.ValueChanged += Refresh;
 			return control;
@@ -103,6 +124,14 @@ namespace Eto.Test.Sections.Drawing
 			control.ValueChanged += Refresh;
 			return control;
 		}
+
+		Control GradientWrapControl ()
+		{
+			var control = new EnumComboBox<GradientWrapMode> ();
+			control.Bind (c => c.SelectedValue, this, c => c.GradientWrap);
+			control.SelectedValueChanged += Refresh;
+			return control;
+		}
 		
 		void Refresh (object sender, EventArgs e)
 		{
@@ -113,18 +142,22 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var matrix = Matrix.Create ();
 			matrix.Translate (OffsetX, OffsetY);
-			matrix.Scale (ScaleX, ScaleY);
+			matrix.Scale (Math.Max (ScaleX / 100f, 0.1f), Math.Max (ScaleY / 100f, 0.1f));
 			matrix.Rotate (Rotation);
-			var textureBrush = brush as ITextureBrush;
+			var textureBrush = brush as ITransformBrush;
 			if (textureBrush != null) {
 				textureBrush.Transform = matrix;
+			}
+			var gradientBrush = brush as LinearGradientBrush;
+			if (gradientBrush != null) {
+				gradientBrush.Wrap = GradientWrap;
 			}
 
 			var rect = new RectangleF (0, 0, 200, 100);
 			g.FillEllipse (brush, rect);
 			g.DrawEllipse (Colors.Black, rect);
 			
-			rect = new RectangleF(0, 110, 200, 80);
+			rect = new RectangleF (0, 110, 200, 80);
 			g.FillRectangle (brush, rect);
 			g.DrawRectangle (Colors.Black, rect);
 		}

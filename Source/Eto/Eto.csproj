@@ -381,6 +381,7 @@
     <Compile Include="Drawing\Brush.cs" />
     <Compile Include="Drawing\PenLineCap.cs" />
     <Compile Include="Drawing\TextureBrush.cs" />
+    <Compile Include="Drawing\LinearGradientBrush.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

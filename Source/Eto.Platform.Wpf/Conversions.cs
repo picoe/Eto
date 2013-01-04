@@ -257,7 +257,7 @@ namespace Eto.Platform.Wpf
 				return image.ControlObject as swmi.BitmapSource;
 		}
 
-		public static swm.Pen ToWpf (this IPen pen)
+		public static swm.Pen ToWpf (this Pen pen)
 		{
 			return (swm.Pen)pen.ControlObject;
 		}
@@ -318,7 +318,7 @@ namespace Eto.Platform.Wpf
 			}
 		}
 
-		public static swm.Brush ToWpf (this IBrush brush)
+		public static swm.Brush ToWpf (this Brush brush)
 		{
 			return (swm.Brush)brush.ControlObject;
 		}
@@ -341,6 +341,30 @@ namespace Eto.Platform.Wpf
 		public static swm.PathGeometry ToWpf (this IGraphicsPath path)
 		{
 			return (swm.PathGeometry)path.ControlObject;
+		}
+
+		public static swm.GradientSpreadMethod ToWpf (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return swm.GradientSpreadMethod.Reflect;
+			case GradientWrapMode.Repeat:
+				return swm.GradientSpreadMethod.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static GradientWrapMode ToEto (this swm.GradientSpreadMethod spread)
+		{
+			switch (spread) {
+			case swm.GradientSpreadMethod.Reflect:
+				return GradientWrapMode.Reflect;
+			case swm.GradientSpreadMethod.Repeat:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

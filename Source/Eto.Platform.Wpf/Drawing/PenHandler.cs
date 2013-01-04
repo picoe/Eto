@@ -8,81 +8,84 @@ using swm = System.Windows.Media;
 namespace Eto.Platform.Wpf.Drawing
 {
 	/// <summary>
-	/// Pen handler
+	/// Handler for <see cref="IPen"/>
 	/// </summary>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class PenHandler : IPenHandler
+	public class PenHandler : IPen
 	{
-		swm.Pen pen;
-		swm.SolidColorBrush brush;
-		DashStyle dashStyle;
-
-		public void Create (Color color, float thickness)
+		public object Create (Color color, float thickness)
 		{
-			brush = new swm.SolidColorBrush (color.ToWpf ());
-			pen = new swm.Pen (brush, thickness);
-			LineCap = PenLineCap.Square;
+			var brush = new swm.SolidColorBrush (color.ToWpf ());
+			var pen = new swm.Pen (brush, thickness);
+			pen.EndLineCap = pen.StartLineCap = pen.DashCap = swm.PenLineCap.Square;
 			pen.MiterLimit = 10f;
+			return pen;
 		}
 
-		public Color Color
+		public Color GetColor (Pen widget)
 		{
-			get { return brush.Color.ToEto (); }
-			set { brush.Color = value.ToWpf (); }
+			var brush = (swm.SolidColorBrush)((swm.Pen)widget.ControlObject).Brush;
+			return brush.Color.ToEto ();
 		}
 
-		public float Thickness
+		public void SetColor (Pen widget, Color color)
 		{
-			get { return (float)pen.Thickness; }
-			set { pen.Thickness = value; }
+			var brush = (swm.SolidColorBrush)((swm.Pen)widget.ControlObject).Brush;
+			brush.Color = color.ToWpf ();
 		}
 
-		public PenLineJoin LineJoin
+		public float GetThickness (Pen widget)
 		{
-			get { return pen.LineJoin.ToEto (); }
-			set { pen.LineJoin = value.ToWpf (); }
+			return (float)((swm.Pen)widget.ControlObject).Thickness;
 		}
 
-		public PenLineCap LineCap
+		public void SetThickness (Pen widget, float thickness)
 		{
-			get { return pen.EndLineCap.ToEto (); }
-			set
-			{
-				pen.EndLineCap = pen.StartLineCap = pen.DashCap = value.ToWpf ();
-				SetDashStyle ();
-			}
+			((swm.Pen)widget.ControlObject).Thickness = thickness;
 		}
 
-		public float MiterLimit
+		public PenLineJoin GetLineJoin (Pen widget)
 		{
-			get { return (float)pen.MiterLimit; }
-			set { pen.MiterLimit = value; }
+			return ((swm.Pen)widget.ControlObject).LineJoin.ToEto ();
 		}
 
-		public object ControlObject
+		public void SetLineJoin (Pen widget, PenLineJoin lineJoin)
 		{
-			get { return pen; }
+			((swm.Pen)widget.ControlObject).LineJoin = lineJoin.ToWpf ();
 		}
 
-		public DashStyle DashStyle
+		public PenLineCap GetLineCap (Pen widget)
 		{
-			get { return dashStyle; }
-			set
-			{
-				dashStyle = value;
-				SetDashStyle ();
-			}
+			return ((swm.Pen)widget.ControlObject).StartLineCap.ToEto ();
 		}
 
-		void SetDashStyle ()
+		public void SetLineCap (Pen widget, PenLineCap lineCap)
 		{
+			var swmpen = (swm.Pen)widget.ControlObject;
+			swmpen.EndLineCap = swmpen.StartLineCap = swmpen.DashCap = lineCap.ToWpf ();
+			SetDashStyle (widget, widget.DashStyle);
+		}
+
+		public float GetMiterLimit (Pen widget)
+		{
+			return (float)((swm.Pen)widget.ControlObject).MiterLimit;
+		}
+
+		public void SetMiterLimit (Pen widget, float miterLimit)
+		{
+			((swm.Pen)widget.ControlObject).MiterLimit = miterLimit;
+		}
+
+		public void SetDashStyle (Pen widget, DashStyle dashStyle)
+		{
+			var swmpen = (swm.Pen)widget.ControlObject;
 			if (dashStyle == null || dashStyle.IsSolid)
-				pen.DashStyle = swm.DashStyles.Solid;
+				swmpen.DashStyle = swm.DashStyles.Solid;
 			else {
 				var dashes = dashStyle.Dashes;
 				double[] wpfdashes;
-				if (pen.DashCap == swm.PenLineCap.Flat)
+				if (swmpen.DashCap == swm.PenLineCap.Flat)
 					wpfdashes = Array.ConvertAll (dashStyle.Dashes, x => (double)x);
 				else {
 					wpfdashes = new double[dashes.Length];
@@ -98,12 +101,8 @@ namespace Eto.Platform.Wpf.Drawing
 						wpfdashes[i] = dash;
 					}
 				}
-				pen.DashStyle = new swm.DashStyle (wpfdashes, dashStyle.Offset);
+				swmpen.DashStyle = new swm.DashStyle (wpfdashes, dashStyle.Offset);
 			}
-		}
-
-		public void Dispose ()
-		{
 		}
 	}
 }

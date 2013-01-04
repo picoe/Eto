@@ -213,6 +213,12 @@
     </Compile>
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\TextureBrushHandler.cs">
+      <Link>Drawing\TextureBrushHandler.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\LinearGradientBrushHandler.cs">
+      <Link>Drawing\LinearGradientBrushHandler.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

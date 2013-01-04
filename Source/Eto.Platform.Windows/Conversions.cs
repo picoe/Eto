@@ -352,19 +352,24 @@ namespace Eto.Platform.Windows
 			return (sd2.Matrix)m.ControlObject;
 		}
 
+		public static IMatrix ToEto (this sd2.Matrix matrix)
+		{
+			return new MatrixHandler (matrix);
+		}
+
 		public static float DegreesToRadians (float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;
 		}
 
-		public static sd.Pen ToSD (this IPen pen)
+		public static sd.Pen ToSD (this Pen pen)
 		{
 			return (sd.Pen)pen.ControlObject;
 		}
 
-		public static sd.Brush ToSD (this IBrush brush)
+		public static sd.Brush ToSD (this Brush brush)
 		{
-			return (sd.Brush)brush.ControlObject;
+			return ((BrushHandler)brush.Handler).GetBrush(brush);
 		}
 
 		public static sd2.LineJoin ToSD (this PenLineJoin value)
@@ -427,5 +432,30 @@ namespace Eto.Platform.Windows
 		{
 			return (sd2.GraphicsPath)path.ControlObject;
 		}
+
+		public static sd2.WrapMode ToSD (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return sd2.WrapMode.TileFlipXY;
+			case GradientWrapMode.Repeat:
+				return sd2.WrapMode.Tile;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static GradientWrapMode ToEtoGradientWrap (this sd2.WrapMode wrapMode)
+		{
+			switch (wrapMode) {
+			case sd2.WrapMode.TileFlipXY:
+				return GradientWrapMode.Reflect;
+			case sd2.WrapMode.Tile:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
 	}
 }

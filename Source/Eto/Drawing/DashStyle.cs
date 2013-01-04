@@ -6,9 +6,9 @@ using System.Text;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Dash style for a <see cref="IPen"/>
+	/// Dash style for a <see cref="Pen"/>
 	/// </summary>
-	/// <seealso cref="IPen.DashStyle"/>
+	/// <seealso cref="Pen.DashStyle"/>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class DashStyle : IEquatable<DashStyle>

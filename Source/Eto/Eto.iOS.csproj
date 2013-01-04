@@ -281,6 +281,8 @@
     <Compile Include="Drawing\PenLineCap.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
     <Compile Include="Drawing\DashStyles.cs" />
+    <Compile Include="Drawing\TextureBrush.cs" />
+    <Compile Include="Drawing\LinearGradientBrush.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

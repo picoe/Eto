@@ -11,18 +11,36 @@ using MonoTouch.CoreGraphics;
 namespace Eto.Platform.iOS.Drawing
 #endif
 {
-	public class SolidBrushHandler : BrushHandler, ISolidBrushHandler
+	/// <summary>
+	/// Handler for <see cref="ISolidBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class SolidBrushHandler : BrushHandler, ISolidBrush
 	{
-		public Color Color { get; set; }
-
-		public void Create (Color color)
+		public override void Apply (object control, GraphicsHandler graphics)
 		{
-			this.Color = color;
+			graphics.Control.SetFillColor ((CGColor)control);
 		}
 
-		public override void Apply (GraphicsHandler graphics)
+		public Color GetColor (SolidBrush widget)
 		{
-			graphics.Control.SetFillColor (Color.ToCGColor ());
+			return ((CGColor)widget.ControlObject).ToEtoColor ();
+		}
+
+		public void SetColor (SolidBrush widget, Color color)
+		{
+			widget.ControlObject = color.ToCGColor ();
+		}
+
+		object ISolidBrush.Create (Eto.Drawing.Color color)
+		{
+			return color.ToCGColor ();
+		}
+
+		public Color GetColor ()
+		{
+			throw new NotImplementedException ();
 		}
 	}
 }

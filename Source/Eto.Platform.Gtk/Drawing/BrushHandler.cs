@@ -3,15 +3,14 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
+	/// <summary>
+	/// Handler for the <see cref="IBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BrushHandler : IBrush
 	{
-		public object ControlObject { get { return this; } }
-
-		public abstract void Apply (GraphicsHandler graphics);
-
-		public void Dispose ()
-		{
-		}
+		public abstract void Apply (object control, GraphicsHandler graphics);
 	}
 }
 

@@ -172,6 +172,7 @@
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenSection.cs" />
+    <Compile Include="Sections\Drawing\BrushSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

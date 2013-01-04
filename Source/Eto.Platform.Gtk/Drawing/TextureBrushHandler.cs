@@ -3,38 +3,73 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
-	public class TextureBrushHandler : BrushHandler, ITextureBrushHandler, ITextureBrush
+	/// <summary>
+	/// Handler for the <see cref="ITextureBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class TextureBrushHandler : BrushHandler, ITextureBrush
 	{
-		Image image;
-		Gdk.Pixbuf pixbuf;
-
-		public void Create (Image image)
+		class TextureBrushObject
 		{
-			this.image = image;
+			public Cairo.Matrix Transform { get; set; }
+			public Gdk.Pixbuf Pixbuf { get; set; }
+			public float Opacity { get; set; }
+
+			public TextureBrushObject ()
+			{
+				Opacity = 1.0f;
+			}
+
+			public void Apply (GraphicsHandler graphics)
+			{
+				if (!object.ReferenceEquals (Transform, null))
+					graphics.Control.Transform (Transform);
+				
+				Gdk.CairoHelper.SetSourcePixbuf (graphics.Control, Pixbuf, 0, 0);
+				var pattern = graphics.Control.Source as Cairo.SurfacePattern;
+				if (pattern != null)
+					pattern.Extend = Cairo.Extend.Repeat;
+				if (Opacity < 1.0f) {
+					graphics.Control.Clip ();
+					graphics.Control.PaintWithAlpha (Opacity);
+				}
+				else
+					graphics.Control.Fill ();
+			}
 		}
 
-		public Image Image
+		public IMatrix GetTransform (TextureBrush widget)
 		{
-			get { return image; }
+			return ((TextureBrushObject)widget.ControlObject).Transform.ToEto ();
 		}
 
-		public IMatrix Transform
+		public void SetTransform (TextureBrush widget, IMatrix transform)
 		{
-			get; set;
+			((TextureBrushObject)widget.ControlObject).Transform = transform.ToCairo ();
 		}
 
-		public override void Apply (GraphicsHandler graphics)
+		public object Create (Image image, float opacity)
 		{
-			if (pixbuf == null)
-				pixbuf = Image.ToGdk ();
+			return new TextureBrushObject {
+				Pixbuf = image.ToGdk (),
+				Opacity = opacity
+			};
+		}
 
-			if (Transform != null)
-				graphics.Control.Transform (Transform.ToCairo ());
+		public override void Apply (object control, GraphicsHandler graphics)
+		{
+			((TextureBrushObject)control).Apply (graphics);
+		}
 
-			Gdk.CairoHelper.SetSourcePixbuf (graphics.Control, pixbuf, 0, 0);
-			var pattern = graphics.Control.Source as Cairo.SurfacePattern;
-			if (pattern != null) pattern.Extend = Cairo.Extend.Repeat;
+		public float GetOpacity (TextureBrush widget)
+		{
+			return ((TextureBrushObject)widget.ControlObject).Opacity;
+		}
 
+		public void SetOpacity (TextureBrush widget, float opacity)
+		{
+			((TextureBrushObject)widget.ControlObject).Opacity = opacity;
 		}
 	}
 }

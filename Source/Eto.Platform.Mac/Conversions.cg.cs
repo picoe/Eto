@@ -73,6 +73,11 @@ namespace Eto.Platform.iOS
 			}
 		}
 
+		public static IMatrix ToEto (this CGAffineTransform matrix)
+		{
+			return new MatrixHandler(matrix);
+		}
+
 		public static CGAffineTransform ToCG (this IMatrix matrix)
 		{
 			if (matrix == null) return CGAffineTransform.MakeIdentity();
@@ -140,34 +145,24 @@ namespace Eto.Platform.iOS
 			}
 		}
 
-		public static PenHandler ToHandler (this IPen pen)
+		public static void Apply (this Pen pen, GraphicsHandler graphics)
 		{
-			return (PenHandler)pen.ControlObject;
+			((PenHandler)pen.Handler).Apply (pen, graphics);
 		}
 		
-		public static void Apply (this IPen pen, GraphicsHandler graphics)
+		public static void Apply (this Brush brush, GraphicsHandler graphics)
 		{
-			pen.ToHandler ().Apply (graphics);
-		}
-		
-		public static BrushHandler ToHandler (this IBrush brush)
-		{
-			return (BrushHandler)brush.ControlObject;
-		}
-		
-		public static void Apply (this IBrush brush, GraphicsHandler graphics)
-		{
-			brush.ToHandler ().Apply (graphics);
+			((BrushHandler)brush.Handler).Apply (brush.ControlObject, graphics);
 		}
 
 		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)
 		{
-			return (GraphicsPathHandler)path.ControlObject;
+			return ((GraphicsPathHandler)path.ControlObject);
 		}
 
 		public static CGPath ToCG (this IGraphicsPath path)
 		{
-			return path.ToHandler ().Control;
+			return ((GraphicsPathHandler)path.ControlObject).Control;
 		}
 	}
 }

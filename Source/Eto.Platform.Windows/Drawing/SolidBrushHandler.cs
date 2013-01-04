@@ -7,29 +7,31 @@ using sd = System.Drawing;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public class SolidBrushHandler : ISolidBrushHandler
+	/// <summary>
+	/// Handler for <see cref="ISolidBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class SolidBrushHandler : BrushHandler, ISolidBrush
 	{
-		sd.SolidBrush brush;
-
-		public void Create (Color color)
+		public object Create (Color color)
 		{
-			brush = new sd.SolidBrush (color.ToSD ());
+			return new sd.SolidBrush (color.ToSD ());
 		}
 
-		public Color Color
+		public Color GetColor (SolidBrush widget)
 		{
-			get { return brush.Color.ToEto (); }
-			set { brush.Color = value.ToSD (); }
+			return ((sd.SolidBrush)widget.ControlObject).Color.ToEto ();
 		}
 
-		public object ControlObject
+		public void SetColor (SolidBrush widget, Color color)
 		{
-			get { return brush; }
+			((sd.SolidBrush)widget.ControlObject).Color = color.ToSD ();
 		}
 
-		public void Dispose ()
+		public override sd.Brush GetBrush (Brush brush)
 		{
-			brush.Dispose ();
+			return (sd.Brush)brush.ControlObject;
 		}
 	}
 }

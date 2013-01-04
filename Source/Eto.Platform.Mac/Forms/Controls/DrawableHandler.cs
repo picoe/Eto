@@ -12,7 +12,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class DrawableHandler : MacView<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
-		IBrush backgroundBrush;
+		Brush backgroundBrush;
 		Color backgroundColor;
 
 		public class EtoDrawableView : MacEventView
@@ -56,7 +56,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				backgroundColor = value;
 				if (backgroundColor.A > 0)
-					backgroundBrush = SolidBrush.Create (backgroundColor, Widget.Generator);
+					backgroundBrush = new SolidBrush (backgroundColor, Widget.Generator);
 				else
 					backgroundBrush = null;
 			}

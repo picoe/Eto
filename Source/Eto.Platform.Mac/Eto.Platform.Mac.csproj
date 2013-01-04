@@ -176,6 +176,7 @@
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\SplineHelper.cs" />
     <Compile Include="Drawing\TextureBrushHandler.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

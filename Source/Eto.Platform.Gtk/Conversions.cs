@@ -16,6 +16,11 @@ namespace Eto.Platform.GtkSharp
 		{
 			return new Cairo.Color ((double)color.R, (double)color.G, (double)color.B, (double)color.A);
 		}
+
+		public static Color ToEto (this Cairo.Color color)
+		{
+			return new Color ((float)color.R, (float)color.G, (float)color.B, (float)color.A);
+		}
 		
 		public static Cairo.Rectangle ToCairo (this Rectangle rectangle)
 		{
@@ -248,24 +253,14 @@ namespace Eto.Platform.GtkSharp
 			return (float)Math.PI * angle / 180.0f;
 		}
 
-		public static PenHandler ToHandler (this IPen pen)
+		public static void Apply (this Pen pen, GraphicsHandler graphics)
 		{
-			return (PenHandler)pen.ControlObject;
+			((PenHandler)pen.Handler).Apply (pen, graphics);
 		}
 
-		public static void Apply (this IPen pen, GraphicsHandler graphics)
+		public static void Apply (this Brush brush, GraphicsHandler graphics)
 		{
-			pen.ToHandler ().Apply (graphics);
-		}
-
-		public static BrushHandler ToHandler (this IBrush brush)
-		{
-			return (BrushHandler)brush.ControlObject;
-		}
-		
-		public static void Apply (this IBrush brush, GraphicsHandler graphics)
-		{
-			brush.ToHandler ().Apply (graphics);
+			((BrushHandler)brush.Handler).Apply (brush.ControlObject, graphics);
 		}
 
 		public static Cairo.LineJoin ToCairo (this PenLineJoin value)
@@ -336,12 +331,22 @@ namespace Eto.Platform.GtkSharp
 
 		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)
 		{
-			return (GraphicsPathHandler)path.ControlObject;
+			return ((GraphicsPathHandler)path.ControlObject);
+		}
+
+		public static void Apply (this IGraphicsPath path, Cairo.Context context)
+		{
+			((GraphicsPathHandler)path.ControlObject).Apply(context);
 		}
 
 		public static Cairo.Matrix ToCairo (this IMatrix matrix)
 		{
 			return (Cairo.Matrix)matrix.ControlObject;
+		}
+
+		public static IMatrix ToEto (this Cairo.Matrix matrix)
+		{
+			return new MatrixHandler (matrix);
 		}
 
 		public static Gdk.Pixbuf ToGdk (this Image image)
@@ -356,6 +361,30 @@ namespace Eto.Platform.GtkSharp
 		public static void SetCairoSurface (this Image image, Cairo.Context context, float x, float y)
 		{
 			Gdk.CairoHelper.SetSourcePixbuf (context, image.ToGdk (), x, y);
+		}
+
+		public static GradientWrapMode ToEto (this Cairo.Extend extend)
+		{
+			switch (extend) {
+			case Cairo.Extend.Reflect:
+				return GradientWrapMode.Reflect;
+			case Cairo.Extend.Repeat:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Cairo.Extend ToCairo (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return Cairo.Extend.Reflect;
+			case GradientWrapMode.Repeat:
+				return Cairo.Extend.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }
