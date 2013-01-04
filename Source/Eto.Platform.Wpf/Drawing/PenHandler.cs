@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 using swm = System.Windows.Media;
 

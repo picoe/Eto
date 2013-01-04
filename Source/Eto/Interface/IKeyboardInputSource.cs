@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Forms;
 
 namespace Eto.Interface

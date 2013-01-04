@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 
 using MouseEventHandler = System.EventHandler<Eto.Forms.MouseEventArgs>;
