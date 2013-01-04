@@ -35,6 +35,7 @@ namespace Eto
 		/// </summary>
 		/// <param name="resourceNamespace">Namespace of where the embedded assemblies should be loaded</param>
 		/// <param name="assembly">Assembly to load the embedded assemblies from, or null to use the calling assembly</param>
+		/// <param name="domain">App domain to register this loader for, or null to use the current domain</param>
 		/// <returns>A new instance of an EmbeddedAssemblyLoader, registered for the specified namespace and assembly</returns>
 		public static EmbeddedAssemblyLoader Register (string resourceNamespace, Assembly assembly = null, AppDomain domain = null)
 		{

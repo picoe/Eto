@@ -28,7 +28,11 @@ namespace Eto
 		/// </remarks>
 		void Initialize ();
 
-		Generator Generator { get; set; }
+		/// <summary>
+		/// Gets or sets the generator associated with the handler
+		/// </summary>
+		/// <value>The generator for this platform handler</value>
+		new Generator Generator { get; set; }
 	}
 
 	/// <summary>
@@ -38,6 +42,10 @@ namespace Eto
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IControlObjectSource
 	{
+		/// <summary>
+		/// Gets the control object for this widget
+		/// </summary>
+		/// <value>The control object for the widget</value>
 		object ControlObject { get; }
 	}
 
