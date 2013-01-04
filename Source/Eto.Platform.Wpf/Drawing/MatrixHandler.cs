@@ -10,7 +10,7 @@ namespace Eto.Platform.Wpf.Drawing
 	/// <summary>
 	/// Handler for <see cref="IMatrix"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class MatrixHandler : IMatrixHandler
 	{
@@ -103,9 +103,9 @@ namespace Eto.Platform.Wpf.Drawing
 			control = swm.Matrix.Identity;
 		}
 
-		public void Create (float m11, float m12, float m21, float m22, float dx, float dy)
+		public void Create (float xx, float yx, float xy, float yy, float dx, float dy)
 		{
-			control = new swm.Matrix (m11, m12, m21, m22, dx, dy);
+			control = new swm.Matrix (xx, yx, xy, yy, dx, dy);
 		}
 
 		public void Invert ()

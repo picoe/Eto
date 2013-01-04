@@ -6,7 +6,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	/// <summary>
 	/// Handler for <see cref="IMatrix"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class MatrixHandler : IMatrixHandler
 	{
