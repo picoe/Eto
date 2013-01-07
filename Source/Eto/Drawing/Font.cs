@@ -475,15 +475,11 @@ namespace Eto.Drawing
         private static Dictionary<string, string> TranslatedFontNames =
             new Dictionary<string, string>()
             {
-#if Windows
-                //{ "serif", System.Drawing.FontFamily.GenericSerif.Name},
-#endif
+                { "serif", "Times New Roman"},
                 { "sans-serif", "Arial"},
                 { "cursive", "Comic Sans MS"},
                 { "fantasy", "Impact"},
-#if Windows
-                //{ "monospace", System.Drawing.FontFamily.GenericMonospace.Name},
-#endif
+                { "monospace", "Courier New"},
             };
 
         public static string TranslateFontFamily(

@@ -231,6 +231,8 @@ namespace Eto.Drawing
 		RectangleF ClipBounds { get; }
 
 		void SetClip(RectangleF rect);
+
+		void Clear(Color color);
 	}
 
 	/// <summary>
@@ -1052,7 +1054,7 @@ namespace Eto.Drawing
 
 		public void Clear(Color color)
 		{
-			// TODO: revive this
+			Handler.Clear(color);
 		}
 	}
 }

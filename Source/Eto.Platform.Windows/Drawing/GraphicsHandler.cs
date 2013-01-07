@@ -311,5 +311,10 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			this.Control.SetClip(rect.ToSD());
 		}
+
+		public void Clear(Color color)
+		{
+			Control.Clear(color.ToSD());
+		}
 	}
 }

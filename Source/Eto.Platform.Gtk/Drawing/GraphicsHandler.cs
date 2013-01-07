@@ -330,5 +330,15 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			Control.Restore ();
 		}
+
+		public void Clear(Color color)
+		{
+			throw new NotImplementedException();
+		}
+
+		public object ControlObject
+		{
+			get { throw new NotImplementedException(); }
+		}
 	}
 }

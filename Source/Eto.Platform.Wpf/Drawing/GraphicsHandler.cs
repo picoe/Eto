@@ -380,5 +380,15 @@ namespace Eto.Platform.Wpf.Drawing
 				throw new InvalidOperationException("Do not call ClipBounds when Graphics.IsRetained = true");
 			}
 		}
+
+		public void Clear(Color color)
+		{
+			// TODO
+		}
+
+		public object ControlObject
+		{
+			get { throw new NotImplementedException(); }
+		}
 	}
 }
