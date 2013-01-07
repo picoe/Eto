@@ -244,6 +244,19 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			throw new NotImplementedException(); // should never get called
 		}
+
+		public FillMode FillMode
+		{
+			get;
+            set; /* TODO: use this in DrawPath */
+		}
+
+		public IGraphicsPath Clone()
+		{
+			return this.Control != null 
+				? new GraphicsPathHandler( new CGPath(this.Control)) 
+				: new GraphicsPathHandler();
+		}
 	}
 }
 

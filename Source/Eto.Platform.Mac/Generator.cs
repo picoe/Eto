@@ -42,10 +42,10 @@ namespace Eto.Platform.Mac
 			g.Add <IIcon> (() => new IconHandler ());
 			g.Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			g.Add <IMatrixHandler> (() => new MatrixHandler ());
-			Add <IPen> (() => new PenHandler ());
-			Add <ISolidBrush> (() => new SolidBrushHandler ());
-			Add <ITextureBrush> (() => new TextureBrushHandler ());
-			Add<ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
+			g.Add <IPen> (() => new PenHandler ());
+			g.Add <ISolidBrush> (() => new SolidBrushHandler ());
+			g.Add <ITextureBrush> (() => new TextureBrushHandler ());
+			g.Add<ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
 
 			// Forms.Cells
 			g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
