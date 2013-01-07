@@ -27,11 +27,15 @@ namespace Eto.Platform.GtkSharp
 			Add <IFont> (() => new FontHandler ());
 			Add <IFonts> (() => new FontsHandler ());
 			Add <IGraphics> (() => new GraphicsHandler ());
-			Add <IGraphicsPath> (() => new GraphicsPathHandler ());
+			Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			Add <IMatrixHandler> (() => new MatrixHandler ());
-			
+			Add <IPen> (() => new PenHandler ());
+			Add <ISolidBrush> (() => new SolidBrushHandler ());
+			Add <ITextureBrush> (() => new TextureBrushHandler ());
+			Add <ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
+
 			// Forms.Cells
 			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
 			Add <IComboBoxCell> (() => new ComboBoxCellHandler ());

@@ -5,6 +5,7 @@ using Eto.Drawing;
 using MonoMac.Foundation;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
+using MonoMac.ImageIO;
 
 namespace Eto.Platform.Mac
 {
@@ -151,16 +152,18 @@ namespace Eto.Platform.Mac
 			view.SetFrameSize (newSize);
 		}
 
-		public static CGAffineTransform ToCG (this IMatrix matrix)
+		public static CGImage ToCG (this Image image)
 		{
-			return (CGAffineTransform)matrix.ControlObject;
+			using (var imageSource = CGImageSource.FromData (image.ToNS ().AsTiff ())) {
+				return imageSource.CreateImage (0, null);
+			}
 		}
 
-		public static float DegreesToRadians (float angle)
+		public static NSImage ToNS (this Image image)
 		{
-			return (float)Math.PI * angle / 180.0f;
+			var source = image.Handler as IImageSource;
+			return source != null ? source.GetImage () : null;
 		}
-
 	}
 }
 

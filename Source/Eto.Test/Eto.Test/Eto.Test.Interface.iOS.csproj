@@ -147,7 +147,6 @@
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
-    <Compile Include="Sections\Drawing\PathSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
     <Compile Include="Dialogs\About.cs" />
@@ -170,6 +169,10 @@
     <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
+    <Compile Include="Sections\Drawing\TransformSection.cs" />
+    <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
+    <Compile Include="Sections\Drawing\PenSection.cs" />
+    <Compile Include="Sections\Drawing\BrushSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

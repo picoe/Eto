@@ -1,67 +1,108 @@
-﻿using System;
 using Eto.Drawing;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-    public class PenHandler : WidgetHandler<swm.Pen, Pen>, IPen
-    {
-        public float Width
-        {
-            get
-            {
-                return (float)Control.Thickness;
-            }
-            set
-            {
-                Control.Thickness = value;
-            }
-        }
+	/// <summary>
+	/// Handler for <see cref="IPen"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class PenHandler : IPen
+	{
+		public object Create (Color color, float thickness)
+		{
+			var brush = new swm.SolidColorBrush (color.ToWpf ());
+			var pen = new swm.Pen (brush, thickness);
+			pen.EndLineCap = pen.StartLineCap = pen.DashCap = swm.PenLineCap.Square;
+			pen.MiterLimit = 10f;
+			return pen;
+		}
 
-        public PenAlignment Alignment
-        {
-            get
-            {
-                // Wpf does not support Alignment
-                return PenAlignment.Center; 
-            }
-            set
-            {
-                // Wpf does not support Alignment
-            }
-        }
+		public Color GetColor (Pen widget)
+		{
+			var brush = (swm.SolidColorBrush)((swm.Pen)widget.ControlObject).Brush;
+			return brush.Color.ToEto ();
+		}
 
-        public Color Color
-        {
-            get
-            {
-                var b = Control.Brush as swm.SolidColorBrush;
+		public void SetColor (Pen widget, Color color)
+		{
+			var brush = (swm.SolidColorBrush)((swm.Pen)widget.ControlObject).Brush;
+			brush.Color = color.ToWpf ();
+		}
 
-                if (b != null)
-                    return b.Color.ToEto();
+		public float GetThickness (Pen widget)
+		{
+			return (float)((swm.Pen)widget.ControlObject).Thickness;
+		}
 
-                return Colors.Black; // should never come here
-            }
-            set
-            {
-                // re-create the pen
-                Create(value, Width, PenAlignment.Center, Control.DashStyle.ToEto());
-            }
-        }
+		public void SetThickness (Pen widget, float thickness)
+		{
+			((swm.Pen)widget.ControlObject).Thickness = thickness;
+		}
 
-        public void Create(Color color, float width, PenAlignment alignment, DashStyle dashStyle)
-        {
-            Control =
-                new swm.Pen(
-                    new swm.SolidColorBrush(color.ToWpf()),
-                    width);
+		public PenLineJoin GetLineJoin (Pen widget)
+		{
+			return ((swm.Pen)widget.ControlObject).LineJoin.ToEto ();
+		}
 
-            Control.DashStyle = dashStyle.ToWpf();
-        }
+		public void SetLineJoin (Pen widget, PenLineJoin lineJoin)
+		{
+			((swm.Pen)widget.ControlObject).LineJoin = lineJoin.ToWpf ();
+		}
 
-        public void Create(Brush brush)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public PenLineCap GetLineCap (Pen widget)
+		{
+			return ((swm.Pen)widget.ControlObject).StartLineCap.ToEto ();
+		}
+
+		public void SetLineCap (Pen widget, PenLineCap lineCap)
+		{
+			var swmpen = (swm.Pen)widget.ControlObject;
+			swmpen.EndLineCap = swmpen.StartLineCap = swmpen.DashCap = lineCap.ToWpf ();
+			SetDashStyle (widget, widget.DashStyle);
+		}
+
+		public float GetMiterLimit (Pen widget)
+		{
+			return (float)((swm.Pen)widget.ControlObject).MiterLimit;
+		}
+
+		public void SetMiterLimit (Pen widget, float miterLimit)
+		{
+			((swm.Pen)widget.ControlObject).MiterLimit = miterLimit;
+		}
+
+		public void SetDashStyle (Pen widget, DashStyle dashStyle)
+		{
+			var swmpen = (swm.Pen)widget.ControlObject;
+			if (dashStyle == null || dashStyle.IsSolid)
+				swmpen.DashStyle = swm.DashStyles.Solid;
+			else {
+				var dashes = dashStyle.Dashes;
+				double[] wpfdashes;
+				if (swmpen.DashCap == swm.PenLineCap.Flat)
+					wpfdashes = Array.ConvertAll (dashStyle.Dashes, x => (double)x);
+				else {
+					wpfdashes = new double[dashes.Length];
+					for (int i = 0; i < wpfdashes.Length; i++) {
+						var dash = (double)dashes[i];
+						if ((i % 2) == 1) {
+							// gap must include square/round thickness
+							dash += 1;
+						} else {
+							// dash must exclude square/round thickness
+							dash -= 1;
+						}
+						wpfdashes[i] = dash;
+					}
+				}
+				swmpen.DashStyle = new swm.DashStyle (wpfdashes, dashStyle.Offset);
+			}
+		}
+	}
 }

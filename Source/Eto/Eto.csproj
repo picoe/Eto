@@ -21,50 +21,7 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
-  <PropertyGroup>
-    <OutputRoot>..\..\..</OutputRoot>
-  </PropertyGroup>
-  <Import Condition="Exists('../../../Common.targets')" Project="../../../Common.targets" />
-  <PropertyGroup>
-    <DefineConstants>$(DefineConstants);DESKTOP;XAML</DefineConstants>
-  </PropertyGroup>
-  <!--MSbuild determines the configurations by trolling all condition expressions.-->
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
-    <OutputPath>$(OutputRoot)\bin\iPhoneSimulator\Debug</OutputPath>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
-    <OutputPath>$(OutputRoot)\bin\iPhoneSimulator\Release</OutputPath>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
-    <OutputPath>$(OutputRoot)\bin\iPhone\Debug</OutputPath>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
-    <OutputPath>$(OutputRoot)\bin\iPhone\Release</OutputPath>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|Mac' ">
-    <OutputPath>$(OutputRoot)\bin\Mac\Debug</OutputPath>
-    <Optimize>false</Optimize>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|Mac' ">
-    <OutputPath>$(OutputRoot)\bin\Mac\Release</OutputPath>
-    <DebugType>none</DebugType>
-    <WarningLevel>4</WarningLevel>
-    <Optimize>false</Optimize>
-  </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
@@ -97,9 +54,6 @@
     <DebugType>full</DebugType>
     <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
-  <ItemGroup Condition="'$(XTarget)' == 'x86' or $(XTarget) == 'AnyCPU'">
-    <Reference Include="System.Drawing" />
-  </ItemGroup>
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -117,35 +71,26 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Binding\ColumnBinding.cs" />
-    <Compile Include="Cache\BrushCache.cs" />
-    <Compile Include="Cache\PenCache.cs" />
     <Compile Include="CancelEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
-    <Compile Include="Cache\FontCache.cs" />
+    <Compile Include="Drawing\DashStyle.cs" />
+    <Compile Include="Drawing\DashStyles.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
+    <Compile Include="Drawing\PenLineJoin.cs" />
     <Compile Include="Drawing\PixelOffsetMode.cs" />
     <Compile Include="Drawing\Region.cs" />
-    <Compile Include="Drawing\Brush.cs" />
-    <Compile Include="Drawing\Constants.cs" />
     <Compile Include="Drawing\Matrix.cs" />
-    <Compile Include="Drawing\Pen.cs" />
-    <Compile Include="Drawing\StringAlignment.cs" />
-    <Compile Include="Drawing\TextAlign.cs" />
-    <Compile Include="Drawing\TransformStack.cs" />
-    <Compile Include="Drawing\VerticalMetrics.cs" />
+    <Compile Include="EmbeddedAssemblyLoader.cs" />
     <Compile Include="EtoEnvironment.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\DataObject.cs" />
-    <Compile Include="Forms\Controls\DragDrop.cs" />
-    <Compile Include="Forms\Controls\DragDropInputSource.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
@@ -168,10 +113,6 @@
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
     <Compile Include="PropertyStore.cs" />
-    <Compile Include="Interface\IDragDropInputSource.cs" />
-    <Compile Include="Interface\IKeyboardInputSource.cs" />
-    <Compile Include="Interface\IMouseInputSource.cs" />
-    <Compile Include="Math\MathUtil.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="WeakEventHandler.cs">
@@ -433,7 +374,25 @@
     <Compile Include="Drawing\Fonts.cs" />
     <Compile Include="Drawing\FontFamilies.cs" />
     <Compile Include="Forms\Cursors.cs" />
-    <Compile Include="ObjectCache.cs" />
+    <Compile Include="Drawing\Pen.cs" />
+    <Compile Include="Drawing\Pens.cs" />
+    <Compile Include="Drawing\Brushes.cs" />
+    <Compile Include="Drawing\SolidBrush.cs" />
+    <Compile Include="Drawing\Brush.cs" />
+    <Compile Include="Drawing\PenLineCap.cs" />
+    <Compile Include="Drawing\TextureBrush.cs" />
+    <Compile Include="Drawing\LinearGradientBrush.cs" />
+    <Compile Include="Interface\IDragDropInputSource.cs" />
+    <Compile Include="Interface\IKeyboardInputSource.cs" />
+    <Compile Include="Interface\IMouseInputSource.cs" />
+    <Compile Include="Drawing\Constants.cs" />
+    <Compile Include="Math\MathUtil.cs" />
+    <Compile Include="Cache\BrushCache.cs" />
+    <Compile Include="Cache\FontCache.cs" />
+    <Compile Include="Cache\PenCache.cs" />
+    <Compile Include="Forms\Controls\DragDrop.cs" />
+    <Compile Include="Forms\Controls\DragDropInputSource.cs" />
+    <Compile Include="Forms\Controls\DataObject.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

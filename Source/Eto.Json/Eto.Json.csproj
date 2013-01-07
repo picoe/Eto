@@ -30,9 +30,9 @@
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
-    <OutputRoot>..\..\..</OutputRoot>  
+    <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />  
+  <Import Condition="Exists('../../../Common.targets')" Project="../../../Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="Newtonsoft.Json">

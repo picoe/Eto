@@ -1,65 +1,19 @@
+using Eto.Drawing;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
-using Eto.Drawing;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
-using Eto;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public class BrushHandler : WidgetHandler<System.Drawing.Brush, Brush>, IBrush
+	/// <summary>
+	/// Base handler for <see cref="IBrush"/>, to get the platform-specific brush
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public abstract class BrushHandler
 	{
-        public BrushHandler()
-        {
-        }
-
-        public BrushHandler(SD.Brush brush)
-        {
-            this.Control = brush;
-        }
-
-        #region IBrush Members
-
-        public void Create(RectangleF rectangle, Color c1, Color c2, float angle)
-        {
-            this.Control =
-                new SD.Drawing2D.LinearGradientBrush(
-                    rectangle.ToSD(),
-                    c1.ToSD(),
-                    c2.ToSD(),
-                    angle);
-        }
-
-        public void Create(Bitmap b)
-        {
-            this.Control =
-                new SD.TextureBrush(
-                    (SD.Image)b.ControlObject);
-        }
-
-        public void Create(Color color)
-        {
-            this.Control = 
-                new SD.SolidBrush(
-                    color.ToSD());
-        }
-
-        public void Create(PointF point1, PointF point2, Color color1, Color color2)
-        {
-            this.Control =
-                new SD.Drawing2D.LinearGradientBrush(
-                    point1.ToSD(),
-                    point2.ToSD(),
-                    color1.ToSD(),
-                    color2.ToSD());
-        }
-
-        public void TranslateTransform(float x, float y)
-        {
-            ((SD.TextureBrush)this.Control).TranslateTransform(x, y);
-        }
-
-        #endregion
-    }
+		public abstract sd.Brush GetBrush (Brush brush);
+	}
 }

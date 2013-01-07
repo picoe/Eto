@@ -9,39 +9,31 @@ using swf = System.Windows.Forms;
 
 namespace Eto.Platform.Windows
 {
-    public static partial class Conversions
-    {
-        public static Padding ToEto(this swf.Padding padding)
-        {
-            return new Padding(padding.Left, padding.Top, padding.Right, padding.Bottom);
-        }
+	public static partial class Conversions
+	{
+		public static Padding ToEto (this swf.Padding padding)
+		{
+			return new Padding (padding.Left, padding.Top, padding.Right, padding.Bottom);
+		}
 
-        public static swf.Padding ToSWF(this Padding padding)
-        {
-            return new swf.Padding(padding.Left, padding.Top, padding.Right, padding.Bottom);
-        }
+		public static swf.Padding ToSWF (this Padding padding)
+		{
+			return new swf.Padding (padding.Left, padding.Top, padding.Right, padding.Bottom);
+		}
 
-        public static Color ToEto(this sd.Color color)
-        {
-            return new Color(
-                color.R / 255f,
-                color.G / 255f,
-                color.B / 255f,
-                color.A / 255f);
-        }
+		public static Color ToEto (this sd.Color color)
+		{
+			return new Color (color.R / 255f, color.G / 255f, color.B / 255f, color.A / 255f);
+		}
 
-        public static sd.Color ToSD(this Color color)
-        {
-            return sd.Color.FromArgb(
-                (byte)(color.A * 255),
-                (byte)(color.R * 255),
-                (byte)(color.G * 255),
-                (byte)(color.B * 255));
-        }
+		public static sd.Color ToSD (this Color color)
+		{
+			return sd.Color.FromArgb ((byte)(color.A * 255), (byte)(color.R * 255), (byte)(color.G * 255), (byte)(color.B * 255));
+		}
 
-        public static DialogResult ToEto(this swf.DialogResult result)
-        {
-            DialogResult ret = DialogResult.None;
+		public static DialogResult ToEto (this swf.DialogResult result)
+		{
+			DialogResult ret = DialogResult.None;
 			if (result == swf.DialogResult.OK)
 				ret = DialogResult.Ok;
 			else if (result == swf.DialogResult.Cancel)
@@ -58,13 +50,12 @@ namespace Eto.Platform.Windows
 				ret = DialogResult.Retry;
 			else if (result == swf.DialogResult.None)
 				ret = DialogResult.None;
-            return ret;
-        }
+			return ret;
+		}
 
-        public static sd.Imaging.ImageFormat ToSD(this ImageFormat format)
-        {
-            switch (format)
-			{
+		public static sd.Imaging.ImageFormat ToSD (this ImageFormat format)
+		{
+			switch (format) {
 			case ImageFormat.Jpeg:
 				return sd.Imaging.ImageFormat.Jpeg;
 			case ImageFormat.Bitmap:
@@ -77,98 +68,94 @@ namespace Eto.Platform.Windows
 				return sd.Imaging.ImageFormat.Png;
 			default:
 				throw new Exception ("Invalid format specified");
-            }
-        }
+			}
+		}
 
-        public static ImageInterpolation ToEto(this sd.Drawing2D.InterpolationMode value)
-        {
-            switch (value)
-            {
-                case sd.Drawing2D.InterpolationMode.NearestNeighbor:
-                    return ImageInterpolation.None;
-                case sd.Drawing2D.InterpolationMode.Low:
-                    return ImageInterpolation.Low;
-                case sd.Drawing2D.InterpolationMode.High:
-                    return ImageInterpolation.Medium;
-                case sd.Drawing2D.InterpolationMode.HighQualityBilinear:
-                    return ImageInterpolation.High;
-                case sd.Drawing2D.InterpolationMode.Default:
-                    return ImageInterpolation.Default;
-                case sd.Drawing2D.InterpolationMode.HighQualityBicubic:
-                case sd.Drawing2D.InterpolationMode.Bicubic:
-                case sd.Drawing2D.InterpolationMode.Bilinear:
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+		public static ImageInterpolation ToEto (this sd2.InterpolationMode value)
+		{
+			switch (value) {
+			case sd2.InterpolationMode.NearestNeighbor:
+				return ImageInterpolation.None;
+			case sd2.InterpolationMode.Low:
+				return ImageInterpolation.Low;
+			case sd2.InterpolationMode.High:
+				return ImageInterpolation.Medium;
+			case sd2.InterpolationMode.HighQualityBilinear:
+				return ImageInterpolation.High;
+			case sd2.InterpolationMode.Default:
+				return ImageInterpolation.Default;
+			case sd2.InterpolationMode.HighQualityBicubic:
+			case sd2.InterpolationMode.Bicubic:
+			case sd2.InterpolationMode.Bilinear:
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 
-        public static sd.Drawing2D.InterpolationMode ToSD(this ImageInterpolation value)
-        {
-            switch (value)
-            {
-                case ImageInterpolation.Default:
-                    return sd.Drawing2D.InterpolationMode.Default;
-                case ImageInterpolation.None:
-                    return sd.Drawing2D.InterpolationMode.NearestNeighbor;
-                case ImageInterpolation.Low:
-                    return sd.Drawing2D.InterpolationMode.Low;
-                case ImageInterpolation.Medium:
-                    return sd.Drawing2D.InterpolationMode.High;
-                case ImageInterpolation.High:
-                    return sd.Drawing2D.InterpolationMode.HighQualityBilinear;
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+		public static sd2.InterpolationMode ToSD (this ImageInterpolation value)
+		{
+			switch (value) {
+			case ImageInterpolation.Default:
+				return sd2.InterpolationMode.Default;
+			case ImageInterpolation.None:
+				return sd2.InterpolationMode.NearestNeighbor;
+			case ImageInterpolation.Low:
+				return sd2.InterpolationMode.Low;
+			case ImageInterpolation.Medium:
+				return sd2.InterpolationMode.High;
+			case ImageInterpolation.High:
+				return sd2.InterpolationMode.HighQualityBilinear;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 
-        public static sd.FontStyle ToSD(this FontStyle style)
-        {
-            sd.FontStyle ret = sd.FontStyle.Regular;
+		public static sd.FontStyle ToSD (this FontStyle style)
+		{
+			sd.FontStyle ret = sd.FontStyle.Regular;
 			if ((style & FontStyle.Bold) != 0)
 				ret |= sd.FontStyle.Bold;
 			if ((style & FontStyle.Italic) != 0)
 				ret |= sd.FontStyle.Italic;
-            return ret;
-        }
+			return ret;
+		}
 
-        public static sdp.PrintRange ToSDP(this PrintSelection value)
-        {
-            switch (value)
-            {
-                case PrintSelection.AllPages:
-                    return sdp.PrintRange.AllPages;
-                case PrintSelection.SelectedPages:
-                    return sdp.PrintRange.SomePages;
-                case PrintSelection.Selection:
-                    return sdp.PrintRange.Selection;
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+		public static sdp.PrintRange ToSDP (this PrintSelection value)
+		{
+			switch (value) {
+			case PrintSelection.AllPages:
+				return sdp.PrintRange.AllPages;
+			case PrintSelection.SelectedPages:
+				return sdp.PrintRange.SomePages;
+			case PrintSelection.Selection:
+				return sdp.PrintRange.Selection;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 
-        public static PrintSelection ToEto(this sdp.PrintRange value)
-        {
-            switch (value)
-            {
-                case sdp.PrintRange.AllPages:
-                    return PrintSelection.AllPages;
-                case sdp.PrintRange.SomePages:
-                    return PrintSelection.SelectedPages;
-                case sdp.PrintRange.Selection:
-                    return PrintSelection.Selection;
-                default:
-                    throw new NotSupportedException();
-            }
-        }
+		public static PrintSelection ToEto (this sdp.PrintRange value)
+		{
+			switch (value) {
+			case sdp.PrintRange.AllPages:
+				return PrintSelection.AllPages;
+			case sdp.PrintRange.SomePages:
+				return PrintSelection.SelectedPages;
+			case sdp.PrintRange.Selection:
+				return PrintSelection.Selection;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 
-        public static FontStyle ToEto(this sd.FontStyle style)
-        {
-            var ret = FontStyle.Normal;
+		public static FontStyle ToEto (this sd.FontStyle style)
+		{
+			var ret = FontStyle.Normal;
 			if (style.HasFlag (sd.FontStyle.Bold))
 				ret |= FontStyle.Bold;
 			if (style.HasFlag (sd.FontStyle.Italic))
 				ret |= FontStyle.Italic;
-            return ret;
+			return ret;
 		}
 
 		public static PointF ToEto (this sd.PointF point)
@@ -181,12 +168,7 @@ namespace Eto.Platform.Windows
 			return new sd.PointF (point.X, point.Y);
 		}
 
-        public static sd.Point ToSD(this Point point)
-        {
-            return new sd.Point(point.X, point.Y);
-        }
-       
-        public static sd.Point ToSDPoint(this PointF point)
+		public static sd.Point ToSDPoint (this PointF point)
 		{
 			return new sd.Point ((int)point.X, (int)point.Y);
 		}
@@ -224,11 +206,6 @@ namespace Eto.Platform.Windows
 		public static sd.RectangleF ToSD (this RectangleF rect)
 		{
 			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
-		}
-
-		public static sd.Rectangle ToSD(this Rectangle rect)
-		{
-			return new sd.Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
 		public static sd.Rectangle ToSDRectangle (this RectangleF rect)
@@ -290,12 +267,6 @@ namespace Eto.Platform.Windows
 			return h.Control;
 		}
 
-		public static sd.Drawing2D.GraphicsPath ToSD (this GraphicsPath graphicsPath)
-		{
-			var h = (GraphicsPathHandler)graphicsPath.Handler;
-			return h.Control;
-		}
-
 		public static sd.Image ToSD (this Image graphics)
 		{
 			var h = (BitmapHandler)graphics.Handler;
@@ -336,16 +307,6 @@ namespace Eto.Platform.Windows
 			return buttons;
 		}
 
-		public static Graphics ToEto (this sd.Graphics g, Eto.Generator generator)
-		{
-			return new Graphics (generator, new GraphicsHandler (g));
-		}
-
-		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
-		{
-			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
-		}
-
 		public static sd.Image ToSD (this IImage image)
 		{
 			if (image == null)
@@ -378,15 +339,20 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static sd.Drawing2D.Matrix ToSD (this IMatrix m)
+		public static sd2.Matrix ToSD (this IMatrix m)
 		{
-			return (sd.Drawing2D.Matrix)m.ControlObject;
+			return (sd2.Matrix)m.ControlObject;
+		}
+
+		public static IMatrix ToEto (this sd2.Matrix matrix)
+		{
+			return new MatrixHandler (matrix);
 		}
 
 		public static float DegreesToRadians (float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;
-        }
+		}
 
         internal static DragDropEffects ToEto(this swf.DragDropEffects effects)
         {
@@ -438,22 +404,15 @@ namespace Eto.Platform.Windows
             return (DragAction)dragAction;
         }
 
-        public static Graphics ToEto(this sd.Graphics g)
-        {
-            return
-                new Graphics(
-                    new GraphicsHandler(
-                        g));
-        }
+		public static Graphics ToEto (this sd.Graphics graphics, Eto.Generator generator)
+		{
+			return new Graphics (generator, new GraphicsHandler (graphics));
+		}
 
-        public static PaintEventArgs ToEto(this 
-            swf.PaintEventArgs e)
-        {
-            return
-                new Eto.Forms.PaintEventArgs(
-                    ToEto(e.Graphics),
-                    e.ClipRectangle.ToEto());
-        }
+		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
+		{
+			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
+		}
 
         public static ITreeItem ToEto(this swf.TreeNode treeNode)
         {
@@ -504,6 +463,102 @@ namespace Eto.Platform.Windows
                 Buttons = ToEto(e.Button),
                 Item = ToEto(e.Item as swf.TreeNode)
             };
-        }
-    }
+		}
+
+		public static sd.Pen ToSD (this Pen pen)
+		{
+			return (sd.Pen)pen.ControlObject;
+		}
+
+		public static sd.Brush ToSD (this Brush brush)
+		{
+			return ((BrushHandler)brush.Handler).GetBrush(brush);
+		}
+
+		public static sd2.LineJoin ToSD (this PenLineJoin value)
+		{
+			switch (value) {
+			case PenLineJoin.Miter:
+				return sd2.LineJoin.Miter;
+			case PenLineJoin.Bevel:
+				return sd2.LineJoin.Bevel;
+			case PenLineJoin.Round:
+				return sd2.LineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineJoin ToEto (this sd2.LineJoin value)
+		{
+			switch (value) {
+			case sd2.LineJoin.Bevel:
+				return PenLineJoin.Bevel;
+			case sd2.LineJoin.Miter:
+				return PenLineJoin.Miter;
+			case sd2.LineJoin.Round:
+				return PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static sd2.LineCap ToSD (this PenLineCap value)
+		{
+			switch (value) {
+			case PenLineCap.Butt:
+				return sd2.LineCap.Flat;
+			case PenLineCap.Round:
+				return sd2.LineCap.Round;
+			case PenLineCap.Square:
+				return sd2.LineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineCap ToEto (this sd2.LineCap value)
+		{
+			switch (value) {
+			case sd2.LineCap.Flat:
+				return PenLineCap.Butt;
+			case sd2.LineCap.Round:
+				return PenLineCap.Round;
+			case sd2.LineCap.Square:
+				return PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static sd2.GraphicsPath ToSD (this IGraphicsPath path)
+		{
+			return (sd2.GraphicsPath)path.ControlObject;
+		}
+
+		public static sd2.WrapMode ToSD (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return sd2.WrapMode.TileFlipXY;
+			case GradientWrapMode.Repeat:
+				return sd2.WrapMode.Tile;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static GradientWrapMode ToEtoGradientWrap (this sd2.WrapMode wrapMode)
+		{
+			switch (wrapMode) {
+			case sd2.WrapMode.TileFlipXY:
+				return GradientWrapMode.Reflect;
+			case sd2.WrapMode.Tile:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+	}
 }

@@ -19,7 +19,8 @@ namespace Eto.Platform.Mac
 {
 	public class Generator : Eto.Generator
 	{ 	
-		public override string ID {
+		public override string ID
+		{
 			get { return Generators.Mac; }
 		}
 
@@ -37,11 +38,15 @@ namespace Eto.Platform.Mac
 			g.Add <IFont> (() => new FontHandler ());
 			g.Add <IFonts> (() => new FontsHandler ());
 			g.Add <IGraphics> (() => new GraphicsHandler ());
-			g.Add <IGraphicsPath> (() => new GraphicsPathHandler ());
+			g.Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
 			g.Add <IIcon> (() => new IconHandler ());
 			g.Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			g.Add <IMatrixHandler> (() => new MatrixHandler ());
-			
+			Add <IPen> (() => new PenHandler ());
+			Add <ISolidBrush> (() => new SolidBrushHandler ());
+			Add <ITextureBrush> (() => new TextureBrushHandler ());
+			Add<ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
+
 			// Forms.Cells
 			g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
 			g.Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
@@ -175,19 +180,6 @@ namespace Eto.Platform.Mac
 				t.y0);
 		}
 
-        internal static CGAffineTransform Convert(
-            Matrix m)
-        {
-            var e = m.Elements;
-
-            return new CGAffineTransform(
-                e[0],
-                e[1],
-                e[2],
-                e[3],
-                e[4],
-                e[5]);
-        }
 #endif
     }
 }

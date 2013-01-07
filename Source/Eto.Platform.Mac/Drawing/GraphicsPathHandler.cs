@@ -2,7 +2,7 @@ using System;
 using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
-using SD = System.Drawing;
+using sd = System.Drawing;
 using Eto.Platform.Mac;
 
 #if OSX
@@ -15,181 +15,225 @@ using MonoTouch.CoreGraphics;
 namespace Eto.Platform.iOS.Drawing
 #endif
 {
-	public class GraphicsPathHandler : WidgetHandler<CGPath, GraphicsPath>, IGraphicsPath
+
+	/// <summary>
+	/// Handler for <see cref="IGraphicsPath"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class GraphicsPathHandler : IGraphicsPathHandler
 	{
+		public CGPath Control { get; set; }
+		bool startFigure = true;
+		PointF? startPoint;
+		IMatrix transform;
+		bool isFirstFigure = true;
+		bool firstFigureClosed;
+
 		public GraphicsPathHandler ()
 		{
 			Control = new CGPath ();
 		}
 
 		public GraphicsPathHandler(CGPath path)
-        {
-            Control = path;
-        }
-
-		
-		public void MoveTo (PointF point)
 		{
-			Control.MoveToPoint (point.ToSD ());
-		}
-		
-		public void LineTo (PointF point)
-		{
-			Control.AddLineToPoint (point.ToSD ());
-		}
-		
-		public void AddLine (PointF point1, PointF point2)
-		{
-			Control.AddLines (new SD.PointF[] { point1.ToSD (), point2.ToSD () });
-		}
-		
-		public void AddLines (PointF[] points)
-		{
-			var sdpoints = from p in points select p.ToSD ();
-			Control.AddLines (sdpoints.ToArray ());
+			Control = path;
 		}
 
-        #region IGraphicsPath Members
+		public void MoveTo (float x, float y)
+		{
+			Control.MoveToPoint (x, y);
+			if (startPoint == null)
+				startPoint = new PointF(x, y);
+			startFigure = false;
+		}
+		
+		public void LineTo (float x, float y)
+		{
+			Control.AddLineToPoint (x, y);
+		}
 
+		void ConnectTo (PointF point)
+		{
+			ConnectTo (point.X, point.Y);
+		}
 
-        public RectangleF GetBounds()
-        {
-            return Control.BoundingBox.ToEto ();
-        }
+		void ConnectTo (float x, float y)
+		{
+			if (Control.IsEmpty || startFigure)
+				MoveTo (x, y);
+			else
+				LineTo (x, y);
+		}
+		
+		public void AddLine (float startX, float startY, float endX, float endY)
+		{
+			ConnectTo (startX, startY);
+			LineTo (endX, endY);
+		}
+		
+		public void AddLines (IEnumerable<PointF> points)
+		{
+			var enumerator = points.GetEnumerator ();
+			if (!enumerator.MoveNext ())
+				return;
+			ConnectTo(enumerator.Current);
+			while (enumerator.MoveNext ())
+			{
+				var point = enumerator.Current;
+				Control.AddLineToPoint(point.X, point.Y);
+			}
+		}
 
-        public FillMode FillMode
-        {
-            get;
-            set; /* TODO: use this in DrawPath */
-        }
+		public void AddRectangle (float x, float y, float width, float height)
+		{
+			Control.AddRect (new sd.RectangleF (x, y, width, height));
+			startFigure = true;
+			isFirstFigure = false;
+		}
 
-        public bool IsEmpty
-        {
-            get 
-            {
-                return Control == null ||
-                Control.IsEmpty;
-            }
-        }
+		public void AddArc (float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			var yscale = height / width;
+			var centerY = y + height / 2;
+			var transform = new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale);
 
-        public void AddCurve(PointF[] points)
-        {
-            /* TODO */ // currently only used for testing
-        }
+			if (startFigure) {
+				// degrees to radians conversion
+				double startRadians = startAngle * Math.PI / 180.0;
+			
+				// x and y radius
+				double dx = width / 2;
+				double dy = height / 2;
+			
+				// determine the start point 
+				double xs = x + dx + (Math.Cos (startRadians) * dx);
+				double ys = y + dy + (Math.Sin (startRadians) * dy);
+			
+				MoveTo ((float)xs, (float)ys);
+			}
 
-        public void AddBezier(
-            PointF pt1, 
-            PointF pt2, 
-            PointF pt3, 
-            PointF pt4)
-        {
-            if (Control != null)
-            {
-                if (Control.IsEmpty)
-                    Control.MoveToPoint(pt1.ToSD ());
-                else
-					Control.AddLineToPoint(pt1.ToSD ());
+			Control.AddArc (transform, x+ width / 2, centerY, width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+		}
 
-				Control.AddCurveToPoint(pt2.ToSD (), pt3.ToSD (), pt4.ToSD ());
-            }
-        }
+		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
+		{
+			ConnectTo (start);
+			Control.AddCurveToPoint (control1.X, control1.Y, control2.X, control2.Y, end.X, end.Y);
+		}
 
-        public void AddPath(
-            IGraphicsPathBase addingPath, 
-            bool connect)
-        {
-            var p = addingPath as GraphicsPath;
+		public void AddPath (IGraphicsPath path, bool connect)
+		{
+			if (path.IsEmpty)
+				return;
 
-            if (p != null)
-            {
-                var h =
-                    p.Handler as GraphicsPathHandler;
+			var handler = path.ToHandler ();
+			if (connect && handler.startPoint != null && !handler.firstFigureClosed) {
+				var startPoint = handler.startPoint.Value;
+				if (handler.transform != null)
+					startPoint = handler.transform.TransformPoint (startPoint);
+				var first = true;
+				handler.Control.Apply (element => {
+					switch (element.Type) {
+					case CGPathElementType.AddCurveToPoint:
+						if (first)
+							ConnectTo (element.Point3.ToEto ());
+						Control.AddCurveToPoint (element.Point1, element.Point2, element.Point3);
+						break;
+					case CGPathElementType.AddLineToPoint:
+						if (first)
+							ConnectTo (element.Point1.ToEto ());
+						Control.AddLineToPoint(element.Point1);
+						break;
+					case CGPathElementType.AddQuadCurveToPoint:
+						if (first)
+							ConnectTo (element.Point2.ToEto ());
+						Control.AddQuadCurveToPoint (element.Point1.X, element.Point1.Y, element.Point2.X, element.Point2.Y);
+						break;
+					case CGPathElementType.CloseSubpath:
+						Control.CloseSubpath ();
+						break;
+					case CGPathElementType.MoveToPoint:
+						if (first)
+							ConnectTo (element.Point1.ToEto ());
+						else
+							Control.MoveToPoint (element.Point1);
+						break;
+					}
+					first = false;
+				});
+			}
+			else {
+				Control.AddPath(handler.Control);
+			}
+			startFigure = handler.startFigure;
+		}
 
-                if (h != null &&
-                    h.Control != null)
-                    Control.AddPath(
-                        h.Control);
-            }
-        }
+		public void Transform (IMatrix matrix)
+		{
+			if (transform == null)
+				transform = matrix;
+			else
+				transform = Matrix.Multiply (transform, matrix);
+			var path = new CGPath ();
+			path.AddPath (matrix.ToCG (), Control);
+			Control = path;
+		}
 
-        public void Transform(IMatrix matrix)
-        {
-            Transform(matrix.ToCG());
-        }
+		public void CloseFigure ()
+		{
+			Control.CloseSubpath ();
+			startFigure = true;
+			if (isFirstFigure)
+				firstFigureClosed = true;
+			isFirstFigure = false;
+		}
 
-        private void Transform(CGAffineTransform transform)
-        {
-            var result =
-                new CGPath();
+		public void StartFigure ()
+		{
+			startFigure = true;
+			isFirstFigure = false;
+		}
 
-            // Add the original path specifying 
-            // the transform
-            result.AddPath(
-                transform,
-                Control);
+		public void AddEllipse (float x, float y, float width, float height)
+		{
+			Control.AddElipseInRect (new sd.RectangleF (x, y, width, height));
+			startFigure = true;
+			isFirstFigure = false;
+		}
 
-            Control = result;
+		public void AddCurve (IEnumerable<PointF> points, float tension)
+		{
+			points = SplineHelper.SplineCurve (points, tension);
+			SplineHelper.Draw (points, start => ConnectTo (start), (c1, c2, end) => {
+				Control.AddCurveToPoint (c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y);
+			});
+		}
 
-            // TODO: This hasn't been tested
-        }
+		public RectangleF Bounds
+		{
+			get { return Control.PathBoundingBox.ToEto (); }
+		}
 
-        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
-        {
-            var result =
-                new CGPath();
+		public bool IsEmpty
+		{
+			get { return Control.IsEmpty; }
+		}
 
-            result.AddRect(rect.ToSD ());
+		public PointF CurrentPoint
+		{
+			get { return Control.CurrentPoint.ToEto (); }
+		}
 
-            // BUGBUG: FIXFIX: start and sweep angle
+		public object ControlObject
+		{
+			get { return this; }
+		}
 
-            Control = result;
-        }
-
-        public void AddBeziers(Point[] points)
-        {
-            /* TODO */
-        }
-
-        public void AddEllipse(RectangleF rect)
-        {
-            if (Control != null)
-                Control.AddElipseInRect(rect.ToSD ());
-        }
-
-        public void Translate(PointF p)
-        {
-            Transform(
-                CGAffineTransform.MakeTranslation(
-                    p.X, p.Y));
-        }
-
-        public IGraphicsPath Clone()
-        {
-            return 
-                this.Control != null
-                ? new GraphicsPathHandler(                
-                    new CGPath(this.Control))
-                : new GraphicsPathHandler();
-        }
-
-        public void AddRectangle(RectangleF rect)
-        {
-            if(Control != null)
-                Control.AddRect(rect.ToSD ());
-        }
-
-        public void CloseFigure()
-        {
-            if (Control != null)
-                Control.CloseSubpath();
-        }
-
-        #endregion
-
-        public GraphicsPath ToGraphicsPath()
-        {
-            throw new NotImplementedException(); // should never get called
-        }
-    }
+		public void Dispose ()
+		{
+			Control.Dispose ();
+		}
+	}
 }
 

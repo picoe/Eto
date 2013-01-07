@@ -17,7 +17,7 @@
     <DebugType>full</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
@@ -25,14 +25,11 @@
     <DebugType>pdbonly</DebugType>
     <Optimize>True</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;WPF</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
-  <PropertyGroup>
-    <OutputRoot>..\..\..</OutputRoot>
-  </PropertyGroup>
-  <Import Condition="Exists('../../../Common.targets')" Project="../../../Common.targets" />
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="ColorPicker">
       <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
@@ -61,6 +58,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
+      <Link>Drawing\SplineHelper.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Platform.Windows\CustomControls\TreeController.cs">
       <Link>CustomControls\TreeGridView\TreeController.cs</Link>
     </Compile>
@@ -94,7 +94,6 @@
     <Compile Include="CustomControls\VirtualCanvas\QuadTree.cs" />
     <Compile Include="CustomControls\VirtualCanvas\VirtualCanvas.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
-    <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
@@ -103,11 +102,15 @@
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
+    <Compile Include="Forms\ClipboardHandler.cs" />
     <Compile Include="Forms\ColorDialogHandler.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Cells\CellHandler.cs" />
@@ -190,6 +193,12 @@
     <Compile Include="PropertyPathHelper.cs" />
     <Compile Include="WpfExtensions.cs" />
     <Compile Include="Drawing\TransformStack.cs" />
+    <Compile Include="..\Eto.Platform.Windows\IO\ShellIcon.cs">
+      <Link>IO\ShellIcon.cs</Link>
+    </Compile>
+    <Compile Include="IO\SystemIcons.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
@@ -272,4 +281,5 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup />
 </Project>

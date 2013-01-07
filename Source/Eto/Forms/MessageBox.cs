@@ -49,9 +49,9 @@ namespace Eto.Forms
 			return Show(parent != null ? parent.Generator : Generator.Current, parent, text, caption, type);
 		}
 		
-		public static DialogResult Show(Generator g, Control parent, string text, string caption = null, MessageBoxType type = MessageBoxType.Information)
+		public static DialogResult Show(Generator generator, Control parent, string text, string caption = null, MessageBoxType type = MessageBoxType.Information)
 		{
-			var mb = g.Create<IMessageBox>();
+			var mb = generator.Create<IMessageBox>();
 			mb.Text = text;
 			mb.Caption = caption;
 			mb.Type = type;
@@ -83,9 +83,9 @@ namespace Eto.Forms
 			return Show (g, parent, text, null, buttons, type);
 		}
 
-		public static DialogResult Show (Generator g, Control parent, string text, string caption, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information)
+		public static DialogResult Show (Generator generator, Control parent, string text, string caption, MessageBoxButtons buttons, MessageBoxType type = MessageBoxType.Information)
 		{
-			var mb = g.Create<IMessageBox> ();
+			var mb = generator.Create<IMessageBox> ();
 			mb.Text = text;
 			mb.Caption = caption;
 			mb.Type = type;

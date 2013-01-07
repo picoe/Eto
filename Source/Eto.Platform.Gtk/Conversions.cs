@@ -1,6 +1,7 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -14,6 +15,11 @@ namespace Eto.Platform.GtkSharp
 		public static Cairo.Color ToCairo (this Color color)
 		{
 			return new Cairo.Color ((double)color.R, (double)color.G, (double)color.B, (double)color.A);
+		}
+
+		public static Color ToEto (this Cairo.Color color)
+		{
+			return new Color ((float)color.R, (float)color.G, (float)color.B, (float)color.A);
 		}
 		
 		public static Cairo.Rectangle ToCairo (this Rectangle rectangle)
@@ -245,6 +251,140 @@ namespace Eto.Platform.GtkSharp
 		public static float DegreesToRadians (float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;
+		}
+
+		public static void Apply (this Pen pen, GraphicsHandler graphics)
+		{
+			((PenHandler)pen.Handler).Apply (pen, graphics);
+		}
+
+		public static void Apply (this Brush brush, GraphicsHandler graphics)
+		{
+			((BrushHandler)brush.Handler).Apply (brush.ControlObject, graphics);
+		}
+
+		public static Cairo.LineJoin ToCairo (this PenLineJoin value)
+		{
+			switch (value) {
+			case PenLineJoin.Miter:
+				return Cairo.LineJoin.Miter;
+			case PenLineJoin.Bevel:
+				return Cairo.LineJoin.Bevel;
+			case PenLineJoin.Round:
+				return Cairo.LineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineJoin ToEto (this Cairo.LineJoin value)
+		{
+			switch (value) {
+			case Cairo.LineJoin.Bevel:
+				return PenLineJoin.Bevel;
+			case Cairo.LineJoin.Miter:
+				return PenLineJoin.Miter;
+			case Cairo.LineJoin.Round:
+				return PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Cairo.LineCap ToCairo (this PenLineCap value)
+		{
+			switch (value) {
+			case PenLineCap.Butt:
+				return Cairo.LineCap.Butt;
+			case PenLineCap.Round:
+				return Cairo.LineCap.Round;
+			case PenLineCap.Square:
+				return Cairo.LineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+		
+		public static PenLineCap ToEto (this Cairo.LineCap value)
+		{
+			switch (value) {
+			case Cairo.LineCap.Butt:
+				return PenLineCap.Butt;
+			case Cairo.LineCap.Round:
+				return PenLineCap.Round;
+			case Cairo.LineCap.Square:
+				return PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Cairo.PointD ToCairo (this PointF point)
+		{
+			return new Cairo.PointD(point.X, point.Y);
+		}
+
+		public static PointF ToEto (this Cairo.PointD point)
+		{
+			return new PointF ((float)point.X, (float)point.Y);
+		}
+
+		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)
+		{
+			return ((GraphicsPathHandler)path.ControlObject);
+		}
+
+		public static void Apply (this IGraphicsPath path, Cairo.Context context)
+		{
+			((GraphicsPathHandler)path.ControlObject).Apply(context);
+		}
+
+		public static Cairo.Matrix ToCairo (this IMatrix matrix)
+		{
+			return (Cairo.Matrix)matrix.ControlObject;
+		}
+
+		public static IMatrix ToEto (this Cairo.Matrix matrix)
+		{
+			return new MatrixHandler (matrix);
+		}
+
+		public static Gdk.Pixbuf ToGdk (this Image image)
+		{
+			var handler = image.Handler as IGtkPixbuf;
+			if (handler != null)
+				return handler.Pixbuf;
+			else
+				return null;
+		}
+
+		public static void SetCairoSurface (this Image image, Cairo.Context context, float x, float y)
+		{
+			Gdk.CairoHelper.SetSourcePixbuf (context, image.ToGdk (), x, y);
+		}
+
+		public static GradientWrapMode ToEto (this Cairo.Extend extend)
+		{
+			switch (extend) {
+			case Cairo.Extend.Reflect:
+				return GradientWrapMode.Reflect;
+			case Cairo.Extend.Repeat:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Cairo.Extend ToCairo (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return Cairo.Extend.Reflect;
+			case GradientWrapMode.Repeat:
+				return Cairo.Extend.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using Eto.Drawing;
 
 namespace Eto.Cache
@@ -33,7 +33,7 @@ namespace Eto.Cache
             if (brushes != null &&
                 !brushes.TryGetValue(key, out result))
             {
-                result = new Brush(generator, color);
+                result = new SolidBrush(color, generator);
                 brushes[key] = result;
             }
 

@@ -190,6 +190,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 					}
 				}
 			}
+
+			SD.SizeF titleSize = this.AttributedStringValue.Size;
+			
+			// test to see if the text height is bigger then the cell, if it is,
+			// don't try to center it or it will be pushed up out of the cell!
+			if (titleSize.Height < cellFrame.Size.Height) {
+				cellFrame.Y = cellFrame.Y + (cellFrame.Size.Height - titleSize.Height) / 2;
+			}
 			
 			if (UseTextShadow) {
 				var str = new NSMutableAttributedString(this.StringValue);

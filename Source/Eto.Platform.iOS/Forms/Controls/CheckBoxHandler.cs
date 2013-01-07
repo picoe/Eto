@@ -27,7 +27,10 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 			public bool? Checked { 
 				get {
-					return segmented.SelectedSegment == 2 ? (bool?)true : (segmented.SelectedSegment == 1 ? (bool?)false : null);
+					if (ThreeState)
+						return segmented.SelectedSegment == 2 ? (bool?)true : (segmented.SelectedSegment == 1 ? (bool?)false : null);
+					else
+						return switchControl.On;
 				}
 				set { 
 					switchControl.On = value ?? false;
