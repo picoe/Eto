@@ -33,7 +33,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color of the cached solid brush to get</param>
 		/// <param name="generator">Generator to get the brush for</param>
-		static Brush Cached (Color color, Generator generator = null) { return GetBrush (color, generator); }
+		public static Brush Cached (Color color, Generator generator = null) { return GetBrush (color, generator); }
 
 		/// <summary>
 		/// Clears the brush cache
