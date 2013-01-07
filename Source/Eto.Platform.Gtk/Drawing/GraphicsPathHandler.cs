@@ -349,6 +349,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			get { return this; }
 		}
+
+		public IGraphicsPath Clone()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
 

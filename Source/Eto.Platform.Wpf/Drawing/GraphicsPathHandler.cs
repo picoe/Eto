@@ -26,6 +26,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Figures = new swm.PathFigureCollection ();
 		}
 
+		private GraphicsPathHandler(swm.PathGeometry control)
+		{
+			Control = control;
+		}
+
 		public bool IsEmpty
 		{
 			get { return Control.IsEmpty (); }
@@ -207,6 +212,11 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Dispose ()
 		{
+		}
+
+		public IGraphicsPath Clone()
+		{
+			return new GraphicsPathHandler(Control.Clone());
 		}
 	}
 }

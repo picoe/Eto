@@ -1035,5 +1035,15 @@ namespace Eto.Drawing
 		}
 
 		#endregion
+
+		public void SetClip(RectangleF clip)
+		{
+			// TODO: revive this functionality
+		}
+
+		public void Clear(Color color)
+		{
+			// TODO: revive this
+		}
 	}
 }

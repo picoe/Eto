@@ -23,97 +23,102 @@ namespace Eto.Platform.Windows
 
 		public Generator()
 		{
+			AddTo(this);
+		}
+
+		public static void AddTo(Eto.Generator g)
+		{
 			// Drawing
-			Add <IBitmap> (() => new BitmapHandler ());
-			Add <IFontFamily> (() => new FontFamilyHandler ());
-			Add <IFont> (() => new FontHandler ());
-			Add <IFonts> (() => new FontsHandler ());
-			Add <IGraphics> (() => new GraphicsHandler ());
-			Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
-			Add <IIcon> (() => new IconHandler ());
-			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
-			Add <IMatrixHandler> (() => new MatrixHandler ());
-			Add <IPen> (() => new PenHandler ());
-			Add <ISolidBrush> (() => new SolidBrushHandler ());
-			Add <ITextureBrush> (() => new TextureBrushHandler ());
-			Add <ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
+			g.Add <IBitmap> (() => new BitmapHandler ());
+			g.Add <IFontFamily> (() => new FontFamilyHandler ());
+			g.Add <IFont> (() => new FontHandler ());
+			g.Add <IFonts> (() => new FontsHandler ());
+			g.Add <IGraphics> (() => new GraphicsHandler ());
+			g.Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
+			g.Add <IIcon> (() => new IconHandler ());
+			g.Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
+			g.Add <IMatrixHandler> (() => new MatrixHandler ());
+			g.Add <IPen> (() => new PenHandler ());
+			g.Add <ISolidBrush> (() => new SolidBrushHandler ());
+			g.Add <ITextureBrush> (() => new TextureBrushHandler ());
+			g.Add <ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
 
 			// Forms.Cells
-			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
-			Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
-			Add <IImageTextCell> (() => new ImageTextCellHandler ());
-			Add <IImageViewCell> (() => new ImageViewCellHandler ());
-			Add <ITextBoxCell> (() => new TextBoxCellHandler ());
+			g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
+			g.Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
+			g.Add <IImageTextCell> (() => new ImageTextCellHandler ());
+			g.Add <IImageViewCell> (() => new ImageViewCellHandler ());
+			g.Add <ITextBoxCell> (() => new TextBoxCellHandler ());
 			
 			// Forms.Controls
-			Add <IButton> (() => new ButtonHandler ());
-			Add <ICheckBox> (() => new CheckBoxHandler ());
-			Add <IComboBox> (() => new ComboBoxHandler ());
-			Add <IDateTimePicker> (() => new DateTimePickerHandler ());
-			Add <IDrawable> (() => new DrawableHandler ());
-			Add <IGridColumn> (() => new GridColumnHandler ());
-			Add <IGridView> (() => new GridViewHandler ());
-			Add <IGroupBox> (() => new GroupBoxHandler ());
-			Add <IImageView> (() => new ImageViewHandler ());
-			Add <ILabel> (() => new LabelHandler ());
-			Add <IListBox> (() => new ListBoxHandler ());
-			Add <INumericUpDown> (() => new NumericUpDownHandler ());
-			Add <IPanel> (() => new PanelHandler ());
-			Add <IPasswordBox> (() => new PasswordBoxHandler ());
-			Add <IProgressBar> (() => new ProgressBarHandler ());
-			Add <IRadioButton> (() => new RadioButtonHandler ());
-			Add <IScrollable> (() => new ScrollableHandler ());
-			Add <ISlider> (() => new SliderHandler ());
-			Add <ISplitter> (() => new SplitterHandler ());
-			Add <ITabControl> (() => new TabControlHandler ());
-			Add <ITabPage> (() => new TabPageHandler ());
-			Add <ITextArea> (() => new TextAreaHandler ());
-			Add <ITextBox> (() => new TextBoxHandler ());
-			Add <ITreeGridView> (() => new TreeGridViewHandler ());
-			Add <ITreeView> (() => new TreeViewHandler ());
-			Add <IWebView> (() => new WebViewHandler ());
+			g.Add <IButton> (() => new ButtonHandler ());
+			g.Add <ICheckBox> (() => new CheckBoxHandler ());
+			g.Add <IComboBox> (() => new ComboBoxHandler ());
+			g.Add <IDateTimePicker> (() => new DateTimePickerHandler ());
+			g.Add <IDrawable> (() => new DrawableHandler ());
+			g.Add <IGridColumn> (() => new GridColumnHandler ());
+			g.Add <IGridView> (() => new GridViewHandler ());
+			g.Add <IGroupBox> (() => new GroupBoxHandler ());
+			g.Add <IImageView> (() => new ImageViewHandler ());
+			g.Add <ILabel> (() => new LabelHandler ());
+			g.Add <IListBox> (() => new ListBoxHandler ());
+			g.Add <INumericUpDown> (() => new NumericUpDownHandler ());
+			g.Add <IPanel> (() => new PanelHandler ());
+			g.Add <IPasswordBox> (() => new PasswordBoxHandler ());
+			g.Add <IProgressBar> (() => new ProgressBarHandler ());
+			g.Add <IRadioButton> (() => new RadioButtonHandler ());
+			g.Add <IScrollable> (() => new ScrollableHandler ());
+			g.Add <ISlider> (() => new SliderHandler ());
+			g.Add <ISplitter> (() => new SplitterHandler ());
+			g.Add <ITabControl> (() => new TabControlHandler ());
+			g.Add <ITabPage> (() => new TabPageHandler ());
+			g.Add <ITextArea> (() => new TextAreaHandler ());
+			g.Add <ITextBox> (() => new TextBoxHandler ());
+			g.Add <ITreeGridView> (() => new TreeGridViewHandler ());
+			g.Add <ITreeView> (() => new TreeViewHandler ());
+			g.Add <IWebView> (() => new WebViewHandler ());
 			
 			// Forms.Menu
-			Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
-			Add <IContextMenu> (() => new ContextMenuHandler ());
-			Add <IImageMenuItem> (() => new ImageMenuItemHandler ());
-			Add <IMenuBar> (() => new MenuBarHandler ());
-			Add <IRadioMenuItem> (() => new RadioMenuItemHandler ());
-			Add <ISeparatorMenuItem> (() => new SeparatorMenuItemHandler ());
+			g.Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
+			g.Add <IContextMenu> (() => new ContextMenuHandler ());
+			g.Add <IImageMenuItem> (() => new ImageMenuItemHandler ());
+			g.Add <IMenuBar> (() => new MenuBarHandler ());
+			g.Add <IRadioMenuItem> (() => new RadioMenuItemHandler ());
+			g.Add <ISeparatorMenuItem> (() => new SeparatorMenuItemHandler ());
 			
 			// Forms.Printing
-			Add <IPrintDialog> (() => new PrintDialogHandler ());
-			Add <IPrintDocument> (() => new PrintDocumentHandler ());
-			Add <IPrintSettings> (() => new PrintSettingsHandler ());
+			g.Add <IPrintDialog> (() => new PrintDialogHandler ());
+			g.Add <IPrintDocument> (() => new PrintDocumentHandler ());
+			g.Add <IPrintSettings> (() => new PrintSettingsHandler ());
 			
 			// Forms.ToolBar
-			Add <ICheckToolBarButton> (() => new CheckToolBarButtonHandler ());
-			Add <ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
-			Add <IToolBarButton> (() => new ToolBarButtonHandler ());
-			Add <IToolBar> (() => new ToolBarHandler ());
+			g.Add <ICheckToolBarButton> (() => new CheckToolBarButtonHandler ());
+			g.Add <ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
+			g.Add <IToolBarButton> (() => new ToolBarButtonHandler ());
+			g.Add <IToolBar> (() => new ToolBarHandler ());
 			
 			// Forms
-			Add <IApplication> (() => new ApplicationHandler ());
-			Add <IClipboard> (() => new ClipboardHandler ());
-			Add <IColorDialog> (() => new ColorDialogHandler ());
-			Add <ICursor> (() => new CursorHandler ());
-			Add <IDialog> (() => new DialogHandler ());
-			Add <IDockLayout> (() => new DockLayoutHandler ());
-			Add <IFontDialog> (() => new FontDialogHandler ());
-			Add <IForm> (() => new FormHandler ());
-			Add <IMessageBox> (() => new MessageBoxHandler ());
-			Add <IOpenFileDialog> (() => new OpenFileDialogHandler ());
-			Add <IPixelLayout> (() => new PixelLayoutHandler ());
-			Add <ISaveFileDialog> (() => new SaveFileDialogHandler ());
-			Add <ISelectFolderDialog> (() => new SelectFolderDialogHandler ());
-			Add <ITableLayout> (() => new TableLayoutHandler ());
-			Add <IUITimer> (() => new UITimerHandler ());
+			g.Add <IApplication> (() => new ApplicationHandler ());
+			g.Add <IClipboard> (() => new ClipboardHandler ());
+			g.Add <IColorDialog> (() => new ColorDialogHandler ());
+			g.Add <ICursor> (() => new CursorHandler ());
+			g.Add <IDialog> (() => new DialogHandler ());
+			g.Add <IDockLayout> (() => new DockLayoutHandler ());
+			g.Add <IFontDialog> (() => new FontDialogHandler ());
+			g.Add <IForm> (() => new FormHandler ());
+			g.Add <IMessageBox> (() => new MessageBoxHandler ());
+			g.Add <IOpenFileDialog> (() => new OpenFileDialogHandler ());
+			g.Add <IPixelLayout> (() => new PixelLayoutHandler ());
+			g.Add <ISaveFileDialog> (() => new SaveFileDialogHandler ());
+			g.Add <ISelectFolderDialog> (() => new SelectFolderDialogHandler ());
+			g.Add <ITableLayout> (() => new TableLayoutHandler ());
+			g.Add <IUITimer> (() => new UITimerHandler ());
 			
 			// IO
-			Add <ISystemIcons> (() => new SystemIconsHandler ());
+			g.Add <ISystemIcons> (() => new SystemIconsHandler ());
 			
 			// General
-			Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
+			g.Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
 		}
 	}
 }

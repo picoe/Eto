@@ -169,6 +169,8 @@ namespace Eto.Drawing
 		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
 		/// </remarks>
 		void CloseFigure ();
+
+		IGraphicsPath Clone();
 	}
 
 	/// <summary>
@@ -358,6 +360,11 @@ namespace Eto.Drawing
 			Handler = Create (generator);
 		}
 
+		private GraphicsPath(IGraphicsPath handler)
+		{
+			Handler = handler;
+		}
+
 		/// <summary>
 		/// Adds a line to the path with the specified start and end points
 		/// </summary>
@@ -541,6 +548,10 @@ namespace Eto.Drawing
 			Handler.Dispose ();
 		}
 
+		public IGraphicsPath Clone()
+		{
+			return new GraphicsPath(Handler.Clone());
+		}
 		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>

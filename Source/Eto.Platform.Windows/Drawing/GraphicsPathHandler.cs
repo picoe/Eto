@@ -126,6 +126,11 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get { return Control.GetLastPoint ().ToEto (); }
 		}
+
+		public IGraphicsPath Clone()
+		{
+			return new GraphicsPathHandler((sd.Drawing2D.GraphicsPath)this.Control.Clone());
+		}
 	}
 }
 
