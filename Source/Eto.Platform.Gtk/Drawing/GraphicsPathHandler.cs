@@ -364,6 +364,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			throw new NotImplementedException(); // should never get called
 		}
+
+		public FillMode FillMode
+		{
+			set { throw new NotImplementedException(); }
+		}
 	}
 }
 

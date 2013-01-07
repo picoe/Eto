@@ -228,5 +228,10 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			throw new NotImplementedException(); // should never get called
 		}
+
+		public FillMode FillMode
+		{
+			set { Control.FillRule = value == FillMode.Alternate ? swm.FillRule.EvenOdd : swm.FillRule.Nonzero ; }
+		}
 	}
 }

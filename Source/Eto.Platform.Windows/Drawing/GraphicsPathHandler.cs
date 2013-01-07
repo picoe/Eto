@@ -141,6 +141,14 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			throw new NotImplementedException(); // should never get called
 		}
+
+		public FillMode FillMode
+		{
+			set 
+			{
+				Control.FillMode = (value == FillMode.Alternate) ? sd2.FillMode.Alternate : sd2.FillMode.Winding;
+			}
+		}
 	}
 }
 

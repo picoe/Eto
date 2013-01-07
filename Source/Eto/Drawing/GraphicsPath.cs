@@ -77,7 +77,12 @@ namespace Eto.Drawing
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IGraphicsPath : IGraphicsPathBase, IControlObjectSource
-	{		
+	{
+		/// <summary>
+		/// Sets a value indicating how this graphics path should be filled.
+		/// </summary>
+		FillMode FillMode { set; }
+
 		/// <summary>
 		/// Gets a value indicating that this graphics path is empty and has no segments
 		/// </summary>
@@ -315,7 +320,15 @@ namespace Eto.Drawing
 		{
 			get { return Handler.Bounds; }
 		}
-		
+
+		/// <summary>
+		/// Sets a value indicating how this graphics path should be filled.
+		/// </summary>
+		public FillMode FillMode 
+		{
+			set { Handler.FillMode = value; }
+		}
+
 		/// <summary>
 		/// Gets a value indicating that this graphics path is empty and has no segments
 		/// </summary>
@@ -374,6 +387,17 @@ namespace Eto.Drawing
 		private GraphicsPath(IGraphicsPath handler)
 		{
 			Handler = handler;
+		}
+
+		public GraphicsPath(FillMode fillMode)
+			: this(null, fillMode)
+		{
+		}
+
+		public GraphicsPath(Generator g, FillMode fillMode)
+			: this(g)
+		{
+			this.Handler.FillMode = fillMode;
 		}
 
 		/// <summary>
