@@ -114,6 +114,21 @@ namespace Eto.Drawing
 			return obj is DashStyle && this == (DashStyle)obj;
 		}
 
+		public override string ToString()
+		{
+			if (object.ReferenceEquals(this, DashStyles.Dash))
+				return "dash";
+			else if (object.ReferenceEquals(this, DashStyles.Dot))
+				return "dot";
+			else if (object.ReferenceEquals(this, DashStyles.DashDot))
+				return "dashdot";
+			else if (object.ReferenceEquals(this, DashStyles.DashDotDot))
+				return "dashdotdot";
+			else if (object.ReferenceEquals(this, DashStyles.Solid))
+				return "solid";
+			return base.ToString();			
+		}
+
 		/// <summary>
 		/// Serves as a hash function for a <see cref="Eto.Drawing.DashStyle"/> object.
 		/// </summary>
