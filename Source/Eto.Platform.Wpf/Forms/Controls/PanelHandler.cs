@@ -43,7 +43,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 			set
 			{
-                Control.Background = BrushCache.GetBrush(this.Generator, value).ControlObject as swm.Brush;
+				Control.Background = Brushes.Cached(value, this.Generator).ControlObject as swm.Brush;
 			}
 		}
 
