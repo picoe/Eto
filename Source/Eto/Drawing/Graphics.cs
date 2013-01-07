@@ -227,6 +227,10 @@ namespace Eto.Drawing
 		/// This restores the transform state from a previous <see cref="SaveTransform"/> call.
 		/// </remarks>
 		void RestoreTransform ();
+
+		RectangleF ClipBounds { get; }
+
+		void SetClip(RectangleF rect);
 	}
 
 	/// <summary>
@@ -1036,9 +1040,14 @@ namespace Eto.Drawing
 
 		#endregion
 
-		public void SetClip(RectangleF clip)
+		public void SetClip(RectangleF rect)
 		{
-			// TODO: revive this functionality
+			Handler.SetClip(rect);
+		}
+
+		public RectangleF ClipBounds
+		{
+			get { return Handler.ClipBounds; }
 		}
 
 		public void Clear(Color color)

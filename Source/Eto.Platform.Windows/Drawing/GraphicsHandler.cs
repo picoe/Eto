@@ -301,5 +301,15 @@ namespace Eto.Platform.Windows.Drawing
 				t.Dispose ();
 			}
 		}
+
+		public RectangleF ClipBounds
+		{
+			get { return this.Control.ClipBounds.ToEto(); }
+		}
+
+		public void SetClip(RectangleF rect)
+		{
+			this.Control.SetClip(rect.ToSD());
+		}
 	}
 }
