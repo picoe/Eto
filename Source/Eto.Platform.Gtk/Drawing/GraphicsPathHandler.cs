@@ -359,6 +359,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			throw new NotImplementedException();
 		}
+
+		public GraphicsPath ToGraphicsPath()
+		{
+			throw new NotImplementedException(); // should never get called
+		}
 	}
 }
 
