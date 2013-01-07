@@ -385,10 +385,5 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			// TODO
 		}
-
-		public object ControlObject
-		{
-			get { throw new NotImplementedException(); }
-		}
 	}
 }
