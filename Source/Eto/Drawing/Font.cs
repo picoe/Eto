@@ -476,13 +476,13 @@ namespace Eto.Drawing
             new Dictionary<string, string>()
             {
 #if Windows
-                { "serif", System.Drawing.FontFamily.GenericSerif.Name},
+                //{ "serif", System.Drawing.FontFamily.GenericSerif.Name},
 #endif
                 { "sans-serif", "Arial"},
                 { "cursive", "Comic Sans MS"},
                 { "fantasy", "Impact"},
 #if Windows
-                { "monospace", System.Drawing.FontFamily.GenericMonospace.Name},
+                //{ "monospace", System.Drawing.FontFamily.GenericMonospace.Name},
 #endif
             };
 
