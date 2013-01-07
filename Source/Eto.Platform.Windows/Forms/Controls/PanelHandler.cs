@@ -5,6 +5,25 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
+	public class PanelHandler : WindowsContainer<MyPanel, Panel>, IPanel
+	{
+		public PanelHandler()
+		{
+			Control = new MyPanel();
+			this.Control.SuspendLayout ();
+			this.Control.Size = SD.Size.Empty;
+			this.Control.MinimumSize = SD.Size.Empty;
+			this.Control.AutoSize = true;
+			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+		}
+
+		public override void OnLoad (EventArgs e)
+		{
+			base.OnLoad (e);
+			Control.ResumeLayout ();
+		}
+	}
+
 	public class MyPanel : SWF.Panel
 	{
 		// Need to override IsInputKey to capture 
@@ -22,25 +41,6 @@ namespace Eto.Platform.Windows
 				default:
 					return base.IsInputKey(keyData);
 			}
-		}
-	}
-
-	public class PanelHandler : WindowsContainer<MyPanel, Panel>, IPanel
-	{
-		public PanelHandler()
-		{
-			Control = new MyPanel();
-			this.Control.SuspendLayout ();
-			this.Control.Size = SD.Size.Empty;
-			this.Control.MinimumSize = SD.Size.Empty;
-			this.Control.AutoSize = true;
-			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-		}
-
-		public override void OnLoad (EventArgs e)
-		{
-			base.OnLoad (e);
-			Control.ResumeLayout ();
 		}
 	}
 }
