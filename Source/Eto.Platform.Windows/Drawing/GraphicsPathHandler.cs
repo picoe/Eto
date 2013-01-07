@@ -1,153 +1,131 @@
 using System;
 using System.Linq;
 using Eto.Drawing;
-using SD = System.Drawing;
+using sd = System.Drawing;
+using sd2 = System.Drawing.Drawing2D;
 using System.Collections.Generic;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public class GraphicsPathHandler : WidgetHandler<SD.Drawing2D.GraphicsPath, GraphicsPath>, IGraphicsPath
+	/// <summary>
+	/// Handler for <see cref="IGraphicsPath"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class GraphicsPathHandler : IGraphicsPathHandler
 	{
-		PointF position;
+		sd2.GraphicsPath Control { get; set; }
+		sd.PointF position;
 
 		public GraphicsPathHandler ()
 		{
-			Control = new SD.Drawing2D.GraphicsPath ();
+			Control = new sd2.GraphicsPath ();
 		}
 
-		private GraphicsPathHandler (SD.Drawing2D.GraphicsPath control)
+		private GraphicsPathHandler (sd2.GraphicsPath control)
 		{
 			Control = control;
 		}
 
-		public void LineTo (PointF point)
+		public void LineTo (float x, float y)
 		{
-			this.Control.AddLine (position.ToSD (), point.ToSD ());
+			var point = new sd.PointF (x, y);
+			Control.AddLine (position, point);
 			position = point;
 		}
 
-		public void MoveTo (PointF point)
+		public void MoveTo (float x, float y)
 		{
-			position = point;
+			position = new sd.PointF (x, y);
 		}
 
-		public void AddLine (PointF point1, PointF point2)
+		public void AddLine (float startX, float startY, float endX, float endY)
 		{
-			this.Control.AddLine (point1.ToSD (), point2.ToSD ());
-			position = point2;
+			this.Control.AddLine (new sd.PointF (startX, startY), new sd.PointF (endX, endY));
+			position = new sd.PointF (endX, endY);
 		}
 
-        public void AddLines(PointF[] points)
-        {
-            var sdlines = from p in points select p.ToSD();
-            this.Control.AddLines(sdlines.ToArray());
-            position = points.Last();
-        }
+		public void AddLines (IEnumerable<PointF> points)
+		{
+			var sdpoints = from p in points select p.ToSD ();
+			var pointArray = sdpoints.ToArray ();
+			Control.AddLines (pointArray);
+			position = pointArray.Last ();
+		}
 
-        public RectangleF GetBounds()
-        {
-            return this.Control.GetBounds().ToRectangleF();
-        }
+		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
+		{
+			Control.AddBezier (start.ToSD (), control1.ToSD (), control2.ToSD (), end.ToSD ());
+		}
 
-        public void Translate(PointF point)
-        {
-            this.Control.Transform(
-                ToTranslationMatrix(
-                    point.ToSD()));
-        }
+		public void AddPath (IGraphicsPath path, bool connect)
+		{
+			Control.AddPath (path.ToSD (), connect);
+		}
 
-        public static SD.Drawing2D.Matrix ToTranslationMatrix(SD.PointF p)
-        {
-            return 
-                new SD.Drawing2D.Matrix(
-                    1, 0,
-                    0, 1,
-                    p.X,
-                    p.Y);
-        }
+		public void Transform (IMatrix matrix)
+		{
+			Control.Transform (matrix.ToSD ());
+		}
 
-        public IGraphicsPath Clone()
-        {
-            return new GraphicsPathHandler(
-                (SD.Drawing2D.GraphicsPath)
-                this.Control.Clone());        
-        }
+		public void CloseFigure ()
+		{
+			Control.CloseFigure ();
+		}
 
-        public void AddRectangle(RectangleF rectangle)
-        {
-            this.Control.AddRectangle(rectangle.ToRectangleF());
-        }
+		public void StartFigure ()
+		{
+			Control.StartFigure ();
+		}
 
-        public void CloseFigure()
-        {
-            this.Control.CloseFigure();
-        }
+		public void AddCurve (IEnumerable<PointF> points, float tension)
+		{
+			var sdpoints = from p in points select p.ToSD ();
+			var pointArray = sdpoints.ToArray ();
+			Control.AddCurve (pointArray, tension);
+			position = pointArray.Last ();
+		}
 
-        public bool IsEmpty
-        {
-            get 
-            { 
-                return 
-                    this.Control == null ||
-                    this.Control.PointCount == 0; 
-            }
-        }
+		public RectangleF Bounds
+		{
+			get { return Control.GetBounds ().ToEto (); }
+		}
 
-        public void AddCurve(PointF[] points)
-        {
-            this.Control.AddCurve(points.ToSD());
-        }
+		public object ControlObject
+		{
+			get { return Control; }
+		}
 
-        public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
-        {
-            this.Control.AddBezier(
-                pt1.ToPointF(),
-                pt2.ToPointF(),
-                pt3.ToPointF(),
-                pt4.ToPointF());
-        }
+		public void Dispose ()
+		{
+			Control.Dispose ();
+		}
 
-        public void AddPath(IGraphicsPathBase addingPath, bool connect)
-        {
-            var sdPath =
-                (SD.Drawing2D.GraphicsPath)
-                    ((IGraphicsPath)addingPath).ControlObject;
 
-            if (sdPath.PointCount > 0)
-                this.Control.AddPath(
-                    sdPath,
-                    connect);
-        }
+		public void AddArc (float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			Control.AddArc (x, y, width, height, startAngle, sweepAngle);
+		}
 
-        public FillMode FillMode
-        {
-            set { Control.FillMode = (SD.Drawing2D.FillMode)value; }
-        }
+		public void AddRectangle (float x, float y, float width, float height)
+		{
+			Control.AddRectangle (new sd.RectangleF (x, y, width, height));
+		}
 
-        public void Transform(IMatrix matrix)
-        {
-            Control.Transform((SD.Drawing2D.Matrix)matrix.ControlObject);
-        }
+		public void AddEllipse (float x, float y, float width, float height)
+		{
+			Control.AddEllipse (x, y, width, height);
+		}
 
-        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
-        {
-            Control.AddArc(rect.ToSD(), startAngle, sweepAngle);
-        }
+		public bool IsEmpty
+		{
+			get { return Control.PointCount == 0; }
+		}
 
-        public void AddBeziers(Point[] points)
-        {
-            Control.AddBeziers(points.ToSD());
-        }
-
-        public void AddEllipse(RectangleF rect)
-        {
-            Control.AddEllipse(rect.ToSD());
-        }
-
-        public GraphicsPath ToGraphicsPath()
-        {
-            throw new NotImplementedException(); // should never get called
-        }
-    }
+		public PointF CurrentPoint
+		{
+			get { return Control.GetLastPoint ().ToEto (); }
+		}
+	}
 }
 

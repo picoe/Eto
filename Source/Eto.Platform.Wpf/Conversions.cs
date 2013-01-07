@@ -9,6 +9,7 @@ using swm = System.Windows.Media;
 using sw = System.Windows;
 using sp = System.Printing;
 using swc = System.Windows.Controls;
+using swmi = System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Eto.Platform.Wpf.Drawing;
 
@@ -247,57 +248,123 @@ namespace Eto.Platform.Wpf
 			return style;
 		}
 
-        public static swm.DashStyle ToWpf(this DashStyle d)
-        {
-            if (d == DashStyle.Dash)
-                return swm.DashStyles.Dash;
-            else if (d == DashStyle.DashDot)
-                return swm.DashStyles.DashDot;
-            else if (d == DashStyle.DashDotDot)
-                return swm.DashStyles.DashDotDot;
-            else if (d == DashStyle.Dot)
-                return swm.DashStyles.Dot;
-            else 
-                return swm.DashStyles.Solid;
-        }
-
-        public static DashStyle ToEto(this swm.DashStyle d)
-        {
-            if (object.ReferenceEquals(d, swm.DashStyles.Dash))
-                return DashStyle.Dash;
-            else if (object.ReferenceEquals(d, swm.DashStyles.DashDot))
-                return DashStyle.DashDot;
-            else if (object.ReferenceEquals(d, swm.DashStyles.DashDotDot))
-                return DashStyle.DashDotDot;
-            else if (object.ReferenceEquals(d, swm.DashStyles.Dot))
-                return DashStyle.Dot;
-            else 
-                return DashStyle.Solid;
-        }
-
-        public static FillMode ToEto(this swm.FillRule f)
-        {
-            return
-                f == swm.FillRule.EvenOdd
-                ? FillMode.Alternate
-                : FillMode.Winding;
-        }
-
-        public static swm.FillRule ToWpf(this FillMode f)
-        {
-            return
-                f == FillMode.Alternate
-                ? swm.FillRule.EvenOdd
-                : swm.FillRule.Nonzero;
-        }
-
-		public static swm.ImageSource ToWpf (this Image image, int? width = null)
+		public static swmi.BitmapSource ToWpf (this Image image, int? width = null)
 		{
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
-				return imageHandler.GetImageClosestToSize (width.Value);
+				return imageHandler.GetImageClosestToSize (width);
 			else
-				return image.ControlObject as swm.ImageSource;
+				return image.ControlObject as swmi.BitmapSource;
+		}
+
+		public static swm.Pen ToWpf (this Pen pen)
+		{
+			return (swm.Pen)pen.ControlObject;
+		}
+
+		public static swm.PenLineJoin ToWpf (this PenLineJoin value)
+		{
+			switch (value) {
+			case PenLineJoin.Miter:
+				return swm.PenLineJoin.Miter;
+			case PenLineJoin.Bevel:
+				return swm.PenLineJoin.Bevel;
+			case PenLineJoin.Round:
+				return swm.PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineJoin ToEto (this swm.PenLineJoin value)
+		{
+			switch (value) {
+			case swm.PenLineJoin.Bevel:
+				return PenLineJoin.Bevel;
+			case swm.PenLineJoin.Miter:
+				return PenLineJoin.Miter;
+			case swm.PenLineJoin.Round:
+				return PenLineJoin.Round;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swm.PenLineCap ToWpf (this PenLineCap value)
+		{
+			switch (value) {
+			case PenLineCap.Butt:
+				return swm.PenLineCap.Flat;
+			case PenLineCap.Round:
+				return swm.PenLineCap.Round;
+			case PenLineCap.Square:
+				return swm.PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static PenLineCap ToEto (this swm.PenLineCap value)
+		{
+			switch (value) {
+			case swm.PenLineCap.Flat:
+				return PenLineCap.Butt;
+			case swm.PenLineCap.Round:
+				return PenLineCap.Round;
+			case swm.PenLineCap.Square:
+				return PenLineCap.Square;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swm.Brush ToWpf (this Brush brush)
+		{
+			return (swm.Brush)brush.ControlObject;
+		}
+
+		public static swm.Matrix ToWpf (this IMatrix matrix)
+		{
+			return (swm.Matrix)matrix.ControlObject;
+		}
+
+		public static swm.Transform ToWpfTransform (this IMatrix matrix)
+		{
+			return new swm.MatrixTransform (matrix.ToWpf ());
+		}
+
+		public static IMatrix ToEtoMatrix (this swm.Transform transform)
+		{
+			return new MatrixHandler (transform.Value);
+		}
+
+		public static swm.PathGeometry ToWpf (this IGraphicsPath path)
+		{
+			return (swm.PathGeometry)path.ControlObject;
+		}
+
+		public static swm.GradientSpreadMethod ToWpf (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return swm.GradientSpreadMethod.Reflect;
+			case GradientWrapMode.Repeat:
+				return swm.GradientSpreadMethod.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static GradientWrapMode ToEto (this swm.GradientSpreadMethod spread)
+		{
+			switch (spread) {
+			case swm.GradientSpreadMethod.Reflect:
+				return GradientWrapMode.Reflect;
+			case swm.GradientSpreadMethod.Repeat:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

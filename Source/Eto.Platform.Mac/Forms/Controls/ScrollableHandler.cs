@@ -29,7 +29,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			
 		}
-		
+
 		class FlippedView : NSView
 		{
 			public override bool IsFlipped {

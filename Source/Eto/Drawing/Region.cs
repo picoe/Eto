@@ -31,7 +31,6 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Defines a region to use for clipping
 	/// </summary>
-	/// <seealso cref="Graphics.ClipRegion"/>
 	public class Region : InstanceWidget
 	{
 		new IRegion Handler { get { return (IRegion)base.Handler; } }

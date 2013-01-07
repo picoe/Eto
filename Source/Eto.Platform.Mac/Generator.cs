@@ -19,7 +19,8 @@ namespace Eto.Platform.Mac
 {
 	public class Generator : Eto.Generator
 	{ 	
-		public override string ID {
+		public override string ID
+		{
 			get { return Generators.Mac; }
 		}
 
@@ -31,11 +32,15 @@ namespace Eto.Platform.Mac
 			Add <IFont> (() => new FontHandler ());
 			Add <IFonts> (() => new FontsHandler ());
 			Add <IGraphics> (() => new GraphicsHandler ());
-			Add <IGraphicsPath> (() => new GraphicsPathHandler ());
+			Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
 			Add <IMatrixHandler> (() => new MatrixHandler ());
-			
+			Add <IPen> (() => new PenHandler ());
+			Add <ISolidBrush> (() => new SolidBrushHandler ());
+			Add <ITextureBrush> (() => new TextureBrushHandler ());
+			Add<ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
+
 			// Forms.Cells
 			Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
 			Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
@@ -140,18 +145,6 @@ namespace Eto.Platform.Mac
         }
 		
 
-        internal static Matrix Convert(
-            CGAffineTransform t)
-        {
-            return new Matrix(
-                t.xx,
-                t.yx,
-                t.xy,
-                t.yy,
-                t.x0,
-                t.y0);
-        }
-
         internal static SD.PointF[] Convert(PointF[] points)
         {
             var result =
@@ -169,18 +162,5 @@ namespace Eto.Platform.Mac
             return result;
         }
 
-        internal static CGAffineTransform Convert(
-            Matrix m)
-        {
-            var e = m.Elements;
-
-            return new CGAffineTransform(
-                e[0],
-                e[1],
-                e[2],
-                e[3],
-                e[4],
-                e[5]);
-        }
     }
 }

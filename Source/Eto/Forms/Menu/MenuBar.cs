@@ -44,8 +44,5 @@ namespace Eto.Forms
 		public MenuItemCollection MenuItems {
 			get { return menuItems; }
 		}
-
-		IWidget ISubMenuWidget.Handler { get { return this.Handler; } }
-
 	}
 }

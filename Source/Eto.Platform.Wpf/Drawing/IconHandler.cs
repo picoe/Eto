@@ -4,19 +4,38 @@ using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using System.IO;
+using sw = System.Windows;
+using swi = System.Windows.Interop;
 using swm = System.Windows.Media;
 using swmi = System.Windows.Media.Imaging;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Wpf.Drawing
 {
 	public interface IWpfImage
 	{
-		swm.ImageSource GetImageClosestToSize (int? width);
+		swmi.BitmapSource GetImageClosestToSize (int? width);
 	}
 
 	public class IconHandler : WidgetHandler<swmi.BitmapFrame, Icon>, IIcon, IWpfImage
 	{
-		swm.ImageSource[] icons;
+		swmi.BitmapSource[] icons;
+
+		public IconHandler ()
+		{
+		}
+
+		public IconHandler (sd.Icon icon)
+		{
+			var rect = new sw.Int32Rect (0, 0, icon.Width, icon.Height);
+			var img = swi.Imaging.CreateBitmapSourceFromHIcon (icon.Handle, rect, swmi.BitmapSizeOptions.FromEmptyOptions ());
+			Control = swmi.BitmapFrame.Create (img);
+		}
+
+		public IconHandler (swmi.BitmapFrame control)
+		{
+			this.Control = control;
+		}
 
 		public static void CopyStream (Stream input, Stream output)
 		{
@@ -63,7 +82,7 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
-		public swm.ImageSource GetLargestIcon ()
+		public swmi.BitmapSource GetLargestIcon ()
 		{
 			var curicon = icons[0];
 			foreach (var icon in icons) {
@@ -73,7 +92,7 @@ namespace Eto.Platform.Wpf.Drawing
 			return curicon;
 		}
 
-		public swm.ImageSource GetImageClosestToSize (int? width)
+		public swmi.BitmapSource GetImageClosestToSize (int? width)
 		{
 			if (width == null)
 				return GetLargestIcon ();
@@ -90,7 +109,7 @@ namespace Eto.Platform.Wpf.Drawing
 		private const int sICONDIR = 6;            // sizeof(ICONDIR) 
 		private const int sICONDIRENTRY = 16;      // sizeof(ICONDIRENTRY)
 
-		public swm.ImageSource[] SplitIcon (swmi.BitmapFrame icon, MemoryStream input)
+		public swmi.BitmapSource[] SplitIcon (swmi.BitmapFrame icon, MemoryStream input)
 		{
 			if (icon == null) {
 				throw new ArgumentNullException ("icon");
@@ -99,7 +118,7 @@ namespace Eto.Platform.Wpf.Drawing
 			// Get multiple .ico file image.
 			byte[] srcBuf = input.ToArray();
 
-			var splitIcons = new List<swm.ImageSource> ();
+			var splitIcons = new List<swmi.BitmapSource> ();
 			int count = BitConverter.ToInt16 (srcBuf, 4); // ICONDIR.idCount
 
 			for (int i = 0; i < count; i++) {
@@ -135,7 +154,7 @@ namespace Eto.Platform.Wpf.Drawing
 			return splitIcons.ToArray ();
 		}
 
-		public swm.ImageSource GetImageWithSize (int? size)
+		public swmi.BitmapSource GetImageWithSize (int? size)
 		{
 			if (size != null) {
 				return GetImageClosestToSize (size.Value);

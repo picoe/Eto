@@ -28,10 +28,14 @@ namespace Eto.Platform.iOS
 			Add <IFont> (() => new FontHandler ());
 			Add <IFonts> (() => new FontsHandler ());
 			Add <IGraphics> (() => new GraphicsHandler ());
-			Add <IGraphicsPath> (() => new GraphicsPathHandler ());
+			Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
 			Add <IIcon> (() => new IconHandler ());
 			Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
-			
+			Add <IMatrixHandler> (() => new MatrixHandler ());
+			Add <IPen> (() => new PenHandler ());
+			Add <ISolidBrush> (() => new SolidBrushHandler ());
+			Add <ITextureBrush> (() => new TextureBrushHandler ());
+
 			// Forms.Cells
 			//Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
 			//Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
@@ -42,7 +46,7 @@ namespace Eto.Platform.iOS
 			// Forms.Controls
 			Add <IButton> (() => new ButtonHandler ());
 			Add <ICheckBox> (() => new CheckBoxHandler ());
-			//Add <IComboBox> (() => new ComboBoxHandler ());
+			Add <IComboBox> (() => new ComboBoxHandler ());
 			//Add <IDateTimePicker> (() => new DateTimePickerHandler ());
 			Add <IDrawable> (() => new DrawableHandler ());
 			Add <IGridColumn> (() => new GridColumnHandler ());
@@ -51,7 +55,7 @@ namespace Eto.Platform.iOS
 			Add <IImageView> (() => new ImageViewHandler ());
 			Add <ILabel> (() => new LabelHandler ());
 			Add <IListBox> (() => new ListBoxHandler ());
-			//Add <INumericUpDown> (() => new NumericUpDownHandler ());
+			Add <INumericUpDown> (() => new NumericUpDownHandler ());
 			Add <IPanel> (() => new PanelHandler ());
 			Add <IPasswordBox> (() => new PasswordBoxHandler ());
 			Add <IProgressBar> (() => new ProgressBarHandler ());
@@ -66,7 +70,8 @@ namespace Eto.Platform.iOS
 			Add <ITreeGridView> (() => new TreeGridViewHandler ());
 			//Add <ITreeView> (() => new TreeViewHandler ());
 			Add <IWebView> (() => new WebViewHandler ());
-			
+			Add <INavigation> (() => new NavigationHandler ());
+
 			// Forms.Menu
 			//Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
 			//Add <IContextMenu> (() => new ContextMenuHandler ());

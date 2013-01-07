@@ -5,6 +5,8 @@ using Eto.Platform.iOS.Drawing;
 using Eto.Forms;
 using MonoTouch.Foundation;
 using System.Linq;
+using MonoTouch.CoreGraphics;
+using MonoTouch.ImageIO;
 
 namespace Eto.Platform.iOS
 {
@@ -48,6 +50,10 @@ namespace Eto.Platform.iOS
 			return new MouseEventArgs (MouseButtons.Primary, Key.None, Point.Empty);
 		}
 
+		public static CGImage ToCG (this Image image)
+		{
+			return image.ToUIImage ().CGImage;
+		}
 	}
 }
 

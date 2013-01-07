@@ -1,5 +1,5 @@
 using System;
-using SD = System.Drawing;
+using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
@@ -12,6 +12,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class DrawableHandler : MacView<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
+		Brush backgroundBrush;
+		Color backgroundColor;
+
 		public class EtoDrawableView : MacEventView
 		{
 			Drawable Drawable
@@ -19,7 +22,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				get { return Widget as Drawable; }
 			}
 			
-			public override void DrawRect (System.Drawing.RectangleF dirtyRect)
+			public override void DrawRect (sd.RectangleF dirtyRect)
 			{
 				if (Widget == null)
 					return;
@@ -48,8 +51,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override Color BackgroundColor
 		{
-			get;
-			set;
+			get { return backgroundColor; }
+			set 
+			{
+				backgroundColor = value;
+				if (backgroundColor.A > 0)
+					backgroundBrush = new SolidBrush (backgroundColor, Widget.Generator);
+				else
+					backgroundBrush = null;
+			}
 		}
 		
 		public void Create ()
@@ -68,11 +78,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null) {
-				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height, Control.IsFlipped));
-
-				if (BackgroundColor.A != 0) {
-					graphics.FillRectangle (BackgroundColor, rect);
+				var handler = new GraphicsHandler (context, Control.Frame.Height, Control.IsFlipped);
+				var graphics = new Graphics (Widget.Generator, handler);
+				if (backgroundBrush != null) {
+					graphics.FillRectangle (backgroundBrush, rect);
 				}
+				var convertedBounds = Control.ConvertRectToView(Control.Bounds, null);
+				handler.Control.SetPatternPhase (new sd.SizeF(convertedBounds.Left, convertedBounds.Bottom));
+
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}

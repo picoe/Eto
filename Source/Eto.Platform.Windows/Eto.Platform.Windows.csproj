@@ -21,17 +21,12 @@
     <FileUpgradeFlags>
     </FileUpgradeFlags>
   </PropertyGroup>
-  <PropertyGroup>
-    <BaseAddress>285212672</BaseAddress>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <FileAlignment>4096</FileAlignment>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;WINFORMS</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <FileAlignment>4096</FileAlignment>
@@ -48,7 +43,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;WINFORMS</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>True</DebugSymbols>
@@ -60,10 +55,7 @@
     <WarningLevel>4</WarningLevel>
     <DebugType>full</DebugType>
   </PropertyGroup>
-  <PropertyGroup>
-    <OutputRoot>..\..\..</OutputRoot>  
-  </PropertyGroup>
-  <Import Condition = "Exists('../../../Common.targets')" Project="../../../Common.targets" />
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.dll</HintPath>
@@ -108,13 +100,15 @@
     </Compile>
     <Compile Include="Conversions.cs" />
     <Compile Include="CustomControls\TreeController.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
-    <Compile Include="Drawing\BrushHandler.cs" />
-    <Compile Include="Drawing\DrawingExtensions.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs">
       <SubType>Code</SubType>
     </Compile>

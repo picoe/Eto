@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using swm = System.Windows.Media;
 using sw = System.Windows;
+using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
 using System.Runtime.InteropServices;
 using BitmapFrame = System.Windows.Media.Imaging.BitmapFrame;
@@ -31,6 +32,15 @@ namespace Eto.Platform.Wpf.Drawing
 	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, IBitmap, IWpfImage
 	{
 		int stride;
+
+		public BitmapHandler ()
+		{
+		}
+
+		public BitmapHandler (swm.Imaging.BitmapSource source)
+		{
+			this.Control = source;
+		}
 
 		public void Create (string fileName)
 		{
@@ -183,7 +193,7 @@ namespace Eto.Platform.Wpf.Drawing
 		}
 
 
-		public swm.ImageSource GetImageClosestToSize (int? width)
+		public swmi.BitmapSource GetImageClosestToSize (int? width)
 		{
 			return Control;
 		}

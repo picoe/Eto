@@ -20,8 +20,6 @@ namespace Eto.Test
 		public string Text { get; set; }
 
 		public bool Expanded { get; set; }
-        public object Tag { get; set; }
-		
 
 		public bool Expandable { get { return Count > 0; } }
 
@@ -60,13 +58,8 @@ namespace Eto.Test
 				return null;
 			}
 		}
-        public object Handler { get; set; }
-        public ITreeItem Clone()
-        {
-            throw new NotImplementedException();
-        }
-    }
-	
+	}
+
 		
 	public class SectionList : TreeGridView
 	{
@@ -124,13 +117,15 @@ namespace Eto.Test
 		{
 			yield return new Section<BitmapSection> { Text = "Bitmap" };
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
-			yield return new Section<PathSection> { Text = "Line Path" };
+			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
+			yield return new Section<PenSection> { Text = "Pens" };
 			yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
 			yield return new Section<TransformSection> { Text = "Transform" };
+			yield return new Section<BrushSection> { Text = "Brushes" };
 		}
 
 		IEnumerable<Section> LayoutsSection ()

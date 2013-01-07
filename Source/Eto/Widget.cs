@@ -6,7 +6,9 @@ namespace Eto
 	/// <summary>
 	/// Handler interface for the <see cref="Widget"/> class
 	/// </summary>
-	public interface IWidget
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public interface IWidget : IGeneratorSource
 	{
 		/// <summary>
 		/// Gets the widget this handler is implemented for
@@ -27,9 +29,52 @@ namespace Eto
 		void Initialize ();
 
 		/// <summary>
-		/// Gets the generator this widget was created with
+		/// Gets or sets the generator associated with the handler
 		/// </summary>
-		Generator Generator { get; set; }
+		/// <value>The generator for this platform handler</value>
+		new Generator Generator { get; set; }
+	}
+
+	/// <summary>
+	/// Interface for widgets that have a control object
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public interface IControlObjectSource
+	{
+		/// <summary>
+		/// Gets the control object for this widget
+		/// </summary>
+		/// <value>The control object for the widget</value>
+		object ControlObject { get; }
+	}
+
+	/// <summary>
+	/// Interface for widgets that have a handler
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public interface IHandlerSource
+	{
+		/// <summary>
+		/// Gets the platform handler object for the widget
+		/// </summary>
+		/// <value>The handler for the widget</value>
+		object Handler { get; }
+	}
+
+	/// <summary>
+	/// Interface for widgets that are created for a specific generator
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public interface IGeneratorSource
+	{
+		/// <summary>
+		/// Gets the generator associated with the widget
+		/// </summary>
+		/// <value>The generator</value>
+		Generator Generator { get; }
 	}
 
 	/// <summary>
@@ -45,12 +90,13 @@ namespace Eto
 	/// 
 	/// To implement the handler for a widget, use the <see cref="WidgetHandler{T}"/> as the base class.
 	/// </remarks>
-	public abstract partial class Widget : IDisposable
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public abstract partial class Widget : IHandlerSource, IDisposable, IGeneratorSource
 	{
 		BindingCollection bindings;
-		
 		PropertyStore properties;
-		
+
 		/// <summary>
 		/// Gets the attached properties for this widget
 		/// </summary>
@@ -70,7 +116,7 @@ namespace Eto
 		/// The generator is typically either passed to the constructor of the control, or the
 		/// <see cref="P:Generator.Current"/> is used.
 		/// </remarks>
-		public Generator Generator { get { return Handler.Generator; } }
+		public Generator Generator { get { return ((IWidget)Handler).Generator; } }
 		
 		/// <summary>
 		/// Gets the collection of bindings that are attached to this widget
@@ -94,7 +140,7 @@ namespace Eto
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
-		public IWidget Handler { get; internal set; }
+		public object Handler { get; internal set; }
 
 		/// <summary>
 		/// Finalizes this widget
@@ -116,8 +162,8 @@ namespace Eto
 			if (generator == null)
 				generator = Generator.Current;
 			this.Handler = handler;
-			this.Handler.Generator = generator;
-			this.Handler.Widget = this; // tell the handler who we are
+			handler.Generator = generator;
+			handler.Widget = this; // tell the handler who we are
 			if (initialize)
 				Initialize ();
 		}
@@ -132,7 +178,13 @@ namespace Eto
 		{
 			if (generator == null)
 				generator = Generator.Current;
-			this.Handler = generator.Create (type, this) as IWidget;
+			this.Handler = generator.Create (type);
+			var widgetHandler = this.Handler as IWidget;
+			if (widgetHandler != null) {
+				widgetHandler.Generator = generator;
+				widgetHandler.Widget = this;
+			}
+
 			if (initialize)
 				Initialize ();
 		}
@@ -149,7 +201,7 @@ namespace Eto
 		/// </remarks>
 		public void Initialize ()
 		{
-			Handler.Initialize ();
+			((IWidget)Handler).Initialize ();
 		}
 		
 		#region IDisposable Members
@@ -200,7 +252,6 @@ namespace Eto
 				this.Handler = null;
 			}
 		}		
-
 	}
 }
 

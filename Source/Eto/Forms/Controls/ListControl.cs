@@ -45,6 +45,15 @@ namespace Eto.Forms
 		{
 			if (SelectedIndexChanged != null)
 				SelectedIndexChanged (this, e);
+			OnSelectedValueChanged (e);
+		}
+
+		public event EventHandler<EventArgs> SelectedValueChanged;
+
+		public virtual void OnSelectedValueChanged (EventArgs e)
+		{
+			if (SelectedValueChanged != null)
+				SelectedValueChanged (this, e);
 		}
 
 		protected ListControl (Generator g, Type type, bool initialize = true)

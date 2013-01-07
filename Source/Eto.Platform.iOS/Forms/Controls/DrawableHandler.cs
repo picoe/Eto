@@ -72,6 +72,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				//var tiledLayer = this.Layer as CATiledLayer;
 				this.BackgroundColor = UIColor.Clear;
+				this.ContentMode = UIViewContentMode.TopLeft;
 			}
 
 			public DrawableHandler Handler { get; set; }

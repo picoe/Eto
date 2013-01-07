@@ -1,38 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System;
 using Eto.Drawing;
 
+#if OSX
+using MonoMac.CoreGraphics;
+
 namespace Eto.Platform.Mac.Drawing
+#elif IOS
+using MonoTouch.CoreGraphics;
+
+namespace Eto.Platform.iOS.Drawing
+#endif
 {
-    public class BrushHandler : WidgetHandler<object, Brush>, IBrush
-    {
-        public Color Color { get; set; }
-
-        public void Create(RectangleF rectangle, Color c1, Color c2, float angle)
-        {
-            
-        }
-
-        public void Create(Bitmap b)
-        {
-            
-        }
-
-        public void Create(Color color)
-        {
-            Color = color;
-        }
-
-        public void Create(PointF point1, PointF point2, Color color1, Color color2)
-        {
-            Color = color1; // TODO
-        }
-
-        public void TranslateTransform(float x, float y)
-        {
-            
-        }
-    }
+	/// <summary>
+	/// Handler for <see cref="IBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public abstract class BrushHandler : IBrush
+	{
+		public abstract void Apply (object control, GraphicsHandler graphics);
+	}
 }
+
