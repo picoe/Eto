@@ -23,14 +23,14 @@ namespace Eto.Drawing
 		/// Not intended to be used directly, use <see cref="Monospace"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string MonospaceFamilyName = "Eto.Monospace";
+		public const string MonospaceFamilyName = "monospace";
 
 		/// <summary>
 		/// Gets a monospace font family
 		/// </summary>
-		public static FontFamily Monospace
+		 public static FontFamily Monospace (Generator generator = null)
 		{
-			get { return Fonts.GetSystemFontFamily (MonospaceFamilyName); }
+			return new FontFamily (generator, MonospaceFamilyName);
 		}
 
 		/// <summary>
@@ -40,14 +40,14 @@ namespace Eto.Drawing
 		/// Not intended to be used directly, use <see cref="Sans"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string SansFamilyName = "Eto.Sans";
+		public const string SansFamilyName = "sans-serif";
 
 		/// <summary>
 		/// Gets a sans-serif font family
 		/// </summary>
-		public static FontFamily Sans
+		public static FontFamily Sans (Generator generator = null)
 		{
-			get { return Fonts.GetSystemFontFamily (SansFamilyName); }
+			return new FontFamily (generator, SansFamilyName);
 		}
 
 		/// <summary>
@@ -57,14 +57,29 @@ namespace Eto.Drawing
 		/// Not intended to be used directly, use <see cref="Serif"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
-		public const string SerifFamilyName = "Eto.Serif";
+		public const string SerifFamilyName = "serif";
 
 		/// <summary>
 		/// Gets a serif font family
 		/// </summary>
-		public static FontFamily Serif
+		public static FontFamily Serif (Generator generator = null)
 		{
-			get { return Fonts.GetSystemFontFamily (SerifFamilyName); }
+			return new FontFamily (generator, SerifFamilyName);
 		}
+
+		public static FontFamily Cursive (Generator generator = null)
+		{
+			return new FontFamily (generator, CursiveFamilyName);
+		}
+
+		public const string CursiveFamilyName = "cursive";
+
+		public static FontFamily Fantasy (Generator generator = null)
+		{
+			return new FontFamily (generator, FantasyFamilyName);
+		}
+
+		public const string FantasyFamilyName = "fantasy";
+
 	}
 }

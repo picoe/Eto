@@ -100,13 +100,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control.Style = Pango.Style.Italic;
 		}
 
-        public float Size
-        {
-            get { return (float)(Control.Size / Pango.Scale.PangoScale); }
-            private set { Control.Size = (int)(value * Pango.Scale.PangoScale); }
-        }
-
-        public FontStyle FontStyle
+		public float Size
+		{
+			get { return (float)(Control.Size / Pango.Scale.PangoScale); }
+			private set { Control.Size = (int)(value * Pango.Scale.PangoScale); }
+		}
+		
+		public FontStyle FontStyle
 		{
 			get {
 				if (style == null) {
@@ -118,12 +118,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 				}
 				return style.Value;
 			}
-        }
+		}
 
 		public string FamilyName
 		{
 			get { return Control.Family; }
-        }
+		}
 
 		public FontFamily Family
 		{
@@ -144,49 +144,84 @@ namespace Eto.Platform.GtkSharp.Drawing
 				return face;
 			}
 		}
-        public float SizeInPoints
-        {
-            get { throw new NotImplementedException(); }
-        }
+		Pango.FontMetrics metrics;
 
-        public string FontFamily
-        {
-            get { throw new NotImplementedException(); }
-        }
+		public Pango.FontMetrics Metrics
+		{
+			get {
+				if (metrics == null)
+					metrics = FontsHandler.Context.GetMetrics (Control, Pango.Language.Default);
+				return metrics;
+			}
+		}
 
-        public float EmHeightPixels
-        {
-            get { throw new NotImplementedException(); }
-        }
+		public float Ascent
+		{
+			get { return (float)Metrics.Ascent / (float)Pango.Scale.PangoScale; }
+		}
+		
+		public float Descent
+		{
+			get { return (float)Metrics.Descent / (float)Pango.Scale.PangoScale; }
+		}
 
-        public float AscentInPixels
-        {
-            get { throw new NotImplementedException(); }
-        }
+		float? lineHeight;
+		public float LineHeight
+		{
+			get {
+				if (lineHeight == null) {
+					using (var layout = new Pango.Layout(FontsHandler.Context)) {
+						layout.FontDescription = Control;
+						layout.SetText ("X");
+						Pango.Rectangle ink, logical;
+						layout.GetExtents (out ink, out logical);
+						lineHeight = (float)logical.Height / (float)Pango.Scale.PangoScale;
+					}
+				}
+				return lineHeight ?? 0f;
+			}
+		}
 
-        public float DescentInPixels
-        {
-            get { throw new NotImplementedException(); }
-        }
+		public float Baseline
+		{
+			get { return Ascent; }
+		}
 
-        public float LineHeightInPixels
-        {
-            get { throw new NotImplementedException(); }
-        }
+		float? leading;
+		public float Leading
+		{
+			get {
+				if (leading == null) {
+					using (var layout = new Pango.Layout(FontsHandler.Context)) {
+						layout.FontDescription = Control;
+						layout.SetText ("X");
+						Pango.Rectangle ink, logical;
+						layout.GetExtents (out ink, out logical);
+						leading = (float)(ink.Y - logical.Y) / (float)Pango.Scale.PangoScale;
+					}
+				}
+				return leading ?? 0f;
+			}
+		}
 
-        public float SizeInPixels
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public float XHeightInPixels
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Create()
-        {
-            throw new NotImplementedException();
-        }
-    }
+		float? xheight;
+		public float XHeight
+		{
+			get {
+				if (xheight == null) {
+					using (var layout = new Pango.Layout(FontsHandler.Context)) {
+						layout.FontDescription = Control;
+						layout.SetText ("x");
+						layout.Spacing = 0;
+						layout.Alignment = Pango.Alignment.Left;
+						layout.Width = int.MaxValue;
+						Pango.Rectangle ink, logical;
+						layout.GetExtents (out ink, out logical);
+						xheight = (float)ink.Height / (float)Pango.Scale.PangoScale;
+					}
+				}
+				return xheight ?? 0f;
+			}
+		}
+	}
 }

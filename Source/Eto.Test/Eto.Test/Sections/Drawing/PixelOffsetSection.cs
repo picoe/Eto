@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Drawing
 
 			g.DrawImage (image, 100, 1, 100, 100);
 
-			g.DrawText (new Font (FontFamilies.Sans, 12), Colors.White, 0, 104, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
+			g.DrawText (Fonts.Sans (12), Colors.White, 0, 104, "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789");
 
 			// filled
 			g.FillRectangle (Brushes.White (), 101, 120, 100, 100);
