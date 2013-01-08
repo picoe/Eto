@@ -105,7 +105,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return (float)(Control.Size / Pango.Scale.PangoScale); }
 			private set { Control.Size = (int)(value * Pango.Scale.PangoScale); }
 		}
-
+		
 		public FontStyle FontStyle
 		{
 			get {
@@ -145,5 +145,84 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
+		Pango.FontMetrics metrics;
+
+		public Pango.FontMetrics Metrics
+		{
+			get {
+				if (metrics == null)
+					metrics = FontsHandler.Context.GetMetrics (Control, Pango.Language.Default);
+				return metrics;
+			}
+		}
+
+		public float Ascent
+		{
+			get { return (float)Metrics.Ascent / (float)Pango.Scale.PangoScale; }
+		}
+		
+		public float Descent
+		{
+			get { return (float)Metrics.Descent / (float)Pango.Scale.PangoScale; }
+		}
+
+		float? lineHeight;
+		public float LineHeight
+		{
+			get {
+				if (lineHeight == null) {
+					using (var layout = new Pango.Layout(FontsHandler.Context)) {
+						layout.FontDescription = Control;
+						layout.SetText ("X");
+						Pango.Rectangle ink, logical;
+						layout.GetExtents (out ink, out logical);
+						lineHeight = (float)logical.Height / (float)Pango.Scale.PangoScale;
+					}
+				}
+				return lineHeight ?? 0f;
+			}
+		}
+
+		public float Baseline
+		{
+			get { return Ascent; }
+		}
+
+		float? leading;
+		public float Leading
+		{
+			get {
+				if (leading == null) {
+					using (var layout = new Pango.Layout(FontsHandler.Context)) {
+						layout.FontDescription = Control;
+						layout.SetText ("X");
+						Pango.Rectangle ink, logical;
+						layout.GetExtents (out ink, out logical);
+						leading = (float)(ink.Y - logical.Y) / (float)Pango.Scale.PangoScale;
+					}
+				}
+				return leading ?? 0f;
+			}
+		}
+
+		float? xheight;
+		public float XHeight
+		{
+			get {
+				if (xheight == null) {
+					using (var layout = new Pango.Layout(FontsHandler.Context)) {
+						layout.FontDescription = Control;
+						layout.SetText ("x");
+						layout.Spacing = 0;
+						layout.Alignment = Pango.Alignment.Left;
+						layout.Width = int.MaxValue;
+						Pango.Rectangle ink, logical;
+						layout.GetExtents (out ink, out logical);
+						xheight = (float)ink.Height / (float)Pango.Scale.PangoScale;
+					}
+				}
+				return xheight ?? 0f;
+			}
+		}
 	}
 }

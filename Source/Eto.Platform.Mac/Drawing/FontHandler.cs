@@ -18,15 +18,18 @@ namespace Eto.Platform.Mac.Drawing
 {
 	public static class FontExtensions
 	{
+		static NSLayoutManager manager = new NSLayoutManager ();
 		public static float LineHeight(this NSFont font)
 		{
+			return manager.DefaultLineHeightForFont (font);
+			/*
 			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
 			var lineHeight = (float)(Math.Floor(font.Ascender + 0.5f) - Math.Floor (font.Descender + 0.5f) + leading);
 
 			if (leading > 0)
 				return lineHeight;
 			else
-				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
+				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));*/
 		}
 #if OSX
 		public static NSFont ToNSFont (this Font font)
@@ -126,7 +129,7 @@ namespace Eto.Platform.Mac.Drawing
 			this.family = family;
 
 			NSFontTraitMask traits = style.ToNS ();
-			var font = NSFontManager.SharedFontManager.FontWithFamily(family.Name, traits, 5, size * FONT_SIZE_FACTOR);
+			var font = NSFontManager.SharedFontManager.FontWithFamily(((FontFamilyHandler)family.Handler).MacName, traits, 5, size * FONT_SIZE_FACTOR);
 			if (font == null || font.Handle == IntPtr.Zero)
 				throw new Exception(string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
@@ -198,5 +201,39 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
+        public bool Underline
+        {
+            get { return false;/* TODO */ }
+        }
+
+        public bool Strikeout
+        {
+            get { return false;/* TODO */ }
+        }
+
+		public float Ascent
+		{
+			get { return Control.Ascender; }
+		}
+		
+		public float Descent
+		{
+			get { return -Control.Descender; }
+		}
+		
+		public float XHeight
+		{
+			get { return Control.XHeight; }
+		}
+
+		public float Leading
+		{
+			get { return Control.Leading; }
+		}
+
+		public float Baseline
+		{
+			get { return Ascent; }
+		}
 	}
 }

@@ -13,24 +13,5 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get { return swm.Fonts.SystemFontFamilies.Select (r => new FontFamily(Generator, new FontFamilyHandler(r))); ; }
 		}
-
-		public FontFamily GetFontFamily (string familyName)
-		{
-			return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily(familyName)));
-		}
-
-		public FontFamily GetSystemFontFamily (string systemFamilyName)
-		{
-			switch (systemFamilyName) {
-			case FontFamilies.MonospaceFamilyName:
-				return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily ("Courier New")));
-			case FontFamilies.SansFamilyName:
-				return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily ("Verdana")));
-			case FontFamilies.SerifFamilyName:
-				return new FontFamily(Generator, new FontFamilyHandler (new swm.FontFamily ("Times New Roman")));
-			default:
-				throw new NotSupportedException ();
-			}
-		}
 	}
 }

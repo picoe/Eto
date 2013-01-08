@@ -16,40 +16,25 @@ namespace Eto.Platform.iOS.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
+		string [] availableFontFamilies;
+
+		public FontsHandler ()
+		{
+#if OSX
+			availableFontFamilies = NSFontManager.SharedFontManager.AvailableFontFamilies;
+#elif IOS
+			availableFontFamilies = UIFont.FamilyNames
+#endif
+		}
+
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-#if OSX
-			get { return NSFontManager.SharedFontManager.AvailableFontFamilies.Select (r => new FontFamily(this.Generator, new FontFamilyHandler (r))); }
-#elif IOS
-			get { return UIFont.FamilyNames.Select (r => new FontFamily(this.Generator, new FontFamilyHandler (r))); }
-#endif
+			get { return availableFontFamilies.Select (r => new FontFamily(this.Generator, new FontFamilyHandler (r))); }
 		}
 
-		public FontFamily GetFontFamily (string familyName)
+		public bool FontFamilyAvailable (string fontFamily)
 		{
-			return new FontFamily(Generator, new FontFamilyHandler (familyName));
-		}
-
-		public FontFamily GetSystemFontFamily (string systemFamilyName)
-		{
-			switch (systemFamilyName) {
-			case FontFamilies.MonospaceFamilyName:
-				systemFamilyName = "Courier New";
-				break;
-			case FontFamilies.SansFamilyName:
-				systemFamilyName = "Helvetica";
-				break;
-			case FontFamilies.SerifFamilyName:
-#if OSX
-				systemFamilyName = "Times";
-#elif IOS
-				systemFamilyName = "Times New Roman";
-#endif
-				break;
-			default:
-				throw new NotSupportedException ();
-			}
-			return new FontFamily(Generator, new FontFamilyHandler (systemFamilyName));
+			return availableFontFamilies.Contains (fontFamily, StringComparer.InvariantCultureIgnoreCase);
 		}
 	}
 }

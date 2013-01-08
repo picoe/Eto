@@ -13,6 +13,7 @@ namespace Eto.Platform.Wpf.Drawing
 	public class FontHandler : WidgetHandler<object, Font>, IFont
 	{
 		FontTypeface typeface;
+		sd.Font sdfont;
 
 		public void Apply (swc.Control control)
 		{
@@ -21,6 +22,20 @@ namespace Eto.Platform.Wpf.Drawing
 			control.FontWeight = WpfFontWeight;
 
 			control.FontSize = this.PixelSize;
+		}
+
+		sd.Font SDFont
+		{
+			get
+			{
+				if (sdfont == null) {
+					var style = sd.FontStyle.Regular;
+					if (Widget.Bold) style |= sd.FontStyle.Bold;
+					if (Widget.Italic) style |= sd.FontStyle.Italic;
+					sdfont = new sd.Font (WpfFamily.Source, (float)Size, style);
+				}
+				return sdfont;
+			}
 		}
 
 		public double PixelSize
@@ -203,16 +218,64 @@ namespace Eto.Platform.Wpf.Drawing
 		public swm.Typeface WpfTypeface
 		{
 			get { return ((FontTypefaceHandler)Typeface.Handler).Control; }
-		}
+        }
 
 		float IFont.Size
 		{
-			get { return (float)this.Size; }
+			get { return (float)Size; }
+		}
+
+        public float Ascent
+        {
+            get
+            {
+				return (float)(Size * WpfFamily.Baseline);
+            }
+        }
+
+		float? descent;
+        public float Descent
+        {
+            get
+            {
+				if (descent == null) {
+					descent = (float)Size * SDFont.FontFamily.GetCellDescent (SDFont.Style) / SDFont.FontFamily.GetEmHeight (SDFont.Style);
+				}
+				return descent ?? 0f;
+            }
+        }
+
+        public float LineHeight
+        {
+			get { return (float)(Size * WpfFamily.LineSpacing); }
+        }
+
+        public float XHeight
+        {
+			get { return (float)(Size * WpfTypeface.XHeight); }
+        }
+
+		public float Baseline
+		{
+			get { return (float)(Size * WpfFamily.Baseline); }
+		}
+
+		public float Leading
+		{
+			get { return LineHeight - (Ascent + Descent); }
 		}
 
 		public string FamilyName
 		{
 			get { return Family.Name; }
 		}
-	}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			if (disposing) {
+				sdfont.Dispose ();
+			}
+		}
+    }
 }

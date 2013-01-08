@@ -53,24 +53,6 @@ namespace Eto.Drawing
 		public IEnumerable<FontTypeface> Typefaces { get { return Handler.Typefaces; } }
 
 		/// <summary>
-		/// Gets a generic monospace font family that works across all platforms
-		/// </summary>
-		[Obsolete("Use FontFamilies.Monospace")]
-		public static readonly FontFamily Monospace = FontFamilies.Monospace;
-
-		/// <summary>
-		/// Gets a generic sans-serif font family that works across all platforms
-		/// </summary>
-		[Obsolete ("Use FontFamilies.Sans")]
-		public static readonly FontFamily Sans = FontFamilies.Sans;
-
-		/// <summary>
-		/// Gets a generic serif font family that works across all platforms
-		/// </summary>
-		[Obsolete ("Use FontFamilies.Serif")]
-		public static readonly FontFamily Serif = FontFamilies.Serif;
-
-		/// <summary>
 		/// Initializes a new instance of the FontFamily class with the specified handler
 		/// </summary>
 		/// <remarks>
@@ -100,7 +82,35 @@ namespace Eto.Drawing
 		public FontFamily (Generator generator, string familyName)
 			: base (generator, typeof(IFontFamily), true)
 		{
+			if (familyName.IndexOf (',') > 0)
+				familyName = SplitFamilyName (familyName, generator);
+
 			Handler.Create (familyName);
+		}
+
+		string SplitFamilyName (string familyName, Generator generator)
+		{
+			var handler = generator.CreateShared<IFonts>();
+			var families = familyName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+
+			char[] trimChars = { ' ', '\'', '"' };
+			foreach (var name in families)
+			{
+				var trimmedName = name.Trim (trimChars);
+				switch (trimmedName.ToLowerInvariant ()) {
+				case FontFamilies.MonospaceFamilyName:
+				case FontFamilies.SansFamilyName:
+				case FontFamilies.SerifFamilyName:
+				case FontFamilies.CursiveFamilyName:
+				case FontFamilies.FantasyFamilyName:
+					return trimmedName;
+				default:
+					if (handler.FontFamilyAvailable (trimmedName))
+						return trimmedName;
+					break;
+				}
+			}
+			return FontFamilies.SansFamilyName;
 		}
 
 		/// <summary>
@@ -172,6 +182,28 @@ namespace Eto.Drawing
 		{
 			return Name;
 		}
+
+		#region Obsolete
+		
+		/// <summary>
+		/// Gets a generic monospace font family that works across all platforms
+		/// </summary>
+		[Obsolete("Use FontFamilies.Monospace")]
+		public static readonly FontFamily Monospace = FontFamilies.Monospace ();
+		
+		/// <summary>
+		/// Gets a generic sans-serif font family that works across all platforms
+		/// </summary>
+		[Obsolete ("Use FontFamilies.Sans")]
+		public static readonly FontFamily Sans = FontFamilies.Sans ();
+		
+		/// <summary>
+		/// Gets a generic serif font family that works across all platforms
+		/// </summary>
+		[Obsolete ("Use FontFamilies.Serif")]
+		public static readonly FontFamily Serif = FontFamilies.Serif ();
+		
+		#endregion
 	}
 }
 
