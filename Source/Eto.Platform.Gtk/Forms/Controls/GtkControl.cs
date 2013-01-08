@@ -59,6 +59,8 @@ namespace Eto.Platform.GtkSharp
 
 		public static string StringToMnuemonic (string label)
 		{
+			if (label == null)
+				return string.Empty;
 			label = label.Replace ("_", "__");
 			var match = Regex.Match (label, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
 			if (match.Success) {
@@ -72,6 +74,8 @@ namespace Eto.Platform.GtkSharp
 
 		public static string MnuemonicToString (string label)
 		{
+			if (label == null)
+				return null;
 			var match = Regex.Match (label, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
 			if (match.Success) {
 				var sb = new StringBuilder (label);
