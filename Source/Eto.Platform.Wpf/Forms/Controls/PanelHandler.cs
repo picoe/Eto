@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
-using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
