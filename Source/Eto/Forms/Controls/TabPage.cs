@@ -12,20 +12,6 @@ namespace Eto.Forms
 		Image Image { get; set; }
 	}
 
-	/// <summary>
-	/// Enhanced tab pages that support
-	/// additional functionality
-	/// </summary>
-	public interface ITabPage2 : ITabPage
-	{
-		/// <summary>
-		/// If true, a dirty indicator is displayed
-		/// so that the user knows the contents of the page 
-		/// are dirty, i.e. need saving.
-		/// </summary>
-		bool Dirty { get; set; }
-	}
-
 	public class TabPage : Container, IImageListItem
 	{
 		ITabPage handler;
