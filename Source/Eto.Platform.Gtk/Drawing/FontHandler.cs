@@ -144,6 +144,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 				return face;
 			}
 		}
+
 		Pango.FontMetrics metrics;
 
 		public Pango.FontMetrics Metrics

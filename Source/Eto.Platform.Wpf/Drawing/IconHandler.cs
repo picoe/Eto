@@ -162,20 +162,5 @@ namespace Eto.Platform.Wpf.Drawing
 			else return Control;
 		}
 
-
-        #region IImage Members
-
-
-        public int Width
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public int Height
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        #endregion
-    }
+	}
 }

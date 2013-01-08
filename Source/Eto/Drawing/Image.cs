@@ -13,7 +13,7 @@ namespace Eto.Drawing
 		/// </summary>
 		Size Size { get; }
 	}
-
+	
 	/// <summary>
 	/// Base class for images
 	/// </summary>
@@ -49,7 +49,7 @@ namespace Eto.Drawing
 		protected Image(Generator generator, IImage handler) : base(generator, handler)
 		{
 		}
-				
+		
 		/// <summary>
 		/// Gets the size of the image, in pixels
 		/// </summary>

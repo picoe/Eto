@@ -125,5 +125,5 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Control.SelectText (Control);
 		}
-    }
+	}
 }

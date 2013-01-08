@@ -514,7 +514,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="obj">Object to compare</param>
 		/// <returns>True if the specified <paramref name="obj"/> is a Point and is equal to this instance, false otherwise</returns>
-        public override bool Equals (object obj)
+		public override bool Equals (object obj)
 		{
 			return obj is PointF && (PointF)obj == this;
 		}

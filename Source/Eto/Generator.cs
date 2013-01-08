@@ -156,7 +156,7 @@ namespace Eto
 		/// </summary>
 		protected Generator ()
 		{
-        }
+		}
 
 		/// <summary>
 		/// Gets a value indicating that the specified type is supported by this generator

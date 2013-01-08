@@ -18,102 +18,102 @@ namespace Eto.Drawing
 		static Dictionary<string, Color> colormap;
 		static object colormaplock = new object ();
 
-        #region Obsolete
+		#region Obsolete
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("Use Colors.Black")]
-        public static readonly Color Black = new Color(0, 0, 0);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete("Use Colors.Black")]
+		public static readonly Color Black = new Color (0, 0, 0);
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("User Colors.White")]
-        public static readonly Color White = new Color(1.0f, 1.0f, 1.0f);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.White")]
+		public static readonly Color White = new Color (1.0f, 1.0f, 1.0f);
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("User Colors.Gray")]
-        public static readonly Color Gray = new Color(0x77 / 255f, 0x77 / 255f, 0x77 / 255f);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Gray")]
+		public static readonly Color Gray = new Color (0x77 / 255f, 0x77 / 255f, 0x77 / 255f);
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("User Colors.DarkGray")]
-        public static readonly Color LightGray = new Color(0xA8 / 255f, 0xA8 / 255f, 0xA8 / 255f);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.DarkGray")]
+		public static readonly Color LightGray = new Color (0xA8 / 255f, 0xA8 / 255f, 0xA8 / 255f);
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("User Colors.Red")]
-        public static readonly Color Red = new Color(1f, 0, 0);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Red")]
+		public static readonly Color Red = new Color (1f, 0, 0);
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("User Colors.Lime")]
-        public static readonly Color Green = new Color(0, 1f, 0);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Lime")]
+		public static readonly Color Green = new Color (0, 1f, 0);
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("User Colors.Blue")]
-        public static readonly Color Blue = new Color(0, 0, 1f);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Blue")]
+		public static readonly Color Blue = new Color (0, 0, 1f);
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("User Colors.Transparent")]
-        public static readonly Color Transparent = new Color(0, 0, 0, 0);
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Transparent")]
+		public static readonly Color Transparent = new Color (0, 0, 0, 0);
 
-        /// <summary>
-        /// An empty color with zero for all components
-        /// </summary>
-#pragma warning disable 618
-        [Obsolete("Use nullable values instead of empty color structs")]
-        public static readonly Color Empty = new Color { IsEmpty = true };
-#pragma warning restore 618
+		/// <summary>
+		/// An empty color with zero for all components
+		/// </summary>
+		#pragma warning disable 618
+		[Obsolete("Use nullable values instead of empty color structs")]
+		public static readonly Color Empty = new Color { IsEmpty = true };
+		#pragma warning restore 618
 
-        /// <summary>
-        /// Obsolete, do not use.
-        /// </summary>
-        [Obsolete("Use ColorCMYK.ToColor() or implicit conversion")]
-        public Color(ColorCMYK cmyk)
-            : this(cmyk.ToColor())
-        {
-        }
+		/// <summary>
+		/// Obsolete, do not use.
+		/// </summary>
+		[Obsolete ("Use ColorCMYK.ToColor() or implicit conversion")]
+		public Color (ColorCMYK cmyk)
+			: this (cmyk.ToColor ())
+		{
+		}
 
-        /// <summary>
-        /// Obsolete, do not use.
-        /// </summary>
-        [Obsolete("Use ColorHSL.ToColor() or implicit conversion")]
-        public Color(ColorHSL hsl)
-            : this(hsl.ToColor())
-        {
-        }
+		/// <summary>
+		/// Obsolete, do not use.
+		/// </summary>
+		[Obsolete ("Use ColorHSL.ToColor() or implicit conversion")]
+		public Color (ColorHSL hsl)
+			: this (hsl.ToColor ())
+		{
+		}
 
-        /// <summary>
-        /// Obsolete, do not use.
-        /// </summary>
-        [Obsolete("Use ColorHSB.ToColor() or implicit conversion")]
-        public Color(ColorHSB hsb)
-            : this(hsb.ToColor())
-        {
-        }
+		/// <summary>
+		/// Obsolete, do not use.
+		/// </summary>
+		[Obsolete ("Use ColorHSB.ToColor() or implicit conversion")]
+		public Color (ColorHSB hsb)
+			: this (hsb.ToColor ())
+		{
+		}
 
-        /// <summary>
-        /// Obsolete. Do not use.
-        /// </summary>
-        [Obsolete("Use nullable values instead")]
-        public bool IsEmpty
-        {
-            get;
-            private set;
-        }
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("Use nullable values instead")]
+		public bool IsEmpty
+		{
+			get;
+			private set;
+		}
 
-        #endregion
+		#endregion
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
