@@ -5,7 +5,6 @@ using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
-using Eto.Cache;
 using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms
@@ -26,7 +25,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 			set
 			{
-                Control.Background = BrushCache.GetBrush(this.Generator, value).ControlObject as swm.Brush;
+				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
             }
 		}
 

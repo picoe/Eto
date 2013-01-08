@@ -10,7 +10,6 @@ using swc = System.Windows.Controls;
 using System.Runtime.InteropServices;
 using Eto.Platform.Wpf.CustomControls;
 using Eto.Platform.Wpf.Forms.Menu;
-using Eto.Cache;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -362,7 +361,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 			set
 			{
-                Control.Background = BrushCache.GetBrush(this.Generator, value).ControlObject as swm.Brush;
+				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
             }
 		}
     }
