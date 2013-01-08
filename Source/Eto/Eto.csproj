@@ -382,6 +382,7 @@
     <Compile Include="Drawing\PenLineCap.cs" />
     <Compile Include="Drawing\TextureBrush.cs" />
     <Compile Include="Drawing\LinearGradientBrush.cs" />
+    <Compile Include="Forms\Screen.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

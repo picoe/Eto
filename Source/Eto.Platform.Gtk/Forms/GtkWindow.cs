@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.GtkSharp.Drawing;
+using Eto.Platform.GtkSharp.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -344,5 +345,10 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		Gtk.Window IGtkWindow.Control { get { return (Gtk.Window)Control; } }
-	}
+
+		public Screen Screen
+		{
+			get { return new Screen(Generator, new ScreenHandler(Control.Display)); }
+		}
+    }
 }

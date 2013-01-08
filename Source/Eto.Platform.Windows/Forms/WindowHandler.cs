@@ -5,6 +5,7 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using System.Linq;
+using Eto.Platform.Windows.Forms;
 
 namespace Eto.Platform.Windows
 {
@@ -305,5 +306,10 @@ namespace Eto.Platform.Windows
 				Control.Opacity = value;
 			}
 		}
-	}
+
+		public Screen Screen
+		{
+			get { return new Screen (Generator, new ScreenHandler (swf.Screen.FromControl (Control))); }
+		}
+    }
 }

@@ -573,5 +573,10 @@ namespace Eto.Platform.Mac.Forms
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-	}
+
+		public Screen Screen
+		{
+			get { return new Screen(Generator, new ScreenHandler (Control.Screen)); }
+		}
+    }
 }

@@ -74,6 +74,7 @@ namespace Eto.Platform.Mac
 			Add <ITreeGridView> (() => new TreeGridViewHandler ());
 			Add <ITreeView> (() => new TreeViewHandler ());
 			Add <IWebView> (() => new WebViewHandler ());
+			Add <IScreens> (() => new ScreensHandler ());
 			
 			// Forms.Menu
 			Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
@@ -122,5 +123,5 @@ namespace Eto.Platform.Mac
 		{
 			return new NSAutoreleasePool ();
 		}
-	}
+    }
 }

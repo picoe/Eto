@@ -351,8 +351,14 @@ namespace Eto.Platform.Wpf.Forms
 			}
 			set
 			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
+            }
 		}
-	}
+
+
+		public Screen Screen
+		{
+			get { return new Screen (Generator, new ScreenHandler (Control)); }
+		}
+    }
 }
