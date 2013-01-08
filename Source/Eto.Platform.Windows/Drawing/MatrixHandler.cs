@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public sd2.Matrix Control { get { return control; } }
 
-		object IMatrix.ControlObject { get { return control; } }
+		object IControlObjectSource.ControlObject { get { return control; } }
 
 		public MatrixHandler ()
 		{
