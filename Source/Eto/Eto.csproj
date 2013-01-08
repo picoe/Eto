@@ -391,6 +391,7 @@
     <Compile Include="Forms\Controls\DragDrop.cs" />
     <Compile Include="Forms\Controls\DragDropInputSource.cs" />
     <Compile Include="Forms\Controls\DataObject.cs" />
+    <Compile Include="Forms\Screen.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
