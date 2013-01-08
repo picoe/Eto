@@ -155,33 +155,35 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				var oldSize = GetPreferredSize (Size.MaxValue);
-				
-				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
-				if (match.Success) {
-					var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
-					var str = new NSMutableAttributedString (val);
-					
-					var matches = Regex.Matches (value, @"[&][&]");
-					var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
-					
-					// copy existing attributes
-					NSRange range;
-					NSMutableDictionary attributes;
-					if (Control.AttributedStringValue.Length > 0)
-						attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
-					else
-						attributes = new NSMutableDictionary();
-
-					if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
-						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
-					str.AddAttributes (attributes, new NSRange(0, str.Length));
-					
-					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
-					Control.AttributedStringValue = str;
-				} else if (!string.IsNullOrEmpty(value))
-					Control.StringValue = value.Replace ("&&", "&");
-				else
+				if (string.IsNullOrEmpty (value)) {
 					Control.StringValue = string.Empty;
+				}
+				else {
+					var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+					if (match.Success) {
+						var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
+						var str = new NSMutableAttributedString (val);
+						
+						var matches = Regex.Matches (value, @"[&][&]");
+						var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
+						
+						// copy existing attributes
+						NSRange range;
+						NSMutableDictionary attributes;
+						if (Control.AttributedStringValue.Length > 0)
+							attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+						else
+							attributes = new NSMutableDictionary();
+
+						if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
+							attributes.Remove (CTStringAttributeKey.UnderlineStyle);
+						str.AddAttributes (attributes, new NSRange(0, str.Length));
+						
+						str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
+						Control.AttributedStringValue = str;
+					} else
+						Control.StringValue = value.Replace ("&&", "&");
+				}
 				LayoutIfNeeded (oldSize);
 			}
 		}
