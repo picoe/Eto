@@ -186,8 +186,10 @@ namespace Eto
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
-			: base(generator, handler, initialize)
+			: base(generator, handler, false)
 		{
+			if (initialize)
+				Initialize ();
 		}
 
 		/// <summary>
@@ -197,8 +199,10 @@ namespace Eto
 		/// <param name="handlerType">Type of the handler to create as the backend for this widget</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget (Generator generator, Type handlerType, bool initialize = true)
-			: base(generator, handlerType, initialize)
+			: base(generator, handlerType, false)
 		{
+			if (initialize)
+				Initialize ();
 		}
 
 		/// <summary>
