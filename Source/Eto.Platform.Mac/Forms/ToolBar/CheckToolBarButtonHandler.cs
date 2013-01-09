@@ -39,8 +39,5 @@ namespace Eto.Platform.Mac
 		{
 			Widget.OnClick(EventArgs.Empty);
 		}
-		
 	}
-
-
 }

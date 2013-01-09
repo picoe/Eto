@@ -16,10 +16,9 @@ namespace Eto.Platform.GtkSharp
 		where W: ToolBarItem
 	{
 		bool enabled = true;
-		
+		Image image;
+
 		protected Gtk.Image GtkImage { get; set; }
-		Icon icon;
-        Image image;
 
 		public abstract void CreateControl(ToolBarHandler handler);
 		
@@ -27,37 +26,15 @@ namespace Eto.Platform.GtkSharp
 		
 		public string ToolTip { get; set; }
 
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				this.icon = value;
-				
-				if (icon != null)
-				{
-					GtkImage = new Gtk.Image((Gtk.IconSet)icon.ControlObject, Gtk.IconSize.Button);
-				}
-				else GtkImage = null;
+				this.image = value;
+				GtkImage = image.ToGtk (Gtk.IconSize.Button);
 			}
 		}
-
-        // ADDED
-        public Image Image
-        {
-            get { return image; }
-            set
-            {
-                this.image = value;
-
-                if (image != null)
-                {
-                    GtkImage = (Gtk.Image)(image.ControlObject);
-                }
-                else GtkImage = null;
-            }
-        }
-		
 
 		public bool Enabled 
 		{
@@ -68,8 +45,5 @@ namespace Eto.Platform.GtkSharp
 					Control.Sensitive = value;
 			}
 		}
-		
 	}
-
-
 }

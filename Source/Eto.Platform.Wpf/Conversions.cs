@@ -248,13 +248,28 @@ namespace Eto.Platform.Wpf
 			return style;
 		}
 
-		public static swmi.BitmapSource ToWpf (this Image image, int? width = null)
+		public static swmi.BitmapSource ToWpf (this Image image, int? size = null)
 		{
+			if (image == null)
+				return null;
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
-				return imageHandler.GetImageClosestToSize (width);
+				return imageHandler.GetImageClosestToSize (size);
 			else
 				return image.ControlObject as swmi.BitmapSource;
+		}
+
+		public static swc.Image ToWpfImage (this Image image, int? size = null)
+		{
+			var source = image.ToWpf (size);
+			if (source == null)
+				return null;
+			var swcImage = new swc.Image { Source = source };
+			if (size != null) {
+				swcImage.MaxWidth = size.Value;
+				swcImage.MaxHeight = size.Value;
+			}
+			return swcImage;
 		}
 
 		public static swm.Pen ToWpf (this Pen pen)

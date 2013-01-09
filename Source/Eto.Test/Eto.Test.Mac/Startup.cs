@@ -47,6 +47,16 @@ namespace Eto.Test.Mac
 				handler.ScrollView.BorderType = NSBorderType.NoBorder;
 				handler.Control.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
 			});
+
+			Style.Add<ToolBarButtonHandler> (null, handler => {
+				// use standard textured/round buttons, and make the image grayscale
+				handler.UseStandardButton (grayscale: true);
+			});
+
+			Style.Add<ToolBarHandler> (null, handler => { 
+				// change display mode or other options
+				//handler.Control.DisplayMode = NSToolbarDisplayMode.Icon;
+			});
 		}
 	}
 }	

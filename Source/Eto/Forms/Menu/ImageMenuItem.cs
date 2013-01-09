@@ -18,8 +18,7 @@ namespace Eto.Forms
 	
 	public interface IImageMenuItem : IMenuActionItem, ISubMenu
 	{
-		Icon Icon { get; set; }
-        Image Image { get; set; }
+		Image Image { get; set; }
 	}
 	
 	public class ImageMenuItem : MenuActionItem, ISubMenuWidget
@@ -46,17 +45,19 @@ namespace Eto.Forms
 			get { return menuItems; }
 		}
 
-		public Icon Icon {
-			get { return handler.Icon; }
-			set { handler.Icon = value; }
+		public Image Image
+		{
+			get { return handler.Image; }
+			set { handler.Image = value; }
 		}
 
-        public Image Image
-        {
-            get { return handler.Image; }
-            set { handler.Image = value; }
-        }
-		
+		[Obsolete ("Use Image instead")]
+		public Icon Icon
+		{
+			get { return Image as Icon; }
+			set { Image = value; }
+		}
+
 		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (IActionItem ai in actionItems) {

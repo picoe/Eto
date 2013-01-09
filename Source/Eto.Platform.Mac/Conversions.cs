@@ -6,6 +6,7 @@ using MonoMac.Foundation;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.ImageIO;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
@@ -159,10 +160,31 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public static NSImage ToNS (this Image image)
+		public static NSImage ToNS (this Image image, int? size = null)
 		{
+			if (image == null)
+				return null;
 			var source = image.Handler as IImageSource;
-			return source != null ? source.GetImage () : null;
+			if (source == null)
+				return null;
+			var nsimage = source.GetImage ();
+
+			if (size != null) {
+				var rep = nsimage.BestRepresentation (new sd.RectangleF (0, 0, size.Value, size.Value), null, null);
+				if (rep.PixelsWide > size.Value || rep.PixelsHigh > size.Value) {
+					var max = Math.Max (nsimage.Size.Width, nsimage.Size.Height);
+					var newimage = new NSImage (new sd.SizeF(size.Value * nsimage.Size.Width / max, size.Value * nsimage.Size.Height / max));
+					newimage.LockFocus ();
+					nsimage.DrawInRect (new sd.RectangleF(sd.PointF.Empty, newimage.Size), new sd.RectangleF(sd.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1f);
+					newimage.UnlockFocus ();
+					nsimage = newimage;
+				}
+				else {
+					nsimage = new NSImage ();
+					nsimage.AddRepresentation (rep);
+				}
+			}
+			return nsimage;
 		}
 	}
 }

@@ -11,7 +11,6 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class CheckToolBarButtonHandler : ToolBarItemHandler<swc.Primitives.ToggleButton, CheckToolBarButton>, ICheckToolBarButton
 	{
-		Icon icon;
         Image image;
 		swc.Image swcImage;
 		swc.TextBlock label;
@@ -56,32 +55,15 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				icon = value;
-				if (icon != null)
-					swcImage.Source = icon.ControlObject as swm.ImageSource;
-				else
-					swcImage.Source = null;
+				image = value;
+				swcImage.Source = image.ToWpf ((int)swcImage.MaxWidth);
 			}
 		}
-
-        public Image Image
-        {
-            get { return image; }
-            set
-            {
-                image = value;
-                /* TODO
-                if (image != null)
-                    image.Source = image.ControlObject as swm.ImageSource;
-                else
-                    image.Source = null;*/
-            }
-        }
 
 		public bool Enabled
 		{

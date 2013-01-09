@@ -94,7 +94,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			return new Gdk.RgbCmap (colors);
 		}
 
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
 			using (var drawable = new Gdk.Pixmap(null, Size.Width, Size.Height, 24))
 			using (var gc = new Gdk.GC(drawable)) {
@@ -102,7 +102,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 	
 				
 				drawable.DrawIndexedImage (gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap ());
-				imageView.Pixmap = drawable;
+
+				if (iconSize != null) {
+					var iconSet = new Gtk.IconSet(Gdk.Pixbuf.FromDrawable (drawable, Gdk.Colormap.System, 0, 0, 0, 0, size.Width, size.Height));
+					imageView.SetFromIconSet(iconSet, iconSize.Value);
+				}
+				else
+					imageView.Pixmap = drawable;
 				
 			}
 		}
