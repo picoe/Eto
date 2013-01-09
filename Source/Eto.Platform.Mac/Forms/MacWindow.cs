@@ -149,7 +149,7 @@ namespace Eto.Platform.Mac.Forms
 			base.Initialize ();
 			Control.DidBecomeKey += delegate {
 				if (MenuBar != null) 
-					NSApplication.SharedApplication.SetMainMenu (MenuBar);
+					NSApplication.SharedApplication.MainMenu = MenuBar;
 			};
 		}
 		
@@ -299,7 +299,7 @@ namespace Eto.Platform.Mac.Forms
 			set {
 				this.menuBar = value;
 				if (Control.IsKeyWindow)
-					NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
+					NSApplication.SharedApplication.MainMenu = (NSMenu)value.ControlObject;
 			}
 		}
 		
