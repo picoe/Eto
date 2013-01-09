@@ -3,6 +3,7 @@ using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
 using sd = System.Drawing;
+using Eto.Platform.Mac;
 
 #if OSX
 using MonoMac.CoreGraphics;
@@ -121,6 +122,11 @@ namespace Eto.Platform.iOS.Drawing
 			Control.AddCurveToPoint (control1.X, control1.Y, control2.X, control2.Y, end.X, end.Y);
 		}
 
+		public void AddPath(IGraphicsPathBase path, bool connect)
+		{
+			AddPath(((IGraphicsPath)path), connect);
+		}
+
 		public void AddPath (IGraphicsPath path, bool connect)
 		{
 			if (path.IsEmpty)
@@ -232,6 +238,24 @@ namespace Eto.Platform.iOS.Drawing
 		public void Dispose ()
 		{
 			Control.Dispose ();
+		}
+	
+		public GraphicsPath ToGraphicsPath()
+		{
+			throw new NotImplementedException(); // should never get called
+		}
+
+		public FillMode FillMode
+		{
+			get;
+            set; /* TODO: use this in DrawPath */
+		}
+
+		public IGraphicsPath Clone()
+		{
+			return this.Control != null 
+				? new GraphicsPathHandler( new CGPath(this.Control)) 
+				: new GraphicsPathHandler();
 		}
 	}
 }

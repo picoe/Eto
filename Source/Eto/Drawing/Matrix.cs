@@ -19,7 +19,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IMatrix : IControlObjectSource
+	public interface IMatrix : IControlObjectSource, IDisposable
 	{
 		/// <summary>
 		/// Gets the elements of this matrix

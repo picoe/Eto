@@ -365,5 +365,25 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			TransformStack.RestoreTransform ();
 		}
+
+		public void SetClip(RectangleF rect)
+		{
+			// Should not be called since Wpf is retained mode.
+			throw new InvalidOperationException("Do not call SetClip when Graphics.IsRetained = true");
+		}
+
+		public RectangleF ClipBounds
+		{
+			get
+			{
+				// Should not be called since Wpf is retained mode.
+				throw new InvalidOperationException("Do not call ClipBounds when Graphics.IsRetained = true");
+			}
+		}
+
+		public void Clear(Color color)
+		{
+			// TODO
+		}
 	}
 }

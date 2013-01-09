@@ -122,12 +122,12 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="x">X value to test</param>
 		/// <param name="y">Y value to test</param>
-		/// <returns>True if the <paramref name="x"/> and <paramref name="y"/> values are between 0 and the Width and Height of this size, respectively. False otherwise</returns>
+		/// <returns>True if the <paramref name="x"/> and <paramref name="y"/> values are greater than or equal to 0 and less than the Width and Height of this size, respectively. False otherwise</returns>
 		public bool Contains (int x, int y)
 		{
 			if (Width == 0 || Height == 0)
 				return false;
-			return (x >= 0 && x <= Width && y >= 0 && y <= Height);
+			return (x >= 0 && x < Width && y >= 0 && y < Height);
 		}
 
 		/// <summary>

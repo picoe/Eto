@@ -144,5 +144,9 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			return new MatrixHandler (control);
 		}
+
+		public void Dispose()
+		{
+		}
 	}
 }

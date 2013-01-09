@@ -235,6 +235,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 			isFirstFigure = false;
 		}
 
+		public void AddPath(IGraphicsPathBase path, bool connect)
+		{
+			AddPath(((IGraphicsPath)path), connect);
+		}
+
 		public void AddPath (IGraphicsPath path, bool connect)
 		{
 			var handler = path.ToHandler ();
@@ -348,6 +353,21 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public object ControlObject
 		{
 			get { return this; }
+		}
+
+		public IGraphicsPath Clone()
+		{
+			throw new NotImplementedException();
+		}
+
+		public GraphicsPath ToGraphicsPath()
+		{
+			throw new NotImplementedException(); // should never get called
+		}
+
+		public FillMode FillMode
+		{
+			set { throw new NotImplementedException(); }
 		}
 	}
 }

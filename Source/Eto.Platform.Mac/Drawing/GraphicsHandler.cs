@@ -492,5 +492,21 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			Control.RestoreState ();
 		}
+
+
+		public RectangleF ClipBounds
+		{
+			get { return Control.GetClipBoundingBox().ToEto(); }
+		}
+
+		public void SetClip(RectangleF rect)
+		{
+			this.Control.ClipToRect(rect.ToSD());
+		}
+
+		public void Clear(Color color)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

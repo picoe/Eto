@@ -83,5 +83,18 @@ namespace Eto.Drawing
 				return dashDotDot;
 			}
 		}
+
+		public static DashStyle Parse(string s)
+		{
+			switch ((s ?? "").ToLowerInvariant())
+			{
+				default:
+				case "solid": return Solid;
+				case "dash": return Dash;
+				case "dot": return Dot;
+				case "dashdot": return DashDot;
+				case "dashdotdot": return DashDotDot;
+			};
+		}
 	}
 }

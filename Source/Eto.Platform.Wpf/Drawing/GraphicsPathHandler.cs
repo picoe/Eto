@@ -26,6 +26,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Figures = new swm.PathFigureCollection ();
 		}
 
+		private GraphicsPathHandler(swm.PathGeometry control)
+		{
+			Control = control;
+		}
+
 		public bool IsEmpty
 		{
 			get { return Control.IsEmpty (); }
@@ -137,6 +142,11 @@ namespace Eto.Platform.Wpf.Drawing
 			CurrentPoint = end;
 		}
 
+		public void AddPath(IGraphicsPathBase path, bool connect)
+		{
+			AddPath(((IGraphicsPath)path), connect);
+		}
+
 		public void AddPath (IGraphicsPath path, bool connect)
 		{
 			if (path.IsEmpty)
@@ -207,6 +217,21 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Dispose ()
 		{
+		}
+
+		public IGraphicsPath Clone()
+		{
+			return new GraphicsPathHandler(Control.Clone());
+		}
+
+		public GraphicsPath ToGraphicsPath()
+		{
+			throw new NotImplementedException(); // should never get called
+		}
+
+		public FillMode FillMode
+		{
+			set { Control.FillRule = value == FillMode.Alternate ? swm.FillRule.EvenOdd : swm.FillRule.Nonzero ; }
 		}
 	}
 }
