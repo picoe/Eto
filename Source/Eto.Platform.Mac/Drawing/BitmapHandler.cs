@@ -266,7 +266,13 @@ namespace Eto.Platform.Mac.Drawing
 
         public Color GetPixel(int x, int y)
         {
-            return default(Color);/* TODO */
+			var result = default(Color);
+
+			// TODO: there may be some cases where 
+			// bmprep is uninitialized.
+			if (bmprep != null) result = bmprep.ColorAt(x, y).ToEto();
+
+			return result;            
         }
     }
 }
