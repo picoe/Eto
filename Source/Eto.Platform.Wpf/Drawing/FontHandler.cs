@@ -13,6 +13,7 @@ namespace Eto.Platform.Wpf.Drawing
 	public class FontHandler : WidgetHandler<object, Font>, IFont
 	{
 		FontTypeface typeface;
+		sd.Font sdfont;
 
 		public void Apply (swc.Control control)
 		{
@@ -21,6 +22,20 @@ namespace Eto.Platform.Wpf.Drawing
 			control.FontWeight = WpfFontWeight;
 
 			control.FontSize = this.PixelSize;
+		}
+
+		sd.Font SDFont
+		{
+			get
+			{
+				if (sdfont == null) {
+					var style = sd.FontStyle.Regular;
+					if (Widget.Bold) style |= sd.FontStyle.Bold;
+					if (Widget.Italic) style |= sd.FontStyle.Italic;
+					sdfont = new sd.Font (WpfFamily.Source, (float)Size, style);
+				}
+				return sdfont;
+			}
 		}
 
 		public double PixelSize
@@ -120,11 +135,6 @@ namespace Eto.Platform.Wpf.Drawing
 			this.WpfFontStyle = WpfTypeface.Style;
 		}
 
-        public void Create()
-        {
-            throw new NotImplementedException();
-        }
-
 		void SetStyle (FontStyle style)
 		{
 			if ((style & Eto.Drawing.FontStyle.Bold) != 0) this.WpfFontWeight = System.Windows.FontWeights.Bold;
@@ -209,57 +219,62 @@ namespace Eto.Platform.Wpf.Drawing
 			get { return ((FontTypefaceHandler)Typeface.Handler).Control; }
         }
 
-        public float SizeInPoints
-        {
-            get { return (float) Size; }
-        }
+		float IFont.Size
+		{
+			get { return (float)Size; }
+		}
 
-        private float? ascentInPixels;
-        public float AscentInPixels
-        {
-            get
-            {
-                if (ascentInPixels == null)
-                {
-                    ascentInPixels = SizeInPixels / 2f; // BUGBUG: fix                        
-                }
-
-                return ascentInPixels ?? 0f;
-            }
-        }
-
-        private float? descentInPixels;
-        public float DescentInPixels
+        public float Ascent
         {
             get
             {
-                if (descentInPixels == null)
-                {
-                    descentInPixels = SizeInPixels / 2f; // BUGBUG: fix                        
-                }
-
-                return descentInPixels ?? 0f;
+				return (float)(Size * WpfFamily.Baseline);
             }
         }
 
-        public float LineHeightInPixels
+		float? descent;
+        public float Descent
         {
-            get { return SizeInPixels; } // BUGBUG: fix
+            get
+            {
+				if (descent == null) {
+					descent = (float)Size * SDFont.FontFamily.GetCellDescent (SDFont.Style) / SDFont.FontFamily.GetEmHeight (SDFont.Style);
+				}
+				return descent ?? 0f;
+            }
         }
 
-        public float XHeightInPixels
+        public float LineHeight
         {
-            get { return SizeInPixels / 2f; } // BUGBUG: fix
+			get { return (float)(Size * WpfFamily.LineSpacing); }
         }
 
-        public float SizeInPixels
+        public float XHeight
         {
-            get { return (float) PointsToPixels(SizeInPoints); }
+			get { return (float)(Size * WpfTypeface.XHeight); }
         }
+
+		public float Baseline
+		{
+			get { return (float)(Size * WpfFamily.Baseline); }
+		}
+
+		public float Leading
+		{
+			get { return LineHeight - (Ascent + Descent); }
+		}
 
 		public string FamilyName
 		{
 			get { return Family.Name; }
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			if (disposing) {
+				sdfont.Dispose ();
+			}
 		}
     }
 }

@@ -410,13 +410,14 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing ();
 #if OSX
+			var nsfont = FontHandler.GetControl (font);
 			var str = new NSString (text);
 			var dic = new NSMutableDictionary ();
 			dic.Add (NSAttributedString.ForegroundColorAttributeName, color.ToNS ());
-			dic.Add (NSAttributedString.FontAttributeName, FontHandler.GetControl (font));
-			var size = str.StringSize (dic);
+			dic.Add (NSAttributedString.FontAttributeName, nsfont);
 			//context.SetShouldAntialias(true);
 			if (!Flipped) {
+				var size = str.StringSize (dic);
 				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 				y = ViewHeight - y - size.Height;
 			}

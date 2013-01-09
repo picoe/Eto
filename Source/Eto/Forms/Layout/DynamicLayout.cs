@@ -278,12 +278,12 @@ namespace Eto.Forms
 
 		public void AddCentered (Control control, bool? xscale, bool? yscale = null)
 		{
-			AddCentered (control, null, null, xscale, yscale, true, true);
+			AddCentered (control, Drawing.Padding.Empty, Size.Empty, xscale, yscale, true, true);
 		}
 
 		public void AddCentered (Control control, Size spacing, bool? xscale = null, bool? yscale = null)
 		{
-			AddCentered (control, null, spacing, xscale, yscale, true, true);
+			AddCentered (control, Drawing.Padding.Empty, spacing, xscale, yscale, true, true);
 		}
 		
 		public void AddCentered (Control control, Padding padding, Size? spacing = null, bool? xscale = null, bool? yscale = null)
@@ -293,7 +293,7 @@ namespace Eto.Forms
 
 		public void AddCentered (Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool horizontalCenter = true, bool verticalCenter = true)
 		{
-			this.BeginVertical (padding, spacing, xscale, yscale);
+			this.BeginVertical (padding ?? Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
 			if (verticalCenter)
 				this.Add (null, null, true);
 			

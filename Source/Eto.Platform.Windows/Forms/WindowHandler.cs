@@ -6,6 +6,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Eto.Platform.Windows.Forms;
 
 namespace Eto.Platform.Windows
 {
@@ -343,6 +344,11 @@ namespace Eto.Platform.Windows
                 NativeWindowMethods.SetWindowPosFlags.IgnoreMove);
 
         }
+
+		public Screen Screen
+		{
+			get { return new Screen (Generator, new ScreenHandler (swf.Screen.FromControl (Control))); }
+		}
     }
 
     internal static class NativeWindowMethods

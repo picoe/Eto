@@ -43,34 +43,14 @@ namespace Eto.Drawing
 		new IFontFamily Handler { get { return (IFontFamily)base.Handler; } }
 
 		/// <summary>
-		/// Gets the name of this font family.
-        /// 
-        /// This can differ from the name returned by the handler.
+		/// Gets the name of this font family
 		/// </summary>
-        public string Name { get; set; }
+		public string Name { get { return Handler.Name; } }
 
 		/// <summary>
 		/// Gets an enumeration of the one or more supported typefaces for this font family
 		/// </summary>
 		public IEnumerable<FontTypeface> Typefaces { get { return Handler.Typefaces; } }
-
-		/// <summary>
-		/// Gets a generic monospace font family that works across all platforms
-		/// </summary>
-		[Obsolete("Use FontFamilies.Monospace")]
-		public static readonly FontFamily Monospace = FontFamilies.Monospace;
-
-		/// <summary>
-		/// Gets a generic sans-serif font family that works across all platforms
-		/// </summary>
-		[Obsolete ("Use FontFamilies.Sans")]
-		public static readonly FontFamily Sans = FontFamilies.Sans;
-
-		/// <summary>
-		/// Gets a generic serif font family that works across all platforms
-		/// </summary>
-		[Obsolete ("Use FontFamilies.Serif")]
-		public static readonly FontFamily Serif = FontFamilies.Serif;
 
 		/// <summary>
 		/// Initializes a new instance of the FontFamily class with the specified handler
@@ -80,10 +60,9 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="generator">Generator for this instance</param>
 		/// <param name="handler">Handler to use</param>
-		public FontFamily (Generator generator, IFontFamily handler, string name = null)
+		public FontFamily (Generator generator, IFontFamily handler)
 			: base (generator, handler, true)
 		{
-            this.Name = name ?? handler.Name;
 		}
 
 		/// <summary>
@@ -93,7 +72,6 @@ namespace Eto.Drawing
 		public FontFamily (string familyName)
 			: this (null, familyName)
 		{
-            this.Name = familyName;
 		}
 
 		/// <summary>
@@ -104,79 +82,36 @@ namespace Eto.Drawing
 		public FontFamily (Generator generator, string familyName)
 			: base (generator, typeof(IFontFamily), true)
 		{
-            this.Name = familyName;
+			if (familyName.IndexOf (',') > 0)
+				familyName = SplitFamilyName (familyName, generator);
 
 			Handler.Create (familyName);
 		}
 
-        private static IFontFamily CreateSystemFontFamilyHandler(
-            string systemFontFamilyName, 
-            Generator generator)
-        {
-            IFontFamily handler = null;
+		string SplitFamilyName (string familyName, Generator generator)
+		{
+			var handler = generator.CreateShared<IFonts>();
+			var families = familyName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
 
-            var fonts = generator.Create<IFonts>();
-
-            handler = fonts.GetSystemFontFamily(systemFontFamilyName);
-
-            return handler;
-        }
-
-        /// <summary>
-        /// If the family name is "serif", "sans-serif", "monospace",
-        /// "cursive" or "fantasy", returns a font family with the
-        /// same name whose handler uses a system-dependent font.
-        /// </summary>
-        /// <param name="familyName"></param>
-        /// <param name="generator"></param>
-        /// <returns></returns>
-        public static FontFamily CreateWebFontFamily(
-            string familyName, 
-            Generator generator = null)
-        {
-            IFontFamily handler = null;
-
-            var temp = generator ?? Generator.Current;
-
-            switch (familyName.ToLowerInvariant())
-            {
-                case "serif":
-                    handler = CreateSystemFontFamilyHandler(
-                        FontFamilies.SerifFamilyName,
-                        temp);
-                    break;
-
-                case "sans-serif":
-                    handler = CreateSystemFontFamilyHandler(
-                        FontFamilies.SansFamilyName,
-                        temp);
-                    break;
-
-                case "monospace":
-                    handler = CreateSystemFontFamilyHandler(
-                        FontFamilies.MonospaceFamilyName,
-                        temp);
-                    break;
-            }
-
-            FontFamily result = null;
-
-            if (handler != null)
-                result =                     
-                    new FontFamily(
-                    generator, 
-                    handler, 
-                    // keep the original family name, e.g. sans, and
-                    // allow the underlying handler to keep its own                    
-                    familyName);
-            else
-                result =
-                    new FontFamily(
-                        generator ?? Generator.Current, 
-                        familyName);
-
-            return result;
-        }
+			char[] trimChars = { ' ', '\'', '"' };
+			foreach (var name in families)
+			{
+				var trimmedName = name.Trim (trimChars);
+				switch (trimmedName.ToLowerInvariant ()) {
+				case FontFamilies.MonospaceFamilyName:
+				case FontFamilies.SansFamilyName:
+				case FontFamilies.SerifFamilyName:
+				case FontFamilies.CursiveFamilyName:
+				case FontFamilies.FantasyFamilyName:
+					return trimmedName;
+				default:
+					if (handler.FontFamilyAvailable (trimmedName))
+						return trimmedName;
+					break;
+				}
+			}
+			return FontFamilies.SansFamilyName;
+		}
 
 		/// <summary>
 		/// Tests this instance for equality with another font family
@@ -247,6 +182,28 @@ namespace Eto.Drawing
 		{
 			return Name;
 		}
+
+		#region Obsolete
+		
+		/// <summary>
+		/// Gets a generic monospace font family that works across all platforms
+		/// </summary>
+		[Obsolete("Use FontFamilies.Monospace")]
+		public static readonly FontFamily Monospace = FontFamilies.Monospace ();
+		
+		/// <summary>
+		/// Gets a generic sans-serif font family that works across all platforms
+		/// </summary>
+		[Obsolete ("Use FontFamilies.Sans")]
+		public static readonly FontFamily Sans = FontFamilies.Sans ();
+		
+		/// <summary>
+		/// Gets a generic serif font family that works across all platforms
+		/// </summary>
+		[Obsolete ("Use FontFamilies.Serif")]
+		public static readonly FontFamily Serif = FontFamilies.Serif ();
+		
+		#endregion
 	}
 }
 

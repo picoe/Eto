@@ -9,12 +9,14 @@ namespace Eto.Platform.Mac.Drawing
 {
 	public class FontFamilyHandler : WidgetHandler<object, FontFamily>, IFontFamily
 	{
+		public string MacName { get; set; }
+
 		public string Name { get; set; }
 		
 		public IEnumerable<FontTypeface> Typefaces
 		{
 			get { 
-				var descriptors = NSFontManager.SharedFontManager.AvailableMembersOfFontFamily (Name);
+				var descriptors = NSFontManager.SharedFontManager.AvailableMembersOfFontFamily (MacName);
 				return descriptors.Select (r => new FontTypeface(Widget, new FontTypefaceHandler(this, r)));
 			}
 		}
@@ -23,14 +25,37 @@ namespace Eto.Platform.Mac.Drawing
 		{
 		}
 
-		public FontFamilyHandler (string name)
+		public FontFamilyHandler (string familyName)
 		{
-			this.Name = name;
+			Create (familyName);
 		}
 		
 		public void Create (string familyName)
 		{
-			this.Name = familyName;
+			Name = MacName = familyName;
+
+			switch (familyName) {
+				
+			case FontFamilies.MonospaceFamilyName:
+				MacName = "Courier New";
+				break;
+			case FontFamilies.SansFamilyName:
+				MacName = "Helvetica";
+				break;
+			case FontFamilies.SerifFamilyName:
+#if OSX
+				MacName = "Times";
+#elif IOS
+				MacName = "Times New Roman";
+#endif
+				break;
+			case FontFamilies.CursiveFamilyName:
+				MacName = "Monotype Corsiva";
+				break;
+			case FontFamilies.FantasyFamilyName:
+				MacName = "Impact";
+				break;
+			}
 		}
 
 		public FontTypeface GetFace(NSFont font)

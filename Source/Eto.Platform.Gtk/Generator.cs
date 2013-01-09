@@ -70,6 +70,7 @@ namespace Eto.Platform.GtkSharp
 			Add <ITreeGridView> (() => new TreeGridViewHandler ());
 			Add <ITreeView> (() => new TreeViewHandler ());
 			Add <IWebView> (() => new WebViewHandler ());
+			Add <IScreens> (() => new ScreensHandler ());
 			
 			// Forms.Menu
 			Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());

@@ -108,5 +108,13 @@ namespace Eto.Forms
 			}
 		}
 
+		internal protected override void OnDataContextChanged (EventArgs e)
+		{
+			base.OnDataContextChanged (e);
+			foreach (var tab in TabPages) {
+				tab.OnDataContextChanged (e);
+			}
+		}
+
 	}
 }

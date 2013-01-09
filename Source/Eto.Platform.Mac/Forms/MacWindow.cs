@@ -574,6 +574,10 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
+		public Screen Screen
+		{
+			get { return new Screen(Generator, new ScreenHandler (Control.Screen)); }
+		}
 
         public Point ScreenToWorld(Point p)
         {

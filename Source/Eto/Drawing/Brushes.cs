@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using BrushKey = System.Tuple<System.UInt32, Eto.Generator>;
+using BrushKey = System.Tuple<System.UInt32>;
 
 namespace Eto.Drawing
 {
@@ -18,7 +18,7 @@ namespace Eto.Drawing
 			var cache = generator.Cache<BrushKey, Brush>(cacheKey);
 			Brush brush;
 			lock (cache) {
-				var key = new BrushKey (color.ToArgb (), generator);
+				var key = new BrushKey (color.ToArgb ());
 				if (!cache.TryGetValue (key, out brush)) {
 					brush = new SolidBrush (color, generator);
 					cache.Add (key, brush);
@@ -33,7 +33,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color of the cached solid brush to get</param>
 		/// <param name="generator">Generator to get the brush for</param>
-		static Brush Cached (Color color, Generator generator = null) { return GetBrush (color, generator); }
+		public static Brush Cached (Color color, Generator generator = null) { return GetBrush (color, generator); }
 
 		/// <summary>
 		/// Clears the brush cache
@@ -43,7 +43,7 @@ namespace Eto.Drawing
 		/// to conserve memory or resources.
 		/// </remarks>
 		/// <param name="generator">Generator to clear the brush cache for</param>
-		static void ClearCache (Generator generator = null)
+		public static void ClearCache (Generator generator = null)
 		{
 			var cache = generator.Cache<BrushKey, Brush>(cacheKey);
 			lock (cache) {

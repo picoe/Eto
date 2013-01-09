@@ -378,6 +378,10 @@ namespace Eto
 			lock (sharedInstances) {
 				if (!sharedInstances.TryGetValue (type, out instance)) {
 					instance = Create (type);
+					var widget = instance as IWidget;
+					if (widget != null) {
+						widget.Generator = this;
+					}
 					sharedInstances[type] = instance;
 				}
 			}

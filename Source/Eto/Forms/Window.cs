@@ -16,6 +16,8 @@ namespace Eto.Forms
 
 		string Title { get; set; }
 
+		Screen Screen { get; }
+
 		//void AddToolbar(ToolBar toolBar);
 		//void RemoveToolbar(ToolBar toolBar);
 		//void ClearToolbars();
@@ -110,6 +112,11 @@ namespace Eto.Forms
 		public virtual void Close ()
 		{
 			handler.Close ();
+		}
+
+		public Screen Screen
+		{
+			get { return handler.Screen; }
 		}
 		
 	}
