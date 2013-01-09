@@ -37,7 +37,7 @@
   <PropertyGroup>
     <OutputRoot>..\..\..</OutputRoot>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Common.targets')" Project="../../../Common.targets" />  
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />  
   <ItemGroup>
     <Reference Include="MonoMac">
       <HintPath>..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
