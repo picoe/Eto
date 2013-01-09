@@ -9,7 +9,7 @@ using NSFont = MonoTouch.UIKit.UIFont;
 namespace Eto.Platform.iOS.Drawing
 
 #elif OSX
-
+	
 using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Drawing
@@ -120,7 +120,7 @@ namespace Eto.Platform.Mac.Drawing
 				return Control.LineHeight ();
 			}
 		}
-
+		
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
 			

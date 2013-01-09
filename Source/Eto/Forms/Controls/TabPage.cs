@@ -21,8 +21,14 @@ namespace Eto.Forms
 		{
 			this.AddDockedControl (control, padding);
 		}
+
+		public TabPage ()
+			: this ((Generator)null)
+		{
+		}
 		
-		public TabPage (Generator g = null) : this (g, typeof(ITabPage))
+		public TabPage (Generator generator)
+			: this (generator, typeof(ITabPage))
 		{
 		}
 		

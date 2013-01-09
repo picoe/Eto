@@ -4,7 +4,6 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
-using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -36,13 +35,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				var brush = Control.Background as swm.SolidColorBrush;
+				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
 				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
 			set
 			{
-				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
+				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
 			}
 		}
 

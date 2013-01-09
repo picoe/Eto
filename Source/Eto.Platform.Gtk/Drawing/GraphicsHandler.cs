@@ -240,7 +240,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			pen.Apply (this);
 		}
 
-		public void DrawImage(Image image, float x, float y)
+		public void DrawImage (Image image, float x, float y)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y);
 		}

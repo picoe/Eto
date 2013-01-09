@@ -36,16 +36,6 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
-		public int Width
-		{
-			get { return 0;/* TODO */ }
-		}
-		
-		public int Height
-		{
-			get { return 0;/* TODO */ }
-		}
-
 		public override UIImage GetUIImage ()
 		{
 			return this.Control;

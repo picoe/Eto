@@ -48,19 +48,5 @@ namespace Eto.Platform.Mac.Drawing
 			destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
 			Control.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
 		}
-
-        #region IImage Members
-
-        public int Width
-        {
-            get { return 0;/* TODO */ }
-        }
-
-        public int Height
-        {
-            get { return 0;/* TODO */ }
-        }
-
-        #endregion
 	}
 }

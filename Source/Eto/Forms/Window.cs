@@ -113,7 +113,7 @@ namespace Eto.Forms
 		{
 			handler.Close ();
 		}
-
+		
 		public Screen Screen
 		{
 			get { return handler.Screen; }

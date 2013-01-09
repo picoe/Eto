@@ -100,9 +100,8 @@ namespace Eto.Forms
         #endregion
 
 		#region Events
-
-        #region SizeChanged
-        public const string SizeChangedEvent = "Control.SizeChanged";
+		
+		public const string SizeChangedEvent = "Control.SizeChanged";
 
 		EventHandler<EventArgs> sizeChanged;
 
@@ -119,10 +118,8 @@ namespace Eto.Forms
 			if (sizeChanged != null)
 				sizeChanged (this, e);
 		}
-        #endregion
 
-        #region KeyDown
-        public const string KeyDownEvent = "Control.KeyDown";
+		public const string KeyDownEvent = "Control.KeyDown";
 
 		EventHandler<KeyPressEventArgs> keyDown;
 
@@ -142,9 +139,7 @@ namespace Eto.Forms
 			if (!e.Handled && Parent != null)
 				Parent.OnKeyDown (e);
 		}
-        #endregion
 
-        #region KeyUp
         public const string KeyUpEvent = "Control.KeyUp";
 
         EventHandler<KeyPressEventArgs> keyUp;
@@ -167,9 +162,7 @@ namespace Eto.Forms
             if (!e.Handled && Parent != null)
                 Parent.OnKeyUp(e);
         }
-        #endregion
 
-        #region TextChanged
         public const string TextChangedEvent = "Control.TextChanged";
 
 		EventHandler<EventArgs> textChanged;
@@ -187,11 +180,8 @@ namespace Eto.Forms
 			if (textChanged != null)
 				textChanged (this, e);
 		}
-        #endregion
 
-        #region MouseDown
-
-        public const string MouseDownEvent = "Control.MouseDown";
+		public const string MouseDownEvent = "Control.MouseDown";
 
 		EventHandler<MouseEventArgs> mouseDown;
 
@@ -208,10 +198,6 @@ namespace Eto.Forms
 			if (mouseDown != null)
 				mouseDown (this, e);
 		}
-
-        #endregion
-
-        #region MouseUp
 
 		public const string MouseUpEvent = "Control.MouseUp";
 
@@ -231,9 +217,6 @@ namespace Eto.Forms
 				mouseUp (this, e);
 		}
 
-        #endregion
-
-        #region MouseMove
 		public const string MouseMoveEvent = "Control.MouseMove";
 
 		EventHandler<MouseEventArgs> mouseMove;
@@ -252,10 +235,7 @@ namespace Eto.Forms
 				mouseMove (this, e);
 		}
 
-        #endregion
-
-        #region MouseLeave
-        public const string MouseLeaveEvent = "Control.MouseLeave";
+		public const string MouseLeaveEvent = "Control.MouseLeave";
 
 		EventHandler<MouseEventArgs> mouseLeave;
 
@@ -273,10 +253,7 @@ namespace Eto.Forms
 				mouseLeave (this, e);
 		}
 
-        #endregion
-
-        #region MouseEnter
-        public const string MouseEnterEvent = "Control.MouseEnter";
+		public const string MouseEnterEvent = "Control.MouseEnter";
 
 		EventHandler<MouseEventArgs> mouseEnter;
 
@@ -293,10 +270,8 @@ namespace Eto.Forms
 			if (mouseEnter != null)
 				mouseEnter (this, e);
 		}
-        #endregion
-
-        #region MouseDoubleClick
-        public const string MouseDoubleClickEvent = "Control.MouseDoubleClick";
+		
+		public const string MouseDoubleClickEvent = "Control.MouseDoubleClick";
 
 		EventHandler<MouseEventArgs> mouseDoubleClick;
 
@@ -313,9 +288,7 @@ namespace Eto.Forms
 			if (mouseDoubleClick != null)
 				mouseDoubleClick (this, e);
 		}
-        #endregion
 
-        #region MouseHover
         public const string MouseHoverEvent = "Control.MouseHover";
 
         EventHandler<MouseEventArgs> mouseHover;
@@ -336,9 +309,6 @@ namespace Eto.Forms
                 mouseHover(this, e);
         }
 
-        #endregion
-
-        #region MouseWheel
         public const string MouseWheelEvent = "Control.MouseWheel";
 
         EventHandler<MouseEventArgs> mouseWheel;
@@ -359,9 +329,6 @@ namespace Eto.Forms
                 mouseWheel(this, e);
         }
 
-        #endregion
-
-        #region GotFocus
         public const string GotFocusEvent = "Control.GotFocus";
 
 		EventHandler<EventArgs> gotFocus;
@@ -379,10 +346,8 @@ namespace Eto.Forms
 			if (gotFocus != null)
 				gotFocus (this, e);
 		}
-        #endregion
 
-        #region LostFocus
-        public const string LostFocusEvent = "Control.LostFocus";
+		public const string LostFocusEvent = "Control.LostFocus";
 
 		EventHandler<EventArgs> lostFocus;
 
@@ -399,10 +364,8 @@ namespace Eto.Forms
 			if (lostFocus != null)
 				lostFocus (this, e);
 		}
-        #endregion
-
-        #region Shown
-        public const string ShownEvent = "Control.Shown";
+		
+		public const string ShownEvent = "Control.Shown";
 
 		EventHandler<EventArgs> shown;
 
@@ -419,9 +382,7 @@ namespace Eto.Forms
 			if (shown != null)
 				shown (this, e);
 		}
-        #endregion
 
-        #region Activated
         public const string ActivatedEvent = "Control.Activated";
 
         EventHandler<EventArgs> activated;
@@ -441,9 +402,7 @@ namespace Eto.Forms
             if (activated != null)
                 activated(this, e);
         }
-        #endregion
 
-        #region Hidden
         public const string HiddenEvent = "Control.Hidden";
 
 		EventHandler<EventArgs> hidden;
@@ -461,10 +420,8 @@ namespace Eto.Forms
 			if (hidden != null)
 				hidden (this, e);
 		}
-        #endregion
-
-        #region PreLoad
-        public event EventHandler<EventArgs> PreLoad;
+		
+		public event EventHandler<EventArgs> PreLoad;
 
 		public virtual void OnPreLoad (EventArgs e)
 		{
@@ -474,10 +431,8 @@ namespace Eto.Forms
 		}
 
 		public event EventHandler<EventArgs> Load;
-        #endregion
 
-        #region Load
-        public virtual void OnLoad (EventArgs e)
+		public virtual void OnLoad (EventArgs e)
 		{
 			Loaded = true;
 			if (Load != null)
@@ -493,9 +448,8 @@ namespace Eto.Forms
 				LoadComplete (this, e);
 			Handler.OnLoadComplete (e);
 		}
-        #endregion
-
-        #endregion
+		
+		#endregion
 
         /// <summary>
         /// An overload to be used when the handler is set after

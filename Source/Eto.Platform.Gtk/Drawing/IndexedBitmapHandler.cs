@@ -94,7 +94,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			return new Gdk.RgbCmap (colors);
 		}
 
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
 			using (var drawable = new Gdk.Pixmap(null, Size.Width, Size.Height, 24))
 			using (var gc = new Gdk.GC(drawable)) {
@@ -102,88 +102,89 @@ namespace Eto.Platform.GtkSharp.Drawing
 	
 				
 				drawable.DrawIndexedImage (gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap ());
-				imageView.Pixmap = drawable;
+
+				if (iconSize != null) {
+					var iconSet = new Gtk.IconSet(Gdk.Pixbuf.FromDrawable (drawable, Gdk.Colormap.System, 0, 0, 0, 0, size.Width, size.Height));
+					imageView.SetFromIconSet(iconSet, iconSize.Value);
+				}
+				else
+					imageView.Pixmap = drawable;
 				
 			}
 		}
 
-        public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
-        {
-            // copy to a surface
-            var surface = new Cairo.ImageSurface(Cairo.Format.Rgb24, (int)source.Width, (int)source.Height);
-            unsafe
-            {
-                byte* destrow = (byte*)surface.DataPtr;
-                fixed (byte* srcdata = this.Control)
-                {
-                    byte* srcrow = srcdata + ((int)source.Top * rowStride) + (int)source.Left;
-                    for (int y = (int)source.Top; y < (int)source.Bottom; y++)
-                    {
-                        byte* src = (byte*)srcrow;
-                        uint* dest = (uint*)destrow;
-                        for (int x = (int)source.Left; x < (int)source.Right; x++)
-                        {
-                            *
-                            dest = colors[*src];
-                            src++;
-                            dest++;
-                        }
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			// copy to a surface
+			var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, (int)source.Width, (int)source.Height);
+			unsafe {
+				byte* destrow = (byte*)surface.DataPtr;
+				fixed (byte* srcdata = this.Control) {
+					byte* srcrow = srcdata + ((int)source.Top * rowStride) + (int)source.Left;
+					for (int y = (int)source.Top; y < (int)source.Bottom; y++) {
+						byte* src = (byte*)srcrow;
+						uint* dest = (uint*)destrow;
+						for (int x = (int)source.Left; x < (int)source.Right; x++) {
+							*
+							dest = colors[*src];
+							src++;
+							dest++;
+						}
 
-                        srcrow += rowStride;
-                        destrow += surface.Stride;
-                    }
-                }
-            }
+						srcrow += rowStride;
+						destrow += surface.Stride;
+					}
+				}
+			}
 
-            var context = graphics.Control;
-            context.Save();
-            destination.X += (float)graphics.InverseOffset;
-            destination.Y += (float)graphics.InverseOffset;
-            context.Rectangle(destination.ToCairo());
-            double scalex = 1;
-            double scaley = 1;
-            if (source.Width != destination.Width || source.Height != destination.Height)
-            {
-                scalex = (double)destination.Width / (double)source.Width;
-                scaley = (double)destination.Height / (double)source.Height;
-                context.Scale(scalex, scaley);
-            }
-            context.SetSourceSurface(surface, (int)destination.Left, (int)destination.Top);
-            context.Fill();
-            context.Restore();
+			var context = graphics.Control;
+			context.Save ();
+			destination.X += (float)graphics.InverseOffset;
+			destination.Y += (float)graphics.InverseOffset;
+			context.Rectangle (destination.ToCairo ());
+			double scalex = 1;
+			double scaley = 1;
+			if (source.Width != destination.Width || source.Height != destination.Height) {
+				scalex = (double)destination.Width / (double)source.Width;
+				scaley = (double)destination.Height / (double)source.Height;
+				context.Scale (scalex, scaley);
+			}
+			context.SetSourceSurface (surface, (int)destination.Left, (int)destination.Top);
+			context.Fill ();
+			context.Restore ();
 
 
-            /*
-            if (graphics == null || graphics.Control == null || graphics.GC == null) 
-                throw new Exception("WHAA?");
-            using (var drawable = new Gdk.Pixmap(graphics.Control, source.Right+1, source.Bottom+1))
-            using (var gc = new Gdk.GC(drawable))
-            {
-                if (drawable.Colormap == null) 
-                    drawable.Colormap = graphics.Control.Colormap;
-                drawable.DrawIndexedImage(gc, 0, 0, source.Right+1, source.Bottom+1, Gdk.RgbDither.None, Control, this.rowStride, GetPmap());
-                if (source.Width != destination.Width || source.Height != destination.Height)
-                {
-                    // scale da shit
-                    Gdk.Pixbuf pb = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, source.Width, source.Height);
-                    pb.GetFromDrawable(drawable, drawable.Colormap, source.X, source.Y, 0, 0, source.Width, source.Height);
+			/*
+			if (graphics == null || graphics.Control == null || graphics.GC == null) 
+				throw new Exception("WHAA?");
+			using (var drawable = new Gdk.Pixmap(graphics.Control, source.Right+1, source.Bottom+1))
+			using (var gc = new Gdk.GC(drawable))
+			{
+				if (drawable.Colormap == null) 
+					drawable.Colormap = graphics.Control.Colormap;
+				drawable.DrawIndexedImage(gc, 0, 0, source.Right+1, source.Bottom+1, Gdk.RgbDither.None, Control, this.rowStride, GetPmap());
+				if (source.Width != destination.Width || source.Height != destination.Height)
+				{
+					// scale da shit
+					Gdk.Pixbuf pb = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, source.Width, source.Height);
+					pb.GetFromDrawable(drawable, drawable.Colormap, source.X, source.Y, 0, 0, source.Width, source.Height);
 	
-                    Gdk.Pixbuf pbDest = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, destination.Width, destination.Height);
-                    pb.Scale(pbDest, 0, 0, destination.Width, destination.Height, 0, 0, (double)destination.Width / (double)source.Width,
-                        (double)destination.Height / (double)source.Height, Gdk.InterpType.Bilinear);
-                    pb.Dispose();
+					Gdk.Pixbuf pbDest = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, destination.Width, destination.Height);
+					pb.Scale(pbDest, 0, 0, destination.Width, destination.Height, 0, 0, (double)destination.Width / (double)source.Width,
+						(double)destination.Height / (double)source.Height, Gdk.InterpType.Bilinear);
+					pb.Dispose();
 	
 	
-                    graphics.Control.DrawPixbuf(graphics.GC, pbDest, 0, 0, destination.X, destination.Y, destination.Width, destination.Height, Gdk.RgbDither.None, 0, 0);
-                    pbDest.Dispose();
-                }
-                else
-                {
-                    // no scaling necessary!
-                    graphics.Control.DrawDrawable(graphics.GC, drawable, source.X, source.Y, destination.X, destination.Y, destination.Width, destination.Height);
-                }
+					graphics.Control.DrawPixbuf(graphics.GC, pbDest, 0, 0, destination.X, destination.Y, destination.Width, destination.Height, Gdk.RgbDither.None, 0, 0);
+					pbDest.Dispose();
+				}
+				else
+				{
+					// no scaling necessary!
+					graphics.Control.DrawDrawable(graphics.GC, drawable, source.X, source.Y, destination.X, destination.Y, destination.Width, destination.Height);
+				}
 				
-            }*/
-        }
-    }
+			}*/
+		}
+	}
 }

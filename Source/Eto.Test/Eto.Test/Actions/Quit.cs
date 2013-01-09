@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Test.Actions
 {
@@ -14,6 +15,7 @@ namespace Eto.Test.Actions
 			this.ToolBarText = "Quit";
 			this.TooltipText = "Close the application";
 			this.Accelerator = Key.Q | Application.Instance.CommonModifier;
+			this.Image = Bitmap.FromResource ("Eto.Test.TestImage.png");
 		}
 		
 		protected override void OnActivated (EventArgs e)

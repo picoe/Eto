@@ -272,10 +272,12 @@ namespace Eto.Platform.Windows
 			return h.Control;
 		}
 
-		public static sd.Image ToSD (this Image graphics)
+		public static sd.Image ToSD (this Image image, int? size = null)
 		{
-			var h = (BitmapHandler)graphics.Handler;
-			return h.Control;
+			if (image == null)
+				return null;
+			var h = (IWindowsImage)image.Handler;
+			return h.GetImageWithSize (size);
 		}
 
 		public static sd.Font ToSD (this Font font)

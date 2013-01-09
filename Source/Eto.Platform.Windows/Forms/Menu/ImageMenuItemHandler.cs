@@ -11,8 +11,8 @@ namespace Eto.Platform.Windows
 {
 	public class ImageMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ImageMenuItem>, IImageMenuItem, IMenu
 	{
-		Icon icon;
         Image image;
+		int imageSize = 16;
 		bool openedHandled;
 
 		public ImageMenuItemHandler()
@@ -24,7 +24,6 @@ namespace Eto.Platform.Windows
 			Control.Click += (sender, e) => {
 				Widget.OnClick (EventArgs.Empty);
 			};
-
 		}
 
 		void HandleDropDownOpened (object sender, EventArgs e)
@@ -34,7 +33,15 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		#region IMenuItem Members
+		public int ImageSize
+		{
+			get { return imageSize; }
+			set
+			{
+				imageSize = value;
+				Control.Image = image.ToSD (imageSize);
+			}
+		}
 
 		public bool Enabled
 		{
@@ -68,36 +75,15 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				icon = value;
-				if (icon != null) Control.Image = ((IconHandler)icon.Handler).GetIconClosestToSize(16).ToBitmap();
-				else Control.Image = null;
+				image = value;
+				Control.Image = image.ToSD (imageSize);
 			}
 		}
-
-        public Image Image
-        {
-            get { return image; }
-            set
-            {
-                image = value;
-
-                if (image != null) 
-                    Control.Image = 
-                        image.ControlObject as SD.Image;
-
-                else Control.Image = null;
-            }
-        }
-
-		#endregion
-
-
-		#region IMenu Members
 
 		public void AddMenu(int index, MenuItem item)
 		{
@@ -117,7 +103,5 @@ namespace Eto.Platform.Windows
 		{
 			Control.DropDownItems.Clear();
 		}
-
-		#endregion
 	}
 }

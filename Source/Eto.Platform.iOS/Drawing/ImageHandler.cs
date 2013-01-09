@@ -50,14 +50,5 @@ namespace Eto.Platform.iOS.Drawing
 		public abstract void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
 
 		public abstract UIImage GetUIImage ();
-		public int Width
-		{
-			get { return 0;/* TODO */ }
-		}
-		
-		public int Height
-		{
-			get { return 0;/* TODO */ }
-		}
 	}
 }
