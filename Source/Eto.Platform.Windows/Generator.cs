@@ -77,6 +77,7 @@ namespace Eto.Platform.Windows
 			g.Add <ITreeGridView> (() => new TreeGridViewHandler ());
 			g.Add <ITreeView> (() => new TreeViewHandler ());
 			g.Add <IWebView> (() => new WebViewHandler ());
+			g.Add <IScreens> (() => new ScreensHandler ());
 			
 			// Forms.Menu
 			g.Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());

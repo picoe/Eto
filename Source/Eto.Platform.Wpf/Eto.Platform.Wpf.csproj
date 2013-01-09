@@ -160,6 +160,8 @@
     <Compile Include="Forms\Printing\PrintDocumentHandler.cs" />
     <Compile Include="Forms\Printing\PrintSettingsHandler.cs" />
     <Compile Include="Forms\SaveFileDialogHandler.cs" />
+    <Compile Include="Forms\ScreenHandler.cs" />
+    <Compile Include="Forms\ScreensHandler.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
     <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />

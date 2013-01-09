@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Drawing
 		PointF rotatedLineCenter = new PointF (60, 60);
 		PointF rotatedTextCenter = new PointF (100, 100);
 		PointF imageScaleLocation = new PointF (240, 0);
-		Font font = new Font (FontFamilies.Sans, 10);
+		Font font = Fonts.Sans (10);
 
 
 		public TransformSection ()

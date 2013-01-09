@@ -90,7 +90,7 @@ namespace Eto.Test.Sections.Printing
 		{
 			var document = new PrintDocument ();
 			document.PrintSettings = settings;
-			var font = new Font (FontFamilies.Serif, 16);
+			var font = Fonts.Serif (16);
 			var printTime = DateTime.Now;
 			document.PrintPage += (sender, e) => {
 				Size pageSize = Size.Round (e.PageSize);

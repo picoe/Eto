@@ -9,7 +9,6 @@ using MonoMac.CoreGraphics;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.IO;
 using System.Threading;
-using SD = System.Drawing;
 using Eto.Platform.Mac.Forms.Controls;
 using Eto.Platform.Mac.Forms.Printing;
 using Eto.Platform.Mac.Forms;
@@ -81,6 +80,7 @@ namespace Eto.Platform.Mac
 			g.Add <ITreeGridView> (() => new TreeGridViewHandler ());
 			g.Add <ITreeView> (() => new TreeViewHandler ());
 			g.Add <IWebView> (() => new WebViewHandler ());
+			Add <IScreens> (() => new ScreensHandler ());
 			
 			// Forms.Menu
 			g.Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
@@ -129,44 +129,6 @@ namespace Eto.Platform.Mac
 		{
 			return new NSAutoreleasePool ();
 		}
-        public static RectangleF Convert(System.Drawing.RectangleF rect)
-        {
-            return new RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
-        }
-
-		
-        public static System.Drawing.RectangleF Convert(RectangleF rect)
-        {
-            return new System.Drawing.RectangleF(rect.X, rect.Y, rect.Width, rect.Height);
-        }
-		
-        public static System.Drawing.PointF Convert(PointF point)
-        {
-            return new System.Drawing.PointF(point.X, point.Y);
-        }
-
-        public static PointF Convert(System.Drawing.PointF point)
-        {
-            return new PointF(point.X, point.Y);
-        }
-		
-        internal static SD.PointF[] Convert(PointF[] points)
-        {
-            var result =
-                new SD.PointF[points.Length];
-
-            for (var i = 0;
-                i < points.Length;
-                ++i)
-            {
-                var p = points[i];
-                result[i] =
-                    new SD.PointF(p.X, p.Y);
-            }
-
-            return result;
-        }
-
 #if FIX
 		internal static Matrix Convert(
 	CGAffineTransform t)

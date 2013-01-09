@@ -260,8 +260,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 			using (var layout = new Pango.Layout (PangoContext)) {
 				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
-				int width, height;
-				layout.GetPixelSize (out width, out height);
 				Control.Save ();
 				Control.Color = color.ToCairo ();
 				Control.MoveTo (x, y);
@@ -278,7 +276,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 				layout.SetText (text);
 				int width, height;
 				layout.GetPixelSize (out width, out height);
-				layout.Dispose ();
 				return new SizeF (width, height);
 			}
 		}

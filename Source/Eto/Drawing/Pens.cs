@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using PenKey = System.Tuple<System.UInt32, float, Eto.Generator>;
+using PenKey = System.Tuple<System.UInt32, float, Eto.Drawing.DashStyle>;
 
 namespace Eto.Drawing
 {
@@ -13,14 +13,15 @@ namespace Eto.Drawing
 	{
 		static object cacheKey = new object ();
 
-		static Pen GetPen (Generator generator, Color color, float thickness = 1f)
+		static Pen GetPen (Generator generator, Color color, float thickness = 1f, DashStyle dashStyle = null)
 		{
 			var cache = generator.Cache<PenKey, Pen> (cacheKey);
 			Pen pen;
 			lock (cache) {
-				var key = new PenKey (color.ToArgb (), thickness, generator);
+				var key = new PenKey (color.ToArgb (), thickness, dashStyle);
 				if (!cache.TryGetValue (key, out pen)) {
 					pen = new Pen (color, thickness, generator);
+					if (dashStyle != null) pen.DashStyle = dashStyle;
 					cache.Add (key, pen);
 				}
 			}
@@ -32,8 +33,9 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="color">Color of the cached pen to get</param>
 		/// <param name="thickness">Thickness of the cached pen to get</param>
+		/// <param name="dashStyle">Dash Style for the pen</param>
 		/// <param name="generator">Generator to get the cached pen for</param>
-		public static Pen Cached (Color color, float thickness = 1f, Generator generator = null)
+		public static Pen Cached (Color color, float thickness = 1f, DashStyle dashStyle = null, Generator generator = null)
 		{
 			return GetPen (generator, color, thickness);
 		}

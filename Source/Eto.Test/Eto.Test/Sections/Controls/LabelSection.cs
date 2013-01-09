@@ -31,7 +31,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			return new Label{
 				Text = "Font Label",
-				Font = new Font (FontFamilies.Sans, 12, FontStyle.Bold),
+				Font = Fonts.Sans (12, FontStyle.Bold),
 			};
 		}
 		

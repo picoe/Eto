@@ -122,8 +122,12 @@ namespace Eto
 			} else {
 				var type = dataItem.GetType ();
 				var changedEvent = type.GetEvent (Property + "Changed");
-				if (changedEvent != null)
-					changedEvent.AddEventHandler (dataItem, handler);
+				if (changedEvent != null) {
+					try {
+						changedEvent.AddEventHandler (dataItem, handler);
+					}
+					catch {}
+				}
 				return dataItem;
 			}
 		}
@@ -143,8 +147,12 @@ namespace Eto
 				var dataItem = bindingReference;
 				var type = dataItem.GetType ();
 				var changedEvent = type.GetEvent (Property + "Changed");
-				if (changedEvent != null)
-					changedEvent.RemoveEventHandler (dataItem, handler);
+				if (changedEvent != null) {
+					try {
+						changedEvent.RemoveEventHandler (dataItem, handler);
+					}
+					catch {}
+				}
 			}
 		}
 	}
