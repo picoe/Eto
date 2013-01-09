@@ -37,7 +37,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to get the cached pen for</param>
 		public static Pen Cached (Color color, float thickness = 1f, DashStyle dashStyle = null, Generator generator = null)
 		{
-			return GetPen (generator, color, thickness);
+			return GetPen (generator, color, thickness, dashStyle);
 		}
 
 		/// <summary>
