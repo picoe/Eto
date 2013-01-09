@@ -82,6 +82,16 @@ namespace Eto
 		{
 		}
 
+		protected virtual void PostInitialize ()
+		{
+		}
+
+		void IWidget.Initialize ()
+		{
+			Initialize ();
+			PostInitialize ();
+		}
+
 		/// <summary>
 		/// Gets a value indicating that the specified event is handled
 		/// </summary>
@@ -226,6 +236,11 @@ namespace Eto
 			if (this.Control == null)
 				Control = CreateControl ();
 			base.Initialize ();
+		}
+
+		protected override void PostInitialize ()
+		{
+			base.PostInitialize ();
 			Style.OnStyleWidgetDefaults (this);
 		}
 

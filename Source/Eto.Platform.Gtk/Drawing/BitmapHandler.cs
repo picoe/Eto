@@ -107,16 +107,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return new Size (Control.Width, Control.Height); }
 		}
 
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
-			imageView.Pixbuf = Control;
-			/*
-			Gdk.Pixmap pix;
-			Gdk.Pixmap mask;
-			Control.RenderPixmapAndMask (out pix, out mask, 0);
-			imageView.Pixmap = pix;
-			imageView.Mask = mask;
-			 * */
+			if (iconSize != null)
+				imageView.SetFromIconSet(new Gtk.IconSet(Control), iconSize.Value);
+			else
+				imageView.Pixbuf = Control;
 		}
 
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)

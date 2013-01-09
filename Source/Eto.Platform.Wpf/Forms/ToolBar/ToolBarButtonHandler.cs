@@ -12,16 +12,16 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class ToolBarButtonHandler : ToolBarItemHandler<swc.Button, ToolBarButton>, IToolBarButton
 	{
-		Icon icon;
-		swc.Image image;
+		Image image;
+		swc.Image swcImage;
 		swc.TextBlock label;
 		public ToolBarButtonHandler ()
 		{
 			Control = new swc.Button ();
-			image = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
+			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
 			label = new swc.TextBlock ();
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
-			panel.Children.Add (image);
+			panel.Children.Add (swcImage);
 			panel.Children.Add (label);
 			Control.Content = panel;
 			Control.Click += delegate {
@@ -41,16 +41,13 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				icon = value;
-				if (icon != null)
-					image.Source = ((IconHandler)icon.Handler).GetImageClosestToSize ((int)image.MaxWidth);
-				else
-					image.Source = null;
+				image = value;
+				swcImage.Source = image.ToWpf ((int)swcImage.MaxWidth);
 			}
 		}
 

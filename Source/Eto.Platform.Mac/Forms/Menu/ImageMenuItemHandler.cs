@@ -5,15 +5,26 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
 
 	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem, IMenuActionHandler
 	{
-		Icon icon;
-		
-		public static bool UseImages = false;
+		Image image;
+		bool showImage = ShowImageDefault;
+
+		public static bool ShowImageDefault = false;
+
+		public bool ShowImage
+		{
+			get { return showImage; }
+			set {
+				showImage = value;
+				SetImage ();
+			}
+		}
 
 		public ImageMenuItemHandler ()
 		{
@@ -39,8 +50,6 @@ namespace Eto.Platform.Mac
 				break;
 			}
 		}
-		
-		#region IMenuItem Members
 		
 		public bool Enabled {
 			get { return Control.Enabled; }
@@ -73,25 +82,19 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public Icon Icon {
-			get { return icon; }
+		public Image Image {
+			get { return image; }
 			set {
-				icon = value;
-				if (UseImages) {
-					if (icon != null) {
-						var image = ((NSImage)icon.ControlObject);
-						var rep = image.BestRepresentation (new System.Drawing.RectangleF (0, 0, 16, 16), null, new NSDictionary ());
-						var image2 = new NSImage ();
-						image2.AddRepresentation (rep);
-						Control.Image = image2;
-					} else
-						Control.Image = null;
-				}
+				image = value;
+				SetImage ();
 			}
 		}
 
-		#endregion
-		
+		void SetImage ()
+		{
+			Control.Image = ShowImageDefault ? this.image.ToNS (16) : null;
+		}
+
 		public override void AddMenu (int index, MenuItem item)
 		{
 			base.AddMenu (index, item);

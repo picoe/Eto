@@ -115,7 +115,13 @@ namespace Eto.Platform.Windows.Drawing
 
 		public SD.Image GetImageWithSize (int? size)
 		{
-			return Control;
+			if (size != null) {
+				var max = Math.Max(Control.Width, Control.Height);
+				var newsize = new SD.Size (size.Value * Control.Width / max, size.Value * Control.Height / max);
+				return new SD.Bitmap (Control, newsize);
+			}
+			else
+				return Control;
 		}
 
 		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)

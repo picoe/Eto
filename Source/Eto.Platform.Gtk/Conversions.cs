@@ -386,5 +386,15 @@ namespace Eto.Platform.GtkSharp
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static Gtk.Image ToGtk (this Image image, Gtk.IconSize? size = null)
+		{
+			if (image == null)
+				return null;
+			var handler = (IImageHandler)image.Handler;
+			var gtkimage =new Gtk.Image ();
+			handler.SetImage (gtkimage, size);
+			return gtkimage;
+		}
 	}
 }
