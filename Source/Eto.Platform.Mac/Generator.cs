@@ -129,19 +129,5 @@ namespace Eto.Platform.Mac
 		{
 			return new NSAutoreleasePool ();
 		}
-#if FIX
-		internal static Matrix Convert(
-	CGAffineTransform t)
-		{
-			return Matrix.Create(
-				t.xx,
-				t.yx,
-				t.xy,
-				t.yy,
-				t.x0,
-				t.y0);
-		}
-
-#endif
     }
 }
