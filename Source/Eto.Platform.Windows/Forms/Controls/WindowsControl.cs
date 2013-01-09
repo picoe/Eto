@@ -196,9 +196,6 @@ namespace Eto.Platform.Windows
 			case Eto.Forms.Control.MouseMoveEvent:
 				Control.MouseMove += Control_MouseMove;
 				break;
-            case Eto.Forms.Control.MouseHoverEvent:
-                Control.MouseHover += Control_MouseHover;
-                break;
             case Eto.Forms.Control.MouseWheelEvent:
                 Control.MouseWheel += Control_MouseWheel;
                 break;
@@ -247,11 +244,6 @@ namespace Eto.Platform.Windows
         void Control_MouseWheel(object sender, SWF.MouseEventArgs e)
         {
             Widget.OnMouseWheel(e.ToEto());
-        }
-
-        void Control_MouseHover(object sender, EventArgs e)
-        {
-            Widget.OnMouseHover(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto()));
         }
 
 		void HandleControlMouseLeave (object sender, EventArgs e)

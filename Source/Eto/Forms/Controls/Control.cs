@@ -289,26 +289,6 @@ namespace Eto.Forms
 				mouseDoubleClick (this, e);
 		}
 
-        public const string MouseHoverEvent = "Control.MouseHover";
-
-        EventHandler<MouseEventArgs> mouseHover;
-
-        public event EventHandler<MouseEventArgs> MouseHover
-        {
-            add
-            {
-                HandleEvent(MouseHoverEvent);
-                mouseHover += value;
-            }
-            remove { mouseHover -= value; }
-        }
-
-        public virtual void OnMouseHover(MouseEventArgs e)
-        {
-            if (mouseHover != null)
-                mouseHover(this, e);
-        }
-
         public const string MouseWheelEvent = "Control.MouseWheel";
 
         EventHandler<MouseEventArgs> mouseWheel;

@@ -7,7 +7,6 @@ namespace Eto.Interface
 {
     public interface IMouseInputSource
     {
-        event MouseEventHandler MouseHover;
         event MouseEventHandler MouseUp;
         event MouseEventHandler MouseMove;
         event MouseEventHandler MouseLeave;
