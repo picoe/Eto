@@ -29,12 +29,6 @@ namespace Eto.Forms
 		Control Panel2 { get; set; }
 	}
 	
-    /// <summary>
-    /// A vertical splitter has top and bottom panes, 
-    /// so their heights are equal.
-    /// A horizontal splitter has left and right panes, 
-    /// so their widths are equal.
-    /// </summary>
 	public class Splitter : Control
 	{
 		ISplitter handler;

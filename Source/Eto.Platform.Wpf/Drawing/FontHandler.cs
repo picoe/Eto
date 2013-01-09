@@ -48,7 +48,7 @@ namespace Eto.Platform.Wpf.Drawing
 					return PointsToPixels (Size * m.M22);
 				}
 				else*/
-						return PointsToPixels(Size);
+					return PointsToPixels (Size);
 			}
 		}
 
@@ -183,6 +183,8 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 			if (size != null) Size = size.Value;
 		}
+
+
 
 		public FontFamily Family
 		{

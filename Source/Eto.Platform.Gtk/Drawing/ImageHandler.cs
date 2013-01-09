@@ -19,22 +19,16 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
 		
-		void SetImage (Gtk.Image imageView);
-		
+		void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize);
 	}
 	
 	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
 		where W: Image
 	{
 
-		#region IImage Members
-
 		public abstract Size Size { get; }
 		
-		public abstract void SetImage (Gtk.Image imageView);
-
-		#endregion
-
+		public abstract void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize);
 
 		public virtual void DrawImage (GraphicsHandler graphics, float x, float y)
 		{
@@ -47,6 +41,5 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 
 		public abstract void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
-
 	}
 }

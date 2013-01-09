@@ -461,7 +461,7 @@ namespace Eto.Drawing
 			set { Top = value.Y; Right = value.X; }
 		}
 
-        /// <summary>
+		/// <summary>
 		/// Gets or sets the point at the <see cref="Bottom"/> and <see cref="Right"/> of the rectangle
 		/// </summary>
 		public PointF BottomRight

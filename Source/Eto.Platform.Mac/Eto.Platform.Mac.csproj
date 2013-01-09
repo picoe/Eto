@@ -181,6 +181,7 @@
     <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
     <Compile Include="Forms\ScreenHandler.cs" />
     <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="NSImageExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

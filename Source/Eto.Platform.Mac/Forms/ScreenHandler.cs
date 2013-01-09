@@ -14,6 +14,7 @@ namespace Eto.Platform.Mac.Forms
 
 		static Selector selBackingScaleFactor = new Selector ("backingScaleFactor");
 
+#pragma warning disable 612, 618
 		public float RealScale
 		{
 			get
@@ -24,6 +25,7 @@ namespace Eto.Platform.Mac.Forms
 					return this.Control.UserSpaceScaleFactor;
 			}
 		}
+#pragma warning restore 612, 618
 
 		public float Scale
 		{

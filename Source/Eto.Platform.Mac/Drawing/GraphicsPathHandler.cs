@@ -38,7 +38,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			Control = path;
 		}
-
+		
 		public void MoveTo (float x, float y)
 		{
 			Control.MoveToPoint (x, y);

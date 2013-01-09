@@ -34,12 +34,12 @@ namespace Eto.Platform.Windows
             return keyCode | modifiers;
         }
 
-        private static Key Find(swf.Keys key)
-        {
-            Key mapped;
-            if (keymap.TryGetValue(key, out mapped)) return mapped;
-            else return Key.None;
-        }
+		private static Key Find(swf.Keys key)
+		{
+			Key mapped;
+			if (keymap.TryGetValue(key, out mapped)) return mapped;
+			else return Key.None;
+		}
 		
 		public static swf.Keys Find(Key key)
 		{

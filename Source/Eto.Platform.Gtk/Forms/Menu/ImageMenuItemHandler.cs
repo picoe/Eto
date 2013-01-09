@@ -10,8 +10,7 @@ namespace Eto.Platform.GtkSharp
 		string tooltip;
 		string text;
 		Key shortcut;
-		Icon icon;
-        Image image;
+		Image image;
 		Gtk.AccelLabel label;
 		
 		public ImageMenuItemHandler()
@@ -64,34 +63,15 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				this.icon = value;
-				if (icon != null)
-				{
-					Control.Image = new Gtk.Image((Gtk.IconSet)icon.ControlObject, Gtk.IconSize.Menu);
-				}
-				else Control.Image = null;
+				image = value;
+				Control.Image = image.ToGtk (Gtk.IconSize.Menu);
 			}
 		}
-
-        public Image Image
-        {
-            get { return image; }
-            set
-            {
-                this.image = value;
-                if (image != null)
-                {
-                    Control.Image = image.ControlObject as Gtk.Widget;
-                }
-                else Control.Image = null;
-            }
-        }
-
 
 		public override void AddMenu(int index, MenuItem item)
 		{
