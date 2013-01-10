@@ -232,7 +232,7 @@ namespace Eto.Drawing
 
 		void SetClip(RectangleF rect);
 
-		void Clear(Color color);
+		void Clear(SolidBrush brush);
 	}
 
 	/// <summary>
@@ -1052,9 +1052,14 @@ namespace Eto.Drawing
 			get { return Handler.ClipBounds; }
 		}
 
-		public void Clear(Color color)
+		/// <summary>
+		/// Resets all pixels in the clip region with the 
+		/// color of the specified solid brush
+		/// </summary>
+		/// <param name="brush"></param>
+		public void Clear(SolidBrush brush)
 		{
-			Handler.Clear(color);
+			Handler.Clear(brush);
 		}
 	}
 }

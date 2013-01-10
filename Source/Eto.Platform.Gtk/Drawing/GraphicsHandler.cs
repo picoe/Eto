@@ -328,7 +328,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 		}
 
-		public void Clear(Color color)
+		public void Clear(SolidBrush brush)
 		{
 			throw new NotImplementedException();
 		}

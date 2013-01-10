@@ -509,9 +509,14 @@ namespace Eto.Platform.iOS.Drawing
 
 		// In progress: Graphics.Clear should not take a color,
 		// and set all pixels to the transparent color.
-		public void Clear(Color color)
+		public void Clear(SolidBrush brush)
 		{
-			this.Control.ClearRect(Control.GetClipBoundingBox());
+			if (brush != null)
+			{
+				var rect = Control.GetClipBoundingBox();
+				this.Control.ClearRect(rect);
+				this.FillRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height);
+			}
 		}
 	}
 }

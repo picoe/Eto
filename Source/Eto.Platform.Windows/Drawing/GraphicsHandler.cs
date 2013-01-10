@@ -312,9 +312,10 @@ namespace Eto.Platform.Windows.Drawing
 			this.Control.SetClip(rect.ToSD());
 		}
 
-		public void Clear(Color color)
+		public void Clear(SolidBrush brush)
 		{
-			Control.Clear(color.ToSD());
+			if (brush != null)
+				Control.Clear(brush.Color.ToSD());
 		}
 	}
 }
