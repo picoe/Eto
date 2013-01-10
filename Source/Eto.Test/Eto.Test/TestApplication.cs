@@ -16,7 +16,8 @@ namespace Eto.Test
 
 		public override void OnInitialized (EventArgs e)
 		{
-			this.MainForm = new MainForm ();
+			var testSectionList = new TestSectionList();
+			this.MainForm = new MainForm (testSectionList.TopNodes);
 			HandleEvent (Application.TerminatingEvent);
 			
 			base.OnInitialized (e);
