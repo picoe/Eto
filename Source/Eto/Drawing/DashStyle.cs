@@ -79,7 +79,7 @@ namespace Eto.Drawing
 				return false;
 			if (style1.Dashes == null)
 				return style2.Dashes == null;
-			return style1.Dashes.SequenceEqual (style2.Dashes);
+			return style2.Dashes != null && style1.Dashes.SequenceEqual (style2.Dashes);
 		}
 
 		/// <summary>

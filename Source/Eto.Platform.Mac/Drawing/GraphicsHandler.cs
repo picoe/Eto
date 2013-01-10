@@ -408,6 +408,9 @@ namespace Eto.Platform.iOS.Drawing
 
 		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
+			// NSString throws an exception if text is null
+			if (string.IsNullOrEmpty(text)) return;
+
 			StartDrawing ();
 #if OSX
 			var nsfont = FontHandler.GetControl (font);
@@ -504,9 +507,16 @@ namespace Eto.Platform.iOS.Drawing
 			this.Control.ClipToRect(rect.ToSD());
 		}
 
-		public void Clear(Color color)
+		// In progress: Graphics.Clear should not take a color,
+		// and set all pixels to the transparent color.
+		public void Clear(SolidBrush brush)
 		{
-			throw new NotImplementedException();
+			if (brush != null)
+			{
+				var rect = Control.GetClipBoundingBox();
+				this.Control.ClearRect(rect);
+				this.FillRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height);
+			}
 		}
 	}
 }

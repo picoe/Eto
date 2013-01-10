@@ -381,7 +381,7 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
-		public void Clear(Color color)
+		public void Clear(SolidBrush brush)
 		{
 			// TODO
 		}
