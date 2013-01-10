@@ -27,7 +27,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void Create (string familyName)
 		{
 			Name = familyName;
-			switch (familyName) {
+			switch (familyName.ToLowerInvariant ()) {
 			case FontFamilies.MonospaceFamilyName:
 				Control = GetFontFamily("monospace");
 				break;

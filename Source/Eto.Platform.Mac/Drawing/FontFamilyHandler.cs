@@ -12,17 +12,21 @@ namespace Eto.Platform.Mac.Drawing
 		public string MacName { get; set; }
 
 		public string Name { get; set; }
+
+		public NSFontTraitMask TraitMask { get; set; }
 		
 		public IEnumerable<FontTypeface> Typefaces
 		{
-			get { 
+			get
+			{ 
 				var descriptors = NSFontManager.SharedFontManager.AvailableMembersOfFontFamily (MacName);
-				return descriptors.Select (r => new FontTypeface(Widget, new FontTypefaceHandler(this, r)));
+				return descriptors.Select (r => new FontTypeface (Widget, new FontTypefaceHandler (this, r)));
 			}
 		}
 
 		public FontFamilyHandler ()
 		{
+			TraitMask = (NSFontTraitMask)int.MaxValue;
 		}
 
 		public FontFamilyHandler (string familyName)
@@ -33,9 +37,9 @@ namespace Eto.Platform.Mac.Drawing
 		public void Create (string familyName)
 		{
 			Name = MacName = familyName;
+			TraitMask = (NSFontTraitMask)int.MaxValue;
 
-			switch (familyName) {
-				
+			switch (familyName.ToLowerInvariant ()) {
 			case FontFamilies.MonospaceFamilyName:
 				MacName = "Courier New";
 				break;
@@ -50,7 +54,8 @@ namespace Eto.Platform.Mac.Drawing
 #endif
 				break;
 			case FontFamilies.CursiveFamilyName:
-				MacName = "Monotype Corsiva";
+				MacName = "Papyrus";
+				TraitMask = NSFontTraitMask.Condensed | NSFontTraitMask.Unbold | NSFontTraitMask.Unitalic;
 				break;
 			case FontFamilies.FantasyFamilyName:
 				MacName = "Impact";
@@ -58,13 +63,13 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
-		public FontTypeface GetFace(NSFont font)
+		public FontTypeface GetFace (NSFont font)
 		{
 			var postScriptName = font.FontDescriptor.PostscriptName;
-			var faceHandler = Typefaces.Select (r => r.Handler).OfType<FontTypefaceHandler>().FirstOrDefault (r => r.PostScriptName == postScriptName);
+			var faceHandler = Typefaces.Select (r => r.Handler).OfType<FontTypefaceHandler> ().FirstOrDefault (r => r.PostScriptName == postScriptName);
 			if (faceHandler == null)
-				faceHandler = new FontTypefaceHandler(this, font);
-			return new FontTypeface(Widget, faceHandler);
+				faceHandler = new FontTypefaceHandler (this, font);
+			return new FontTypeface (Widget, faceHandler);
 		}
 	}
 }
