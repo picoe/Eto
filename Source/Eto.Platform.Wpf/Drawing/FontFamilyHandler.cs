@@ -25,7 +25,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void Create (string familyName)
 		{
 			Name = familyName;
-			switch (familyName) {
+			switch (familyName.ToLowerInvariant ()) {
 			case FontFamilies.MonospaceFamilyName:
 				familyName = "Courier New";
 				break;
@@ -36,8 +36,10 @@ namespace Eto.Platform.Wpf.Drawing
 				familyName = "Times New Roman";
 				break;
 			case FontFamilies.CursiveFamilyName:
+				familyName = "Comic Sans MS, Monotype Corsiva, Papryus";
 				break;
 			case FontFamilies.FantasyFamilyName:
+				familyName = "Impact, Juice ITC";
 				break;
 			}
 			Control = new swm.FontFamily (familyName);
