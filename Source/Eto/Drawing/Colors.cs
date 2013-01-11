@@ -11,7 +11,7 @@ namespace Eto.Drawing
 	public static class Colors
 	{
 		/// <summary>Gets a color with an ARGB value of #</summary>
-		public static Color Transparent { get { return new Color (0, 0, 0, 0); } }
+		public static Color Transparent { get { return Color.FromArgb (0, 0, 0, 0); } }
 
 		// Red colors
 		/// <summary>Gets a color with an ARGB value of #FFCD5C5C</summary>
