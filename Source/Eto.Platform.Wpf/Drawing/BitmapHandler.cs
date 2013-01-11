@@ -126,11 +126,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.CopyPixels (rect, pixels, stride: stride, offset: 0);
 			
 			if (Control.Format == swm.PixelFormats.Rgb24)
-				return Color.FromArgb (r: pixels [0], g: pixels [1], b: pixels [2]);
+				return Color.FromArgb (red: pixels [0], green: pixels [1], blue: pixels [2]);
 			else if (Control.Format == swm.PixelFormats.Bgr32)
-				return Color.FromArgb (b: pixels [0], g: pixels [1], r: pixels [2]);
+				return Color.FromArgb (blue: pixels [0], green: pixels [1], red: pixels [2]);
 			else if (Control.Format == swm.PixelFormats.Pbgra32)
-				return Color.FromArgb (b: pixels [0], g: pixels [1], r: pixels [2], a: pixels [3]);
+				return Color.FromArgb (blue: pixels [0], green: pixels [1], red: pixels [2], alpha: pixels [3]);
 			else
 				throw new NotSupportedException ();
 		}
