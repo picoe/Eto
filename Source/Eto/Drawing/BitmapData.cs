@@ -12,23 +12,58 @@ namespace Eto.Drawing
 	/// Ensure you call <see cref="Bitmap.Unlock"/> with the same instance when you are done
 	/// accessing or writing the data.
 	/// </remarks>
-	public abstract class BitmapData
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public abstract class BitmapData : IDisposable
 	{
 		IntPtr data;
 		int scanWidth;
 		object controlObject;
+		Image image;
+		int bitsPerPixel;
 
 		/// <summary>
 		/// Initializes a new instance of the BitmapData class
 		/// </summary>
+		/// <param name="image">Image this data is for</param>
 		/// <param name="data">Pointer to the bitmap data</param>
 		/// <param name="scanWidth">Width of each scan row, in bytes</param>
+		/// <param name="bitsPerPixel">Bits per pixel</param>
 		/// <param name="controlObject">Platform specific object for the bitmap data (if any)</param>
-		protected BitmapData(IntPtr data, int scanWidth, object controlObject)
+		protected BitmapData(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 		{
+			this.image = image;
 			this.data = data;
 			this.scanWidth = scanWidth;
+			this.bitsPerPixel = bitsPerPixel;
 			this.controlObject = controlObject;
+		}
+
+		/// <summary>
+		/// Gets the image this data is for
+		/// </summary>
+		/// <value>The bitmap.</value>
+		public Image Image
+		{
+			get { return image; }
+		}
+
+		/// <summary>
+		/// Gets the bits per pixel
+		/// </summary>
+		/// <value>The bits per pixel</value>
+		public int BitsPerPixel
+		{
+			get { return bitsPerPixel; }
+		}
+
+		/// <summary>
+		/// Gets the bytes per pixel
+		/// </summary>
+		/// <value>The bytes per pixel</value>
+		public int BytesPerPixel
+		{
+			get { return (bitsPerPixel + 7) / 8;}
 		}
 
 		/// <summary>
@@ -112,6 +147,19 @@ namespace Eto.Drawing
 		public object ControlObject
 		{
 			get { return controlObject; }
+		}
+
+		/// <summary>
+		/// Releases all resource used by the <see cref="Eto.Drawing.BitmapData"/> object.
+		/// </summary>
+		/// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Eto.Drawing.BitmapData"/>. The
+		/// <see cref="Dispose"/> method leaves the <see cref="Eto.Drawing.BitmapData"/> in an unusable state. After calling
+		/// <see cref="Dispose"/>, you must release all references to the <see cref="Eto.Drawing.BitmapData"/> so the garbage
+		/// collector can reclaim the memory that the <see cref="Eto.Drawing.BitmapData"/> was occupying.</remarks>
+		public void Dispose ()
+		{
+			var handler = (ILockableImage)image.Handler;
+			handler.Unlock (this);
 		}
 	}
 }

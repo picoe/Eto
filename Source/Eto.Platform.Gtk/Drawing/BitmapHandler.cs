@@ -5,10 +5,15 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
+	/// <summary>
+	/// Bitmap data handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public BitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -23,6 +28,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 	}
 
+	/// <summary>
+	/// Bitmap handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
 		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf> ();
@@ -71,15 +81,20 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public void Resize (int width, int height)
+		public void Create(int width, int height, Graphics graphics)
 		{
-			Control = Control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
-			sizes.Clear ();
+			Create (width, height, PixelFormat.Format32bppRgba);
+		}
+
+		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		{
+			var pixbuf = image.ToGdk ();
+			Control = pixbuf.ScaleSimple (width, height, interpolation.ToGdk ());
 		}
 
 		public BitmapData Lock ()
 		{
-			return new BitmapDataHandler (Control.Pixels, Control.Rowstride, null);
+			return new BitmapDataHandler (Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null);
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -167,7 +182,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 				pb.Dispose ();*/
 		}
 
-		#region IGtkPixbuf implementation
 		public Gdk.Pixbuf Pixbuf {
 			get {
 				return Control;
@@ -186,6 +200,32 @@ namespace Eto.Platform.GtkSharp.Drawing
 			
 			return pixbuf;
 		}
-		#endregion
-    }
+
+		public IBitmap Clone()
+		{
+			return new BitmapHandler (Control.Copy ());
+		}
+		
+		public Color GetPixel (int x, int y)
+		{
+			using (var data = Lock ()) {
+				unsafe {
+					byte* srcrow = (byte*)data.Data;
+					srcrow += y * data.ScanWidth;
+					srcrow += x * data.BytesPerPixel;
+					if (data.BytesPerPixel == 4) {
+						return Color.FromArgb (data.TranslateDataToArgb (*(uint*)srcrow));
+					}
+					else if (data.BytesPerPixel == 3) {
+						var b = *(srcrow ++);
+						var g = *(srcrow ++);
+						var r = *(srcrow ++);
+						return Color.FromArgb (r, g, b);
+					}
+					else
+						throw new NotSupportedException ();
+				}
+			}
+		}
+	}
 }
