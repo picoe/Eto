@@ -90,8 +90,16 @@ namespace Eto.Platform.Wpf
 		public static string ToWpfMneumonic (this string value)
 		{
 			if (value == null)
-				return null;
-			return value.Replace ("_", "__").Replace ("&", "_");
+				return string.Empty;
+			value = value.Replace ("_", "__");
+			var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+			if (match.Success) {
+				var sb = new StringBuilder (value);
+				sb[match.Index] = '_';
+				sb.Replace ("&&", "&");
+				return sb.ToString ();
+			}
+			return value.Replace ("&&", "&");
 		}
 
 		public static string ConvertMneumonicFromWPF (object obj)
@@ -99,11 +107,15 @@ namespace Eto.Platform.Wpf
 			var value = obj as string;
 			if (value == null)
 				return null;
-			return Regex.Replace (value, "(?<![_])[_]", (match) => {
-				if (match.Value == "__")
-					return "_";
-				else
-					return "&"; });
+			var match = Regex.Match (value, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
+			if (match.Success) {
+				var sb = new StringBuilder (value);
+				sb[match.Index] = '&';
+				sb.Replace ("__", "_");
+				return sb.ToString ();
+			}
+			value = value.Replace ("__", "_");
+			return value;
 		}
 
         public static KeyPressEventArgs ToEto(this swi.KeyEventArgs e, KeyType keyType)
