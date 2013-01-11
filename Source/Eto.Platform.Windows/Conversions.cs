@@ -6,6 +6,7 @@ using sd = System.Drawing;
 using sdp = System.Drawing.Printing;
 using sd2 = System.Drawing.Drawing2D;
 using swf = System.Windows.Forms;
+using sdi = System.Drawing.Imaging;
 
 namespace Eto.Platform.Windows
 {
@@ -96,7 +97,7 @@ namespace Eto.Platform.Windows
 		{
 			switch (value) {
 			case ImageInterpolation.Default:
-				return sd2.InterpolationMode.Default;
+				return sd2.InterpolationMode.High;
 			case ImageInterpolation.None:
 				return sd2.InterpolationMode.NearestNeighbor;
 			case ImageInterpolation.Low:
@@ -567,5 +568,24 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+		public static int BitsPerPixel (this sdi.PixelFormat format)
+		{
+			switch (format) {
+			case sdi.PixelFormat.Format1bppIndexed:
+				return 1;
+			case sdi.PixelFormat.Format4bppIndexed:
+				return 4;
+			case sdi.PixelFormat.Format8bppIndexed:
+				return 8;
+			case sdi.PixelFormat.Format24bppRgb:
+				return 24;
+			case sdi.PixelFormat.Format32bppArgb:
+			case sdi.PixelFormat.Format32bppPArgb:
+			case sdi.PixelFormat.Format32bppRgb:
+				return 32;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }

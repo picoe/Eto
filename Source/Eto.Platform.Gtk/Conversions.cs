@@ -54,7 +54,26 @@ namespace Eto.Platform.GtkSharp
 				throw new NotSupportedException ();
 			}
 		}
-		
+
+		public static Gdk.InterpType ToGdk (this ImageInterpolation value)
+		{
+
+			switch (value) {
+			case ImageInterpolation.Default:
+				return Gdk.InterpType.Bilinear;
+			case ImageInterpolation.None:
+				return Gdk.InterpType.Nearest;
+			case ImageInterpolation.High:
+				return  Gdk.InterpType.Hyper;
+			case ImageInterpolation.Low:
+				return  Gdk.InterpType.Tiles;
+			case ImageInterpolation.Medium:
+				return  Gdk.InterpType.Bilinear;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
 		public static Color ToEto (this Gdk.Color color)
 		{
 			return new Color ((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue);
@@ -395,6 +414,14 @@ namespace Eto.Platform.GtkSharp
 			var gtkimage =new Gtk.Image ();
 			handler.SetImage (gtkimage, size);
 			return gtkimage;
+		}
+
+		public static void SetGtkImage (this Image image, Gtk.Image gtkimage, Gtk.IconSize? size = null)
+		{
+			if (image == null)
+				return;
+			var handler = (IImageHandler)image.Handler;
+			handler.SetImage (gtkimage, size);
 		}
 	}
 }

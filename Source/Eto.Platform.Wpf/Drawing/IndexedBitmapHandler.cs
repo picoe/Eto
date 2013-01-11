@@ -35,7 +35,7 @@ namespace Eto.Platform.Wpf.Drawing
 			var wb = Control as swm.Imaging.WriteableBitmap;
 			if (wb != null) {
 				wb.Lock ();
-				return new BitmapDataHandler (wb.BackBuffer, (int)Control.PixelWidth, Control);
+				return new BitmapDataHandler (Widget, wb.BackBuffer, (int)Control.PixelWidth, Control.Format.BitsPerPixel, Control);
 			}
 			else
 				throw new InvalidOperationException ();
