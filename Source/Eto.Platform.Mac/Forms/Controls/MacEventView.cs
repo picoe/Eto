@@ -5,6 +5,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreImage;
 using Eto.Drawing;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -18,6 +19,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		static NSString CIInputGVector = new NSString ("inputGVector");
 		static NSString CIInputBVector = new NSString ("inputBVector");
 
+		static Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
+
 		public static void Colourize (NSView control, Color color, Action drawAction)
 		{
 			var size = control.Frame.Size;
@@ -30,7 +33,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var ciImage = CIImage.FromData (image.AsTiff ());
 			
 			if (control.IsFlipped) {
-				var realSize = control.ConvertSizeToBase (size);
+				SD.SizeF realSize;
+				if (control.RespondsToSelector (selConvertSizeToBacking))
+					realSize = control.ConvertSizeToBacking (size);
+				else
+					realSize = control.ConvertSizeToBase (size);
 				var affineTransform = new NSAffineTransform ();
 				affineTransform.Translate (0, realSize.Height);
 				affineTransform.Scale (1, -1);
