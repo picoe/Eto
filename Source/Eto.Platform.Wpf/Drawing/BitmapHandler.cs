@@ -110,6 +110,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control = resizedImage;
 		}
 
+		public void SetBitmap (swm.Imaging.BitmapSource bitmap)
+		{
+			this.Control = bitmap;
+		}
+
 		public Color GetPixel (int x, int y)
 		{
 			var rect = new sw.Int32Rect (x, y, 1, 1);
