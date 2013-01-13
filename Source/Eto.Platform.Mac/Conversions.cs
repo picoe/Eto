@@ -186,6 +186,42 @@ namespace Eto.Platform.Mac
 			}
 			return nsimage;
 		}
+
+		public static NSCellImagePosition ToNS (this ButtonImagePosition value)
+		{
+			switch (value) {
+			case ButtonImagePosition.Below:
+				return NSCellImagePosition.ImageBelow;
+			case ButtonImagePosition.Overlay:
+				return NSCellImagePosition.ImageOverlaps;
+			case ButtonImagePosition.Left:
+				return NSCellImagePosition.ImageLeft;
+			case ButtonImagePosition.Right:
+				return NSCellImagePosition.ImageRight;
+			case ButtonImagePosition.Above:
+				return NSCellImagePosition.ImageAbove;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static ButtonImagePosition ToEto (this NSCellImagePosition value)
+		{
+			switch (value) {
+			case NSCellImagePosition.ImageBelow:
+				return ButtonImagePosition.Below;
+			case NSCellImagePosition.ImageOverlaps:
+				return ButtonImagePosition.Overlay;
+			case NSCellImagePosition.ImageLeft:
+				return ButtonImagePosition.Left;
+			case NSCellImagePosition.ImageRight:
+				return ButtonImagePosition.Right;
+			case NSCellImagePosition.ImageAbove:
+				return ButtonImagePosition.Above;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }
 

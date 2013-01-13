@@ -479,5 +479,41 @@ namespace Eto.Platform.Windows
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static swf.TextImageRelation ToSD (this ButtonImagePosition value)
+		{
+			switch (value) {
+			case ButtonImagePosition.Left:
+				return swf.TextImageRelation.ImageBeforeText;
+			case ButtonImagePosition.Right:
+				return swf.TextImageRelation.TextBeforeImage;
+			case ButtonImagePosition.Above:
+				return swf.TextImageRelation.ImageAboveText;
+			case ButtonImagePosition.Below:
+				return swf.TextImageRelation.TextAboveImage;
+			case ButtonImagePosition.Overlay:
+				return swf.TextImageRelation.Overlay;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static ButtonImagePosition ToEto (this swf.TextImageRelation value)
+		{
+			switch (value) {
+			case swf.TextImageRelation.ImageAboveText:
+				return ButtonImagePosition.Above;
+			case swf.TextImageRelation.ImageBeforeText:
+				return ButtonImagePosition.Left;
+			case swf.TextImageRelation.Overlay:
+				return ButtonImagePosition.Overlay;
+			case swf.TextImageRelation.TextAboveImage:
+				return ButtonImagePosition.Below;
+			case swf.TextImageRelation.TextBeforeImage:
+				return ButtonImagePosition.Left;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }
