@@ -292,6 +292,7 @@ namespace Eto.Drawing
 		/// 	byte* pdata = bd.Data;
 		/// 	// access data
 		/// }
+		/// </code>
 		/// </remarks>
 		/// <returns>A BitmapData object that carries a pointer and functions for manipulating the data directly</returns>
 		public BitmapData Lock ()

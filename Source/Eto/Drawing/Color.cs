@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
@@ -241,7 +240,7 @@ namespace Eto.Drawing
 		/// <remarks>
 		/// Use <see cref="TryParse"/> instead of try/catch.
 		/// </remarks>
-		/// <exception cref="ArgumentOutOfRange">If the value is an invalid color</exception>
+		/// <exception cref="ArgumentOutOfRangeException">If the value is an invalid color</exception>
 		/// <param name="value">Value to convert</param>
 		public static Color Parse (string value)
 		{
@@ -419,7 +418,7 @@ namespace Eto.Drawing
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete("Use Colors.Black")]
-		public static readonly Color Black = new Color (0, 0, 0);
+		public static readonly Color Black = new Color (0f, 0f, 0f);
 		
 		/// <summary>
 		/// Obsolete. Do not use.
@@ -461,7 +460,7 @@ namespace Eto.Drawing
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("User Colors.Transparent")]
-		public static readonly Color Transparent = new Color (0, 0, 0, 0);
+		public static readonly Color Transparent = new Color (0f, 0f, 0f, 0f);
 		
 		/// <summary>
 		/// An empty color with zero for all components

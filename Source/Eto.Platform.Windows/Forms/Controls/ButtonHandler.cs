@@ -4,7 +4,6 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
