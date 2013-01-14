@@ -126,12 +126,11 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
-		public void EnableFullScreen(NSApplicationPresentationOptions options = NSApplicationPresentationOptions.FullScreen | NSApplicationPresentationOptions.AutoHideToolbar | NSApplicationPresentationOptions.AutoHideMenuBar | NSApplicationPresentationOptions.AutoHideDock)
+		public void EnableFullScreen()
 		{
 			if (Control.RespondsToSelector (new Selector ("setPresentationOptions:"))) {
-				if (options.HasFlag (NSApplicationPresentationOptions.FullScreen))
-					AddFullScreenMenuItem = true;
-				Control.PresentationOptions = options;
+				AddFullScreenMenuItem = true;
+				Control.PresentationOptions |= NSApplicationPresentationOptions.FullScreen;
 			}
 		}
 		

@@ -10,10 +10,15 @@ using MonoMac.ImageIO;
 
 namespace Eto.Platform.Mac.Drawing
 {
+	/// <summary>
+	/// Bitmap data handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public BitmapDataHandler (Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -40,6 +45,11 @@ namespace Eto.Platform.Mac.Drawing
 		public override bool Flipped { get { return false; } }
 	}
 
+	/// <summary>
+	/// Bitmap handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, IBitmap
 	{
 		NSImageRep rep;
@@ -139,24 +149,21 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
-        public void Create(int width, int height, Graphics graphics)
-        {
-            // TODO: eliminate if possible
-        }
-
-        public void Create(Size size, PixelFormat pixelFormat)
-        {
-            Create(
-                size.Width,
-                size.Height,
-                pixelFormat);
-        }
-
-		public void Resize (int width, int height)
+		public void Create(int width, int height, Graphics graphics)
 		{
-			//control = control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
+			Create (width, height, PixelFormat.Format32bppRgba);
 		}
-		
+
+		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		{
+			var source = image.ToNS ();
+			Control = new NSImage (new sd.SizeF(width, height));
+			Control.LockFocus ();
+			NSGraphicsContext.CurrentContext.GraphicsPort.InterpolationQuality = interpolation.ToCG ();
+			source.DrawInRect (new sd.RectangleF(sd.PointF.Empty, Control.Size), new sd.RectangleF(sd.PointF.Empty, source.Size), NSCompositingOperation.SourceOver, 1f);
+			Control.UnlockFocus ();
+		}
+
 		public override NSImage GetImage ()
 		{
 			return Control;
@@ -164,17 +171,14 @@ namespace Eto.Platform.Mac.Drawing
 
 		public BitmapData Lock ()
 		{
-			//Control.LockFocus();
 			if (bmprep != null)
-				return new BitmapDataHandler (bmprep.BitmapData, bmprep.BytesPerRow, Control);
+				return new BitmapDataHandler (Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
 			else
 				return null;
 		}
 
 		public void Unlock (BitmapData bitmapData)
 		{
-			//Control.UnlockFocus();
-			// don't need to do anythin
 		}
 
 		public void Save (Stream stream, ImageFormat format)
@@ -219,34 +223,18 @@ namespace Eto.Platform.Mac.Drawing
 		}
 
 		public override Size Size {
-			get { 
+			get {
+				/*
 				NSImageRep rep = this.rep;
 				if (rep == null)
 					rep = Control.BestRepresentationForDevice (null);
 				if (rep != null)
 					return new Size(rep.PixelsWide, rep.PixelsHigh);
 				else
-					return Control.Size.ToEtoSize();
+				*/
+				return Control.Size.ToEtoSize();
 			}
 		}
-		
-		/*
-		public override void DrawImage (GraphicsHandler graphics, int x, int y)
-		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate(new SD.RectangleF(0, 0, nsimage.Size.Width, nsimage.Size.Height), nsimage.Size.Height);
-			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, nsimage.Size.Width, nsimage.Size.Height), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
-		}
-		
-		public override void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height)
-		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate(new SD.RectangleF(0, 0, nsimage.Size.Width, nsimage.Size.Height), nsimage.Size.Height);
-			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, width, height), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
-		}
-		*/
 		
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
@@ -259,20 +247,18 @@ namespace Eto.Platform.Mac.Drawing
 			else
 				Control.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
-        public IBitmap Clone()
-        {
-            return null;/* TODO */
-        }
 
-        public Color GetPixel(int x, int y)
-        {
-			var result = default(Color);
+		public IBitmap Clone()
+		{
+			return new BitmapHandler ((NSImage)Control.Copy ());
+		}
 
-			// TODO: there may be some cases where 
-			// bmprep is uninitialized.
-			if (bmprep != null) result = bmprep.ColorAt(x, y).ToEto();
+		public Color GetPixel(int x, int y)
+		{
+			if (bmprep == null)
+				throw new InvalidOperationException (string.Format ("Cannot get pixel data for this type of bitmap ({0})", rep.GetType ()));
 
-			return result;            
-        }
-    }
+			return bmprep.ColorAt(x, y).ToEto();
+		}
+	}
 }

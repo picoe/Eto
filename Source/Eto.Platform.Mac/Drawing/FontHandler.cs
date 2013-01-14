@@ -1,6 +1,9 @@
 using System;
 using Eto.Drawing;
 using System.Text;
+using System.Linq;
+
+
 #if IOS
 
 using MonoTouch.UIKit;
@@ -128,10 +131,11 @@ namespace Eto.Platform.Mac.Drawing
 			this.style = style;
 			this.family = family;
 
-			NSFontTraitMask traits = style.ToNS ();
-			var font = NSFontManager.SharedFontManager.FontWithFamily(((FontFamilyHandler)family.Handler).MacName, traits, 5, size * FONT_SIZE_FACTOR);
+			var familyHandler = (FontFamilyHandler)family.Handler;
+			NSFontTraitMask traits = style.ToNS () & familyHandler.TraitMask;
+			var font = NSFontManager.SharedFontManager.FontWithFamily(familyHandler.MacName, traits, 5, size * FONT_SIZE_FACTOR);
 			if (font == null || font.Handle == IntPtr.Zero)
-				throw new Exception(string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
+				throw new ArgumentOutOfRangeException(string.Empty, string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
 			string suffix = string.Empty;
 			var familyHandler = family.Handler as FontFamilyHandler;

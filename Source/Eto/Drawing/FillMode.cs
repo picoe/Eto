@@ -1,4 +1,4 @@
-﻿
+
 namespace Eto.Drawing
 {
 	// Summary:

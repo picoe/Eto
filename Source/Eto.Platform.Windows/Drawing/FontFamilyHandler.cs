@@ -45,7 +45,7 @@ namespace Eto.Platform.Windows.Drawing
 		public void Create (string familyName)
 		{
 			Name = familyName;
-			switch (familyName.ToLowerInvariant()) {
+			switch (familyName.ToLowerInvariant ()) {
 			case FontFamilies.MonospaceFamilyName:
 				this.Control = sd.FontFamily.GenericMonospace;
 				break;

@@ -32,8 +32,7 @@ namespace Eto.Test.Sections.Drawing
 			while (pal.Count < 256)
 				pal.Add (Colors.Black);
 			image.Palette = pal;
-			var bd = image.Lock ();
-			
+			using (var bd = image.Lock ()) {
 			unsafe {
 				int col = 0;
 				byte* brow = (byte*)bd.Data;
@@ -49,7 +48,7 @@ namespace Eto.Test.Sections.Drawing
 					brow += bd.ScanWidth;
 				}
 			}
-			image.Unlock (bd);
+			}
 			return image;
 			
 		}
