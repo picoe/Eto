@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel;
 using System.Globalization;
-using System.Text.RegularExpressions;
 using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
@@ -17,103 +16,6 @@ namespace Eto.Drawing
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
 		static object colormaplock = new object ();
-
-		#region Obsolete
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete("Use Colors.Black")]
-		public static readonly Color Black = new Color (0, 0, 0);
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.White")]
-		public static readonly Color White = new Color (1.0f, 1.0f, 1.0f);
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Gray")]
-		public static readonly Color Gray = new Color (0x77 / 255f, 0x77 / 255f, 0x77 / 255f);
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.DarkGray")]
-		public static readonly Color LightGray = new Color (0xA8 / 255f, 0xA8 / 255f, 0xA8 / 255f);
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Red")]
-		public static readonly Color Red = new Color (1f, 0, 0);
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Lime")]
-		public static readonly Color Green = new Color (0, 1f, 0);
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Blue")]
-		public static readonly Color Blue = new Color (0, 0, 1f);
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("User Colors.Transparent")]
-		public static readonly Color Transparent = new Color (0, 0, 0, 0);
-
-		/// <summary>
-		/// An empty color with zero for all components
-		/// </summary>
-		#pragma warning disable 618
-		[Obsolete("Use nullable values instead of empty color structs")]
-		public static readonly Color Empty = new Color { IsEmpty = true };
-		#pragma warning restore 618
-
-		/// <summary>
-		/// Obsolete, do not use.
-		/// </summary>
-		[Obsolete ("Use ColorCMYK.ToColor() or implicit conversion")]
-		public Color (ColorCMYK cmyk)
-			: this (cmyk.ToColor ())
-		{
-		}
-
-		/// <summary>
-		/// Obsolete, do not use.
-		/// </summary>
-		[Obsolete ("Use ColorHSL.ToColor() or implicit conversion")]
-		public Color (ColorHSL hsl)
-			: this (hsl.ToColor ())
-		{
-		}
-
-		/// <summary>
-		/// Obsolete, do not use.
-		/// </summary>
-		[Obsolete ("Use ColorHSB.ToColor() or implicit conversion")]
-		public Color (ColorHSB hsb)
-			: this (hsb.ToColor ())
-		{
-		}
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("Use nullable values instead")]
-		public bool IsEmpty
-		{
-			get;
-			private set;
-		}
-
-		#endregion
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
@@ -136,15 +38,47 @@ namespace Eto.Drawing
 		public float B { get; set; }
 
 		/// <summary>
+		/// Gets or sets the alpha/opacity component as a byte of a 32-bit color (0-255)
+		/// </summary>
+		/// <value>The alpha component</value>
+		public int Ab { get { return (int)((A * 255) + 0.5); } set { A = value / 255f; } }
+
+		/// <summary>
+		/// Gets or sets the red component as a byte of a 32-bit color (0-255)
+		/// </summary>
+		/// <value>The red component</value>
+		public int Rb { get { return (int)((R * 255) + 0.5); } set { R = value / 255f; } }
+
+		/// <summary>
+		/// Gets or sets the green component as a byte of a 32-bit color (0-255)
+		/// </summary>
+		/// <value>The green component</value>
+		public int Gb { get { return (int)((G * 255) + 0.5); } set { G = value / 255f; } }
+
+		/// <summary>
+		/// Gets or sets the blue component as a byte of a 32-bit color (0-255)
+		/// </summary>
+		/// <value>The blue component</value>
+		public int Bb { get { return (int)((B * 255) + 0.5); } set { B = value / 255f; } }
+
+		/// <summary>
+		/// Creates a color from 8-bit ARGB components
+		/// </summary>
+		/// <returns>A new instance of the Color object with the specified components</returns>
+		/// <param name="red">The red component (0-255)</param>
+		/// <param name="green">The green component (0-255)</param>
+		/// <param name="blue">The blue component (0-255)</param>
+		/// <param name="alpha">The alpha component (0-255)</param>
+		public static Color FromArgb (int red, int green, int blue, int alpha = 255)
+		{
+			return new Color(alpha: alpha / 255f, red: red / 255f, green: green / 255f, blue: blue / 255f);
+		}
+
+		/// <summary>
 		/// Creates a Color from a 32-bit ARGB value
 		/// </summary>
 		/// <param name="argb">32-bit ARGB value with Alpha in the high byte</param>
 		/// <returns>A new instance of the Color object with the specified color</returns>
-        public static Color FromArgb(int r, int g, int b, int a = 255)
-        {
-            return new Color(alpha: a / 255f, red: r / 255f, green: g / 255f, blue: b / 255f);
-        }
-
 		public static Color FromArgb (uint argb)
 		{
 			return new Color (((argb >> 16) & 0xff) / 255f, ((argb >> 8) & 0xff) / 255f, (argb & 0xff) / 255f, ((argb >> 24) & 0xff) / 255f);
@@ -189,18 +123,6 @@ namespace Eto.Drawing
 			this.G = green;
 			this.B = blue;
 			this.A = alpha;
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Color object with the specified red, green, blue, and alpha components
-		/// </summary>
-		/// <param name="red">Red component (0-255)</param>
-		/// <param name="green">Green component (0-255)</param>
-		/// <param name="blue">Blue component (0-255)</param>
-		/// <param name="alpha">Alpha component (0-255)</param>
-		public Color (int red, int green, int blue, int alpha = 0xff)
-			: this (red / 255f, green / 255f, blue / 255f, alpha / 255f)
-		{
 		}
 
 		/// <summary>
@@ -313,15 +235,26 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Converts a string into a new instance of a Color
+		/// </summary>
+		/// <remarks>
+		/// Use <see cref="TryParse"/> instead of try/catch.
+		/// </remarks>
+		/// <exception cref="ArgumentOutOfRangeException">If the value is an invalid color</exception>
+		/// <param name="value">Value to convert</param>
+		public static Color Parse (string value)
+		{
+			Color color;
+			if (TryParse (value, out color))
+				return color;
+			throw new ArgumentOutOfRangeException ("value", value, "Cannot convert value to a color");
+		}
+
+		/// <summary>
 		/// Tests if the specified object has the same value as this Color
 		/// </summary>
 		/// <param name="obj">Color to compare with</param>
 		/// <returns>True if the specified object is a Color and has the same ARGB components as this color, false otherwise</returns>
-        public int R_ { get { return (int)((R * 255) + 0.5); } }
-        public int G_ { get { return (int)((G * 255) + 0.5); } }
-        public int B_ { get { return (int)((B * 255) + 0.5); } }
-        public int A_ { get { return (int)((A * 255) + 0.5); } }
-
 		public override bool Equals (object obj)
 		{
 			return obj is Color && this == (Color)obj;
@@ -379,11 +312,7 @@ namespace Eto.Drawing
 		/// <returns>The 32-bit ARGB value that corresponds to this color</returns>
 		public uint ToArgb ()
 		{
-			return (
-                (uint)(B * byte.MaxValue) | 
-                (uint)(G * byte.MaxValue) << 8 | 
-                (uint)(R * byte.MaxValue) << 16 | 
-                (uint)(A * byte.MaxValue) << 24);
+			return ((uint)(B * byte.MaxValue) | (uint)(G * byte.MaxValue) << 8 | (uint)(R * byte.MaxValue) << 16 | (uint)(A * byte.MaxValue) << 24);
 		}
 
 		/// <summary>
@@ -412,7 +341,7 @@ namespace Eto.Drawing
 		public override string ToString ()
 		{
 			return ToHex ();
-        }
+		}
 
 		/// <summary>
 		/// Compares the specified color for equality
@@ -423,115 +352,174 @@ namespace Eto.Drawing
 		{
 			return other == this;
 		}
-        #region Element Id Colors
 
-        public static Color GetElementIdColor(int id)
-        {
-            var result = default(Color);
+		#region Element Id Colors
 
-            // This algorithm is from the SVG# code base:
-            // The counter is used to generate IDs in the range [0,2^24-1]
-            // The 24 bits of the counter are interpreted as follows:
-            // [red 7 bits | green 7 bits | blue 7 bits |shuffle term 3 bits]
-            // The shuffle term is used to define how the remaining high
-            // bit is set on each color. The colors are generated in the
-            // range [0,127] (7 bits) instead of [0,255]. Then the shuffle term
-            // is used to adjust them into the range [0,255].
-            // This algorithm has the feature that consecutive ids generate
-            // visually distinct colors.
-            int shuffleTerm = id & 7;
+		/// <summary>
+		/// Creates a new color from an Element ID value
+		/// </summary>
+		/// <remarks>
+		/// This algorithm is from the SVG# code base:
+		/// The counter is used to generate IDs in the range [0,2^24-1]
+		/// The 24 bits of the counter are interpreted as follows:
+		/// [red 7 bits | green 7 bits | blue 7 bits |shuffle term 3 bits]
+		/// The shuffle term is used to define how the remaining high
+		/// bit is set on each color. The colors are generated in the
+		/// range [0,127] (7 bits) instead of [0,255]. Then the shuffle term
+		/// is used to adjust them into the range [0,255].
+		/// This algorithm has the feature that consecutive ids generate
+		/// visually distinct colors.
+		/// </remarks>
+		/// <returns>A new instance of a Color with the value from the element id</returns>
+		/// <param name="id">Identifier.</param>
+		/// <param name="alpha">Alpha.</param>
+		public static Color FromElementId (int id, int alpha = 255)
+		{
+			int shuffleTerm = id & 7;
+			
+			int red = 0x7f & (id >> 17);
+			int green = 0x7f & (id >> 10);
+			int blue = 0x7f & (id >> 3);
+			
+			if ((shuffleTerm & 1) == 1)
+				blue |= 0x80;
+			
+			if ((shuffleTerm & 2) == 2)
+				green |= 0x80;
+			
+			if ((shuffleTerm & 4) == 4)
+				red |= 0x80;
+			
+			return Color.FromArgb (red, green, blue, alpha);
+		}
 
-            int r = 0x7f & (id >> 17);
-            int g = 0x7f & (id >> 10);
-            int b = 0x7f & (id >> 3);
+		/// <summary>
+		/// Converts this color to an Element ID value
+		/// </summary>
+		/// <seealso cref="FromElementId"/>
+		/// <returns>The element id value of this color</returns>
+		public int ToElementId ()
+		{
+			int result = (this.Rb & 0x7f) << 17
+				| (this.Gb & 0x7f) << 10
+				| (this.Bb & 0x7f) << 3
+				| ((this.Rb & 0x80) == 0x80 ? 4 : 0)
+				| ((this.Gb & 0x80) == 0x80 ? 2 : 0)
+				| ((this.Bb & 0x80) == 0x80 ? 1 : 0);
+			
+			return result;
+		}
 
-            if ((shuffleTerm & 1) == 1)
-                b |= 0x80;
+		#endregion
 
-            if ((shuffleTerm & 2) == 2)
-                g |= 0x80;
-
-            if ((shuffleTerm & 4) == 4)
-                r |= 0x80;
-
-            /*
-            switch (shuffleTerm)
-            {
-                case 0: break;
-                case 1: b |= 0x80; break;
-                case 2: g |= 0x80; break;
-                case 3: g |= 0x80; b |= 0x80; break;
-                case 4: r |= 0x80; break;
-                case 5: r |= 0x80; b |= 0x80; break;
-                case 6: r |= 0x80; g |= 0x80; break;
-                case 7: r |= 0x80; g |= 0x80; b |= 0x80; break;
-            }*/
-
-            result = new Color(r, g, b);
-
-            return result;
-        }
-
-        public int ToElementId()
-        {
-            int result =
-                (this.R_ & 0x7f) << 17 |
-                (this.G_ & 0x7f) << 10 |
-                (this.B_ & 0x7f) << 3 |
-                ((this.R_ & 0x80) == 0x80 ? 4 : 0) |
-                ((this.G_ & 0x80) == 0x80 ? 2 : 0) |
-                ((this.B_ & 0x80) == 0x80 ? 1 : 0);
-
-            return result;
-        }
-
-        #endregion
-
-        #region Parse
-
-        private static Regex ColorRegexArgb =
-            new Regex(@"\#(\w\w)(\w\w)(\w\w)(\w\w)");
-
-        private static Regex ColorRegexRgb =
-            new Regex(@"\#(\w\w)(\w\w)(\w\w)");
-
-        public static Color? Parse(string value)
-        {
-            Color? color = null;
-
-            var matchArgb =
-                ColorRegexArgb.Match(
-                    value);
-
-            if (matchArgb.Success)
-            {
-                color =
-                    new Color(
-                        Convert.ToInt32(matchArgb.Groups[2].Value, 16), // R
-                        Convert.ToInt32(matchArgb.Groups[3].Value, 16), // G
-                        Convert.ToInt32(matchArgb.Groups[4].Value, 16), // B
-                        Convert.ToInt32(matchArgb.Groups[1].Value, 16)); // A
-            }
-            else
-            {
-
-                var match =
-                    ColorRegexRgb.Match(
-                        value);
-
-                if (match.Success)
-                {
-                    color =
-                        new Color(
-                            Convert.ToInt32(match.Groups[1].Value, 16),
-                            Convert.ToInt32(match.Groups[2].Value, 16),
-                            Convert.ToInt32(match.Groups[3].Value, 16));
-                }
-            }
-
-            return color;
-        }
-
-        #endregion
-    }
+		#region Obsolete
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete("Use Colors.Black")]
+		public static readonly Color Black = new Color (0f, 0f, 0f);
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.White")]
+		public static readonly Color White = new Color (1.0f, 1.0f, 1.0f);
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Gray")]
+		public static readonly Color Gray = new Color (0x77 / 255f, 0x77 / 255f, 0x77 / 255f);
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.DarkGray")]
+		public static readonly Color LightGray = new Color (0xA8 / 255f, 0xA8 / 255f, 0xA8 / 255f);
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Red")]
+		public static readonly Color Red = new Color (1f, 0, 0);
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Lime")]
+		public static readonly Color Green = new Color (0, 1f, 0);
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Blue")]
+		public static readonly Color Blue = new Color (0, 0, 1f);
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("User Colors.Transparent")]
+		public static readonly Color Transparent = new Color (0f, 0f, 0f, 0f);
+		
+		/// <summary>
+		/// An empty color with zero for all components
+		/// </summary>
+#pragma warning disable 618
+		[Obsolete("Use nullable values instead of empty color structs")]
+		public static readonly Color Empty = new Color { IsEmpty = true };
+#pragma warning restore 618
+		
+		/// <summary>
+		/// Obsolete, do not use.
+		/// </summary>
+		[Obsolete ("Use ColorCMYK.ToColor() or implicit conversion")]
+		public Color (ColorCMYK cmyk)
+		: this (cmyk.ToColor ())
+		{
+		}
+		
+		/// <summary>
+		/// Obsolete, do not use.
+		/// </summary>
+		[Obsolete ("Use ColorHSL.ToColor() or implicit conversion")]
+		public Color (ColorHSL hsl)
+		: this (hsl.ToColor ())
+		{
+		}
+		
+		/// <summary>
+		/// Obsolete, do not use.
+		/// </summary>
+		[Obsolete ("Use ColorHSB.ToColor() or implicit conversion")]
+		public Color (ColorHSB hsb)
+		: this (hsb.ToColor ())
+		{
+		}
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("Use nullable values instead")]
+		public bool IsEmpty
+		{
+			get;
+			private set;
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the Color object with the specified red, green, blue, and alpha components
+		/// </summary>
+		/// <param name="red">Red component (0-255)</param>
+		/// <param name="green">Green component (0-255)</param>
+		/// <param name="blue">Blue component (0-255)</param>
+		/// <param name="alpha">Alpha component (0-255)</param>
+		[Obsolete ("Use Color.FromArgb instead")]
+		public Color (int red, int green, int blue, int alpha = 0xff)
+		: this (red / 255f, green / 255f, blue / 255f, alpha / 255f)
+		{
+		}
+		
+		#endregion
+	}
 }

@@ -1,53 +1,93 @@
 using System;
 using System.Reflection;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class ButtonHandler : WindowsControl<System.Windows.Forms.Button, Button>, IButton
+	/// <summary>
+	/// Button handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button>, IButton
 	{
-        Image image;
+		Image image;
 
-		public override SWF.DockStyle DockStyle {
-			get {
-				return SWF.DockStyle.None;
+		public override swf.DockStyle DockStyle { get { return swf.DockStyle.None; } }
+
+		public class EtoButton : swf.Button
+		{
+			public override sd.Size GetPreferredSize (sd.Size proposedSize)
+			{
+				var size = base.GetPreferredSize (sd.Size.Empty);
+				// fix bug where text will wrap if it has both an image and text
+				if (AutoSize && Image != null) {
+					size.Width += 3;
+				}
+				return size;
 			}
 		}
 
-		public ButtonHandler()
+		public override Size? DefaultSize
 		{
-			Control = new SWF.Button();
-			Control.MinimumSize = Button.DefaultSize.ToSD ();
+			get { return Button.DefaultSize; }
+		}
+
+		public ButtonHandler ()
+		{
+			Control = new EtoButton ();
+			Control.AutoSizeMode = swf.AutoSizeMode.GrowAndShrink;
+			Control.TextImageRelation = swf.TextImageRelation.ImageBeforeText;
 			Control.AutoSize = true;
 			Control.Click += delegate {
-				Widget.OnClick(EventArgs.Empty);
+				Widget.OnClick (EventArgs.Empty);
 			};
 		}
-                //this.Control.MaximumSize = Generator.Convert(value);
-        public Image Image
-        {
-            get
-            {
-                return image;
-            }
-            set
-            {
-                image = value;
-                var sdimage = image.ControlObject as SD.Image;
-                if (sdimage != null) Control.Image = sdimage;
-                else
-                {
-                    var icon = image.ControlObject as IconHandler;
-                    Control.Image = icon.GetLargestIcon().ToBitmap();
-                }
-                if (//!sizeSet &&   TODO
-                    Control.Image != null)
-                    Control.Size = Control.Image.Size;
-            }
-        }
+
+		public override string Text
+		{
+			get { return base.Text; }
+			set
+			{
+				base.Text = value;
+				SetAlign ();
+			}
+		}
+
+		public Image Image
+		{
+			get { return image; }
+			set
+			{
+				image = value;
+				Control.Image = image.ToSD ();
+			}
+		}
+
+		void SetAlign ()
+		{
+			if (string.IsNullOrEmpty (base.Text)) {
+				if (Control.TextImageRelation == swf.TextImageRelation.ImageBeforeText)
+					Control.ImageAlign = sd.ContentAlignment.MiddleLeft;
+				else if (Control.TextImageRelation == swf.TextImageRelation.TextBeforeImage)
+					Control.ImageAlign = sd.ContentAlignment.MiddleRight;
+				else
+					Control.ImageAlign = sd.ContentAlignment.MiddleCenter;
+			}
+			else
+				Control.ImageAlign = sd.ContentAlignment.MiddleCenter;
+		}
+
+		public ButtonImagePosition ImagePosition
+		{
+			get { return Control.TextImageRelation.ToEto (); }
+			set {
+				Control.TextImageRelation = value.ToSD ();
+				SetAlign ();
+			}
+		}
 	}
 }

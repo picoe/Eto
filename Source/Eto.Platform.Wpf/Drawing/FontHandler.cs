@@ -185,7 +185,6 @@ namespace Eto.Platform.Wpf.Drawing
 		}
 
 
-
 		public FontFamily Family
 		{
 			get;

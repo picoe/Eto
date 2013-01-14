@@ -46,6 +46,67 @@ namespace Eto.Drawing
 			get { return Dashes == null || Dashes.Length == 0; }
 		}
 
+		public static bool TryParse (string value, out DashStyle style)
+		{
+			if (string.IsNullOrEmpty (value)) {
+				style = DashStyles.Solid;
+				return true;
+			}
+
+			switch (value.ToLowerInvariant ()) {
+			case "solid":
+				style = DashStyles.Solid;
+				return true;
+				break;
+			case "dash":
+				style = DashStyles.Dash;
+				return true;
+				break;
+			case "dot":
+				style = DashStyles.Dot;
+				return true;
+				break;
+			case "dashdot":
+				style = DashStyles.DashDot;
+				return true;
+				break;
+			case "dashdotdot":
+				style = DashStyles.DashDotDot;
+				return true;
+				break;
+			}
+
+			var values = value.Split (',');
+			if (values.Length == 0) {
+				style = DashStyles.Solid;
+				return true;
+			}
+			float offset;
+			if (!float.TryParse (values [0], out offset))
+				throw new ArgumentOutOfRangeException ("value", value);
+			float [] dashes = null;
+			if (values.Length > 1) {
+				dashes = new float [values.Length - 1];
+				for (int i = 0; i < dashes.Length; i++) {
+					float dashValue;
+					if (!float.TryParse (values [i + 1], out dashValue))
+						throw new ArgumentOutOfRangeException ("value", value);
+					dashes [i] = dashValue;
+				}
+			}
+
+			style = new DashStyle (offset, dashes);
+			return true;
+		}
+
+		public static DashStyle Parse (string value)
+		{
+			DashStyle style;
+			if (TryParse (value, out style))
+				return style;
+			throw new ArgumentOutOfRangeException ("value", value, "Cannot convert value to a color");
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Drawing.DashStyle"/> class.
 		/// </summary>
@@ -114,6 +175,10 @@ namespace Eto.Drawing
 			return obj is DashStyle && this == (DashStyle)obj;
 		}
 
+		/// <summary>
+		/// Returns a <see cref="System.String"/> that represents the current <see cref="Eto.Drawing.DashStyle"/>.
+		/// </summary>
+		/// <returns>A <see cref="System.String"/> that represents the current <see cref="Eto.Drawing.DashStyle"/>.</returns>
 		public override string ToString()
 		{
 			if (object.ReferenceEquals(this, DashStyles.Dash))
@@ -126,7 +191,8 @@ namespace Eto.Drawing
 				return "dashdotdot";
 			else if (object.ReferenceEquals(this, DashStyles.Solid))
 				return "solid";
-			return base.ToString();			
+			else
+				return string.Format ("{0},{1}", Offset, string.Join (",", Dashes.Select (r => r.ToString ())));
 		}
 
 		/// <summary>
