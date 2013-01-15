@@ -122,12 +122,7 @@ namespace Eto.Platform.iOS.Drawing
 			Control.AddCurveToPoint (control1.X, control1.Y, control2.X, control2.Y, end.X, end.Y);
 		}
 
-		public void AddPath(IGraphicsPathBase path, bool connect)
-		{
-			AddPath(((IGraphicsPath)path), connect);
-		}
-
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath(IGraphicsPath path, bool connect)
 		{
 			if (path.IsEmpty)
 				return;
@@ -240,11 +235,6 @@ namespace Eto.Platform.iOS.Drawing
 			Control.Dispose ();
 		}
 	
-		public GraphicsPath ToGraphicsPath()
-		{
-			throw new NotImplementedException(); // should never get called
-		}
-
 		public FillMode FillMode
 		{
 			get;

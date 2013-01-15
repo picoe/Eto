@@ -507,8 +507,6 @@ namespace Eto.Platform.iOS.Drawing
 			this.Control.ClipToRect(rect.ToSD());
 		}
 
-		// In progress: Graphics.Clear should not take a color,
-		// and set all pixels to the transparent color.
 		public void Clear(SolidBrush brush)
 		{
 			if (brush != null)

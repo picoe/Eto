@@ -58,12 +58,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.AddBezier (start.ToSD (), control1.ToSD (), control2.ToSD (), end.ToSD ());
 		}
 
-		public void AddPath(IGraphicsPathBase path, bool connect)
-		{
-			AddPath(((IGraphicsPath)path), connect);
-		}
-
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath(IGraphicsPath path, bool connect)
 		{
 			Control.AddPath(path.ToSD(), connect);
 		}
@@ -137,11 +132,6 @@ namespace Eto.Platform.Windows.Drawing
 			return new GraphicsPathHandler((sd.Drawing2D.GraphicsPath)this.Control.Clone());
 		}
 	
-		public GraphicsPath ToGraphicsPath()
-		{
-			throw new NotImplementedException(); // should never get called
-		}
-
 		public FillMode FillMode
 		{
 			set 

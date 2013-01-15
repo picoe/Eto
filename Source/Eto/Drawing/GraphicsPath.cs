@@ -4,71 +4,6 @@ using System.Collections.Generic;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Allows different implementations to be used so that a graphics
-	/// path can be rendered to alternate media such as SVG or
-	/// dumped to a string.
-	/// </summary>
-	public interface IGraphicsPathBase : IDisposable
-	{
-		/// <summary>
-		/// Adds a bezier curve to the path with two control points
-		/// </summary>
-		/// <remarks>
-		/// If the current figure is not closed, it will connect with the <paramref name="start"/> of the bezier curve.
-		/// The current position will be moved to the <paramref name="end"/> point.
-		/// </remarks>
-		/// <param name="start">Starting point of the bezier curve</param>
-		/// <param name="control1">First control point of the curve</param>
-		/// <param name="control2">Second control point of the curve</param>
-		/// <param name="end">Ending point of the bezier curve</param>
-		void AddBezier(PointF start, PointF control1, PointF control2, PointF end);
-
-		/// <summary>
-		/// Closes the current figure by connecting a line to the beginning of the figure
-		/// </summary>
-		/// <remarks>
-		/// This will also make the next segment added to the path start independently from the last figure.
-		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
-		/// </remarks>
-		void CloseFigure();
-
-		/// <summary>
-		/// Adds the specified <paramref name="path"/> to the current path, optionally connecting the current figure to the start of the path
-		/// </summary>
-		/// <remarks>
-		/// The <paramref name="connect"/> parameter only specifies that the path should be connected to the current path
-		/// at the beginning. The end of the specified path will always be connected to the next segment added to this path,
-		/// unlesss <see cref="CloseFigure"/> or <see cref="StartFigure"/> are called after this.
-		/// </remarks>
-		/// <param name="path">Child path to add to this instance</param>
-		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
-		void AddPath(IGraphicsPathBase path, bool connect = false);
-
-		/// <summary>
-		/// Gets the bounding rectangle for this path
-		/// </summary>
-		RectangleF Bounds { get; }
-
-		GraphicsPath ToGraphicsPath();
-
-		/// <summary>
-		/// Adds lines to each of the specified <paramref name="points"/> to the path 
-		/// </summary>
-		/// <remarks>
-		/// If the current figure is not closed, it will connect with the first point specified.
-		/// The current position will be moved to the last point specified
-		/// </remarks>
-		/// <param name="points">Points for each part of the line</param>
-		void AddLines(IEnumerable<PointF> points);
-
-		/// <summary>
-		/// Transforms the points in the path with the specified matrix
-		/// </summary>
-		/// <param name="matrix">Matrix to transform the path</param>
-		void Transform(IMatrix matrix);
-	};
-
-	/// <summary>
 	/// Graphics path to be used for drawing or filling using a <see cref="Graphics"/> object
 	/// </summary>
 	/// <remarks>
@@ -76,7 +11,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGraphicsPath : IGraphicsPathBase, IControlObjectSource
+	public interface IGraphicsPath : IDisposable, IControlObjectSource
 	{
 		/// <summary>
 		/// Sets a value indicating how this graphics path should be filled.
@@ -185,6 +120,61 @@ namespace Eto.Drawing
 		/// This will make the next segment added to the path independent (unconnected) to the last segment.
 		/// </remarks>
 		void StartFigure ();
+
+		/// <summary>
+		/// Adds a bezier curve to the path with two control points
+		/// </summary>
+		/// <remarks>
+		/// If the current figure is not closed, it will connect with the <paramref name="start"/> of the bezier curve.
+		/// The current position will be moved to the <paramref name="end"/> point.
+		/// </remarks>
+		/// <param name="start">Starting point of the bezier curve</param>
+		/// <param name="control1">First control point of the curve</param>
+		/// <param name="control2">Second control point of the curve</param>
+		/// <param name="end">Ending point of the bezier curve</param>
+		void AddBezier(PointF start, PointF control1, PointF control2, PointF end);
+
+		/// <summary>
+		/// Closes the current figure by connecting a line to the beginning of the figure
+		/// </summary>
+		/// <remarks>
+		/// This will also make the next segment added to the path start independently from the last figure.
+		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
+		/// </remarks>
+		void CloseFigure();
+
+		/// <summary>
+		/// Adds the specified <paramref name="path"/> to the current path, optionally connecting the current figure to the start of the path
+		/// </summary>
+		/// <remarks>
+		/// The <paramref name="connect"/> parameter only specifies that the path should be connected to the current path
+		/// at the beginning. The end of the specified path will always be connected to the next segment added to this path,
+		/// unlesss <see cref="CloseFigure"/> or <see cref="StartFigure"/> are called after this.
+		/// </remarks>
+		/// <param name="path">Child path to add to this instance</param>
+		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
+		void AddPath(IGraphicsPath path, bool connect = false);
+
+		/// <summary>
+		/// Gets the bounding rectangle for this path
+		/// </summary>
+		RectangleF Bounds { get; }
+
+		/// <summary>
+		/// Adds lines to each of the specified <paramref name="points"/> to the path 
+		/// </summary>
+		/// <remarks>
+		/// If the current figure is not closed, it will connect with the first point specified.
+		/// The current position will be moved to the last point specified
+		/// </remarks>
+		/// <param name="points">Points for each part of the line</param>
+		void AddLines(IEnumerable<PointF> points);
+
+		/// <summary>
+		/// Transforms the points in the path with the specified matrix
+		/// </summary>
+		/// <param name="matrix">Matrix to transform the path</param>
+		void Transform(IMatrix matrix);
 
 		IGraphicsPath Clone();
 	}
@@ -538,7 +528,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="path">Child path to add to this instance</param>
 		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
-		public void AddPath (IGraphicsPathBase path, bool connect = false)
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			Handler.AddPath (path, connect);
 		}
@@ -598,11 +588,6 @@ namespace Eto.Drawing
 		object IHandlerSource.Handler
 		{
 			get { throw new NotImplementedException (); }
-		}
-
-		public GraphicsPath ToGraphicsPath()
-		{
-			return this;
 		}
 	}
 }
