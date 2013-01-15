@@ -219,11 +219,6 @@ namespace Eto.Platform.Wpf.Drawing
 			return new GraphicsPathHandler(Control.Clone());
 		}
 
-		public GraphicsPath ToGraphicsPath()
-		{
-			throw new NotImplementedException(); // should never get called
-		}
-
 		public FillMode FillMode
 		{
 			set { Control.FillRule = value == FillMode.Alternate ? swm.FillRule.EvenOdd : swm.FillRule.Nonzero ; }

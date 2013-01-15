@@ -132,11 +132,6 @@ namespace Eto.Platform.Windows.Drawing
 			return new GraphicsPathHandler((sd.Drawing2D.GraphicsPath)this.Control.Clone());
 		}
 	
-		public GraphicsPath ToGraphicsPath()
-		{
-			throw new NotImplementedException(); // should never get called
-		}
-
 		public FillMode FillMode
 		{
 			set 

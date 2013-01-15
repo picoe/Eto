@@ -235,11 +235,6 @@ namespace Eto.Platform.iOS.Drawing
 			Control.Dispose ();
 		}
 	
-		public GraphicsPath ToGraphicsPath()
-		{
-			throw new NotImplementedException(); // should never get called
-		}
-
 		public FillMode FillMode
 		{
 			get;

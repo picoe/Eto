@@ -176,8 +176,6 @@ namespace Eto.Drawing
 		/// <param name="matrix">Matrix to transform the path</param>
 		void Transform(IMatrix matrix);
 
-		GraphicsPath ToGraphicsPath();
-
 		IGraphicsPath Clone();
 	}
 
@@ -590,11 +588,6 @@ namespace Eto.Drawing
 		object IHandlerSource.Handler
 		{
 			get { throw new NotImplementedException (); }
-		}
-
-		public GraphicsPath ToGraphicsPath()
-		{
-			return this;
 		}
 	}
 }
