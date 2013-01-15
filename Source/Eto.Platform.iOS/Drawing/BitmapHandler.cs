@@ -11,8 +11,8 @@ namespace Eto.Platform.iOS.Drawing
 {
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public BitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -35,7 +35,6 @@ namespace Eto.Platform.iOS.Drawing
 
 	public class BitmapHandler : ImageHandler<UIImage, Bitmap>, IBitmap
 	{
-		int bytesPerRow;
 		CGDataProvider provider;
 		CGImage cgimage;
 		
@@ -60,7 +59,7 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
-					bytesPerRow = bytesPerPixel * width;
+					int bytesPerRow = bytesPerPixel * width;
 
 					Data = NSMutableData.FromLength (bytesPerRow * height);
 
@@ -76,7 +75,7 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
-					bytesPerRow = bytesPerPixel * width;
+					int bytesPerRow = bytesPerPixel * width;
 					Data = NSMutableData.FromLength (bytesPerRow * height);
 					//Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
@@ -92,7 +91,7 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
-					bytesPerRow = bytesPerPixel * width;
+					int bytesPerRow = bytesPerPixel * width;
 					Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
 					provider = new CGDataProvider (Data.MutableBytes, (int)Data.Length, false);
@@ -105,14 +104,22 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
-		public void Resize (int width, int height)
+		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			//control = control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
+			var source = image.ToUI ();
+			// todo: use interpolation
+			Control = source.Scale (new SD.SizeF(width, height));
+		}
+
+		public void Create (int width, int height, Graphics graphics)
+		{
+			Create (width, height, PixelFormat.Format32bppRgba);
 		}
 
 		public BitmapData Lock ()
 		{
-			return new BitmapDataHandler (Data.MutableBytes, bytesPerRow, Control);
+			cgimage = cgimage ?? Control.CGImage;
+			return new BitmapDataHandler (Widget, Data.MutableBytes, cgimage.BytesPerRow, cgimage.BitsPerPixel, Control);
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -218,6 +225,33 @@ namespace Eto.Platform.iOS.Drawing
 		public override UIImage GetUIImage ()
 		{
 			return this.Control;
+		}
+
+		public IBitmap Clone ()
+		{
+			return new BitmapHandler { Control = (UIImage)this.Control.Copy () };
+		}
+
+		public Color GetPixel (int x, int y)
+		{
+			using (var data = Lock ()) {
+				unsafe {
+					byte* srcrow = (byte*)data.Data;
+					srcrow += y * data.ScanWidth;
+					srcrow += x * data.BytesPerPixel;
+					if (data.BytesPerPixel == 4) {
+						return Color.FromArgb (data.TranslateDataToArgb (*(uint*)srcrow));
+					}
+					else if (data.BytesPerPixel == 3) {
+						var b = *(srcrow ++);
+						var g = *(srcrow ++);
+						var r = *(srcrow ++);
+						return Color.FromArgb (r, g, b);
+					}
+					else
+						throw new NotSupportedException ();
+				}
+			}
 		}
 
 	}

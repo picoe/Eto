@@ -283,6 +283,15 @@
     <Compile Include="Drawing\DashStyles.cs" />
     <Compile Include="Drawing\TextureBrush.cs" />
     <Compile Include="Drawing\LinearGradientBrush.cs" />
+    <Compile Include="Interface\IDragDropInputSource.cs" />
+    <Compile Include="Interface\IKeyboardInputSource.cs" />
+    <Compile Include="Interface\IMouseInputSource.cs" />
+    <Compile Include="Forms\Controls\DataObject.cs" />
+    <Compile Include="Forms\Controls\DragDrop.cs" />
+    <Compile Include="Forms\Controls\DragDropInputSource.cs" />
+    <Compile Include="Forms\Screen.cs" />
+    <Compile Include="Drawing\FillMode.cs" />
+    <Compile Include="Helper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

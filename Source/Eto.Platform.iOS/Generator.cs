@@ -35,6 +35,7 @@ namespace Eto.Platform.iOS
 			Add <IPen> (() => new PenHandler ());
 			Add <ISolidBrush> (() => new SolidBrushHandler ());
 			Add <ITextureBrush> (() => new TextureBrushHandler ());
+			Add <ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
 
 			// Forms.Cells
 			//Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
