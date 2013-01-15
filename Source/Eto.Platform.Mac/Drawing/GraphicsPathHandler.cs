@@ -136,17 +136,17 @@ namespace Eto.Platform.iOS.Drawing
 					switch (element.Type) {
 					case CGPathElementType.AddCurveToPoint:
 						if (first)
-							ConnectTo (element.Point3.ToEto ());
+							ConnectTo (Platform.Conversions.ToEto (element.Point3));
 						Control.AddCurveToPoint (element.Point1, element.Point2, element.Point3);
 						break;
 					case CGPathElementType.AddLineToPoint:
 						if (first)
-							ConnectTo (element.Point1.ToEto ());
+							ConnectTo (Platform.Conversions.ToEto (element.Point1));
 						Control.AddLineToPoint(element.Point1);
 						break;
 					case CGPathElementType.AddQuadCurveToPoint:
 						if (first)
-							ConnectTo (element.Point2.ToEto ());
+							ConnectTo (Platform.Conversions.ToEto (element.Point2));
 						Control.AddQuadCurveToPoint (element.Point1.X, element.Point1.Y, element.Point2.X, element.Point2.Y);
 						break;
 					case CGPathElementType.CloseSubpath:
@@ -154,7 +154,7 @@ namespace Eto.Platform.iOS.Drawing
 						break;
 					case CGPathElementType.MoveToPoint:
 						if (first)
-							ConnectTo (element.Point1.ToEto ());
+							ConnectTo (Platform.Conversions.ToEto (element.Point1));
 						else
 							Control.MoveToPoint (element.Point1);
 						break;
@@ -211,7 +211,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public RectangleF Bounds
 		{
-			get { return Control.PathBoundingBox.ToEto (); }
+			get { return Platform.Conversions.ToEto (Control.PathBoundingBox); }
 		}
 
 		public bool IsEmpty
@@ -221,7 +221,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public PointF CurrentPoint
 		{
-			get { return Control.CurrentPoint.ToEto (); }
+			get { return Platform.Conversions.ToEto (Control.CurrentPoint); }
 		}
 
 		public object ControlObject
@@ -232,6 +232,13 @@ namespace Eto.Platform.iOS.Drawing
 		public void Dispose ()
 		{
 			Control.Dispose ();
+		}
+	
+		public FillMode FillMode { get; set; }
+
+		public IGraphicsPath Clone ()
+		{
+			return new GraphicsPathHandler (new CGPath (this.Control));
 		}
 	}
 }

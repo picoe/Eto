@@ -349,6 +349,21 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			get { return this; }
 		}
+
+		public IGraphicsPath Clone()
+		{
+			var handler = new GraphicsPathHandler ();
+			handler.commands.AddRange (this.commands);
+			handler.transform = this.transform.Clone ();
+			handler.firstFigureClosed = this.firstFigureClosed;
+			handler.isFirstFigure = this.isFirstFigure;
+			return handler;
+		}
+
+		public FillMode FillMode
+		{
+			get; set;
+		}
 	}
 }
 

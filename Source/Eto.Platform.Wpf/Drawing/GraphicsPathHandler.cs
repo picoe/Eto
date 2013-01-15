@@ -208,5 +208,16 @@ namespace Eto.Platform.Wpf.Drawing
 		public void Dispose ()
 		{
 		}
+
+		public IGraphicsPath Clone ()
+		{
+			return new GraphicsPathHandler (Control.Clone ());
+		}
+
+		public FillMode FillMode
+		{
+			set { Control.FillRule = value == FillMode.Alternate ? swm.FillRule.EvenOdd : swm.FillRule.Nonzero; }
+			get { return Control.FillRule == swm.FillRule.EvenOdd ? FillMode.Alternate : FillMode.Winding; }
+		}
 	}
 }

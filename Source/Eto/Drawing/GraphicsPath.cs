@@ -17,7 +17,12 @@ namespace Eto.Drawing
 		/// Gets the bounding rectangle for this path
 		/// </summary>
 		RectangleF Bounds { get; }
-		
+
+		/// <summary>
+		/// Gets or sets a value indicating how this graphics path should be filled.
+		/// </summary>
+		FillMode FillMode { get; set; }
+
 		/// <summary>
 		/// Gets a value indicating that this graphics path is empty and has no segments
 		/// </summary>
@@ -146,7 +151,7 @@ namespace Eto.Drawing
 		/// <param name="path">Child path to add to this instance</param>
 		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
 		void AddPath (IGraphicsPath path, bool connect = false);
-
+		
 		/// <summary>
 		/// Transforms the points in the path with the specified matrix
 		/// </summary>
@@ -169,6 +174,11 @@ namespace Eto.Drawing
 		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
 		/// </remarks>
 		void CloseFigure ();
+
+		/// <summary>
+		/// Creates a clone of the graphics path
+		/// </summary>
+		IGraphicsPath Clone ();
 	}
 
 	/// <summary>
@@ -302,7 +312,16 @@ namespace Eto.Drawing
 		{
 			get { return Handler.Bounds; }
 		}
-		
+
+		/// <summary>
+		/// Sets a value indicating how this graphics path should be filled.
+		/// </summary>
+		public FillMode FillMode
+		{
+			set { Handler.FillMode = value; }
+			get { return Handler.FillMode; }
+		}
+
 		/// <summary>
 		/// Gets a value indicating that this graphics path is empty and has no segments
 		/// </summary>
@@ -334,7 +353,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator used to create the graphics path objects</param>
 		public static Func<IGraphicsPath> Instantiator (Generator generator = null)
 		{
-			var instantiator = generator.Find<IGraphicsPathHandler>();
+			var instantiator = generator.Find<IGraphicsPathHandler> ();
 			return () => {
 				return instantiator ();
 			};
@@ -356,6 +375,15 @@ namespace Eto.Drawing
 		public GraphicsPath (Generator generator = null)
 		{
 			Handler = Create (generator);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.GraphicsPath"/> class.
+		/// </summary>
+		/// <param name="handler">Handler for the graphics path</param>
+		GraphicsPath (IGraphicsPath handler)
+		{
+			Handler = handler;
 		}
 
 		/// <summary>
@@ -542,6 +570,14 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Creates a clone of the graphics path
+		/// </summary>
+		public IGraphicsPath Clone ()
+		{
+			return new GraphicsPath (Handler.Clone ());
+		}
+
+		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>
 		object IControlObjectSource.ControlObject
@@ -551,7 +587,7 @@ namespace Eto.Drawing
 
 		object IHandlerSource.Handler
 		{
-			get { throw new NotImplementedException (); }
+			get { return Handler; }
 		}
 	}
 }
