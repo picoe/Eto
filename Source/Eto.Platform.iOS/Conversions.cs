@@ -50,9 +50,20 @@ namespace Eto.Platform.iOS
 			return new MouseEventArgs (MouseButtons.Primary, Key.None, Point.Empty);
 		}
 
+		public static UIImage ToUI (this Image image)
+		{
+			if (image == null)
+				return null;
+			var handler = image.Handler as IImageHandler;
+			if (handler != null)
+				return handler.GetUIImage ();
+			else
+				return null;
+		}
+
 		public static CGImage ToCG (this Image image)
 		{
-			return image.ToUIImage ().CGImage;
+			return image.ToUI ().CGImage;
 		}
 	}
 }

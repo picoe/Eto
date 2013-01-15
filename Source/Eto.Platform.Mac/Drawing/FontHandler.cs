@@ -21,6 +21,12 @@ namespace Eto.Platform.Mac.Drawing
 {
 	public static class FontExtensions
 	{
+#if OSX
+		public static NSFont ToNSFont (this Font font)
+		{
+			return ((FontHandler)font.Handler).Control;
+		}
+
 		static NSLayoutManager manager = new NSLayoutManager ();
 		public static float LineHeight(this NSFont font)
 		{
@@ -34,10 +40,16 @@ namespace Eto.Platform.Mac.Drawing
 			else
 				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));*/
 		}
-#if OSX
-		public static NSFont ToNSFont (this Font font)
+#elif IOS
+		public static float LineHeight(this NSFont font)
 		{
-			return ((FontHandler)font.Handler).Control;
+			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
+			var lineHeight = (float)(Math.Floor(font.Ascender + 0.5f) - Math.Floor (font.Descender + 0.5f) + leading);
+
+			if (leading > 0)
+				return lineHeight;
+			else
+				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
 		}
 #endif
 	}
@@ -227,7 +239,11 @@ namespace Eto.Platform.Mac.Drawing
 		
 		public float XHeight
 		{
+#if OSX
 			get { return Control.XHeight; }
+#elif IOS
+			get { return Control.xHeight; }
+#endif
 		}
 
 		public float Leading

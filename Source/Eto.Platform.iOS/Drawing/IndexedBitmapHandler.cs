@@ -10,8 +10,8 @@ namespace Eto.Platform.iOS.Drawing
 
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler(IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -76,7 +76,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			IntPtr ptr = Marshal.AllocHGlobal(Control.Length);
 			Marshal.Copy(Control, 0, ptr, Control.Length);
-			return  new IndexedBitmapDataHandler(ptr, rowStride, null);
+			return  new IndexedBitmapDataHandler(Widget, ptr, rowStride, Widget.BitsPerPixel, null);
 		}
 
 		public void Unlock(BitmapData bitmapData)
