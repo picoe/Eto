@@ -108,7 +108,7 @@ namespace Eto.Drawing
 		/// Creates a new font object
 		/// </summary>
 		/// <param name="family">Type of font family</param>
-		/// <param name="sizeInPoints">Size of the font (in points)</param>
+		/// <param name="size">Size of the font (in points)</param>
 		/// <param name="style">Style of the font</param>
 		void Create(FontFamily family, float sizeInPoints, FontStyle style);
 
@@ -116,11 +116,11 @@ namespace Eto.Drawing
 		/// Creates a new font object with the specified <paramref name="systemFont"/> and optional size
 		/// </summary>
 		/// <param name="systemFont">System font to create</param>
-		/// <param name="sizeInPoints">Size of font to use, or null to use the system font's default size</param>
-		void Create(SystemFont systemFont, float? sizeInPoints);
+		/// <param name="size">Size of font to use, or null to use the system font's default size</param>
+		void Create(SystemFont systemFont, float? size);
 
 		/// <summary>
-		/// Creates a new font object with the specified <paramref name="typeface"/> and <paramref name="sizeInPoints"/>
+		/// Creates a new font object with the specified <paramref name="typeface"/> and <paramref name="size"/>
 		/// </summary>
 		/// <param name="typeface">Typeface to specify the style (and family) of the font</param>
 		/// <param name="sizeInPoints">Size of the font to create</param>
@@ -194,27 +194,28 @@ namespace Eto.Drawing
 		/// <param name="family">Family of font to use</param>
 		/// <param name="sizeInPoints">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
-		public Font(string fontFamily, float sizeInPoints, FontStyle style = FontStyle.Normal, Generator generator = null)
+		/// <param name="generator">Generator to create the font for</param>
+		public Font (string family, float sizeInPoints, FontStyle style = FontStyle.Normal, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
-			Handler.Create (new FontFamily(fontFamily), sizeInPoints, style);
+			Handler.Create (new FontFamily(family), sizeInPoints, style);
 		}
 
 		/// <summary>
-		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="sizeInPoints"/>, and <paramref name="style"/>
+		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
 		/// </summary>
 		/// <param name="generator">Generator to create the font for</param>
 		/// <param name="family">Family of font to use</param>
-		/// <param name="sizeInPoints">Size of the font, in points</param>
+		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
-		public Font(FontFamily family, float sizeInPoints, FontStyle style = FontStyle.Normal, Generator generator = null)
+		public Font(FontFamily family, float size, FontStyle style = FontStyle.Normal, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
-			Handler.Create(family, sizeInPoints, style);
+			Handler.Create(family, size, style);
 		}
 
 		/// <summary>
-		/// Creates a new instance of the Font class with a specified <paramref name="systemFont"/> and optional custom <paramref name="sizeInPoints"/>
+		/// Creates a new instance of the Font class with a specified <paramref name="systemFont"/> and optional custom <paramref name="size"/>
 		/// </summary>
 		/// <remarks>
 		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
@@ -222,24 +223,24 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="generator">Generator to create the font for</param>
 		/// <param name="systemFont">Type of system font to create</param>
-		/// <param name="sizeInPoints">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
-		public Font(SystemFont systemFont, float? sizeInPoints = null, Generator generator = null)
+		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
+		public Font(SystemFont systemFont, float? size = null, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
-			Handler.Create(systemFont, sizeInPoints);
+			Handler.Create(systemFont, size);
 		}
 
 
 		/// <summary>
-		/// Initializes a new instance of the Font class with the specified <paramref name="typeface"/> and <paramref name="sizeInPoints"/>
+		/// Initializes a new instance of the Font class with the specified <paramref name="typeface"/> and <paramref name="size"/>
 		/// </summary>
 		/// <param name="typeface">Typeface of the font to create</param>
-		/// <param name="sizeInPoints">Size of the font in points</param>
+		/// <param name="size">Size of the font in points</param>
 		/// <param name="generator">Generator to create the font handler</param>
-		public Font (FontTypeface typeface, float sizeInPoints, Generator generator = null)
+		public Font (FontTypeface typeface, float size, Generator generator = null)
 			: base (generator, typeof (IFont))
 		{
-			Handler.Create (typeface, sizeInPoints);
+			Handler.Create (typeface, size);
 		}
 
 		/// <summary>
