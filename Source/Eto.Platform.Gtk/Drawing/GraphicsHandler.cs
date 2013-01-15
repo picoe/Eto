@@ -227,6 +227,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			path.Apply (Control);
 			Control.Restore ();
 			Control.Save ();
+			Control.FillRule = path.FillMode.ToCairo ();
 			brush.Apply (this);
 			Control.Restore ();
 		}

@@ -127,17 +127,15 @@ namespace Eto.Platform.Windows.Drawing
 			get { return Control.GetLastPoint ().ToEto (); }
 		}
 
-		public IGraphicsPath Clone()
+		public IGraphicsPath Clone ()
 		{
-			return new GraphicsPathHandler((sd.Drawing2D.GraphicsPath)this.Control.Clone());
+			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)this.Control.Clone ());
 		}
-	
+
 		public FillMode FillMode
 		{
-			set 
-			{
-				Control.FillMode = (value == FillMode.Alternate) ? sd2.FillMode.Alternate : sd2.FillMode.Winding;
-			}
+			set { Control.FillMode = value == FillMode.Alternate ? sd2.FillMode.Alternate : sd2.FillMode.Winding; }
+			get { return Control.FillMode == sd2.FillMode.Alternate ? FillMode.Alternate : FillMode.Winding; }
 		}
 	}
 }

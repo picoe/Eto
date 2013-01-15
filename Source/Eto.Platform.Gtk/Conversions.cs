@@ -423,5 +423,17 @@ namespace Eto.Platform.GtkSharp
 			var handler = (IImageHandler)image.Handler;
 			handler.SetImage (gtkimage, size);
 		}
+
+		public static Cairo.FillRule ToCairo (this FillMode value)
+		{
+			switch (value) {
+			case FillMode.Alternate:
+				return Cairo.FillRule.EvenOdd;
+			case FillMode.Winding:
+				return Cairo.FillRule.Winding;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }

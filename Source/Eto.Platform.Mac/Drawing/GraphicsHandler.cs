@@ -362,7 +362,17 @@ namespace Eto.Platform.iOS.Drawing
 			Control.AddPath (path.ToCG ());
 			Control.ClosePath ();
 			brush.Apply (this);
-			Control.FillPath ();
+			switch (path.FillMode)
+			{
+			case FillMode.Alternate:
+				Control.EOFillPath ();
+				break;
+			case FillMode.Winding:
+				Control.FillPath ();
+				break;
+			default:
+				throw new NotSupportedException ();
+			}
 			EndDrawing ();
 		}
 
@@ -499,7 +509,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public RectangleF ClipBounds
 		{
-			get { return Control.GetClipBoundingBox().ToEto(); }
+			get { return Platform.Conversions.ToEto (Control.GetClipBoundingBox()); }
 		}
 
 		public void SetClip(RectangleF rect)

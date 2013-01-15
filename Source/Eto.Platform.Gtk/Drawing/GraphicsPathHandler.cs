@@ -352,12 +352,17 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public IGraphicsPath Clone()
 		{
-			throw new NotImplementedException();
+			var handler = new GraphicsPathHandler ();
+			handler.commands.AddRange (this.commands);
+			handler.transform = this.transform.Clone ();
+			handler.firstFigureClosed = this.firstFigureClosed;
+			handler.isFirstFigure = this.isFirstFigure;
+			return handler;
 		}
 
 		public FillMode FillMode
 		{
-			set { throw new NotImplementedException(); }
+			get; set;
 		}
 	}
 }
