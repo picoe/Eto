@@ -257,7 +257,7 @@ namespace Eto
 		}
 
 		/// <summary>
-		/// Initializes the specified <see cref="generator"/> as the current generator
+		/// Initializes the specified <paramref name="generator"/> as the current generator
 		/// </summary>
 		/// <remarks>
 		/// This is called automatically by the <see cref="Forms.Application"/> when it is constructed

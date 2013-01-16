@@ -20,17 +20,14 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the KeyPressEventArgs class for a character key press
 		/// </summary>
-		/// <param name="key">key and modifiers that were pressed</param>
+		/// <param name="keyData">key and modifiers that were pressed</param>
+		/// <param name="keyType">Type of key event</param>
 		/// <param name="keyChar">character equivalent</param>
 		public KeyPressEventArgs(Key keyData, KeyType keyType, char? keyChar = null)
 		{
             this.KeyData = keyData;
 			this.keyChar = keyChar;
             this.KeyType = keyType;
-		/// <summary>
-		/// Initializes a new instance of the KeyPressEventArgs class for a non-character key press
-		/// </summary>
-		/// <param name="key">key and modifiers that were pressed</param>
 		}
 
 		/// <summary>

@@ -312,7 +312,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Creates a new rotation matrix around a <paramref name="center"/> point with the specified <paramref name="angle"/>
+		/// Creates a new rotation matrix around a (<paramref name="centerX"/>, <paramref name="centerY"/>) point with the specified <paramref name="angle"/>
 		/// </summary>
 		/// <returns>A new rotation matrix</returns>
 		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
