@@ -418,7 +418,6 @@ namespace Eto.Platform.iOS.Drawing
 
 		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
-			// NSString throws an exception if text is null
 			if (string.IsNullOrEmpty(text)) return;
 
 			StartDrawing ();
@@ -505,7 +504,6 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			Control.RestoreState ();
 		}
-
 
 		public RectangleF ClipBounds
 		{
