@@ -418,6 +418,8 @@ namespace Eto.Platform.iOS.Drawing
 
 		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
+			if (string.IsNullOrEmpty(text)) return;
+
 			StartDrawing ();
 #if OSX
 			var nsfont = FontHandler.GetControl (font);
