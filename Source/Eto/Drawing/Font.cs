@@ -99,7 +99,7 @@ namespace Eto.Drawing
 		/// <param name="family">Type of font family</param>
 		/// <param name="size">Size of the font (in points)</param>
 		/// <param name="style">Style of the font</param>
-		void Create(FontFamily family, float sizeInPoints, FontStyle style);
+		void Create(FontFamily family, float size, FontStyle style);
 
 		/// <summary>
 		/// Creates a new font object with the specified <paramref name="systemFont"/> and optional size
@@ -112,8 +112,8 @@ namespace Eto.Drawing
 		/// Creates a new font object with the specified <paramref name="typeface"/> and <paramref name="size"/>
 		/// </summary>
 		/// <param name="typeface">Typeface to specify the style (and family) of the font</param>
-		/// <param name="sizeInPoints">Size of the font to create</param>
-		void Create (FontTypeface typeface, float sizeInPoints);
+		/// <param name="size">Size of the font to create</param>
+		void Create (FontTypeface typeface, float size);
 
 		float XHeight { get; }
 		
@@ -181,13 +181,13 @@ namespace Eto.Drawing
 		/// Creates a new instance of the Font class with a specified <paramref name="family"/>, <paramref name="size"/>, and <paramref name="style"/>
 		/// </summary>
 		/// <param name="family">Family of font to use</param>
-		/// <param name="sizeInPoints">Size of the font, in points</param>
+		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to create the font for</param>
-		public Font (string family, float sizeInPoints, FontStyle style = FontStyle.Normal, Generator generator = null)
+		public Font (string family, float size, FontStyle style = FontStyle.Normal, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
-			Handler.Create (new FontFamily(family), sizeInPoints, style);
+			Handler.Create (new FontFamily(family), size, style);
 		}
 
 		/// <summary>

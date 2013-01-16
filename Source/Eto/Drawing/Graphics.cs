@@ -43,7 +43,7 @@ namespace Eto.Drawing
 		void DrawRectangle (Pen pen, float x, float y, float width, float height);
 
 		/// <summary>
-		/// Fills a rectangle with the specified <paramref name="color"/>
+		/// Fills a rectangle with the specified <paramref name="brush"/>
 		/// </summary>
 		/// <param name="brush">Brush to fill with</param>
 		/// <param name="x">X co-ordinate</param>

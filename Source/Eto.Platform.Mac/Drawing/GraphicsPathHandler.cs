@@ -3,6 +3,7 @@ using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
 using sd = System.Drawing;
+using Eto.Platform.Mac;
 
 #if OSX
 using MonoMac.CoreGraphics;
