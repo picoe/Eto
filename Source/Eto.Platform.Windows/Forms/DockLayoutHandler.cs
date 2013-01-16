@@ -65,7 +65,6 @@ namespace Eto.Platform.Windows
 			set {
 				if (child == value)
 					return;
-
 				Control.SuspendLayout ();
 	
 				SWF.Control childControl;
@@ -74,8 +73,7 @@ namespace Eto.Platform.Windows
 					childControl = value.GetContainerControl();
 					childControl.Dock = SWF.DockStyle.Fill;
 					value.SetScale (XScale, YScale);
-
-					Control.Controls.Add(childControl, 0, 0);
+					Control.Controls.Add (childControl, 0, 0);
 				}
 	
 				if (this.child != null) {
