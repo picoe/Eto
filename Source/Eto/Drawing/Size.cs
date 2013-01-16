@@ -179,6 +179,28 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
+		/// </summary>
+		/// <param name="size">Size to multiply</param>
+		/// <param name="factor">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a Size struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
+		public static Size operator * (int factor, Size size)
+		{
+			return new Size (size.Width * factor, size.Height * factor);
+		}
+		
+		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified floating point <paramref name="factor"/>
+		/// </summary>
+		/// <param name="size">Size to multiply</param>
+		/// <param name="factor">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
+		public static SizeF operator * (Size size, float factor)
+		{
+			return new SizeF (size.Width * factor, size.Height * factor);
+		}
+		
+		/// <summary>
 		/// Divides the <see cref="Width"/> and <see cref="Height"/> of two sizes
 		/// </summary>
 		/// <param name="size1">Size to divide</param>
@@ -286,6 +308,16 @@ namespace Eto.Drawing
 		public static bool operator != (Size size1, Size size2)
 		{
 			return (size1.Width != size2.Width || size1.Height != size2.Height);
+		}
+
+		/// <summary>
+		/// Explicit conversion from a <see cref="SizeF"/> to a <see cref="Size"/> by truncating values
+		/// </summary>
+		/// <param name="size">Size to convert</param>
+		/// <returns>A new instance of a Size with the value of the specified <paramref name="size"/></returns>
+		public static explicit operator Size (SizeF size)
+		{
+			return new Size ((int)size.Width, (int)size.Height);
 		}
 
 		/// <summary>

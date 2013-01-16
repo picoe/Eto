@@ -15,65 +15,10 @@ namespace Eto.Drawing
 		float x;
 		float y;
 
-		#region Obsolete
-
-		/// <summary>
-		/// Obsolete. Do not use.
-		/// </summary>
-		[Obsolete ("Use operator + instead")]
-		public static PointF Add (PointF point, SizeF size)
-		{
-			return new PointF (point.X + size.Width, point.Y + size.Height);
-		}
-
-		/// <summary>
-		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
-		/// </summary>
-		[Obsolete ("Use PointF.IsZero instead")]
-		public bool IsEmpty
-		{
-			get { return x == 0 && y == 0; }
-		}
-
-		/// <summary>
-		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
-		/// </summary>
-		/// <param name="x">Value to add to the X co-ordinate of this point</param>
-		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
-		[Obsolete("Use Offset() instead")]
-		public void Add (float x, float y)
-		{
-			this.x += x;
-			this.y += y;
-		}
-		
-		/// <summary>
-		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
-		/// </summary>
-		/// <param name="point">Point with X and Y values to add to this point</param>
-		[Obsolete("Use Offset() instead")]
-		public void Add (PointF point)
-		{
-			this.Add (point.X, point.Y);
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Gets an empty point with an X and Y value of zero
 		/// </summary>
 		public static readonly PointF Empty = new PointF (0, 0);
-
-		/// <summary>
-		/// Gets the distance between two points using pythagoras theorem
-		/// </summary>
-		/// <param name="point1">First point to calculate the distance from</param>
-		/// <param name="point2">Second point to calculate the distance to</param>
-		/// <returns>The distance between the two points</returns>
-		public static double Distance (Point point1, Point point2)
-		{
-			return Math.Sqrt (Math.Abs (point1.X - point2.X) + Math.Abs (point1.Y - point2.Y));
-		}
 
 		/// <summary>
 		/// Returns the minimum X and Y components of two points
@@ -148,11 +93,82 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets the magnitude of this point from 0,0 using Pythagoras' theorem
+		/// Gets the point as a normal vector (perpendicular) to the current point from the origin
 		/// </summary>
-		public double Magnitude
+		/// <value>The normal vector of this point</value>
+		public PointF Normal
 		{
-			get { return Math.Sqrt (X * X + Y * Y); }
+			get { return new PointF (-Y, X); }
+		}
+
+		/// <summary>
+		/// Creates a unit vector PointF (a point with a <see cref="Length"/> of 1.0 from origin 0,0) with the specified angle, in degrees
+		/// </summary>
+		/// <returns>A new instance of a PointF with the x,y co-ordinates set at a distance of 1.0 from the origin</returns>
+		/// <param name="angle">Angle in degrees of the unit vector</param>
+		public static PointF UnitVectorAtAngle (float angle)
+		{
+			angle = angle * Helper.DegreesToRadians;
+			return new PointF ((float)Math.Cos(angle), (float)Math.Sin(angle));
+		}
+
+		/// <summary>
+		/// Gets the current point as a unit vector (a point with a <see cref="Length"/> of 1.0 from origin 0,0)
+		/// </summary>
+		/// <value>The unit vector equivalent of this point's X and Y coordinates</value>
+		public PointF UnitVector
+		{
+			get
+			{
+				double length = Length;
+				
+				const float epsilon = 1e-6f;
+				var x = X;
+				var y = Y;
+				
+				// deal with very small points without blowing up.
+				int iterations = 0;
+				while (length < epsilon && iterations < 3)
+				{
+					if (Math.Abs (x) > epsilon)
+					{
+						y = y * x;
+						x = 1;
+					}
+					else if (Math.Abs (y) > epsilon)
+					{
+						x = x * y;
+						y = 1;
+					}
+					
+					length = Math.Sqrt (x * x + y * y);
+					
+					iterations++;
+				}
+				
+				if (iterations == 3)
+					return new PointF (1, 0); // arbitrary
+				
+				return new PointF ((float)(X / length), (float)(Y / length));
+			}
+		}
+
+		/// <summary>
+		/// Gets the length of the point as a vector from origin 0,0
+		/// </summary>
+		/// <value>The length of this point as a vector</value>
+		public float Length
+		{
+			get { return (float)Math.Sqrt (X * X + Y * Y); }
+		}
+
+		/// <summary>
+		/// Gets the squared length of the point as a vector from origin 0,0.
+		/// </summary>
+		/// <value>The length of the squared.</value>
+		public float LengthSquared
+		{
+			get { return X * X + Y * Y; }
 		}
 
 		/// <summary>
@@ -161,6 +177,28 @@ namespace Eto.Drawing
 		public bool IsZero
 		{
 			get { return x == 0 && y == 0; }
+		}
+
+		/// <summary>
+		/// Gets the distance between this point and the specified <paramref name="point"/>
+		/// </summary>
+		/// <param name="point">Point to calculate the distance from</param>
+		public float Distance (PointF point)
+		{
+			var x = Math.Abs (this.X - point.X);
+			var y = Math.Abs (this.Y - point.Y);
+			return (float)Math.Sqrt (x * x + y * y);
+		}
+
+		/// <summary>
+		/// Gets the distance between two points using pythagoras theorem
+		/// </summary>
+		/// <param name="point1">First point to calculate the distance from</param>
+		/// <param name="point2">Second point to calculate the distance to</param>
+		/// <returns>The distance between the two points</returns>
+		public static float Distance (PointF point1, PointF point2)
+		{
+			return point1.Distance (point2);
 		}
 
 		/// <summary>
@@ -186,6 +224,18 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Restricts the X and Y co-ordinates of the specified <paramref name="point"/> within the <paramref name="rectangle"/>
+		/// </summary>
+		/// <param name="point">Point to restrict</param>
+		/// <param name="rectangle">Rectangle to restrict the point within</param>
+		/// <returns>A new point that falls within the <paramref name="rectangle"/></returns>
+		public static Point Restrict (Point point, Rectangle rectangle)
+		{
+			point.Restrict (rectangle);
+			return point;
+		}
+
+		/// <summary>
 		/// Offsets the X and Y co-ordinates of this point by the specified <paramref name="x"/> and <paramref name="y"/> values
 		/// </summary>
 		/// <param name="x">Value to add to the X co-ordinate of this point</param>
@@ -197,14 +247,85 @@ namespace Eto.Drawing
 		}
 		
 		/// <summary>
-		/// Offsets the X and Y co-ordinates of this point by the values from the specified <paramref name="point"/>
+		/// Offsets the X and Y co-ordinates of this point by the values from the specified <paramref name="offset"/>
 		/// </summary>
-		/// <param name="point">Point with X and Y values to add to this point</param>
-		public void Offset (PointF point)
+		/// <param name="offset">Point with X and Y values to add to this point</param>
+		public void Offset (PointF offset)
 		{
-			this.Offset (point.X, point.Y);
+			this.Offset (offset.X, offset.Y);
 		}
 
+		/// <summary>
+		/// Offsets the X and Y co-ordinates of the <paramref name="point"/> by the specified <paramref name="x"/> and <paramref name="y"/> values
+		/// </summary>
+		/// <param name="point">Point to offset</param>
+		/// <param name="x">Value to add to the X co-ordinate of this point</param>
+		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
+		/// <returns>A new point with the offset X and Y values</returns>
+		public static PointF Offset (PointF point, float x, float y)
+		{
+			point.Offset (x, y);
+			return point;
+		}
+
+		/// <summary>
+		/// Offsets the X and Y co-ordinates of the <paramref name="point"/> by the values from the specified <paramref name="offset"/>
+		/// </summary>
+		/// <param name="point">Point to offset</param>
+		/// <param name="offset">Point with X and Y values to add to this point</param>
+		/// <returns>A new point offset by the specified value</returns>
+		public static PointF Offset (PointF point, PointF offset)
+		{
+			point.Offset (offset);
+			return point;
+		}
+
+		/// <summary>
+		/// Treats the point as a vector and rotates it around the origin (0,0) by the specified <paramref name="angle"/>.
+		/// </summary>
+		/// <param name="angle">Angle in degrees to rotate this point around the origin (0,0)</param>
+		public void Rotate (float angle)
+		{
+			angle *= Helper.DegreesToRadians;
+			var x = this.X * Math.Cos (angle) - this.Y * Math.Sin (angle);
+			var y = this.X * Math.Sin (angle) + this.Y * Math.Cos (angle);
+			this.x = (float)x;
+			this.y = (float)y;
+		}
+
+		/// <summary>
+		/// Treats the <paramref name="point"/> as a vector and rotates it around the origin (0,0) by the specified <paramref name="angle"/>.
+		/// </summary>
+		/// <param name="point">Point to rotate</param>
+		/// <param name="angle">Angle in degrees to rotate the point around the origin (0,0)</param>
+		/// <returns>A new point with the rotated X and Y coordinates</returns>
+		public static PointF Rotate (PointF point, float angle)
+		{
+			point.Rotate (angle);
+			return point;
+		}
+
+		/// <summary>
+		/// Gets the cross product of this instance and the specified <paramref name="point"/>
+		/// </summary>
+		/// <param name="point">Point to get the dot product for</param>
+		/// <returns>The cross product (X * point.X + Y * point.Y) between this point and the specified point</returns>
+		public float CrossProduct (PointF point)
+		{
+			return x * point.x + y * point.y;
+		}
+
+		/// <summary>
+		/// Gets the cross product between two points
+		/// </summary>
+		/// <param name="point1">First point to get the cross product</param>
+		/// <param name="point2">Second point to get the cross product</param>
+		/// <returns>The cross product (point1.X * point2.X + poin1.Y * point2.Y) between the two points</returns>
+		public static float CrossProduct (PointF point1, PointF point2)
+		{
+			return point1.CrossProduct (point2);
+		}
+		
 		/// <summary>
 		/// Returns a new PointF with negative x and y values of the specified <paramref name="point"/>
 		/// </summary>
@@ -339,14 +460,25 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Multiplies the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="value"/>
+		/// Multiplies the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="factor"/>
 		/// </summary>
 		/// <param name="point">Base point value</param>
-		/// <param name="value">Value to multiply the X and Y co-ordinates with</param>
-		/// <returns>A new instance of a point with the product of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="value"/></returns>
-		public static PointF operator * (PointF point, float value)
+		/// <param name="factor">Value to multiply the X and Y co-ordinates with</param>
+		/// <returns>A new instance of a point with the product of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="factor"/></returns>
+		public static PointF operator * (PointF point, float factor)
 		{
-			return new PointF (point.X * value, point.Y * value);
+			return new PointF (point.X * factor, point.Y * factor);
+		}
+
+		/// <summary>
+		/// Multiplies the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="factor"/>
+		/// </summary>
+		/// <param name="point">Base point value</param>
+		/// <param name="factor">Value to multiply the X and Y co-ordinates with</param>
+		/// <returns>A new instance of a point with the product of the X and Y co-ordinates of the <paramref name="point"/> and specified <paramref name="factor"/></returns>
+		public static PointF operator *(float factor, PointF point)
+		{
+			return new PointF (point.X * factor, point.Y * factor);
 		}
 
 		/// <summary>
@@ -420,5 +552,58 @@ namespace Eto.Drawing
 		{
 			return other == this;
 		}
+
+		#region Obsolete
+		
+		/// <summary>
+		/// Obsolete. Do not use.
+		/// </summary>
+		[Obsolete ("Use operator + instead")]
+		public static PointF Add (PointF point, SizeF size)
+		{
+			return new PointF (point.X + size.Width, point.Y + size.Height);
+		}
+		
+		/// <summary>
+		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
+		/// </summary>
+		[Obsolete ("Use PointF.IsZero instead")]
+		public bool IsEmpty
+		{
+			get { return x == 0 && y == 0; }
+		}
+		
+		/// <summary>
+		/// Adds the specified <paramref name="x"/> and <paramref name="y"/> values to this point
+		/// </summary>
+		/// <param name="x">Value to add to the X co-ordinate of this point</param>
+		/// <param name="y">Value to add to the Y co-ordinate of this point</param>
+		[Obsolete("Use Offset() instead")]
+		public void Add (float x, float y)
+		{
+			this.x += x;
+			this.y += y;
+		}
+		
+		/// <summary>
+		/// Adds the X and Y co-ordinate values of the specified <paramref name="point"/> to this point
+		/// </summary>
+		/// <param name="point">Point with X and Y values to add to this point</param>
+		[Obsolete("Use Offset() instead")]
+		public void Add (PointF point)
+		{
+			this.Add (point.X, point.Y);
+		}
+		
+		/// <summary>
+		/// Gets the magnitude of this point from 0,0 using Pythagoras' theorem
+		/// </summary>
+		[Obsolete ("Use Length instead")]
+		public double Magnitude
+		{
+			get { return Math.Sqrt (X * X + Y * Y); }
+		}
+		
+		#endregion
 	}
 }

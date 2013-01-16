@@ -63,51 +63,6 @@ namespace Eto.Drawing
 		public static readonly Rectangle Empty = new Rectangle (0, 0, 0, 0);
 
 		/// <summary>
-		/// Restricts the rectangle to be within the specified <paramref name="location"/> and <paramref name="size"/>
-		/// </summary>
-		/// <remarks>
-		/// This is a shortcut for <seealso cref="Restrict(Rectangle)"/>
-		/// </remarks>
-		/// <param name="location">Minimum location for the rectangle</param>
-		/// <param name="size">Maximum size for the rectangle</param>
-		public void Restrict (Point location, Size size)
-		{
-			Restrict (new Rectangle (location, size));
-		}
-
-		/// <summary>
-		/// Restricts the rectangle to be within the specified <paramref name="size"/> at an X,Y location of 0, 0
-		/// </summary>
-		/// <remarks>
-		/// This is a shortcut for <seealso cref="Restrict(Rectangle)"/>
-		/// </remarks>
-		/// <param name="size">Maxiumum size for the rectangle</param>
-		public void Restrict (Size size)
-		{
-			Restrict (new Rectangle (size));
-		}
-
-		/// <summary>
-		/// Restricts the rectangle to be within the specified <paramref name="rectangle"/>
-		/// </summary>
-		/// <remarks>
-		/// This ensures that the current rectangle's bounds fall within the bounds of the specified <paramref name="rectangle"/>.
-		/// It is useful to ensure that the rectangle does not exceed certain limits (e.g. for drawing)
-		/// </remarks>
-		/// <param name="rectangle"></param>
-		public void Restrict (Rectangle rectangle)
-		{
-			if (Left < rectangle.Left)
-				Left = rectangle.Left;
-			if (Top < rectangle.Top)
-				Top = rectangle.Top;
-			if (Right > rectangle.Right)
-				Right = rectangle.Right;
-			if (Bottom > rectangle.Bottom)
-				Bottom = rectangle.Bottom;
-		}
-
-		/// <summary>
 		/// Normalizes the rectangle so both the <see cref="Width"/> and <see cref="Height"/> are positive, without changing the location of the rectangle
 		/// </summary>
 		/// <remarks>
@@ -196,37 +151,6 @@ namespace Eto.Drawing
 		{
 			this.location = new Point (x, y);
 			this.size = new Size (width, height);
-		}
-
-		/// <summary>
-		/// Offsets the location of the rectangle by the specified <paramref name="x"/> and <paramref name="y"/> values
-		/// </summary>
-		/// <param name="x">Horizontal offset to move the rectangle</param>
-		/// <param name="y">Vertical offset to move the rectangle</param>
-		public void Offset (int x, int y)
-		{
-			this.location.X += x;
-			this.location.Y += y;
-		}
-
-		/// <summary>
-		/// Offsets the location of the rectangle by the specified <paramref name="size"/>
-		/// </summary>
-		/// <param name="size">Width and Height to move the rectangle</param>
-		public void Offset (Size size)
-		{
-			this.location.X += size.Width;
-			this.location.Y += size.Height;
-		}
-
-		/// <summary>
-		/// Offsets the location of the rectangle by the X and Y values of the specified <paramref name="point"/>
-		/// </summary>
-		/// <param name="point">Point with values to offset the rectangle</param>
-		public void Offset (Point point)
-		{
-			this.location.X += point.X;
-			this.location.Y += point.Y;
 		}
 
 		/// <summary>
@@ -656,6 +580,74 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Offsets the location of the rectangle by the specified <paramref name="x"/> and <paramref name="y"/> values
+		/// </summary>
+		/// <param name="x">Horizontal offset to move the rectangle</param>
+		/// <param name="y">Vertical offset to move the rectangle</param>
+		public void Offset (int x, int y)
+		{
+			this.location.X += x;
+			this.location.Y += y;
+		}
+		
+		/// <summary>
+		/// Offsets the location of the rectangle by the specified <paramref name="size"/>
+		/// </summary>
+		/// <param name="size">Width and Height to move the rectangle</param>
+		public void Offset (Size size)
+		{
+			this.location.X += size.Width;
+			this.location.Y += size.Height;
+		}
+		
+		/// <summary>
+		/// Offsets the location of the rectangle by the X and Y values of the specified <paramref name="point"/>
+		/// </summary>
+		/// <param name="point">Point with values to offset the rectangle</param>
+		public void Offset (Point point)
+		{
+			this.location.X += point.X;
+			this.location.Y += point.Y;
+		}
+
+		/// <summary>
+		/// Offsets the location of the <paramref name="rectangle"/> by the specified <paramref name="x"/> and <paramref name="y"/> values
+		/// </summary>
+		/// <param name="rectangle">Rectangle to offset</param>
+		/// <param name="x">Horizontal offset to move the rectangle</param>
+		/// <param name="y">Vertical offset to move the rectangle</param>
+		/// <returns>A new Rectangle with the offset location</returns>
+		public static Rectangle Offset (Rectangle rectangle, int x, int y)
+		{
+			rectangle.Offset (x, y);
+			return rectangle;
+		}
+		
+		/// <summary>
+		/// Offsets the location of the <paramref name="rectangle"/> by the specified <paramref name="size"/>
+		/// </summary>
+		/// <param name="rectangle">Rectangle to inflate</param>
+		/// <param name="size">Width and Height to move the rectangle</param>
+		/// <returns>A new Rectangle with the offset location</returns>
+		public static Rectangle Offset (Rectangle rectangle, Size size)
+		{
+			rectangle.Offset (size);
+			return rectangle;
+		}
+		
+		/// <summary>
+		/// Offsets the location of the <paramref name="rectangle"/> by the X and Y values of the specified <paramref name="point"/>
+		/// </summary>
+		/// <param name="rectangle">Rectangle to offset</param>
+		/// <param name="point">Point with values to offset the rectangle</param>
+		/// <returns>A new Rectangle with the offset location</returns>
+		public static Rectangle Offset (Rectangle rectangle, Point point)
+		{
+			rectangle.Offset (point);
+			return rectangle;
+		}
+
+		/// <summary>
 		/// Inflates all dimensions of this rectangle by the specified <paramref name="size"/>
 		/// </summary>
 		/// <remarks>
@@ -701,6 +693,43 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Inflates all dimensions of the <paramref name="rectangle"/> by the specified <paramref name="size"/>
+		/// </summary>
+		/// <remarks>
+		/// This inflates the <paramref name="rectangle"/> in all dimensions by the width and height specified by <paramref name="size"/>.
+		/// The resulting rectangle will be increased in width and height twice that of the specified size, and the center
+		/// will be in the same location.
+		/// A negative width and/or height can be passed in to deflate the rectangle.
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to inflate</param>
+		/// <param name="size">Size to inflate the rectangle by</param>
+		/// <returns>A new rectangle inflated by the specified width and height</returns>
+		public static Rectangle Inflate (Rectangle rectangle, Size size)
+		{
+			rectangle.Inflate (size);
+			return rectangle;
+		}
+		
+		/// <summary>
+		/// Inflates all dimensions of this <paramref name="rectangle"/> by the specified <paramref name="width"/> and <paramref name="height"/>
+		/// </summary>
+		/// <remarks>
+		/// This inflates the <paramref name="rectangle"/> in all dimensions by the specified <paramref name="width"/> and <paramref name="height"/>.
+		/// The resulting rectangle will be increased in width and height twice that of the specified size, and the center
+		/// will be in the same location.
+		/// A negative width and/or height can be passed in to deflate the rectangle.
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to inflate</param>
+		/// <param name="width">Width to inflate the left and right of the rectangle by</param>
+		/// <param name="height">Height to inflate the top and bottom of the rectangle by</param>
+		/// <returns>A new rectangle inflated by the specified width and height</returns>
+		public static Rectangle Inflate (Rectangle rectangle, int width, int height)
+		{
+			rectangle.Inflate (width, height);
+			return rectangle;
+		}
+
+		/// <summary>
 		/// Aligns the rectangle to a grid of the specified <paramref name="gridSize"/>
 		/// </summary>
 		/// <remarks>
@@ -729,23 +758,163 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Aligns the <paramref name="rectangle"/> to a grid of the specified <paramref name="gridSize"/>
+		/// </summary>
+		/// <remarks>
+		/// This will align the top, left, right, and bottom to a grid by inflating each edge to the next grid line.
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to align</param>
+		/// <param name="gridSize">Size of the grid to align the rectangle to</param>
+		/// <returns>A new Rectangle aligned to the grid</returns>
+		public static Rectangle Align (Rectangle rectangle, Size gridSize)
+		{
+			rectangle.Align (gridSize);
+			return rectangle;
+		}
+		
+		/// <summary>
+		/// Aligns the <paramref name="rectangle"/> to a grid of the specified <paramref name="gridWidth"/> and <paramref name="gridHeight"/>
+		/// </summary>
+		/// <remarks>
+		/// This will align the top, left, right, and bottom to a grid by inflating each edge to the next grid line.
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to align</param>
+		/// <param name="gridWidth">Grid width</param>
+		/// <param name="gridHeight">Grid height</param>
+		/// <returns>A new Rectangle aligned to the grid</returns>
+		public static Rectangle Align (Rectangle rectangle, int gridWidth, int gridHeight)
+		{
+			rectangle.Align (gridWidth, gridHeight);
+			return rectangle;
+		}
+
+		/// <summary>
+		/// Union the <paramref name="rectangle"/> into this instance to encompass both rectangles
+		/// </summary>
+		/// <param name="rectangle">Rectangle to union with this instance</param>
+		public void Union (Rectangle rectangle)
+		{
+			var left = Math.Min (this.Left, rectangle.Left);
+			var top = Math.Min (this.Top, rectangle.Top);
+			var right = Math.Max (this.Right, rectangle.Right);
+			var bottom = Math.Max (this.Bottom, rectangle.Bottom);
+			location = new Point (left, top);
+			size = new Size (right - left, bottom - top);
+		}
+
+		/// <summary>
 		/// Combines two rectangles into one rectangle that encompasses both
 		/// </summary>
 		/// <param name="rect1">First rectangle to union</param>
 		/// <param name="rect2">Second rectangle to union</param>
-		/// <returns>A rectangle that encompasses both <paramref name="rect1"/> and <paramref name="rect2"/></returns>
+		/// <returns>A new Rectangle that encompasses both <paramref name="rect1"/> and <paramref name="rect2"/></returns>
 		public static Rectangle Union (Rectangle rect1, Rectangle rect2)
 		{
-			Rectangle rect = rect1;
-			if (rect2.Left < rect.Left)
-				rect.Left = rect2.Left;
-			if (rect2.Top < rect.Top)
-				rect.Top = rect2.Top;
-			if (rect2.Right > rect.Right)
-				rect.Right = rect2.Right;
-			if (rect2.Bottom > rect.Bottom)
-				rect.Bottom = rect2.Bottom;
-			return rect;
+			rect1.Union (rect2);
+			return rect1;
+		}
+
+		/// <summary>
+		/// Intersect the rectangle with the specified <paramref name="rectangle"/>
+		/// </summary>
+		/// <param name="rectangle">Rectangle to intersect with</param>
+		public void Intersect (Rectangle rectangle)
+		{
+			var left = Math.Max (this.Left, rectangle.Left);
+			var top = Math.Max (this.Top, rectangle.Top);
+			var width = Math.Max (Math.Min (this.Right, rectangle.Right) - left, 0);
+			var height = Math.Max (Math.Min (this.Bottom, rectangle.Bottom) - top, 0);
+			location = new Point (left, top);
+			size = new Size (width, height);
+		}
+		
+		/// <summary>
+		/// Intersect the two specified rectangles
+		/// </summary>
+		/// <param name="rect1">First rectangle to intersect</param>
+		/// <param name="rect2">Second rectangle to intersect</param>
+		/// <returns>A new RectangleF with the intersection of the two rectangles</returns>
+		public static Rectangle Intersect (Rectangle rect1, Rectangle rect2)
+		{
+			rect1.Intersect (rect2);
+			return rect1;
+		}
+
+		/// <summary>
+		/// Restricts the rectangle to be within the specified <paramref name="location"/> and <paramref name="size"/>
+		/// </summary>
+		/// <remarks>
+		/// This is a shortcut for <seealso cref="Restrict(Rectangle)"/>
+		/// </remarks>
+		/// <param name="location">Minimum location for the rectangle</param>
+		/// <param name="size">Maximum size for the rectangle</param>
+		public void Restrict (Point location, Size size)
+		{
+			Restrict (new Rectangle (location, size));
+		}
+		
+		/// <summary>
+		/// Restricts the rectangle to be within the specified <paramref name="size"/> at an X,Y location of 0, 0
+		/// </summary>
+		/// <remarks>
+		/// This is a shortcut for <seealso cref="Restrict(Rectangle)"/>
+		/// </remarks>
+		/// <param name="size">Maxiumum size for the rectangle</param>
+		public void Restrict (Size size)
+		{
+			Restrict (new Rectangle (size));
+		}
+		
+		/// <summary>
+		/// Restricts the rectangle to be within the specified <paramref name="rectangle"/>
+		/// </summary>
+		/// <remarks>
+		/// This ensures that the current rectangle's bounds fall within the bounds of the specified <paramref name="rectangle"/>.
+		/// It is useful to ensure that the rectangle does not exceed certain limits (e.g. for drawing)
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to restrict this instance to</param>
+		public void Restrict (Rectangle rectangle)
+		{
+			if (Left < rectangle.Left)
+				Left = rectangle.Left;
+			if (Top < rectangle.Top)
+				Top = rectangle.Top;
+			if (Right > rectangle.Right)
+				Right = rectangle.Right;
+			if (Bottom > rectangle.Bottom)
+				Bottom = rectangle.Bottom;
+		}
+
+		/// <summary>
+		/// Restricts the <paramref name="rectangle"/> to be within the specified <paramref name="size"/>
+		/// </summary>
+		/// <remarks>
+		/// This ensures that <paramref name="rectangle"/>'s bounds fall within the bounds of the specified <paramref name="size"/>
+		/// It is useful to ensure that the rectangle does not exceed certain limits (e.g. for drawing)
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to restrict</param>
+		/// <param name="size">Size to restrict to</param>
+		/// <returns>A new rectangle restricted to the restrict bounds</returns>
+		public static Rectangle Restrict (Rectangle rectangle, Size size)
+		{
+			rectangle.Restrict (size);
+			return rectangle;
+		}
+
+		/// <summary>
+		/// Restricts the <paramref name="rectangle"/> to be within the <paramref name="restrict"/> rectangle
+		/// </summary>
+		/// <remarks>
+		/// This ensures that <paramref name="rectangle"/>'s bounds fall within the bounds of the specified <paramref name="restrict"/> rectangle
+		/// It is useful to ensure that the rectangle does not exceed certain limits (e.g. for drawing)
+		/// </remarks>
+		/// <param name="rectangle">Rectangle to restrict</param>
+		/// <param name="restrict">Rectangle to restrict to</param>
+		/// <returns>A new rectangle restricted to the restrict bounds</returns>
+		public static Rectangle Restrict (Rectangle rectangle, Rectangle restrict)
+		{
+			rectangle.Restrict (restrict);
+			return rectangle;
 		}
 
 		/// <summary>
@@ -820,6 +989,16 @@ namespace Eto.Drawing
 		public static bool operator != (Rectangle rect1, Rectangle rect2)
 		{
 			return !(rect1 == rect2);
+		}
+
+		/// <summary>
+		/// Implicit conversion from a <see cref="RectangleF"/> to a <see cref="Rectangle"/>
+		/// </summary>
+		/// <param name="rectangle">Point to convert</param>
+		/// <returns>A new instance of a Rectangle with the value of the specified <paramref name="rectangle"/></returns>
+		public static explicit operator Rectangle (RectangleF rectangle)
+		{
+			return new Rectangle ((Point)rectangle.Location, (Size)rectangle.Size);
 		}
 
 		/// <summary>
