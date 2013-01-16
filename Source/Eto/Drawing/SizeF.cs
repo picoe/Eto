@@ -107,7 +107,7 @@ namespace Eto.Drawing
 		{
 			if (Width == 0 || Height == 0)
 				return false;
-			return (x >= 0 && x <= Width && y >= 0 && y <= Height);
+			return (x >= 0 && x < Width && y >= 0 && y < Height);
 		}
 
 		/// <summary>

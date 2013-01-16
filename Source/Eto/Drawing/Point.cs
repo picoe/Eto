@@ -14,7 +14,7 @@ namespace Eto.Drawing
 	{
 		int x;
 		int y;
-
+		
 		/// <summary>
 		/// Gets an empty point with an X and Y value of zero
 		/// </summary>
@@ -29,7 +29,7 @@ namespace Eto.Drawing
 		{
 			return new Point ((int)point.X, (int)point.Y);
 		}
-
+		
 		/// <summary>
 		/// Rounds the X and Y components of the specified <paramref name="point"/> to a <see cref="Point"/>
 		/// </summary>
@@ -50,7 +50,7 @@ namespace Eto.Drawing
 		{
 			return new Point (Math.Min (point1.X, point2.X), Math.Min (point1.Y, point2.Y));
 		}
-
+		
 		/// <summary>
 		/// Returns the maximum X and Y components of two points
 		/// </summary>
@@ -61,7 +61,7 @@ namespace Eto.Drawing
 		{
 			return new Point (Math.Max (point1.X, point2.X), Math.Max (point1.Y, point2.Y));
 		}
-
+		
 		/// <summary>
 		/// Returns the absolute X and Y components of the specified <paramref name="point"/>
 		/// </summary>
@@ -82,7 +82,7 @@ namespace Eto.Drawing
 			this.x = x;
 			this.y = y;
 		}
-
+		
 		/// <summary>
 		/// Initializes a new instance of a Point class with <see cref="X"/> and <see cref="Y"/> values corresponding to the <see cref="Size.Width"/> and <see cref="Size.Height"/> values 
 		/// of the specified <paramref name="size"/>, respecitively
@@ -112,7 +112,7 @@ namespace Eto.Drawing
 			get { return x; }
 			set { x = value; }
 		}
-
+		
 		/// <summary>
 		/// Gets or sets the Y co-ordinate of this point
 		/// </summary>
@@ -121,7 +121,7 @@ namespace Eto.Drawing
 			get { return y; }
 			set { y = value; }
 		}
-
+		
 		/// <summary>
 		/// Gets the point as a normal vector (perpendicular) to the current point from the origin
 		/// </summary>
@@ -182,7 +182,7 @@ namespace Eto.Drawing
 				return new PointF ((float)(X / length), (float)(Y / length));
 			}
 		}
-
+		
 		/// <summary>
 		/// Gets the length of the point as a vector from origin 0,0
 		/// </summary>
@@ -191,7 +191,7 @@ namespace Eto.Drawing
 		{
 			get { return (float)Math.Sqrt (X * X + Y * Y); }
 		}
-
+		
 		/// <summary>
 		/// Gets the squared length of the point as a vector from origin 0,0.
 		/// </summary>
@@ -200,7 +200,7 @@ namespace Eto.Drawing
 		{
 			get { return X * X + Y * Y; }
 		}
-
+		
 		/// <summary>
 		/// Gets a value indicating that both the X and Y co-ordinates of this point are zero
 		/// </summary>
@@ -252,7 +252,7 @@ namespace Eto.Drawing
 			if (y > rectangle.InnerBottom)
 				y = rectangle.InnerBottom;
 		}
-
+		
 		/// <summary>
 		/// Restricts the X and Y co-ordinates of the specified <paramref name="point"/> within the <paramref name="rectangle"/>
 		/// </summary>
@@ -284,7 +284,7 @@ namespace Eto.Drawing
 		{
 			this.Offset (point.X, point.Y);
 		}
-
+		
 		/// <summary>
 		/// Offsets the X and Y co-ordinates of the <paramref name="point"/> by the specified <paramref name="x"/> and <paramref name="y"/> values
 		/// </summary>
@@ -309,7 +309,7 @@ namespace Eto.Drawing
 			point.Offset (offset);
 			return point;
 		}
-
+		
 		/// <summary>
 		/// Gets the cross product of this instance and the specified <paramref name="point"/>
 		/// </summary>
@@ -330,7 +330,7 @@ namespace Eto.Drawing
 		{
 			return point1.CrossProduct (point2);
 		}
-
+		
 		/// <summary>
 		/// Returns a new Point with negative x and y values of the specified <paramref name="point"/>
 		/// </summary>
@@ -339,29 +339,29 @@ namespace Eto.Drawing
 		{
 			return new Point (-point.x, -point.y);
 		}
-
+		
 		/// <summary>
 		/// Operator to return the difference between two points as a <see cref="Size"/>
 		/// </summary>
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to subtract</param>
-		/// <returns>A new instance of a Size with the Width and Height equal to the difference of the X and Y co-ordinates, respectively</returns>
+		/// <returns>A new instance of a Size with the X and Y equal to the difference of the X and Y co-ordinates, respectively</returns>
 		public static Point operator - (Point point1, Point point2)
 		{
 			return new Point (point1.x - point2.x, point1.y - point2.y);
 		}
-
+		
 		/// <summary>
-		/// Operator to return the addition of two points as a <see cref="Size"/>
+		/// Operator to return the addition of two points as a <see cref="Point"/>
 		/// </summary>
 		/// <param name="point1">Base point value</param>
 		/// <param name="point2">Point to add</param>
-		/// <returns>A new instance of a Size with the Width and Height equal to the sum of the two point's X and Y co-ordinates, respectively</returns>
+		/// <returns>A new instance of a Point with the X and Y equal to the sum of the two point's X and Y co-ordinates, respectively</returns>
 		public static Point operator + (Point point1, Point point2)
 		{
 			return new Point (point1.x + point2.x, point1.y + point2.y);
 		}
-
+		
 		/// <summary>
 		/// Operator to add a size to a point
 		/// </summary>
@@ -372,7 +372,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.x + size.Width, point.y + size.Height);
 		}
-
+		
 		/// <summary>
 		/// Operator to subtract a size from a point
 		/// </summary>
@@ -383,7 +383,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.x - size.Width, point.y - size.Height);
 		}
-
+		
 		/// <summary>
 		/// Operator to add a <paramref name="value"/> to both the X and Y co-ordinates of a point
 		/// </summary>
@@ -394,7 +394,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.x + value, point.y + value);
 		}
-
+		
 		/// <summary>
 		/// Operator to subtract a <paramref name="value"/> from both the X and Y co-ordinates of a point
 		/// </summary>
@@ -419,7 +419,7 @@ namespace Eto.Drawing
 		{
 			return point1.x == point2.x && point1.y == point2.y;
 		}
-
+		
 		/// <summary>
 		/// Determines the inequality between two points
 		/// </summary>
@@ -433,7 +433,7 @@ namespace Eto.Drawing
 		{
 			return point1.x != point2.x || point1.y != point2.y;
 		}
-
+		
 		/// <summary>
 		/// Multiplies the specified <paramref name="point"/> with a <paramref name="size"/>
 		/// </summary>
@@ -444,7 +444,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.X * size.Width, point.Y * size.Height);
 		}
-
+		
 		/// <summary>Multiplies the X and Y co-ordinates of the two specified point values</summary>
 		/// <param name="point1">First point to multiply</param>
 		/// <param name="point2">Secont point to multiply</param>
@@ -452,7 +452,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point1.X * point2.X, point1.Y * point2.Y);
 		}
-
+		
 		/// <summary>
 		/// Divides the specified <paramref name="point"/> with a <paramref name="size"/>
 		/// </summary>
@@ -463,7 +463,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.X / size.Width, point.Y / size.Height);
 		}
-
+		
 		/// <summary>
 		/// Multiplies the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="factor"/>
 		/// </summary>
@@ -474,7 +474,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.X * factor, point.Y * factor);
 		}
-
+		
 		/// <summary>
 		/// Multiplies the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="factor"/>
 		/// </summary>
@@ -485,7 +485,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.X * factor, point.Y * factor);
 		}
-
+		
 		/// <summary>
 		/// Multiplies the <see cref="X"/> and <see cref="Y"/> of a <paramref name="point"/> by the specified floating point <paramref name="factor"/>
 		/// </summary>
@@ -496,7 +496,7 @@ namespace Eto.Drawing
 		{
 			return new PointF (point.X * factor, point.Y * factor);
 		}
-
+		
 		/// <summary>
 		/// Divides the X and Y co-ordinates of the specified <paramref name="point"/> with a given <paramref name="value"/>
 		/// </summary>
@@ -507,7 +507,7 @@ namespace Eto.Drawing
 		{
 			return new Point (point.X / value, point.Y / value);
 		}
-
+		
 		/// <summary>
 		/// Explicit conversion from a <see cref="PointF"/> to a <see cref="Point"/> by truncating values
 		/// </summary>
@@ -517,7 +517,7 @@ namespace Eto.Drawing
 		{
 			return new Point ((int)point.X, (int)point.Y);
 		}
-
+		
 		/// <summary>
 		/// Explicit conversion from a <paramref name="size"/> to a Point with a X and Y of the Width and Height values of the size, respectively
 		/// </summary>
@@ -527,7 +527,7 @@ namespace Eto.Drawing
 		{
 			return new Point (size);
 		}
-
+		
 		/// <summary>
 		/// Returns a value indicating that the specified <paramref name="obj"/> is equal to this point
 		/// </summary>
@@ -537,7 +537,7 @@ namespace Eto.Drawing
 		{
 			return obj is Point && (Point)obj == this;
 		}
-
+		
 		/// <summary>
 		/// Gets the hash code of this point
 		/// </summary>
@@ -546,7 +546,7 @@ namespace Eto.Drawing
 		{
 			return X ^ Y;
 		}
-
+		
 		/// <summary>
 		/// Converts this point to a string
 		/// </summary>
@@ -555,7 +555,7 @@ namespace Eto.Drawing
 		{
 			return String.Format ("X={0} Y={1}", x, y);
 		}
-
+		
 		/// <summary>
 		/// Returns a value indicating that the specified <paramref name="other"/> point is equal to this point
 		/// </summary>
@@ -565,7 +565,7 @@ namespace Eto.Drawing
 		{
 			return other == this;
 		}
-
+		
 		#region Obsolete
 		
 		/// <summary>
@@ -617,6 +617,6 @@ namespace Eto.Drawing
 			get { return Math.Sqrt (X * X + Y * Y); }
 		}
 		
-		#endregion
+#endregion
 	}
 }
