@@ -8,9 +8,9 @@ using Eto.Test.Sections.Layouts;
 
 namespace Eto.Test
 {
-	public class TestSectionList
+	public static class TestSectionList
 	{
-		public IEnumerable<Section> TopNodes()
+		public static IEnumerable<Section> TopNodes()
 		{
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
@@ -20,8 +20,8 @@ namespace Eto.Test
 			yield return new Section("Printing", PrintingSection());
 			yield return new Section("Serialization", SerializationSection());
 		}
-
-		IEnumerable<Section> ControlSection()
+		
+		static IEnumerable<Section> ControlSection()
 		{
 			yield return new Section<LabelSection> { Text = "Label" };
 			yield return new Section<ButtonSection> { Text = "Button" };
@@ -48,8 +48,8 @@ namespace Eto.Test
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 			yield return new Section<ImageViewSection> { Text = "Image View" };
 		}
-
-		IEnumerable<Section> DrawingSection()
+		
+		static IEnumerable<Section> DrawingSection()
 		{
 			yield return new Section<BitmapSection> { Text = "Bitmap" };
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
@@ -63,28 +63,28 @@ namespace Eto.Test
 			yield return new Section<TransformSection> { Text = "Transform" };
 			yield return new Section<BrushSection> { Text = "Brushes" };
 		}
-
-		IEnumerable<Section> LayoutsSection()
+		
+		static IEnumerable<Section> LayoutsSection()
 		{
 			yield return new Section("Table Layout", TableLayoutsSection());
 			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
 		}
-
-		IEnumerable<Section> TableLayoutsSection()
+		
+		static IEnumerable<Section> TableLayoutsSection()
 		{
 			yield return new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" };
 			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing" };
 			yield return new Section<Sections.Layouts.TableLayoutSection.ScalingSection> { Text = "Scaling" };
 		}
-
-		IEnumerable<Section> ScrollableLayoutSection()
+		
+		static IEnumerable<Section> ScrollableLayoutSection()
 		{
 			yield return new Section<Sections.Layouts.ScrollingLayouts.TableLayoutExpansion> { Text = "Table Layout Expansion" };
 			yield return new Section<Sections.Layouts.ScrollingLayouts.DockLayoutExpansion> { Text = "Dock Layout Expansion" };
 			yield return new Section<Sections.Layouts.ScrollingLayouts.PixelLayoutExpansion> { Text = "Pixel Layout Expansion" };
 		}
-
-		IEnumerable<Section> DialogsSection()
+		
+		static IEnumerable<Section> DialogsSection()
 		{
 			yield return new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" };
 			yield return new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" };
@@ -92,21 +92,21 @@ namespace Eto.Test
 			yield return new Section<Sections.Dialogs.CustomDialogSection> { Text = "Custom Dialog" };
 			yield return new Section<Sections.Dialogs.FontDialogSection> { Text = "Font Dialog" };
 		}
-
-		IEnumerable<Section> SerializationSection()
+		
+		static IEnumerable<Section> SerializationSection()
 		{
 			yield return new Section<Sections.Serialization.JsonReadSection> { Text = "Json" };
 #if XAML
 			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
 #endif
 		}
-
-		IEnumerable<Section> PrintingSection()
+		
+		static IEnumerable<Section> PrintingSection()
 		{
 			yield return new Section<Sections.Printing.PrintDialogSection> { Text = "Print Dialog" };
 		}
-
-		IEnumerable<Section> BehaviorsSection()
+		
+		static IEnumerable<Section> BehaviorsSection()
 		{
 			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };
 			yield return new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" };
