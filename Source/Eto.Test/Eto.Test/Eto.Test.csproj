@@ -103,6 +103,7 @@
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
+    <Compile Include="TestSectionList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
