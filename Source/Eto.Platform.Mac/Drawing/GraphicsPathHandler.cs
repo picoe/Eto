@@ -122,7 +122,7 @@ namespace Eto.Platform.iOS.Drawing
 			Control.AddCurveToPoint (control1.X, control1.Y, control2.X, control2.Y, end.X, end.Y);
 		}
 
-		public void AddPath(IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect)
 		{
 			if (path.IsEmpty)
 				return;

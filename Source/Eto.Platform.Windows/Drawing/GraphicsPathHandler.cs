@@ -58,9 +58,9 @@ namespace Eto.Platform.Windows.Drawing
 			Control.AddBezier (start.ToSD (), control1.ToSD (), control2.ToSD (), end.ToSD ());
 		}
 
-		public void AddPath(IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect)
 		{
-			Control.AddPath(path.ToSD(), connect);
+			Control.AddPath (path.ToSD (), connect);
 		}
 
 		public void Transform (IMatrix matrix)

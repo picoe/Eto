@@ -235,7 +235,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			isFirstFigure = false;
 		}
 
-		public void AddPath(IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect)
 		{
 			var handler = path.ToHandler ();
 			Add (exec => {
