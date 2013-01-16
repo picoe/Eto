@@ -150,11 +150,11 @@ namespace Eto.Platform.Windows.Drawing
 
 		public PointF TransformPoint (Point p)
 		{
-			var px = new sd.Point[] { p.ToSD () };
+			var px = new sd.Point[] { Platform.Conversions.ToSD (p) };
 
 			this.Control.TransformPoints (px);
 
-			return px [0].ToEto ();
+			return Platform.Conversions.ToEto (px [0]);
 		}
 
 		public PointF TransformPoint (PointF p)

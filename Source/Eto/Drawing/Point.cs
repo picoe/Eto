@@ -617,6 +617,6 @@ namespace Eto.Drawing
 			get { return Math.Sqrt (X * X + Y * Y); }
 		}
 		
-#endregion
+		#endregion
 	}
 }

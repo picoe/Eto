@@ -19,50 +19,50 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IMatrix : IControlObjectSource
+	public interface IMatrix : IControlObjectSource, IDisposable
 	{
 		/// <summary>
 		/// Gets the elements of this matrix
 		/// </summary>
 		/// <value>The elements of the matrix</value>
 		float[] Elements { get; }
-
+		
 		/// <summary>
 		/// Gets or sets the value at position [1,1] in the matrix
 		/// </summary>
 		float Xx { get; set; }
-
+		
 		/// <summary>
 		/// Gets or sets the value at position [1,2] in the matrix
 		/// </summary>
 		float Yx { get; set; }
-
+		
 		/// <summary>
 		/// Gets or sets the value at position [2,1] in the matrix
 		/// </summary>
 		float Xy { get; set; }
-
+		
 		/// <summary>
 		/// Gets or sets the value at position [2,2] in the matrix
 		/// </summary>
 		float Yy { get; set; }
-
+		
 		/// <summary>
 		/// Gets or sets the value at position [3,1] in the matrix
 		/// </summary>
 		float X0 { get; set; }
-
+		
 		/// <summary>
 		/// Gets or sets the value at position [3,2] in the matrix
 		/// </summary>
 		float Y0 { get; set; }
-
+		
 		/// <summary>
 		/// Prepend a rotation to the matrix around the origin (0,0)
 		/// </summary>
 		/// <param name="angle">Angle in degrees to rotate. A positive value indicates a clockwise rotation, whereas a negative value will rotate counter clockwise</param>
 		void Rotate (float angle);
-
+		
 		/// <summary>
 		/// Prepend a rotation around the specified point to the matrix
 		/// </summary>
@@ -70,21 +70,21 @@ namespace Eto.Drawing
 		/// <param name="centerX">X co-ordinate of the point to rotate around</param>
 		/// <param name="centerY">Y co-ordinate of the point to rotate around</param>
 		void RotateAt (float angle, float centerX, float centerY);
-
+		
 		/// <summary>
 		/// Prepend a translation to the matrix
 		/// </summary>
 		/// <param name="offsetX">The amount to offset along the x axis</param>
 		/// <param name="offsetY">The amount to offset along the y axis</param>
 		void Translate (float offsetX, float offsetY);
-
+		
 		/// <summary>
 		/// Prepend a scale to the matrix from the origin (0, 0)
 		/// </summary>
 		/// <param name="scaleX">The amount to multiply coordinates along the x axis</param>
 		/// <param name="scaleY">The amount to multiply coordinates along the y axis</param>
 		void Scale (float scaleX, float scaleY);
-
+		
 		/// <summary>
 		/// Prepend a scale to the matrix from the specified point
 		/// </summary>
@@ -93,51 +93,51 @@ namespace Eto.Drawing
 		/// <param name="centerX">X co-ordinate of the point to scale from</param>
 		/// <param name="centerY">Y co-ordinate of the point to scale from</param>
 		void ScaleAt (float scaleX, float scaleY, float centerX, float centerY);
-
+		
 		/// <summary>
 		/// Prepend a skew to the matrix
 		/// </summary>
 		/// <param name="skewX">Amount to skew along the X axis, 1.0 does not skew</param>
 		/// <param name="skewY">Amount to skew along the Y axis, 1.0 does not skew</param>
 		void Skew (float skewX, float skewY);
-
+		
 		/// <summary>
 		/// Append the specified <paramref name="matrix"/> to this matrix
 		/// </summary>
 		/// <param name="matrix">Matrix to append to this matrix</param>
 		void Append (IMatrix matrix);
-
+		
 		/// <summary>
 		/// Prepend the specified matrix to this matrix
 		/// </summary>
 		/// <param name="matrix">Matrix to prepend to this matrix</param>
 		void Prepend (IMatrix matrix);
-
+		
 		/// <summary>
 		/// Inverts this matrix
 		/// </summary>
 		void Invert ();
-
+		
 		/// <summary>
 		/// Transforms the specified point using this matrix transform
 		/// </summary>
 		/// <returns>The value of the point transformed by this matrix</returns>
 		/// <param name="point">Point to transform</param>
 		PointF TransformPoint (Point point);
-
+		
 		/// <summary>
 		/// Transforms the specified point using this matrix transform
 		/// </summary>
 		/// <returns>The value of the point transformed by this matrix</returns>
 		/// <param name="point">Point to transform</param>
 		PointF TransformPoint (PointF point);
-
+		
 		/// <summary>
 		/// Clone this instance
 		/// </summary>
 		IMatrix Clone ();
 	}
-
+	
 	/// <summary>
 	/// Handler interface for the <see cref="IMatrix"/>
 	/// </summary>
@@ -157,7 +157,7 @@ namespace Eto.Drawing
 		/// </para>
 		/// </remarks>
 		void Create ();
-
+		
 		/// <summary>
 		/// Creates a new matrix with the specified components
 		/// </summary>
@@ -177,7 +177,7 @@ namespace Eto.Drawing
 		/// <param name="y0">Y0 component of the matrix (translateY)</param>
 		void Create (float xx, float yx, float xy, float yy, float x0, float y0);
 	}
-
+	
 	/// <summary>
 	/// Methods to create and manage an <see cref="IMatrix"/>
 	/// </summary>
@@ -198,7 +198,7 @@ namespace Eto.Drawing
 				matrix.Append (matrices [i]);
 			return matrix;
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with the specified <paramref name="scale"/>
 		/// </summary>
@@ -209,7 +209,7 @@ namespace Eto.Drawing
 		{
 			return FromScale (scale.Width, scale.Height, generator);
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with the specified scale factor
 		/// </summary>
@@ -233,7 +233,7 @@ namespace Eto.Drawing
 		{
 			return FromScaleAt (scale.Width, scale.Height, center.X, center.Y, generator);
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with a scale at the specified point
 		/// </summary>
@@ -249,7 +249,7 @@ namespace Eto.Drawing
 			matrix.ScaleAt (scaleX, scaleY, centerX, centerY);
 			return matrix;
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with a translation
 		/// </summary>
@@ -260,7 +260,7 @@ namespace Eto.Drawing
 		{
 			return FromTranslation (offset.Width, offset.Height, generator);
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with a translation
 		/// </summary>
@@ -271,7 +271,7 @@ namespace Eto.Drawing
 		{
 			return FromTranslation (offset.X, offset.Y, generator);
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with a translation
 		/// </summary>
@@ -285,7 +285,7 @@ namespace Eto.Drawing
 			matrix.Translate (distanceX, distanceY);
 			return matrix;
 		}
-
+		
 		/// <summary>
 		/// Creates a new rotation matrix
 		/// </summary>
@@ -298,7 +298,7 @@ namespace Eto.Drawing
 			matrix.Rotate (angle);
 			return matrix;
 		}
-
+		
 		/// <summary>
 		/// Creates a new rotation matrix around a center point with the specified <paramref name="angle"/>
 		/// </summary>
@@ -310,7 +310,7 @@ namespace Eto.Drawing
 		{
 			return FromRotationAt (angle, center.X, center.Y, generator);
 		}
-
+		
 		/// <summary>
 		/// Creates a new rotation matrix around a (<paramref name="centerX"/>, <paramref name="centerY"/>) point with the specified <paramref name="angle"/>
 		/// </summary>
@@ -325,7 +325,7 @@ namespace Eto.Drawing
 			matrix.RotateAt (angle, centerX, centerY);
 			return matrix;
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with a skew
 		/// </summary>
@@ -339,7 +339,7 @@ namespace Eto.Drawing
 			matrix.Skew (skewX, skewY);
 			return matrix;
 		}
-
+		
 		/// <summary>
 		/// Gets a delegate that can be used to create an identity matrix
 		/// </summary>
@@ -353,7 +353,7 @@ namespace Eto.Drawing
 				return matrix;
 			};
 		}
-
+		
 		/// <summary>
 		/// Gets a delegate that can be used to create instances of a matrix with specified components
 		/// </summary>
@@ -368,7 +368,7 @@ namespace Eto.Drawing
 				return matrix;
 			};
 		}
-
+		
 		/// <summary>
 		/// Creates a new identity matrix
 		/// </summary>
@@ -379,7 +379,7 @@ namespace Eto.Drawing
 			handler.Create ();
 			return handler;
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with the specified <paramref name="elements"/>
 		/// </summary>
@@ -395,7 +395,7 @@ namespace Eto.Drawing
 			handler.Create (elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 			return handler;
 		}
-
+		
 		/// <summary>
 		/// Creates a new matrix with the specified components
 		/// </summary>
@@ -412,7 +412,7 @@ namespace Eto.Drawing
 			handler.Create (xx, yx, xy, yy, x0, y0);
 			return handler;
 		}
-
+		
 		/// <summary>
 		/// Prepend a rotation around the specified point to the matrix
 		/// </summary>
@@ -423,7 +423,7 @@ namespace Eto.Drawing
 		{
 			matrix.RotateAt (angle, center.X, center.Y);
 		}
-
+		
 		/// <summary>
 		/// Prepend a translation to the matrix
 		/// </summary>
@@ -497,7 +497,7 @@ namespace Eto.Drawing
 		{
 			matrix.ScaleAt (scale, scale, centerX, centerY);
 		}
-
+		
 		/// <summary>
 		/// Append the specified <paramref name="matrices"/> to the <paramref name="matrix"/>
 		/// </summary>
@@ -508,7 +508,7 @@ namespace Eto.Drawing
 			for (int i = 0; i < matrices.Length; i++)
 				matrix.Append (matrices [i]);
 		}
-
+		
 		/// <summary>
 		/// Prepends the specified <paramref name="matrices"/> to the <paramref name="matrix"/>
 		/// </summary>
