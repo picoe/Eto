@@ -159,6 +159,17 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
+		/// </summary>
+		/// <param name="size">Size to multiply</param>
+		/// <param name="factor">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
+		public static SizeF operator * (float factor, SizeF size)
+		{
+			return new SizeF (size.Width * factor, size.Height * factor);
+		}
+
+		/// <summary>
 		/// Divides the <see cref="Width"/> and <see cref="Height"/> of two sizes
 		/// </summary>
 		/// <param name="size1">Size to divide</param>

@@ -389,11 +389,11 @@
     <Compile Include="Interface\IDragDropInputSource.cs" />
     <Compile Include="Interface\IKeyboardInputSource.cs" />
     <Compile Include="Interface\IMouseInputSource.cs" />
-    <Compile Include="Math\MathUtil.cs" />
     <Compile Include="Forms\Controls\DragDrop.cs" />
     <Compile Include="Forms\Controls\DragDropInputSource.cs" />
     <Compile Include="Forms\Controls\DataObject.cs" />
     <Compile Include="Forms\Screen.cs" />
+    <Compile Include="Helper.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
