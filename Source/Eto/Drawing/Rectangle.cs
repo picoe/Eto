@@ -154,6 +154,16 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Initializes a new instance of a Rectangle class with truncated values of the specified floating-point RectangleF<paramref name="point"/>
+		/// </summary>
+		/// <param name="point">RectangleF to initialize the X and Y values of the new instance with</param>
+		public Rectangle(RectangleF rectangle)
+		{
+			this.location = new Point((int)rectangle.X, (int)rectangle.Y);
+			this.size = new Size((int)rectangle.Width, (int)rectangle.Height);
+		}
+
+		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="point"/> is within the bounds of this rectangle
 		/// </summary>
 		/// <param name="point">Point to test</param>
