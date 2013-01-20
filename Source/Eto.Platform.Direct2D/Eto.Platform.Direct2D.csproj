@@ -51,16 +51,16 @@
   <PropertyGroup>
     <OutputRoot>..</OutputRoot>
   </PropertyGroup>
-  <Import Condition="Exists('../Eto.Common.targets')" Project="../Eto.Common.targets" />
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="SharpDX">
-      <HintPath>..\packages\SharpDX.2.4.1\lib\net40\SharpDX.dll</HintPath>
+      <HintPath>..\..\..\packages\SharpDX.2.4.2\lib\net40\SharpDX.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.Direct2D1">
-      <HintPath>..\packages\SharpDX.Direct2D1.2.4.1\lib\net40\SharpDX.Direct2D1.dll</HintPath>
+      <HintPath>..\..\..\packages\SharpDX.Direct2D1.2.4.2\lib\net40\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
     <Reference Include="SharpDX.DXGI">
-      <HintPath>..\packages\SharpDX.DXGI.2.4.1\lib\net40\SharpDX.DXGI.dll</HintPath>
+      <HintPath>..\..\..\packages\SharpDX.DXGI.2.4.2\lib\net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -91,15 +91,15 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Source\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
+    <ProjectReference Include="..\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
       <Project>{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}</Project>
       <Name>Eto.Platform.Windows</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Eto\Source\Eto\Eto.csproj">
+    <ProjectReference Include="..\Eto\Eto.csproj">
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
     </ProjectReference>
-    <ProjectReference Include="..\MyLibrary\MyLibrary.csproj">
+    <ProjectReference Include="..\..\..\MyLibrary\MyLibrary.csproj">
       <Project>{F9611917-B656-4128-A53A-2A5F8ABB544F}</Project>
       <Name>MyLibrary</Name>
     </ProjectReference>
