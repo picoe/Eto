@@ -29,7 +29,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			get { return image; }
 			set {
 				image = value;
-				Control.Image = value.ToUIImage ();
+				Control.Image = value.ToUI ();
 			}
 		}
 	}

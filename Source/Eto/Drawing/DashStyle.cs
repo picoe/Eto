@@ -57,23 +57,18 @@ namespace Eto.Drawing
 			case "solid":
 				style = DashStyles.Solid;
 				return true;
-				break;
 			case "dash":
 				style = DashStyles.Dash;
 				return true;
-				break;
 			case "dot":
 				style = DashStyles.Dot;
 				return true;
-				break;
 			case "dashdot":
 				style = DashStyles.DashDot;
 				return true;
-				break;
 			case "dashdotdot":
 				style = DashStyles.DashDotDot;
 				return true;
-				break;
 			}
 
 			var values = value.Split (',');

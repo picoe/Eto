@@ -184,16 +184,11 @@ namespace Eto
 		{
 			get
 			{
-                if (current == null)
-                    throw new ApplicationException("Generator has not been initialized");
-                return current;
-            }
-        }
-
-        public static void Initialize(string assembly)
-        {
-            Initialize(GetGenerator(assembly));
-        }
+				if (current == null)
+					throw new ApplicationException ("Generator has not been initialized");
+				return current;
+			}
+		}
 		
 		/// <summary>
 		/// Returns the current generator, or detects the generator to use if no current generator is set.
@@ -211,59 +206,58 @@ namespace Eto
 			{
 				if (current != null)
 					return current;
+
+				Generator detected = null;
 #if MOBILE
-				Initialize(Generator.GetGenerator (Generators.IosAssembly, true));
+				detected = Generator.GetGenerator (Generators.IosAssembly, true);
 #elif DESKTOP
 			
 				if (EtoEnvironment.Platform.IsMac)
-					Initialize(Generator.GetGenerator (Generators.MacAssembly, true));
+					detected = Generator.GetGenerator (Generators.MacAssembly, true);
 				else if (EtoEnvironment.Platform.IsWindows) {
-					Initialize(Generator.GetGenerator (Generators.WpfAssembly, true));
-					if (current == null)
-						Initialize(Generator.GetGenerator (Generators.WinAssembly, true));
+					detected = Generator.GetGenerator (Generators.WpfAssembly, true);
+					if (detected == null)
+						detected = Generator.GetGenerator (Generators.WinAssembly, true);
 				}
 
-				if (current == null && EtoEnvironment.Platform.IsUnix)
-					Initialize(Generator.GetGenerator (Generators.GtkAssembly, true));
+				if (detected == null && EtoEnvironment.Platform.IsUnix)
+					detected = Generator.GetGenerator (Generators.GtkAssembly, true);
 #endif
 				
-				if (current == null)
+				if (detected == null)
 					throw new EtoException ("Could not detect platform. Are you missing a platform assembly?");
 					
+				Initialize (detected);
 				return current;
 			}
 		}
 
-        /// <summary>
-        /// Can be used by apps that switch between generators.
-        /// 
-        /// Set this property at the start of a block of code.
-        /// All objects created after that point are verified to
-        /// use this generator.
-        /// 
-        /// If null, no validation is performed.
-        /// </summary>
-        public static Generator ValidateGenerator { get; set; }
-
-        /// <summary>
-        /// Called by handlers to make sure they use the generator
-        /// specified by ValidateGenerator
-        /// </summary>
-        /// <param name="generator"></param>
-        public static void Validate(Generator generator)
-        {
-            if (ValidateGenerator != null &&
-                !object.ReferenceEquals(
-                generator,
-                ValidateGenerator))
-            {
-                throw new EtoException(
-                    string.Format("Expected to use generator {0}", ValidateGenerator));
-            }
-        }
+		/// <summary>
+		/// Can be used by apps that switch between generators.
+		/// 
+		/// Set this property at the start of a block of code.
+		/// All objects created after that point are verified to
+		/// use this generator.
+		/// 
+		/// If null, no validation is performed.
+		/// </summary>
+		public static Generator ValidateGenerator { get; set; }
 
 		/// <summary>
-		/// Initializes this generator as the current generator
+		/// Called by handlers to make sure they use the generator
+		/// specified by ValidateGenerator
+		/// </summary>
+		/// <param name="generator"></param>
+		[Conditional ("DEBUG")]
+		public static void Validate (Generator generator)
+		{
+			if (ValidateGenerator != null && !object.ReferenceEquals (generator, ValidateGenerator)) {
+				throw new EtoException (string.Format ("Expected to use generator {0}", ValidateGenerator));
+			}
+		}
+
+		/// <summary>
+		/// Initializes the specified <paramref name="generator"/> as the current generator
 		/// </summary>
 		/// <remarks>
 		/// This is called automatically by the <see cref="Forms.Application"/> when it is constructed
@@ -273,7 +267,16 @@ namespace Eto
 		{
 			current = generator;
 		}
-		
+
+		/// <summary>
+		/// Initialize the generator with the specified <paramref name="generatorType"/> as the current generator
+		/// </summary>
+		/// <param name="generatorType">Type of the generator to set as the current generator</param>
+		public static void Initialize(string generatorType)
+		{
+			Initialize(GetGenerator(generatorType));
+		}
+
 		/// <summary>
 		/// Gets the generator of the specified type
 		/// </summary>
@@ -284,10 +287,6 @@ namespace Eto
 			return GetGenerator (generatorType, false);
 		}
 
-        // A static dictionary of generator instances.
-        static Dictionary<Type, Generator> GeneratorInstances = 
-            new Dictionary<Type, Generator>();
-
 		static Generator GetGenerator (string generatorType, bool allowNull)
 		{
 			Type type = Type.GetType (generatorType);
@@ -297,20 +296,7 @@ namespace Eto
 				else
 					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
 			}
-			try {
-                Generator result = null;
-
-                if (!GeneratorInstances.TryGetValue(type, out result) ||
-                    result == null)
-                {
-                    result = (Generator)Activator.CreateInstance(type);
-                    GeneratorInstances[type] = result;
-                }
-
-                return result;
-				} catch (TargetInvocationException e) {
-				throw e.InnerException;
-			}
+			return (Generator)Activator.CreateInstance (type);
 		}
 
 		/// <summary>

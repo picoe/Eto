@@ -23,7 +23,7 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 			availableFontFamilies = NSFontManager.SharedFontManager.AvailableFontFamilies;
 #elif IOS
-			availableFontFamilies = UIFont.FamilyNames
+			availableFontFamilies = UIFont.FamilyNames;
 #endif
 		}
 

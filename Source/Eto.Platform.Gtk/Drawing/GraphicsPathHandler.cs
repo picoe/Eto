@@ -235,7 +235,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			isFirstFigure = false;
 		}
 
-		public void AddPath(IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect)
 		{
 			var handler = path.ToHandler ();
 			Add (exec => {
@@ -352,12 +352,17 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public IGraphicsPath Clone()
 		{
-			throw new NotImplementedException();
+			var handler = new GraphicsPathHandler ();
+			handler.commands.AddRange (this.commands);
+			handler.transform = this.transform.Clone ();
+			handler.firstFigureClosed = this.firstFigureClosed;
+			handler.isFirstFigure = this.isFirstFigure;
+			return handler;
 		}
 
 		public FillMode FillMode
 		{
-			set { throw new NotImplementedException(); }
+			get; set;
 		}
 	}
 }

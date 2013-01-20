@@ -14,9 +14,14 @@ namespace Eto.Drawing
 	public interface IGraphicsPath : IDisposable, IControlObjectSource
 	{
 		/// <summary>
-		/// Sets a value indicating how this graphics path should be filled.
+		/// Gets the bounding rectangle for this path
 		/// </summary>
-		FillMode FillMode { set; }
+		RectangleF Bounds { get; }
+
+		/// <summary>
+		/// Gets or sets a value indicating how this graphics path should be filled.
+		/// </summary>
+		FillMode FillMode { get; set; }
 
 		/// <summary>
 		/// Gets a value indicating that this graphics path is empty and has no segments
@@ -48,6 +53,16 @@ namespace Eto.Drawing
 		void AddLine (float startX, float startY, float endX, float endY);
 
 		/// <summary>
+		/// Adds lines to each of the specified <paramref name="points"/> to the path 
+		/// </summary>
+		/// <remarks>
+		/// If the current figure is not closed, it will connect with the first point specified.
+		/// The current position will be moved to the last point specified
+		/// </remarks>
+		/// <param name="points">Points for each part of the line</param>
+		void AddLines (IEnumerable<PointF> points);
+
+		/// <summary>
 		/// Adds a line from the current position to the specified location
 		/// </summary>
 		/// <param name="x">X co-ordinate to draw the line to</param>
@@ -76,6 +91,18 @@ namespace Eto.Drawing
 		/// <param name="sweepAngle">Sweep angle (positive or negative) to specify how long the arc is, in degrees</param>
 		void AddArc (float x, float y, float width, float height, float startAngle, float sweepAngle);
 
+		/// <summary>
+		/// Adds a bezier curve to the path with two control points
+		/// </summary>
+		/// <remarks>
+		/// If the current figure is not closed, it will connect with the <paramref name="start"/> of the bezier curve.
+		/// The current position will be moved to the <paramref name="end"/> point.
+		/// </remarks>
+		/// <param name="start">Starting point of the bezier curve</param>
+		/// <param name="control1">First control point of the curve</param>
+		/// <param name="control2">Second control point of the curve</param>
+		/// <param name="end">Ending point of the bezier curve</param>
+		void AddBezier (PointF start, PointF control1, PointF control2, PointF end);
 
 		/// <summary>
 		/// Adds a curve that intersects with the specified <paramref name="points"/> to the path
@@ -114,36 +141,6 @@ namespace Eto.Drawing
 		void AddRectangle (float x, float y, float width, float height);
 
 		/// <summary>
-		/// Starts a new figure without closing the current figure
-		/// </summary>
-		/// <remarks>
-		/// This will make the next segment added to the path independent (unconnected) to the last segment.
-		/// </remarks>
-		void StartFigure ();
-
-		/// <summary>
-		/// Adds a bezier curve to the path with two control points
-		/// </summary>
-		/// <remarks>
-		/// If the current figure is not closed, it will connect with the <paramref name="start"/> of the bezier curve.
-		/// The current position will be moved to the <paramref name="end"/> point.
-		/// </remarks>
-		/// <param name="start">Starting point of the bezier curve</param>
-		/// <param name="control1">First control point of the curve</param>
-		/// <param name="control2">Second control point of the curve</param>
-		/// <param name="end">Ending point of the bezier curve</param>
-		void AddBezier(PointF start, PointF control1, PointF control2, PointF end);
-
-		/// <summary>
-		/// Closes the current figure by connecting a line to the beginning of the figure
-		/// </summary>
-		/// <remarks>
-		/// This will also make the next segment added to the path start independently from the last figure.
-		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
-		/// </remarks>
-		void CloseFigure();
-
-		/// <summary>
 		/// Adds the specified <paramref name="path"/> to the current path, optionally connecting the current figure to the start of the path
 		/// </summary>
 		/// <remarks>
@@ -153,30 +150,35 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="path">Child path to add to this instance</param>
 		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
-		void AddPath(IGraphicsPath path, bool connect = false);
-
-		/// <summary>
-		/// Gets the bounding rectangle for this path
-		/// </summary>
-		RectangleF Bounds { get; }
-
-		/// <summary>
-		/// Adds lines to each of the specified <paramref name="points"/> to the path 
-		/// </summary>
-		/// <remarks>
-		/// If the current figure is not closed, it will connect with the first point specified.
-		/// The current position will be moved to the last point specified
-		/// </remarks>
-		/// <param name="points">Points for each part of the line</param>
-		void AddLines(IEnumerable<PointF> points);
-
+		void AddPath (IGraphicsPath path, bool connect = false);
+		
 		/// <summary>
 		/// Transforms the points in the path with the specified matrix
 		/// </summary>
 		/// <param name="matrix">Matrix to transform the path</param>
-		void Transform(IMatrix matrix);
+		void Transform (IMatrix matrix);
 
-		IGraphicsPath Clone();
+		/// <summary>
+		/// Starts a new figure without closing the current figure
+		/// </summary>
+		/// <remarks>
+		/// This will make the next segment added to the path independent (unconnected) to the last segment.
+		/// </remarks>
+		void StartFigure ();
+
+		/// <summary>
+		/// Closes the current figure by connecting a line to the beginning of the figure
+		/// </summary>
+		/// <remarks>
+		/// This will also make the next segment added to the path start independently from the last figure.
+		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
+		/// </remarks>
+		void CloseFigure ();
+
+		/// <summary>
+		/// Creates a clone of the graphics path
+		/// </summary>
+		IGraphicsPath Clone ();
 	}
 
 	/// <summary>
@@ -314,9 +316,10 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Sets a value indicating how this graphics path should be filled.
 		/// </summary>
-		public FillMode FillMode 
+		public FillMode FillMode
 		{
 			set { Handler.FillMode = value; }
+			get { return Handler.FillMode; }
 		}
 
 		/// <summary>
@@ -350,7 +353,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator used to create the graphics path objects</param>
 		public static Func<IGraphicsPath> Instantiator (Generator generator = null)
 		{
-			var instantiator = generator.Find<IGraphicsPathHandler>();
+			var instantiator = generator.Find<IGraphicsPathHandler> ();
 			return () => {
 				return instantiator ();
 			};
@@ -374,20 +377,13 @@ namespace Eto.Drawing
 			Handler = Create (generator);
 		}
 
-		private GraphicsPath(IGraphicsPath handler)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.GraphicsPath"/> class.
+		/// </summary>
+		/// <param name="handler">Handler for the graphics path</param>
+		GraphicsPath (IGraphicsPath handler)
 		{
 			Handler = handler;
-		}
-
-		public GraphicsPath(FillMode fillMode)
-			: this(null, fillMode)
-		{
-		}
-
-		public GraphicsPath(Generator g, FillMode fillMode)
-			: this(g)
-		{
-			this.Handler.FillMode = fillMode;
 		}
 
 		/// <summary>
@@ -573,10 +569,14 @@ namespace Eto.Drawing
 			Handler.Dispose ();
 		}
 
-		public IGraphicsPath Clone()
+		/// <summary>
+		/// Creates a clone of the graphics path
+		/// </summary>
+		public IGraphicsPath Clone ()
 		{
-			return new GraphicsPath(Handler.Clone());
+			return new GraphicsPath (Handler.Clone ());
 		}
+
 		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>
@@ -587,7 +587,7 @@ namespace Eto.Drawing
 
 		object IHandlerSource.Handler
 		{
-			get { throw new NotImplementedException (); }
+			get { return Handler; }
 		}
 	}
 }

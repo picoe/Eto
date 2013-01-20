@@ -39,7 +39,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				cell.TextLabel.Text = item.Text;
 				var imageItem = item as IImageListItem;
 				if (imageItem != null)
-					cell.ImageView.Image = imageItem.Image.ToUIImage();
+					cell.ImageView.Image = imageItem.Image.ToUI ();
 				else
 					cell.ImageView.Image = null;
 				return cell;

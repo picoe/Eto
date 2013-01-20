@@ -173,6 +173,7 @@
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
+    <Compile Include="TestSectionList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

@@ -90,7 +90,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets a font with the <see cref="FontFamilities.Monospace"/> family and the specified size and style
+		/// Gets a font with the <see cref="FontFamilies.Monospace"/> family and the specified size and style
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
@@ -101,7 +101,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets a font with the <see cref="FontFamilities.Sans"/> family and the specified size and style
+		/// Gets a font with the <see cref="FontFamilies.Sans"/> family and the specified size and style
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
@@ -112,7 +112,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets a font with the <see cref="FontFamilities.Serif"/> family and the specified size and style
+		/// Gets a font with the <see cref="FontFamilies.Serif"/> family and the specified size and style
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
@@ -123,7 +123,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets a font with the <see cref="FontFamilities.Cursive"/> family and the specified size and style
+		/// Gets a font with the <see cref="FontFamilies.Cursive"/> family and the specified size and style
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
@@ -134,7 +134,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets a font with the <see cref="FontFamilities.Fantasy"/> family and the specified size and style
+		/// Gets a font with the <see cref="FontFamilies.Fantasy"/> family and the specified size and style
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>

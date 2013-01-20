@@ -1,16 +1,19 @@
 
 namespace Eto.Drawing
 {
-	// Summary:
-	//     Specifies how the interior of a closed path is filled.
+	/// <summary>
+	/// Mode for how a closed <see cref="IGraphicsPath"/> is filled
+	/// </summary>
 	public enum FillMode
 	{
-		// Summary:
-		//     Specifies the alternate fill mode.
+		/// <summary>
+		/// Alternating / Even-Odd fill mode
+		/// </summary>
 		Alternate = 0,
-		//
-		// Summary:
-		//     Specifies the winding fill mode.
+
+		/// <summary>
+		/// Winding fill mode
+		/// </summary>
 		Winding = 1,
 	}
 }

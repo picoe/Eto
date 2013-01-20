@@ -58,9 +58,9 @@ namespace Eto.Platform.Windows.Drawing
 			Control.AddBezier (start.ToSD (), control1.ToSD (), control2.ToSD (), end.ToSD ());
 		}
 
-		public void AddPath(IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect)
 		{
-			Control.AddPath(path.ToSD(), connect);
+			Control.AddPath (path.ToSD (), connect);
 		}
 
 		public void Transform (IMatrix matrix)
@@ -127,17 +127,15 @@ namespace Eto.Platform.Windows.Drawing
 			get { return Control.GetLastPoint ().ToEto (); }
 		}
 
-		public IGraphicsPath Clone()
+		public IGraphicsPath Clone ()
 		{
-			return new GraphicsPathHandler((sd.Drawing2D.GraphicsPath)this.Control.Clone());
+			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)this.Control.Clone ());
 		}
-	
+
 		public FillMode FillMode
 		{
-			set 
-			{
-				Control.FillMode = (value == FillMode.Alternate) ? sd2.FillMode.Alternate : sd2.FillMode.Winding;
-			}
+			set { Control.FillMode = value == FillMode.Alternate ? sd2.FillMode.Alternate : sd2.FillMode.Winding; }
+			get { return Control.FillMode == sd2.FillMode.Alternate ? FillMode.Alternate : FillMode.Winding; }
 		}
 	}
 }

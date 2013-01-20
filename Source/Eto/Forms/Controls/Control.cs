@@ -431,15 +431,6 @@ namespace Eto.Forms
 		
 		#endregion
 
-        /// <summary>
-        /// An overload to be used when the handler is set after
-        /// construction
-        /// </summary>
-        /// <param name="generator"></param>
-        protected Control(Generator generator, IControl inner) :
-            base(generator, inner)
-        {
-        }
 		protected Control (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{

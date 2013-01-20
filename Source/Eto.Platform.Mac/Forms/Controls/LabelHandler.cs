@@ -59,32 +59,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				get;
 				set;
 			}
-			
-			static IntPtr selAttributedStringValue = Selector.GetHandle ("attributedStringValue");
-			static IntPtr selSetAttributedStringValue = Selector.GetHandle ("setAttributedStringValue:");
-
-			// remove when implemented in monomac
-			public NSAttributedString AttributedStringValue {
-				[Export ("attributedStringValue")]
-				get {
-					if (this.IsDirectBinding) {
-						return new NSAttributedString (Messaging.IntPtr_objc_msgSend (base.Handle, EtoLabel.selAttributedStringValue));
-					}
-					return new NSAttributedString (Messaging.IntPtr_objc_msgSendSuper (base.SuperHandle, EtoLabel.selAttributedStringValue));
-				}
-				[Export ("setAttributedStringValue:")]
-				set {
-					if (value == null) {
-						throw new ArgumentNullException ("value");
-					}
-					if (this.IsDirectBinding) {
-						Messaging.void_objc_msgSend_IntPtr (base.Handle, EtoLabel.selSetAttributedStringValue, value.Handle);
-					} else {
-						Messaging.void_objc_msgSendSuper_IntPtr (base.SuperHandle, EtoLabel.selSetAttributedStringValue, value.Handle);
-					}
-				}
-				
-			}
 		}
 		
 		public LabelHandler ()

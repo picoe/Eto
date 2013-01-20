@@ -36,7 +36,8 @@ namespace Eto
 		where W: Widget
 	{
 		HashSet<string> eventHooks; 
-		
+		Generator generator;
+
 		/// <summary>
 		/// Finalizes the WidgetHandler
 		/// </summary>
@@ -67,22 +68,18 @@ namespace Eto
 		/// <summary>
 		/// Gets the generator that was used to create this handler
 		/// </summary>
-        private Generator generator;
-        public Generator Generator
-        {
-            get
-            {
-                return generator;
-            }
-            set
-            {
-                generator = value;
+		public Generator Generator
+		{
+			get { return generator; }
+			set
+			{
+				generator = value;
+				
+				// validate the generator
+				Eto.Generator.Validate (generator);
+			}
+		}
 
-                // validate the generator
-                Eto.Generator.Validate(generator);
-            }
-        }
-		
 		#region IWidget Members
 
 		/// <summary>

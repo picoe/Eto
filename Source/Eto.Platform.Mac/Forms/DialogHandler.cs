@@ -86,10 +86,6 @@ namespace Eto.Platform.Mac.Forms
 			return Widget.DialogResult;
 		}
 		
-        public void Invalidate(Rectangle rect)
-        {
-            throw new NotImplementedException();
-        }
 		void HandleClosed (object sender, EventArgs e)
 		{
 			if (session != null)
@@ -106,5 +102,5 @@ namespace Eto.Platform.Mac.Forms
 				base.Close ();
 		}
 		
-    }
+	}
 }
