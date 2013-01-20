@@ -75,6 +75,16 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Initializes a new instance of a PointF class with values of the Point<paramref name="point"/>
+		/// </summary>
+		/// <param name="point">Point to initialize the X and Y values of the new instance with</param>
+		public PointF (Point point)
+		{
+			this.x = (int)point.X;
+			this.y = (int)point.Y;
+		}
+
+		/// <summary>
 		/// Gets or sets the X co-ordinate of this point
 		/// </summary>
 		public float X
@@ -306,24 +316,24 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets the cross product of this instance and the specified <paramref name="point"/>
+		/// Gets the dot product of this instance and the specified <paramref name="point"/>
 		/// </summary>
 		/// <param name="point">Point to get the dot product for</param>
-		/// <returns>The cross product (X * point.X + Y * point.Y) between this point and the specified point</returns>
-		public float CrossProduct (PointF point)
+		/// <returns>The dot product (X * point.X + Y * point.Y) between this point and the specified point</returns>
+		public float DotProduct (PointF point)
 		{
 			return x * point.x + y * point.y;
 		}
 
 		/// <summary>
-		/// Gets the cross product between two points
+		/// Gets the dot product between two points
 		/// </summary>
-		/// <param name="point1">First point to get the cross product</param>
-		/// <param name="point2">Second point to get the cross product</param>
-		/// <returns>The cross product (point1.X * point2.X + poin1.Y * point2.Y) between the two points</returns>
-		public static float CrossProduct (PointF point1, PointF point2)
+		/// <param name="point1">First point to get the dot product</param>
+		/// <param name="point2">Second point to get the dot product</param>
+		/// <returns>The dot product (point1.X * point2.X + poin1.Y * point2.Y) between the two points</returns>
+		public static float DotProduct (PointF point1, PointF point2)
 		{
-			return point1.CrossProduct (point2);
+			return point1.DotProduct (point2);
 		}
 		
 		/// <summary>

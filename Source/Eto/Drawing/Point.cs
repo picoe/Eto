@@ -311,24 +311,24 @@ namespace Eto.Drawing
 		}
 		
 		/// <summary>
-		/// Gets the cross product of this instance and the specified <paramref name="point"/>
+		/// Gets the dot product of this instance and the specified <paramref name="point"/>
 		/// </summary>
 		/// <param name="point">Point to get the dot product for</param>
-		/// <returns>The cross product (X * point.X + Y * point.Y) between this point and the specified point</returns>
-		public int CrossProduct (Point point)
+		/// <returns>The dot product (X * point.X + Y * point.Y) between this point and the specified point</returns>
+		public int DotProduct (Point point)
 		{
 			return x * point.x + y * point.y;
 		}
 		
 		/// <summary>
-		/// Gets the cross product between two points
+		/// Gets the dot product between two points
 		/// </summary>
-		/// <param name="point1">First point to get the cross product</param>
-		/// <param name="point2">Second point to get the cross product</param>
-		/// <returns>The cross product (point1.X * point2.X + poin1.Y * point2.Y) between the two points</returns>
-		public static int CrossProduct (Point point1, Point point2)
+		/// <param name="point1">First point to get the dot product</param>
+		/// <param name="point2">Second point to get the dot product</param>
+		/// <returns>The dot product (point1.X * point2.X + poin1.Y * point2.Y) between the two points</returns>
+		public static int DotProduct (Point point1, Point point2)
 		{
-			return point1.CrossProduct (point2);
+			return point1.DotProduct (point2);
 		}
 		
 		/// <summary>
