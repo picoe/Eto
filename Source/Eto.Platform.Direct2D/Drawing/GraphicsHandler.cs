@@ -32,14 +32,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			var rx = width / 2f;
 			var ry = height / 2f;
 
-			return
-				new sd.Ellipse(
-					center:
-						new s.DrawingPointF(
-							x + rx,
-							y + ry),
-					radiusX: rx,
-					radiusY: ry);
+			return new sd.Ellipse(center: new s.DrawingPointF(x + rx, y + ry), radiusX: rx, radiusY: ry);
 		}
 
 		public bool Antialias { get; set; } // not used

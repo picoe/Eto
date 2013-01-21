@@ -150,9 +150,11 @@ namespace Eto.Platform.Windows.Drawing
 				return Control;
 		}
 
-		public IBitmap Clone()
+		public IBitmap Clone(Rectangle? rectangle = null)
 		{
-			return new BitmapHandler((SD.Bitmap)this.Control.Clone());
+			return new BitmapHandler(rectangle != null 
+				? (SD.Bitmap)this.Control.Clone(rectangle.Value.ToSD(), this.Control.PixelFormat) 
+				: (SD.Bitmap)this.Control.Clone());
 		}
 
 		public Color GetPixel(int x, int y)

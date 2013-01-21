@@ -196,9 +196,9 @@ namespace Eto.Platform.Wpf.Drawing
 			return Control;
 		}
 
-		public IBitmap Clone()
+		public IBitmap Clone(Rectangle? rectangle = null)
 		{
-			return new BitmapHandler (Control.Clone ());
+			return new BitmapHandler (Control.Clone ()); // TODO: rectangle
 		}
 	}
 }

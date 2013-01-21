@@ -248,9 +248,9 @@ namespace Eto.Platform.Mac.Drawing
 				Control.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
-		public IBitmap Clone()
+		public IBitmap Clone(Rectangle? rectangle = null)
 		{
-			return new BitmapHandler ((NSImage)Control.Copy ());
+			return new BitmapHandler ((NSImage)Control.Copy ()); // TODO: rectangle
 		}
 
 		public Color GetPixel(int x, int y)

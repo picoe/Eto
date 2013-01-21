@@ -201,9 +201,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			return pixbuf;
 		}
 
-		public IBitmap Clone()
+		public IBitmap Clone(Rectangle? rectangle = null)
 		{
-			return new BitmapHandler (Control.Copy ());
+			return new BitmapHandler (Control.Copy ()); // TODO: rectangle
 		}
 		
 		public Color GetPixel (int x, int y)
