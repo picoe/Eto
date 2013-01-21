@@ -5,23 +5,21 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}</ProjectGuid>
+    <ProjectGuid>{15490F6C-C579-4A86-AD16-8D9B5B41EB87}</ProjectGuid>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
-    <AssemblyName>Eto.Platform.Mac</AssemblyName>
+    <AssemblyName>Eto.Platform.XamMac</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup>
-    <DefineConstants>$(DefineConstants);Mac;DESKTOP;</DefineConstants>
-    <Optimize>false</Optimize>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>DEBUG;OSX;DESKTOP;MONOMAC</DefineConstants>
+    <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -32,27 +30,21 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
-    <DefineConstants>OSX;DESKTOP;MONOMAC</DefineConstants>
+    <DefineConstants>OSX;DESKTOP;XAMMAC</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>
-  <PropertyGroup>
-    <OutputRoot>..\..\..</OutputRoot>
-  </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
-    <Reference Include="MonoMac">
-      <HintPath>..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
+    <Reference Include="XamMac, Version=0.0.0.0, Culture=neutral">
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
-    <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Forms\Controls\MacTextControl.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -179,7 +171,9 @@
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Forms\SaveFileDialogHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\SplineHelper.cs" />
     <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="Drawing\LinearGradientBrushHandler.cs" />

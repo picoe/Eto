@@ -5,13 +5,12 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>10.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}</ProjectGuid>
-    <ProjectTypeGuids>{948B3504-5B70-4649-8FE4-BDE1FB46EC69};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <ProjectGuid>{5CFF5206-278B-4DE2-93AF-571B2121B5A7}</ProjectGuid>
+    <ProjectTypeGuids>{42C0BBD9-55CE-4FC1-8D90-A7348ABAFB23};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Exe</OutputType>
     <RootNamespace>Eto.Test.Mac</RootNamespace>
-    <AssemblyName>Eto.Test.Mac</AssemblyName>
-    <LastXamMacNagTime>14/12/2100 1:15:16 AM</LastXamMacNagTime>
-    <SuppressXamMacMigration>True</SuppressXamMacMigration>
+    <AssemblyName>Eto.Test.XamMac</AssemblyName>
+    <LastXamMacNagTime>14/12/2012 1:15:16 AM</LastXamMacNagTime>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -29,6 +28,7 @@
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
     <UseSGen>False</UseSGen>
+    <I18n />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
@@ -40,8 +40,11 @@
     <EnableCodeSigning>False</EnableCodeSigning>
     <CreatePackage>False</CreatePackage>
     <EnablePackageSigning>False</EnablePackageSigning>
-    <IncludeMonoRuntime>False</IncludeMonoRuntime>
-    <UseSGen>False</UseSGen>
+    <IncludeMonoRuntime>True</IncludeMonoRuntime>
+    <UseSGen>True</UseSGen>
+    <CodeSigningKey>Mac Developer</CodeSigningKey>
+    <PackageSigningKey>Developer ID Installer</PackageSigningKey>
+    <I18n />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -49,9 +52,7 @@
     <Reference Include="System.Core" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
-    <Reference Include="MonoMac">
-      <HintPath>..\..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
-    </Reference>
+    <Reference Include="XamMac" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Startup.cs" />
@@ -66,10 +67,6 @@
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Eto.Platform.Mac\Eto.Platform.Mac.csproj">
-      <Project>{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}</Project>
-      <Name>Eto.Platform.Mac</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Eto.Test\Eto.Test.csproj">
       <Project>{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}</Project>
       <Name>Eto.Test</Name>
@@ -77,6 +74,10 @@
     <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">
       <Project>{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}</Project>
       <Name>Eto.Json</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Platform.Mac\Eto.Platform.XamMac.csproj">
+      <Project>{15490F6C-C579-4A86-AD16-8D9B5B41EB87}</Project>
+      <Name>Eto.Platform.XamMac</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
