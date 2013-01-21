@@ -17,17 +17,17 @@ using Eto.Platform.Mac.Forms.Menu;
 namespace Eto.Platform.Mac
 {
 	public class Generator : Eto.Generator
-	{ 	
-		public override string ID
-		{
-			get { return Generators.Mac; }
-		}
-
+	{
+#if XAMMAC
+		public override string ID { get { return Generators.XamMac; } }
+#else
+		public override string ID { get { return Generators.Mac; } }
+#endif
+		
 		public Generator ()
 		{
 			AddTo(this);
 		}
-
 
 		public static void AddTo(Eto.Generator g)
 		{
@@ -129,5 +129,5 @@ namespace Eto.Platform.Mac
 		{
 			return new NSAutoreleasePool ();
 		}
-    }
+	}
 }
