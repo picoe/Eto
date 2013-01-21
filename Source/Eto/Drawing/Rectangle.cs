@@ -154,7 +154,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Initializes a new instance of a Rectangle class with truncated values of the specified floating-point RectangleF<paramref name="point"/>
+		/// Initializes a new instance of a Rectangle class with truncated values of the specified floating-point <paramref name="rectangle"/>
 		/// </summary>
 		/// <param name="point">RectangleF to initialize the X and Y values of the new instance with</param>
 		public Rectangle(RectangleF rectangle)
