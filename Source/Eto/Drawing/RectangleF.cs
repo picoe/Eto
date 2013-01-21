@@ -96,6 +96,16 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Initilizes a new instance of the RectangleF class with the specified <paramref name="rectangle"/>.
+		/// </summary>
+		/// <param name="rectangle"></param>
+		public RectangleF(Rectangle rectangle)
+		{
+			this.location = new PointF(rectangle.X, rectangle.Y);
+			this.size = new SizeF(rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the Rectangle class with X, Y co-ordinates at 0,0 and the specified <paramref name="size"/>
 		/// </summary>
 		/// <param name="size">Size to give the rectangle</param>
