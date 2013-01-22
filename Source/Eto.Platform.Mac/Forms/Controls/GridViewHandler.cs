@@ -128,7 +128,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			Control = new EtoTableView {
 				Handler = this,

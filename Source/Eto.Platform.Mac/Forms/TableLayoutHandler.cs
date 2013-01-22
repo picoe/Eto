@@ -61,8 +61,8 @@ namespace Eto.Platform.Mac.Forms
 		{
 			DisposeControl = false;
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			

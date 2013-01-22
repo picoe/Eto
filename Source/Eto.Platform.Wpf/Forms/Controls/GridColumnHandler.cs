@@ -26,7 +26,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public IGridHandler GridHandler { get; set; }
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			DataCell = new TextBoxCell (Widget.Generator);

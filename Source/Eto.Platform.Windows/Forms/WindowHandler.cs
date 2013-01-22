@@ -67,7 +67,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			content = new swf.Panel {

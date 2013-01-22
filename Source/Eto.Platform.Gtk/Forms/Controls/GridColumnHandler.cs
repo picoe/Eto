@@ -32,7 +32,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			Resizable = true;
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			this.DataCell = new TextBoxCell (Widget.Generator);

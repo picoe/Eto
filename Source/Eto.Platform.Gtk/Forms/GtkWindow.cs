@@ -99,7 +99,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			vbox.PackStart (menuBox, false, false, 0);

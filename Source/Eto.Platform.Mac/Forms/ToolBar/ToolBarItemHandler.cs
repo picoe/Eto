@@ -110,7 +110,7 @@ namespace Eto.Platform.Mac
 			return (T)new NSToolbarItem(this.Identifier);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.Target = new ToolBarItemHandlerTarget{ Handler = this };

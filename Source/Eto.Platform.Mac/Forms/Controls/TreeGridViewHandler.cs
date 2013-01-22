@@ -233,8 +233,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				break;
 			}
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			Control = new EtoOutlineView { 
 				Handler = this,

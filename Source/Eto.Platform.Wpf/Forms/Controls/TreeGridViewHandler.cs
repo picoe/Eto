@@ -26,7 +26,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			return controller[row];
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			controller = new TreeController { Handler = this };

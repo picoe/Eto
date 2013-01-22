@@ -143,8 +143,8 @@ namespace Eto.Platform.Mac.Forms
 			AutoSize = true;
 			
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.DidBecomeKey += delegate {
