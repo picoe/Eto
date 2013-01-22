@@ -7,12 +7,6 @@ namespace Eto.Forms
 {
 	public interface IClipboard : IInstanceWidget
     {
-        #region Format Names
-
-        string StringFormatName { get; }
-
-        #endregion
-
         string[] Types { get; }
 		
 		void SetString (string value, string type);
@@ -46,12 +40,6 @@ namespace Eto.Forms
 		{
 			handler = (IClipboard)Handler;
 		}
-
-        #region Format Names
-
-        public string StringFormatName { get { return handler.StringFormatName; } }
-
-        #endregion
 
         public string[] Types {
 			get { return handler.Types; }

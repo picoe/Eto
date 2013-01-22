@@ -196,15 +196,6 @@ namespace Eto.Platform.Windows.Forms
 		}
 		
 		#endregion
-
-        #region Format Names
-
-        public string StringFormatName
-        {
-            get { return SWF.DataFormats.UnicodeText; }
-        }
-
-        #endregion
     }
 }
 

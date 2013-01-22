@@ -64,10 +64,5 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			sw.Clipboard.Clear ();
 		}
-
-		public string StringFormatName
-		{
-			get { throw new NotImplementedException (); }
-		}
 	}
 }

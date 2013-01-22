@@ -153,11 +153,6 @@ namespace Eto.Platform.GtkSharp.Forms
 		#region IWidget implementation
 
 		#endregion
-
-        public string StringFormatName
-        {
-            get { throw new NotImplementedException(); }
-        }
     }
 }
 
