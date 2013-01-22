@@ -45,7 +45,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 

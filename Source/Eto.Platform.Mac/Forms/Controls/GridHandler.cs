@@ -219,7 +219,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			columns = new ColumnCollection { Handler = this };

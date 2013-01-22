@@ -77,7 +77,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control = sd.Graphics.FromImage ((sd.Image)image.ControlObject);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 

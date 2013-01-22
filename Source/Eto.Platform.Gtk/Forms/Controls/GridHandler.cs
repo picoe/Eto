@@ -35,7 +35,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			Tree.Model = new Gtk.TreeModelAdapter (CreateModelImplementor ());
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Tree = new Gtk.TreeView ();

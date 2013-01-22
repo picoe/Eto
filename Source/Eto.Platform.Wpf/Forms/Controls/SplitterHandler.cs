@@ -84,11 +84,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public override void Initialize ()
-		{
-			base.Initialize ();
-		}
-
 		void UpdateOrientation ()
 		{
 			if (orientation == SplitterOrientation.Horizontal) {

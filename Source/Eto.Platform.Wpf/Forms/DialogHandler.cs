@@ -19,7 +19,7 @@ namespace Eto.Platform.Wpf.Forms
 			return new sw.Window ();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.ShowInTaskbar = false;

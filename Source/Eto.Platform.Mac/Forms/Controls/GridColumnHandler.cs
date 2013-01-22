@@ -54,8 +54,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Editable = false;
 			AutoSize = true;
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			this.DataCell = new TextBoxCell (Widget.Generator);

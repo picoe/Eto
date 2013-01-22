@@ -265,12 +265,6 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public override void Initialize ()
-		{
-			base.Initialize ();
-			
-		}
-
 		public virtual void OnLoad (EventArgs e)
 		{
 		}

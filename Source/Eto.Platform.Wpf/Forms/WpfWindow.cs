@@ -36,7 +36,7 @@ namespace Eto.Platform.Wpf.Forms
 			get { return content; }
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 

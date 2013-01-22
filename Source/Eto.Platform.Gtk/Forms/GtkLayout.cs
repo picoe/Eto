@@ -14,7 +14,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		bool setlayout;
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			

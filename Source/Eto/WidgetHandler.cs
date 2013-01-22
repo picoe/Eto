@@ -89,7 +89,7 @@ namespace Eto
 		/// Override this to initialize any of the platform objects.  This is called
 		/// in the widget constructor, after all of the widget's constructor code has been called.
 		/// </remarks>
-		public virtual void Initialize()
+		protected virtual void Initialize ()
 		{
 		}
 
@@ -97,7 +97,7 @@ namespace Eto
 		{
 		}
 
-		void IWidget.Initialize ()
+		void IWidget.Initialize()
 		{
 			Initialize ();
 			PostInitialize ();
@@ -242,10 +242,11 @@ namespace Eto
 		/// Override this to initialize any of the platform objects.  This is called
 		/// in the widget constructor, after all of the widget's constructor code has been called.
 		/// </remarks>
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			if (this.Control == null)
 				Control = CreateControl ();
+
 			base.Initialize ();
 		}
 

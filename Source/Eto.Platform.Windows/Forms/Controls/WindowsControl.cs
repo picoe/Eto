@@ -113,7 +113,7 @@ namespace Eto.Platform.Windows
 			get { return this.Control; }
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			Control.TabIndex = 100;
 			XScale = true;

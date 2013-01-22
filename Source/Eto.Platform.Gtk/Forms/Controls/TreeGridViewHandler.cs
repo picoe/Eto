@@ -15,7 +15,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		bool? selectCollapsingItem;
 		ITreeGridItem lastSelected;
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 
