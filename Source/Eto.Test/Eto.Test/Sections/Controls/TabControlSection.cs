@@ -8,10 +8,14 @@ namespace Eto.Test.Sections.Controls
 	{
 		public TabControlSection ()
 		{
-			var layout = new DynamicLayout (this);
-			
-			layout.Add (DefaultTabs ());
-			
+			Add();			
+		}
+
+		protected virtual void Add()
+		{
+			var layout = new DynamicLayout(this);
+
+			layout.Add(DefaultTabs());
 		}
 		
 		Control DefaultTabs ()
@@ -74,6 +78,26 @@ namespace Eto.Test.Sections.Controls
 				Log.Write (control, "Click, Item: {0}", control.Text);
 			};
 		}
+	}
+
+	public class ThemedTabControlSection : TabControlSection
+	{
+		protected override void Add()
+		{
+			// Clone the current generator and add handlers
+			// for TabControl and TabPage. Create a TabControlSection
+			// using the new generator and then restore the previous generator.
+			var currentGenerator = Generator.Current;
+			var generator = Activator.CreateInstance(currentGenerator.GetType()) as Generator;
+			Generator.Initialize(generator);
+
+			generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
+			generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());
+
+			base.Add();
+			
+			Generator.Initialize(currentGenerator); // restore
+		}		
 	}
 }
 
