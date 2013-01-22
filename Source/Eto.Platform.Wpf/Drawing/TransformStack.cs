@@ -31,17 +31,17 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void TranslateTransform (float dx, float dy)
 		{
-			Push (Matrix.FromTranslation (dx, dy));
+			Push (Matrix.FromTranslation (dx, dy, generator));
 		}
 
 		public void RotateTransform (float angle)
 		{
-			Push (Matrix.FromRotation (angle));
+			Push (Matrix.FromRotation (angle, generator));
 		}
 
 		public void ScaleTransform (float sx, float sy)
 		{
-			Push (Matrix.FromScale (sx, sy));
+			Push (Matrix.FromScale (sx, sy, generator));
 		}
 
 		public void MultiplyTransform (IMatrix matrix)
