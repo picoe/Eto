@@ -106,7 +106,7 @@ namespace Eto.Platform.Windows
 			if (child != null) {
 				SWF.Control childControl = child.GetContainerControl ();
 				if (childControl.Parent != null) childControl.Parent.Controls.Remove (childControl);
-				childControl.Dock = ((IWindowsControl)child.Handler).DockStyle;
+				childControl.Dock = child.GetWindowsControl().DockStyle;
 				childControl.Margin = GetPadding (x, y);
 				SetScale (child, x, y);
 
