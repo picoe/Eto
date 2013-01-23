@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 using s = SharpDX;
 
 namespace Eto.Platform.Direct2D.Drawing
