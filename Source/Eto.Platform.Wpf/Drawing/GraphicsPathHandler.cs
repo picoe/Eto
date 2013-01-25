@@ -188,7 +188,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void Transform (IMatrix matrix)
 		{
 			if (Control.Transform != null)
-				Control.Transform = new swm.MatrixTransform (swm.Matrix.Multiply (Control.Transform.Value, matrix.ToWpf ()));
+				Control.Transform = new swm.MatrixTransform (swm.Matrix.Multiply (matrix.ToWpf (), Control.Transform.Value));
 			else
 				Control.Transform = matrix.ToWpfTransform ();
 		}

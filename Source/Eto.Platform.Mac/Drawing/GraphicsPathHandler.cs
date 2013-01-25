@@ -174,7 +174,7 @@ namespace Eto.Platform.iOS.Drawing
 			if (transform == null)
 				transform = matrix;
 			else
-				transform = Matrix.Multiply (transform, matrix);
+				transform.Prepend (matrix);
 			var path = new CGPath ();
 			path.AddPath (matrix.ToCG (), Control);
 			Control = path;

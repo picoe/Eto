@@ -250,7 +250,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public void Transform (IMatrix matrix)
 		{
 			if (transform != null)
-				transform.Append (matrix);
+				transform.Prepend (matrix);
 			else
 				transform = matrix;
 		}
