@@ -249,7 +249,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void Transform (IMatrix matrix)
 		{
-			transform = matrix;
+			if (transform != null)
+				transform.Append (matrix);
+			else
+				transform = matrix;
 		}
 
 		public void CloseFigure ()
@@ -354,7 +357,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			var handler = new GraphicsPathHandler ();
 			handler.commands.AddRange (this.commands);
-			handler.transform = this.transform.Clone ();
+			handler.transform = this.transform != null ? this.transform.Clone () : null;
 			handler.firstFigureClosed = this.firstFigureClosed;
 			handler.isFirstFigure = this.isFirstFigure;
 			return handler;
