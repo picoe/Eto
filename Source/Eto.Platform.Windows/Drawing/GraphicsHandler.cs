@@ -38,7 +38,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public GraphicsHandler (sd.Graphics graphics)
 		{
-			this.Control = graphics;			
+			this.Control = graphics;
 		}
 		
 		public bool Antialias
@@ -300,6 +300,34 @@ namespace Eto.Platform.Windows.Drawing
 
 				t.Dispose ();
 			}
+		}
+
+		public RectangleF ClipBounds
+		{
+			get { return this.Control.ClipBounds.ToEto(); }
+		}
+
+		public void SetClip (RectangleF rectangle)
+		{
+			this.Control.SetClip (rectangle.ToSD ());
+		}
+
+		public void SetClip (IGraphicsPath path)
+		{
+			this.Control.SetClip (path.ToSD ());
+		}
+
+		public void ResetClip ()
+		{
+			this.Control.ResetClip ();
+		}
+
+		public void Clear(SolidBrush brush)
+		{
+			if (brush != null)
+				Control.Clear (brush.Color.ToSD ());
+			else
+				Control.Clear (sd.Color.Transparent);
 		}
 	}
 }

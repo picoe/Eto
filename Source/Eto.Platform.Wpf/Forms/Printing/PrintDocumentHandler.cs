@@ -29,7 +29,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			{
 				base.OnRender (dc);
 				var rect = new Rectangle (new Size((int)Width, (int)Height));
-				var graphicsHandler = new GraphicsHandler (this, dc, null);
+				var graphicsHandler = new GraphicsHandler (this, dc, new sw.Rect (0, 0, Width, Height));
 				var graphics = new Graphics (Handler.Widget.Generator, graphicsHandler);
 				// needed to set size properly for some reason.. ??
 				graphics.DrawRectangle (new Pen(Colors.Transparent), rect);

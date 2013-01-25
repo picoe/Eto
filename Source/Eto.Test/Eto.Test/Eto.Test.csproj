@@ -49,6 +49,7 @@
     <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
+    <Compile Include="Sections\Drawing\ClipSection.cs" />
     <Compile Include="Sections\Drawing\DrawTextSection.cs" />
     <Compile Include="Sections\Drawing\FontsSection.cs" />
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
@@ -106,6 +107,7 @@
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
     <Compile Include="TestSectionList.cs" />
+    <Compile Include="Sections\Drawing\ClearSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
