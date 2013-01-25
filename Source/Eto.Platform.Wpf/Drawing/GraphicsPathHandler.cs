@@ -187,7 +187,10 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Transform (IMatrix matrix)
 		{
-			Control.Transform = matrix.ToWpfTransform ();
+			if (Control.Transform != null)
+				Control.Transform = new swm.MatrixTransform (swm.Matrix.Multiply (Control.Transform.Value, matrix.ToWpf ()));
+			else
+				Control.Transform = matrix.ToWpfTransform ();
 		}
 
 		public void AddEllipse (float x, float y, float width, float height)
