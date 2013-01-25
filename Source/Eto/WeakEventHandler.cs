@@ -123,7 +123,7 @@ namespace Eto
 		/// <param name="unregister">Delegate to unregister the event handler</param>
 		/// <returns>Event handler to attach to the long lived object</returns>
 		public static EventHandler<E> MakeWeak<E> (this EventHandler<E> eventHandler, UnregisterCallback<E> unregister = null)
-    		where E: EventArgs
+			where E: EventArgs
 		{
 			if (eventHandler == null)
 				throw new ArgumentNullException ("eventHandler");

@@ -58,6 +58,12 @@ namespace Eto.Forms
 		}
 
 
+		public Drawable (Generator g, IDrawable handler, bool initialize = true) 
+			: base (g, handler, initialize)
+		{
+			this.handler = handler;
+		}
+
 		public virtual void OnPaint (PaintEventArgs pe)
 		{
 			if (Paint != null)

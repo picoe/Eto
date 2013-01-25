@@ -221,10 +221,10 @@ namespace Eto.Forms
 			Handler.LoadHtml (html, baseUri);
 		}
 
-        public void ShowPrintDialog ()
-        {
+		public void ShowPrintDialog ()
+		{
 			Handler.ShowPrintDialog ();
-        }
+		}
 
 		public bool BrowserContextMenuEnabled {
 			get { return Handler.BrowserContextMenuEnabled; }
