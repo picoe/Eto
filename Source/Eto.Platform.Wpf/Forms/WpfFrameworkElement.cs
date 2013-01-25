@@ -128,7 +128,7 @@ namespace Eto.Platform.Wpf.Forms
 		public virtual Graphics CreateGraphics ()
 		{
             var drawingVisual = new swm.DrawingVisual();
-
+			
             var dc = drawingVisual.RenderOpen();
 
             var graphics = 
@@ -304,21 +304,15 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			
 		}
-        public Point ScreenToWorld(Point p)
-        {
-            // TODO: Is this correct?
-            return 
-                Control.PointFromScreen(
-                    p.ToWpf())
-                .ToEto();
-        }
+		public Point ScreenToWorld (Point p)
+		{
+			return Control.PointFromScreen (p.ToWpf ()).ToEto ();
+		}
 
-        public Point WorldToScreen(Point p)
-        {
-            return
-                Control.PointToScreen(
-                    p.ToWpf()).ToEto();
-        }
+		public Point WorldToScreen (Point p)
+		{
+			return Control.PointToScreen (p.ToWpf ()).ToEto ();
+		}
 
 
         public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
@@ -341,12 +335,18 @@ namespace Eto.Platform.Wpf.Forms
 
         public Point MousePosition
         {
-            get { throw new NotImplementedException(); }
+			get { return swi.Mouse.GetPosition (Control).ToEto (); }
         }
 
         public Point Location
         {
-            get { throw new NotImplementedException(); }
+			get
+			{
+				if (Widget.Parent == null)
+					return Point.Empty;
+				else
+					return Control.TranslatePoint (new sw.Point (0, 0), Widget.Parent.GetContainerControl ()).ToEto ();
+			}
         }
 
         public void SetControl(object control)

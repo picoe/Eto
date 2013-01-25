@@ -1,18 +1,37 @@
 using System;
-using SWF = System.Windows.Forms;
-using SD = System.Drawing;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class PanelHandler : WindowsContainer<MyPanel, Panel>, IPanel
+	public class PanelHandler : WindowsContainer<PanelHandler.EtoPanel, Panel>, IPanel
 	{
-		public PanelHandler()
+		public class EtoPanel : swf.Panel
 		{
-			Control = new MyPanel();
+			// Need to override IsInputKey to capture 
+			// the arrow keys.
+			protected override bool IsInputKey (swf.Keys keyData)
+			{
+				switch (keyData & swf.Keys.KeyCode) {
+				case swf.Keys.Up:
+				case swf.Keys.Down:
+				case swf.Keys.Left:
+				case swf.Keys.Right:
+				case swf.Keys.Back:
+					return true;
+				default:
+					return base.IsInputKey (keyData);
+				}
+			}
+		}
+
+		public PanelHandler ()
+		{
+			Control = new EtoPanel ();
 			this.Control.SuspendLayout ();
-			this.Control.Size = SD.Size.Empty;
-			this.Control.MinimumSize = SD.Size.Empty;
+			this.Control.Size = sd.Size.Empty;
+			this.Control.MinimumSize = sd.Size.Empty;
 			this.Control.AutoSize = true;
 			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
 		}
@@ -21,26 +40,6 @@ namespace Eto.Platform.Windows
 		{
 			base.OnLoad (e);
 			Control.ResumeLayout ();
-		}
-	}
-
-	public class MyPanel : SWF.Panel
-	{
-		// Need to override IsInputKey to capture 
-		// the arrow keys.
-		protected override bool IsInputKey(SWF.Keys keyData)
-		{
-			switch (keyData & SWF.Keys.KeyCode)
-			{
-				case SWF.Keys.Up:
-				case SWF.Keys.Down:
-				case SWF.Keys.Left:
-				case SWF.Keys.Right:
-				case SWF.Keys.Back:
-					return true;
-				default:
-					return base.IsInputKey(keyData);
-			}
 		}
 	}
 }
