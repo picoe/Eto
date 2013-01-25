@@ -589,6 +589,88 @@ namespace Eto.Drawing
 		{
 			get { return Handler; }
 		}
+
+		/// <summary>
+		/// Creates a rounded rectangle using the specified corner radius
+		/// </summary>
+		/// <returns>The round rect.</returns>
+		/// <param name="rectangle">Rectangle to round</param>
+		/// <param name="radius">Radius for all corners</param>
+		/// <param name="generator">Generator to create the graphics path</param>
+		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float radius, Generator generator = null)
+		{
+			return GetRoundRect (rectangle, radius, radius, radius, radius, generator);
+		}
+
+		/// <summary>
+		/// Creates a rounded rectangle using the specified corner radius
+		/// </summary>
+		/// <param name="rectangle">Rectangle to round</param>
+		/// <param name="nwRadius">Radius of the north east corner</param>
+		/// <param name="neRadius">Radius of the north west corner</param>
+		/// <param name="seRadius">Radius of the south east corner</param>
+		/// <param name="swRadius">Radius of the south west corner</param>
+		/// <param name="generator">Generator to create the graphics path</param>
+		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius, Generator generator = null)
+		{
+			///  NW-----NE
+			///  |       |
+			///  |       |
+			///  SW-----SE
+
+			var result = GraphicsPath.Create (generator);
+
+			nwRadius *= 2;
+			neRadius *= 2;
+			seRadius *= 2;
+			swRadius *= 2;
+
+			//NW ---- NE
+			result.AddLine (new PointF (rectangle.X + nwRadius, rectangle.Y), new PointF (rectangle.Right - neRadius, rectangle.Y));
+
+			//NE Arc
+			if (neRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Right - neRadius, rectangle.Top, rectangle.Right, rectangle.Top + neRadius);
+				result.AddArc (rect, -90, 90);
+			}
+
+			// NE
+			//  |
+			// SE
+			result.AddLine (new PointF (rectangle.Right, rectangle.Top + neRadius), new PointF (rectangle.Right, rectangle.Bottom - seRadius));
+
+			//SE Arc
+			if (seRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Right - seRadius, rectangle.Bottom - seRadius, rectangle.Right, rectangle.Bottom);
+				result.AddArc (rect, 0, 90);
+			}
+
+			// SW --- SE
+			result.AddLine (new PointF (rectangle.Right - seRadius, rectangle.Bottom), new PointF (rectangle.Left + swRadius, rectangle.Bottom));
+
+			//SW Arc
+			if (swRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Left, rectangle.Bottom - swRadius, rectangle.Left + swRadius, rectangle.Bottom);
+				result.AddArc (rect, 90, 90);
+			}
+
+			// NW
+			// |
+			// SW
+			result.AddLine (new PointF (rectangle.Left, rectangle.Bottom - swRadius), new PointF (rectangle.Left, rectangle.Top + nwRadius));
+
+			//NW Arc
+			if (nwRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Left, rectangle.Top, rectangle.Left + nwRadius, rectangle.Top + nwRadius);
+				result.AddArc (rect, 180, 90);
+			}
+
+			result.CloseFigure ();
+
+			return result;
+		}
 	}
 }
 
