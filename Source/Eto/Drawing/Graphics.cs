@@ -228,10 +228,42 @@ namespace Eto.Drawing
 		/// </remarks>
 		void RestoreTransform ();
 
+		/// <summary>
+		/// Gets the bounds of the clipping region
+		/// </summary>
+		/// <remarks>
+		/// This rectangle will encompass all parts of the clipping region, which may not be rectangular in shape
+		/// </remarks>
+		/// <value>The clip bounds applied to drawing operations</value>
 		RectangleF ClipBounds { get; }
 
-		void SetClip(RectangleF rect);
+		/// <summary>
+		/// Sets the clip region to the specified <paramref name="rectangle"/>
+		/// </summary>
+		/// <remarks>
+		/// The previous clipping region will be cleared after this call
+		/// </remarks>
+		/// <param name="rectangle">Rectangle for the clipping region</param>
+		void SetClip (RectangleF rectangle);
 
+		/// <summary>
+		/// Sets the clip region to the specified <paramref name="path"/>
+		/// </summary>
+		/// <remarks>
+		/// The previous clipping region will be cleared after this call
+		/// </remarks>
+		/// <param name="path">Path to specify the clip region</param>
+		void SetClip (IGraphicsPath path);
+
+		/// <summary>
+		/// Resets the clip bounds to encompass the entire drawing area
+		/// </summary>
+		void ResetClip ();
+
+		/// <summary>
+		/// Resets all pixels in the <see cref="ClipBounds"/> region with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to clear the graphics context</param>
 		void Clear(SolidBrush brush);
 	}
 
@@ -1013,6 +1045,59 @@ namespace Eto.Drawing
 			Handler.RestoreTransform ();
 		}
 
+		/// <summary>
+		/// Gets the bounds of the clipping region
+		/// </summary>
+		/// <remarks>
+		/// This rectangle will encompass all parts of the clipping region, which may not be rectangular in shape
+		/// </remarks>
+		/// <value>The clip bounds applied to drawing operations</value>
+		public RectangleF ClipBounds
+		{
+			get { return Handler.ClipBounds; }
+		}
+
+		/// <summary>
+		/// Sets the clip region to the specified <paramref name="rectangle"/>
+		/// </summary>
+		/// <remarks>
+		/// The previous clipping region will be cleared after this call
+		/// </remarks>
+		/// <param name="rectangle">Rectangle for the clipping region</param>
+		public void SetClip (RectangleF rectangle)
+		{
+			Handler.SetClip (rectangle);
+		}
+
+		/// <summary>
+		/// Sets the clip region to the specified <paramref name="path"/>
+		/// </summary>
+		/// <remarks>
+		/// The previous clipping region will be cleared after this call
+		/// </remarks>
+		/// <param name="path">Path to specify the clip region</param>
+		public void SetClip (IGraphicsPath path)
+		{
+			Handler.SetClip (path);
+		}
+
+		/// <summary>
+		/// Resets the clip bounds to encompass the entire drawing area
+		/// </summary>
+		public void ResetClip ()
+		{
+			Handler.ResetClip ();
+		}
+		
+		/// <summary>
+		/// Resets all pixels in the <see cref="ClipBounds"/> region with the specified <paramref name="brush"/>
+		/// </summary>
+		/// <param name="brush">Brush to clear the graphics context</param>
+		public void Clear (SolidBrush brush = null)
+		{
+			Handler.Clear (brush);
+		}
+
 		#region Obsolete
 
 		/// <summary>
@@ -1041,25 +1126,5 @@ namespace Eto.Drawing
 		}
 
 		#endregion
-
-		public void SetClip(RectangleF rect)
-		{
-			Handler.SetClip(rect);
-		}
-
-		public RectangleF ClipBounds
-		{
-			get { return Handler.ClipBounds; }
-		}
-
-		/// <summary>
-		/// Resets all pixels in the clip region with the 
-		/// color of the specified solid brush
-		/// </summary>
-		/// <param name="brush"></param>
-		public void Clear(SolidBrush brush)
-		{
-			Handler.Clear(brush);
-		}
 	}
 }

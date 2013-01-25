@@ -13,6 +13,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 		double offset = 0.5;
 		double inverseoffset = 0;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
+		RectangleF? clipBounds;
+		IGraphicsPath clipPath;
+
 
 		public PixelOffsetMode PixelOffsetMode
 		{
@@ -289,19 +292,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			base.Dispose (disposing);
 		}
 
-		public void SetClip (RectangleF rect)
-		{
-			throw new NotImplementedException ();
-		}
-
 		public void TranslateTransform (float offsetX, float offsetY)
 		{
 			Control.Translate (offsetX, offsetY);
-		}
-
-		public RectangleF ClipBounds
-		{
-			get { throw new NotImplementedException (); }
 		}
 
 		public void RotateTransform (float angle)
@@ -321,17 +314,72 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void SaveTransform ()
 		{
+			ReverseClip ();
 			Control.Save ();
+			ApplyClip ();
 		}
 
 		public void RestoreTransform ()
 		{
 			Control.Restore ();
+			ApplyClip ();
 		}
 
-		public void Clear(SolidBrush brush)
+		void ReverseClip ()
 		{
-			throw new NotImplementedException();
+			if (clipBounds != null)
+				Control.ResetClip ();
+		}
+
+		void ApplyClip ()
+		{
+			if (clipPath != null) {
+				clipPath.Apply (Control);
+				Control.Clip ();
+			} else if (clipBounds != null) {
+				Control.Rectangle (clipBounds.Value.ToCairo ());
+				Control.Clip ();
+			}
+		}
+
+		public RectangleF ClipBounds
+		{
+			get { return clipBounds ?? RectangleF.Empty; }
+		}
+
+		public void SetClip (RectangleF rectangle)
+		{
+			ResetClip ();
+			clipBounds = rectangle;
+			ApplyClip ();
+		}
+
+		public void SetClip (IGraphicsPath path)
+		{
+			ResetClip ();
+			clipPath = path;
+			clipBounds = path.Bounds;
+			ApplyClip ();
+		}
+
+		public void ResetClip ()
+		{
+			clipBounds = null;
+			Control.ResetClip ();
+		}
+
+		public void Clear (SolidBrush brush)
+		{
+			Control.Save ();
+			Control.Operator = Cairo.Operator.Clear;
+			Control.Paint ();
+			Control.Restore ();
+			Control.Save ();
+			if (brush != null) {
+				brush.Apply (this);
+				Control.Paint ();
+			}
+			Control.Restore ();
 		}
 	}
 }

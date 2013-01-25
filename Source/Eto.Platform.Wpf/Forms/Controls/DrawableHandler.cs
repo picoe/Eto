@@ -40,7 +40,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		class EtoCanvas : swc.Canvas
+		class EtoCanvas : swc.Panel
 		{
 			public EtoChild Child { get; set; }
 
