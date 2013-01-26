@@ -153,6 +153,6 @@ namespace Eto.Platform.GtkSharp.Forms
 		#region IWidget implementation
 
 		#endregion
-    }
+	}
 }
 

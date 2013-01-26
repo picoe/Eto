@@ -11,7 +11,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new UIView();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.BackgroundColor = UIColor.White;

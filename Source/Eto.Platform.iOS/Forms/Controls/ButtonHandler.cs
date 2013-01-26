@@ -56,7 +56,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return UIButton.FromType(UIButtonType.RoundedRect);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			/**
@@ -75,12 +75,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 				Widget.OnClick(EventArgs.Empty);
 			};
 		}
-		
-		#region IButton implementation
-		public IImage Image {
-			get {throw new NotImplementedException(); }
-			set {throw new NotImplementedException(); }
+
+		public Image Image
+		{
+			get;
+			set;
 		}
-		#endregion
+
+		public ButtonImagePosition ImagePosition
+		{
+			get;
+			set;
+		}
 	}
 }

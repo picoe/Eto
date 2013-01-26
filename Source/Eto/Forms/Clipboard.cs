@@ -6,8 +6,8 @@ using System.IO;
 namespace Eto.Forms
 {
 	public interface IClipboard : IInstanceWidget
-    {
-        string[] Types { get; }
+	{
+		string[] Types { get; }
 		
 		void SetString (string value, string type);
 
@@ -40,8 +40,8 @@ namespace Eto.Forms
 		{
 			handler = (IClipboard)Handler;
 		}
-
-        public string[] Types {
+		
+		public string[] Types {
 			get { return handler.Types; }
 		}
 		

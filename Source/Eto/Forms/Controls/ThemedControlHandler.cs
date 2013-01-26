@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -152,6 +152,7 @@ namespace Eto.Forms
 			Control.SetControl(control);
 		}
 
+#if DESKTOP
 		public string ToolTip
 		{
 			get { return Control.ToolTip; }
@@ -163,7 +164,7 @@ namespace Eto.Forms
 			get { return Control.Cursor; }
 			set { Control.Cursor = value; }
 		}
-
+#endif
 
 		public object ControlObject
 		{

@@ -108,9 +108,9 @@ namespace Eto.Forms
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected Container (Generator generator, IContainer handler, bool initialize = true)
 			: base(generator, handler, initialize)
-        {
-            this.handler = handler;
-        }
+		{
+			this.handler = handler;
+		}
 
 		
 		public object ContainerObject {

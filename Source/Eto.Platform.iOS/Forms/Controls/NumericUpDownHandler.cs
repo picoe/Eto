@@ -19,7 +19,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return Size.Max (base.GetNaturalSize (), new Size(60, 0));
 		}
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.KeyboardType = UIKeyboardType.NumberPad;

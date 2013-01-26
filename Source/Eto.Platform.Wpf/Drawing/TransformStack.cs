@@ -15,6 +15,7 @@ namespace Eto.Platform.Wpf.Drawing
 		Action<IMatrix> push;
 		Action pop;
 		Stack<StackEntry> stack;
+		StackEntry current;
 
 		/// <summary>
 		/// Initializes a new instance of the TransformStack class
@@ -31,17 +32,17 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void TranslateTransform (float dx, float dy)
 		{
-			Push (Matrix.FromTranslation (dx, dy));
+			Push (Matrix.FromTranslation (dx, dy, generator));
 		}
 
 		public void RotateTransform (float angle)
 		{
-			Push (Matrix.FromRotation (angle));
+			Push (Matrix.FromRotation (angle, generator));
 		}
 
 		public void ScaleTransform (float sx, float sy)
 		{
-			Push (Matrix.FromScale (sx, sy));
+			Push (Matrix.FromScale (sx, sy, generator));
 		}
 
 		public void MultiplyTransform (IMatrix matrix)
@@ -51,18 +52,40 @@ namespace Eto.Platform.Wpf.Drawing
 
 		class StackEntry
 		{
+			List<IMatrix> matrices = new List<IMatrix>();
 			public int popCount;
+			public List<IMatrix> Matrices { get { return matrices; } }
 		}
 
-		StackEntry s = null;
 
-		private void Push (IMatrix matrix)
+		public void PushAll ()
+		{
+			if (stack != null) {
+				foreach (var entry in stack) {
+					foreach (var matrix in entry.Matrices) {
+						push (matrix);
+					}
+				}
+			}
+		}
+
+		StackEntry NewEntry ()
+		{
+			stack = stack ?? new Stack<StackEntry> ();
+			var entry = new StackEntry ();
+			stack.Push (entry);
+			return entry;
+		}
+
+		void Push (IMatrix matrix)
 		{
 			// If we're in a SaveTransform block,
 			// increment the pop count.
-			if (s != null)
-				s.popCount++;
+			current = current ?? NewEntry ();
+			current.Matrices.Add (matrix);
 
+			current.popCount++;
+			
 			// push the transform
 			push (matrix);
 		}
@@ -70,40 +93,24 @@ namespace Eto.Platform.Wpf.Drawing
 		public void SaveTransform ()
 		{
 			// Create a stack the first time.
-			if (stack == null)
-				stack = new Stack<StackEntry> ();
-
-			// If there is an existing
-			// entry, push it
-			if (s != null)
-				stack.Push (s);
-
-			// start a new entry
-			s = new StackEntry { popCount = 0 };
+			current = NewEntry ();
 		}
 
 		public void RestoreTransform ()
 		{
 			// If there is a current entry, use it.
-			var t = s;
-
-			if (t == null)
+			if (current == null)
 				throw new EtoException ("RestoreTransform called without SaveTransform");
 
 			// Pop the drawing context
 			// popCount times
-			while (t != null && t.popCount-- > 0)
+			while (current.popCount-- > 0) {
 				// return a cloned matrix
 				// since the caller may dispose it.
 				pop ();
-
-			// reset the current entry always
-			s = null;
-
-			// otherwise if the stack is nonempty
-			// pop the value.
-			if (stack != null && stack.Count > 0)
-				s = stack.Pop ();
+			}
+			stack.Pop ();
+			current = (stack.Count == 0) ? NewEntry () : stack.Peek ();
 		}
 	}
 }

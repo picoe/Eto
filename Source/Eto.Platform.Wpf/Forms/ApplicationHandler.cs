@@ -37,7 +37,7 @@ namespace Eto.Platform.Wpf.Forms
 			return new sw.Application ();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			instance = this;

@@ -212,8 +212,11 @@ namespace Eto
 				detected = Generator.GetGenerator (Generators.IosAssembly, true);
 #elif DESKTOP
 			
-				if (EtoEnvironment.Platform.IsMac)
-					detected = Generator.GetGenerator (Generators.MacAssembly, true);
+				if (EtoEnvironment.Platform.IsMac) {
+					detected = Generator.GetGenerator (Generators.XamMacAssembly, true);
+					if (detected == null)
+						detected = Generator.GetGenerator (Generators.MacAssembly, true);
+				}
 				else if (EtoEnvironment.Platform.IsWindows) {
 					detected = Generator.GetGenerator (Generators.WpfAssembly, true);
 					if (detected == null)

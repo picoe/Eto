@@ -236,9 +236,7 @@
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Controls\PanelHandler.cs">
-      <SubType>Component</SubType>
-    </Compile>
+    <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="Forms\Controls\RadioButton.cs">
       <SubType>Code</SubType>
     </Compile>

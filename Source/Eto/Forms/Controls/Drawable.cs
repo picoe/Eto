@@ -58,11 +58,11 @@ namespace Eto.Forms
 		}
 
 
-        public Drawable(Generator g, IDrawable handler) 
-            : base(g, handler)
-        {
-            this.handler = handler;
-        }
+		public Drawable (Generator g, IDrawable handler, bool initialize = true) 
+			: base (g, handler, initialize)
+		{
+			this.handler = handler;
+		}
 
 		public virtual void OnPaint (PaintEventArgs pe)
 		{
@@ -79,5 +79,6 @@ namespace Eto.Forms
 		{
 			handler.Update (rect);
 		}
+
 	}
 }

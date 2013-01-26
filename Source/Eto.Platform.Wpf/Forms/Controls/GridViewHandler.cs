@@ -18,7 +18,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;

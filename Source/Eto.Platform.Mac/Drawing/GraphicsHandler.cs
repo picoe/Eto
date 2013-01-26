@@ -42,6 +42,8 @@ namespace Eto.Platform.iOS.Drawing
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
 		float inverseoffset = 0f;
+		SD.RectangleF? clipBounds;
+		IGraphicsPath clipPath;
 
 		public float Offset { get { return offset; } }
 		public float InverseOffset { get { return inverseoffset; } }
@@ -72,16 +74,6 @@ namespace Eto.Platform.iOS.Drawing
 			needsLock = true;
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
 			Control = graphicsContext.GraphicsPort;
-			Control.SaveState ();
-			Control.ClipToRect (view.ConvertRectToView (view.VisibleRect (), null));
-			AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
-				var handler = e.Widget.Handler as GraphicsHandler;
-				var innerview = handler.view;
-				var innercontext = handler.Control;
-				innercontext.RestoreState ();
-				innercontext.ClipToRect (innerview.ConvertRectToView (innerview.VisibleRect (), null));
-				innercontext.SaveState ();
-			}, view);
 			this.Flipped = view.IsFlipped;
 #elif IOS
 			this.Control = UIGraphics.GetCurrentContext ();
@@ -91,7 +83,11 @@ namespace Eto.Platform.iOS.Drawing
 			Control.SetAllowsSubpixelPositioning (false);
 			if (!Flipped)
 				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+
 			Control.SaveState ();
+#if OSX
+			Control.ClipToRect (TranslateView (view.VisibleRect ()));
+#endif
 		}
 
 #if OSX
@@ -118,6 +114,8 @@ namespace Eto.Platform.iOS.Drawing
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			//context.ScaleCTM(1, -1);
 			Control.SetAllowsSubpixelPositioning (false);
+			if (!Flipped)
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 		}
 
 #endif
@@ -468,6 +466,7 @@ namespace Eto.Platform.iOS.Drawing
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
+				ReverseClip ();
 				if (graphicsContext != null)
 					graphicsContext.FlushGraphics ();
 			}
@@ -494,35 +493,82 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			Control.ConcatCTM (matrix.ToCG ());
 		}
-		
+
 		public void SaveTransform ()
 		{
+			ReverseClip ();
 			Control.SaveState ();
+			RestoreClip ();
 		}
 		
 		public void RestoreTransform ()
 		{
+			ReverseClip ();
 			Control.RestoreState ();
+			RestoreClip ();
 		}
 
 		public RectangleF ClipBounds
 		{
-			get { return Platform.Conversions.ToEto (Control.GetClipBoundingBox()); }
+			get { return Platform.Conversions.ToEto (Control.GetClipBoundingBox ()); }
 		}
 
-		public void SetClip(RectangleF rect)
+		public void SetClip (RectangleF rectangle)
 		{
-			this.Control.ClipToRect(rect.ToSD());
+			ResetClip ();
+			clipBounds = TranslateView (rectangle.ToSD ());
+			RestoreClip ();
 		}
 
-		public void Clear(SolidBrush brush)
+		public void SetClip (IGraphicsPath path)
 		{
-			if (brush != null)
-			{
-				var rect = Control.GetClipBoundingBox();
-				this.Control.ClearRect(rect);
-				this.FillRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height);
+			ResetClip ();
+			clipPath = path.Clone ();
+			RestoreClip ();
+		}
+
+		void RestoreClip ()
+		{
+			if (clipPath != null) {
+				Control.SaveState ();
+				Control.AddPath (clipPath.ToCG ());
+				switch (clipPath.FillMode)
+				{
+				case FillMode.Alternate:
+					Control.EOClip ();
+					break;
+				case FillMode.Winding:
+					Control.Clip ();
+					break;
+				default:
+					throw new NotSupportedException ();
+				}
+			} else if (clipBounds != null) {
+				Control.SaveState ();
+				Control.ClipToRect (clipBounds.Value);
 			}
+		}
+
+		void ReverseClip ()
+		{
+			if (clipBounds != null || clipPath != null) {
+				Control.RestoreState ();
+			}
+		}
+
+		public void ResetClip ()
+		{
+			ReverseClip ();
+			clipBounds = null;
+			clipPath = null;
+		}
+
+		public void Clear (SolidBrush brush)
+		{
+			var rect = Control.GetClipBoundingBox ();
+			this.Control.ClearRect (rect);
+			if (brush != null)
+				this.FillRectangle (brush, rect.X, rect.Y, rect.Width, rect.Height);
 		}
 	}
 }

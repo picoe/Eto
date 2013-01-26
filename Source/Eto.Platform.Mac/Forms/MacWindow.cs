@@ -143,13 +143,18 @@ namespace Eto.Platform.Mac.Forms
 			AutoSize = true;
 			
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.DidBecomeKey += delegate {
-				if (MenuBar != null) 
+				if (MenuBar != null) {
+#if XAMMAC
+					NSApplication.SharedApplication.SetMainMenu (MenuBar);
+#else
 					NSApplication.SharedApplication.MainMenu = MenuBar;
+#endif
+				}
 			};
 		}
 		
@@ -298,8 +303,13 @@ namespace Eto.Platform.Mac.Forms
 			}
 			set {
 				this.menuBar = value;
-				if (Control.IsKeyWindow)
+				if (Control.IsKeyWindow) {
+#if XAMMAC
+					NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
+#else
 					NSApplication.SharedApplication.MainMenu = (NSMenu)value.ControlObject;
+#endif
+				}
 			}
 		}
 		

@@ -116,5 +116,13 @@ namespace Eto.Forms
 			}
 		}
 
+		public override void UpdateBindings ()
+		{
+			base.UpdateBindings ();
+			foreach (var tab in TabPages) {
+				tab.UpdateBindings ();
+			}
+		}
+
 	}
 }

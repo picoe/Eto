@@ -1,4 +1,4 @@
-﻿using Eto.Drawing;
+using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -8,32 +8,32 @@ namespace Eto.Forms
 	/// </summary>
 	/// <typeparam name="T">The Eto control used to create the custom implementation</typeparam>
 	/// <typeparam name="W">The container being implemented.</typeparam>
-    public class ThemedContainerHandler<T, W>
-        : ThemedControlHandler<T, W>, 
-		IContainer
-        where T: Container
-        where W : Control
-    {
+	public class ThemedContainerHandler<T, W> : ThemedControlHandler<T, W>, IContainer
+		where T: Container
+		where W : Control
+	{
+#if DESKTOP
 		public Size? MinimumSize
 		{
 			get { return Control.MinimumSize; }
-			set { Control.MinimumSize = value; ; }
+			set { Control.MinimumSize = value; }
+		}
+#endif
+
+		public Size ClientSize
+		{
+			get { return Control.ClientSize; }
+			set { Control.ClientSize = value; }
 		}
 
-        public Size ClientSize
-        {
-            get { return Control.ClientSize; }
-            set { Control.ClientSize = value; }
-        }
+		public object ContainerObject
+		{
+			get { return Control; }
+		}
 
-        public object ContainerObject
-        {
-            get { return Control; }
-        }
-
-        public void SetLayout(Layout layout)
-        {
-            this.Control.Layout = layout;
-        }
-    }
+		public void SetLayout (Layout layout)
+		{
+			this.Control.Layout = layout;
+		}
+	}
 }
