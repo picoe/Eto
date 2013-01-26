@@ -79,5 +79,6 @@ namespace Eto.Forms
 		{
 			handler.Update (rect);
 		}
+
 	}
 }
