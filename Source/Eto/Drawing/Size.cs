@@ -108,6 +108,15 @@ namespace Eto.Drawing
 		}
 		
 		/// <summary>
+		/// Initializes a new Size with the truncated width and height of size.
+		/// </summary>
+		/// <param name="size"></param>
+		public Size(SizeF size)
+			: this((int)size.Width, (int)size.Height)
+		{
+		}
+
+		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="point"/> is within the <see cref="Width"/> and <see cref="Height"/> of this size
 		/// </summary>
 		/// <param name="point">Point to test</param>
