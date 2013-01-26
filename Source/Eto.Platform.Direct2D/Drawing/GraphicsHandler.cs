@@ -64,6 +64,16 @@ namespace Eto.Platform.Direct2D.Drawing
 			throw new NotImplementedException();
 		}
 
+		void IGraphics.SetClip(IGraphicsPath path)
+		{
+			throw new NotImplementedException();
+		}
+
+		void IGraphics.ResetClip()
+		{
+			throw new NotImplementedException();
+		}
+
 		void IGraphics.TranslateTransform(float dx, float dy)
 		{
 			Control.Transform =
