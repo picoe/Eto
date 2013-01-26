@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -49,6 +49,7 @@
     <Compile Include="Sections\Controls\TreeViewSection.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
     <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
+    <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />
     <Compile Include="Sections\Drawing\AntialiasSection.cs" />
     <Compile Include="Sections\Drawing\ClipSection.cs" />
@@ -133,7 +134,9 @@
   <ItemGroup>
     <EmbeddedResource Include="TestImage.png" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <EmbeddedResource Include="Textures.png" />
+  </ItemGroup>
   <ItemGroup />
   <ItemGroup />
   <ItemGroup />
