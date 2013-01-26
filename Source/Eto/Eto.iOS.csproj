@@ -292,6 +292,8 @@
     <Compile Include="Forms\Screen.cs" />
     <Compile Include="Drawing\FillMode.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
+    <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

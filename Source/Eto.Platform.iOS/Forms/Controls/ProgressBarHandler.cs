@@ -18,7 +18,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new UIProgressView ();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			this.Indeterminate = false;

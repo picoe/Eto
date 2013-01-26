@@ -102,7 +102,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new CheckBox();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.ValueChanged += delegate {

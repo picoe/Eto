@@ -85,7 +85,9 @@ namespace Eto.Platform.iOS.Drawing
 				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 
 			Control.SaveState ();
+#if OSX
 			Control.ClipToRect (TranslateView (view.VisibleRect ()));
+#endif
 		}
 
 #if OSX

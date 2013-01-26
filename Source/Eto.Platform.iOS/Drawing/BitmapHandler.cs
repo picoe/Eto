@@ -227,7 +227,7 @@ namespace Eto.Platform.iOS.Drawing
 			return this.Control;
 		}
 
-		public IBitmap Clone ()
+		public IBitmap Clone (Rectangle? rectangle)
 		{
 			return new BitmapHandler { Control = (UIImage)this.Control.Copy () };
 		}

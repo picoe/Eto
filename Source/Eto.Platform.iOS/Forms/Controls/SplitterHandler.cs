@@ -37,7 +37,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			UseMGSplitViewController = false;
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			//SplitController.Delegate = new MG.MGSplitViewControllerDelegate();

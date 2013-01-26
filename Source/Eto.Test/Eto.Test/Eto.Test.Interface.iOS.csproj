@@ -173,6 +173,11 @@
     <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
+    <Compile Include="TestSectionList.cs" />
+    <Compile Include="Handlers\TabControlHandler.cs" />
+    <Compile Include="Handlers\TabPageHandler.cs" />
+    <Compile Include="Sections\Drawing\ClearSection.cs" />
+    <Compile Include="Sections\Drawing\ClipSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
