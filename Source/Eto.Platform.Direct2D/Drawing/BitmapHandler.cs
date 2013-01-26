@@ -85,7 +85,7 @@ namespace Eto.Platform.Direct2D.Drawing
             throw new NotImplementedException();
         }
 
-		public IBitmap Clone(Rectangle? rectangle = null)
+		public Bitmap Clone(Rectangle? rectangle = null)
         {
             throw new NotImplementedException();
         }
