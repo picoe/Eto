@@ -114,6 +114,8 @@ namespace Eto.Platform.iOS.Drawing
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			//context.ScaleCTM(1, -1);
 			Control.SetAllowsSubpixelPositioning (false);
+			if (!Flipped)
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
 		}
 
 #endif

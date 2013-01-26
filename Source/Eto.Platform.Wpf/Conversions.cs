@@ -52,6 +52,11 @@ namespace Eto.Platform.Wpf
 			return new sw.Rect (value.X, value.Y, value.Width, value.Height);
 		}
 
+		public static sw.Int32Rect ToWpfInt32 (this Rectangle value)
+		{
+			return new sw.Int32Rect (value.X, value.Y, value.Width, value.Height);
+		}
+
 		public static sw.Rect ToWpf (this RectangleF value)
 		{
 			return new sw.Rect (value.X, value.Y, value.Width, value.Height);

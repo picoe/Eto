@@ -23,10 +23,10 @@ Global
 		AppStore|iPhone = AppStore|iPhone
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.Ad-Hoc|iPhone.ActiveCfg = Debug|Any CPU
-		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.Ad-Hoc|iPhone.Build.0 = Debug|Any CPU
-		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.AppStore|iPhone.ActiveCfg = Debug|Any CPU
-		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.AppStore|iPhone.Build.0 = Debug|Any CPU
+		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.Ad-Hoc|iPhone.ActiveCfg = Release|Any CPU
+		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.Ad-Hoc|iPhone.Build.0 = Release|Any CPU
+		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.AppStore|iPhone.ActiveCfg = Release|Any CPU
+		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.AppStore|iPhone.Build.0 = Release|Any CPU
 		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}.Debug|iPhone.ActiveCfg = Debug|Any CPU

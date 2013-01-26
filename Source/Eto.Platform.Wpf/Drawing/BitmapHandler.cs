@@ -196,24 +196,22 @@ namespace Eto.Platform.Wpf.Drawing
 			return Control;
 		}
 
-		public IBitmap Clone(Rectangle? rectangle = null)
+		public Bitmap Clone (Rectangle? rectangle = null)
 		{
-			swmi.BitmapSource clone = null;
+			swmi.BitmapSource clone;
 
-			if (rectangle != null)
-			{
+			if (rectangle != null) {
+				var rect = rectangle.Value;
 				int stride = Control.PixelWidth * (Control.Format.BitsPerPixel / 8);
 				byte[] data = new byte[stride * Control.PixelHeight];
-				Control.CopyPixels(data, stride, 0);
-				var target = new swmi.WriteableBitmap(Control.PixelWidth, Control.PixelHeight, Control.DpiX, Control.DpiY, Control.Format, null);
-				var r = rectangle.Value;
-				target.WritePixels(new sw.Int32Rect(r.X, r.Y, r.Width, r.Height), data, stride, destinationX: 0, destinationY: 0);
+				Control.CopyPixels (data, stride, 0);
+				var target = new swmi.WriteableBitmap (rect.Width, rect.Height, Control.DpiX, Control.DpiY, Control.Format, null);
+				target.WritePixels (rect.ToWpfInt32 (), data, stride, destinationX: 0, destinationY: 0);
 				clone = target;
-			}
-			else
-				clone = Control.Clone(); 
+			} else
+				clone = Control.Clone ();
 
-			return new BitmapHandler (clone); 
+			return new Bitmap (Generator, new BitmapHandler (clone));
 		}
 	}
 }
