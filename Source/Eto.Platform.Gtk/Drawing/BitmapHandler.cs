@@ -201,9 +201,23 @@ namespace Eto.Platform.GtkSharp.Drawing
 			return pixbuf;
 		}
 
-		public IBitmap Clone()
+		public Bitmap Clone (Rectangle? rectangle = null)
 		{
-			return new BitmapHandler (Control.Copy ());
+			if (rectangle == null)
+				return new Bitmap(Generator, new BitmapHandler (Control.Copy ()));
+			else {
+				var rect = rectangle.Value;
+				PixelFormat format;
+				if (Control.BitsPerSample == 24)
+					format = PixelFormat.Format24bppRgb;
+				else if (Control.HasAlpha)
+					format = PixelFormat.Format32bppRgba;
+				else
+					format = PixelFormat.Format32bppRgb;
+				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
+				Control.CopyArea (rect.X, rect.Y, rect.Width, rect.Height, bmp.ToGdk (), 0, 0);
+				return bmp;
+			}
 		}
 		
 		public Color GetPixel (int x, int y)

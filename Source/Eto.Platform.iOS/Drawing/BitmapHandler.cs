@@ -170,44 +170,17 @@ namespace Eto.Platform.iOS.Drawing
 		
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var nsimage = this.Control;
-			var sourceRect = source.ToSD (); 
-			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
-			SD.RectangleF destRect = graphics.TranslateView (destination.ToSD(), false);
-			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {
+			var sourceRect = source.ToSD ();
+			var imgsize = Control.Size;
+			SD.RectangleF destRect = graphics.TranslateView (destination.ToSD (), false);
+			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize) {
 				graphics.Control.SaveState ();
-				//graphics.Context.ClipToRect(destRect);
-				if (graphics.Flipped) {
-					graphics.Control.TranslateCTM (0, nsimage.Size.Height);
-					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
-				} else {
-					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
-				}
-				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
-				//nsimage.CGImage(destRect, CGBlendMode.Normal, 1);
-
+				graphics.Control.TranslateCTM (destRect.X - sourceRect.X, destRect.Y + sourceRect.Y + destRect.Height);
+				graphics.Control.ScaleCTM (imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
+				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), Control.CGImage);
 				graphics.Control.RestoreState ();
-				
-				//var imgportion = nsimage..CGImage.WithImageInRect(sourceRect);
-				/*graphics.Context.SaveState();
-				if (graphics.Flipped) {
-					graphics.Context.TranslateCTM(0, destRect.Bottom);
-					graphics.Context.ScaleCTM(1.0F, -1.0F);
-				}*/
-				//var context = graphics.ControlObject as CGContext;
-				//Console.WriteLine("drawing source:{0} dest:{1}", source, destRect);
-				//graphics.Context.DrawImage(destRect, imgportion);
-				
-				//nsimage = UIImage.FromImage(imgportion);
-				//nsimage.Draw(destRect, CGBlendMode.Normal, 1);
-				
-				//imgportion.Dispose();
-				//nsimage.Dispose();
-				//graphics.Context.RestoreState();
 			} else {
-				//graphics.Context.DrawImage(destRect, nsimage.CGImage);
-				//Console.WriteLine("drawing full image");	
-				nsimage.Draw (destRect, CGBlendMode.Normal, 1);
+				Control.Draw (destRect, CGBlendMode.Normal, 1);
 			}
 		}
 		
@@ -227,9 +200,27 @@ namespace Eto.Platform.iOS.Drawing
 			return this.Control;
 		}
 
-		public IBitmap Clone (Rectangle? rectangle)
+		public Bitmap Clone (Rectangle? rectangle)
 		{
-			return new BitmapHandler { Control = (UIImage)this.Control.Copy () };
+			if (rectangle == null)
+				return new Bitmap (Generator, new BitmapHandler { Control = (UIImage)this.Control.Copy () });
+			else {
+				var rect = rectangle.Value;
+				cgimage = cgimage ?? Control.CGImage;
+				PixelFormat format;
+				if (cgimage.BitsPerPixel == 24)
+					format = PixelFormat.Format24bppRgb;
+				else if (cgimage.AlphaInfo == CGImageAlphaInfo.None)
+					format = PixelFormat.Format32bppRgb;
+				else
+					format = PixelFormat.Format32bppRgba;
+				
+				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
+				using (var graphics = new Graphics (bmp)) {
+					graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
+				}
+				return bmp;
+			}
 		}
 
 		public Color GetPixel (int x, int y)

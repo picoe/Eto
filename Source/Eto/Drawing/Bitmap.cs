@@ -120,7 +120,9 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Creates a clone of the bitmap
 		/// </summary>
-		IBitmap Clone ();
+		/// <param name="rectangle">If specified, the region of the bitmap to clone</param>
+		/// <returns></returns>
+		Bitmap Clone(Rectangle? rectangle = null);
 
 		/// <summary>
 		/// Gets the color of the pixel at the specified coordinates
@@ -341,9 +343,9 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Creates a clone of the bitmap
 		/// </summary>
-		public Bitmap Clone()
+		public Bitmap Clone (Rectangle? rectangle = null)
 		{
-			return new Bitmap (this.Generator, this.Handler.Clone());
+			return Handler.Clone (rectangle);
 		}
 
 		/// <summary>

@@ -248,9 +248,26 @@ namespace Eto.Platform.Mac.Drawing
 				Control.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
-		public IBitmap Clone()
+		public Bitmap Clone (Rectangle? rectangle = null)
 		{
-			return new BitmapHandler ((NSImage)Control.Copy ());
+			if (rectangle == null)
+				return new Bitmap (Generator, new BitmapHandler ((NSImage)Control.Copy ()));
+			else {
+				var rect = rectangle.Value;
+				PixelFormat format;
+				if (bmprep != null && bmprep.BitsPerPixel == 24)
+					format = PixelFormat.Format24bppRgb;
+				else if (alpha || (bmprep != null && bmprep.HasAlpha))
+					format = PixelFormat.Format32bppRgba;
+				else
+					format = PixelFormat.Format32bppRgb;
+
+				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
+				using (var graphics = new Graphics (bmp)) {
+					graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
+				}
+				return bmp;
+			}
 		}
 
 		public Color GetPixel(int x, int y)
