@@ -31,7 +31,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new TableDelegate { Handler = this };
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 

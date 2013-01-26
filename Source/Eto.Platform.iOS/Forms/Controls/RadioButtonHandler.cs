@@ -26,7 +26,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new UIButton(UIButtonType.RoundedRect);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.ShowsTouchWhenHighlighted = false;

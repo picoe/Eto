@@ -27,7 +27,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new EtoTextView();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.Layer.BorderWidth = 1f;

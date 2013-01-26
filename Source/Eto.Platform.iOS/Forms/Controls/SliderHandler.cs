@@ -14,7 +14,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return new UISlider ();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			MaxValue = 100;
