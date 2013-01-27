@@ -24,7 +24,7 @@ namespace Eto.Platform.iOS.Drawing
 		class BrushObject
 		{
 			CGImage image;
-			CGAffineTransform transform;
+			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
 			float [] alpha = new float[] { 1f };
 			CGPattern pattern;
 
@@ -56,8 +56,7 @@ namespace Eto.Platform.iOS.Drawing
 			{
 				get { return transform; }
 				set {
-					transform = value;
-					transform.Scale (1f, -1f);
+					transform = value;					
 					SetPattern ();
 				}
 			}
@@ -73,7 +72,9 @@ namespace Eto.Platform.iOS.Drawing
 
 			void SetPattern ()
 			{
-				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), transform, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
+				var t = transform;
+				t.Scale(1f, -1f);
+				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 			}
 		}
 
