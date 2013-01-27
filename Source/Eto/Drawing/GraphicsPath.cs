@@ -381,7 +381,7 @@ namespace Eto.Drawing
 		/// Initializes a new instance of the <see cref="Eto.Drawing.GraphicsPath"/> class.
 		/// </summary>
 		/// <param name="handler">Handler for the graphics path</param>
-		GraphicsPath (IGraphicsPath handler)
+		public GraphicsPath (IGraphicsPath handler)
 		{
 			Handler = handler;
 		}
