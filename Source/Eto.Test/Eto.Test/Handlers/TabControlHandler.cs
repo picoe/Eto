@@ -26,33 +26,30 @@ namespace Eto.Test.Handlers
             this.Control = new Panel { };
 			this.Tabs = new Tabs
 			{
-				// TODO: the height should be based on the height of the tabs
-				// the width doesn't matter
-				Size = new Size(100, 30),        
 				SelectionChanged = e => {
-						var tab = e as Tab; // need not be a tab, could be the insert button
-						Panel tabContentPanel = null;
-						TabPageHandler h = null;
-						if (tab != null &&
-							(h = tab.Tag as TabPageHandler) != null &&
-							this.ContentPanel != null)
-						{
-							tabContentPanel = h.Control;
-							if (SetContentPanelDelegate != null)
-								SetContentPanelDelegate(tabContentPanel);
-							else
-								this.ContentPanel.AddDockedControl(tabContentPanel); // can be null
-						}
-					},
+					var tab = e as Tab; 
+					Panel tabContentPanel = null;
+					TabPageHandler h = null;
+					if (tab != null &&
+						(h = tab.Tag as TabPageHandler) != null &&
+						this.ContentPanel != null)
+					{
+						tabContentPanel = h.Control;
+						if (SetContentPanelDelegate != null)
+							SetContentPanelDelegate(tabContentPanel);
+						else
+							this.ContentPanel.AddDockedControl(tabContentPanel); // can be null
+					}
+				},
 			};
  			ClearTabs();
-			this.ContentPanel = new Panel { };
+			this.ContentPanel = new Panel { BackgroundColor = Colors.White };
 			Control.LoadComplete += (s, e) =>
 				{
-					var tableLayout = new TableLayout(Control, 1, 2) { Padding = Padding.Empty, Spacing = Size.Empty };
+					var tableLayout = new TableLayout(Control, 2, 1) { Padding = Padding.Empty, Spacing = Size.Empty };
 					tableLayout.SetRowScale(0, scale: false);
 					tableLayout.Add(Tabs, 0, 0);
-					tableLayout.Add(ContentPanel, 0, 1);
+					tableLayout.Add(ContentPanel, 1, 0);
 				};
         }
 
@@ -95,6 +92,16 @@ namespace Eto.Test.Handlers
 
 	class Tab : Button
 	{
+		bool selected;
+		public bool Selected
+		{
+			get { return selected; }
+			set
+			{
+				selected = value;
+				BackgroundColor = selected ? Colors.LightCyan : Colors.Transparent;
+			}
+		}
 	}
 
 	class Tabs : Panel
@@ -105,8 +112,14 @@ namespace Eto.Test.Handlers
 		public Tab SelectedTab {
 			get { return selectedTab; }
 			private set {
-				selectedTab = value;
-				if (SelectionChanged != null) SelectionChanged(value);
+				if (!object.ReferenceEquals(selectedTab, value))
+				{
+					if (selectedTab != null)
+						selectedTab.Selected = false;
+					if ((selectedTab = value) != null) // note: assignment
+						selectedTab.Selected = true;
+					if (SelectionChanged != null) SelectionChanged(value);
+				}
 			}
 		}
 
@@ -132,7 +145,7 @@ namespace Eto.Test.Handlers
 		internal void Insert(Tab tab, int index)
 		{
 			Items.Insert(index, tab);
-			tab.Click += (s, e) => SelectedTab = tab;
+			tab.MouseUp += (s, e) => SelectedTab = tab;
 			LayoutItems();
 			if (SelectedTab == null)
 				SelectedTab = tab;
@@ -140,11 +153,11 @@ namespace Eto.Test.Handlers
 
 		private void LayoutItems()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout(padding: Padding.Empty, spacing: Size.Empty);
 			this.Layout = layout;
-			layout.BeginHorizontal();
+			layout.BeginVertical();
 			foreach (var tab in Items)
-				layout.Add(tab);
+				layout.Add(tab, xscale: true, yscale:false);
 		}
 
 		public int SelectedIndex
