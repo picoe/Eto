@@ -977,15 +977,6 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Translates the origin of the co-ordinate system by the given offset
-		/// </summary>
-		/// <param name="offset">Offset to translate the co-ordinate system by</param>
-		public void TranslateTransform(Point offset)
-		{
-			Handler.TranslateTransform(offset.X, offset.Y);
-		}
-
-		/// <summary>
 		/// Rotates the co-ordinate system by the given <paramref name="angle"/>
 		/// </summary>
 		/// <param name="angle">Angle in degrees to rotate the co-ordinates</param>
