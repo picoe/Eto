@@ -111,45 +111,9 @@ namespace Eto.Forms
 				this.Control.SetParentLayout(layout);
 		}
 
-		public Point ScreenToWorld(Point p)
-		{
-			return Control.ScreenToWorld(p);
-		}
-
-		public Point WorldToScreen(Point p)
-		{
-			return Control.WorldToScreen(p);
-		}
-
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
 			throw new NotImplementedException();
-		}
-
-		public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool Capture
-		{
-			get { return Control.Capture; }
-			set { Control.Capture = value; }
-		}
-
-		public Point MousePosition
-		{
-			get { return Control.MousePosition; }
-		}
-
-		public Point Location
-		{
-			get { return Control.Location; }
-		}
-
-		public void SetControl(object control)
-		{
-			Control.SetControl(control);
 		}
 
 #if DESKTOP
@@ -184,11 +148,6 @@ namespace Eto.Forms
 					handled = true;
 					break;
 
-				case Eto.Forms.Control.KeyUpEvent:
-					Control.KeyUp += (s, e) => Widget.OnKeyUp(e);
-					handled = true;
-					break;
-
 				case Eto.Forms.Control.TextChangedEvent:
 					Control.TextChanged += (s, e) => Widget.OnTextChanged(e);
 					handled = true;
@@ -219,10 +178,6 @@ namespace Eto.Forms
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
 					Control.MouseMove += (s, e) => Widget.OnMouseMove(e);
-					handled = true;
-					break;
-				case Eto.Forms.Control.MouseWheelEvent:
-					Control.MouseWheel += (s, e) => Widget.OnMouseWheel(e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
