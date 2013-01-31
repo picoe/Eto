@@ -178,6 +178,7 @@
     <Compile Include="Handlers\TabPageHandler.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Drawing\ClipSection.cs" />
+    <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
