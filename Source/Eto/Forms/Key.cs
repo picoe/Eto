@@ -182,6 +182,8 @@ namespace Eto.Forms
 		/// <summary>The Left Bracket '['  Key</summary>
 		LeftBracket = 0x0062,
 
+		/// <summary> /// The context menu Key /// </summary>
+		ContextMenu = 0x0063,
 
 		/// <summary>The Shift Key Modifier</summary>
 		Shift = 0x1000,

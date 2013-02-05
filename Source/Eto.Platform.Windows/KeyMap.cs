@@ -151,6 +151,7 @@ namespace Eto.Platform.Windows
 			keymap.Add(swf.Keys.Insert, Key.Insert);
             keymap.Add(swf.Keys.OemPeriod, Key.Period);
             keymap.Add(swf.Keys.Tab, Key.Tab);
+			keymap.Add(swf.Keys.Apps, Key.ContextMenu);
 			
 			foreach (var entry in keymap)
 			{
