@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -22,9 +22,6 @@
     </FileUpgradeFlags>
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
-  <PropertyGroup>
-    <DefineConstants>$(DefineConstants);DESKTOP;XAML</DefineConstants>
-  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
@@ -95,9 +92,11 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\Drawable.mobile.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
+    <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
@@ -121,6 +120,7 @@
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
+    <Compile Include="Threading\Thread.cs" />
     <Compile Include="WeakEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>

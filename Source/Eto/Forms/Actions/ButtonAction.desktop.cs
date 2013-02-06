@@ -1,3 +1,4 @@
+#if DESKTOP
 using System;
 using System.Reflection;
 using System.Collections;
@@ -46,3 +47,4 @@ namespace Eto.Forms
 		}
 	}
 }
+#endif
