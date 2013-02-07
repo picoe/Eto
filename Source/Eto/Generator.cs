@@ -151,6 +151,31 @@ namespace Eto
 		/// </remarks>
 		public abstract string ID { get; }
 
+		public virtual bool IsMac
+		{
+			get { return ID == Generators.Mac || ID == Generators.XamMac; }
+		}
+
+		public virtual bool IsWinForms
+		{
+			get { return ID == Generators.Windows; }
+		}
+		
+		public virtual bool IsWpf
+		{
+			get { return ID == Generators.Wpf; }
+		}
+		
+		public virtual bool IsGtk
+		{
+			get { return ID == Generators.Gtk; }
+		}
+
+		public virtual bool IsIos
+		{
+			get { return ID == Generators.Ios; }
+		}
+		
 		/// <summary>
 		/// Initializes a new instance of the Generator class
 		/// </summary>
