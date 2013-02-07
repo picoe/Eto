@@ -205,9 +205,16 @@ namespace Eto.Platform.Windows
 			Widget.OnMouseDoubleClick (GetMouseEvent (e));
 		}
 
-		MouseEventArgs GetMouseEvent (System.Windows.Forms.MouseEventArgs e)
+		protected virtual MouseEventArgs GetMouseEvent (System.Windows.Forms.MouseEventArgs e)
 		{
-			Point point = new Point (e.X, e.Y);
+			var point = e.Location.ToEto ();
+			var cs = Control.Size;
+			if (cs.Width >= short.MaxValue || cs.Height >= short.MaxValue) {
+				var pos = SWF.Cursor.Position;
+				pos = Control.PointToClient (pos);
+				point = pos.ToEto ();
+			}
+
 			MouseButtons buttons = MouseButtons.None;
 			if ((e.Button & SWF.MouseButtons.Left) != 0)
 				buttons |= MouseButtons.Primary;
@@ -251,7 +258,7 @@ namespace Eto.Platform.Windows
 		}
 
 		public virtual Size ClientSize {
-			get { return new Size (ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
+			get { return ContainerControl.ClientSize.ToEto (); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
 				ContainerControl.ClientSize = value.ToSD ();
