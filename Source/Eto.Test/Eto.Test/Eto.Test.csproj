@@ -13,7 +13,6 @@
   <PropertyGroup>
     <OutputRoot>..\..\..\..</OutputRoot>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>DESKTOP;XAML</DefineConstants>
   </PropertyGroup>
   <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,6 +29,7 @@
     <DebugType>none</DebugType>
     <Optimize>False</Optimize>
     <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
+    <DefineConstants>DESKTOP;XAML</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
