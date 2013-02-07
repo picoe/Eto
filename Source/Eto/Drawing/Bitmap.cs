@@ -167,7 +167,7 @@ namespace Eto.Drawing
 		[Obsolete ("Use FromResource(string, Assembly) instead")]
 		public static Bitmap FromResource (Assembly asm, string resourceName)
 		{
-			return FromResource (resourceName, asm);
+			return FromResource (resourceName, asm ?? Assembly.GetCallingAssembly ());
 		}
 
 		/// <summary>
