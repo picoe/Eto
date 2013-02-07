@@ -147,6 +147,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				Control.BackgroundColor = value.ToNS ();
+				Control.DrawsBackground = value.A > 0;
 			}
 		}
 		
