@@ -19,9 +19,11 @@ namespace Eto.Platform.Wpf.Forms
 			get
 			{
 				var size = sw.Size.Empty;
-				var handler = this.Widget.Layout.Handler as IWpfLayout;
-				if (handler != null)
-					size = handler.PreferredSize;
+				if (this.Widget.Layout != null) {
+					var handler = this.Widget.Layout.InnerLayout.Handler as IWpfLayout;
+					if (handler != null)
+						size = handler.PreferredSize;
+				}
 				var baseSize = base.PreferredSize;
 				return new sw.Size (Math.Max (size.Width, baseSize.Width), Math.Max (size.Height, baseSize.Height));
 			}
