@@ -93,9 +93,13 @@ namespace Eto.Platform.Mac
 		void SetImage ()
 		{
 #if XAMMAC
-			Control.Image = ShowImageDefault ? this.image.ToNS (16) : new NSImage (new sd.SizeF (1,1));
+			// nulls not allowed with XamMac. Remove when XamMac is updated.
+			if (this.image != null && ShowImage)
+				Control.Image = this.image.ToNS (16);
+			else
+				Messaging.void_objc_msgSend_IntPtr (Control.Handle, Selector.GetHandle ("setImage:"), IntPtr.Zero);
 #else
-			Control.Image = ShowImageDefault ? this.image.ToNS (16) : null;
+			Control.Image = ShowImage ? this.image.ToNS (16) : null;
 #endif
 		}
 
