@@ -231,21 +231,28 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var src = image.ToWpf ();
 			Control.PushClip (new swm.RectangleGeometry (destination.ToWpf ()));
-			bool scaled = false;
+			bool scale = source.Size != destination.Size;
+			bool translate = source.X > 0 || source.Y > 0;
 			double scalex = 1.0;
 			double scaley = 1.0;
-			if (source.Size != destination.Size) {
+			if (scale) {
 				scalex = (double)destination.Width / (double)source.Width;
 				scaley = (double)destination.Height / (double)source.Height;
 				Control.PushTransform (new swm.ScaleTransform (scalex, scaley));
-				scaled = true;
+				scale = true;
 			}
-			Control.DrawImage (src, new sw.Rect ((destination.X / scalex) - source.X, (destination.Y / scaley) - source.Y, destination.Width / scalex, destination.Height / scaley));
-			// pop once for PushClip
-			Control.Pop ();
-			// pop again for PushTransform
-			if (scaled)
+			if (translate)
+				Control.PushTransform (new swm.TranslateTransform (-source.X, -source.Y));
+			var rect = new sw.Rect (destination.X / scalex, destination.Y / scaley, image.Size.Width, image.Size.Height);
+			Control.DrawImage (src, rect);
+			// pop for TranslateTransform
+			if (translate)
 				Control.Pop ();
+			// pop again for ScaleTransform
+			if (scale)
+				Control.Pop ();
+			// pop for PushClip
+			Control.Pop ();
 		}
 
 		public void DrawText (Font font, Color color, float x, float y, string text)
