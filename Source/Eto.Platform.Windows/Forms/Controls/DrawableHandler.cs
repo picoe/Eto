@@ -105,12 +105,6 @@ namespace Eto.Platform.Windows
 			set { Control.CanFocusMe = value; }
 		}
 
-		public override Size Size
-		{
-			get	{ return Control.Size.ToEto (); }
-			set { Control.Size = value.ToSD (); }
-		}
-
 		public void Update(Rectangle rect)
 		{
 			using (var g = Control.CreateGraphics ()) {
