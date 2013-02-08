@@ -95,7 +95,8 @@ namespace Eto.Platform.Mac
 #if XAMMAC
 			Control.Image = ShowImageDefault ? this.image.ToNS (16) : new NSImage (new sd.SizeF (1,1));
 #else
-			Control.Image = ShowImageDefault ? this.image.ToNS (16) : null;
+			if (this.image != null && ShowImageDefault)
+				Control.Image = ShowImageDefault ? this.image.ToNS(16) : null;
 #endif
 		}
 
