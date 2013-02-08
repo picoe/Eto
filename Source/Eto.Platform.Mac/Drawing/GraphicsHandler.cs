@@ -38,7 +38,6 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 		NSView view;
 		float height;
-		bool needsLock;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
 		float inverseoffset = 0f;
@@ -71,20 +70,20 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			this.view = view;
 #if OSX
-			needsLock = true;
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
 			Control = graphicsContext.GraphicsPort;
 			this.Flipped = view.IsFlipped;
+
 #elif IOS
 			this.Control = UIGraphics.GetCurrentContext ();
 			this.Flipped = !view.Layer.GeometryFlipped;
 #endif
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
-			if (!Flipped)
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
-
 			Control.SaveState ();
+			if (!Flipped)
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, view.Window.ContentView.Frame.Height + 1));
+
 #if OSX
 			Control.ClipToRect (TranslateView (view.VisibleRect ()));
 #endif
@@ -174,10 +173,6 @@ namespace Eto.Platform.iOS.Drawing
 		
 		public void Flush ()
 		{
-			if (view != null && !needsLock) {
-				//view.UnlockFocus ();
-				needsLock = true;
-			}
 #if OSX
 			graphicsContext.FlushGraphics ();
 #endif
@@ -204,6 +199,7 @@ namespace Eto.Platform.iOS.Drawing
 					point.Y += offset;
 				}
 			}
+
 			if (view != null) {
 				point = view.ConvertPointToView (point, null);
 			}
@@ -236,20 +232,14 @@ namespace Eto.Platform.iOS.Drawing
 			return rect;
 		}
 
-		void Lock ()
-		{
-			if (needsLock && view != null) {
-				//view.LockFocus();
-				needsLock = false;
-			}
-		}
-		
 		void StartDrawing ()
 		{
-			Lock ();
 #if OSX
-			NSGraphicsContext.GlobalSaveGraphicsState ();
-			NSGraphicsContext.CurrentContext = this.graphicsContext;
+			if (view != null) {
+				NSGraphicsContext.GlobalSaveGraphicsState ();
+				NSGraphicsContext.CurrentContext = this.graphicsContext;
+			}
+			Control.SaveState ();
 #elif IOS
 			UIGraphics.PushContext (this.Control);
 			this.Control.SaveState ();
@@ -259,7 +249,10 @@ namespace Eto.Platform.iOS.Drawing
 		void EndDrawing ()
 		{
 #if OSX
-			NSGraphicsContext.GlobalRestoreGraphicsState ();
+			Control.RestoreState ();
+			if (view != null) {
+				NSGraphicsContext.GlobalRestoreGraphicsState ();
+			}
 #elif IOS
 			this.Control.RestoreState ();
 			UIGraphics.PopContext ();
@@ -277,7 +270,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
 		{
 			StartDrawing ();
-			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
+			var rect = TranslateView (new SD.RectangleF (x, y, width, height), true);
 			pen.Apply (this);
 			Control.StrokeRect (rect);
 			EndDrawing ();
@@ -293,7 +286,7 @@ namespace Eto.Platform.iOS.Drawing
 			}*/
 
 			brush.Apply (this);
-			Control.FillRect (TranslateView (new SD.RectangleF (x, y, width, height), true, true));
+			Control.FillRect (TranslateView (new SD.RectangleF (x, y, width, height), width > 1 || height > 1, true));
 			EndDrawing ();
 		}
 
