@@ -31,9 +31,15 @@
   </PropertyGroup>
   <PropertyGroup>
     <OutputRoot>..\..\..</OutputRoot>
+    <LibrariesPath>..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
-  <ItemGroup>
+  <ItemGroup Condition = " '$(XTarget)' == 'iOS'  ">
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Libraries\Json.NET\Bin\Portable\Newtonsoft.Json.dll</HintPath>
+    </Reference>  
+  </ItemGroup>
+  <ItemGroup Condition=" '$(XTarget)' != 'iOS' ">
     <Reference Include="System" />
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\Libraries\Json.NET\Bin\Net40\Newtonsoft.Json.dll</HintPath>

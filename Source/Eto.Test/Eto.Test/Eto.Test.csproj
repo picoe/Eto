@@ -34,7 +34,7 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(XTarget)' != 'iOS' ">
     <Reference Include="System" />
     <Reference Include="System.Core" />
   </ItemGroup>

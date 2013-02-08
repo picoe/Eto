@@ -54,7 +54,7 @@
     <DebugType>full</DebugType>
     <GenerateDocumentation>True</GenerateDocumentation>
   </PropertyGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(XTarget)' != 'iOS' ">
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -63,8 +63,6 @@
     </Reference>
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs">

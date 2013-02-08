@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -87,22 +87,22 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>IOS;MOBILE</DefineConstants>
   </PropertyGroup>
-  <ItemGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <ItemGroup Condition=" '$(XTarget)' == '' ">
+    <Reference Include="monotouch">
+      <HintPath>..\..\..\lib\iOS\monotouch.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="monotouch" />
+  </ItemGroup>
+  <ItemGroup>
     <Reference Include="MGSplitViewController">
       <HintPath>..\..\Libraries\MGSplitViewController\MGSplitViewController.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
-  <ItemGroup>
-    <Folder Include="Drawing\" />
-    <Folder Include="Forms\" />
-    <Folder Include="Forms\Controls\" />
-    <Folder Include="Forms\Cells\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Compile Include="Generator.cs" />
     <Compile Include="Drawing\BitmapHandler.cs">
@@ -219,10 +219,16 @@
       <Link>Drawing\LinearGradientBrushHandler.cs</Link>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
+  <ItemGroup Condition=" '$(XTarget)' != 'iOS' ">
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">
       <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
       <Name>Eto.iOS</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup Condition=" '$(XTarget)' == 'iOS' ">
+    <ProjectReference Include="..\Eto\Eto.csproj">
+      <Project>{16289d2f-044c-49ef-83e9-9391aff8fd2b}</Project>
+      <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
 </Project>
