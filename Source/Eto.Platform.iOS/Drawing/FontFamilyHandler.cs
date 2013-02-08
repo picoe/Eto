@@ -51,7 +51,9 @@ namespace Eto.Platform.iOS.Drawing
 		public UIFont CreateFont (float size, FontStyle style)
 		{
 			var matched = Typefaces.FirstOrDefault (r => r.FontStyle == style);
-			if (matched == null) matched = Typefaces.First ();
+			if (matched == null) matched = Typefaces.FirstOrDefault ();
+			if (matched == null)
+				return UIFont.SystemFontOfSize (size);
 			var handler = matched.Handler as FontTypefaceHandler;
 			return handler.CreateFont(size);
 		}

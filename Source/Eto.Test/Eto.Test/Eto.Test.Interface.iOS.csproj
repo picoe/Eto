@@ -108,6 +108,7 @@
     <EmbeddedResource Include="TestIcon.ico" />
     <EmbeddedResource Include="TestImage.png" />
     <EmbeddedResource Include="Sections\Serialization\Json\Test.json" />
+    <EmbeddedResource Include="Textures.png" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="MainForm.cs" />
@@ -178,6 +179,7 @@
     <Compile Include="Handlers\TabPageHandler.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Drawing\ClipSection.cs" />
+    <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
