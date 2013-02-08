@@ -33,7 +33,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				base.OnRender (dc);
 				if (Handler.virtualChildren == null) {
-					var rect = new Rectangle (Handler.Widget.Size);
+					var rect = new Rectangle (Size.Max(Handler.Widget.Size, Size.Empty));
 					var graphics = new Graphics (Handler.Widget.Generator, new GraphicsHandler (this, dc, rect.ToWpf ()));
 					Handler.Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}
