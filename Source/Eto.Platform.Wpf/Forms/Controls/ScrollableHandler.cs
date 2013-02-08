@@ -98,7 +98,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				}
 				else
 					c.Height = preferredSize.Height;
-				virtualCanvas.RecalculateExtent ();
+				//virtualCanvas.RecalculateExtent ();
 			}
 		}
 
@@ -166,7 +166,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				return new Eto.Drawing.Size ((int)scroller.ScrollableWidth, (int)scroller.ScrollableHeight);
+				return new Eto.Drawing.Size ((int)scroller.ExtentWidth, (int)scroller.ExtentHeight);
 			}
 			set
 			{
