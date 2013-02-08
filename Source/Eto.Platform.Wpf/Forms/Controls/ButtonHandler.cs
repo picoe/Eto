@@ -18,7 +18,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		Image image;
 		swc.Image swcimage;
-		swc.TextBlock label;
+		swc.Label label;
 		swc.Grid grid;
 		ButtonImagePosition imagePosition;
 
@@ -30,7 +30,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 			Control.MinWidth = Button.DefaultSize.Width;
 			Control.MinHeight = Button.DefaultSize.Height;
-			label = new swc.TextBlock {
+			label = new swc.Label {
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,
 				Padding = new sw.Thickness (3, 0, 3, 0),
@@ -63,9 +63,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return Conversions.ConvertMneumonicFromWPF (label.Text); }
+			get { return Conversions.ConvertMneumonicFromWPF ((string)label.Content); }
 			set {
-				label.Text = value.ToWpfMneumonic ();
+				label.Content = value.ToWpfMneumonic ();
 				SetImagePosition ();
 			}
 		}
@@ -82,7 +82,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void SetImagePosition ()
 		{
-			bool hideLabel = string.IsNullOrEmpty (label.Text);
+			bool hideLabel = string.IsNullOrEmpty ((string)label.Content);
 			int col, row;
 			switch (imagePosition) {
 			case ButtonImagePosition.Left:
