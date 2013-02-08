@@ -180,11 +180,11 @@ namespace Eto.Platform.Windows
 
 		public override Size ClientSize
 		{
-			get { return ContainerControl.ClientSize.ToEto (); }
+			get { return Control.ClientSize.ToEto (); }
 			set
 			{
-				ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.ClientSize = value.ToSD ();
+				Control.AutoSize = value.Width == -1 || value.Height == -1;
+				Control.ClientSize = value.ToSD ();
 			}
 		}
 
