@@ -168,7 +168,7 @@ namespace Eto.Test
 			args.Menu.FindAddSubMenu ("&Window", 900);
 			var help = args.Menu.FindAddSubMenu ("&Help", 1000);
 
-			if (Generator.ID == "mac") {
+			if (Generator.ID == "mac" || Generator.ID == "eto2.mac") {
 				// have a nice OS X style menu
 
 				var main = args.Menu.FindAddSubMenu (Application.Instance.Name, 0);
