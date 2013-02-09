@@ -145,6 +145,7 @@ namespace Eto.Platform.Wpf.Forms
 				if (menu != null) {
 					var handler = (MenuBarHandler)menu.Handler;
 					menuHolder.Content = handler.Control;
+					this.Control.InputBindings.Clear ();
 					CopyKeyBindings (handler.Control.Items);
 				}
 				else {
