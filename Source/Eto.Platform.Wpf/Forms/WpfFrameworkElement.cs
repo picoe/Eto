@@ -124,11 +124,6 @@ namespace Eto.Platform.Wpf.Forms
 			Control.InvalidateVisual ();
 		}
 
-		public Graphics CreateGraphics ()
-		{
-			throw new NotImplementedException ();
-		}
-
 		public void SuspendLayout ()
 		{
 

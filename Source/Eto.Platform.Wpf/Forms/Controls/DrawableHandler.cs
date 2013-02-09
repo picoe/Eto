@@ -130,6 +130,25 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
+		public virtual Graphics CreateGraphics()
+		{
+			var drawingVisual = new swm.DrawingVisual();
+
+			var dc = drawingVisual.RenderOpen();
+
+			var graphics =
+				new Graphics(
+					Widget.Generator,
+					new Eto.Platform.Wpf.Drawing.GraphicsHandler(
+						drawingVisual,
+						dc,
+						new Rectangle(
+							Point.Empty,
+							this.Size).ToWpf()));
+
+			return graphics;
+		}
+
 		void Control_SizeChanged (object sender, sw.SizeChangedEventArgs e)
 		{
 			SetMaxTiles ();

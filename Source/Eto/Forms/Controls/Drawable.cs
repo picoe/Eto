@@ -11,6 +11,7 @@ namespace Eto.Forms
 
 		bool CanFocus { get; set; }
 
+		Graphics CreateGraphics();
 	}
 
 	public class PaintEventArgs : EventArgs
@@ -70,6 +71,11 @@ namespace Eto.Forms
 				Paint (this, pe);
 		}
 
+		public Graphics CreateGraphics()
+		{
+			return handler.CreateGraphics();
+		}
+		
 		public bool CanFocus {
 			get { return handler.CanFocus; }
 			set { handler.CanFocus = value; }

@@ -18,8 +18,6 @@ namespace Eto.Forms
 
 		void Invalidate (Rectangle rect);
 
-		Graphics CreateGraphics ();
-
 		void SuspendLayout ();
 
 		void ResumeLayout ();
@@ -417,11 +415,6 @@ namespace Eto.Forms
 		
 		public virtual bool HasFocus {
 			get { return Handler.HasFocus; }
-		}
-		
-		public Graphics CreateGraphics ()
-		{
-			return Handler.CreateGraphics ();
 		}
 		
 		public virtual void Focus ()

@@ -46,7 +46,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return CanFocus;
 			}
 		}
-	
+
+		public Graphics CreateGraphics()
+		{
+			return new Graphics(Widget.Generator, new GraphicsHandler(Control));
+		}
+
 		public override bool Enabled { get; set; }
 		
 		public override Color BackgroundColor

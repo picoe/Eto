@@ -368,11 +368,6 @@ namespace Eto.Platform.Mac.Forms
 			Control.SetNeedsDisplayInRect (region);
 		}
 
-		public Graphics CreateGraphics ()
-		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control));
-		}
-
 		public void SuspendLayout ()
 		{
 		}
