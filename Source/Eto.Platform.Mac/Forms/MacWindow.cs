@@ -356,11 +356,6 @@ namespace Eto.Platform.Mac.Forms
 			Control.ContentView.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
-		public Graphics CreateGraphics ()
-		{
-			return null;
-		}
-
 		public void SuspendLayout ()
 		{
 		}

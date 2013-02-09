@@ -338,11 +338,6 @@ namespace Eto.Platform.Windows
 			set { Control.BackColor = value.ToSD (); }
 		}
 
-		public Graphics CreateGraphics ()
-		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control.CreateGraphics ()));
-		}
-
 		public virtual void SuspendLayout ()
 		{
 			Control.SuspendLayout ();

@@ -53,11 +53,6 @@ namespace Eto.Forms
 			Control.Invalidate(rect);
 		}
 
-		public virtual Graphics CreateGraphics()
-		{
-			return Control.CreateGraphics();
-		}
-
 		public void SuspendLayout()
 		{
 			Control.SuspendLayout();

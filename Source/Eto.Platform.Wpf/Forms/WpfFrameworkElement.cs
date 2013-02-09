@@ -125,25 +125,6 @@ namespace Eto.Platform.Wpf.Forms
 			Control.InvalidateVisual ();
 		}
 
-		public virtual Graphics CreateGraphics ()
-		{
-            var drawingVisual = new swm.DrawingVisual();
-			
-            var dc = drawingVisual.RenderOpen();
-
-            var graphics = 
-                new Graphics(
-                    Widget.Generator, 
-                    new Eto.Platform.Wpf.Drawing.GraphicsHandler(
-                        drawingVisual, 
-                        dc, 
-                        new Rectangle(
-                            Point.Empty,
-                            this.Size).ToWpf()));
-
-            return graphics;
-		}
-
 		public void SuspendLayout ()
 		{
 

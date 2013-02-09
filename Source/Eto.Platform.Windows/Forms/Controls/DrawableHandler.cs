@@ -99,7 +99,12 @@ namespace Eto.Platform.Windows
 			Control = new EtoDrawable { Handler = this };
 			Control.TabStop = true;
 		}
-		
+
+		public Graphics CreateGraphics()
+		{
+			return new Graphics(Widget.Generator, new GraphicsHandler(Control.CreateGraphics()));
+		}
+
 		public bool CanFocus {
 			get { return Control.CanFocusMe; }
 			set { Control.CanFocusMe = value; }

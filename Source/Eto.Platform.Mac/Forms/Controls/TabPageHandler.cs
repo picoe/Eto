@@ -150,11 +150,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.View.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
-		public Eto.Drawing.Graphics CreateGraphics ()
-		{
-            return null;/* TODO */
-		}
-
 		public void SuspendLayout ()
 		{
 		}
