@@ -31,7 +31,9 @@ namespace Eto.Platform.iOS.Forms
 		}
 		protected override Eto.Drawing.Size GetNaturalSize ()
 		{
-			var layout = Widget.Layout.InnerLayout.Handler as IiosLayout;
+			var layout = 
+				Widget != null && Widget.Layout != null && Widget.Layout.InnerLayout != null
+				? Widget.Layout.InnerLayout.Handler as IiosLayout : null;
 			if (layout != null)
 				return layout.GetPreferredSize (Size.MaxValue);
 			else
