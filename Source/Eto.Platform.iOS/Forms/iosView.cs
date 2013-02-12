@@ -253,12 +253,12 @@ namespace Eto.Platform.iOS.Forms
 
 		public Point ScreenToWorld (Point p)
 		{
-			throw new NotImplementedException ();
+			return Control.ConvertPointFromView(new SD.PointF(p.X, p.Y), null).ToEtoPoint();
 		}
 
 		public Point WorldToScreen (Point p)
 		{
-			throw new NotImplementedException ();
+			return Control.ConvertPointToView(new SD.PointF(p.X, p.Y), null).ToEtoPoint();
 		}
 
 		public DragDropEffects DoDragDrop (object data, DragDropEffects allowedEffects)
