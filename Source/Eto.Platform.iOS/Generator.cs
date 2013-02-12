@@ -112,7 +112,7 @@ namespace Eto.Platform.iOS
 			//g.Add <ISaveFileDialog> (() => new SaveFileDialogHandler ());
 			//g.Add <ISelectFolderDialog> (() => new SelectFolderDialogHandler ());
 			g.Add <ITableLayout> (() => new TableLayoutHandler ());
-			//g.Add <IUITimer> (() => new UITimerHandler ());
+			g.Add <IUITimer> (() => new UITimerHandler ());
 			
 			// IO
 			//g.Add <ISystemIcons> (() => new SystemIconsHandler ());
