@@ -3,14 +3,14 @@ using System.Linq;
 using Eto.Drawing;
 using System.Collections.Generic;
 using sd = System.Drawing;
-using Eto.Platform.Mac;
 
 #if OSX
 using MonoMac.CoreGraphics;
-
+using Eto.Platform.Mac;
 namespace Eto.Platform.Mac.Drawing
 #elif IOS
 using MonoTouch.CoreGraphics;
+using Eto.Platform.iOS;
 
 namespace Eto.Platform.iOS.Drawing
 #endif
