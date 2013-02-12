@@ -77,7 +77,7 @@ namespace Eto.Platform.iOS.Drawing
 			this.Flipped = view.IsFlipped;
 #elif IOS
 			this.Control = UIGraphics.GetCurrentContext ();
-			this.Flipped = !view.Layer.GeometryFlipped;
+			this.Flipped = view != null && view.Layer != null &&!view.Layer.GeometryFlipped;
 #endif
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
