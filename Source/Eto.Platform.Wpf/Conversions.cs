@@ -12,6 +12,7 @@ using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Eto.Platform.Wpf.Drawing;
+using Eto.Platform.Wpf.Forms;
 
 namespace Eto.Platform.Wpf
 {
@@ -401,6 +402,14 @@ namespace Eto.Platform.Wpf
 			default:
 				throw new NotSupportedException ();
 			}
+		}
+
+		public static IWpfLayout GetWpfLayout (this Container widget)
+		{
+			if (widget.Layout != null && widget.Layout.InnerLayout != null)
+				return widget.Layout.InnerLayout.Handler as IWpfLayout;
+			else
+				return null;
 		}
 	}
 }

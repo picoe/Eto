@@ -13,7 +13,7 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public interface IWpfFrameworkElement
 	{
-		sw.Size PreferredSize { get; }
+		sw.Size GetPreferredSize (sw.Size? constraint);
 		sw.FrameworkElement ContainerControl { get; }
 	}
 
@@ -28,12 +28,12 @@ namespace Eto.Platform.Wpf.Forms
 				return control.ControlObject as sw.FrameworkElement;
 		}
 
-        public static sw.Size GetPreferredSize (this Control control)
+        public static sw.Size GetPreferredSize (this Control control, sw.Size? available = null)
         {
 			if (control != null) {
 				var handler = control.Handler as IWpfFrameworkElement;
 				if (handler != null)
-					return handler.PreferredSize;
+					return handler.GetPreferredSize (available);
 			}
 			return sw.Size.Empty;
         }
@@ -48,6 +48,7 @@ namespace Eto.Platform.Wpf.Forms
 		double preferredHeight = double.NaN;
 		Size? newSize;
 		Cursor cursor;
+		bool loaded;
 
 		public abstract Color BackgroundColor
 		{
@@ -76,11 +77,10 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public virtual sw.Size PreferredSize
+		public virtual sw.Size GetPreferredSize (sw.Size? constraint = null)
 		{
-			get {
-				if (double.IsNaN(preferredWidth) || double.IsNaN(preferredHeight)) {
-					ContainerControl.Measure (new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
+			if (double.IsNaN(preferredWidth) || double.IsNaN(preferredHeight) || constraint != null) {
+				ContainerControl.Measure (constraint ?? new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
 					if (double.IsNaN (preferredWidth))
 						preferredWidth = ContainerControl.DesiredSize.Width;
 					if (double.IsNaN (preferredHeight))
@@ -88,7 +88,6 @@ namespace Eto.Platform.Wpf.Forms
 				}
 				return new sw.Size (preferredWidth, preferredHeight);
 			}
-		}
 
 		public bool Enabled
 		{
@@ -138,6 +137,14 @@ namespace Eto.Platform.Wpf.Forms
 		public virtual void Focus ()
 		{
 			Control.Focus ();
+		}
+
+		protected virtual void EnsureLoaded ()
+		{
+			if (!loaded) {
+				Control.EnsureLoaded ();
+				loaded = true;
+			}
 		}
 
 		public virtual bool HasFocus
