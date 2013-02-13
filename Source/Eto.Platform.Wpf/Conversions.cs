@@ -305,9 +305,12 @@ namespace Eto.Platform.Wpf
 			return swcImage;
 		}
 
-		public static swm.Pen ToWpf (this Pen pen)
+		public static swm.Pen ToWpf (this Pen pen, bool clone = false)
 		{
-			return (swm.Pen)pen.ControlObject;
+			var p = (swm.Pen)pen.ControlObject;
+			if (clone)
+				p = p.Clone ();
+			return p;
 		}
 
 		public static swm.PenLineJoin ToWpf (this PenLineJoin value)
@@ -366,9 +369,12 @@ namespace Eto.Platform.Wpf
 			}
 		}
 
-		public static swm.Brush ToWpf (this Brush brush)
+		public static swm.Brush ToWpf (this Brush brush, bool clone = false)
 		{
-			return (swm.Brush)brush.ControlObject;
+			var b = (swm.Brush)brush.ControlObject;
+			if (clone)
+				b = b.Clone ();
+			return b;
 		}
 
 		public static swm.Matrix ToWpf (this IMatrix matrix)

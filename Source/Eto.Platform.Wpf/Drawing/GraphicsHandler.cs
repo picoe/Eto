@@ -110,14 +110,14 @@ namespace Eto.Platform.Wpf.Drawing
 		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
 		{
 			PushGuideLines (x, y, width, height);
-			Control.DrawRectangle (null, pen.ToWpf (), new sw.Rect (x + offset, y + offset, width, height));
+			Control.DrawRectangle (null, pen.ToWpf (true), new sw.Rect (x + offset, y + offset, width, height));
 			Control.Pop ();
 		}
 
 
 		public void DrawLine (Pen pen, float startx, float starty, float endx, float endy)
 		{
-			var wpfPen = pen.ToWpf ();
+			var wpfPen = pen.ToWpf (true);
 			Control.PushGuidelineSet (new swm.GuidelineSet (new double[] { startx, endx }, new double[] { starty, endy }));
 			Control.DrawLine (wpfPen, new sw.Point (startx + offset, starty + offset), new sw.Point (endx + offset, endy + offset));
 			Control.Pop ();
@@ -125,7 +125,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void FillRectangle (Brush brush, float x, float y, float width, float height)
 		{
-			var wpfBrush = brush.ToWpf ();
+			var wpfBrush = brush.ToWpf (true);
 			PushGuideLines (x, y, width, height);
 			Control.DrawRectangle (wpfBrush, null, new sw.Rect (x + inverseoffset, y + inverseoffset, width, height));
 			Control.Pop ();
@@ -133,13 +133,13 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void DrawEllipse (Pen pen, float x, float y, float width, float height)
 		{
-			Control.DrawEllipse (null, pen.ToWpf (), new sw.Point (x + width / 2.0 + offset, y + height / 2.0 + offset), width / 2.0, height / 2.0);
+			Control.DrawEllipse (null, pen.ToWpf (true), new sw.Point (x + width / 2.0 + offset, y + height / 2.0 + offset), width / 2.0, height / 2.0);
 		}
 
 		public void FillEllipse (Brush brush, float x, float y, float width, float height)
 		{
 			//PushGuideLines(x, y, width, height);
-			Control.DrawEllipse (brush.ToWpf (), null, new sw.Point (x + width / 2.0 + inverseoffset, y + height / 2.0 + inverseoffset), width / 2.0, height / 2.0);
+			Control.DrawEllipse (brush.ToWpf (true), null, new sw.Point (x + width / 2.0 + inverseoffset, y + height / 2.0 + inverseoffset), width / 2.0, height / 2.0);
 			//Control.Pop();
 		}
 
@@ -185,7 +185,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var arc = CreateArcDrawing (new sw.Rect (x, y, width, height), startAngle, sweepAngle, false);
 			Control.PushTransform (new swm.TranslateTransform (offset, offset));
-			Control.DrawGeometry (null, pen.ToWpf (), arc);
+			Control.DrawGeometry (null, pen.ToWpf (true), arc);
 			Control.Pop ();
 		}
 
@@ -193,19 +193,19 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var arc = CreateArcDrawing (new sw.Rect (x, y, width, height), startAngle, sweepAngle, true);
 			Control.PushTransform (new swm.TranslateTransform (inverseoffset, inverseoffset));
-			Control.DrawGeometry (brush.ToWpf (), null, arc);
+			Control.DrawGeometry (brush.ToWpf (true), null, arc);
 			Control.Pop ();
 		}
 
 		public void FillPath (Brush brush, IGraphicsPath path)
 		{
-			Control.DrawGeometry (brush.ToWpf (), null, path.ToWpf ());
+			Control.DrawGeometry (brush.ToWpf (true), null, path.ToWpf ());
 		}
 
 		public void DrawPath (Pen pen, IGraphicsPath path)
 		{
 			Control.PushTransform (new swm.TranslateTransform (offset, offset));
-			Control.DrawGeometry (null, pen.ToWpf (), path.ToWpf ());
+			Control.DrawGeometry (null, pen.ToWpf (true), path.ToWpf ());
 			Control.Pop ();
 		}
 
