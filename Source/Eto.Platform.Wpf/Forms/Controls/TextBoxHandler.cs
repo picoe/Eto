@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
-using mwc = Microsoft.Windows.Controls;
+using mwc = Xceed.Wpf.Toolkit;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms.Controls

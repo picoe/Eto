@@ -11,6 +11,7 @@
     <RootNamespace>Eto.Platform.Wpf</RootNamespace>
     <AssemblyName>Eto.Platform.Wpf</AssemblyName>
     <FileAlignment>512</FileAlignment>
+    <ReleaseVersion />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -52,8 +53,8 @@
     <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
     <Reference Include="WindowsFormsIntegration" />
-    <Reference Include="WPFToolkit.Extended">
-      <HintPath>..\..\Libraries\WPFToolkit.Extended\WPFToolkit.Extended.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Toolkit">
+      <HintPath>..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>False</Private>
     </Reference>
   </ItemGroup>
@@ -220,6 +221,9 @@
     </COMReference>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll">
+      <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
+    </EmbeddedResource>
     <EmbeddedResource Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
       <Link>CustomControls\Assemblies\ColorPicker.dll</Link>
     </EmbeddedResource>
@@ -227,16 +231,12 @@
       <Link>WPFToolkit.Extended-License.txt</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <EmbeddedResource Include="..\..\Libraries\WPFToolkit.Extended\WPFToolkit.Extended.dll">
-      <Link>CustomControls\Assemblies\WPFToolkit.Extended.dll</Link>
-    </EmbeddedResource>
     <EmbeddedResource Include="Properties\FontDialogResources.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>FontDialogResources.Designer.cs</LastGenOutput>
       <SubType>Designer</SubType>
     </EmbeddedResource>
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Page Include="CustomControls\FontDialog\fontchooser.xaml">
       <Generator>MSBuild:Compile</Generator>
