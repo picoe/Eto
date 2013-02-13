@@ -130,14 +130,29 @@ namespace Eto.Platform.Wpf
 			return new KeyPressEventArgs (key) { Handled = e.Handled };
 		}
 
-		public static MouseEventArgs ToEto (this swi.MouseEventArgs e, sw.IInputElement control)
+		public static MouseEventArgs ToEto (this swi.MouseButtonEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
 		{
 			var buttons = MouseButtons.None;
-			if (e.LeftButton == swi.MouseButtonState.Pressed)
+			if (e.ChangedButton == swi.MouseButton.Left && e.LeftButton == buttonState)
 				buttons |= MouseButtons.Primary;
-			if (e.RightButton == swi.MouseButtonState.Pressed)
+			if (e.ChangedButton == swi.MouseButton.Right && e.RightButton == buttonState)
 				buttons |= MouseButtons.Alternate;
-			if (e.MiddleButton == swi.MouseButtonState.Pressed)
+			if (e.ChangedButton == swi.MouseButton.Middle && e.MiddleButton == buttonState)
+				buttons |= MouseButtons.Middle;
+			var modifiers = Key.None;
+			var location = e.GetPosition (control).ToEto ();
+
+			return new MouseEventArgs (buttons, modifiers, location);
+		}
+
+		public static MouseEventArgs ToEto (this swi.MouseEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		{
+			var buttons = MouseButtons.None;
+			if (e.LeftButton == buttonState)
+				buttons |= MouseButtons.Primary;
+			if (e.RightButton == buttonState)
+				buttons |= MouseButtons.Alternate;
+			if (e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
 			var modifiers = Key.None;
 			var location = e.GetPosition (control).ToEto ();
