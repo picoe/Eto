@@ -19,7 +19,7 @@ namespace Eto.Test.Sections.Controls
 			layout.EndHorizontal ();
 			layout.EndVertical ();
 			layout.BeginVertical ();
-			layout.AddRow (new Label { Text = "Large Canvas" }, DockLayout.CreatePanel (this.LargeCanvas ()));
+			layout.AddRow (new Label { Text = "Large Canvas" }, DockLayout.CreatePanel(this.LargeCanvas ()));
 			layout.EndVertical ();
 
 			layout.Add (null);
