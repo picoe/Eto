@@ -6,6 +6,8 @@ using sw = System.Windows;
 using swm = System.Windows.Media;
 using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
+using Eto.Platform.Wpf.Forms;
+using System.Threading;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -13,16 +15,21 @@ namespace Eto.Platform.Wpf.Drawing
 	{
 		Palette palette;
 		int numColors;
+		bool isLocked;
+		bool paletteSetInLocked;
 
 		public void Create (int width, int height, int bitsPerPixel)
 		{
+			this.Size = new Size (width, height);
 			var format = swm.PixelFormats.Indexed8;
 			numColors = (int)Math.Pow(2, bitsPerPixel);
 			var colors = new List<swm.Color> (numColors);
 			while (colors.Count < numColors) {
 				colors.Add (swm.Colors.Black);
 			}
-			Control = new swmi.WriteableBitmap (width, height, 96, 96, format, new swmi.BitmapPalette (colors));
+			ApplicationHandler.InvokeIfNecessary (() => {
+				Control = new swmi.WriteableBitmap (width, height, 96, 96, format, new swmi.BitmapPalette (colors));
+			});
 		}
 
 		public void Resize (int width, int height)
@@ -32,23 +39,30 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public BitmapData Lock ()
 		{
-			var wb = Control as swm.Imaging.WriteableBitmap;
-			if (wb != null) {
-				wb.Lock ();
-				return new BitmapDataHandler (Widget, wb.BackBuffer, (int)Control.PixelWidth, Control.Format.BitsPerPixel, Control);
-			}
-			else
+			if (isLocked)
 				throw new InvalidOperationException ();
+			BitmapDataHandler bd = null;
+			ApplicationHandler.InvokeIfNecessary (() => {
+				Control.Lock ();
+				bd = new BitmapDataHandler (Widget, Control.BackBuffer, Size.Width, Control.Format.BitsPerPixel, Control);
+			});
+			isLocked = true;
+			return bd;
 		}
 
 		public void Unlock (BitmapData bitmapData)
 		{
-			var wb = Control as swm.Imaging.WriteableBitmap;
-			if (wb != null) {
-
-				wb.AddDirtyRect (new sw.Int32Rect (0, 0, Size.Width, Size.Height));
-				wb.Unlock ();
-			}
+			if (!isLocked)
+				throw new InvalidOperationException ();
+			ApplicationHandler.InvokeIfNecessary (() => {
+				Control.AddDirtyRect (new sw.Int32Rect (0, 0, Size.Width, Size.Height));
+				Control.Unlock ();
+				if (paletteSetInLocked) {
+					SetPalette ();
+					paletteSetInLocked = false;
+				}
+			});
+			isLocked = false;
 		}
 
 		public Palette Palette
@@ -68,20 +82,33 @@ namespace Eto.Platform.Wpf.Drawing
 				if (value.Count != numColors)
 					throw new ArgumentOutOfRangeException ("Palette must have the same number of colors as the image");
 				palette = value;
-				var old = Control;
-				// re-create with new palette
-				var colors = new List<swm.Color> (numColors);
-				for (int i = 0; i < numColors; i++) {
-					colors.Add(palette[i].ToWpf ());
+				if (isLocked)
+					paletteSetInLocked = true;
+				else {
+					ApplicationHandler.InvokeIfNecessary (() => {
+						SetPalette ();
+					});
 				}
-				Control = new swmi.WriteableBitmap (old.PixelWidth, old.PixelHeight, 96, 96, old.Format, new swmi.BitmapPalette (colors));
-				Control.CopyPixels (sw.Int32Rect.Empty, old.BackBuffer, old.BackBufferStride * old.PixelHeight, old.BackBufferStride);
 			}
+		}
+
+		void SetPalette ()
+		{
+			var old = Control;
+			// re-create with new palette
+			var colors = new List<swm.Color> (numColors);
+			for (int i = 0; i < numColors; i++) {
+				colors.Add (palette[i].ToWpf ());
+			}
+			var bufferSize = old.BackBufferStride * old.PixelHeight;
+			var pal = new swmi.BitmapPalette (colors);
+			var bs = swmi.BitmapSource.Create (old.PixelWidth, old.PixelHeight, 96, 96, old.Format, pal, old.BackBuffer, bufferSize, old.BackBufferStride);
+			Control = new swmi.WriteableBitmap (bs);
 		}
 
 		public Size Size
 		{
-			get { return new Size (Control.PixelWidth, Control.PixelHeight); }
+			get; private set;
 		}
 
 		public swmi.BitmapSource GetImageClosestToSize (int? width)
