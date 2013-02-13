@@ -111,6 +111,28 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Adds two padding values together
+		/// </summary>
+		/// <param name="value1">First padding value to add</param>
+		/// <param name="value2">Second padding value to add</param>
+		/// <returns>The sum of both padding values</returns>
+		public static Padding operator + (Padding value1, Padding value2)
+		{
+			return new Padding (value1.Left + value2.Left, value1.Top + value2.Top, value1.Right + value2.Right, value1.Bottom + value2.Bottom);
+		}
+
+		/// <summary>
+		/// Subtracts a padding value from another value
+		/// </summary>
+		/// <param name="value1">Padding value to subtract from</param>
+		/// <param name="value2">Padding value to subtract from the first value</param>
+		/// <returns>The value of the first padding minus the second padding value</returns>
+		public static Padding operator - (Padding value1, Padding value2)
+		{
+			return new Padding (value1.Left - value2.Left, value1.Top - value2.Top, value1.Right - value2.Right, value1.Bottom - value2.Bottom);
+		}
+
+		/// <summary>
 		/// Determines the equality of two padding objects
 		/// </summary>
 		/// <param name="value1">First padding value to compare</param>

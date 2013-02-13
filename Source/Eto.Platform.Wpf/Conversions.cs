@@ -12,6 +12,7 @@ using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Eto.Platform.Wpf.Drawing;
+using Eto.Platform.Wpf.Forms;
 
 namespace Eto.Platform.Wpf
 {
@@ -129,19 +130,30 @@ namespace Eto.Platform.Wpf
             return new KeyPressEventArgs(key, keyType) { Handled = e.Handled };
 		}
 
-		public static MouseEventArgs ToEto (this swi.MouseEventArgs e, sw.IInputElement control)
+		public static MouseEventArgs ToEto (this swi.MouseButtonEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
 		{
 			var buttons = MouseButtons.None;
-			if (e is swi.MouseButtonEventArgs)
-			{
-				var b = ((swi.MouseButtonEventArgs)e).ChangedButton;
-				if (b == swi.MouseButton.Left)
-					buttons |= MouseButtons.Primary;
-				if (b == swi.MouseButton.Right)
-					buttons |= MouseButtons.Alternate;
-				if (b == swi.MouseButton.Middle)
-					buttons |= MouseButtons.Middle;
-			}
+			if (e.ChangedButton == swi.MouseButton.Left && e.LeftButton == buttonState)
+				buttons |= MouseButtons.Primary;
+			if (e.ChangedButton == swi.MouseButton.Right && e.RightButton == buttonState)
+				buttons |= MouseButtons.Alternate;
+			if (e.ChangedButton == swi.MouseButton.Middle && e.MiddleButton == buttonState)
+				buttons |= MouseButtons.Middle;
+			var modifiers = Key.None;
+			var location = e.GetPosition (control).ToEto ();
+
+			return new MouseEventArgs (buttons, modifiers, location);
+		}
+
+		public static MouseEventArgs ToEto (this swi.MouseEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		{
+			var buttons = MouseButtons.None;
+			if (e.LeftButton == buttonState)
+				buttons |= MouseButtons.Primary;
+			if (e.RightButton == buttonState)
+				buttons |= MouseButtons.Alternate;
+			if (e.MiddleButton == buttonState)
+				buttons |= MouseButtons.Middle;
 			var modifiers = Key.None;
 			var location = e.GetPosition (control).ToEto ();
 
@@ -293,9 +305,12 @@ namespace Eto.Platform.Wpf
 			return swcImage;
 		}
 
-		public static swm.Pen ToWpf (this Pen pen)
+		public static swm.Pen ToWpf (this Pen pen, bool clone = false)
 		{
-			return (swm.Pen)pen.ControlObject;
+			var p = (swm.Pen)pen.ControlObject;
+			if (clone)
+				p = p.Clone ();
+			return p;
 		}
 
 		public static swm.PenLineJoin ToWpf (this PenLineJoin value)
@@ -354,9 +369,12 @@ namespace Eto.Platform.Wpf
 			}
 		}
 
-		public static swm.Brush ToWpf (this Brush brush)
+		public static swm.Brush ToWpf (this Brush brush, bool clone = false)
 		{
-			return (swm.Brush)brush.ControlObject;
+			var b = (swm.Brush)brush.ControlObject;
+			if (clone)
+				b = b.Clone ();
+			return b;
 		}
 
 		public static swm.Matrix ToWpf (this IMatrix matrix)
@@ -401,6 +419,14 @@ namespace Eto.Platform.Wpf
 			default:
 				throw new NotSupportedException ();
 			}
+		}
+
+		public static IWpfLayout GetWpfLayout (this Container widget)
+		{
+			if (widget.Layout != null && widget.Layout.InnerLayout != null)
+				return widget.Layout.InnerLayout.Handler as IWpfLayout;
+			else
+				return null;
 		}
 	}
 }

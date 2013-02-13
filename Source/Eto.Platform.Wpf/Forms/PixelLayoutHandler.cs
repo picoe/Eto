@@ -10,20 +10,18 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class PixelLayoutHandler : WpfLayout<swc.Canvas, PixelLayout>, IPixelLayout
 	{
-		public override sw.Size PreferredSize
+		public override sw.Size GetPreferredSize (sw.Size? constraint)
 		{
-			get {
-				var size = new sw.Size ();
-				foreach (var control in Widget.Controls) {
-					var container = control.GetContainerControl ();
-					var preferredSize = control.GetPreferredSize ();
-					var left = swc.Canvas.GetLeft (container) + preferredSize.Width;
-					var top = swc.Canvas.GetTop (container) + preferredSize.Height;
-					if (size.Width < left) size.Width = left;
-					if (size.Height < top) size.Height = top;
-				}
-				return size;
+			var size = new sw.Size ();
+			foreach (var control in Widget.Controls) {
+				var container = control.GetContainerControl ();
+				var preferredSize = control.GetPreferredSize (constraint);
+				var left = swc.Canvas.GetLeft (container) + preferredSize.Width;
+				var top = swc.Canvas.GetTop (container) + preferredSize.Height;
+				if (size.Width < left) size.Width = left;
+				if (size.Height < top) size.Height = top;
 			}
+			return size;
 		}
 
 		public PixelLayoutHandler ()

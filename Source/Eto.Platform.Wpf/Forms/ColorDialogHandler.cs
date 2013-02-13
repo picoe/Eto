@@ -4,6 +4,7 @@ using Eto.Drawing;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using msc = Microsoft.Samples.CustomControls;
+using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -29,7 +30,12 @@ namespace Eto.Platform.Wpf.Forms
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
 			var result = Control.ShowDialog ();
-			return result != null && result.Value ? DialogResult.Ok : DialogResult.Cancel;
+			if (result == true) {
+				Widget.OnColorChanged (EventArgs.Empty);
+				return DialogResult.Ok;
+			}
+			else
+				return DialogResult.Cancel;
 		}
 	}
 }

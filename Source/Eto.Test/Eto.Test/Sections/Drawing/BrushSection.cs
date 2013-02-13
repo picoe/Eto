@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -40,10 +41,12 @@ namespace Eto.Test.Sections.Drawing
 			//gradientBrush = new LinearGradientBrush (new RectangleF (0, 0, 50, 50), Colors.AliceBlue, Colors.Black, 10);
 			gradientBrush.Wrap = GradientWrapMode.Repeat;
 			textureBrush = new TextureBrush (image, 0.5f);
+			brush = textureBrush;
+
 			ScaleX = 100f;
 			ScaleY = 100f;
 
-			drawable = new Drawable { Size = new Size (600, 200) };
+			drawable = new Drawable { Size = new Size (300, 200) };
 
 			drawable.Paint += (sender, pe) => {
 				Draw (pe.Graphics);
@@ -54,7 +57,7 @@ namespace Eto.Test.Sections.Drawing
 			matrixRow.Table.Visible = false;
 			gradientRow = layout.AddSeparateRow (null, GradientWrapControl (), null);
 			gradientRow.Table.Visible = false;
-			layout.AddRow (drawable);
+			layout.AddSeparateRow (null, drawable, null);
 			layout.Add (null);
 		}
 
@@ -73,16 +76,23 @@ namespace Eto.Test.Sections.Drawing
 			control.Items.Add (new BrushItem { Text = "Solid", Brush = solidBrush });
 			control.Items.Add (new BrushItem { Text = "Texture", Brush = textureBrush, SupportsMatrix = true });
 			control.Items.Add (new BrushItem { Text = "Gradient", Brush = gradientBrush, SupportsMatrix = true, SupportsGradient = true });
-			control.SelectedIndex = 0;
+			control.SelectedValue = control.Items.OfType<BrushItem> ().First (r => r.Brush == brush);
 			control.SelectedValueChanged += (sender, e) => {
 				var item = (BrushItem)control.SelectedValue;
-				this.brush = item.Brush;
-				matrixRow.Table.Visible = item.SupportsMatrix;
-				gradientRow.Table.Visible = item.SupportsGradient;
-
+				SetItem (item);
+			};
+			this.LoadComplete += delegate {
+				SetItem (control.SelectedValue as BrushItem);
 			};
 			control.SelectedValueChanged += Refresh;
 			return control;
+		}
+
+		void SetItem (BrushItem item)
+		{
+			this.brush = item.Brush;
+			matrixRow.Table.Visible = item.SupportsMatrix;
+			gradientRow.Table.Visible = item.SupportsGradient;
 		}
 
 		Control ScaleXControl ()

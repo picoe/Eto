@@ -14,17 +14,14 @@ namespace Eto.Platform.Wpf.Forms
 		where W: Container
 	{
 
-		public override sw.Size PreferredSize
+		public override sw.Size GetPreferredSize(sw.Size? constraint)
 		{
-			get
-			{
-				var size = sw.Size.Empty;
-				var handler = this.Widget.Layout.Handler as IWpfLayout;
-				if (handler != null)
-					size = handler.PreferredSize;
-				var baseSize = base.PreferredSize;
-				return new sw.Size (Math.Max (size.Width, baseSize.Width), Math.Max (size.Height, baseSize.Height));
-			}
+			var size = sw.Size.Empty;
+			var layout = this.Widget.GetWpfLayout ();
+			if (layout != null)
+				size = layout.GetPreferredSize(constraint);
+			var baseSize = base.GetPreferredSize(constraint);
+			return new sw.Size (Math.Max (size.Width, baseSize.Width), Math.Max (size.Height, baseSize.Height));
 		}
 
 		public abstract Eto.Drawing.Size ClientSize { get; set; }

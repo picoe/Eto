@@ -41,6 +41,7 @@ namespace Eto.Platform.Wpf.Forms
 			base.Initialize ();
 
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+			Control.UseLayoutRounding = true;
 			main = new swc.DockPanel ();
 			content = new swc.DockPanel ();
 			menuHolder = new swc.ContentControl { IsTabStop = false };
