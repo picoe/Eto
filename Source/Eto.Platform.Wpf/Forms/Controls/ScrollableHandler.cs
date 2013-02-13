@@ -5,44 +5,70 @@ using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swm = System.Windows.Media;
-using msc = Microsoft.Sample.Controls;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
+using System.ComponentModel;
+using System.Threading;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public interface ISupportVirtualize
-	{
-        IEnumerable<msc.IVirtualChild> Children { get; }
-
-		void ClearChildren ();
-	}
-
 	public class ScrollableHandler : WpfFrameworkElement<swc.Border, Scrollable>, IScrollable
 	{
 		BorderType borderType;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
-		swc.ScrollViewer scroller;
-		msc.VirtualCanvas virtualCanvas;
+		EtoScrollViewer scroller;
+		swc.Border content;
 
-		class EtoScrollViewer : swc.ScrollViewer
+		public class EtoScrollViewer : swc.ScrollViewer
 		{
+			public ScrollableHandler Handler { get; set; }
+
+			protected override sw.Size MeasureOverride (sw.Size constraint)
+			{
+				var size = base.MeasureOverride (constraint);
+				var content = (swc.Border)Content;
+				var info = this.ScrollInfo;
+				var layoutHandler = Handler.Widget.GetWpfLayout ();
+				if (layoutHandler != null) {
+					var preferredSize = layoutHandler.GetPreferredSize (null);
+					if (Handler.ExpandContentWidth)
+						content.Width = Math.Max (0, Math.Max (content.MinWidth, Math.Max (preferredSize.Width, info.ViewportWidth)));
+					else
+						content.Width = preferredSize.Width;
+
+					if (Handler.ExpandContentHeight) {
+						var viewportHeight = info.ViewportHeight;
+						var extentHeight = info.ExtentHeight;
+						// fix issue with GroupBox that makes the control grow continuously
+						if (viewportHeight < extentHeight || viewportHeight > extentHeight + 1)
+							content.Height = Math.Max (0, Math.Max (content.MinHeight, Math.Max (preferredSize.Height, viewportHeight)));
+					} else
+						content.Height = preferredSize.Height;
+					//Debug.WriteLine ("Content Size: {0}x{1}", content.Width, content.Height);
+				}
+				return size;
+			}
+
+			public swc.Primitives.IScrollInfo GetScrollInfo ()
+			{
+				return base.ScrollInfo;
+			}
 		}
 
 		public override Color BackgroundColor
 		{
 			get
 			{
-				var brush = virtualCanvas.Background as swm.SolidColorBrush;
+				var brush = content.Background as swm.SolidColorBrush;
 				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
 			set
 			{
-				virtualCanvas.Background = new swm.SolidColorBrush (value.ToWpf ());
+				content.Background = new swm.SolidColorBrush (value.ToWpf ());
 			}
 		}
 
@@ -51,21 +77,25 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new swc.Border {
 				SnapsToDevicePixels = true
 			};
-			scroller = new swc.ScrollViewer {
+			scroller = new EtoScrollViewer {
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
+				Handler = this,
 				CanContentScroll = true,
 				SnapsToDevicePixels = true,
 				Focusable = false
 			};
-			virtualCanvas = new msc.VirtualCanvas {
-				SnapsToDevicePixels = true,
-				OrderControls = false
-			};
             scroller.ScrollChanged += HandleChangedSize;
             scroller.Loaded += HandleChangedSize;
 
-			scroller.Content = virtualCanvas;
+			content = new swc.Border {
+				SnapsToDevicePixels = true,
+				Focusable = false,
+				VerticalAlignment = sw.VerticalAlignment.Top,
+				HorizontalAlignment = sw.HorizontalAlignment.Left
+			};
+
+			scroller.Content = content;
 			Control.Child = scroller;
 			this.Border = BorderType.Bezel;
 		}
@@ -73,86 +103,33 @@ namespace Eto.Platform.Wpf.Forms.Controls
         void HandleChangedSize (object sender, EventArgs e)
         {
 			UpdateSizes ();
-        }
+		}
 
 		void UpdateSizes ()
 		{
-			if (!Control.IsLoaded)
-				return;
-			var c = virtualCanvas.Backdrop;
-			if (c != null && Widget.Layout != null && Widget.Layout.InnerLayout != null) {
-				var layoutHandler = Widget.Layout.InnerLayout.Handler as IWpfLayout;
-				if (layoutHandler == null)
-					return;
-				var preferredSize = layoutHandler.PreferredSize;
-				if (this.ExpandContentWidth) {
-					var margins = c.Margin.Left + c.Margin.Right;
-					c.Width = Math.Max (0, Math.Max(c.MinWidth, Math.Max (preferredSize.Width, scroller.ViewportWidth)));
-				}
-				else
-					c.Width = preferredSize.Width;
-
-				if (this.ExpandContentHeight) {
-					var margins = c.Margin.Top + c.Margin.Bottom;
-					c.Height = Math.Max (0, Math.Max(c.MinHeight, Math.Max (preferredSize.Height, scroller.ViewportHeight)));
-				}
-				else
-					c.Height = preferredSize.Height;
-				//virtualCanvas.RecalculateExtent ();
-			}
+			scroller.InvalidateMeasure ();
 		}
 
         public override void OnLoadComplete (EventArgs e)
         {
             base.OnLoadComplete (e);
-            GetVirtualChildren ();
-            Control.InvalidateMeasure ();
-        }
-
-        public void UpdateVisualChildren ()
-        {
-            GetVirtualChildren ();
-            Control.InvalidateMeasure ();
-        }
-
-        void ScanChildren (ICollection<msc.IVirtualChild> virtualChildren, Container container)
-        {
-            foreach (var control in container.Controls) {
-                if (control.Handler is ScrollableHandler)
-                    continue;
-                var child = control.Handler as ISupportVirtualize;
-                if (child != null) {
-                    child.ClearChildren();
-                    foreach (var item in child.Children)
-                        virtualChildren.Add (item);
-                }
-                var childContainer = control as Container;
-                if (childContainer != null) {
-                    ScanChildren (virtualChildren, childContainer);
-                }
-            }
-        }
-
-		void GetVirtualChildren ()
-		{
-			var virtualChildren = new ObservableCollection<msc.IVirtualChild> ();
-            ScanChildren (virtualChildren, Widget);
-			virtualCanvas.VirtualChildren = virtualChildren;
+			Control.InvalidateMeasure ();
 		}
 
 		public void UpdateScrollSizes ()
 		{
-			var layout = Widget.Layout.Handler as IWpfLayout;
+			var layout = Widget.GetWpfLayout();
 			if (layout != null) layout.AutoSize ();
-			GetVirtualChildren ();
 			Control.InvalidateMeasure ();
 			UpdateSizes ();
 		}
+
 
 		public Eto.Drawing.Point ScrollPosition
 		{
 			get
 			{
+				EnsureLoaded ();
 				return new Eto.Drawing.Point ((int)scroller.HorizontalOffset, (int)scroller.VerticalOffset);
 			}
 			set
@@ -166,12 +143,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
+				EnsureLoaded ();
 				return new Eto.Drawing.Size ((int)scroller.ExtentWidth, (int)scroller.ExtentHeight);
 			}
 			set
 			{
-                virtualCanvas.Backdrop.MinHeight = value.Height;
-                virtualCanvas.Backdrop.MinWidth = value.Width;
+                content.MinHeight = value.Height;
+				content.MinWidth = value.Width;
 				UpdateSizes ();
 			}
 		}
@@ -205,7 +183,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				return this.Size; // new Eto.Drawing.Size ((int)scroller.ViewportWidth, (int)scroller.ViewportHeight);
+				if (!Widget.Loaded)
+					return base.Size;
+				EnsureLoaded ();
+				var info = scroller.GetScrollInfo ();
+				if (info != null)
+					return new Size ((int)info.ViewportWidth, (int)info.ViewportHeight);
+				else
+					return Size.Empty;
 			}
 			set
 			{
@@ -215,18 +200,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public Eto.Drawing.Rectangle VisibleRect
 		{
-			get { return new Eto.Drawing.Rectangle (ScrollPosition, ScrollSize); }
+			get { return new Eto.Drawing.Rectangle (ScrollPosition, ClientSize); }
 		}
 
 		public object ContainerObject
 		{
-			get { return virtualCanvas.ContentCanvas; }
+			get { return content; }
 		}
 
 		public void SetLayout (Layout layout)
 		{
 			var control = layout.ControlObject as sw.UIElement;
-			virtualCanvas.Backdrop.Child = control;
+			content.Child = control;
 		}
 
 		public Eto.Drawing.Size? MinimumSize
@@ -254,14 +239,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-				case Scrollable.ScrollEvent:
-					scroller.ScrollChanged += (sender, e) => {
-						Widget.OnScroll (new ScrollEventArgs (new Point ((int)e.HorizontalOffset, (int)e.VerticalOffset)));
-					};
-					break;
-				default:
-					base.AttachEvent (handler);
-					break;
+			case Scrollable.ScrollEvent:
+				scroller.ScrollChanged += (sender, e) => {
+					Widget.OnScroll (new ScrollEventArgs (new Point ((int)e.HorizontalOffset, (int)e.VerticalOffset)));
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 

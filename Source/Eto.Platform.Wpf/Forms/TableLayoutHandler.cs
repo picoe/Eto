@@ -19,20 +19,21 @@ namespace Eto.Platform.Wpf.Forms
 		bool[] rowScale;
 		bool lastRowScale;
 
-		public override sw.Size PreferredSize
+		public override sw.Size GetPreferredSize (sw.Size? constraint)
 		{
-			get {
-				double[] widths = new double[columnScale.Length];
-				double[] heights = new double[rowScale.Length];
-				for (int y = 0; y < heights.Length; y++)
-					for (int x = 0; x < widths.Length; x++) {
-						var preferredSize = controls[x,y].GetPreferredSize();
-						widths[x] = Math.Max (widths[x], preferredSize.Width);
-						heights[y] = Math.Max (heights[y], preferredSize.Height);
-					}
+			var size = constraint ?? new sw.Size (double.PositiveInfinity, double.PositiveInfinity);
+			var padding = new sw.Size ((columnScale.Length - 1) * Spacing.Width + Padding.Horizontal, (rowScale.Length - 1) * Spacing.Height + Padding.Vertical);
+			size = new sw.Size (Math.Max(0, size.Width - padding.Width), Math.Max(0, size.Height - padding.Height));
+			double[] widths = new double[columnScale.Length];
+			double[] heights = new double[rowScale.Length];
+			for (int y = 0; y < heights.Length; y++)
+				for (int x = 0; x < widths.Length; x++) {
+					var preferredSize = controls[x, y].GetPreferredSize (size);
+					widths[x] = Math.Max (widths[x], preferredSize.Width);
+					heights[y] = Math.Max (heights[y], preferredSize.Height);
+				}
 
-				return new sw.Size (widths.Sum () + columnScale.Length * Spacing.Width + Padding.Vertical, heights.Sum () + rowScale.Length * Spacing.Height + Padding.Vertical);
-			}
+			return new sw.Size (widths.Sum () + padding.Width, heights.Sum () + padding.Height);
 		}
 
 		public void CreateControl (int cols, int rows)
@@ -79,14 +80,14 @@ namespace Eto.Platform.Wpf.Forms
 				var max = Control.ColumnDefinitions[x].ActualWidth;
 				foreach (var child in ColumnControls (x)) {
 					if (!double.IsNaN(child.Width))
-						child.Width = Math.Max(0, max - child.Margin.Left - child.Margin.Right);
+						child.Width = Math.Max(0, max - child.Margin.Horizontal ());
 				}
 			}
 			for (int y = 0; y < Control.RowDefinitions.Count; y++) {
 				var max = Control.RowDefinitions[y].ActualHeight;
 				foreach (var child in RowControls (y)) {
 					if (!double.IsNaN (child.Height))
-						child.Height = Math.Max(0, max - child.Margin.Top - child.Margin.Bottom);
+						child.Height = Math.Max(0, max - child.Margin.Vertical ());
 				}
 			}
 		}
@@ -102,7 +103,7 @@ namespace Eto.Platform.Wpf.Forms
 				if (x == col && max < maxWidth) max = maxWidth;
 				foreach (var child in ColumnControls (x)) {
 					if (!double.IsNaN (child.Width))
-						child.Width = Math.Max(0, max - child.Margin.Left - child.Margin.Right);
+						child.Width = Math.Max(0, max - child.Margin.Horizontal ());
 				}
 			}
 			for (int y = 0; y < Control.RowDefinitions.Count; y++) {
@@ -110,7 +111,7 @@ namespace Eto.Platform.Wpf.Forms
 				if (y == row && max < maxHeight) max = maxHeight;
 				foreach (var child in RowControls (y)) {
 					if (!double.IsNaN (child.Height))
-						child.Height = Math.Max(0, max - child.Margin.Top - child.Margin.Bottom);
+						child.Height = Math.Max(0, max - child.Margin.Vertical ());
 				}
 			}
 		}

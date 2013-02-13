@@ -45,8 +45,9 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
-		public GraphicsHandler (swm.Visual visual, swm.DrawingContext context, sw.Rect bounds)
+		public GraphicsHandler (swm.Visual visual, swm.DrawingContext context, sw.Rect bounds, bool shouldDispose = true)
 		{
+			this.DisposeControl = shouldDispose;
 			this.visual = visual;
 			this.drawingVisual = visual as swm.DrawingVisual;
 
@@ -55,14 +56,9 @@ namespace Eto.Platform.Wpf.Drawing
 			//if (DPI != new sw.Size(1.0, 1.0))
 			//	this.Control.PushTransform (new swm.ScaleTransform (DPI.Width, DPI.Height));
 			var dpi = DPI;
-			//offset = dpi.Width / 2;
-			//this.Control.PushTransform (new swm.TranslateTransform (0, -0.5));
 			this.bounds = bounds;
 
-			//PushGuideLines (r.X, r.Y, r.Width, r.Height);
-			//r = new sw.Rect (r.X, r.Y, r.Width + 0.5, r.Height + 0.5);
-			//this.Control.PushClip (new swm.RectangleGeometry (r));
-			this.Control.PushClip (new swm.RectangleGeometry (new sw.Rect (bounds.X - 0.5, bounds.Y - 0.5, bounds.Width + 1, bounds.Height + 1)));
+			this.Control.PushClip (new swm.RectangleGeometry (bounds));
 
 			PushGuideLines (bounds);
 

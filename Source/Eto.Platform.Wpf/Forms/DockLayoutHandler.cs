@@ -6,6 +6,7 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Drawing;
+using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -13,12 +14,12 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		Control content;
 
-		public override sw.Size PreferredSize
+		public override sw.Size GetPreferredSize (sw.Size? constraint)
 		{
-			get { 
-				var preferredSize = content.GetPreferredSize ();
-				return new sw.Size (preferredSize.Width + Padding.Horizontal, preferredSize.Height + Padding.Vertical);
-			}
+			var size = constraint ?? new sw.Size (double.PositiveInfinity, double.PositiveInfinity);
+			size = new sw.Size (Math.Max (0, size.Width - Padding.Horizontal), Math.Max (0, size.Height - Padding.Vertical));
+			var preferredSize = content.GetPreferredSize (size);
+			return new sw.Size (Math.Max(0, preferredSize.Width + Padding.Horizontal), Math.Max(0, preferredSize.Height + Padding.Vertical));
 		}
 
 		public DockLayoutHandler ()

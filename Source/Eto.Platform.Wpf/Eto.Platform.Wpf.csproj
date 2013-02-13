@@ -85,15 +85,6 @@
     </Compile>
     <Compile Include="CustomControls\SelectableTreeView.cs" />
     <Compile Include="CustomControls\TreeGridView\TreeToggleButton.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\Gestures\AutoScroll.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\Gestures\ExponentialAnimation.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\Gestures\MapZoom.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\Gestures\Pan.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\Gestures\RectangleSelectionGesture.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\Gestures\SelectionRectVisual.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\PerfTimer.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\QuadTree.cs" />
-    <Compile Include="CustomControls\VirtualCanvas\VirtualCanvas.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
     <Compile Include="Drawing\FontHandler.cs" />
     <Compile Include="Drawing\FontsHandler.cs" />
