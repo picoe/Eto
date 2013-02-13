@@ -98,7 +98,7 @@ namespace Eto.Platform.Wpf.Drawing
 			var source = image.ToWpf ();
 			// use drawing group to allow for better quality scaling
 			var group = new swm.DrawingGroup ();
-			swm.RenderOptions.SetBitmapScalingMode (group, swm.BitmapScalingMode.HighQuality);
+			swm.RenderOptions.SetBitmapScalingMode (group, interpolation.ToWpf ());
 			group.Children.Add (new swm.ImageDrawing (source, new sw.Rect (0, 0, width, height)));
 
 			var drawingVisual = new swm.DrawingVisual ();
