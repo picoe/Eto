@@ -81,13 +81,13 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			if (double.IsNaN(preferredWidth) || double.IsNaN(preferredHeight) || constraint != null) {
 				ContainerControl.Measure (constraint ?? new sw.Size (double.PositiveInfinity, double.PositiveInfinity));
-					if (double.IsNaN (preferredWidth))
-						preferredWidth = ContainerControl.DesiredSize.Width;
-					if (double.IsNaN (preferredHeight))
-						preferredHeight = ContainerControl.DesiredSize.Height;
-				}
-				return new sw.Size (preferredWidth, preferredHeight);
+				if (double.IsNaN (preferredWidth))
+					preferredWidth = ContainerControl.DesiredSize.Width;
+				if (double.IsNaN (preferredHeight))
+					preferredHeight = ContainerControl.DesiredSize.Height;
 			}
+			return new sw.Size (preferredWidth, preferredHeight);
+		}
 
 		public bool Enabled
 		{
@@ -141,7 +141,12 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual void Focus ()
 		{
-			Control.Focus ();
+			if (Control.IsLoaded)
+				Control.Focus ();
+			else
+				Control.Loaded += (sender, e) => {
+					Control.Focus ();
+				};
 		}
 
 		protected virtual void EnsureLoaded ()
@@ -183,7 +188,7 @@ namespace Eto.Platform.Wpf.Forms
 						if (wpfcontrol == null && e.ClickCount == 2)
 							Widget.OnMouseDoubleClick (args);
 						if (!args.Handled)
-						Widget.OnMouseDown (args);
+							Widget.OnMouseDown (args);
 						if (args.Handled)
 							Control.CaptureMouse ();
 						e.Handled = args.Handled;
