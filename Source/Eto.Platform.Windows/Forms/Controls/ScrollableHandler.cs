@@ -178,6 +178,15 @@ namespace Eto.Platform.Windows
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 
+		public override Size ClientSize
+		{
+			get { return Control.ClientSize.ToEto (); }
+			set
+			{
+				Control.AutoSize = value.Width == -1 || value.Height == -1;
+				Control.ClientSize = value.ToSD ();
+			}
+		}
 
 		public bool ExpandContentWidth
 		{
