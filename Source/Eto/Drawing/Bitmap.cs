@@ -248,10 +248,10 @@ namespace Eto.Drawing
 		/// <param name="height">Height to scale the source image to</param>
 		/// <param name="interpolation">Interpolation quality</param>
 		/// <param name="generator">Generator to create the bitmap</param>
-		public Bitmap(Image image, int width, int height, ImageInterpolation interpolation = ImageInterpolation.Default, Generator generator = null)
+		public Bitmap(Image image, int? width = null, int? height = null, ImageInterpolation interpolation = ImageInterpolation.Default, Generator generator = null)
 			: this (generator)
 		{
-			Handler.Create (image, width, height, interpolation);
+			Handler.Create (image, width ?? image.Size.Width, height ?? image.Size.Height, interpolation);
 		}
 		
 		/// <summary>
