@@ -37,8 +37,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Padding Padding
 		{
-			get { return Control.Margin.ToEto (); }
-			set { Control.Margin = value.ToWpf (); }
+			get { return Control.Padding.ToEto (); }
+			set { Control.Padding = value.ToWpf (); }
 		}
 
 		public Control Content
