@@ -175,7 +175,12 @@ namespace Eto.Platform.Wpf.Forms
 				case Eto.Forms.Control.MouseDownEvent:
 					Control.MouseDown += (sender, e) => {
 						var args = e.ToEto (Control);
+						if (wpfcontrol == null && e.ClickCount == 2)
+							Widget.OnMouseDoubleClick (args);
+						if (!args.Handled)
 						Widget.OnMouseDown (args);
+						if (args.Handled)
+							Control.CaptureMouse ();
 						e.Handled = args.Handled;
 					};
 					break;
@@ -187,17 +192,12 @@ namespace Eto.Platform.Wpf.Forms
 							e.Handled = args.Handled;
 						};
 					else
-						Control.MouseDown += (sender, e) => {
-							if (e.ClickCount == 2) {
-								var args = e.ToEto (Control);
-								Widget.OnMouseDoubleClick (args);
-								e.Handled = args.Handled;
-							}
-						};
+						HandleEvent (Eto.Forms.Control.MouseDownEvent);
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					Control.MouseUp += (sender, e) => {
-						var args = e.ToEto (Control);
+						Control.ReleaseMouseCapture ();
+						var args = e.ToEto (Control, swi.MouseButtonState.Released);
 						Widget.OnMouseUp (args);
 						e.Handled = args.Handled;
 					};
