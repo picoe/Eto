@@ -10,7 +10,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class DrawableHandler : MacView<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
+	public class DrawableHandler : MacContainer<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
 		Brush backgroundBrush;
 		Color backgroundColor;
@@ -89,7 +89,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}
-		
 
+		public override object ContainerObject
+		{
+			get { return Control; }
+		}
 	}
 }

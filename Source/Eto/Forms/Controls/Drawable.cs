@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public partial interface IDrawable : IControl
+	public partial interface IDrawable : IContainer
 	{
 		void Create ();
 		
@@ -35,7 +35,7 @@ namespace Eto.Forms
 
 	public delegate void PaintEventHandler (object sender, PaintEventArgs pe);
 
-	public partial class Drawable : Control
+	public partial class Drawable : Container
 	{
 		IDrawable handler;
 

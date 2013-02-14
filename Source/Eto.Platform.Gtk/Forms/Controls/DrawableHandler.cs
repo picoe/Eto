@@ -43,5 +43,39 @@ namespace Eto.Platform.GtkSharp
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}
+
+		public Graphics CreateGraphics()
+		{
+			return new Graphics(Widget.Generator, new GraphicsHandler(Control, Control.GdkWindow));
+		}
+
+		public Size ClientSize
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
+
+		public object ContainerObject
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public Size? MinimumSize
+		{
+			get
+			{
+				throw new NotImplementedException();
+			}
+			set
+			{
+				throw new NotImplementedException();
+			}
+		}
 	}
 }
