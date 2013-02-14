@@ -38,6 +38,11 @@ namespace Eto.Platform.Windows
                     if (HideFromAltTab)
                         createParams.ExStyle |= 0x80;
 
+					// Turn on WS_EX_COMPOSITED. This is needed to
+					// make Drawable work correctly as a Container.
+					// see http://stackoverflow.com/a/2613272/90291
+					createParams.ExStyle |= 0x02000000;  
+
                     return createParams;
                 }
             }
