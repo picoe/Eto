@@ -124,7 +124,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public void Create ()
 		{
-			Control = new MyTiledView{ Handler = this };
+			Control = new MyView{ Handler = this };
 		}
 		
 		public void Create (bool largeCanvas)
