@@ -12,7 +12,7 @@ using MonoTouch.GLKit;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class DrawableHandler : iosView<DrawableHandler.MyView, Drawable>, IDrawable
+	public class DrawableHandler : iosContainer<DrawableHandler.MyView, Drawable>, IDrawable
 	{
 		/*
 		[Register("FastLayer")]
