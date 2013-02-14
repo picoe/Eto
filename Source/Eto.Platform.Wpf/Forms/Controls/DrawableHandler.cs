@@ -13,7 +13,7 @@ using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable>, IDrawable
+	public class DrawableHandler : WpfContainer<swc.Canvas, Drawable>, IDrawable
 	{
 		bool tiled;
 		Scrollable scrollable;
@@ -330,6 +330,61 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set {
 				if (value != Control.Focusable) {
 					Control.Focusable = value;
+				}
+			}
+		}
+
+		public override Size ClientSize
+		{
+			get { return this.Size; }
+			set { this.Size = value; }
+		}
+
+		public override object ContainerObject
+		{
+			get { return Control; }
+		}
+
+		public override void SetLayout(Layout layout)
+		{
+			Control.Children.Clear();
+			Control.Children.Add((System.Windows.UIElement)layout.ControlObject);
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
+				if (brush != null) return brush.Color.ToEto();
+				else return Colors.Black;
+			}
+			set
+			{
+				Control.Background = new System.Windows.Media.SolidColorBrush(value.ToWpf());
+			}
+		}
+
+		public override Size? MinimumSize
+		{
+			get
+			{
+				if (Control.MinWidth > 0 && Control.MinHeight > 0)
+					return new Size((int)Control.MinWidth, (int)Control.MinHeight);
+				else
+					return null;
+			}
+			set
+			{
+				if (value != null)
+				{
+					Control.MinWidth = value.Value.Width;
+					Control.MinHeight = value.Value.Height;
+				}
+				else
+				{
+					Control.MinHeight = 0;
+					Control.MinWidth = 0;
 				}
 			}
 		}
