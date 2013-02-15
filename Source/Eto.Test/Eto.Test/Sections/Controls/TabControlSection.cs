@@ -14,11 +14,14 @@ namespace Eto.Test.Sections.Controls
 		protected virtual void Add()
 		{
 			var layout = new DynamicLayout(this);
-
-			layout.Add(DefaultTabs());
+			var tabControl = DefaultTabs();
+			layout.Add(tabControl);
+			var button = new Button { Text = "Add Tab" };
+			button.Click += (s, e) => tabControl.TabPages.Add(new TabPage { Text = "Added" });
+			layout.Add(button);
 		}
 		
-		Control DefaultTabs ()
+		TabControl DefaultTabs ()
 		{
 			var control = new TabControl ();
 			LogEvents (control);
