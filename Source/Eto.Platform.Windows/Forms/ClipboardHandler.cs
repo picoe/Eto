@@ -124,6 +124,29 @@ namespace Eto.Platform.Windows.Forms
 					}
 				}
 			}
+			if (swf.Clipboard.ContainsFileDropList())
+			{
+				var list = swf.Clipboard.GetFileDropList();
+				if (list != null && list.Count > 0)
+				{
+					var path = list[0];
+					sd.Image bmp = null;
+					try
+					{
+						bmp = sd.Bitmap.FromFile(path);
+						var result = new sd.Bitmap(bmp);
+						return result;
+					}
+					catch (Exception)
+					{
+					}
+					finally
+					{
+						if (bmp != null)
+							bmp.Dispose();
+					}
+				}
+			}
 
 			return swf.Clipboard.ContainsImage () ? swf.Clipboard.GetImage () : null;
 		}
