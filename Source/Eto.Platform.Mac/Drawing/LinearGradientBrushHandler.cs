@@ -23,9 +23,12 @@ namespace Eto.Platform.iOS.Drawing
 	{
 		class BrushObject
 		{
-			CGAffineTransform transform;
+			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
 			float [] alpha = new float[] { 1f };
 			CGPattern pattern;
+			sd.PointF patternOffset;
+			static CGColorSpace patternColorSpace = CGColorSpace.CreatePattern (null);
+
 			GradientWrapMode wrap;
 			sd.SizeF tileSize;
 			sd.SizeF sectionSize;
@@ -43,7 +46,7 @@ namespace Eto.Platform.iOS.Drawing
 				get { return wrap; }
 				set {
 					wrap = value;
-					SetPattern ();
+					pattern = null;
 				}
 			}
 
@@ -54,10 +57,27 @@ namespace Eto.Platform.iOS.Drawing
 			
 			public void Apply (GraphicsHandler graphics)
 			{
-				if (pattern == null) SetPattern ();
-				using (var patternSpace = CGColorSpace.CreatePattern (null)) {
-					graphics.Control.SetFillColorSpace (patternSpace);
+#if OSX
+				if (graphics.DisplayView != null && graphics.DisplayView.Layer != null) {
+					var ofs = graphics.DisplayView.ConvertPointFromView (sd.PointF.Empty, null);
+					if (graphics.Flipped)
+						ofs.Y = graphics.ViewHeight - ofs.Y;
+					if (pattern == null || ofs != patternOffset) {
+						patternOffset = ofs;
+						SetPattern ();
+					}
 				}
+				else if (pattern == null || patternOffset != sd.PointF.Empty) {
+					patternOffset = sd.PointF.Empty;
+					SetPattern ();
+				}
+#elif IOS
+				if (pattern == null)
+					SetPattern ();
+#endif
+
+
+				graphics.Control.SetFillColorSpace (patternColorSpace);
 				graphics.Control.SetFillPattern (pattern, alpha);
 			}
 			
@@ -73,7 +93,7 @@ namespace Eto.Platform.iOS.Drawing
 				set {
 					transform = value;
 					transform.Scale (1f, -1f);
-					SetPattern ();
+					pattern = null;
 				}
 			}
 			
@@ -109,7 +129,9 @@ namespace Eto.Platform.iOS.Drawing
 				else
 					tileSize = new sd.SizeF(sectionSize.Width * 2, sectionSize.Height * 2);
 				var rect = new sd.RectangleF(StartPoint, tileSize);
-				pattern = new CGPattern(rect, transform, rect.Width, rect.Height, CGPatternTiling.ConstantSpacingMinimalDistortion, true, DrawPattern);
+				var t = transform;
+				t.Translate (patternOffset.X, patternOffset.Y);
+				pattern = new CGPattern(rect, t, rect.Width, rect.Height, CGPatternTiling.ConstantSpacingMinimalDistortion, true, DrawPattern);
 			}
 		}
 

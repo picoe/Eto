@@ -24,15 +24,36 @@ namespace Eto.Platform.iOS.Drawing
 		class BrushObject
 		{
 			CGImage image;
+
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
 			float [] alpha = new float[] { 1f };
 			CGPattern pattern;
+			sd.PointF patternOffset;
+			static CGColorSpace patternColorSpace = CGColorSpace.CreatePattern (null);
 
 			public void Apply (GraphicsHandler graphics)
 			{
-				using (var patternSpace = CGColorSpace.CreatePattern (null)) {
-					graphics.Control.SetFillColorSpace (patternSpace);
+				graphics.Control.SetFillColorSpace (patternColorSpace);
+#if OSX
+				if (graphics.DisplayView != null && graphics.DisplayView.Layer != null) {
+					var ofs = graphics.DisplayView.ConvertPointFromView (sd.PointF.Empty, null);
+					if (graphics.Flipped)
+						ofs.Y = graphics.ViewHeight - ofs.Y;
+					if (pattern == null || ofs != patternOffset) {
+						patternOffset = ofs;
+						SetPattern ();
+					}
 				}
+				else if (pattern == null || patternOffset != sd.PointF.Empty) {
+					patternOffset = sd.PointF.Empty;
+					SetPattern ();
+				}
+#elif IOS
+				if (pattern == null)
+					SetPattern ();
+#endif
+
+
 				graphics.Control.SetFillPattern (pattern, alpha);
 			}
 			
@@ -42,7 +63,7 @@ namespace Eto.Platform.iOS.Drawing
 				set
 				{
 					image = value;
-					SetPattern ();
+					pattern = null;
 				}
 			}
 
@@ -57,23 +78,25 @@ namespace Eto.Platform.iOS.Drawing
 				get { return transform; }
 				set {
 					transform = value;					
-					SetPattern ();
+					pattern = null;
 				}
 			}
 
 			void DrawPattern (CGContext context)
 			{
 				var destRect = new sd.RectangleF(0, 0, image.Width, image.Height);
-				context.TranslateCTM (0, image.Height / 2);
-				context.ScaleCTM (1f, -1f);
-				context.TranslateCTM (0, -image.Height / 2);
+				context.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, image.Height));
 				context.DrawImage (destRect, image);
 			}
 
 			void SetPattern ()
 			{
 				var t = transform;
-				t.Scale(1f, -1f);
+#if OSX
+				t.Scale(1f, -1f); // flip transform on OS X so rotation is clockwise
+#endif
+				t.Translate (patternOffset.X, patternOffset.Y);
+
 				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 			}
 		}

@@ -240,7 +240,7 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			var sourceRect = graphics.Translate (source.ToSD (), Control.Size.Height);
 			var destRect = graphics.TranslateView (destination.ToSD (), true, true);
-			graphics.Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, graphics.ViewHeight));
+			graphics.FlipDrawing ();
 			destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
 			if (alpha)
 				Control.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
@@ -263,7 +263,7 @@ namespace Eto.Platform.Mac.Drawing
 					format = PixelFormat.Format32bppRgb;
 
 				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
-				using (var graphics = new Graphics (bmp)) {
+				using (var graphics = new Graphics (Generator, bmp)) {
 					graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
 				}
 				return bmp;

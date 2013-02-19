@@ -119,6 +119,7 @@
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Drawing\ClipSection.cs" />
     <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
+    <Compile Include="Sections\Drawing\DirectDrawingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

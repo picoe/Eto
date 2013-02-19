@@ -27,7 +27,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					graphics.Control.Transform (Transform);
 				
 				Gdk.CairoHelper.SetSourcePixbuf (graphics.Control, Pixbuf, 0, 0);
-				var pattern = graphics.Control.Source as Cairo.SurfacePattern;
+				var pattern = graphics.Control.Source as Cairo.Pattern;
 				if (pattern != null)
 					pattern.Extend = Cairo.Extend.Repeat;
 				if (Opacity < 1.0f) {
