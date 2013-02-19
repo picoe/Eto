@@ -60,7 +60,8 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void AddPath (IGraphicsPath path, bool connect)
 		{
-			Control.AddPath (path.ToSD (), connect);
+			if (path != null && !path.IsEmpty) // avoid throwing an exception if the path is empty - consistent across platforms.
+				Control.AddPath(path.ToSD(), connect);
 		}
 
 		public void Transform (IMatrix matrix)
