@@ -110,6 +110,25 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Blends the <paramref name="blendColor"/> onto the specified <paramref name="baseColor"/>
+		/// </summary>
+		/// <remarks>
+		/// This computes the blended value of two colors.
+		/// </remarks>
+		/// <param name="baseColor">Base color</param>
+		/// <param name="blendColor">Color to blend onto the base color</param>
+		public static Color Blend (Color baseColor, Color blendColor)
+		{
+			if (blendColor.A == 1.0)
+				return blendColor;
+			var inv = 1.0f - blendColor.A;
+			baseColor.R = baseColor.R * inv + blendColor.R * blendColor.A;
+			baseColor.G = baseColor.G * inv + blendColor.G * blendColor.A;
+			baseColor.B = baseColor.B * inv + blendColor.B * blendColor.A;
+			return baseColor;
+		}
+
+		/// <summary>
 		/// Initializes a new instance of the Color object with the specified red, green, blue, and alpha components
 		/// </summary>
 		/// <param name="red">Red component (0-1)</param>
