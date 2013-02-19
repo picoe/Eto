@@ -81,7 +81,7 @@ namespace Eto
 			return (Func<T>)(generator ?? Generator.Current).Find (typeof(T));
 		}
 
-		internal static Dictionary<K, V> Cache<K, V> (this Generator generator, object cacheKey)
+		public static Dictionary<K, V> Cache<K, V> (this Generator generator, object cacheKey)
 		{
 			return (generator ?? Generator.Current).GetSharedProperty <Dictionary<K, V>> (cacheKey, () => new Dictionary<K, V> ());
 		}
