@@ -5,27 +5,33 @@ using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class DrawableHandler : GtkControl<Gtk.DrawingArea, Drawable>, IDrawable
+	public class DrawableHandler : GtkContainer<Gtk.EventBox, Drawable>, IDrawable
 	{
+		Gtk.VBox content;
+
 		public void Create ()
 		{
-			Control = new Gtk.DrawingArea ();
+			Control = new Gtk.EventBox ();
 			Control.ExposeEvent += control_ExposeEvent;
 			Control.Events |= Gdk.EventMask.ExposureMask;
 			//Control.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(0, 0, 0));
 			//Control.DoubleBuffered = false;
 			Control.CanFocus = false;
 			Control.CanDefault = true;
-			
+			Control.Events |= Gdk.EventMask.ButtonPressMask;
+			Control.ButtonPressEvent += (o, args) => {
+				if (CanFocus)
+					Control.GrabFocus ();
+			};
+
+			content = new Gtk.VBox();
+
+			Control.Add (content);
 		}
-		
+
 		public bool CanFocus {
-			get {
-				return Control.CanFocus;
-			}
-			set {
-				Control.CanFocus = value;
-			}
+			get { return Control.CanFocus; }
+			set { Control.CanFocus = value; }
 		}
 
 		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
@@ -49,33 +55,20 @@ namespace Eto.Platform.GtkSharp
 			return new Graphics(Widget.Generator, new GraphicsHandler(Control, Control.GdkWindow));
 		}
 
-		public Size ClientSize
+		public override object ContainerObject
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			get { return content; }
 		}
 
-		public object ContainerObject
+		public override void SetLayout (Layout inner)
 		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public Size? MinimumSize
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
+			if (content.Children.Length > 0)
+				foreach (Gtk.Widget child in content.Children)
+					content.Remove (child);
+			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
+			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
+			content.Add (containerWidget);
+			containerWidget.ShowAll ();
 		}
 	}
 }
