@@ -192,7 +192,7 @@ namespace Eto.Platform.iOS.Forms
 
 		public Graphics CreateGraphics ()
 		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control));
+			throw new NotSupportedException ();
 		}
 
 		public virtual void SuspendLayout ()
