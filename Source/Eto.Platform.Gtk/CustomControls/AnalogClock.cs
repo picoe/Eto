@@ -103,8 +103,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 						
 					}
 				}
-				DrawFace (center, (radius / 2) + 17, e);
-				DrawFace (center, 8, e);
+				//DrawFace (center, (radius / 2) + 17, e);
+				//DrawFace (center, 8, e);
 				
 			}
 			return true;			
