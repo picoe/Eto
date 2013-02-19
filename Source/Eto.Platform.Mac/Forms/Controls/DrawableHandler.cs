@@ -59,11 +59,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return backgroundColor; }
 			set 
 			{
+				if (backgroundColor != value) {
 				backgroundColor = value;
 				if (backgroundColor.A > 0)
 					backgroundBrush = new SolidBrush (backgroundColor, Widget.Generator);
 				else
 					backgroundBrush = null;
+					this.Invalidate ();
+				}
 			}
 		}
 		
