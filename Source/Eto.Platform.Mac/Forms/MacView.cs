@@ -384,18 +384,25 @@ namespace Eto.Platform.Mac.Forms
 				focus = true;
 		}
 
-		public virtual Color BackgroundColor {
-			get { 
-				if (!Control.WantsLayer) {
+		public virtual Color BackgroundColor
+		{
+			get
+			{
+				if (!Control.WantsLayer)
 					Control.WantsLayer = true;
-				}
 				return Control.Layer.BackgroundColor.ToEtoColor ();
 			}
-			set {
-				if (!Control.WantsLayer) {
-					Control.WantsLayer = true;
+			set
+			{
+				if (value.A > 0) {
+					if (!Control.WantsLayer)
+						Control.WantsLayer = true;
+					Control.Layer.BackgroundColor = value.ToCGColor ();
+				} else {
+					Control.WantsLayer = false;
+					if (Control.Layer != null)
+						Control.Layer.BackgroundColor = value.ToCGColor ();
 				}
-				Control.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
 

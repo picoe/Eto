@@ -111,6 +111,7 @@
     <Compile Include="Sections\Drawing\BrushSection.cs" />
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
+    <Compile Include="Sections\Drawing\DirectDrawingSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">
