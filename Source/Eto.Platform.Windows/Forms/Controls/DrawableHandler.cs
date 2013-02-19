@@ -24,6 +24,7 @@ namespace Eto.Platform.Windows
 				this.SetStyle (swf.ControlStyles.UserPaint, true);
 				this.SetStyle (swf.ControlStyles.DoubleBuffer, true);
 				this.SetStyle (swf.ControlStyles.ResizeRedraw, true);
+				this.SetStyle (swf.ControlStyles.SupportsTransparentBackColor, true);
 			}
 
 			public bool CanFocusMe
