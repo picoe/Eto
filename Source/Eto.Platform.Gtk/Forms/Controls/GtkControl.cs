@@ -145,11 +145,14 @@ namespace Eto.Platform.GtkSharp
 			get {
 				return backgroundColor ?? GetOriginalBackgroundColor ();
 			}
-			set { 
-				var col = Color.Blend(GetOriginalBackgroundColor (), value);
-				var eb = ContainerControl as Gtk.EventBox;
-				if (eb != null && value.A > 0) eb.VisibleWindow = true;
-				ContainerControl.ModifyBg (Gtk.StateType.Normal, col.ToGdk ());
+			set {
+				if (backgroundColor != value) {
+					backgroundColor = value;
+					var col = Color.Blend (GetOriginalBackgroundColor (), value);
+					var eb = ContainerControl as Gtk.EventBox;
+					if (eb != null && value.A > 0) eb.VisibleWindow = true;
+					ContainerControl.ModifyBg (Gtk.StateType.Normal, col.ToGdk ());
+				}
 			}
 		}
 
