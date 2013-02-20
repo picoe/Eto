@@ -291,6 +291,11 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual void SetParentLayout (Layout layout)
 		{
+			if (Widget.ParentLayout != null && Widget.ParentLayout.InnerLayout != null) {
+				// remove from old layout
+				var parent = Widget.ParentLayout.InnerLayout.Handler as IWpfLayout;
+				parent.Remove (ContainerControl);
+			}
 		}
 
 		public void MapPlatformAction (string systemAction, BaseAction action)

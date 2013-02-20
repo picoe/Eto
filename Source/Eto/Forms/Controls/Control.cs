@@ -396,15 +396,15 @@ namespace Eto.Forms
 		
 		public void SetParent (Control parent)
 		{
+			Handler.SetParent (parent);
 			this.Parent = parent;
 			OnDataContextChanged (EventArgs.Empty);
-			Handler.SetParent (parent);
 		}
 
 		public void SetParentLayout (Layout layout)
 		{
-			this.ParentLayout = layout;
 			Handler.SetParentLayout (layout);
+			this.ParentLayout = layout;
 			this.SetParent (layout != null ? layout.Container : null);
 		}
 

@@ -262,13 +262,17 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Remove (Control child)
 		{
-			var control = child.GetContainerControl ();
+			Remove (child.GetContainerControl ());
+		}
+
+		public override void Remove (sw.FrameworkElement control)
+		{
 			var x = swc.Grid.GetColumn (control);
 			var y = swc.Grid.GetRow (control);
 			Control.Children.Remove (control);
 			controls[x, y] = null;
 			Control.Children.Add (EmptyCell (x, y));
-            SetSizes();
+			SetSizes ();
 		}
 	}
 }
