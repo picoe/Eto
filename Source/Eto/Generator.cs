@@ -214,6 +214,11 @@ namespace Eto
 				return current;
 			}
 		}
+
+		/// <summary>
+		/// Returns true if the current generator has been set.
+		/// </summary>
+		public static bool HasCurrent { get { return current != null; } }
 		
 		/// <summary>
 		/// Returns the current generator, or detects the generator to use if no current generator is set.
