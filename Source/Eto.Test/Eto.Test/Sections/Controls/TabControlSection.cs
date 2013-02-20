@@ -6,21 +6,41 @@ namespace Eto.Test.Sections.Controls
 {
 	public class TabControlSection : Panel
 	{
+		TabControl tabControl;
+
 		public TabControlSection ()
 		{
-			Add();			
+			Create ();			
 		}
 
-		protected virtual void Add()
+		protected virtual void Create ()
 		{
-			var layout = new DynamicLayout(this);
-			var tabControl = DefaultTabs();
-			layout.Add(tabControl);
-			var button = new Button { Text = "Add Tab" };
-			button.Click += (s, e) => tabControl.TabPages.Add(new TabPage { Text = "Added" });
-			layout.Add(button);
+			var layout = new DynamicLayout (this);
+			layout.AddSeparateRow (null, AddTab (), RemoveTab (), null);
+			layout.AddSeparateRow (tabControl = DefaultTabs ());
 		}
-		
+
+		Control AddTab ()
+		{
+			var control = new Button { Text = "Add Tab" };
+			control.Click += (s, e) => {
+				var tab = new TabPage { Text = "Tab " + (tabControl.TabPages.Count + 1) };
+				tabControl.TabPages.Add (tab);
+			};
+			return control;
+		}
+
+		Control RemoveTab ()
+		{
+			var control = new Button { Text = "Remove Tab" };
+			control.Click += (s, e) => {
+				if (tabControl.SelectedIndex >= 0 && tabControl.TabPages.Count > 0) {
+					tabControl.TabPages.RemoveAt (tabControl.SelectedIndex);
+				}
+			};
+			return control;
+		}
+
 		TabControl DefaultTabs ()
 		{
 			var control = new TabControl ();
@@ -85,21 +105,24 @@ namespace Eto.Test.Sections.Controls
 
 	public class ThemedTabControlSection : TabControlSection
 	{
-		protected override void Add()
+		protected override void Create ()
 		{
 			// Clone the current generator and add handlers
 			// for TabControl and TabPage. Create a TabControlSection
 			// using the new generator and then restore the previous generator.
 			var currentGenerator = Generator.Current;
-			var generator = Activator.CreateInstance(currentGenerator.GetType()) as Generator;
-			Generator.Initialize(generator);
+			try {
+				var generator = Activator.CreateInstance (currentGenerator.GetType ()) as Generator;
+				Generator.Initialize (generator);
 
-			generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
-			generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());
+				generator.Add<ITabControl> (() => new Eto.Test.Handlers.TabControlHandler ());
+				generator.Add<ITabPage> (() => new Eto.Test.Handlers.TabPageHandler ());
 
-			base.Add();
+				base.Create ();
+			} finally {
 			
-			Generator.Initialize(currentGenerator); // restore
+				Generator.Initialize (currentGenerator); // restore
+			}
 		}		
 	}
 }

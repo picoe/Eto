@@ -41,6 +41,8 @@ namespace Eto.Platform.GtkSharp
 		Point location;
 		bool mouseDownHandled;
 		Cursor cursor;
+		Color? originalBackgroundColor;
+		Color? backgroundColor;
 
 		public GtkControl ()
 		{
@@ -132,12 +134,25 @@ namespace Eto.Platform.GtkSharp
 			Control.QueueDrawArea (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
+		Color GetOriginalBackgroundColor ()
+		{
+			if (originalBackgroundColor == null)
+				originalBackgroundColor = ContainerControl.Style.Background (Gtk.StateType.Normal).ToEto ();
+			return originalBackgroundColor.Value;
+		}
+
 		public virtual Color BackgroundColor {
-			get { return ContainerControl.Style.Background (Gtk.StateType.Normal).ToEto (); }
-			set { 
-				var eb = ContainerControl as Gtk.EventBox;
-				if (eb != null) eb.VisibleWindow = value.A > 0;
-				ContainerControl.ModifyBg (Gtk.StateType.Normal, value.ToGdk ());
+			get {
+				return backgroundColor ?? GetOriginalBackgroundColor ();
+			}
+			set {
+				if (backgroundColor != value) {
+					backgroundColor = value;
+					var col = Color.Blend (GetOriginalBackgroundColor (), value);
+					var eb = ContainerControl as Gtk.EventBox;
+					if (eb != null && value.A > 0) eb.VisibleWindow = true;
+					ContainerControl.ModifyBg (Gtk.StateType.Normal, col.ToGdk ());
+				}
 			}
 		}
 

@@ -20,6 +20,8 @@ namespace Eto.Test.Sections.Drawing
 		Brush solidBrush;
 		DynamicRow matrixRow;
 		DynamicRow gradientRow;
+		bool useBackgroundColor;
+		Panel panel;
 
 		public float Rotation { get; set; }
 
@@ -31,11 +33,20 @@ namespace Eto.Test.Sections.Drawing
 
 		public float OffsetY { get; set; }
 
+		public bool UseBackgroundColor
+		{
+			get { return useBackgroundColor; }
+			set {
+				useBackgroundColor = value;
+				drawable.BackgroundColor = value ? Colors.Blue : Colors.Transparent;
+			}
+		}
+
 		public GradientWrapMode GradientWrap { get; set; }
 
 		public BrushSection ()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout (panel = new Panel { });
 			brush = solidBrush = Brushes.LightSkyBlue ();
 			gradientBrush = new LinearGradientBrush (Colors.AliceBlue, Colors.Black, new PointF (0, 0), new PointF (100f, 100f));
 			//gradientBrush = new LinearGradientBrush (new RectangleF (0, 0, 50, 50), Colors.AliceBlue, Colors.Black, 10);
@@ -52,13 +63,16 @@ namespace Eto.Test.Sections.Drawing
 				Draw (pe.Graphics);
 			};
 
-			layout.AddSeparateRow (null, BrushControl (), null);
+			layout.AddSeparateRow (null, BrushControl (), UseBackgroundColorControl (), null);
 			matrixRow = layout.AddSeparateRow (null, new Label { Text = "Rot" }, RotationControl (), new Label { Text = "Sx"}, ScaleXControl (), new Label { Text = "Sy"}, ScaleYControl (), new Label { Text = "Ox"}, OffsetXControl (), new Label { Text = "Oy"}, OffsetYControl (), null);
 			matrixRow.Table.Visible = false;
 			gradientRow = layout.AddSeparateRow (null, GradientWrapControl (), null);
 			gradientRow.Table.Visible = false;
 			layout.AddSeparateRow (null, drawable, null);
 			layout.Add (null);
+
+			this.AddDockedControl (layout.Container);
+
 		}
 
 		class BrushItem : ListItem
@@ -140,6 +154,13 @@ namespace Eto.Test.Sections.Drawing
 			var control = new EnumComboBox<GradientWrapMode> ();
 			control.Bind (c => c.SelectedValue, this, c => c.GradientWrap);
 			control.SelectedValueChanged += Refresh;
+			return control;
+		}
+
+		Control UseBackgroundColorControl ()
+		{
+			var control = new CheckBox { Text = "Use Background Color" };
+			control.Bind (c => c.Checked, this, c => c.UseBackgroundColor);
 			return control;
 		}
 		

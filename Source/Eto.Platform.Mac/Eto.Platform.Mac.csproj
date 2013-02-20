@@ -11,7 +11,7 @@
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
-    <DefineConstants>$(DefineConstants);Mac;DESKTOP;</DefineConstants>
+    <DefineConstants>$(DefineConstants);OSX;DESKTOP;MONOMAC</DefineConstants>
     <Optimize>false</Optimize>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
@@ -31,7 +31,6 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <DefineConstants>OSX;DESKTOP;MONOMAC</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
   </PropertyGroup>

@@ -31,5 +31,21 @@ namespace Eto.Platform.Wpf.Forms
 		public abstract void SetLayout (Layout layout);
 
 		public abstract Size? MinimumSize { get; set; }
+
+		public override void Invalidate ()
+		{
+			base.Invalidate ();
+			foreach (var control in Widget.Children) {
+				control.Invalidate ();
+			}
+		}
+
+		public override void Invalidate (Rectangle rect)
+		{
+			base.Invalidate (rect);
+			foreach (var control in Widget.Children) {
+				control.Invalidate (rect);
+			}
+		}
 	}
 }

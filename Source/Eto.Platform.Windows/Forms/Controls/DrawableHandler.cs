@@ -24,6 +24,7 @@ namespace Eto.Platform.Windows
 				this.SetStyle (swf.ControlStyles.UserPaint, true);
 				this.SetStyle (swf.ControlStyles.DoubleBuffer, true);
 				this.SetStyle (swf.ControlStyles.ResizeRedraw, true);
+				this.SetStyle (swf.ControlStyles.SupportsTransparentBackColor, true);
 			}
 
 			public bool CanFocusMe
@@ -108,12 +109,6 @@ namespace Eto.Platform.Windows
 		public bool CanFocus {
 			get { return Control.CanFocusMe; }
 			set { Control.CanFocusMe = value; }
-		}
-
-		public override Size Size
-		{
-			get	{ return Control.Size.ToEto (); }
-			set { Control.Size = value.ToSD (); }
 		}
 
 		public void Update(Rectangle rect)

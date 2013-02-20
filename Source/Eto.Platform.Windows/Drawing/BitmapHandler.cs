@@ -168,7 +168,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			graphics.Control.DrawImage (Control, source.ToSD (), destination.ToSD (), SD.GraphicsUnit.Pixel);
+			graphics.Control.DrawImage (Control, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
 		}
 
 		public void DrawImage (GraphicsHandler graphics, float x, float y)

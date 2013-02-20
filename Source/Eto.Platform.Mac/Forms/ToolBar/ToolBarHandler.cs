@@ -80,7 +80,7 @@ namespace Eto.Platform.Mac
 		{
 			var handler = item.Handler as IToolBarBaseItemHandler;
 			items.Add (handler);
-			Control.InsertItem (handler.Identifier, items.Count - 1);
+			Control.InsertItem (handler.Identifier, Control.Items.Length);
 			if (handler != null)
 				handler.ControlAdded (this);
 			//Control.ValidateVisibleItems();
@@ -124,8 +124,8 @@ namespace Eto.Platform.Mac
 
 		public void Clear ()
 		{
-			foreach (var item in items) {
-				Control.RemoveItem (0);
+			for (int i = Control.Items.Length - 1; i >=0; i--) {
+				Control.RemoveItem (i);
 			}
 			items.Clear ();
 			

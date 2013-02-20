@@ -65,7 +65,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 					var key = KeyMap.ConvertKey (value);
 					var modifier = KeyMap.ConvertModifier (value);
 					Control.InputBindings.Add (new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
-					Control.InputGestureText = KeyMap.KeyToString (value);
+					Control.InputGestureText = value.ToShortcutString ();
 				}
 				else
 					Control.InputGestureText = null;

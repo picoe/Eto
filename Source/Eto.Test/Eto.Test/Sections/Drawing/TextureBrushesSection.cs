@@ -16,18 +16,21 @@ namespace Eto.Test.Sections.Drawing
 			for (var i = 0; i < 10; ++i)
 			{
 				var w = image.Size.Width / 3; // same as height
-				var img = i == 0 ? image : image.Clone(
-					new Rectangle((i - 1) % 3 * w, (i - 1) / 3 * w, w, w));
-				var b = new TextureBrush(img);
-				Drawable d = new Drawable { Size = image.Size * 2 };
-				d.Paint += (s, e) => {
+				var img = image;
+				if (i > 0)
+					img = img.Clone (new Rectangle((i - 1) % 3 * w, (i - 1) / 3 * w, w, w));
+
+				var brush = new TextureBrush(img);
+				var drawable = new Drawable { Size = image.Size * 2 };
+
+				drawable.Paint += (s, e) => {
 					var destRect = new RectangleF(new PointF(100, 100), image.Size);
-					var temp = b.Transform; // save state					
-					b.Transform = Matrix.FromTranslation(destRect.Location);
-					e.Graphics.FillRectangle(b, destRect);
-					b.Transform = temp;
+					var temp = brush.Transform; // save state					
+					brush.Transform = Matrix.FromTranslation(destRect.Location);
+					e.Graphics.FillRectangle(brush, destRect);
+					brush.Transform = temp;
 				};
-				layout.AddRow(d);
+				layout.AddRow(drawable);
 			}
 			layout.Add(null);
 		}

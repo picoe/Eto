@@ -38,15 +38,17 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 		NSView view;
 		float height;
-		bool needsLock;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
 		float inverseoffset = 0f;
 		SD.RectangleF? clipBounds;
 		IGraphicsPath clipPath;
+		int transformSaveCount;
 
 		public float Offset { get { return offset; } }
 		public float InverseOffset { get { return inverseoffset; } }
+
+		public NSView DisplayView { get; private set; }
 		
 		public bool Flipped {
 			get;
@@ -70,52 +72,60 @@ namespace Eto.Platform.iOS.Drawing
 		public GraphicsHandler (NSView view)
 		{
 			this.view = view;
+			DisposeControl = false;
 #if OSX
-			needsLock = true;
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
 			Control = graphicsContext.GraphicsPort;
 			this.Flipped = view.IsFlipped;
+
 #elif IOS
 			this.Control = UIGraphics.GetCurrentContext ();
 			this.Flipped = view != null && view.Layer != null &&!view.Layer.GeometryFlipped;
 #endif
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
-			if (!Flipped)
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
-
 			Control.SaveState ();
+
 #if OSX
+			var pos = view.ConvertPointToView(SD.PointF.Empty, view.Window.ContentView);
+			if (!Flipped) {
+				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, view.Window.ContentView.Frame.Height + pos.Y));
+			}
+			Control.TranslateCTM (pos.X, pos.Y);
 			Control.ClipToRect (TranslateView (view.VisibleRect ()));
 #endif
 		}
 
 #if OSX
-		public GraphicsHandler (NSGraphicsContext graphicsContext, float height, bool flipped)
-		{ 
+		public GraphicsHandler (NSView view, NSGraphicsContext graphicsContext, float height, bool flipped)
+		{
+			this.DisplayView = view;
 			this.height = height;
 			this.graphicsContext = graphicsContext;
+			DisposeControl = false;
 			this.Control = graphicsContext.GraphicsPort;
 			this.Flipped = flipped;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
+			Control.SaveState ();
 			if (!Flipped)
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+				FlipDrawing ();
 		}
 #elif IOS
-		public GraphicsHandler (CGContext context, float height, bool flipped)
+		public GraphicsHandler (NSView view, CGContext context, float height, bool flipped)
 		{
+			this.DisplayView = view;
 			this.height = height;
 			if (height > 0) {
 				this.Flipped = flipped;
 			}
-			//this.Control = gc;
+			DisposeControl = false;
 			this.Control = context;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
-			//context.ScaleCTM(1, -1);
+			Control.SaveState ();
 			Control.SetAllowsSubpixelPositioning (false);
 			if (!Flipped)
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+				FlipDrawing ();
 		}
 
 #endif
@@ -151,12 +161,25 @@ namespace Eto.Platform.iOS.Drawing
 			Control = new CGBitmapContext (handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
 #endif
 
+			DisposeControl = false;
 			Flipped = false;
 			this.height = image.Size.Height;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
+			Control.SaveState ();
 			if (!Flipped)
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+				FlipDrawing ();
+		}
+
+		public void Reset ()
+		{
+			// unwind all SaveState's
+			ResetClip ();
+			while (transformSaveCount > 0) {
+				RestoreTransform ();
+			}
+			// initial save state
+			Control.RestoreState ();
 		}
 
 		public void Commit ()
@@ -174,10 +197,6 @@ namespace Eto.Platform.iOS.Drawing
 		
 		public void Flush ()
 		{
-			if (view != null && !needsLock) {
-				//view.UnlockFocus ();
-				needsLock = true;
-			}
 #if OSX
 			graphicsContext.FlushGraphics ();
 #endif
@@ -192,6 +211,11 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
+		public void FlipDrawing ()
+		{
+			Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+		}
+
 		public SD.PointF TranslateView (SD.PointF point, bool halfers = false, bool inverse = false, float elementHeight = 0)
 		{
 			if (halfers) {
@@ -203,9 +227,6 @@ namespace Eto.Platform.iOS.Drawing
 					point.X += offset;
 					point.Y += offset;
 				}
-			}
-			if (view != null) {
-				point = view.ConvertPointToView (point, null);
 			}
 			return point;
 		}
@@ -222,10 +243,6 @@ namespace Eto.Platform.iOS.Drawing
 					rect.Y += offset;
 				}
 			}
-
-			if (view != null) {
-				rect = view.ConvertRectToView (rect, null);
-			}
 			return rect;
 		}
 
@@ -236,20 +253,12 @@ namespace Eto.Platform.iOS.Drawing
 			return rect;
 		}
 
-		void Lock ()
-		{
-			if (needsLock && view != null) {
-				//view.LockFocus();
-				needsLock = false;
-			}
-		}
-		
 		void StartDrawing ()
 		{
-			Lock ();
 #if OSX
 			NSGraphicsContext.GlobalSaveGraphicsState ();
 			NSGraphicsContext.CurrentContext = this.graphicsContext;
+			Control.SaveState ();
 #elif IOS
 			UIGraphics.PushContext (this.Control);
 			this.Control.SaveState ();
@@ -259,6 +268,7 @@ namespace Eto.Platform.iOS.Drawing
 		void EndDrawing ()
 		{
 #if OSX
+			Control.RestoreState ();
 			NSGraphicsContext.GlobalRestoreGraphicsState ();
 #elif IOS
 			this.Control.RestoreState ();
@@ -277,7 +287,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
 		{
 			StartDrawing ();
-			System.Drawing.RectangleF rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
+			var rect = TranslateView (new SD.RectangleF (x, y, width, height), true);
 			pen.Apply (this);
 			Control.StrokeRect (rect);
 			EndDrawing ();
@@ -293,7 +303,7 @@ namespace Eto.Platform.iOS.Drawing
 			}*/
 
 			brush.Apply (this);
-			Control.FillRect (TranslateView (new SD.RectangleF (x, y, width, height), true, true));
+			Control.FillRect (TranslateView (new SD.RectangleF (x, y, width, height), width > 1 || height > 1, true));
 			EndDrawing ();
 		}
 
@@ -466,9 +476,11 @@ namespace Eto.Platform.iOS.Drawing
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
-				ReverseClip ();
 				if (graphicsContext != null)
 					graphicsContext.FlushGraphics ();
+				Reset ();
+				if (graphicsContext != null)
+					graphicsContext.Dispose ();
 			}
 			base.Dispose (disposing);
 		}
@@ -498,12 +510,16 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			ReverseClip ();
 			Control.SaveState ();
+			transformSaveCount++;
 			RestoreClip ();
 		}
 		
 		public void RestoreTransform ()
 		{
+			if (transformSaveCount <= 0)
+				throw new InvalidOperationException ("No saved transform");
 			ReverseClip ();
+			transformSaveCount--;
 			Control.RestoreState ();
 			RestoreClip ();
 		}
