@@ -238,6 +238,8 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
+    <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
+    <Compile Include="Forms\Controls\RadioButtonList.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

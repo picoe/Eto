@@ -48,6 +48,7 @@ namespace Eto.Test
 			yield return new Section<ProgressBarSection> { Text = "Progress Bar" };
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 			yield return new Section<ImageViewSection> { Text = "Image View" };
+			yield return new Section<RadioButtonListSection> { Text = "Radio Button List" };
 		}
 		
 		static IEnumerable<Section> DrawingSection()
