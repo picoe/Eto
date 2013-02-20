@@ -394,6 +394,8 @@
     <Compile Include="Forms\Controls\DataObject.cs" />
     <Compile Include="Forms\Screen.cs" />
     <Compile Include="Helper.cs" />
+    <Compile Include="Forms\Controls\RadioButtonList.cs" />
+    <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
