@@ -14,10 +14,16 @@ namespace Eto.Platform.GtkSharp
 			get { return label; }
 		}
 		
-		public void Create(RadioButton controller)
+		public void Create (RadioButton controller)
 		{
-			if (controller != null) Control = new Gtk.RadioButton((Gtk.RadioButton)controller.ControlObject);
-			else Control = new Gtk.RadioButton((Gtk.RadioButton)null);
+			if (controller != null)
+				Control = new Gtk.RadioButton (RadioButtonHandler.GetControl (controller));
+			else {
+				Control = new Gtk.RadioButton ((Gtk.RadioButton)null);
+				// make gtk work like others in that no radio button is initially selected
+				var inactive = new Gtk.RadioButton (Control);
+				inactive.Active = true;
+			}
 			label = new Gtk.AccelLabel("");
 			Control.Add(label); //control.AddMnemonicLabel(label);
 			Control.Toggled += control_Toggled;
