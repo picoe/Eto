@@ -59,5 +59,12 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		public override void Remove (sw.FrameworkElement child)
+		{
+			if (Control.Child == child) {
+				Control.Child = null;
+				content = null;
+			}
+		}
 	}
 }
