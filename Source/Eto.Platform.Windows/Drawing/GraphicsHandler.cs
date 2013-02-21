@@ -329,5 +329,10 @@ namespace Eto.Platform.Windows.Drawing
 			else
 				Control.Clear (sd.Color.Transparent);
 		}
+
+		public CompositingMode CompositingMode
+		{
+			set { Control.CompositingMode = value.ToSD(); }
+		}
 	}
 }

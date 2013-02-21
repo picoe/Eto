@@ -623,5 +623,15 @@ namespace Eto.Platform.Windows
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static CompositingMode ToEto(this sd2.CompositingMode value)
+		{
+			return value == sd2.CompositingMode.SourceCopy ? CompositingMode.SourceCopy : CompositingMode.SourceOver;
+		}
+
+		public static sd2.CompositingMode ToSD(this CompositingMode value)
+		{
+			return value == CompositingMode.SourceCopy ? sd2.CompositingMode.SourceCopy : sd2.CompositingMode.SourceOver;
+		}
 	}
 }

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
@@ -74,6 +74,7 @@
     </Compile>
     <Compile Include="ContentProperty.cs" />
     <Compile Include="Drawing\Colors.cs" />
+    <Compile Include="Drawing\CompositingMode.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
     <Compile Include="Drawing\DashStyles.cs" />
     <Compile Include="Drawing\FillMode.cs" />

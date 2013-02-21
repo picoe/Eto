@@ -144,6 +144,11 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
+		public CompositingMode CompositingMode
+		{
+			set { throw new NotImplementedException(); }
+		}
+
 		public ImageInterpolation ImageInterpolation {
 			get { return Control.InterpolationQuality.ToEto (); }
 			set { Control.InterpolationQuality = value.ToCG (); }

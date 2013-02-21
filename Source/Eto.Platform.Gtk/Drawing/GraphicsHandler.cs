@@ -28,6 +28,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
+		public CompositingMode CompositingMode
+		{
+			set { throw new NotImplementedException(); }
+		}
+
 		public double Offset { get { return offset; } }
 
 		public double InverseOffset { get { return inverseoffset; } }
