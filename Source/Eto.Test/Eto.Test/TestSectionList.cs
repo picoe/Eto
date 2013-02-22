@@ -120,6 +120,7 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.BadgeLabelSection> { Text = "Badge Label" };
 #if DESKTOP
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
+			yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
 #endif
 		}
 	}

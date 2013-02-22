@@ -187,6 +187,9 @@ namespace Eto.Platform.Windows
 					Widget.OnLostFocus (EventArgs.Empty);
 				};
 				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 

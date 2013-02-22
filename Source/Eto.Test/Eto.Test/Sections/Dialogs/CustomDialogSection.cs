@@ -75,7 +75,7 @@ namespace Eto.Test.Sections.Dialogs
 			control.Click += delegate {
 				var dialog = new Dialog ();
 #if DESKTOP
-				dialog.State = WindowState.Maximized;
+				dialog.WindowState = WindowState.Maximized;
 				dialog.Resizable = true;
 #endif
 				dialog.Title = "Kitchen Sink Dialog";

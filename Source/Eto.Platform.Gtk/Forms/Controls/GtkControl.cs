@@ -277,13 +277,6 @@ namespace Eto.Platform.GtkSharp
 						Widget.OnShown (EventArgs.Empty);
 				};
 				break;
-			case Eto.Forms.Control.HiddenEvent:
-				EventControl.AddEvents ((int)Gdk.EventMask.VisibilityNotifyMask);
-				EventControl.VisibilityNotifyEvent += (o, args) => {
-					if (args.Event.State != Gdk.VisibilityState.FullyObscured)
-						Widget.OnShown (EventArgs.Empty);
-				};
-				break;
 			default:
 				base.AttachEvent (handler);
 				return;
