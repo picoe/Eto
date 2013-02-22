@@ -15,6 +15,7 @@ namespace Eto.Platform.Windows
 	public class ButtonHandler : WindowsControl<ButtonHandler.EtoButton, Button>, IButton
 	{
 		Image image;
+		Size defaultSize;
 
 		public override swf.DockStyle DockStyle { get { return swf.DockStyle.None; } }
 
@@ -33,7 +34,7 @@ namespace Eto.Platform.Windows
 
 		public override Size? DefaultSize
 		{
-			get { return Button.DefaultSize; }
+			get { return defaultSize; }
 		}
 
 		public ButtonHandler ()
@@ -45,6 +46,7 @@ namespace Eto.Platform.Windows
 			Control.Click += delegate {
 				Widget.OnClick (EventArgs.Empty);
 			};
+			defaultSize = Button.DefaultSize;
 		}
 
 		public override string Text

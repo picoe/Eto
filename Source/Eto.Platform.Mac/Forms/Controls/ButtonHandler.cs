@@ -20,6 +20,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Image image;
 		ButtonImagePosition imagePosition;
+		Size defaultSize;
 
 		class MyButtonCell : NSButtonCell
 		{
@@ -47,11 +48,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				
 				if (Handler.AutoSize) {
 					var frame = this.Frame;
-					var defaultSize = Button.DefaultSize;
-					if (frame.Width < defaultSize.Width)
-						frame.Width = defaultSize.Width;
-					if (frame.Height < defaultSize.Height)
-						frame.Height = defaultSize.Height;
+					if (frame.Width < Handler.defaultSize.Width)
+						frame.Width = Handler.defaultSize.Width;
+					if (frame.Height < Handler.defaultSize.Height)
+						frame.Height = Handler.defaultSize.Height;
 					this.Frame = frame;
 				}
 			}
@@ -62,16 +62,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public ButtonHandler ()
 		{
-			Control = new EtoButton{ Handler = this };
-			Control.Cell = new MyButtonCell ();
-			Control.Title = string.Empty;
+			Control = new EtoButton{ 
+				Handler = this,
+				Cell = new MyButtonCell (),
+				Title = string.Empty,
+				BezelStyle = NSBezelStyle.Rounded,
+				ImagePosition = NSCellImagePosition.ImageLeft
+			};
+			defaultSize = Button.DefaultSize;
 			Control.SetButtonType (NSButtonType.MomentaryPushIn);
-			Control.BezelStyle = NSBezelStyle.Rounded;
-			Control.ImagePosition = NSCellImagePosition.ImageLeft;
-			Control.SetFrameSize (Button.DefaultSize.ToSDSizeF ());
+			Control.SetFrameSize (defaultSize.ToSDSizeF ());
 			Control.Activated += delegate {
 				Widget.OnClick (EventArgs.Empty);
 			};
+			SetBezel ();
 		}
 		
 		public override void AttachEvent (string handler)
@@ -108,9 +112,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
+		public override Size Size
+		{
+			get { return base.Size; }
+			set
+			{
+				base.Size = value;
+				SetBezel ();
+			}
+		}
+
 		bool NeedsBiggerBezel
 		{
 			get {
+				var size = PreferredSize ?? defaultSize;
+				if (size.Height > 26)
+					return true;
 				if (Image == null)
 					return false;
 				if (image.Size.Height > 18)

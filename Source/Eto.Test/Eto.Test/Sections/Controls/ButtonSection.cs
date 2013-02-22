@@ -28,9 +28,10 @@ namespace Eto.Test.Sections.Controls
 			
 			layout.AddAutoSized (NormalButton (), centered: true);
 			layout.AddAutoSized (LongerButton (), centered: true);
+			layout.AddAutoSized (DefaultSizeButton (), centered: true);
 			layout.AddAutoSized (ColourButton (), centered: true);
 			layout.AddAutoSized (DisabledButton (), centered: true);
-			layout.AddSeparateRow (null, new Label { Text = "Image Position:" }, ImagePositionControl (), null);
+			layout.AddSeparateRow (null, new Label { Text = "Image Position:", VerticalAlign = VerticalAlign.Middle }, ImagePositionControl (), null);
 			layout.AddSeparateRow (null, TableLayout.AutoSized (ImageButton (smallImage)), TableLayout.AutoSized (ImageTextButton (smallImage)), null);
 			layout.AddSeparateRow (null, TableLayout.AutoSized (ImageButton (largeImage)), TableLayout.AutoSized (ImageTextButton (largeImage)), null);
 
@@ -49,6 +50,21 @@ namespace Eto.Test.Sections.Controls
 			var control = new Button{ Text = "This is a long(er) button title" };
 			LogEvents(control);
 			return control;
+		}
+
+		Control DefaultSizeButton ()
+		{
+			var old = Button.DefaultSize;
+			Button.DefaultSize = new Size (50, 50);
+			var control = new Button { Text = "B" };
+			LogEvents (control);
+			var control2 = new Button { Text = "Button With Text" };
+			LogEvents (control2);
+			Button.DefaultSize = old;
+
+			var layout = new DynamicLayout (new Panel (), Padding.Empty);
+			layout.AddRow (new Label { Text = "With Default Size of 50x50:", VerticalAlign = VerticalAlign.Middle }, control, control2);
+			return layout.Container;
 		}
 
 		Control ColourButton ()
