@@ -60,6 +60,11 @@
       <HintPath>..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="Interop.SHDocVw">
+      <HintPath>..\..\Libraries\SHDocVw\Interop.SHDocVw.dll</HintPath>
+      <Private>False</Private>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
@@ -204,22 +209,14 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <COMReference Include="SHDocVw">
-      <Guid>{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>1</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll">
       <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\Libraries\WPFColorPicker\ColorPicker.dll">
       <Link>CustomControls\Assemblies\ColorPicker.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
+      <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>
     </EmbeddedResource>
     <Content Include="..\..\Libraries\WPFToolkit.Extended\WPFToolkit.Extended-License.txt">
       <Link>WPFToolkit.Extended-License.txt</Link>
