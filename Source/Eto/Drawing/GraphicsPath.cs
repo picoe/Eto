@@ -615,10 +615,10 @@ namespace Eto.Drawing
 		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
 		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius, Generator generator = null)
 		{
-			///  NW-----NE
-			///  |       |
-			///  |       |
-			///  SW-----SE
+			//  NW-----NE
+			//  |       |
+			//  |       |
+			//  SW-----SE
 
 			var result = GraphicsPath.Create (generator);
 

@@ -1,6 +1,7 @@
 using System;
 using WebKit;
 using GLib;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -53,7 +54,7 @@ namespace Eto.Platform.GtkSharp
 			return result;
 		}
 
-		[CDeclCallback]
+		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate bool NewWindowPolicyDecisionRequestedVMDelegate (IntPtr webview,IntPtr frame,IntPtr request,IntPtr action,IntPtr decision);
 
 		private static NewWindowPolicyDecisionRequestedVMDelegate NewWindowPolicyDecisionRequestedVMCallback;

@@ -100,14 +100,14 @@ namespace Eto.Forms
 			{
 				var button = Handler.CreateButton (item);
 				Handler.buttons.Add (button);
-				Handler.Layout ();
+				Handler.LayoutButtons ();
 			}
 
 			public override void InsertItem (int index, IListItem item)
 			{
 				var button = Handler.CreateButton (item);
 				Handler.buttons.Insert (index, button);
-				Handler.Layout ();
+				Handler.LayoutButtons ();
 			}
 
 			public override void RemoveItem (int index)
@@ -119,7 +119,7 @@ namespace Eto.Forms
 				if (button == Handler.controller)
 					Handler.Recreate ();
 				else
-					Handler.Layout ();
+					Handler.LayoutButtons ();
 
 				if (isSelected)
 					Handler.SetSelected (null, true);
@@ -139,7 +139,7 @@ namespace Eto.Forms
 			{
 				if (orientation != value) {
 					orientation = value;
-					Layout ();
+					LayoutButtons ();
 				}
 			}
 		}
@@ -150,7 +150,7 @@ namespace Eto.Forms
 			set {
 				if (spacing != value) {
 					spacing = value;
-					Layout ();
+					LayoutButtons ();
 				}
 			}
 		}
@@ -184,7 +184,7 @@ namespace Eto.Forms
 			if (DataStore == null)
 				this.DataStore = CreateDefaultItems ();
 			else {
-				Layout ();
+				LayoutButtons ();
 				SetSelected (selectedButton, true);
 			}
 		}
@@ -199,7 +199,7 @@ namespace Eto.Forms
 		{
 		}
 
-		void Layout ()
+		void LayoutButtons ()
 		{
 			if (!Loaded)
 				return;
@@ -224,7 +224,7 @@ namespace Eto.Forms
 			buttons.Clear ();
 			controller = null;
 			Create ();
-			Layout ();
+			LayoutButtons ();
 		}
 
 		void Create ()

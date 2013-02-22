@@ -77,7 +77,7 @@ namespace Eto.Drawing
 		/// Clears the font cache
 		/// </summary>
 		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached"/> method to cache fonts and want to clear it
+		/// This is useful if you are using the <see cref="Cached(FontFamily,float,FontStyle,Generator)"/> method to cache fonts and want to clear it
 		/// to conserve memory or resources.
 		/// </remarks>
 		/// <param name="generator">Generator to clear the font cache for</param>
