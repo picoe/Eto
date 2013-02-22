@@ -65,8 +65,6 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -78,6 +76,7 @@
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
     <Compile Include="Drawing\DashStyles.cs" />
+    <Compile Include="Drawing\FillMode.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
     <Compile Include="Drawing\PenLineJoin.cs" />
@@ -91,9 +90,11 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\Drawable.mobile.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
+    <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
@@ -117,6 +118,7 @@
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
+    <Compile Include="Threading\Thread.cs" />
     <Compile Include="WeakEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -385,7 +387,6 @@
     <Compile Include="Drawing\TextureBrush.cs" />
     <Compile Include="Drawing\LinearGradientBrush.cs" />
     <Compile Include="Forms\Screen.cs" />
-    <Compile Include="Drawing\FillMode.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Forms\Controls\RadioButtonList.cs" />
     <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />

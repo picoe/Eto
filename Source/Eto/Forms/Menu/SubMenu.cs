@@ -1,3 +1,4 @@
+#if DESKTOP
 using System;
 using System.Collections.Generic;
 
@@ -19,4 +20,4 @@ namespace Eto.Forms
 		void GenerateActions (IEnumerable<IActionItem> actionItems);
 	}
 }
-
+#endif

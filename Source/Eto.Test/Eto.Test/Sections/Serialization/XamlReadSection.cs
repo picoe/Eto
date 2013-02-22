@@ -1,3 +1,4 @@
+#if XAML
 using System;
 using Eto.Forms;
 
@@ -12,3 +13,4 @@ namespace Eto.Test.Sections.Serialization
 	}
 }
 
+#endif
