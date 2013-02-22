@@ -44,6 +44,7 @@
     <Compile Include="Handlers\TabPageHandler.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
+    <Compile Include="Sections\Behaviors\WindowsSection.cs" />
     <Compile Include="Sections\Controls\ImageViewSection.cs" />
     <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
     <Compile Include="Sections\Controls\TreeViewSection.cs" />

@@ -272,7 +272,6 @@ namespace Eto.Platform.Mac.Forms
 				AddMethod (selBecomeFirstResponder, new Func<IntPtr, IntPtr, bool> (TriggerGotFocus), "B@:");
 				break;
 			case Eto.Forms.Control.ShownEvent:
-			case Eto.Forms.Control.HiddenEvent:
 				// TODO
 				break;
 			default:

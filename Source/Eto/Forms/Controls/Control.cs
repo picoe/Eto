@@ -361,44 +361,6 @@ namespace Eto.Forms
 				shown (this, e);
 		}
 
-        public const string ActivatedEvent = "Control.Activated";
-
-        EventHandler<EventArgs> activated;
-
-        public event EventHandler<EventArgs> Activated
-        {
-            add
-            {
-                HandleEvent(ActivatedEvent);
-                activated += value;
-            }
-            remove { activated -= value; }
-        }
-
-        public virtual void OnActivated(EventArgs e)
-        {
-            if (activated != null)
-                activated(this, e);
-        }
-
-        public const string HiddenEvent = "Control.Hidden";
-
-		EventHandler<EventArgs> hidden;
-
-		public event EventHandler<EventArgs> Hidden {
-			add {
-				HandleEvent (HiddenEvent);
-				hidden += value;
-			}
-			remove { hidden -= value; }
-		}
-
-		public virtual void OnHidden (EventArgs e)
-		{
-			if (hidden != null)
-				hidden (this, e);
-		}
-		
 		public event EventHandler<EventArgs> PreLoad;
 
 		public virtual void OnPreLoad (EventArgs e)
@@ -615,7 +577,34 @@ namespace Eto.Forms
         {
             get { return Handler.Location; }
         }
-    }
+
+		#region Obsolete
+
+		[Obsolete ("This event is depricated")]
+		public const string HiddenEvent = "Control.Hidden";
+
+		EventHandler<EventArgs> hidden;
+
+		[Obsolete ("This event is depricated")]
+		public event EventHandler<EventArgs> Hidden
+		{
+			add
+			{
+				HandleEvent (HiddenEvent);
+				hidden += value;
+			}
+			remove { hidden -= value; }
+		}
+
+		[Obsolete ("This event is depricated")]
+		public virtual void OnHidden (EventArgs e)
+		{
+			if (hidden != null)
+				hidden (this, e);
+		}
+
+		#endregion
+	}
 	
 	public class ControlCollection : List<Control>
 	{

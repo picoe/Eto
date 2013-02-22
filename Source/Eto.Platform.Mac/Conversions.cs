@@ -222,6 +222,28 @@ namespace Eto.Platform.Mac
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static WindowStyle ToEtoWindowStyle (this NSWindowStyle style)
+		{
+			if (style.HasFlag (NSWindowStyle.Borderless))
+				return WindowStyle.None;
+			else
+				return WindowStyle.Default;
+		}
+
+		public static NSWindowStyle ToNS (this WindowStyle style, NSWindowStyle existing)
+		{
+			const NSWindowStyle NONE_STYLE = NSWindowStyle.Borderless;
+			const NSWindowStyle DEFAULT_STYLE = NSWindowStyle.Titled;
+			switch (style) {
+			case WindowStyle.Default:
+				return (existing & ~NONE_STYLE) | DEFAULT_STYLE;
+			case WindowStyle.None:
+				return (existing & ~DEFAULT_STYLE) | NONE_STYLE;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }
 

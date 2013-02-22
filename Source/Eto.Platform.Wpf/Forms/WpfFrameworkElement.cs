@@ -250,13 +250,6 @@ namespace Eto.Platform.Wpf.Forms
 						}
 					};
 					break;
-				case Eto.Forms.Control.HiddenEvent:
-					Control.IsVisibleChanged += (sender, e) => {
-						if (!(bool)e.NewValue) {
-							Widget.OnHidden (EventArgs.Empty);
-						}
-					};
-					break;
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.GotFocus += (sender, e) => {
 						Widget.OnGotFocus (EventArgs.Empty);

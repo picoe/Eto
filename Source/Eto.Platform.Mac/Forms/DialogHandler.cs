@@ -71,7 +71,8 @@ namespace Eto.Platform.Mac.Forms
 				else if (parent.ControlObject is NSView) Control.ParentWindow = ((NSView)parent.ControlObject).Window;
 			}
 			Control.MakeKeyWindow ();
-			
+			Widget.OnShown (EventArgs.Empty);
+
 			Widget.Closed += HandleClosed;
 			switch (DisplayMode) {
 			case DialogDisplayMode.Attached:

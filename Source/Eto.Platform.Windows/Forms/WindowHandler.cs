@@ -28,6 +28,7 @@ namespace Eto.Platform.Windows
 		swf.Panel content;
 		swf.Panel toolbarHolder;
 		swf.ToolTip tooltips = new swf.ToolTip();
+		bool resizable = true;
 
 		public override Size DesiredSize
 		{
@@ -110,16 +111,15 @@ namespace Eto.Platform.Windows
 				break;
 			case Window.ClosingEvent:
 				Control.FormClosing += delegate(object sender, swf.FormClosingEventArgs e) {
-					var args = new CancelEventArgs(e.Cancel);
+					var args = new CancelEventArgs (e.Cancel);
 					Widget.OnClosing (args);
 					
 					if (!e.Cancel && swf.Application.OpenForms.Count <= 1 
 						|| e.CloseReason == swf.CloseReason.ApplicationExitCall
-						|| e.CloseReason == swf.CloseReason.WindowsShutDown)
-					{
+						|| e.CloseReason == swf.CloseReason.WindowsShutDown) {
 						Application.Instance.OnTerminating (args);
 					}
-		
+
 					e.Cancel = args.Cancel;
 				};
 				break;
@@ -128,23 +128,22 @@ namespace Eto.Platform.Windows
 					Widget.OnShown (EventArgs.Empty);
 				};
 				break;
-            case Window.ActivatedEvent:
-                Control.Activated += delegate
-                {
-                    Widget.OnActivated(EventArgs.Empty);
-                };
-                break;
-            case Window.MaximizedEvent:
-				Control.Resize += delegate {
-					if (Control.WindowState == swf.FormWindowState.Maximized) {
-						Widget.OnMaximized (EventArgs.Empty);
-					}
+			case Window.GotFocusEvent:
+				Control.Activated += delegate {
+					Widget.OnGotFocus (EventArgs.Empty);
 				};
 				break;
-			case Window.MinimizedEvent:
-				Control.Resize += delegate {
-					if (Control.WindowState == swf.FormWindowState.Minimized) {
-						Widget.OnMaximized (EventArgs.Empty);
+			case Window.LostFocusEvent:
+				Control.Deactivate += delegate {
+					Widget.OnLostFocus (EventArgs.Empty);
+				};
+				break;
+			case Window.WindowStateChangedEvent:
+				var oldState = Control.WindowState;
+				Control.Resize += (sender, e) => {
+					if (Control.WindowState != oldState) {
+						oldState = Control.WindowState;
+						Widget.OnWindowStateChanged (EventArgs.Empty);
 					}
 				};
 				break;
@@ -166,7 +165,7 @@ namespace Eto.Platform.Windows
 				
 				if (value == null) {
 					Control.MainMenuStrip = null;
-				} else {
+				} else	{
 					var c = (swf.MenuStrip)value.ControlObject;
 					c.Dock = swf.DockStyle.Top;
 					c.ResumeLayout ();
@@ -179,24 +178,44 @@ namespace Eto.Platform.Windows
 				menu = value;
 			}
 		}
-		
-		public bool Resizable {
-			get {
-				if (Control.FormBorderStyle == swf.FormBorderStyle.Sizable)
-					return true;
-				else
-					return false;
-			}
+
+		public virtual bool Resizable
+		{
+			get { return resizable; }
 			set {
-				if (value) {
-					Control.FormBorderStyle = swf.FormBorderStyle.Sizable;
-				} else {
-					Control.FormBorderStyle = swf.FormBorderStyle.FixedDialog;
+				if (value != resizable) {
+					resizable = value;
+					Control.FormBorderStyle = Control.FormBorderStyle.ToEto ().ToSWF (value);
 				}
 			}
 		}
-		
-		public ToolBar ToolBar {
+
+		public virtual bool Maximizable
+		{
+			get { return Control.MaximizeBox; }
+			set { Control.MaximizeBox = value; }
+		}
+
+		public virtual bool Minimizable
+		{
+			get { return Control.MinimizeBox; }
+			set { Control.MinimizeBox = value; }
+		}
+
+		public virtual bool ShowInTaskbar
+		{
+			get { return Control.ShowInTaskbar; }
+			set { Control.ShowInTaskbar = value; }
+		}
+
+		public virtual bool TopMost
+		{
+			get { return Control.TopMost; }
+			set { Control.TopMost = value; }
+		}
+
+		public ToolBar ToolBar
+		{
 			get {
 				return this.toolBar;
 			}
@@ -254,7 +273,7 @@ namespace Eto.Platform.Windows
 			set { Control.Text = value; }
 		}
 		
-		public Point Location {
+		public new Point Location {
 			get {
 				return Control.Location.ToEto ();
 			}
@@ -263,9 +282,11 @@ namespace Eto.Platform.Windows
 				Control.StartPosition = swf.FormStartPosition.Manual;
 			}
 		}
-		
-		public WindowState State {
-			get {
+
+		public virtual WindowState WindowState
+		{
+			get
+			{
 				switch (Control.WindowState) {
 				case swf.FormWindowState.Maximized:
 					return WindowState.Maximized;
@@ -277,16 +298,17 @@ namespace Eto.Platform.Windows
 					throw new NotSupportedException ();
 				}
 			}
-			set {
+			set
+			{
 				switch (value) {
 				case WindowState.Maximized:
-					Control.WindowState = System.Windows.Forms.FormWindowState.Maximized;
+					Control.WindowState = swf.FormWindowState.Maximized;
 					break;
 				case WindowState.Minimized:
-					Control.WindowState = System.Windows.Forms.FormWindowState.Minimized;
+					Control.WindowState = swf.FormWindowState.Minimized;
 					break;
 				case WindowState.Normal:
-					Control.WindowState = System.Windows.Forms.FormWindowState.Normal;
+					Control.WindowState = swf.FormWindowState.Normal;
 					break;
 				default:
 					throw new NotSupportedException ();
@@ -296,7 +318,7 @@ namespace Eto.Platform.Windows
 		
 		public Rectangle? RestoreBounds {
 			get {
-				if (this.State == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
+				if (this.WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
 				else return Control.RestoreBounds.ToEto ();
 			}
 		}
@@ -314,36 +336,23 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-
-        public void RemoveBorder()
+        public WindowStyle WindowStyle
         {
-            this.Control.FormBorderStyle = swf.FormBorderStyle.None;
+			get { return Control.FormBorderStyle.ToEto (); }
+			set { Control.FormBorderStyle = value.ToSWF (resizable); }
         }
 
-        public void BringToFront()
-        {
-            // This is more reliable than 
-            // this.Control.BringToFront()
-            /*var prev = this.Control.TopMost;
-            this.Control.TopMost = true;
-            this.Control.TopMost = prev;*/
-            NativeWindowMethods.SetWindowPos(
-                this.Control.Handle,
-                NativeWindowMethods.HWND_TOPMOST, 0, 0, 0, 0,
-                NativeWindowMethods.SetWindowPosFlags.DoNotActivate |
-                NativeWindowMethods.SetWindowPosFlags.ShowWindow |
-                NativeWindowMethods.SetWindowPosFlags.IgnoreResize |
-                NativeWindowMethods.SetWindowPosFlags.IgnoreMove);
+		public void BringToFront ()
+		{
+			if (Control.WindowState == swf.FormWindowState.Minimized)
+				Control.WindowState = swf.FormWindowState.Normal;
+			Control.Activate ();
+		}
 
-            NativeWindowMethods.SetWindowPos(
-                this.Control.Handle,
-                NativeWindowMethods.HWND_NOTOPMOST, 0, 0, 0, 0,
-                NativeWindowMethods.SetWindowPosFlags.DoNotActivate |
-                NativeWindowMethods.SetWindowPosFlags.ShowWindow |
-                NativeWindowMethods.SetWindowPosFlags.IgnoreResize |
-                NativeWindowMethods.SetWindowPosFlags.IgnoreMove);
-
-        }
+		public void SendToBack ()
+		{
+			Control.SendToBack ();
+		}
 
 		public Screen Screen
 		{

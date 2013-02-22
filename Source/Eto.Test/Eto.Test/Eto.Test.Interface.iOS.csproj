@@ -120,6 +120,7 @@
     <Compile Include="Sections\Drawing\ClipSection.cs" />
     <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
     <Compile Include="Sections\Drawing\DirectDrawingSection.cs" />
+    <Compile Include="Sections\Behaviors\WindowsSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
   </ItemGroup>
   <ItemGroup>

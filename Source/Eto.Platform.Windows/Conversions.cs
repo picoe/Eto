@@ -623,5 +623,49 @@ namespace Eto.Platform.Windows
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static bool ToEtoResizable (this swf.FormBorderStyle style)
+		{
+			switch (style) {
+			case swf.FormBorderStyle.Fixed3D:
+			case swf.FormBorderStyle.FixedDialog:
+			case swf.FormBorderStyle.FixedSingle:
+			case swf.FormBorderStyle.FixedToolWindow:
+			case swf.FormBorderStyle.None:
+				return false;
+			case swf.FormBorderStyle.Sizable:
+			case swf.FormBorderStyle.SizableToolWindow:
+				return true;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static WindowStyle ToEto (this swf.FormBorderStyle style)
+		{
+			switch (style) {
+			case swf.FormBorderStyle.Fixed3D:
+			case swf.FormBorderStyle.Sizable:
+				return WindowStyle.Default;
+			case swf.FormBorderStyle.SizableToolWindow:
+			case swf.FormBorderStyle.FixedDialog:
+			case swf.FormBorderStyle.None:
+				return WindowStyle.None;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swf.FormBorderStyle ToSWF (this WindowStyle style, bool resizable)
+		{
+			switch (style) {
+			case WindowStyle.Default:
+				return resizable ? swf.FormBorderStyle.Sizable : swf.FormBorderStyle.Fixed3D;
+			case WindowStyle.None:
+				return swf.FormBorderStyle.None;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }

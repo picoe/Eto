@@ -428,5 +428,29 @@ namespace Eto.Platform.Wpf
 			else
 				return null;
 		}
+
+		public static WindowStyle ToEto (this sw.WindowStyle style)
+		{
+			switch (style) {
+			case sw.WindowStyle.None:
+				return WindowStyle.None;
+			case sw.WindowStyle.ThreeDBorderWindow:
+				return WindowStyle.Default;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static sw.WindowStyle ToWpf (this WindowStyle style)
+		{
+			switch (style) {
+			case WindowStyle.None:
+				return sw.WindowStyle.None;
+			case WindowStyle.Default:
+				return sw.WindowStyle.ThreeDBorderWindow;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
 	}
 }

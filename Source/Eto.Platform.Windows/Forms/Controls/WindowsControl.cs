@@ -239,6 +239,10 @@ namespace Eto.Platform.Windows
                         e.ToEto());
                 break;
             }
+			default:
+				base.AttachEvent (handler);
+				break;
+			}
 		}
 
         void Control_MouseWheel(object sender, SWF.MouseEventArgs e)
