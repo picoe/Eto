@@ -26,7 +26,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		HashSet<string> delayedEvents = new HashSet<string> ();
 
-#if !__MonoCS__
 		SHDocVw.WebBrowser_V1 WebBrowserV1
 		{
 			get { return (SHDocVw.WebBrowser_V1)Browser.ActiveXInstance; }
@@ -41,7 +40,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				break;
 			}
 		}
-#endif
 
 		public SwfWebViewHandler ()
 		{
@@ -103,10 +101,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				delayedEvents.Add (newEvent);
 			if (Browser.ActiveXInstance != null)
 			{
-#if !__MonoCS__
 				foreach (var handler in delayedEvents)
 					AttachEvent (WebBrowserV1, handler);
-#endif
 				delayedEvents.Clear ();
 			}
 		}
