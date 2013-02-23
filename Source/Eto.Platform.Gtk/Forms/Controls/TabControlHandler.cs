@@ -25,6 +25,11 @@ namespace Eto.Platform.GtkSharp
 		public void InsertTab (int index, TabPage page)
 		{
 			var pageHandler = (TabPageHandler)page.Handler;
+
+			if (Widget.Loaded) {
+				pageHandler.Control.ShowAll ();
+				pageHandler.LabelControl.ShowAll ();
+			}
 			
 			if (index == -1)
 				Control.AppendPage(pageHandler.Control, pageHandler.LabelControl);
