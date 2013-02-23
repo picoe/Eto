@@ -9,12 +9,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class TabControlHandler : WpfControl<swc.TabControl, TabControl>, ITabControl
 	{
+		bool disableSelectedIndexChanged;
 		public TabControlHandler ()
 		{
 			Control = new swc.TabControl ();
 			Control.Loaded += delegate {
 				Control.SelectionChanged += delegate {
-					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+					if (!disableSelectedIndexChanged)
+						Widget.OnSelectedIndexChanged (EventArgs.Empty);
 				};
 			};
 		}
@@ -31,6 +33,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Control.Items.Add (page.ControlObject);
 			else
 				Control.Items.Insert (index, page.ControlObject);
+			if (Widget.Loaded && Control.Items.Count == 1)
+				SelectedIndex = 0;
 		}
 
 		public void ClearTabs ()
@@ -40,7 +44,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void RemoveTab (int index, TabPage page)
 		{
-			Control.Items.Remove (page.ControlObject);
+			disableSelectedIndexChanged = true;
+			try {
+				Control.Items.Remove (page.ControlObject);
+				if (Widget.Loaded)
+					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			} finally {
+				disableSelectedIndexChanged = false;
+			}
 		}
 	}
 }

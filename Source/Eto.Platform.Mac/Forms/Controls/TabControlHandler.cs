@@ -8,22 +8,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class TabControlHandler : MacView<NSTabView, TabControl>, ITabControl
 	{
+		bool disableSelectedIndexChanged;
 		public class EtoTabView : NSTabView, IMacControl
 		{
 			public object Handler { get; set; }
-			
 		}
 		
 		public TabControlHandler ()
 		{
 			Enabled = true;
 			Control = new EtoTabView { Handler = this };
-			Control.DidSelect += delegate {
-				this.Widget.OnSelectedIndexChanged (EventArgs.Empty);
-			};
 		}
 
-		#region ITabControl Members
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			Control.DidSelect += delegate {
+				if (!disableSelectedIndexChanged)
+					this.Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			};
+		}
 
 		public int SelectedIndex
 		{
@@ -51,11 +55,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public void RemoveTab (int index, TabPage page)
 		{
-			Control.Remove (((TabPageHandler)page.Handler).Control);
+			disableSelectedIndexChanged = true;
+			try {
+				var isSelected = SelectedIndex == index;
+				Control.Remove (((TabPageHandler)page.Handler).Control);
+				if (isSelected && Control.Items.Length > 0)
+					SelectedIndex = Math.Min (index, Control.Items.Length - 1);
+				if (Widget.Loaded)
+					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			} finally {
+				disableSelectedIndexChanged = false;
+			}
 		}
 		
-		#endregion
-
 		protected override Size GetNaturalSize ()
 		{
 			Size size = base.GetNaturalSize();
