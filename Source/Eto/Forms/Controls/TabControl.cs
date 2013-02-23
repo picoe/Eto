@@ -75,8 +75,8 @@ namespace Eto.Forms
 
 		internal void RemoveTab (int index, TabPage page)
 		{
-			page.SetParent (null);
 			handler.RemoveTab (index, page);
+			page.SetParent (null);
 		}
 		
 		internal void ClearTabs ()
