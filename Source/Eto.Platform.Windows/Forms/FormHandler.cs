@@ -129,11 +129,5 @@ namespace Eto.Platform.Windows
 		{
 			Control.Show();
 		}
-
-        public Color TransparencyKey
-        {
-            get { return Control.TransparencyKey.ToEto(); }
-            set { Control.TransparencyKey = value.ToSD(); }
-        }
     }
 }

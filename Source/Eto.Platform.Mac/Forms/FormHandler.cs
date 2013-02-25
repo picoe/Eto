@@ -40,11 +40,5 @@ namespace Eto.Platform.Mac.Forms
 			else
 				Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
 		}
-
-        public Color TransparencyKey
-        {
-            get { return default(Color);/* TODO */ }
-            set { /* TODO */ }
-        }
     }
 }

@@ -24,11 +24,5 @@ namespace Eto.Platform.Wpf.Forms
 			else
 				ApplicationHandler.Instance.DelayShownWindows.Add (Control);
 		}
-
-        public Color TransparencyKey
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
     }
 }

@@ -6,8 +6,6 @@ namespace Eto.Forms
 	public interface IForm : IWindow
 	{
 		void Show ();
-
-        Color TransparencyKey { get; set; }
     }
 
 	public class Form : Window
@@ -39,11 +37,5 @@ namespace Eto.Forms
 			
 			handler.Show ();
 		}
-
-        public Color TransparencyKey
-        {
-            get { return handler.TransparencyKey; }
-            set { handler.TransparencyKey = value; }
-        }
 	}
 }

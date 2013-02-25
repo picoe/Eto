@@ -19,11 +19,5 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control.ShowAll();
 		}
-
-        public Color TransparencyKey
-        {
-            get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
     }
 }
