@@ -30,18 +30,5 @@ namespace Eto.Platform.Wpf.Forms
             get { throw new NotImplementedException(); }
             set { throw new NotImplementedException(); }
         }
-
-
-        public bool KeyPreview
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
     }
 }

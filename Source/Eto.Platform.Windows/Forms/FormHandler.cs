@@ -117,7 +117,11 @@ namespace Eto.Platform.Windows
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,
 				Size = sd.Size.Empty,
-				MinimumSize = sd.Size.Empty
+				MinimumSize = sd.Size.Empty,
+				// Setting KeyPreview = true ensures that
+				// all keypresses including ESC are sent to the form.
+				// This is consistent with other platforms.
+				KeyPreview = true,
 			};
 		}
 
@@ -130,13 +134,6 @@ namespace Eto.Platform.Windows
         {
             get { return Control.TransparencyKey.ToEto(); }
             set { Control.TransparencyKey = value.ToSD(); }
-        }
-
-
-        public bool KeyPreview
-        {
-            get { return Control.KeyPreview; }
-            set { Control.KeyPreview = value; }
         }
     }
 }

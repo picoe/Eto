@@ -46,18 +46,5 @@ namespace Eto.Platform.Mac.Forms
             get { return default(Color);/* TODO */ }
             set { /* TODO */ }
         }
-
-
-        public bool KeyPreview
-        {
-            get
-            {
-                return false;/* TODO */
-            }
-            set
-            {
-                /* TODO */
-            }
-        }
     }
 }
