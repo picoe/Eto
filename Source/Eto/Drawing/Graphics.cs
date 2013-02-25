@@ -17,12 +17,6 @@ namespace Eto.Drawing
 		PixelOffsetMode PixelOffsetMode { get; set; }
 
 		/// <summary>
-		/// Gets or sets the compositing mode for draw operations.
-		/// The getter is unavailable in retained mode.
-		/// </summary>
-		CompositingMode CompositingMode { get; set; }
-
-		/// <summary>
 		/// Creates the graphics object for drawing on the specified <paramref name="image"/>
 		/// </summary>
 		/// <param name="image">Image to perform drawing operations on</param>
@@ -936,17 +930,6 @@ namespace Eto.Drawing
 		{
 			get { return Handler.PixelOffsetMode; }
 			set { Handler.PixelOffsetMode = value; }
-		}
-
-		/// <summary>
-		/// Sets the compositing mode for draw operations.
-		/// Getting the compositing mode is not supported in retained mode.
-		/// The default is CompositingMode.SourceOver.
-		/// </summary>
-		public CompositingMode CompositingMode 
-		{
-			get { return Handler.CompositingMode; }
-			set { Handler.CompositingMode = value; }
 		}
 
 		/// <summary>

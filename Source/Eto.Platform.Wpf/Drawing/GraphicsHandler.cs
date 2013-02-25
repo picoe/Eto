@@ -45,12 +45,6 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
-		public CompositingMode CompositingMode
-		{
-			get { throw new NotImplementedException(); } 
-			set { throw new NotImplementedException(); } 
-		}
-
 		public GraphicsHandler (swm.Visual visual, swm.DrawingContext context, sw.Rect bounds, bool shouldDispose = true)
 		{
 			this.DisposeControl = shouldDispose;
