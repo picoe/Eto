@@ -332,6 +332,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public CompositingMode CompositingMode
 		{
+			get { return Control.CompositingMode.ToEto(); }
 			set { Control.CompositingMode = value.ToSD(); }
 		}
 	}

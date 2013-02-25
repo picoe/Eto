@@ -30,7 +30,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public CompositingMode CompositingMode
 		{
-			set { throw new NotImplementedException(); }
+			get { return Control.Operator == Cairo.Operator.Source ? CompositingMode.SourceCopy : CompositingMode.SourceOver; }
+			set { Control.Operator = (value == CompositingMode.SourceCopy) ? Cairo.Operator.Source : Cairo.Operator.Over; }
 		}
 
 		public double Offset { get { return offset; } }

@@ -249,6 +249,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public CompositingMode CompositingMode
 		{
+			get { throw new NotImplementedException(); } 
 			set { throw new NotImplementedException(); }
 		}
 	}

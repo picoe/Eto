@@ -47,6 +47,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public CompositingMode CompositingMode
 		{
+			get { throw new NotImplementedException(); } 
 			set { throw new NotImplementedException(); } 
 		}
 
