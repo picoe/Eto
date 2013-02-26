@@ -42,7 +42,5 @@ namespace Eto.Platform.Mac.Forms
 			else
 				Control.MakeKeyAndOrderFront (ApplicationHandler.Instance.AppDelegate);
 		}
-
-		
 	}
 }
