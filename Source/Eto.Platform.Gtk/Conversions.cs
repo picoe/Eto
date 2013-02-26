@@ -435,5 +435,24 @@ namespace Eto.Platform.GtkSharp
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static KeyEventArgs ToEto (this Gdk.EventKey args)
+		{
+			Key key = Key.None;
+			key |= KeyMap.Convert (args.Key);
+			Gdk.ModifierType state = args.State;
+			key |= KeyMap.Convert (state);
+
+			if (key != Key.None) {
+				Key modifiers = (key & Key.ModifierMask);
+				if (args.KeyValue <= 128 && ((modifiers & ~Key.Shift) == 0))
+					return new KeyEventArgs (key, KeyEventType.KeyDown, (char)args.KeyValue);
+				else
+					return new KeyEventArgs (key, KeyEventType.KeyDown);
+			} else if (args.KeyValue <= 128)
+				return new KeyEventArgs (key, KeyEventType.KeyDown, (char)args.KeyValue);
+			else
+				return null;
+		}
 	}
 }

@@ -149,10 +149,12 @@ namespace Eto.Platform.Windows
 		{
 			switch (handler) {
 			case Eto.Forms.Control.KeyDownEvent: 
-				Control.KeyDown += new SWF.KeyEventHandler (Control_KeyDown);
-				Control.KeyPress += new System.Windows.Forms.KeyPressEventHandler (Control_KeyPress);
+				Control.KeyDown += Control_KeyDown;
+				Control.KeyPress += Control_KeyPress;
 				break;
-				
+			case Eto.Forms.Control.KeyUpEvent:
+				Control.KeyUp += Control_KeyUp;
+				break;
 			case Eto.Forms.Control.TextChangedEvent:
 				Control.TextChanged += Control_TextChanged;
 				break;
@@ -383,6 +385,7 @@ namespace Eto.Platform.Windows
 		bool handled;
 		char keyChar;
 		bool charPressed;
+		public Key? LastKeyDown { get; set; }
 
 		void Control_KeyDown (object sender, System.Windows.Forms.KeyEventArgs e)
 		{
@@ -390,20 +393,23 @@ namespace Eto.Platform.Windows
 			handled = true;
 			key = KeyMap.Convert (e.KeyCode) | KeyMap.Convert (e.Modifiers);
 
-			if (key != Key.None) {
-				KeyPressEventArgs kpea = new KeyPressEventArgs (key);
+			if (key != Key.None && LastKeyDown != key) {
+				var kpea = new KeyEventArgs (key, KeyEventType.KeyDown);
 				Widget.OnKeyDown (kpea);
-				e.Handled = kpea.Handled;
+                e.SuppressKeyPress = kpea.Handled;
 				handled = kpea.Handled;
 			} else
 				handled = false;
+
 			if (!handled && charPressed) {
 				// this is when something in the event causes messages to be processed for some reason (e.g. show dialog box)
 				// we want the char event to come after the dialog is closed, and handled is set to true!
-				KeyPressEventArgs kpea = new KeyPressEventArgs (key, keyChar);
+				var kpea = new KeyEventArgs (key, KeyEventType.KeyDown, keyChar);
 				Widget.OnKeyDown (kpea);
-				e.Handled = kpea.Handled;
+                e.SuppressKeyPress = kpea.Handled;
 			}
+
+			LastKeyDown = null;
 		}
 
 		void Control_KeyPress (object sender, System.Windows.Forms.KeyPressEventArgs e)
@@ -411,13 +417,23 @@ namespace Eto.Platform.Windows
 			charPressed = true;
 			keyChar = e.KeyChar;
 			if (!handled) {
-				KeyPressEventArgs kpea = new KeyPressEventArgs (key, keyChar);
+				var kpea = new KeyEventArgs (key, KeyEventType.KeyDown, keyChar);
 				Widget.OnKeyDown (kpea);
 				e.Handled = kpea.Handled;
 			} else
 				e.Handled = true;
 		}
 
+
+        void Control_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
+        {
+            key = KeyMap.Convert(e.KeyData);
+
+            var kpea = new KeyEventArgs(key, KeyEventType.KeyUp);
+            Widget.OnKeyUp(kpea);
+            e.Handled = kpea.Handled;
+        }
+        
 		void Control_TextChanged (object sender, EventArgs e)
 		{
 			Widget.OnTextChanged (e);

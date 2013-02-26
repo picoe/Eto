@@ -196,9 +196,6 @@
     <Compile Include="Forms\Controls\Drawable.cs" />
     <Compile Include="Forms\Controls\GroupBox.cs" />
     <Compile Include="Forms\Controls\ImageView.cs" />
-    <Compile Include="Forms\Controls\KeyPressEventArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Controls\Label.cs" />
     <Compile Include="Forms\Controls\ListBox.cs" />
     <Compile Include="Forms\Controls\ListControl.cs" />
@@ -390,6 +387,9 @@
     <Compile Include="Helper.cs" />
     <Compile Include="Forms\Controls\RadioButtonList.cs" />
     <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
+    <Compile Include="Forms\Controls\KeyEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

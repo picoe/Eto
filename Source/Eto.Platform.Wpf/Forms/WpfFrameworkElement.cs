@@ -170,99 +170,106 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			var wpfcontrol = Control as swc.Control;
 			switch (handler) {
-				case Eto.Forms.Control.MouseMoveEvent:
-					Control.MouseMove += (sender, e) => {
+			case Eto.Forms.Control.MouseMoveEvent:
+				Control.MouseMove += (sender, e) => {
+					var args = e.ToEto (Control);
+					Widget.OnMouseMove (args);
+					e.Handled = args.Handled;
+				};
+				break;
+			case Eto.Forms.Control.MouseDownEvent:
+				Control.MouseDown += (sender, e) => {
+					var args = e.ToEto (Control);
+					if (wpfcontrol == null && e.ClickCount == 2)
+						Widget.OnMouseDoubleClick (args);
+					if (!args.Handled)
+						Widget.OnMouseDown (args);
+					if (args.Handled)
+						Control.CaptureMouse ();
+					e.Handled = args.Handled;
+				};
+				break;
+			case Eto.Forms.Control.MouseDoubleClickEvent:
+				if (wpfcontrol != null)
+					wpfcontrol.MouseDoubleClick += (sender, e) => {
 						var args = e.ToEto (Control);
-						Widget.OnMouseMove (args);
+						Widget.OnMouseDoubleClick (args);
 						e.Handled = args.Handled;
 					};
-					break;
-				case Eto.Forms.Control.MouseDownEvent:
-					Control.MouseDown += (sender, e) => {
-						var args = e.ToEto (Control);
-						if (wpfcontrol == null && e.ClickCount == 2)
-							Widget.OnMouseDoubleClick (args);
-						if (!args.Handled)
-							Widget.OnMouseDown (args);
-						if (args.Handled)
-							Control.CaptureMouse ();
-						e.Handled = args.Handled;
-					};
-					break;
-				case Eto.Forms.Control.MouseDoubleClickEvent:
-					if (wpfcontrol != null)
-						wpfcontrol.MouseDoubleClick += (sender, e) => {
-							var args = e.ToEto (Control);
-							Widget.OnMouseDoubleClick (args);
-							e.Handled = args.Handled;
-						};
-					else
-						HandleEvent (Eto.Forms.Control.MouseDownEvent);
-					break;
-				case Eto.Forms.Control.MouseUpEvent:
-					Control.MouseUp += (sender, e) => {
-						Control.ReleaseMouseCapture ();
-						var args = e.ToEto (Control, swi.MouseButtonState.Released);
-						Widget.OnMouseUp (args);
-						e.Handled = args.Handled;
-					};
-					break;
-				case Eto.Forms.Control.MouseEnterEvent:
-					Control.MouseEnter += (sender, e) => {
-						var args = e.ToEto (Control);
-						Widget.OnMouseEnter (args);
-						e.Handled = args.Handled;
-					};
-					break;
-				case Eto.Forms.Control.MouseLeaveEvent:
-					Control.MouseLeave += (sender, e) => {
-						var args = e.ToEto (Control);
-						Widget.OnMouseLeave (args);
-						e.Handled = args.Handled;
-					};
-					break;
-				case Eto.Forms.Control.SizeChangedEvent:
-					Control.SizeChanged += (sender, e) => {
-						this.newSize = e.NewSize.ToEto (); // so we can report this back in Control.Size
-						Widget.OnSizeChanged (EventArgs.Empty);
-						this.newSize = null;
-					};
-					break;
-				case Eto.Forms.Control.KeyDownEvent:
-					Control.TextInput += (sender, e) => {
-						foreach (var keyChar in e.Text) {
-							var key = Key.None;
-							var args = new KeyPressEventArgs (key, keyChar);
-							Widget.OnKeyDown (args);
-							e.Handled |= args.Handled;
-						}
-					};
-					Control.KeyDown += (sender, e) => {
-						var args = e.ToEto ();
+				else
+					HandleEvent (Eto.Forms.Control.MouseDownEvent);
+				break;
+			case Eto.Forms.Control.MouseUpEvent:
+				Control.MouseUp += (sender, e) => {
+					Control.ReleaseMouseCapture ();
+					var args = e.ToEto (Control, swi.MouseButtonState.Released);
+					Widget.OnMouseUp (args);
+					e.Handled = args.Handled;
+				};
+				break;
+			case Eto.Forms.Control.MouseEnterEvent:
+				Control.MouseEnter += (sender, e) => {
+					var args = e.ToEto (Control);
+					Widget.OnMouseEnter (args);
+					e.Handled = args.Handled;
+				};
+				break;
+			case Eto.Forms.Control.MouseLeaveEvent:
+				Control.MouseLeave += (sender, e) => {
+					var args = e.ToEto (Control);
+					Widget.OnMouseLeave (args);
+					e.Handled = args.Handled;
+				};
+				break;
+			case Eto.Forms.Control.SizeChangedEvent:
+				Control.SizeChanged += (sender, e) => {
+					this.newSize = e.NewSize.ToEto (); // so we can report this back in Control.Size
+					Widget.OnSizeChanged (EventArgs.Empty);
+					this.newSize = null;
+				};
+				break;
+			case Eto.Forms.Control.KeyDownEvent:
+				Control.TextInput += (sender, e) => {
+					foreach (var keyChar in e.Text) {
+						var key = Key.None;
+						var args = new KeyEventArgs (key, KeyEventType.KeyDown, keyChar);
 						Widget.OnKeyDown (args);
-						e.Handled = args.Handled;
-					};
-					break;
-				case Eto.Forms.Control.ShownEvent:
-					Control.IsVisibleChanged += (sender, e) => {
-						if ((bool)e.NewValue) {
-							Widget.OnShown (EventArgs.Empty);
-						}
-					};
-					break;
-				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (sender, e) => {
-						Widget.OnGotFocus (EventArgs.Empty);
-					};
-					break;
-				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (sender, e) => {
-						Widget.OnLostFocus (EventArgs.Empty);
-					};
-					break;
-				default:
-					base.AttachEvent (handler);
-					break;
+						e.Handled |= args.Handled;
+					}
+				};
+				Control.KeyDown += (sender, e) => {
+					var args = e.ToEto (KeyEventType.KeyDown);
+					Widget.OnKeyDown (args);
+					e.Handled = args.Handled;
+				};
+				break;
+			case Eto.Forms.Control.KeyUpEvent:
+				Control.KeyUp += (sender, e) => {
+					var args = e.ToEto (KeyEventType.KeyUp);
+					Widget.OnKeyUp (args);
+					e.Handled = args.Handled;
+				};
+				break;
+			case Eto.Forms.Control.ShownEvent:
+				Control.IsVisibleChanged += (sender, e) => {
+					if ((bool)e.NewValue) {
+						Widget.OnShown (EventArgs.Empty);
+					}
+				};
+				break;
+			case Eto.Forms.Control.GotFocusEvent:
+				Control.GotFocus += (sender, e) => {
+					Widget.OnGotFocus (EventArgs.Empty);
+				};
+				break;
+			case Eto.Forms.Control.LostFocusEvent:
+				Control.LostFocus += (sender, e) => {
+					Widget.OnLostFocus (EventArgs.Empty);
+				};
+				break;
+			default:
+				base.AttachEvent (handler);
+				break;
 			}
 		}
 

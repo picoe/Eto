@@ -68,7 +68,7 @@ namespace Eto.Forms
 			return false;
 		}
 		
-		private void control_KeyDown (object sender, KeyPressEventArgs e)
+		private void control_KeyDown (object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("key: {0}, sender: {1}", e.KeyData.ToString(), sender.GetType().ToString());
 			foreach (var action in this) {

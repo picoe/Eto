@@ -72,9 +72,9 @@ namespace Eto.Forms
 
 		public const string KeyDownEvent = "Control.KeyDown";
 
-		EventHandler<KeyPressEventArgs> keyDown;
+		EventHandler<KeyEventArgs> keyDown;
 
-		public event EventHandler<KeyPressEventArgs> KeyDown {
+		public event EventHandler<KeyEventArgs> KeyDown {
 			add {
 				HandleEvent (KeyDownEvent);
 				keyDown += value;
@@ -82,7 +82,7 @@ namespace Eto.Forms
 			remove { keyDown -= value; }
 		}
 		
-		public virtual void OnKeyDown (KeyPressEventArgs e)
+		public virtual void OnKeyDown (KeyEventArgs e)
 		{
 			//Console.WriteLine("{0} ({1})", e.KeyData, this);
 			if (keyDown != null)
@@ -91,7 +91,30 @@ namespace Eto.Forms
 				Parent.OnKeyDown (e);
 		}
 
-		public const string TextChangedEvent = "Control.TextChanged";
+        public const string KeyUpEvent = "Control.KeyUp";
+
+        EventHandler<KeyEventArgs> keyUp;
+
+        public event EventHandler<KeyEventArgs> KeyUp
+        {
+            add
+            {
+                HandleEvent(KeyUpEvent);
+                keyUp += value;
+            }
+            remove { keyUp -= value; }
+        }
+
+        public virtual void OnKeyUp(KeyEventArgs e)
+        {
+            //Console.WriteLine("{0} ({1})", e.KeyData, this);
+            if (keyUp != null)
+                keyUp(this, e);
+            if (!e.Handled && Parent != null)
+                Parent.OnKeyUp(e);
+        }
+
+        public const string TextChangedEvent = "Control.TextChanged";
 
 		EventHandler<EventArgs> textChanged;
 

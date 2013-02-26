@@ -225,7 +225,11 @@ namespace Eto.Platform.GtkSharp
 			switch (handler) {
 			case Eto.Forms.Control.KeyDownEvent:
 				EventControl.AddEvents ((int)Gdk.EventMask.KeyPressMask);
-				EventControl.KeyPressEvent += GtkControlObject_KeyPressEvent;
+				EventControl.KeyPressEvent += HandleKeyPressEvent;
+				break;
+			case Eto.Forms.Control.KeyUpEvent:
+				EventControl.AddEvents ((int)Gdk.EventMask.KeyReleaseMask);
+				EventControl.KeyReleaseEvent += HandleKeyReleaseEvent;
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				EventControl.AddEvents ((int)Gdk.EventMask.StructureMask);
@@ -282,7 +286,7 @@ namespace Eto.Platform.GtkSharp
 				return;
 			}
 		}
-		
+
 		void HandleControlLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
 			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
@@ -385,34 +389,27 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		[ConnectBefore]
-		void GtkControlObject_KeyPressEvent (object o, Gtk.KeyPressEventArgs args)
+		void HandleKeyPressEvent (object o, Gtk.KeyPressEventArgs args)
 		{
-			Key key = Key.None;
-			key |= KeyMap.Convert (args.Event.Key);
-			Gdk.ModifierType state = args.Event.State;
-			key |= KeyMap.Convert (state);
-			//args.Event. = false; //.RetVal = false;
-
-			//Console.WriteLine("{0} | {1} | {2} | {3}", args.Event.Key.ToString(), args.Event.State.ToString(), this.Widget.ToString(), key.ToString());
-			if (key != Key.None) {
-				KeyPressEventArgs kpea;
-				Key modifiers = (key & Key.ModifierMask);
-				if (args.Event.KeyValue <= 128 && ((modifiers & ~Key.Shift) == 0))
-					kpea = new KeyPressEventArgs (key, (char)args.Event.KeyValue);
-				else
-					kpea = new KeyPressEventArgs (key);
-				Widget.OnKeyDown (kpea);
-				if (kpea.Handled)
+			var e = args.Event.ToEto ();
+			if (e != null) {
+				Widget.OnKeyDown (e);
+				if (e.Handled)
 					args.RetVal = true;
-			} else if (args.Event.KeyValue <= 128) {
-				KeyPressEventArgs kpea;
-				kpea = new KeyPressEventArgs (key, (char)args.Event.KeyValue);
-				Widget.OnKeyDown (kpea);
-				if (kpea.Handled)
+			}
+		}
+
+		void HandleKeyReleaseEvent (object o, Gtk.KeyReleaseEventArgs args)
+		{
+			var e = args.Event.ToEto ();
+			if (e != null) {
+				Widget.OnKeyUp (e);
+				if (e.Handled)
 					args.RetVal = true;
 			}
 		}
 		
+
 		protected virtual Gtk.Widget FontControl
 		{
 			get { return Control; }
