@@ -65,6 +65,7 @@ namespace Eto.Platform.Mac.Forms
 
 		bool IsEventHandled (string eventName);
 
+		void PostKeyDown (KeyEventArgs e);
 	}
 	
 	public interface IMacContainerControl
@@ -471,6 +472,10 @@ namespace Eto.Platform.Mac.Forms
 				Control.Window.MakeFirstResponder (Control);
 		}
 
+		public virtual void PostKeyDown (KeyEventArgs e)
+		{
+		}
+		
 		#region IMacView implementation
 
 		Control IMacViewHandler.Widget {

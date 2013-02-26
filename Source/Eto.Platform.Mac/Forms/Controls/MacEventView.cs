@@ -88,6 +88,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (control != null) {
 				var kpea = theEvent.ToEtoKeyPressEventArgs ();
 				control.OnKeyDown (kpea);
+				if (!kpea.Handled) {
+					var handler = control.Handler as IMacViewHandler;
+					if (handler != null)
+						handler.PostKeyDown (kpea);
+				}
 
 				return kpea.Handled;
 			}
