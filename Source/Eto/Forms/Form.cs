@@ -6,7 +6,7 @@ namespace Eto.Forms
 	public interface IForm : IWindow
 	{
 		void Show ();
-    }
+	}
 
 	public class Form : Window
 	{

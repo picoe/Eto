@@ -62,7 +62,7 @@ namespace Eto.Platform.Windows
 			};
 		}
 
-        public void Show()
+		public void Show()
 		{
 			Control.Show();
 		}
