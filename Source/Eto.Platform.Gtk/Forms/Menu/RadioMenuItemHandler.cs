@@ -67,7 +67,7 @@ namespace Eto.Platform.GtkSharp
 			get { return shortcut; }
 			set {
 				shortcut = value;
-				accelLabel.Text = KeyMap.KeyToString (value);
+				accelLabel.Text = value.ToShortcutString ();
 				accelLabel.Visible = accelLabel.Text.Length > 0;
 			}
 		}
