@@ -70,6 +70,7 @@ namespace Eto.Platform.Windows
 		protected override void Initialize ()
 		{
 			base.Initialize ();
+			Control.KeyPreview = true;
 			content = new swf.Panel {
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
