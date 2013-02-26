@@ -77,41 +77,13 @@ namespace Eto.Drawing
 		{
 			if (assembly == null)
 				assembly = Assembly.GetCallingAssembly ();
-            using (var stream = assembly.GetManifestResourceStream(resourceName))
-            {
-                if (stream == null)
-                    throw new ResourceNotFoundException(assembly, resourceName);
-
-                // If the string is of the format
-                // embedded resources file name, 
-                // embedded resource name,
-                // call Icon.FromEmbeddedResource.
-                // Otherwise call Icon.FromResource
-                var s = resourceName.Split(',');
-
-                if (s.Length == 2)
-                    return FromEmbeddedResource(assembly, s[0], s[1]);
-
-                return new Icon(stream);
-            }
+			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
+				if (stream == null)
+					throw new ResourceNotFoundException (assembly, resourceName);
+				return new Icon (stream);
+			}
 		}
 
-        public static Icon FromEmbeddedResource(
-            Assembly asm, 
-            string resourceFilename,
-            string resourceName)
-        {
-            if (asm == null)
-                asm = Assembly.GetCallingAssembly();
-            using (var stream = Resources.GetEmbeddedResource(
-                resourceFilename,
-                resourceName, 
-                asm))
-            {
-                return new Icon(stream);
-            }
-        }
-       
 		/// <summary>
 		/// Loads an icon from an embedded resource of the caller's assembly
 		/// </summary>
@@ -121,7 +93,7 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
-        public static Icon FromResource(string resourceName)
+		public static Icon FromResource (string resourceName)
 		{
 			var asm = Assembly.GetCallingAssembly ();
 			return FromResource (asm, resourceName);
