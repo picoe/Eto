@@ -64,6 +64,7 @@ namespace Eto.Test
 			yield return new Section<TransformSection> { Text = "Transform" };
 			yield return new Section<BrushSection> { Text = "Brushes" };
 			yield return new Section<TextureBrushesSection> { Text = "Texture Brushes" };
+			yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };

@@ -97,6 +97,8 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 				t.Translate (patternOffset.X, patternOffset.Y);
 
+				if (pattern != null) 
+					pattern.Dispose();
 				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 			}
 		}
