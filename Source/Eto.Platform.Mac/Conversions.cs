@@ -244,6 +244,24 @@ namespace Eto.Platform.Mac
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static KeyEventArgs ToEtoKeyPressEventArgs (this NSEvent theEvent)
+		{
+			char keyChar = !string.IsNullOrEmpty (theEvent.Characters) ? theEvent.Characters [0] : '\0';
+			Key key = KeyMap.MapKey (theEvent.KeyCode);
+			KeyEventArgs kpea;
+			Key modifiers = KeyMap.GetModifiers (theEvent);
+			key |= modifiers;
+			if (key != Key.None) {
+				if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
+					kpea = new KeyEventArgs (key, KeyEventType.KeyDown, keyChar);
+				else
+					kpea = new KeyEventArgs (key, KeyEventType.KeyDown);
+			} else {
+				kpea = new KeyEventArgs (key, KeyEventType.KeyDown, keyChar);
+			}
+			return kpea;
+		}
 	}
 }
 

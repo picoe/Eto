@@ -49,6 +49,10 @@ namespace Eto.Platform.Windows
 			{
 				var e = new swf.KeyEventArgs (keyData);
 				base.OnKeyDown (e);
+				if (!e.Handled) {
+					// Prevent firing the keydown event twice for the same key
+					Handler.LastKeyDown = KeyMap.Convert (e.KeyData);
+				}
 				return e.Handled;
 			}
 

@@ -5,7 +5,7 @@ namespace Eto.Interface
 {
     public interface IKeyboardInputSource
     {
-        event EventHandler<KeyPressEventArgs> KeyUp;
-        event EventHandler<KeyPressEventArgs> KeyDown;
+        event EventHandler<KeyEventArgs> KeyUp;
+        event EventHandler<KeyEventArgs> KeyDown;
     }
 }

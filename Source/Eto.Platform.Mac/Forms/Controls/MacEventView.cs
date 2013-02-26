@@ -86,27 +86,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public static bool KeyDown (Control control, NSEvent theEvent)
 		{
 			if (control != null) {
-				char keyChar = !string.IsNullOrEmpty (theEvent.Characters) ? theEvent.Characters [0] : '\0';
-				Key key = KeyMap.MapKey (theEvent.KeyCode);
-				KeyPressEventArgs kpea;
-				Key modifiers = KeyMap.GetModifiers (theEvent);
-				key |= modifiers;
-				//Console.WriteLine("\t\tkeymap.Add({2}, Key.{0}({1})); {3}", theEvent.Characters, (int)keyChar, theEvent.KeyCode, theEvent.ModifierFlags);
-				//Console.WriteLine("\t\t{0} {1} {2}", key & Key.ModifierMask, key & Key.KeyMask, (NSKey)keyChar);
-				if (key != Key.None) {
-					if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
-                        kpea = new KeyPressEventArgs(key, KeyType.KeyDown, keyChar);
-					else
-						kpea = new KeyPressEventArgs (key, KeyType.KeyDown);
-				} else {
-                    kpea = new KeyPressEventArgs(key, KeyType.KeyDown, keyChar);
-				}
+				var kpea = theEvent.ToEtoKeyPressEventArgs ();
 				control.OnKeyDown (kpea);
+
 				return kpea.Handled;
 			}
 			return false;
 		}
-		
+
+		public static bool KeyUp (Control control, NSEvent theEvent)
+		{
+			if (control != null) {
+				var kpea = theEvent.ToEtoKeyPressEventArgs ();
+				control.OnKeyUp (kpea);
+				return kpea.Handled;
+			}
+			return false;
+		}
+
 		public override void ResetCursorRects ()
 		{
 			var cursor = Handler.Cursor;

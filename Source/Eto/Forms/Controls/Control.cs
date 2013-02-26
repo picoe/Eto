@@ -119,9 +119,9 @@ namespace Eto.Forms
 
 		public const string KeyDownEvent = "Control.KeyDown";
 
-		EventHandler<KeyPressEventArgs> keyDown;
+		EventHandler<KeyEventArgs> keyDown;
 
-		public event EventHandler<KeyPressEventArgs> KeyDown {
+		public event EventHandler<KeyEventArgs> KeyDown {
 			add {
 				HandleEvent (KeyDownEvent);
 				keyDown += value;
@@ -129,7 +129,7 @@ namespace Eto.Forms
 			remove { keyDown -= value; }
 		}
 		
-		public virtual void OnKeyDown (KeyPressEventArgs e)
+		public virtual void OnKeyDown (KeyEventArgs e)
 		{
 			//Console.WriteLine("{0} ({1})", e.KeyData, this);
 			if (keyDown != null)
@@ -140,9 +140,9 @@ namespace Eto.Forms
 
         public const string KeyUpEvent = "Control.KeyUp";
 
-        EventHandler<KeyPressEventArgs> keyUp;
+        EventHandler<KeyEventArgs> keyUp;
 
-        public event EventHandler<KeyPressEventArgs> KeyUp
+        public event EventHandler<KeyEventArgs> KeyUp
         {
             add
             {
@@ -152,7 +152,7 @@ namespace Eto.Forms
             remove { keyUp -= value; }
         }
 
-        public virtual void OnKeyUp(KeyPressEventArgs e)
+        public virtual void OnKeyUp(KeyEventArgs e)
         {
             //Console.WriteLine("{0} ({1})", e.KeyData, this);
             if (keyUp != null)
@@ -576,7 +576,7 @@ namespace Eto.Forms
         public Point Location
         {
             get { return Handler.Location; }
-        }
+		}
 
 		#region Obsolete
 

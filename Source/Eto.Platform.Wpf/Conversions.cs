@@ -124,10 +124,10 @@ namespace Eto.Platform.Wpf
 			return value;
 		}
 
-        public static KeyPressEventArgs ToEto(this swi.KeyEventArgs e, KeyType keyType)
+        public static KeyEventArgs ToEto(this swi.KeyEventArgs e, KeyEventType keyType)
 		{
             var key = KeyMap.Convert(e.Key, swi.Keyboard.Modifiers);
-            return new KeyPressEventArgs(key, keyType) { Handled = e.Handled };
+            return new KeyEventArgs(key, keyType) { Handled = e.Handled };
 		}
 
 		public static MouseEventArgs ToEto (this swi.MouseButtonEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
