@@ -18,9 +18,6 @@ namespace Eto.Platform.Windows
 		public ImageMenuItemHandler()
 		{
 			Control = new SWF.ToolStripMenuItem();
-
-            Control.ImageScaling =
-                SWF.ToolStripItemImageScaling.None;
 			Control.Click += (sender, e) => {
 				Widget.OnClick (EventArgs.Empty);
 			};
