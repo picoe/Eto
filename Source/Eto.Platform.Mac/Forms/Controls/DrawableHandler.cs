@@ -88,11 +88,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (context != null) {
 				var handler = new GraphicsHandler (Control, context, Control.Frame.Height, Control.IsFlipped);
 				using (var graphics = new Graphics (Widget.Generator, handler)) {
-					if (backgroundBrush != null) {
+					if (backgroundBrush != null)
 						graphics.FillRectangle (backgroundBrush, rect);
-					}
-					var convertedBounds = Control.ConvertRectToView (Control.Bounds, null);
-					handler.Control.SetPatternPhase (new sd.SizeF (convertedBounds.Left, convertedBounds.Bottom));
 
 					Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}

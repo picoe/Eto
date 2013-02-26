@@ -2,6 +2,9 @@ using System;
 using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
+using System.Collections.Generic;
+
+
 #if OSX
 using Eto.Platform.Mac.Forms;
 using MonoMac.CoreGraphics;
@@ -44,12 +47,16 @@ namespace Eto.Platform.iOS.Drawing
 		SD.RectangleF? clipBounds;
 		IGraphicsPath clipPath;
 		int transformSaveCount;
+		Stack<CGAffineTransform> transforms;
+		CGAffineTransform currentTransform = CGAffineTransform.MakeIdentity ();
 
 		public float Offset { get { return offset; } }
 		public float InverseOffset { get { return inverseoffset; } }
 
 		public NSView DisplayView { get; private set; }
-		
+
+		public CGAffineTransform CurrentTransform { get { return currentTransform; } }
+
 		public bool Flipped {
 			get;
 			set;
@@ -87,12 +94,13 @@ namespace Eto.Platform.iOS.Drawing
 			Control.SaveState ();
 
 #if OSX
-			var pos = view.ConvertPointToView(SD.PointF.Empty, view.Window.ContentView);
-			if (!Flipped) {
-				Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, view.Window.ContentView.Frame.Height + pos.Y));
-			}
-			Control.TranslateCTM (pos.X, pos.Y);
-			Control.ClipToRect (TranslateView (view.VisibleRect ()));
+			Control.ClipToRect (view.ConvertRectToView (view.VisibleRect (), null));
+			var pos = view.ConvertPointToView(SD.PointF.Empty, null);
+			if (!Flipped)
+				currentTransform = new CGAffineTransform (1, 0, 0, -1, pos.X, pos.Y + view.Frame.Height);
+			else
+				currentTransform = new CGAffineTransform (1, 0, 0, -1, pos.X, pos.Y);
+			Control.ConcatCTM (currentTransform);
 #endif
 		}
 
@@ -182,19 +190,6 @@ namespace Eto.Platform.iOS.Drawing
 			Control.RestoreState ();
 		}
 
-		public void Commit ()
-		{
-			/*if (image != null)
-			{
-				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
-				pb.GetFromDrawable(drawable, drawable.Colormap, 0, 0, 0, 0, image.Size.Width, image.Size.Height);
-				gc.Dispose();
-				gc = null;
-				drawable.Dispose();
-				drawable = null;
-			}*/
-		}
-		
 		public void Flush ()
 		{
 #if OSX
@@ -213,7 +208,9 @@ namespace Eto.Platform.iOS.Drawing
 
 		public void FlipDrawing ()
 		{
-			Control.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight));
+			var m = new CGAffineTransform (1, 0, 0, -1, 0, ViewHeight);
+			Control.ConcatCTM (m);
+			currentTransform.Multiply (m);
 		}
 
 		public SD.PointF TranslateView (SD.PointF point, bool halfers = false, bool inverse = false, float elementHeight = 0)
@@ -488,22 +485,26 @@ namespace Eto.Platform.iOS.Drawing
 		public void TranslateTransform (float offsetX, float offsetY)
 		{
 			Control.TranslateCTM (offsetX, offsetY);
+			currentTransform.Translate (offsetX, offsetY);
 		}
 		
 		public void RotateTransform (float angle)
 		{
 			angle = Conversions.DegreesToRadians (angle);
 			Control.RotateCTM (angle);
+			currentTransform.Rotate (angle);
 		}
 		
 		public void ScaleTransform(float scaleX, float scaleY)
 		{
-			Control.ScaleCTM(scaleX, scaleY);
+			Control.ScaleCTM (scaleX, scaleY);
+			currentTransform.Scale (scaleX, scaleY);
 		}
 		
 		public void MultiplyTransform (IMatrix matrix)
 		{
-			Control.ConcatCTM (matrix.ToCG ());
+			var m = matrix.ToCG ();
+			Control.ConcatCTM (m);
 		}
 
 		public void SaveTransform ()
@@ -512,6 +513,9 @@ namespace Eto.Platform.iOS.Drawing
 			Control.SaveState ();
 			transformSaveCount++;
 			RestoreClip ();
+			if (transforms == null)
+				transforms = new Stack<CGAffineTransform> ();
+			transforms.Push (currentTransform);
 		}
 		
 		public void RestoreTransform ()
@@ -522,6 +526,7 @@ namespace Eto.Platform.iOS.Drawing
 			transformSaveCount--;
 			Control.RestoreState ();
 			RestoreClip ();
+			currentTransform = transforms.Pop ();
 		}
 
 		public RectangleF ClipBounds
