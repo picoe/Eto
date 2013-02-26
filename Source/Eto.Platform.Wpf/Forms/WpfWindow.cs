@@ -435,7 +435,7 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get
 			{
-				var brush = Control.Background as swm.SolidColorBrush;
+				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
 				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
@@ -444,6 +444,7 @@ namespace Eto.Platform.Wpf.Forms
 				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
             }
 		}
+
 
 		public Screen Screen
 		{

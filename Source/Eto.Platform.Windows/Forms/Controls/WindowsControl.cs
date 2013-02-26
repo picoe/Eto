@@ -80,10 +80,6 @@ namespace Eto.Platform.Windows
         }
     }
 
-    /*public class MouseEventSourceHandler : Eto.Interface.IMouseInputSource
-    {
-    }*/
-
 	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
 		where T: System.Windows.Forms.Control
 		where W: Control

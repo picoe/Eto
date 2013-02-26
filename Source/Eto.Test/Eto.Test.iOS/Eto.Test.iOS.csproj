@@ -55,6 +55,8 @@
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n />
     <MtouchLink>None</MtouchLink>
+    <CrashReportingApiKey />
+    <MtouchUseSGen>True</MtouchUseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
