@@ -69,7 +69,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public override void Apply (object control, GraphicsHandler graphics)
 		{
 			var gradient = ((EtoGradient)control);
-			graphics.Control.Transform (gradient.Transform);
+			if (!object.ReferenceEquals (gradient.Transform, null))
+				graphics.Control.Transform (gradient.Transform);
 			graphics.Control.Pattern = gradient;
 			graphics.Control.Fill ();
 		}
