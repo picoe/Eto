@@ -238,6 +238,7 @@ namespace Eto.Platform.Mac.Forms
 			Control.ReleasedWhenClosed = false;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
+			Control.AutorecalculatesKeyViewLoop = true;
 			//Control.Delegate = new MacWindowDelegate{ Handler = this };
 			Control.WillReturnFieldEditor = (sender, forObject) => {
 				FieldEditorObject = forObject;
