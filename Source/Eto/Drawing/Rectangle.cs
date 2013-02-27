@@ -980,6 +980,50 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Adds the <paramref name="offset"/> to the specified <paramref name="rectangle"/>, moving its location
+		/// </summary>
+		/// <param name="rectangle">Rectangle to offset</param>
+		/// <param name="offset">Offset to move the location by</param>
+		public static Rectangle operator + (Rectangle rectangle, Point offset)
+		{
+			rectangle.Offset (offset);
+			return rectangle;
+		}
+
+		/// <summary>
+		/// Subtracts the <paramref name="offset"/> from the specified <paramref name="rectangle"/>, moving its location
+		/// </summary>
+		/// <param name="rectangle">Rectangle to offset</param>
+		/// <param name="offset">Offset to move the location by</param>
+		public static Rectangle operator - (Rectangle rectangle, Point offset)
+		{
+			rectangle.Offset (-offset);
+			return rectangle;
+		}
+		
+		/// <summary>
+		/// Adds the <paramref name="offset"/> to the specified <paramref name="rectangle"/>, moving its location
+		/// </summary>
+		/// <param name="rectangle">Rectangle to offset</param>
+		/// <param name="offset">Offset to move the location by</param>
+		public static Rectangle operator + (Rectangle rectangle, Size offset)
+		{
+			rectangle.Offset (offset);
+			return rectangle;
+		}
+		
+		/// <summary>
+		/// Subtracts the <paramref name="offset"/> from the specified <paramref name="rectangle"/>, moving its location
+		/// </summary>
+		/// <param name="rectangle">Rectangle to offset</param>
+		/// <param name="offset">Offset to move the location by</param>
+		public static Rectangle operator - (Rectangle rectangle, Size offset)
+		{
+			rectangle.Offset (-offset);
+			return rectangle;
+		}
+		
+		/// <summary>
 		/// Compares two rectangles for equality
 		/// </summary>
 		/// <param name="rect1">First rectangle to compare</param>
