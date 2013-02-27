@@ -12,7 +12,7 @@ namespace Eto.Drawing
 	public static class Pens
 	{
 		static object cacheKey = new object ();
-
+		
 		static Pen GetPen (Generator generator, Color color, float thickness = 1f, DashStyle dashStyle = null)
 		{
 			var cache = generator.Cache<PenKey, Pen> (cacheKey);
@@ -27,7 +27,7 @@ namespace Eto.Drawing
 			}
 			return pen;
 		}
-
+		
 		/// <summary>
 		/// Gets a cached pen with the specified <paramref name="color"/> and <paramref name="thickness"/>
 		/// </summary>
@@ -39,7 +39,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, color, thickness, dashStyle);
 		}
-
+		
 		/// <summary>
 		/// Clears the pen cache
 		/// </summary>
@@ -55,7 +55,7 @@ namespace Eto.Drawing
 				cache.Clear ();
 			}
 		}
-
+		
 		// Red colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFCD5C5C</summary>
 		public static Pen IndianRed (Generator generator = null)
@@ -102,7 +102,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.DarkRed);
 		}
-
+		
 		// Pink colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFFFC0CB</summary>
 		public static Pen Pink (Generator generator = null)
@@ -134,7 +134,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.PaleVioletRed);
 		}
-
+		
 		// Orange colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFFF7F50</summary>
 		public static Pen Coral (Generator generator = null)
@@ -161,7 +161,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.Orange);
 		}
-
+		
 		// Yellow colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFFFD700</summary>
 		public static Pen Gold (Generator generator = null)
@@ -218,7 +218,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.DarkKhaki);
 		}
-
+		
 		// Purple colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFE6E6FA</summary>
 		public static Pen Lavender (Generator generator = null)
@@ -310,7 +310,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.MediumSlateBlue);
 		}
-
+		
 		// Green colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFADFF2F</summary>
 		public static Pen GreenYellow (Generator generator = null)
@@ -427,7 +427,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.Teal);
 		}
-
+		
 		// Blue/Cyan colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FF00FFFF</summary>
 		public static Pen Aqua (Generator generator = null)
@@ -549,7 +549,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.MidnightBlue);
 		}
-
+		
 		// Brown colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFFFF8DC</summary>
 		public static Pen Cornsilk (Generator generator = null)
@@ -636,7 +636,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.Maroon);
 		}
-
+		
 		// White colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFFFFFFF</summary>
 		public static Pen White (Generator generator = null)
@@ -723,7 +723,7 @@ namespace Eto.Drawing
 		{
 			return GetPen (generator, Colors.MistyRose);
 		}
-
+		
 		// Gray colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFDCDCDC</summary>
 		public static Pen Gainsboro (Generator generator = null)

@@ -11,6 +11,7 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		void AutoSize ();
 		sw.Size GetPreferredSize (sw.Size? constraint);
+		void Remove (sw.FrameworkElement child);
 	}
 
 	public abstract class WpfLayout<T, W> : WidgetHandler<T, W>, ILayout, IWpfLayout
@@ -18,6 +19,8 @@ namespace Eto.Platform.Wpf.Forms
 		where W: Layout
 	{
 		public abstract sw.Size GetPreferredSize (sw.Size? constraint = null);
+
+		public abstract void Remove (sw.FrameworkElement child);
 
 		public virtual void AutoSize ()
 		{

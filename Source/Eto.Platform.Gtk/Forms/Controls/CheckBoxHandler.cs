@@ -35,8 +35,8 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public override string Text {
-			get { return Control.Label; }
-			set { Control.Label = value; }
+			get { return MnuemonicToString (Control.Label); }
+			set { Control.Label = StringToMnuemonic(value); }
 		}
 
 		public override Font Font

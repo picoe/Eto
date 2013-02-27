@@ -44,6 +44,7 @@
     <Compile Include="Handlers\TabPageHandler.cs" />
     <Compile Include="Log.cs" />
     <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
+    <Compile Include="Sections\Behaviors\WindowsSection.cs" />
     <Compile Include="Sections\Controls\ImageViewSection.cs" />
     <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
     <Compile Include="Sections\Controls\TreeViewSection.cs" />
@@ -113,6 +114,7 @@
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Drawing\DirectDrawingSection.cs" />
+    <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

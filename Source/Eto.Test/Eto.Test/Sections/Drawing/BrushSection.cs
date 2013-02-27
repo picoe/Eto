@@ -21,7 +21,6 @@ namespace Eto.Test.Sections.Drawing
 		DynamicRow matrixRow;
 		DynamicRow gradientRow;
 		bool useBackgroundColor;
-		Panel panel;
 
 		public float Rotation { get; set; }
 
@@ -46,7 +45,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public BrushSection ()
 		{
-			var layout = new DynamicLayout (panel = new Panel { });
+			var layout = new DynamicLayout (new Panel { });
 			brush = solidBrush = Brushes.LightSkyBlue ();
 			gradientBrush = new LinearGradientBrush (Colors.AliceBlue, Colors.Black, new PointF (0, 0), new PointF (100f, 100f));
 			//gradientBrush = new LinearGradientBrush (new RectangleF (0, 0, 50, 50), Colors.AliceBlue, Colors.Black, 10);

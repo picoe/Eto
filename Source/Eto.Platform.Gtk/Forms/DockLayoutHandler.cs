@@ -28,8 +28,8 @@ namespace Eto.Platform.GtkSharp
 			get { return content; }
 			set {
 				if (content == value) return;
-				if (Control.Child != null) {
-					Control.Remove (Control.Child);
+				if (content != null) {
+					Control.Remove (content.GetContainerWidget ());
 				}
 				
 				content = value;

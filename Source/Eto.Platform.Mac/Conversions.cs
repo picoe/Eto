@@ -222,6 +222,46 @@ namespace Eto.Platform.Mac
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static WindowStyle ToEtoWindowStyle (this NSWindowStyle style)
+		{
+			if (style.HasFlag (NSWindowStyle.Borderless))
+				return WindowStyle.None;
+			else
+				return WindowStyle.Default;
+		}
+
+		public static NSWindowStyle ToNS (this WindowStyle style, NSWindowStyle existing)
+		{
+			const NSWindowStyle NONE_STYLE = NSWindowStyle.Borderless;
+			const NSWindowStyle DEFAULT_STYLE = NSWindowStyle.Titled;
+			switch (style) {
+			case WindowStyle.Default:
+				return (existing & ~NONE_STYLE) | DEFAULT_STYLE;
+			case WindowStyle.None:
+				return (existing & ~DEFAULT_STYLE) | NONE_STYLE;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static KeyEventArgs ToEtoKeyPressEventArgs (this NSEvent theEvent)
+		{
+			char keyChar = !string.IsNullOrEmpty (theEvent.Characters) ? theEvent.Characters [0] : '\0';
+			Key key = KeyMap.MapKey (theEvent.KeyCode);
+			KeyEventArgs kpea;
+			Key modifiers = KeyMap.GetModifiers (theEvent);
+			key |= modifiers;
+			if (key != Key.None) {
+				if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
+					kpea = new KeyEventArgs (key, KeyEventType.KeyDown, keyChar);
+				else
+					kpea = new KeyEventArgs (key, KeyEventType.KeyDown);
+			} else {
+				kpea = new KeyEventArgs (key, KeyEventType.KeyDown, keyChar);
+			}
+			return kpea;
+		}
 	}
 }
 

@@ -43,24 +43,6 @@ namespace Eto.Platform.GtkSharp
 			return result;
 		}
 		
-		public static string KeyToString(Key key)
-		{
-			if (key != Key.None)
-			{
-				string val = string.Empty;
-				Key modifier = (key & Key.ModifierMask);
-				if (modifier != Key.None) val += modifier.ToString();
-				Key mainKey = (key & Key.KeyMask);
-				if (mainKey != Key.None)
-				{
-					if (val.Length > 0) val += "+";
-					val += mainKey.ToString();
-				}
-				return val;
-			}
-			return string.Empty;
-		}
-
 		static KeyMap()
 		{
 			keymap.Add(Gdk.Key.A, Key.A);
@@ -135,12 +117,14 @@ namespace Eto.Platform.GtkSharp
 			keymap.Add(Gdk.Key.slash, Key.ForwardSlash);
 			keymap.Add(Gdk.Key.division, Key.Divide);
 			//keymap.Add(Gdk.Key.dollar, Key.Dollar);
-			
+			keymap.Add(Gdk.Key.Menu, Key.ContextMenu);
+
 			foreach (var val in keymap)
 			{
 				inversekeymap.Add(val.Value, val.Key);
 			}
-			
+
+			keymap.Add((Gdk.Key)0x1000010, Key.ContextMenu); // os x
 			keymap.Add(Gdk.Key.a, Key.A);
 			keymap.Add(Gdk.Key.b, Key.B);
 			keymap.Add(Gdk.Key.c, Key.C);

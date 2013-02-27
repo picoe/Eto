@@ -106,7 +106,7 @@ namespace Eto.Drawing
 		: this(point.X, point.Y)
 		{
 		}
-
+		
 		/// <summary>
 		/// Initializes a new Size with the truncated width and height of size.
 		/// </summary>

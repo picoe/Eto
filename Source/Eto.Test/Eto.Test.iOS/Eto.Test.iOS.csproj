@@ -21,7 +21,6 @@
     <WarningLevel>4</WarningLevel>
     <ConsolePause>False</ConsolePause>
     <MtouchDebug>True</MtouchDebug>
-    <MtouchProfiling>True</MtouchProfiling>
     <MtouchLink>None</MtouchLink>
     <AssemblyName>EtoTest</AssemblyName>
     <MtouchArch>ARMv7</MtouchArch>
@@ -37,6 +36,8 @@
     <ConsolePause>False</ConsolePause>
     <MtouchLink>None</MtouchLink>
     <AssemblyName>EtoTest</AssemblyName>
+    <MtouchI18n />
+    <MtouchArch>ARMv7</MtouchArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <DebugSymbols>True</DebugSymbols>
@@ -49,11 +50,13 @@
     <ConsolePause>False</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>True</MtouchDebug>
-    <MtouchProfiling>True</MtouchProfiling>
     <AssemblyName>EtoTestiOS</AssemblyName>
     <IpaPackageName />
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n />
+    <MtouchLink>None</MtouchLink>
+    <CrashReportingApiKey />
+    <MtouchUseSGen>True</MtouchUseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <DebugType>none</DebugType>
@@ -91,6 +94,7 @@
     <AssemblyName>EtoTestiOS</AssemblyName>
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n />
+    <IpaPackageName />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

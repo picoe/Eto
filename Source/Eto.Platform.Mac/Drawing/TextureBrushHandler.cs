@@ -26,6 +26,7 @@ namespace Eto.Platform.iOS.Drawing
 			CGImage image;
 
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
+			CGAffineTransform? viewTransform;
 			float [] alpha = new float[] { 1f };
 			CGPattern pattern;
 			sd.PointF patternOffset;
@@ -34,25 +35,22 @@ namespace Eto.Platform.iOS.Drawing
 			public void Apply (GraphicsHandler graphics)
 			{
 				graphics.Control.SetFillColorSpace (patternColorSpace);
-#if OSX
-				if (graphics.DisplayView != null && graphics.DisplayView.Layer != null) {
-					var ofs = graphics.DisplayView.ConvertPointFromView (sd.PointF.Empty, null);
-					if (graphics.Flipped)
-						ofs.Y = graphics.ViewHeight - ofs.Y;
-					if (pattern == null || ofs != patternOffset) {
-						patternOffset = ofs;
-						SetPattern ();
-					}
-				}
-				else if (pattern == null || patternOffset != sd.PointF.Empty) {
-					patternOffset = sd.PointF.Empty;
-					SetPattern ();
-				}
-#elif IOS
-				if (pattern == null)
-					SetPattern ();
-#endif
 
+				// make current transform apply to the pattern
+#if OSX
+				var currentTransform = graphics.Control.GetCTM ();
+#elif IOS
+				var currentTransform = graphics.CurrentTransform;
+#endif
+				if (graphics.DisplayView != null) {
+					var pos = graphics.DisplayView.ConvertPointToView (sd.PointF.Empty, null);
+					currentTransform.Translate(pos.X, pos.Y);
+					graphics.Control.SetPatternPhase(new sd.SizeF(-pos.X, -pos.Y));
+				}
+				if (pattern == null || viewTransform != currentTransform) {
+					viewTransform = currentTransform;
+					SetPattern ();
+				}
 
 				graphics.Control.SetFillPattern (pattern, alpha);
 			}
@@ -98,12 +96,9 @@ namespace Eto.Platform.iOS.Drawing
 
 			void SetPattern ()
 			{
-				var t = transform;
-#if OSX
-				t.Scale(1f, -1f); // flip transform on OS X so rotation is clockwise
-#endif
-				t.Translate (patternOffset.X, patternOffset.Y);
-
+				var t = this.transform;
+				if (viewTransform != null)
+					t.Multiply (viewTransform.Value);
 				ClearPattern();
 				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 			}

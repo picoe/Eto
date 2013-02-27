@@ -310,9 +310,19 @@ namespace Eto
 	/// </remarks>
 	/// <typeparam name="I">Type of items in the data store</typeparam>
 	/// <typeparam name="C">Type of the data store to detect changes on</typeparam>
-	public abstract class DataStoreChangedHandler<I, C> : CollectionChangedHandler<I, C>
+	public abstract class DataStoreChangedHandler<I, C> : CollectionChangedHandler<I, C>, IEnumerable<I>
 		where C: class, IDataStore<I>
 	{
+		public IEnumerator<I> GetEnumerator ()
+		{
+			return new DataStoreVirtualCollection<I>(Collection).GetEnumerator ();
+		}
+
+		IEnumerator IEnumerable.GetEnumerator ()
+		{
+			return GetEnumerator ();
+		}
+
 		/// <summary>
 		/// Called when the collection is registered
 		/// </summary>

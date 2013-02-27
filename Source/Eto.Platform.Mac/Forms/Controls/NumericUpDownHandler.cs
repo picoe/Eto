@@ -38,7 +38,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public class EtoUpDownTextField : NSTextField, IMacControl
 		{
-			public object Handler { get; set; }
+			public NumericUpDownHandler Handler { get; set; }
+
+			object IMacControl.Handler { get { return Handler; } }
 		}
 
 		public NumericUpDownHandler ()
@@ -70,7 +72,27 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var naturalSize = GetNaturalSize ();
 			Control.Frame = new System.Drawing.RectangleF (0, 0, naturalSize.Width, naturalSize.Height);
 		}
-		
+
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			HandleEvent (NumericUpDown.KeyDownEvent);
+		}
+
+		public override void PostKeyDown (KeyEventArgs e)
+		{
+			base.PostKeyDown (e);
+			if (e.KeyData == Key.Down) {
+				Value = Math.Max (Value - 1, MinValue);
+				Widget.OnValueChanged (EventArgs.Empty);
+				e.Handled = true;
+			} else if (e.KeyData == Key.Up) {
+				Value = Math.Min (Value + 1, MaxValue);
+				Widget.OnValueChanged (EventArgs.Empty);
+				e.Handled = true;
+			}
+		}
+
 		protected override Size GetNaturalSize ()
 		{
 			if (naturalSize == null) {

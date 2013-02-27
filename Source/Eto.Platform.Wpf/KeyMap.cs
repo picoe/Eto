@@ -145,6 +145,7 @@ namespace Eto.Platform.Wpf
 			keymap.Add (swi.Key.Enter, Key.Enter);
 			keymap.Add (swi.Key.Insert, Key.Insert);
 			keymap.Add (swi.Key.Tab, Key.Tab);
+			keymap.Add (swi.Key.Apps, Key.ContextMenu);
 
 			foreach (var entry in keymap) {
 				inverse.Add (entry.Value, entry.Key);

@@ -51,5 +51,10 @@ namespace Eto.Platform.Wpf.Forms
 			var element = child.GetContainerControl ();
 			Control.Children.Remove (element);
 		}
+
+		public override void Remove (sw.FrameworkElement child)
+		{
+			Control.Children.Remove (child);
+		}
 	}
 }

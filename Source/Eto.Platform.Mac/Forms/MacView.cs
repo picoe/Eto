@@ -65,6 +65,7 @@ namespace Eto.Platform.Mac.Forms
 
 		bool IsEventHandled (string eventName);
 
+		void PostKeyDown (KeyEventArgs e);
 	}
 	
 	public interface IMacContainerControl
@@ -215,6 +216,7 @@ namespace Eto.Platform.Mac.Forms
 		static Selector selRightMouseUp = new Selector ("rightMouseUp:");
 		static Selector selRightMouseDragged = new Selector ("rightMouseDragged:");
 		static Selector selKeyDown = new Selector ("keyDown:");
+		static Selector selKeyUp = new Selector ("keyUp:");
 		static Selector selBecomeFirstResponder = new Selector ("becomeFirstResponder");
 		static Selector selResignFirstResponder = new Selector ("resignFirstResponder");
 		
@@ -240,13 +242,14 @@ namespace Eto.Platform.Mac.Forms
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
-				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) {
+				this.AddObserver (NSView.NSViewFrameDidChangeNotification, e => {
+					var w = (Control)e.Widget;
 					var h = ((MacView<T, W>)(e.Widget.Handler));
 					var oldFrameSize = h.oldFrameSize;
 					h.OnSizeChanged (EventArgs.Empty);
-					var newSize = e.Widget.Size;
+					var newSize = h.Size;
 					if (oldFrameSize == null || oldFrameSize.Value != newSize) {
-						e.Widget.OnSizeChanged (EventArgs.Empty);
+						w.OnSizeChanged (EventArgs.Empty);
 						h.oldFrameSize = newSize;
 					}
 				});
@@ -265,6 +268,9 @@ namespace Eto.Platform.Mac.Forms
 			case Eto.Forms.Control.KeyDownEvent:
 				AddMethod (selKeyDown, new Action<IntPtr, IntPtr, IntPtr> (TriggerKeyDown), "v@:@");
 				break;
+			case Eto.Forms.Control.KeyUpEvent:
+				AddMethod (selKeyUp, new Action<IntPtr, IntPtr, IntPtr> (TriggerKeyUp), "v@:@");
+				break;
 			case Eto.Forms.Control.LostFocusEvent:
 				AddMethod (selResignFirstResponder, new Func<IntPtr, IntPtr, bool> (TriggerLostFocus), "B@:");
 				break;
@@ -272,7 +278,6 @@ namespace Eto.Platform.Mac.Forms
 				AddMethod (selBecomeFirstResponder, new Func<IntPtr, IntPtr, bool> (TriggerGotFocus), "B@:");
 				break;
 			case Eto.Forms.Control.ShownEvent:
-			case Eto.Forms.Control.HiddenEvent:
 				// TODO
 				break;
 			default:
@@ -304,6 +309,16 @@ namespace Eto.Platform.Mac.Forms
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			var theEvent = new NSEvent (e);
 			if (!MacEventView.KeyDown (handler.Widget, theEvent)) {
+				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
+			}
+		}
+		
+		static void TriggerKeyUp (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			var theEvent = new NSEvent (e);
+			if (!MacEventView.KeyUp (handler.Widget, theEvent)) {
 				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
 			}
 		}
@@ -456,6 +471,10 @@ namespace Eto.Platform.Mac.Forms
 		{
 			if (focus && Control.Window != null)
 				Control.Window.MakeFirstResponder (Control);
+		}
+
+		public virtual void PostKeyDown (KeyEventArgs e)
+		{
 		}
 		
 		#region IMacView implementation

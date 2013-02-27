@@ -5,7 +5,6 @@ using System.Collections.Generic;
 namespace Eto.Forms
 {
 	public class DataStoreVirtualCollection<T> : IList<T>, IList
-		where T : class
 	{
 		const string ReadOnlyErrorMsg = "DataStoreVirtualCollection is a read-only collection.";
 		IDataStore<T> store;

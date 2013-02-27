@@ -26,7 +26,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>TRACE</DefineConstants>
+    <DefineConstants>TRACE;WINFORMS</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <FileAlignment>4096</FileAlignment>
@@ -43,7 +43,7 @@
     <BaseAddress>285212672</BaseAddress>
     <ConfigurationOverrideFile>
     </ConfigurationOverrideFile>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DefineConstants>DEBUG;TRACE;WINFORMS</DefineConstants>
     <DocumentationFile>
     </DocumentationFile>
     <DebugSymbols>True</DebugSymbols>
@@ -61,6 +61,11 @@
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
+    <Reference Include="Interop.SHDocVw">
+      <HintPath>..\..\Libraries\SHDocVw\Interop.SHDocVw.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+      <Private>False</Private>
+    </Reference>
     <Reference Include="Microsoft.WindowsAPICodePack">
       <HintPath>..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.dll</HintPath>
       <Private>False</Private>
@@ -320,6 +325,7 @@
     <Compile Include="Forms\Cells\TextBoxCellHandler.cs" />
     <Compile Include="Forms\Cells\CheckBoxCellHandler.cs" />
     <Compile Include="Forms\Cells\ImageViewCellHandler.cs" />
+    <Compile Include="Win32.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -329,22 +335,16 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <COMReference Include="SHDocVw">
-      <Guid>{EAB22AC0-30C1-11CF-A7EB-0000C05BAE0B}</Guid>
-      <VersionMajor>1</VersionMajor>
-      <VersionMinor>1</VersionMinor>
-      <Lcid>0</Lcid>
-      <WrapperTool>tlbimp</WrapperTool>
-      <Isolated>False</Isolated>
-      <EmbedInteropTypes>True</EmbedInteropTypes>
-    </COMReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.dll">
       <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.dll</Link>
     </EmbeddedResource>
     <EmbeddedResource Include="..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.Shell.dll">
       <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.Shell.dll</Link>
+    </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
+      <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
 </Project>

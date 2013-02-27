@@ -40,7 +40,7 @@ namespace Eto.Test
 			//this.Opacity = 0.5;
 
 #if DESKTOP
-			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent);
+			HandleEvent (MainForm.WindowStateChangedEvent);
 #endif
 			HandleEvent (MainForm.ClosedEvent, MainForm.ClosingEvent);
 
@@ -168,7 +168,7 @@ namespace Eto.Test
 			args.Menu.FindAddSubMenu ("&Window", 900);
 			var help = args.Menu.FindAddSubMenu ("&Help", 1000);
 
-			if (Generator.ID == "mac" || Generator.ID == "eto2.mac") {
+			if (Generator.IsMac) {
 				// have a nice OS X style menu
 
 				var main = args.Menu.FindAddSubMenu (Application.Instance.Name, 0);
@@ -233,16 +233,10 @@ namespace Eto.Test
 		#endregion
 
 #if DESKTOP
-		public override void OnMaximized (EventArgs e)
+		public override void OnWindowStateChanged (EventArgs e)
 		{
-			base.OnMaximized (e);
-			Log.Write (this, "Maximized");
-		}
-
-		public override void OnMinimized (EventArgs e)
-		{
-			base.OnMinimized (e);
-			Log.Write (this, "Minimized");
+			base.OnWindowStateChanged (e);
+			Log.Write (this, "StateChanged: {0}", this.WindowState);
 		}
 
 		public override void OnClosing (System.ComponentModel.CancelEventArgs e)

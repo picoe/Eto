@@ -50,7 +50,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.OnLoad (e);
 			
 			// apple+backspace clears the value
-			Widget.KeyDown += delegate(object sender, KeyPressEventArgs ev) {
+			Widget.KeyDown += delegate(object sender, KeyEventArgs ev) {
 				if (!ev.Handled) {
 					if (ev.KeyData == (Key.Application | Key.Backspace)) {
 						curValue = null;

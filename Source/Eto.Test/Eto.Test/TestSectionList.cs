@@ -48,6 +48,7 @@ namespace Eto.Test
 			yield return new Section<ProgressBarSection> { Text = "Progress Bar" };
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 			yield return new Section<ImageViewSection> { Text = "Image View" };
+			yield return new Section<RadioButtonListSection> { Text = "Radio Button List" };
 		}
 		
 		static IEnumerable<Section> DrawingSection()
@@ -120,6 +121,7 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.BadgeLabelSection> { Text = "Badge Label" };
 #if DESKTOP
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
+			yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
 #endif
 		}
 	}

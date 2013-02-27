@@ -35,10 +35,12 @@ namespace Eto.Platform.Mac.Forms
 
 		public void Show ()
 		{
-			if (this.State == WindowState.Minimized)
-				Control.MakeKeyWindow();
+			if (!Control.IsVisible)
+				Widget.OnShown (EventArgs.Empty);
+			if (this.WindowState == WindowState.Minimized)
+				Control.MakeKeyWindow ();
 			else
-				Control.MakeKeyAndOrderFront(ApplicationHandler.Instance.AppDelegate);
+				Control.MakeKeyAndOrderFront (ApplicationHandler.Instance.AppDelegate);
 		}
-    }
+	}
 }

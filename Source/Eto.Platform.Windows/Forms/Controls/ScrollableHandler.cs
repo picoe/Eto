@@ -22,6 +22,10 @@ namespace Eto.Platform.Windows
 			{
 				SWF.KeyEventArgs e = new SWF.KeyEventArgs (keyData);
 				base.OnKeyDown (e);
+				if (!e.Handled) {
+					// Prevent firing the keydown event twice for the same key
+					Handler.LastKeyDown = KeyMap.Convert (e.KeyData);
+				}
 				return e.Handled;
 			}
 			

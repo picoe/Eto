@@ -183,6 +183,7 @@ namespace Eto.Platform.Mac
 			keymap.Add(121, Key.PageDown);
 			keymap.Add(119, Key.End);
 			keymap.Add(115, Key.Home);
+			keymap.Add(110, Key.ContextMenu);
 
 			
 			inverse.Add (Key.A, "a");

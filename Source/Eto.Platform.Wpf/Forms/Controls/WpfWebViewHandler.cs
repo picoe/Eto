@@ -217,7 +217,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get {
 				var browser = WebBrowser2;
 				if (browser != null && browser.Document != null)
-					return Convert.ToString(browser.Document.Title);
+					return Convert.ToString(((dynamic)browser.Document).Title);
 				else return null;
 			}
 		}
@@ -240,7 +240,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
         public void ShowPrintDialog ()
         {
-            WebBrowser2.Document.execCommand("Print", true, null);
+            ((dynamic)WebBrowser2.Document).execCommand("Print", true, null);
         }
 
 		// Note that this does not work for WPF
