@@ -160,6 +160,9 @@
     <Compile Include="..\Eto.Platform.Mac\Drawing\LinearGradientBrushHandler.cs">
       <Link>Drawing\LinearGradientBrushHandler.cs</Link>
     </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Forms\MacBase.cs">
+      <Link>Forms\MacBase.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.iOS.csproj">

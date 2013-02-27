@@ -242,13 +242,14 @@ namespace Eto.Platform.Mac.Forms
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
-				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) {
+				this.AddObserver (NSView.NSViewFrameDidChangeNotification, e => {
+					var w = (Control)e.Widget;
 					var h = ((MacView<T, W>)(e.Widget.Handler));
 					var oldFrameSize = h.oldFrameSize;
 					h.OnSizeChanged (EventArgs.Empty);
-					var newSize = e.Widget.Size;
+					var newSize = h.Size;
 					if (oldFrameSize == null || oldFrameSize.Value != newSize) {
-						e.Widget.OnSizeChanged (EventArgs.Empty);
+						w.OnSizeChanged (EventArgs.Empty);
 						h.oldFrameSize = newSize;
 					}
 				});

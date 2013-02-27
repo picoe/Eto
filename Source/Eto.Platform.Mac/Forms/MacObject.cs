@@ -5,12 +5,6 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public interface IMacControl
-	{
-		object Handler { get; }
-	}
-
-	
 	public class MacObject<T, W> : MacBase<T, W>
 		where T: NSObject 
 		where W: InstanceWidget
@@ -29,6 +23,12 @@ namespace Eto.Platform.Mac.Forms
 		{
 			return base.AddObserver (key, action, control ?? Control);
 		}
+		
+		public new void AddControlObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
+		{
+			base.AddControlObserver (key, action, control ?? control);
+		}
+		
 	}
 }
 
