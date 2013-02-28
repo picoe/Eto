@@ -115,6 +115,7 @@
     <Compile Include="Sections\Drawing\ClearSection.cs" />
     <Compile Include="Sections\Drawing\DirectDrawingSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
+    <Compile Include="Sections\Behaviors\ScreenSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto\Eto.csproj">

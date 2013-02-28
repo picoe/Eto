@@ -375,7 +375,17 @@ namespace Eto.Platform.GtkSharp
 
 		public Screen Screen
 		{
-			get { return new Screen(Generator, new ScreenHandler(Control.Display)); }
+			get
+			{
+				var screen = Control.Screen;
+				var gdkWindow = Control.GdkWindow;
+				if (screen != null && gdkWindow != null) {
+					var monitor = screen.GetMonitorAtWindow (gdkWindow);
+					return new Screen (Generator, new ScreenHandler (screen, monitor));
+				}
+				else
+					return null;
+			}
 		}
 
 		public void BringToFront()

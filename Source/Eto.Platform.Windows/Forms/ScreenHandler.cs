@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Windows.Forms
 {
@@ -25,6 +26,26 @@ namespace Eto.Platform.Windows.Forms
 		public float Scale
 		{
 			get { return scale; }
+		}
+
+		public RectangleF Bounds
+		{
+			get { return Control.Bounds.ToEto (); }
+		}
+
+		public RectangleF WorkingArea
+		{
+			get { return Control.WorkingArea.ToEto (); }
+		}
+
+		public int BitsPerPixel
+		{
+			get { return Control.BitsPerPixel; }
+		}
+
+		public bool IsPrimary
+		{
+			get { return Control.Primary; }
 		}
 	}
 }
