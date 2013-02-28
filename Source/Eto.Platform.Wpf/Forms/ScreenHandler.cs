@@ -4,6 +4,7 @@ using sw = System.Windows;
 using sd = System.Drawing;
 using swm = System.Windows.Media;
 using swf = System.Windows.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -43,6 +44,26 @@ namespace Eto.Platform.Wpf.Forms
 		public float Scale
 		{
 			get { return scale; }
+		}
+
+		public RectangleF Bounds
+		{
+			get { return Control.Bounds.ToEto (); }
+		}
+
+		public RectangleF WorkingArea
+		{
+			get { return Control.WorkingArea.ToEto (); }
+		}
+
+		public int BitsPerPixel
+		{
+			get { return Control.BitsPerPixel; }
+		}
+
+		public bool IsPrimary
+		{
+			get { return Control.Primary; }
 		}
 	}
 }

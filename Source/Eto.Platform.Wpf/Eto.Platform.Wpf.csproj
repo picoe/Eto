@@ -63,6 +63,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\Eto.Platform.Mac\Conversions.sd.cs">
+      <Link>Conversions.sd.cs</Link>
+    </Compile>
     <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
     </Compile>
