@@ -70,10 +70,7 @@ namespace Eto.Platform.GtkSharp
 					return ContainerControl.SizeRequest ().ToEto (); 
 			}
 			set {
-				if (ContainerControl.Visible)
-					ContainerControl.Allocation = new Gdk.Rectangle(Control.Allocation.Location, value.ToGdk ());
-				else
-					ContainerControl.SetSizeRequest (value.Width, value.Height);
+				ContainerControl.SetSizeRequest (value.Width, value.Height);
 			}
 		}
 		
