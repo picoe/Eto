@@ -29,7 +29,6 @@ namespace Eto.Platform.iOS.Drawing
 			CGAffineTransform? viewTransform;
 			float [] alpha = new float[] { 1f };
 			CGPattern pattern;
-			sd.PointF patternOffset;
 			static CGColorSpace patternColorSpace = CGColorSpace.CreatePattern (null);
 
 			public void Apply (GraphicsHandler graphics)
