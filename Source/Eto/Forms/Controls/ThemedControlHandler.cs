@@ -94,6 +94,11 @@ namespace Eto.Forms
 			Control.OnLoadComplete(e);
 		}
 
+		public void OnUnLoad(EventArgs e)
+		{
+			Control.OnUnLoad(e);
+		}
+		
 		public void SetParent(Control parent)
 		{
 			if (this.Control != null)

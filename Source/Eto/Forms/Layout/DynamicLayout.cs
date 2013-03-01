@@ -94,11 +94,15 @@ namespace Eto.Forms
 			public void OnLoad ()
 			{
 			}
-
+			
 			public void OnLoadComplete ()
 			{
 			}
 
+			public void OnUnLoad ()
+			{
+			}
+			
 			public void Update ()
 			{
 			}

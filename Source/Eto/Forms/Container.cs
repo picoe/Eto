@@ -93,7 +93,19 @@ namespace Eto.Forms
 			if (Layout != null)
 				Layout.OnLoadComplete (e);
 		}
-		
+
+		public override void OnUnLoad (EventArgs e)
+		{
+			foreach (Control control in Controls) {
+				control.OnUnLoad (e);
+			}
+			
+			base.OnLoad (e);
+			
+			if (Layout != null)
+				Layout.OnUnLoad (e);
+		}
+
 		protected Container (Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
