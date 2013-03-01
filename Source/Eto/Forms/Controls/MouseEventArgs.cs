@@ -14,12 +14,13 @@ namespace Eto.Forms
 	
 	public class MouseEventArgs : EventArgs
 	{
-		public MouseEventArgs(MouseButtons buttons, Key modifiers, Point location)
+		public MouseEventArgs(MouseButtons buttons, Key modifiers, Point location, SizeF? delta = null)
 		{
 			this.Modifiers = modifiers;
 			this.Buttons = buttons;
 			this.Location = location;
 			this.Pressure = 1.0f;
+			this.Delta = delta ?? SizeF.Empty;
 		}
 		
 		public Key Modifiers { get; private set; }
@@ -31,7 +32,8 @@ namespace Eto.Forms
 		public bool Handled { get; set; }
 		
 		public float Pressure { get; set; }
-		
+
+        public SizeF Delta { get; set; }
 	}
 }
 

@@ -44,6 +44,8 @@ namespace Eto.Platform.GtkSharp
 		Color? originalBackgroundColor;
 		Color? backgroundColor;
 
+		public static float SCROLL_AMOUNT = 2f;
+
 		public GtkControl ()
 		{
 			size = Size.Empty;
@@ -266,6 +268,10 @@ namespace Eto.Platform.GtkSharp
 					//GtkControlObject.Events |= Gdk.EventMask.PointerMotionHintMask;
 				EventControl.MotionNotifyEvent += GtkControlObject_MotionNotifyEvent;
 				break;
+			case Eto.Forms.Control.MouseWheelEvent:
+				EventControl.AddEvents ((int)Gdk.EventMask.ScrollMask);
+				EventControl.ScrollEvent += HandleScrollEvent;
+				break;
 			case Eto.Forms.Control.GotFocusEvent:
 				EventControl.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
 				EventControl.FocusInEvent += delegate {
@@ -289,6 +295,33 @@ namespace Eto.Platform.GtkSharp
 				base.AttachEvent (handler);
 				return;
 			}
+		}
+
+		void HandleScrollEvent (object o, Gtk.ScrollEventArgs args)
+		{
+			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
+			Key modifiers = GetKeyModifiers (args.Event.State);
+			MouseButtons buttons = GetButtonModifiers (args.Event.State);
+			SizeF delta;
+
+			switch (args.Event.Direction) {
+			case Gdk.ScrollDirection.Down:
+				delta = new SizeF (0f, -SCROLL_AMOUNT);
+				break;
+			case Gdk.ScrollDirection.Left:
+				delta = new SizeF (SCROLL_AMOUNT, 0f);
+				break;
+			case Gdk.ScrollDirection.Right:
+				delta = new SizeF (-SCROLL_AMOUNT, 0f);
+				break;
+			case Gdk.ScrollDirection.Up:
+				delta = new SizeF (0f, SCROLL_AMOUNT);
+				break;
+			default:
+				throw new NotSupportedException ();
+			}
+
+			Widget.OnMouseWheel (new MouseEventArgs (buttons, modifiers, p, delta));
 		}
 
 		void HandleControlLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)

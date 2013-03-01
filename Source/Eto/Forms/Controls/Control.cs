@@ -242,6 +242,26 @@ namespace Eto.Forms
 				mouseDoubleClick (this, e);
 		}
 
+		public const string MouseWheelEvent = "Control.MouseWheel";
+		
+		EventHandler<MouseEventArgs> mouseWheel;
+		
+		public event EventHandler<MouseEventArgs> MouseWheel
+		{
+			add
+			{
+				HandleEvent(MouseWheelEvent);
+				mouseWheel += value;
+			}
+			remove { mouseWheel -= value; }
+		}
+		
+		public virtual void OnMouseWheel(MouseEventArgs e)
+		{
+			if (mouseWheel != null)
+				mouseWheel(this, e);
+		}
+		
 		public const string GotFocusEvent = "Control.GotFocus";
 
 		EventHandler<EventArgs> gotFocus;

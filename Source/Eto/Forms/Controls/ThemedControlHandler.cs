@@ -180,6 +180,10 @@ namespace Eto.Forms
 					Control.MouseMove += (s, e) => Widget.OnMouseMove(e);
 					handled = true;
 					break;
+				case Eto.Forms.Control.MouseWheelEvent:
+					Control.MouseWheel += (s, e) => Widget.OnMouseWheel(e);
+					handled = true;
+					break;
 				case Eto.Forms.Control.GotFocusEvent:
 					Control.GotFocus += (s, e) => Widget.OnGotFocus(e);
 					handled = true;

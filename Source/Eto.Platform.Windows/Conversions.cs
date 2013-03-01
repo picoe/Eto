@@ -12,6 +12,8 @@ namespace Eto.Platform.Windows
 {
 	public static partial class Conversions
 	{
+		public const float WHEEL_DELTA = 120f;
+
 		public static Padding ToEto (this swf.Padding padding)
 		{
 			return new Padding (padding.Left, padding.Top, padding.Right, padding.Bottom);
@@ -289,6 +291,8 @@ namespace Eto.Platform.Windows
 			var modifiers = KeyMap.Convert (swf.Control.ModifierKeys);
 
 			var result = new MouseEventArgs (buttons, modifiers, point);
+			result.Delta = new SizeF (0, (float)e.Delta / WHEEL_DELTA);
+
 			return result;
 		}
 

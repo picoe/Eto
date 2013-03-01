@@ -18,20 +18,20 @@ namespace Eto.Platform.Mac.Forms
 		public NSView View { get; set; }
 	
 		public Control Widget { get; set; }
-	
+
 		[Export("mouseMoved:")]
 		public void MouseMoved (NSEvent theEvent)
 		{
-			Widget.OnMouseMove (Conversions.GetMouseEvent (View, theEvent));
+			Widget.OnMouseMove (Conversions.GetMouseEvent (View, theEvent, false));
 		}
 		
 		[Export("mouseEntered:")]
 		public void MouseEntered (NSEvent theEvent)
 		{
-			Widget.OnMouseEnter (Conversions.GetMouseEvent (View, theEvent));
+			Widget.OnMouseEnter (Conversions.GetMouseEvent (View, theEvent, false));
 		}
 
-		[Export("cursorUpdate::")]
+		[Export("cursorUpdate:")]
 		public void CursorUpdate (NSEvent theEvent)
 		{
 		}
@@ -39,7 +39,13 @@ namespace Eto.Platform.Mac.Forms
 		[Export("mouseExited:")]
 		public void MouseExited (NSEvent theEvent)
 		{
-			Widget.OnMouseLeave (Conversions.GetMouseEvent (View, theEvent));
+			Widget.OnMouseLeave (Conversions.GetMouseEvent (View, theEvent, false));
+		}
+
+		[Export("scrollWheel:")]
+		public void ScrollWheel (NSEvent theEvent)
+		{
+			Widget.OnMouseWheel (Conversions.GetMouseEvent (View, theEvent, true));
 		}
 	}
 	
@@ -193,7 +199,8 @@ namespace Eto.Platform.Mac.Forms
 			if (tracking != null)
 				Control.RemoveTrackingArea (tracking);
 			//Console.WriteLine ("Adding mouse tracking {0} for area {1}", this.Widget.GetType ().FullName, Control.Frame.Size);
-			mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = Control };
+			if (mouseDelegate == null)
+				mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = Control };
 			tracking = new NSTrackingArea (new SD.RectangleF (new SD.PointF (0, 0), Control.Frame.Size), 
 				NSTrackingAreaOptions.ActiveAlways | mouseOptions | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect, 
 			    mouseDelegate, 
@@ -215,6 +222,7 @@ namespace Eto.Platform.Mac.Forms
 		static Selector selRightMouseDown = new Selector ("rightMouseDown:");
 		static Selector selRightMouseUp = new Selector ("rightMouseUp:");
 		static Selector selRightMouseDragged = new Selector ("rightMouseDragged:");
+		static Selector selScrollWheel = new Selector ("scrollWheel:");
 		static Selector selKeyDown = new Selector ("keyDown:");
 		static Selector selKeyUp = new Selector ("keyUp:");
 		static Selector selBecomeFirstResponder = new Selector ("becomeFirstResponder");
@@ -264,6 +272,9 @@ namespace Eto.Platform.Mac.Forms
 				break;
 			case Eto.Forms.Control.MouseDoubleClickEvent:
 				HandleEvent (Eto.Forms.Control.MouseDownEvent);
+				break;
+			case Eto.Forms.Control.MouseWheelEvent:
+				AddMethod (selScrollWheel, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseWheel), "v@:@");
 				break;
 			case Eto.Forms.Control.KeyDownEvent:
 				AddMethod (selKeyDown, new Action<IntPtr, IntPtr, IntPtr> (TriggerKeyDown), "v@:@");
@@ -328,7 +339,7 @@ namespace Eto.Platform.Mac.Forms
 			var obj = Runtime.GetNSObject (sender);
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			var theEvent = new NSEvent (e);
-			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				handler.Widget.OnMouseDoubleClick (args);
 			
@@ -346,7 +357,7 @@ namespace Eto.Platform.Mac.Forms
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 
 			var theEvent = new NSEvent (e);
-			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, false);
 			handler.Widget.OnMouseUp (args);
 			if (!args.Handled) {
 				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
@@ -359,13 +370,28 @@ namespace Eto.Platform.Mac.Forms
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			
 			var theEvent = new NSEvent (e);
-			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, false);
 			handler.Widget.OnMouseMove (args);
 			if (!args.Handled) {
 				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
 			}
 		}
-		
+
+		static void TriggerMouseWheel (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			
+			var theEvent = new NSEvent (e);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, true);
+			if (!args.Delta.IsZero) {
+				handler.Widget.OnMouseWheel (args);
+				if (!args.Handled) {
+					Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
+				}
+			}
+		}
+
 		protected virtual void OnSizeChanged (EventArgs e)
 		{
 			CreateTracking ();

@@ -18,6 +18,8 @@ namespace Eto.Platform.Wpf
 {
 	public static class Conversions
 	{
+		public const float WHEEL_DELTA = 120f;
+		
 		public static swm.Color ToWpf (this Color value)
 		{
 			return swm.Color.FromArgb ((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
@@ -158,6 +160,22 @@ namespace Eto.Platform.Wpf
 			var location = e.GetPosition (control).ToEto ();
 
 			return new MouseEventArgs (buttons, modifiers, location);
+		}
+
+		public static MouseEventArgs ToEto (this swi.MouseWheelEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		{
+			var buttons = MouseButtons.None;
+			if (e.LeftButton == buttonState)
+				buttons |= MouseButtons.Primary;
+			if (e.RightButton == buttonState)
+				buttons |= MouseButtons.Alternate;
+			if (e.MiddleButton == buttonState)
+				buttons |= MouseButtons.Middle;
+			var modifiers = Key.None;
+			var location = e.GetPosition (control).ToEto ();
+			var delta = new SizeF (0, (float)e.Delta / WHEEL_DELTA);
+
+			return new MouseEventArgs (buttons, modifiers, location, delta);
 		}
 
 		public static swm.BitmapScalingMode ToWpf (this ImageInterpolation value)

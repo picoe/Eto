@@ -221,6 +221,13 @@ namespace Eto.Platform.Wpf.Forms
 					e.Handled = args.Handled;
 				};
 				break;
+			case Eto.Forms.Control.MouseWheelEvent:
+				Control.MouseWheel += (sender, e) => {
+					var args = e.ToEto (Control);
+					Widget.OnMouseLeave (args);
+					e.Handled = args.Handled;
+				};
+				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.SizeChanged += (sender, e) => {
 					this.newSize = e.NewSize.ToEto (); // so we can report this back in Control.Size
