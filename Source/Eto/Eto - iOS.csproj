@@ -11,28 +11,36 @@
     <RootNamespace>Eto</RootNamespace>
     <AssemblyName>Eto</AssemblyName>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+  <PropertyGroup>
+    <FileAlignment>512</FileAlignment>
     <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>bin\iOS\Debug</OutputPath>
-    <DefineConstants>DEBUG;MOBILE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <OutputRoot>..\..\..</OutputRoot>
+    <LibrariesPath>..\..\Libraries</LibrariesPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\BuildOutput\iOS\Debug</OutputPath>
+    <DefineConstants>DEBUG;MOBILE</DefineConstants>
+    <Optimize>False</Optimize>
+    <DebugType>full</DebugType>
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
-    <OutputPath>bin\iOS\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
+    <OutputPath>..\..\BuildOutput\iOS\Release</OutputPath>
     <DefineConstants>MOBILE</DefineConstants>
+    <Optimize>True</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <ConsolePause>False</ConsolePause>
   </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <ItemGroup>
+    <Reference Include="System.Core" />
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
     <Compile Include="EtoEnvironment.cs" />
     <Compile Include="EtoException.cs" />
     <Compile Include="Generator.cs" />
@@ -192,7 +200,7 @@
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="EtoMemberIdentifier.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDialog.cs" />
@@ -236,6 +244,7 @@
     <Compile Include="Forms\Controls\KeyEventArgs.cs" />
     <Compile Include="Interface\IKeyboardInputSource.cs" />
     <Compile Include="Interface\IMouseInputSource.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
@@ -244,10 +253,5 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System.Core" />
-    <Reference Include="System" />
-    <Reference Include="System.Xml" />
   </ItemGroup>
 </Project>
