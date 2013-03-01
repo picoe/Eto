@@ -32,6 +32,13 @@ namespace Eto.Test.Sections.Behaviors
 			layout.Add (null);
 		}
 
+		public override void OnUnLoad (EventArgs e)
+		{
+			base.OnUnLoad (e);
+			if (child != null)
+				child.Close ();
+		}
+
 		Control WindowStyle ()
 		{
 			styleCombo = new EnumRadioButtonList<WindowStyle> {
@@ -146,10 +153,36 @@ namespace Eto.Test.Sections.Behaviors
 			child.Shown += child_Shown;
 			child.GotFocus += child_GotFocus;
 			child.LostFocus += child_LostFocus;
+			child.LocationChanged += child_LocationChanged;
+			child.SizeChanged += child_SizeChanged;
 			bringToFrontButton.Enabled = true;
 			child.Show ();
 		}
 
+		void child_Closed (object sender, EventArgs e)
+		{
+			Log.Write (child, "Closed");
+			child.WindowStateChanged -= child_WindowStateChanged;
+			child.Closed -= child_Closed;
+			child.Shown -= child_Shown;
+			child.GotFocus -= child_GotFocus;
+			child.LostFocus -= child_LostFocus;
+			child.LocationChanged -= child_LocationChanged;
+			child.SizeChanged -= child_SizeChanged;
+			bringToFrontButton.Enabled = false;
+			child = null;
+		}
+
+		void child_LocationChanged (object sender, EventArgs e)
+		{
+			Log.Write (child, "LocationChanged: {0}", child.Location);
+		}
+		
+		void child_SizeChanged (object sender, EventArgs e)
+		{
+			Log.Write (child, "SizeChanged: {0}", child.Size);
+		}
+		
 		void child_LostFocus (object sender, EventArgs e)
 		{
 			Log.Write (child, "LostFocus");
@@ -163,16 +196,6 @@ namespace Eto.Test.Sections.Behaviors
 		void child_Shown (object sender, EventArgs e)
 		{
 			Log.Write (child, "Shown");
-		}
-
-		void child_Closed (object sender, EventArgs e)
-		{
-			Log.Write (child, "Closed");
-			child.WindowStateChanged -= child_WindowStateChanged;
-			child.Closed -= child_Closed;
-			child.Shown -= child_Shown;
-			bringToFrontButton.Enabled = false;
-			child = null;
 		}
 
 		void child_WindowStateChanged (object sender, EventArgs e)
