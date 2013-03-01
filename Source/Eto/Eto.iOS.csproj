@@ -234,6 +234,8 @@
     <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
     <Compile Include="Forms\Controls\RadioButtonList.cs" />
     <Compile Include="Forms\Controls\KeyEventArgs.cs" />
+    <Compile Include="Interface\IKeyboardInputSource.cs" />
+    <Compile Include="Interface\IMouseInputSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

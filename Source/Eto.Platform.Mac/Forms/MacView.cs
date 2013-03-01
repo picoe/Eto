@@ -528,13 +528,6 @@ namespace Eto.Platform.Mac.Forms
             return p; /* TODO */
         }
 
-
-        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-        {
-            return DragDropEffects.None; /* TODO */
-        }
-
-
         public bool Capture
         {
             get

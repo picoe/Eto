@@ -676,13 +676,6 @@ namespace Eto.Platform.Mac.Forms
             return p;/* TODO */
         }
 
-
-        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-        {
-            return default(DragDropEffects);/* TODO */
-        }
-
-
         public bool Capture
         {
             get

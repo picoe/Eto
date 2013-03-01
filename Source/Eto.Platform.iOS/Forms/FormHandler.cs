@@ -42,8 +42,6 @@ namespace Eto.Platform.iOS.Forms
 			//ApplicationHandler.Instance.Navigation.PushViewController(Controller, true);
 		}
 
-		#region IControl implementation
-
 		public Eto.Drawing.Point ScreenToWorld (Eto.Drawing.Point p)
 		{
 			throw new NotImplementedException ();
@@ -54,31 +52,10 @@ namespace Eto.Platform.iOS.Forms
 			throw new NotImplementedException ();
 		}
 
-		public DragDropEffects DoDragDrop (object data, DragDropEffects allowedEffects)
-		{
-			throw new NotImplementedException ();
-		}
-
 		public void SetControl (object control)
 		{
 			throw new NotImplementedException ();
 		}
-
-		#endregion
-
-		#region IForm implementation
-
-		public Eto.Drawing.Color TransparencyKey {
-			get;
-			set;
-		}
-
-		public bool KeyPreview {
-			get;
-			set;
-		}
-
-		#endregion
 	}
 }
 

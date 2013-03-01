@@ -323,13 +323,6 @@ namespace Eto.Platform.Wpf.Forms
 			return Control.PointToScreen (p.ToWpf ()).ToEto ();
 		}
 
-
-        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-        {
-            throw new NotImplementedException();
-        }
-
-
         public bool Capture
         {
             get

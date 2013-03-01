@@ -126,11 +126,6 @@ namespace Eto.Forms
 			throw new NotImplementedException();
 		}
 
-		public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-		{
-			throw new NotImplementedException();
-		}
-
 		public bool Capture
 		{
 			get { return Control.Capture; }

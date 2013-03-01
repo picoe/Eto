@@ -374,56 +374,6 @@ namespace Eto.Platform.Windows
 			return (float)Math.PI * angle / 180.0f;
 		}
 
-        internal static DragDropEffects ToEto(this swf.DragDropEffects effects)
-        {
-            return (DragDropEffects)effects;
-        }
-
-        internal static swf.DragDropEffects ToSWF(this 
-            DragDropEffects effects)
-        {
-            return (swf.DragDropEffects)effects;
-        }
-
-        internal static DragEventArgs ToEto(this 
-            swf.DragEventArgs e)
-        {
-            var result =
-                new DragEventArgs(
-                    new DataObject(e.Data),
-                    e.X,
-                    e.Y,
-                    ToEto(e.AllowedEffect),
-                    ToEto(e.Effect));
-
-            return result;
-        }
-
-        internal static GiveFeedbackEventArgs ToEto(
-            this swf.GiveFeedbackEventArgs e)
-        {
-            return
-                new GiveFeedbackEventArgs(
-                    ToEto(e.Effect),
-                    e.UseDefaultCursors);
-        }
-
-        internal static QueryContinueDragEventArgs ToEto(
-            this swf.QueryContinueDragEventArgs e)
-        {
-            return
-                new QueryContinueDragEventArgs(
-                    e.KeyState,
-                    e.EscapePressed,
-                    ToEto(e.Action));
-        }
-
-        private static DragAction ToEto(this 
-            swf.DragAction dragAction)
-        {
-            return (DragAction)dragAction;
-        }
-
         public static ITreeItem ToEto(this swf.TreeNode treeNode)
         {
             return
@@ -465,15 +415,6 @@ namespace Eto.Platform.Windows
                     };
 
         }
-
-        public static ItemDragEventArgs ToEto(this swf.ItemDragEventArgs e)
-        {
-            return new ItemDragEventArgs()
-            {
-                Buttons = ToEto(e.Button),
-                Item = ToEto(e.Item as swf.TreeNode)
-            };
-		}
 
 		public static sd.Pen ToSD (this Pen pen)
 		{

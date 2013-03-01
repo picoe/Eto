@@ -147,20 +147,6 @@ namespace Eto.Platform.Windows
 
 		public override void AttachEvent (string handler)
 		{
-            Action<Action<DragEventArgs>, SWF.DragEventArgs>
-                handleDragEvent = (f, e) =>
-                {
-                    var e1 =
-                        e.ToEto();
-
-                    // call the function
-                    f(e1);
-
-                    e.Effect =
-                        e1.Effect.ToSWF();
-                };
-
-
 			switch (handler) {
 			case Eto.Forms.Control.KeyDownEvent: 
 				Control.KeyDown += Control_KeyDown;
@@ -206,35 +192,6 @@ namespace Eto.Platform.Windows
 					Widget.OnLostFocus (EventArgs.Empty);
 				};
 				break;
-            case Eto.Forms.DragDropInputSource.DragDropEvent:
-                Control.DragDrop += (s, e) =>
-                    handleDragEvent(
-                        Widget.DragDropInputSource.OnDragDrop,
-                        e);
-                break;
-            case Eto.Forms.DragDropInputSource.DragEnterEvent:
-                Control.DragEnter += (s, e) =>
-                    handleDragEvent(
-                        Widget.DragDropInputSource.OnDragEnter,
-                        e);
-                break;
-            case Eto.Forms.DragDropInputSource.DragOverEvent:
-                Control.DragOver += (s, e) =>
-                    handleDragEvent(
-                        Widget.DragDropInputSource.OnDragOver,
-                        e);
-                break;
-            case Eto.Forms.DragDropInputSource.GiveFeedbackEvent:
-                Control.GiveFeedback += (s, e) =>
-                    Widget.DragDropInputSource.OnGiveFeedback(
-                        e.ToEto());
-                break;
-            case Eto.Forms.DragDropInputSource.QueryContinueDragEvent:
-                Control.QueryContinueDrag += (s, e) =>
-                    // TODO: convert the result back to SWF
-                    Widget.DragDropInputSource.OnQueryContinueDrag(
-                        e.ToEto());
-                break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -510,17 +467,6 @@ namespace Eto.Platform.Windows
                 this.Control.PointToScreen(
                     p.ToSD()).ToEto();
         }
-
-        public DragDropEffects DoDragDrop(
-            object data, 
-            DragDropEffects allowedEffects)
-        {
-            return                
-                this.Control.DoDragDrop(
-                data,
-                allowedEffects.ToSWF()).ToEto();
-        }
-
 
         public bool Capture
         {

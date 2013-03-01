@@ -120,13 +120,6 @@ namespace Eto.Platform.Windows.Forms.Controls
                             e.ToEto());
                     };
                     break;
-                case TreeView.ItemDragEvent:
-                    Control.ItemDrag += (s, e) =>
-                    {
-                        this.Widget.OnItemDrag(
-                            e.ToEto());
-                    };
-                    break;
                     
                 default:
                     base.AttachEvent(handler);

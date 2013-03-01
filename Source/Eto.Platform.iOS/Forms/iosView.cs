@@ -178,8 +178,6 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		#region IControl implementation
-		
 		public virtual void Invalidate ()
 		{
 			Control.SetNeedsDisplay();
@@ -247,13 +245,9 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 		
-		#endregion
-
 		public void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-
-		#region IControl implementation
 
 		public Point ScreenToWorld (Point p)
 		{
@@ -263,11 +257,6 @@ namespace Eto.Platform.iOS.Forms
 		public Point WorldToScreen (Point p)
 		{
 			return Control.ConvertPointToView(new SD.PointF(p.X, p.Y), null).ToEtoPoint();
-		}
-
-		public DragDropEffects DoDragDrop (object data, DragDropEffects allowedEffects)
-		{
-			throw new NotImplementedException ();
 		}
 
 		public void SetControl (object control)
@@ -287,8 +276,6 @@ namespace Eto.Platform.iOS.Forms
 		public Point Location {
 			get { throw new NotImplementedException(); }
 		}
-
-		#endregion
 	}
 }
 

@@ -383,12 +383,8 @@
     <Compile Include="Drawing\PenLineCap.cs" />
     <Compile Include="Drawing\TextureBrush.cs" />
     <Compile Include="Drawing\LinearGradientBrush.cs" />
-    <Compile Include="Interface\IDragDropInputSource.cs" />
     <Compile Include="Interface\IKeyboardInputSource.cs" />
     <Compile Include="Interface\IMouseInputSource.cs" />
-    <Compile Include="Forms\Controls\DragDrop.cs" />
-    <Compile Include="Forms\Controls\DragDropInputSource.cs" />
-    <Compile Include="Forms\Controls\DataObject.cs" />
     <Compile Include="Forms\Screen.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Forms\Controls\RadioButtonList.cs" />

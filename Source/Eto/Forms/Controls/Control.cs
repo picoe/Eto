@@ -47,8 +47,6 @@ namespace Eto.Forms
 
         Point WorldToScreen(Point p);
 
-        DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects);
-
         bool Capture { get; set; }
 
         Point MousePosition { get; }
@@ -69,35 +67,6 @@ namespace Eto.Forms
 		new IControl Handler { get { return (IControl)base.Handler; } }
 		
 		public bool Loaded { get; private set; }
-
-        #region Drag/Drop
-        /// <summary>
-        /// Instead of implementing drag/drop functionality 
-        /// directly on control, it is aggregated in the
-        /// DragDropInputSource class.
-        /// </summary>
-        private DragDropInputSource dragDropInputSource;
-        public DragDropInputSource DragDropInputSource
-        {
-            get
-            {
-                if(dragDropInputSource == null)
-                    dragDropInputSource = 
-                        new DragDropInputSource(
-                            this);
-
-                return dragDropInputSource;
-            }
-        }
-
-        public DragDropEffects DoDragDrop(
-            object data, 
-            DragDropEffects dragDropEffects)
-        {
-            return Handler.DoDragDrop(data, dragDropEffects);
-        }
-
-        #endregion
 
 		#region Events
 		

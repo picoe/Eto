@@ -498,13 +498,6 @@ namespace Eto.Platform.GtkSharp
             throw new NotImplementedException();
         }
 
-
-        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-        {
-            throw new NotImplementedException();
-        }
-
-
         public bool Capture
         {
             get
