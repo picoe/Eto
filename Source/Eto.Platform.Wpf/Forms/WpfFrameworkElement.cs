@@ -285,6 +285,10 @@ namespace Eto.Platform.Wpf.Forms
 		{
 		}
 
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		public virtual void SetParent (Control parent)
 		{
 		}

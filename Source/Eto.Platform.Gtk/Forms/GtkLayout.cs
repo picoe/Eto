@@ -46,6 +46,10 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		public virtual void OnUnLoad ()
+		{
+		}
+
 		public virtual void Update ()
 		{
 		}

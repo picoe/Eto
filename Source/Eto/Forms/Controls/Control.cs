@@ -34,6 +34,8 @@ namespace Eto.Forms
 
 		void OnLoadComplete (EventArgs e);
 
+		void OnUnLoad (EventArgs e);
+
 		void SetParent (Control parent);
 
 		void SetParentLayout (Layout layout);
@@ -321,7 +323,17 @@ namespace Eto.Forms
 				LoadComplete (this, e);
 			Handler.OnLoadComplete (e);
 		}
+
+		public event EventHandler<EventArgs> UnLoad;
 		
+		public virtual void OnUnLoad (EventArgs e)
+		{
+			Loaded = false;
+			if (UnLoad != null)
+				UnLoad (this, e);
+			Handler.OnUnLoad (e);
+		}
+
 		#endregion
 
 		protected Control (Generator generator, Type type, bool initialize = true)
@@ -401,9 +413,13 @@ namespace Eto.Forms
 		
 		public void SetParent (Control parent)
 		{
+			var loaded = this.Loaded;
 			Handler.SetParent (parent);
 			this.Parent = parent;
 			OnDataContextChanged (EventArgs.Empty);
+			if (parent == null && loaded) {
+				this.OnUnLoad (EventArgs.Empty);
+			}
 		}
 
 		public void SetParentLayout (Layout layout)

@@ -213,6 +213,10 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		void HandleControlRealized (object sender, EventArgs e)
 		{
 			if (cursor != null)

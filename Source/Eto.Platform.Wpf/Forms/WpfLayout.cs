@@ -34,6 +34,10 @@ namespace Eto.Platform.Wpf.Forms
 		{
 		}
 
+		public virtual void OnUnLoad ()
+		{
+		}
+
 		public virtual void Update ()
 		{
 		}

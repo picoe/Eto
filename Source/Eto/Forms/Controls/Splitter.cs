@@ -129,5 +129,13 @@ namespace Eto.Forms
 			base.OnLoadComplete (e);
 		}
 		
+		public override void OnUnLoad (EventArgs e)
+		{
+			if (Panel1 != null)
+				Panel1.OnUnLoad (e);
+			if (Panel2 != null)
+				Panel2.OnUnLoad (e);
+			base.OnUnLoad (e);
+		}
 	}
 }

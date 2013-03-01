@@ -371,6 +371,10 @@ namespace Eto.Platform.Windows
 		{
 			SetToolTip ();
 		}
+
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
 		
 		void SetToolTip ()
 		{

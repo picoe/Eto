@@ -473,10 +473,14 @@ namespace Eto.Platform.Mac.Forms
 				Control.Window.MakeFirstResponder (Control);
 		}
 
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		public virtual void PostKeyDown (KeyEventArgs e)
 		{
 		}
-		
+
 		#region IMacView implementation
 
 		Control IMacViewHandler.Widget {

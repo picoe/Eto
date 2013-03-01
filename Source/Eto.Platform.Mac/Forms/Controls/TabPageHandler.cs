@@ -130,6 +130,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Focus ();
 		}
 
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		public void Print (PrintSettings settings)
 		{
 			var op = NSPrintOperation.FromView(Control.View);
