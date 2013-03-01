@@ -175,8 +175,8 @@ namespace Eto.Platform.Windows
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.SizeChanged += Control_SizeChanged;
 				break;
-            case Eto.Forms.Control.MouseDoubleClickEvent:
-				Control.MouseDoubleClick += Control_DoubleClick;
+			case Eto.Forms.Control.MouseDoubleClickEvent:
+				Control.MouseDoubleClick += HandleDoubleClick;
 				break;
 			case Eto.Forms.Control.MouseEnterEvent:
 				Control.MouseEnter += HandleControlMouseEnter;
@@ -185,18 +185,18 @@ namespace Eto.Platform.Windows
 				Control.MouseLeave += HandleControlMouseLeave;
 				break;
 			case Eto.Forms.Control.MouseDownEvent:
-				Control.MouseDown += Control_MouseDown;
+				Control.MouseDown += HandleMouseDown;
 				break;
 			case Eto.Forms.Control.MouseUpEvent:
-				Control.MouseUp += Control_MouseUp;
+				Control.MouseUp += HandleMouseUp;
 				break;
 			case Eto.Forms.Control.MouseMoveEvent:
-				Control.MouseMove += Control_MouseMove;
+				Control.MouseMove += HandleMouseMove;
 				break;
             case Eto.Forms.Control.MouseWheelEvent:
-                Control.MouseWheel += Control_MouseWheel;
+                Control.MouseWheel += HandleMouseWheel;
                 break;
-            case Eto.Forms.Control.GotFocusEvent:
+			case Eto.Forms.Control.GotFocusEvent:
 				Control.GotFocus += delegate {
 					Widget.OnGotFocus (EventArgs.Empty); 
 				};
@@ -241,39 +241,39 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-        void Control_MouseWheel(object sender, SWF.MouseEventArgs e)
+        void HandleMouseWheel (object sender, SWF.MouseEventArgs e)
         {
-            Widget.OnMouseWheel(e.ToEto());
-        }
+			Widget.OnMouseWheel (e.ToEto ());
+		}
 
 		void HandleControlMouseLeave (object sender, EventArgs e)
 		{
-            Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto()));
+			Widget.OnMouseLeave (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto ()));
 		}
 
 		void HandleControlMouseEnter (object sender, EventArgs e)
 		{
-            Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, KeyMap.Convert(SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto()));
+			Widget.OnMouseEnter (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto ()));
 		}
 
-        void Control_DoubleClick(object sender, System.Windows.Forms.MouseEventArgs e)
+		void HandleDoubleClick (object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseDoubleClick(e.ToEto());
+			Widget.OnMouseDoubleClick (e.ToEto ());
 		}
 
-		void Control_MouseUp (Object sender, SWF.MouseEventArgs e)
+		void HandleMouseUp (Object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseUp(e.ToEto());
+			Widget.OnMouseUp (e.ToEto ());
 		}
 
-		void Control_MouseMove (Object sender, SWF.MouseEventArgs e)
+		void HandleMouseMove (Object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseMove(e.ToEto());
+			Widget.OnMouseMove (e.ToEto ());
 		}
 
-		void Control_MouseDown (object sender, SWF.MouseEventArgs e)
+		void HandleMouseDown (object sender, SWF.MouseEventArgs e)
 		{
-            Widget.OnMouseDown(e.ToEto());
+			Widget.OnMouseDown (e.ToEto ());
 		}
 
 		public virtual string Text {

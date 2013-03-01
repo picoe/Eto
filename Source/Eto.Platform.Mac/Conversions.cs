@@ -135,12 +135,15 @@ namespace Eto.Platform.Mac
 			return loc.ToEtoPoint ();
 		}
 
-		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent)
+		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent, bool includeWheel)
 		{
 			var pt = Conversions.GetLocation (view, theEvent);
 			Key modifiers = KeyMap.GetModifiers (theEvent);
 			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
-			return new MouseEventArgs (buttons, modifiers, pt);
+			SizeF? delta = null;
+			if (includeWheel)
+				delta = new SizeF (theEvent.DeltaX, theEvent.DeltaY);
+			return new MouseEventArgs (buttons, modifiers, pt, delta);
 		}
 
 		public static void SetSizeWithAuto (NSView view, Size size)
