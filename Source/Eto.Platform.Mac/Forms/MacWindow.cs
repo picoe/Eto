@@ -214,6 +214,28 @@ namespace Eto.Platform.Mac.Forms
 			case Eto.Forms.Control.KeyDownEvent:
 				// TODO
 				break;
+			case Eto.Forms.Control.SizeChangedEvent:
+				Size? oldSize = null;
+				AddControlObserver ((NSString)"frame", e => {
+					var widget = (Window)e.Widget;
+					var newSize = widget.Size;
+					if (oldSize != newSize) {
+						widget.OnSizeChanged (EventArgs.Empty);
+						oldSize = newSize;
+					}
+				});
+				break;
+			case Window.LocationChangedEvent:
+				Point? oldLocation = null;
+				AddControlObserver ((NSString)"frame", e => {
+					var widget = (Window)e.Widget;
+					var newLocation = widget.Location;
+					if (oldLocation != newLocation) {
+						widget.OnLocationChanged (EventArgs.Empty);
+						oldLocation = newLocation;
+					}
+				});
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -566,7 +588,11 @@ namespace Eto.Platform.Mac.Forms
 		public virtual void OnLoadComplete (EventArgs e)
 		{
 		}
-		
+
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		public virtual void LayoutChildren ()
 		{
 			if (Widget.Layout != null) {

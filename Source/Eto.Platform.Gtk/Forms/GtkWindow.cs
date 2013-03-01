@@ -188,10 +188,37 @@ namespace Eto.Platform.GtkSharp
 					}
 				};
 				break;
+			case Window.SizeChangedEvent:
+				Size? oldSize = null;
+				Control.SizeAllocated += (o, args) => {
+					var newSize = this.Size;
+					if (Control.IsRealized && oldSize != newSize) {
+						Widget.OnSizeChanged (EventArgs.Empty);
+						oldSize = newSize;
+					}
+				};
+				break;
+			case Window.LocationChangedEvent:
+				Control.ConfigureEvent += HandleConfigureEvent;
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
 			}
+		}
+
+		Point? oldLocation;
+		Point? currentLocation;
+
+		[GLib.ConnectBefore]
+		void HandleConfigureEvent (object o, Gtk.ConfigureEventArgs args)
+		{
+			currentLocation = new Point(args.Event.X, args.Event.Y);
+			if (Control.IsRealized && Widget.Loaded && oldLocation != currentLocation) {
+				Widget.OnLocationChanged (EventArgs.Empty);
+				oldLocation = currentLocation;
+			}
+			currentLocation = null;
 		}
 
 		public MenuBar Menu {
@@ -305,6 +332,8 @@ namespace Eto.Platform.GtkSharp
 		
 		public override Point Location {
 			get {
+				if (currentLocation != null)
+					return currentLocation.Value;
 				int x, y;
 				Control.GetPosition (out x, out y);
 				return new Point (x, y);

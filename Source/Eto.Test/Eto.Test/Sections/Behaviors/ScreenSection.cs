@@ -9,6 +9,7 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		RectangleF displayBounds = Screen.DisplayBounds ();
 		Screen[] screens;
+		Window parentWindow;
 
 		public ScreenSection ()
 		{
@@ -25,6 +26,24 @@ namespace Eto.Test.Sections.Behaviors
 			}
 			layout.EndVertical ();
 			layout.Add (ScreenLayout ());
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			parentWindow = this.ParentWindow;
+			parentWindow.LocationChanged += HandleLocationChanged;
+		}
+
+		public override void OnUnLoad (EventArgs e)
+		{
+			base.OnUnLoad (e);
+			parentWindow.LocationChanged -= HandleLocationChanged;
+		}
+
+		void HandleLocationChanged (object sender, EventArgs e)
+		{
+			Invalidate ();
 		}
 
 		Control ScreenLayout ()
