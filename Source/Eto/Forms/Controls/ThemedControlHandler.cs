@@ -148,6 +148,11 @@ namespace Eto.Forms
 					handled = true;
 					break;
 
+				case Eto.Forms.Control.KeyUpEvent:
+					Control.KeyUp += (s, e) => Widget.OnKeyUp(e);
+					handled = true;
+					break;
+
 				case Eto.Forms.Control.TextChangedEvent:
 					Control.TextChanged += (s, e) => Widget.OnTextChanged(e);
 					handled = true;
