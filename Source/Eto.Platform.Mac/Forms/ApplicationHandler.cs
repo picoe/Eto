@@ -34,7 +34,6 @@ namespace Eto.Platform.Mac.Forms
 
 		public ApplicationHandler ()
 		{
-			NSApplication.Init ();
 			EtoBundle.Init();
 			Control = NSApplication.SharedApplication;
 		}

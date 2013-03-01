@@ -26,6 +26,7 @@ namespace Eto.Platform.Mac
 		
 		public Generator ()
 		{
+			NSApplication.Init ();
 			AddTo(this);
 		}
 
