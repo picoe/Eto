@@ -123,6 +123,7 @@
     <Compile Include="Sections\Behaviors\WindowsSection.cs" />
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
     <Compile Include="Sections\Behaviors\ScreenSection.cs" />
+    <Compile Include="Sections\Drawing\TextureBrushesSection2.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

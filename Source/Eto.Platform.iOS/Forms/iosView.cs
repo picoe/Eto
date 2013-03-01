@@ -243,6 +243,10 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+		
 		#endregion
 
 		public void MapPlatformAction (string systemAction, BaseAction action)
