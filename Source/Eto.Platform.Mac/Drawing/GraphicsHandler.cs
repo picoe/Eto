@@ -94,6 +94,41 @@ namespace Eto.Platform.iOS.Drawing
 			Control.SaveState ();
 
 #if OSX
+			view.PostsFrameChangedNotifications = true;
+			AddObserver (NSView.NSViewFrameDidChangeNotification, FrameDidChange, view);
+
+			// if control is in a scrollview, we need to trap when it's scrolled as well
+			var parent = view.Superview;
+			while (parent != null) {
+				var scroll = parent as NSScrollView;
+				if (scroll != null) {
+					scroll.ContentView.PostsBoundsChangedNotifications = true;
+					AddObserver (NSView.NSViewBoundsDidChangeNotification, FrameDidChange, scroll.ContentView);
+				}
+				parent = parent.Superview;
+			}
+
+			SetViewClip ();
+#endif
+		}
+
+#if OSX
+
+		void FrameDidChange (ObserverActionArgs e)
+		{
+			//Console.WriteLine ("Woooo!");
+			var h = e.Handler as GraphicsHandler;
+			h.RewindAll ();
+				
+			h.Control.RestoreState ();
+			h.Control.SaveState ();
+			h.SetViewClip ();
+				
+			h.ReplayAll ();
+		}
+
+		void SetViewClip ()
+		{
 			Control.ClipToRect (view.ConvertRectToView (view.VisibleRect (), null));
 			var pos = view.ConvertPointToView(SD.PointF.Empty, null);
 			if (!Flipped)
@@ -101,10 +136,8 @@ namespace Eto.Platform.iOS.Drawing
 			else
 				currentTransform = new CGAffineTransform (1, 0, 0, -1, pos.X, pos.Y);
 			Control.ConcatCTM (currentTransform);
-#endif
 		}
 
-#if OSX
 		public GraphicsHandler (NSView view, NSGraphicsContext graphicsContext, float height, bool flipped)
 		{
 			this.DisplayView = view;
@@ -509,10 +542,10 @@ namespace Eto.Platform.iOS.Drawing
 
 		public void SaveTransform ()
 		{
-			ReverseClip ();
+			RewindClip ();
 			Control.SaveState ();
 			transformSaveCount++;
-			RestoreClip ();
+			ReplayClip ();
 			if (transforms == null)
 				transforms = new Stack<CGAffineTransform> ();
 			transforms.Push (currentTransform);
@@ -522,10 +555,10 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			if (transformSaveCount <= 0)
 				throw new InvalidOperationException ("No saved transform");
-			ReverseClip ();
+			RewindClip ();
 			transformSaveCount--;
 			Control.RestoreState ();
-			RestoreClip ();
+			ReplayClip ();
 			currentTransform = transforms.Pop ();
 		}
 
@@ -538,17 +571,17 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			ResetClip ();
 			clipBounds = TranslateView (rectangle.ToSD ());
-			RestoreClip ();
+			ReplayClip ();
 		}
 
 		public void SetClip (IGraphicsPath path)
 		{
 			ResetClip ();
 			clipPath = path.Clone ();
-			RestoreClip ();
+			ReplayClip ();
 		}
 
-		void RestoreClip ()
+		void ReplayClip ()
 		{
 			if (clipPath != null) {
 				Control.SaveState ();
@@ -570,16 +603,46 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
-		void ReverseClip ()
+		void RewindClip ()
 		{
 			if (clipBounds != null || clipPath != null) {
 				Control.RestoreState ();
 			}
 		}
 
+		void RewindTransform ()
+		{
+			for (int i = 0; i < transformSaveCount; i++)
+				Control.RestoreState ();
+		}
+
+		void ReplayTransform ()
+		{
+			// replay transforms
+			if (transforms != null) {
+				foreach (var transform in transforms) {
+					Control.ConcatCTM (transform);
+					Control.SaveState ();
+				}
+			}
+			//Control.ConcatCTM (currentTransform);
+		}
+
+		void RewindAll ()
+		{
+			RewindClip ();
+			RewindTransform ();
+		}
+
+		void ReplayAll ()
+		{
+			ReplayTransform ();
+			ReplayClip ();
+		}
+
 		public void ResetClip ()
 		{
-			ReverseClip ();
+			RewindClip ();
 			clipBounds = null;
 			clipPath = null;
 		}
