@@ -1,15 +1,15 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.iOS", "Eto\Eto.iOS.csproj", "{83452633-C37C-490F-852A-3ADE0A2CF0D4}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - iOS", "Eto\Eto - iOS.csproj", "{83452633-C37C-490F-852A-3ADE0A2CF0D4}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.iOS", "Eto.Platform.iOS\Eto.Platform.iOS.csproj", "{E711B298-D141-4EC5-9BFD-84962B264F90}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Interface.iOS", "Eto.Test\Eto.Test\Eto.Test.Interface.iOS.csproj", "{97DEC3D5-5E7C-493D-AB7E-C0001AF7085F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - iOS", "Eto.Test\Eto.Test\Eto.Test - iOS.csproj", "{97DEC3D5-5E7C-493D-AB7E-C0001AF7085F}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.iOS", "Eto.Test\Eto.Test.iOS\Eto.Test.iOS.csproj", "{AB42209E-E87F-4749-96CF-8CAE83981808}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json.IOS", "Eto.Json\Eto.Json.IOS.csproj", "{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json - iOS", "Eto.Json\Eto.Json - iOS.csproj", "{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
