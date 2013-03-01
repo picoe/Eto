@@ -329,7 +329,14 @@ namespace Eto
 				else
 					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
 			}
-			return (Generator)Activator.CreateInstance (type);
+			try {
+				return (Generator)Activator.CreateInstance (type);
+			} catch {
+				if (allowNull)
+					return null;
+				else
+					throw;
+			}
 		}
 
 		/// <summary>
