@@ -317,6 +317,16 @@ namespace Eto.Platform.Windows
 			return buttons;
 		}
 
+		public static Graphics ToEto (this sd.Graphics g, Eto.Generator generator)
+		{
+			return new Graphics (generator, new GraphicsHandler (g));
+		}
+
+		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
+		{
+			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
+		}
+
 		public static sd.Image ToSD (this IImage image)
 		{
 			if (image == null)
@@ -413,16 +423,6 @@ namespace Eto.Platform.Windows
         {
             return (DragAction)dragAction;
         }
-
-		public static Graphics ToEto (this sd.Graphics graphics, Eto.Generator generator)
-		{
-			return new Graphics (generator, new GraphicsHandler (graphics));
-		}
-
-		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
-		{
-			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
-		}
 
         public static ITreeItem ToEto(this swf.TreeNode treeNode)
         {

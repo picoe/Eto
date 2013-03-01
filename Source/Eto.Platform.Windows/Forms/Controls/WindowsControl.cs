@@ -292,7 +292,7 @@ namespace Eto.Platform.Windows
 		}
 
 		public virtual Size ClientSize {
-			get { return new Size (ContainerControl.ClientSize.Width, ContainerControl.ClientSize.Height); }
+			get { return ContainerControl.ClientSize.ToEto (); }
 			set {
 				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
 				ContainerControl.ClientSize = value.ToSD ();

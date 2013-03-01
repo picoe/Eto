@@ -83,8 +83,8 @@ namespace Eto.Platform.iOS.Drawing
 			{
 				if (pattern != null)
 					pattern.Dispose();
-				pattern = null;
-			}
+					pattern = null;
+				}
 
 			void DrawPattern (CGContext context)
 			{
