@@ -113,14 +113,14 @@ namespace Eto.Platform.Wpf.Drawing
 			control.Invert ();
 		}
 		
-		public PointF TransformPoint (Point p)
+		public PointF TransformPoint (Point point)
 		{
-			return control.Transform (p.ToWpf ()).ToEto ();
+			return control.Transform (point.ToWpf ()).ToEto ();
 		}
 		
-		public PointF TransformPoint (PointF p)
+		public PointF TransformPoint (PointF point)
 		{
-			return control.Transform (p.ToWpf ()).ToEto ();
+			return control.Transform (point.ToWpf ()).ToEto ();
 		}
 		
 		public IMatrix Clone ()
