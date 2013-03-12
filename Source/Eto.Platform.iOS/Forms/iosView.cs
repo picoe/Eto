@@ -178,8 +178,6 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		#region IControl implementation
-		
 		public virtual void Invalidate ()
 		{
 			Control.SetNeedsDisplay();
@@ -247,10 +245,24 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 		
-		#endregion
-
 		public void MapPlatformAction (string systemAction, BaseAction action)
 		{
+		}
+
+		public PointF PointFromScreen (PointF point)
+		{
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertPointFromView (sdpoint, null);
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+		
+		public PointF PointToScreen (PointF point)
+		{
+			var sdpoint = point.ToSD ();
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			sdpoint = Control.ConvertPointToView (sdpoint, null);
+			return Platform.Conversions.ToEto (sdpoint);
 		}
 	}
 }
