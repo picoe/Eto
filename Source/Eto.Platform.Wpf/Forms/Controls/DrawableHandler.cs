@@ -103,7 +103,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			base.OnLoadComplete (e);
 
 			RegisterScrollable ();
-			
+		}
+
+		public override void OnUnLoad (EventArgs e)
+		{
+			base.OnUnLoad (e);
+			UnRegisterScrollable ();
 		}
 
 		public override Size Size
