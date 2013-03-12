@@ -81,9 +81,60 @@ namespace Eto.Platform
 			TOOLWINDOW = 0x80
 		}
 
-		public enum WM : uint
+		public enum WM : int
 		{
-			SETREDRAW = 0xB
+			SETREDRAW = 0xB,
+			MOUSEMOVE = 0x0200,
+			LBUTTONDOWN = 0x0201,
+			LBUTTONUP = 0x0202,
+			LBUTTONDBLCLK = 0x0203,
+			RBUTTONDOWN = 0x0204,
+			RBUTTONUP =   0x0205,
+			RBUTTONDBLCLK = 0x0206,
+			MBUTTONDOWN = 0x0207,
+			MBUTTONUP = 0x0208,
+			MBUTTONDBLCLK = 0x0209,
+			MOUSEWHEEL = 0x20A
+			}
+
+		public static ushort HIWORD (IntPtr dwValue)
+		{
+			return (ushort)((((long)dwValue) >> 0x10) & 0xffff);
+		}
+
+		public static ushort HIWORD (uint dwValue)
+		{
+			return (ushort)(dwValue >> 0x10);
+		}
+
+		public static int SignedHIWORD (IntPtr n)
+		{
+			return SignedHIWORD ((int)((long)n));
+		}
+
+		public static int SignedLOWORD (IntPtr n)
+		{
+			return SignedLOWORD ((int)((long)n));
+		}
+
+		public static int SignedHIWORD (int n)
+		{
+			return (int)((short)(n >> 16 & 65535));
+		}
+
+		public static int SignedLOWORD (int n)
+		{
+			return (int)((short)(n & 65535));
+		}
+
+		public static int GET_WHEEL_DELTA_WPARAM (IntPtr wParam)
+		{
+			return (short)HIWORD (wParam);
+		}
+
+		public static int GET_WHEEL_DELTA_WPARAM (uint wParam)
+		{
+			return (short)HIWORD (wParam);
 		}
 
 		[DllImport ("user32.dll")]
@@ -101,6 +152,5 @@ namespace Eto.Platform
 
 		[DllImport("user32.dll")]
 	    public static extern int SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
-
 	}
 }

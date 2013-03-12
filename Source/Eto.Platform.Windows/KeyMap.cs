@@ -11,7 +11,7 @@ namespace Eto.Platform.Windows
 		static Dictionary<swf.Keys, Key> keymap = new Dictionary<swf.Keys, Key>();
 		static Dictionary<Key, swf.Keys> inverse = new Dictionary<Key, swf.Keys>();
 
-        public static Key Convert(swf.Keys keyData)
+        public static Key ToEto (this swf.Keys keyData)
         {
             // convert the modifiers
             Key modifiers = Key.None;
@@ -48,17 +48,11 @@ namespace Eto.Platform.Windows
 			else return swf.Keys.None;
 		}
 		
-		public static swf.Keys Convert(Key key)
+		public static swf.Keys ToSWF (this Key key)
 		{
-			var keys = key.ToString()
-                  .Split(new[] { ", " }, StringSplitOptions.None)
-                  .Select(v => (Key)Enum.Parse(typeof(Key), v));
-			swf.Keys ret = swf.Keys.None;
-			foreach (var val in keys)
-			{
-				ret |= Find(val);
-			}
-			return ret;
+			var code = key & Key.KeyMask;
+			var modifier = key & Key.ModifierMask;
+			return Find (code) | Find (modifier);
 		}
 		
 		public static string KeyToString(Key key)

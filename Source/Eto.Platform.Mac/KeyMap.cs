@@ -75,34 +75,6 @@ namespace Eto.Platform.Mac
 			return key;
 		}
 		
-		public static MouseButtons GetMouseButtons (NSEvent theEvent)
-		{
-			MouseButtons buttons = MouseButtons.None;
-			
-			switch (theEvent.Type)
-			{
-			case NSEventType.LeftMouseUp:
-			case NSEventType.LeftMouseDown:
-			case NSEventType.LeftMouseDragged:
-				if ((theEvent.ModifierFlags & NSEventModifierMask.ControlKeyMask) > 0)
-					buttons |= MouseButtons.Alternate;
-				else
-					buttons |= MouseButtons.Primary;
-				break;
-			case NSEventType.RightMouseUp:
-			case NSEventType.RightMouseDown:
-			case NSEventType.RightMouseDragged:
-				buttons |= MouseButtons.Alternate;
-				break;
-			case NSEventType.OtherMouseUp:
-			case NSEventType.OtherMouseDown:
-			case NSEventType.OtherMouseDragged:
-				buttons |= MouseButtons.Middle;
-				break;
-			}
-			return buttons;
-		}
-
 		static KeyMap ()
 		{
 			keymap.Add(0, Key.A);

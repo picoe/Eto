@@ -247,7 +247,7 @@ namespace Eto.Platform.GtkSharp
 					var actionItem = child as MenuActionItem;
 					if (actionItem != null && actionItem.Shortcut != Key.None) {
 						var widget = actionItem.ControlObject as Gtk.Widget;
-						var key = new Gtk.AccelKey (KeyMap.ConvertToKey (actionItem.Shortcut), KeyMap.ConvertToModifier (actionItem.Shortcut), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
+						var key = new Gtk.AccelKey (actionItem.Shortcut.ToGdkKey (), actionItem.Shortcut.ToGdkModifier (), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator ("activate", accelGroup, key);
 					}
 					SetAccelerators (child as ISubMenuWidget);

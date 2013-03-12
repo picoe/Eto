@@ -288,7 +288,7 @@ namespace Eto.Platform.Windows
 		{
 			var point = new Point (e.X, e.Y);
 			var buttons = ToEto (e.Button);
-			var modifiers = KeyMap.Convert (swf.Control.ModifierKeys);
+			var modifiers = swf.Control.ModifierKeys.ToEto ();
 
 			var result = new MouseEventArgs (buttons, modifiers, point);
 			result.Delta = new SizeF (0, (float)e.Delta / WHEEL_DELTA);
@@ -296,7 +296,7 @@ namespace Eto.Platform.Windows
 			return result;
 		}
 
-		private static MouseButtons ToEto (this swf.MouseButtons button)
+		public static MouseButtons ToEto (this swf.MouseButtons button)
 		{
 			MouseButtons buttons = MouseButtons.None;
 

@@ -1,0 +1,137 @@
+using Eto.Drawing;
+using Eto.Forms;
+using System;
+using System.Collections.Generic;
+using System.Diagnostics;
+using System.Linq;
+using System.Text;
+using swf = System.Windows.Forms;
+
+namespace Eto.Platform.Windows
+{
+	public class BubbleEvent
+	{
+		public Func<BubbleEventArgs, bool> HandleEvent { get; set; }
+
+		public int Message { get; set; }
+	}
+
+	public class BubbleEventArgs : EventArgs
+	{
+		public swf.Message Message { get; private set; }
+
+		public Control Control { get; private set; }
+
+		public swf.Control WinControl { get; private set; }
+
+		public IWindowsControl WindowsControl
+		{
+			get { return Control != null ? Control.Handler as IWindowsControl : null; }
+		}
+
+		public IEnumerable<Control> Parents
+		{
+			get
+			{
+				var control = WinControl;
+				while (control != null) {
+					var etochild = ToEto (control);
+					if (etochild != null)
+						yield return etochild;
+					control = control.Parent;
+				}
+			}
+		}
+
+		public BubbleEventArgs (swf.Message message, swf.Control winControl)
+		{
+			this.Message = message;
+			this.Control = ToEto(winControl);
+			this.WinControl = winControl;
+		}
+
+		Control ToEto (swf.Control child)
+		{
+			var handler = child.Tag as IControl;
+			if (handler != null) {
+				return handler.Widget as Control;
+			}
+			return null;
+		}
+	}
+
+	public class BubbleEventFilter : swf.IMessageFilter
+	{
+		Dictionary<int, BubbleEvent> messages = new Dictionary<int, BubbleEvent> ();
+
+		public void AddBubbleEvents (Func<BubbleEventArgs, bool> handleEvent, params int[] messages)
+		{
+			foreach (var message in messages) {
+				AddBubbleEvent (handleEvent, message);
+			}
+		}
+
+		public void AddBubbleEvent (Func<BubbleEventArgs, bool> handleEvent, int message)
+		{
+			messages.Add (message, new BubbleEvent {
+				Message = message,
+				HandleEvent = handleEvent
+			});
+		}
+
+		public bool PreFilterMessage (ref swf.Message message)
+		{
+			BubbleEvent bubble;
+			if (messages.TryGetValue (message.Msg, out bubble)) {
+				var child = swf.Control.FromHandle (message.HWnd);
+
+				if (child != null) {
+					var args = new BubbleEventArgs (message, child);
+					if (bubble.HandleEvent (args))
+						return true;
+				}
+			}
+			return false;
+		}
+
+		public void AddBubbleMouseEvent (Action<Control, MouseEventArgs> action, bool? capture, int message)
+		{
+			AddBubbleEvent (be => MouseEvent(be, action, capture), message);
+		}
+
+		public void AddBubbleMouseEvents (Action<Control, MouseEventArgs> action, bool? capture, params int[] messages)
+		{
+			foreach (var message in messages) {
+				AddBubbleEvent (be => MouseEvent (be, action, capture), message);
+			}
+		}
+
+		static bool MouseEvent (BubbleEventArgs be, Action<Control, MouseEventArgs> action, bool? capture)
+		{
+			var modifiers = swf.Control.ModifierKeys.ToEto ();
+			var delta = new SizeF (0, Win32.GET_WHEEL_DELTA_WPARAM (be.Message.WParam) / Conversions.WHEEL_DELTA);
+			var position = new Point (Win32.SignedLOWORD (be.Message.LParam), Win32.SignedHIWORD (be.Message.LParam));
+			var me = new MouseEventArgs (swf.Control.MouseButtons.ToEto (), modifiers, position, delta);
+			var handler = be.WindowsControl;
+			var mousePosition = swf.Control.MousePosition.ToEto ();
+			var ret = false;
+			var first = true;
+			foreach (var control in be.Parents) {
+				if (!first)
+					me = new MouseEventArgs (me.Buttons, modifiers, control.PointFromScreen (mousePosition), delta);
+				else
+					first = false;
+				action (control, me);
+				if (me.Handled) {
+					ret = true;
+					break;
+				}
+			}
+			if (capture != null && ret || (handler != null && handler.ShouldCaptureMouse)) {
+				//be.WinControl.Capture = capture.Value;
+			}
+			return ret;
+		}
+
+	}
+}

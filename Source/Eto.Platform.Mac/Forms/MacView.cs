@@ -507,16 +507,30 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
-		#region IMacView implementation
+		Control IMacViewHandler.Widget { get { return this.Widget; } }
 
-		Control IMacViewHandler.Widget {
-			get {
-				return this.Widget;
+        public PointF PointFromScreen (PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			if (Control.Window != null) {
+				sdpoint = Control.Window.ConvertBaseToScreen (sdpoint);
+				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
 			}
+			return Platform.Conversions.ToEto (sdpoint);
 		}
-		
-		#endregion
-		
+
+        public PointF PointToScreen (PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			sdpoint = Control.ConvertPointToView (sdpoint, null);
+			if (Control.Window != null) {
+				sdpoint = Control.Window.ConvertBaseToScreen (sdpoint);
+				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
+			}
+			return Platform.Conversions.ToEto (sdpoint);
+        }
+
 		static void TriggerSystemAction (IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var selector = new Selector (sel);

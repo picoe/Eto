@@ -39,9 +39,13 @@ namespace Eto.Forms
 		void SetParent (Control parent);
 
 		void SetParentLayout (Layout layout);
-		
+
 		void MapPlatformAction (string systemAction, BaseAction action);
-	}
+
+		PointF PointFromScreen (PointF point);
+
+		PointF PointToScreen (PointF point);
+    }
 	
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
@@ -488,6 +492,16 @@ namespace Eto.Forms
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
 			Handler.MapPlatformAction(systemAction, action);
+		}
+
+		public PointF PointFromScreen (PointF point)
+		{
+			return Handler.PointFromScreen (point);
+		}
+
+		public PointF PointToScreen (PointF point)
+		{
+			return Handler.PointToScreen (point);
 		}
 
 		#region Obsolete

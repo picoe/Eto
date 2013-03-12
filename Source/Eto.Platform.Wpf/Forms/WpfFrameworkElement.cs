@@ -49,12 +49,16 @@ namespace Eto.Platform.Wpf.Forms
 		Size? newSize;
 		Cursor cursor;
 		bool loaded;
+		bool isMouseOver;
+		bool isMouseCaptured;
 
 		public abstract Color BackgroundColor
 		{
 			get;
 			set;
 		}
+
+		public virtual bool UseMousePreview { get { return false; } }
 
 		public virtual sw.FrameworkElement ContainerControl
 		{
@@ -152,6 +156,14 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			Control.Tag = this;
+			HandleEvent (Eto.Forms.Control.MouseDownEvent);
+			HandleEvent (Eto.Forms.Control.MouseUpEvent);
+		}
+
 		public virtual bool HasFocus
 		{
 			get { return Control.IsFocused; }
@@ -174,55 +186,54 @@ namespace Eto.Platform.Wpf.Forms
 				Control.MouseMove += (sender, e) => {
 					var args = e.ToEto (Control);
 					Widget.OnMouseMove (args);
-					e.Handled = args.Handled;
+					e.Handled = args.Handled || isMouseCaptured;
 				};
 				break;
 			case Eto.Forms.Control.MouseDownEvent:
-				Control.MouseDown += (sender, e) => {
-					var args = e.ToEto (Control);
-					if (wpfcontrol == null && e.ClickCount == 2)
-						Widget.OnMouseDoubleClick (args);
-					if (!args.Handled)
-						Widget.OnMouseDown (args);
-					if (args.Handled)
-						Control.CaptureMouse ();
-					e.Handled = args.Handled;
-				};
+				if (UseMousePreview)
+					Control.PreviewMouseDown += HandleMouseDown;
+				else
+					Control.MouseDown += HandleMouseDown;
+				HandleEvent (Eto.Forms.Control.MouseUpEvent);
 				break;
 			case Eto.Forms.Control.MouseDoubleClickEvent:
 				if (wpfcontrol != null)
-					wpfcontrol.MouseDoubleClick += (sender, e) => {
-						var args = e.ToEto (Control);
-						Widget.OnMouseDoubleClick (args);
-						e.Handled = args.Handled;
-					};
+					if (UseMousePreview)
+						wpfcontrol.PreviewMouseDoubleClick += HandleMouseDoubleClick;
+					else
+						wpfcontrol.MouseDoubleClick += HandleMouseDoubleClick;
 				else
 					HandleEvent (Eto.Forms.Control.MouseDownEvent);
 				break;
 			case Eto.Forms.Control.MouseUpEvent:
-				Control.MouseUp += (sender, e) => {
-					Control.ReleaseMouseCapture ();
-					var args = e.ToEto (Control, swi.MouseButtonState.Released);
-					Widget.OnMouseUp (args);
-					e.Handled = args.Handled;
-				};
+				if (UseMousePreview)
+					Control.PreviewMouseUp += HandleMouseUp;
+				else
+					Control.MouseUp += HandleMouseUp;
+				HandleEvent (Eto.Forms.Control.MouseDownEvent);
 				break;
 			case Eto.Forms.Control.MouseEnterEvent:
 				Control.MouseEnter += (sender, e) => {
-					var args = e.ToEto (Control);
-					Widget.OnMouseEnter (args);
-					e.Handled = args.Handled;
+					if (isMouseOver != Control.IsMouseOver) {
+						var args = e.ToEto (Control);
+						Widget.OnMouseEnter (args);
+						e.Handled = args.Handled;
+						isMouseOver = Control.IsMouseOver;
+					}
 				};
 				break;
 			case Eto.Forms.Control.MouseLeaveEvent:
 				Control.MouseLeave += (sender, e) => {
-					var args = e.ToEto (Control);
-					Widget.OnMouseLeave (args);
-					e.Handled = args.Handled;
+					if (isMouseOver != Control.IsMouseOver) {
+						var args = e.ToEto (Control);
+						Widget.OnMouseLeave (args);
+						e.Handled = args.Handled;
+						isMouseOver = Control.IsMouseOver;
+					}
 				};
 				break;
 			case Eto.Forms.Control.MouseWheelEvent:
-				Control.MouseWheel += (sender, e) => {
+				Control.PreviewMouseWheel += (sender, e) => {
 					var args = e.ToEto (Control);
 					Widget.OnMouseLeave (args);
 					e.Handled = args.Handled;
@@ -230,7 +241,7 @@ namespace Eto.Platform.Wpf.Forms
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.SizeChanged += (sender, e) => {
-					this.newSize = e.NewSize.ToEto (); // so we can report this back in Control.Size
+					this.newSize = e.NewSize.ToEtoSize (); // so we can report this back in Control.Size
 					Widget.OnSizeChanged (EventArgs.Empty);
 					this.newSize = null;
 				};
@@ -280,6 +291,40 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		void HandleMouseUp (object sender, swi.MouseButtonEventArgs e)
+		{
+			var args = e.ToEto (Control, swi.MouseButtonState.Released);
+			Widget.OnMouseUp (args);
+			e.Handled = args.Handled;
+			if (Control.IsMouseCaptured && isMouseCaptured) {
+				Control.ReleaseMouseCapture ();
+				isMouseCaptured = false;
+			}
+		}
+
+		void HandleMouseDoubleClick (object sender, swi.MouseButtonEventArgs e)
+		{
+			var args = e.ToEto (Control);
+			Widget.OnMouseDoubleClick (args);
+			e.Handled = args.Handled;
+		}
+
+		void HandleMouseDown (object sender, swi.MouseButtonEventArgs e)
+		{
+			isMouseCaptured = false;
+			var args = e.ToEto (Control);
+			if (!(Control is swc.Control) && e.ClickCount == 2)
+				Widget.OnMouseDoubleClick (args);
+			if (!args.Handled)
+				Widget.OnMouseDown (args);
+			e.Handled = args.Handled;
+			if (!UseMousePreview || e.Handled) {
+				e.Handled = true;
+				isMouseCaptured = true;
+				Control.CaptureMouse ();
+			}
+		}
+
 		public virtual void OnLoad (EventArgs e)
 		{
 		}
@@ -311,7 +356,22 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void MapPlatformAction (string systemAction, BaseAction action)
 		{
-			
 		}
-	}
+
+		public PointF PointFromScreen (PointF point)
+		{
+			if (Control.IsLoaded)
+				return Control.PointFromScreen (point.ToWpf ()).ToEto ();
+			else
+				return point;
+		}
+
+		public PointF PointToScreen (PointF point)
+		{
+			if (Control.IsLoaded)
+				return Control.PointToScreen (point.ToWpf ()).ToEto ();
+			else
+				return point;
+		}
+    }
 }

@@ -111,6 +111,16 @@ namespace Eto.Forms
 				this.Control.SetParentLayout(layout);
 		}
 
+		public PointF PointFromScreen (PointF point)
+		{
+			return Control.PointFromScreen (point);
+		}
+
+		public PointF PointToScreen (PointF point)
+		{
+			return Control.PointToScreen (point);
+		}
+
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
 			throw new NotImplementedException();

@@ -22,6 +22,8 @@ namespace Eto.Platform.Windows
 		Size DesiredSize { get; }
 
 		void SetScale (bool xscale, bool yscale);
+
+		bool ShouldCaptureMouse { get; }
 	}
 
 	public static class WindowsControlExtensions
@@ -108,6 +110,11 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+		public virtual bool ShouldCaptureMouse
+		{
+			get { return false; }
+		}
+
 		public virtual SWF.Control ContainerControl
 		{
 			get { return this.Control; }
@@ -115,10 +122,12 @@ namespace Eto.Platform.Windows
 
 		protected override void Initialize ()
 		{
+			base.Initialize ();
 			Control.TabIndex = 100;
 			XScale = true;
 			YScale = true;
 			this.Control.Margin = SWF.Padding.Empty;
+			this.Control.Tag = this;
 		}
 		
 		public virtual SWF.DockStyle DockStyle {
@@ -172,9 +181,13 @@ namespace Eto.Platform.Windows
 				break;
 			case Eto.Forms.Control.MouseDownEvent:
 				Control.MouseDown += HandleMouseDown;
+				if (ShouldCaptureMouse)
+					HandleEvent (Eto.Forms.Control.MouseUpEvent);
 				break;
 			case Eto.Forms.Control.MouseUpEvent:
 				Control.MouseUp += HandleMouseUp;
+				if (ShouldCaptureMouse)
+					HandleEvent (Eto.Forms.Control.MouseDownEvent);
 				break;
 			case Eto.Forms.Control.MouseMoveEvent:
 				Control.MouseMove += HandleMouseMove;
@@ -200,37 +213,48 @@ namespace Eto.Platform.Windows
 
         void HandleMouseWheel (object sender, SWF.MouseEventArgs e)
         {
-			Widget.OnMouseWheel (e.ToEto ());
+			if (!ApplicationHandler.BubbleMouseEvents)
+				Widget.OnMouseWheel (e.ToEto ());
 		}
 
 		void HandleControlMouseLeave (object sender, EventArgs e)
 		{
-			Widget.OnMouseLeave (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto ()));
+			Widget.OnMouseLeave (new MouseEventArgs (MouseButtons.None, SWF.Control.ModifierKeys.ToEto (), SWF.Control.MousePosition.ToEto ()));
 		}
 
 		void HandleControlMouseEnter (object sender, EventArgs e)
 		{
-			Widget.OnMouseEnter (new MouseEventArgs (MouseButtons.None, KeyMap.Convert (SWF.Control.ModifierKeys), SWF.Control.MousePosition.ToEto ()));
+			Widget.OnMouseEnter (new MouseEventArgs (MouseButtons.None, SWF.Control.ModifierKeys.ToEto (), SWF.Control.MousePosition.ToEto ()));
 		}
 
 		void HandleDoubleClick (object sender, SWF.MouseEventArgs e)
 		{
-			Widget.OnMouseDoubleClick (e.ToEto ());
+			if (!ApplicationHandler.BubbleMouseEvents)
+				Widget.OnMouseDoubleClick (e.ToEto ());
 		}
 
 		void HandleMouseUp (Object sender, SWF.MouseEventArgs e)
 		{
-			Widget.OnMouseUp (e.ToEto ());
+			if (!ApplicationHandler.BubbleMouseEvents) {
+				if (ShouldCaptureMouse)
+					Control.Capture = false;
+				Widget.OnMouseUp (e.ToEto ());
+			}
 		}
 
 		void HandleMouseMove (Object sender, SWF.MouseEventArgs e)
 		{
-			Widget.OnMouseMove (e.ToEto ());
+			if (!ApplicationHandler.BubbleMouseEvents)
+				Widget.OnMouseMove (e.ToEto ());
 		}
 
 		void HandleMouseDown (object sender, SWF.MouseEventArgs e)
 		{
-			Widget.OnMouseDown (e.ToEto ());
+			if (!ApplicationHandler.BubbleMouseEvents) {
+				Widget.OnMouseDown (e.ToEto ());
+				if (ShouldCaptureMouse)
+					Control.Capture = true;
+			}
 		}
 
 		public virtual string Text {
@@ -381,7 +405,7 @@ namespace Eto.Platform.Windows
 		{
 			charPressed = false;
 			handled = true;
-			key = KeyMap.Convert (e.KeyCode) | KeyMap.Convert (e.Modifiers);
+			key = e.KeyData.ToEto ();
 
 			if (key != Key.None && LastKeyDown != key) {
 				var kpea = new KeyEventArgs (key, KeyEventType.KeyDown);
@@ -417,7 +441,7 @@ namespace Eto.Platform.Windows
 
         void Control_KeyUp(object sender, System.Windows.Forms.KeyEventArgs e)
         {
-            key = KeyMap.Convert(e.KeyData);
+			key = e.KeyData.ToEto ();
 
             var kpea = new KeyEventArgs(key, KeyEventType.KeyUp);
             Widget.OnKeyUp(kpea);
@@ -449,5 +473,15 @@ namespace Eto.Platform.Windows
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-	}
+
+        public virtual PointF PointFromScreen(PointF point)
+        {
+            return this.Control.PointToClient(point.ToSDPoint ()).ToEto();
+        }
+
+        public virtual PointF PointToScreen(PointF point)
+        {
+            return this.Control.PointToScreen(point.ToSDPoint ()).ToEto();
+        }
+    }
 }

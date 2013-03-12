@@ -666,6 +666,22 @@ namespace Eto.Platform.Mac.Forms
 			get { return new Screen(Generator, new ScreenHandler (Control.Screen)); }
 		}
 
+        public PointF PointFromScreen(PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+
+        public PointF PointToScreen(PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+
 		public WindowStyle WindowStyle
 		{
 			get { return Control.StyleMask.ToEtoWindowStyle (); }

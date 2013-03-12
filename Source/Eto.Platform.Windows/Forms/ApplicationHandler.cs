@@ -5,6 +5,7 @@ using sd = System.Drawing;
 using Eto.Forms;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
@@ -13,6 +14,7 @@ namespace Eto.Platform.Windows
 		string badgeLabel;
 
 		public static bool EnableScrollingUnderMouse = true;
+		public static bool BubbleMouseEvents = true;
 		
 		public void RunIteration ()
 		{
@@ -74,8 +76,17 @@ namespace Eto.Platform.Windows
 
 			if (EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter (new ScrollMessageFilter ());
+
+			if (BubbleMouseEvents) {
+				var bubble = new BubbleEventFilter ();
+				bubble.AddBubbleMouseEvent ((c, e) => c.OnMouseWheel (e), null, (int)Win32.WM.MOUSEWHEEL);
+				bubble.AddBubbleMouseEvent ((c, e) => c.OnMouseMove (e), null, (int)Win32.WM.MOUSEMOVE);
+				bubble.AddBubbleMouseEvents ((c, e) => c.OnMouseDown (e), true, (int)Win32.WM.LBUTTONDOWN, (int)Win32.WM.RBUTTONDOWN, (int)Win32.WM.MBUTTONDOWN);
+				bubble.AddBubbleMouseEvents ((c, e) => c.OnMouseDoubleClick (e), null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
+				bubble.AddBubbleMouseEvents ((c, e) => c.OnMouseUp (e), false, (int)Win32.WM.LBUTTONUP, (int)Win32.WM.RBUTTONUP, (int)Win32.WM.MBUTTONUP);
+				swf.Application.AddMessageFilter (bubble);
+			}
 			
-			//SWF.Application.AddMessageFilter(new KeyFilter());
 			if (app.MainForm != null && app.MainForm.Loaded) 
 				swf.Application.Run ((swf.Form)app.MainForm.ControlObject);
 			else 

@@ -18,7 +18,7 @@ namespace Eto.Test.Sections.Drawing
 			var drawable = new Drawable();
 			var font = new Font(SystemFont.Default);
 			this.AddDockedControl(drawable);
-			var location = new Point(100, 100);
+			var location = new PointF (100, 100);
 			drawable.BackgroundColor = Colors.Green;
 			drawable.MouseMove += (s, e) => { location = e.Location; drawable.Invalidate(); };
 			drawable.Paint += (s, e) => {
