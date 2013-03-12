@@ -264,6 +264,11 @@ namespace Eto.Platform.iOS.Forms
 			sdpoint = Control.ConvertPointToView (sdpoint, null);
 			return Platform.Conversions.ToEto (sdpoint);
 		}
+
+		public Point Location
+		{
+			get { return Control.Frame.Location.ToEtoPoint (); }
+		}
 	}
 }
 

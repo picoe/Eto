@@ -373,5 +373,16 @@ namespace Eto.Platform.Wpf.Forms
 			else
 				return point;
 		}
+
+        public Point Location
+        {
+			get
+			{
+				if (Widget.Parent == null)
+					return Point.Empty;
+				else
+					return Control.TranslatePoint (new sw.Point (0, 0), Widget.Parent.GetContainerControl ()).ToEtoPoint ();
+			}
+        }
     }
 }

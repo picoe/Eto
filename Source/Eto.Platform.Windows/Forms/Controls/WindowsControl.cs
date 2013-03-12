@@ -487,5 +487,10 @@ namespace Eto.Platform.Windows
         {
             return this.Control.PointToScreen(point.ToSDPoint ()).ToEto();
         }
+
+        public Point Location
+        {
+            get { return this.Control.Location.ToEto(); }
+        }
     }
 }

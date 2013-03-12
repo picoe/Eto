@@ -45,7 +45,9 @@ namespace Eto.Forms
 		PointF PointFromScreen (PointF point);
 		
 		PointF PointToScreen (PointF point);
-    }
+
+		Point Location { get; }
+	}
 	
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
@@ -520,6 +522,11 @@ namespace Eto.Forms
 		public PointF PointToScreen (PointF point)
 		{
 			return Handler.PointToScreen (point);
+		}
+
+		public Point Location
+		{
+			get { return Handler.Location; }
 		}
 
 		#region Obsolete

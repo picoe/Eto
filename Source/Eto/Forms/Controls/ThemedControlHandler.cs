@@ -126,6 +126,11 @@ namespace Eto.Forms
 			throw new NotImplementedException();
 		}
 
+		public Point Location
+		{
+			get { return Control.Location; }
+		}
+
 #if DESKTOP
 		public string ToolTip
 		{
