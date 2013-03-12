@@ -48,8 +48,6 @@ namespace Eto.Forms
 		PointF PointToScreen (PointF point);
 
         Point Location { get; }
-
-        void SetControl(object control);
     }
 	
 	[ToolboxItem(true)]
@@ -383,24 +381,6 @@ namespace Eto.Forms
 			: base (generator, handler, initialize)
 		{
 		}
-
-        // Provided as a means of wrapping a WinForms control
-        public static T Create<T>(
-            object o)
-            where T:Control, new()
-        {
-            var r =
-                new T();
-
-            r.SetControl(o);
-
-            return r;
-        }
-
-        public void SetControl(object control)
-        {
-            Handler.SetControl(control);
-        }
 
 		public void Invalidate ()
 		{

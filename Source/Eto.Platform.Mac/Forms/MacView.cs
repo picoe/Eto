@@ -536,12 +536,6 @@ namespace Eto.Platform.Mac.Forms
             get { return Platform.Conversions.ToEtoPoint (Control.Frame.Location); }
         }
 
-
-        public void SetControl(object control)
-        {
-            /* TODO */
-        }
-		
 		static void TriggerSystemAction (IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var selector = new Selector (sel);

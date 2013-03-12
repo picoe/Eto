@@ -384,10 +384,5 @@ namespace Eto.Platform.Wpf.Forms
 					return Control.TranslatePoint (new sw.Point (0, 0), Widget.Parent.GetContainerControl ()).ToEtoPoint ();
 			}
         }
-
-        public void SetControl(object control)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

@@ -471,10 +471,5 @@ namespace Eto.Platform.GtkSharp
 			}
 			return point;
 		}
-
-		public void SetControl(object control)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

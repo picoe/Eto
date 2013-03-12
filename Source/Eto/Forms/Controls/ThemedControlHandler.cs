@@ -131,11 +131,6 @@ namespace Eto.Forms
 			get { return Control.Location; }
 		}
 
-		public void SetControl(object control)
-		{
-			Control.SetControl(control);
-		}
-
 #if DESKTOP
 		public string ToolTip
 		{

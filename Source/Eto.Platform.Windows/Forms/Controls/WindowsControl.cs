@@ -492,10 +492,5 @@ namespace Eto.Platform.Windows
         {
             get { return this.Control.Location.ToEto(); }
         }
-
-        public void SetControl(object control)
-        {
-            this.Control = control as T;
-        }
     }
 }
