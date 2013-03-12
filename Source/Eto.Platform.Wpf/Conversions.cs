@@ -65,7 +65,12 @@ namespace Eto.Platform.Wpf
 			return new sw.Rect (value.X, value.Y, value.Width, value.Height);
 		}
 
-		public static Size ToEto (this sw.Size value)
+		public static SizeF ToEto (this sw.Size value)
+		{
+			return new SizeF ((float)value.Width, (float)value.Height);
+		}
+
+		public static Size ToEtoSize (this sw.Size value)
 		{
 			return new Size ((int)value.Width, (int)value.Height);
 		}
@@ -80,7 +85,12 @@ namespace Eto.Platform.Wpf
 			return new sw.Size (value.Width, value.Height);
 		}
 
-		public static Point ToEto (this sw.Point value)
+		public static PointF ToEto (this sw.Point value)
+		{
+			return new PointF ((float)value.X, (float)value.Y);
+		}
+
+		public static Point ToEtoPoint (this sw.Point value)
 		{
 			return new Point ((int)value.X, (int)value.Y);
 		}

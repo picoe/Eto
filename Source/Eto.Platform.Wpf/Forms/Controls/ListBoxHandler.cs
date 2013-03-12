@@ -43,6 +43,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		}
 
+		public override bool UseMousePreview { get { return true; } }
+
 		public IListStore DataStore
 		{
 			get { return store; }

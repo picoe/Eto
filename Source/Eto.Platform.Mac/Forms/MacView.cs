@@ -507,47 +507,33 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
-		#region IMacView implementation
+		Control IMacViewHandler.Widget { get { return this.Widget; } }
 
-		Control IMacViewHandler.Widget {
-			get {
-				return this.Widget;
+        public PointF PointFromScreen (PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			if (Control.Window != null) {
+				sdpoint = Control.Window.ConvertBaseToScreen (sdpoint);
+				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
 			}
+			return Platform.Conversions.ToEto (sdpoint);
 		}
-		
-		#endregion
 
-
-        public Point ScreenToWorld(Point p)
+        public PointF PointToScreen (PointF point)
         {
-            return p; /* TODO */
-        }
-
-        public Point WorldToScreen(Point p)
-        {
-            return p; /* TODO */
-        }
-
-        public bool Capture
-        {
-            get
-            {
-                return false; /* TODO */
-            }
-            set
-            {
-                /* TODO */
-            }
-        }
-
-        public Point MousePosition
-        {
-            get { return Point.Empty; /* TODO */ }
+			var sdpoint = point.ToSD ();
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			sdpoint = Control.ConvertPointToView (sdpoint, null);
+			if (Control.Window != null) {
+				sdpoint = Control.Window.ConvertBaseToScreen (sdpoint);
+				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
+			}
+			return Platform.Conversions.ToEto (sdpoint);
         }
 
         public Point Location
         {
-            get { return Point.Empty; /* TODO */ }
+            get { return Platform.Conversions.ToEtoPoint (Control.Frame.Location); }
         }
 
 

@@ -15,6 +15,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new swc.PasswordBox { Width = 80 };
 		}
 
+		public override bool UseMousePreview { get { return true; } }
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {

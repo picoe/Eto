@@ -111,30 +111,19 @@ namespace Eto.Forms
 				this.Control.SetParentLayout(layout);
 		}
 
-		public Point ScreenToWorld(Point p)
+		public PointF PointFromScreen (PointF point)
 		{
-			return Control.ScreenToWorld(p);
+			return Control.PointFromScreen (point);
 		}
 
-		public Point WorldToScreen(Point p)
+		public PointF PointToScreen (PointF point)
 		{
-			return Control.WorldToScreen(p);
+			return Control.PointToScreen (point);
 		}
 
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
 			throw new NotImplementedException();
-		}
-
-		public bool Capture
-		{
-			get { return Control.Capture; }
-			set { Control.Capture = value; }
-		}
-
-		public Point MousePosition
-		{
-			get { return Control.MousePosition; }
 		}
 
 		public Point Location

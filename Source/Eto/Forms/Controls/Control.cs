@@ -41,15 +41,11 @@ namespace Eto.Forms
 
 		void SetParentLayout (Layout layout);
 
-        Point ScreenToWorld(Point p);
-		
 		void MapPlatformAction (string systemAction, BaseAction action);
 
-        Point WorldToScreen(Point p);
+		PointF PointFromScreen (PointF point);
 
-        bool Capture { get; set; }
-
-        Point MousePosition { get; }
+		PointF PointToScreen (PointF point);
 
         Point Location { get; }
 
@@ -524,43 +520,19 @@ namespace Eto.Forms
 			Handler.MapPlatformAction(systemAction, action);
 		}
 
-        /// <summary>
-        /// Converts to world coordinates, which
-        /// are usually the control's client coordinates.
-        /// However controls may choose to support
-        /// other coordinate systems, e.g. a
-        /// scrolling, zooming canvas.
-        /// </summary>
-        public Point ScreenToWorld(Point p)
-        {
-            return Handler.ScreenToWorld(p);
-        }
+		public PointF PointFromScreen (PointF point)
+		{
+			return Handler.PointFromScreen (point);
+		}
 
-        public Point WorldToScreen(Point p)
-        {
-            return Handler.WorldToScreen(p);
-        }
+		public PointF PointToScreen (PointF point)
+		{
+			return Handler.PointToScreen (point);
+		}
 
-        public bool Capture
-        {
-            get
-            {
-                return Handler.Capture;
-            }
-            set
-            {
-                Handler.Capture = value;
-            }
-        }
-
-        public Point MousePosition
-        {
-            get { return Handler.MousePosition; }
-        }
-
-        public Point Location
-        {
-            get { return Handler.Location; }
+		public Point Location
+		{
+			get { return Handler.Location; }
 		}
 
 		#region Obsolete

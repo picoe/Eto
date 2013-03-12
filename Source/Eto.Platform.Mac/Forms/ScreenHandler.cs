@@ -41,7 +41,8 @@ namespace Eto.Platform.Mac.Forms
 				var bounds = Control.Frame;
 				var origin = NSScreen.Screens[0].Frame.Bottom;
 				bounds.Y = origin - bounds.Height - bounds.Y;
-				return bounds.ToEto ();
+				return Platform.Conversions.ToEto (bounds);
+
 			}
 		}
 
@@ -52,7 +53,7 @@ namespace Eto.Platform.Mac.Forms
 				var workingArea = this.Control.VisibleFrame;
 				var origin = NSScreen.Screens[0].Frame.Bottom;
 				workingArea.Y = origin - workingArea.Height - workingArea.Y;
-				return workingArea.ToEto ();
+				return Platform.Conversions.ToEto (workingArea);
 			}
 		}
 

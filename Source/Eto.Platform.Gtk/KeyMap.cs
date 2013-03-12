@@ -9,14 +9,14 @@ namespace Eto.Platform.GtkSharp
 		static Dictionary<Gdk.Key, Key> keymap = new Dictionary<Gdk.Key, Key>();
 		static Dictionary<Key, Gdk.Key> inversekeymap = new Dictionary<Key, Gdk.Key>();
 
-		public static Key Convert(Gdk.Key gkey)
+		public static Key ToEto (this Gdk.Key gkey)
 		{
 			Key key;
 			if (keymap.TryGetValue(gkey, out key)) return key;
 			return Key.None;
 		}
 		
-		public static Key Convert(Gdk.ModifierType modifier)
+		public static Key ToEtoKey (this Gdk.ModifierType modifier)
 		{
 			Key result = Key.None;
 			if ((modifier & Gdk.ModifierType.Mod1Mask) > 0) result |= Key.Alt;
@@ -26,14 +26,14 @@ namespace Eto.Platform.GtkSharp
 			return result;
 		}
 
-		public static Gdk.Key ConvertToKey(Key key)
+		public static Gdk.Key ToGdkKey (this Key key)
 		{
 			Gdk.Key result;
 			if (inversekeymap.TryGetValue(key & Key.KeyMask, out result)) return result;
 			return (Gdk.Key)0;
 		}
 
-		public static Gdk.ModifierType ConvertToModifier(Key key)
+		public static Gdk.ModifierType ToGdkModifier (this Key key)
 		{
 			Gdk.ModifierType result = Gdk.ModifierType.None;
 			if ((key & Key.Alt) > 0) result |= Gdk.ModifierType.Mod1Mask;

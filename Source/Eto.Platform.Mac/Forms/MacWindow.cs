@@ -666,37 +666,21 @@ namespace Eto.Platform.Mac.Forms
 			get { return new Screen(Generator, new ScreenHandler (Control.Screen)); }
 		}
 
-        public Point ScreenToWorld(Point p)
+        public PointF PointFromScreen(PointF point)
         {
-            return p;/* TODO */
-        }
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
 
-        public Point WorldToScreen(Point p)
+        public PointF PointToScreen(PointF point)
         {
-            return p;/* TODO */
-        }
-
-        public bool Capture
-        {
-            get
-            {
-                return false;/* TODO */
-            }
-            set
-            {
-                /* TODO */
-            }
-        }
-
-        public Point MousePosition
-        {
-            get { return Point.Empty;/* TODO */ }
-        }
-
-        public void SetControl(object control)
-        {
-            /* TODO */
-        }
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
 
 		public WindowStyle WindowStyle
 		{

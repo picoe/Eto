@@ -126,7 +126,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new EtoMainCanvas {
 				Handler = this,
 				SnapsToDevicePixels = true,
-				FocusVisualStyle = null
+				FocusVisualStyle = null,
+				Background = swm.Brushes.Transparent
 			};
 		}
 
@@ -204,7 +205,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (scrollable != null) {
 				// only show tiles in the visible rect of the scrollable
 				var visibleRect = scrollable.VisibleRect;
-				visibleRect.Offset (-Control.TranslatePoint (new sw.Point (), scrollable.ContainerObject as sw.UIElement).ToEto ());
+				visibleRect.Offset (-Control.TranslatePoint (new sw.Point (), scrollable.ContainerObject as sw.UIElement).ToEtoPoint ());
 				rect.Intersect (visibleRect);
 			}
 

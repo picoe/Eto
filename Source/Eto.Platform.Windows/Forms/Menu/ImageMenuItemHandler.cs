@@ -63,10 +63,10 @@ namespace Eto.Platform.Windows
 
 		public Key Shortcut
 		{
-			get { return KeyMap.Convert(this.Control.ShortcutKeys); }
+			get { return this.Control.ShortcutKeys.ToEto (); }
 			set 
-			{ 
-				var key = KeyMap.Convert(value);
+			{
+				var key = value.ToSWF ();
 				if (SWF.ToolStripManager.IsValidShortcut(key)) Control.ShortcutKeys = key;
 				else this.Control.ShortcutKeyDisplayString = KeyMap.KeyToString(value);
 			}
