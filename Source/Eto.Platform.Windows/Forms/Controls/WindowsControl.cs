@@ -362,6 +362,10 @@ namespace Eto.Platform.Windows
 
 		public virtual void SetParent (Control parent)
 		{
+            // This is needed to
+            // detach docking windows.
+            if (parent == null)
+                Control.Parent = null;            
 		}
 
 		void Control_SizeChanged (object sender, EventArgs e)
