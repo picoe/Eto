@@ -41,21 +41,6 @@ namespace Eto.Platform.iOS.Forms
 			Control.MakeKeyAndVisible();
 			//ApplicationHandler.Instance.Navigation.PushViewController(Controller, true);
 		}
-
-		public Eto.Drawing.Point ScreenToWorld (Eto.Drawing.Point p)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public Eto.Drawing.Point WorldToScreen (Eto.Drawing.Point p)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public void SetControl (object control)
-		{
-			throw new NotImplementedException ();
-		}
 	}
 }
 

@@ -245,6 +245,7 @@
     <Compile Include="Interface\IKeyboardInputSource.cs" />
     <Compile Include="Interface\IMouseInputSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Forms\Mouse.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
