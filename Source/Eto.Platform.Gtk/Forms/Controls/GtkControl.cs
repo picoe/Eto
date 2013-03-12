@@ -13,7 +13,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public interface IGtkControl
 	{
-		Point Location { get; set; }
+		Point CurrentLocation { get; set; }
 
 		Gtk.Widget ContainerControl { get; }
 	}
@@ -39,7 +39,6 @@ namespace Eto.Platform.GtkSharp
 		Font font;
 		Size size;
 		Size asize;
-		Point location;
 		bool mouseDownHandled;
 		Cursor cursor;
 		Color? originalBackgroundColor;
@@ -92,10 +91,7 @@ namespace Eto.Platform.GtkSharp
 			return label;
 		}
 
-		public virtual Point Location {
-			get { return location; }
-			set { location = value; }
-		}
+		public virtual Point CurrentLocation { get; set; }
 
 		public virtual Size Size {
 			get {
@@ -470,6 +466,11 @@ namespace Eto.Platform.GtkSharp
 				return new PointF (point.X + x, point.Y + y);
 			}
 			return point;
+		}
+
+		public Point Location
+		{
+			get { return Control.Allocation.Location.ToEto (); }
 		}
 	}
 }

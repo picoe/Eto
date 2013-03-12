@@ -330,7 +330,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public override Point Location {
+		public new Point Location {
 			get {
 				if (currentLocation != null)
 					return currentLocation.Value;
