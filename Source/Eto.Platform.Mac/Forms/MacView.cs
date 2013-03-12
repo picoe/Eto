@@ -617,6 +617,6 @@ namespace Eto.Platform.Mac.Forms
 				}
 			}
 		}
-	}
+    }
 }
 

@@ -10,7 +10,7 @@ namespace Eto.Forms
 		
 		void Close ();
 		
-		Point Location { get; set; }
+		new Point Location { get; set; }
 
 		double Opacity { get; set; }
 
@@ -106,7 +106,7 @@ namespace Eto.Forms
 			set { Title = value; }
 		}
 		
-		public Point Location {
+		public new Point Location {
 			get { return handler.Location; }
 			set { handler.Location = value; }
 		}

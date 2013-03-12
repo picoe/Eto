@@ -447,7 +447,7 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.TooltipText; }
 			set { Control.TooltipText = value; }
 		}
-		
+
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
