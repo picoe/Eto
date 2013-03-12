@@ -1,5 +1,6 @@
 using System;
 using System.Reflection;
+using System.Linq;
 using Eto.Forms;
 using MonoMac.AppKit;
 using Eto.Drawing;
@@ -27,6 +28,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (!disableSelectedIndexChanged)
 					this.Widget.OnSelectedIndexChanged (EventArgs.Empty);
 			};
+			Control.ShouldSelectTabViewItem += (tabView, item) => {
+				var tab = this.Widget.TabPages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
+				if (tab != null)
+					return tab.Enabled;
+				else
+					return true;
+			}; 
 		}
 
 		public int SelectedIndex
@@ -42,9 +50,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public void InsertTab (int index, TabPage page)
 		{
 			if (index == -1)
-				Control.Add (((TabPageHandler)page.Handler).Control);
+				Control.Add (((TabPageHandler)page.Handler).TabViewItem);
 			else
-				Control.Insert (((TabPageHandler)page.Handler).Control, index);
+				Control.Insert (((TabPageHandler)page.Handler).TabViewItem, index);
 		}
 		
 		public void ClearTabs ()
@@ -58,7 +66,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			disableSelectedIndexChanged = true;
 			try {
 				var isSelected = SelectedIndex == index;
-				Control.Remove (((TabPageHandler)page.Handler).Control);
+				Control.Remove (((TabPageHandler)page.Handler).TabViewItem);
 				if (isSelected && Control.Items.Length > 0)
 					SelectedIndex = Math.Min (index, Control.Items.Length - 1);
 				if (Widget.Loaded)
