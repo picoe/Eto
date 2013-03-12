@@ -513,9 +513,11 @@ namespace Eto.Platform.Mac.Forms
         {
 			var sdpoint = point.ToSD ();
 			if (Control.Window != null) {
-				sdpoint = Control.Window.ConvertBaseToScreen (sdpoint);
 				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
+				sdpoint = Control.Window.ConvertScreenToBase (sdpoint);
 			}
+			sdpoint = Control.ConvertPointFromView (sdpoint, null);
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
 			return Platform.Conversions.ToEto (sdpoint);
 		}
 
