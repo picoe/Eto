@@ -24,12 +24,13 @@ namespace Eto.Platform.Windows
 
 		public void Add(Control child, int x, int y)
 		{
-			SWF.ScrollableControl parent = Widget.Container.ControlObject as SWF.ScrollableControl;
+			var control = Widget.Container.ControlObject as SWF.Control;
+			var scrollableControl = control as SWF.ScrollableControl;
 			SWF.Control ctl = child.GetContainerControl ();
 			SD.Point pt = new SD.Point(x, y);
-			if (parent != null) pt.Offset(parent.AutoScrollPosition);
+			if (scrollableControl != null) pt.Offset(scrollableControl.AutoScrollPosition);
 			ctl.Location = pt;
-			parent.Controls.Add(ctl);
+			control.Controls.Add(ctl);
 			ctl.BringToFront();
 		}
 

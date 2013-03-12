@@ -9,6 +9,8 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
+		HashSet<string> availableFontFamilies;
+
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
 			get {
@@ -16,20 +18,15 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 
-		public FontFamily GetFontFamily (string familyName)
+		public bool FontFamilyAvailable (string fontFamily)
 		{
-			return new FontFamily (Generator, new FontFamilyHandler (new sd.FontFamily (familyName)));
-		}
-
-		public FontFamily GetSystemFontFamily (string systemFamilyName)
-		{
-			switch (systemFamilyName) {
-			case FontFamilies.MonospaceFamilyName: return new FontFamily (Generator, new FontFamilyHandler (sd.FontFamily.GenericMonospace));
-			case FontFamilies.SansFamilyName: return new FontFamily (Generator, new FontFamilyHandler (sd.FontFamily.GenericSansSerif));
-			case FontFamilies.SerifFamilyName: return new FontFamily (Generator, new FontFamilyHandler (sd.FontFamily.GenericSerif));
-			default:
-				throw new NotSupportedException ();
+			if (availableFontFamilies == null) {
+				availableFontFamilies = new HashSet<string> (StringComparer.InvariantCultureIgnoreCase);
+				foreach (var family in sd.FontFamily.Families) {
+					availableFontFamilies.Add (family.Name);
+				}
 			}
+			return availableFontFamilies.Contains (fontFamily);
 		}
 	}
 }

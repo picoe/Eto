@@ -6,6 +6,7 @@ using Eto.Forms;
 using System.Diagnostics;
 using sw = System.Windows;
 using swm = System.Windows.Media;
+using System.Threading;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -18,6 +19,15 @@ namespace Eto.Platform.Wpf.Forms
 		public static ApplicationHandler Instance
 		{
 			get { return instance; }
+		}
+
+		public static void InvokeIfNecessary (Action action)
+		{
+			if (Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
+				action ();
+			else {
+				Instance.Invoke(action);
+			}
 		}
 
 		public List<sw.Window> DelayShownWindows
@@ -37,7 +47,7 @@ namespace Eto.Platform.Wpf.Forms
 			return new sw.Application ();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			instance = this;

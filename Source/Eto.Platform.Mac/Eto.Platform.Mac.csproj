@@ -10,16 +10,18 @@
     <RootNamespace>Eto.Platform.Mac</RootNamespace>
     <AssemblyName>Eto.Platform.Mac</AssemblyName>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <PropertyGroup>
+    <DefineConstants>$(DefineConstants);OSX;DESKTOP;MONOMAC</DefineConstants>
+    <Optimize>false</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>DEBUG;OSX;DESKTOP</DefineConstants>
+    <DefineConstants>DEBUG;OSX;DESKTOP;MONOMAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -29,10 +31,13 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DefineConstants>OSX;DESKTOP</DefineConstants>
+    <DefineConstants>OSX;DESKTOP;MONOMAC</DefineConstants>
     <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
+  <PropertyGroup>
+    <OutputRoot>..\..\..</OutputRoot>
+  </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="MonoMac">
       <HintPath>..\..\Libraries\MonoMac\MonoMac.dll</HintPath>
@@ -43,8 +48,9 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Forms\Controls\MacTextControl.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -130,7 +136,7 @@
     <Compile Include="Forms\Actions\MacButtonAction.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\ClipboardHandler.cs" />
@@ -171,10 +177,15 @@
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Forms\SaveFileDialogHandler.cs" />
-    <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SolidBrushHandler.cs" />
-    <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\SplineHelper.cs" />
+    <Compile Include="Drawing\TextureBrushHandler.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
+    <Compile Include="Forms\ScreenHandler.cs" />
+    <Compile Include="Forms\ScreensHandler.cs" />
+    <Compile Include="NSImageExtensions.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Forms\MouseHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -192,4 +203,7 @@
   </ItemGroup>
   <ItemGroup />
   <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Properties\" />
+  </ItemGroup>
 </Project>

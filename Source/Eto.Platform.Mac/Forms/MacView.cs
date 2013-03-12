@@ -18,20 +18,20 @@ namespace Eto.Platform.Mac.Forms
 		public NSView View { get; set; }
 	
 		public Control Widget { get; set; }
-	
+
 		[Export("mouseMoved:")]
 		public void MouseMoved (NSEvent theEvent)
 		{
-			Widget.OnMouseMove (Conversions.GetMouseEvent (View, theEvent));
+			Widget.OnMouseMove (Conversions.GetMouseEvent (View, theEvent, false));
 		}
 		
 		[Export("mouseEntered:")]
 		public void MouseEntered (NSEvent theEvent)
 		{
-			Widget.OnMouseEnter (Conversions.GetMouseEvent (View, theEvent));
+			Widget.OnMouseEnter (Conversions.GetMouseEvent (View, theEvent, false));
 		}
 
-		[Export("cursorUpdate::")]
+		[Export("cursorUpdate:")]
 		public void CursorUpdate (NSEvent theEvent)
 		{
 		}
@@ -39,7 +39,13 @@ namespace Eto.Platform.Mac.Forms
 		[Export("mouseExited:")]
 		public void MouseExited (NSEvent theEvent)
 		{
-			Widget.OnMouseLeave (Conversions.GetMouseEvent (View, theEvent));
+			Widget.OnMouseLeave (Conversions.GetMouseEvent (View, theEvent, false));
+		}
+
+		[Export("scrollWheel:")]
+		public void ScrollWheel (NSEvent theEvent)
+		{
+			Widget.OnMouseWheel (Conversions.GetMouseEvent (View, theEvent, true));
 		}
 	}
 	
@@ -65,6 +71,7 @@ namespace Eto.Platform.Mac.Forms
 
 		bool IsEventHandled (string eventName);
 
+		void PostKeyDown (KeyEventArgs e);
 	}
 	
 	public interface IMacContainerControl
@@ -192,7 +199,8 @@ namespace Eto.Platform.Mac.Forms
 			if (tracking != null)
 				Control.RemoveTrackingArea (tracking);
 			//Console.WriteLine ("Adding mouse tracking {0} for area {1}", this.Widget.GetType ().FullName, Control.Frame.Size);
-			mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = Control };
+			if (mouseDelegate == null)
+				mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = Control };
 			tracking = new NSTrackingArea (new SD.RectangleF (new SD.PointF (0, 0), Control.Frame.Size), 
 				NSTrackingAreaOptions.ActiveAlways | mouseOptions | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect, 
 			    mouseDelegate, 
@@ -214,7 +222,9 @@ namespace Eto.Platform.Mac.Forms
 		static Selector selRightMouseDown = new Selector ("rightMouseDown:");
 		static Selector selRightMouseUp = new Selector ("rightMouseUp:");
 		static Selector selRightMouseDragged = new Selector ("rightMouseDragged:");
+		static Selector selScrollWheel = new Selector ("scrollWheel:");
 		static Selector selKeyDown = new Selector ("keyDown:");
+		static Selector selKeyUp = new Selector ("keyUp:");
 		static Selector selBecomeFirstResponder = new Selector ("becomeFirstResponder");
 		static Selector selResignFirstResponder = new Selector ("resignFirstResponder");
 		
@@ -240,13 +250,14 @@ namespace Eto.Platform.Mac.Forms
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
 				Control.PostsFrameChangedNotifications = true;
-				this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) {
+				this.AddObserver (NSView.NSViewFrameDidChangeNotification, e => {
+					var w = (Control)e.Widget;
 					var h = ((MacView<T, W>)(e.Widget.Handler));
 					var oldFrameSize = h.oldFrameSize;
 					h.OnSizeChanged (EventArgs.Empty);
-					var newSize = e.Widget.Size;
+					var newSize = h.Size;
 					if (oldFrameSize == null || oldFrameSize.Value != newSize) {
-						e.Widget.OnSizeChanged (EventArgs.Empty);
+						w.OnSizeChanged (EventArgs.Empty);
 						h.oldFrameSize = newSize;
 					}
 				});
@@ -262,8 +273,14 @@ namespace Eto.Platform.Mac.Forms
 			case Eto.Forms.Control.MouseDoubleClickEvent:
 				HandleEvent (Eto.Forms.Control.MouseDownEvent);
 				break;
+			case Eto.Forms.Control.MouseWheelEvent:
+				AddMethod (selScrollWheel, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseWheel), "v@:@");
+				break;
 			case Eto.Forms.Control.KeyDownEvent:
 				AddMethod (selKeyDown, new Action<IntPtr, IntPtr, IntPtr> (TriggerKeyDown), "v@:@");
+				break;
+			case Eto.Forms.Control.KeyUpEvent:
+				AddMethod (selKeyUp, new Action<IntPtr, IntPtr, IntPtr> (TriggerKeyUp), "v@:@");
 				break;
 			case Eto.Forms.Control.LostFocusEvent:
 				AddMethod (selResignFirstResponder, new Func<IntPtr, IntPtr, bool> (TriggerLostFocus), "B@:");
@@ -272,7 +289,6 @@ namespace Eto.Platform.Mac.Forms
 				AddMethod (selBecomeFirstResponder, new Func<IntPtr, IntPtr, bool> (TriggerGotFocus), "B@:");
 				break;
 			case Eto.Forms.Control.ShownEvent:
-			case Eto.Forms.Control.HiddenEvent:
 				// TODO
 				break;
 			default:
@@ -308,12 +324,22 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
+		static void TriggerKeyUp (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			var theEvent = new NSEvent (e);
+			if (!MacEventView.KeyUp (handler.Widget, theEvent)) {
+				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
+			}
+		}
+		
 		static void TriggerMouseDown (IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var obj = Runtime.GetNSObject (sender);
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			var theEvent = new NSEvent (e);
-			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, false);
 			if (theEvent.ClickCount >= 2)
 				handler.Widget.OnMouseDoubleClick (args);
 			
@@ -331,7 +357,7 @@ namespace Eto.Platform.Mac.Forms
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 
 			var theEvent = new NSEvent (e);
-			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, false);
 			handler.Widget.OnMouseUp (args);
 			if (!args.Handled) {
 				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
@@ -344,13 +370,28 @@ namespace Eto.Platform.Mac.Forms
 			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
 			
 			var theEvent = new NSEvent (e);
-			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, false);
 			handler.Widget.OnMouseMove (args);
 			if (!args.Handled) {
 				Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
 			}
 		}
-		
+
+		static void TriggerMouseWheel (IntPtr sender, IntPtr sel, IntPtr e)
+		{
+			var obj = Runtime.GetNSObject (sender);
+			var handler = (MacView<T,W>)((IMacControl)obj).Handler;
+			
+			var theEvent = new NSEvent (e);
+			var args = Conversions.GetMouseEvent ((NSView)obj, theEvent, true);
+			if (!args.Delta.IsZero) {
+				handler.Widget.OnMouseWheel (args);
+				if (!args.Handled) {
+					Messaging.void_objc_msgSendSuper_IntPtr (obj.SuperHandle, sel, e);
+				}
+			}
+		}
+
 		protected virtual void OnSizeChanged (EventArgs e)
 		{
 			CreateTracking ();
@@ -366,11 +407,6 @@ namespace Eto.Platform.Mac.Forms
 			var region = rect.ToSDRectangleF ();
 			region.Y = Control.Frame.Height - region.Y - region.Height;
 			Control.SetNeedsDisplayInRect (region);
-		}
-
-		public Graphics CreateGraphics ()
-		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control));
 		}
 
 		public void SuspendLayout ()
@@ -389,18 +425,25 @@ namespace Eto.Platform.Mac.Forms
 				focus = true;
 		}
 
-		public virtual Color BackgroundColor {
-			get { 
-				if (!Control.WantsLayer) {
+		public virtual Color BackgroundColor
+		{
+			get
+			{
+				if (!Control.WantsLayer)
 					Control.WantsLayer = true;
-				}
 				return Control.Layer.BackgroundColor.ToEtoColor ();
 			}
-			set {
-				if (!Control.WantsLayer) {
-					Control.WantsLayer = true;
+			set
+			{
+				if (value.A > 0) {
+					if (!Control.WantsLayer)
+						Control.WantsLayer = true;
+					Control.Layer.BackgroundColor = value.ToCGColor ();
+				} else {
+					Control.WantsLayer = false;
+					if (Control.Layer != null)
+						Control.Layer.BackgroundColor = value.ToCGColor ();
 				}
-				Control.Layer.BackgroundColor = value.ToCGColor ();
 			}
 		}
 
@@ -455,17 +498,46 @@ namespace Eto.Platform.Mac.Forms
 			if (focus && Control.Window != null)
 				Control.Window.MakeFirstResponder (Control);
 		}
-		
-		#region IMacView implementation
 
-		Control IMacViewHandler.Widget {
-			get {
-				return this.Widget;
-			}
+		public virtual void OnUnLoad (EventArgs e)
+		{
 		}
-		
-		#endregion
-		
+
+		public virtual void PostKeyDown (KeyEventArgs e)
+		{
+		}
+
+		Control IMacViewHandler.Widget { get { return this.Widget; } }
+
+        public PointF PointFromScreen (PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			if (Control.Window != null) {
+				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
+				sdpoint = Control.Window.ConvertScreenToBase (sdpoint);
+			}
+			sdpoint = Control.ConvertPointFromView (sdpoint, null);
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+
+        public PointF PointToScreen (PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			sdpoint = Control.ConvertPointToView (sdpoint, null);
+			if (Control.Window != null) {
+				sdpoint = Control.Window.ConvertBaseToScreen (sdpoint);
+				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
+			}
+			return Platform.Conversions.ToEto (sdpoint);
+        }
+
+        public Point Location
+        {
+            get { return Platform.Conversions.ToEtoPoint (Control.Frame.Location); }
+        }
+
 		static void TriggerSystemAction (IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var selector = new Selector (sel);
@@ -552,6 +624,6 @@ namespace Eto.Platform.Mac.Forms
 				}
 			}
 		}
-	}
+    }
 }
 

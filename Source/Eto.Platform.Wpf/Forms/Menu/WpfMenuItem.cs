@@ -8,6 +8,7 @@ using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
 using Eto.Platform.Wpf.Drawing;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
@@ -15,7 +16,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		where C : swc.MenuItem
 		where W : MenuActionItem
 	{
-		Eto.Drawing.Icon icon;
+        Image image;
 		swi.RoutedCommand command = new swi.RoutedCommand ();
 		bool openingHandled;
 
@@ -26,20 +27,13 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			};
 		}
 
-		public Eto.Drawing.Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				icon = value;
-				if (icon != null)
-					Control.Icon = new swc.Image {
-						Source = ((IWpfImage)icon.Handler).GetImageClosestToSize (16),
-						MaxWidth = 16,
-						MaxHeight = 16
-					};
-				else
-					Control.Icon = null;
+				image = value;
+				Control.Icon = image.ToWpfImage (16);
 			}
 		}
 
@@ -71,7 +65,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 					var key = KeyMap.ConvertKey (value);
 					var modifier = KeyMap.ConvertModifier (value);
 					Control.InputBindings.Add (new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });
-					Control.InputGestureText = KeyMap.KeyToString (value);
+					Control.InputGestureText = value.ToShortcutString ();
 				}
 				else
 					Control.InputGestureText = null;

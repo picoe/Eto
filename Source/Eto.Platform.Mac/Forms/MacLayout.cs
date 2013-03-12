@@ -72,6 +72,10 @@ namespace Eto.Platform.Mac.Forms
 			
 		}
 		
+		public virtual void OnUnLoad ()
+		{
+		}
+		
 		public virtual SD.RectangleF GetPosition (Control control)
 		{
 			return ((NSView)control.ControlObject).Frame;

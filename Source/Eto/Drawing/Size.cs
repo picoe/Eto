@@ -13,7 +13,7 @@ namespace Eto.Drawing
 		/// Gets or sets the width
 		/// </summary>
 		public int Width { get; set; }
-
+		
 		/// <summary>
 		/// Gets or sets the height
 		/// </summary>
@@ -23,7 +23,7 @@ namespace Eto.Drawing
 		/// Gets an empty size with a zero width and height
 		/// </summary>
 		public static readonly Size Empty = new Size (0, 0);
-
+		
 		/// <summary>
 		/// Converts a floating point <paramref name="size"/> to an integral size by rounding the width and height
 		/// </summary>
@@ -33,7 +33,7 @@ namespace Eto.Drawing
 		{
 			return new Size ((int)Math.Round (size.Width), (int)Math.Round (size.Height));
 		}
-
+		
 		/// <summary>
 		/// Converts a floating point <paramref name="size"/> to an integral size by truncating the width and height
 		/// </summary>
@@ -54,7 +54,7 @@ namespace Eto.Drawing
 		{
 			return new Size (Math.Min (size1.Width, size2.Width), Math.Min (size1.Height, size2.Height));
 		}
-
+		
 		/// <summary>
 		/// Returns the maximum width and height of two sizes
 		/// </summary>
@@ -65,7 +65,7 @@ namespace Eto.Drawing
 		{
 			return new Size (Math.Max (size1.Width, size2.Width), Math.Max (size1.Height, size2.Height));
 		}
-
+		
 		/// <summary>
 		/// Returns the absolute width and height of the specified <paramref name="size"/>
 		/// </summary>
@@ -75,24 +75,24 @@ namespace Eto.Drawing
 		{
 			return new Size (Math.Abs (size.Width), Math.Abs (size.Height));
 		}
-
+		
 		/// <summary>
 		/// Size with width and height with a maximum int value
 		/// </summary>
 		public static readonly Size MaxValue = new Size (Int32.MaxValue, Int32.MaxValue);
-
+		
 		/// <summary>
 		/// Size with width and height with a minimum int value
 		/// </summary>
 		public static readonly Size MinValue = new Size (Int32.MinValue, Int32.MinValue);
-
+		
 		/// <summary>
 		/// Initializes a new Size class with the specified width and height
 		/// </summary>
 		/// <param name="width">Initial width of the size</param>
 		/// <param name="height">Initial height of the size</param>
 		public Size (int width, int height)
-			: this()
+		: this()
 		{
 			Width = width;
 			Height = height;
@@ -103,10 +103,19 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="point">Point to convert to a Size struct</param>
 		public Size (Point point)
-			: this(point.X, point.Y)
+		: this(point.X, point.Y)
 		{
 		}
 		
+		/// <summary>
+		/// Initializes a new Size with the truncated width and height of size.
+		/// </summary>
+		/// <param name="size"></param>
+		public Size(SizeF size)
+			: this((int)size.Width, (int)size.Height)
+		{
+		}
+
 		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="point"/> is within the <see cref="Width"/> and <see cref="Height"/> of this size
 		/// </summary>
@@ -116,20 +125,20 @@ namespace Eto.Drawing
 		{
 			return Contains (point.X, point.Y);
 		}
-
+		
 		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="x"/> and <paramref name="y"/> values are within the <see cref="Width"/> and <see cref="Height"/> of this size
 		/// </summary>
 		/// <param name="x">X value to test</param>
 		/// <param name="y">Y value to test</param>
-		/// <returns>True if the <paramref name="x"/> and <paramref name="y"/> values are between 0 and the Width and Height of this size, respectively. False otherwise</returns>
+		/// <returns>True if the <paramref name="x"/> and <paramref name="y"/> values are greater than or equal to 0 and less than the Width and Height of this size, respectively. False otherwise</returns>
 		public bool Contains (int x, int y)
 		{
 			if (Width == 0 || Height == 0)
 				return false;
-			return (x >= 0 && x <= Width && y >= 0 && y <= Height);
+			return (x >= 0 && x < Width && y >= 0 && y < Height);
 		}
-
+		
 		/// <summary>
 		/// Gets a value indicating that both the <see cref="Width"/> and <see cref="Height"/> are zero
 		/// </summary>
@@ -145,7 +154,7 @@ namespace Eto.Drawing
 		{
 			get { return Width == 0 || Height == 0; }
 		}
-
+		
 		/// <summary>
 		/// Negates the Width and Height of the specified <paramref name="size"/> value
 		/// </summary>		
@@ -155,7 +164,7 @@ namespace Eto.Drawing
 		{
 			return new Size (-size.Width, -size.Height);
 		}
-
+		
 		/// <summary>
 		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of two sizes
 		/// </summary>
@@ -166,7 +175,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size1.Width * size2.Width, size1.Height * size2.Height);
 		}
-
+		
 		/// <summary>
 		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
 		/// </summary>
@@ -177,7 +186,29 @@ namespace Eto.Drawing
 		{
 			return new Size (size.Width * factor, size.Height * factor);
 		}
-
+		
+		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
+		/// </summary>
+		/// <param name="size">Size to multiply</param>
+		/// <param name="factor">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a Size struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
+		public static Size operator * (int factor, Size size)
+		{
+			return new Size (size.Width * factor, size.Height * factor);
+		}
+		
+		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified floating point <paramref name="factor"/>
+		/// </summary>
+		/// <param name="size">Size to multiply</param>
+		/// <param name="factor">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
+		public static SizeF operator * (Size size, float factor)
+		{
+			return new SizeF (size.Width * factor, size.Height * factor);
+		}
+		
 		/// <summary>
 		/// Divides the <see cref="Width"/> and <see cref="Height"/> of two sizes
 		/// </summary>
@@ -188,7 +219,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size1.Width / size2.Width, size1.Height / size2.Height);
 		}
-
+		
 		/// <summary>
 		/// Divides the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
 		/// </summary>
@@ -199,7 +230,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size.Width / factor, size.Height / factor);
 		}
-
+		
 		/// <summary>
 		/// Adds the <see cref="Width"/> and <see cref="Height"/> values of two sizes together
 		/// </summary>
@@ -210,7 +241,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size1.Width + size2.Width, size1.Height + size2.Height);
 		}
-
+		
 		/// <summary>
 		/// Subtracts the <see cref="Width"/> and <see cref="Height"/> value of one size from another
 		/// </summary>
@@ -221,7 +252,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size1.Width - size2.Width, size1.Height - size2.Height);
 		}
-
+		
 		/// <summary>
 		/// Adds the <see cref="Point.X"/> and <see cref="Point.Y"/> value to the <see cref="Width"/> and <see cref="Height"/> of a size
 		/// </summary>
@@ -232,7 +263,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size.Width + point.X, size.Height + point.Y);
 		}
-
+		
 		/// <summary>
 		/// Subtracts the <see cref="Point.X"/> and <see cref="Point.Y"/> value from the <see cref="Width"/> and <see cref="Height"/> of a size
 		/// </summary>
@@ -243,7 +274,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size.Width - point.X, size.Height - point.Y);
 		}
-
+		
 		/// <summary>
 		/// Subtracts a <paramref name="value"/> from the <see cref="Width"/> and <see cref="Height"/> of the specified <paramref name="size"/>
 		/// </summary>
@@ -254,7 +285,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size.Width - value, size.Height - value);
 		}
-
+		
 		/// <summary>
 		/// Adds a <paramref name="value"/> to the <see cref="Width"/> and <see cref="Height"/> of the specified <paramref name="size"/>
 		/// </summary>
@@ -265,7 +296,7 @@ namespace Eto.Drawing
 		{
 			return new Size (size.Width + value, size.Height + value);
 		}
-
+		
 		/// <summary>
 		/// Compares two sizes for equality
 		/// </summary>
@@ -276,7 +307,7 @@ namespace Eto.Drawing
 		{
 			return (size1.Width == size2.Width && size1.Height == size2.Height);
 		}
-
+		
 		/// <summary>
 		/// Compares two sizes for inequality
 		/// </summary>
@@ -287,7 +318,17 @@ namespace Eto.Drawing
 		{
 			return (size1.Width != size2.Width || size1.Height != size2.Height);
 		}
-
+		
+		/// <summary>
+		/// Explicit conversion from a <see cref="SizeF"/> to a <see cref="Size"/> by truncating values
+		/// </summary>
+		/// <param name="size">Size to convert</param>
+		/// <returns>A new instance of a Size with the value of the specified <paramref name="size"/></returns>
+		public static explicit operator Size (SizeF size)
+		{
+			return new Size ((int)size.Width, (int)size.Height);
+		}
+		
 		/// <summary>
 		/// Explicit conversion from a <paramref name="point"/> to a Size with a Width and Height of the X and Y values of the point, respectively
 		/// </summary>
@@ -297,7 +338,7 @@ namespace Eto.Drawing
 		{
 			return new Size (point);
 		}
-
+		
 		/// <summary>
 		/// Compares this size to the specified <paramref name="obj"/>
 		/// </summary>
@@ -307,7 +348,7 @@ namespace Eto.Drawing
 		{
 			return obj is Size && (Size)obj == this;
 		}
-
+		
 		/// <summary>
 		/// Gets the hash code for this Size
 		/// </summary>
@@ -316,7 +357,7 @@ namespace Eto.Drawing
 		{
 			return Width ^ Height;
 		}
-
+		
 		/// <summary>
 		/// Converts this Size struct to a string
 		/// </summary>
@@ -325,7 +366,7 @@ namespace Eto.Drawing
 		{
 			return String.Format ("Width={0} Height={1}", Width, Height);
 		}
-
+		
 		/// <summary>
 		/// Compares this size to the <paramref name="other"/> size
 		/// </summary>

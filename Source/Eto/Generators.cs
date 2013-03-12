@@ -51,6 +51,16 @@ namespace Eto
 		public const string MacAssembly = "Eto.Platform.Mac.Generator, Eto.Platform.Mac";
 
 		/// <summary>
+		/// ID of the Mac OS X platform
+		/// </summary>
+		public const string XamMac = "xammac";
+		
+		/// <summary>
+		/// Assembly name of the Mac OS X platform
+		/// </summary>
+		public const string XamMacAssembly = "Eto.Platform.Mac.Generator, Eto.Platform.XamMac";
+		
+		/// <summary>
 		/// ID of the Windows forms platform
 		/// </summary>
 		public const string Windows = "windows";

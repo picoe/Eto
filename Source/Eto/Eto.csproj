@@ -1,59 +1,41 @@
 <?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
-    <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.50727</ProductVersion>
-    <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <AssemblyKeyContainerName>
-    </AssemblyKeyContainerName>
-    <AssemblyName>Eto</AssemblyName>
-    <DefaultClientScript>JScript</DefaultClientScript>
-    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
-    <DefaultTargetSchema>IE50</DefaultTargetSchema>
-    <DelaySign>false</DelaySign>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</ProjectGuid>
     <OutputType>Library</OutputType>
-    <AppDesignerFolder>
-    </AppDesignerFolder>
     <RootNamespace>Eto</RootNamespace>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
+    <AssemblyName>Eto</AssemblyName>
   </PropertyGroup>
-  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <BaseAddress>285212672</BaseAddress>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
-    <DefineConstants>TRACE;DESKTOP;XAML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
-    <FileAlignment>4096</FileAlignment>
-    <Optimize>true</Optimize>
-    <OutputPath>..\..\BuildOutput\Release\</OutputPath>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <RemoveIntegerChecks>False</RemoveIntegerChecks>
+  <PropertyGroup>
+    <FileAlignment>512</FileAlignment>
+    <DebugSymbols>True</DebugSymbols>
+    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <DebugType>pdbonly</DebugType>
-    <GenerateDocumentation>true</GenerateDocumentation>
-    <DebugSymbols>true</DebugSymbols>
+    <OutputRoot>..\..\..</OutputRoot>
+    <LibrariesPath>..\..\Libraries</LibrariesPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <BaseAddress>285212672</BaseAddress>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
+    <OutputPath>..\..\BuildOutput\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;DESKTOP;XAML</DefineConstants>
-    <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
-    <DebugSymbols>true</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <Optimize>false</Optimize>
-    <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <RegisterForComInterop>False</RegisterForComInterop>
-    <RemoveIntegerChecks>False</RemoveIntegerChecks>
-    <WarningLevel>4</WarningLevel>
-    <DebugType>full</DebugType>
     <GenerateDocumentation>true</GenerateDocumentation>
+    <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
+    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\BuildOutput\Release</OutputPath>
+    <DefineConstants>TRACE;DESKTOP;XAML</DefineConstants>
+    <GenerateDocumentation>true</GenerateDocumentation>
+    <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+  </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="System">
       <Name>System</Name>
@@ -65,11 +47,6 @@
     <Reference Include="System.Xaml" />
   </ItemGroup>
   <ItemGroup>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="AssemblyInfo.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Binding\ColumnBinding.cs" />
     <Compile Include="CancelEventHandler.cs">
       <SubType>Code</SubType>
@@ -78,6 +55,7 @@
     <Compile Include="Drawing\Colors.cs" />
     <Compile Include="Drawing\DashStyle.cs" />
     <Compile Include="Drawing\DashStyles.cs" />
+    <Compile Include="Drawing\FillMode.cs" />
     <Compile Include="Drawing\ImageConverter.cs" />
     <Compile Include="Drawing\ImageInterpolation.cs" />
     <Compile Include="Drawing\PenLineJoin.cs" />
@@ -91,9 +69,13 @@
     <Compile Include="EtoException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Forms\Controls\Drawable.mobile.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
+    <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
+    <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
+    <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
     <Compile Include="Forms\Controls\TreeView.desktop.cs" />
@@ -101,6 +83,7 @@
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
     <Compile Include="Forms\Layout\DynamicTable.cs" />
+    <Compile Include="Forms\Mouse.cs" />
     <Compile Include="Forms\Printing\PageSettings.cs" />
     <Compile Include="Forms\Printing\PrintDocument.cs" />
     <Compile Include="Forms\Printing\PrintSettings.cs" />
@@ -115,6 +98,7 @@
     <Compile Include="PropertyStore.cs" />
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
+    <Compile Include="Threading\Thread.cs" />
     <Compile Include="WeakEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -192,9 +176,6 @@
     <Compile Include="Forms\Controls\Drawable.cs" />
     <Compile Include="Forms\Controls\GroupBox.cs" />
     <Compile Include="Forms\Controls\ImageView.cs" />
-    <Compile Include="Forms\Controls\KeyPressEventArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Controls\Label.cs" />
     <Compile Include="Forms\Controls\ListBox.cs" />
     <Compile Include="Forms\Controls\ListControl.cs" />
@@ -267,7 +248,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="..\GlobalAssemblyInfo.cs">
-      <Link>GlobalAssemblyInfo.cs</Link>
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\WebView.cs" />
     <Compile Include="Forms\Clipboard.cs" />
@@ -380,6 +361,18 @@
     <Compile Include="Drawing\SolidBrush.cs" />
     <Compile Include="Drawing\Brush.cs" />
     <Compile Include="Drawing\PenLineCap.cs" />
+    <Compile Include="Drawing\TextureBrush.cs" />
+    <Compile Include="Drawing\LinearGradientBrush.cs" />
+    <Compile Include="Forms\Screen.cs" />
+    <Compile Include="Helper.cs" />
+    <Compile Include="Forms\Controls\RadioButtonList.cs" />
+    <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
+    <Compile Include="Forms\Controls\KeyEventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

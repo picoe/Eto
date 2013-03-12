@@ -16,6 +16,11 @@ namespace Eto.Platform.GtkSharp
 		{
 			return new Cairo.Color ((double)color.R, (double)color.G, (double)color.B, (double)color.A);
 		}
+
+		public static Color ToEto (this Cairo.Color color)
+		{
+			return new Color ((float)color.R, (float)color.G, (float)color.B, (float)color.A);
+		}
 		
 		public static Cairo.Rectangle ToCairo (this Rectangle rectangle)
 		{
@@ -49,7 +54,26 @@ namespace Eto.Platform.GtkSharp
 				throw new NotSupportedException ();
 			}
 		}
-		
+
+		public static Gdk.InterpType ToGdk (this ImageInterpolation value)
+		{
+
+			switch (value) {
+			case ImageInterpolation.Default:
+				return Gdk.InterpType.Bilinear;
+			case ImageInterpolation.None:
+				return Gdk.InterpType.Nearest;
+			case ImageInterpolation.High:
+				return  Gdk.InterpType.Hyper;
+			case ImageInterpolation.Low:
+				return  Gdk.InterpType.Tiles;
+			case ImageInterpolation.Medium:
+				return  Gdk.InterpType.Bilinear;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
 		public static Color ToEto (this Gdk.Color color)
 		{
 			return new Color ((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue);
@@ -248,24 +272,14 @@ namespace Eto.Platform.GtkSharp
 			return (float)Math.PI * angle / 180.0f;
 		}
 
-		public static PenHandler ToHandler (this IPen pen)
+		public static void Apply (this Pen pen, GraphicsHandler graphics)
 		{
-			return (PenHandler)pen.ControlObject;
+			((PenHandler)pen.Handler).Apply (pen, graphics);
 		}
 
-		public static void Apply (this IPen pen, GraphicsHandler graphics)
+		public static void Apply (this Brush brush, GraphicsHandler graphics)
 		{
-			pen.ToHandler ().Apply (graphics);
-		}
-
-		public static BrushHandler ToHandler (this IBrush brush)
-		{
-			return (BrushHandler)brush.ControlObject;
-		}
-		
-		public static void Apply (this IBrush brush, GraphicsHandler graphics)
-		{
-			brush.ToHandler ().Apply (graphics);
+			((BrushHandler)brush.Handler).Apply (brush.ControlObject, graphics);
 		}
 
 		public static Cairo.LineJoin ToCairo (this PenLineJoin value)
@@ -336,12 +350,132 @@ namespace Eto.Platform.GtkSharp
 
 		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)
 		{
-			return (GraphicsPathHandler)path.ControlObject;
+			return ((GraphicsPathHandler)path.ControlObject);
+		}
+
+		public static void Apply (this IGraphicsPath path, Cairo.Context context)
+		{
+			((GraphicsPathHandler)path.ControlObject).Apply(context);
 		}
 
 		public static Cairo.Matrix ToCairo (this IMatrix matrix)
 		{
 			return (Cairo.Matrix)matrix.ControlObject;
+		}
+
+		public static IMatrix ToEto (this Cairo.Matrix matrix)
+		{
+			return new MatrixHandler (matrix);
+		}
+
+		public static Gdk.Pixbuf ToGdk (this Image image)
+		{
+			var handler = image.Handler as IGtkPixbuf;
+			if (handler != null)
+				return handler.Pixbuf;
+			else
+				return null;
+		}
+
+		public static void SetCairoSurface (this Image image, Cairo.Context context, float x, float y)
+		{
+			Gdk.CairoHelper.SetSourcePixbuf (context, image.ToGdk (), x, y);
+		}
+
+		public static GradientWrapMode ToEto (this Cairo.Extend extend)
+		{
+			switch (extend) {
+			case Cairo.Extend.Reflect:
+				return GradientWrapMode.Reflect;
+			case Cairo.Extend.Repeat:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Cairo.Extend ToCairo (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return Cairo.Extend.Reflect;
+			case GradientWrapMode.Repeat:
+				return Cairo.Extend.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static Gtk.Image ToGtk (this Image image, Gtk.IconSize? size = null)
+		{
+			if (image == null)
+				return null;
+			var handler = (IImageHandler)image.Handler;
+			var gtkimage =new Gtk.Image ();
+			handler.SetImage (gtkimage, size);
+			return gtkimage;
+		}
+
+		public static void SetGtkImage (this Image image, Gtk.Image gtkimage, Gtk.IconSize? size = null)
+		{
+			if (image == null)
+				return;
+			var handler = (IImageHandler)image.Handler;
+			handler.SetImage (gtkimage, size);
+		}
+
+		public static Cairo.FillRule ToCairo (this FillMode value)
+		{
+			switch (value) {
+			case FillMode.Alternate:
+				return Cairo.FillRule.EvenOdd;
+			case FillMode.Winding:
+				return Cairo.FillRule.Winding;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static KeyEventArgs ToEto (this Gdk.EventKey args)
+		{
+			Key key = args.Key.ToEto () | args.State.ToEtoKey ();
+
+			if (key != Key.None) {
+				Key modifiers = (key & Key.ModifierMask);
+				if (args.KeyValue <= 128 && ((modifiers & ~Key.Shift) == 0))
+					return new KeyEventArgs (key, KeyEventType.KeyDown, (char)args.KeyValue);
+				else
+					return new KeyEventArgs (key, KeyEventType.KeyDown);
+			} else if (args.KeyValue <= 128)
+				return new KeyEventArgs (key, KeyEventType.KeyDown, (char)args.KeyValue);
+			else
+				return null;
+		}
+
+		public static MouseButtons ToEtoMouseButtons (this Gdk.ModifierType modifiers)
+		{
+			MouseButtons buttons = MouseButtons.None;
+			if (modifiers.HasFlag (Gdk.ModifierType.Button1Mask))
+				buttons |= MouseButtons.Primary;
+			if (modifiers.HasFlag (Gdk.ModifierType.Button2Mask))
+				buttons |= MouseButtons.Middle;
+			if (modifiers.HasFlag (Gdk.ModifierType.Button3Mask))
+				buttons |= MouseButtons.Alternate;
+			return buttons;
+		}
+
+		public static MouseButtons ToEtoMouseButtons (this Gdk.EventButton ev)
+		{
+			switch (ev.Button) {
+			case 1:
+				return MouseButtons.Primary;
+			case 2:
+				return MouseButtons.Middle;
+			case 3:
+				return MouseButtons.Alternate;
+			default:
+				return MouseButtons.None;
+			}
 		}
 	}
 }

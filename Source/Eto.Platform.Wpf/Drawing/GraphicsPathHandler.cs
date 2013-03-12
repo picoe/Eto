@@ -26,6 +26,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Figures = new swm.PathFigureCollection ();
 		}
 
+		GraphicsPathHandler (swm.PathGeometry control)
+		{
+			Control = control;
+		}
+
 		public bool IsEmpty
 		{
 			get { return Control.IsEmpty (); }
@@ -182,7 +187,10 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Transform (IMatrix matrix)
 		{
-			Control.Transform = matrix.ToWpfTransform ();
+			if (Control.Transform != null)
+				Control.Transform = new swm.MatrixTransform (swm.Matrix.Multiply (matrix.ToWpf (), Control.Transform.Value));
+			else
+				Control.Transform = matrix.ToWpfTransform ();
 		}
 
 		public void AddEllipse (float x, float y, float width, float height)
@@ -207,6 +215,17 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Dispose ()
 		{
+		}
+
+		public IGraphicsPath Clone ()
+		{
+			return new GraphicsPathHandler (Control.Clone ());
+		}
+
+		public FillMode FillMode
+		{
+			set { Control.FillRule = value == FillMode.Alternate ? swm.FillRule.EvenOdd : swm.FillRule.Nonzero; }
+			get { return Control.FillRule == swm.FillRule.EvenOdd ? FillMode.Alternate : FillMode.Winding; }
 		}
 	}
 }

@@ -75,8 +75,8 @@ namespace Eto.Forms
 
 		internal void RemoveTab (int index, TabPage page)
 		{
-			page.SetParent (null);
 			handler.RemoveTab (index, page);
+			page.SetParent (null);
 		}
 		
 		internal void ClearTabs ()
@@ -105,6 +105,30 @@ namespace Eto.Forms
 			base.OnLoadComplete (e);
 			foreach (var page in pages) {
 				page.OnLoadComplete (e);
+			}
+		}
+
+		public override void OnUnLoad (EventArgs e)
+		{
+			base.OnUnLoad (e);
+			foreach (var page in pages) {
+				page.OnUnLoad (e);
+			}
+		}
+		
+		internal protected override void OnDataContextChanged (EventArgs e)
+		{
+			base.OnDataContextChanged (e);
+			foreach (var tab in TabPages) {
+				tab.OnDataContextChanged (e);
+			}
+		}
+
+		public override void UpdateBindings ()
+		{
+			base.UpdateBindings ();
+			foreach (var tab in TabPages) {
+				tab.UpdateBindings ();
 			}
 		}
 

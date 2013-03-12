@@ -60,7 +60,8 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void AddPath (IGraphicsPath path, bool connect)
 		{
-			Control.AddPath (path.ToSD (), connect);
+			if (path != null && !path.IsEmpty) // avoid throwing an exception if the path is empty - consistent across platforms.
+				Control.AddPath(path.ToSD(), connect);
 		}
 
 		public void Transform (IMatrix matrix)
@@ -125,6 +126,17 @@ namespace Eto.Platform.Windows.Drawing
 		public PointF CurrentPoint
 		{
 			get { return Control.GetLastPoint ().ToEto (); }
+		}
+
+		public IGraphicsPath Clone ()
+		{
+			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)this.Control.Clone ());
+		}
+
+		public FillMode FillMode
+		{
+			set { Control.FillMode = value == FillMode.Alternate ? sd2.FillMode.Alternate : sd2.FillMode.Winding; }
+			get { return Control.FillMode == sd2.FillMode.Alternate ? FillMode.Alternate : FillMode.Winding; }
 		}
 	}
 }

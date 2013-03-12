@@ -1,3 +1,4 @@
+#if DESKTOP
 using System;
 using System.Collections.Generic;
 
@@ -48,9 +49,6 @@ namespace Eto.Forms
 		{
 			handler.Show (relativeTo);
 		}
-
-		IWidget ISubMenuWidget.Handler { get { return this.Handler; } }
-
 	}
 }
-
+#endif

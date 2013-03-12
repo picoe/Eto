@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
-using mwc = Microsoft.Windows.Controls;
+using mwc = Xceed.Wpf.Toolkit;
 using System.Globalization;
 
 namespace Eto.Platform.Wpf.Forms.Controls
@@ -20,6 +20,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 			Mode = DateTimePicker.DefaultMode;
 		}
+
+		public override bool UseMousePreview { get { return true; } }
 
 		public override void OnLoad (EventArgs e)
 		{

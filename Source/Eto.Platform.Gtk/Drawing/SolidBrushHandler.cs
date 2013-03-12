@@ -3,18 +3,32 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
-	public class SolidBrushHandler : BrushHandler, ISolidBrushHandler
+	/// <summary>
+	/// Handler for the <see cref="ISolidBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class SolidBrushHandler : BrushHandler, ISolidBrush
 	{
-		public Color Color { get; set; }
-
-		public void Create (Color color)
+		public override void Apply (object control, GraphicsHandler graphics)
 		{
-			this.Color = color;
+			graphics.Control.Color = (Cairo.Color)control;
+			graphics.Control.Fill ();
 		}
 
-		public override void Apply (GraphicsHandler graphics)
+		public Color GetColor (SolidBrush widget)
 		{
-			graphics.Control.Color = Color.ToCairo ();
+			return ((Cairo.Color)widget.ControlObject).ToEto ();
+		}
+
+		public void SetColor (SolidBrush widget, Color color)
+		{
+			widget.ControlObject = color.ToCairo ();
+		}
+
+		public object Create (Color color)
+		{
+			return color.ToCairo ();
 		}
 	}
 }

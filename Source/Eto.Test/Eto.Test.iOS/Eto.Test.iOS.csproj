@@ -11,17 +11,21 @@
     <RootNamespace>Eto.Test.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
   </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+  <PropertyGroup>
+    <FileAlignment>512</FileAlignment>
     <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
-    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
-    <DefineConstants>DEBUG;</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
+    <OutputRoot>..\..\..\..</OutputRoot>
+    <LibrariesPath>..\..\..\Libraries</LibrariesPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhoneSimulator' ">
+    <OutputPath>bin\iPhoneSimulator\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
     <ConsolePause>False</ConsolePause>
     <MtouchDebug>True</MtouchDebug>
-    <MtouchProfiling>True</MtouchProfiling>
     <MtouchLink>None</MtouchLink>
     <AssemblyName>EtoTest</AssemblyName>
     <MtouchArch>ARMv7</MtouchArch>
@@ -29,38 +33,35 @@
     <MtouchUseSGen>True</MtouchUseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
     <OutputPath>bin\iPhoneSimulator\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
     <MtouchLink>None</MtouchLink>
     <AssemblyName>EtoTest</AssemblyName>
+    <MtouchI18n />
+    <MtouchArch>ARMv7</MtouchArch>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
-    <DebugSymbols>True</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
     <OutputPath>bin\iPhone\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <Optimize>False</Optimize>
     <ConsolePause>False</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <MtouchDebug>True</MtouchDebug>
-    <MtouchProfiling>True</MtouchProfiling>
     <AssemblyName>EtoTestiOS</AssemblyName>
     <IpaPackageName />
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n />
+    <MtouchLink>None</MtouchLink>
+    <CrashReportingApiKey />
+    <MtouchUseSGen>True</MtouchUseSGen>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
     <OutputPath>bin\iPhone\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
     <CodesignKey>iPhone Developer</CodesignKey>
     <AssemblyName>EtoTestiOS</AssemblyName>
@@ -68,11 +69,9 @@
     <MtouchI18n />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
     <OutputPath>bin\iPhone\Ad-Hoc</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
     <BuildIpa>True</BuildIpa>
     <CodesignKey>iPhone Distribution</CodesignKey>
@@ -81,16 +80,15 @@
     <MtouchI18n />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
-    <DebugType>none</DebugType>
-    <Optimize>True</Optimize>
     <OutputPath>bin\iPhone\AppStore</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <DebugType>full</DebugType>
+    <Optimize>True</Optimize>
     <ConsolePause>False</ConsolePause>
     <CodesignKey>iPhone Distribution</CodesignKey>
     <AssemblyName>EtoTestiOS</AssemblyName>
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n />
+    <IpaPackageName />
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -104,28 +102,37 @@
   <ItemGroup>
     <Compile Include="Startup.cs" />
     <Compile Include="MainForm.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\..\Eto.Platform.iOS\Eto.Platform.iOS.csproj">
-      <Project>{E711B298-D141-4EC5-9BFD-84962B264F90}</Project>
-      <Name>Eto.Platform.iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\Eto\Eto.iOS.csproj">
-      <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
-      <Name>Eto.iOS</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Eto.Test\Eto.Test.Interface.iOS.csproj">
-      <Project>{97DEC3D5-5E7C-493D-AB7E-C0001AF7085F}</Project>
-      <Name>Eto.Test.Interface.iOS</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Resources\" />
+    <Folder Include="Properties\" />
   </ItemGroup>
   <ItemGroup>
     <BundleResource Include="Resources\Default-568h%402x.png" />
     <BundleResource Include="Resources\Default.png" />
     <BundleResource Include="Resources\Default%402x.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto.Json\Eto.Json - iOS.csproj">
+      <Project>{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}</Project>
+      <Name>Eto.Json - iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Platform.iOS\Eto.Platform.iOS.csproj">
+      <Project>{E711B298-D141-4EC5-9BFD-84962B264F90}</Project>
+      <Name>Eto.Platform.iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Eto.Test\Eto.Test - iOS.csproj">
+      <Project>{97DEC3D5-5E7C-493D-AB7E-C0001AF7085F}</Project>
+      <Name>Eto.Test - iOS</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto\Eto - iOS.csproj">
+      <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
+      <Name>Eto - iOS</Name>
+    </ProjectReference>
   </ItemGroup>
 </Project>

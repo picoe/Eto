@@ -18,8 +18,6 @@ namespace Eto.Forms
 
 		void Invalidate (Rectangle rect);
 
-		Graphics CreateGraphics ();
-
 		void SuspendLayout ();
 
 		void ResumeLayout ();
@@ -36,11 +34,19 @@ namespace Eto.Forms
 
 		void OnLoadComplete (EventArgs e);
 
+		void OnUnLoad (EventArgs e);
+
 		void SetParent (Control parent);
 
 		void SetParentLayout (Layout layout);
-		
+
 		void MapPlatformAction (string systemAction, BaseAction action);
+
+		PointF PointFromScreen (PointF point);
+		
+		PointF PointToScreen (PointF point);
+
+		Point Location { get; }
 	}
 	
 	[ToolboxItem(true)]
@@ -55,11 +61,12 @@ namespace Eto.Forms
 		#region Events
 		
 		public const string SizeChangedEvent = "Control.SizeChanged";
-
 		EventHandler<EventArgs> sizeChanged;
 
-		public event EventHandler<EventArgs> SizeChanged {
-			add {
+		public event EventHandler<EventArgs> SizeChanged
+		{
+			add
+			{
 				HandleEvent (SizeChangedEvent);
 				sizeChanged += value;
 			}
@@ -73,18 +80,19 @@ namespace Eto.Forms
 		}
 
 		public const string KeyDownEvent = "Control.KeyDown";
+		EventHandler<KeyEventArgs> keyDown;
 
-		EventHandler<KeyPressEventArgs> keyDown;
-
-		public event EventHandler<KeyPressEventArgs> KeyDown {
-			add {
+		public event EventHandler<KeyEventArgs> KeyDown
+		{
+			add
+			{
 				HandleEvent (KeyDownEvent);
 				keyDown += value;
 			}
 			remove { keyDown -= value; }
 		}
 		
-		public virtual void OnKeyDown (KeyPressEventArgs e)
+		public virtual void OnKeyDown (KeyEventArgs e)
 		{
 			//Console.WriteLine("{0} ({1})", e.KeyData, this);
 			if (keyDown != null)
@@ -93,12 +101,35 @@ namespace Eto.Forms
 				Parent.OnKeyDown (e);
 		}
 
-		public const string TextChangedEvent = "Control.TextChanged";
+		public const string KeyUpEvent = "Control.KeyUp";
+		EventHandler<KeyEventArgs> keyUp;
 
+		public event EventHandler<KeyEventArgs> KeyUp
+		{
+			add
+			{
+				HandleEvent (KeyUpEvent);
+				keyUp += value;
+			}
+			remove { keyUp -= value; }
+		}
+
+		public virtual void OnKeyUp (KeyEventArgs e)
+		{
+			//Console.WriteLine("{0} ({1})", e.KeyData, this);
+			if (keyUp != null)
+				keyUp (this, e);
+			if (!e.Handled && Parent != null)
+				Parent.OnKeyUp (e);
+		}
+
+		public const string TextChangedEvent = "Control.TextChanged";
 		EventHandler<EventArgs> textChanged;
 
-		public event EventHandler<EventArgs> TextChanged {
-			add {
+		public event EventHandler<EventArgs> TextChanged
+		{
+			add
+			{
 				HandleEvent (TextChangedEvent);
 				textChanged += value;
 			}
@@ -112,11 +143,12 @@ namespace Eto.Forms
 		}
 
 		public const string MouseDownEvent = "Control.MouseDown";
-
 		EventHandler<MouseEventArgs> mouseDown;
 
-		public event EventHandler<MouseEventArgs> MouseDown {
-			add {
+		public event EventHandler<MouseEventArgs> MouseDown
+		{
+			add
+			{
 				HandleEvent (MouseDownEvent);
 				mouseDown += value;
 			}
@@ -130,11 +162,12 @@ namespace Eto.Forms
 		}
 
 		public const string MouseUpEvent = "Control.MouseUp";
-
 		EventHandler<MouseEventArgs> mouseUp;
 
-		public event EventHandler<MouseEventArgs> MouseUp {
-			add {
+		public event EventHandler<MouseEventArgs> MouseUp
+		{
+			add
+			{
 				HandleEvent (MouseUpEvent);
 				mouseUp += value;
 			}
@@ -148,11 +181,12 @@ namespace Eto.Forms
 		}
 
 		public const string MouseMoveEvent = "Control.MouseMove";
-
 		EventHandler<MouseEventArgs> mouseMove;
 
-		public event EventHandler<MouseEventArgs> MouseMove {
-			add {
+		public event EventHandler<MouseEventArgs> MouseMove
+		{
+			add
+			{
 				HandleEvent (MouseMoveEvent);
 				mouseMove += value;
 			}
@@ -166,11 +200,12 @@ namespace Eto.Forms
 		}
 
 		public const string MouseLeaveEvent = "Control.MouseLeave";
-
 		EventHandler<MouseEventArgs> mouseLeave;
 
-		public event EventHandler<MouseEventArgs> MouseLeave {
-			add {
+		public event EventHandler<MouseEventArgs> MouseLeave
+		{
+			add
+			{
 				HandleEvent (MouseLeaveEvent);
 				mouseLeave += value;
 			}
@@ -184,11 +219,12 @@ namespace Eto.Forms
 		}
 
 		public const string MouseEnterEvent = "Control.MouseEnter";
-
 		EventHandler<MouseEventArgs> mouseEnter;
 
-		public event EventHandler<MouseEventArgs> MouseEnter {
-			add {
+		public event EventHandler<MouseEventArgs> MouseEnter
+		{
+			add
+			{
 				HandleEvent (MouseEnterEvent);
 				mouseEnter += value;
 			}
@@ -202,11 +238,12 @@ namespace Eto.Forms
 		}
 		
 		public const string MouseDoubleClickEvent = "Control.MouseDoubleClick";
-
 		EventHandler<MouseEventArgs> mouseDoubleClick;
 
-		public event EventHandler<MouseEventArgs> MouseDoubleClick {
-			add {
+		public event EventHandler<MouseEventArgs> MouseDoubleClick
+		{
+			add
+			{
 				HandleEvent (MouseDoubleClickEvent);
 				mouseDoubleClick += value;
 			}
@@ -219,12 +256,32 @@ namespace Eto.Forms
 				mouseDoubleClick (this, e);
 		}
 
+		public const string MouseWheelEvent = "Control.MouseWheel";
+		EventHandler<MouseEventArgs> mouseWheel;
+		
+		public event EventHandler<MouseEventArgs> MouseWheel
+		{
+			add
+			{
+				HandleEvent (MouseWheelEvent);
+				mouseWheel += value;
+			}
+			remove { mouseWheel -= value; }
+		}
+		
+		public virtual void OnMouseWheel (MouseEventArgs e)
+		{
+			if (mouseWheel != null)
+				mouseWheel (this, e);
+		}
+		
 		public const string GotFocusEvent = "Control.GotFocus";
-
 		EventHandler<EventArgs> gotFocus;
 
-		public event EventHandler<EventArgs> GotFocus {
-			add {
+		public event EventHandler<EventArgs> GotFocus
+		{
+			add
+			{
 				HandleEvent (GotFocusEvent);
 				gotFocus += value;
 			}
@@ -238,11 +295,12 @@ namespace Eto.Forms
 		}
 
 		public const string LostFocusEvent = "Control.LostFocus";
-
 		EventHandler<EventArgs> lostFocus;
 
-		public event EventHandler<EventArgs> LostFocus {
-			add {
+		public event EventHandler<EventArgs> LostFocus
+		{
+			add
+			{
 				HandleEvent (LostFocusEvent);
 				lostFocus += value;
 			}
@@ -256,11 +314,12 @@ namespace Eto.Forms
 		}
 		
 		public const string ShownEvent = "Control.Shown";
-
 		EventHandler<EventArgs> shown;
 
-		public event EventHandler<EventArgs> Shown {
-			add {
+		public event EventHandler<EventArgs> Shown
+		{
+			add
+			{
 				HandleEvent (ShownEvent);
 				shown += value;
 			}
@@ -273,24 +332,6 @@ namespace Eto.Forms
 				shown (this, e);
 		}
 
-		public const string HiddenEvent = "Control.Hidden";
-
-		EventHandler<EventArgs> hidden;
-
-		public event EventHandler<EventArgs> Hidden {
-			add {
-				HandleEvent (HiddenEvent);
-				hidden += value;
-			}
-			remove { hidden -= value; }
-		}
-
-		public virtual void OnHidden (EventArgs e)
-		{
-			if (hidden != null)
-				hidden (this, e);
-		}
-		
 		public event EventHandler<EventArgs> PreLoad;
 
 		public virtual void OnPreLoad (EventArgs e)
@@ -318,7 +359,17 @@ namespace Eto.Forms
 				LoadComplete (this, e);
 			Handler.OnLoadComplete (e);
 		}
+
+		public event EventHandler<EventArgs> UnLoad;
 		
+		public virtual void OnUnLoad (EventArgs e)
+		{
+			Loaded = false;
+			if (UnLoad != null)
+				UnLoad (this, e);
+			Handler.OnUnLoad (e);
+		}
+
 		#endregion
 
 		protected Control (Generator generator, Type type, bool initialize = true)
@@ -347,22 +398,26 @@ namespace Eto.Forms
 			Handler.Invalidate (rect);
 		}
 
-		public virtual Size Size {
+		public virtual Size Size
+		{
 			get { return Handler.Size; }
 			set { Handler.Size = value; }
 		}
 
-		public virtual bool Enabled {
+		public virtual bool Enabled
+		{
 			get { return Handler.Enabled; }
 			set { Handler.Enabled = value; }
 		}
 
-		public virtual bool Visible {
+		public virtual bool Visible
+		{
 			get { return Handler.Visible; }
 			set { Handler.Visible = value; }
 		}
 		
-		public override object DataContext {
+		public override object DataContext
+		{
 			get { return base.DataContext ?? (Parent != null ? Parent.DataContext : null); }
 			set { base.DataContext = value; }
 		}
@@ -398,30 +453,31 @@ namespace Eto.Forms
 		
 		public void SetParent (Control parent)
 		{
+			var loaded = this.Loaded;
+			Handler.SetParent (parent);
 			this.Parent = parent;
 			OnDataContextChanged (EventArgs.Empty);
-			Handler.SetParent (parent);
+			if (parent == null && loaded) {
+				this.OnUnLoad (EventArgs.Empty);
+			}
 		}
 
 		public void SetParentLayout (Layout layout)
 		{
-			this.ParentLayout = layout;
 			Handler.SetParentLayout (layout);
+			this.ParentLayout = layout;
 			this.SetParent (layout != null ? layout.Container : null);
 		}
 
-		public Color BackgroundColor {
+		public Color BackgroundColor
+		{
 			get { return Handler.BackgroundColor; }
 			set { Handler.BackgroundColor = value; }
 		}
 		
-		public virtual bool HasFocus {
-			get { return Handler.HasFocus; }
-		}
-		
-		public Graphics CreateGraphics ()
+		public virtual bool HasFocus
 		{
-			return Handler.CreateGraphics ();
+			get { return Handler.HasFocus; }
 		}
 		
 		public virtual void Focus ()
@@ -439,8 +495,10 @@ namespace Eto.Forms
 			Handler.ResumeLayout ();
 		}
 
-		public Window ParentWindow {
-			get {
+		public Window ParentWindow
+		{
+			get
+			{
 				Control c = this;
 				while (c != null) {
 					if (c is Window)
@@ -451,10 +509,52 @@ namespace Eto.Forms
 			}
 		}
 		
-		public void MapPlatformAction(string systemAction, BaseAction action)
+		public void MapPlatformAction (string systemAction, BaseAction action)
 		{
-			Handler.MapPlatformAction(systemAction, action);
+			Handler.MapPlatformAction (systemAction, action);
 		}
+
+		public PointF PointFromScreen (PointF point)
+		{
+			return Handler.PointFromScreen (point);
+		}
+
+		public PointF PointToScreen (PointF point)
+		{
+			return Handler.PointToScreen (point);
+		}
+
+		public Point Location
+		{
+			get { return Handler.Location; }
+		}
+
+		#region Obsolete
+
+		[Obsolete ("This event is deprecated")]
+		public const string HiddenEvent = "Control.Hidden";
+
+		EventHandler<EventArgs> hidden;
+
+		[Obsolete ("This event is deprecated")]
+		public event EventHandler<EventArgs> Hidden
+		{
+			add
+			{
+				HandleEvent (HiddenEvent);
+				hidden += value;
+			}
+			remove { hidden -= value; }
+		}
+
+		[Obsolete ("This event is deprecated")]
+		public virtual void OnHidden (EventArgs e)
+		{
+			if (hidden != null)
+				hidden (this, e);
+		}
+
+		#endregion
 	}
 	
 	public class ControlCollection : List<Control>

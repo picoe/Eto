@@ -6,10 +6,11 @@ using sd = System.Drawing;
 
 #if OSX
 using MonoMac.CoreGraphics;
-
+using Eto.Platform.Mac;
 namespace Eto.Platform.Mac.Drawing
 #elif IOS
 using MonoTouch.CoreGraphics;
+using Eto.Platform.iOS;
 
 namespace Eto.Platform.iOS.Drawing
 #endif
@@ -173,7 +174,7 @@ namespace Eto.Platform.iOS.Drawing
 			if (transform == null)
 				transform = matrix;
 			else
-				transform = Matrix.Multiply (transform, matrix);
+				transform.Prepend (matrix);
 			var path = new CGPath ();
 			path.AddPath (matrix.ToCG (), Control);
 			Control = path;
@@ -232,6 +233,13 @@ namespace Eto.Platform.iOS.Drawing
 		public void Dispose ()
 		{
 			Control.Dispose ();
+		}
+	
+		public FillMode FillMode { get; set; }
+
+		public IGraphicsPath Clone ()
+		{
+			return new GraphicsPathHandler (new CGPath (this.Control));
 		}
 	}
 }

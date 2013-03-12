@@ -184,6 +184,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				HeaderView = null,
 				AutoresizesOutlineColumn = true,
 				AllowsColumnResizing = false,
+				FocusRingType = NSFocusRingType.None,
 				ColumnAutoresizingStyle = NSTableViewColumnAutoresizingStyle.FirstColumnOnly
 			};
 			var col = new NSTableColumn {

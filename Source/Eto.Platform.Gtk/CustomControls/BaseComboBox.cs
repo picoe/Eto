@@ -26,6 +26,25 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			}
 			return base.OnExposeEvent (evnt);
 		}
+#else
+		protected override bool OnDrawn (Cairo.Context cr)
+		{
+			var rect = this.Allocation;
+			if (rect.Width > 0 && rect.Height > 0) {
+				entry.StyleContext.RenderFrame (cr, 0, 0, rect.Width, rect.Height);
+			}
+			return base.OnDrawn (cr);
+		}
+
+		protected override void OnAdjustSizeRequest (Orientation orientation, out int minimum_size, out int natural_size)
+		{
+			base.OnAdjustSizeRequest (orientation, out minimum_size, out natural_size);
+			if (orientation == Orientation.Horizontal)
+				natural_size = minimum_size = Math.Max (minimum_size, 150);
+			else if (orientation == Orientation.Vertical)
+				natural_size = minimum_size = Math.Max (minimum_size, 30);
+		}
+
 #endif
 
 		public Entry Entry {
@@ -47,7 +66,10 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				IsEditable = true,
 				HasFrame = false
 			};
-			
+
+#if GTK3
+			entry.MarginLeft = 2;
+#endif
 			entry.FocusInEvent += delegate {
 				QueueDraw ();
 			};
@@ -64,6 +86,10 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				WidthRequest = 20,
 				CanFocus = true
 			};
+#if GTK3
+			//popupButton.MarginBottom = 4;
+			//popupButton.MarginTop = 4;
+#endif
 
 			popupButton.Add (new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.Out));
 
@@ -74,7 +100,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		{
 			var hbox3 = new Gtk.HBox ();
 
-			hbox3.PackStart (CreateEntry (), true, true, 5);
+			hbox3.PackStart (CreateEntry (), true, true, 0);
 
 			hbox3.PackEnd (CreatePopupButton (), false, false, 0);
 			

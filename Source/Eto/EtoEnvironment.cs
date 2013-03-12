@@ -70,6 +70,7 @@ namespace Eto
 		/// Gets the folder path for the specified special folder
 		/// </summary>
 		/// <param name="folder">Special folder to retrieve the path for</param>
+		/// <param name="generator">Generator to get the folder path with</param>
 		/// <returns>Path of the specified folder</returns>
 		public static string GetFolderPath (EtoSpecialFolder folder, Generator generator = null)
 		{

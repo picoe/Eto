@@ -100,14 +100,14 @@ namespace Eto.Test.Sections.Drawing
 			return drawable;
 		}
 
-		void Draw (Graphics g, Action<IPen> action)
+		void Draw (Graphics g, Action<Pen> action)
 		{
 			var path = new GraphicsPath ();
 			path.AddLines (new PointF (0, 0), new PointF (100, 40), new PointF (0, 30), new PointF (50, 70));
 
 			for (int i = 0; i < 4; i++) {
 				float thickness = 1f + i * PenThickness;
-				var pen = Pen.Create (Colors.Black, thickness);
+				var pen = new Pen (Colors.Black, thickness);
 				pen.LineCap = this.LineCap;
 				pen.LineJoin = this.LineJoin;
 				pen.DashStyle = this.DashStyle;

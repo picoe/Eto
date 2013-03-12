@@ -6,11 +6,14 @@ using sd = System.Drawing;
 using sdp = System.Drawing.Printing;
 using sd2 = System.Drawing.Drawing2D;
 using swf = System.Windows.Forms;
+using sdi = System.Drawing.Imaging;
 
 namespace Eto.Platform.Windows
 {
 	public static partial class Conversions
 	{
+		public const float WHEEL_DELTA = 120f;
+
 		public static Padding ToEto (this swf.Padding padding)
 		{
 			return new Padding (padding.Left, padding.Top, padding.Right, padding.Bottom);
@@ -96,7 +99,7 @@ namespace Eto.Platform.Windows
 		{
 			switch (value) {
 			case ImageInterpolation.Default:
-				return sd2.InterpolationMode.Default;
+				return sd2.InterpolationMode.High;
 			case ImageInterpolation.None:
 				return sd2.InterpolationMode.NearestNeighbor;
 			case ImageInterpolation.Low:
@@ -267,10 +270,12 @@ namespace Eto.Platform.Windows
 			return h.Control;
 		}
 
-		public static sd.Image ToSD (this Image graphics)
+		public static sd.Image ToSD (this Image image, int? size = null)
 		{
-			var h = (BitmapHandler)graphics.Handler;
-			return h.Control;
+			if (image == null)
+				return null;
+			var h = (IWindowsImage)image.Handler;
+			return h.GetImageWithSize (size);
 		}
 
 		public static sd.Font ToSD (this Font font)
@@ -283,13 +288,15 @@ namespace Eto.Platform.Windows
 		{
 			var point = new Point (e.X, e.Y);
 			var buttons = ToEto (e.Button);
-			var modifiers = KeyMap.Convert (swf.Control.ModifierKeys);
+			var modifiers = swf.Control.ModifierKeys.ToEto ();
 
 			var result = new MouseEventArgs (buttons, modifiers, point);
+			result.Delta = new SizeF (0, (float)e.Delta / WHEEL_DELTA);
+
 			return result;
 		}
 
-		private static MouseButtons ToEto (this swf.MouseButtons button)
+		public static MouseButtons ToEto (this swf.MouseButtons button)
 		{
 			MouseButtons buttons = MouseButtons.None;
 
@@ -352,19 +359,24 @@ namespace Eto.Platform.Windows
 			return (sd2.Matrix)m.ControlObject;
 		}
 
+		public static IMatrix ToEto (this sd2.Matrix matrix)
+		{
+			return new MatrixHandler (matrix);
+		}
+
 		public static float DegreesToRadians (float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;
 		}
 
-		public static sd.Pen ToSD (this IPen pen)
+		public static sd.Pen ToSD (this Pen pen)
 		{
 			return (sd.Pen)pen.ControlObject;
 		}
 
-		public static sd.Brush ToSD (this IBrush brush)
+		public static sd.Brush ToSD (this Brush brush)
 		{
-			return (sd.Brush)brush.ControlObject;
+			return ((BrushHandler)brush.Handler).GetBrush(brush);
 		}
 
 		public static sd2.LineJoin ToSD (this PenLineJoin value)
@@ -426,6 +438,130 @@ namespace Eto.Platform.Windows
 		public static sd2.GraphicsPath ToSD (this IGraphicsPath path)
 		{
 			return (sd2.GraphicsPath)path.ControlObject;
+		}
+
+		public static sd2.WrapMode ToSD (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return sd2.WrapMode.TileFlipXY;
+			case GradientWrapMode.Repeat:
+				return sd2.WrapMode.Tile;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static GradientWrapMode ToEtoGradientWrap (this sd2.WrapMode wrapMode)
+		{
+			switch (wrapMode) {
+			case sd2.WrapMode.TileFlipXY:
+				return GradientWrapMode.Reflect;
+			case sd2.WrapMode.Tile:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static int BitsPerPixel (this sdi.PixelFormat format)
+		{
+			switch (format) {
+			case sdi.PixelFormat.Format1bppIndexed:
+				return 1;
+			case sdi.PixelFormat.Format4bppIndexed:
+				return 4;
+			case sdi.PixelFormat.Format8bppIndexed:
+				return 8;
+			case sdi.PixelFormat.Format24bppRgb:
+				return 24;
+			case sdi.PixelFormat.Format32bppArgb:
+			case sdi.PixelFormat.Format32bppPArgb:
+			case sdi.PixelFormat.Format32bppRgb:
+				return 32;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swf.TextImageRelation ToSD (this ButtonImagePosition value)
+		{
+			switch (value) {
+			case ButtonImagePosition.Left:
+				return swf.TextImageRelation.ImageBeforeText;
+			case ButtonImagePosition.Right:
+				return swf.TextImageRelation.TextBeforeImage;
+			case ButtonImagePosition.Above:
+				return swf.TextImageRelation.ImageAboveText;
+			case ButtonImagePosition.Below:
+				return swf.TextImageRelation.TextAboveImage;
+			case ButtonImagePosition.Overlay:
+				return swf.TextImageRelation.Overlay;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static ButtonImagePosition ToEto (this swf.TextImageRelation value)
+		{
+			switch (value) {
+			case swf.TextImageRelation.ImageAboveText:
+				return ButtonImagePosition.Above;
+			case swf.TextImageRelation.ImageBeforeText:
+				return ButtonImagePosition.Left;
+			case swf.TextImageRelation.Overlay:
+				return ButtonImagePosition.Overlay;
+			case swf.TextImageRelation.TextAboveImage:
+				return ButtonImagePosition.Below;
+			case swf.TextImageRelation.TextBeforeImage:
+				return ButtonImagePosition.Left;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static bool ToEtoResizable (this swf.FormBorderStyle style)
+		{
+			switch (style) {
+			case swf.FormBorderStyle.Fixed3D:
+			case swf.FormBorderStyle.FixedDialog:
+			case swf.FormBorderStyle.FixedSingle:
+			case swf.FormBorderStyle.FixedToolWindow:
+			case swf.FormBorderStyle.None:
+				return false;
+			case swf.FormBorderStyle.Sizable:
+			case swf.FormBorderStyle.SizableToolWindow:
+				return true;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static WindowStyle ToEto (this swf.FormBorderStyle style)
+		{
+			switch (style) {
+			case swf.FormBorderStyle.Fixed3D:
+			case swf.FormBorderStyle.Sizable:
+				return WindowStyle.Default;
+			case swf.FormBorderStyle.SizableToolWindow:
+			case swf.FormBorderStyle.FixedDialog:
+			case swf.FormBorderStyle.None:
+				return WindowStyle.None;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static swf.FormBorderStyle ToSWF (this WindowStyle style, bool resizable)
+		{
+			switch (style) {
+			case WindowStyle.Default:
+				return resizable ? swf.FormBorderStyle.Sizable : swf.FormBorderStyle.Fixed3D;
+			case WindowStyle.None:
+				return swf.FormBorderStyle.None;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

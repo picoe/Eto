@@ -76,8 +76,15 @@ namespace Eto.Forms
 		
 		public bool ShowLabel { get; set; }
 		
-		public Icon Icon { get; set; }
-		
+		public Image Image { get; set; }
+
+		[Obsolete ("Use Image")]
+		public Icon Icon
+		{
+			get { return Image as Icon; }
+			set { Image = value; }
+		}
+
 		public Key Accelerator
 		{
 			get { return (Accelerators != null && Accelerators.Length > 0) ? Accelerators[0] : Key.None; }
@@ -110,10 +117,10 @@ namespace Eto.Forms
 		
 		#endregion
 		
-		public BaseAction(string id, string text, Icon icon, EventHandler<EventArgs> activated)
+		public BaseAction(string id, string text, Image image, EventHandler<EventArgs> activated)
 			: this(id, text, activated)
 		{
-			this.Icon = icon;
+			this.Image = image;
 
 		}
 

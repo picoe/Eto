@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Text;
 
 namespace Eto.Drawing
 {
@@ -113,11 +115,23 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font to create</param>
 		void Create (FontTypeface typeface, float size);
 
+		float XHeight { get; }
+		
+		float Ascent { get; }
+		
+		float Descent { get; }
+		
+		float LineHeight { get; }
+
+		float Leading { get; }
+
+		float Baseline { get; }
+
 		/// <summary>
 		/// Gets the size of the font in points
 		/// </summary>
 		float Size { get; }
-
+		
 		/// <summary>
 		/// Gets the name of the family of this font
 		/// </summary>
@@ -169,9 +183,11 @@ namespace Eto.Drawing
 		/// <param name="family">Family of font to use</param>
 		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
-		public Font(FontFamily family, float size, FontStyle style = FontStyle.Normal)
-			: this(Generator.Current, family, size, style)
+		/// <param name="generator">Generator to create the font for</param>
+		public Font (string family, float size, FontStyle style = FontStyle.Normal, Generator generator = null)
+			: base(generator, typeof(IFont))
 		{
+			Handler.Create (new FontFamily(family), size, style);
 		}
 
 		/// <summary>
@@ -181,7 +197,7 @@ namespace Eto.Drawing
 		/// <param name="family">Family of font to use</param>
 		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
-		public Font (Generator generator, FontFamily family, float size, FontStyle style = FontStyle.Normal)
+		public Font(FontFamily family, float size, FontStyle style = FontStyle.Normal, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
 			Handler.Create(family, size, style);
@@ -194,70 +210,23 @@ namespace Eto.Drawing
 		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
 		/// given the <see cref="SystemFont"/> enumeration.
 		/// </remarks>
-		/// <param name="systemFont">Type of system font to create</param>
-		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
-		public Font(SystemFont systemFont, float? size = null)
-			: this(Generator.Current, systemFont, size)
-		{
-		}
-
-		/// <summary>
-		/// Creates a new instance of the Font class with a specified <paramref name="systemFont"/> and optional custom <paramref name="size"/>
-		/// </summary>
-		/// <remarks>
-		/// The system fonts are the same fonts that the standard UI of each platform use for particular areas
-		/// given the <see cref="SystemFont"/> enumeration.
-		/// </remarks>
 		/// <param name="generator">Generator to create the font for</param>
 		/// <param name="systemFont">Type of system font to create</param>
 		/// <param name="size">Optional size of the font, in points. If not specified, the default size of the system font is used</param>
-		public Font (Generator generator, SystemFont systemFont, float? size = null)
+		public Font(SystemFont systemFont, float? size = null, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
 			Handler.Create(systemFont, size);
 		}
 
-		/// <summary>
-		/// Initializes a new instance of the Font class with the specified family name, size and style
-		/// </summary>
-		/// <param name="familyName">Name of the font family to create</param>
-		/// <param name="size">Size of the font (in points)</param>
-		/// <param name="style">Style to apply to the font (if available for that family)</param>
-		public Font (string familyName, float size, FontStyle style = FontStyle.Normal)
-			: this (Generator.Current, familyName, size, style)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Font class with the specified <paramref name="familyName"/>, <paramref name="size"/>, and <paramref name="style"/>
-		/// </summary>
-		/// <param name="generator">Generator to create the font handler</param>
-		/// <param name="familyName">Name of the font family to create</param>
-		/// <param name="size">Size of the font (in points)</param>
-		/// <param name="style">Style to apply to the font (if available for that family)</param>
-		public Font (Generator generator, string familyName, float size, FontStyle style = FontStyle.Normal)
-			: base(generator, typeof(IFont))
-		{
-			Handler.Create(new FontFamily(generator, familyName), size, style);
-		}
 
 		/// <summary>
 		/// Initializes a new instance of the Font class with the specified <paramref name="typeface"/> and <paramref name="size"/>
 		/// </summary>
 		/// <param name="typeface">Typeface of the font to create</param>
 		/// <param name="size">Size of the font in points</param>
-		public Font (FontTypeface typeface, float size)
-			: this (null, typeface, size)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Font class with the specified <paramref name="typeface"/> and <paramref name="size"/>
-		/// </summary>
 		/// <param name="generator">Generator to create the font handler</param>
-		/// <param name="typeface">Typeface of the font to create</param>
-		/// <param name="size">Size of the font in points</param>
-		public Font (Generator generator, FontTypeface typeface, float size)
+		public Font (FontTypeface typeface, float size, Generator generator = null)
 			: base (generator, typeof (IFont))
 		{
 			Handler.Create (typeface, size);
@@ -312,6 +281,36 @@ namespace Eto.Drawing
 			get { return Handler.Typeface; }
 		}
 		
+		public float XHeight
+		{
+			get { return Handler.XHeight; }
+		}
+		
+		public float Ascent
+		{
+			get { return Handler.Ascent; }
+		}
+		
+		public float Descent
+		{
+			get { return Handler.Descent; }
+		}
+		
+		public float LineHeight
+		{
+			get { return Handler.LineHeight; }
+		}
+
+		public float Leading
+		{
+			get { return Handler.Leading; }
+		}
+
+		public float Baseline
+		{
+			get { return Handler.Baseline; }
+		}
+
 		/// <summary>
 		/// Gets the size, in points, of this font
 		/// </summary>
@@ -319,7 +318,7 @@ namespace Eto.Drawing
 		{
 			get { return Handler.Size; }
 		}
-
+		
 		/// <summary>
 		/// Gets a value indicating that this font has a bold style
 		/// </summary>
@@ -327,7 +326,7 @@ namespace Eto.Drawing
 		{
 			get { return FontStyle.HasFlag (FontStyle.Bold); }
 		}
-
+		
 		/// <summary>
 		/// Gets a value indicating that this font has an italic style
 		/// </summary>
@@ -340,9 +339,25 @@ namespace Eto.Drawing
 		/// Gets a string representation of the font object
 		/// </summary>
 		/// <returns>String representation of the font object</returns>
-		public override string ToString ()
+		public override string ToString()
 		{
-			return string.Format ("Family={0}, Typeface={1}, Size={2}, Style={3}", Family, Typeface, Size, FontStyle);
+			return string.Format("Family={0}, Typeface={1}, Size={2}pt, Style={3}", Family, Typeface, Size, FontStyle);
+		}
+
+		public override bool Equals(object obj)
+		{
+			var font = obj as Font;
+
+			return font != null
+				&& object.ReferenceEquals(this.Generator, font.Generator)
+				&& this.Family.Equals(font.Family)
+				&& this.Size.Equals (font.Size)
+				&& this.FontStyle.Equals(font.FontStyle);
+		}
+
+		public override int GetHashCode()
+		{
+			return this.FamilyName.GetHashCode () ^ this.Generator.GetHashCode () ^ this.Size.GetHashCode () ^ this.FontStyle.GetHashCode ();
 		}
 	}
 }

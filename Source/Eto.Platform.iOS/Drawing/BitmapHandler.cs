@@ -11,8 +11,8 @@ namespace Eto.Platform.iOS.Drawing
 {
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public BitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -35,7 +35,6 @@ namespace Eto.Platform.iOS.Drawing
 
 	public class BitmapHandler : ImageHandler<UIImage, Bitmap>, IBitmap
 	{
-		int bytesPerRow;
 		CGDataProvider provider;
 		CGImage cgimage;
 		
@@ -60,7 +59,7 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
-					bytesPerRow = bytesPerPixel * width;
+					int bytesPerRow = bytesPerPixel * width;
 
 					Data = NSMutableData.FromLength (bytesPerRow * height);
 
@@ -76,7 +75,7 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
-					bytesPerRow = bytesPerPixel * width;
+					int bytesPerRow = bytesPerPixel * width;
 					Data = NSMutableData.FromLength (bytesPerRow * height);
 					//Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
@@ -92,7 +91,7 @@ namespace Eto.Platform.iOS.Drawing
 					int bitsPerComponent = 8;
 					int bitsPerPixel = numComponents * bitsPerComponent;
 					int bytesPerPixel = bitsPerPixel / 8;
-					bytesPerRow = bytesPerPixel * width;
+					int bytesPerRow = bytesPerPixel * width;
 					Data = new NSMutableData ((uint)(bytesPerRow * height));
 				
 					provider = new CGDataProvider (Data.MutableBytes, (int)Data.Length, false);
@@ -105,14 +104,22 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
-		public void Resize (int width, int height)
+		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			//control = control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
+			var source = image.ToUI ();
+			// todo: use interpolation
+			Control = source.Scale (new SD.SizeF(width, height));
+		}
+
+		public void Create (int width, int height, Graphics graphics)
+		{
+			Create (width, height, PixelFormat.Format32bppRgba);
 		}
 
 		public BitmapData Lock ()
 		{
-			return new BitmapDataHandler (Data.MutableBytes, bytesPerRow, Control);
+			cgimage = cgimage ?? Control.CGImage;
+			return new BitmapDataHandler (Widget, Data.MutableBytes, cgimage.BytesPerRow, cgimage.BitsPerPixel, Control);
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -163,44 +170,22 @@ namespace Eto.Platform.iOS.Drawing
 		
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var nsimage = this.Control;
-			var sourceRect = source.ToSD (); 
-			//var sourceRect = graphics.Translate(Generator.ConvertF(source), nsimage.Size.Height);
-			SD.RectangleF destRect = graphics.TranslateView (destination.ToSD(), false);
-			if (source.TopLeft != Point.Empty || sourceRect.Size != nsimage.Size) {
+			var sourceRect = source.ToSD ();
+			var imgsize = Control.Size;
+			SD.RectangleF destRect = graphics.TranslateView (destination.ToSD (), false);
+			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize) {
 				graphics.Control.SaveState ();
-				//graphics.Context.ClipToRect(destRect);
-				if (graphics.Flipped) {
-					graphics.Control.TranslateCTM (0, nsimage.Size.Height);
-					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, -(nsimage.Size.Height / destRect.Height));
-				} else {
-					graphics.Control.ScaleCTM (nsimage.Size.Width / destRect.Width, nsimage.Size.Height / destRect.Height);
-				}
-				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), nsimage.CGImage);
-				//nsimage.CGImage(destRect, CGBlendMode.Normal, 1);
-
+#if OSX
+				graphics.Control.TranslateCTM (destRect.X - sourceRect.X, destRect.Y + sourceRect.Y + destRect.Height);
+				graphics.Control.ScaleCTM (imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
+#elif IOS
+				graphics.Control.TranslateCTM (destRect.X - sourceRect.X, imgsize.Height - (destRect.Y + sourceRect.Y));
+				graphics.Control.ScaleCTM (imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
+#endif
+				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), Control.CGImage);
 				graphics.Control.RestoreState ();
-				
-				//var imgportion = nsimage..CGImage.WithImageInRect(sourceRect);
-				/*graphics.Context.SaveState();
-				if (graphics.Flipped) {
-					graphics.Context.TranslateCTM(0, destRect.Bottom);
-					graphics.Context.ScaleCTM(1.0F, -1.0F);
-				}*/
-				//var context = graphics.ControlObject as CGContext;
-				//Console.WriteLine("drawing source:{0} dest:{1}", source, destRect);
-				//graphics.Context.DrawImage(destRect, imgportion);
-				
-				//nsimage = UIImage.FromImage(imgportion);
-				//nsimage.Draw(destRect, CGBlendMode.Normal, 1);
-				
-				//imgportion.Dispose();
-				//nsimage.Dispose();
-				//graphics.Context.RestoreState();
 			} else {
-				//graphics.Context.DrawImage(destRect, nsimage.CGImage);
-				//Console.WriteLine("drawing full image");	
-				nsimage.Draw (destRect, CGBlendMode.Normal, 1);
+				Control.Draw (destRect, CGBlendMode.Normal, 1);
 			}
 		}
 		
@@ -218,6 +203,51 @@ namespace Eto.Platform.iOS.Drawing
 		public override UIImage GetUIImage ()
 		{
 			return this.Control;
+		}
+
+		public Bitmap Clone (Rectangle? rectangle)
+		{
+			if (rectangle == null)
+				return new Bitmap (Generator, new BitmapHandler { Control = (UIImage)this.Control.Copy () });
+			else {
+				var rect = rectangle.Value;
+				cgimage = cgimage ?? Control.CGImage;
+				PixelFormat format;
+				if (cgimage.BitsPerPixel == 24)
+					format = PixelFormat.Format24bppRgb;
+				else if (cgimage.AlphaInfo == CGImageAlphaInfo.None)
+					format = PixelFormat.Format32bppRgb;
+				else
+					format = PixelFormat.Format32bppRgba;
+				
+				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
+				using (var graphics = new Graphics (bmp)) {
+					graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
+				}
+				return bmp;
+			}
+		}
+
+		public Color GetPixel (int x, int y)
+		{
+			using (var data = Lock ()) {
+				unsafe {
+					byte* srcrow = (byte*)data.Data;
+					srcrow += y * data.ScanWidth;
+					srcrow += x * data.BytesPerPixel;
+					if (data.BytesPerPixel == 4) {
+						return Color.FromArgb (data.TranslateDataToArgb (*(uint*)srcrow));
+					}
+					else if (data.BytesPerPixel == 3) {
+						var b = *(srcrow ++);
+						var g = *(srcrow ++);
+						var r = *(srcrow ++);
+						return Color.FromArgb (r, g, b);
+					}
+					else
+						throw new NotSupportedException ();
+				}
+			}
 		}
 
 	}

@@ -39,11 +39,6 @@ namespace Eto.Platform.Windows.Drawing
 			Control = font;
 		}
 
-		public void Create (string fontName, float size, FontStyle style)
-		{
-			Control = new SD.Font (fontName, size, style.ToSD ());
-		}
-
 		public void Create (FontFamily family, float size, FontStyle style)
 		{
 			this.family = family;
@@ -99,11 +94,6 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 		
-		public float Size
-		{
-			get { return this.Control.Size; }
-		}
-
 		public string FamilyName
 		{
 			get { return this.Control.FontFamily.Name; }
@@ -141,5 +131,57 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get { return Control.FontFamily; }
 		}
+
+
+		public float XHeight
+		{
+			get
+			{
+				return Size * 0.5f;
+			}
+		}
+
+		public float Baseline
+		{
+			get { return Ascent; }
+		}
+
+		public float Leading
+		{
+			get { return LineHeight - (Ascent + Descent); }
+		}
+
+		float? ascentInPixels;
+		public float Ascent
+		{
+			get
+			{
+				if (ascentInPixels == null)
+					ascentInPixels = Size * Control.FontFamily.GetCellAscent (Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
+				return ascentInPixels ?? 0f;
+			}
+		}
+
+		float? descentInPixels;
+		/// <summary>
+		/// Gets the descent of the font
+		/// </summary>
+		/// <remarks>
+		/// Font metrics from http://msdn.microsoft.com/en-us/library/xwf9s90b(VS.71).aspx
+		/// </remarks>
+		public float Descent
+		{
+			get
+			{
+				if (descentInPixels == null)
+					descentInPixels = Size * Control.FontFamily.GetCellDescent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
+
+				return descentInPixels ?? 0f;
+			}
+		}
+
+		public float LineHeight { get { return Size * Control.FontFamily.GetLineSpacing (Control.Style) / Control.FontFamily.GetEmHeight(Control.Style); } }
+
+		public float Size { get { return Control.SizeInPoints; } }
 	}
 }

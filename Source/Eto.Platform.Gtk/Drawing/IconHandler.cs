@@ -34,9 +34,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 		
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
-			imageView.Pixbuf = Pixbuf;
+			if (iconSize != null)
+				imageView.SetFromIconSet(Control, iconSize.Value);
+			else
+				imageView.Pixbuf = Pixbuf;
 		}
 		
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)

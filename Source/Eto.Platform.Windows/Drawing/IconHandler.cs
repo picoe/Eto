@@ -144,7 +144,7 @@ namespace Eto.Platform.Windows.Drawing
 		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var image = GetImageWithSize((int)Math.Max(destination.Width, destination.Height));
-			graphics.Control.DrawImage (image, source.ToSD (), destination.ToSD (), SD.GraphicsUnit.Pixel);
+			graphics.Control.DrawImage (image, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
 		}
 
 		public void DrawImage (GraphicsHandler graphics, float x, float y)

@@ -7,28 +7,26 @@ using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
 {
-	public class SolidBrushHandler : ISolidBrushHandler
+	/// <summary>
+	/// Handler for <see cref="ISolidBrush"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public class SolidBrushHandler : ISolidBrush
 	{
-		swm.SolidColorBrush brush;
-
-		public void Create (Color color)
+		public Color GetColor (SolidBrush widget)
 		{
-			brush = new swm.SolidColorBrush (color.ToWpf ());
+			return ((swm.SolidColorBrush)widget.ControlObject).Color.ToEto ();
 		}
 
-		public Color Color
+		public void SetColor (SolidBrush widget, Color color)
 		{
-			get { return brush.Color.ToEto (); }
-			set { brush.Color = value.ToWpf (); }
+			((swm.SolidColorBrush)widget.ControlObject).Color = color.ToWpf ();
 		}
 
-		public object ControlObject
+		public object Create (Color color)
 		{
-			get { return brush; }
-		}
-
-		public void Dispose ()
-		{
+			return new swm.SolidColorBrush (color.ToWpf ());
 		}
 	}
 }

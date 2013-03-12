@@ -10,7 +10,7 @@ namespace Eto.Drawing
 	public enum PenLineJoin
 	{
 		/// <summary>
-		/// Uses a miter to join lines, usually within a certain limit specified by <see cref="IPen.MiterLimit"/>
+		/// Uses a miter to join lines, usually within a certain limit specified by <see cref="Pen.MiterLimit"/>
 		/// </summary>
 		Miter,
 

@@ -59,32 +59,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				get;
 				set;
 			}
-			
-			static IntPtr selAttributedStringValue = Selector.GetHandle ("attributedStringValue");
-			static IntPtr selSetAttributedStringValue = Selector.GetHandle ("setAttributedStringValue:");
-
-			// remove when implemented in monomac
-			public NSAttributedString AttributedStringValue {
-				[Export ("attributedStringValue")]
-				get {
-					if (this.IsDirectBinding) {
-						return new NSAttributedString (Messaging.IntPtr_objc_msgSend (base.Handle, EtoLabel.selAttributedStringValue));
-					}
-					return new NSAttributedString (Messaging.IntPtr_objc_msgSendSuper (base.SuperHandle, EtoLabel.selAttributedStringValue));
-				}
-				[Export ("setAttributedStringValue:")]
-				set {
-					if (value == null) {
-						throw new ArgumentNullException ("value");
-					}
-					if (this.IsDirectBinding) {
-						Messaging.void_objc_msgSend_IntPtr (base.Handle, EtoLabel.selSetAttributedStringValue, value.Handle);
-					} else {
-						Messaging.void_objc_msgSendSuper_IntPtr (base.SuperHandle, EtoLabel.selSetAttributedStringValue, value.Handle);
-					}
-				}
-				
-			}
 		}
 		
 		public LabelHandler ()
@@ -155,33 +129,35 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				var oldSize = GetPreferredSize (Size.MaxValue);
-				
-				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
-				if (match.Success) {
-					var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
-					var str = new NSMutableAttributedString (val);
-					
-					var matches = Regex.Matches (value, @"[&][&]");
-					var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
-					
-					// copy existing attributes
-					NSRange range;
-					NSMutableDictionary attributes;
-					if (Control.AttributedStringValue.Length > 0)
-						attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
-					else
-						attributes = new NSMutableDictionary();
-
-					if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
-						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
-					str.AddAttributes (attributes, new NSRange(0, str.Length));
-					
-					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
-					Control.AttributedStringValue = str;
-				} else if (!string.IsNullOrEmpty(value))
-					Control.StringValue = value.Replace ("&&", "&");
-				else
+				if (string.IsNullOrEmpty (value)) {
 					Control.StringValue = string.Empty;
+				}
+				else {
+					var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+					if (match.Success) {
+						var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
+						var str = new NSMutableAttributedString (val);
+						
+						var matches = Regex.Matches (value, @"[&][&]");
+						var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
+						
+						// copy existing attributes
+						NSRange range;
+						NSMutableDictionary attributes;
+						if (Control.AttributedStringValue.Length > 0)
+							attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+						else
+							attributes = new NSMutableDictionary();
+
+						if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
+							attributes.Remove (CTStringAttributeKey.UnderlineStyle);
+						str.AddAttributes (attributes, new NSRange(0, str.Length));
+						
+						str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
+						Control.AttributedStringValue = str;
+					} else
+						Control.StringValue = value.Replace ("&&", "&");
+				}
 				LayoutIfNeeded (oldSize);
 			}
 		}

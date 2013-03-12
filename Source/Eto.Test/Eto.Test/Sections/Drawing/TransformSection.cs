@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Drawing
 		PointF rotatedLineCenter = new PointF (60, 60);
 		PointF rotatedTextCenter = new PointF (100, 100);
 		PointF imageScaleLocation = new PointF (240, 0);
-		Font font = new Font (FontFamilies.Sans, 10);
+		Font font = Fonts.Sans (10);
 
 
 		public TransformSection ()
@@ -183,7 +183,7 @@ namespace Eto.Test.Sections.Drawing
 
 		void DrawRotatedLines (Graphics g, Color color, PointF center, Action<PointF, float> action)
 		{
-			var pen = Pen.Create (color);
+			var pen = new Pen (color);
 			for (float i = 0; i < 360f; i += 10) {
 				g.SaveTransform ();
 				action (center, i);
@@ -207,7 +207,7 @@ namespace Eto.Test.Sections.Drawing
 			for (float i = 0; i <= 360f; i += 90f) {
 				g.SaveTransform ();
 				action (center, i);
-				g.DrawArc (Pen.Create (color), RectangleF.FromCenter (center, new SizeF(50, 50)), 0, 45f);
+				g.DrawArc (new Pen (color), RectangleF.FromCenter (center, new SizeF(50, 50)), 0, 45f);
 				g.RestoreTransform ();
 			}
 		}

@@ -59,6 +59,11 @@ namespace Eto.Platform.iOS.Forms
 
 		public abstract string Title { get; set; }
 
+		public Screen Screen
+		{
+			get { return null; }
+		}
+
 	}
 }
 

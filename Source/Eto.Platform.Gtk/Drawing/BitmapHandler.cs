@@ -5,10 +5,15 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp.Drawing
 {
+	/// <summary>
+	/// Bitmap data handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public BitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -23,6 +28,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 	}
 
+	/// <summary>
+	/// Bitmap handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
 		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf> ();
@@ -71,15 +81,20 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public void Resize (int width, int height)
+		public void Create(int width, int height, Graphics graphics)
 		{
-			Control = Control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
-			sizes.Clear ();
+			Create (width, height, PixelFormat.Format32bppRgba);
+		}
+
+		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		{
+			var pixbuf = image.ToGdk ();
+			Control = pixbuf.ScaleSimple (width, height, interpolation.ToGdk ());
 		}
 
 		public BitmapData Lock ()
 		{
-			return new BitmapDataHandler (Control.Pixels, Control.Rowstride, null);
+			return new BitmapDataHandler (Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null);
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -107,16 +122,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 			get { return new Size (Control.Width, Control.Height); }
 		}
 
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
-			imageView.Pixbuf = Control;
-			/*
-			Gdk.Pixmap pix;
-			Gdk.Pixmap mask;
-			Control.RenderPixmapAndMask (out pix, out mask, 0);
-			imageView.Pixmap = pix;
-			imageView.Mask = mask;
-			 * */
+			if (iconSize != null)
+				imageView.SetFromIconSet(new Gtk.IconSet(Control), iconSize.Value);
+			else
+				imageView.Pixbuf = Control;
 		}
 
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
@@ -171,7 +182,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 				pb.Dispose ();*/
 		}
 
-		#region IGtkPixbuf implementation
 		public Gdk.Pixbuf Pixbuf {
 			get {
 				return Control;
@@ -190,6 +200,46 @@ namespace Eto.Platform.GtkSharp.Drawing
 			
 			return pixbuf;
 		}
-		#endregion
-    }
+
+		public Bitmap Clone (Rectangle? rectangle = null)
+		{
+			if (rectangle == null)
+				return new Bitmap(Generator, new BitmapHandler (Control.Copy ()));
+			else {
+				var rect = rectangle.Value;
+				PixelFormat format;
+				if (Control.BitsPerSample == 24)
+					format = PixelFormat.Format24bppRgb;
+				else if (Control.HasAlpha)
+					format = PixelFormat.Format32bppRgba;
+				else
+					format = PixelFormat.Format32bppRgb;
+				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
+				Control.CopyArea (rect.X, rect.Y, rect.Width, rect.Height, bmp.ToGdk (), 0, 0);
+				return bmp;
+			}
+		}
+		
+		public Color GetPixel (int x, int y)
+		{
+			using (var data = Lock ()) {
+				unsafe {
+					byte* srcrow = (byte*)data.Data;
+					srcrow += y * data.ScanWidth;
+					srcrow += x * data.BytesPerPixel;
+					if (data.BytesPerPixel == 4) {
+						return Color.FromArgb (data.TranslateDataToArgb (*(uint*)srcrow));
+					}
+					else if (data.BytesPerPixel == 3) {
+						var b = *(srcrow ++);
+						var g = *(srcrow ++);
+						var r = *(srcrow ++);
+						return Color.FromArgb (r, g, b);
+					}
+					else
+						throw new NotSupportedException ();
+				}
+			}
+		}
+	}
 }

@@ -47,7 +47,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 						break;
 					}
 				}
-				panel2Rect.X = panel1Rect.Width + dividerThickness;
+				panel2Rect.X = Math.Min (panel1Rect.Width + dividerThickness, newFrame.Width);
 			} else {
 				panel2Rect.X = 0;
 				panel2Rect.Width = panel1Rect.Width = newFrame.Width;
@@ -73,7 +73,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 						break;
 					}
 				}
-				panel2Rect.Y = panel1Rect.Height + dividerThickness;
+				panel2Rect.Y = Math.Min (panel1Rect.Height + dividerThickness, newFrame.Height);
 			}
 				
 			splitView.Subviews [0].Frame = panel1Rect;

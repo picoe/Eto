@@ -6,13 +6,41 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class MouseEventsSection : AllControlsBase
 	{
+		CheckBox handleEvents;
+		CheckBox showParentEvents;
+
 		public MouseEventsSection ()
 		{
+			LogEvents (this);
 		}
 		
 		void LogMouseEvent (object sender, string type, MouseEventArgs e)
 		{
-			Log.Write (sender, "{0}, Location: {1}, Buttons: {2}, Modifiers: {3}", type, e.Location, e.Buttons, e.Modifiers);
+			if (!showParentEvents.Checked == true && sender == this)
+				return;
+			Log.Write (sender, "{0}, Location: {1}, Buttons: {2}, Modifiers: {3}, Delta: {4}", type, e.Location, e.Buttons, e.Modifiers, e.Delta);
+			if (handleEvents.Checked == true)
+				e.Handled = true;
+		}
+
+		protected override Control GenerateOptions ()
+		{
+			var layout = new DynamicLayout (new Panel ());
+
+			layout.AddRow (null, Handled (), ShowParentEvents (), null);
+			layout.Add (null);
+
+			return layout.Container;
+		}
+
+		Control Handled ()
+		{
+			return handleEvents = new CheckBox { Text = "Handle mouse events" };
+		}
+		
+		Control ShowParentEvents ()
+		{
+			return showParentEvents = new CheckBox { Text = "Show parent events (bubbled)" };
 		}
 		
 		protected override void LogEvents (Control control)
@@ -21,6 +49,9 @@ namespace Eto.Test.Sections.Behaviors
 			
 			control.MouseDoubleClick += delegate(object sender, MouseEventArgs e) {
 				LogMouseEvent (control, "MouseDoubleClick", e);
+			};
+			control.MouseWheel += delegate(object sender, MouseEventArgs e) {
+				LogMouseEvent (control, "MouseWheel", e);
 			};
 			control.MouseMove += delegate(object sender, MouseEventArgs e) {
 				LogMouseEvent (control, "MouseMove", e);

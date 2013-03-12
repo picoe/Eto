@@ -3,6 +3,7 @@ using System.ComponentModel;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.GtkSharp.Drawing;
+using Eto.Platform.GtkSharp.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -29,7 +30,9 @@ namespace Eto.Platform.GtkSharp
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
 		WindowState state;
-		
+		WindowStyle style;
+		bool topMost;
+
 		public GtkWindow ()
 		{
 			vbox = new Gtk.VBox ();
@@ -48,23 +51,63 @@ namespace Eto.Platform.GtkSharp
 			get { return containerBox; }
 		}
 
-		public bool Resizable {
-			get {
 #if GTK2
-				return Control.AllowGrow;
+		public bool Resizable
+		{
+			get { return Control.Resizable; }
+			set { Control.Resizable = value; }
+		}
 #else
-				return Control.Resizable;
+		public bool Resizable
+		{
+			get { return Control.Resizable; }
+			set { Control.Resizable = Control.HasResizeGrip = value; }
+		}
 #endif
-			}
-			set {
-#if GTK2
-				Control.AllowGrow = value;
-#else
-				Control.Resizable = Control.HasResizeGrip = value;
-#endif
+
+		public bool Minimizable { get; set; }
+
+		public bool Maximizable { get; set; }
+
+		public bool ShowInTaskbar
+		{
+			get { return !Control.SkipTaskbarHint; }
+			set { Control.SkipTaskbarHint = !value; }
+		}
+
+		public bool TopMost
+		{
+			get { return topMost; }
+			set { 
+				if (topMost != value) {
+					topMost = value;
+					Control.KeepAbove = topMost;
+				}
 			}
 		}
-		
+
+		public WindowStyle WindowStyle
+		{
+			get { return style; }
+			set
+			{ 
+				if (style != value) {
+					style = value;
+
+					switch (style) {
+					case WindowStyle.Default:
+						Control.Decorated = true;
+						break;
+					case WindowStyle.None:
+						Control.Decorated = false;
+						break;
+					default:
+						throw new NotSupportedException ();
+					}
+				}
+			}
+		}
+
 		public override Size Size {
 			get {
 				if (Control.Visible)
@@ -107,7 +150,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			actionvbox.PackStart (menuBox, false, false, 0);
@@ -116,7 +159,7 @@ namespace Eto.Platform.GtkSharp
 			vbox.PackStart (bottomToolbarBox, false, false, 0);
 			
 			Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
-				if (this.State == WindowState.Normal) {
+				if (this.WindowState == WindowState.Normal) {
 					if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Maximized) != 0) {
 						restoreBounds = Widget.Bounds;
 					} else if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0) {
@@ -145,33 +188,47 @@ namespace Eto.Platform.GtkSharp
 					Widget.OnShown (EventArgs.Empty);
 				};
 				break;
-			case Window.HiddenEvent:
-				Control.Hidden += delegate {
-					Widget.OnHidden (EventArgs.Empty);
-				};
-				break;
-			case Window.MaximizedEvent:
+			case Window.WindowStateChangedEvent:
+				var oldState = this.WindowState;
 				Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
-					if ((args.Event.ChangedMask & (Gdk.WindowState.Maximized | Gdk.WindowState.Fullscreen)) != 0 
-						&&
-						(args.Event.NewWindowState & (Gdk.WindowState.Maximized | Gdk.WindowState.Fullscreen)) != 0) {
-						Widget.OnMaximized (EventArgs.Empty);
+					var newState = this.WindowState;
+					if (newState != oldState) {
+						oldState = newState;
+						Widget.OnWindowStateChanged (EventArgs.Empty);
 					}
 				};
 				break;
-			case Window.MinimizedEvent:
-				Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
-					if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 
-						&&
-						(args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0) {
-						Widget.OnMinimized (EventArgs.Empty);
+			case Window.SizeChangedEvent:
+				Size? oldSize = null;
+				Control.SizeAllocated += (o, args) => {
+					var newSize = this.Size;
+					if (Control.IsRealized && oldSize != newSize) {
+						Widget.OnSizeChanged (EventArgs.Empty);
+						oldSize = newSize;
 					}
 				};
+				break;
+			case Window.LocationChangedEvent:
+				Control.ConfigureEvent += HandleConfigureEvent;
 				break;
 			default:
 				base.AttachEvent (handler);
 				break;
 			}
+		}
+
+		Point? oldLocation;
+		Point? currentLocation;
+
+		[GLib.ConnectBefore]
+		void HandleConfigureEvent (object o, Gtk.ConfigureEventArgs args)
+		{
+			currentLocation = new Point(args.Event.X, args.Event.Y);
+			if (Control.IsRealized && Widget.Loaded && oldLocation != currentLocation) {
+				Widget.OnLocationChanged (EventArgs.Empty);
+				oldLocation = currentLocation;
+			}
+			currentLocation = null;
 		}
 
 		public MenuBar Menu {
@@ -204,7 +261,7 @@ namespace Eto.Platform.GtkSharp
 					var actionItem = child as MenuActionItem;
 					if (actionItem != null && actionItem.Shortcut != Key.None) {
 						var widget = actionItem.ControlObject as Gtk.Widget;
-						var key = new Gtk.AccelKey (KeyMap.ConvertToKey (actionItem.Shortcut), KeyMap.ConvertToModifier (actionItem.Shortcut), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
+						var key = new Gtk.AccelKey (actionItem.Shortcut.ToGdkKey (), actionItem.Shortcut.ToGdkModifier (), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator ("activate", accelGroup, key);
 					}
 					SetAccelerators (child as ISubMenuWidget);
@@ -287,8 +344,10 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public override Point Location {
+		public new Point Location {
 			get {
+				if (currentLocation != null)
+					return currentLocation.Value;
 				int x, y;
 				Control.GetPosition (out x, out y);
 				return new Point (x, y);
@@ -298,20 +357,18 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public WindowState State {
+		public WindowState WindowState {
 			get {
 				if (Control.GdkWindow == null)
 					return state;	
 
-				switch (Control.GdkWindow.State & (Gdk.WindowState.Maximized | Gdk.WindowState.Iconified | Gdk.WindowState.Fullscreen)) {
-				case Gdk.WindowState.Maximized:
-				case Gdk.WindowState.Fullscreen:
-					return WindowState.Maximized;
-				case Gdk.WindowState.Iconified:
+				if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Iconified))
 					return WindowState.Minimized;
-				default:
-					return WindowState.Normal;
-				}
+				if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Maximized))
+					return WindowState.Maximized;
+				if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Fullscreen))
+					return WindowState.Maximized;
+				return WindowState.Normal;
 			}
 			set {
 				if (state != value) {
@@ -319,6 +376,12 @@ namespace Eto.Platform.GtkSharp
 				
 					switch (value) {
 					case WindowState.Maximized:
+						if (Control.GdkWindow != null) {
+							if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Fullscreen))
+								Control.Unfullscreen ();
+							if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Iconified))
+								Control.Deiconify ();
+						}
 						Control.Maximize ();
 						break;
 					case WindowState.Minimized:
@@ -326,17 +389,12 @@ namespace Eto.Platform.GtkSharp
 						break;
 					case WindowState.Normal:
 						if (Control.GdkWindow != null) {
-							switch (Control.GdkWindow.State & (Gdk.WindowState.Maximized | Gdk.WindowState.Iconified | Gdk.WindowState.Fullscreen)) {
-							case Gdk.WindowState.Maximized:
-								Control.Unmaximize ();
-								break;
-							case Gdk.WindowState.Fullscreen:
+							if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Fullscreen))
 								Control.Unfullscreen ();
-								break;
-							case Gdk.WindowState.Iconified:
+							if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Maximized))
+								Control.Unmaximize ();
+							if (Control.GdkWindow.State.HasFlag (Gdk.WindowState.Iconified))
 								Control.Deiconify ();
-								break;
-							}
 						}
 						break;
 					}
@@ -346,7 +404,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public Rectangle? RestoreBounds {
 			get {
-				return State == WindowState.Normal ? null : restoreBounds;
+				return WindowState == WindowState.Normal ? null : restoreBounds;
 			}
 		}
 
@@ -357,5 +415,32 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		Gtk.Window IGtkWindow.Control { get { return (Gtk.Window)Control; } }
+
+		public Screen Screen
+		{
+			get
+			{
+				var screen = Control.Screen;
+				var gdkWindow = Control.GdkWindow;
+				if (screen != null && gdkWindow != null) {
+					var monitor = screen.GetMonitorAtWindow (gdkWindow);
+					return new Screen (Generator, new ScreenHandler (screen, monitor));
+				}
+				else
+					return null;
+			}
+		}
+
+		public void BringToFront()
+		{
+			Control.Present ();
+		}
+
+		public void SendToBack ()
+		{
+			if (Control.GdkWindow != null)
+				Control.GdkWindow.Lower ();
+		}
+
 	}
 }

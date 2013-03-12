@@ -8,18 +8,16 @@ namespace Eto.Platform.Windows.Forms.Controls
 {
 	public class TabControlHandler : WindowsControl<SWF.TabControl, TabControl>, ITabControl
 	{
+		bool disableSelectedIndexChanged;
 		public TabControlHandler ()
 		{
 			this.Control = new SWF.TabControl ();
 			this.Control.ImageList = new SWF.ImageList{ ColorDepth = SWF.ColorDepth.Depth32Bit };
-			this.Control.SelectedIndexChanged += control_SelectedIndexChanged;
+			this.Control.SelectedIndexChanged += (sender, e) => {
+				if (!disableSelectedIndexChanged)
+					Widget.OnSelectedIndexChanged (e);
+			};
 		}
-
-		private void control_SelectedIndexChanged (object sender, EventArgs e)
-		{
-			Widget.OnSelectedIndexChanged (e);
-		}
-		#region ITabControl Members
 
 		public int SelectedIndex {
 			get { return Control.SelectedIndex; }
@@ -33,18 +31,29 @@ namespace Eto.Platform.Windows.Forms.Controls
 				this.Control.TabPages.Add (pageHandler.Control);
 			else
 				this.Control.TabPages.Insert (index, pageHandler.Control);
+			if (Widget.Loaded && Control.TabPages.Count == 1)
+				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 		}
 		
 		public void RemoveTab (int index, TabPage page)
 		{
-			this.Control.TabPages.RemoveAt (index);
+			disableSelectedIndexChanged = true;
+			try {
+				var tab = Control.TabPages[index];
+				var isSelected = Control.SelectedIndex == index;
+				Control.TabPages.Remove (tab);
+				if (isSelected)
+					Control.SelectedIndex = Math.Min (index, Control.TabPages.Count - 1);
+				if (Widget.Loaded)
+					Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			} finally {
+				disableSelectedIndexChanged = false;
+			}
 		}
 		
 		public void ClearTabs ()
 		{
 			this.Control.TabPages.Clear ();
 		}
-
-		#endregion
 	}
 }

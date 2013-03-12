@@ -16,11 +16,19 @@ namespace Eto.Forms
 	{
 		ITabPage handler;
 		
-		public TabPage () : this (Generator.Current)
+		public TabPage (Control control, Padding? padding = null)
+			: this (control.Generator)
+		{
+			this.AddDockedControl (control, padding);
+		}
+
+		public TabPage ()
+			: this ((Generator)null)
 		{
 		}
 		
-		public TabPage (Generator g) : this (g, typeof(ITabPage))
+		public TabPage (Generator generator)
+			: this (generator, typeof(ITabPage))
 		{
 		}
 		

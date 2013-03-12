@@ -12,6 +12,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 		double offset = 0.5;
 		double inverseoffset = 0;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
+		RectangleF? clipBounds;
+		IGraphicsPath clipPath;
 #if GTK2
 		Gdk.Drawable drawable;
 
@@ -22,12 +24,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 #else
-		Gdk.Window drawable;
-
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Window drawable)
 		{
 			this.widget = widget;
-			this.drawable = drawable;
 			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 #endif
@@ -152,42 +151,28 @@ namespace Eto.Platform.GtkSharp.Drawing
 #endif
 		}
 
-		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
+		public void DrawLine (Pen pen, float startx, float starty, float endx, float endy)
 		{
-			Control.Save ();
+			Control.MoveTo (startx + offset, starty + offset);
+			Control.LineTo (endx + offset, endy + offset);
 			pen.Apply (this);
-			if (startx != endx || starty != endy) {
-				// to draw a line, it must move..
-				Control.MoveTo (startx + offset, starty + offset);
-				Control.LineTo (endx + offset, endy + offset);
-				Control.Stroke ();
-			} else {
-				// to draw one pixel, we must fill it
-				Control.Rectangle (startx, starty, 1, 1);
-				Control.Fill ();
-			}
-			Control.Restore ();
 		}
 
-		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
+		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
 		{
-			Control.Save ();
-			pen.Apply (this);
 			Control.Rectangle (x + offset, y + offset, width, height);
-			Control.Stroke ();
-			Control.Restore ();
+			pen.Apply (this);
 		}
 
-		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
+		public void FillRectangle (Brush brush, float x, float y, float width, float height)
 		{
+			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
 			Control.Save ();
 			brush.Apply (this);
-			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
-			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
+		public void DrawEllipse (Pen pen, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
@@ -198,13 +183,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Control.Scale (width / height, 1.0);
 			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
 			Control.Restore ();
-			Control.Save ();
 			pen.Apply (this);
-			Control.Stroke ();
-			Control.Restore ();
 		}
 
-		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
+		public void FillEllipse (Brush brush, float x, float y, float width, float height)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
@@ -217,11 +199,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 			Control.Save ();
 			brush.Apply (this);
-			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc (Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
@@ -235,13 +216,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 			else
 				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
 			Control.Restore ();
-			Control.Save ();
 			pen.Apply (this);
-			Control.Stroke ();
-			Control.Restore ();
 		}
 
-		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void FillPie (Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
 			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
@@ -258,28 +236,28 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore ();
 			Control.Save ();
 			brush.Apply (this);
-			Control.Fill ();
 			Control.Restore ();
 		}
 
-		public void FillPath (IBrush brush, IGraphicsPath path)
+		public void FillPath (Brush brush, IGraphicsPath path)
 		{
 			Control.Save ();
-			brush.Apply (this);
 			Control.Translate (inverseoffset, inverseoffset);
-			path.ToHandler ().Apply (Control);
-			Control.Fill ();
+			path.Apply (Control);
+			Control.Restore ();
+			Control.Save ();
+			Control.FillRule = path.FillMode.ToCairo ();
+			brush.Apply (this);
 			Control.Restore ();
 		}
 
-		public void DrawPath (IPen pen, IGraphicsPath path)
+		public void DrawPath (Pen pen, IGraphicsPath path)
 		{
 			Control.Save ();
-			pen.Apply (this);
 			Control.Translate (offset, offset);
-			path.ToHandler ().Apply (Control);
-			Control.Stroke ();
+			path.Apply (Control);
 			Control.Restore ();
+			pen.Apply (this);
 		}
 
 		public void DrawImage (Image image, float x, float y)
@@ -297,13 +275,19 @@ namespace Eto.Platform.GtkSharp.Drawing
 			((IImageHandler)image.Handler).DrawImage (this, source, destination);
 		}
 
+		Pango.Layout CreateLayout ()
+		{
+			if (PangoContext != null)
+				return new Pango.Layout (PangoContext);
+			else
+				return Pango.CairoHelper.CreateLayout (Control);
+		}
+
 		public void DrawText (Font font, Color color, float x, float y, string text)
 		{
-			using (var layout = new Pango.Layout (PangoContext)) {
+			using (var layout = CreateLayout ()) {
 				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
-				int width, height;
-				layout.GetPixelSize (out width, out height);
 				Control.Save ();
 				Control.Color = color.ToCairo ();
 				Control.MoveTo (x, y);
@@ -315,12 +299,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			using (var layout = new Pango.Layout (PangoContext)) {
+			using (var layout = CreateLayout ()) {
 				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
 				int width, height;
 				layout.GetPixelSize (out width, out height);
-				layout.Dispose ();
 				return new SizeF (width, height);
 			}
 		}
@@ -333,19 +316,9 @@ namespace Eto.Platform.GtkSharp.Drawing
 			base.Dispose (disposing);
 		}
 
-		public void SetClip (RectangleF rect)
-		{
-			throw new NotImplementedException ();
-		}
-
 		public void TranslateTransform (float offsetX, float offsetY)
 		{
 			Control.Translate (offsetX, offsetY);
-		}
-
-		public RectangleF ClipBounds
-		{
-			get { throw new NotImplementedException (); }
 		}
 
 		public void RotateTransform (float angle)
@@ -365,11 +338,71 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void SaveTransform ()
 		{
+			ReverseClip ();
 			Control.Save ();
+			ApplyClip ();
 		}
 
 		public void RestoreTransform ()
 		{
+			Control.Restore ();
+			ApplyClip ();
+		}
+
+		void ReverseClip ()
+		{
+			if (clipBounds != null)
+				Control.ResetClip ();
+		}
+
+		void ApplyClip ()
+		{
+			if (clipPath != null) {
+				clipPath.Apply (Control);
+				Control.Clip ();
+			} else if (clipBounds != null) {
+				Control.Rectangle (clipBounds.Value.ToCairo ());
+				Control.Clip ();
+			}
+		}
+
+		public RectangleF ClipBounds
+		{
+			get { return clipBounds ?? RectangleF.Empty; }
+		}
+
+		public void SetClip (RectangleF rectangle)
+		{
+			ResetClip ();
+			clipBounds = rectangle;
+			ApplyClip ();
+		}
+
+		public void SetClip (IGraphicsPath path)
+		{
+			ResetClip ();
+			clipPath = path;
+			clipBounds = path.Bounds;
+			ApplyClip ();
+		}
+
+		public void ResetClip ()
+		{
+			clipBounds = null;
+			Control.ResetClip ();
+		}
+
+		public void Clear (SolidBrush brush)
+		{
+			Control.Save ();
+			Control.Operator = Cairo.Operator.Clear;
+			Control.Paint ();
+			Control.Restore ();
+			Control.Save ();
+			if (brush != null) {
+				brush.Apply (this);
+				Control.Paint ();
+			}
 			Control.Restore ();
 		}
 	}

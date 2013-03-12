@@ -12,11 +12,14 @@ using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Eto.Platform.Wpf.Drawing;
+using Eto.Platform.Wpf.Forms;
 
 namespace Eto.Platform.Wpf
 {
 	public static class Conversions
 	{
+		public const float WHEEL_DELTA = 120f;
+		
 		public static swm.Color ToWpf (this Color value)
 		{
 			return swm.Color.FromArgb ((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
@@ -52,12 +55,22 @@ namespace Eto.Platform.Wpf
 			return new sw.Rect (value.X, value.Y, value.Width, value.Height);
 		}
 
+		public static sw.Int32Rect ToWpfInt32 (this Rectangle value)
+		{
+			return new sw.Int32Rect (value.X, value.Y, value.Width, value.Height);
+		}
+
 		public static sw.Rect ToWpf (this RectangleF value)
 		{
 			return new sw.Rect (value.X, value.Y, value.Width, value.Height);
 		}
 
-		public static Size ToEto (this sw.Size value)
+		public static SizeF ToEto (this sw.Size value)
+		{
+			return new SizeF ((float)value.Width, (float)value.Height);
+		}
+
+		public static Size ToEtoSize (this sw.Size value)
 		{
 			return new Size ((int)value.Width, (int)value.Height);
 		}
@@ -72,7 +85,12 @@ namespace Eto.Platform.Wpf
 			return new sw.Size (value.Width, value.Height);
 		}
 
-		public static Point ToEto (this sw.Point value)
+		public static PointF ToEto (this sw.Point value)
+		{
+			return new PointF ((float)value.X, (float)value.Y);
+		}
+
+		public static Point ToEtoPoint (this sw.Point value)
 		{
 			return new Point ((int)value.X, (int)value.Y);
 		}
@@ -90,8 +108,16 @@ namespace Eto.Platform.Wpf
 		public static string ToWpfMneumonic (this string value)
 		{
 			if (value == null)
-				return null;
-			return value.Replace ("_", "__").Replace ("&", "_");
+				return string.Empty;
+			value = value.Replace ("_", "__");
+			var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+			if (match.Success) {
+				var sb = new StringBuilder (value);
+				sb[match.Index] = '_';
+				sb.Replace ("&&", "&");
+				return sb.ToString ();
+			}
+			return value.Replace ("&&", "&");
 		}
 
 		public static string ConvertMneumonicFromWPF (object obj)
@@ -99,32 +125,67 @@ namespace Eto.Platform.Wpf
 			var value = obj as string;
 			if (value == null)
 				return null;
-			return Regex.Replace (value, "(?<![_])[_]", (match) => {
-				if (match.Value == "__")
-					return "_";
-				else
-					return "&"; });
+			var match = Regex.Match (value, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
+			if (match.Success) {
+				var sb = new StringBuilder (value);
+				sb[match.Index] = '&';
+				sb.Replace ("__", "_");
+				return sb.ToString ();
+			}
+			value = value.Replace ("__", "_");
+			return value;
 		}
 
-		public static KeyPressEventArgs ToEto (this swi.KeyEventArgs e)
+        public static KeyEventArgs ToEto(this swi.KeyEventArgs e, KeyEventType keyType)
 		{
-			var key = KeyMap.Convert (e.Key, swi.Keyboard.Modifiers);
-			return new KeyPressEventArgs (key) { Handled = e.Handled };
+            var key = KeyMap.Convert(e.Key, swi.Keyboard.Modifiers);
+            return new KeyEventArgs(key, keyType) { Handled = e.Handled };
 		}
 
-		public static MouseEventArgs ToEto (this swi.MouseEventArgs e, sw.IInputElement control)
+		public static MouseEventArgs ToEto (this swi.MouseButtonEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
 		{
 			var buttons = MouseButtons.None;
-			if (e.LeftButton == swi.MouseButtonState.Pressed)
+			if (e.ChangedButton == swi.MouseButton.Left && e.LeftButton == buttonState)
 				buttons |= MouseButtons.Primary;
-			if (e.RightButton == swi.MouseButtonState.Pressed)
+			if (e.ChangedButton == swi.MouseButton.Right && e.RightButton == buttonState)
 				buttons |= MouseButtons.Alternate;
-			if (e.MiddleButton == swi.MouseButtonState.Pressed)
+			if (e.ChangedButton == swi.MouseButton.Middle && e.MiddleButton == buttonState)
 				buttons |= MouseButtons.Middle;
 			var modifiers = Key.None;
 			var location = e.GetPosition (control).ToEto ();
 
 			return new MouseEventArgs (buttons, modifiers, location);
+		}
+
+		public static MouseEventArgs ToEto (this swi.MouseEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		{
+			var buttons = MouseButtons.None;
+			if (e.LeftButton == buttonState)
+				buttons |= MouseButtons.Primary;
+			if (e.RightButton == buttonState)
+				buttons |= MouseButtons.Alternate;
+			if (e.MiddleButton == buttonState)
+				buttons |= MouseButtons.Middle;
+			var modifiers = Key.None;
+			var location = e.GetPosition (control).ToEto ();
+
+			return new MouseEventArgs (buttons, modifiers, location);
+		}
+
+		public static MouseEventArgs ToEto (this swi.MouseWheelEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		{
+			var buttons = MouseButtons.None;
+			if (e.LeftButton == buttonState)
+				buttons |= MouseButtons.Primary;
+			if (e.RightButton == buttonState)
+				buttons |= MouseButtons.Alternate;
+			if (e.MiddleButton == buttonState)
+				buttons |= MouseButtons.Middle;
+			var modifiers = Key.None;
+			var location = e.GetPosition (control).ToEto ();
+			var delta = new SizeF (0, (float)e.Delta / WHEEL_DELTA);
+
+			return new MouseEventArgs (buttons, modifiers, location, delta);
 		}
 
 		public static swm.BitmapScalingMode ToWpf (this ImageInterpolation value)
@@ -223,7 +284,7 @@ namespace Eto.Platform.Wpf
 
 		public static Size GetSize (sw.FrameworkElement element)
 		{
-			if (!double.IsNaN (element.ActualWidth) && !double.IsNaN (element.ActualHeight))
+			if (element.IsVisible && (!double.IsNaN (element.ActualWidth) && !double.IsNaN (element.ActualHeight)))
 				return new Size ((int)element.ActualWidth, (int)element.ActualHeight);
 			else
 				return new Size ((int)(double.IsNaN (element.Width) ? -1 : element.Width), (int)(double.IsNaN (element.Height) ? -1 : element.Height));
@@ -248,18 +309,36 @@ namespace Eto.Platform.Wpf
 			return style;
 		}
 
-		public static swmi.BitmapSource ToWpf (this Image image, int? width = null)
+		public static swmi.BitmapSource ToWpf (this Image image, int? size = null)
 		{
+			if (image == null)
+				return null;
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
-				return imageHandler.GetImageClosestToSize (width.Value);
+				return imageHandler.GetImageClosestToSize (size);
 			else
 				return image.ControlObject as swmi.BitmapSource;
 		}
 
-		public static swm.Pen ToWpf (this IPen pen)
+		public static swc.Image ToWpfImage (this Image image, int? size = null)
 		{
-			return (swm.Pen)pen.ControlObject;
+			var source = image.ToWpf (size);
+			if (source == null)
+				return null;
+			var swcImage = new swc.Image { Source = source };
+			if (size != null) {
+				swcImage.MaxWidth = size.Value;
+				swcImage.MaxHeight = size.Value;
+			}
+			return swcImage;
+		}
+
+		public static swm.Pen ToWpf (this Pen pen, bool clone = false)
+		{
+			var p = (swm.Pen)pen.ControlObject;
+			if (clone)
+				p = p.Clone ();
+			return p;
 		}
 
 		public static swm.PenLineJoin ToWpf (this PenLineJoin value)
@@ -318,9 +397,12 @@ namespace Eto.Platform.Wpf
 			}
 		}
 
-		public static swm.Brush ToWpf (this IBrush brush)
+		public static swm.Brush ToWpf (this Brush brush, bool clone = false)
 		{
-			return (swm.Brush)brush.ControlObject;
+			var b = (swm.Brush)brush.ControlObject;
+			if (clone)
+				b = b.Clone ();
+			return b;
 		}
 
 		public static swm.Matrix ToWpf (this IMatrix matrix)
@@ -333,9 +415,70 @@ namespace Eto.Platform.Wpf
 			return new swm.MatrixTransform (matrix.ToWpf ());
 		}
 
+		public static IMatrix ToEtoMatrix (this swm.Transform transform)
+		{
+			return new MatrixHandler (transform.Value);
+		}
+
 		public static swm.PathGeometry ToWpf (this IGraphicsPath path)
 		{
 			return (swm.PathGeometry)path.ControlObject;
+		}
+
+		public static swm.GradientSpreadMethod ToWpf (this GradientWrapMode wrap)
+		{
+			switch (wrap) {
+			case GradientWrapMode.Reflect:
+				return swm.GradientSpreadMethod.Reflect;
+			case GradientWrapMode.Repeat:
+				return swm.GradientSpreadMethod.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static GradientWrapMode ToEto (this swm.GradientSpreadMethod spread)
+		{
+			switch (spread) {
+			case swm.GradientSpreadMethod.Reflect:
+				return GradientWrapMode.Reflect;
+			case swm.GradientSpreadMethod.Repeat:
+				return GradientWrapMode.Repeat;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static IWpfLayout GetWpfLayout (this Container widget)
+		{
+			if (widget.Layout != null && widget.Layout.InnerLayout != null)
+				return widget.Layout.InnerLayout.Handler as IWpfLayout;
+			else
+				return null;
+		}
+
+		public static WindowStyle ToEto (this sw.WindowStyle style)
+		{
+			switch (style) {
+			case sw.WindowStyle.None:
+				return WindowStyle.None;
+			case sw.WindowStyle.ThreeDBorderWindow:
+				return WindowStyle.Default;
+			default:
+				throw new NotSupportedException ();
+			}
+		}
+
+		public static sw.WindowStyle ToWpf (this WindowStyle style)
+		{
+			switch (style) {
+			case WindowStyle.None:
+				return sw.WindowStyle.None;
+			case WindowStyle.Default:
+				return sw.WindowStyle.ThreeDBorderWindow;
+			default:
+				throw new NotSupportedException ();
+			}
 		}
 	}
 }

@@ -16,20 +16,6 @@ namespace Eto.Platform.iOS.Drawing
 		UIImage GetUIImage ();
 	}
 
-	public static class ImageExtensions
-	{
-		public static UIImage ToUIImage (this Image image)
-		{
-			if (image == null)
-				return null;
-			var handler = image.Handler as IImageHandler;
-			if (handler != null)
-				return handler.GetUIImage ();
-			else
-				return null;
-		}
-	}
-
 	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
 		where T: class
 		where W: Image

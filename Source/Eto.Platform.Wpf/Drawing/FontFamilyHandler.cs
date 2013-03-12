@@ -18,18 +18,34 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public FontFamilyHandler (swm.FontFamily wpfFamily)
 		{
-			this.Control = wpfFamily;
+			Control = wpfFamily;
+			Name = Control.Source;
 		}
 
 		public void Create (string familyName)
 		{
+			Name = familyName;
+			switch (familyName.ToLowerInvariant ()) {
+			case FontFamilies.MonospaceFamilyName:
+				familyName = "Courier New";
+				break;
+			case FontFamilies.SansFamilyName:
+				familyName = "Tahoma, Arial, Verdana, Trebuchet, MS Sans Serif, Helvetica";
+				break;
+			case FontFamilies.SerifFamilyName:
+				familyName = "Times New Roman";
+				break;
+			case FontFamilies.CursiveFamilyName:
+				familyName = "Comic Sans MS, Monotype Corsiva, Papryus";
+				break;
+			case FontFamilies.FantasyFamilyName:
+				familyName = "Impact, Juice ITC";
+				break;
+			}
 			Control = new swm.FontFamily (familyName);
 		}
 
-		public string Name
-		{
-			get { return Control.Source; }
-		}
+		public string Name { get; set; }
 
 		public IEnumerable<FontTypeface> Typefaces
 		{

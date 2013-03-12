@@ -3,44 +3,77 @@ using System;
 namespace Eto.Drawing
 {
 	/// <summary>
-	/// Defines a brush with a solid color for use with <see cref="Graphics"/> fill operations
+	/// Platform handler interface for <see cref="SolidBrush"/>
 	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface ISolidBrush : IBrush
 	{
-		/// <summary>
-		/// Gets or sets the fill color of this brush
-		/// </summary>
-		Color Color { get; set; }
+		Color GetColor (SolidBrush widget);
+
+		void SetColor (SolidBrush widget, Color color);
+
+		object Create (Color color);
 	}
 	
 	/// <summary>
-	/// Handler interface for the <see cref="ISolidBrush"/>
+	/// Defines a brush with a solid color for use with <see cref="Graphics"/> fill operations
 	/// </summary>
-	public interface ISolidBrushHandler : ISolidBrush
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public sealed class SolidBrush : Brush
 	{
-		/// <summary>
-		/// Creates a solid brush with the specified <paramref name="color"/>
-		/// </summary>
-		/// <param name="color">Initial color for the brush</param>
-		void Create (Color color);
-	}
+		ISolidBrush handler;
 
-	/// <summary>
-	/// Methods to create a <see cref="ISolidBrush"/>
-	/// </summary>
-	public static class SolidBrush
-	{
 		/// <summary>
-		/// Creates a new solid brush with the specified <paramref name="color"/>
+		/// Gets or sets the control object for this widget
+		/// </summary>
+		/// <value>The control object for the widget</value>
+		public override object ControlObject { get; set; }
+
+		/// <summary>
+		/// Gets the platform handler object for the widget
+		/// </summary>
+		/// <value>The handler for the widget</value>
+		public override object Handler { get { return handler; } }
+
+		/// <summary>
+		/// Gets a delegate to instantiate objects of this type with minimal overhead
+		/// </summary>
+		/// <param name="generator">Generator to create the solid brushes</param>
+		public Func<Color, SolidBrush> Instantiator (Generator generator = null)
+		{
+			var handler = generator.CreateShared<ISolidBrush> ();
+			return (color) => {
+				var control = handler.Create (color);
+				return new SolidBrush (handler, control);
+			};
+		}
+
+		SolidBrush (ISolidBrush handler, object control)
+		{
+			this.handler = handler;
+			this.ControlObject = control;
+		}
+
+		/// <summary>
+		/// Initializes a new instance of a SolidBrush with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color for the brush</param>
 		/// <param name="generator">Generator to create the brush for</param>
-		/// <returns>A new instance of a solid brush with the specified color</returns>
-		public static ISolidBrush Create (Color color, Generator generator = null)
+		public SolidBrush (Color color, Generator generator = null)
 		{
-			var handler = generator.Create<ISolidBrushHandler> ();
-			handler.Create (color);
-			return handler;
+			handler = generator.CreateShared <ISolidBrush> ();
+			ControlObject = handler.Create (color);
+		}
+
+		/// <summary>
+		/// Gets or sets the fill color of this brush
+		/// </summary>
+		public Color Color
+		{
+			get { return handler.GetColor (this); }
+			set { handler.SetColor (this, value); }
 		}
 	}
 }

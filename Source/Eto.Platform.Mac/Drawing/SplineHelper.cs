@@ -5,6 +5,11 @@ using System.Collections.Generic;
 
 namespace Eto.Platform
 {
+	/// <summary>
+	/// Helper methods to calculate points of a spline
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class SplineHelper
 	{
 		public static IEnumerable<PointF> SplineCurve (IEnumerable<PointF> points, float tension)
@@ -54,9 +59,9 @@ namespace Eto.Platform
 			}
 		}
 
-		static PointF[] CalculateSplineCurve (PointF point0, PointF point1, PointF point2, PointF point3, float tension)
+		static PointF[] CalculateSplineCurve (PointF point0, PointF point1, PointF point2, PointF point3, float tension, int numberOfPoints = 20)
 		{
-			var points = new PointF[20];
+			var points = new PointF[numberOfPoints];
 			float SX1 = tension * (point2.X - point0.X);
 			float SY1 = tension * (point2.Y - point0.Y);
 			float SX2 = tension * (point3.X - point1.X);

@@ -10,8 +10,8 @@ namespace Eto.Platform.Windows.Drawing
 
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler(IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base (image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -67,7 +67,7 @@ namespace Eto.Platform.Windows.Drawing
 		public BitmapData Lock()
 		{
 			SD.Imaging.BitmapData bd = Control.LockBits(new SD.Rectangle(0, 0, Control.Width, Control.Height), SD.Imaging.ImageLockMode.ReadWrite, Control.PixelFormat);
-			return new BitmapDataHandler(bd.Scan0, bd.Stride, bd);
+			return new BitmapDataHandler(Widget, bd.Scan0, bd.Stride, bd.PixelFormat.BitsPerPixel(), bd);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -102,7 +102,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			graphics.Control.DrawImage (Control, source.ToSD (), destination.ToSD (), SD.GraphicsUnit.Pixel);
+			graphics.Control.DrawImage (Control, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
 		}
 
 		public void DrawImage (GraphicsHandler graphics, float x, float y)

@@ -10,9 +10,7 @@ namespace Eto.Test.Sections.Printing
 	public class PrintDialogSection : Panel
 	{
 		PrintSettings settings = new PrintSettings();
-		NumericUpDown selectedStart;
 		NumericUpDown selectedEnd;
-		NumericUpDown maximumStart;
 		NumericUpDown maximumEnd;
 		CheckBox allowPageRange;
 		CheckBox allowSelection;
@@ -90,7 +88,7 @@ namespace Eto.Test.Sections.Printing
 		{
 			var document = new PrintDocument ();
 			document.PrintSettings = settings;
-			var font = new Font (FontFamilies.Serif, 16);
+			var font = Fonts.Serif (16);
 			var printTime = DateTime.Now;
 			document.PrintPage += (sender, e) => {
 				Size pageSize = Size.Round (e.PageSize);
@@ -223,7 +221,7 @@ namespace Eto.Test.Sections.Printing
 
 		Control MaximumStart ()
 		{
-			var control = maximumStart = new NumericUpDown { MinValue = 1 };
+			var control = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
 				control.Value = settings.MaximumPageRange.Start;
 			};
@@ -255,7 +253,7 @@ namespace Eto.Test.Sections.Printing
 
 		Control SelectedStart ()
 		{
-			var control = selectedStart = new NumericUpDown { MinValue = 1 };
+			var control = new NumericUpDown { MinValue = 1 };
 			control.DataContextChanged += delegate {
 				control.Value = settings.SelectedPageRange.Start;
 			};

@@ -19,7 +19,7 @@ namespace Eto.Platform.Wpf.Forms
 			return new sw.Window ();
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.ShowInTaskbar = false;
@@ -40,15 +40,12 @@ namespace Eto.Platform.Wpf.Forms
 
 		public DialogResult ShowDialog (Control parent)
 		{
-			var parentWindow = parent.ParentWindow;
-			if (parentWindow != null)
-			{
-				var owner = ((IWpfWindow)parentWindow.Handler).Control;
-				Control.Owner = owner;
-				if (owner.Owner == null)
-					Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
-				else
-				{
+			if (parent != null) {
+				var parentWindow = parent.ParentWindow;
+				if (parentWindow != null) {
+					var owner = ((IWpfWindow)parentWindow.Handler).Control;
+					Control.Owner = owner;
+					// CenterOwner does not work in certain cases (e.g. with autosizing)
 					Control.WindowStartupLocation = sw.WindowStartupLocation.Manual;
 					Control.SourceInitialized += HandleSourceInitialized;
 				}

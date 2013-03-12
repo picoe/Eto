@@ -9,10 +9,13 @@ namespace Eto.Platform.GtkSharp
 		public TabControlHandler()
 		{
 			Control = new Gtk.Notebook();
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
 			Control.SwitchPage += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);
-				if (SelectedIndex >= 0)
-					Widget.TabPages[SelectedIndex].OnClick (EventArgs.Empty);
 			};
 		}
 
@@ -25,6 +28,11 @@ namespace Eto.Platform.GtkSharp
 		public void InsertTab (int index, TabPage page)
 		{
 			var pageHandler = (TabPageHandler)page.Handler;
+
+			if (Widget.Loaded) {
+				pageHandler.Control.ShowAll ();
+				pageHandler.LabelControl.ShowAll ();
+			}
 			
 			if (index == -1)
 				Control.AppendPage(pageHandler.Control, pageHandler.LabelControl);
@@ -41,6 +49,8 @@ namespace Eto.Platform.GtkSharp
 		public void RemoveTab (int index, TabPage page)
 		{
 			Control.RemovePage (index);
+			if (Widget.Loaded && Control.NPages == 0)
+				Widget.OnSelectedIndexChanged (EventArgs.Empty);
 		}
 	}
 }

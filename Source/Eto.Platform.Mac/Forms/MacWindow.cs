@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
@@ -46,6 +47,7 @@ namespace Eto.Platform.Mac.Forms
 				base.Zoom (sender);
 				zoom = true;
 			}
+			Handler.Widget.OnWindowStateChanged (EventArgs.Empty);
 		}
 	}
 	
@@ -102,6 +104,10 @@ namespace Eto.Platform.Mac.Forms
 		bool setInitialSize;
 		Size? minimumSize;
 		WindowState? initialState;
+		bool maximizable = true;
+		bool topMost;
+
+		static Selector selSetStyleMask = new Selector ("setStyleMask:");
 		
 		public NSObject FieldEditorObject { get; set; }
 		
@@ -143,13 +149,18 @@ namespace Eto.Platform.Mac.Forms
 			AutoSize = true;
 			
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.DidBecomeKey += delegate {
-				if (MenuBar != null) 
+				if (MenuBar != null) {
+#if XAMMAC
 					NSApplication.SharedApplication.SetMainMenu (MenuBar);
+#else
+					NSApplication.SharedApplication.MainMenu = MenuBar;
+#endif
+				}
 			};
 		}
 		
@@ -168,33 +179,62 @@ namespace Eto.Platform.Mac.Forms
 					return !args.Cancel;
 				};
 				break;
-			case Window.MaximizedEvent:
+			case Window.WindowStateChangedEvent:
 				Control.ShouldZoom = (window, newFrame) => {
+					if (!Maximizable)
+						return false;
 					if (!window.IsZoomed) {
 						RestoreBounds = Widget.Bounds;
-						Widget.OnMaximized (EventArgs.Empty);
 					}
 					return true;
 				};
-				break;
-			case Window.MinimizedEvent:
 				Control.WillMiniaturize += delegate {
 					this.RestoreBounds = Widget.Bounds;
-					Widget.OnMinimized (EventArgs.Empty);
+				};
+				Control.DidMiniaturize += delegate {
+					Widget.OnWindowStateChanged (EventArgs.Empty);
+				};
+				Control.DidDeminiaturize += delegate {
+					Widget.OnWindowStateChanged (EventArgs.Empty);
 				};
 				break;
 			case Eto.Forms.Control.ShownEvent:
+				// handled when shown
+				break;
+			case Eto.Forms.Control.GotFocusEvent:
 				Control.DidBecomeKey += delegate {
-					Widget.OnShown (EventArgs.Empty);
+					Widget.OnGotFocus (EventArgs.Empty);
 				};
 				break;
-			case Eto.Forms.Control.HiddenEvent:
+			case Eto.Forms.Control.LostFocusEvent:
 				Control.DidResignKey += delegate {
-					Widget.OnHidden (EventArgs.Empty);
+					Widget.OnLostFocus (EventArgs.Empty);
 				};
 				break;
 			case Eto.Forms.Control.KeyDownEvent:
 				// TODO
+				break;
+			case Eto.Forms.Control.SizeChangedEvent:
+				Size? oldSize = null;
+				AddControlObserver ((NSString)"frame", e => {
+					var widget = (Window)e.Widget;
+					var newSize = widget.Size;
+					if (oldSize != newSize) {
+						widget.OnSizeChanged (EventArgs.Empty);
+						oldSize = newSize;
+					}
+				});
+				break;
+			case Window.LocationChangedEvent:
+				Point? oldLocation = null;
+				AddControlObserver ((NSString)"frame", e => {
+					var widget = (Window)e.Widget;
+					var newLocation = widget.Location;
+					if (oldLocation != newLocation) {
+						widget.OnLocationChanged (EventArgs.Empty);
+						oldLocation = newLocation;
+					}
+				});
 				break;
 			default:
 				base.AttachEvent (handler);
@@ -220,6 +260,7 @@ namespace Eto.Platform.Mac.Forms
 			Control.ReleasedWhenClosed = false;
 			Control.HasShadow = true;
 			Control.ShowsResizeIndicator = true;
+			Control.AutorecalculatesKeyViewLoop = true;
 			//Control.Delegate = new MacWindowDelegate{ Handler = this };
 			Control.WillReturnFieldEditor = (sender, forObject) => {
 				FieldEditorObject = forObject;
@@ -244,15 +285,56 @@ namespace Eto.Platform.Mac.Forms
 		public virtual string Title { get { return Control.Title; } set { Control.Title = value; } }
 
 		public bool Resizable {
-			get { return (Control.StyleMask & NSWindowStyle.Resizable) != 0; }
+			get { return Control.StyleMask.HasFlag (NSWindowStyle.Resizable); }
 			set {
-				if (Control.RespondsToSelector (new Selector ("setStyleMask:"))) {
+				if (Control.RespondsToSelector (selSetStyleMask)) {
 					if (value)
 						Control.StyleMask |= NSWindowStyle.Resizable;
 					else
 						Control.StyleMask &= ~NSWindowStyle.Resizable;
 				} else {
 					// 10.5, what do we do?!
+				}
+			}
+		}
+
+		public bool Minimizable {
+			get { return Control.StyleMask.HasFlag (NSWindowStyle.Miniaturizable); }
+			set {
+				if (Control.RespondsToSelector (selSetStyleMask)) {
+					if (value)
+						Control.StyleMask |= NSWindowStyle.Miniaturizable;
+					else
+						Control.StyleMask &= ~NSWindowStyle.Miniaturizable;
+				} else {
+					// 10.5, what do we do?!
+				}
+			}
+		}
+
+		public bool Maximizable
+		{
+			get { return maximizable; }
+			set {
+				if (maximizable != value) {
+					maximizable = value;
+					HandleEvent (Window.WindowStateChangedEvent);
+				}
+			}
+		}
+
+		public bool ShowInTaskbar
+		{
+			get; set;
+		}
+
+		public bool TopMost
+		{
+			get { return topMost; }
+			set {
+				if (topMost != value) {
+					topMost = value;
+					Control.Level = value ? NSWindowLevel.PopUpMenu : NSWindowLevel.Normal;
 				}
 			}
 		}
@@ -298,8 +380,13 @@ namespace Eto.Platform.Mac.Forms
 			}
 			set {
 				this.menuBar = value;
-				if (Control.IsKeyWindow)
+				if (Control.IsKeyWindow) {
+#if XAMMAC
 					NSApplication.SharedApplication.SetMainMenu ((NSMenu)value.ControlObject);
+#else
+					NSApplication.SharedApplication.MainMenu = (NSMenu)value.ControlObject;
+#endif
+				}
 			}
 		}
 		
@@ -315,7 +402,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual void Close ()
 		{
-			Control.PerformClose (Control);
+			Control.Close ();
 		}
 
 		public ToolBar ToolBar {
@@ -344,11 +431,6 @@ namespace Eto.Platform.Mac.Forms
 		void IControl.Invalidate (Rectangle rect)
 		{
 			Control.ContentView.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
-		}
-
-		public Graphics CreateGraphics ()
-		{
-			return null;
 		}
 
 		public void SuspendLayout ()
@@ -428,7 +510,7 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
-		public WindowState State {
+		public WindowState WindowState {
 			get {
 				if (initialState != null)
 					return initialState.Value;
@@ -446,26 +528,27 @@ namespace Eto.Platform.Mac.Forms
 				}
 				switch (value) {
 				case WindowState.Maximized: 
-					if (!Control.IsZoomed) {
+					if (Control.IsMiniaturized)
+						Control.Deminiaturize (Control);
+					if (!Control.IsZoomed)
 						Control.Zoom (Control);
-					}
 					break;
 				case WindowState.Minimized:
 					if (!Control.IsMiniaturized)
 						Control.Miniaturize (Control);
 					break;
 				case WindowState.Normal: 
+					if (Control.IsZoomed)
+						Control.Zoom (Control);
 					if (Control.IsMiniaturized)
 						Control.Deminiaturize (Control);
-					else if (Control.IsZoomed)
-						Control.Zoom (Control);
 					break;
 				}
 			}
 		}
 		
 		public Rectangle? RestoreBounds {
-			get { return State == WindowState.Normal ? null : restoreBounds; }
+			get { return WindowState == WindowState.Normal ? null : restoreBounds; }
 			set { restoreBounds = value; }
 		}
 
@@ -489,12 +572,12 @@ namespace Eto.Platform.Mac.Forms
 				setInitialSize = true;
 
 				PositionWindow ();
-				if (initialState != null) {
-					State = initialState.Value;
-					initialState = null;
-				}
 			} else {
 				PositionWindow();
+			}
+			if (initialState != null) {
+				WindowState = initialState.Value;
+				initialState = null;
 			}
 		}
 
@@ -505,7 +588,11 @@ namespace Eto.Platform.Mac.Forms
 		public virtual void OnLoadComplete (EventArgs e)
 		{
 		}
-		
+
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		public virtual void LayoutChildren ()
 		{
 			if (Widget.Layout != null) {
@@ -572,6 +659,54 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
+		}
+
+		public Screen Screen
+		{
+			get { return new Screen(Generator, new ScreenHandler (Control.Screen)); }
+		}
+
+        public PointF PointFromScreen(PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+
+        public PointF PointToScreen(PointF point)
+        {
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+
+		public WindowStyle WindowStyle
+		{
+			get { return Control.StyleMask.ToEtoWindowStyle (); }
+			set {
+				if (Control.RespondsToSelector (selSetStyleMask)) {
+					Control.StyleMask = value.ToNS (Control.StyleMask);
+				} else {
+					// 10.5, what do we do?!
+				}
+			}
+		}
+
+		public void BringToFront ()
+		{
+			Control.OrderFront (Control);
+			Control.MakeKeyWindow ();
+		}
+
+		public void SendToBack ()
+		{
+			Control.OrderBack (Control);
+			var window = NSApplication.SharedApplication.Windows.FirstOrDefault (r => r != Control);
+			if (window != null)
+				window.MakeKeyWindow ();
+			Control.ResignKeyWindow ();
 		}
 	}
 }

@@ -11,18 +11,18 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IGraphicsPath : IDisposable
+	public interface IGraphicsPath : IDisposable, IControlObjectSource
 	{
-		/// <summary>
-		/// Gets the platform-specific control object
-		/// </summary>
-		object ControlObject { get; }
-
 		/// <summary>
 		/// Gets the bounding rectangle for this path
 		/// </summary>
 		RectangleF Bounds { get; }
-		
+
+		/// <summary>
+		/// Gets or sets a value indicating how this graphics path should be filled.
+		/// </summary>
+		FillMode FillMode { get; set; }
+
 		/// <summary>
 		/// Gets a value indicating that this graphics path is empty and has no segments
 		/// </summary>
@@ -151,7 +151,7 @@ namespace Eto.Drawing
 		/// <param name="path">Child path to add to this instance</param>
 		/// <param name="connect">True to connect the current figure to the first figure of the specified path, if it is not closed</param>
 		void AddPath (IGraphicsPath path, bool connect = false);
-
+		
 		/// <summary>
 		/// Transforms the points in the path with the specified matrix
 		/// </summary>
@@ -174,6 +174,11 @@ namespace Eto.Drawing
 		/// To start a new figure without closing the current one, use <see cref="StartFigure"/>
 		/// </remarks>
 		void CloseFigure ();
+
+		/// <summary>
+		/// Creates a clone of the graphics path
+		/// </summary>
+		IGraphicsPath Clone ();
 	}
 
 	/// <summary>
@@ -296,7 +301,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsPath : IGraphicsPath
+	public class GraphicsPath : IGraphicsPath, IHandlerSource
 	{
 		IGraphicsPath Handler { get; set; }
 
@@ -307,7 +312,16 @@ namespace Eto.Drawing
 		{
 			get { return Handler.Bounds; }
 		}
-		
+
+		/// <summary>
+		/// Sets a value indicating how this graphics path should be filled.
+		/// </summary>
+		public FillMode FillMode
+		{
+			set { Handler.FillMode = value; }
+			get { return Handler.FillMode; }
+		}
+
 		/// <summary>
 		/// Gets a value indicating that this graphics path is empty and has no segments
 		/// </summary>
@@ -329,6 +343,21 @@ namespace Eto.Drawing
 		{
 			get { return Handler.CurrentPoint; }
 		}
+
+		/// <summary>
+		/// Creates a delegate that can be used to create instances of the <see cref="IGraphicsPath"/>
+		/// </summary>
+		/// <remarks>
+		/// This is useful when creating a very large number of graphics path objects
+		/// </remarks>
+		/// <param name="generator">Generator used to create the graphics path objects</param>
+		public static Func<IGraphicsPath> Instantiator (Generator generator = null)
+		{
+			var instantiator = generator.Find<IGraphicsPathHandler> ();
+			return () => {
+				return instantiator ();
+			};
+		}
 		
 		/// <summary>
 		/// Creates a new instance of the IGraphicsPath for the specified generator
@@ -336,7 +365,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
 		public static IGraphicsPath Create (Generator generator = null)
 		{
-			return generator.Create<IGraphicsPathHandler>();
+			return generator.Create<IGraphicsPathHandler> ();
 		}
 
 		/// <summary>
@@ -346,6 +375,15 @@ namespace Eto.Drawing
 		public GraphicsPath (Generator generator = null)
 		{
 			Handler = Create (generator);
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Drawing.GraphicsPath"/> class.
+		/// </summary>
+		/// <param name="handler">Handler for the graphics path</param>
+		public GraphicsPath (IGraphicsPath handler)
+		{
+			Handler = handler;
 		}
 
 		/// <summary>
@@ -532,11 +570,106 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Creates a clone of the graphics path
+		/// </summary>
+		public IGraphicsPath Clone ()
+		{
+			return new GraphicsPath (Handler.Clone ());
+		}
+
+		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>
-		object IGraphicsPath.ControlObject
+		object IControlObjectSource.ControlObject
 		{
 			get { return Handler.ControlObject; }
+		}
+
+		object IHandlerSource.Handler
+		{
+			get { return Handler; }
+		}
+
+		/// <summary>
+		/// Creates a rounded rectangle using the specified corner radius
+		/// </summary>
+		/// <returns>The round rect.</returns>
+		/// <param name="rectangle">Rectangle to round</param>
+		/// <param name="radius">Radius for all corners</param>
+		/// <param name="generator">Generator to create the graphics path</param>
+		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float radius, Generator generator = null)
+		{
+			return GetRoundRect (rectangle, radius, radius, radius, radius, generator);
+		}
+
+		/// <summary>
+		/// Creates a rounded rectangle using the specified corner radius
+		/// </summary>
+		/// <param name="rectangle">Rectangle to round</param>
+		/// <param name="nwRadius">Radius of the north east corner</param>
+		/// <param name="neRadius">Radius of the north west corner</param>
+		/// <param name="seRadius">Radius of the south east corner</param>
+		/// <param name="swRadius">Radius of the south west corner</param>
+		/// <param name="generator">Generator to create the graphics path</param>
+		/// <returns>GraphicsPath with the lines of the rounded rectangle ready to be painted</returns>
+		public static IGraphicsPath GetRoundRect (RectangleF rectangle, float nwRadius, float neRadius, float seRadius, float swRadius, Generator generator = null)
+		{
+			//  NW-----NE
+			//  |       |
+			//  |       |
+			//  SW-----SE
+
+			var result = GraphicsPath.Create (generator);
+
+			nwRadius *= 2;
+			neRadius *= 2;
+			seRadius *= 2;
+			swRadius *= 2;
+
+			//NW ---- NE
+			result.AddLine (new PointF (rectangle.X + nwRadius, rectangle.Y), new PointF (rectangle.Right - neRadius, rectangle.Y));
+
+			//NE Arc
+			if (neRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Right - neRadius, rectangle.Top, rectangle.Right, rectangle.Top + neRadius);
+				result.AddArc (rect, -90, 90);
+			}
+
+			// NE
+			//  |
+			// SE
+			result.AddLine (new PointF (rectangle.Right, rectangle.Top + neRadius), new PointF (rectangle.Right, rectangle.Bottom - seRadius));
+
+			//SE Arc
+			if (seRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Right - seRadius, rectangle.Bottom - seRadius, rectangle.Right, rectangle.Bottom);
+				result.AddArc (rect, 0, 90);
+			}
+
+			// SW --- SE
+			result.AddLine (new PointF (rectangle.Right - seRadius, rectangle.Bottom), new PointF (rectangle.Left + swRadius, rectangle.Bottom));
+
+			//SW Arc
+			if (swRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Left, rectangle.Bottom - swRadius, rectangle.Left + swRadius, rectangle.Bottom);
+				result.AddArc (rect, 90, 90);
+			}
+
+			// NW
+			// |
+			// SW
+			result.AddLine (new PointF (rectangle.Left, rectangle.Bottom - swRadius), new PointF (rectangle.Left, rectangle.Top + nwRadius));
+
+			//NW Arc
+			if (nwRadius > 0f) {
+				var rect = RectangleF.FromSides (rectangle.Left, rectangle.Top, rectangle.Left + nwRadius, rectangle.Top + nwRadius);
+				result.AddArc (rect, 180, 90);
+			}
+
+			result.CloseFigure ();
+
+			return result;
 		}
 	}
 }

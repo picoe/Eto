@@ -6,7 +6,9 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Handler for the <see cref="IndexedBitmap"/> class
 	/// </summary>
-	public interface IIndexedBitmap : IImage
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public interface IIndexedBitmap : IImage, ILockableImage
 	{
 		/// <summary>
 		/// Creates a new indexed bitmap with the specified size and bits per pixel
@@ -24,21 +26,6 @@ namespace Eto.Drawing
 		void Resize(int width, int height);
 
 		/// <summary>
-		/// Locks the bits of the bitmap for direct manipulation
-		/// </summary>
-		/// <remarks>
-		/// Note you must call <see cref="Unlock"/> after modifying the bitmap data
-		/// </remarks>
-		/// <returns>A BitmapData object that carries a pointer and functions for manipulating the data directly</returns>
-		BitmapData Lock();
-
-		/// <summary>
-		/// Unlocks the bits of the bitmap
-		/// </summary>
-		/// <param name="bitmapData">Instance of the bitmap data retrieved from the <see cref="Lock"/> method</param>
-		void Unlock(BitmapData bitmapData);
-
-		/// <summary>
 		/// Gets or sets the palette of the image
 		/// </summary>
 		Palette Palette { get; set; }
@@ -47,9 +34,11 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Represents a bitmap where each pixel is specified as an index in a <see cref="Palette"/>
 	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class IndexedBitmap : Image
 	{
-		IIndexedBitmap handler;
+		new IIndexedBitmap Handler { get { return (IIndexedBitmap)base.Handler; } }
 
 		/// <summary>
 		/// Gets the number of bits per pixel for this bitmap
@@ -78,8 +67,7 @@ namespace Eto.Drawing
 			: base(generator, typeof(IIndexedBitmap))
 		{
 			this.BitsPerPixel = bitsPerPixel;
-			handler = (IIndexedBitmap)Handler;
-			handler.Create(width, height, bitsPerPixel);
+			Handler.Create(width, height, bitsPerPixel);
 		}
 
 		/// <summary>
@@ -89,28 +77,28 @@ namespace Eto.Drawing
 		/// <param name="height">New height of the bitmap</param>
 		public void Resize (int width, int height)
 		{
-			handler.Resize(width, height);
+			Handler.Resize(width, height);
 		}
 
 		/// <summary>
-		/// Locks the bits of the bitmap for direct manipulation
+		/// Locks the data of the image to directly access the bytes of the image
 		/// </summary>
 		/// <remarks>
-		/// Note you must call <see cref="Unlock"/> after modifying the bitmap data
+		/// This locks the data to read and write to directly using unsafe pointers. After reading or updating
+		/// the data, you must call <see cref="BitmapData.Dispose"/> to unlock the data before using the bitmap.
+		/// e.g.:
+		/// 
+		/// <code>
+		/// using (var bd = bitmap.Lock ()) {
+		/// 	byte* pdata = bd.Data;
+		/// 	// access data
+		/// }
+		/// </code>
 		/// </remarks>
 		/// <returns>A BitmapData object that carries a pointer and functions for manipulating the data directly</returns>
 		public BitmapData Lock ()
 		{
-			return handler.Lock();
-		}
-
-		/// <summary>
-		/// Unlocks the bits of the bitmap
-		/// </summary>
-		/// <param name="bitmapData">Instance of the bitmap data retrieved from the <see cref="Lock"/> method</param>
-		public void Unlock (BitmapData bitmapData)
-		{
-			handler.Unlock(bitmapData);
+			return Handler.Lock();
 		}
 
 		/// <summary>
@@ -121,9 +109,22 @@ namespace Eto.Drawing
 		/// </remarks>
 		public Palette Palette 
 		{
-			get { return handler.Palette; }
-			set { handler.Palette = value; }
+			get { return Handler.Palette; }
+			set { Handler.Palette = value; }
 		}
 
+		#region Obsolete
+
+		/// <summary>
+		/// Unlocks the bits of the bitmap
+		/// </summary>
+		/// <param name="bitmapData">Instance of the bitmap data retrieved from the <see cref="Lock"/> method</param>
+		[Obsolete ("Use BitmapData.Dispose instead")]
+		public void Unlock (BitmapData bitmapData)
+		{
+			Handler.Unlock(bitmapData);
+		}
+
+		#endregion
 	}
 }

@@ -57,8 +57,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			switch (handler) {
 			case Scrollable.ScrollEvent:
 				Control.ContentView.PostsBoundsChangedNotifications = true;
-				this.AddObserver (NSView.NSViewBoundsDidChangeNotification, delegate(ObserverActionArgs e) {
-					e.Widget.OnScroll (new ScrollEventArgs (e.Widget.ScrollPosition));
+				this.AddObserver (NSView.NSViewBoundsDidChangeNotification, e => {
+					var w = (Scrollable)e.Widget;
+					w.OnScroll (new ScrollEventArgs (w.ScrollPosition));
 				}, Control.ContentView);
 				break;
 			default:
@@ -147,6 +148,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				Control.BackgroundColor = value.ToNS ();
+				Control.DrawsBackground = value.A > 0;
 			}
 		}
 		

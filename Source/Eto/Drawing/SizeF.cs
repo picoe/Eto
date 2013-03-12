@@ -107,7 +107,7 @@ namespace Eto.Drawing
 		{
 			if (Width == 0 || Height == 0)
 				return false;
-			return (x >= 0 && x <= Width && y >= 0 && y <= Height);
+			return (x >= 0 && x < Width && y >= 0 && y < Height);
 		}
 
 		/// <summary>
@@ -154,6 +154,17 @@ namespace Eto.Drawing
 		/// <param name="factor">Factor to multiply both the Width and Height by</param>
 		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
 		public static SizeF operator * (SizeF size, float factor)
+		{
+			return new SizeF (size.Width * factor, size.Height * factor);
+		}
+
+		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
+		/// </summary>
+		/// <param name="size">Size to multiply</param>
+		/// <param name="factor">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
+		public static SizeF operator * (float factor, SizeF size)
 		{
 			return new SizeF (size.Width * factor, size.Height * factor);
 		}

@@ -95,7 +95,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.CanUserReorderColumns = value; }
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Columns = new ColumnCollection { Handler = this };

@@ -10,7 +10,7 @@ namespace Eto.Platform.Windows.Drawing
 	/// <summary>
 	/// Handler for <see cref="IMatrix"/>
 	/// </summary>
-	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class MatrixHandler : IMatrixHandler, IDisposable
 	{
@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public sd2.Matrix Control { get { return control; } }
 
-		object IMatrix.ControlObject { get { return control; } }
+		object IControlObjectSource.ControlObject { get { return control; } }
 
 		public MatrixHandler ()
 		{
@@ -138,9 +138,9 @@ namespace Eto.Platform.Windows.Drawing
 			control = new sd2.Matrix ();
 		}
 
-		public void Create (float m11, float m12, float m21, float m22, float dx, float dy)
+		public void Create (float xx, float yx, float xy, float yy, float dx, float dy)
 		{
-			control = new sd2.Matrix (m11, m12, m21, m22, dx, dy);
+			control = new sd2.Matrix (xx, yx, xy, yy, dx, dy);
 		}
 
 		public void Invert ()
@@ -150,11 +150,11 @@ namespace Eto.Platform.Windows.Drawing
 
 		public PointF TransformPoint (Point p)
 		{
-			var px = new sd.Point[] { p.ToSD () };
+			var px = new sd.Point[] { Platform.Conversions.ToSD (p) };
 
 			this.Control.TransformPoints (px);
 
-			return px [0].ToEto ();
+			return Platform.Conversions.ToEto (px [0]);
 		}
 
 		public PointF TransformPoint (PointF p)

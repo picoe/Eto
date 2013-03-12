@@ -110,7 +110,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			return null;
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.DataSource = new DataSource { Handler = this };

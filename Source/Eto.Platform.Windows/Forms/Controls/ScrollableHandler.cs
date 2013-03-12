@@ -22,6 +22,10 @@ namespace Eto.Platform.Windows
 			{
 				SWF.KeyEventArgs e = new SWF.KeyEventArgs (keyData);
 				base.OnKeyDown (e);
+				if (!e.Handled) {
+					// Prevent firing the keydown event twice for the same key
+					Handler.LastKeyDown = e.KeyData.ToEto ();
+				}
 				return e.Handled;
 			}
 			
@@ -178,6 +182,15 @@ namespace Eto.Platform.Windows
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 
+		public override Size ClientSize
+		{
+			get { return Control.ClientSize.ToEto (); }
+			set
+			{
+				Control.AutoSize = value.Width == -1 || value.Height == -1;
+				Control.ClientSize = value.ToSD ();
+			}
+		}
 
 		public bool ExpandContentWidth
 		{

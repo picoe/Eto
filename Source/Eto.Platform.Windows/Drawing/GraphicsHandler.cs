@@ -7,6 +7,11 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.Windows.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IGraphics"/>
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsHandler : WidgetHandler<System.Drawing.Graphics, Graphics>, IGraphics
 	{
 		Stack<sd.Drawing2D.Matrix> savedTransforms;
@@ -33,7 +38,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public GraphicsHandler (sd.Graphics graphics)
 		{
-			this.Control = graphics;			
+			this.Control = graphics;
 		}
 		
 		public bool Antialias
@@ -72,7 +77,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control = sd.Graphics.FromImage ((sd.Image)image.ControlObject);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 
@@ -85,27 +90,27 @@ namespace Eto.Platform.Windows.Drawing
 		{
 		}
 
-		public void DrawLine (IPen pen, float startx, float starty, float endx, float endy)
+		public void DrawLine (Pen pen, float startx, float starty, float endx, float endy)
 		{
 			this.Control.DrawLine (pen.ToSD (), startx, starty, endx, endy);
 		}
 
-		public void DrawRectangle (IPen pen, float x, float y, float width, float height)
+		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
 		{
 			Control.DrawRectangle (pen.ToSD (), x, y, width, height);
 		}
 
-		public void FillRectangle (IBrush brush, float x, float y, float width, float height)
+		public void FillRectangle (Brush brush, float x, float y, float width, float height)
 		{
 			Control.FillRectangle (brush.ToSD (), x - 0.5f, y - 0.5f, width, height);
 		}
 
-		public void DrawEllipse (IPen pen, float x, float y, float width, float height)
+		public void DrawEllipse (Pen pen, float x, float y, float width, float height)
 		{
 			Control.DrawEllipse (pen.ToSD (), x, y, width, height);
 		}
 
-		public void FillEllipse (IBrush brush, float x, float y, float width, float height)
+		public void FillEllipse (Brush brush, float x, float y, float width, float height)
 		{
 			Control.FillEllipse (brush.ToSD (), x - 0.5f, y - 0.5f, width, height);
 		}
@@ -175,7 +180,7 @@ namespace Eto.Platform.Windows.Drawing
 			return radians * 180.0f / (float)Math.PI;
 		}
 
-		public void DrawArc (IPen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc (Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			if (width != height) {
 				var endAngle = startAngle + sweepAngle;
@@ -186,7 +191,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.DrawArc (pen.ToSD (), x, y, width, height, startAngle, sweepAngle);
 		}
 
-		public void FillPie (IBrush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void FillPie (Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			if (width != height) {
 				var endAngle = startAngle + sweepAngle;
@@ -196,8 +201,8 @@ namespace Eto.Platform.Windows.Drawing
 			}
 			Control.FillPie (brush.ToSD (), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
 		}
-		
-		public void FillPath (IBrush brush, IGraphicsPath path)
+
+		public void FillPath (Brush brush, IGraphicsPath path)
 		{
 			var old = Control.PixelOffsetMode;
 			Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
@@ -205,7 +210,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.PixelOffsetMode = old;
 		}
 
-		public void DrawPath (IPen pen, IGraphicsPath path)
+		public void DrawPath (Pen pen, IGraphicsPath path)
 		{
 			Control.DrawPath (pen.ToSD (), path.ToSD ());
 		}
@@ -295,6 +300,34 @@ namespace Eto.Platform.Windows.Drawing
 
 				t.Dispose ();
 			}
+		}
+
+		public RectangleF ClipBounds
+		{
+			get { return this.Control.ClipBounds.ToEto(); }
+		}
+
+		public void SetClip (RectangleF rectangle)
+		{
+			this.Control.SetClip (rectangle.ToSD ());
+		}
+
+		public void SetClip (IGraphicsPath path)
+		{
+			this.Control.SetClip (path.ToSD ());
+		}
+
+		public void ResetClip ()
+		{
+			this.Control.ResetClip ();
+		}
+
+		public void Clear(SolidBrush brush)
+		{
+			if (brush != null)
+				Control.Clear (brush.Color.ToSD ());
+			else
+				Control.Clear (sd.Color.Transparent);
 		}
 	}
 }

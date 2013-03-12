@@ -21,6 +21,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
+		public override bool UseMousePreview { get { return true; } }
+
 		public int MaxValue
 		{
 			get { return (int)Control.Maximum; }

@@ -1,3 +1,4 @@
+#if DESKTOP
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -62,10 +63,6 @@ namespace Eto
 		public void Register (AppDomain domain = null)
 		{
 			domain = domain ?? AppDomain.CurrentDomain;
-			domain.ResourceResolve += (sender, args) => {
-				Console.WriteLine (args.Name);
-				return null;
-			};
 			domain.AssemblyResolve += (sender, args) => {
 				var assemblyName = new AssemblyName (args.Name);
 				if (assemblyName.Name.EndsWith (".resources")) return null;
@@ -89,3 +86,5 @@ namespace Eto
 		}
 	}
 }
+
+#endif

@@ -46,7 +46,50 @@ namespace Eto.Platform.Mac
 		where T: NSToolbarItem
 		where W: ToolBarItem
 	{
-		Icon icon;
+		Image image;
+		NSButton button;
+		NSMenuItem menuItem;
+		sd.SizeF buttonSize = new sd.SizeF (42, 24);
+		Color? tint;
+
+		public sd.SizeF ButtonSize
+		{
+			get { return buttonSize; }
+			set
+			{
+				buttonSize = value;
+				button.Frame = new sd.RectangleF(sd.PointF.Empty, buttonSize);
+			}
+		}
+
+		public bool UseButton
+		{
+			get { return Control.View != null; }
+			set {
+				if (button == null && value) {
+					button = new NSButton {
+						BezelStyle = NSBezelStyle.TexturedRounded,
+						Frame = new sd.RectangleF(sd.PointF.Empty, buttonSize),
+						Target = Control.Target,
+						Action = Control.Action
+					};
+				}
+				Control.View = value ? button : null;
+			}
+		}
+
+		public NSButton Button
+		{
+			get { return button; }
+		}
+
+		public Color? Tint
+		{
+			get { return tint; }
+			set {
+				tint = value;
+			}
+		}
 
 		public virtual string Identifier { get; set; }
 		
@@ -55,19 +98,30 @@ namespace Eto.Platform.Mac
 			this.Identifier = Guid.NewGuid().ToString();
 		}
 
+		public void UseStandardButton (bool grayscale)
+		{
+			UseButton = true;
+			if (grayscale)
+				Tint = Colors.Gray;
+		}
+
 		public override T CreateControl ()
 		{
 			return (T)new NSToolbarItem(this.Identifier);
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Control.Target = new ToolBarItemHandlerTarget{ Handler = this };
 			Control.Action = new Selector("action");
 			Control.Autovalidates = false;
-			if (icon != null) Control.Image = (NSImage)icon.ControlObject;
-			Control.Label = this.Text;
+
+			menuItem = new NSMenuItem(string.Empty);
+			menuItem.Action = Control.Action;
+			menuItem.Target = Control.Target;
+			Control.MenuFormRepresentation = menuItem;
+			Control.Enabled = true;
 		}
 		
 		public virtual void ControlAdded(ToolBarHandler toolbar)
@@ -80,34 +134,38 @@ namespace Eto.Platform.Mac
 		
 		public string Text {
 			get { return Control.Label; }
-			set { Control.Label = value ?? string.Empty; }
+			set { Control.Label = menuItem.Title = value ?? string.Empty; }
 		}
 
 		public string ToolTip {
 			get { return Control.ToolTip; }
-			set { Control.ToolTip = value ?? string.Empty; }
+			set { menuItem.ToolTip = button.ToolTip = value ?? string.Empty; }
 		}
 
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				this.icon = value;
-				if (this.icon != null)
-					Control.Image = ((IImageSource)icon.Handler).GetImage ();
-				else 
-					//Control = null; // grr. NRE in monomac
-					Control.Image = new NSImage(new sd.SizeF (1, 1));
+				this.image = value;
+				SetImage ();
 			}
 		}
-		
+
+		void SetImage ()
+		{
+			var nsimage = this.image.ToNS (UseButton ? (int?)20 : null);
+			if (tint != null && nsimage != null)
+				nsimage = nsimage.Tint (tint.Value.ToNS ());
+			Control.Image =  nsimage;
+		}
+
 		public virtual bool Enabled
 		{
 			get { return Control.Enabled; }
 			set { Control.Enabled = value; }
 		}
-
+	
 		public virtual bool Selectable { get; set; }
 		
 		public void OnClick()

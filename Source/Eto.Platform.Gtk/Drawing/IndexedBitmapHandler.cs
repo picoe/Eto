@@ -10,8 +10,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public IndexedBitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -30,6 +30,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	{
 		Size size;
 		int rowStride;
+		int bitsPerPixel;
 		uint[] colors;
 
 		public int RowStride {
@@ -42,6 +43,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void Create (int width, int height, int bitsPerPixel)
 		{
+			this.bitsPerPixel = bitsPerPixel;
 			rowStride = width * bitsPerPixel / 8;
 			int colorCount = (int)Math.Pow (2, bitsPerPixel);
 			colors = new uint[colorCount];
@@ -62,7 +64,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			IntPtr ptr = Marshal.AllocHGlobal (Control.Length);
 			Marshal.Copy (Control, 0, ptr, Control.Length);
-			return  new IndexedBitmapDataHandler (ptr, rowStride, null);
+			return  new IndexedBitmapDataHandler (Widget, ptr, rowStride, bitsPerPixel, null);
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -91,7 +93,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			return new Gdk.RgbCmap (colors);
 		}
 
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
 			using (var drawable = new Gdk.Pixmap(null, Size.Width, Size.Height, 24))
 			using (var gc = new Gdk.GC(drawable)) {
@@ -99,12 +101,18 @@ namespace Eto.Platform.GtkSharp.Drawing
 	
 				
 				drawable.DrawIndexedImage (gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap ());
-				imageView.Pixmap = drawable;
+
+				if (iconSize != null) {
+					var iconSet = new Gtk.IconSet(Gdk.Pixbuf.FromDrawable (drawable, Gdk.Colormap.System, 0, 0, 0, 0, size.Width, size.Height));
+					imageView.SetFromIconSet(iconSet, iconSize.Value);
+				}
+				else
+					imageView.Pixmap = drawable;
 				
 			}
 		}
 #else
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
 		}
 #endif

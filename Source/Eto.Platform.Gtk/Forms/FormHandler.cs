@@ -24,6 +24,5 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control.ShowAll();
 		}
-
 	}
 }

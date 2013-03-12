@@ -9,10 +9,7 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public class FontFamilyHandler : WidgetHandler<sd.FontFamily, FontFamily>, IFontFamily
 	{
-		public string Name
-		{
-			get { return Control.Name; }
-		}
+		public string Name { get; set; }
 
 		IEnumerable<sd.FontStyle> Styles
 		{
@@ -42,11 +39,33 @@ namespace Eto.Platform.Windows.Drawing
 		public FontFamilyHandler (sd.FontFamily windowsFamily)
 		{
 			this.Control = windowsFamily;
+			Name = Control.Name;
 		}
 
 		public void Create (string familyName)
 		{
-			this.Control = new sd.FontFamily (familyName);
+			Name = familyName;
+			switch (familyName.ToLowerInvariant ()) {
+			case FontFamilies.MonospaceFamilyName:
+				this.Control = sd.FontFamily.GenericMonospace;
+				break;
+			case FontFamilies.SansFamilyName:
+				this.Control = sd.FontFamily.GenericSansSerif;
+				break;
+			case FontFamilies.SerifFamilyName:
+				this.Control = sd.FontFamily.GenericSerif;
+				break;
+			case FontFamilies.CursiveFamilyName:
+				this.Control = new sd.FontFamily ("Comic Sans MS");
+				break;
+			case FontFamilies.FantasyFamilyName:
+				this.Control = new sd.FontFamily ("Gabriola");
+				break;
+			default:
+				this.Control = new sd.FontFamily (familyName);
+				Name = Control.Name;
+				break;
+			}
 		}
 	}
 }

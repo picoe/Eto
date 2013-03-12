@@ -85,12 +85,12 @@ namespace Eto.Forms
 		
 		public string Text {
 			get { return handler.Text; }
-			set { handler.Text = value; }
+			set { handler.Text = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
 		}
 		
 		public string Html {
 			get { return handler.Html; }
-			set { handler.Html = value; }
+			set { handler.Html = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
 		}
 		
 		public Image Image {

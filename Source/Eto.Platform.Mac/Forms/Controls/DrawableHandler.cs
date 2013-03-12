@@ -1,5 +1,5 @@
 using System;
-using SD = System.Drawing;
+using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
@@ -10,9 +10,9 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class DrawableHandler : MacView<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
+	public class DrawableHandler : MacContainer<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
-		IBrush backgroundBrush;
+		Brush backgroundBrush;
 		Color backgroundColor;
 
 		public class EtoDrawableView : MacEventView
@@ -22,7 +22,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				get { return Widget as Drawable; }
 			}
 			
-			public override void DrawRect (System.Drawing.RectangleF dirtyRect)
+			public override void DrawRect (sd.RectangleF dirtyRect)
 			{
 				if (Widget == null)
 					return;
@@ -45,21 +45,28 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				return CanFocus;
 			}
-			
 		}
-	
+
+		public Graphics CreateGraphics ()
+		{
+			return new Graphics (Widget.Generator, new GraphicsHandler (Control));
+		}
+
 		public override bool Enabled { get; set; }
 		
 		public override Color BackgroundColor
 		{
 			get { return backgroundColor; }
-			set 
+			set
 			{
-				backgroundColor = value;
-				if (backgroundColor.A > 0)
-					backgroundBrush = SolidBrush.Create (backgroundColor, Widget.Generator);
-				else
-					backgroundBrush = null;
+				if (backgroundColor != value) {
+					backgroundColor = value;
+					if (backgroundColor.A > 0)
+						backgroundBrush = new SolidBrush (backgroundColor, Widget.Generator);
+					else
+						backgroundBrush = null;
+					this.Invalidate ();
+				}
 			}
 		}
 		
@@ -79,14 +86,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var context = NSGraphicsContext.CurrentContext;
 			if (context != null) {
-				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.Frame.Height, Control.IsFlipped));
-				if (backgroundBrush != null) {
-					graphics.FillRectangle (backgroundBrush, rect);
+				var handler = new GraphicsHandler (Control, context, Control.Frame.Height, Control.IsFlipped);
+				using (var graphics = new Graphics (Widget.Generator, handler)) {
+					if (backgroundBrush != null)
+						graphics.FillRectangle (backgroundBrush, rect);
+
+					Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}
-				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
 		}
-		
 
+		public override object ContainerObject
+		{
+			get { return Control; }
+		}
 	}
 }

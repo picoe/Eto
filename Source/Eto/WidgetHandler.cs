@@ -36,7 +36,8 @@ namespace Eto
 		where W: Widget
 	{
 		HashSet<string> eventHooks; 
-		
+		Generator generator;
+
 		/// <summary>
 		/// Finalizes the WidgetHandler
 		/// </summary>
@@ -67,8 +68,18 @@ namespace Eto
 		/// <summary>
 		/// Gets the generator that was used to create this handler
 		/// </summary>
-		public Generator Generator { get; set; }
-		
+		public Generator Generator
+		{
+			get { return generator; }
+			set
+			{
+				generator = value;
+				
+				// validate the generator
+				Eto.Generator.Validate (generator);
+			}
+		}
+
 		#region IWidget Members
 
 		/// <summary>
@@ -78,8 +89,18 @@ namespace Eto
 		/// Override this to initialize any of the platform objects.  This is called
 		/// in the widget constructor, after all of the widget's constructor code has been called.
 		/// </remarks>
-		public virtual void Initialize()
+		protected virtual void Initialize ()
 		{
+		}
+
+		protected virtual void PostInitialize ()
+		{
+		}
+
+		void IWidget.Initialize()
+		{
+			Initialize ();
+			PostInitialize ();
 		}
 
 		/// <summary>
@@ -221,11 +242,17 @@ namespace Eto
 		/// Override this to initialize any of the platform objects.  This is called
 		/// in the widget constructor, after all of the widget's constructor code has been called.
 		/// </remarks>
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			if (this.Control == null)
 				Control = CreateControl ();
+
 			base.Initialize ();
+		}
+
+		protected override void PostInitialize ()
+		{
+			base.PostInitialize ();
 			Style.OnStyleWidgetDefaults (this);
 		}
 

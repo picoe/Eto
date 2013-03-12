@@ -37,6 +37,10 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 		
+		public virtual void OnUnLoad()
+		{
+		}
+		
 		public virtual void Update()
 		{
 			Layout ();

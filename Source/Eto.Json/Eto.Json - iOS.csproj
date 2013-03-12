@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>10.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{5F92A18F-6ED3-4BD6-AFB7-FEEF3F4DA1E0}</ProjectGuid>
+    <ProjectTypeGuids>{6BC8ED88-2882-458C-8E55-DFD12B67127B};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Eto.Json.IOS</RootNamespace>
+    <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>Eto.Json</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup>
+    <FileAlignment>512</FileAlignment>
+    <DebugSymbols>True</DebugSymbols>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <OutputRoot>..\..\..</OutputRoot>
+    <LibrariesPath>..\..\Libraries</LibrariesPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\BuildOutput\iOS\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <Optimize>False</Optimize>
+    <DebugType>full</DebugType>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\BuildOutput\iOS\Release</OutputPath>
+    <Optimize>True</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <ConsolePause>False</ConsolePause>
+  </PropertyGroup>
+  <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="monotouch" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Libraries\Json.NET\Bin\Portable\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="DelegateConverter.cs" />
+    <Compile Include="DynamicLayoutConverter.cs" />
+    <Compile Include="EtoBinder.cs" />
+    <Compile Include="EtoContractResolver.cs" />
+    <Compile Include="EventValueProvider.cs" />
+    <Compile Include="JsonReader.cs" />
+    <Compile Include="NameConverter.cs" />
+    <Compile Include="NamespaceManager.cs" />
+    <Compile Include="PropertyStoreConverter.cs" />
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
+    <Compile Include="DefaultNamespaceManager.cs" />
+    <Compile Include="ImageConverter.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto - iOS.csproj">
+      <Project>{83452633-C37C-490F-852A-3ADE0A2CF0D4}</Project>
+      <Name>Eto - iOS</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

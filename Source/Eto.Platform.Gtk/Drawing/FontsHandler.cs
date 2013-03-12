@@ -8,10 +8,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
+		HashSet<string> familyNames;
 		static Pango.Context context;
+
 		public static Pango.Context Context
 		{
-			get {
+			get
+			{
 				if (context == null) {
 					var window = new Gtk.Window (string.Empty);
 					context = window.PangoContext;
@@ -22,25 +25,18 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-			get { return Context.Families.Select (r => new FontFamily(Generator, new FontFamilyHandler(r))); }
+			get { return Context.Families.Select (r => new FontFamily (Generator, new FontFamilyHandler (r))); }
 		}
 
-		public FontFamily GetSystemFontFamily (string systemFamilyName)
+		public bool FontFamilyAvailable (string fontFamily)
 		{
-			switch (systemFamilyName) {
-			case FontFamilies.MonospaceFamilyName:
-				systemFamilyName = "monospace";
-				break;
-			case FontFamilies.SansFamilyName:
-				systemFamilyName = "sans";
-				break;
-			case FontFamilies.SerifFamilyName:
-				systemFamilyName = "serif";
-				break;
-			default:
-				throw new NotSupportedException ();
+			if (familyNames == null) {
+				familyNames = new HashSet<string> (StringComparer.InvariantCultureIgnoreCase);
+				foreach (var family in Context.Families) {
+					familyNames.Add (family.Name);
+				}
 			}
-			return new FontFamily (Generator, systemFamilyName);
+			return familyNames.Contains (fontFamily);
 		}
 	}
 }

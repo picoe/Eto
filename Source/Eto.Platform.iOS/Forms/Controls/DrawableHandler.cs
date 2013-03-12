@@ -12,7 +12,7 @@ using MonoTouch.GLKit;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class DrawableHandler : iosView<DrawableHandler.MyView, Drawable>, IDrawable
+	public class DrawableHandler : iosContainer<DrawableHandler.MyView, Drawable>, IDrawable
 	{
 		/*
 		[Register("FastLayer")]
@@ -124,7 +124,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public void Create ()
 		{
-			Control = new MyTiledView{ Handler = this };
+			Control = new MyView{ Handler = this };
 		}
 		
 		public void Create (bool largeCanvas)
@@ -157,7 +157,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				//var oldCheck = UIApplication.CheckForIllegalCrossThreadCalls;
 				//UIApplication.CheckForIllegalCrossThreadCalls = false;
 				
-				using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.BaseFrame.Height, true))) {
+				using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, context, Control.BaseFrame.Height, true))) {
 					Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}
 				//UIApplication.CheckForIllegalCrossThreadCalls = oldCheck;

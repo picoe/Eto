@@ -49,7 +49,11 @@ namespace Eto.Platform.Windows
 		public virtual void OnLoadComplete ()
 		{
 		}
-		
+
+		public virtual void OnUnLoad ()
+		{
+		}
+
 		public virtual void Update ()
 		{
 		}

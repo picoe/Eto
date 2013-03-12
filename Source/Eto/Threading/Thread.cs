@@ -1,3 +1,4 @@
+#if MOBILE
 using System;
 
 namespace Eto.Threading
@@ -68,4 +69,4 @@ namespace Eto.Threading
 		}
 	}
 }
-
+#endif

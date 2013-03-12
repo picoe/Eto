@@ -52,7 +52,7 @@ namespace Eto.Drawing
 			if (isIcon)
 				return Icon.FromResource (ns.Assembly, ns.Namespace);
 			else
-				return Bitmap.FromResource (ns.Assembly, ns.Namespace);
+				return Bitmap.FromResource (ns.Namespace, ns.Assembly);
 		}
 
 		static Image LoadImage (string resourceName)

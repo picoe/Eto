@@ -1,3 +1,4 @@
+#if DESKTOP
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -44,8 +45,6 @@ namespace Eto.Forms
 		public MenuItemCollection MenuItems {
 			get { return menuItems; }
 		}
-
-		IWidget ISubMenuWidget.Handler { get { return this.Handler; } }
-
 	}
 }
+#endif

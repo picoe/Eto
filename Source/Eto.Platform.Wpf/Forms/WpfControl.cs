@@ -20,7 +20,7 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
                 if (brush != null) return brush.Color.ToEto ();
-                else return Colors.Black;
+                else return Colors.Transparent;
 			}
 			set
 			{
