@@ -29,7 +29,9 @@ namespace Eto.Forms
 		{
 			this.Values = values;
 		}
-		
+
+		public object Tag { get; set; }
+
 		public object[] Values { get; set; }
 		
 		public virtual object GetValue (int column)
