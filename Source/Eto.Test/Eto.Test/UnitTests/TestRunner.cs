@@ -18,7 +18,7 @@ namespace Eto.Test.UnitTests
 		{
 			Succeeded = true;
 		}
-		internal void AreEqual(object expected, object actual)
+		internal void AreEqual(object sender, object expected, object actual)
 		{
 			if (expected == null && actual == null)
 			{
@@ -28,7 +28,7 @@ namespace Eto.Test.UnitTests
 				(expected != null && actual == null) ||
 				!expected.Equals(actual))
 			{
-				Log.Write(this, "Assert.Equals failure. Expected={0} Actual={1}", expected ?? "null", actual ?? "null");
+				Log.Write(sender, "Assert.Equals failure. Expected={0} Actual={1}", expected ?? "null", actual ?? "null");
 				Succeeded = false;
 			}
 		}
