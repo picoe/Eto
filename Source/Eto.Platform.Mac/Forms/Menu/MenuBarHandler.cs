@@ -18,7 +18,7 @@ namespace Eto.Platform.Mac
 		{
 			var itemHandler = item.Handler as IMenuHandler;
 			if (itemHandler != null) itemHandler.EnsureSubMenu ();
-			Control.InsertItematIndex ((NSMenuItem)item.ControlObject, index);
+			Control.InsertItem ((NSMenuItem)item.ControlObject, index);
 		}
 
 		public void RemoveMenu (MenuItem item)

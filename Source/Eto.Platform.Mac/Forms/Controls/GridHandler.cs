@@ -120,10 +120,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridColumnHandler GetColumn (NSTableColumn tableColumn)
 		{
-			var str = tableColumn.Identifier as NSString;
-			if (str != null) {
+			var str = tableColumn.Identifier;
+			if (!string.IsNullOrEmpty (str)) {
 				int col;
-				if (int.TryParse ((string)str, out col)) {
+				if (int.TryParse (str, out col)) {
 					return GetColumn (col);
 				}
 			}

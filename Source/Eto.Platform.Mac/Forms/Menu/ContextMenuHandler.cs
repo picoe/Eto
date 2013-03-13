@@ -15,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Menu
 
 		public void AddMenu (int index, MenuItem item)
 		{
-			Control.InsertItematIndex ((NSMenuItem)item.ControlObject, index);
+			Control.InsertItem ((NSMenuItem)item.ControlObject, index);
 		}
 
 		public void RemoveMenu (MenuItem item)
