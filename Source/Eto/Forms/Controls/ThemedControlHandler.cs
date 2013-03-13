@@ -94,6 +94,11 @@ namespace Eto.Forms
 			Control.OnLoadComplete(e);
 		}
 
+		public void OnUnLoad(EventArgs e)
+		{
+			Control.OnUnLoad(e);
+		}
+		
 		public void SetParent(Control parent)
 		{
 			if (this.Control != null)
@@ -106,14 +111,14 @@ namespace Eto.Forms
 				this.Control.SetParentLayout(layout);
 		}
 
-		public Point ScreenToWorld(Point p)
+		public PointF PointFromScreen (PointF point)
 		{
-			return Control.ScreenToWorld(p);
+			return Control.PointFromScreen (point);
 		}
 
-		public Point WorldToScreen(Point p)
+		public PointF PointToScreen (PointF point)
 		{
-			return Control.WorldToScreen(p);
+			return Control.PointToScreen (point);
 		}
 
 		public void MapPlatformAction(string systemAction, BaseAction action)
@@ -121,30 +126,9 @@ namespace Eto.Forms
 			throw new NotImplementedException();
 		}
 
-		public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-		{
-			throw new NotImplementedException();
-		}
-
-		public bool Capture
-		{
-			get { return Control.Capture; }
-			set { Control.Capture = value; }
-		}
-
-		public Point MousePosition
-		{
-			get { return Control.MousePosition; }
-		}
-
 		public Point Location
 		{
 			get { return Control.Location; }
-		}
-
-		public void SetControl(object control)
-		{
-			Control.SetControl(control);
 		}
 
 #if DESKTOP

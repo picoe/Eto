@@ -21,6 +21,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Mode = DateTimePicker.DefaultMode;
 		}
 
+		public override bool UseMousePreview { get { return true; } }
+
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);

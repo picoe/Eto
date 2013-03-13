@@ -98,6 +98,11 @@ namespace Eto.Platform.Wpf.Forms
 					Widget.OnLostFocus (EventArgs.Empty);
 				};
 				break;
+			case Window.LocationChangedEvent:
+				Control.LocationChanged += (sender, e) => {
+					Widget.OnLocationChanged (EventArgs.Empty);
+				};
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;

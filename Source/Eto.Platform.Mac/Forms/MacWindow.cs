@@ -214,6 +214,28 @@ namespace Eto.Platform.Mac.Forms
 			case Eto.Forms.Control.KeyDownEvent:
 				// TODO
 				break;
+			case Eto.Forms.Control.SizeChangedEvent:
+				Size? oldSize = null;
+				AddControlObserver ((NSString)"frame", e => {
+					var widget = (Window)e.Widget;
+					var newSize = widget.Size;
+					if (oldSize != newSize) {
+						widget.OnSizeChanged (EventArgs.Empty);
+						oldSize = newSize;
+					}
+				});
+				break;
+			case Window.LocationChangedEvent:
+				Point? oldLocation = null;
+				AddControlObserver ((NSString)"frame", e => {
+					var widget = (Window)e.Widget;
+					var newLocation = widget.Location;
+					if (oldLocation != newLocation) {
+						widget.OnLocationChanged (EventArgs.Empty);
+						oldLocation = newLocation;
+					}
+				});
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
@@ -566,7 +588,11 @@ namespace Eto.Platform.Mac.Forms
 		public virtual void OnLoadComplete (EventArgs e)
 		{
 		}
-		
+
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		public virtual void LayoutChildren ()
 		{
 			if (Widget.Layout != null) {
@@ -640,44 +666,21 @@ namespace Eto.Platform.Mac.Forms
 			get { return new Screen(Generator, new ScreenHandler (Control.Screen)); }
 		}
 
-        public Point ScreenToWorld(Point p)
+        public PointF PointFromScreen(PointF point)
         {
-            return p;/* TODO */
-        }
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
 
-        public Point WorldToScreen(Point p)
+        public PointF PointToScreen(PointF point)
         {
-            return p;/* TODO */
-        }
-
-
-        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-        {
-            return default(DragDropEffects);/* TODO */
-        }
-
-
-        public bool Capture
-        {
-            get
-            {
-                return false;/* TODO */
-            }
-            set
-            {
-                /* TODO */
-            }
-        }
-
-        public Point MousePosition
-        {
-            get { return Point.Empty;/* TODO */ }
-        }
-
-        public void SetControl(object control)
-        {
-            /* TODO */
-        }
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertBaseToScreen (sdpoint);
+			sdpoint.Y = Control.Screen.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
 
 		public WindowStyle WindowStyle
 		{

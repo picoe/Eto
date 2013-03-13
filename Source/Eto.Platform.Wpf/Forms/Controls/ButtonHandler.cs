@@ -61,6 +61,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.Content = grid;
 		}
 
+		public override bool UseMousePreview { get { return true; } }
+
 		public string Text
 		{
 			get { return Conversions.ConvertMneumonicFromWPF ((string)label.Content); }

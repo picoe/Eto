@@ -178,8 +178,6 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		#region IControl implementation
-		
 		public virtual void Invalidate ()
 		{
 			Control.SetNeedsDisplay();
@@ -243,48 +241,34 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
-		#endregion
-
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+		
 		public void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
 
-		#region IControl implementation
-
-		public Point ScreenToWorld (Point p)
+		public PointF PointFromScreen (PointF point)
 		{
-			return Control.ConvertPointFromView(new SD.PointF(p.X, p.Y), null).ToEtoPoint();
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertPointFromView (sdpoint, null);
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
 		}
-
-		public Point WorldToScreen (Point p)
+		
+		public PointF PointToScreen (PointF point)
 		{
-			return Control.ConvertPointToView(new SD.PointF(p.X, p.Y), null).ToEtoPoint();
+			var sdpoint = point.ToSD ();
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			sdpoint = Control.ConvertPointToView (sdpoint, null);
+			return Platform.Conversions.ToEto (sdpoint);
 		}
 
-		public DragDropEffects DoDragDrop (object data, DragDropEffects allowedEffects)
+		public Point Location
 		{
-			throw new NotImplementedException ();
+			get { return Control.Frame.Location.ToEtoPoint (); }
 		}
-
-		public void SetControl (object control)
-		{
-			throw new NotImplementedException ();
-		}
-
-		public bool Capture {
-			get;
-			set;
-		}
-
-		public Point MousePosition {
-			get { throw new NotImplementedException(); }
-		}
-
-		public Point Location {
-			get { throw new NotImplementedException(); }
-		}
-
-		#endregion
 	}
 }
 

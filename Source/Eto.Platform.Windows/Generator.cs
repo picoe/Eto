@@ -114,6 +114,7 @@ namespace Eto.Platform.Windows
 			g.Add <ISelectFolderDialog> (() => new SelectFolderDialogHandler ());
 			g.Add <ITableLayout> (() => new TableLayoutHandler ());
 			g.Add <IUITimer> (() => new UITimerHandler ());
+			g.Add <IMouse> (() => new MouseHandler ());
 			
 			// IO
 			g.Add <ISystemIcons> (() => new SystemIconsHandler ());

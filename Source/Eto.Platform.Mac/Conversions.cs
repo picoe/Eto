@@ -127,20 +127,51 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public static Point GetLocation (NSView view, NSEvent theEvent)
+		public static PointF GetLocation (NSView view, NSEvent theEvent)
 		{
 			var loc = view.ConvertPointFromView (theEvent.LocationInWindow, null);
 			if (!view.IsFlipped)
 				loc.Y = view.Frame.Height - loc.Y;
-			return loc.ToEtoPoint ();
+			return loc.ToEto ();
 		}
 
-		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent)
+		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent, bool includeWheel)
 		{
 			var pt = Conversions.GetLocation (view, theEvent);
 			Key modifiers = KeyMap.GetModifiers (theEvent);
-			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
-			return new MouseEventArgs (buttons, modifiers, pt);
+			MouseButtons buttons = theEvent.GetMouseButtons ();
+			SizeF? delta = null;
+			if (includeWheel)
+				delta = new SizeF (theEvent.DeltaX, theEvent.DeltaY);
+			return new MouseEventArgs (buttons, modifiers, pt, delta);
+		}
+
+		public static MouseButtons GetMouseButtons (this NSEvent theEvent)
+		{
+			MouseButtons buttons = MouseButtons.None;
+			
+			switch (theEvent.Type)
+			{
+			case NSEventType.LeftMouseUp:
+			case NSEventType.LeftMouseDown:
+			case NSEventType.LeftMouseDragged:
+				if ((theEvent.ModifierFlags & NSEventModifierMask.ControlKeyMask) > 0)
+					buttons |= MouseButtons.Alternate;
+				else
+					buttons |= MouseButtons.Primary;
+				break;
+			case NSEventType.RightMouseUp:
+			case NSEventType.RightMouseDown:
+			case NSEventType.RightMouseDragged:
+				buttons |= MouseButtons.Alternate;
+				break;
+			case NSEventType.OtherMouseUp:
+			case NSEventType.OtherMouseDown:
+			case NSEventType.OtherMouseDragged:
+				buttons |= MouseButtons.Middle;
+				break;
+			}
+			return buttons;
 		}
 
 		public static void SetSizeWithAuto (NSView view, Size size)

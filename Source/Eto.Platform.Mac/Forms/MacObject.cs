@@ -26,7 +26,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		public new void AddControlObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
 		{
-			base.AddControlObserver (key, action, control ?? control);
+			base.AddControlObserver (key, action, control ?? Control);
 		}
 		
 	}

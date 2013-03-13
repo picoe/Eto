@@ -205,28 +205,6 @@ namespace Eto.Forms
         }
         #endregion
 
-        #region ItemDrag
-        public const string ItemDragEvent = "TreeView.ItemDrag";
-
-        EventHandler<ItemDragEventArgs> itemDrag;
-
-        public event EventHandler<ItemDragEventArgs> ItemDrag
-        {
-            add
-            {
-                HandleEvent(ItemDragEvent);
-                itemDrag += value;
-            }
-            remove { itemDrag -= value; }
-        }
-
-        public virtual void OnItemDrag(ItemDragEventArgs e)
-        {
-            if (itemDrag != null)
-                itemDrag(this, e);
-        }
-        #endregion
-			
 		public const string ExpandingEvent = "TreeView.ExpandingEvent";
 
 		event EventHandler<TreeViewItemCancelEventArgs> _Expanding;

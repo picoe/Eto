@@ -188,10 +188,37 @@ namespace Eto.Platform.GtkSharp
 					}
 				};
 				break;
+			case Window.SizeChangedEvent:
+				Size? oldSize = null;
+				Control.SizeAllocated += (o, args) => {
+					var newSize = this.Size;
+					if (Control.IsRealized && oldSize != newSize) {
+						Widget.OnSizeChanged (EventArgs.Empty);
+						oldSize = newSize;
+					}
+				};
+				break;
+			case Window.LocationChangedEvent:
+				Control.ConfigureEvent += HandleConfigureEvent;
+				break;
 			default:
 				base.AttachEvent (handler);
 				break;
 			}
+		}
+
+		Point? oldLocation;
+		Point? currentLocation;
+
+		[GLib.ConnectBefore]
+		void HandleConfigureEvent (object o, Gtk.ConfigureEventArgs args)
+		{
+			currentLocation = new Point(args.Event.X, args.Event.Y);
+			if (Control.IsRealized && Widget.Loaded && oldLocation != currentLocation) {
+				Widget.OnLocationChanged (EventArgs.Empty);
+				oldLocation = currentLocation;
+			}
+			currentLocation = null;
 		}
 
 		public MenuBar Menu {
@@ -220,7 +247,7 @@ namespace Eto.Platform.GtkSharp
 					var actionItem = child as MenuActionItem;
 					if (actionItem != null && actionItem.Shortcut != Key.None) {
 						var widget = actionItem.ControlObject as Gtk.Widget;
-						var key = new Gtk.AccelKey (KeyMap.ConvertToKey (actionItem.Shortcut), KeyMap.ConvertToModifier (actionItem.Shortcut), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
+						var key = new Gtk.AccelKey (actionItem.Shortcut.ToGdkKey (), actionItem.Shortcut.ToGdkModifier (), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator ("activate", accelGroup, key);
 					}
 					SetAccelerators (child as ISubMenuWidget);
@@ -303,8 +330,10 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public override Point Location {
+		public new Point Location {
 			get {
+				if (currentLocation != null)
+					return currentLocation.Value;
 				int x, y;
 				Control.GetPosition (out x, out y);
 				return new Point (x, y);
@@ -375,7 +404,17 @@ namespace Eto.Platform.GtkSharp
 
 		public Screen Screen
 		{
-			get { return new Screen(Generator, new ScreenHandler(Control.Display)); }
+			get
+			{
+				var screen = Control.Screen;
+				var gdkWindow = Control.GdkWindow;
+				if (screen != null && gdkWindow != null) {
+					var monitor = screen.GetMonitorAtWindow (gdkWindow);
+					return new Screen (Generator, new ScreenHandler (screen, monitor));
+				}
+				else
+					return null;
+			}
 		}
 
 		public void BringToFront()

@@ -25,6 +25,8 @@ namespace Eto.Forms
 		/// </summary>
 		void OnLoadComplete ();
 
+		void OnUnLoad ();
+
 		/// <summary>
 		/// Re-calculates the layout of the controls and re-positions them, if necessary
 		/// </summary>
@@ -127,6 +129,17 @@ namespace Eto.Forms
 			if (LoadComplete != null)
 				LoadComplete (this, e);
 			Handler.OnLoadComplete ();
+		}
+
+		
+		public event EventHandler<EventArgs> UnLoad;
+		
+		public virtual void OnUnLoad (EventArgs e)
+		{
+			Loaded = false;
+			if (UnLoad != null)
+				UnLoad (this, e);
+			Handler.OnUnLoad ();
 		}
 
 		protected Layout (Generator g, Container container, Type type, bool initialize = true)

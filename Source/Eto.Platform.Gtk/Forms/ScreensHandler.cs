@@ -22,9 +22,12 @@ namespace Eto.Platform.GtkSharp.Forms
 		{
 			get
 			{
-				foreach (var display in Gdk.DisplayManager.Get ().ListDisplays ())
-				{
-					yield return new Screen(Generator, new ScreenHandler(display));
+				var display = Gdk.Display.Default;
+				for (int i = 0; i < display.NScreens; i++) {
+					var screen = display.GetScreen (i);
+					for (int monitor = 0; monitor < screen.NMonitors; monitor++) {
+						yield return new Screen (Generator, new ScreenHandler (screen, monitor));
+					}
 				}
 			}
 		}
@@ -33,8 +36,7 @@ namespace Eto.Platform.GtkSharp.Forms
 		{
 			get
 			{
-				var display = Gdk.DisplayManager.Get ().DefaultDisplay;
-				return new Screen(Generator, new ScreenHandler(display));
+				return new Screen(Generator, new ScreenHandler(Gdk.Display.Default.DefaultScreen, 0));
 			}
 		}
 	}

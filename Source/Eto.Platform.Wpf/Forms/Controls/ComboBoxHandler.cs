@@ -76,6 +76,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.ItemTemplate = template;
 		}
 
+		public override bool UseMousePreview { get { return true; } }
+
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);

@@ -18,6 +18,8 @@ namespace Eto.Platform.Wpf
 {
 	public static class Conversions
 	{
+		public const float WHEEL_DELTA = 120f;
+		
 		public static swm.Color ToWpf (this Color value)
 		{
 			return swm.Color.FromArgb ((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
@@ -63,7 +65,12 @@ namespace Eto.Platform.Wpf
 			return new sw.Rect (value.X, value.Y, value.Width, value.Height);
 		}
 
-		public static Size ToEto (this sw.Size value)
+		public static SizeF ToEto (this sw.Size value)
+		{
+			return new SizeF ((float)value.Width, (float)value.Height);
+		}
+
+		public static Size ToEtoSize (this sw.Size value)
 		{
 			return new Size ((int)value.Width, (int)value.Height);
 		}
@@ -78,7 +85,12 @@ namespace Eto.Platform.Wpf
 			return new sw.Size (value.Width, value.Height);
 		}
 
-		public static Point ToEto (this sw.Point value)
+		public static PointF ToEto (this sw.Point value)
+		{
+			return new PointF ((float)value.X, (float)value.Y);
+		}
+
+		public static Point ToEtoPoint (this sw.Point value)
 		{
 			return new Point ((int)value.X, (int)value.Y);
 		}
@@ -158,6 +170,22 @@ namespace Eto.Platform.Wpf
 			var location = e.GetPosition (control).ToEto ();
 
 			return new MouseEventArgs (buttons, modifiers, location);
+		}
+
+		public static MouseEventArgs ToEto (this swi.MouseWheelEventArgs e, sw.IInputElement control, swi.MouseButtonState buttonState = swi.MouseButtonState.Pressed)
+		{
+			var buttons = MouseButtons.None;
+			if (e.LeftButton == buttonState)
+				buttons |= MouseButtons.Primary;
+			if (e.RightButton == buttonState)
+				buttons |= MouseButtons.Alternate;
+			if (e.MiddleButton == buttonState)
+				buttons |= MouseButtons.Middle;
+			var modifiers = Key.None;
+			var location = e.GetPosition (control).ToEto ();
+			var delta = new SizeF (0, (float)e.Delta / WHEEL_DELTA);
+
+			return new MouseEventArgs (buttons, modifiers, location, delta);
 		}
 
 		public static swm.BitmapScalingMode ToWpf (this ImageInterpolation value)

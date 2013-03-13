@@ -280,14 +280,6 @@ namespace Eto.Platform.Mac.Forms.Controls
                 //            Generator.Convert(e));
                 //    };
                     break;
-                case TreeView.ItemDragEvent:
-                    /* TODO */
-                //    Control.ItemDrag += (s, e) =>
-                //    {
-                //        this.Widget.OnItemDrag(
-                //            Generator.Convert(e));
-                //    };
-                    break;
 
                 default:
                     base.AttachEvent(handler);

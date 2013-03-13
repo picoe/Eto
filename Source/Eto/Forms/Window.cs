@@ -10,7 +10,7 @@ namespace Eto.Forms
 		
 		void Close ();
 		
-		Point Location { get; set; }
+		new Point Location { get; set; }
 
 		double Opacity { get; set; }
 
@@ -66,7 +66,25 @@ namespace Eto.Forms
 			if (closing != null)
 				closing (this, e);
 		}
+
+		public const string LocationChangedEvent = "Window.LocationChanged";
 		
+		EventHandler<EventArgs> locationChanged;
+		
+		public event EventHandler<EventArgs> LocationChanged {
+			add {
+				HandleEvent (LocationChangedEvent);
+				locationChanged += value;
+			}
+			remove { locationChanged -= value; }
+		}
+		
+		public virtual void OnLocationChanged (EventArgs e)
+		{
+			if (locationChanged != null)
+				locationChanged (this, e);
+		}
+
 		#endregion
 
 		protected Window (Generator g, Type type, bool initialize = true)
@@ -88,7 +106,7 @@ namespace Eto.Forms
 			set { Title = value; }
 		}
 		
-		public Point Location {
+		public new Point Location {
 			get { return handler.Location; }
 			set { handler.Location = value; }
 		}

@@ -41,8 +41,6 @@ namespace Eto.Forms
 	[ContentProperty("Children")]
 	public class TreeGridItem : GridItem, ITreeGridItem, ITreeGridStore<ITreeGridItem>
 	{
-		public object Tag { get; set; }
-
 		TreeGridItemCollection children;
 
 		public TreeGridItemCollection Children

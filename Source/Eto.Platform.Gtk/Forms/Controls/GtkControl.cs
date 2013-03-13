@@ -13,7 +13,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public interface IGtkControl
 	{
-		Point Location { get; set; }
+		Point CurrentLocation { get; set; }
 
 		Gtk.Widget ContainerControl { get; }
 	}
@@ -31,18 +31,20 @@ namespace Eto.Platform.GtkSharp
 		}
 	}
 
-	public abstract class GtkControl<T, W> : WidgetHandler<T, W>, IControl, IGtkControl
+	public abstract class 
+		GtkControl<T, W> : WidgetHandler<T, W>, IControl, IGtkControl
 		where T: Gtk.Widget
 		where W: Control
 	{
 		Font font;
 		Size size;
 		Size asize;
-		Point location;
 		bool mouseDownHandled;
 		Cursor cursor;
 		Color? originalBackgroundColor;
 		Color? backgroundColor;
+
+		public static float SCROLL_AMOUNT = 2f;
 
 		public GtkControl ()
 		{
@@ -89,10 +91,7 @@ namespace Eto.Platform.GtkSharp
 			return label;
 		}
 
-		public virtual Point Location {
-			get { return location; }
-			set { location = value; }
-		}
+		public virtual Point CurrentLocation { get; set; }
 
 		public virtual Size Size {
 			get {
@@ -213,6 +212,10 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+
 		void HandleControlRealized (object sender, EventArgs e)
 		{
 			if (cursor != null)
@@ -262,6 +265,10 @@ namespace Eto.Platform.GtkSharp
 					//GtkControlObject.Events |= Gdk.EventMask.PointerMotionHintMask;
 				EventControl.MotionNotifyEvent += GtkControlObject_MotionNotifyEvent;
 				break;
+			case Eto.Forms.Control.MouseWheelEvent:
+				EventControl.AddEvents ((int)Gdk.EventMask.ScrollMask);
+				EventControl.ScrollEvent += HandleScrollEvent;
+				break;
 			case Eto.Forms.Control.GotFocusEvent:
 				EventControl.AddEvents ((int)Gdk.EventMask.FocusChangeMask);
 				EventControl.FocusInEvent += delegate {
@@ -287,10 +294,37 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		void HandleScrollEvent (object o, Gtk.ScrollEventArgs args)
+		{
+			var p = new PointF ((float)args.Event.X, (float)args.Event.Y);
+			Key modifiers = args.Event.State.ToEtoKey ();
+			MouseButtons buttons = args.Event.State.ToEtoMouseButtons ();
+			SizeF delta;
+
+			switch (args.Event.Direction) {
+			case Gdk.ScrollDirection.Down:
+				delta = new SizeF (0f, -SCROLL_AMOUNT);
+				break;
+			case Gdk.ScrollDirection.Left:
+				delta = new SizeF (SCROLL_AMOUNT, 0f);
+				break;
+			case Gdk.ScrollDirection.Right:
+				delta = new SizeF (-SCROLL_AMOUNT, 0f);
+				break;
+			case Gdk.ScrollDirection.Up:
+				delta = new SizeF (0f, SCROLL_AMOUNT);
+				break;
+			default:
+				throw new NotSupportedException ();
+			}
+
+			Widget.OnMouseWheel (new MouseEventArgs (buttons, modifiers, p, delta));
+		}
+
 		void HandleControlLeaveNotifyEvent (object o, Gtk.LeaveNotifyEventArgs args)
 		{
-			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
-			Key modifiers = GetKeyModifiers (args.Event.State);
+			var p = new PointF ((float)args.Event.X, (float)args.Event.Y);
+			Key modifiers = args.Event.State.ToEtoKey ();
 			MouseButtons buttons = MouseButtons.None;
 			
 			Widget.OnMouseLeave (new MouseEventArgs (buttons, modifiers, p));
@@ -298,56 +332,18 @@ namespace Eto.Platform.GtkSharp
 
 		void HandleControlEnterNotifyEvent (object o, Gtk.EnterNotifyEventArgs args)
 		{
-			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
-			Key modifiers = GetKeyModifiers (args.Event.State);
+			var p = new PointF ((float)args.Event.X, (float)args.Event.Y);
+			Key modifiers = args.Event.State.ToEtoKey ();
 			MouseButtons buttons = MouseButtons.None;
 			
 			Widget.OnMouseEnter (new MouseEventArgs (buttons, modifiers, p));
 		}
 
-		private Key GetKeyModifiers (Gdk.ModifierType state)
-		{
-			Key modifiers = Key.None;
-			if ((state & Gdk.ModifierType.ShiftMask) != 0)
-				modifiers |= Key.Shift;
-			if ((state & Gdk.ModifierType.ControlMask) != 0)
-				modifiers |= Key.Control;
-			if ((state & Gdk.ModifierType.Mod1Mask) != 0)
-				modifiers |= Key.Alt;
-			return modifiers;
-		}
-		
-		MouseButtons GetButtons (Gdk.EventButton ev)
-		{
-			switch (ev.Button) {
-			case 1:
-				return MouseButtons.Primary;
-			case 2:
-				return MouseButtons.Middle;
-			case 3:
-				return MouseButtons.Alternate;
-			default:
-				return MouseButtons.None;
-			}
-		}
-
-		private MouseButtons GetButtonModifiers (Gdk.ModifierType state)
-		{
-			MouseButtons buttons = MouseButtons.None;
-			if ((state & Gdk.ModifierType.Button1Mask) != 0)
-				buttons |= MouseButtons.Primary;
-			if ((state & Gdk.ModifierType.Button2Mask) != 0)
-				buttons |= MouseButtons.Alternate;
-			if ((state & Gdk.ModifierType.Button3Mask) != 0)
-				buttons |= MouseButtons.Middle;
-			return buttons;
-		}
-
 		private void GtkControlObject_MotionNotifyEvent (System.Object o, Gtk.MotionNotifyEventArgs args)
 		{
-			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
-			Key modifiers = GetKeyModifiers (args.Event.State);
-			MouseButtons buttons = GetButtonModifiers (args.Event.State);
+			var p = new PointF ((float)args.Event.X, (float)args.Event.Y);
+			Key modifiers = args.Event.State.ToEtoKey ();
+			MouseButtons buttons = args.Event.State.ToEtoMouseButtons ();
 			
 			Widget.OnMouseMove (new MouseEventArgs (buttons, modifiers, p));
 			
@@ -358,18 +354,18 @@ namespace Eto.Platform.GtkSharp
 
 		private void GtkControlObject_ButtonReleaseEvent (object o, Gtk.ButtonReleaseEventArgs args)
 		{
-			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
-			Key modifiers = GetKeyModifiers (args.Event.State);
-			MouseButtons buttons = GetButtons (args.Event);
+			var p = new PointF ((float)args.Event.X, (float)args.Event.Y);
+			Key modifiers = args.Event.State.ToEtoKey ();
+			MouseButtons buttons = args.Event.ToEtoMouseButtons ();
 			
 			Widget.OnMouseUp (new MouseEventArgs (buttons, modifiers, p));
 		}
 
 		private void GtkControlObject_ButtonPressEvent (object sender, Gtk.ButtonPressEventArgs args)
 		{
-			Point p = new Point (Convert.ToInt32 (args.Event.X), Convert.ToInt32 (args.Event.Y));
-			Key modifiers = GetKeyModifiers (args.Event.State);
-			MouseButtons buttons = GetButtons (args.Event);
+			var p = new PointF ((float)args.Event.X, (float)args.Event.Y);
+			Key modifiers = args.Event.State.ToEtoKey ();
+			MouseButtons buttons = args.Event.ToEtoMouseButtons ();
 			if (Control.CanFocus && !Control.HasFocus)
 				Control.GrabFocus ();
 			if (args.Event.Type == Gdk.EventType.ButtonPress) {
@@ -451,44 +447,30 @@ namespace Eto.Platform.GtkSharp
 		public virtual void MapPlatformAction (string systemAction, BaseAction action)
 		{
 		}
-        public Point ScreenToWorld(Point p)
+
+        public PointF PointFromScreen (PointF point)
         {
-            throw new NotImplementedException();
-        }
+			if (Control.GdkWindow != null) {
+				int x, y;
+				Control.GdkWindow.GetOrigin (out x, out y);
+				return new PointF (point.X - x, point.Y - y);
+			}
+			return point;
+		}
 
-        public Point WorldToScreen(Point p)
+        public PointF PointToScreen (PointF point)
         {
-            throw new NotImplementedException();
-        }
+			if (Control.GdkWindow != null) {
+				int x, y;
+				Control.GdkWindow.GetOrigin (out x, out y);
+				return new PointF (point.X + x, point.Y + y);
+			}
+			return point;
+		}
 
-
-        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-        {
-            throw new NotImplementedException();
-        }
-
-
-        public bool Capture
-        {
-            get
-            {
-                throw new NotImplementedException();
-            }
-            set
-            {
-                throw new NotImplementedException();
-            }
-        }
-
-        public Point MousePosition
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-
-        public void SetControl(object control)
-        {
-            throw new NotImplementedException();
-        }
-    }
+		public Point Location
+		{
+			get { return Control.Allocation.Location.ToEto (); }
+		}
+	}
 }

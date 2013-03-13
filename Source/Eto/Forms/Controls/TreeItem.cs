@@ -72,8 +72,6 @@ namespace Eto.Forms
 			this.Children.AddRange (children);
 		}
 
-        public object Tag { get; set; }
-
         /// <summary>
         /// Used internally to reference the UI item
         /// </summary>

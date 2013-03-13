@@ -108,6 +108,14 @@ namespace Eto.Forms
 			}
 		}
 
+		public override void OnUnLoad (EventArgs e)
+		{
+			base.OnUnLoad (e);
+			foreach (var page in pages) {
+				page.OnUnLoad (e);
+			}
+		}
+		
 		internal protected override void OnDataContextChanged (EventArgs e)
 		{
 			base.OnDataContextChanged (e);

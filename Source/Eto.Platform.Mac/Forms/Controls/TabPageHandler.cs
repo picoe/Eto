@@ -10,12 +10,13 @@ using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TabPageHandler : WidgetHandler<NSTabViewItem, TabPage>, ITabPage, IMacContainer
+	public class TabPageHandler : MacContainer<NSView, TabPage>, ITabPage, IMacContainer
 	{
 		const int ICON_PADDING = 2;
 		Image image;
-		bool focus;
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+
+		public NSTabViewItem TabViewItem { get; private set; }
 		
 		class MyTabViewItem : NSTabViewItem
 		{
@@ -54,24 +55,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public TabPageHandler ()
 		{
-			Control = new MyTabViewItem{ Handler = this };
-			Control.Identifier = new NSString (Guid.NewGuid ().ToString ());
-			//Control.View = new NSView();
-			Control.Color = NSColor.Blue;
+			TabViewItem = new MyTabViewItem {
+				Handler = this,
+				Identifier = new NSString (Guid.NewGuid ().ToString ())
+			};
+			Control = TabViewItem.View;
+			Enabled = true;
 		}
 
-		// TODO: implement this, or remove from base?
-		public Cursor Cursor {
-			get; set;
-		}
-		
-		public string ToolTip {
-			get; set; 
-		}
-		
 		public string Text {
-			get { return Control.Label; }
-			set { Control.Label = value; }
+			get { return TabViewItem.Label; }
+			set { TabViewItem.Label = value; }
 		}
 		
 		public Image Image {
@@ -83,231 +77,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public Size? MinimumSize {
-			get;
-			set;
-		}
-		
-		public virtual object ContainerObject {
+		public override object ContainerObject {
 			get {
-				return Control.View;
+				return TabViewItem.View;
 			}
 		}
 
-		public virtual void SetLayout (Layout layout)
-		{
-			var maclayout = layout.InnerLayout.Handler as IMacLayout;
-			if (maclayout == null)
-				return;
-			var control = maclayout.LayoutObject as NSView;
-			if (control != null) {
-				var container = ContainerObject as NSView;
-				control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-				control.SetFrameSize (container.Frame.Size);
-				container.AddSubview (control);
-			}
-		}
-		
-		public virtual void SetParentLayout (Layout layout)
-		{
-		}
-		
-		public virtual void SetParent (Control parent)
-		{
-		}
-
-		public virtual void OnPreLoad (EventArgs e)
-		{
-		}
-		
-		public virtual void OnLoad (EventArgs e)
-		{
-		}
-
-		public virtual void OnLoadComplete (EventArgs e)
-		{
-			if (focus) 
-				Focus ();
-		}
-
-		public void Print (PrintSettings settings)
-		{
-			var op = NSPrintOperation.FromView(Control.View);
-			if (settings != null)
-				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
-			op.ShowsPrintPanel = false;
-			op.RunOperation ();
-		}
-
-		#region IControl implementation
-		public void Invalidate ()
-		{
-			Control.View.NeedsDisplay = true;
-		}
-
-		void IControl.Invalidate (Eto.Drawing.Rectangle rect)
-		{
-			Control.View.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
-		}
-
-		public void SuspendLayout ()
-		{
-		}
-
-		public void ResumeLayout ()
-		{
-		}
-
-		public void Focus ()
-		{
-			if (Control.View.Window != null)
-				Control.View.Window.MakeFirstResponder (Control.View);
-			else
-				focus = true;
-		}
-
-		public virtual Color BackgroundColor {
-			get { 
-				if (!Control.View.WantsLayer) {
-					Control.View.WantsLayer = true;
-				}
-				return Control.View.Layer.BackgroundColor.ToEtoColor ();
-			}
-			set {
-				if (!Control.View.WantsLayer) {
-					Control.View.WantsLayer = true;
-				}
-				Control.View.Layer.BackgroundColor = value.ToCGColor ();
-			}
-		}
-
-		public string Id {
-			get;
-			set;
-		}
-
-		public Eto.Drawing.Size Size {
-			get {
-                return Size.Empty; /* TODO */
-			}
-			set {
-				/* TODO */
-			}
-		}
-
-		public Eto.Drawing.Size ClientSize {
-			get {
-                return Size.Empty; /* TODO */
-			}
-			set {
-				/* TODO */
-			}
-		}
-
-		public bool Enabled {
-			get {
-				return false;
-			}
-			set {
-				/* TODO */
-			}
-		}
-
-		public bool HasFocus {
-			get {
-				return false;
-			}
-		}
-
-		public bool Visible {
-			get {
-                return false;/* TODO */
-			}
-			set {
-				/* TODO */
-			}
-		}
-		#endregion
-
-		#region IMacContainer implementation
-		public void SetContentSize (SD.SizeF contentSize)
-		{
-			
-		}
-
-		public bool AutoSize {
-			get;
-			set;
-		}
-		
-		public virtual Size GetPreferredSize (Size availableSize)
-		{
-			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
-				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-				if (layout != null)
-					return layout.GetPreferredSize (availableSize);
-			}
-			return Size.Empty;
-		}
-
-		public virtual void LayoutChildren ()
-		{
-			if (Widget.Layout != null) {
-				var childLayout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-				if (childLayout != null) {
-					childLayout.LayoutChildren ();
-				}
-			}
-		}
-		
-		#endregion
-		
-		public virtual void MapPlatformAction (string systemAction, BaseAction action)
-		{
-		}
-
-        public Point ScreenToWorld(Point p)
-        {
-            return p; /* TODO */
-        }
-
-        public Point WorldToScreen(Point p)
-        {
-            return p; /* TODO */
-        }
-
-
-        public DragDropEffects DoDragDrop(object data, DragDropEffects allowedEffects)
-        {
-            return DragDropEffects.None; /* TODO */
-        }
-
-
-        public bool Capture
-        {
-            get
-            {
-                return false; /* TODO */
-            }
-            set
-            {
-                /* TODO */
-            }
-        }
-
-        public Point MousePosition
-        {
-            get { return Point.Empty; /* TODO */ }
-        }
-
-        public Point Location
-        {
-            get { return Point.Empty; /* TODO */ }
-        }
-
-        public void SetControl(object control)
-        {
-            /* TODO */
-        }
-    }
+		public override bool Enabled { get; set; }
+	}
 }

@@ -12,6 +12,8 @@ namespace Eto.Platform.Windows
 {
 	public static partial class Conversions
 	{
+		public const float WHEEL_DELTA = 120f;
+
 		public static Padding ToEto (this swf.Padding padding)
 		{
 			return new Padding (padding.Left, padding.Top, padding.Right, padding.Bottom);
@@ -291,15 +293,15 @@ namespace Eto.Platform.Windows
 		{
 			var point = new Point (e.X, e.Y);
 			var buttons = ToEto (e.Button);
-			var modifiers = KeyMap.Convert (swf.Control.ModifierKeys);
+			var modifiers = swf.Control.ModifierKeys.ToEto ();
 
 			var result = new MouseEventArgs (buttons, modifiers, point);
-            result.Delta = e.Delta;
+			result.Delta = new SizeF (0, (float)e.Delta / WHEEL_DELTA);
 
 			return result;
 		}
 
-		private static MouseButtons ToEto (this swf.MouseButtons button)
+		public static MouseButtons ToEto (this swf.MouseButtons button)
 		{
 			MouseButtons buttons = MouseButtons.None;
 
@@ -313,6 +315,16 @@ namespace Eto.Platform.Windows
 				buttons |= MouseButtons.Middle;
 
 			return buttons;
+		}
+
+		public static Graphics ToEto (this sd.Graphics g, Eto.Generator generator)
+		{
+			return new Graphics (generator, new GraphicsHandler (g));
+		}
+
+		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
+		{
+			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
 		}
 
 		public static sd.Image ToSD (this IImage image)
@@ -362,66 +374,6 @@ namespace Eto.Platform.Windows
 			return (float)Math.PI * angle / 180.0f;
 		}
 
-        internal static DragDropEffects ToEto(this swf.DragDropEffects effects)
-        {
-            return (DragDropEffects)effects;
-        }
-
-        internal static swf.DragDropEffects ToSWF(this 
-            DragDropEffects effects)
-        {
-            return (swf.DragDropEffects)effects;
-        }
-
-        internal static DragEventArgs ToEto(this 
-            swf.DragEventArgs e)
-        {
-            var result =
-                new DragEventArgs(
-                    new DataObject(e.Data),
-                    e.X,
-                    e.Y,
-                    ToEto(e.AllowedEffect),
-                    ToEto(e.Effect));
-
-            return result;
-        }
-
-        internal static GiveFeedbackEventArgs ToEto(
-            this swf.GiveFeedbackEventArgs e)
-        {
-            return
-                new GiveFeedbackEventArgs(
-                    ToEto(e.Effect),
-                    e.UseDefaultCursors);
-        }
-
-        internal static QueryContinueDragEventArgs ToEto(
-            this swf.QueryContinueDragEventArgs e)
-        {
-            return
-                new QueryContinueDragEventArgs(
-                    e.KeyState,
-                    e.EscapePressed,
-                    ToEto(e.Action));
-        }
-
-        private static DragAction ToEto(this 
-            swf.DragAction dragAction)
-        {
-            return (DragAction)dragAction;
-        }
-
-		public static Graphics ToEto (this sd.Graphics graphics, Eto.Generator generator)
-		{
-			return new Graphics (generator, new GraphicsHandler (graphics));
-		}
-
-		public static PaintEventArgs ToEto (this swf.PaintEventArgs e, Eto.Generator generator)
-		{
-			return new Eto.Forms.PaintEventArgs (ToEto (e.Graphics, generator), e.ClipRectangle.ToEto ());
-		}
-
         public static ITreeItem ToEto(this swf.TreeNode treeNode)
         {
             return
@@ -463,15 +415,6 @@ namespace Eto.Platform.Windows
                     };
 
         }
-
-        public static ItemDragEventArgs ToEto(this swf.ItemDragEventArgs e)
-        {
-            return new ItemDragEventArgs()
-            {
-                Buttons = ToEto(e.Button),
-                Item = ToEto(e.Item as swf.TreeNode)
-            };
-		}
 
 		public static sd.Pen ToSD (this Pen pen)
 		{

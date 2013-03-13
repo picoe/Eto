@@ -24,7 +24,7 @@ namespace Eto.Platform.Windows
 				base.OnKeyDown (e);
 				if (!e.Handled) {
 					// Prevent firing the keydown event twice for the same key
-					Handler.LastKeyDown = KeyMap.Convert (e.KeyData);
+					Handler.LastKeyDown = e.KeyData.ToEto ();
 				}
 				return e.Handled;
 			}

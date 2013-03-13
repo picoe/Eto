@@ -438,10 +438,7 @@ namespace Eto.Platform.GtkSharp
 
 		public static KeyEventArgs ToEto (this Gdk.EventKey args)
 		{
-			Key key = Key.None;
-			key |= KeyMap.Convert (args.Key);
-			Gdk.ModifierType state = args.State;
-			key |= KeyMap.Convert (state);
+			Key key = args.Key.ToEto () | args.State.ToEtoKey ();
 
 			if (key != Key.None) {
 				Key modifiers = (key & Key.ModifierMask);
@@ -453,6 +450,32 @@ namespace Eto.Platform.GtkSharp
 				return new KeyEventArgs (key, KeyEventType.KeyDown, (char)args.KeyValue);
 			else
 				return null;
+		}
+
+		public static MouseButtons ToEtoMouseButtons (this Gdk.ModifierType modifiers)
+		{
+			MouseButtons buttons = MouseButtons.None;
+			if (modifiers.HasFlag (Gdk.ModifierType.Button1Mask))
+				buttons |= MouseButtons.Primary;
+			if (modifiers.HasFlag (Gdk.ModifierType.Button2Mask))
+				buttons |= MouseButtons.Middle;
+			if (modifiers.HasFlag (Gdk.ModifierType.Button3Mask))
+				buttons |= MouseButtons.Alternate;
+			return buttons;
+		}
+
+		public static MouseButtons ToEtoMouseButtons (this Gdk.EventButton ev)
+		{
+			switch (ev.Button) {
+			case 1:
+				return MouseButtons.Primary;
+			case 2:
+				return MouseButtons.Middle;
+			case 3:
+				return MouseButtons.Alternate;
+			default:
+				return MouseButtons.None;
+			}
 		}
 	}
 }

@@ -4,10 +4,11 @@ VERSION=1.2
 
 OUTPUT_DIR=./BuildOutput
 OUTPUT_ZIP=Eto.Forms-$(VERSION).zip
-MD_PATH=/Applications/MonoDevelop.app
+MD_PATH=/Applications/Xamarin\ Studio.app
 MDTOOL=$(MD_PATH)/Contents/MacOS/mdtool
 SOURCE=./Source
-ETO_SLN=$(SOURCE)/Eto.sln
+ETO_SLN="$(SOURCE)/Eto.sln"
+ETO_IOS_SLN="$(SOURCE)/Eto - iOS.sln"
 ZIP=zip -9 -r
 
 assemblies=\
@@ -43,6 +44,10 @@ zip-mac: build-mac
 
 build-mac:
 	$(MDTOOL) build -c:Mac\ Debug $(ETO_SLN)
+
+build-ios:
+	$(MDTOOL) build -c:Debug $(ETO_IOS_SLN)
+	$(MDTOOL) build -c:Release $(ETO_IOS_SLN)
 	
 debug-bin:
 	$(call process-release,${OUTPUT_DIR}/Debug)
@@ -53,17 +58,19 @@ release-bin:
 	$(call convert-pdb,$(OUTPUT_DIR)/Release)
 	rm -fR $(OUTPUT_DIR)/Release/Eto.Test.*
 
-zip: debug-bin release-bin
+zip: debug-bin release-bin build-ios
 	@echo Zipping to $(OUTPUT_ZIP)
 	cd $(OUTPUT_DIR); \
 	rm -f $(OUTPUT_ZIP); \
-	$(ZIP) $(OUTPUT_ZIP) Debug Release;
+	$(ZIP) $(OUTPUT_ZIP) Debug Release iOS;
 
 
 define process-release
 	cd $1; \
 	rm -f *.mdb; \
 	rm -f Eto.Test*.pdb; \
+	rm -f XamMac.*; \
+	rm -f Eto.Test.XamMac*; \
 	rm -f *.vshost.exe*; \
 	rm -f Newtonsoft.Json.pdb; \
 	rm -f Newtonsoft.Json.xml;
