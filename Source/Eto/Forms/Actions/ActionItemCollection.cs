@@ -78,12 +78,15 @@ namespace Eto.Forms
 			else return null;
 		}
 
-		public ActionItemSubMenu FindAddSubMenu(string subMenuText, int order = 500)
+		public ActionItemSubMenu FindAddSubMenu(string subMenuText, int order = 500, bool plaintextMatch = false)
 		{
+			// replace accerators if plaintextMatch is true
+			Func<string, string> convert = s => plaintextMatch ? s.Replace("&", "") : s;
+
 			ActionItemSubMenu subMenu = null;
 			foreach (IActionItem item in this)
 			{
-				if (item is ActionItemSubMenu && ((ActionItemSubMenu)item).SubMenuText == subMenuText)
+				if (item is ActionItemSubMenu && convert(((ActionItemSubMenu)item).SubMenuText) == convert(subMenuText))
 				{
 					subMenu = ((ActionItemSubMenu)item);
 				}
