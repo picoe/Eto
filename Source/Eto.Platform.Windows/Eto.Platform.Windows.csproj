@@ -19,6 +19,7 @@
     <OutputRoot>..\..\..</OutputRoot>
     <LibrariesPath>..\..\Libraries</LibrariesPath>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <DefineConstants>TRACE;WINFORMS</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>

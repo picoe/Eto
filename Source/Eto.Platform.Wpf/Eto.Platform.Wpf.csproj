@@ -18,6 +18,7 @@
     <WarningLevel>4</WarningLevel>
     <OutputRoot>..\..\..</OutputRoot>
     <LibrariesPath>..\..\Libraries</LibrariesPath>
+    <DefineConstants>TRACE;WPF</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
