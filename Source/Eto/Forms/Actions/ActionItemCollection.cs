@@ -80,7 +80,7 @@ namespace Eto.Forms
 
 		public ActionItemSubMenu FindAddSubMenu(string subMenuText, int order = 500, bool plaintextMatch = false)
 		{
-			// replace accerators if plaintextMatch is true
+			// replace accelerators if plaintextMatch is true
 			Func<string, string> convert = s => plaintextMatch ? s.Replace("&", "") : s;
 
 			ActionItemSubMenu subMenu = null;
