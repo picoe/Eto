@@ -120,7 +120,11 @@ namespace Eto.Platform.Windows.Forms.Controls
                             e.ToEto());
                     };
                     break;
-                    
+                case TreeView.SelectionChangedEvent:
+					// This case is to avoid the default handler,
+					// but no implementation is needed since
+					// Control.AfterSelect is registered by the constructor.
+					break;
                 default:
                     base.AttachEvent(handler);
                     break;
