@@ -69,6 +69,7 @@ namespace Eto.Test
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };
+			yield return new Section<DrawingTestSection> { Text = "Unit Tests" };
 		}
 		
 		static IEnumerable<Section> LayoutsSection()
