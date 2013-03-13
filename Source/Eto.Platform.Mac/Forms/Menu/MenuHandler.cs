@@ -27,7 +27,7 @@ namespace Eto.Platform.Mac
 		public virtual void AddMenu (int index, MenuItem item)
 		{
 			EnsureSubMenu ();
-			Control.Submenu.InsertItematIndex ((NSMenuItem)item.ControlObject, index);
+			Control.Submenu.InsertItem ((NSMenuItem)item.ControlObject, index);
 		}
 
 		public virtual void RemoveMenu (MenuItem item)
