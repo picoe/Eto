@@ -275,6 +275,8 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				Control.SizeToContent = sw.SizeToContent.Manual;
 				base.Size = value;
+				if (!Control.IsLoaded)
+					initialClientSize = null;
 			}
 		}
 
