@@ -94,9 +94,9 @@ namespace Eto.Platform.Windows
 			return false;
 		}
 
-		public void AddBubbleMouseEvent (Action<Control, MouseEventArgs> action, bool? capture, int message)
+		public void AddBubbleMouseEvent (Action<Control, MouseEventArgs> action, bool? capture, int message, Func<MouseButtons, MouseButtons> modifyButtons = null)
 		{
-			AddBubbleEvent (be => MouseEvent(be, action, capture), message);
+			AddBubbleEvent (be => MouseEvent (be, action, capture, modifyButtons), message);
 		}
 
 		public void AddBubbleMouseEvents (Action<Control, MouseEventArgs> action, bool? capture, params int[] messages)
@@ -106,12 +106,15 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		static bool MouseEvent (BubbleEventArgs be, Action<Control, MouseEventArgs> action, bool? capture)
+		static bool MouseEvent (BubbleEventArgs be, Action<Control, MouseEventArgs> action, bool? capture, Func<MouseButtons, MouseButtons> modifyButtons = null)
 		{
 			var modifiers = swf.Control.ModifierKeys.ToEto ();
-			var delta = new SizeF (0, Win32.GET_WHEEL_DELTA_WPARAM (be.Message.WParam) / Conversions.WHEEL_DELTA);
+			var delta = new SizeF (0, Win32.GetWheelDeltaWParam (be.Message.WParam) / Conversions.WHEEL_DELTA);
 			var position = new Point (Win32.SignedLOWORD (be.Message.LParam), Win32.SignedHIWORD (be.Message.LParam));
-			var me = new MouseEventArgs (swf.Control.MouseButtons.ToEto (), modifiers, position, delta);
+			var buttons = Win32.GetMouseButtonWParam (be.Message.WParam).ToEto ();
+			if (modifyButtons != null)
+				buttons = modifyButtons (buttons);
+			var me = new MouseEventArgs (buttons, modifiers, position, delta);
 			var handler = be.WindowsControl;
 			var mousePosition = swf.Control.MousePosition.ToEto ();
 			var ret = false;
