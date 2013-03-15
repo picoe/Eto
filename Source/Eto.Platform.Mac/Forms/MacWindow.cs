@@ -158,6 +158,9 @@ namespace Eto.Platform.Mac.Forms
 					NSApplication.SharedApplication.MainMenu = MenuBar;
 				}
 			};
+
+            // needed for RestoreBounds to be set correctly
+            HandleEvent (Window.WindowStateChangedEvent);
 		}
 		
 		public override void AttachEvent (string handler)
