@@ -101,6 +101,76 @@ namespace Eto.Drawing
 				element.SetAttribute ("height", Size.Height);
 			}
 		}
+
+		public static void WriteChildRectangleXml (this XmlElement element, string elementName, Rectangle? rect)
+		{
+			if (rect != null)
+				element.WriteChildXml (elementName, new RectSaver { Rectangle = rect.Value });
+		}
+		
+		public static Rectangle? ReadChildRectangleXml (this XmlElement element, string elementName)
+		{
+			var rect = element.ReadChildXml<RectSaver> (elementName);
+			if (rect != null)
+				return rect.Rectangle;
+			else
+				return null;
+		}
+		
+		class RectSaver : IXmlReadable
+		{
+			public Rectangle Rectangle { get; set; }
+			
+			public void ReadXml(XmlElement element)
+			{
+				var ps = new PointSaver ();
+				ps.ReadXml(element);
+				var ss = new SizeSaver ();
+				ss.ReadXml(element);
+				Rectangle = new Rectangle(ps.Point, ss.Size);
+			}
+			
+			public void WriteXml(XmlElement element)
+			{
+				var ps = new PointSaver { Point = Rectangle.Location };
+				ps.WriteXml(element);
+				var ss = new SizeSaver { Size = Rectangle.Size };
+				ss.WriteXml(element);
+			}
+		}
+		
+		public static void WriteChildPointXml (this XmlElement element, string elementName, Point? point)
+		{
+			if (point != null)
+				element.WriteChildXml (elementName, new PointSaver { Point = point.Value });
+		}
+		
+		public static Point? ReadChildPointXml (this XmlElement element, string elementName)
+		{
+			var point = element.ReadChildXml<PointSaver> (elementName);
+			if (point != null)
+				return point.Point;
+			else
+				return null;
+		}
+		
+		class PointSaver : IXmlReadable
+		{
+			public Point Point { get; set; }
+			
+			public void ReadXml (XmlElement element)
+			{
+				var x = element.GetIntAttribute ("x") ?? 0;
+				var y = element.GetIntAttribute ("y") ?? 0;
+				Point = new Point(x, y);
+			}
+			
+			public void WriteXml (XmlElement element)
+			{
+				element.SetAttribute ("x", Point.X);
+				element.SetAttribute ("y", Point.Y);
+			}
+		}
 	}
 }
 
