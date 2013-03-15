@@ -71,22 +71,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override NSTextField CreateControl()
 		{
-			var control = new EtoTextField {
+			return new EtoTextField {
 				Handler = this,
 				Bezeled = true,
 				Editable = true,
 				Selectable = true,
 				Formatter = new MyFormatter{ Handler = this }
 			};
-			control.Cell.Scrollable = true;
-			control.Cell.Wraps = false;
-			control.Cell.UsesSingleLineMode = true;
-			return control;
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
+			Control.Cell.Scrollable = true;
+			Control.Cell.Wraps = false;
+			Control.Cell.UsesSingleLineMode = true;
+
 			MaxLength = -1;
 		}
 
