@@ -25,20 +25,28 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
 			}
 		}
-		
-		public PasswordBoxHandler ()
+
+		public override NSTextField CreateControl()
 		{
-			Control = new EtoTextField{ Handler = this };
-			Control.Bezeled = true;
-			Control.Editable = true;
-			Control.Selectable = true;
-			
-			Control.Formatter = new MyFormatter{ Handler = this };
-			//Control.BezelStyle = NSTextFieldBezelStyle.Square;
-			//Control.Bordered = true;
+			return new EtoTextField {
+				Handler = this,
+				Bezeled = true,
+				Editable = true,
+				Selectable = true,
+				Formatter = new MyFormatter{ Handler = this }
+			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Cell.Scrollable = true;
+			Control.Cell.Wraps = false;
+			Control.Cell.UsesSingleLineMode = true;
+
 			MaxLength = -1;
 		}
-		
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
