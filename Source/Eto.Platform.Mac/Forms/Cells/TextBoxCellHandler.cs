@@ -34,7 +34,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Control = new EtoCell { 
 				Handler = this,
-				UsesSingleLineMode = true
+				UsesSingleLineMode = true,
+				Wraps = false,
+				Scrollable = true
 			};
 		}
 
