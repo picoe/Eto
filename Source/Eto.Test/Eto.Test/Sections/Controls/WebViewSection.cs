@@ -11,6 +11,7 @@ namespace Eto.Test.Sections.Controls
 		Button goForward;
 		Button stopButton;
 		Label titleLabel;
+		CheckBox cancelLoad;
 		
 		public WebViewSection ()
 		{
@@ -18,11 +19,16 @@ namespace Eto.Test.Sections.Controls
 
 			var webContainer = WebView ();
 			layout.Add (Buttons ());
-			layout.AddSeparateRow (TitleLabel (), null, EnableContextMenu ());
+			layout.AddSeparateRow (TitleLabel (), null, CancelLoad (), EnableContextMenu ());
 			layout.Add (webContainer, yscale: true);
 
 			if (webView != null)
 				LoadHtml();
+		}
+
+		Control CancelLoad ()
+		{
+			return cancelLoad = new CheckBox { Text = "Cancel Load" };
 		}
 		
 		Control WebView ()
@@ -30,18 +36,25 @@ namespace Eto.Test.Sections.Controls
 			try {
 				webView = new WebView ();
 
-				webView.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
-					Log.Write (webView, "Document loading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
+				webView.Navigated += (sender, e) => {
+					Log.Write (webView, "Navigated, Uri: {0}", e.Uri);
 					UpdateButtons ();
-					stopButton.Enabled = true;
 				};
-				webView.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
-					Log.Write (webView, "Document loaded, Uri: {0}", e.Uri);
+				webView.DocumentLoading += (sender, e) => {
+					Log.Write (webView, "DocumentLoading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
+					e.Cancel = cancelLoad.Checked ?? false;
+					if (!e.Cancel) {
+						UpdateButtons ();
+						stopButton.Enabled = true;
+					}
+				};
+				webView.DocumentLoaded += (sender, e) => {
+					Log.Write (webView, "DocumentLoaded, Uri: {0}", e.Uri);
 					UpdateButtons ();
 					stopButton.Enabled = false;
 				};
 				webView.OpenNewWindow += (sender, e) => {
-					Log.Write (webView, "Open new window with name '{0}', Url: {1}", e.NewWindowName, e.Uri);
+					Log.Write (webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
 				};
 				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e) {
 					titleLabel.Text = e.Title;
