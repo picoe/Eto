@@ -62,7 +62,7 @@ namespace Eto
 		protected override object InternalGetValue (object dataItem)
 		{
 			EnsureProperty (dataItem);
-			if (descriptor != null) {
+			if (descriptor != null && dataItem != null) {
 				return descriptor.GetValue (dataItem);
 			}
 			return null;
@@ -76,7 +76,7 @@ namespace Eto
 		protected override void InternalSetValue (object dataItem, object value)
 		{
 			EnsureProperty (dataItem);
-			if (descriptor != null) {
+			if (descriptor != null && dataItem != null) {
 				if (value != null && !descriptor.PropertyType.IsAssignableFrom (value.GetType ()))
 				{
 					value = Convert.ChangeType (value, descriptor.PropertyType);

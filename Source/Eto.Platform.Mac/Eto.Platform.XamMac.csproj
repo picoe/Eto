@@ -38,7 +38,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Core" />
     <Reference Include="System.Xaml" />
-    <Reference Include="XamMac, Version=0.0.0.0, Culture=neutral">
+    <Reference Include="XamMac, Version=0.0.0.0, Culture=neutral, PublicKeyToken=84e04ff9cfb79065">
       <Private>False</Private>
     </Reference>
   </ItemGroup>

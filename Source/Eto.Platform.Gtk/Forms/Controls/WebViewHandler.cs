@@ -49,20 +49,27 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case WebView.NavigatedEvent:
+				HandleEvent (WebView.DocumentLoadedEvent);
+				break;
 			case WebView.DocumentLoadedEvent:
-				Control.LoadFinished += delegate(object o, WebKit.LoadFinishedArgs args) {
-					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (args.Frame.Uri != null ? new Uri (args.Frame.Uri) : null));
+				Control.LoadFinished += (o, args) => {
+					var uri = args.Frame.Uri != null ? new Uri (args.Frame.Uri) : null;
+					var e = new WebViewLoadedEventArgs (uri);
+					if (args.Frame == Control.MainFrame)
+						Widget.OnNavigated (e);
+					Widget.OnDocumentLoaded (e);
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
-				Control.NavigationRequested += delegate(object o, WebKit.NavigationRequestedArgs args) {
+				Control.NavigationRequested += (sender, args) => {
 					if (args.Request.Uri.StartsWith (EtoReturnPrefix)) {
 						// pass back the response to ExecuteScript()
 						this.scriptReturnValue = HttpUtility.UrlDecode (args.Request.Uri.Substring (EtoReturnPrefix.Length));
 						returnResetEvent.Set ();
 						args.RetVal = WebKit.NavigationResponse.Ignore;
 					} else {
-						var e = new WebViewLoadingEventArgs (new Uri (args.Request.Uri), false);
+						var e = new WebViewLoadingEventArgs (new Uri(args.Request.Uri), false);
 						Widget.OnDocumentLoading (e);
 						if (e.Cancel)
 							args.RetVal = WebKit.NavigationResponse.Ignore;
@@ -82,7 +89,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			case WebView.DocumentTitleChangedEvent:
-				Control.TitleChanged += delegate(object o, WebKit.TitleChangedArgs args) {
+				Control.TitleChanged += (sender, args) => {
 					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (args.Title));
 				};
 				break;

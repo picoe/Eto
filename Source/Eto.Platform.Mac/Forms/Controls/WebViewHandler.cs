@@ -12,6 +12,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class WebViewHandler : MacView<wk.WebView, WebView>, IWebView
 	{
+		static Selector selIgnore = new Selector ("ignore");
+		static Selector selUse = new Selector ("use");
+		
 		NewWindowHandler newWindowHandler;
 		public WebViewHandler ()
 		{
@@ -45,7 +48,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler.Widget.OnOpenNewWindow (args);
 				if (!args.Cancel)
 					NSWorkspace.SharedWorkspace.OpenUrl(url);
-				listener.PerformSelector (new Selector ("ignore"), null, 0);
+				listener.PerformSelector (selIgnore, null, 0);
 			}
 		}
 
@@ -171,9 +174,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case WebView.NavigatedEvent:
+				HandleEvent (WebView.DocumentLoadedEvent);
+				break;
 			case WebView.DocumentLoadedEvent:
 				this.Control.FinishedLoad += delegate(object sender, wk.WebFrameEventArgs e) {
-					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (this.Url));
+					var args = new WebViewLoadedEventArgs (this.Url);
+					if (e.ForFrame == Control.MainFrame)
+						Widget.OnNavigated (args);
+					Widget.OnDocumentLoaded (args);
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
@@ -181,9 +190,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 					var args = new WebViewLoadingEventArgs (new Uri (e.Request.Url.AbsoluteString), e.Frame == Control.MainFrame);
 					Widget.OnDocumentLoading (args);
 					if (args.Cancel)
-						e.DecisionToken.PerformSelector (new Selector ("ignore"), null, 0);
+						e.DecisionToken.PerformSelector (selIgnore, null, 0);
 					else
-						e.DecisionToken.PerformSelector (new Selector ("use"), null, 0);
+						e.DecisionToken.PerformSelector (selUse, null, 0);
 				};
 				break;
 			case WebView.OpenNewWindowEvent:
@@ -192,7 +201,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Widget.OnOpenNewWindow (args);
 					if (!args.Cancel)
 						NSWorkspace.SharedWorkspace.OpenUrl(e.Request.Url);
-					e.DecisionToken.PerformSelector (new Selector ("ignore"), null, 0);
+					e.DecisionToken.PerformSelector (selIgnore, null, 0);
 				};
 				break;
 			case WebView.DocumentTitleChangedEvent:

@@ -192,7 +192,6 @@ namespace Eto.Platform.Wpf.CustomControls
 		/// <param name="dc">An instance of <see cref="T:System.Windows.Media.DrawingContext"/> used to render the control.</param>
 		protected override void OnRender (DrawingContext dc)
 		{
-			base.OnRender (dc);
 			if (background != null)
 				dc.DrawRectangle (background, null, new Rect (0, 0, RenderSize.Width, RenderSize.Height));
 

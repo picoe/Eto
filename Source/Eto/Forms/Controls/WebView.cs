@@ -79,8 +79,30 @@ namespace Eto.Forms
 		new IWebView Handler { get { return (IWebView)base.Handler; } }
 		
 		#region Events
-		
-		public const string DocumentLoadedEvent = "WebView.DocumentLoaded";
+
+        #region Navigated
+        public const string NavigatedEvent = "WebView.Navigated";
+        EventHandler<WebViewLoadedEventArgs> navigated;
+
+        public event EventHandler<WebViewLoadedEventArgs> Navigated
+        {
+            add
+            {
+                HandleEvent(NavigatedEvent);
+                navigated += value;
+            }
+            remove { navigated -= value; }
+        }
+
+        public virtual void OnNavigated(WebViewLoadedEventArgs e)
+        {
+            if (navigated != null)
+                navigated(this, e);
+        }
+
+        #endregion
+
+        public const string DocumentLoadedEvent = "WebView.DocumentLoaded";
 		EventHandler<WebViewLoadedEventArgs> documentLoaded;
 
 		public event EventHandler<WebViewLoadedEventArgs> DocumentLoaded {
