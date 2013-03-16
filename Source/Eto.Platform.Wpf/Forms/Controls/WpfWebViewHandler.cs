@@ -102,9 +102,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			switch (handler)
 			{
+			case WebView.NavigatedEvent:
+				Control.Navigated += (sender, e) => {
+					var args = new WebViewLoadedEventArgs (e.Uri);
+					Widget.OnNavigated (args);
+				};
+				break;
 			case WebView.DocumentLoadedEvent:
-				Control.LoadCompleted += delegate (object sender, swn.NavigationEventArgs e)
-				{
+				Control.LoadCompleted += (sender, e) => {
 					var args = new WebViewLoadedEventArgs (e.Uri);
 					Widget.OnDocumentLoaded (args);
 					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (this.DocumentTitle));
@@ -112,8 +117,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
-				Control.Navigating += delegate (object sender, swn.NavigatingCancelEventArgs e)
-				{
+				Control.Navigating += (sender, e) => {
 					var args = new WebViewLoadingEventArgs (e.Uri, true);
 					Widget.OnDocumentLoading (args);
 					e.Cancel = args.Cancel;
@@ -122,6 +126,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			case WebView.OpenNewWindowEvent:
 			case WebView.DocumentTitleChangedEvent:
 				HookDocumentEvents (handler);
+				HandleEvent (WebView.NavigatedEvent);
 				break;
 			default:
 				base.AttachEvent (handler);
