@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Windows.Forms;
 
 namespace Eto.Platform
 {
@@ -89,52 +90,61 @@ namespace Eto.Platform
 			LBUTTONUP = 0x0202,
 			LBUTTONDBLCLK = 0x0203,
 			RBUTTONDOWN = 0x0204,
-			RBUTTONUP =   0x0205,
+			RBUTTONUP = 0x0205,
 			RBUTTONDBLCLK = 0x0206,
 			MBUTTONDOWN = 0x0207,
 			MBUTTONUP = 0x0208,
 			MBUTTONDBLCLK = 0x0209,
 			MOUSEWHEEL = 0x20A
-			}
-
-		public static ushort HIWORD (IntPtr dwValue)
-		{
-			return (ushort)((((long)dwValue) >> 0x10) & 0xffff);
 		}
 
-		public static ushort HIWORD (uint dwValue)
+		public static ushort LOWORD (IntPtr word) { return (ushort)(((long)word) & 0xffff); }
+
+		public static ushort LOWORD (int word) { return (ushort)(word & 0xFFFF); }
+
+		public static ushort HIWORD (IntPtr dwValue) { return (ushort)((((long)dwValue) >> 0x10) & 0xffff); }
+
+		public static ushort HIWORD (uint dwValue) { return (ushort)(dwValue >> 0x10); }
+
+		public static int SignedHIWORD (IntPtr n) { return SignedHIWORD ((int)((long)n)); }
+
+		public static int SignedLOWORD (IntPtr n) { return SignedLOWORD ((int)((long)n)); }
+
+		public static int SignedHIWORD (int n) { return (int)((short)(n >> 16 & 65535)); }
+
+		public static int SignedLOWORD (int n) { return (int)((short)(n & 65535)); }
+
+		public static int GetWheelDeltaWParam (IntPtr wParam) { return SignedHIWORD (wParam); }
+
+		[Flags]
+		public enum MK : int
 		{
-			return (ushort)(dwValue >> 0x10);
+			NONE = 0x0000,
+			LBUTTON = 0x0001,
+			RBUTTON = 0x0002,
+			SHIFT = 0x0004,
+			CONTROL = 0x0008,
+			MBUTTON = 0x0010,
+			XBUTTON1 = 0x0020,
+			XBUTTON2 = 0x0040
 		}
 
-		public static int SignedHIWORD (IntPtr n)
+		public static MouseButtons GetMouseButtonWParam (IntPtr wParam)
 		{
-			return SignedHIWORD ((int)((long)n));
-		}
+			var mask = (MK)LOWORD (wParam);
+			var buttons = MouseButtons.None;
 
-		public static int SignedLOWORD (IntPtr n)
-		{
-			return SignedLOWORD ((int)((long)n));
-		}
-
-		public static int SignedHIWORD (int n)
-		{
-			return (int)((short)(n >> 16 & 65535));
-		}
-
-		public static int SignedLOWORD (int n)
-		{
-			return (int)((short)(n & 65535));
-		}
-
-		public static int GET_WHEEL_DELTA_WPARAM (IntPtr wParam)
-		{
-			return (short)HIWORD (wParam);
-		}
-
-		public static int GET_WHEEL_DELTA_WPARAM (uint wParam)
-		{
-			return (short)HIWORD (wParam);
+			if (mask.HasFlag (MK.LBUTTON))
+				buttons |= MouseButtons.Left;
+			if (mask.HasFlag (MK.RBUTTON))
+				buttons |= MouseButtons.Right;
+			if (mask.HasFlag (MK.MBUTTON))
+				buttons |= MouseButtons.Middle;
+			if (mask.HasFlag (MK.XBUTTON1))
+				buttons |= MouseButtons.XButton1;
+			if (mask.HasFlag (MK.XBUTTON2))
+				buttons |= MouseButtons.XButton2;
+			return buttons;
 		}
 
 		[DllImport ("user32.dll")]
@@ -151,6 +161,6 @@ namespace Eto.Platform
 		public static extern int SetWindowLong (IntPtr hWnd, GWL nIndex, uint dwNewLong);
 
 		[DllImport("user32.dll")]
-	    public static extern int SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
+		public static extern int SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
 	}
 }

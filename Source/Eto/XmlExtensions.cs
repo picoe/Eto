@@ -531,8 +531,12 @@ namespace Eto
 		/// <param name="documentElementName">Document element name</param>
 		public static void SaveXml (this IXmlReadable obj, string fileName, string documentElementName = "object")
 		{
-			using (var fileStream = File.Create (fileName)) {
-				SaveXml(obj, fileStream, documentElementName);
+			using (var stream = new MemoryStream ()) {
+				SaveXml(obj, stream, documentElementName);
+				stream.Position = 0;
+				using (var fileStream = File.Create (fileName)) {
+					stream.WriteTo (fileStream);
+				}
 			}
 		}
 

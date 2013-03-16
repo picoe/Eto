@@ -68,6 +68,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case WebView.NavigatedEvent:
+				this.Browser.Navigated += (sender, e) => {
+					Widget.OnNavigated (new WebViewLoadedEventArgs (e.Url));
+				};
+				break;
 			case WebView.DocumentLoadedEvent:
 				this.Browser.DocumentCompleted += (sender, e) => {
 					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (e.Url));
