@@ -36,6 +36,9 @@ namespace Eto.Platform.Mac.Forms
 		{
 			EtoBundle.Init();
 			Control = NSApplication.SharedApplication;
+			// until everything is marked as thread safe correctly in monomac
+			// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
+			NSApplication.CheckForIllegalCrossThreadCalls = false;
 		}
 		
 		static void restart_WillTerminate (object sender, EventArgs e)
