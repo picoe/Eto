@@ -161,6 +161,11 @@ namespace Eto.Platform.Windows
 			return ret;
 		}
 
+		public static Point ToEto (this sd.Point point)
+		{
+			return new Point (point.X, point.Y);
+		}
+
 		public static PointF ToEto (this sd.PointF point)
 		{
 			return new PointF (point.X, point.Y);
@@ -201,9 +206,19 @@ namespace Eto.Platform.Windows
 			return new sd.SizeF (size.Width, size.Height);
 		}
 
+		public static Rectangle ToEto (this sd.Rectangle rect)
+		{
+			return new Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
 		public static RectangleF ToEto (this sd.RectangleF rect)
 		{
 			return new RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static sd.Rectangle ToSD (this Rectangle rect)
+		{
+			return new sd.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
 		public static sd.RectangleF ToSD (this RectangleF rect)
