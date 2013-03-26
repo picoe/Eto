@@ -226,11 +226,6 @@ namespace Eto.Platform.Windows
 			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		public static sd.Rectangle ToSD(this Rectangle rect)
-		{
-			return new sd.Rectangle(rect.X, rect.Y, rect.Width, rect.Height);
-		}
-
 		public static sd.Rectangle ToSDRectangle(this RectangleF rect)
 		{
 			return new sd.Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
