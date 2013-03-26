@@ -48,16 +48,15 @@ namespace Eto.Platform.Mac.Forms
 				container.AddSubview (control);
 			}
 		}
-		
-		protected override Size GetNaturalSize ()
+
+		protected override Size GetNaturalSize (Size availableSize)
 		{
-			var size = base.GetNaturalSize ();
 			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
-					size = layout.GetPreferredSize (Size.MaxValue);
+					return layout.GetPreferredSize (availableSize);
 			}
-			return size;
+			return base.GetNaturalSize (availableSize);
 		}
 		
 		public virtual void SetContentSize (SD.SizeF contentSize)

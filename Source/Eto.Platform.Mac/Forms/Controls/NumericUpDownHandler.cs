@@ -69,7 +69,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			Control.AddSubview (text);
 			Control.AddSubview (stepper);
-			var naturalSize = GetNaturalSize ();
+			var naturalSize = GetNaturalSize (Size.MaxValue);
 			Control.Frame = new System.Drawing.RectangleF (0, 0, naturalSize.Width, naturalSize.Height);
 		}
 
@@ -93,7 +93,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		protected override Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			if (naturalSize == null) {
 				text.SizeToFit ();
