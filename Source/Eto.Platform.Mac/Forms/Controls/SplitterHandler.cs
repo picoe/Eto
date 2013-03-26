@@ -223,14 +223,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		#endregion
 
-		protected override Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			Size size = new Size ();
 
 			var p1 = panel1 != null ? panel1.Handler as IMacAutoSizing : null;
 			var p2 = panel2 != null ? panel2.Handler as IMacAutoSizing : null;
-			var p1size = p1 != null ? p1.GetPreferredSize (Size.MaxValue) : Size.Empty;
-			var p2size = p2 != null ? p2.GetPreferredSize (Size.MaxValue) : Size.Empty;
+			var p1size = p1 != null ? p1.GetPreferredSize (availableSize) : Size.Empty;
+			var p2size = p2 != null ? p2.GetPreferredSize (availableSize) : Size.Empty;
 			if (Control.IsVertical) {
 				if (position != null) {
 					switch (FixedPanel) {
