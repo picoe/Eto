@@ -125,6 +125,7 @@ namespace Eto.Platform.Mac
 
 			// General
 			g.Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
+			g.Add <IThread> (() => new ThreadHandler ());
 		}
 
 		public override IDisposable ThreadStart ()
