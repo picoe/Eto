@@ -116,7 +116,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			throw new NotImplementedException(); // TODO
 		}
 
-		void IGraphics.DrawText(Font font, Color color, float x, float y, string text)
+		void IGraphics.DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
 			throw new NotImplementedException();
 		}

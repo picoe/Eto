@@ -454,7 +454,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawText(Font font, Color color, float x, float y, string text)
+		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
 			if (string.IsNullOrEmpty(text)) return;
 
@@ -463,7 +463,7 @@ namespace Eto.Platform.iOS.Drawing
 			var nsfont = FontHandler.GetControl (font);
 			var str = new NSString (text);
 			var dic = new NSMutableDictionary ();
-			dic.Add (NSAttributedString.ForegroundColorAttributeName, color.ToNS ());
+			dic.Add (NSAttributedString.ForegroundColorAttributeName, brush.Color.ToNS ());
 			dic.Add (NSAttributedString.FontAttributeName, nsfont);
 			//context.SetShouldAntialias(true);
 			if (!Flipped) {
