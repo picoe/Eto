@@ -16,8 +16,12 @@ namespace Eto
 		{
 			this.GetValue = getValue;
 			this.SetValue = setValue;
-			this.AddChangeEvent = addChangeEvent;
-			this.RemoveChangeEvent = removeChangeEvent;
+			if (addChangeEvent != null && removeChangeEvent != null) {
+				this.AddChangeEvent = addChangeEvent;
+				this.RemoveChangeEvent = removeChangeEvent;
+			}
+			else if (addChangeEvent != null || removeChangeEvent != null)
+				throw new ArgumentException("You must either specify both the add and remove change event delegates, or pass null for both");
 		}
 		
 		protected override object InternalGetValue (object dataItem)
@@ -42,10 +46,13 @@ namespace Eto
 		/// <returns>binding reference used to track the event hookup, to pass to <see cref="RemoveValueChangedHandler"/> when removing the handler</returns>
 		public override object AddValueChangedHandler (object dataItem, EventHandler<EventArgs> handler)
 		{
-			if (dataItem == null)
+			if (AddChangeEvent != null && dataItem !=  null)
+			{
+				AddChangeEvent((T)dataItem, handler);
+				return dataItem;
+			}
+			else
 				return false;
-			AddChangeEvent((T)dataItem, handler);
-			return dataItem;
 		}
 
 		/// <summary>
@@ -55,7 +62,7 @@ namespace Eto
 		/// <param name="handler">Same handler that was set up during the <see cref="AddValueChangedHandler"/> call</param>
 		public override void RemoveValueChangedHandler (object bindingReference, EventHandler<EventArgs> handler)
 		{
-			if (bindingReference is T)
+			if (RemoveChangeEvent != null && bindingReference is T)
 			{
 				var dataItem = bindingReference;
 				RemoveChangeEvent((T)dataItem, handler);

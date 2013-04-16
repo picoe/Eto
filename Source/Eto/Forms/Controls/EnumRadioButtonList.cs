@@ -64,6 +64,20 @@ namespace Eto.Forms
 			items.Sort ((x, y) => string.Compare (x.Text, y.Text, StringComparison.CurrentCultureIgnoreCase));
 			return items;
 		}
+
+		public new ObjectBinding<EnumRadioButtonList<T>, T> SelectedValueBinding
+		{
+			get
+			{
+				return new ObjectBinding<EnumRadioButtonList<T>, T>(
+					this, 
+					c => c.SelectedValue, 
+					(c, v) => c.SelectedValue = v, 
+					(c, h) => c.SelectedValueChanged += h, 
+					(c, h) => c.SelectedValueChanged -= h
+					);
+			}
+		}
 	}
 }
 

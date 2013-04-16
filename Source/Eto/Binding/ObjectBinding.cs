@@ -5,6 +5,57 @@ using System.Collections.ObjectModel;
 
 namespace Eto
 {
+	public class ObjectBinding<T, TValue> : ObjectBinding
+	{
+		public new T DataItem
+		{
+			get { return (T)base.DataItem; }
+			set { base.DataItem = value; }
+		}
+
+		public new TValue DataValue
+		{
+			get { return (TValue)base.DataValue; }
+			set { base.DataValue = value; }
+		}
+
+		public ObjectBinding (T dataItem, Func<T, TValue> getValue, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null)
+			: this(dataItem, new DelegateBinding<T, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent))
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the ObjectBinding with the specified object and binding to get/set values with
+		/// </summary>
+		/// <param name="dataItem">object to get/set values from</param>
+		/// <param name="innerBinding">binding to use to get/set the values from the dataItem</param>
+		public ObjectBinding (T dataItem, IndirectBinding innerBinding)
+			: base (dataItem, innerBinding)
+		{
+		}
+
+		public DualBinding Bind<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return Bind(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent), mode);
+		}
+
+		public DualBinding Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return BindingExtensions.Bind(this, binding, mode);
+		}
+
+		public DualBinding Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return Bind(objectValue, new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent), mode);
+		}
+		
+		public DualBinding Bind<TObject>(TObject objectValue, DelegateBinding<TObject, TValue> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			var valueBinding = new ObjectBinding(objectValue, objectBinding);
+			return BindingExtensions.Bind(this, valueBinding, mode);
+		}
+	}
+
 	/// <summary>
 	/// Binding for a particular object to get/set values from/to
 	/// </summary>

@@ -16,34 +16,51 @@ namespace Eto.Forms
 
 		private ICheckBox inner;
 
-		public virtual void OnCheckedChanged (EventArgs e)
+		public virtual void OnCheckedChanged(EventArgs e)
 		{
 			if (CheckedChanged != null)
-				CheckedChanged (this, e);
+				CheckedChanged(this, e);
 		}
 
-		public CheckBox () : this (Generator.Current)
+		public CheckBox() : this (Generator.Current)
 		{
 		}
 		
-		public CheckBox (Generator g) : this (g, typeof(ICheckBox))
+		public CheckBox(Generator g) : this (g, typeof(ICheckBox))
 		{
 		}
 		
-		protected CheckBox (Generator g, Type type, bool initialize = true)
+		protected CheckBox(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
 			inner = (ICheckBox)base.Handler;
 		}
 
-		public virtual bool? Checked {
+		public virtual bool? Checked
+		{
 			get { return inner.Checked; }
 			set { inner.Checked = value; }
 		}
 		
-		public bool ThreeState {
+		public bool ThreeState
+		{
 			get { return inner.ThreeState; }
 			set { inner.ThreeState = value; }
 		}
+
+		public ObjectBinding<CheckBox, bool?> CheckedBinding
+		{
+			get
+			{
+				return new ObjectBinding<CheckBox, bool?>(
+					this, 
+					c => c.Checked, 
+					(c, v) => c.Checked = v, 
+					(c, h) => c.CheckedChanged += h, 
+					(c, h) => c.CheckedChanged -= h
+				);
+			}
+		}
+
 	}
 }
