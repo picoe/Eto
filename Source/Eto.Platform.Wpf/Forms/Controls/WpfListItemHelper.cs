@@ -48,7 +48,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				var item = value as IImageListItem;
 				if (item == null || item.Image == null) return null;
-				return ((IWpfImage)item.Image.Handler).GetImageClosestToSize (16);
+				return item.Image.ToWpf (16);
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
