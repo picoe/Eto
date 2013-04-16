@@ -367,9 +367,10 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
 			pen.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			var centerY = rect.GetMidY();
+			var centerY = RectangleFExtensions.GetMidY(rect);
+			var centerX = RectangleFExtensions.GetMidX(rect);
 			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
-			Control.AddArc (rect.GetMidX(), centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc (centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
 			Control.StrokePath ();
 			EndDrawing ();
 		}
@@ -381,11 +382,12 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true, true);
 			brush.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			var centerY = rect.GetMidY();
+			var centerY = RectangleFExtensions.GetMidY(rect);
+			var centerX = RectangleFExtensions.GetMidX(rect);
 			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
-			Control.MoveTo (rect.GetMidX(), centerY);
-			Control.AddArc (rect.GetMidX(), centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
-			Control.AddLineToPoint (rect.GetMidX(), centerY);
+			Control.MoveTo (centerX, centerY);
+			Control.AddArc (centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddLineToPoint (centerX, centerY);
 			Control.ClosePath ();
 			Control.FillPath ();
 			EndDrawing ();
