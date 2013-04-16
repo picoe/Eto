@@ -69,7 +69,7 @@ namespace Eto
 		/// <returns>A new instance of the DualBinding class that is used to control the binding</returns>
 		public static DualBinding Bind (this InstanceWidget widget, string widgetPropertyName, string dataContextPropertyName, DualBindingMode mode = DualBindingMode.TwoWay, object defaultWidgetValue = null, object defaultContextValue = null)
 		{
-			var contextBinding = new ObjectBinding(widget, "DataContext");
+			var contextBinding = new ObjectBinding(widget, new DelegateBinding<InstanceWidget, object>(w => w.DataContext, null, (w, h) => w.DataContextChanged += h, (w, h) => w.DataContextChanged -= h));
 			var valueBinding = new ObjectBinding(contextBinding.DataValue, dataContextPropertyName);
 			valueBinding.GettingNullValue = defaultWidgetValue;
 			valueBinding.SettingNullValue = defaultContextValue;
@@ -100,6 +100,26 @@ namespace Eto
 			var widgetExpression = (MemberExpression)widgetProperty.Body;
 			var sourceExpression = (MemberExpression)sourceProperty.Body;
 			return Bind (widget, widgetExpression.Member.Name, sourceExpression.Member.Name, mode, defaultWidgetValue, defaultContextValue);
+		}
+
+		public static DualBinding Bind<TWidget, TWidgetProperty, TObject, TObjectProperty> (this TWidget widget, DelegateBinding<TWidget, TWidgetProperty> widgetBinding, DelegateBinding<TObject, TObjectProperty> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay, object defaultWidgetValue = null, object defaultContextValue = null)
+			where TWidget: InstanceWidget
+		{
+			var contextBinding = new ObjectBinding(widget, new DelegateBinding<InstanceWidget, object>(w => w.DataContext, null, (w, h) => w.DataContextChanged += h, (w, h) => w.DataContextChanged -= h));
+			var valueBinding = new ObjectBinding(contextBinding.DataValue, objectBinding);
+			valueBinding.GettingNullValue = defaultWidgetValue;
+			valueBinding.SettingNullValue = defaultContextValue;
+			contextBinding.DataValueChanged += delegate {
+				valueBinding.DataItem = contextBinding.DataValue;
+			};
+			var binding = new DualBinding (
+				valueBinding,
+				new ObjectBinding(widget, widgetBinding),
+				mode
+				);
+			widget.Bindings.Add (contextBinding);
+			widget.Bindings.Add (binding);
+			return binding;
 		}
 
 	}
