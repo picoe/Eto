@@ -151,12 +151,10 @@ namespace Eto.Platform.Mac.Forms
 				}
 			if (controlFrame.Width < requiredx) {
 				totalx = requiredx - totalxpadding;
-				controlFrame.Width = requiredx;
 			}
 			if (controlFrame.Height < requiredy) {
 				//Console.WriteLine("restricting y from {0} to {1}", controlFrame.Height, requiredy);
 				totaly = requiredy - totalypadding;
-				controlFrame.Height = requiredy;
 			}
 			
 			if (numy > 0) {
