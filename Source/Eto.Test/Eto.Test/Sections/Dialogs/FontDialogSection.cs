@@ -3,6 +3,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using VerticalAlign = Eto.Forms.VerticalAlign;
 
 namespace Eto.Test.Sections.Dialogs
 {

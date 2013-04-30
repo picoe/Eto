@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using VerticalAlign = Eto.Forms.VerticalAlign;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -110,7 +111,7 @@ namespace Eto.Test.Sections.Controls
 		Control Wrap ()
 		{
 			var control = new TextArea{
-				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + Environment.NewLine + "Second Line",
+				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + System.Environment.NewLine + "Second Line",
 				Wrap = true
 			};
 			LogEvents (control);
@@ -119,8 +120,8 @@ namespace Eto.Test.Sections.Controls
 		
 		Control NoWrap ()
 		{
-			var control = new TextArea{ 
-				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + Environment.NewLine + "Second Line",
+			var control = new TextArea{
+				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + System.Environment.NewLine + "Second Line",
 				Wrap = false
 			};
 			LogEvents (control);

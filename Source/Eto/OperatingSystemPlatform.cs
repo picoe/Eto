@@ -72,7 +72,7 @@ namespace Eto
 			if (Type.GetType ("Mono.Runtime", false) != null)
 				IsMono = true;
 
-			switch (Environment.OSVersion.Platform) {
+			switch (System.Environment.OSVersion.Platform) {
 			case PlatformID.MacOSX:
 				IsMac = true;
 				IsUnix = true;

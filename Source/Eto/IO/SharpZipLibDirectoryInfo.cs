@@ -1,3 +1,4 @@
+#if !IOS
 using System;
 using System.Text.RegularExpressions;
 using System.Collections;
@@ -63,3 +64,4 @@ namespace Eto.IO
 
 	}
 }
+#endif
