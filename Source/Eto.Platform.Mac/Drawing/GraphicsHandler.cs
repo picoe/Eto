@@ -478,7 +478,7 @@ namespace Eto.Platform.iOS.Drawing
 			var str = new NSString (text);
 			var size = str.StringSize (uifont);
 			//context.SetShouldAntialias(true);
-			Control.SetFillColor(color.ToCGColor ());
+			Control.SetFillColor(brush.Color.ToCGColor());
 			str.DrawString (TranslateView (new SD.PointF(x, y), elementHeight: size.Height), uifont);
 #endif
 
