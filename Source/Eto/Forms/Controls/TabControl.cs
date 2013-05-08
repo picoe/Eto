@@ -131,6 +131,5 @@ namespace Eto.Forms
 				tab.UpdateBindings ();
 			}
 		}
-
 	}
 }

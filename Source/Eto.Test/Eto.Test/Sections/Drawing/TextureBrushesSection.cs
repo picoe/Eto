@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Drawing
 {
 	class TextureBrushesSection : Scrollable
 	{
-		Bitmap image = Bitmap.FromResource ("Eto.Test.Textures.png");
+		Bitmap image = TestIcons.Textures;
 
 		public TextureBrushesSection ()
 		{

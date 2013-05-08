@@ -11,7 +11,7 @@ namespace Eto.Test.Sections.Drawing
 		UITimer timer;
 		bool useTexturesAndGradients;
 		Drawable drawable;
-		static Image texture = Bitmap.FromResource ("Eto.Test.Textures.png");
+		static Image texture = TestIcons.Textures;
 
 		class Box
 		{

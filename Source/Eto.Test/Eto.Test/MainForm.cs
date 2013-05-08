@@ -34,7 +34,7 @@ namespace Eto.Test
 			this.SectionList = new SectionList(topNodes);
 
 #if DESKTOP
-			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
+			this.Icon = TestIcons.TestIcon;
 			this.ClientSize = new Size (900, 650);
 #endif
 			//this.Opacity = 0.5;

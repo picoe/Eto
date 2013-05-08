@@ -23,8 +23,8 @@ namespace Eto.Test.Sections.Controls
 
 	public class GridViewSection : Panel
 	{
-		static Image image1 = Bitmap.FromResource ("Eto.Test.TestImage.png");
-		static Image image2 = Icon.FromResource ("Eto.Test.TestIcon.ico");
+		static Image image1 = TestIcons.TestImage;
+		static Image image2 = TestIcons.TestIcon;
 		
 		public GridViewSection ()
 		{
