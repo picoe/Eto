@@ -43,11 +43,171 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
-		/// <summary>
-		/// Encapsulates text-handling functionality
-		/// </summary>
-		public class MyTextInputView : UIView
+		// A UITextPosition object represents a position in a text container; in other words, it is 
+		// an index into the backing string in a text-displaying view.
+		// 
+		// Classes that adopt the UITextInput protocol must create custom UITextPosition objects 
+		// for representing specific locations within the text managed by the class. The text input 
+		// system uses both these objects and UITextRange objects for communicating text-layout information.
+		//
+		// We could use more sophisticated objects, but for demonstration purposes it suffices to wrap integers.
+		class IndexedPosition : UITextPosition
 		{
+			public int Index { get; private set; }
+
+			private IndexedPosition(int index)
+			{
+				this.Index = index;
+			}
+
+			// We need to keep all the IndexedPositions we create accessible from managed code,
+			// otherwise the garbage collector will collect them since it won't know that native
+			// code has references to them.
+			static Dictionary<int, IndexedPosition> indexes = new Dictionary<int, IndexedPosition>();
+			public static IndexedPosition GetPosition(int index)
+			{
+				IndexedPosition result;
+
+				if (!indexes.TryGetValue(index, out result))
+				{
+					result = new IndexedPosition(index);
+					indexes[index] = result;
+				}
+				return result;
+			}
+		}
+
+		// A UITextRange object represents a range of characters in a text container; in other words,
+		// it identifies a starting index and an ending index in string backing a text-entry object.
+		//
+		// Classes that adopt the UITextInput protocol must create custom UITextRange objects for 
+		// representing ranges within the text managed by the class. The starting and ending indexes 
+		// of the range are represented by UITextPosition objects. The text system uses both UITextRange 
+		// and UITextPosition objects for communicating text-layout information.
+		class IndexedRange : UITextRange
+		{
+			public NSRange Range { get; private set; }
+
+			private IndexedRange()
+			{
+			}
+
+			public override UITextPosition start { get { return IndexedPosition.GetPosition(Range.Location); } }
+			public override UITextPosition end { get { return IndexedPosition.GetPosition(Range.Location + Range.Length); } }
+			public override bool IsEmpty { get { return Range.Length == 0; } }
+
+			// We need to keep all the IndexedRanges we create accessible from managed code,
+			// otherwise the garbage collector will collect them since it won't know that native
+			// code has references to them.
+			private static Dictionary<NSRange, IndexedRange> ranges = new Dictionary<NSRange, IndexedRange>(new NSRangeEqualityComparer());
+			public static IndexedRange GetRange(NSRange theRange)
+			{
+				IndexedRange result;
+
+				if (theRange.Location == NSRange.NotFound)
+					return null;
+
+				if (!ranges.TryGetValue(theRange, out result))
+				{
+					result = new IndexedRange();
+					result.Range = new NSRange(theRange.Location, theRange.Length);
+				}
+				return result;
+			}
+
+			class NSRangeEqualityComparer : IEqualityComparer<NSRange>
+			{
+				#region IEqualityComparer[NSRange] implementation
+				public bool Equals(NSRange x, NSRange y)
+				{
+					return x.Length == y.Length && x.Location == y.Location;
+				}
+
+				public int GetHashCode(NSRange obj)
+				{
+					return obj.Location.GetHashCode() ^ obj.Length.GetHashCode();
+				}
+				#endregion
+			}
+
+		}
+
+		[Adopts("UITextInput")]
+		[Adopts("UIKeyInput")]
+		[Adopts("UITextInputTraits")]
+		[Register("MyView")]
+		public class MyView : UIView
+		{
+			public override void TouchesBegan (NSSet touches, UIEvent evt)
+			{
+				var args = Conversions.ConvertMouse (this, touches, evt);
+				Handler.Widget.OnMouseDown (args);
+				if (!args.Handled)
+					base.TouchesBegan (touches, evt);
+			}
+			
+			public override void TouchesEnded (NSSet touches, UIEvent evt)
+			{
+				var args = Conversions.ConvertMouse (this, touches, evt);
+				Handler.Widget.OnMouseUp (args);
+				if (!args.Handled)
+					base.TouchesEnded (touches, evt);
+			}
+			
+			public override void TouchesMoved (NSSet touches, UIEvent evt)
+			{
+				var args = Conversions.ConvertMouse (this, touches, evt);
+				Handler.Widget.OnMouseMove (args);
+				if (!args.Handled)
+					base.TouchesMoved (touches, evt);
+			}
+			
+			public MyView ()
+			{
+				//var tiledLayer = this.Layer as CATiledLayer;
+				this.BackgroundColor = UIColor.Clear;
+				this.ContentMode = UIViewContentMode.TopLeft;
+			}
+
+			public DrawableHandler Handler { get; set; }
+
+			public override void Draw (System.Drawing.RectangleF rect)
+			{
+				//Console.WriteLine ("Drawing {0}, {1}", rect, new System.Diagnostics.StackTrace ());
+				Handler.Update (rect.ToEtoRectangle ());
+			}
+
+			public bool CanFocus { get; set; }
+
+			public override bool CanBecomeFirstResponder {
+				get { return CanFocus; }
+			}
+
+			public override bool BecomeFirstResponder ()
+			{
+				Handler.Widget.OnGotFocus (EventArgs.Empty);
+				return base.BecomeFirstResponder ();
+			}
+
+			public override bool ResignFirstResponder ()
+			{
+				Handler.Widget.OnLostFocus (EventArgs.Empty);
+				return base.ResignFirstResponder ();
+			}
+			
+			static IntPtr selFrame = Selector.GetHandle("frame");
+			
+			public SD.RectangleF BaseFrame
+			{
+				get {
+					SD.RectangleF result;
+					Messaging.RectangleF_objc_msgSend_stret (out result, base.Handle, selFrame);
+					return result;
+				}
+			}
+
+			#region Text Handling - could not move this into a superclass because of protocol registration issues. 
+
 			NSDictionary markedTextStyle;
 			[Export("markedTextStyle")]
 			public NSDictionary MarkedTextStyle
@@ -90,11 +250,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				get
 				{
-					throw new NotImplementedException();
+					return null;
 				}
 				set
 				{
-					throw new NotImplementedException();
+					//throw new NotImplementedException();
 				}
 			}
 
@@ -103,10 +263,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			[Export("markedTextRange")]
 			IndexedRange MarkedTextRange
 			{
-				get
-				{
-					throw new NotImplementedException();
-				}
+				get { return null; }
 			}
 
 			// UITextInput required method - Insert the provided text and marks it to indicate 
@@ -200,13 +357,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 			// UITextInputStringTokenizer for this purpose, as this sample does. If you require 
 			// different behavior than this system-provided tokenizer, you can create a custom 
 			// tokenizer that adopts the UITextInputTokenizer protocol.
+			UITextInputTokenizer tokenizer;
 			[Export("tokenizer")]
 			UITextInputTokenizer Tokenizer
 			{
-				get
-				{
-					throw new NotImplementedException();
-				}
+				get { return tokenizer = tokenizer ?? new UITextInputStringTokenizer(this); }
 			}
 			#endregion
 			#region UITextInput - Text Layout, writing direction and position related methods
@@ -314,7 +469,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			[Export("insertText:")]
 			void InsertText(string text)
 			{
-				throw new NotImplementedException();
+				// TODO
 			}
 
 			// UIKeyInput required method - Delete a character from the displayed text.
@@ -326,165 +481,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				throw new NotImplementedException();
 			}
 			#endregion
-		}
-
-		// A UITextPosition object represents a position in a text container; in other words, it is 
-		// an index into the backing string in a text-displaying view.
-		// 
-		// Classes that adopt the UITextInput protocol must create custom UITextPosition objects 
-		// for representing specific locations within the text managed by the class. The text input 
-		// system uses both these objects and UITextRange objects for communicating text-layout information.
-		//
-		// We could use more sophisticated objects, but for demonstration purposes it suffices to wrap integers.
-		class IndexedPosition : UITextPosition
-		{
-			public int Index { get; private set; }
-
-			private IndexedPosition(int index)
-			{
-				this.Index = index;
-			}
-
-			// We need to keep all the IndexedPositions we create accessible from managed code,
-			// otherwise the garbage collector will collect them since it won't know that native
-			// code has references to them.
-			static Dictionary<int, IndexedPosition> indexes = new Dictionary<int, IndexedPosition>();
-			public static IndexedPosition GetPosition(int index)
-			{
-				IndexedPosition result;
-
-				if (!indexes.TryGetValue(index, out result))
-				{
-					result = new IndexedPosition(index);
-					indexes[index] = result;
-				}
-				return result;
-			}
-		}
-
-		// A UITextRange object represents a range of characters in a text container; in other words,
-		// it identifies a starting index and an ending index in string backing a text-entry object.
-		//
-		// Classes that adopt the UITextInput protocol must create custom UITextRange objects for 
-		// representing ranges within the text managed by the class. The starting and ending indexes 
-		// of the range are represented by UITextPosition objects. The text system uses both UITextRange 
-		// and UITextPosition objects for communicating text-layout information.
-		class IndexedRange : UITextRange
-		{
-			public NSRange Range { get; private set; }
-
-			private IndexedRange()
-			{
-			}
-
-			public override UITextPosition start { get { return IndexedPosition.GetPosition(Range.Location); } }
-			public override UITextPosition end { get { return IndexedPosition.GetPosition(Range.Location + Range.Length); } }
-			public override bool IsEmpty { get { return Range.Length == 0; } }
-
-			// We need to keep all the IndexedRanges we create accessible from managed code,
-			// otherwise the garbage collector will collect them since it won't know that native
-			// code has references to them.
-			private static Dictionary<NSRange, IndexedRange> ranges = new Dictionary<NSRange, IndexedRange>(new NSRangeEqualityComparer());
-			public static IndexedRange GetRange(NSRange theRange)
-			{
-				IndexedRange result;
-
-				if (theRange.Location == NSRange.NotFound)
-					return null;
-
-				if (!ranges.TryGetValue(theRange, out result))
-				{
-					result = new IndexedRange();
-					result.Range = new NSRange(theRange.Location, theRange.Length);
-				}
-				return result;
-			}
-
-			class NSRangeEqualityComparer : IEqualityComparer<NSRange>
-			{
-				#region IEqualityComparer[NSRange] implementation
-				public bool Equals(NSRange x, NSRange y)
-				{
-					return x.Length == y.Length && x.Location == y.Location;
-				}
-
-				public int GetHashCode(NSRange obj)
-				{
-					return obj.Location.GetHashCode() ^ obj.Length.GetHashCode();
-				}
-				#endregion
-			}
-
-		}
-		public class MyView : UIView
-		{
-			public override void TouchesBegan (NSSet touches, UIEvent evt)
-			{
-				var args = Conversions.ConvertMouse (this, touches, evt);
-				Handler.Widget.OnMouseDown (args);
-				if (!args.Handled)
-					base.TouchesBegan (touches, evt);
-			}
-			
-			public override void TouchesEnded (NSSet touches, UIEvent evt)
-			{
-				var args = Conversions.ConvertMouse (this, touches, evt);
-				Handler.Widget.OnMouseUp (args);
-				if (!args.Handled)
-					base.TouchesEnded (touches, evt);
-			}
-			
-			public override void TouchesMoved (NSSet touches, UIEvent evt)
-			{
-				var args = Conversions.ConvertMouse (this, touches, evt);
-				Handler.Widget.OnMouseMove (args);
-				if (!args.Handled)
-					base.TouchesMoved (touches, evt);
-			}
-			
-			public MyView ()
-			{
-				//var tiledLayer = this.Layer as CATiledLayer;
-				this.BackgroundColor = UIColor.Clear;
-				this.ContentMode = UIViewContentMode.TopLeft;
-			}
-
-			public DrawableHandler Handler { get; set; }
-
-			public override void Draw (System.Drawing.RectangleF rect)
-			{
-				//Console.WriteLine ("Drawing {0}, {1}", rect, new System.Diagnostics.StackTrace ());
-				Handler.Update (rect.ToEtoRectangle ());
-			}
-
-			public bool CanFocus { get; set; }
-
-			public override bool CanBecomeFirstResponder {
-				get { return CanFocus; }
-			}
-
-			public override bool BecomeFirstResponder ()
-			{
-				Handler.Widget.OnGotFocus (EventArgs.Empty);
-				return base.BecomeFirstResponder ();
-			}
-
-			public override bool ResignFirstResponder ()
-			{
-				Handler.Widget.OnLostFocus (EventArgs.Empty);
-				return base.ResignFirstResponder ();
-			}
-			
-			static IntPtr selFrame = Selector.GetHandle("frame");
-			
-			public SD.RectangleF BaseFrame
-			{
-				get {
-					SD.RectangleF result;
-					Messaging.RectangleF_objc_msgSend_stret (out result, base.Handle, selFrame);
-					return result;
-				}
-			}
+			#endregion
 		}
 		
 		public override Eto.Drawing.Size Size {
