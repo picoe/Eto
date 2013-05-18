@@ -146,6 +146,25 @@ namespace Eto.Forms
 				textChanged (this, e);
 		}
 
+		public const string TextInputEvent = "Control.TextInput";
+		EventHandler<TextInputEventArgs> textInput;
+
+		public event EventHandler<TextInputEventArgs> TextInput
+		{
+			add
+			{
+				HandleEvent(TextInputEvent);
+				textInput += value;
+			}
+			remove { textInput -= value; }
+		}
+
+		public virtual void OnTextInput(TextInputEventArgs e)
+		{
+			if (textInput != null)
+				textInput(this, e);
+		}
+
 		public const string MouseDownEvent = "Control.MouseDown";
 		EventHandler<MouseEventArgs> mouseDown;
 

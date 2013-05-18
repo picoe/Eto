@@ -278,7 +278,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			[Export("unmarkText")]
 			void UnmarkText()
 			{
-				throw new NotImplementedException();
+				
 			}
 			#endregion
 			#region UITextInput - Computing Text Ranges and Text Positions
@@ -469,7 +469,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 			[Export("insertText:")]
 			void InsertText(string text)
 			{
-				// TODO
+				var args = new TextInputEventArgs { Text = text };
+				Handler.Widget.OnTextInput(args);
 			}
 
 			// UIKeyInput required method - Delete a character from the displayed text.
