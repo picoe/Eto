@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows
 			
 			public HorizontalAlign HorizontalAlign { get; set; }
 			
-			public VerticalAlign VerticalAlign { get; set; }
+			public Eto.Forms.VerticalAlign VerticalAlign { get; set; }
 			
 			public MyLabel()
 			{
@@ -98,11 +98,11 @@ namespace Eto.Platform.Windows
 						{
 							switch (this.VerticalAlign)
 							{
-							case VerticalAlign.Bottom:
+							case Eto.Forms.VerticalAlign.Bottom:
 								rect.Y += rect.Height - size.Height;
 								rect.Height = size.Height;
 								break;
-							case VerticalAlign.Middle:
+							case Eto.Forms.VerticalAlign.Middle:
 								rect.Y += (rect.Height - size.Height) / 2;
 								rect.Height = size.Height;
 								break;
@@ -194,7 +194,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 		
-		public VerticalAlign VerticalAlign {
+		public Eto.Forms.VerticalAlign VerticalAlign {
 			get {
 				return Control.VerticalAlign;
 			}
