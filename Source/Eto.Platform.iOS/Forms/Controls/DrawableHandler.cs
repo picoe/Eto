@@ -479,7 +479,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 			[Export("deleteBackward")]
 			void DeleteBackward()
 			{
-				throw new NotImplementedException();
+				var args = new TextInputEventArgs { DeleteBackwards = true };
+				Handler.Widget.OnTextInput(args);
 			}
 			#endregion
 			#endregion

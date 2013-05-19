@@ -10,6 +10,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// The entered text, or null if no text was entered.
 		/// </summary>
-		public string Text { get; set; } 
+		public string Text { get; set; }
+		public bool DeleteBackwards { get; set; }
 	}
 }
