@@ -55,25 +55,6 @@ namespace Eto.Platform.Windows
 			return Find (code) | Find (modifier);
 		}
 		
-		public static string KeyToString(Key key)
-		{
-			if (key != Key.None)
-			{
-				string val = string.Empty;
-				Key modifier = (key & Key.ModifierMask);
-				if (modifier != Key.None) val += modifier.ToString();
-				Key mainKey = (key & Key.KeyMask);
-				if (mainKey != Key.None)
-				{
-					if (val.Length > 0) val += "+";
-					val += mainKey.ToString();
-				}
-				return val;
-			}
-			return string.Empty;
-		}
-		
-
 		static KeyMap()
 		{
 			keymap.Add(swf.Keys.A, Key.A);
