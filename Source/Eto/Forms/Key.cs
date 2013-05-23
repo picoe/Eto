@@ -243,31 +243,5 @@ namespace Eto.Forms
 			{ Key.RightBracket, "(" },
 			{ Key.LeftBracket, ")" }
 		};
-
-		/// <summary>
-		/// Converts the specified key to a shortcut string such as Ctrl+Alt+Z
-		/// </summary>
-		/// <param name="key">Key to convert</param>
-		/// <param name="separator">Separator between each modifier and key</param>
-		/// <returns>A human-readable string representing the key combination including modifiers</returns>
-		public static string ToShortcutString (this Key key, string separator = "+")
-		{
-			var sb = new StringBuilder ();
-			if (key.HasFlag (Key.Control))
-				AppendSeparator (sb, separator, "Ctrl");
-			if (key.HasFlag (Key.Shift))
-				AppendSeparator (sb, separator, "Shift");
-			if (key.HasFlag (Key.Alt))
-				AppendSeparator (sb, separator, "Alt");
-
-			var mainKey = key & Key.KeyMask;
-			string val;
-			if (keymap.TryGetValue (mainKey, out val))
-				AppendSeparator (sb, separator, val);
-			else
-				AppendSeparator (sb, separator, mainKey.ToString ());
-
-			return sb.ToString ();
-		}
 	}
 }

@@ -51,8 +51,22 @@ namespace Eto.Platform.Windows
 		public static swf.Keys ToSWF (this Key key)
 		{
 			var code = key & Key.KeyMask;
-			var modifier = key & Key.ModifierMask;
-			return Find (code) | Find (modifier);
+			swf.Keys modifiers = swf.Keys.None;
+			
+			// convert the modifiers
+			// Shift
+			if ((key & Key.Shift) == Key.Shift)
+				modifiers |= swf.Keys.Shift;
+	
+			// Control
+			if ((key & Key.Control) == Key.Control)
+				modifiers |= swf.Keys.Control;
+
+			// Alt
+			if ((key & Key.Alt) == Key.Alt)
+				modifiers |= swf.Keys.Alt;
+
+			return Find (code) | modifiers;
 		}
 		
 		static KeyMap()
