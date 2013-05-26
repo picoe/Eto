@@ -92,7 +92,7 @@ namespace Eto
 
 		public static DualBinding Bind(this InstanceWidget widget, IndirectBinding widgetBinding, DirectBinding valueBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			return Bind(new ObjectBinding(widget, widgetBinding), valueBinding, mode);
+			return Bind(widgetBinding: new ObjectBinding(widget, widgetBinding), valueBinding: valueBinding, mode: mode);
 		}
 
 		public static DualBinding Bind(this InstanceWidget widget, IndirectBinding widgetBinding, object objectValue, IndirectBinding objectBinding, DualBindingMode mode = DualBindingMode.TwoWay, object defaultWidgetValue = null, object defaultContextValue = null)
@@ -132,7 +132,7 @@ namespace Eto
 				GettingNullValue = defaultWidgetValue,
 				SettingNullValue = defaultContextValue
 			};
-			var binding = Bind(widgetBinding, valueBinding, mode);
+			DualBinding binding = Bind(widgetBinding: widgetBinding, valueBinding: valueBinding, mode: mode);
 			contextBinding.DataValueChanged += delegate
 			{
 				((ObjectBinding)binding.Source).DataItem = contextBinding.DataValue;
