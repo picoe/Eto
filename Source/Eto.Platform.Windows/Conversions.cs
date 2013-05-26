@@ -535,7 +535,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static bool ToEtoResizable (this swf.FormBorderStyle style)
+		public static bool IsResizable (this swf.FormBorderStyle style)
 		{
 			switch (style) {
 			case swf.FormBorderStyle.Fixed3D:
@@ -557,9 +557,9 @@ namespace Eto.Platform.Windows
 			switch (style) {
 			case swf.FormBorderStyle.Fixed3D:
 			case swf.FormBorderStyle.Sizable:
-				return WindowStyle.Default;
-			case swf.FormBorderStyle.SizableToolWindow:
-			case swf.FormBorderStyle.FixedDialog:
+            case swf.FormBorderStyle.SizableToolWindow:
+            case swf.FormBorderStyle.FixedDialog:
+                return WindowStyle.Default;
 			case swf.FormBorderStyle.None:
 				return WindowStyle.None;
 			default:
@@ -567,16 +567,17 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static swf.FormBorderStyle ToSWF (this WindowStyle style, bool resizable)
-		{
-			switch (style) {
-			case WindowStyle.Default:
-				return resizable ? swf.FormBorderStyle.Sizable : swf.FormBorderStyle.Fixed3D;
-			case WindowStyle.None:
-				return swf.FormBorderStyle.None;
-			default:
-				throw new NotSupportedException ();
-			}
-		}
+        public static swf.FormBorderStyle ToSWF(this WindowStyle style, bool resizable, swf.FormBorderStyle defaultStyle)
+        {
+            switch (style)
+            {
+                case WindowStyle.Default:
+                    return resizable ? swf.FormBorderStyle.Sizable : defaultStyle;
+                case WindowStyle.None:
+                    return swf.FormBorderStyle.None;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
 	}
 }
