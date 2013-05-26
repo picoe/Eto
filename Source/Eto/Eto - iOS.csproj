@@ -244,6 +244,7 @@
     <Compile Include="Forms\Controls\KeyEventArgs.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\Mouse.cs" />
+    <Compile Include="Binding\DelegateBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

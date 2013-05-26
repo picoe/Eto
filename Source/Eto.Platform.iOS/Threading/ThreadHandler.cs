@@ -29,6 +29,11 @@ namespace Eto.Platform.iOS.Threading
 			Control = new NSThread(new Delegate { Handler = this }, new Selector("execute"), NSNull.Null);
 		}
 
+		public void CreateMain ()
+		{
+			Control = NSThread.MainThread;
+		}
+
 		public void CreateCurrent ()
 		{
 			Control = NSThread.Current;
@@ -44,10 +49,14 @@ namespace Eto.Platform.iOS.Threading
 			Control.Cancel();
 		}
 		
-		public bool IsAlive {
-			get {
-				return Control.IsExecuting;
-			}
+		public bool IsAlive
+		{
+			get { return Control.IsExecuting; }
+		}
+
+		public bool IsMain
+		{
+			get { return Control.IsMainThread; }
 		}
 	}
 }
