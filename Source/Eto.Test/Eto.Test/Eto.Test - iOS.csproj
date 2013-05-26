@@ -119,6 +119,8 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Sections\Behaviors\MousePositionSection.cs" />
+    <Compile Include="Sections\Drawing\UnitTestSection.cs" />
+    <Compile Include="UnitTests\TestRunner.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

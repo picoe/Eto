@@ -7,29 +7,31 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public abstract class GridHandler<T, W> : iosControl<T, W>, IGrid
+	public interface IGridHandler
+	{
+		Grid Widget { get; }
+	}
+
+	public abstract class EtoTableDelegate : UITableViewDelegate
+	{
+		public IGridHandler Handler { get; set; }
+
+		public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
+		{
+			Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+		}
+	}
+
+	public abstract class GridHandler<T, W> : iosControl<T, W>, IGrid, IGridHandler
 		where T: UITableView
 		where W: Grid
 	{
-		public class TableDelegate : UITableViewDelegate
-		{
-			public virtual GridHandler<T, W> Handler { get; set; }
-
-			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
-			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
-			}
-		}
-
 		public override T CreateControl ()
 		{
 			return (T)new UITableView ();
 		}
 
-		protected virtual UITableViewDelegate CreateDelegate()
-		{
-			return new TableDelegate { Handler = this };
-		}
+		protected abstract UITableViewDelegate CreateDelegate();
 
 		protected override void Initialize ()
 		{
@@ -77,6 +79,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public IEnumerable<int> SelectedRows {
 			get { return null; }
 		}
+
+		Grid IGridHandler.Widget { get { return Widget; } }
 	}
 }
 
