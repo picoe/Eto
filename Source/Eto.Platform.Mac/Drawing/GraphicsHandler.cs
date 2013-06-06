@@ -10,19 +10,18 @@ using Eto.Platform.Mac.Forms;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+
+namespace Eto.Platform.Mac.Drawing
 #elif IOS
 using Eto.Platform.iOS.Forms;
 using MonoTouch.CoreGraphics;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using NSView = MonoTouch.UIKit.UIView;
-#endif
 
-#if OSX
-namespace Eto.Platform.Mac.Drawing
-#elif IOS
 namespace Eto.Platform.iOS.Drawing
 #endif
+
 {
 	/// <summary>
 	/// Handler for the <see cref="IGraphics"/>
@@ -39,6 +38,7 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 		NSGraphicsContext graphicsContext;
 #endif
+		bool disposeContext;
 		NSView view;
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
@@ -82,6 +82,7 @@ namespace Eto.Platform.iOS.Drawing
 			DisposeControl = false;
 #if OSX
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
+			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
 			this.Flipped = view.IsFlipped;
 
@@ -196,6 +197,7 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 			var rep = handler.Control.Representations ().OfType<NSBitmapImageRep> ().FirstOrDefault ();
 			graphicsContext = NSGraphicsContext.FromBitmap (rep);
+			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
 #elif IOS
 			var cgimage = handler.Control.CGImage;
@@ -508,10 +510,10 @@ namespace Eto.Platform.iOS.Drawing
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
-				if (graphicsContext != null)
+				if (disposeContext && graphicsContext != null)
 					graphicsContext.FlushGraphics ();
 				Reset ();
-				if (graphicsContext != null)
+				if (disposeContext && graphicsContext != null)
 					graphicsContext.Dispose ();
 			}
 			base.Dispose (disposing);
