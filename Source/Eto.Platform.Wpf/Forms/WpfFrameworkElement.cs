@@ -74,7 +74,7 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get {
 				var newSize = this.newSize;
-				if (!Widget.Loaded && size != null) return size.Value;
+				if (!Control.IsLoaded && size != null) return size.Value;
 				else if (newSize != null) return newSize.Value;
 				else return Conversions.GetSize (Control); 
 			}
