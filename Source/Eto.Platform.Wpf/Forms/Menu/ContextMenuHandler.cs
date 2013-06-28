@@ -34,6 +34,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 				Control.PlacementTarget = relativeTo.ControlObject as sw.UIElement;
 			}
 			Control.IsOpen = true;
+            WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 		}
 	}
 }
