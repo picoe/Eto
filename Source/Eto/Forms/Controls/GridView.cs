@@ -65,9 +65,9 @@ namespace Eto.Forms
 			{
 				if (DataStore == null)
 					yield break;
-				foreach (var row in SelectedRows) {
-					yield return DataStore[row];
-				}
+				if (SelectedRows != null)
+					foreach (var row in SelectedRows)
+						yield return DataStore[row];
 			}
 		}
 	}
