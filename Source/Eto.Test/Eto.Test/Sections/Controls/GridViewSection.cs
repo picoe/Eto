@@ -90,9 +90,12 @@ namespace Eto.Test.Sections.Controls
 				Image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
 
 				text = string.Format ("Col 1 Row {0}", row);
-				
-				val = rand.Next (dropDown.DataStore.Count + 1);
-				dropDownKey = val == 0 ? null : dropDown.DataStore [val - 1].Key;
+
+				if (dropDown != null)
+				{
+					val = rand.Next(dropDown.DataStore.Count + 1);
+					dropDownKey = val == 0 ? null : dropDown.DataStore[val - 1].Key;
+				}
 			}
 		}
 
@@ -156,8 +159,8 @@ namespace Eto.Test.Sections.Controls
 					Log.Write (item, "Click, no item selected");
 			};
 			menu.MenuItems.Add (item);
-			// Delete menu item directly from the store, 
-			// the UI updates via the binding.
+
+			// Delete menu item: deletes the item from the store, the UI updates via the binding.
 			var deleteItem = new ImageMenuItem { Text = "Delete Item" };
 			deleteItem.Click += (s, e) =>
 			{
@@ -166,6 +169,15 @@ namespace Eto.Test.Sections.Controls
 					(control.DataStore as GridItemCollection).Remove(i);
 			};
 			menu.MenuItems.Add(deleteItem);
+
+			// Insert item: inserts an item into the store, the UI updates via the binding.
+			var insertItem = new ImageMenuItem { Text = "Insert Item at the start of the list" };
+			insertItem.Click += (s, e) => {
+				var i = control.SelectedItems.First() as MyGridItem;
+				if (i != null)
+					(control.DataStore as GridItemCollection).Insert(0, new MyGridItem(new Random(), 0, null));
+			};
+			menu.MenuItems.Add(insertItem);
 			
 			control.ContextMenu = menu;
 			return control;

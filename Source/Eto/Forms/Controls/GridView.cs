@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IGridStore : IDataStore<object>
+	public interface IGridStore : IDataStore
 	{
 	}
 

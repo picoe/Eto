@@ -14,6 +14,10 @@ namespace Eto.Forms
 		}
 	}
 
+	public interface IDataStore : IDataStore<object>
+	{
+	}
+
 	public static class DataStoreExtensions
 	{
 		public static IEnumerable<T> AsEnumerable<T> (this IDataStore<T> store)
