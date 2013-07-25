@@ -26,33 +26,40 @@ namespace Eto.Platform.Windows.Forms.Controls
 			
 			public override void AddRange (IEnumerable<object> items)
 			{
-				Handler.Control.Refresh ();
-				Handler.Control.RowCount = Collection.Count;
+				Handler.SetRowCount(Collection.Count);
 			}
 			
 			public override void AddItem (object item)
 			{
-				Handler.Control.RowCount ++;
-				Handler.Control.Refresh ();
+				Handler.IncrementRowCountBy(1);
 			}
 
 			public override void InsertItem (int index, object item)
 			{
-				Handler.Control.RowCount ++;
-				Handler.Control.Refresh ();
+				Handler.IncrementRowCountBy(1);
 			}
 
 			public override void RemoveItem (int index)
 			{
-				Handler.Control.RowCount --;
-				Handler.Control.Refresh ();
+				Handler.IncrementRowCountBy(-1);
 			}
 
 			public override void RemoveAllItems ()
 			{
-				Handler.Control.RowCount = 0;
-				Handler.Control.Refresh ();
+				Handler.SetRowCount(0);
 			}
+		}
+
+		private void SetRowCount(int rowCount)
+		{
+			Control.RowCount = rowCount;
+			Control.Invalidate();
+		}
+
+		private void IncrementRowCountBy(int increment)
+		{
+			Control.RowCount += increment;
+			Control.Invalidate();
 		}
 
 		public IGridStore DataStore {
