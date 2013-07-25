@@ -7,7 +7,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public abstract class GridHandler<T, W> : iosControl<T, W>, IGrid
+	public abstract class GridHandler<T, W> : iosControl<T, W>, IGrid, IiosViewController
 		where T: UITableView
 		where W: Grid
 	{
@@ -21,9 +21,44 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
+		internal class RotatableTableViewController : UITableViewController
+		{
+			public object Control { get; set; }
+
+			public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
+			{
+				return UIInterfaceOrientationMask.All;
+			}
+
+			[Obsolete]
+			public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
+			{
+				return true;
+			}
+
+			protected override void Dispose(bool disposing) // TODO: Is this needed? RotatableViewController implements Dispose but RotatableNavigationController does not.
+			{
+				var c = Control as IDisposable;
+				if (c != null)
+				{
+					c.Dispose();
+					c = null;
+				}
+				base.Dispose(disposing);
+			}
+		}
+
+		RotatableTableViewController tableViewController;
+
+		public override UIViewController Controller
+		{
+			get { return tableViewController; }
+		}
+
 		public override T CreateControl ()
 		{
-			return (T)new UITableView ();
+			tableViewController = new RotatableTableViewController { Control = this.Widget };
+			return (T)tableViewController.TableView;
 		}
 
 		protected virtual UITableViewDelegate CreateDelegate()
@@ -75,7 +110,13 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		public IEnumerable<int> SelectedRows {
-			get { return null; }
+			get 
+			{
+				var i = Control.IndexPathsForSelectedRows;
+				if (i != null)
+					foreach (var s in i)
+						yield return s.Section;
+			}
 		}
 	}
 }
