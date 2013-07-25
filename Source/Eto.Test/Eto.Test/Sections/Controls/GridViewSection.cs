@@ -156,6 +156,16 @@ namespace Eto.Test.Sections.Controls
 					Log.Write (item, "Click, no item selected");
 			};
 			menu.MenuItems.Add (item);
+			// Delete menu item directly from the store, 
+			// the UI updates via the binding.
+			var deleteItem = new ImageMenuItem { Text = "Delete Item" };
+			deleteItem.Click += (s, e) =>
+			{
+				var i = control.SelectedItems.First() as MyGridItem;
+				if (i != null)
+					(control.DataStore as GridItemCollection).Remove(i);
+			};
+			menu.MenuItems.Add(deleteItem);
 			
 			control.ContextMenu = menu;
 			return control;
