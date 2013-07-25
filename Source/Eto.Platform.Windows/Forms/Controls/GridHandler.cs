@@ -22,7 +22,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		ContextMenu contextMenu;
 		ColumnCollection columns;
 
-		protected abstract IGridItem GetItemAtRow (int row);
+		protected abstract object GetItemAtRow (int row);
 
 		public GridHandler ()
 		{

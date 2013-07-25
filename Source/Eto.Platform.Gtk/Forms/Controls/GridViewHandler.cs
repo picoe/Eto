@@ -8,9 +8,9 @@ using Eto.Platform.GtkSharp.Forms.Cells;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<GridView>, IGridView, ICellDataSource, IGtkListModelHandler<IGridItem, IGridStore>, IGridHandler
+	public class GridViewHandler : GridHandler<GridView>, IGridView, ICellDataSource, IGtkListModelHandler<object, IGridStore>, IGridHandler
 	{
-		GtkListModel<IGridItem, IGridStore> model;
+		GtkListModel<object, IGridStore> model;
 		CollectionHandler collection;
 		
 		public GridViewHandler ()
@@ -19,27 +19,27 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		protected override Gtk.TreeModelImplementor CreateModelImplementor ()
 		{
-			model = new GtkListModel<IGridItem, IGridStore> { Handler = this };
+			model = new GtkListModel<object, IGridStore> { Handler = this };
 			return model;
 		}
 		
-		public class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
+		public class CollectionHandler : DataStoreChangedHandler<object, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
-			public override void AddRange (IEnumerable<IGridItem> items)
+			public override void AddRange (IEnumerable<object> items)
 			{
 				Handler.UpdateModel ();
 			}
 
-			public override void AddItem (IGridItem item)
+			public override void AddItem (object item)
 			{
 				var iter = Handler.model.GetIterAtRow (Collection.Count);
 				var path = Handler.model.GetPathAtRow (Collection.Count);
 				Handler.Tree.Model.EmitRowInserted (path, iter);
 			}
 
-			public override void InsertItem (int index, IGridItem item)
+			public override void InsertItem (int index, object item)
 			{
 				var iter = Handler.model.GetIterAtRow (index);
 				var path = Handler.model.GetPathAtRow (index);
@@ -78,7 +78,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			return model.GetItemAtPath (path);
 		}
 
-		public GLib.Value GetColumnValue (IGridItem item, int dataColumn, int row)
+		public GLib.Value GetColumnValue (object item, int dataColumn, int row)
 		{
 			int column;
 			if (ColumnMap.TryGetValue (dataColumn, out column)) {
@@ -88,7 +88,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			return new GLib.Value ((string)null);
 		}
 
-		public int GetRowOfItem (IGridItem item)
+		public int GetRowOfItem (object item)
 		{
 			if (collection == null) return -1;
 			return collection.IndexOf (item);

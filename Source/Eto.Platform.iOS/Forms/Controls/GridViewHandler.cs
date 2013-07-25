@@ -38,15 +38,15 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 
-		class Collection : DataStoreChangedHandler<IGridItem, IGridStore>
+		class Collection : DataStoreChangedHandler<object, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
-			public override void AddItem (IGridItem item)
+			public override void AddItem(object item)
 			{
 				Handler.ReloadData();
 			}
-			public override void InsertItem (int index, IGridItem item)
+			public override void InsertItem(int index, object item)
 			{
 				Handler.ReloadData();
 			}
@@ -126,12 +126,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 					
 		}
 
-		public IGridItem GetItem(NSIndexPath indexPath)
+		public object GetItem(NSIndexPath indexPath)
 		{
-			var result = store.Collection[indexPath.Row] as IGridItem;
+			var result = store.Collection[indexPath.Row];
 			return result;
 			// BUGBUG: the below code seems wrong, it does an extra indirection.
-			var section = store.Collection[indexPath.Section] as IDataStore<IGridItem>;
+			var section = store.Collection[indexPath.Section] as IDataStore<object>;
 			if (section != null) {
 				return section[indexPath.Row];
 			}

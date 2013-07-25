@@ -184,7 +184,7 @@ namespace Eto.Forms
 			set { handler.AllowMultipleSelection = value; }
 		}
 
-		public abstract IEnumerable<IGridItem> SelectedItems { get; }
+		public abstract IEnumerable<object> SelectedItems { get; }
 
 		public IEnumerable<int> SelectedRows {
 			get { return handler.SelectedRows; }

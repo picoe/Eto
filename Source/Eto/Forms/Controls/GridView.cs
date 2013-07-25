@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IGridStore : IDataStore<IGridItem>
+	public interface IGridStore : IDataStore<object>
 	{
 	}
 
@@ -22,9 +22,9 @@ namespace Eto.Forms
 
 		public int Column { get; private set; }
 
-		public IGridItem Item { get; private set; }
+		public object Item { get; private set; }
 
-		public GridViewCellArgs (GridColumn gridColumn, int row, int column, IGridItem item)
+		public GridViewCellArgs (GridColumn gridColumn, int row, int column, object item)
 		{
 			this.GridColumn = gridColumn;
 			this.Row = row;
@@ -43,12 +43,12 @@ namespace Eto.Forms
 		/// request. The method should return true after deleting the
 		/// item, or false to indicate the item could not be deleted.
 		/// </summary>
-		public Func<IGridItem, bool> DeleteItemHandler { get; set; }
+		public Func<object, bool> DeleteItemHandler { get; set; }
 
 		/// <summary>
 		/// A delegate that returns true if an item can be edited
 		/// </summary>
-		public Func<IGridItem, bool> CanDeleteItem { get; set; }
+		public Func<object, bool> CanDeleteItem { get; set; }
 
 		/// <summary>
 		/// The text to display in a Delete item button.
@@ -77,7 +77,7 @@ namespace Eto.Forms
 			set { handler.DataStore = value; }
 		}
 
-		public override IEnumerable<IGridItem> SelectedItems
+		public override IEnumerable<object> SelectedItems
 		{
 			get
 			{

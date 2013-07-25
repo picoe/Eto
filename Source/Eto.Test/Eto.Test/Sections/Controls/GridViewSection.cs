@@ -40,7 +40,7 @@ namespace Eto.Test.Sections.Controls
 		/// <summary>
 		/// POCO (Plain Old CLR Object) to test property bindings
 		/// </summary>
-		class MyGridItem : IGridItem
+		class MyGridItem
 		{
 			bool? check;
 			string text;

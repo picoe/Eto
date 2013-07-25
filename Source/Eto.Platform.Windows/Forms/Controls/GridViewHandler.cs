@@ -14,29 +14,29 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 		}
 
-		protected override IGridItem GetItemAtRow (int row)
+		protected override object GetItemAtRow (int row)
 		{
 			if (collection == null) return null;
 			return collection.Collection[row];
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<object, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
 			
-			public override void AddRange (IEnumerable<IGridItem> items)
+			public override void AddRange (IEnumerable<object> items)
 			{
 				Handler.Control.Refresh ();
 				Handler.Control.RowCount = Collection.Count;
 			}
 			
-			public override void AddItem (IGridItem item)
+			public override void AddItem (object item)
 			{
 				Handler.Control.RowCount ++;
 				Handler.Control.Refresh ();
 			}
 
-			public override void InsertItem (int index, IGridItem item)
+			public override void InsertItem (int index, object item)
 			{
 				Handler.Control.RowCount ++;
 				Handler.Control.Refresh ();

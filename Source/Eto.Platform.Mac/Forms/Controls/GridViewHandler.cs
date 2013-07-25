@@ -141,26 +141,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.Initialize ();
 		}
 		
-		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<object, IGridStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
-			public override int IndexOf (IGridItem item)
+			public override int IndexOf (object item)
 			{
 				return -1; // not needed
 			}
 			
-			public override void AddRange (IEnumerable<IGridItem> items)
+			public override void AddRange (IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData ();
 			}
 
-			public override void AddItem (IGridItem item)
+			public override void AddItem (object item)
 			{
 				Handler.Control.ReloadData ();
 			}
 
-			public override void InsertItem (int index, IGridItem item)
+			public override void InsertItem (int index, object item)
 			{
 				Handler.Control.ReloadData ();
 			}

@@ -17,7 +17,7 @@ namespace Eto.Forms
 		T Parent { get; set; }
 	}
 	
-	public interface ITreeGridItem : IGridItem, ITreeItem<ITreeGridItem>
+	public interface ITreeGridItem : ITreeItem<ITreeGridItem>
 	{
 	}
 

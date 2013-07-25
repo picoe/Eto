@@ -37,7 +37,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		protected ColumnCollection Columns { get; private set; }
 
-		protected abstract IGridItem GetItemAtRow (int row);
+		protected abstract object GetItemAtRow (int row);
 
 		public override void AttachEvent (string handler)
 		{
@@ -157,7 +157,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				var list = Control.ItemsSource as IList;
 				if (list != null) {
-					foreach (var item in Control.SelectedItems.OfType<IGridItem> ()) {
+					foreach (var item in Control.SelectedItems.OfType<object> ()) {
 						yield return list.IndexOf (item);
 					}
 				}
