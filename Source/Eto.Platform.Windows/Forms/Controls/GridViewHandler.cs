@@ -20,7 +20,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			return collection.Collection[row];
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<object, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
 			
@@ -62,7 +62,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			Control.Invalidate();
 		}
 
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)

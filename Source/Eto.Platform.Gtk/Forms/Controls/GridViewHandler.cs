@@ -8,9 +8,9 @@ using Eto.Platform.GtkSharp.Forms.Cells;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<GridView>, IGridView, ICellDataSource, IGtkListModelHandler<object, IGridStore>, IGridHandler
+	public class GridViewHandler : GridHandler<GridView>, IGridView, ICellDataSource, IGtkListModelHandler<object, IDataStore>, IGridHandler
 	{
-		GtkListModel<object, IGridStore> model;
+		GtkListModel<object, IDataStore> model;
 		CollectionHandler collection;
 		
 		public GridViewHandler ()
@@ -19,11 +19,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		protected override Gtk.TreeModelImplementor CreateModelImplementor ()
 		{
-			model = new GtkListModel<object, IGridStore> { Handler = this };
+			model = new GtkListModel<object, IDataStore> { Handler = this };
 			return model;
 		}
 		
-		public class CollectionHandler : DataStoreChangedHandler<object, IGridStore>
+		public class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
@@ -58,7 +58,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 		
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)

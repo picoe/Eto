@@ -4,14 +4,15 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
+#if OBSOLETE
 	public interface IGridStore : IDataStore
 	{
 	}
-
+#endif
 
 	public partial interface IGridView : IGrid
 	{
-		IGridStore DataStore { get; set; }
+		IDataStore DataStore { get; set; }
 	}
 
 	public class GridViewCellArgs : EventArgs
@@ -72,7 +73,7 @@ namespace Eto.Forms
 			handler = (IGridView)Handler;
 		}
 
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
 		}

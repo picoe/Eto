@@ -141,7 +141,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.Initialize ();
 		}
 		
-		class CollectionHandler : DataStoreChangedHandler<object, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
@@ -176,7 +176,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)

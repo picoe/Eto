@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<swc.DataGrid, GridView>, IGridView
 	{
-		IGridStore store;
+		IDataStore store;
 
 		public GridViewHandler ()
 		{
@@ -30,7 +30,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			return store[row];
 		}
 
-		public IGridStore DataStore
+		public IDataStore DataStore
 		{
 			get { return store; }
 			set

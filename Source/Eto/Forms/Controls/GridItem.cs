@@ -9,7 +9,7 @@ namespace Eto.Forms
 	}
 #endif
 
-	public class GridItemCollection : DataStoreCollection<object>, IGridStore
+	public class GridItemCollection : DataStoreCollection<object>, IDataStore
 	{
 		public GridItemCollection ()
 		{

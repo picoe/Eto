@@ -38,7 +38,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 
-		class Collection : DataStoreChangedHandler<object, IGridStore>
+		class Collection : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
@@ -144,7 +144,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.DataSource = new DataSource { Handler = this };
 		}
 
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return store.Collection; }
 			set {
 				store.Register(value);
