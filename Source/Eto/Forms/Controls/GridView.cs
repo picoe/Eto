@@ -12,7 +12,6 @@ namespace Eto.Forms
 	public partial interface IGridView : IGrid
 	{
 		IGridStore DataStore { get; set; }
-
 	}
 
 	public class GridViewCellArgs : EventArgs
@@ -37,6 +36,25 @@ namespace Eto.Forms
 	public partial class GridView : Grid
 	{
 		IGridView handler;
+
+#if MOBILE
+		/// <summary>
+		/// A delegate method to delete an item in response to a user's
+		/// request. The method should return true after deleting the
+		/// item, or false to indicate the item could not be deleted.
+		/// </summary>
+		public Func<IGridItem, bool> DeleteItemHandler { get; set; }
+
+		/// <summary>
+		/// A delegate that returns true if an item can be edited
+		/// </summary>
+		public Func<IGridItem, bool> CanDeleteItem { get; set; }
+
+		/// <summary>
+		/// The text to display in a Delete item button.
+		/// </summary>
+		public string DeleteConfirmationTitle { get; set; }
+#endif
 
 		public GridView ()
 			: this (Generator.Current)

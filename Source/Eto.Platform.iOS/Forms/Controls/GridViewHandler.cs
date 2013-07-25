@@ -13,39 +13,61 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public class GridTableDelegate : GridHandler<UITableView, GridView>.TableDelegate
 		{
-			public GridViewHandler TreeHandler { get; set; }
+			public GridViewHandler GridViewHandler { get; set; }
 
 			public override GridHandler<UITableView, GridView> Handler {
-				get { return TreeHandler; }
+				get { return GridViewHandler; }
 				set { }
+			}
+
+			public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
+			{
+				var result = GridViewHandler.Widget.DeleteConfirmationTitle;
+				if (string.IsNullOrEmpty(result))
+					result = base.TitleForDeleteConfirmation(tableView, indexPath);
+				return result;
+			}
+
+			public override UITableViewCellEditingStyle EditingStyleForRow(UITableView tableView, NSIndexPath indexPath)
+			{
+				return GridViewHandler.Widget.CanDeleteItem != null &&
+					GridViewHandler.Widget.CanDeleteItem(GridViewHandler.GetItem(indexPath))
+					? UITableViewCellEditingStyle.Delete
+					: UITableViewCellEditingStyle.None;
 			}
 		}
 
 
 		class Collection : DataStoreChangedHandler<IGridItem, IGridStore>
 		{
+			public GridViewHandler Handler { get; set; }
+
 			public override void AddItem (IGridItem item)
 			{
+				Handler.ReloadData();
 			}
 			public override void InsertItem (int index, IGridItem item)
 			{
+				Handler.ReloadData();
 			}
 			public override void RemoveItem (int index)
 			{
+				Handler.ReloadData();
 			}
 			public override void RemoveAllItems ()
 			{
+				Handler.ReloadData();
 			}
 		}
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new GridTableDelegate { TreeHandler  = this };
+			return new GridTableDelegate { GridViewHandler  = this };
 		}
 
 		public GridViewHandler ()
 		{
-			store = new Collection();
+			store = new Collection { Handler = this };
 		}
 
 		public class DataSource : UITableViewDataSource
@@ -56,10 +78,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 			public override int RowsInSection (UITableView tableView, int section)
 			{
-				if (Handler.store.Collection != null)
-					return Handler.store.Collection.Count;
-				else
-					return 0;
+				var result = Handler.store.Collection != null ? Handler.store.Collection.Count : 0;
+				return result;
 			}
 
 			public override UITableViewCell GetCell (UITableView tableView, MonoTouch.Foundation.NSIndexPath indexPath)
@@ -74,10 +94,43 @@ namespace Eto.Platform.iOS.Forms.Controls
 				}
 				return cell;
 			}
+
+			public override void CommitEditingStyle(
+				UITableView tableView, 
+				UITableViewCellEditingStyle editingStyle, 
+				NSIndexPath indexPath)
+			{
+				switch (editingStyle)
+				{
+					case UITableViewCellEditingStyle.Delete:
+						// remove the item from the underlying data source
+						if (Handler.Widget.DeleteItemHandler != null &&
+							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath)))
+						{
+							// That succeeded, so delete the row from the table
+							tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
+						}
+						break;
+					case UITableViewCellEditingStyle.None:
+					case UITableViewCellEditingStyle.Insert: // TODO
+						break;					
+				}
+			}
+
+			public override bool CanEditRow(UITableView tableView, NSIndexPath indexPath)
+			{
+				// If the widget returns true, allow the row to be deleted
+				return Handler.Widget.CanDeleteItem != null &&
+					Handler.Widget.CanDeleteItem(Handler.GetItem(indexPath)); 
+			}
+					
 		}
 
 		public IGridItem GetItem(NSIndexPath indexPath)
 		{
+			var result = store.Collection[indexPath.Row] as IGridItem;
+			return result;
+			// BUGBUG: the below code seems wrong, it does an extra indirection.
 			var section = store.Collection[indexPath.Section] as IDataStore<IGridItem>;
 			if (section != null) {
 				return section[indexPath.Row];
@@ -95,8 +148,13 @@ namespace Eto.Platform.iOS.Forms.Controls
 			get { return store.Collection; }
 			set {
 				store.Register(value);
-				Control.ReloadData ();
+				ReloadData();
 			}
+		}
+
+		public void ReloadData()
+		{
+			Control.ReloadData();
 		}
 	}
 }
