@@ -37,6 +37,7 @@ namespace Eto.Forms
 	public partial class GridView : Grid
 	{
 		IGridView handler;
+		IDataStoreView dataStoreView; // provides sorting and filtering on the model.
 
 #if MOBILE
 		/// <summary>
@@ -73,9 +74,21 @@ namespace Eto.Forms
 			handler = (IGridView)Handler;
 		}
 
+		/// <summary>
+		/// The model data store.
+		/// Setting this creates a DataStoreView, and the handler's
+		/// DataStore is set to the view collection of the DataStoreView.
+		/// </summary>
 		public IDataStore DataStore {
-			get { return handler.DataStore; }
-			set { handler.DataStore = value; }
+			get { return dataStoreView != null ? dataStoreView.Model : null; }
+			set
+			{	
+				// Create a data store view wrapping the model
+				dataStoreView = value != null ? new DataStoreView { Model = value } : null;
+
+				// Set the handler's data store to the sorted and filtered view.
+				handler.DataStore = dataStoreView != null ? dataStoreView.View : null;
+			}
 		}
 
 		public override IEnumerable<object> SelectedItems
@@ -88,6 +101,41 @@ namespace Eto.Forms
 					foreach (var row in SelectedRows)
 						yield return DataStore[row];
 			}
+		}
+
+		/// <summary>
+		/// Does view to model mapping of the selected row indexes.
+		/// </summary>
+		public override IEnumerable<int> SelectedRows
+		{
+			get
+			{
+				if (dataStoreView != null)
+					foreach (var row in handler.SelectedRows)
+						yield return dataStoreView.ViewToModel(row);
+			}
+		}
+
+		/// <summary>
+		/// Selects the view row of the specified model row index
+		/// </summary>
+		public override void SelectRow(int row)
+		{
+			var viewRow = 0;
+			if(dataStoreView != null &&
+				(viewRow = dataStoreView.ModelToView(row)) >= 0)
+				base.SelectRow(viewRow);
+		}
+
+		/// <summary>
+		/// Unselects the view row of the specified model row index
+		/// </summary>
+		public override void UnselectRow(int row)
+		{
+			var viewRow = 0;
+			if (dataStoreView != null &&
+				(viewRow = dataStoreView.ModelToView(row)) >= 0)
+				base.UnselectRow(viewRow);
 		}
 	}
 }

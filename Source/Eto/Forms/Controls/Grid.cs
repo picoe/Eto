@@ -186,7 +186,7 @@ namespace Eto.Forms
 
 		public abstract IEnumerable<object> SelectedItems { get; }
 
-		public IEnumerable<int> SelectedRows {
+		public virtual IEnumerable<int> SelectedRows {
 			get { return handler.SelectedRows; }
 		}
 
@@ -196,7 +196,7 @@ namespace Eto.Forms
 			set { handler.RowHeight = value; }
 		}
 
-		public void SelectRow (int row)
+		public virtual void SelectRow (int row)
 		{
 			handler.SelectRow (row);
 		}
@@ -206,7 +206,7 @@ namespace Eto.Forms
 			handler.SelectAll ();
 		}
 
-		public void UnselectRow (int row)
+		public virtual void UnselectRow(int row)
 		{
 			handler.UnselectRow (row);
 		}
