@@ -143,11 +143,22 @@ namespace Eto.Forms
 
 	public class DataStoreView : IDataStoreView
 	{
+		CollectionHandler collectionHandler;
+
 		public IDataStore model;
 		public IDataStore Model
 		{
 			get { return model; }
-			set { model = value; }
+			set 
+			{
+				// unregister the old dataStoreChangedHandler if there is one
+				if (collectionHandler != null)
+					collectionHandler.Unregister();
+
+				model = value;
+				collectionHandler = new CollectionHandler { Handler = this };
+				collectionHandler.Register(value);
+			}
 		}
 
 		public IDataStore View
@@ -177,6 +188,36 @@ namespace Eto.Forms
 		{
 			get { return filter; }
 			set { filter = value; }
+		}
+
+		private bool ShouldSortOrFilter
+		{
+			get { return SortComparer != null || Filter != null; }
+		}
+
+		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
+		{
+			public DataStoreView Handler { get; set; }
+
+			public override void AddRange(IEnumerable<object> items)
+			{
+			}
+
+			public override void AddItem(object item)
+			{
+			}
+
+			public override void InsertItem(int index, object item)
+			{
+			}
+
+			public override void RemoveItem(int index)
+			{
+			}
+
+			public override void RemoveAllItems()
+			{
+			}
 		}
 	}
 }

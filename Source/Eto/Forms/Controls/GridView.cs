@@ -91,6 +91,18 @@ namespace Eto.Forms
 			}
 		}
 
+		public Comparison<object> SortComparer
+		{
+			get { return dataStoreView != null ? dataStoreView.SortComparer : null; }
+			set { if(dataStoreView != null) dataStoreView.SortComparer = value; }
+		}
+
+		public Func<object, bool> Filter
+		{
+			get { return dataStoreView != null ? dataStoreView.Filter : null; }
+			set { if (dataStoreView != null) dataStoreView.Filter = value; }
+		}
+
 		public override IEnumerable<object> SelectedItems
 		{
 			get
