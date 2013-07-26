@@ -145,6 +145,14 @@ namespace Eto.Forms
 	{
 		CollectionHandler collectionHandler;
 
+		/// <summary>
+		/// The collection that serves as the view.
+		/// 
+		/// This object reference is kept throughout the life of the
+		/// DataStoreView.
+		/// </summary>
+		readonly GridItemCollection view = new GridItemCollection();
+
 		public IDataStore model;
 		public IDataStore Model
 		{
@@ -157,13 +165,13 @@ namespace Eto.Forms
 
 				model = value;
 				collectionHandler = new CollectionHandler { Handler = this };
-				collectionHandler.Register(value);
+				collectionHandler.Register(value);				
 			}
 		}
 
 		public IDataStore View
 		{
-			get { return model; }
+			get { return HasSortOrFilter ? view : model; }
 		}
 
 		public int ViewToModel(int index)
@@ -180,17 +188,43 @@ namespace Eto.Forms
 		public Comparison<object> SortComparer
 		{
 			get { return sortComparer; }
-			set { sortComparer = value; }
+			set
+			{
+				if (!object.ReferenceEquals(sortComparer, value))
+				{
+					sortComparer = value;
+					UpdateView();
+				}
+			}
 		}
 
 		private Func<object, bool> filter;
 		public Func<object, bool> Filter
 		{
 			get { return filter; }
-			set { filter = value; }
+			set
+			{
+				if (!object.ReferenceEquals(filter, value))
+				{
+					filter = value;
+					UpdateView();
+				}
+			}
 		}
 
-		private bool ShouldSortOrFilter
+		/// <summary>
+		/// When the sort or filter changes, creates or destroys the view
+		/// as needed.
+		/// </summary>
+		private void UpdateView()
+		{
+			if (view != null)
+			{
+			}
+		}
+
+
+		private bool HasSortOrFilter
 		{
 			get { return SortComparer != null || Filter != null; }
 		}
@@ -201,22 +235,43 @@ namespace Eto.Forms
 
 			public override void AddRange(IEnumerable<object> items)
 			{
+				if (Handler.HasSortOrFilter)
+					Handler.UpdateView();
+				else
+					Handler.view.AddRange(items);
+
 			}
 
 			public override void AddItem(object item)
 			{
+				if (Handler.HasSortOrFilter)
+					Handler.UpdateView();
+				else
+					Handler.view.Add(item);
 			}
 
 			public override void InsertItem(int index, object item)
 			{
+				if (Handler.HasSortOrFilter)
+					Handler.UpdateView();
+				else
+					Handler.view.Insert(index, item);
 			}
 
 			public override void RemoveItem(int index)
 			{
+				if (Handler.HasSortOrFilter)
+					Handler.UpdateView();
+				else
+					Handler.view.RemoveAt(index);
 			}
 
 			public override void RemoveAllItems()
 			{
+				if (Handler.HasSortOrFilter)
+					Handler.UpdateView();
+				else
+					Handler.view.Clear();
 			}
 		}
 	}

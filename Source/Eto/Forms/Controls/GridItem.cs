@@ -9,6 +9,10 @@ namespace Eto.Forms
 	}
 #endif
 
+	/// <summary>
+	/// This should be renamed to DataStoreCollection, since there isn't
+	/// any Grid-ness about it anymore.
+	/// </summary>
 	public class GridItemCollection : DataStoreCollection<object>, IDataStore
 	{
 		public GridItemCollection ()
