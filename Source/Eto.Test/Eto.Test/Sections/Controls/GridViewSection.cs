@@ -25,7 +25,8 @@ namespace Eto.Test.Sections.Controls
 	{
 		static Image image1 = TestIcons.TestImage;
 		static Image image2 = TestIcons.TestIcon;
-		
+		TextBox filterText = null;
+			
 		public GridViewSection ()
 		{
 			var layout = new DynamicLayout (this);
@@ -33,7 +34,13 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label { Text = "Default" }, Default ());
 			layout.AddRow (new Label { Text = "No Header,\nNon-Editable" }, NoHeader ());
 #if DESKTOP
-			layout.AddRow (new Label { Text = "Context Menu\n&& Multi-Select" }, WithContextMenu ());
+			layout.BeginHorizontal();
+			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&&Filter" });
+			layout.BeginVertical();
+			layout.Add(filterText = new TextBox { PlaceholderText = "Filter" });
+			layout.Add(WithContextMenuAndFilter());
+			layout.EndVertical();
+			layout.EndHorizontal();
 #endif
 		}
 		
@@ -145,11 +152,36 @@ namespace Eto.Test.Sections.Controls
 		}
 
 #if DESKTOP
-		GridView WithContextMenu ()
+		GridView WithContextMenuAndFilter ()
 		{
 			var control = Default ();
 			control.AllowMultipleSelection = true;
+			var items = control.DataStore as GridItemCollection;
+
+			// Filter
+			filterText.TextChanged += (s, e) => {
+				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+				
+				// Set the filter delegate on the GridView
+				control.Filter = (filterItems.Length == 0) 
+				? (Func<object, bool>) null
+				: o => {
+					var i = o as MyGridItem;					
+					var matches = true;
+
+					// Every item in the split filter string should be within the Text property
+					foreach(var filterItem in filterItems)
+						if (!i.Text.Contains(filterItem))
+						{
+							matches = false;
+							break;
+						};
+
+					return matches;
+				};
+			};
 			
+			// Context menu
 			var menu = new ContextMenu ();
 			var item = new ImageMenuItem{ Text = "Click Me!"};
 			item.Click += delegate {
@@ -166,7 +198,7 @@ namespace Eto.Test.Sections.Controls
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
-					(control.DataStore as GridItemCollection).Remove(i);
+					items.Remove(i);
 			};
 			menu.MenuItems.Add(deleteItem);
 
@@ -175,7 +207,7 @@ namespace Eto.Test.Sections.Controls
 			insertItem.Click += (s, e) => {
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
-					(control.DataStore as GridItemCollection).Insert(0, new MyGridItem(new Random(), 0, null));
+					items.Insert(0, new MyGridItem(new Random(), 0, null));
 			};
 			menu.MenuItems.Add(insertItem);
 			

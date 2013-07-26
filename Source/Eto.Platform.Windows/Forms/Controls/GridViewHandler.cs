@@ -53,13 +53,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 		private void SetRowCount(int rowCount)
 		{
 			Control.RowCount = rowCount;
-			Control.Invalidate();
+			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
 		private void IncrementRowCountBy(int increment)
 		{
 			Control.RowCount += increment;
-			Control.Invalidate();
+			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
 		public IDataStore DataStore {

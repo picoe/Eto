@@ -2,6 +2,7 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -152,6 +153,7 @@ namespace Eto.Forms
 		/// DataStoreView.
 		/// </summary>
 		readonly GridItemCollection view = new GridItemCollection();
+		readonly MyComparer comparer = new MyComparer();
 
 		public IDataStore model;
 		public IDataStore Model
@@ -171,7 +173,7 @@ namespace Eto.Forms
 
 		public IDataStore View
 		{
-			get { return HasSortOrFilter ? view : model; }
+			get { return view; }
 		}
 
 		public int ViewToModel(int index)
@@ -187,12 +189,12 @@ namespace Eto.Forms
 		private Comparison<object> sortComparer;
 		public Comparison<object> SortComparer
 		{
-			get { return sortComparer; }
+			get { return comparer.SortComparer; }
 			set
 			{
-				if (!object.ReferenceEquals(sortComparer, value))
+				if (!object.ReferenceEquals(SortComparer, value))
 				{
-					sortComparer = value;
+					comparer.SortComparer = value;
 					UpdateView();
 				}
 			}
@@ -212,14 +214,36 @@ namespace Eto.Forms
 			}
 		}
 
+		class MyComparer : IComparer<object>
+		{
+			public Comparison<object> SortComparer { get; set; }
+			public int Compare(object x, object y)
+			{
+				throw new NotImplementedException();
+			}
+		}
+
 		/// <summary>
 		/// When the sort or filter changes, creates or destroys the view
 		/// as needed.
+		/// 
+		/// This should only be called if a sort or filter is applied.
+		/// 
+		/// BUGBUG: what happens if there was a sort or filter, but they are being removed?
 		/// </summary>
 		private void UpdateView()
 		{
-			if (view != null)
+			if (view != null &&
+				model != null)
 			{
+				var temp = new DataStoreVirtualCollection<object>(view);
+				// filter if needed
+				var list = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
+				// sort if needed
+				list.OrderBy(x => x, this.comparer);
+				// Clear and re-add the list
+				view.Clear();				
+				view.AddRange(list);
 			}
 		}
 
@@ -235,6 +259,7 @@ namespace Eto.Forms
 
 			public override void AddRange(IEnumerable<object> items)
 			{
+				/// BUGBUG: what happens if there was a sort or filter, but they are being removed?
 				if (Handler.HasSortOrFilter)
 					Handler.UpdateView();
 				else
@@ -244,6 +269,7 @@ namespace Eto.Forms
 
 			public override void AddItem(object item)
 			{
+				/// BUGBUG: what happens if there was a sort or filter, but they are being removed?
 				if (Handler.HasSortOrFilter)
 					Handler.UpdateView();
 				else
@@ -252,6 +278,7 @@ namespace Eto.Forms
 
 			public override void InsertItem(int index, object item)
 			{
+				/// BUGBUG: what happens if there was a sort or filter, but they are being removed?
 				if (Handler.HasSortOrFilter)
 					Handler.UpdateView();
 				else
@@ -260,6 +287,7 @@ namespace Eto.Forms
 
 			public override void RemoveItem(int index)
 			{
+				/// BUGBUG: what happens if there was a sort or filter, but they are being removed?
 				if (Handler.HasSortOrFilter)
 					Handler.UpdateView();
 				else
@@ -268,6 +296,7 @@ namespace Eto.Forms
 
 			public override void RemoveAllItems()
 			{
+				/// BUGBUG: what happens if there was a sort or filter, but they are being removed?
 				if (Handler.HasSortOrFilter)
 					Handler.UpdateView();
 				else
