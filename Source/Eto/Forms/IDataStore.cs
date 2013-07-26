@@ -85,9 +85,17 @@ namespace Eto.Forms
 
 		public void AddRange (IEnumerable<T> items)
 		{
-			foreach (var item in items) {
-				Add (item);
-			}
+			// We don't call Add(item) for each item because
+			// that triggers a notification each time.
+			// Instead we add all items to the underlying collection
+			// and then trigger a single notification for the range
+			// http://stackoverflow.com/a/851129/90291
+			
+			var oldIndex = Items.Count;
+			foreach (var i in items)  
+				Items.Add(i);
+
+			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<T>(items), oldIndex));
 		}
 	}
 
@@ -301,6 +309,21 @@ namespace Eto.Forms
 					Handler.UpdateView();
 				else
 					Handler.view.Clear();
+			}
+
+			public override void RemoveRange(IEnumerable<object> items)
+			{
+				base.RemoveRange(items); // TODO: the base implementation is slow
+			}
+
+			public override void InsertRange(int index, IEnumerable<object> items)
+			{
+				base.InsertRange(index, items); // TODO: the base implementation is slow
+			}
+
+			public override void RemoveRange(int index, int count)
+			{
+				base.RemoveRange(index, count); // TODO: the base implementation is slow
 			}
 		}
 	}

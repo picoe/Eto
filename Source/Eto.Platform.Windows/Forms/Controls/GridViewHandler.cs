@@ -40,9 +40,24 @@ namespace Eto.Platform.Windows.Forms.Controls
 				Handler.IncrementRowCountBy(1);
 			}
 
+			public override void InsertRange(int index, IEnumerable<object> items)
+			{
+				Handler.SetRowCount(Collection.Count);
+			}
+
 			public override void RemoveItem (int index)
 			{
 				Handler.IncrementRowCountBy(-1);
+			}
+
+			public override void RemoveRange(int index, int count)
+			{
+				Handler.SetRowCount(Collection.Count);				
+			}
+
+			public override void RemoveRange(IEnumerable<object> items)
+			{
+				Handler.SetRowCount(Collection.Count);
 			}
 
 			public override void RemoveAllItems ()
