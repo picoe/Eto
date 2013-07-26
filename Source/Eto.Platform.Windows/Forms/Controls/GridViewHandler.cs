@@ -16,8 +16,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected override object GetItemAtRow (int row)
 		{
-			if (collection == null) return null;
-			return collection.Collection[row];
+			if (collection != null && collection.Collection.Count > row) 			
+				return collection.Collection[row];
+			return null;
 		}
 
 		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>

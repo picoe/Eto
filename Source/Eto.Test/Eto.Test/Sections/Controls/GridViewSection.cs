@@ -85,6 +85,8 @@ namespace Eto.Test.Sections.Controls
 					Log ("DropDownKey", value);
 				}
 			}
+
+			public Color Color { get; set; } // used for owner-drawn cells
 			
 			public MyGridItem (Random rand, int row, ComboBoxCell dropDown)
 			{
@@ -97,6 +99,8 @@ namespace Eto.Test.Sections.Controls
 				Image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
 
 				text = string.Format ("Col 1 Row {0}", row);
+
+				Color = new Color(rand.Next(256), rand.Next(256), rand.Next(256));
 
 				if (dropDown != null)
 				{
@@ -130,6 +134,21 @@ namespace Eto.Test.Sections.Controls
 			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageViewCell ("Image") });
 			control.Columns.Add (new GridColumn{ HeaderText = "Text", DataCell = new TextBoxCell ("Text"), Editable = true, Sortable = true });
 			control.Columns.Add (new GridColumn{ HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
+
+#if Windows // Drawable cells - need to implement on other platforms.
+			var drawableCell = new DrawableCell
+			{
+				PaintHandler = (g, rect, o) => {
+					var m = o as MyGridItem;
+					if (m != null)
+					{
+						var b = Brushes.Cached(m.Color) as SolidBrush;
+						g.FillRectangle(b, rect);
+					}
+				}
+			};
+			control.Columns.Add(new GridColumn { HeaderText = "Owner drawn", DataCell = drawableCell });
+#endif
 			
 			var items = new GridItemCollection ();
 			var rand = new Random ();

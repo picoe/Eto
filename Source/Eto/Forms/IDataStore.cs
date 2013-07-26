@@ -236,7 +236,7 @@ namespace Eto.Forms
 			if (view != null &&
 				model != null)
 			{
-				var temp = new DataStoreVirtualCollection<object>(view);
+				var temp = new DataStoreVirtualCollection<object>(model);
 				// filter if needed
 				var list = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
 				// sort if needed
