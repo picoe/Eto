@@ -38,16 +38,22 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 			Control.CellValueNeeded += (sender, e) => {
 				var item = GetItemAtRow(e.RowIndex);
-				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
-				if (item != null && col != null)
-					e.Value = col.GetCellValue (item);
+				if (Widget.Columns.Count > e.ColumnIndex)
+				{
+					var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+					if (item != null && col != null)
+						e.Value = col.GetCellValue(item);
+				}
 			};
 
 			Control.CellValuePushed += (sender, e) => {
 				var item = GetItemAtRow(e.RowIndex);
-				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
-				if (item != null && col != null)
-					col.SetCellValue (item, e.Value);
+				if (Widget.Columns.Count > e.ColumnIndex)
+				{
+					var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+					if (item != null && col != null)
+						col.SetCellValue(item, e.Value);
+				}
 			};
 			Control.RowPostPaint += HandleRowPostPaint;
 		}
