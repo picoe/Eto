@@ -36,13 +36,31 @@ namespace Eto.Platform.Windows.Forms.Controls
 				return size;
 			}
 
-			protected override void Paint (System.Drawing.Graphics graphics, System.Drawing.Rectangle clipBounds, System.Drawing.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
+			// Cache the Eto graphics between cell redraws, since rows
+			// are drawn using the same sd.Graphics.
+			private sd.Graphics cachedGraphicsKey = null;
+			private Graphics cachedGraphics = null;
+
+			protected override void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{
-				using (var g = new Graphics(Handler.Generator, new GraphicsHandler(graphics, shouldDisposeGraphics: false)))
+				if (!object.ReferenceEquals(cachedGraphicsKey, graphics) ||
+					cachedGraphics == null)
 				{
-					if(Handler.Widget.PaintHandler != null)
-						Handler.Widget.PaintHandler(g, new RectangleF(cellBounds.ToEto()), value); // TODO: add cell state.
+					cachedGraphicsKey = graphics;
+					cachedGraphics = new Graphics(Handler.Generator, new GraphicsHandler(graphics, shouldDisposeGraphics: false));
 				}
+				else
+				{
+				}
+
+				if (Handler.Widget.PaintHandler != null)
+					Handler.Widget.PaintHandler(new DrawableCellPaintArgs
+					{
+						Graphics = cachedGraphics,
+						CellBounds = new RectangleF(cellBounds.ToEto()),
+						Item = value,
+						CellState = cellState.ToEto(),
+					});
 			}
 
 			protected override void OnMouseClick (swf.DataGridViewCellMouseEventArgs e)

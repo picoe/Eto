@@ -138,12 +138,14 @@ namespace Eto.Test.Sections.Controls
 #if Windows // Drawable cells - need to implement on other platforms.
 			var drawableCell = new DrawableCell
 			{
-				PaintHandler = (g, rect, o) => {
-					var m = o as MyGridItem;
+				PaintHandler = args => {
+					var m = args.Item as MyGridItem;
 					if (m != null)
 					{
-						var b = Brushes.Cached(m.Color) as SolidBrush;
-						g.FillRectangle(b, rect);
+						var b =  args.CellState == DrawableCellState.Selected 
+							? Brushes.Cached(Colors.Blue)
+							: Brushes.Cached(m.Color) as SolidBrush;
+						args.Graphics.FillRectangle(b, args.CellBounds);
 					}
 				}
 			};

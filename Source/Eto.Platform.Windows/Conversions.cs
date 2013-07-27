@@ -610,5 +610,13 @@ namespace Eto.Platform.Windows
 				throw new NotSupportedException ();
 			}
 		}
+
+		public static DrawableCellState ToEto(this swf.DataGridViewElementStates state)
+		{
+			if ( (state & swf.DataGridViewElementStates.Selected) == swf.DataGridViewElementStates.Selected)
+				return DrawableCellState.Selected;
+
+			return DrawableCellState.Normal;
+		}		
 	}
 }
