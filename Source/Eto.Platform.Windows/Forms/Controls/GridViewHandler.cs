@@ -27,7 +27,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			
 			public override void AddRange (IEnumerable<object> items)
 			{
-				Handler.SetRowCount(Collection.Count);
+				Handler.SetRowCount();
 			}
 			
 			public override void AddItem (object item)
@@ -42,7 +42,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			public override void InsertRange(int index, IEnumerable<object> items)
 			{
-				Handler.SetRowCount(Collection.Count);
+				Handler.SetRowCount();
 			}
 
 			public override void RemoveItem (int index)
@@ -52,23 +52,23 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			public override void RemoveRange(int index, int count)
 			{
-				Handler.SetRowCount(Collection.Count);				
+				Handler.SetRowCount();				
 			}
 
 			public override void RemoveRange(IEnumerable<object> items)
 			{
-				Handler.SetRowCount(Collection.Count);
+				Handler.SetRowCount();
 			}
 
 			public override void RemoveAllItems ()
 			{
-				Handler.SetRowCount(0);
+				Handler.SetRowCount();
 			}
 		}
 
-		private void SetRowCount(int rowCount)
+		private void SetRowCount()
 		{
-			Control.RowCount = rowCount;
+			Control.RowCount = collection.Collection != null ? collection.Collection.Count : 0;
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
