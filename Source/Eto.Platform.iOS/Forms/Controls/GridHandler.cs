@@ -11,43 +11,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		where T: UITableView
 		where W: Grid
 	{
-		public class TableDelegate : UITableViewDelegate
-		{
-			public virtual GridHandler<T, W> Handler { get; set; }
-
-			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
-			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
-			}
-		}
-
-		internal class RotatableTableViewController : UITableViewController
-		{
-			public object Control { get; set; }
-
-			public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
-			{
-				return UIInterfaceOrientationMask.All;
-			}
-
-			[Obsolete]
-			public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
-			{
-				return true;
-			}
-
-			protected override void Dispose(bool disposing) // TODO: Is this needed? RotatableViewController implements Dispose but RotatableNavigationController does not.
-			{
-				var c = Control as IDisposable;
-				if (c != null)
-				{
-					c.Dispose();
-					c = null;
-				}
-				base.Dispose(disposing);
-			}
-		}
-
 		RotatableTableViewController tableViewController;
 
 		public override UIViewController Controller
@@ -63,7 +26,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected virtual UITableViewDelegate CreateDelegate()
 		{
-			return new TableDelegate { Handler = this };
+			return new GridHandlerTableDelegate { Handler = this };
 		}
 
 		protected override void Initialize ()
@@ -117,6 +80,45 @@ namespace Eto.Platform.iOS.Forms.Controls
 					foreach (var s in i)
 						yield return s.Section;
 			}
+		}
+	}
+
+	public class GridHandlerTableDelegate : UITableViewDelegate
+	{
+		public virtual IGrid Handler { get; set; }
+
+		public Grid Widget { get { return Handler.Widget as Grid; } }
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			Widget.OnSelectionChanged(EventArgs.Empty);
+		}
+	}
+
+	internal class RotatableTableViewController : UITableViewController
+	{
+		public object Control { get; set; }
+
+		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
+		{
+			return UIInterfaceOrientationMask.All;
+		}
+
+		[Obsolete]
+		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
+		{
+			return true;
+		}
+
+		protected override void Dispose(bool disposing) // TODO: Is this needed? RotatableViewController implements Dispose but RotatableNavigationController does not.
+		{
+			var c = Control as IDisposable;
+			if (c != null)
+			{
+				c.Dispose();
+				c = null;
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

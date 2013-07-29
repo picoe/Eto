@@ -11,33 +11,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		Collection store;
 
-		public class GridTableDelegate : GridHandler<UITableView, GridView>.TableDelegate
-		{
-			public GridViewHandler GridViewHandler { get; set; }
-
-			public override GridHandler<UITableView, GridView> Handler {
-				get { return GridViewHandler; }
-				set { }
-			}
-
-			public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
-			{
-				var result = GridViewHandler.Widget.DeleteConfirmationTitle;
-				if (string.IsNullOrEmpty(result))
-					result = base.TitleForDeleteConfirmation(tableView, indexPath);
-				return result;
-			}
-
-			public override UITableViewCellEditingStyle EditingStyleForRow(UITableView tableView, NSIndexPath indexPath)
-			{
-				return GridViewHandler.Widget.CanDeleteItem != null &&
-					GridViewHandler.Widget.CanDeleteItem(GridViewHandler.GetItem(indexPath))
-					? UITableViewCellEditingStyle.Delete
-					: UITableViewCellEditingStyle.None;
-			}
-		}
-
-
 		class Collection : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
@@ -155,6 +128,33 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public void ReloadData()
 		{
 			Control.ReloadData();
+		}
+	}
+
+	public class GridTableDelegate : GridHandlerTableDelegate
+	{
+		public GridViewHandler GridViewHandler { get; set; }
+
+		public override IGrid Handler
+		{
+			get { return GridViewHandler; }
+			set { }
+		}
+
+		public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
+		{
+			var result = GridViewHandler.Widget.DeleteConfirmationTitle;
+			if (string.IsNullOrEmpty(result))
+				result = base.TitleForDeleteConfirmation(tableView, indexPath);
+			return result;
+		}
+
+		public override UITableViewCellEditingStyle EditingStyleForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			return GridViewHandler.Widget.CanDeleteItem != null &&
+				GridViewHandler.Widget.CanDeleteItem(GridViewHandler.GetItem(indexPath))
+				? UITableViewCellEditingStyle.Delete
+				: UITableViewCellEditingStyle.None;
 		}
 	}
 }
