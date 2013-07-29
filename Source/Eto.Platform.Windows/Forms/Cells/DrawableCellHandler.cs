@@ -49,11 +49,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 					cachedGraphicsKey = graphics;
 					cachedGraphics = new Graphics(Handler.Generator, new GraphicsHandler(graphics, shouldDisposeGraphics: false));
 				}
-				else
-				{
-				}
 
 				if (Handler.Widget.PaintHandler != null)
+				{
+					var b = graphics.ClipBounds;
+					graphics.SetClip(clipBounds);
 					Handler.Widget.PaintHandler(new DrawableCellPaintArgs
 					{
 						Graphics = cachedGraphics,
@@ -61,6 +61,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 						Item = value,
 						CellState = cellState.ToEto(),
 					});
+					graphics.SetClip(b); // restore
+				}
 			}
 
 			protected override void OnMouseClick (swf.DataGridViewCellMouseEventArgs e)
