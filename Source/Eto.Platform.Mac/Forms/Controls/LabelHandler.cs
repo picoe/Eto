@@ -10,6 +10,7 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreText;
 using System.Text.RegularExpressions;
 using System.Linq;
+using VerticalAlign = Eto.Forms.VerticalAlign;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
