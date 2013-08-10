@@ -34,7 +34,32 @@ namespace Eto.Forms
 		ISplitter handler;
 		
 		public static bool Supported { get { return Generator.Current.Supports<ISplitter> (); } }
-		
+
+		#region Events
+		public const string SplitterMovedEvent = "Control.SplitterMoved";
+		EventHandler<EventArgs> splitterMoved;
+
+		/// <summary>
+		/// Raised when the user moves the splitter.
+		/// </summary>
+		public event EventHandler<EventArgs> SplitterMoved
+		{
+			add
+			{
+				HandleEvent(SplitterMovedEvent);
+				splitterMoved += value;
+			}
+			remove { splitterMoved -= value; }
+		}
+
+		public virtual void OnSplitterMoved(EventArgs e)
+		{
+			if (splitterMoved != null)
+				splitterMoved(this, e);
+		}
+
+		#endregion
+
 		public Splitter () : this (Generator.Current)
 		{
 		}
