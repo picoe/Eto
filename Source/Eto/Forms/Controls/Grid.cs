@@ -186,6 +186,21 @@ namespace Eto.Forms
 
 		public abstract IEnumerable<object> SelectedItems { get; }
 
+		/// <summary>
+		/// If there is exactly one selected item, returns it, otherwise
+		/// returns null.
+		/// </summary>
+		public object SelectedItem
+		{
+			get
+			{
+				var selectedItems = SelectedItems;
+				if (selectedItems != null && selectedItems.Count() == 1)
+					return SelectedItems.FirstOrDefault();
+				return null;
+			}
+		}
+
 		public virtual IEnumerable<int> SelectedRows {
 			get { return handler.SelectedRows; }
 		}
