@@ -162,6 +162,8 @@ namespace Eto.Forms
 		/// </summary>
 		readonly GridItemCollection view = new GridItemCollection();
 		readonly MyComparer comparer = new MyComparer();
+		Dictionary<int, int> viewToModel = null;
+		Dictionary<int, int> modelToView = null;
 
 		public IDataStore model;
 		public IDataStore Model
@@ -184,17 +186,38 @@ namespace Eto.Forms
 			get { return view; }
 		}
 
-		public int ViewToModel(int index)
+		public int ViewToModel(int viewIndex)
 		{
-			return index;
+			var result = viewIndex;
+			
+			var temp = 0;
+			if (HasSortOrFilter &&
+				viewToModel != null &&
+				viewToModel.TryGetValue(viewIndex, out temp))
+				result = temp;
+
+			return result;
 		}
 
-		public int ModelToView(int index)
+		public int ModelToView(int modelIndex)
 		{
-			return index;
+			var result = modelIndex;
+
+			var temp = 0;
+			if (HasSortOrFilter &&
+				modelToView != null &&
+				modelToView.TryGetValue(modelIndex, out temp))
+				result = temp;
+
+			return result;
 		}
 
-		private Comparison<object> sortComparer;
+		/// <summary>
+		/// A comparer used to sort the displayed items.
+		/// If SortComparer or Filter is specified, the model items
+		/// should implement Equals so that model-to-view
+		/// mapping can be done.
+		/// </summary>
 		public Comparison<object> SortComparer
 		{
 			get { return comparer.SortComparer; }
@@ -208,6 +231,12 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Used to filter the displayed items.
+		/// If SortComparer or Filter is specified, the model items
+		/// should implement Equals so that model-to-view
+		/// mapping can be done.
+		/// </summary>
 		private Func<object, bool> filter;
 		public Func<object, bool> Filter
 		{
@@ -227,7 +256,7 @@ namespace Eto.Forms
 			public Comparison<object> SortComparer { get; set; }
 			public int Compare(object x, object y)
 			{
-				throw new NotImplementedException();
+				return SortComparer != null ? SortComparer(x, y) : 0;
 			}
 		}
 
@@ -245,16 +274,53 @@ namespace Eto.Forms
 				model != null)
 			{
 				var temp = new DataStoreVirtualCollection<object>(model);
+
 				// filter if needed
 				var list = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
+				
 				// sort if needed
-				list.OrderBy(x => x, this.comparer);
+				var viewItems = list.OrderBy(x => x, this.comparer);
+				
 				// Clear and re-add the list
 				view.Clear();				
-				view.AddRange(list);
+				
+				view.AddRange(viewItems);
+
+				// If a sort or filter is specified, create a dictionary
+				// of the item indices. This materializes a list of all the
+				// objects.
+				// If no sort or filter is specified, this overhead is avoided.
+				viewToModel = null;
+				modelToView = null;
+				if (HasSortOrFilter)
+				{
+					viewToModel = new Dictionary<int, int>();
+					modelToView = new Dictionary<int, int>();
+
+					// Create a temporary dictionary of model items
+					var modelIndexes = new Dictionary<object, int>();
+					for (var i = 0; i < temp.Count; ++i)
+					{
+						var o = temp[i];
+						if (o != null)
+							modelIndexes[o] = i;
+					}
+
+					var viewIndex = 0;
+					foreach (var o in viewItems)
+					{
+						var modelIndex = 0;
+						if (o != null &&
+							modelIndexes.TryGetValue(o, out modelIndex))
+						{
+							viewToModel[viewIndex] = modelIndex;
+							modelToView[modelIndex] = viewIndex;
+						}
+						viewIndex++;
+					}
+				}
 			}
 		}
-
 
 		private bool HasSortOrFilter
 		{
