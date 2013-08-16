@@ -276,10 +276,11 @@ namespace Eto.Forms
 				var temp = new DataStoreVirtualCollection<object>(model);
 
 				// filter if needed
-				var list = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
+				var viewItems = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
 				
 				// sort if needed
-				var viewItems = list.OrderBy(x => x, this.comparer);
+				if (this.comparer != null)
+					viewItems.Sort(this.comparer);
 				
 				// Clear and re-add the list
 				view.Clear();				

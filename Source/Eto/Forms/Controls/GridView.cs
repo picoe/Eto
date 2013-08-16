@@ -86,21 +86,36 @@ namespace Eto.Forms
 				// Create a data store view wrapping the model
 				dataStoreView = value != null ? new DataStoreView { Model = value } : null;
 
+				// Initialize the sort comparer and filter since a new view has been created.
+				this.SortComparer = this.sortComparer;
+				this.Filter = this.filter;				
+
 				// Set the handler's data store to the sorted and filtered view.
 				handler.DataStore = dataStoreView != null ? dataStoreView.View : null;
 			}
 		}
 
+		private Comparison<object> sortComparer;
 		public Comparison<object> SortComparer
 		{
-			get { return dataStoreView != null ? dataStoreView.SortComparer : null; }
-			set { if(dataStoreView != null) dataStoreView.SortComparer = value; }
+			get { return sortComparer; }
+			set
+			{
+				sortComparer = value;
+				if (dataStoreView != null)
+					dataStoreView.SortComparer = value;
+			}
 		}
 
+		Func<object, bool> filter;
 		public Func<object, bool> Filter
 		{
-			get { return dataStoreView != null ? dataStoreView.Filter : null; }
-			set { if (dataStoreView != null) dataStoreView.Filter = value; }
+			get { return filter; }
+			set
+			{
+				filter = value;
+				if (dataStoreView != null) dataStoreView.Filter = value;
+			}
 		}
 
 		public override IEnumerable<object> SelectedItems
