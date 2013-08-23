@@ -56,6 +56,16 @@ namespace Eto.Platform.Windows.Forms.Controls
 				}
 			};
 			Control.RowPostPaint += HandleRowPostPaint;
+
+			// The DataGridView automatically selects the first row, which
+			// is problematic and also not consistent across platforms.
+			// So we always get rid of the first selection.
+			var isFirstSelection = true;
+			Control.SelectionChanged += (s, e) => {
+				if (isFirstSelection)
+					Control.ClearSelection();
+				isFirstSelection = false;
+			};
 		}
 
 		bool handledAutoSize = false;
