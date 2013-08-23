@@ -16,7 +16,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected override object GetItemAtRow (int row)
 		{
-			if (collection != null && collection.Collection.Count > row) 			
+			if (collection != null && collection.Collection != null && collection.Collection.Count > row) 			
 				return collection.Collection[row];
 			return null;
 		}
