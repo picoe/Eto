@@ -71,6 +71,7 @@
     </Compile>
     <Compile Include="Forms\Controls\Drawable.mobile.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
+    <Compile Include="Forms\Controls\GridViewSelection.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
     <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
