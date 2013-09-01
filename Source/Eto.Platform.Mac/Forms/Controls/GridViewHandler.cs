@@ -64,10 +64,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
 			}
-			
+					
 			public override void SelectionDidChange (NSNotification notification)
 			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+				Handler.Widget.OnSelectionChanged ();
+
+				// Trigger CellClick
+				var tableView = Handler.Control;
+				var row = tableView.ClickedRow;
+				var col = tableView.ClickedColumn;
+				Handler.Widget.OnCellClick(
+					new GridViewCellArgs(Handler.GetColumn(tableView.ClickedColumn).Widget,
+					row, col, Handler.collection.Collection[row]));					
 			}
 
 			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)

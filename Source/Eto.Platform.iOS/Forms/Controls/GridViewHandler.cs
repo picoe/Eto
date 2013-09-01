@@ -141,6 +141,18 @@ namespace Eto.Platform.iOS.Forms.Controls
 			set { }
 		}
 
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			base.RowSelected(tableView, indexPath);
+
+			// CellClick event
+			GridViewHandler.Widget.OnCellClick(new GridViewCellArgs(
+				null, // TODO
+				indexPath.Row,
+				0, // Is this correct?
+				GridViewHandler.GetItem(indexPath)));
+		}
+
 		public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
 		{
 			var result = GridViewHandler.Widget.DeleteConfirmationTitle;

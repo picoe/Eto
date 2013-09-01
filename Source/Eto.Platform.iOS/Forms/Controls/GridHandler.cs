@@ -91,7 +91,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
-			Widget.OnSelectionChanged(EventArgs.Empty);
+			Widget.OnSelectionChanged();
 		}
 	}
 
