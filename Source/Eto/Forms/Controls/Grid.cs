@@ -82,7 +82,7 @@ namespace Eto.Forms
 		public virtual void OnBeginCellEdit (GridViewCellArgs e)
 		{
 			if (_BeginCellEdit != null)
-				_BeginCellEdit (this, e);
+				_BeginCellEdit(this, this.ViewToModel(e));
 		}
 
 		public const string EndCellEditEvent = "Grid.EndCellEditEvent";
@@ -100,7 +100,7 @@ namespace Eto.Forms
 		public virtual void OnEndCellEdit (GridViewCellArgs e)
 		{
 			if (_EndCellEdit != null)
-				_EndCellEdit (this, e);
+				_EndCellEdit (this, this.ViewToModel(e));
 		}
 
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
@@ -157,6 +157,10 @@ namespace Eto.Forms
 				_CellFormatting (this, e);
 		}
 
+		protected virtual GridViewCellArgs ViewToModel(GridViewCellArgs e)
+		{
+			return e;
+		}
 
 		#endregion
 

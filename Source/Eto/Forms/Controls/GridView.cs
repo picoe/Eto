@@ -72,6 +72,9 @@ namespace Eto.Forms
 		protected GridView (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
+			// Always attach the SelectionChangedEvent
+			// since it is always handled in the GridView.
+			this.HandleEvent(Grid.SelectionChangedEvent);
 		}
 
 		/// <summary>
@@ -96,6 +99,41 @@ namespace Eto.Forms
 				// Set the handler's data store to the sorted and filtered view.
 				Handler.DataStore = DataStoreView != null ? DataStoreView.View : null;
 			}
+		}
+
+		#region Events
+
+		#region CellClick
+		public const string CellClickEvent = "GridView.CellClick";
+
+		EventHandler<GridViewCellArgs> cellClick;
+
+		public event EventHandler<GridViewCellArgs> CellClick
+		{
+			add
+			{
+				HandleEvent(CellClickEvent);
+				cellClick += value;
+			}
+			remove { cellClick -= value; }
+		}
+
+		public virtual void OnCellClick(GridViewCellArgs e)
+		{
+			if (cellClick != null)
+				cellClick(this, this.ViewToModel(e));
+		}
+		#endregion
+
+		#endregion
+
+		protected override GridViewCellArgs ViewToModel(GridViewCellArgs e)
+		{
+			return new GridViewCellArgs(
+				e.GridColumn,
+				this.DataStoreView.ViewToModel(e.Row),
+				e.Column,
+				e.Item);
 		}
 
 		public override void OnSelectionChanged()

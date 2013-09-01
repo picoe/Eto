@@ -21,6 +21,22 @@ namespace Eto.Platform.Windows.Forms.Controls
 			return null;
 		}
 
+		public override void AttachEvent(string handler)
+		{
+			switch (handler) {
+			case GridView.CellClickEvent:
+				Control.CellClick += (sender, e) => {
+					var item = GetItemAtRow (e.RowIndex);
+					var column = Widget.Columns [e.ColumnIndex];
+					Widget.OnCellClick (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+				};
+				break;
+			default:
+				base.AttachEvent(handler);
+				break;
+			}
+		}
+
 		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
