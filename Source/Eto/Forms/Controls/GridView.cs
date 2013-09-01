@@ -36,8 +36,9 @@ namespace Eto.Forms
 
 	public partial class GridView : Grid
 	{
-		IGridView handler;
-		IDataStoreView dataStoreView; // provides sorting and filtering on the model.
+		public new IGridView Handler { get { return base.Handler as IGridView; } }
+		internal IDataStoreView DataStoreView { get; private set; } // provides sorting and filtering on the model.
+		GridViewSelection selection; // manages the selection
 
 #if MOBILE
 		/// <summary>
@@ -71,7 +72,6 @@ namespace Eto.Forms
 		protected GridView (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IGridView)Handler;
 		}
 
 		/// <summary>
@@ -80,19 +80,29 @@ namespace Eto.Forms
 		/// DataStore is set to the view collection of the DataStoreView.
 		/// </summary>
 		public IDataStore DataStore {
-			get { return dataStoreView != null ? dataStoreView.Model : null; }
+			get { return DataStoreView != null ? DataStoreView.Model : null; }
 			set
-			{	
+			{
+				// initialize the selection
+				this.selection = new GridViewSelection(this, value);
+
 				// Create a data store view wrapping the model
-				dataStoreView = value != null ? new DataStoreView { Model = value } : null;
+				DataStoreView = value != null ? new DataStoreView { Model = value } : null;
 
 				// Initialize the sort comparer and filter since a new view has been created.
 				this.SortComparer = this.sortComparer;
 				this.Filter = this.filter;				
 
 				// Set the handler's data store to the sorted and filtered view.
-				handler.DataStore = dataStoreView != null ? dataStoreView.View : null;
+				Handler.DataStore = DataStoreView != null ? DataStoreView.View : null;
 			}
+		}
+
+		public override void OnSelectionChanged()
+		{
+			if (this.selection != null &&
+				!this.selection.SuppressSelectionChanged)
+				base.OnSelectionChanged();
 		}
 
 		private Comparison<object> sortComparer;
@@ -102,8 +112,8 @@ namespace Eto.Forms
 			set
 			{
 				sortComparer = value;
-				if (dataStoreView != null)
-					dataStoreView.SortComparer = value;
+				if (DataStoreView != null)
+					DataStoreView.SortComparer = value;
 			}
 		}
 
@@ -114,7 +124,7 @@ namespace Eto.Forms
 			set
 			{
 				filter = value;
-				if (dataStoreView != null) dataStoreView.Filter = value;
+				if (DataStoreView != null) DataStoreView.Filter = value;
 			}
 		}
 
@@ -135,12 +145,7 @@ namespace Eto.Forms
 		/// </summary>
 		public override IEnumerable<int> SelectedRows
 		{
-			get
-			{
-				if (dataStoreView != null)
-					foreach (var row in handler.SelectedRows)
-						yield return dataStoreView.ViewToModel(row);
-			}
+			get { return this.selection != null ? this.selection.SelectedRows : new List<int>(); }
 		}
 
 		/// <summary>
@@ -148,10 +153,8 @@ namespace Eto.Forms
 		/// </summary>
 		public override void SelectRow(int row)
 		{
-			var viewRow = 0;
-			if(dataStoreView != null &&
-				(viewRow = dataStoreView.ModelToView(row)) >= 0)
-				base.SelectRow(viewRow);
+			if (this.selection != null)
+				this.selection.SelectRow(row);
 		}
 
 		/// <summary>
@@ -159,10 +162,20 @@ namespace Eto.Forms
 		/// </summary>
 		public override void UnselectRow(int row)
 		{
-			var viewRow = 0;
-			if (dataStoreView != null &&
-				(viewRow = dataStoreView.ModelToView(row)) >= 0)
-				base.UnselectRow(viewRow);
+			if (this.selection != null)
+				this.selection.UnselectRow(row);
+		}
+
+		public override void SelectAll()
+		{
+			if (this.selection != null)
+				this.selection.SelectAll();
+		}
+
+		public override void UnselectAll()
+		{
+			if (this.selection != null)
+				this.selection.UnselectAll();
 		}
 	}
 }

@@ -115,10 +115,10 @@ namespace Eto.Forms
 			remove { _SelectionChanged -= value; }
 		}
 
-		public virtual void OnSelectionChanged (EventArgs e)
+		public virtual void OnSelectionChanged ()
 		{
 			if (_SelectionChanged != null)
-				_SelectionChanged (this, e);
+				_SelectionChanged (this, EventArgs.Empty);
 		}
 		
 		public const string ColumnHeaderClickEvent = "Grid.ColumnHeaderClickEvent";
@@ -216,7 +216,7 @@ namespace Eto.Forms
 			handler.SelectRow (row);
 		}
 
-		public void SelectAll ()
+		public virtual void SelectAll ()
 		{
 			handler.SelectAll ();
 		}
@@ -226,7 +226,7 @@ namespace Eto.Forms
 			handler.UnselectRow (row);
 		}
 
-		public void UnselectAll ()
+		public virtual void UnselectAll()
 		{
 			handler.UnselectAll ();
 		}

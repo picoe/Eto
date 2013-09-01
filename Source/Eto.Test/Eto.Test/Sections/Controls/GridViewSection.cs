@@ -38,8 +38,19 @@ namespace Eto.Test.Sections.Controls
 			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&&Filter" });
 			layout.BeginVertical();
 			layout.Add(filterText = new TextBox { PlaceholderText = "Filter" });
-			layout.Add(WithContextMenuAndFilter());
+			var withContextMenuAndFilter = WithContextMenuAndFilter();
+			layout.Add(withContextMenuAndFilter);
+			var selectionGridView = Default(addItems: false);
 			layout.EndVertical();
+			layout.EndHorizontal();
+			layout.BeginHorizontal();
+			layout.Add(new Label { Text = "Selected Items" });
+			layout.Add(selectionGridView);
+			withContextMenuAndFilter.SelectionChanged += (s, e) => {
+				var items = new GridItemCollection();
+				items.AddRange(withContextMenuAndFilter.SelectedItems);
+				selectionGridView.DataStore = items;
+			};
 			layout.EndHorizontal();
 #endif
 		}
@@ -122,7 +133,7 @@ namespace Eto.Test.Sections.Controls
 			return combo;
 		}
 		
-		GridView Default ()
+		GridView Default (bool addItems = true)
 		{
 			var control = new GridView {
 				Size = new Size (300, 100)
@@ -141,23 +152,22 @@ namespace Eto.Test.Sections.Controls
 				PaintHandler = args => {
 					var m = args.Item as MyGridItem;
 					if (m != null)
-					{
-						var b =  args.CellState == DrawableCellState.Selected 
-							? Brushes.Cached(Colors.Blue)
-							: Brushes.Cached(m.Color) as SolidBrush;
-						args.Graphics.FillRectangle(b, args.CellBounds);
-					}
+						args.Graphics.FillRectangle(Brushes.Cached(m.Color) as SolidBrush, args.CellBounds);
 				}
 			};
 			control.Columns.Add(new GridColumn { HeaderText = "Owner drawn", DataCell = drawableCell });
 #endif
-			
-			var items = new GridItemCollection ();
-			var rand = new Random ();
-			for (int i = 0; i < 10000; i++) {
-				items.Add (new MyGridItem (rand, i, dropDown));
+
+			if (addItems)
+			{
+				var items = new GridItemCollection();
+				var rand = new Random();
+				for (int i = 0; i < 10000; i++)
+				{
+					items.Add(new MyGridItem(rand, i, dropDown));
+				}
+				control.DataStore = items;
 			}
-			control.DataStore = items;
 
 			return control;
 		}

@@ -149,7 +149,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				break;
 			case Grid.SelectionChangedEvent:
 				Control.SelectionChanged += delegate {
-					Widget.OnSelectionChanged (EventArgs.Empty);
+					Widget.OnSelectionChanged ();
 				};
 				break;
 			case Grid.CellFormattingEvent:

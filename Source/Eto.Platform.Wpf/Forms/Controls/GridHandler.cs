@@ -68,7 +68,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			case Grid.SelectionChangedEvent:
 				Control.SelectedCellsChanged += (sender, e) => {
 					if (!SkipSelectionChanged)
-						Widget.OnSelectionChanged (EventArgs.Empty);
+						Widget.OnSelectionChanged ();
 				};
 				break;
 			case Grid.CellFormattingEvent:

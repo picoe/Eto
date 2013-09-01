@@ -73,7 +73,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			case Grid.SelectionChangedEvent:
 				Tree.Selection.Changed += delegate {
 					if (!SkipSelectedChange)
-						Widget.OnSelectionChanged (EventArgs.Empty);
+						Widget.OnSelectionChanged ();
 				};
 				break;
 			default:
