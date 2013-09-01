@@ -71,11 +71,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 				// Trigger CellClick
 				var tableView = Handler.Control;
-				var row = tableView.ClickedRow;
-				var col = tableView.ClickedColumn;
-				Handler.Widget.OnCellClick(
-					new GridViewCellArgs(Handler.GetColumn(tableView.ClickedColumn).Widget,
-					row, col, Handler.collection.Collection[row]));					
+				var row = tableView.SelectedRow;
+				var col = tableView.SelectedColumn;
+				if (row >= 0) // && col >= 0) TODO: Fix the column
+					Handler.Widget.OnCellClick (
+						new GridViewCellArgs (null, // TODO: col is always -1 currently, so this does not work: Handler.GetColumn (tableView.ClickedColumn).Widget,
+		                     row, col, Handler.collection.Collection [row]));					
 			}
 
 			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
