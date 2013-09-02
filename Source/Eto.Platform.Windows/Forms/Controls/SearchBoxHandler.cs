@@ -12,5 +12,29 @@ namespace Eto.Platform.Windows
 		{
 			Control = new TextBoxHandler.WatermarkTextBox();
 		}
+
+		public bool ReadOnly
+		{
+			get { return Control.ReadOnly; }
+			set { Control.ReadOnly = value; }
+		}
+
+		public int MaxLength
+		{
+			get { return this.Control.MaxLength; }
+			set { this.Control.MaxLength = value; }
+		}
+
+		public string PlaceholderText
+		{
+			get { return Control.WatermarkText; }
+			set { Control.WatermarkText = value; }
+		}
+
+		public void SelectAll()
+		{
+			this.Control.Focus();
+			this.Control.SelectAll();
+		}
 	}
 }

@@ -75,6 +75,7 @@
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
     <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
+    <Compile Include="Forms\Controls\SearchBox.cs" />
     <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
