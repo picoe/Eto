@@ -23,6 +23,19 @@ namespace Eto.Platform.iOS.Forms.Controls
 			MaxLength = Int32.MaxValue;
 		}
 
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				case Eto.Forms.Control.TextChangedEvent:
+					Control.TextChanged += (s, e) => Widget.OnTextChanged(e);
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
+		}
+
 		public string Text {
 			get { return Control.Text; }
 			set { Control.Text = value; }
