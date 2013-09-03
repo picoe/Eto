@@ -274,7 +274,7 @@ namespace Eto.Forms
 			{
 				var viewRows = ViewRows;
 				if (viewRows.Any())
-					modelRowToSelect = viewRows.First();
+					modelRowToSelect = next ? viewRows.First() : viewRows.Last();
 			}
 
 			if (modelRowToSelect != null)
