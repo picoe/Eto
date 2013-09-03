@@ -12,6 +12,7 @@ namespace Eto.Forms
 	/// 
 	/// 1) The user changes the selection in the control. In this case the selection indexes are recalculated.
 	/// 2) The application programmatically changes the selection using SelectRow(), SelectAll(), etc.
+	///    In this case the internal selection is updated and SelectionChanged is fired.
 	/// 3) A sort or filter is applied to the GridView. 
 	/// 4) The DataStore changes, i.e. items are added, removed or modified.
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
@@ -124,6 +125,7 @@ namespace Eto.Forms
 		public void UnselectRow(int row)
 		{
 			ChangeSelection(() => {
+				areAllObjectsSelected = false;
 				if (selectedRows.Contains(row))
 					selectedRows.Remove(row);
 
@@ -145,7 +147,7 @@ namespace Eto.Forms
 		internal void UnselectAll()
 		{
 			ChangeSelection(() => {
-				areAllObjectsSelected = true;
+				areAllObjectsSelected = false;
 				selectedRows.Clear();
 				Handler.UnselectAll();
 			});

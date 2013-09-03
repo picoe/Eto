@@ -33,6 +33,12 @@ namespace Eto.Forms
 		IDataStore View { get; }
 
 		/// <summary>
+		/// The model indexes of the displayed rows.
+		/// E.g. ViewRows[5] is the index in the data store of
+		/// the 6th displayed item.
+		/// </summary>		
+		IEnumerable<int> ViewRows { get; }
+		/// <summary>
 		/// Converts the index of an object in the view to an
 		/// index of the same object in the model. This method
 		/// always succeeds since the view is a subset of the model.
@@ -72,7 +78,7 @@ namespace Eto.Forms
 		/// </summary>
 		readonly GridItemCollection view = new GridItemCollection();
 		readonly MyComparer comparer = new MyComparer();
-		Dictionary<int, int> viewToModel = null;
+		List<int> viewToModel = null;
 		Dictionary<int, int> modelToView = null;
 
 		public IDataStore model;
@@ -96,15 +102,20 @@ namespace Eto.Forms
 			get { return view; }
 		}
 
+		public IEnumerable<int> ViewRows
+		{
+			get { return viewToModel ?? new List<int>(); }
+		}
+
 		public int ViewToModel(int viewIndex)
 		{
 			var result = viewIndex;
 
-			var temp = 0;
 			if (HasSortOrFilter &&
 				viewToModel != null &&
-				viewToModel.TryGetValue(viewIndex, out temp))
-				result = temp;
+				viewIndex >= 0 &&
+				viewToModel.Count > viewIndex)
+				result = viewToModel[viewIndex];
 
 			return result;
 		}
@@ -205,7 +216,7 @@ namespace Eto.Forms
 				modelToView = null;
 				if (HasSortOrFilter)
 				{
-					viewToModel = new Dictionary<int, int>();
+					viewToModel = new List<int>();
 					modelToView = new Dictionary<int, int>();
 
 					// Create a temporary dictionary of model items
@@ -220,13 +231,13 @@ namespace Eto.Forms
 					var viewIndex = 0;
 					foreach (var o in viewItems)
 					{
-						var modelIndex = 0;
+						var modelIndex = -1;
 						if (o != null &&
 							modelIndexes.TryGetValue(o, out modelIndex))
 						{
-							viewToModel[viewIndex] = modelIndex;
 							modelToView[modelIndex] = viewIndex;
 						}
+						viewToModel.Add(modelIndex); // always add to viewToModel because the number of items must match those in viewItems
 						viewIndex++;
 					}
 				}

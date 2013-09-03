@@ -1,6 +1,7 @@
 using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -187,6 +188,16 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
+		/// The model indexes of the displayed rows.
+		/// E.g. ViewRows[5] is the index in the data store of
+		/// the 6th displayed item.
+		/// </summary>		
+		public IEnumerable<int> ViewRows
+		{
+			get { return DataStoreView.ViewRows; }
+		}
+
+		/// <summary>
 		/// Selects the view row of the specified model row index
 		/// </summary>
 		public override void SelectRow(int row)
@@ -214,6 +225,63 @@ namespace Eto.Forms
 		{
 			if (this.selection != null)
 				this.selection.UnselectAll();
+		}
+
+		/// <summary>
+		/// Selects the next item in the view (not the model.)
+		/// This can be used to cursor up/down the view
+		/// </summary>
+		public void SelectNextViewRow()
+		{
+			SelectNextViewRow(next: true);
+		}
+
+		public void SelectPreviousViewRow()
+		{
+			SelectNextViewRow(next: false);
+		}
+
+		private void SelectNextViewRow(bool next)
+		{
+			var increment = next ? 1 : -1;
+			int? modelRowToSelect = null; // If there are no selected rows, this is the default
+
+			var r = SelectedRows;
+			if (this.DataStoreView != null &&
+				r.Any())
+			{
+				// Get the last (or first, if moving back) selected view row.
+				// This handles multiselection.
+				int? currentRowViewIndex = null;
+				foreach (var x in r)
+				{
+					var temp = this.DataStoreView.ModelToView(x);
+					if (temp != null &&
+						(currentRowViewIndex == null || Math.Sign(temp.Value - currentRowViewIndex.Value) == Math.Sign(increment)))
+						currentRowViewIndex = temp;
+				}
+
+				if (currentRowViewIndex != null)
+				{
+					var newRow = currentRowViewIndex.Value + increment; // view index
+					if (newRow >= 0 &&
+						this.DataStore.Count > newRow)
+						modelRowToSelect = this.DataStoreView.ViewToModel(newRow);
+				}
+			}
+
+			if (modelRowToSelect == null)
+			{
+				var viewRows = ViewRows;
+				if (viewRows.Any())
+					modelRowToSelect = viewRows.First();
+			}
+
+			if (modelRowToSelect != null)
+			{
+				UnselectAll();
+				SelectRow(modelRowToSelect.Value);
+			}
 		}
 	}
 }
