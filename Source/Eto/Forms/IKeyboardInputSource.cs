@@ -1,7 +1,7 @@
 using System;
 using Eto.Forms;
 
-namespace Eto.Interface
+namespace Eto.Forms
 {
     public interface IKeyboardInputSource
     {

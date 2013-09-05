@@ -3,7 +3,6 @@ using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
-using Eto.Interface;
 
 namespace Eto.Forms
 {
