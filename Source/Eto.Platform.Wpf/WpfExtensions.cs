@@ -22,7 +22,7 @@ namespace Eto.Platform.Wpf
 			return null;
 		}
 
-		public static T FindChild<T> (this sw.DependencyObject parent, string childName)
+		public static T FindChild<T> (this sw.DependencyObject parent, string childName = null)
 		   where T : sw.DependencyObject
 		{
 			// Confirm parent and childName are valid. 

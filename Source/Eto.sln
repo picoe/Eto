@@ -181,6 +181,7 @@ Global
 		$2.inheritsScope = text/plain
 		$0.TextStylePolicy = $3
 		$3.FileWidth = 120
+		$3.TabsToSpaces = False
 		$3.inheritsSet = VisualStudio
 		$3.inheritsScope = text/plain
 		$3.scope = text/x-csharp
@@ -197,6 +198,8 @@ Global
 		$4.ElseNewLinePlacement = NewLine
 		$4.CatchNewLinePlacement = NewLine
 		$4.FinallyNewLinePlacement = NewLine
+		$4.WhileNewLinePlacement = DoNotCare
+		$4.ArrayInitializerWrapping = DoNotChange
 		$4.ArrayInitializerBraceStyle = NextLine
 		$4.BeforeMethodDeclarationParentheses = False
 		$4.BeforeMethodCallParentheses = False

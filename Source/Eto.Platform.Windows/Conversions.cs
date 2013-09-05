@@ -226,7 +226,7 @@ namespace Eto.Platform.Windows
 			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		public static sd.Rectangle ToSDRectangle (this RectangleF rect)
+		public static sd.Rectangle ToSDRectangle(this RectangleF rect)
 		{
 			return new sd.Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 		}
@@ -383,6 +383,14 @@ namespace Eto.Platform.Windows
 		{
 			return (float)Math.PI * angle / 180.0f;
 		}
+
+        public static ITreeItem ToEto(this swf.TreeNode treeNode)
+        {
+            return
+                treeNode != null
+                ? treeNode.Tag as ITreeItem
+                : null;
+        }
 
 		public static sd.Pen ToSD (this Pen pen)
 		{
