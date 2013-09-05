@@ -392,40 +392,6 @@ namespace Eto.Platform.Windows
                 : null;
         }
 
-        public static TreeNodeMouseClickEventArgs ToEto(this 
-            swf.TreeNodeMouseClickEventArgs e)
-        {
-            var mouseEventArgs =
-                ToEto((swf.MouseEventArgs)e);
-
-            return new TreeNodeMouseClickEventArgs(
-                mouseEventArgs,
-                ToEto(e.Node));
-        }
-
-        public static TreeViewItemEventArgs ToEto(this swf.TreeViewEventArgs e)
-        {
-            return
-                new TreeViewItemEventArgs(
-                    ToEto(e.Node))
-                {
-                    Action = (Eto.Forms.TreeViewAction)e.Action,
-                };
-
-        }
-
-        public static TreeViewItemEventArgs ToEto(this swf.NodeLabelEditEventArgs e)
-        {
-            return
-                new TreeViewItemEventArgs(
-                    ToEto(e.Node))
-                    {
-                        CancelEdit = e.CancelEdit,
-                        Label = e.Label
-                    };
-
-        }
-
 		public static sd.Pen ToSD (this Pen pen)
 		{
 			return (sd.Pen)pen.ControlObject;

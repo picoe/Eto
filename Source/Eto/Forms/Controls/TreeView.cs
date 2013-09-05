@@ -16,392 +16,312 @@ namespace Eto.Forms
 
 		ITreeItem SelectedItem { get; set; }
 
-        ITreeItem GetNodeAt(Point point);
+		void RefreshData();
 
-		void RefreshData ();
+		void RefreshItem(ITreeItem item);
 
-		void RefreshItem (ITreeItem item);
+		ITreeItem GetNodeAt(PointF point);
 
-        bool LabelEdit { get; set; }
-
-        bool IsExpanded(ITreeItem item);
-
-        void Collapse(ITreeItem item);
-
-        void AddTo(ITreeItem dest, ITreeItem item);
-
-        bool AllowDrop { get; set; }
-
-        void Expand(ITreeItem item);
-
-        void Remove(ITreeItem item);
-
-        void SetImage(TreeItem item, Image image);
-    }
-
-    public enum TreeViewAction
-    {
-        Unknown = 0,
-        ByKeyboard = 1,
-        ByMouse = 2,
-        Collapse = 3,
-        Expand = 4,
-    }
+		bool LabelEdit { get; set; }
+	}
 
 	public class TreeViewItemEventArgs : EventArgs
 	{
 		public ITreeItem Item { get; private set; }
-		
-		public TreeViewItemEventArgs (ITreeItem item)
-		{
-			this.Item = item;
-		}
 
-        public bool CancelEdit { get; set; }
-
-        public string Label { get; set; }
-
-        public TreeViewAction Action { get; set; }
-    }
-
-    public class ItemDragEventArgs : EventArgs
-    {
-        public MouseButtons Buttons { get; set; }
-        public object Item { get; set; }
-    }
-
-    public class TreeNodeMouseClickEventArgs : MouseEventArgs
-    {
-        public ITreeItem Item { get; private set; }
-
-        public TreeNodeMouseClickEventArgs(
-            MouseEventArgs e,
-            ITreeItem item)
-            :base(e.Buttons, e.Modifiers, e.Location)
-        {
-            this.Item = item;
-        }
-    }
-
-	public class TreeViewItemCancelEventArgs : CancelEventArgs
-	{
-		public ITreeItem Item { get; private set; }
-		
-		public TreeViewItemCancelEventArgs (ITreeItem item)
+		public TreeViewItemEventArgs(ITreeItem item)
 		{
 			this.Item = item;
 		}
 	}
-	
+
+	public class TreeViewItemCancelEventArgs : CancelEventArgs
+	{
+		public ITreeItem Item { get; private set; }
+
+		public TreeViewItemCancelEventArgs(ITreeItem item)
+		{
+			this.Item = item;
+		}
+	}
+
+	public class TreeViewItemEditEventArgs : TreeViewItemCancelEventArgs
+	{
+		public string Label { get; set; }
+
+		public TreeViewItemEditEventArgs(ITreeItem item, string label)
+			: base(item)
+		{
+			this.Label = label;
+		}
+	}
+
 	public partial class TreeView : Control
 	{
 		ITreeView handler;
-		
 		#region Events
-
 		public const string ActivatedEvent = "TreeView.Activated";
-
 		EventHandler<TreeViewItemEventArgs> _Activated;
 
-		public event EventHandler<TreeViewItemEventArgs> Activated {
-			add {
-				HandleEvent (ActivatedEvent);
+		public event EventHandler<TreeViewItemEventArgs> Activated
+		{
+			add
+			{
+				HandleEvent(ActivatedEvent);
 				_Activated += value;
 			}
 			remove { _Activated -= value; }
 		}
 
-		public virtual void OnActivated (TreeViewItemEventArgs e)
+		public virtual void OnActivated(TreeViewItemEventArgs e)
 		{
 			if (_Activated != null)
-				_Activated (this, e);
+				_Activated(this, e);
 		}
 
-        #region SelectionChanged
-        public const string SelectionChangedEvent = "TreeView.SelectionChanged";
+		public const string SelectionChangedEvent = "TreeView.SelectionChangedEvent";
 
-        EventHandler<EventArgs> selectionChanged;
+		event EventHandler<EventArgs> _SelectionChanged;
 
-        public event EventHandler<EventArgs> SelectionChanged
-        {
-            add
-            {
-                HandleEvent(SelectionChangedEvent);
-                selectionChanged += value;
-            }
-            remove { selectionChanged -= value; }
-        }
+		public event EventHandler<EventArgs> SelectionChanged
+		{
+			add
+			{
+				_SelectionChanged += value;
+				HandleEvent(SelectionChangedEvent);
+			}
+			remove
+			{
+				_SelectionChanged -= value;
+			}
+		}
 
-        public virtual void OnSelectionChanged(EventArgs e)
-        {
-            if (selectionChanged != null)
-                selectionChanged(this, e);
-        }
-        #endregion
-
-        #region BeforeLabelEdit
-        public const string BeforeLabelEditEvent = "TreeView.BeforeLabelEdit";
-
-        EventHandler<TreeViewItemEventArgs> beforeLabelEdit;
-
-        public event EventHandler<TreeViewItemEventArgs> BeforeLabelEdit
-        {
-            add
-            {
-                HandleEvent(BeforeLabelEditEvent);
-                beforeLabelEdit += value;
-            }
-            remove { beforeLabelEdit -= value; }
-        }
-
-        public virtual void OnBeforeLabelEdit(TreeViewItemEventArgs e)
-        {
-            if (beforeLabelEdit != null)
-                beforeLabelEdit(this, e);
-        }
-        #endregion
-
-        #region AfterLabelEdit
-        public const string AfterLabelEditEvent = "TreeView.AfterLabelEdit";
-
-        EventHandler<TreeViewItemEventArgs> afterLabelEdit;
-
-        public event EventHandler<TreeViewItemEventArgs> AfterLabelEdit
-        {
-            add
-            {
-                HandleEvent(AfterLabelEditEvent);
-                afterLabelEdit += value;
-            }
-            remove { afterLabelEdit -= value; }
-        }
-
-        public virtual void OnAfterLabelEdit(TreeViewItemEventArgs e)
-        {
-            if (afterLabelEdit != null)
-                afterLabelEdit(this, e);
-        }
-        #endregion
-        
-        #region NodeMouseClick
-        public const string NodeMouseClickEvent = "TreeView.NodeMouseClick";
-
-        EventHandler<TreeNodeMouseClickEventArgs> nodeMouseClick;
-
-        public event EventHandler<TreeNodeMouseClickEventArgs> NodeMouseClick
-        {
-            add
-            {
-                HandleEvent(NodeMouseClickEvent);
-                nodeMouseClick += value;
-            }
-            remove { nodeMouseClick -= value; }
-        }
-
-        public virtual void OnNodeMouseClick(TreeNodeMouseClickEventArgs e)
-        {
-            if (nodeMouseClick != null)
-                nodeMouseClick(this, e);
-        }
-        #endregion
+		public virtual void OnSelectionChanged(EventArgs e)
+		{
+			if (_SelectionChanged != null)
+				_SelectionChanged(this, e);
+		}
 
 		public const string ExpandingEvent = "TreeView.ExpandingEvent";
 
 		event EventHandler<TreeViewItemCancelEventArgs> _Expanding;
 
-		public event EventHandler<TreeViewItemCancelEventArgs> Expanding {
-			add {
+		public event EventHandler<TreeViewItemCancelEventArgs> Expanding
+		{
+			add
+			{
 				_Expanding += value;
-				HandleEvent (ExpandingEvent);
+				HandleEvent(ExpandingEvent);
 			}
 			remove { _Expanding -= value; }
 		}
 
-		public virtual void OnExpanding (TreeViewItemCancelEventArgs e)
+		public virtual void OnExpanding(TreeViewItemCancelEventArgs e)
 		{
 			if (_Expanding != null)
-				_Expanding (this, e);
+				_Expanding(this, e);
 		}
 
 		public const string ExpandedEvent = "TreeView.ExpandedEvent";
 
 		event EventHandler<TreeViewItemEventArgs> _Expanded;
 
-		public event EventHandler<TreeViewItemEventArgs> Expanded {
-			add {
+		public event EventHandler<TreeViewItemEventArgs> Expanded
+		{
+			add
+			{
 				_Expanded += value;
-				HandleEvent (ExpandedEvent);
+				HandleEvent(ExpandedEvent);
 			}
 			remove { _Expanded -= value; }
 		}
 
-		public virtual void OnExpanded (TreeViewItemEventArgs e)
+		public virtual void OnExpanded(TreeViewItemEventArgs e)
 		{
 			if (_Expanded != null)
-				_Expanded (this, e);
+				_Expanded(this, e);
 		}
-		
+
 		public const string CollapsingEvent = "TreeView.CollapsingEvent";
 
 		event EventHandler<TreeViewItemCancelEventArgs> _Collapsing;
 
-		public event EventHandler<TreeViewItemCancelEventArgs> Collapsing {
-			add {
+		public event EventHandler<TreeViewItemCancelEventArgs> Collapsing
+		{
+			add
+			{
 				_Collapsing += value;
-				HandleEvent (CollapsingEvent);
+				HandleEvent(CollapsingEvent);
 			}
 			remove { _Collapsing -= value; }
 		}
 
-		public virtual void OnCollapsing (TreeViewItemCancelEventArgs e)
+		public virtual void OnCollapsing(TreeViewItemCancelEventArgs e)
 		{
 			if (_Collapsing != null)
-				_Collapsing (this, e);
+				_Collapsing(this, e);
 		}
-		
+
 		public const string CollapsedEvent = "TreeView.CollapsedEvent";
 
 		event EventHandler<TreeViewItemEventArgs> _Collapsed;
 
-		public event EventHandler<TreeViewItemEventArgs> Collapsed {
-			add {
+		public event EventHandler<TreeViewItemEventArgs> Collapsed
+		{
+			add
+			{
 				_Collapsed += value;
-				HandleEvent (CollapsedEvent);
+				HandleEvent(CollapsedEvent);
 			}
 			remove { _Collapsed -= value; }
 		}
 
-		public virtual void OnCollapsed (TreeViewItemEventArgs e)
+		public virtual void OnCollapsed(TreeViewItemEventArgs e)
 		{
 			if (_Collapsed != null)
-				_Collapsed (this, e);
+				_Collapsed(this, e);
 		}
 
+		public const string AfterLabelEditEvent = "TreeView.AfterLabelEdit";
+
+		event EventHandler<TreeViewItemEditEventArgs> _AfterLabelEdit;
+
+		public event EventHandler<TreeViewItemEditEventArgs> AfterLabelEdit
+		{
+			add
+			{
+				_AfterLabelEdit += value;
+				HandleEvent(AfterLabelEditEvent);
+			}
+			remove { _AfterLabelEdit -= value; }
+		}
+
+		public virtual void OnAfterLabelEdit(TreeViewItemEditEventArgs e)
+		{
+			if (_AfterLabelEdit != null)
+				_AfterLabelEdit(this, e);
+		}
+
+		public const string BeforeLabelEditEvent = "TreeView.BeforeLabelEdit";
+
+		event EventHandler<TreeViewItemCancelEventArgs> _BeforeLabelEdit;
+
+		public event EventHandler<TreeViewItemCancelEventArgs> BeforeLabelEdit
+		{
+			add
+			{
+				_BeforeLabelEdit += value;
+				HandleEvent(BeforeLabelEditEvent);
+			}
+			remove { _BeforeLabelEdit -= value; }
+		}
+
+		public virtual void OnBeforeLabelEdit(TreeViewItemCancelEventArgs e)
+		{
+			if (_BeforeLabelEdit != null)
+				_BeforeLabelEdit(this, e);
+		}
+
+		public const string NodeMouseClickEvent = "TreeView.NodeMouseClick";
+
+		event EventHandler<TreeViewItemEventArgs> _NodeMouseClick;
+
+		public event EventHandler<TreeViewItemEventArgs> NodeMouseClick
+		{
+			add
+			{
+				_NodeMouseClick += value;
+				HandleEvent(NodeMouseClickEvent);
+			}
+			remove { _NodeMouseClick -= value; }
+		}
+
+		public virtual void OnNodeMouseClick(TreeViewItemEventArgs e)
+		{
+			if (_NodeMouseClick != null)
+				_NodeMouseClick(this, e);
+		}
 		#endregion
-		
-		public TreeView () : this (Generator.Current)
+		public TreeView() : this (Generator.Current)
 		{
 		}
 
-		public TreeView (Generator g) : this (g, typeof(ITreeView))
+		public TreeView(Generator g) : this (g, typeof(ITreeView))
 		{
 		}
-		
-		protected TreeView (Generator generator, Type type, bool initialize = true)
+
+		protected TreeView(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
 			handler = (ITreeView)Handler;
 		}
-		
-		public ITreeItem SelectedItem {
+
+		public ITreeItem SelectedItem
+		{
 			get { return handler.SelectedItem; }
-            set
-            {
-                EnsureVisible(value);
-                handler.SelectedItem = value;
-            }
+			set { handler.SelectedItem = value; }
 		}
-		
+
 		[Obsolete("Use DataStore property instead")]
-		public ITreeStore TopNode {
+		public ITreeStore TopNode
+		{
 			get { return this.DataStore; }
 			set { this.DataStore = value; }
 		}
-		
-		public ITreeStore DataStore {
+
+		public ITreeStore DataStore
+		{
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
 		}
 
-		public void RefreshData ()
+		public void RefreshData()
 		{
-			handler.RefreshData ();
+			handler.RefreshData();
 		}
-		
-		public void RefreshItem (ITreeItem item)
+
+		public void RefreshItem(ITreeItem item)
 		{
-			handler.RefreshItem (item);
+			handler.RefreshItem(item);
 		}
-        public ITreeItem GetNodeAt(Point point)
-        {
-            return handler.GetNodeAt(point);
-        }
 
-        public bool LabelEdit
-        {
-            get { return handler.LabelEdit; }
-            set { handler.LabelEdit = value; }
-        }
+		public ITreeItem GetNodeAt(PointF point)
+		{
+			return handler.GetNodeAt(point);
+		}
 
-        public bool IsExpanded(ITreeItem item)
-        {
-            return handler.IsExpanded(item);
-        }
+		public bool LabelEdit
+		{
+			get { return handler.LabelEdit; }
+			set { handler.LabelEdit = value; }
+		}
 
-        public void Collapse(ITreeItem item)
-        {
-            handler.Collapse(item);
-        }
+		private void EnsureVisible(ITreeItem value)
+		{
+			if (value != null)
+			{
+				// expand the parents
+				var items = new Stack<ITreeItem>();
 
-        public void Expand(ITreeItem item)
-        {
-            handler.Expand(item);
-        }
+				var temp = value;
+				while (temp != null)
+				{
+					// start with the parent
+					temp = temp.Parent;
 
-        public bool AllowDrop
-        {
-            get { return handler.AllowDrop; }
-            set { handler.AllowDrop = value; }
-        }
+					if (temp != null)
+						items.Push(temp);
+				}
 
-        public void Remove(ITreeItem item)
-        {
-            handler.Remove(item);
-        }
+				while (items.Count > 0)
+				{
+					var item = items.Pop();
 
-        public void AddTo(ITreeItem dest, ITreeItem item)
-        {
-            handler.AddTo(
-                dest,
-                item);
-        }
-
-        public void SetImage(
-            TreeItem item, 
-            Image image)
-        {
-            handler.SetImage(
-                item,
-                image);
-        }
-
-        private void EnsureVisible(
-            ITreeItem value)
-        {
-            if (value != null)
-            {
-                // expand the parents
-                var items = new Stack<ITreeItem>();
-
-                var temp = value;
-                while (temp != null)
-                {
-                    // start with the parent
-                    temp = temp.Parent;
-
-                    if (temp != null)
-                        items.Push(temp);
-                }
-
-                while (items.Count > 0)
-                {
-                    var item =
-                        items.Pop();
-
-                    if (item != null)
-                        Expand(item);
-                }
-            }
-        }
-    }
+					if (item != null)
+						item.Expanded = true;
+				}
+				RefreshData();
+			}
+		}
+	}
 }
