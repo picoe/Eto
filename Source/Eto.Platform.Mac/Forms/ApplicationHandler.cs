@@ -34,7 +34,6 @@ namespace Eto.Platform.Mac.Forms
 
 		public ApplicationHandler ()
 		{
-			EtoBundle.Init();
 			Control = NSApplication.SharedApplication;
 			// until everything is marked as thread safe correctly in monomac
 			// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
@@ -95,6 +94,8 @@ namespace Eto.Platform.Mac.Forms
 		
 		public void Run (string[] args)
 		{
+			EtoBundle.Init();
+
 			if (Control.Delegate == null)
 				Control.Delegate = this.AppDelegate ?? new AppDelegate ();
 			NSApplication.Main (args);
