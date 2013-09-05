@@ -1,25 +1,31 @@
 #!/bin/bash
 
 function tounix () {
+	SAVEIFS=$IFS
+	IFS=$(echo -en "\n\b")
 	for f in $1
 	do
-		echo "Processing $f"
+		ff=${f#$SOURCE_DIR}
+		echo "Processing $ff"
 		# remove BOM
 		if [[ -f "$f" && `head -c 3 "$f"` == $'\xef\xbb\xbf' ]]; then
 			# file exists and has UTF-8 BOM
 			tail -c +4 "$f" > "$f.bak" && mv "$f.bak" "$f"
 		fi
-  		
 		# CRLF to LF
 		perl -pi -e 's/\r\n/\n/g' "$f"
 	
 	done
+	IFS=$SAVEIFS
 }
 
 function towindows () {
+	SAVEIFS=$IFS
+	IFS=$(echo -en "\n\b")
 	for f in $1
 	do
-		echo "Processing $f"
+		ff=${f#$SOURCE_DIR}
+		echo "Processing $ff"
 		# remove BOM
 		if [[ -f "$f" && `head -c 3 "$f"` == $'\xef\xbb\xbf' ]]; then
 			# file exists and has UTF-8 BOM
@@ -30,6 +36,7 @@ function towindows () {
 		perl -pi -e 's/\r\n/\n/g' "$f"
 		perl -pi -e 's/\n/\r\n/' "$f"
 	done
+	IFS=$SAVEIFS
 }
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
