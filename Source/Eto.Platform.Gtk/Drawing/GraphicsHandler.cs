@@ -267,13 +267,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 				return Pango.CairoHelper.CreateLayout (Control);
 		}
 
-		public void DrawText (Font font, Color color, float x, float y, string text)
+		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
 			using (var layout = CreateLayout ()) {
 				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
 				Control.Save ();
-				Control.Color = color.ToCairo ();
+				Control.Color = brush.Color.ToCairo ();
 				Control.MoveTo (x, y);
 				Pango.CairoHelper.LayoutPath (Control, layout);
 				Control.Fill ();

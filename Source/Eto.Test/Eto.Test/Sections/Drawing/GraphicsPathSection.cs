@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
+using VerticalAlign = Eto.Forms.VerticalAlign;
 
 namespace Eto.Test.Sections.Drawing
 {

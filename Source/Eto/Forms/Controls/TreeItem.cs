@@ -66,6 +66,6 @@ namespace Eto.Forms
 		{
 			this.Children.AddRange (children);
 		}
-	}
+    }
 }
 

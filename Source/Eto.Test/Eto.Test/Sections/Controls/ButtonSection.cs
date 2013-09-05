@@ -2,6 +2,7 @@ using System;
 using Eto.Drawing;
 using Eto.Forms;
 using System.ComponentModel;
+using VerticalAlign = Eto.Forms.VerticalAlign;
 
 namespace Eto.Test.Sections.Controls
 {

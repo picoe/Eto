@@ -553,7 +553,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this point</returns>
 		public override string ToString ()
 		{
-			return String.Format ("X={0} Y={1}", x, y);
+			return String.Format ("({0},{1})", x, y);
 		}
 		
 		/// <summary>

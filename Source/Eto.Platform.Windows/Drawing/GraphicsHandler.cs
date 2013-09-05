@@ -233,11 +233,9 @@ namespace Eto.Platform.Windows.Drawing
 			handler.DrawImage (this, source, destination);
 		}
 
-		public void DrawText (Font font, Color color, float x, float y, string text)
+		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
-			sd.Brush brush = new sd.SolidBrush (color.ToSD ());
-			Control.DrawString (text, (sd.Font)font.ControlObject, brush, x, y, defaultStringFormat);
-			brush.Dispose ();
+			Control.DrawString(text, (sd.Font)font.ControlObject, brush.ControlObject as sd.Brush, x, y, defaultStringFormat);
 		}
 
 		public SizeF MeasureString (Font font, string text)

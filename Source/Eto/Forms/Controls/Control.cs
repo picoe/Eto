@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
+using Eto.Interface;
 
 namespace Eto.Forms
 {
@@ -52,12 +53,15 @@ namespace Eto.Forms
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
-	public abstract partial class Control : InstanceWidget
+	public abstract partial class Control : 
+        InstanceWidget, 
+        IMouseInputSource,
+        IKeyboardInputSource
 	{
 		new IControl Handler { get { return (IControl)base.Handler; } }
 		
 		public bool Loaded { get; private set; }
-		
+
 		#region Events
 		
 		public const string SizeChangedEvent = "Control.SizeChanged";
