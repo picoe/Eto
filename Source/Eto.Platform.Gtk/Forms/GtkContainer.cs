@@ -13,7 +13,7 @@ namespace Eto.Platform.GtkSharp
 	}
 	
 	public abstract class GtkContainer<T, W> : GtkControl<T, W>, IContainer, IGtkContainer
-		where T: Gtk.Container
+		where T: Gtk.Widget
 		where W: Container
 			
 	{
@@ -26,10 +26,21 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		public virtual Gtk.Container MainContainerControl
+		{
+			get { return (Gtk.Container)base.ContainerControl; }
+		}
+
+		public sealed override Gtk.Widget ContainerControl
+		{
+			get { return MainContainerControl; }
+		}
+
+
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
-			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
+			ContainerControl.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
 				if (MinimumSize != null) {
 					var alloc = args.Requisition;
 					if (MinimumSize.Value.Width > 0) alloc.Width = Math.Max (alloc.Width, MinimumSize.Value.Width);
@@ -53,16 +64,13 @@ namespace Eto.Platform.GtkSharp
 		
 		public override Size Size {
 			get {
-				if (Control.Visible) 
-					return Generator.Convert(Control.Allocation.Size);
+				if (ContainerControl.Visible) 
+					return ContainerControl.Allocation.Size.ToEto ();
 				else
-					return Generator.Convert (Control.SizeRequest ()); 
+					return ContainerControl.SizeRequest ().ToEto (); 
 			}
 			set {
-				if (Control.Visible)
-					Control.Allocation = new Gdk.Rectangle(Control.Allocation.Location, Generator.Convert (value));
-				else
-					Control.SetSizeRequest (value.Width, value.Height);
+				ContainerControl.SetSizeRequest (value.Width, value.Height);
 			}
 		}
 		

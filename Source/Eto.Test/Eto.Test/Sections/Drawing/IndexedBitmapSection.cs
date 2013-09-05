@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class IndexedBitmapSection : Panel
+	public class IndexedBitmapSection : Scrollable
 	{
 		public IndexedBitmapSection ()
 		{
@@ -32,24 +32,23 @@ namespace Eto.Test.Sections.Drawing
 			while (pal.Count < 256)
 				pal.Add (Colors.Black);
 			image.Palette = pal;
-			var bd = image.Lock ();
-			
-			unsafe {
-				int col = 0;
-				byte* brow = (byte*)bd.Data;
-				for (int y = 0; y < image.Size.Height; y++) {
-					byte* b = brow;
-					col = -y;
-					for (int x = 0; x < image.Size.Width; x++) {
-						while (col < 0) col = ega.Count + col;
-						while (col >= ega.Count) col -= ega.Count;
-						*b = (byte)col++;
-						b++;
+			using (var bd = image.Lock ()) {
+				unsafe {
+					int col = 0;
+					byte* brow = (byte*)bd.Data;
+					for (int y = 0; y < image.Size.Height; y++) {
+						byte* b = brow;
+						col = -y;
+						for (int x = 0; x < image.Size.Width; x++) {
+							while (col < 0) col = ega.Count + col;
+							while (col >= ega.Count) col -= ega.Count;
+							*b = (byte)col++;
+							b++;
+						}
+						brow += bd.ScanWidth;
 					}
-					brow += bd.ScanWidth;
 				}
 			}
-			image.Unlock (bd);
 			return image;
 			
 		}

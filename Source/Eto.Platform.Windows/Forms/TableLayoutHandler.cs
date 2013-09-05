@@ -1,4 +1,3 @@
-#define SWF_1_1
 using System;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
@@ -24,9 +23,7 @@ namespace Eto.Platform.Windows
 
 		public override Size DesiredSize
 		{
-			get { 
-				return Generator.Convert (Control.PreferredSize);
-			}
+			get { return Control.PreferredSize.ToEto (); }
 		}
 		
 		public TableLayoutHandler()
@@ -38,7 +35,7 @@ namespace Eto.Platform.Windows
 			this.Control.Size = SD.Size.Empty;
 			this.Control.MinimumSize = SD.Size.Empty;
 			this.Control.AutoSize = true;
-			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
+			this.Control.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
 		}
@@ -78,13 +75,8 @@ namespace Eto.Platform.Windows
 		}
 		
 		public Padding Padding {
-			get {
-				return Generator.Convert(Control.Padding);
-			}
-			set
-			{
-				Control.Padding = Generator.Convert(value);
-			}
+			get { return Control.Padding.ToEto (); }
+			set { Control.Padding = value.ToSWF (); }
 		}
 
 		void SetScale (Control control, int x, int y)
@@ -114,7 +106,7 @@ namespace Eto.Platform.Windows
 			if (child != null) {
 				SWF.Control childControl = child.GetContainerControl ();
 				if (childControl.Parent != null) childControl.Parent.Controls.Remove (childControl);
-				childControl.Dock = ((IWindowsControl)child.Handler).DockStyle;
+				childControl.Dock = child.GetWindowsControl().DockStyle;
 				childControl.Margin = GetPadding (x, y);
 				SetScale (child, x, y);
 

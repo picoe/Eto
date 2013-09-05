@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class InterpolationSection : Panel
+	public class InterpolationSection : Scrollable
 	{
 		public InterpolationSection ()
 		{

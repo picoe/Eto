@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows.Forms
 			SWF.DialogResult dr;
 			if (parent != null) dr = Control.ShowDialog((SWF.IWin32Window)parent.ControlObject);
 			else dr = Control.ShowDialog();
-			return Generator.Convert(dr);
+			return dr.ToEto ();
 		}
 
 		public string Title {

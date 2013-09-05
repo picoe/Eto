@@ -4,6 +4,7 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -33,33 +34,35 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Control = new EtoCell { 
 				Handler = this,
-				UsesSingleLineMode = true
+				UsesSingleLineMode = true,
+				Wraps = false,
+				Scrollable = true
 			};
 		}
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
 		{
 			var c = cell as EtoCell;
-			c.BackgroundColor = Generator.ConvertNS (color);
+			c.BackgroundColor = color.ToNS ();
 			c.DrawsBackground = color != Colors.Transparent;
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)
 		{
 			var c = cell as EtoCell;
-			return Generator.Convert (c.BackgroundColor);
+			return c.BackgroundColor.ToEto ();
 		}
 
 		public override void SetForegroundColor (NSCell cell, Color color)
 		{
 			var c = cell as EtoCell;
-			c.TextColor = Generator.ConvertNS (color);
+			c.TextColor = color.ToNS ();
 		}
 
 		public override Color GetForegroundColor (NSCell cell)
 		{
 			var c = cell as EtoCell;
-			return Generator.Convert (c.TextColor);
+			return c.TextColor.ToEto ();
 		}
 
 		public override NSObject GetObjectValue (object dataItem)

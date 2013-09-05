@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +24,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
 			};
 		}
+
+		public override bool UseMousePreview { get { return true; } }
 
 		public override void AttachEvent (string handler)
 		{
@@ -94,7 +96,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public Range Selection
 		{
 			get { return new Range (Control.SelectionStart, Control.SelectionLength); }
-			set { Control.Select (value.Location, value.Length); }
+			set { Control.Select (value.Start, value.Length); }
 		}
 
 		public void SelectAll ()

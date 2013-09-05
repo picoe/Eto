@@ -1,10 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
+using Eto.Platform.Wpf.Forms;
 
 namespace Eto.Platform.Wpf
 {
@@ -73,6 +74,29 @@ namespace Eto.Platform.Wpf
 				current = swm.VisualTreeHelper.GetParent (current);
 			}
 			return false;
+		}
+
+		public static void EnsureLoaded (this sw.FrameworkElement control)
+		{
+			ApplicationHandler.InvokeIfNecessary (() => {
+				if (!control.IsLoaded)
+					control.Dispatcher.Invoke (new Action (() => { }), sw.Threading.DispatcherPriority.ContextIdle, null);
+			});
+		}
+
+		public static double Horizontal (this sw.Thickness thickness)
+		{
+			return thickness.Left + thickness.Right;
+		}
+
+		public static double Vertical (this sw.Thickness thickness)
+		{
+			return thickness.Top + thickness.Bottom;
+		}
+
+		public static sw.Size Size (this sw.Thickness thickness)
+		{
+			return new sw.Size (thickness.Horizontal (), thickness.Vertical ());
 		}
 	}
 }

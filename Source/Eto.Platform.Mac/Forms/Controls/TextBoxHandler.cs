@@ -4,6 +4,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Controls;
 using MonoMac.ObjCRuntime;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -69,25 +70,30 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public TextBoxHandler ()
+		public override NSTextField CreateControl()
 		{
-			Control = new EtoTextField {
+			return new EtoTextField {
 				Handler = this,
 				Bezeled = true,
 				Editable = true,
 				Selectable = true,
 				Formatter = new MyFormatter{ Handler = this }
 			};
-			Control.Cell.LineBreakMode = NSLineBreakMode.CharWrapping;
+		}
 
-			//Control.BezelStyle = NSTextFieldBezelStyle.Square;
-			//Control.Bordered = true;
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Cell.Scrollable = true;
+			Control.Cell.Wraps = false;
+			Control.Cell.UsesSingleLineMode = true;
+
 			MaxLength = -1;
 		}
 
-		protected override Eto.Drawing.Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
-			var size = base.GetNaturalSize ();
+			var size = base.GetNaturalSize (availableSize);
 			size.Width = Math.Max (100, size.Height);
 			return size;
 		}
@@ -119,6 +125,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public string PlaceholderText {
 			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
+		}
+
+		public void SelectAll()
+		{
+			Control.SelectText (Control);
 		}
 	}
 }

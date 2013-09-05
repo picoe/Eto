@@ -35,18 +35,57 @@ namespace Eto.Platform.iOS.Forms.Controls
 				}
 			}
 		}
-		
-		
-		public ButtonHandler ()
+
+		public override void AttachEvent (string handler)
 		{
-			Control = UIButton.FromType(UIButtonType.RoundedRect); //new MyButton{ Handler = this };
+			base.AttachEvent (handler);
+		}
+
+		public override Color BackgroundColor {
+			get {
+				return Control.Layer.BackgroundColor.ToEtoColor ();
+			}
+			set {
+				Control.Layer.BackgroundColor = value.ToCGColor ();
+			}
+		}
+
+		public override UIButton CreateControl ()
+		{
+			//return UIButton.FromType(UIButtonType.Custom);
+			return UIButton.FromType(UIButtonType.RoundedRect);
+		}
+
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			/**
+			Control.SetTitleColor (UIColor.Black, UIControlState.Normal);
+			Control.BackgroundColor = UIColor.White;
+			Control.Layer.BorderColor = UIColor.Black.CGColor;
+			Control.Layer.BorderWidth = 0.5f;
+			Control.Layer.CornerRadius = 7f;
+			/**/
+			Control = UIButton.FromType(UIButtonType.RoundedRect);
+			/**/
 			Control.SetTitle(string.Empty, UIControlState.Normal);
 			//Control.ButtonType = UIButtonType.RoundedRect;
-			Control.SetFrameSize(Generator.ConvertF(Button.DefaultSize));
+			Control.SetFrameSize(Button.DefaultSize.ToSDSizeF());
 			Control.TouchUpInside += delegate {
 				Widget.OnClick(EventArgs.Empty);
 			};
 		}
-		
+
+		public Image Image
+		{
+			get;
+			set;
+		}
+
+		public ButtonImagePosition ImagePosition
+		{
+			get;
+			set;
+		}
 	}
 }

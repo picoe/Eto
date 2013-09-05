@@ -2,7 +2,11 @@ using System;
 using System.Runtime.InteropServices;
 using Microsoft.Win32;
 
+#if WINFORMS
 namespace Eto.Platform.Windows.IO
+#elif WPF
+namespace Eto.Platform.Wpf.IO
+#endif
 {
 
 	/// <summary>

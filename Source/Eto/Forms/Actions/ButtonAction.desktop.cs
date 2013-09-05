@@ -1,3 +1,4 @@
+#if DESKTOP
 using System;
 using System.Reflection;
 using System.Collections;
@@ -14,7 +15,7 @@ namespace Eto.Forms
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = this.Enabled;
-			if (Icon != null) mi.Icon = Icon;
+			if (Image != null) mi.Image = Image;
 			if (!string.IsNullOrEmpty (MenuItemStyle))
 				mi.Style = MenuItemStyle;
 			new MenuConnector(this, mi);
@@ -46,3 +47,4 @@ namespace Eto.Forms
 		}
 	}
 }
+#endif

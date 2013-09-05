@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -11,18 +11,18 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class CheckToolBarButtonHandler : ToolBarItemHandler<swc.Primitives.ToggleButton, CheckToolBarButton>, ICheckToolBarButton
 	{
-		Icon icon;
-		swc.Image image;
+        Image image;
+		swc.Image swcImage;
 		swc.TextBlock label;
 		public CheckToolBarButtonHandler ()
 		{
 			Control = new swc.Primitives.ToggleButton {
 				IsThreeState = false
 			};
-			image = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
+			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
 			label = new swc.TextBlock ();
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
-			panel.Children.Add (image);
+			panel.Children.Add (swcImage);
 			panel.Children.Add (label);
 			Control.Content = panel;
 
@@ -55,16 +55,13 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.ToolTip = value; }
 		}
 
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				icon = value;
-				if (icon != null)
-					image.Source = icon.ControlObject as swm.ImageSource;
-				else
-					image.Source = null;
+				image = value;
+				swcImage.Source = image.ToWpf ((int)swcImage.MaxWidth);
 			}
 		}
 

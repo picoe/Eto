@@ -1,6 +1,7 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp.Forms.Cells
 {
@@ -21,8 +22,8 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		}
 
 		public override Eto.Drawing.Color BackgroundColor {
-			get { return Generator.Convert (Renderer.CellBackgroundGdk); }
-			set { Renderer.CellBackgroundGdk = Generator.Convert (value); }
+			get { return Renderer.CellBackgroundGdk.ToEto (); }
+			set { Renderer.CellBackgroundGdk = value.ToGdk (); }
 		}
 
 		public override Eto.Drawing.Color ForegroundColor {
@@ -42,12 +43,16 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		}
 
 		public override Eto.Drawing.Color ForegroundColor {
-			get { return Generator.Convert (Renderer.ForegroundGdk); }
-			set { Renderer.ForegroundGdk = Generator.Convert (value); }
+			get { return Renderer.ForegroundGdk.ToEto (); }
+			set { Renderer.ForegroundGdk = value.ToGdk (); }
 		}
 
 		public override Eto.Drawing.Font Font {
-			get { return font; }
+			get {
+				if (font == null)
+					return new Font (Column.Generator, new FontHandler (Renderer.FontDesc));
+				return font;
+			}
 			set {
 				font = value;
 				if (Font != null)

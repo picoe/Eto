@@ -10,8 +10,8 @@ namespace Eto.Platform.Windows.Drawing
 
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler(IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base (image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -26,7 +26,7 @@ namespace Eto.Platform.Windows.Drawing
 		}
 	}
 
-	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap
+	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap, IWindowsImage
 	{
 
 		public IndexedBitmapHandler()
@@ -67,7 +67,7 @@ namespace Eto.Platform.Windows.Drawing
 		public BitmapData Lock()
 		{
 			SD.Imaging.BitmapData bd = Control.LockBits(new SD.Rectangle(0, 0, Control.Width, Control.Height), SD.Imaging.ImageLockMode.ReadWrite, Control.PixelFormat);
-			return new BitmapDataHandler(bd.Scan0, bd.Stride, bd);
+			return new BitmapDataHandler(Widget, bd.Scan0, bd.Stride, bd.PixelFormat.BitsPerPixel(), bd);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -80,7 +80,7 @@ namespace Eto.Platform.Windows.Drawing
 			get
 			{
 				SD.Imaging.ColorPalette cp = Control.Palette;
-				return new Palette(cp.Entries.Select(r => Generator.Convert (r)).ToList ());
+				return new Palette(cp.Entries.Select(r => r.ToEto ()).ToList ());
 			}
 			set
 			{
@@ -88,11 +88,31 @@ namespace Eto.Platform.Windows.Drawing
 				if (value.Count != cp.Entries.Length) throw new ArgumentException("Input palette must have the same colors as the output");
 				for (int i=0; i<value.Count; i++)
 				{
-					cp.Entries[i] = Generator.Convert(value[i]);
+					cp.Entries[i] = value[i].ToSD ();
 				}
 				Control.Palette = cp;
 			}
 		}
 
+
+		public SD.Image GetImageWithSize (int? size)
+		{
+			return Control;
+		}
+
+		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			graphics.Control.DrawImage (Control, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y)
+		{
+			graphics.Control.DrawImage (Control, x, y);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			graphics.Control.DrawImage (Control, x, y, width, height);
+		}
 	}
 }

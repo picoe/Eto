@@ -5,14 +5,20 @@ using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
-using SD = System.Drawing;
+using sd = System.Drawing;
+using MonoMac.ImageIO;
 
 namespace Eto.Platform.Mac.Drawing
 {
+	/// <summary>
+	/// Bitmap data handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public BitmapDataHandler (Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -36,13 +42,14 @@ namespace Eto.Platform.Mac.Drawing
 			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
 		}
 
-		public override bool Flipped {
-			get {
-				return false;
-			}
-		}
+		public override bool Flipped { get { return false; } }
 	}
 
+	/// <summary>
+	/// Bitmap handler.
+	/// </summary>
+	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : ImageHandler<NSImage, Bitmap>, IBitmap
 	{
 		NSImageRep rep;
@@ -65,7 +72,7 @@ namespace Eto.Platform.Mac.Drawing
 			Control = new NSImage (fileName);
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new SD.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create (Stream stream)
@@ -73,7 +80,7 @@ namespace Eto.Platform.Mac.Drawing
 			Control = new NSImage (NSData.FromStream (stream));
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
-			Control.Size = new SD.SizeF(rep.PixelsWide, rep.PixelsHigh);
+			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
 		public void Create (int width, int height, PixelFormat pixelFormat)
@@ -142,11 +149,21 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
-		public void Resize (int width, int height)
+		public void Create(int width, int height, Graphics graphics)
 		{
-			//control = control.ScaleSimple (width, height, Gdk.InterpType.Bilinear);
+			Create (width, height, PixelFormat.Format32bppRgba);
 		}
-		
+
+		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		{
+			var source = image.ToNS ();
+			Control = new NSImage (new sd.SizeF(width, height));
+			Control.LockFocus ();
+			NSGraphicsContext.CurrentContext.GraphicsPort.InterpolationQuality = interpolation.ToCG ();
+			source.DrawInRect (new sd.RectangleF(sd.PointF.Empty, Control.Size), new sd.RectangleF(sd.PointF.Empty, source.Size), NSCompositingOperation.SourceOver, 1f);
+			Control.UnlockFocus ();
+		}
+
 		public override NSImage GetImage ()
 		{
 			return Control;
@@ -154,17 +171,14 @@ namespace Eto.Platform.Mac.Drawing
 
 		public BitmapData Lock ()
 		{
-			//Control.LockFocus();
 			if (bmprep != null)
-				return new BitmapDataHandler (bmprep.BitmapData, bmprep.BytesPerRow, Control);
+				return new BitmapDataHandler (Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
 			else
 				return null;
 		}
 
 		public void Unlock (BitmapData bitmapData)
 		{
-			//Control.UnlockFocus();
-			// don't need to do anythin
 		}
 
 		public void Save (Stream stream, ImageFormat format)
@@ -209,45 +223,59 @@ namespace Eto.Platform.Mac.Drawing
 		}
 
 		public override Size Size {
-			get { 
+			get {
+				/*
 				NSImageRep rep = this.rep;
 				if (rep == null)
 					rep = Control.BestRepresentationForDevice (null);
 				if (rep != null)
 					return new Size(rep.PixelsWide, rep.PixelsHigh);
 				else
-					return Generator.ConvertF (Control.Size);
+				*/
+				return Control.Size.ToEtoSize();
 			}
 		}
 		
-		/*
-		public override void DrawImage (GraphicsHandler graphics, int x, int y)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate(new SD.RectangleF(0, 0, nsimage.Size.Width, nsimage.Size.Height), nsimage.Size.Height);
-			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, nsimage.Size.Width, nsimage.Size.Height), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
-		}
-		
-		public override void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height)
-		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate(new SD.RectangleF(0, 0, nsimage.Size.Width, nsimage.Size.Height), nsimage.Size.Height);
-			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, width, height), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
-		}
-		*/
-		
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
-		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate (Generator.ConvertF (source), nsimage.Size.Height);
-			var destRect = graphics.TranslateView (Generator.ConvertF (destination), false);
+			var sourceRect = graphics.Translate (source.ToSD (), Control.Size.Height);
+			var destRect = graphics.TranslateView (destination.ToSD (), true, true);
+			graphics.FlipDrawing ();
+			destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
 			if (alpha)
-				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+				Control.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
 			else
-				nsimage.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
+				Control.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
+		public Bitmap Clone (Rectangle? rectangle = null)
+		{
+			if (rectangle == null)
+				return new Bitmap (Generator, new BitmapHandler ((NSImage)Control.Copy ()));
+			else {
+				var rect = rectangle.Value;
+				PixelFormat format;
+				if (bmprep != null && bmprep.BitsPerPixel == 24)
+					format = PixelFormat.Format24bppRgb;
+				else if (alpha || (bmprep != null && bmprep.HasAlpha))
+					format = PixelFormat.Format32bppRgba;
+				else
+					format = PixelFormat.Format32bppRgb;
+
+				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
+				using (var graphics = new Graphics (Generator, bmp)) {
+					graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
+				}
+				return bmp;
+			}
+		}
+
+		public Color GetPixel(int x, int y)
+		{
+			if (bmprep == null)
+				throw new InvalidOperationException (string.Format ("Cannot get pixel data for this type of bitmap ({0})", rep.GetType ()));
+
+			return bmprep.ColorAt(x, y).ToEto();
+		}
 	}
 }

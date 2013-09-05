@@ -34,9 +34,11 @@ namespace Eto.Platform.Mac.Forms
 
 		public ApplicationHandler ()
 		{
-			NSApplication.Init ();
 			EtoBundle.Init();
 			Control = NSApplication.SharedApplication;
+			// until everything is marked as thread safe correctly in monomac
+			// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
+			NSApplication.CheckForIllegalCrossThreadCalls = false;
 		}
 		
 		static void restart_WillTerminate (object sender, EventArgs e)
@@ -126,12 +128,11 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 		
-		public void EnableFullScreen(NSApplicationPresentationOptions options = NSApplicationPresentationOptions.FullScreen | NSApplicationPresentationOptions.AutoHideToolbar | NSApplicationPresentationOptions.AutoHideMenuBar | NSApplicationPresentationOptions.AutoHideDock)
+		public void EnableFullScreen()
 		{
 			if (Control.RespondsToSelector (new Selector ("setPresentationOptions:"))) {
-				if (options.HasFlag (NSApplicationPresentationOptions.FullScreen))
-					AddFullScreenMenuItem = true;
-				Control.PresentationOptions = options;
+				AddFullScreenMenuItem = true;
+				Control.PresentationOptions |= NSApplicationPresentationOptions.FullScreen;
 			}
 		}
 		

@@ -11,8 +11,8 @@ namespace Eto.Platform.Mac.Drawing
 {
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public IndexedBitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -31,6 +31,7 @@ namespace Eto.Platform.Mac.Drawing
 	{
 		Size size;
 		int bytesPerRow;
+		int bitsPerPixel;
 		uint[] colors;
 		BitmapHandler bmp;
 		IntPtr ptr;
@@ -50,6 +51,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public void Create (int width, int height, int bitsPerPixel)
 		{
+			this.bitsPerPixel = bitsPerPixel;
 			bytesPerRow = width * bitsPerPixel / 8;
 			int colorCount = (int)Math.Pow (2, bitsPerPixel);
 			colors = new uint[colorCount];
@@ -73,7 +75,7 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			//IntPtr ptr = Marshal.AllocHGlobal (Control.Length);
 			//Marshal.Copy (Control, 0, ptr, Control.Length);
-			return  new IndexedBitmapDataHandler (ptr, bytesPerRow, null);
+			return  new IndexedBitmapDataHandler (Widget, ptr, bytesPerRow, bitsPerPixel, null);
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -153,9 +155,9 @@ namespace Eto.Platform.Mac.Drawing
 			
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			CopyTo (bmp, source);
+			CopyTo (bmp, Rectangle.Truncate (source));
 			bmp.DrawImage (graphics, source, destination);
 		}
 		

@@ -10,8 +10,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler (IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public IndexedBitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -30,6 +30,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 	{
 		Size size;
 		int rowStride;
+		int bitsPerPixel;
 		uint[] colors;
 
 		public int RowStride {
@@ -44,6 +45,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void Create (int width, int height, int bitsPerPixel)
 		{
+			this.bitsPerPixel = bitsPerPixel;
 			rowStride = width * bitsPerPixel / 8;
 			int colorCount = (int)Math.Pow (2, bitsPerPixel);
 			colors = new uint[colorCount];
@@ -64,7 +66,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			IntPtr ptr = Marshal.AllocHGlobal (Control.Length);
 			Marshal.Copy (Control, 0, ptr, Control.Length);
-			return  new IndexedBitmapDataHandler (ptr, rowStride, null);
+			return  new IndexedBitmapDataHandler (Widget, ptr, rowStride, bitsPerPixel, null);
 		}
 
 		public void Unlock (BitmapData bitmapData)
@@ -94,7 +96,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			return new Gdk.RgbCmap (colors);
 		}
 
-		public override void SetImage (Gtk.Image imageView)
+		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
 			using (var drawable = new Gdk.Pixmap(null, Size.Width, Size.Height, 24))
 			using (var gc = new Gdk.GC(drawable)) {
@@ -102,38 +104,46 @@ namespace Eto.Platform.GtkSharp.Drawing
 	
 				
 				drawable.DrawIndexedImage (gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap ());
-				imageView.Pixmap = drawable;
+
+				if (iconSize != null) {
+					var iconSet = new Gtk.IconSet(Gdk.Pixbuf.FromDrawable (drawable, Gdk.Colormap.System, 0, 0, 0, 0, size.Width, size.Height));
+					imageView.SetFromIconSet(iconSet, iconSize.Value);
+				}
+				else
+					imageView.Pixmap = drawable;
 				
 			}
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			// copy to a surface
-			var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, source.Width, source.Height);
+			var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, (int)source.Width, (int)source.Height);
 			unsafe {
 				byte* destrow = (byte*)surface.DataPtr;
 				fixed (byte* srcdata = this.Control) {
-					byte* srcrow = srcdata + (source.Top * rowStride) + source.Left;
-					for (int y = source.Top; y < source.Bottom; y++) {
+					byte* srcrow = srcdata + ((int)source.Top * rowStride) + (int)source.Left;
+					for (int y = (int)source.Top; y < (int)source.Bottom; y++) {
 						byte* src = (byte*)srcrow;
 						uint* dest = (uint*)destrow;
-						for (int x = source.Left; x < source.Right; x++) {
+						for (int x = (int)source.Left; x < (int)source.Right; x++) {
 							*
-							dest = colors [*src];
+							dest = colors[*src];
 							src++;
 							dest++;
 						}
-						
+
 						srcrow += rowStride;
 						destrow += surface.Stride;
 					}
 				}
 			}
-			
+
 			var context = graphics.Control;
 			context.Save ();
-			context.Rectangle (Generator.ConvertC (destination));
+			destination.X += (float)graphics.InverseOffset;
+			destination.Y += (float)graphics.InverseOffset;
+			context.Rectangle (destination.ToCairo ());
 			double scalex = 1;
 			double scaley = 1;
 			if (source.Width != destination.Width || source.Height != destination.Height) {
@@ -141,11 +151,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 				scaley = (double)destination.Height / (double)source.Height;
 				context.Scale (scalex, scaley);
 			}
-			context.SetSourceSurface (surface, destination.Left, destination.Top);
+			context.SetSourceSurface (surface, (int)destination.Left, (int)destination.Top);
 			context.Fill ();
 			context.Restore ();
-			
-			
+
+
 			/*
 			if (graphics == null || graphics.Control == null || graphics.GC == null) 
 				throw new Exception("WHAA?");

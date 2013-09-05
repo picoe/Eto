@@ -1,126 +1,127 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class DrawableHandler : WindowsControl<DrawableHandler.DrawableInternal, Drawable>, IDrawable
+	public class DrawableHandler : WindowsContainer<DrawableHandler.EtoDrawable, Drawable>, IDrawable
 	{
-
-		public class DrawableInternal : SWF.Control
+		public class EtoDrawable : swf.Control
 		{
 			bool canFocus;
 
-			DrawableHandler handler;
-			public DrawableInternal(DrawableHandler handler)
+			public DrawableHandler Handler { get; set; }
+
+			public EtoDrawable ()
 			{
-				this.handler = handler;
-				this.SetStyle(SWF.ControlStyles.AllPaintingInWmPaint, true);
-				//this.SetStyle(SWF.ControlStyles.SupportsTransparentBackColor, true);
-				//this.SetStyle(SWF.ControlStyles.Selectable, true);
-				this.SetStyle(SWF.ControlStyles.StandardClick, true);
-				this.SetStyle(SWF.ControlStyles.StandardDoubleClick, true);
-				this.SetStyle(SWF.ControlStyles.ContainerControl, true);
-				this.SetStyle(SWF.ControlStyles.UserPaint, true);
-				this.SetStyle(SWF.ControlStyles.DoubleBuffer, true);
-				//this.SetStyle(SWF.ControlStyles.Opaque, true);
-				//this.SetStyle(SWF.ControlStyles., true);
-				//this.BackColor = SD.Color.Transparent;
-				//this.BackColor = SD.Color.Black;
+				this.SetStyle (swf.ControlStyles.AllPaintingInWmPaint, true);
+				this.SetStyle (swf.ControlStyles.StandardClick, true);
+				this.SetStyle (swf.ControlStyles.StandardDoubleClick, true);
+				this.SetStyle (swf.ControlStyles.ContainerControl, true);
+				this.SetStyle (swf.ControlStyles.UserPaint, true);
+				this.SetStyle (swf.ControlStyles.DoubleBuffer, true);
+				this.SetStyle (swf.ControlStyles.ResizeRedraw, true);
+				this.SetStyle (swf.ControlStyles.SupportsTransparentBackColor, true);
 			}
-			
+
 			public bool CanFocusMe
 			{
 				get { return canFocus; }
-				set { canFocus = value; this.SetStyle(SWF.ControlStyles.Selectable, value);  }
+				set { canFocus = value; this.SetStyle (swf.ControlStyles.Selectable, value); }
 			}
 
-			protected override void OnGotFocus(EventArgs e)
+			protected override void OnGotFocus (EventArgs e)
 			{
-				base.OnGotFocus(e);
-				Invalidate();
+				base.OnGotFocus (e);
+				Invalidate ();
 			}
 
-			protected override void OnLostFocus(EventArgs e)
+			protected override void OnLostFocus (EventArgs e)
 			{
-				base.OnLostFocus(e);
-				Invalidate();
+				base.OnLostFocus (e);
+				Invalidate ();
 			}
-			
-			protected override bool ProcessDialogKey(SWF.Keys keyData)
+
+			protected override bool ProcessDialogKey (swf.Keys keyData)
 			{
-				var e = new SWF.KeyEventArgs(keyData);
-				base.OnKeyDown(e);
+				var e = new swf.KeyEventArgs (keyData);
+				base.OnKeyDown (e);
+				if (!e.Handled) {
+					// Prevent firing the keydown event twice for the same key
+					Handler.LastKeyDown = e.KeyData.ToEto ();
+				}
 				return e.Handled;
 			}
-			
-			protected override bool IsInputKey(System.Windows.Forms.Keys keyData)
+
+			protected override bool IsInputKey (swf.Keys keyData)
 			{
-				switch (keyData)
-				{
-					case SWF.Keys.Up:
-					case SWF.Keys.Down:
-					case SWF.Keys.Left:
-					case SWF.Keys.Right:
-						return true;
-					default:
-						return base.IsInputKey(keyData);
+				switch (keyData) {
+				case swf.Keys.Up:
+				case swf.Keys.Down:
+				case swf.Keys.Left:
+				case swf.Keys.Right:
+				case swf.Keys.Back:
+					return true;
+				default:
+					return base.IsInputKey (keyData);
 				}
 			}
 
-			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
+			protected override void OnPaint (swf.PaintEventArgs e)
 			{
-				//base.OnPaint(e);
-				Graphics graphics = new Graphics(handler.Widget.Generator, new GraphicsHandler(e.Graphics));
+				base.OnPaint (e);
 
-				handler.Widget.OnPaint(new PaintEventArgs(graphics, Generator.Convert(e.ClipRectangle)));
+				Handler.Widget.OnPaint (e.ToEto (Handler.Generator));
 			}
-			protected override void OnClick(EventArgs e)
+
+			protected override void OnClick (EventArgs e)
 			{
 				base.OnClick (e);
-				if (CanFocusMe) Focus();
+				if (CanFocusMe) Focus ();
 			}
-
-            protected override void OnSizeChanged(EventArgs e)
-            {
-                base.OnSizeChanged(e);
-                Invalidate();
-            }
-
 		}
-		
+
+        public DrawableHandler()
+        {
+        }
+
+        /// <summary>
+        /// This is to allow instantiating a DrawableHandler
+        /// from an existing control.
+        /// </summary>
+        public DrawableHandler(EtoDrawable control) 
+        {
+            Control = control;
+			Control.Handler = this;
+            Control.TabStop = true;
+        }
+
 		public void Create ()
 		{
-			Control = new DrawableInternal(this);
+			Control = new EtoDrawable { Handler = this };
 			Control.TabStop = true;
 		}
-		
-		public bool CanFocus {
-			get {
-				return Control.CanFocusMe;
-			}
-			set {
-				Control.CanFocusMe = value;
-			}
+
+		public Graphics CreateGraphics()
+		{
+			return new Graphics(Widget.Generator, new GraphicsHandler(Control.CreateGraphics()));
 		}
 
-		public override Size Size
-		{
-			get	{ return Generator.Convert(Control.Size); }
-			set { Control.Size = Generator.Convert(value); }
+		public bool CanFocus {
+			get { return Control.CanFocusMe; }
+			set { Control.CanFocusMe = value; }
 		}
 
 		public void Update(Rectangle rect)
 		{
-			SD.Graphics g = Control.CreateGraphics();
-			Graphics graphics = new Graphics(Widget.Generator, new GraphicsHandler(g));
+			using (var g = Control.CreateGraphics ()) {
+				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (g));
 
-			Widget.OnPaint(new PaintEventArgs(graphics, rect));
-			g.Dispose();
+				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+			}
 		}
-
 	}
 }

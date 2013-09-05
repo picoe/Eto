@@ -31,21 +31,12 @@ namespace Eto.Platform.Windows
 				using (var g = SD.Graphics.FromHwnd (this.Handle)) {
 					var bordersAndPadding = this.Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
 					proposedSize -= bordersAndPadding;
-					proposedSize.Width = Math.Max (0, proposedSize.Width);
 					proposedSize.Height = Math.Max (0, proposedSize.Height);
-					bool isDocked = false;
-					if (proposedSize.Width <= 0) {
-						var dockLayout = Handler.Widget.ParentLayout as DockLayout;
-						if (dockLayout != null) {
-							proposedSize.Width = this.Parent.Width - dockLayout.Padding.Horizontal;
-							isDocked = true;
-						}
-					}
-					else
-						proposedSize.Width = Int32.MaxValue;
+					if (proposedSize.Width <= 1)
+						proposedSize.Width = int.MaxValue;
+
 					var size = g.MeasureString (this.Text, this.Font, proposedSize.Width, format);
-					if (isDocked)
-						size.Width = proposedSize.Width;
+
 					size += bordersAndPadding;
 					return SD.Size.Ceiling (size);
 				}
@@ -148,7 +139,7 @@ namespace Eto.Platform.Windows
 				}
 			}			
 		}
-		
+
 		public LabelHandler ()
 		{
 			Control = new MyLabel { Handler = this };
@@ -157,10 +148,10 @@ namespace Eto.Platform.Windows
 		
 		public Color TextColor {
 			get {
-				return Generator.Convert (Control.ForeColor);
+				return Control.ForeColor.ToEto ();
 			}
 			set {
-				Control.ForeColor = Generator.Convert (value);
+				Control.ForeColor = value.ToSD ();
 			}
 		}
 

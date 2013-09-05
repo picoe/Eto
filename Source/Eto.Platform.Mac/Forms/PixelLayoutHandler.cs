@@ -5,6 +5,7 @@ using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -27,16 +28,16 @@ namespace Eto.Platform.Mac.Forms
 			Point point;
 			if (points.TryGetValue (control, out point)) {
 				var frameSize = ((NSView)control.ControlObject).Frame.Size;
-				return new SD.RectangleF (Generator.ConvertF (point), frameSize);
+				return new SD.RectangleF (point.ToSDPointF (), frameSize);
 			}
 			return base.GetPosition (control);
 		}
 		
-		public override Size GetPreferredSize ()
+		public override Size GetPreferredSize (Size availableSize)
 		{
 			Size size = Size.Empty;
 			foreach (var item in points) {
-				var frameSize = GetPreferredSize (item.Key);
+				var frameSize = item.Key.GetPreferredSize (availableSize);
 				size = Size.Max (size, frameSize + new Size (item.Value));
 			}
 			return size;
@@ -59,7 +60,7 @@ namespace Eto.Platform.Mac.Forms
 			var offset = ((IMacViewHandler)control.Handler).PositionOffset;
 			var childView = control.GetContainerView ();
 			
-			var preferredSize = GetPreferredSize (control);
+			var preferredSize = control.GetPreferredSize (Control.Frame.Size.ToEtoSize ());
 
 			SD.PointF origin;
 			if (flipped)
@@ -73,7 +74,7 @@ namespace Eto.Platform.Mac.Forms
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 				);
 			
-			var frame = new SD.RectangleF (origin, Generator.Convert (preferredSize));
+			var frame = new SD.RectangleF (origin, preferredSize.ToSDSizeF ());
 			if (frame != childView.Frame) {
 				childView.Frame = frame;
 			}

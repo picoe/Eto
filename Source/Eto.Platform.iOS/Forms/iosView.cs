@@ -8,12 +8,14 @@ using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Forms
 {
+
 	public interface IiosView
 	{
 		Size PositionOffset { get; }
-		Size? PreferredSize { get; }
+		Size GetPreferredSize (Size availableSize);
 		Size? MinimumSize { get; }
 		bool AutoSize { get; }
+		UIView ContainerControl { get; }
 	}
 	
 	public interface IiosViewController
@@ -21,21 +23,86 @@ namespace Eto.Platform.iOS.Forms
 		UIViewController Controller { get; }
 	}
 
+	public static class ViewExtensions
+	{
+		public static void AddSubView(this Container parent, Control control)
+		{
+
+			var parentViewController = parent.Handler as IiosViewController;
+			if (parentViewController != null) {
+				var viewController = control.Handler as IiosViewController;
+				if (viewController != null) {
+					parentViewController.Controller.AddChildViewController(viewController.Controller);
+					return;
+				}
+			}
+			var viewHandler = control.Handler as IiosView;
+			var view = viewHandler != null ? viewHandler.ContainerControl : control.ControlObject as UIView;
+
+			var parentView = parent.Handler as IiosContainer;
+			if (parentView != null && view != null) {
+				parentView.ContentControl.AddSubview (view);
+			}
+		}
+	}
+
+
 	public abstract class iosView<T, W> : iosObject<T, W>, IControl, IiosView
 		where T: UIView
 		where W: Control
 	{
+		Size? naturalSize;
+
+		public virtual UIViewController Controller { get { return null; } }
+
+		public virtual UIView ContainerControl
+		{
+			get { return (UIView)Control; }
+		}
 
 		public virtual bool AutoSize { get; protected set; }
+
+		public Size? PreferredSize { get; set; }
+
+		protected virtual Size GetNaturalSize ()
+		{
+			if (naturalSize != null) 
+				return naturalSize.Value;
+			var control = Control as UIView;
+			if (control != null) {
+				naturalSize = control.SizeThatFits(UIView.UILayoutFittingCompressedSize).ToEtoSize ();
+				return naturalSize.Value;
+			}
+			return Size.Empty;
+		}
 		
-		public virtual Size? PreferredSize { get; set; }
+		public virtual Size GetPreferredSize (Size availableSize)
+		{
+			var size = GetNaturalSize ();
+			if (!AutoSize && PreferredSize != null) {
+				var preferredSize = PreferredSize.Value;
+				if (preferredSize.Width >= 0)
+					size.Width = preferredSize.Width;
+				if (preferredSize.Height >= 0)
+					size.Height = preferredSize.Height;
+			}
+			if (MinimumSize != null)
+				size = Size.Max (size, MinimumSize.Value);
+			if (MaximumSize != null)
+				size = Size.Min (size, MaximumSize.Value);
+			return size;
+		}
+
+
 		public virtual Size? MinimumSize { get; set; }
+		public virtual Size? MaximumSize { get; set; }
 
 		public virtual Size Size {
-			get { return Generator.ConvertF (Control.Frame.Size); }
+			get { return Control.Frame.Size.ToEtoSize (); }
 			set { 
 				if (value != this.Size) {
-					Control.SetFrameSize (Generator.ConvertF (value));
+					PreferredSize = value;
+					Control.SetFrameSize (value.ToSDSizeF ());
 					Widget.OnSizeChanged (EventArgs.Empty);
 					this.AutoSize = false;
 					CreateTracking ();
@@ -111,8 +178,6 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		#region IControl implementation
-		
 		public virtual void Invalidate ()
 		{
 			Control.SetNeedsDisplay();
@@ -120,13 +185,12 @@ namespace Eto.Platform.iOS.Forms
 
 		public virtual void Invalidate (Rectangle rect)
 		{
-			var region = Generator.ConvertF (rect);
-			Control.SetNeedsDisplayInRect (region);
+			Control.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
 		}
 
 		public Graphics CreateGraphics ()
 		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control));
+			throw new NotSupportedException ();
 		}
 
 		public virtual void SuspendLayout ()
@@ -143,8 +207,8 @@ namespace Eto.Platform.iOS.Forms
 		}
 
 		public virtual Color BackgroundColor {
-			get { return Generator.Convert(Control.BackgroundColor); }
-			set { Control.BackgroundColor = Generator.ConvertUI (value); }
+			get { return Control.BackgroundColor.ToEto (); }
+			set { Control.BackgroundColor = value.ToUI (); }
 		}
 
 		public virtual bool Enabled {
@@ -161,8 +225,7 @@ namespace Eto.Platform.iOS.Forms
 			set { Control.Hidden = !value; }
 		}
 
-		// TODO
-		public Font Font { 
+		public virtual Font Font { 
 			get; set;
 		}
 		
@@ -178,10 +241,33 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
-		#endregion
-
+		public virtual void OnUnLoad (EventArgs e)
+		{
+		}
+		
 		public void MapPlatformAction (string systemAction, BaseAction action)
 		{
+		}
+
+		public PointF PointFromScreen (PointF point)
+		{
+			var sdpoint = point.ToSD ();
+			sdpoint = Control.ConvertPointFromView (sdpoint, null);
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+		
+		public PointF PointToScreen (PointF point)
+		{
+			var sdpoint = point.ToSD ();
+			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			sdpoint = Control.ConvertPointToView (sdpoint, null);
+			return Platform.Conversions.ToEto (sdpoint);
+		}
+
+		public Point Location
+		{
+			get { return Control.Frame.Location.ToEtoPoint (); }
 		}
 	}
 }

@@ -16,6 +16,11 @@ namespace Eto.Forms
 		{
 			handler = (ICommonDialog)Handler;
 		}
+
+		public DialogResult ShowDialog (Control parent)
+		{
+			return ShowDialog (parent.ParentWindow);
+		}
 		
 		public DialogResult ShowDialog (Window parent)
 		{

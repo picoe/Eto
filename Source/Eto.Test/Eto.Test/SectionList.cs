@@ -18,7 +18,7 @@ namespace Eto.Test
 	public class Section : List<Section>, ITreeGridItem<Section>
 	{
 		public string Text { get; set; }
-		
+
 		public bool Expanded { get; set; }
 
 		public bool Expandable { get { return Count > 0; } }
@@ -59,15 +59,13 @@ namespace Eto.Test
 			}
 		}
 	}
-	
+
 		
 	public class SectionList : TreeGridView
 	{
-		Container contentContainer;
-		
-		public SectionList (Container contentContainer)
+		public SectionList(Func<IEnumerable<Section>> topNodes)
 		{
-			this.contentContainer = contentContainer;
+			this.TopNodes = topNodes;
 			this.Style = "sectionList";
 			this.ShowHeader = false;
 
@@ -77,103 +75,29 @@ namespace Eto.Test
 			HandleEvent (SelectionChangedEvent);
 		}
 
-		IEnumerable<Section> TopNodes ()
-		{
-			yield return new Section ("Behaviors", BehaviorsSection ());
-			yield return new Section ("Drawing", DrawingSection ());
-			yield return new Section ("Controls", ControlSection ());
-			yield return new Section ("Layouts", LayoutsSection ());
-			yield return new Section ("Dialogs", DialogsSection ());
-			yield return new Section ("Serialization", SerializationSection ());
-		}
-		
-		IEnumerable<Section> ControlSection ()
-		{
-			yield return new Section<LabelSection> { Text = "Label" };
-			yield return new Section<ButtonSection> { Text = "Button" };
-			yield return new Section<CheckBoxSection> { Text = "Check Box" };
-			yield return new Section<RadioButtonSection> { Text = "Radio Button" };
-			yield return new Section<ScrollableSection> { Text = "Scrollable" };
-			yield return new Section<TextBoxSection> { Text = "Text Box" };
-			yield return new Section<TextAreaSection> { Text = "Text Area" };
-			yield return new Section<WebViewSection> { Text = "Web View" };
-			yield return new Section<DrawableSection> { Text = "Drawable" };
-			yield return new Section<ListBoxSection> { Text = "List Box" };
-			yield return new Section<TabControlSection> { Text = "Tab Control" };
-			yield return new Section<TreeGridViewSection> { Text = "Tree Grid View" };
-			yield return new Section<TreeViewSection> { Text = "Tree View" };
-			yield return new Section<NumericUpDownSection> { Text = "Numeric Up/Down" };
-			yield return new Section<DateTimePickerSection> { Text = "Date / Time" };
-			yield return new Section<ComboBoxSection> { Text = "Combo Box" };
-			yield return new Section<GroupBoxSection> { Text = "Group Box" };
-			yield return new Section<SliderSection> { Text = "Slider" };
-			yield return new Section<GridViewSection> { Text = "Grid View" };
-			yield return new Section<GridCellFormattingSection> { Text = "Grid Cell Formatting" };
-			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
-			yield return new Section<ProgressBarSection> { Text = "Progress Bar" };
-			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
-		}
+		private Func<IEnumerable<Section>> TopNodes { get; set; }
 
-		IEnumerable<Section> DrawingSection ()
-		{
-			yield return new Section<BitmapSection> { Text = "Bitmap" };
-			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
-			yield return new Section<PathSection> { Text = "Line Path" };
-			yield return new Section<AntialiasSection> { Text = "Antialias" };
-			yield return new Section<DrawTextSection> { Text = "Draw Text" };
-			yield return new Section<FontsSection> { Text = "Control Fonts" };
-			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
-		}
+		public Control SectionControl { get; private set; }
 
-		IEnumerable<Section> LayoutsSection ()
-		{
-			yield return new Section ("Table Layout", TableLayoutsSection ());
-		}
-
-		IEnumerable<Section> TableLayoutsSection ()
-		{
-			yield return new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" };
-			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing" };
-			yield return new Section<Sections.Layouts.TableLayoutSection.ScalingSection> { Text = "Scaling" };
-		}
-
-		IEnumerable<Section> DialogsSection ()
-		{
-			yield return new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" };
-			yield return new Section<Sections.Dialogs.FileDialogSection> { Text = "File Dialog" };
-			yield return new Section<Sections.Dialogs.SelectFolderSection> { Text = "Select Folder Dialog" };
-			yield return new Section<Sections.Dialogs.CustomDialogSection> { Text = "Custom Dialog" };
-		}
-
-		IEnumerable<Section> SerializationSection ()
-		{
-			yield return new Section<Sections.Serialization.JsonReadSection> { Text = "Json" };
-#if XAML
-			yield return new Section<Sections.Serialization.XamlReadSection> { Text = "Xaml" };
-#endif
-		}
-		IEnumerable<Section> BehaviorsSection ()
-		{
-			yield return new Section<Sections.Behaviors.FocusEventsSection> { Text = "Focus Events" };
-			yield return new Section<Sections.Behaviors.MouseEventsSection> { Text = "Mouse Events" };
-			yield return new Section<Sections.Behaviors.KeyEventsSection> { Text = "Key Events" };
-			yield return new Section<Sections.Behaviors.BadgeLabelSection> { Text = "Badge Label" };
-#if DESKTOP
-			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
-#endif
+		public string SectionTitle {
+			get {
+				var section = this.SelectedItem as Section;
+				if (section != null)
+					return section.Text;
+				return null;
+			}
 		}
 		
 		public override void OnSelectionChanged (EventArgs e)
 		{
-			base.OnSelectionChanged (e);
-			
 			var sectionGenerator = this.SelectedItem as ISectionGenerator;
 			
 			if (sectionGenerator != null) {
-				var control = sectionGenerator.GenerateControl ();
-				contentContainer.AddDockedControl (control);
+				SectionControl = sectionGenerator.GenerateControl ();
 			} else 
-				contentContainer.AddDockedControl (null);
+				SectionControl = null;
+
+			base.OnSelectionChanged (e);
 		}
 	}
 }

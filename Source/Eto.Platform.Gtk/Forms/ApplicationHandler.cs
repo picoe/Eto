@@ -36,10 +36,17 @@ namespace Eto.Platform.GtkSharp
 				badgeLabel = value;
 				if (!string.IsNullOrEmpty (badgeLabel))
 				{
-					if (statusIcon == null)
+					if (statusIcon == null) {
 						statusIcon = new Gtk.StatusIcon ();
+						statusIcon.Activate += delegate {
+							var form = Application.Instance.MainForm;
+							if (form != null)
+								form.BringToFront ();
+						};
+					}
 					var bmp = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, 32, 32);
 					using (var graphics = new Graphics(new Bitmap (Widget.Generator, new BitmapHandler (bmp)))) {
+						graphics.Clear ();
 						DrawBadgeLabel (graphics, new Size (bmp.Width, bmp.Height), badgeLabel);
 					}
 					statusIcon.Pixbuf = bmp;
@@ -52,11 +59,14 @@ namespace Eto.Platform.GtkSharp
 
 		protected virtual void DrawBadgeLabel (Graphics graphics, Size size, string badgeLabel)
 		{
-			graphics.FillEllipse (Colors.Red, new Rectangle (size));
-			graphics.DrawEllipse (Colors.White, new Rectangle (size));
+			var rect = new Rectangle (size);
+			rect.Inflate (-2, -2);
+			graphics.FillEllipse (Brushes.Red (Generator), rect);
+			graphics.DrawEllipse (new Pen(Colors.White, 2, Generator), rect);
 			var font = new Font(SystemFont.Bold, 10);
 			var labelSize = graphics.MeasureString (font, badgeLabel);
-			graphics.DrawText (font, Colors.White, new Point ((int)((size.Width - labelSize.Width) / 2), (int)((size.Height - labelSize.Height) / 2)), badgeLabel);
+			var labelPosition = ((PointF)(rect.Size - labelSize) / 2) + rect.Location;
+			graphics.DrawText (font, Colors.White, labelPosition, badgeLabel);
 			graphics.Flush ();
 		}
 

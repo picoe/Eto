@@ -1,51 +1,54 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
+using sw = System.Windows;
+using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class PanelHandler : WpfFrameworkElement<System.Windows.Controls.Border, Panel>, IPanel
+	public class PanelHandler : WpfContainer<swc.Border, Panel>, IPanel
 	{
 		public PanelHandler ()
 		{
-			Control = new System.Windows.Controls.Border ();
-			//Control.Background = System.Windows.SystemColors.ControlBrush;
+			Control = new swc.Border ();
+			Control.Background = swm.Brushes.Transparent; // so we get mouse events
 		}
 
-		public Size ClientSize
+		public override Size ClientSize
 		{
 			get { return this.Size; }
 			set { this.Size = value; }
 		}
 
-		public object ContainerObject
+		public override object ContainerObject
 		{
 			get { return Control; }
 		}
 
-		public virtual void SetLayout (Layout layout)
+		public override void SetLayout (Layout layout)
 		{
-			Control.Child = (System.Windows.UIElement)layout.ControlObject;
+			Control.Child = (sw.UIElement)layout.ControlObject;
 		}
 
 		public override Color BackgroundColor
 		{
 			get
 			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return Generator.Convert (brush.Color);
+				var brush = Control.Background as swm.SolidColorBrush;
+				if (brush != null) return brush.Color.ToEto ();
 				else return Colors.Black;
 			}
 			set
 			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (Generator.Convert (value));
+				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
 			}
 		}
 
-		public Size? MinimumSize
+		public override Size? MinimumSize
 		{
 			get
 			{

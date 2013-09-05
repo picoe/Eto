@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Text;
+using System.Collections.Generic;
 
 namespace Eto.Test
 {
@@ -9,6 +10,7 @@ namespace Eto.Test
 	{
 		TextArea eventLog;
 		Panel contentContainer;
+		Navigation navigation;
 
 		public TextArea EventLog
 		{
@@ -25,29 +27,20 @@ namespace Eto.Test
 			}
 		}
 
-		Panel ContentContainer
-		{
-			get
-			{
-				if (contentContainer == null) {
-					contentContainer = new Panel ();
-				}
-				return contentContainer;
-			}
-		}
-
-		public MainForm ()
+		public MainForm(Func<IEnumerable<Section>> topNodes)
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
+			this.SectionList = new SectionList(topNodes);
+
 #if DESKTOP
 			this.Icon = Icon.FromResource ("Eto.Test.TestIcon.ico");
-#endif
 			this.ClientSize = new Size (900, 650);
+#endif
 			//this.Opacity = 0.5;
 
 #if DESKTOP
-			HandleEvent (MainForm.MaximizedEvent, MainForm.MinimizedEvent);
+			HandleEvent (MainForm.WindowStateChangedEvent);
 #endif
 			HandleEvent (MainForm.ClosedEvent, MainForm.ClosingEvent);
 
@@ -67,23 +60,46 @@ namespace Eto.Test
 			this.AddDockedControl (MainContent ());
 		}
 
+		public SectionList SectionList { get; set; }
+
 		Control MainContent ()
 		{
-			var splitter = new Splitter {
-				Position = 200,
-				FixedPanel = SplitterFixedPanel.Panel1
-			};
+			contentContainer = new Panel ();
 
-			var sectionList = new SectionList (this.ContentContainer);
 			// set focus when the form is shown
 			this.Shown += delegate {
-				sectionList.Focus ();
+				SectionList.Focus ();
+			};
+			SectionList.SelectedItemChanged += (sender, e) => {
+				var control = SectionList.SectionControl;
+				if (navigation != null) {
+					if (control != null)
+						navigation.Push (control, SectionList.SectionTitle);
+				}
+				else
+					contentContainer.AddDockedControl (control);
 			};
 
-			splitter.Panel1 = sectionList;
-			splitter.Panel2 = RightPane ();
+			if (Splitter.Supported) {
+				var splitter = new Splitter {
+					Position = 200,
+					FixedPanel = SplitterFixedPanel.Panel1,
+					Panel1 = SectionList,
+#if MOBILE
+					// for now, don't show log in mobile
+					Panel2 = contentContainer
+#else
+					Panel2 = RightPane ()
+#endif
+				};
+				return splitter;
+			}
+			else if (Navigation.Supported) {
+				navigation = new Navigation(SectionList, "Eto.Test");
+				return navigation;
+			}
+			else throw new EtoException("Platform must support splitter or navigation");
 
-			return splitter;
 		}
 
 		Control RightPane ()
@@ -94,7 +110,7 @@ namespace Eto.Test
 				FixedPanel = SplitterFixedPanel.Panel2
 			};
 
-			splitter.Panel1 = this.ContentContainer;
+			splitter.Panel1 = contentContainer;
 			splitter.Panel2 = this.EventLogSection();
 
 			return splitter;
@@ -152,7 +168,7 @@ namespace Eto.Test
 			args.Menu.FindAddSubMenu ("&Window", 900);
 			var help = args.Menu.FindAddSubMenu ("&Help", 1000);
 
-			if (Generator.ID == "mac") {
+			if (Generator.IsMac) {
 				// have a nice OS X style menu
 
 				var main = args.Menu.FindAddSubMenu (Application.Instance.Name, 0);
@@ -217,16 +233,10 @@ namespace Eto.Test
 		#endregion
 
 #if DESKTOP
-		public override void OnMaximized (EventArgs e)
+		public override void OnWindowStateChanged (EventArgs e)
 		{
-			base.OnMaximized (e);
-			Log.Write (this, "Maximized");
-		}
-
-		public override void OnMinimized (EventArgs e)
-		{
-			base.OnMinimized (e);
-			Log.Write (this, "Minimized");
+			base.OnWindowStateChanged (e);
+			Log.Write (this, "StateChanged: {0}", this.WindowState);
 		}
 
 		public override void OnClosing (System.ComponentModel.CancelEventArgs e)

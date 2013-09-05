@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class BitmapSection : Panel
+	public class BitmapSection : Scrollable
 	{
 		public BitmapSection ()
 		{
@@ -19,14 +19,19 @@ namespace Eto.Test.Sections.Drawing
 				new Label { Text = "Custom 32-bit" }, CreateCustom32 (),
 				new Label { Text = "Custom 32-bit alpha" }, CreateCustom32Alpha (),
 				null
-				);
+			);
+
+			layout.AddRow (
+				new Label { Text = "Clone" }, Cloning (),
+				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized (CloningRectangle (), centered: true),
+				null);
 
 			layout.Add (null);
 		}
 
 		Control LoadFromStream ()
 		{
-			var resourceStream = GetType().Assembly.GetManifestResourceStream ("Eto.Test.TestImage.png");
+			var resourceStream = GetType ().Assembly.GetManifestResourceStream ("Eto.Test.TestImage.png");
 
 			var image = new Bitmap (resourceStream);
 
@@ -39,8 +44,8 @@ namespace Eto.Test.Sections.Drawing
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics (image)) {
-				graphics.DrawLine (Colors.Blue, Point.Empty, new Point (image.Size));
-				graphics.DrawRectangle (Colors.Blue, new Rectangle (image.Size));
+				graphics.DrawLine (Pens.Blue (), Point.Empty, new Point (image.Size));
+				graphics.DrawRectangle (Pens.Blue (), new Rectangle (image.Size - 1));
 			}
 
 			return new ImageView { Image = image };
@@ -52,10 +57,24 @@ namespace Eto.Test.Sections.Drawing
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics (image)) {
-				graphics.DrawLine (Colors.Blue, Point.Empty, new Point (image.Size));
-				graphics.DrawRectangle (Colors.Black, new Rectangle (image.Size));
+				graphics.DrawLine (Pens.Blue (), Point.Empty, new Point (image.Size));
+				graphics.DrawRectangle (Pens.Black (), new Rectangle (image.Size - 1));
 			}
 
+			return new ImageView { Image = image };
+		}
+
+		Control Cloning ()
+		{
+			var image = Bitmap.FromResource ("Eto.Test.TestImage.png");
+			image = image.Clone ();
+			return new ImageView { Image = image };
+		}
+
+		Control CloningRectangle ()
+		{
+			var image = Bitmap.FromResource ("Eto.Test.TestImage.png");
+			image = image.Clone (new Rectangle (32, 32, 64, 64));
 			return new ImageView { Image = image };
 		}
 

@@ -37,6 +37,23 @@ namespace Eto
 		/// <param name="id">ID of the event to handle</param>
 		void HandleEvent (string id);
 	}
+
+	/// <summary>
+	/// Generic implementation of <see cref="IInstanceWidget"/> to provide a statically typed control parameter
+	/// </summary>
+	/// <remarks>
+	/// This interface can be used on platform handlers so that we can get the platform-specific control
+	/// of a widget without having to know its implementation details.
+	/// </remarks>
+	/// <typeparam name="T">Platform-specific control used for the widget</typeparam>
+	/// <typeparam name="W">Widget type</typeparam>
+	public interface IInstanceWidget<out T, W> : IInstanceWidget
+	{
+		/// <summary>
+		/// Gets the platform-specific control used for the widget
+		/// </summary>
+		T Control { get; }
+	}
 	
 
 	/// <summary>
@@ -54,9 +71,9 @@ namespace Eto
 	// Doesn't work in mono yet:
 	// [RuntimeNameProperty("ID")]
 #endif
-	public abstract class InstanceWidget : Widget
+	public abstract class InstanceWidget : Widget, IControlObjectSource
 	{
-		IInstanceWidget handler;
+		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
 		string style;
 		object dataContext;
 
@@ -65,8 +82,8 @@ namespace Eto
 		/// </summary>
 		public string ID
 		{
-			get { return handler.ID; }
-			set { handler.ID = value; }
+			get { return Handler.ID; }
+			set { Handler.ID = value; }
 		}
 		
 		/// <summary>
@@ -169,9 +186,10 @@ namespace Eto
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
-			: base(generator, handler, initialize)
+			: base(generator, handler, false)
 		{
-			this.handler = (IInstanceWidget)Handler;
+			if (initialize)
+				Initialize ();
 		}
 
 		/// <summary>
@@ -181,9 +199,10 @@ namespace Eto
 		/// <param name="handlerType">Type of the handler to create as the backend for this widget</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget (Generator generator, Type handlerType, bool initialize = true)
-			: base(generator, handlerType, initialize)
+			: base(generator, handlerType, false)
 		{
-			this.handler = (IInstanceWidget)Handler;
+			if (initialize)
+				Initialize ();
 		}
 
 		/// <summary>
@@ -199,7 +218,7 @@ namespace Eto
 		/// </remarks>
 		public object ControlObject
 		{
-			get { return handler.ControlObject; }
+			get { return Handler.ControlObject; }
 		}
 
 		/// <summary>
@@ -234,7 +253,7 @@ namespace Eto
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
 		public void HandleEvent (string id)
 		{
-			handler.HandleEvent (id);
+			Handler.HandleEvent (id);
 		}
 
 		/// <summary>

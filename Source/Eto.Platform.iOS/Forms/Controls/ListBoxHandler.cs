@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using System.Linq;
+using Eto.Platform.iOS.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -34,7 +35,13 @@ namespace Eto.Platform.iOS.Forms.Controls
 				if (cell == null) {
 					cell = new UITableViewCell(UITableViewCellStyle.Default, kCellIdentifier);
 				}
-				cell.TextLabel.Text = Handler.collection.Collection[indexPath.Row].Text;
+				var item = Handler.collection.Collection[indexPath.Row];
+				cell.TextLabel.Text = item.Text;
+				var imageItem = item as IImageListItem;
+				if (imageItem != null)
+					cell.ImageView.Image = imageItem.Image.ToUI ();
+				else
+					cell.ImageView.Image = null;
 				return cell;
 			}
 		}
@@ -112,7 +119,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 		
 		public int SelectedIndex {
-			get	{ return Control.IndexPathForSelectedRow.Row; }
+			get	{ return Control.IndexPathForSelectedRow != null ? Control.IndexPathForSelectedRow.Row : -1; }
 			set { Control.SelectRow (NSIndexPath.FromRowSection (value, 0), true, UITableViewScrollPosition.Middle); }
 		}
 	}

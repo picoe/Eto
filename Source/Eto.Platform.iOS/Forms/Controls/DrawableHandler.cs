@@ -12,7 +12,7 @@ using MonoTouch.GLKit;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class DrawableHandler : iosView<DrawableHandler.MyView, Drawable>, IDrawable
+	public class DrawableHandler : iosContainer<DrawableHandler.MyView, Drawable>, IDrawable
 	{
 		/*
 		[Register("FastLayer")]
@@ -46,7 +46,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			public override void TouchesBegan (NSSet touches, UIEvent evt)
 			{
-				var args = Generator.ConvertMouse (this, touches, evt);
+				var args = Conversions.ConvertMouse (this, touches, evt);
 				Handler.Widget.OnMouseDown (args);
 				if (!args.Handled)
 					base.TouchesBegan (touches, evt);
@@ -54,7 +54,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			
 			public override void TouchesEnded (NSSet touches, UIEvent evt)
 			{
-				var args = Generator.ConvertMouse (this, touches, evt);
+				var args = Conversions.ConvertMouse (this, touches, evt);
 				Handler.Widget.OnMouseUp (args);
 				if (!args.Handled)
 					base.TouchesEnded (touches, evt);
@@ -62,7 +62,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			
 			public override void TouchesMoved (NSSet touches, UIEvent evt)
 			{
-				var args = Generator.ConvertMouse (this, touches, evt);
+				var args = Conversions.ConvertMouse (this, touches, evt);
 				Handler.Widget.OnMouseMove (args);
 				if (!args.Handled)
 					base.TouchesMoved (touches, evt);
@@ -72,6 +72,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				//var tiledLayer = this.Layer as CATiledLayer;
 				this.BackgroundColor = UIColor.Clear;
+				this.ContentMode = UIViewContentMode.TopLeft;
 			}
 
 			public DrawableHandler Handler { get; set; }
@@ -79,7 +80,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			public override void Draw (System.Drawing.RectangleF rect)
 			{
 				//Console.WriteLine ("Drawing {0}, {1}", rect, new System.Diagnostics.StackTrace ());
-				Handler.Update (Generator.ConvertF (rect));
+				Handler.Update (rect.ToEtoRectangle ());
 			}
 
 			public bool CanFocus { get; set; }
@@ -123,7 +124,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		
 		public void Create ()
 		{
-			Control = new MyTiledView{ Handler = this };
+			Control = new MyView{ Handler = this };
 		}
 		
 		public void Create (bool largeCanvas)
@@ -156,7 +157,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				//var oldCheck = UIApplication.CheckForIllegalCrossThreadCalls;
 				//UIApplication.CheckForIllegalCrossThreadCalls = false;
 				
-				using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (context, Control.BaseFrame.Height, false))) {
+				using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, context, Control.BaseFrame.Height, true))) {
 					Widget.OnPaint (new PaintEventArgs (graphics, rect));
 				}
 				//UIApplication.CheckForIllegalCrossThreadCalls = oldCheck;

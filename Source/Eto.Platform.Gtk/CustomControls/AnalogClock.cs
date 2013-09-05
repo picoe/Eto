@@ -36,8 +36,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		{
 			e.Arc (center.X, center.Y, radius, 0, 360);
 			Cairo.Gradient pat = new Cairo.LinearGradient (100, 200, 200, 100);
-			pat.AddColorStop (0, Generator.ConvertC (new Eto.Drawing.Color (240, 240, 230, 75)));
-			pat.AddColorStop (1, Generator.ConvertC (new Eto.Drawing.Color (0, 0, 0, 50)));
+			pat.AddColorStop (0, Eto.Drawing.Color.FromArgb (240, 240, 230, 75).ToCairo ());
+			pat.AddColorStop (1, Eto.Drawing.Color.FromArgb (0, 0, 0, 50).ToCairo ());
 			e.LineWidth = 0.1;
 			e.Pattern = pat;
 			e.FillPreserve ();
@@ -103,8 +103,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 						
 					}
 				}
-				DrawFace (center, (radius / 2) + 17, e);
-				DrawFace (center, 8, e);
+				//DrawFace (center, (radius / 2) + 17, e);
+				//DrawFace (center, 8, e);
 				
 			}
 			return true;			

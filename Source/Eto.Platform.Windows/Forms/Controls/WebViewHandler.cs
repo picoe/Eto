@@ -19,7 +19,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		HashSet<string> delayedEvents = new HashSet<string> ();
 
-#if !__MonoCS__
 		SHDocVw.WebBrowser_V1 WebBrowserV1
 		{
 			get { return (SHDocVw.WebBrowser_V1)Control.ActiveXInstance; }
@@ -34,16 +33,19 @@ namespace Eto.Platform.Windows.Forms.Controls
 				break;
 			}
 		}
-#endif
 
 		public WebViewHandler ()
 		{
-			this.Control = new SWF.WebBrowser { IsWebBrowserContextMenuEnabled = false };
+			this.Control = new SWF.WebBrowser {
+				IsWebBrowserContextMenuEnabled = false,
+				WebBrowserShortcutsEnabled = false,
+				AllowWebBrowserDrop = false,
+				ScriptErrorsSuppressed = true
+			};
 			this.Control.HandleCreated += (sender, e) => {
 				HookDocumentEvents ();
 			};
 		}
-
 
 		void WebBrowserV1_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
 		{
@@ -55,6 +57,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
+			case WebView.NavigatedEvent:
+				this.Control.Navigated += (s, e) => {
+					Widget.OnNavigated (new WebViewLoadedEventArgs (e.Url));
+				};
+				break;
 			case WebView.DocumentLoadedEvent:
 				this.Control.DocumentCompleted += (sender, e) => {
 					Widget.OnDocumentLoaded (new WebViewLoadedEventArgs (e.Url));
@@ -88,10 +95,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 				delayedEvents.Add (newEvent);
 			if (Control.ActiveXInstance != null)
 			{
-#if !__MonoCS__
 				foreach (var handler in delayedEvents)
 					AttachEvent (WebBrowserV1, handler);
-#endif
 				delayedEvents.Clear ();
 			}
 		}
@@ -164,6 +169,12 @@ namespace Eto.Platform.Windows.Forms.Controls
         {
             this.Control.ShowPrintDialog();
         }
+
+		public bool BrowserContextMenuEnabled
+		{
+			get { return Control.IsWebBrowserContextMenuEnabled; }
+			set { Control.IsWebBrowserContextMenuEnabled = value; }
+		}
 	}
 }
 

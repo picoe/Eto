@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +25,20 @@ namespace Eto.Platform.Wpf.CustomControls
 	/// </remarks>
 	public class MultiSizeImage : Image
 	{
+		Brush background;
+
+		public Brush Background
+		{
+			get { return background; }
+			set
+			{
+				if (background != value) {
+					background = value;
+					InvalidateVisual ();
+				}
+			}
+		}
+
 		static MultiSizeImage ()
 		{
 			// Tell WPF to inform us whenever the Source dependency property is changed
@@ -178,11 +192,12 @@ namespace Eto.Platform.Wpf.CustomControls
 		/// <param name="dc">An instance of <see cref="T:System.Windows.Media.DrawingContext"/> used to render the control.</param>
 		protected override void OnRender (DrawingContext dc)
 		{
+			if (background != null)
+				dc.DrawRectangle (background, null, new Rect (0, 0, RenderSize.Width, RenderSize.Height));
+
 			if (Source == null)
-			{
-				base.OnRender (dc);
 				return;
-			}
+
 			ImageSource src = Source;
 			var ourSize = RenderSize.Width * RenderSize.Height;
 			foreach (var frame in _availableFrames)

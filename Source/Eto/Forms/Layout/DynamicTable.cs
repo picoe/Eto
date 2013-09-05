@@ -1,20 +1,23 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
+using System.ComponentModel;
+
+
 #if XAML
 using System.Windows.Markup;
 #endif
 
 namespace Eto.Forms
 {
-#if XAML
 	[ContentProperty("Items")]
-#endif
 	public class DynamicRow
 	{
 		List<DynamicItem> items = new List<DynamicItem> ();
+
+		public DynamicTable Table { get; internal set; }
 
 		public List<DynamicItem> Items
 		{
@@ -44,15 +47,14 @@ namespace Eto.Forms
 			if (controls == null)
 				return;
 			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
-			Items.AddRange ((IEnumerable<DynamicItem>)items);
+			Items.AddRange (items.OfType<DynamicItem>());
 		}
 	}
 
-#if XAML
 	[ContentProperty("Rows")]
-#endif
-	public class DynamicTable : DynamicItem
+	public class DynamicTable : DynamicItem, ISupportInitialize
 	{
+		bool visible = true;
 		List<DynamicRow> rows = new List<DynamicRow> ();
 
 		public List<DynamicRow> Rows
@@ -67,6 +69,17 @@ namespace Eto.Forms
 		public Padding? Padding { get; set; }
 
 		public Size? Spacing { get; set; }
+
+		public bool Visible
+		{
+			get { return Container != null ? Container.Visible : visible; }
+			set {
+				if (Container != null)
+					Container.Visible = value;
+				else
+					visible = value;
+			}
+		}
 
 		internal DynamicRow CurrentRow { get; set; }
 
@@ -83,12 +96,14 @@ namespace Eto.Forms
 		public void AddRow (DynamicItem item)
 		{
 			var row = new DynamicRow ();
+			row.Table = this;
 			row.Items.Add (item);
 			rows.Add (row);
 		}
 
 		public void AddRow (DynamicRow row)
 		{
+			row.Table = this;
 			rows.Add (row);
 		}
 
@@ -99,7 +114,7 @@ namespace Eto.Forms
 			int cols = rows.Where (r => r != null).Max (r => r.Items.Count);
 
 			if (Container == null) {
-				Container = new Panel ();
+				Container = new Panel { Visible = visible };
 				this.Layout = new TableLayout (Container, cols, rows.Count);
 			}
 			else {
@@ -127,6 +142,18 @@ namespace Eto.Forms
 				}
 			}
 			return Container;
+		}
+
+		void ISupportInitialize.BeginInit ()
+		{
+		}
+
+		void ISupportInitialize.EndInit ()
+		{
+			foreach (var row in rows)
+			{
+				row.Table = this;
+			}
 		}
 	}
 }

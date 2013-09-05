@@ -45,7 +45,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 
@@ -100,15 +100,25 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set
 			{
 				controller.InitializeItems (value);
+			}
+		}
+
+		public override void Invalidate ()
+		{
+			base.Invalidate ();
+			if (this.Widget.Loaded) {
 				Control.Refresh ();
+				AutoSizeColumns ();
 			}
 		}
 
 		void HandleCollectionChanged (object sender, NotifyCollectionChangedEventArgs e)
 		{
 			Control.RowCount = controller.Count;
-			if (this.Widget.Loaded)
+			if (this.Widget.Loaded) {
 				Control.Refresh ();
+				AutoSizeColumns ();
+			}
 		}
 
 		public ITreeGridItem SelectedItem
@@ -271,10 +281,23 @@ namespace Eto.Platform.Windows.Forms.Controls
 						controller.CollapseRow (rowIndex);
 					else
 						controller.ExpandRow (rowIndex);
+
 					return true;
 				}
 			}
 			return false;
+		}
+
+		void AutoSizeColumns ()
+		{
+			foreach (var colHandler in Widget.Columns.Where (r => r.AutoSize).Select (r => r.Handler).OfType<GridColumnHandler> ()) {
+				if (colHandler.AutoSize) {
+					// expand this column to fit content width
+					var width = colHandler.Control.GetPreferredWidth (swf.DataGridViewAutoSizeColumnMode.AllCells, false);
+					if (width > colHandler.Control.Width)
+						colHandler.Control.Width = width;
+				}
+			}
 		}
 
 		void ITreeHandler.PreResetTree ()

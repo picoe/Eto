@@ -8,9 +8,18 @@ namespace Eto.Test.Sections.Behaviors
 	{
 		public AllControlsBase ()
 		{
-			
+		}
+
+		public override void OnPreLoad (EventArgs e)
+		{
+
 			var layout = new DynamicLayout (this);
 			
+			var options = GenerateOptions ();
+			if (options != null)
+				layout.Add (options);
+
+			layout.BeginVertical ();
 			layout.AddRow (null, LabelControl (), ButtonControl (), null);
 			layout.AddRow (null, TextBoxControl (), TextAreaControl (), null);
 			layout.AddRow (null, CheckBoxControl (), RadioButtonControl (), null);
@@ -18,7 +27,15 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddRow (null, ComboBoxControl (), PasswordBoxControl (), null);
 			layout.AddRow (null, ListBoxControl (), DrawableControl (), null);
 			layout.AddRow (null, GroupBoxControl (), new Panel(), null);
+			layout.EndVertical ();
 			layout.Add (null);
+
+			base.OnPreLoad (e);
+		}
+
+		protected virtual Control GenerateOptions ()
+		{
+			return null;
 		}
 		
 		Control LabelControl ()
@@ -108,7 +125,7 @@ namespace Eto.Test.Sections.Behaviors
 		{
 			var control = new Drawable { Size = new Size (100, 30), CanFocus = true };
 			control.Paint += delegate(object sender, PaintEventArgs pe) {
-				pe.Graphics.FillRectangle (Colors.Blue, pe.ClipRectangle);
+				pe.Graphics.FillRectangle (Brushes.Blue (), pe.ClipRectangle);
 			};
 			LogEvents (control);
 			return control;

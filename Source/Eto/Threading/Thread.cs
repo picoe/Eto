@@ -2,70 +2,86 @@ using System;
 
 namespace Eto.Threading
 {
-	public interface IThread : IWidget
+	public interface IThread : IInstanceWidget
 	{
-		void Create ();
-
-		void CreateCurrent ();
+		void Create();
 		
-		void Start ();
-
-		void Abort ();
+		void CreateCurrent();
+		
+		void CreateMain();
+		
+		void Start();
+		
+		void Abort();
 		
 		bool IsAlive { get; }
+		
+		bool IsMain { get; }
 	}
 	
 	public class Thread : InstanceWidget
 	{
-		IThread inner;
+		new IThread Handler { get { return (IThread)base.Handler; } }
+		
 		Action action;
 		
-		public static Thread CurrentThread {
-			get {
-				var thread = new Thread ();
-				thread.inner.CreateCurrent ();
-				return thread;
-			}
-		}
-		
-		private Thread ()
-			: base(Generator.Current, typeof(IThread))
+		public static Thread CurrentThread(Generator generator = null)
 		{
-			inner = (IThread)Handler;
+			var thread = new Thread(generator);
+			thread.Handler.CreateCurrent();
+			return thread;
 		}
 		
-		public Thread (Action action)
-			: this(Generator.Current, action)
+		public static Thread MainThread(Generator generator = null)
 		{
+			var thread = new Thread(generator);
+			thread.Handler.CreateMain();
+			return thread;
 		}
 		
-		public Thread (Generator generator, Action action)
+		private Thread(Generator generator)
 			: base(generator, typeof(IThread))
 		{
-			inner = (IThread)Handler;
-			this.action = action;
-			inner.Create ();
 		}
 		
-		public virtual void OnExecuted ()
+		public Thread(Action action, Generator generator = null)
+			: base(generator, typeof(IThread), false)
+		{
+			this.action = action;
+			Handler.Create();
+			Initialize();
+		}
+		
+		public virtual void OnExecuted()
 		{
 			if (action != null)
-				action ();
+				action();
 		}
 		
-		public void Start ()
+		public void Start()
 		{
-			inner.Start ();
+			Handler.Start();
 		}
 		
-		public void Abort ()
+		public void Abort()
 		{
-			inner.Abort ();
+			Handler.Abort();
 		}
 		
-		public bool IsAlive {
-			get { return inner.IsAlive; }
+		public bool IsAlive
+		{
+			get { return Handler.IsAlive; }
 		}
+		
+		public bool IsMain
+		{
+			get { return Handler.IsMain; }
+		}
+		
+		public static bool IsMainThread(Generator generator = null)
+		{
+			return CurrentThread(generator).IsMain;
+		}
+		
 	}
 }
-

@@ -9,248 +9,131 @@ using MonoMac.CoreGraphics;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.IO;
 using System.Threading;
+using Eto.Platform.Mac.Forms.Controls;
+using Eto.Platform.Mac.Forms.Printing;
+using Eto.Platform.Mac.Forms;
+using Eto.Platform.Mac.Forms.Menu;
+using Eto.Platform.Mac.Threading;
+using Eto.Threading;
 
 namespace Eto.Platform.Mac
 {
+	[Preserve(AllMembers = true)]
 	public class Generator : Eto.Generator
-	{ 	
-		public override string ID {
-			get { return Generators.Mac; }
-		}
+	{
+#if XAMMAC
+		public override string ID { get { return Generators.XamMac; } }
+#else
+		public override string ID { get { return Generators.Mac; } }
+#endif
 		
-		public static Point GetLocation (NSView view, NSEvent theEvent)
+		public Generator ()
 		{
-			var loc = view.ConvertPointFromView (theEvent.LocationInWindow, null);
-			if (!view.IsFlipped)
-				loc.Y = view.Frame.Height - loc.Y;
-			return Generator.ConvertF (loc);
+			NSApplication.Init ();
+			AddTo(this);
 		}
-		
+
+		public static void AddTo(Eto.Generator g)
+		{
+			// Drawing
+			g.Add <IBitmap> (() => new BitmapHandler ());
+			g.Add <IFontFamily> (() => new FontFamilyHandler ());
+			g.Add <IFont> (() => new FontHandler ());
+			g.Add <IFonts> (() => new FontsHandler ());
+			g.Add <IGraphics> (() => new GraphicsHandler ());
+			g.Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
+			g.Add <IIcon> (() => new IconHandler ());
+			g.Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
+			g.Add <IMatrixHandler> (() => new MatrixHandler ());
+			g.Add <IPen> (() => new PenHandler ());
+			g.Add <ISolidBrush> (() => new SolidBrushHandler ());
+			g.Add <ITextureBrush> (() => new TextureBrushHandler ());
+			g.Add<ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
+
+			// Forms.Cells
+			g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
+			g.Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
+			g.Add <IImageTextCell> (() => new ImageTextCellHandler ());
+			g.Add <IImageViewCell> (() => new ImageViewCellHandler ());
+			g.Add <ITextBoxCell> (() => new TextBoxCellHandler ());
+			
+			// Forms.Controls
+			g.Add <IButton> (() => new ButtonHandler ());
+			g.Add <ICheckBox> (() => new CheckBoxHandler ());
+			g.Add <IComboBox> (() => new ComboBoxHandler ());
+			g.Add <IDateTimePicker> (() => new DateTimePickerHandler ());
+			g.Add <IDrawable> (() => new DrawableHandler ());
+			g.Add <IGridColumn> (() => new GridColumnHandler ());
+			g.Add <IGridView> (() => new GridViewHandler ());
+			g.Add <IGroupBox> (() => new GroupBoxHandler ());
+			g.Add <IImageView> (() => new ImageViewHandler ());
+			g.Add <ILabel> (() => new LabelHandler ());
+			g.Add <IListBox> (() => new ListBoxHandler ());
+			g.Add <INumericUpDown> (() => new NumericUpDownHandler ());
+			g.Add <IPanel> (() => new PanelHandler ());
+			g.Add <IPasswordBox> (() => new PasswordBoxHandler ());
+			g.Add <IProgressBar> (() => new ProgressBarHandler ());
+			g.Add <IRadioButton> (() => new RadioButtonHandler ());
+			g.Add <IScrollable> (() => new ScrollableHandler ());
+			g.Add <ISlider> (() => new SliderHandler ());
+			g.Add <ISplitter> (() => new SplitterHandler ());
+			g.Add <ITabControl> (() => new TabControlHandler ());
+			g.Add <ITabPage> (() => new TabPageHandler ());
+			g.Add <ITextArea> (() => new TextAreaHandler ());
+			g.Add <ITextBox> (() => new TextBoxHandler ());
+			g.Add <ITreeGridView> (() => new TreeGridViewHandler ());
+			g.Add <ITreeView> (() => new TreeViewHandler ());
+			g.Add <IWebView> (() => new WebViewHandler ());
+			g.Add <IScreens> (() => new ScreensHandler ());
+			
+			// Forms.Menu
+			g.Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
+			g.Add <IContextMenu> (() => new ContextMenuHandler ());
+			g.Add <IImageMenuItem> (() => new ImageMenuItemHandler ());
+			g.Add <IMenuBar> (() => new MenuBarHandler ());
+			g.Add <IRadioMenuItem> (() => new RadioMenuItemHandler ());
+			g.Add <ISeparatorMenuItem> (() => new SeparatorMenuItemHandler ());
+			
+			// Forms.Printing
+			g.Add <IPrintDialog> (() => new PrintDialogHandler ());
+			g.Add <IPrintDocument> (() => new PrintDocumentHandler ());
+			g.Add <IPrintSettings> (() => new PrintSettingsHandler ());
+			
+			// Forms.ToolBar
+			g.Add <ICheckToolBarButton> (() => new CheckToolBarButtonHandler ());
+			g.Add <ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
+			g.Add <IToolBarButton> (() => new ToolBarButtonHandler ());
+			g.Add <IToolBar> (() => new ToolBarHandler ());
+			
+			// Forms
+			g.Add <IApplication> (() => new ApplicationHandler ());
+			g.Add <IClipboard> (() => new ClipboardHandler ());
+			g.Add <IColorDialog> (() => new ColorDialogHandler ());
+			g.Add <ICursor> (() => new CursorHandler ());
+			g.Add <IDialog> (() => new DialogHandler ());
+			g.Add <IDockLayout> (() => new DockLayoutHandler ());
+			g.Add <IFontDialog> (() => new FontDialogHandler ());
+			g.Add <IForm> (() => new FormHandler ());
+			g.Add <IMessageBox> (() => new MessageBoxHandler ());
+			g.Add <IOpenFileDialog> (() => new OpenFileDialogHandler ());
+			g.Add <IPixelLayout> (() => new PixelLayoutHandler ());
+			g.Add <ISaveFileDialog> (() => new SaveFileDialogHandler ());
+			g.Add <ISelectFolderDialog> (() => new SelectFolderDialogHandler ());
+			g.Add <ITableLayout> (() => new TableLayoutHandler ());
+			g.Add <IUITimer> (() => new UITimerHandler ());
+			g.Add <IMouse> (() => new MouseHandler ());
+
+			// IO
+			g.Add <ISystemIcons> (() => new SystemIconsHandler ());
+
+			// General
+			g.Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
+			g.Add <IThread> (() => new ThreadHandler ());
+		}
+
 		public override IDisposable ThreadStart ()
 		{
 			return new NSAutoreleasePool ();
-		}
-
-		public static System.Drawing.Size Convert (Size size)
-		{
-			return new System.Drawing.Size (size.Width, size.Height);
-		}
-
-		public static Size Convert (System.Drawing.Size size)
-		{
-			return new Size (size.Width, size.Height);
-		}
-
-		public static System.Drawing.Point Convert (Point point)
-		{
-			return new System.Drawing.Point (point.X, point.Y);
-		}
-
-		public static Point Convert (System.Drawing.Point point)
-		{
-			return new Point (point.X, point.Y);
-		}
-
-		public static System.Drawing.SizeF ConvertF (Size size)
-		{
-			return new System.Drawing.SizeF (size.Width, size.Height);
-		}
-
-		public static Size ConvertF (System.Drawing.SizeF size)
-		{
-			return new Size ((int)size.Width, (int)size.Height);
-		}
-		
-		public static System.Drawing.RectangleF ConvertF (System.Drawing.RectangleF frame, Size size)
-		{
-			frame.Size = ConvertF (size);
-			return frame;
-		}
-
-		public static Rectangle ConvertF (System.Drawing.RectangleF rect)
-		{
-			return new Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-		}
-
-		public static System.Drawing.RectangleF ConvertF (Rectangle rect)
-		{
-			return new System.Drawing.RectangleF ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
-		}
-		
-		public static Point ConvertF (System.Drawing.PointF point)
-		{
-			return new Point ((int)point.X, (int)point.Y);
-		}
-
-		public static System.Drawing.PointF ConvertF (Point point)
-		{
-			return new System.Drawing.PointF ((int)point.X, (int)point.Y);
-		}
-
-		public static NSRange Convert (Range range)
-		{
-			return new NSRange(range.Location, range.Length);
-		}
-		
-		public static Range Convert (NSRange range)
-		{
-			return new Range (range.Location, range.Length);
-		}
-
-		static CGColorSpace deviceRGB;
-
-		static CGColorSpace CreateDeviceRGB ()
-		{
-			if (deviceRGB != null)
-				return deviceRGB;
-			deviceRGB = CGColorSpace.CreateDeviceRGB ();
-			return deviceRGB;
-		}
-		
-		public static CGColor Convert (Color color)
-		{
-			return new CGColor (CreateDeviceRGB (), new float[] { color.R, color.G, color.B, color.A });
-		}
-
-		public static Color Convert (CGColor color)
-		{
-			return new Color (color.Components [0], color.Components [1], color.Components [2], color.Alpha);
-		}
-
-		public static NSColor ConvertNS (Color color)
-		{
-			return NSColor.FromDeviceRgba (color.R, color.G, color.B, color.A);
-		}
-
-		public static CGColor ConvertNSToCG (NSColor color)
-		{
-			var cs = NSColorSpace.DeviceRGBColorSpace;
-
-			var devColor = color.UsingColorSpace (cs);
-			float[] components;
-			devColor.GetComponents (out components);
-			return new CGColor(cs.ColorSpace, components);
-		}
-
-		public static Color Convert (NSColor color)
-		{
-			if (color == null)
-				return Colors.Black;
-			float red, green, blue, alpha;
-			color.GetRgba (out red, out green, out blue, out alpha);
-			return new Color (red, green, blue, alpha);
-		}
-		
-		public static NSUrl Convert (Uri uri)
-		{
-			if (uri == null) return null;
-			return new NSUrl(uri.AbsoluteUri);
-		}
-		
-		public static MouseEventArgs GetMouseEvent (NSView view, NSEvent theEvent)
-		{
-			var pt = Generator.GetLocation (view, theEvent);
-			Key modifiers = KeyMap.GetModifiers (theEvent);
-			MouseButtons buttons = KeyMap.GetMouseButtons (theEvent);
-			return new MouseEventArgs (buttons, modifiers, pt);
-		}
-		
-		public static void SetSizeWithAuto (NSView view, Size size)
-		{
-			var newSize = view.Frame.Size;
-			if (size.Width >= 0)
-				newSize.Width = size.Width;
-			if (size.Height >= 0)
-				newSize.Height = size.Height;
-			view.SetFrameSize (newSize);
-		}
-		
-		static DateTime ReferenceDate = new DateTime (2001, 1, 1, 0, 0, 0);
-
-		public static NSDate Convert (DateTime date)
-		{
-			return NSDate.FromTimeIntervalSinceReferenceDate ((date.ToUniversalTime () - ReferenceDate).TotalSeconds);
-		}
-		
-		public static NSDate Convert (DateTime? date)
-		{
-			if (date == null) return null;
-			return Convert (date.Value);
-		}
-		
-		public static DateTime? Convert (NSDate date)
-		{
-			if (date == null) return null;
-			return new DateTime ((long)(date.SecondsSinceReferenceDate * TimeSpan.TicksPerSecond + ReferenceDate.Ticks), DateTimeKind.Utc).ToLocalTime ();
-		}
-
-		public static NSImageInterpolation Convert (ImageInterpolation value)
-		{
-			switch (value) {
-			case ImageInterpolation.None:
-				return NSImageInterpolation.None;
-			case ImageInterpolation.Low:
-				return NSImageInterpolation.Low;
-			case ImageInterpolation.Medium:
-				return NSImageInterpolation.Medium;
-			case ImageInterpolation.High:
-				return NSImageInterpolation.High;
-			default:
-				throw new NotSupportedException();
-			}
-		}
-
-		public static ImageInterpolation Convert (NSImageInterpolation value)
-		{
-			switch (value) {
-			case NSImageInterpolation.None:
-				return ImageInterpolation.None;
-			case NSImageInterpolation.Low:
-				return ImageInterpolation.Low;
-			case NSImageInterpolation.Medium:
-				return ImageInterpolation.Medium;
-			case NSImageInterpolation.Default:
-			case NSImageInterpolation.High:
-				return ImageInterpolation.High;
-			default:
-				throw new NotSupportedException();
-			}
-		}
-
-		public static CGInterpolationQuality ConvertCG (ImageInterpolation value)
-		{
-			switch (value) {
-			case ImageInterpolation.Default:
-				return CGInterpolationQuality.Default;
-			case ImageInterpolation.None:
-				return CGInterpolationQuality.None;
-			case ImageInterpolation.Low:
-				return CGInterpolationQuality.Low;
-			case ImageInterpolation.Medium:
-				return CGInterpolationQuality.Medium;
-			case ImageInterpolation.High:
-				return CGInterpolationQuality.High;
-			default:
-				throw new NotSupportedException();
-			}
-		}
-
-		public static ImageInterpolation ConvertCG (CGInterpolationQuality value)
-		{
-			switch (value) {
-			case CGInterpolationQuality.Default:
-				return ImageInterpolation.Default;
-			case CGInterpolationQuality.None:
-				return ImageInterpolation.None;
-			case CGInterpolationQuality.Low:
-				return ImageInterpolation.Low;
-			case CGInterpolationQuality.Medium:
-				return ImageInterpolation.Medium;
-			case CGInterpolationQuality.High:
-				return ImageInterpolation.High;
-			default:
-				throw new NotSupportedException();
-			}
 		}
 	}
 }

@@ -3,14 +3,15 @@ using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Eto.Drawing;
+using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Drawing
 {
 
 	public class IndexedBitmapDataHandler : BitmapData
 	{
-		public IndexedBitmapDataHandler(IntPtr data, int scanWidth, object controlObject)
-			: base(data, scanWidth, controlObject)
+		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
@@ -75,7 +76,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			IntPtr ptr = Marshal.AllocHGlobal(Control.Length);
 			Marshal.Copy(Control, 0, ptr, Control.Length);
-			return  new IndexedBitmapDataHandler(ptr, rowStride, null);
+			return  new IndexedBitmapDataHandler(Widget, ptr, rowStride, Widget.BitsPerPixel, null);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -83,6 +84,7 @@ namespace Eto.Platform.iOS.Drawing
 			IntPtr ptr = bitmapData.Data;
 			Marshal.Copy(ptr, Control, 0, Control.Length);
 			Marshal.FreeHGlobal(ptr);
+			UpdateBitmap (new Rectangle(this.Size));
 		}
 
 		public Palette Palette
@@ -104,7 +106,7 @@ namespace Eto.Platform.iOS.Drawing
 		}
 
 
-		public override void DrawImage(GraphicsHandler graphics, Rectangle source, Rectangle destination)
+		void UpdateBitmap (Rectangle source, bool flipped = false)
 		{
 			var bd = bmp.Lock();
 			
@@ -115,7 +117,7 @@ namespace Eto.Platform.iOS.Drawing
 					var dest = (byte*)bd.Data;
 					var src = pSrc;
 					var scany = rowStride;
-					if (graphics.Flipped)
+					if (flipped)
 					{
 						src += Control.Length - scany;
 						scany = -scany;
@@ -123,7 +125,7 @@ namespace Eto.Platform.iOS.Drawing
 					
 					dest += source.Top * bd.ScanWidth;
 					dest += source.Left * sizeof(uint);
-
+					
 					src += source.Top * scany;
 					src += source.Left;
 					
@@ -145,7 +147,10 @@ namespace Eto.Platform.iOS.Drawing
 				}
 			}
 			bmp.Unlock(bd);
+		}
 
+		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
 			bmp.DrawImage(graphics, source, destination);
 		}
 		
@@ -157,6 +162,11 @@ namespace Eto.Platform.iOS.Drawing
 				bmp.Dispose();
 				bmp = null;
 			}
+		}
+
+		public override UIImage GetUIImage ()
+		{
+			return bmp.GetUIImage ();
 		}
 	}
 }

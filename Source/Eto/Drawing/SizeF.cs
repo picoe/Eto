@@ -6,19 +6,9 @@ namespace Eto.Drawing
 	/// <summary>
 	/// Represents a floating point size with width and height components
 	/// </summary>
-	[TypeConverter (typeof (SizeFConverter))]
+	[TypeConverter (typeof(SizeFConverter))]
 	public struct SizeF : IEquatable<SizeF>
 	{
-		/// <summary>
-		/// Implicitly converts the specified integral <paramref name="size"/> to a floating point <see cref="SizeF"/>
-		/// </summary>
-		/// <param name="size">Size to convert</param>
-		/// <returns>A new instance of a floating point SizeF with the same value as the specified <paramref name="size"/></returns>
-		public static implicit operator SizeF (Size size)
-		{
-			return new SizeF (size.Width, size.Height);
-		}
-
 		/// <summary>
 		/// Gets or sets the width
 		/// </summary>
@@ -63,8 +53,18 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Size struct with absolute (positive) width and height</returns>
 		public static SizeF Abs (SizeF size)
 		{
-			return new SizeF(Math.Abs (size.Width), Math.Abs (size.Height));
+			return new SizeF (Math.Abs (size.Width), Math.Abs (size.Height));
 		}
+
+		/// <summary>
+		/// SizeF with width and height with a maximum float value
+		/// </summary>
+		public static readonly SizeF MaxValue = new SizeF (float.MaxValue, float.MaxValue);
+		
+		/// <summary>
+		/// SizeF with width and height with a minimum float value
+		/// </summary>
+		public static readonly SizeF MinValue = new SizeF (float.MinValue, float.MinValue);
 
 		/// <summary>
 		/// Initializes a new SizeF class with the specified width and height
@@ -107,21 +107,33 @@ namespace Eto.Drawing
 		{
 			if (Width == 0 || Height == 0)
 				return false;
-			return (x >= 0 && x <= Width && y >= 0 && y <= Height);
+			return (x >= 0 && x < Width && y >= 0 && y < Height);
 		}
 
 		/// <summary>
 		/// Gets a value indicating that both the <see cref="Width"/> and <see cref="Height"/> are zero
 		/// </summary>
-		public bool IsZero {
+		public bool IsZero
+		{
 			get { return Width == 0 && Height == 0; }
 		}
 
 		/// <summary>
 		/// Gets a value indicating that either the <see cref="Width"/> or <see cref="Height"/> are zero
 		/// </summary>
-		public bool IsEmpty {
+		public bool IsEmpty
+		{
 			get { return Width == 0 || Height == 0; }
+		}
+
+		/// <summary>
+		/// Negates the Width and Height of the specified <paramref name="size"/> value
+		/// </summary>		
+		/// <param name="size">Size to negate</param>
+		/// <returns>A new size that has a negative value of each of the Width and Height</returns>
+		public static SizeF operator - (SizeF size)
+		{
+			return new SizeF (-size.Width, -size.Height);
 		}
 
 		/// <summary>
@@ -132,10 +144,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a SizeF struct with the product of both sizes</returns>
 		public static SizeF operator * (SizeF size1, SizeF size2)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width * size2.Width;
-			result.Height = size1.Height * size2.Height;
-			return result;
+			return new SizeF (size1.Width * size2.Width, size1.Height * size2.Height);
 		}
 
 		/// <summary>
@@ -144,12 +153,20 @@ namespace Eto.Drawing
 		/// <param name="size">Size to multiply</param>
 		/// <param name="factor">Factor to multiply both the Width and Height by</param>
 		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
-		public static SizeF operator * (SizeF size1, float multiplier)
+		public static SizeF operator * (SizeF size, float factor)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width * multiplier;
-			result.Height = size1.Height * multiplier;
-			return result;
+			return new SizeF (size.Width * factor, size.Height * factor);
+		}
+
+		/// <summary>
+		/// Multiplies the <see cref="Width"/> and <see cref="Height"/> of a <paramref name="size"/> by the specified <paramref name="factor"/>
+		/// </summary>
+		/// <param name="size">Size to multiply</param>
+		/// <param name="factor">Factor to multiply both the Width and Height by</param>
+		/// <returns>A new instance of a SizeF struct with the product of the <paramref name="size"/> and <paramref name="factor"/></returns>
+		public static SizeF operator * (float factor, SizeF size)
+		{
+			return new SizeF (size.Width * factor, size.Height * factor);
 		}
 
 		/// <summary>
@@ -160,10 +177,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a SizeF struct with the division of <paramref name="size1"/> by <paramref name="size2"/></returns>
 		public static SizeF operator / (SizeF size1, SizeF size2)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width / size2.Width;
-			result.Height = size1.Height / size2.Height;
-			return result;
+			return new SizeF (size1.Width / size2.Width, size1.Height / size2.Height);
 		}
 
 		/// <summary>
@@ -172,12 +186,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size to divide</param>
 		/// <param name="factor">Factor to divide both the Width and Height by</param>
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size"/> divided by <paramref name="factor"/></returns>
-		public static SizeF operator / (SizeF size1, float factor)
+		public static SizeF operator / (SizeF size, float factor)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width / factor;
-			result.Height = size1.Height / factor;
-			return result;
+			return new SizeF (size.Width / factor, size.Height / factor);
 		}
 
 		/// <summary>
@@ -188,10 +199,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a SizeF struct with the addition of the width and height of both sizes</returns>
 		public static SizeF operator + (SizeF size1, SizeF size2)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width + size2.Width;
-			result.Height = size1.Height + size2.Height;
-			return result;
+			return new SizeF (size1.Width + size2.Width, size1.Height + size2.Height);
 		}
 
 		/// <summary>
@@ -202,10 +210,7 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size1"/> minus <paramref name="size2"/></returns>
 		public static SizeF operator - (SizeF size1, SizeF size2)
 		{
-			SizeF result = size1;
-			result.Width = size1.Width - size2.Width;
-			result.Height = size1.Height - size2.Height;
-			return result;
+			return new SizeF (size1.Width - size2.Width, size1.Height - size2.Height);
 		}
 
 		/// <summary>
@@ -214,9 +219,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size to subtract from</param>
 		/// <param name="value">Value to subtract from the width and height</param>
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size"/> minus <paramref name="value"/></returns>
-		public static SizeF operator - (SizeF size1, float value)
+		public static SizeF operator - (SizeF size, float value)
 		{
-			return new SizeF (size1.Width - value, size1.Height - value);
+			return new SizeF (size.Width - value, size.Height - value);
 		}
 
 		/// <summary>
@@ -225,9 +230,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size to add to</param>
 		/// <param name="value">Value to add to the width and height</param>
 		/// <returns>A new instance of a SizeF struct with the width and height of <paramref name="size"/> plus <paramref name="value"/></returns>
-		public static SizeF operator + (SizeF size1, float value)
+		public static SizeF operator + (SizeF size, float value)
 		{
-			return new SizeF (size1.Width + value, size1.Height + value);
+			return new SizeF (size.Width + value, size.Height + value);
 		}
 
 		/// <summary>
@@ -250,6 +255,26 @@ namespace Eto.Drawing
 		public static bool operator != (SizeF size1, SizeF size2)
 		{
 			return (size1.Width != size2.Width || size1.Height != size2.Height);
+		}
+
+		/// <summary>
+		/// Implicitly converts the specified integral <paramref name="size"/> to a floating point <see cref="SizeF"/>
+		/// </summary>
+		/// <param name="size">Size to convert</param>
+		/// <returns>A new instance of a floating point SizeF with the same value as the specified <paramref name="size"/></returns>
+		public static implicit operator SizeF (Size size)
+		{
+			return new SizeF (size.Width, size.Height);
+		}
+
+		/// <summary>
+		/// Explicit conversion from a <paramref name="point"/> to a Size with a Width and Height of the X and Y values of the point, respectively
+		/// </summary>
+		/// <param name="point">Point to convert</param>
+		/// <returns>A new size with the width and height of the X and Y values of the point, respectively</returns>
+		public static explicit operator SizeF (PointF point)
+		{
+			return new SizeF (point);
 		}
 
 		/// <summary>

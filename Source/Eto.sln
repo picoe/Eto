@@ -1,0 +1,223 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac.csproj", "{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "Eto\Eto.csproj", "{16289D2F-044C-49EF-83E9-9391AFF8FD2B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Gtk", "Eto.Platform.Gtk\Eto.Platform.Gtk.csproj", "{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Mac", "Eto.Platform.Mac\Eto.Platform.Mac.csproj", "{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Windows", "Eto.Platform.Windows\Eto.Platform.Windows.csproj", "{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "Eto.Test\Eto.Test\Eto.Test.csproj", "{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinForms", "Eto.Test\Eto.Test.WinForms\Eto.Test.WinForms.csproj", "{01118427-C412-4BC3-BD0C-E1DBC43FB479}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk", "Eto.Test\Eto.Test.Gtk\Eto.Test.Gtk.csproj", "{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json", "Eto.Json\Eto.Json.csproj", "{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Wpf", "Eto.Platform.Wpf\Eto.Platform.Wpf.csproj", "{E3524178-5A24-47C0-B155-92314FE4B2B6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Wpf", "Eto.Test\Eto.Test.Wpf\Eto.Test.Wpf.csproj", "{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.XamMac", "Eto.Test\Eto.Test.Mac\Eto.Test.XamMac.csproj", "{5CFF5206-278B-4DE2-93AF-571B2121B5A7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.XamMac", "Eto.Platform.Mac\Eto.Platform.XamMac.csproj", "{15490F6C-C579-4A86-AD16-8D9B5B41EB87}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Linux Debug|Any CPU = Linux Debug|Any CPU
+		Linux Release|Any CPU = Linux Release|Any CPU
+		Mac Debug|Any CPU = Mac Debug|Any CPU
+		Mac Release|Any CPU = Mac Release|Any CPU
+		Windows Debug|Any CPU = Windows Debug|Any CPU
+		Windows Release|Any CPU = Windows Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{15490F6C-C579-4A86-AD16-8D9B5B41EB87}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Linux Release|Any CPU.Build.0 = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16289D2F-044C-49EF-83E9-9391AFF8FD2B}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Linux Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1FF7BE58-A6A2-4132-8CAF-AA2EF18122A1}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Linux Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5CFF5206-278B-4DE2-93AF-571B2121B5A7}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Linux Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9DD10DFF-5AB3-4E66-B798-CA17911A61E4}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBAEAD48-6540-43FA-B86A-114ECCB15C7A}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Linux Debug|Any CPU.ActiveCfg = Debug|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Linux Debug|Any CPU.Build.0 = Debug|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Linux Release|Any CPU.ActiveCfg = Release|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Linux Release|Any CPU.Build.0 = Release|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Mac Debug|Any CPU.ActiveCfg = Debug|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Mac Debug|Any CPU.Build.0 = Debug|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Mac Release|Any CPU.ActiveCfg = Release|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Mac Release|Any CPU.Build.0 = Release|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Windows Debug|Any CPU.ActiveCfg = Debug|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Windows Debug|Any CPU.Build.0 = Debug|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Windows Release|Any CPU.ActiveCfg = Release|x86
+		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Windows Release|Any CPU.Build.0 = Release|x86
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E3524178-5A24-47C0-B155-92314FE4B2B6}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Linux Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Linux Release|Any CPU.Build.0 = Release|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Mac Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Mac Release|Any CPU.Build.0 = Release|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Eto.Test\Eto.Test.Gtk\Eto.Test.Gtk.csproj
+		Policies = $0
+		$0.DotNetNamingPolicy = $1
+		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
+		$1.ResourceNamePolicy = MSBuild
+		$0.TextStylePolicy = $2
+		$2.FileWidth = 120
+		$2.TabsToSpaces = False
+		$2.inheritsSet = VisualStudio
+		$2.inheritsScope = text/plain
+		$0.TextStylePolicy = $3
+		$3.FileWidth = 120
+		$3.inheritsSet = VisualStudio
+		$3.inheritsScope = text/plain
+		$3.scope = text/x-csharp
+		$0.CSharpFormattingPolicy = $4
+		$4.IndentSwitchBody = True
+		$4.AnonymousMethodBraceStyle = NextLine
+		$4.PropertyBraceStyle = NextLine
+		$4.PropertyGetBraceStyle = NextLine
+		$4.PropertySetBraceStyle = NextLine
+		$4.EventBraceStyle = NextLine
+		$4.EventAddBraceStyle = NextLine
+		$4.EventRemoveBraceStyle = NextLine
+		$4.StatementBraceStyle = NextLine
+		$4.ElseNewLinePlacement = NewLine
+		$4.CatchNewLinePlacement = NewLine
+		$4.FinallyNewLinePlacement = NewLine
+		$4.ArrayInitializerBraceStyle = NextLine
+		$4.BeforeMethodDeclarationParentheses = False
+		$4.BeforeMethodCallParentheses = False
+		$4.BeforeConstructorDeclarationParentheses = False
+		$4.BeforeDelegateDeclarationParentheses = False
+		$4.NewParentheses = False
+		$4.SpacesBeforeBrackets = False
+		$4.inheritsSet = Mono
+		$4.inheritsScope = text/x-csharp
+		$4.scope = text/x-csharp
+		$0.TextStylePolicy = $5
+		$5.FileWidth = 120
+		$5.TabsToSpaces = False
+		$5.inheritsSet = VisualStudio
+		$5.inheritsScope = text/plain
+		$5.scope = text/plain
+		$0.StandardHeader = $6
+		$6.Text = 
+		$6.IncludeInNewFiles = False
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

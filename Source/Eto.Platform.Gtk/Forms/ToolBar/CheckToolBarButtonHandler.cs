@@ -39,7 +39,7 @@ namespace Eto.Platform.GtkSharp
 			Control.Active = ischecked;
 			Control.Label = this.Text;
 			//Control.TooltipText = this.ToolTip;
-			Control.IconWidget = Image;
+			Control.IconWidget = GtkImage;
 			Control.Toggled += button_Toggled;
 			Control.Sensitive = this.Enabled;
 			Control.CanFocus = false;

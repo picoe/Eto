@@ -5,6 +5,57 @@ using System.Collections.ObjectModel;
 
 namespace Eto
 {
+	public class ObjectBinding<T, TValue> : ObjectBinding
+	{
+		public new T DataItem
+		{
+			get { return (T)base.DataItem; }
+			set { base.DataItem = value; }
+		}
+
+		public new TValue DataValue
+		{
+			get { return (TValue)base.DataValue; }
+			set { base.DataValue = value; }
+		}
+
+		public ObjectBinding (T dataItem, Func<T, TValue> getValue, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null)
+			: this(dataItem, new DelegateBinding<T, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent))
+		{
+		}
+		
+		/// <summary>
+		/// Initializes a new instance of the ObjectBinding with the specified object and binding to get/set values with
+		/// </summary>
+		/// <param name="dataItem">object to get/set values from</param>
+		/// <param name="innerBinding">binding to use to get/set the values from the dataItem</param>
+		public ObjectBinding (T dataItem, IndirectBinding innerBinding)
+			: base (dataItem, innerBinding)
+		{
+		}
+
+		public DualBinding Bind<TObject>(Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return Bind(new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent), mode);
+		}
+
+		public DualBinding Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return BindingExtensions.Bind(widgetBinding: this, dataContextBinding: binding, mode: mode);
+		}
+
+		public DualBinding Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			return Bind(objectValue, new DelegateBinding<TObject, TValue>(getValue, setValue, addChangeEvent, removeChangeEvent), mode);
+		}
+		
+		public DualBinding Bind<TObject>(TObject objectValue, DelegateBinding<TObject, TValue> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			var valueBinding = new ObjectBinding(objectValue, objectBinding);
+			return BindingExtensions.Bind(widgetBinding: this, valueBinding: valueBinding, mode: mode);
+		}
+	}
+
 	/// <summary>
 	/// Binding for a particular object to get/set values from/to
 	/// </summary>
@@ -27,7 +78,7 @@ namespace Eto
 		/// Gets the binding used to get/set the values from the <see cref="DataItem"/>
 		/// </summary>
 		public IndirectBinding InnerBinding { get; private set; }
-
+		
 		/// <summary>
 		/// Gets the object to get/set the values using the <see cref="InnerBinding"/>
 		/// </summary>
@@ -38,6 +89,24 @@ namespace Eto
 				dataItem = value;
 				OnDataValueChanged (EventArgs.Empty);
 			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the default value to use when setting the value for this binding when input value is null
+		/// </summary>
+		public object SettingNullValue
+		{
+			get;
+			set;
+		}
+		
+		/// <summary>
+		/// Gets or sets the default value to use when getting the value for this binding when the <see cref="DataItem"/> or property value is null
+		/// </summary>
+		public object GettingNullValue
+		{
+			get;
+			set;
 		}
 		
 		/// <summary>
@@ -65,17 +134,17 @@ namespace Eto
 			this.InnerBinding.Changed += HandleInnerBindingChanged;
 			this.InnerBinding.Changing += HandleInnerBindingChanging;
 		}
-
+		
 		void HandleInnerBindingChanging (object sender, BindingChangingEventArgs e)
 		{
 			OnChanging (e);
 		}
-
+		
 		void HandleInnerBindingChanged (object sender, BindingChangedEventArgs e)
 		{
 			OnChanged (e);
 		}
-
+		
 		/// <summary>
 		/// Gets or sets the value of this binding on the bound object
 		/// </summary>
@@ -84,10 +153,10 @@ namespace Eto
 		/// </remarks>
 		public override object DataValue {
 			get {
-				return InnerBinding.GetValue (DataItem);
+				return InnerBinding.GetValue (DataItem) ?? GettingNullValue;
 			}
 			set {
-				InnerBinding.SetValue (DataItem, value);
+				InnerBinding.SetValue (DataItem, value ?? SettingNullValue);
 			}
 		}
 		
@@ -102,7 +171,7 @@ namespace Eto
 					dataValueChangedReference = InnerBinding.AddValueChangedHandler (
 						DataItem,
 						new EventHandler<EventArgs>(HandleChangedEvent)
-					);
+						);
 				break;
 			default:
 				base.HandleEvent (handler);
@@ -121,7 +190,7 @@ namespace Eto
 					InnerBinding.RemoveValueChangedHandler (
 						dataValueChangedReference,
 						new EventHandler<EventArgs>(HandleChangedEvent)
-					);
+						);
 					dataValueChangedReference = null;
 				}
 				break;
@@ -137,7 +206,7 @@ namespace Eto
 		public override void Unbind ()
 		{
 			base.Unbind ();
-
+			
 			RemoveEvent (DataValueChangedEvent);
 			InnerBinding.Unbind ();
 		}

@@ -4,6 +4,7 @@ using Eto.Misc;
 using Eto.Test;
 using Eto.Forms;
 using Eto.Drawing;
+using System.Diagnostics;
 
 namespace Eto.Test.Gtk
 {
@@ -12,7 +13,10 @@ namespace Eto.Test.Gtk
 		//[STAThread]
 		static void Main (string [] args)
 		{
-			var generator = Generator.GetGenerator ("Eto.Platform.GtkSharp.Generator, Eto.Platform.Gtk");
+#if DEBUG
+			Debug.Listeners.Add (new ConsoleTraceListener());
+#endif
+			var generator = new Eto.Platform.GtkSharp.Generator ();
 			
 			var app = new TestApplication (generator);
 			app.Run (args);

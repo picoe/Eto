@@ -1,9 +1,9 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Forms;
-using mwc = Microsoft.Windows.Controls;
+using mwc = Xceed.Wpf.Toolkit;
 using System.Globalization;
 
 namespace Eto.Platform.Wpf.Forms.Controls
@@ -16,16 +16,34 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public DateTimePickerHandler ()
 		{
 			Control = new mwc.DateTimePicker {
-
+                ShowButtonSpinner = false
 			};
 			Mode = DateTimePicker.DefaultMode;
+            MinDate = DateTime.MinValue;
+            MaxDate = DateTime.MaxValue;
 		}
+
+		public override bool UseMousePreview { get { return true; } }
 
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
+            DateTime? last = Value;
 			Control.ValueChanged += delegate {
-				Widget.OnValueChanged (EventArgs.Empty);
+                var val = Value;
+                if (val != null)
+                {
+                    if (val.Value < MinDate)
+                        val = Value = MinDate;
+                    else if (val.Value > MaxDate)
+                        val = Value = MaxDate;
+                }
+
+                if (last != val && (last == null || val == null || Math.Abs((last.Value - val.Value).TotalSeconds) >= 1))
+                {
+                    Widget.OnValueChanged(EventArgs.Empty);
+                    last = val;
+                }
 			};
 		}
 

@@ -1,0 +1,60 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using Eto.Forms;
+using sw = System.Windows;
+using swc = System.Windows.Controls;
+
+namespace Eto.Platform.Wpf.Forms.Printing
+{
+	public class PrintDialogHandler : WidgetHandler<swc.PrintDialog, PrintDialog>, IPrintDialog
+	{
+		PrintSettings settings;
+		public PrintDialogHandler ()
+		{
+			Control = new swc.PrintDialog {
+				UserPageRangeEnabled = true
+			};
+		}
+
+		public DialogResult ShowDialog (Window parent)
+		{
+			Control.SetEtoSettings (settings);
+			var result = Control.ShowDialog ();
+			if (result == true) {
+				settings = null;
+				return DialogResult.Ok;
+			}
+			else
+				return DialogResult.Cancel;
+		}
+
+		public PrintSettings PrintSettings
+		{
+			get
+			{
+				if (settings == null)
+					settings = Control.GetEtoSettings(Widget.Generator);
+				return settings;
+			}
+			set
+			{
+				settings = value;
+				Control.SetEtoSettings (settings);
+			}
+		}
+
+		public bool AllowPageRange
+		{
+			get { return Control.UserPageRangeEnabled; }
+			set { Control.UserPageRangeEnabled = value; }
+		}
+
+		// not supported in wpf
+		public bool AllowSelection
+		{
+			get; set;
+		}
+	}
+}

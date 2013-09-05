@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class TextAreaSection : Panel
+	public class TextAreaSection : Scrollable
 	{
 		public TextAreaSection ()
 		{

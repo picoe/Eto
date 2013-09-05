@@ -62,7 +62,7 @@ namespace Eto
 		protected override object InternalGetValue (object dataItem)
 		{
 			EnsureProperty (dataItem);
-			if (descriptor != null) {
+			if (descriptor != null && dataItem != null) {
 				return descriptor.GetValue (dataItem);
 			}
 			return null;
@@ -76,7 +76,7 @@ namespace Eto
 		protected override void InternalSetValue (object dataItem, object value)
 		{
 			EnsureProperty (dataItem);
-			if (descriptor != null) {
+			if (descriptor != null && dataItem != null) {
 				if (value != null && !descriptor.PropertyType.IsAssignableFrom (value.GetType ()))
 				{
 					value = Convert.ChangeType (value, descriptor.PropertyType);
@@ -122,8 +122,12 @@ namespace Eto
 			} else {
 				var type = dataItem.GetType ();
 				var changedEvent = type.GetEvent (Property + "Changed");
-				if (changedEvent != null)
-					changedEvent.AddEventHandler (dataItem, handler);
+				if (changedEvent != null) {
+					try {
+						changedEvent.AddEventHandler (dataItem, handler);
+					}
+					catch {}
+				}
 				return dataItem;
 			}
 		}
@@ -143,8 +147,12 @@ namespace Eto
 				var dataItem = bindingReference;
 				var type = dataItem.GetType ();
 				var changedEvent = type.GetEvent (Property + "Changed");
-				if (changedEvent != null)
-					changedEvent.RemoveEventHandler (dataItem, handler);
+				if (changedEvent != null) {
+					try {
+						changedEvent.RemoveEventHandler (dataItem, handler);
+					}
+					catch {}
+				}
 			}
 		}
 	}

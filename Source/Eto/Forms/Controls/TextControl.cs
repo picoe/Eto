@@ -1,4 +1,5 @@
 using System;
+
 #if XAML
 using System.Windows.Markup;
 #endif
@@ -10,9 +11,7 @@ namespace Eto.Forms
 		string Text { get; set; }
 	}
 	
-#if XAML
 	[ContentProperty("Text")]
-#endif
 	public abstract class TextControl : CommonControl
 	{
 		ITextControl handler;
@@ -26,6 +25,20 @@ namespace Eto.Forms
 		{
 			get { return handler.Text; }
 			set { handler.Text = value; }
+		}
+
+		public ObjectBinding<TextControl, string> TextBinding
+		{
+			get
+			{
+				return new ObjectBinding<TextControl, string>(
+					this,
+					c => c.Text, 
+					(c, v) => c.Text = v, 
+					(c, h) => c.TextChanged += h, 
+					(c, h) => c.TextChanged -= h
+				);
+			}
 		}
 	}
 }

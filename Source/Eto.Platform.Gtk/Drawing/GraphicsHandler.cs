@@ -5,13 +5,41 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class GraphicsHandler : WidgetHandler<Cairo.Context, Graphics>, IGraphics
 	{
+		Pango.Context pangoContext;
 		Gtk.Widget widget;
 		Gdk.Drawable drawable;
 		Image image;
 		Cairo.ImageSurface surface;
+		double offset = 0.5;
+		double inverseoffset = 0;
+		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
+		RectangleF? clipBounds;
+		IGraphicsPath clipPath;
+
+
+		public PixelOffsetMode PixelOffsetMode
+		{
+			get { return pixelOffsetMode; }
+			set
+			{
+				pixelOffsetMode = value;
+				offset = value == PixelOffsetMode.None ? 0.5 : 0;
+				inverseoffset = value == PixelOffsetMode.None ? 0 : 0.5;
+			}
+		}
+
+		public double Offset { get { return offset; } }
+
+		public double InverseOffset { get { return inverseoffset; } }
 
 		public GraphicsHandler ()
 		{
+		}
+
+		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext)
+		{
+			this.Control = context;
+			this.pangoContext = pangoContext;
 		}
 		
 		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable)
@@ -21,9 +49,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 
-		public bool Antialias {
+		public bool IsRetained { get { return false; } }
+
+		public bool Antialias
+		{
 			get { return Control.Antialias != Cairo.Antialias.None; }
-			set {
+			set
+			{
 				if (value)
 					Control.Antialias = Cairo.Antialias.Default;
 				else
@@ -31,8 +63,21 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public ImageInterpolation ImageInterpolation {
-			get; set;
+		public ImageInterpolation ImageInterpolation
+		{
+			get;
+			set;
+		}
+
+		public Pango.Context PangoContext
+		{
+			get
+			{
+				if (pangoContext == null && widget != null) {
+					pangoContext = widget.PangoContext;
+				}
+				return pangoContext;
+			}
 		}
 
 		public void CreateFromImage (Bitmap image)
@@ -57,7 +102,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			if (image != null) {
 				var handler = (BitmapHandler)image.Handler;
-				Gdk.Pixbuf pb = (Gdk.Pixbuf)image.ControlObject;
+				Gdk.Pixbuf pb = handler.GetPixbuf (Size.MaxValue);
 				if (pb != null) {
 
 					surface.Flush ();
@@ -69,7 +114,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 							uint* src = (uint*)srcrow;
 							uint* dest = (uint*)destrow;
 							for (int x=0; x<image.Size.Width; x++) {
-								*dest = bd.TranslateArgbToData(*src);
+								*dest = bd.TranslateArgbToData (*src);
 								dest++;
 								src++;
 							}
@@ -80,163 +125,171 @@ namespace Eto.Platform.GtkSharp.Drawing
 					handler.Unlock (bd);
 				}
 			}
-			if (Control != null)
-			{
-				((IDisposable)Control).Dispose();
+			if (Control != null) {
+				((IDisposable)Control).Dispose ();
 				if (surface != null) {
 					this.Control = new Cairo.Context (surface);
-				}
-				else if (drawable != null) {
+				} else if (drawable != null) {
 					this.Control = Gdk.CairoHelper.Create (drawable);
 				}
 			}
 		}
 
-		public void DrawLine (Color color, int startx, int starty, int endx, int endy)
+		public void DrawLine (Pen pen, float startx, float starty, float endx, float endy)
 		{
+			Control.MoveTo (startx + offset, starty + offset);
+			Control.LineTo (endx + offset, endy + offset);
+			pen.Apply (this);
+		}
+
+		public void DrawRectangle (Pen pen, float x, float y, float width, float height)
+		{
+			Control.Rectangle (x + offset, y + offset, width, height);
+			pen.Apply (this);
+		}
+
+		public void FillRectangle (Brush brush, float x, float y, float width, float height)
+		{
+			Control.Rectangle (x + inverseoffset, y + inverseoffset, width, height);
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
-			if (startx != endx || starty != endy) {
-				// to draw a line, it must move..
-				Control.MoveTo (startx + 0.5, starty + 0.5);
-				Control.LineTo (endx + 0.5, endy + 0.5);
-				Control.LineCap = Cairo.LineCap.Square;
-				Control.LineWidth = 1.0;
-				Control.Stroke ();
-			} else {
-				// to draw one pixel, we must fill it
-				Control.Rectangle (startx, starty, 1, 1);
-				Control.Fill ();
-			}
+			brush.Apply (this);
 			Control.Restore ();
 		}
 
-		public void DrawRectangle (Color color, int x, int y, int width, int height)
+		public void DrawEllipse (Pen pen, float x, float y, float width, float height)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
-			Control.Rectangle (x + 0.5, y + 0.5, width - 1, height - 1);
-			Control.LineWidth = 1.0;
-			Control.Stroke ();
+			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
+			Control.Restore ();
+			pen.Apply (this);
+		}
+
+		public void FillEllipse (Brush brush, float x, float y, float width, float height)
+		{
+			Control.Save ();
+			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			Control.Arc (0, 0, radius, 0, 2 * Math.PI);
+			Control.Restore ();
+			Control.Save ();
+			brush.Apply (this);
 			Control.Restore ();
 		}
 
-		public void FillRectangle (Color color, int x, int y, int width, int height)
+		public void DrawArc (Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
-			Control.Rectangle (x, y, width, height);
-			Control.Fill ();
+			Control.Translate (x + width / 2 + offset, y + height / 2 + offset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			if (sweepAngle < 0)
+				Control.ArcNegative(0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+			else
+				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+			Control.Restore ();
+			pen.Apply (this);
+		}
+
+		public void FillPie (Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			Control.Save ();
+			Control.Translate (x + width / 2 + inverseoffset, y + height / 2 + inverseoffset);
+			double radius = Math.Max (width / 2.0, height / 2.0);
+			if (width > height)
+				Control.Scale (1.0, height / width);
+			else
+				Control.Scale (width / height, 1.0);
+			if (sweepAngle < 0)
+				Control.ArcNegative(0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+			else
+				Control.Arc (0, 0, radius, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle));
+			Control.LineTo (0, 0);
+			Control.Restore ();
+			Control.Save ();
+			brush.Apply (this);
 			Control.Restore ();
 		}
 
-		public void DrawEllipse (Color color, int x, int y, int width, int height)
+		public void FillPath (Brush brush, IGraphicsPath path)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
-			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
-			Control.LineWidth = 1.0;
-			Control.Stroke ();
+			Control.Translate (inverseoffset, inverseoffset);
+			path.Apply (Control);
+			Control.Restore ();
+			Control.Save ();
+			Control.FillRule = path.FillMode.ToCairo ();
+			brush.Apply (this);
 			Control.Restore ();
 		}
 
-		public void FillEllipse (Color color, int x, int y, int width, int height)
+		public void DrawPath (Pen pen, IGraphicsPath path)
 		{
 			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
-			Control.Arc (x + width / 2, y + height / 2, 0, 0, 2 * Math.PI);
-			Control.Fill ();
+			Control.Translate (offset, offset);
+			path.Apply (Control);
 			Control.Restore ();
+			pen.Apply (this);
 		}
 
-		
-		public void FillPath (Color color, GraphicsPath path)
-		{
-			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
-			var pathHandler = path.Handler as GraphicsPathHandler;
-			pathHandler.Apply (this);
-			Control.Fill ();
-			Control.Restore ();
-		}
-
-		public void DrawPath (Color color, GraphicsPath path)
-		{
-			Control.Save ();
-			Control.Color = Generator.ConvertC (color);
-			var pathHandler = path.Handler as GraphicsPathHandler;
-			pathHandler.Apply (this);
-			Control.LineCap = Cairo.LineCap.Square;
-			Control.LineWidth = 1.0;
-			Control.Stroke ();
-			Control.Restore ();
-		}
-		
-		public void DrawImage (Image image, int x, int y)
+		public void DrawImage (Image image, float x, float y)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y);
 		}
 
-		public void DrawImage (Image image, int x, int y, int width, int height)
+		public void DrawImage (Image image, float x, float y, float width, float height)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, x, y, width, height);
 		}
 
-		public void DrawImage (Image image, Rectangle source, Rectangle destination)
+		public void DrawImage (Image image, RectangleF source, RectangleF destination)
 		{
 			((IImageHandler)image.Handler).DrawImage (this, source, destination);
 		}
 
-		public void DrawIcon (Icon icon, int x, int y, int width, int height)
+		Pango.Layout CreateLayout ()
 		{
-			var iconHandler = ((IconHandler)icon.Handler);
-			var pixbuf = iconHandler.Pixbuf;
-			Control.Save ();
-			Gdk.CairoHelper.SetSourcePixbuf(Control, pixbuf, 0, 0);
-			if (width != pixbuf.Width || height != pixbuf.Height) {
-				Control.Scale ((double)width / (double)pixbuf.Width, (double)height / (double)pixbuf.Height);
-			}
-			Control.Rectangle (x, y, width, height);
-			Control.Fill ();
-			Control.Restore ();
-		}
-		
-		public Region ClipRegion {
-			get { return null; }
-			set {
-				
-			}
+			if (PangoContext != null)
+				return new Pango.Layout (PangoContext);
+			else
+				return Pango.CairoHelper.CreateLayout (Control);
 		}
 
-		public void DrawText (Font font, Color color, int x, int y, string text)
+		public void DrawText (Font font, Color color, float x, float y, string text)
 		{
-			if (widget != null) {
-				using (var layout = new Pango.Layout (widget.PangoContext)) {
-					layout.FontDescription = (Pango.FontDescription)font.ControlObject;
-					layout.SetText (text);
-					Control.Save ();
-					Control.Color = Generator.ConvertC (color);
-					Control.MoveTo (x, y);
-					Pango.CairoHelper.LayoutPath (Control, layout);
-					Control.Fill ();
-					Control.Restore ();
-				}
+			using (var layout = CreateLayout ()) {
+				layout.FontDescription = ((FontHandler)font.Handler).Control;
+				layout.SetText (text);
+				Control.Save ();
+				Control.Color = color.ToCairo ();
+				Control.MoveTo (x, y);
+				Pango.CairoHelper.LayoutPath (Control, layout);
+				Control.Fill ();
+				Control.Restore ();
 			}
 		}
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			if (widget != null) {
-
-				Pango.Layout layout = new Pango.Layout (widget.PangoContext);
-				layout.FontDescription = (Pango.FontDescription)font.ControlObject;
+			using (var layout = CreateLayout ()) {
+				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
 				int width, height;
 				layout.GetPixelSize (out width, out height);
-				layout.Dispose ();
 				return new SizeF (width, height);
 			}
-			return new SizeF ();
 		}
 
 		protected override void Dispose (bool disposing)
@@ -245,6 +298,96 @@ namespace Eto.Platform.GtkSharp.Drawing
 				Flush ();
 			
 			base.Dispose (disposing);
+		}
+
+		public void TranslateTransform (float offsetX, float offsetY)
+		{
+			Control.Translate (offsetX, offsetY);
+		}
+
+		public void RotateTransform (float angle)
+		{
+			Control.Rotate (Conversions.DegreesToRadians (angle));
+		}
+
+		public void ScaleTransform (float scaleX, float scaleY)
+		{
+			Control.Scale (scaleX, scaleY);
+		}
+
+		public void MultiplyTransform (IMatrix matrix)
+		{
+			Control.Transform (matrix.ToCairo ());
+		}
+
+		public void SaveTransform ()
+		{
+			ReverseClip ();
+			Control.Save ();
+			ApplyClip ();
+		}
+
+		public void RestoreTransform ()
+		{
+			Control.Restore ();
+			ApplyClip ();
+		}
+
+		void ReverseClip ()
+		{
+			if (clipBounds != null)
+				Control.ResetClip ();
+		}
+
+		void ApplyClip ()
+		{
+			if (clipPath != null) {
+				clipPath.Apply (Control);
+				Control.Clip ();
+			} else if (clipBounds != null) {
+				Control.Rectangle (clipBounds.Value.ToCairo ());
+				Control.Clip ();
+			}
+		}
+
+		public RectangleF ClipBounds
+		{
+			get { return clipBounds ?? RectangleF.Empty; }
+		}
+
+		public void SetClip (RectangleF rectangle)
+		{
+			ResetClip ();
+			clipBounds = rectangle;
+			ApplyClip ();
+		}
+
+		public void SetClip (IGraphicsPath path)
+		{
+			ResetClip ();
+			clipPath = path;
+			clipBounds = path.Bounds;
+			ApplyClip ();
+		}
+
+		public void ResetClip ()
+		{
+			clipBounds = null;
+			Control.ResetClip ();
+		}
+
+		public void Clear (SolidBrush brush)
+		{
+			Control.Save ();
+			Control.Operator = Cairo.Operator.Clear;
+			Control.Paint ();
+			Control.Restore ();
+			Control.Save ();
+			if (brush != null) {
+				brush.Apply (this);
+				Control.Paint ();
+			}
+			Control.Restore ();
 		}
 	}
 }

@@ -14,7 +14,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		bool setlayout;
 		
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			
@@ -44,6 +44,10 @@ namespace Eto.Platform.GtkSharp
 				IGtkContainer container = Widget.Container.Handler as IGtkContainer;
 				container.SetLayout (Widget);
 			}
+		}
+
+		public virtual void OnUnLoad ()
+		{
 		}
 
 		public virtual void Update ()

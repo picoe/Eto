@@ -18,22 +18,27 @@ namespace Eto.Platform.Windows
 			get { return Widget.Layout != null && Widget.Layout.InnerLayout != null ? Widget.Layout.InnerLayout.Handler as IWindowsLayout : null; }
 		}
 
+		public bool EnableRedrawDuringSuspend { get; set; }
+
 		protected bool SkipLayoutScale { get; set; }
 
 		public override Size DesiredSize
 		{
 			get
 			{
-				var size = this.MinimumSize ?? Size.Empty;
+				var size = Size.Empty;
 				var layout = WindowsLayout;
 
 				if (layout != null)
-				{
-					if (!SkipLayoutScale)
-						size = Size.Max (layout.DesiredSize, size);
-				}
+					size = Size.Max (layout.DesiredSize, size);
 
-				size = Size.Max (base.DesiredSize, size);
+				var desired = base.DesiredSize;
+				if (desired.Width >= 0)
+					size.Width = desired.Width;
+				if (desired.Height >= 0)
+					size.Height = desired.Height;
+				if (this.MinimumSize != null)
+					size = Size.Max (this.MinimumSize.Value, size);
 				return size;
 			}
 		}
@@ -54,7 +59,7 @@ namespace Eto.Platform.Windows
 			get { return minimumSize; }
 			set {
 				minimumSize = value;
-				this.Control.MinimumSize = Generator.Convert (value ?? Size.Empty);
+				this.Control.MinimumSize = (value ?? Size.Empty).ToSD ();
 			}
 		}
 
@@ -88,6 +93,8 @@ namespace Eto.Platform.Windows
 					if (control != null)
 					{
 						control.SuspendLayout ();
+						if (!EnableRedrawDuringSuspend && control.IsHandleCreated)
+							Win32.SendMessage (control.Handle, Win32.WM.SETREDRAW, IntPtr.Zero, IntPtr.Zero);
 					}
 				}
 				
@@ -105,6 +112,8 @@ namespace Eto.Platform.Windows
 					var control = layout.LayoutObject as SWF.Control;
 					if (control != null)
 					{
+						if (!EnableRedrawDuringSuspend && control.IsHandleCreated)
+							Win32.SendMessage (control.Handle, Win32.WM.SETREDRAW, new IntPtr(1), IntPtr.Zero);
 						control.ResumeLayout ();
 					}
 				}

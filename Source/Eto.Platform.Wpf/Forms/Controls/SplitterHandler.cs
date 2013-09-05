@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,14 +74,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			if (panel != null)
 			{
+				var control = panel.GetContainerControl ();
+				control.VerticalAlignment = sw.VerticalAlignment.Stretch;
+				control.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
+				/*
 				((sw.FrameworkElement)panel.ControlObject).Width = double.NaN;
 				((sw.FrameworkElement)panel.ControlObject).Height = double.NaN;
+				 * */
 			}
-		}
-
-		public override void Initialize ()
-		{
-			base.Initialize ();
 		}
 
 		void UpdateOrientation ()
@@ -263,7 +263,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				panel1 = value;
 				pane1.Children.Clear ();
 				if (panel1 != null) {
-					var control = (sw.FrameworkElement)panel1.ControlObject;
+					var control = panel1.GetContainerControl();
 					control.Style = style;
 					//swc.DockPanel.SetDock (control, swc.Dock.Top);
 					//control.Height = double.NaN;
@@ -279,10 +279,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				panel2 = value;
 				pane2.Children.Clear ();
 				if (panel2 != null) {
-					var control = (sw.FrameworkElement)panel2.ControlObject;
+					var control = panel2.GetContainerControl();
 					control.Style = style;
 					//swc.DockPanel.SetDock (control, swc.Dock.Top);
-					control.Height = double.NaN;
+					//control.Height = double.NaN;
 					SetStretch (panel2);
 					pane2.Children.Add (control);
 				}

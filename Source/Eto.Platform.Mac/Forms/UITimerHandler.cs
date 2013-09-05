@@ -1,8 +1,17 @@
 using System;
-using MonoMac.Foundation;
 using Eto.Forms;
+#if IOS
+using MonoTouch.Foundation;
+#else
+using MonoMac.Foundation;
+#endif
 
+#if IOS
+namespace Eto.Platform.iOS.Forms
+
+#elif OSX
 namespace Eto.Platform.Mac.Forms
+#endif
 {
 	public class UITimerHandler : WidgetHandler<NSTimer, UITimer>, IUITimer
 	{

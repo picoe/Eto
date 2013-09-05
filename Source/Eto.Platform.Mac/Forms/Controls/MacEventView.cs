@@ -5,6 +5,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreImage;
 using Eto.Drawing;
+using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -18,6 +19,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		static NSString CIInputGVector = new NSString ("inputGVector");
 		static NSString CIInputBVector = new NSString ("inputBVector");
 
+		static Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
+
 		public static void Colourize (NSView control, Color color, Action drawAction)
 		{
 			var size = control.Frame.Size;
@@ -30,7 +33,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var ciImage = CIImage.FromData (image.AsTiff ());
 			
 			if (control.IsFlipped) {
-				var realSize = control.ConvertSizeToBase (size);
+				SD.SizeF realSize;
+				if (control.RespondsToSelector (selConvertSizeToBacking))
+					realSize = control.ConvertSizeToBacking (size);
+				else
+					realSize = control.ConvertSizeToBase (size);
 				var affineTransform = new NSAffineTransform ();
 				affineTransform.Translate (0, realSize.Height);
 				affineTransform.Scale (1, -1);
@@ -79,27 +86,29 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public static bool KeyDown (Control control, NSEvent theEvent)
 		{
 			if (control != null) {
-				char keyChar = !string.IsNullOrEmpty (theEvent.Characters) ? theEvent.Characters [0] : '\0';
-				Key key = KeyMap.MapKey (theEvent.KeyCode);
-				KeyPressEventArgs kpea;
-				Key modifiers = KeyMap.GetModifiers (theEvent);
-				key |= modifiers;
-				//Console.WriteLine("\t\tkeymap.Add({2}, Key.{0}({1})); {3}", theEvent.Characters, (int)keyChar, theEvent.KeyCode, theEvent.ModifierFlags);
-				//Console.WriteLine("\t\t{0} {1} {2}", key & Key.ModifierMask, key & Key.KeyMask, (NSKey)keyChar);
-				if (key != Key.None) {
-					if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
-						kpea = new KeyPressEventArgs (key, keyChar);
-					else
-						kpea = new KeyPressEventArgs (key);
-				} else {
-					kpea = new KeyPressEventArgs (key, keyChar);
-				}
+				var kpea = theEvent.ToEtoKeyPressEventArgs ();
 				control.OnKeyDown (kpea);
+				if (!kpea.Handled) {
+					var handler = control.Handler as IMacViewHandler;
+					if (handler != null)
+						handler.PostKeyDown (kpea);
+				}
+
 				return kpea.Handled;
 			}
 			return false;
 		}
-		
+
+		public static bool KeyUp (Control control, NSEvent theEvent)
+		{
+			if (control != null) {
+				var kpea = theEvent.ToEtoKeyPressEventArgs ();
+				control.OnKeyUp (kpea);
+				return kpea.Handled;
+			}
+			return false;
+		}
+
 		public override void ResetCursorRects ()
 		{
 			var cursor = Handler.Cursor;

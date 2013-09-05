@@ -5,6 +5,11 @@ using Eto.Forms;
 using Eto.IO;
 using Eto.Platform.GtkSharp.Drawing;
 using System.Threading;
+using Eto.Platform.GtkSharp.Forms.Cells;
+using Eto.Platform.GtkSharp.Forms.Controls;
+using Eto.Platform.GtkSharp.Forms.Printing;
+using Eto.Platform.GtkSharp.Forms;
+using Eto.Platform.GtkSharp.IO;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -21,141 +26,105 @@ namespace Eto.Platform.GtkSharp
 			Gtk.Application.Init();
 			
 			Gdk.Threads.Enter ();
-		}
-		
-		public static Gdk.Color Convert (Color color)
-		{
-			return new Gdk.Color ((byte)(color.R * byte.MaxValue), (byte)(color.G * byte.MaxValue), (byte)(color.B * byte.MaxValue));
-		}
-		
-		public static Cairo.Color ConvertC (Color color)
-		{
-			return new Cairo.Color ((double)color.R, (double)color.G, (double)color.B, (double)color.A);
+
+			AddTo (this);
 		}
 
-		public static Cairo.Rectangle ConvertC (Rectangle rectangle)
+		public static void AddTo(Eto.Generator g)
 		{
-			return new Cairo.Rectangle (rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
-		}
+			// Drawing
+			g.Add <IBitmap> (() => new BitmapHandler ());
+			g.Add <IFontFamily> (() => new FontFamilyHandler ());
+			g.Add <IFont> (() => new FontHandler ());
+			g.Add <IFonts> (() => new FontsHandler ());
+			g.Add <IGraphics> (() => new GraphicsHandler ());
+			g.Add <IGraphicsPathHandler> (() => new GraphicsPathHandler ());
+			g.Add <IIcon> (() => new IconHandler ());
+			g.Add <IIndexedBitmap> (() => new IndexedBitmapHandler ());
+			g.Add <IMatrixHandler> (() => new MatrixHandler ());
+			g.Add <IPen> (() => new PenHandler ());
+			g.Add <ISolidBrush> (() => new SolidBrushHandler ());
+			g.Add <ITextureBrush> (() => new TextureBrushHandler ());
+			g.Add <ILinearGradientBrush> (() => new LinearGradientBrushHandler ());
 
-		public static Rectangle ConvertC (Cairo.Rectangle rectangle)
-		{
-			return new Rectangle ((int)rectangle.X, (int)rectangle.Y, (int)rectangle.Width, (int)rectangle.Height);
-		}
+			// Forms.Cells
+			g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
+			g.Add <IComboBoxCell> (() => new ComboBoxCellHandler ());
+			g.Add <IImageTextCell> (() => new ImageTextCellHandler ());
+			g.Add <IImageViewCell> (() => new ImageViewCellHandler ());
+			g.Add <ITextBoxCell> (() => new TextBoxCellHandler ());
+			
+			// Forms.Controls
+			g.Add <IButton> (() => new ButtonHandler ());
+			g.Add <ICheckBox> (() => new CheckBoxHandler ());
+			g.Add <IComboBox> (() => new ComboBoxHandler ());
+			g.Add <IDateTimePicker> (() => new DateTimePickerHandler ());
+			g.Add <IDrawable> (() => new DrawableHandler ());
+			g.Add <IGridColumn> (() => new GridColumnHandler ());
+			g.Add <IGridView> (() => new GridViewHandler ());
+			g.Add <IGroupBox> (() => new GroupBoxHandler ());
+			g.Add <IImageView> (() => new ImageViewHandler ());
+			g.Add <ILabel> (() => new LabelHandler ());
+			g.Add <IListBox> (() => new ListBoxHandler ());
+			g.Add <INumericUpDown> (() => new NumericUpDownHandler ());
+			g.Add <IPanel> (() => new PanelHandler ());
+			g.Add <IPasswordBox> (() => new PasswordBoxHandler ());
+			g.Add <IProgressBar> (() => new ProgressBarHandler ());
+			g.Add <IRadioButton> (() => new RadioButtonHandler ());
+			g.Add <IScrollable> (() => new ScrollableHandler ());
+			g.Add <ISlider> (() => new SliderHandler ());
+			g.Add <ISplitter> (() => new SplitterHandler ());
+			g.Add <ITabControl> (() => new TabControlHandler ());
+			g.Add <ITabPage> (() => new TabPageHandler ());
+			g.Add <ITextArea> (() => new TextAreaHandler ());
+			g.Add <ITextBox> (() => new TextBoxHandler ());
+			g.Add <ITreeGridView> (() => new TreeGridViewHandler ());
+			g.Add <ITreeView> (() => new TreeViewHandler ());
+			g.Add <IWebView> (() => new WebViewHandler ());
+			g.Add <IScreens> (() => new ScreensHandler ());
+			
+			// Forms.Menu
+			g.Add <ICheckMenuItem> (() => new CheckMenuItemHandler ());
+			g.Add <IContextMenu> (() => new ContextMenuHandler ());
+			g.Add <IImageMenuItem> (() => new ImageMenuItemHandler ());
+			g.Add <IMenuBar> (() => new MenuBarHandler ());
+			g.Add <IRadioMenuItem> (() => new RadioMenuItemHandler ());
+			g.Add <ISeparatorMenuItem> (() => new SeparatorMenuItemHandler ());
+			
+			// Forms.Printing
+			g.Add <IPrintDialog> (() => new PrintDialogHandler ());
+			g.Add <IPrintDocument> (() => new PrintDocumentHandler ());
+			g.Add <IPrintSettings> (() => new PrintSettingsHandler ());
+			
+			// Forms.ToolBar
+			g.Add <ICheckToolBarButton> (() => new CheckToolBarButtonHandler ());
+			g.Add <ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
+			g.Add <IToolBarButton> (() => new ToolBarButtonHandler ());
+			g.Add <IToolBar> (() => new ToolBarHandler ());
 
-		public static Cairo.Filter ConvertC (ImageInterpolation value)
-		{
-			switch (value) {
-			case ImageInterpolation.Default:
-				return  Cairo.Filter.Bilinear;
-			case ImageInterpolation.None:
-				return Cairo.Filter.Nearest;
-			case ImageInterpolation.High:
-				return  Cairo.Filter.Best;
-			case ImageInterpolation.Low:
-				return  Cairo.Filter.Fast;
-			case ImageInterpolation.Medium:
-				return  Cairo.Filter.Good;
-			default:
-				throw new NotSupportedException();
-			}
-		}
-		
-		public static Color Convert (Gdk.Color color)
-		{
-			return new Color ((float)color.Red / ushort.MaxValue, (float)color.Green / ushort.MaxValue, (float)color.Blue / ushort.MaxValue);
-		}
+			// Forms
+			g.Add <IApplication> (() => new ApplicationHandler ());
+			g.Add <IClipboard> (() => new ClipboardHandler ());
+			g.Add <IColorDialog> (() => new ColorDialogHandler ());
+			g.Add <ICursor> (() => new CursorHandler ());
+			g.Add <IDialog> (() => new DialogHandler ());
+			g.Add <IDockLayout> (() => new DockLayoutHandler ());
+			g.Add <IFontDialog> (() => new FontDialogHandler ());
+			g.Add <IForm> (() => new FormHandler ());
+			g.Add <IMessageBox> (() => new MessageBoxHandler ());
+			g.Add <IOpenFileDialog> (() => new OpenFileDialogHandler ());
+			g.Add <IPixelLayout> (() => new PixelLayoutHandler ());
+			g.Add <ISaveFileDialog> (() => new SaveFileDialogHandler ());
+			g.Add <ISelectFolderDialog> (() => new SelectFolderDialogHandler ());
+			g.Add <ITableLayout> (() => new TableLayoutHandler ());
+			g.Add <IUITimer> (() => new UITimerHandler ());
+			g.Add <IMouse> (() => new MouseHandler ());
 
-		public static Gdk.Size Convert (Size size)
-		{
-			return new Gdk.Size (size.Width, size.Height);
-		}
+			// IO
+			g.Add <ISystemIcons> (() => new SystemIconsHandler ());
 
-		public static Size Convert (Gdk.Size size)
-		{
-			return new Size (size.Width, size.Height);
-		}
-
-		public static Size Convert (Gtk.Requisition req)
-		{
-			return new Size (req.Width, req.Height);
-		}
-
-		public static Gdk.Point Convert (Point point)
-		{
-			return new Gdk.Point (point.X, point.Y);
-		}
-
-		public static Point Convert (Gdk.Point point)
-		{
-			return new Point (point.X, point.Y);
-		}
-
-		public static Gdk.Rectangle Convert (Rectangle rect)
-		{
-			return new Gdk.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
-		}
-
-		public static Rectangle Convert (Gdk.Rectangle rect)
-		{
-			return new Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
-		}
-
-		public static DialogResult Convert (Gtk.ResponseType result)
-		{
-			DialogResult ret = DialogResult.None;
-			if (result == Gtk.ResponseType.Ok)
-				ret = DialogResult.Ok;
-			else if (result == Gtk.ResponseType.Cancel)
-				ret = DialogResult.Cancel;
-			else if (result == Gtk.ResponseType.Yes)
-				ret = DialogResult.Yes;
-			else if (result == Gtk.ResponseType.No)
-				ret = DialogResult.No;
-			else if (result == Gtk.ResponseType.None)
-				ret = DialogResult.None;
-			else if (result == Gtk.ResponseType.Accept)
-				ret = DialogResult.Ignore;
-			else if (result == Gtk.ResponseType.Reject)
-				ret = DialogResult.Abort;
-			else
-				ret = DialogResult.None;
-
-			return ret;
-		}
-
-		public static string Convert (ImageFormat format)
-		{
-			switch (format) {
-			case ImageFormat.Jpeg:
-				return "jpeg";
-			case ImageFormat.Bitmap:
-				return "bmp";
-			case ImageFormat.Gif:
-				return "gif";
-			case ImageFormat.Tiff:
-				return "tiff";
-			case ImageFormat.Png:
-				return "png";
-			default:
-				throw new Exception ("Invalid format specified");
-			}
-		}
-		
-		public static Gdk.CursorType Convert(CursorType cursor)
-		{
-			switch (cursor) {
-			case CursorType.Arrow: return Gdk.CursorType.Arrow;
-			case CursorType.Crosshair: return Gdk.CursorType.Crosshair;
-			case CursorType.Default: return Gdk.CursorType.Arrow;
-			case CursorType.HorizontalSplit: return Gdk.CursorType.SbHDoubleArrow;
-			case CursorType.VerticalSplit: return Gdk.CursorType.SbVDoubleArrow;
-			case CursorType.IBeam: return Gdk.CursorType.Xterm;
-			case CursorType.Move: return Gdk.CursorType.Fleur;
-			case CursorType.Pointer: return Gdk.CursorType.Hand2;
-			default:
-				throw new NotSupportedException();
-			}
+			// General
+			g.Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
 		}
 	}
 }

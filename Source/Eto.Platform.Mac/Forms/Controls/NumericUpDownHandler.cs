@@ -3,6 +3,7 @@ using Eto.Forms;
 using SD = System.Drawing;
 using MonoMac.AppKit;
 using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -37,7 +38,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public class EtoUpDownTextField : NSTextField, IMacControl
 		{
-			public object Handler { get; set; }
+			public NumericUpDownHandler Handler { get; set; }
+
+			object IMacControl.Handler { get { return Handler; } }
 		}
 
 		public NumericUpDownHandler ()
@@ -66,11 +69,31 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			Control.AddSubview (text);
 			Control.AddSubview (stepper);
-			var naturalSize = GetNaturalSize ();
+			var naturalSize = GetNaturalSize (Size.MaxValue);
 			Control.Frame = new System.Drawing.RectangleF (0, 0, naturalSize.Width, naturalSize.Height);
 		}
-		
-		protected override Size GetNaturalSize ()
+
+		protected override void Initialize ()
+		{
+			base.Initialize ();
+			HandleEvent (NumericUpDown.KeyDownEvent);
+		}
+
+		public override void PostKeyDown (KeyEventArgs e)
+		{
+			base.PostKeyDown (e);
+			if (e.KeyData == Key.Down) {
+				Value = Math.Max (Value - 1, MinValue);
+				Widget.OnValueChanged (EventArgs.Empty);
+				e.Handled = true;
+			} else if (e.KeyData == Key.Up) {
+				Value = Math.Min (Value + 1, MaxValue);
+				Widget.OnValueChanged (EventArgs.Empty);
+				e.Handled = true;
+			}
+		}
+
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			if (naturalSize == null) {
 				text.SizeToFit ();
@@ -127,6 +150,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Font Font {
 			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (text.Font));
 				return font;
 			}
 			set {

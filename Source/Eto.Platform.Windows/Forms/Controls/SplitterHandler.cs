@@ -28,10 +28,10 @@ namespace Eto.Platform.Windows
 		{
 			base.OnLoadComplete (e);
 			if (position != null) {
-				Control.SplitterDistance = position.Value;
+			    Control.SplitterDistance = position.Value;
 			}
-			Control.Panel1Collapsed = panel1 == null || !((IWindowsControl)panel1.Handler).InternalVisible;
-			Control.Panel2Collapsed = panel2 == null || !((IWindowsControl)panel2.Handler).InternalVisible;
+			Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsControl()).InternalVisible;
+			Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsControl()).InternalVisible;
 		}
 		
 		public SplitterFixedPanel FixedPanel {
@@ -93,19 +93,19 @@ namespace Eto.Platform.Windows
 				if (panel1 != value) {
 					Control.SuspendLayout ();
 					if (panel1 != null) {
-						SWF.Control c = (SWF.Control)panel1.ControlObject;
+						SWF.Control c = panel1.GetSwfControl();
 						c.VisibleChanged -= c1_VisibleChanged;
 					}
 					panel1 = value;
 					Control.Panel1.Controls.Clear ();
 					if (panel1 != null) {
-						SWF.Control c = (SWF.Control)panel1.ControlObject;
+						SWF.Control c = panel1.GetSwfControl();
 						c.Dock = SWF.DockStyle.Fill;
 						c.VisibleChanged += c1_VisibleChanged;
-						Control.Panel1.Controls.Add ((SWF.Control)panel1.ControlObject);
+						Control.Panel1.Controls.Add (panel1.GetSwfControl());
 					}
 					if (Widget.Loaded)
-						Control.Panel1Collapsed = panel1 == null || !((IWindowsControl)panel1.Handler).InternalVisible;
+						Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsControl()).InternalVisible;
 					Control.ResumeLayout ();
 				}
 			}
@@ -117,19 +117,19 @@ namespace Eto.Platform.Windows
 				if (panel2 != value) {
 					Control.SuspendLayout ();
 					if (panel2 != null) {
-						SWF.Control c = (SWF.Control)panel2.ControlObject;
+						SWF.Control c = panel2.GetSwfControl();
 						c.VisibleChanged -= c2_VisibleChanged;
 					}
 					panel2 = value;
 					Control.Panel2.Controls.Clear ();
 					if (panel2 != null) {
-						SWF.Control c = (SWF.Control)panel2.ControlObject;
+						SWF.Control c = panel2.GetSwfControl();
 						c.Dock = SWF.DockStyle.Fill;
 						c.VisibleChanged += c2_VisibleChanged;
-						Control.Panel2.Controls.Add ((SWF.Control)panel2.ControlObject);
+						Control.Panel2.Controls.Add (panel2.GetSwfControl());
 					}
 					if (Widget.Loaded)
-						Control.Panel2Collapsed = panel2 == null || !((IWindowsControl)panel2.Handler).InternalVisible;
+						Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsControl()).InternalVisible;
 					Control.ResumeLayout ();
 				}
 			}
@@ -138,7 +138,7 @@ namespace Eto.Platform.Windows
 		void c1_VisibleChanged (object sender, EventArgs e)
 		{
 			
-			if (panel1 != null && ((IWindowsControl)panel1.Handler).InternalVisible)
+			if (panel1 != null && (panel1.GetWindowsControl()).InternalVisible)
 				Control.Panel1Collapsed = false;
 			else
 				Control.Panel1Collapsed = true;
@@ -146,7 +146,7 @@ namespace Eto.Platform.Windows
 
 		void c2_VisibleChanged (object sender, EventArgs e)
 		{
-			if (panel2 != null && ((IWindowsControl)panel2.Handler).InternalVisible)
+			if (panel2 != null && (panel2.GetWindowsControl()).InternalVisible)
 				Control.Panel2Collapsed = false;
 			else
 				Control.Panel2Collapsed = true;

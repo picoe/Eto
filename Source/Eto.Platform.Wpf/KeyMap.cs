@@ -69,23 +69,6 @@ namespace Eto.Platform.Wpf
 			return val;
 		}
 
-		public static string KeyToString (Key key)
-		{
-			if (key != Key.None) {
-				string val = string.Empty;
-				Key modifier = (key & Key.ModifierMask);
-				if (modifier != Key.None) val += modifier.ToString ();
-				Key mainKey = (key & Key.KeyMask);
-				if (mainKey != Key.None) {
-					if (val.Length > 0) val += "+";
-					val += mainKey.ToString ();
-				}
-				return val;
-			}
-			return string.Empty;
-		}
-
-
 		static KeyMap ()
 		{
 			keymap.Add (swi.Key.A, Key.A);
@@ -162,6 +145,7 @@ namespace Eto.Platform.Wpf
 			keymap.Add (swi.Key.Enter, Key.Enter);
 			keymap.Add (swi.Key.Insert, Key.Insert);
 			keymap.Add (swi.Key.Tab, Key.Tab);
+			keymap.Add (swi.Key.Apps, Key.ContextMenu);
 
 			foreach (var entry in keymap) {
 				inverse.Add (entry.Value, entry.Key);

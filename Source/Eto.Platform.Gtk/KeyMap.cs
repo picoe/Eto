@@ -9,14 +9,14 @@ namespace Eto.Platform.GtkSharp
 		static Dictionary<Gdk.Key, Key> keymap = new Dictionary<Gdk.Key, Key>();
 		static Dictionary<Key, Gdk.Key> inversekeymap = new Dictionary<Key, Gdk.Key>();
 
-		public static Key Convert(Gdk.Key gkey)
+		public static Key ToEto (this Gdk.Key gkey)
 		{
 			Key key;
 			if (keymap.TryGetValue(gkey, out key)) return key;
 			return Key.None;
 		}
 		
-		public static Key Convert(Gdk.ModifierType modifier)
+		public static Key ToEtoKey (this Gdk.ModifierType modifier)
 		{
 			Key result = Key.None;
 			if ((modifier & Gdk.ModifierType.Mod1Mask) > 0) result |= Key.Alt;
@@ -26,14 +26,14 @@ namespace Eto.Platform.GtkSharp
 			return result;
 		}
 
-		public static Gdk.Key ConvertToKey(Key key)
+		public static Gdk.Key ToGdkKey (this Key key)
 		{
 			Gdk.Key result;
 			if (inversekeymap.TryGetValue(key & Key.KeyMask, out result)) return result;
 			return (Gdk.Key)0;
 		}
 
-		public static Gdk.ModifierType ConvertToModifier(Key key)
+		public static Gdk.ModifierType ToGdkModifier (this Key key)
 		{
 			Gdk.ModifierType result = Gdk.ModifierType.None;
 			if ((key & Key.Alt) > 0) result |= Gdk.ModifierType.Mod1Mask;
@@ -43,24 +43,6 @@ namespace Eto.Platform.GtkSharp
 			return result;
 		}
 		
-		public static string KeyToString(Key key)
-		{
-			if (key != Key.None)
-			{
-				string val = string.Empty;
-				Key modifier = (key & Key.ModifierMask);
-				if (modifier != Key.None) val += modifier.ToString();
-				Key mainKey = (key & Key.KeyMask);
-				if (mainKey != Key.None)
-				{
-					if (val.Length > 0) val += "+";
-					val += mainKey.ToString();
-				}
-				return val;
-			}
-			return string.Empty;
-		}
-
 		static KeyMap()
 		{
 			keymap.Add(Gdk.Key.A, Key.A);
@@ -135,12 +117,14 @@ namespace Eto.Platform.GtkSharp
 			keymap.Add(Gdk.Key.slash, Key.ForwardSlash);
 			keymap.Add(Gdk.Key.division, Key.Divide);
 			//keymap.Add(Gdk.Key.dollar, Key.Dollar);
-			
+			keymap.Add(Gdk.Key.Menu, Key.ContextMenu);
+
 			foreach (var val in keymap)
 			{
 				inversekeymap.Add(val.Value, val.Key);
 			}
-			
+
+			keymap.Add((Gdk.Key)0x1000010, Key.ContextMenu); // os x
 			keymap.Add(Gdk.Key.a, Key.A);
 			keymap.Add(Gdk.Key.b, Key.B);
 			keymap.Add(Gdk.Key.c, Key.C);

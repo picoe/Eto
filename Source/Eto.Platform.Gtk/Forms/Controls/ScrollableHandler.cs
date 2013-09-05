@@ -11,6 +11,9 @@ namespace Eto.Platform.GtkSharp
 		Gtk.VBox vbox;
 		BorderType border;
 		bool autoSize = true;
+		bool expandWidth = true;
+		bool expandHeight = true;
+		Gtk.Widget layoutObject;
 		
 		public override object ContainerObject {
 			get {
@@ -47,7 +50,7 @@ namespace Eto.Platform.GtkSharp
 			hbox = new Gtk.HBox ();
 			vbox = new Gtk.VBox ();
 			vp.Add (vbox);
-			vbox.Add (hbox);
+			vbox.PackStart (hbox, true, true, 0);
 			
 			// autosize the scrolled window to the size of the content
 			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args) {
@@ -101,18 +104,26 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnSizeChanged (EventArgs.Empty);
 		}
 		
-		public override void SetLayout (Layout inner)
+		public override void SetLayout (Layout layout)
 		{
 			foreach (Gtk.Widget child in hbox.Children)
 				hbox.Remove (child);
-			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			hbox.PackStart (gtklayout.ContainerObject, false, true, 0);
-			//vp.Add ((Gtk.Widget)gtklayout.ContainerObject);
+			IGtkLayout gtklayout = (IGtkLayout)layout.Handler;
+			layoutObject = gtklayout.ContainerObject;
+			hbox.PackStart (layoutObject, false, true, 0);
+			SetPacking ();
+		}
+
+		void SetPacking ()
+		{
+			if (layoutObject != null)
+				hbox.SetChildPacking(layoutObject, expandWidth, expandWidth, 0, Gtk.PackType.Start);
+			vbox.SetChildPacking(hbox, expandHeight, expandHeight, 0, Gtk.PackType.Start);
 		}
 
 		public override Color BackgroundColor {
-			get { return Generator.Convert (vp.Style.Background (Gtk.StateType.Normal)); }
-			set { vp.ModifyBg (Gtk.StateType.Normal, Generator.Convert (value)); }
+			get { return vp.Style.Background (Gtk.StateType.Normal).ToEto (); }
+			set { vp.ModifyBg (Gtk.StateType.Normal, value.ToGdk ()); }
 		}
 
 		public override Size ClientSize {
@@ -159,5 +170,25 @@ namespace Eto.Platform.GtkSharp
 			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
 		}
 
+		public bool ExpandContentWidth
+		{
+			get { return expandWidth; }
+			set {
+				if (expandWidth != value) {
+					expandWidth = value;
+					SetPacking ();
+				}
+			}
+		}
+		public bool ExpandContentHeight
+		{
+			get { return expandHeight; }
+			set {
+				if (expandHeight != value) {
+					expandHeight = value;
+					SetPacking ();
+				}
+			}
+		}
 	}
 }

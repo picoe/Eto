@@ -69,7 +69,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		public override Font Font {
-			get { return font; }
+			get {
+				if (font == null)
+					font = new Font (CellHandler.Generator, new FontHandler (Cell.Font));
+				return font;
+			}
 			set {
 				font = value;
 				if (font != null)
@@ -116,10 +120,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridColumnHandler GetColumn (NSTableColumn tableColumn)
 		{
-			var str = tableColumn.Identifier as NSString;
-			if (str != null) {
+			var str = tableColumn.Identifier;
+			if (!string.IsNullOrEmpty (str)) {
 				int col;
-				if (int.TryParse ((string)str, out col)) {
+				if (int.TryParse (str, out col)) {
 					return GetColumn (col);
 				}
 			}
@@ -215,7 +219,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			columns = new ColumnCollection { Handler = this };
@@ -333,7 +337,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return ScrollView.VisibleRect ();
 		}
 
-		protected override Eto.Drawing.Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			var width = Widget.Columns.Sum (r => r.Width);
 			if (width == 0) width = 100;

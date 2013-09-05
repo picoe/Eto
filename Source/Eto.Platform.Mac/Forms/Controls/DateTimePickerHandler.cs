@@ -36,13 +36,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoDatePicker { Handler = this };
 			Control.TimeZone = NSTimeZone.LocalTimeZone;
 			Control.Calendar = NSCalendar.CurrentCalendar;
-			Control.DateValue = Generator.Convert (DateTime.Now);
+			Control.DateValue = DateTime.Now.ToNS ();
 			this.Mode = DateTimePicker.DefaultMode;
 		}
 		
-		protected override Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
-			return Size.Max (new Size (mode == DateTimePickerMode.DateTime ? 180 : 120, 10), base.GetNaturalSize ());
+			return Size.Max (new Size (mode == DateTimePickerMode.DateTime ? 180 : 120, 10), base.GetNaturalSize (availableSize));
 		}
 		
 		public override void OnLoad (EventArgs e)
@@ -50,7 +50,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.OnLoad (e);
 			
 			// apple+backspace clears the value
-			Widget.KeyDown += delegate(object sender, KeyPressEventArgs ev) {
+			Widget.KeyDown += delegate(object sender, KeyEventArgs ev) {
 				if (!ev.Handled) {
 					if (ev.KeyData == (Key.Application | Key.Backspace)) {
 						curValue = null;
@@ -63,15 +63,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Widget.MouseDown += delegate(object sender, MouseEventArgs ev) {
 				if (ev.Buttons == MouseButtons.Primary) {
 					if (curValue == null) {
-						curValue = Generator.Convert (Control.DateValue);
+						curValue = Control.DateValue.ToEto ();
 						Widget.OnValueChanged (EventArgs.Empty);
 						Control.NeedsDisplay = true;
 					}
 				}
 			};
 			Control.ValidateProposedDateValue += delegate(object sender, NSDatePickerValidatorEventArgs ev) {
-				var date = Generator.Convert (ev.ProposedDateValue);
-				if (date != Generator.Convert (Control.DateValue)) {
+				var date = ev.ProposedDateValue.ToEto ();
+				if (date != Control.DateValue.ToEto ()) {
 					curValue = date;
 					Widget.OnValueChanged (EventArgs.Empty);
 				}
@@ -99,21 +99,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 		
 		public DateTime MinDate {
-			get {
-				return Generator.Convert (Control.MinDate) ?? DateTime.MinValue;
-			}
-			set {
-				Control.MinDate = Generator.Convert (value);
-			}
+			get { return Control.MinDate.ToEto () ?? DateTime.MinValue; }
+			set { Control.MinDate = value.ToNS (); }
 		}
 		
 		public DateTime MaxDate {
-			get {
-				return Generator.Convert (Control.MaxDate) ?? DateTime.MaxValue;
-			}
-			set {
-				Control.MaxDate = Generator.Convert (value);
-			}
+			get { return Control.MaxDate.ToEto () ?? DateTime.MaxValue; }
+			set { Control.MaxDate = value.ToNS (); }
 		}
 
 		public DateTime? Value {
@@ -123,9 +115,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set {
 				curValue = value;
 				if (value != null)
-					Control.DateValue = Generator.Convert (value);
+					Control.DateValue = value.ToNS ();
 				else
-					Control.DateValue = Generator.Convert (DateTime.Now);
+					Control.DateValue = DateTime.Now.ToNS ();
 			}
 		}
 

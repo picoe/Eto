@@ -32,15 +32,13 @@ namespace Eto.Forms
 		Padding Padding { get; set; }
 	}
 
-#if XAML
 	[ContentProperty("Children")]
-#endif
 	public class TableLayout : Layout
 	{
 		ITableLayout inner;
 		Control[,] controls;
 		Size size;
-		IList<Control> children;
+		List<Control> children;
 		public static Size DefaultSpacing = new Size (5, 5);
 		public static Padding DefaultPadding = new Padding (5);
 		
@@ -51,12 +49,12 @@ namespace Eto.Forms
 				return controls.OfType<Control> ();
 			}
 		}
-		
-		public IList<Control> Children {
+
+		public List<Control> Children
+		{
 			get { 
-				if (children == null) {
+				if (children == null)
 					children = new List<Control> ();
-				}
 				return children; 
 			}
 		}
@@ -221,7 +219,7 @@ namespace Eto.Forms
 		public void Add (Control control, int x, int y)
 		{
 			if (control != null)
-				SetLocation (control, new Point(x, y));
+				control.Properties [LocationProperty] = new Point (x, y);
 			InnerAdd (control, x, y);
 		}
 

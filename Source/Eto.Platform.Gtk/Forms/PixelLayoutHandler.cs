@@ -17,7 +17,7 @@ namespace Eto.Platform.GtkSharp
 
 			var gtkcontrol = child.GetContainerWidget ();
 			Control.Put (gtkcontrol, x, y);
-			ctl.Location = new Point (x, y);
+			ctl.CurrentLocation = new Point (x, y);
 			if (this.Control.Visible)
 				gtkcontrol.ShowAll ();
 		}
@@ -25,10 +25,10 @@ namespace Eto.Platform.GtkSharp
 		public void Move (Control child, int x, int y)
 		{
 			var ctl = ((IGtkControl)child.Handler);
-			if (ctl.Location.X != x || ctl.Location.Y != y) {
+			if (ctl.CurrentLocation.X != x || ctl.CurrentLocation.Y != y) {
 				Control.Move (child.GetContainerWidget (), x, y);
 				
-				ctl.Location = new Point (x, y);
+				ctl.CurrentLocation = new Point (x, y);
 			}
 		}
 		

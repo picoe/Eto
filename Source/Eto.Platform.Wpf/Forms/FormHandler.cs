@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -22,6 +22,7 @@ namespace Eto.Platform.Wpf.Forms
 				Control.Show ();
 			else
 				ApplicationHandler.Instance.DelayShownWindows.Add (Control);
-		}
+            WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+        }
 	}
 }

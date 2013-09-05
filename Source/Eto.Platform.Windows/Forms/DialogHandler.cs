@@ -15,7 +15,6 @@ namespace Eto.Platform.Windows
 		public DialogHandler()
 		{
 			Control = new swf.Form {
-				FormBorderStyle = swf.FormBorderStyle.FixedDialog,
 				StartPosition = swf.FormStartPosition.CenterParent,
 				AutoSize = true,
 				Size = sd.Size.Empty,
@@ -26,6 +25,11 @@ namespace Eto.Platform.Windows
 				MinimizeBox = false
 			};
 		}
+
+        protected override swf.FormBorderStyle DefaultWindowStyle
+        {
+            get { return swf.FormBorderStyle.FixedDialog; }
+        }
 
 		public Button AbortButton {
 			get {

@@ -19,10 +19,8 @@ namespace Eto.Forms
 		void SetLayout (Layout layout);
 	}
 	
-#if XAML
 	[ContentProperty("Layout")]
-#endif
-	public partial class Container : Control
+	public abstract partial class Container : Control
 	{
 		IContainer handler;
 		Layout layout;
@@ -95,12 +93,37 @@ namespace Eto.Forms
 			if (Layout != null)
 				Layout.OnLoadComplete (e);
 		}
-		
+
+		public override void OnUnLoad (EventArgs e)
+		{
+			foreach (Control control in Controls) {
+				control.OnUnLoad (e);
+			}
+			
+			base.OnLoad (e);
+			
+			if (Layout != null)
+				Layout.OnUnLoad (e);
+		}
+
 		protected Container (Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
 			handler = (IContainer)base.Handler;
 		}
+
+		/// <summary>
+		/// Initializes a new instance of the Container with the specified handler
+		/// </summary>
+		/// <param name="generator">Generator for the widget</param>
+		/// <param name="handler">Pre-created handler to attach to this instance</param>
+		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
+		protected Container (Generator generator, IContainer handler, bool initialize = true)
+			: base(generator, handler, initialize)
+		{
+			this.handler = handler;
+		}
+
 		
 		public object ContainerObject {
 			get { return handler.ContainerObject; }

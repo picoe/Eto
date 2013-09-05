@@ -39,6 +39,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 			get
 			{
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (text.FontDesc));
 				return font;
 			}
 			set

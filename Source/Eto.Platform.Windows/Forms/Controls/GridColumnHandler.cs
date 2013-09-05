@@ -17,8 +17,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			Control = new swf.DataGridViewColumn();
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			DataCell = new TextBoxCell(Widget.Generator);

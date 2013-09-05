@@ -4,26 +4,86 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Diagnostics;
+using System.Linq.Expressions;
+using System.Threading;
 
 namespace Eto
 {
 	/// <summary>
 	/// Arguments for when a widget is created
 	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class WidgetCreatedArgs : EventArgs
 	{
 		/// <summary>
 		/// Gets the instance of the widget that was created
 		/// </summary>
-		public IWidget Instance { get; private set; }
+		public object Instance { get; private set; }
 		
 		/// <summary>
 		/// Initializes a new instance of the WidgetCreatedArgs class
 		/// </summary>
 		/// <param name="instance">Instance of the widget that was created</param>
-		public WidgetCreatedArgs (IWidget instance)
+		public WidgetCreatedArgs (object instance)
 		{
 			this.Instance = instance;
+		}
+	}
+
+	/// <summary>
+	/// Extensions for the <see cref="Generator"/> class
+	/// </summary>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public static class GeneratorExtensions
+	{
+		/// <summary>
+		/// Creates a new instance of the handler of the specified type of <typeparamref name="T"/>
+		/// </summary>
+		/// <remarks>
+		/// This extension should be used when creating instances of a fixed type.
+		/// This is a helper so that you can use a null generator variable to create instances with the current
+		/// generator without having to do the extra check
+		/// </remarks>
+		/// <typeparam name="T">Type of handler to create</typeparam>
+		/// <param name="generator">Generator to create the instance, or null to use the current generator</param>
+		/// <returns>A new instance of a handler</returns>
+		public static T Create<T> (this Generator generator)
+		{
+			return (T)(generator ?? Generator.Current).Create (typeof (T));
+		}
+
+		/// <summary>
+		/// Creates a shared singleton instance of the specified type of <typeparamref name="T"/>
+		/// </summary>
+		/// <remarks>
+		/// This extension should be used when creating shared instances of a fixed type.
+		/// This is a helper so that you can use a null generator variable to create instances with the current
+		/// generator without having to do the extra check
+		/// </remarks>
+		/// <param name="generator">Generator to create or get the shared instance, or null to use the current generator</param>
+		/// <typeparam name="T">The type of handler to get a shared instance for</typeparam>
+		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
+		public static T CreateShared<T> (this Generator generator)
+		{
+			return (T)(generator ?? Generator.Current).CreateShared (typeof(T));
+		}
+
+		/// <summary>
+		/// Finds the delegate to create instances of the specified type
+		/// </summary>
+		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="IWidget"/> or another type)</typeparam>
+		/// <returns>The delegate to use to create instances of the specified type</returns>
+		public static Func<T> Find<T> (this Generator generator)
+			where T: class
+		{
+			return (Func<T>)(generator ?? Generator.Current).Find (typeof(T));
+		}
+
+		public static Dictionary<K, V> Cache<K, V> (this Generator generator, object cacheKey)
+		{
+			return (generator ?? Generator.Current).GetSharedProperty <Dictionary<K, V>> (cacheKey, () => new Dictionary<K, V> ());
 		}
 	}
 	
@@ -34,18 +94,33 @@ namespace Eto
 	/// The generator takes care of creating the platform-specific implementations of each
 	/// control. Typically, the types are automatically found from the platform assembly, however
 	/// you can also create your own platform-specific controls by adding the types manually via
-	/// <see cref="Generator.Add"/>, or <see cref="Generator.AddAssembly"/>.
+	/// <see cref="Generator.Add"/>
 	/// 
 	/// The types are found by the interface of the control.  For example the <see cref="Forms.Label"/> control
 	/// uses the <see cref="Forms.ILabel"/> interface for its platform implementation.  The generator
 	/// will automatically scan an assembly for a class that directly implements this interface
 	/// for its platform implementation (if it hasn't been added manually).
 	/// </remarks>
+	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Generator
 	{
-		Dictionary<string, ConstructorInfo> constructorMap = new Dictionary<string, ConstructorInfo> ();
-		List<Type> types = new List<Type>();
-		HashSet<Assembly> typeAssemblies = new HashSet<Assembly>();
+		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>> ();
+		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object> ();
+		Dictionary<object, object> properties = new Dictionary<object, object> ();
+		static Generator current;
+
+		internal T GetSharedProperty<T> (object key, Func<T> instantiator)
+		{
+			object value;
+			lock (properties) {
+				if (!properties.TryGetValue (key, out value)) {
+					value = instantiator ();
+					properties [key] = value;
+				}
+			}
+			return (T)value;
+		}
 
 		#region Events
 
@@ -76,12 +151,36 @@ namespace Eto
 		/// </remarks>
 		public abstract string ID { get; }
 
+		public virtual bool IsMac
+		{
+			get { return ID == Generators.Mac || ID == Generators.XamMac; }
+		}
+
+		public virtual bool IsWinForms
+		{
+			get { return ID == Generators.Windows; }
+		}
+		
+		public virtual bool IsWpf
+		{
+			get { return ID == Generators.Wpf; }
+		}
+		
+		public virtual bool IsGtk
+		{
+			get { return ID == Generators.Gtk; }
+		}
+
+		public virtual bool IsIos
+		{
+			get { return ID == Generators.Ios; }
+		}
+		
 		/// <summary>
 		/// Initializes a new instance of the Generator class
 		/// </summary>
 		protected Generator ()
 		{
-			AddAssembly(this.GetType ().Assembly);
 		}
 
 		/// <summary>
@@ -90,12 +189,10 @@ namespace Eto
 		/// <typeparam name="T">type to test for</typeparam>
 		/// <returns>true if the specified type is supported, false otherwise</returns>
 		public virtual bool Supports<T> ()
-			where T: IWidget
+			where T: class
 		{
-			return Find<T> () != null;
+			return this.Find<T> () != null;
 		}
-
-		static Generator current;
 
 		/// <summary>
 		/// Gets the current generator
@@ -108,13 +205,20 @@ namespace Eto
 		/// This will be used when creating controls, unless explicitly passed through the constructor of the
 		/// control. This allows you to use multiple generators at one time.
 		/// </remarks>
-		public static Generator Current {
-			get {
+		public static Generator Current
+		{
+			get
+			{
 				if (current == null)
 					throw new ApplicationException ("Generator has not been initialized");
 				return current;
 			}
 		}
+
+		/// <summary>
+		/// Returns true if the current generator has been set.
+		/// </summary>
+		public static bool HasCurrent { get { return current != null; } }
 		
 		/// <summary>
 		/// Returns the current generator, or detects the generator to use if no current generator is set.
@@ -126,35 +230,67 @@ namespace Eto
 		/// Mac OS X will prefer the Mac platform.
 		/// Other unix-based platforms will prefer GTK.
 		/// </remarks>
-		public static Generator Detect {
-			get {
+		public static Generator Detect
+		{
+			get
+			{
 				if (current != null)
 					return current;
+
+				Generator detected = null;
 #if MOBILE
-				current = Generator.GetGenerator (Generators.IosAssembly, true);
+				detected = Generator.GetGenerator (Generators.IosAssembly, true);
 #elif DESKTOP
 			
-				if (EtoEnvironment.Platform.IsMac)
-					current = Generator.GetGenerator (Generators.MacAssembly, true);
+				if (EtoEnvironment.Platform.IsMac) {
+					detected = Generator.GetGenerator (Generators.XamMacAssembly, true);
+					if (detected == null)
+						detected = Generator.GetGenerator (Generators.MacAssembly, true);
+				}
 				else if (EtoEnvironment.Platform.IsWindows) {
-					current = Generator.GetGenerator (Generators.WpfAssembly, true);
-					if (current == null)
-						current = Generator.GetGenerator (Generators.WinAssembly, true);
+					detected = Generator.GetGenerator (Generators.WpfAssembly, true);
+					if (detected == null)
+						detected = Generator.GetGenerator (Generators.WinAssembly, true);
 				}
 
-				if (current == null && EtoEnvironment.Platform.IsUnix)
-					current = Generator.GetGenerator (Generators.GtkAssembly, true);
+				if (detected == null && EtoEnvironment.Platform.IsUnix)
+					detected = Generator.GetGenerator (Generators.GtkAssembly, true);
 #endif
 				
-				if (current == null)
+				if (detected == null)
 					throw new EtoException ("Could not detect platform. Are you missing a platform assembly?");
 					
+				Initialize (detected);
 				return current;
 			}
 		}
-		
+
 		/// <summary>
-		/// Initializes this generator as the current generator
+		/// Can be used by apps that switch between generators.
+		/// 
+		/// Set this property at the start of a block of code.
+		/// All objects created after that point are verified to
+		/// use this generator.
+		/// 
+		/// If null, no validation is performed.
+		/// </summary>
+		public static Generator ValidateGenerator { get; set; }
+
+		/// <summary>
+		/// Called by handlers to make sure they use the generator
+		/// specified by ValidateGenerator
+		/// </summary>
+		/// <param name="generator"></param>
+		[Conditional ("DEBUG")]
+		public static void Validate (Generator generator)
+		{
+			if (ValidateGenerator != null && !object.ReferenceEquals (generator, ValidateGenerator)) {
+				throw new EtoException (string.Format ("Expected to use generator {0}", ValidateGenerator));
+			}
+		}
+
+		/// <summary>
+		/// Initializes the specified <paramref name="generator"/> as the current generator
 		/// </summary>
 		/// <remarks>
 		/// This is called automatically by the <see cref="Forms.Application"/> when it is constructed
@@ -164,7 +300,16 @@ namespace Eto
 		{
 			current = generator;
 		}
-		
+
+		/// <summary>
+		/// Initialize the generator with the specified <paramref name="generatorType"/> as the current generator
+		/// </summary>
+		/// <param name="generatorType">Type of the generator to set as the current generator</param>
+		public static void Initialize(string generatorType)
+		{
+			Initialize(GetGenerator(generatorType));
+		}
+
 		/// <summary>
 		/// Gets the generator of the specified type
 		/// </summary>
@@ -175,7 +320,6 @@ namespace Eto
 			return GetGenerator (generatorType, false);
 		}
 
-
 		static Generator GetGenerator (string generatorType, bool allowNull)
 		{
 			Type type = Type.GetType (generatorType);
@@ -185,168 +329,89 @@ namespace Eto
 				else
 					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
 			}
-			try
-			{
-				return (Generator)Activator.CreateInstance(type);
-			}
-			catch (TargetInvocationException e)
-			{
-				throw e.InnerException;
+			try {
+				return (Generator)Activator.CreateInstance (type);
+			} catch {
+				if (allowNull)
+					return null;
+				else
+					throw;
 			}
 		}
 
 		/// <summary>
-		/// Adds the specified handler type to this generator
+		/// Add the <paramref name="instantiator"/> for the specified handler type of <typeparamref name="T"/>
 		/// </summary>
-		/// <remarks>
-		/// This can be used to add a single handler to this generator.  Typically you would do this
-		/// before running your application.
-		/// </remarks>
-		/// <example>
-		/// <code><![CDATA[
-		/// var generator = Generator.Detect;
-		///	generator.Add<IMyControl>(typeof(MyControlHandler));
-		/// ]]></code>
-		/// </example>
-		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
-		/// <returns>An instance of the constructor info used to create instances of this type</returns>
-		public ConstructorInfo Add<T> (Type handlerType)
-			where T: IWidget
+		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
+		/// <typeparam name="T">The handler type to add the instantiator for (usually an interface derived from <see cref="IWidget"/>)</typeparam>
+		public void Add<T> (Func<T> instantiator)
+			where T: class
 		{
-			return Add (typeof(T), handlerType);
+			Add (typeof(T), instantiator);
 		}
 		
 		/// <summary>
-		/// Finds the constructor info for the specified type
+		/// Add the specified type and instantiator.
 		/// </summary>
-		/// <typeparam name="T">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</typeparam>
-		/// <returns>An instance of the constructor info used to create instances of this type</returns>
-		protected ConstructorInfo Find<T> ()
-			where T: IWidget
+		/// <param name="type">Type of the handler (usually an interface derived from <see cref="IWidget"/>)</param>
+		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
+		public void Add (Type type, Func<object> instantiator)
 		{
-			return Find (typeof(T));
+			instantiatorMap [type] = instantiator;
 		}
 		
 		/// <summary>
-		/// Creates a new instance of the handler of the specified type
+		/// Find the delegate to create instances of the specified <paramref name="type"/>
 		/// </summary>
-		/// <typeparam name="T">Type of handler to create</typeparam>
-		/// <param name="widget">Widget instance to attach to the handler</param>
-		/// <returns>A new instance of a handler</returns>
-		public T CreateHandler<T> (Widget widget = null)
-			where T: IWidget
+		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="IWidget"/> or another type)</param>
+		public Func<object> Find (Type type)
 		{
-			return (T)CreateHandler (typeof (T), widget);
-		}
-
-		/// <summary>
-		/// Adds the specified handler type to this generator
-		/// </summary>
-		/// <remarks>
-		/// This can be used to add a single handler to this generator.  Typically you would do this
-		/// before running your application.
-		/// </remarks>
-		/// <example>
-		/// <code><![CDATA[
-		/// var generator = Generator.Detect;
-		///	generator.Add<IMyControl>(typeof(MyControlHandler));
-		/// ]]></code></example>
-		/// <param name="type">Type of the handler interface (derived from <see cref="IWidget"/> or another type)</param>
-		/// <param name="handlerType">Type of the backend handler type that implements the interface</param>
-		/// <returns>An instance of the constructor info used to create instances of this type</returns>
-		public ConstructorInfo Add (Type type, Type handlerType)
-		{
-			ConstructorInfo constructor = handlerType.GetConstructor (new Type[] { });
-			if (constructor == null) 
-				throw new ArgumentException (string.Format ("the default constructor for class {0} cannot be found", handlerType.FullName));
-
-			constructorMap[type.Name] = constructor;
-			return constructor;
-		}
-
-		/// <summary>
-		/// Adds the specified assembly to scan for handler impelementations
-		/// </summary>
-		/// <remarks>
-		/// If you create your own controls with custom handlers, you can use this method
-		/// to add the assembly to the list of assemblies that will be scanned for the handler
-		/// implementations.
-		/// </remarks>
-		/// <param name="assembly">Assembly with handler implementations to add</param>
-		public void AddAssembly (Assembly assembly)
-		{
-			if (!typeAssemblies.Contains (assembly))
-			{
-				typeAssemblies.Add (assembly);
-				IEnumerable<Type> exportedTypes;
-				try
-				{
-					exportedTypes = assembly.GetTypes ();
-				}
-				catch (ReflectionTypeLoadException ex)
-				{
-					Debug.WriteLine (string.Format ("Could not load type(s) from assembly '{0}': {1}", assembly.FullName, ex.GetBaseException ()));
-					exportedTypes = ex.Types;
-				}
-
-				exportedTypes = exportedTypes.Where (r => typeof (IWidget).IsAssignableFrom (r) && r.IsClass && !r.IsAbstract);
-				types.InsertRange (0, exportedTypes);
-			}
-		}
-
-		ConstructorInfo Find (Type type)
-		{
-			lock (this) {
-				ConstructorInfo info;
-				if (constructorMap.TryGetValue (type.Name, out info))
-					return info;
-
-				List<Type > removalTypes = null;
-				foreach (Type foundType in types) {
-					try {
-						if (foundType.IsClass && !foundType.IsAbstract && type.IsAssignableFrom (foundType)) {
-							if (removalTypes != null)
-								foreach (var t in removalTypes)
-									types.Remove (t);
-							return Add (type, foundType);
-						}
-					} catch (Exception e) {
-						Debug.WriteLine (string.Format ("Could not instantiate type '{0}'\n{1}", type, e));
-						if (removalTypes == null)
-							removalTypes = new List<Type> ();
-						removalTypes.Add (foundType);
-					}
-				}
-				if (removalTypes != null)
-					foreach (var t in removalTypes)
-						types.Remove (t);
+			Func<object> activator;
+			if (instantiatorMap.TryGetValue (type, out activator))
+				return activator;
+			else
 				return null;
-			}
 		}
 
 		/// <summary>
 		/// Creates a new instance of the handler of the specified type
 		/// </summary>
 		/// <param name="type">Type of handler to create</param>
-		/// <param name="widget">Widget instance to attach to the handler</param>
 		/// <returns>A new instance of a handler</returns>
-		public IWidget CreateHandler (Type type, Widget widget)
+		public object Create (Type type)
 		{
-			var constructor = Find (type);
-			if (constructor == null)
-				throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
 			try {
-				var val = constructor.Invoke (new object[] { }) as IWidget;
-				if (widget != null) {
-					widget.Handler = val;
-					val.Widget = widget;
-				}
-				OnWidgetCreated (new WidgetCreatedArgs (val));
-				return val;
+				var instantiator = Find (type);
+				if (instantiator == null)
+					throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
+
+				var handler = instantiator ();
+				OnWidgetCreated (new WidgetCreatedArgs (handler));
+				return handler;
 			} catch (Exception e) {
 				throw new HandlerInvalidException (string.Format ("Could not create instance of type {0}", type), e);
 			}
+		}
+
+		/// <summary>
+		/// Creates a shared singleton instance of the specified type of <paramref name="type"/>
+		/// </summary>
+		/// <param name="type">The type of handler to get a shared instance for</param>
+		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
+		public object CreateShared (Type type)
+		{
+			object instance;
+			lock (sharedInstances) {
+				if (!sharedInstances.TryGetValue (type, out instance)) {
+					instance = Create (type);
+					var widget = instance as IWidget;
+					if (widget != null) {
+						widget.Generator = this;
+					}
+					sharedInstances[type] = instance;
+				}
+			}
+			return instance;
 		}
 
 		/// <summary>

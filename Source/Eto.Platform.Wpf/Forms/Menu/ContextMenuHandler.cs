@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
@@ -34,6 +34,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 				Control.PlacementTarget = relativeTo.ControlObject as sw.UIElement;
 			}
 			Control.IsOpen = true;
+            WpfFrameworkElementHelper.ShouldCaptureMouse = false;
 		}
 	}
 }

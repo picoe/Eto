@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +10,7 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ImageViewHandler : WpfFrameworkElement<swc.Image, ImageView>, IImageView
+	public class ImageViewHandler : WpfFrameworkElement<CustomControls.MultiSizeImage, ImageView>, IImageView
 	{
 		Image image;
 
@@ -18,20 +18,21 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				return Colors.Transparent;
+				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
+				if (brush != null) return brush.Color.ToEto ();
+				else return Colors.Black;
 			}
 			set
 			{
-				
+				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
 			}
 		}
 
-
 		public ImageViewHandler ()
 		{
-			Control = new Eto.Platform.Wpf.CustomControls.MultiSizeImage {
+			Control = new CustomControls.MultiSizeImage {
 				Stretch = swm.Stretch.Uniform,
-				StretchDirection = swc.StretchDirection.DownOnly
+				StretchDirection = swc.StretchDirection.Both
 			};
 		}
 

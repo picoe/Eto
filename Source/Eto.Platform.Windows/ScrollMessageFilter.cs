@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -9,31 +9,40 @@ namespace Eto.Platform.Windows
 {
 	class ScrollMessageFilter : IMessageFilter
 	{
-		int WM_MOUSEWHEEL = 0x20A;
-
-		[DllImport ("User32.dll")]
-		static extern Int32 SendMessage (IntPtr hWnd, int Msg, IntPtr wParam, IntPtr lParam);
+		public static bool IsScrollable (Control control)
+		{
+			var p = control as ScrollableControl;
+			if (p != null) return p.AutoScroll;
+			else return
+				control is DataGridView
+				|| control is DataGrid
+				|| control is TreeView
+				|| control is ListControl
+				|| control is RichTextBox;
+		}
 
 		public bool PreFilterMessage (ref Message m)
 		{
-			if (m.Msg == WM_MOUSEWHEEL) {
+			if (m.Msg == (int)Win32.WM.MOUSEWHEEL) {
 				var c = Control.FromHandle(m.HWnd);
 				if (c == null) return false;
 				while (c.Parent != null) c = c.Parent;
 
 				var cp = Cursor.Position;
 				Control scrollChild = null;
-				while (c != null && c.HasChildren)
+				while (c != null)
 				{
-					var p = c as Panel;
-					if (p != null && p.AutoScroll)
+					if (IsScrollable (c))
 						scrollChild = c;
 
+					if (!c.HasChildren)
+						break;
+
 					c = c.GetChildAtPoint (c.PointToClient (cp));
-				} 
-				
+				}
+
 				if (scrollChild == null) return false;
-				SendMessage (scrollChild.Handle, m.Msg, m.WParam, m.LParam);
+				Win32.SendMessage (scrollChild.Handle, (Win32.WM)m.Msg, m.WParam, m.LParam);
 
 				return true;
 			}

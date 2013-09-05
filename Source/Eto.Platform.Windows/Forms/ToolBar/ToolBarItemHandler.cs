@@ -18,12 +18,23 @@ namespace Eto.Platform.Windows
 		where T: SWF.ToolStripItem
 		where W: ToolBarItem
 	{
-		Icon icon;
-				
+        Image image;
+		int imageSize = 16;
+
 		public abstract void CreateControl(ToolBarHandler handler);
 
 		public virtual void InvokeButton()
 		{
+		}
+
+		public int ImageSize
+		{
+			get { return imageSize; }
+			set
+			{
+				imageSize = value;
+				Control.Image = image.ToSD (imageSize);
+			}
 		}
 		
 		public string Text
@@ -38,21 +49,16 @@ namespace Eto.Platform.Windows
 			set { Control.ToolTipText = value; }
 		}
 		
-		
-		public Icon Icon
+		public Image Image
 		{
-			get { return icon; }
+			get { return image; }
 			set
 			{
-				this.icon = value;
-				if (icon != null) Control.Image = ((IconHandler)icon.Handler).GetIconClosestToSize(16).ToBitmap();
-				else Control.Image = null;
+				this.image = value;
+				Control.Image = image.ToSD (imageSize);
 			}
 		}
-		
+
 		public abstract bool Enabled { get; set; }
-
 	}
-
-
 }

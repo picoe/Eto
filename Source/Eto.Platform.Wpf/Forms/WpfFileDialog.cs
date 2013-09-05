@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -74,7 +74,7 @@ namespace Eto.Platform.Wpf.Forms
 			get { return new Uri(Control.InitialDirectory); }
 			set
 			{
-				Control.InitialDirectory = value.AbsolutePath;
+				Control.InitialDirectory = value.LocalPath;
 			}
 		}
 	}

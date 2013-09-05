@@ -54,8 +54,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Editable = false;
 			AutoSize = true;
 		}
-		
-		public override void Initialize ()
+
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			this.DataCell = new TextBoxCell (Widget.Generator);
@@ -78,9 +78,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 					width = Math.Max (Control.HeaderCell.CellSize.Width, width);
 					
 				if (dataCell != null) {
+					/* Auto size based on visible cells only*/
 					var rect = handler.GetVisibleRect ();
 					var range = handler.Table.RowsInRect (rect);
-					//var range = new NSRange(0, handler.RowCount);
+					/**
+					var range = new NSRange(0, handler.RowCount);
+					/**/
+
 					var cellSize = Control.DataCell.CellSize;
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (int i = range.Location; i < range.Location + range.Length; i++) {
@@ -185,15 +189,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return (GridColumn)Widget; }
 		}
 
-		public Font Font {
-			get { return font; }
+		public Font Font
+		{
+			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.DataCell.Font));
+				return font;
+			}
 			set {
 				font = value;
 				if (font != null) {
 					var fontHandler = (FontHandler)font.Handler;
 					Control.DataCell.Font = fontHandler.Control;
-				}
-				else
+				} else
 					Control.DataCell.Font = null;
 			}
 		}

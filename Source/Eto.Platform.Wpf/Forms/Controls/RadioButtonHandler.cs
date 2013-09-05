@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,6 +26,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Widget.OnCheckedChanged (EventArgs.Empty);
 			};
 		}
+
+		public override bool UseMousePreview { get { return true; } }
 
 		public bool Checked
 		{

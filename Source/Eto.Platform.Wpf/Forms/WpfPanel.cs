@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,12 +16,12 @@ namespace Eto.Platform.Wpf.Forms
 			get
 			{
 				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return Generator.Convert(brush.Color);
-				else return Colors.Black;
+                if (brush != null) return brush.Color.ToEto ();
+                else return Colors.Black;
 			}
 			set
 			{
-				Control.Background = new System.Windows.Media.SolidColorBrush(Generator.Convert(value));
+                Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
 			}
 		}
 	}

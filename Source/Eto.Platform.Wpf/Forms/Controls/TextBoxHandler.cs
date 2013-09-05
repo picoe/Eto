@@ -1,10 +1,10 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
-using mwc = Microsoft.Windows.Controls;
+using mwc = Xceed.Wpf.Toolkit;
 using Eto.Forms;
 
 namespace Eto.Platform.Wpf.Forms.Controls
@@ -17,6 +17,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new mwc.WatermarkTextBox { Width = 80 };
 		}
+
+		public override bool UseMousePreview { get { return true; } }
 
 		public override void AttachEvent (string handler)
 		{
@@ -62,5 +64,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return Control.Watermark as string; }
 			set { Control.Watermark = value; }
 		}
-	}
+
+		public void SelectAll ()
+		{
+			Control.Focus ();
+			Control.SelectAll ();
+		}
+    }
 }

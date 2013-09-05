@@ -59,32 +59,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				get;
 				set;
 			}
-			
-			static IntPtr selAttributedStringValue = Selector.GetHandle ("attributedStringValue");
-			static IntPtr selSetAttributedStringValue = Selector.GetHandle ("setAttributedStringValue:");
-
-			// remove when implemented in monomac
-			public NSAttributedString AttributedStringValue {
-				[Export ("attributedStringValue")]
-				get {
-					if (this.IsDirectBinding) {
-						return new NSAttributedString (Messaging.IntPtr_objc_msgSend (base.Handle, EtoLabel.selAttributedStringValue));
-					}
-					return new NSAttributedString (Messaging.IntPtr_objc_msgSendSuper (base.SuperHandle, EtoLabel.selAttributedStringValue));
-				}
-				[Export ("setAttributedStringValue:")]
-				set {
-					if (value == null) {
-						throw new ArgumentNullException ("value");
-					}
-					if (this.IsDirectBinding) {
-						Messaging.void_objc_msgSend_IntPtr (base.Handle, EtoLabel.selSetAttributedStringValue, value.Handle);
-					} else {
-						Messaging.void_objc_msgSendSuper_IntPtr (base.SuperHandle, EtoLabel.selSetAttributedStringValue, value.Handle);
-					}
-				}
-				
-			}
 		}
 		
 		public LabelHandler ()
@@ -108,10 +82,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public Color TextColor {
 			get {
-				return Generator.Convert (Control.TextColor);
+				return Control.TextColor.ToEto ();
 			}
 			set {
-				Control.TextColor = Generator.ConvertNS (value);
+				Control.TextColor = value.ToNS ();
 			}
 		}
 		
@@ -154,34 +128,36 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Control.StringValue;
 			}
 			set {
-				var oldSize = GetPreferredSize ();
-				
-				var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
-				if (match.Success) {
-					var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
-					var str = new NSMutableAttributedString (val);
-					
-					var matches = Regex.Matches (value, @"[&][&]");
-					var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
-					
-					// copy existing attributes
-					NSRange range;
-					NSMutableDictionary attributes;
-					if (Control.AttributedStringValue.Length > 0)
-						attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
-					else
-						attributes = new NSMutableDictionary();
-
-					if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
-						attributes.Remove (CTStringAttributeKey.UnderlineStyle);
-					str.AddAttributes (attributes, new NSRange(0, str.Length));
-					
-					str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
-					Control.AttributedStringValue = str;
-				} else if (!string.IsNullOrEmpty(value))
-					Control.StringValue = value.Replace ("&&", "&");
-				else
+				var oldSize = GetPreferredSize (Size.MaxValue);
+				if (string.IsNullOrEmpty (value)) {
 					Control.StringValue = string.Empty;
+				}
+				else {
+					var match = Regex.Match (value, @"(?<=([^&](?:[&]{2})*)|^)[&](?![&])");
+					if (match.Success) {
+						var val = value.Remove(match.Index, match.Length).Replace ("&&", "&");
+						var str = new NSMutableAttributedString (val);
+						
+						var matches = Regex.Matches (value, @"[&][&]");
+						var prefixCount = matches.Cast<Match>().Count (r => r.Index < match.Index);
+						
+						// copy existing attributes
+						NSRange range;
+						NSMutableDictionary attributes;
+						if (Control.AttributedStringValue.Length > 0)
+							attributes = new NSMutableDictionary(Control.AttributedStringValue.GetAttributes (0, out range));
+						else
+							attributes = new NSMutableDictionary();
+
+						if (attributes.ContainsKey(CTStringAttributeKey.UnderlineStyle))
+							attributes.Remove (CTStringAttributeKey.UnderlineStyle);
+						str.AddAttributes (attributes, new NSRange(0, str.Length));
+						
+						str.AddAttribute (CTStringAttributeKey.UnderlineStyle, new NSNumber ((int)CTUnderlineStyle.Single), new NSRange (match.Index - prefixCount, 1));
+						Control.AttributedStringValue = str;
+					} else
+						Control.StringValue = value.Replace ("&&", "&");
+				}
 				LayoutIfNeeded (oldSize);
 			}
 		}
@@ -215,14 +191,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public Eto.Drawing.Font Font {
 			get {
+				if (font == null)
+					font = new Font (Widget.Generator, new FontHandler (Control.Font));
 				return font;
 			}
 			set {
+				var oldSize = GetPreferredSize (Size.MaxValue);
 				font = value;
 				if (font != null)
 					Control.Font = ((FontHandler)font.Handler).Control;
 				else
 					Control.Font = NSFont.LabelFontOfSize (NSFont.LabelFontSize);
+				LayoutIfNeeded (oldSize);
 			}
 		}
 		

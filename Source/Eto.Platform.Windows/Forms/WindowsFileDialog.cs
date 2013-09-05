@@ -80,7 +80,7 @@ namespace Eto.Platform.Windows
 				dr = Control.ShowDialog ((SWF.Control)parent.ControlObject);
 			else
 				dr = Control.ShowDialog ();
-			return Generator.Convert (dr);
+			return dr.ToEto ();
 		}
 
 		#endregion

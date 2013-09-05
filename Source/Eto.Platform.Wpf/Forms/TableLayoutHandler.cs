@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,19 +6,39 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
+using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms
 {
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout>, ITableLayout
 	{
 		Eto.Drawing.Size spacing;
+		Control[,] controls;
 		bool[] columnScale;
 		bool lastColumnScale;
 		bool[] rowScale;
 		bool lastRowScale;
 
+		public override sw.Size GetPreferredSize (sw.Size? constraint)
+		{
+			var size = constraint ?? new sw.Size (double.PositiveInfinity, double.PositiveInfinity);
+			var padding = new sw.Size ((columnScale.Length - 1) * Spacing.Width + Padding.Horizontal, (rowScale.Length - 1) * Spacing.Height + Padding.Vertical);
+			size = new sw.Size (Math.Max(0, size.Width - padding.Width), Math.Max(0, size.Height - padding.Height));
+			double[] widths = new double[columnScale.Length];
+			double[] heights = new double[rowScale.Length];
+			for (int y = 0; y < heights.Length; y++)
+				for (int x = 0; x < widths.Length; x++) {
+					var preferredSize = controls[x, y].GetPreferredSize (size);
+					widths[x] = Math.Max (widths[x], preferredSize.Width);
+					heights[y] = Math.Max (heights[y], preferredSize.Height);
+				}
+
+			return new sw.Size (widths.Sum () + padding.Width, heights.Sum () + padding.Height);
+		}
+
 		public void CreateControl (int cols, int rows)
 		{
+			controls = new Control[cols, rows];
 			columnScale = new bool[cols];
 			rowScale = new bool[rows];
 			lastColumnScale = true;
@@ -37,6 +57,19 @@ namespace Eto.Platform.Wpf.Forms
 			Control.SizeChanged += delegate {
 				SetSizes ();
 			};
+
+			for (int y = 0; y < rows; y++)
+				for (int x = 0; x < cols; x++)
+					Control.Children.Add (EmptyCell (x, y));
+		}
+
+		sw.FrameworkElement EmptyCell (int x, int y)
+		{
+			var empty = new sw.FrameworkElement { };
+			swc.Grid.SetColumn (empty, x);
+			swc.Grid.SetRow (empty, y);
+			SetMargins (empty, x, y);
+			return empty;
 		}
 
 		void SetSizes ()
@@ -47,14 +80,14 @@ namespace Eto.Platform.Wpf.Forms
 				var max = Control.ColumnDefinitions[x].ActualWidth;
 				foreach (var child in ColumnControls (x)) {
 					if (!double.IsNaN(child.Width))
-						child.Width = max - child.Margin.Left - child.Margin.Right;
+						child.Width = Math.Max(0, max - child.Margin.Horizontal ());
 				}
 			}
 			for (int y = 0; y < Control.RowDefinitions.Count; y++) {
 				var max = Control.RowDefinitions[y].ActualHeight;
 				foreach (var child in RowControls (y)) {
 					if (!double.IsNaN (child.Height))
-						child.Height = max - child.Margin.Top - child.Margin.Bottom;
+						child.Height = Math.Max(0, max - child.Margin.Vertical ());
 				}
 			}
 		}
@@ -70,7 +103,7 @@ namespace Eto.Platform.Wpf.Forms
 				if (x == col && max < maxWidth) max = maxWidth;
 				foreach (var child in ColumnControls (x)) {
 					if (!double.IsNaN (child.Width))
-						child.Width = Math.Max(0, max - child.Margin.Left - child.Margin.Right);
+						child.Width = Math.Max(0, max - child.Margin.Horizontal ());
 				}
 			}
 			for (int y = 0; y < Control.RowDefinitions.Count; y++) {
@@ -78,7 +111,7 @@ namespace Eto.Platform.Wpf.Forms
 				if (y == row && max < maxHeight) max = maxHeight;
 				foreach (var child in RowControls (y)) {
 					if (!double.IsNaN (child.Height))
-						child.Height = Math.Max(0, max - child.Margin.Top - child.Margin.Bottom);
+						child.Height = Math.Max(0, max - child.Margin.Vertical ());
 				}
 			}
 		}
@@ -179,24 +212,29 @@ namespace Eto.Platform.Wpf.Forms
 
 		public Eto.Drawing.Padding Padding
 		{
-			get { return Generator.Convert (Control.Margin); }
-			set { Control.Margin = Generator.Convert (value); }
+			get { return Control.Margin.ToEto (); }
+			set { Control.Margin = value.ToWpf (); }
 		}
+
+        void Remove(int x, int y)
+        {
+			var control = controls[x, y];
+			controls[x, y] = null;
+			if (control != null)
+				Control.Children.Remove (control.GetContainerControl ());
+        }
 
 		public void Add (Control child, int x, int y)
 		{
-			if (child == null) {
-				foreach (sw.UIElement element in Control.Children) {
-					var col = swc.Grid.GetColumn (element);
-					if (x != col) continue;
-					var row = swc.Grid.GetRow (element);
-					if (y != row) continue;
-					Control.Children.Remove (element);
-					break;
-				}
-			}
-			else {
-				var control = (sw.FrameworkElement)child.ControlObject;
+            Remove(x, y);
+            if (child == null)
+            {
+                Control.Children.Add(EmptyCell(x, y));
+            }
+            else
+            {
+				var control = child.GetContainerControl ();
+				controls[x, y] = child;
 				control.SetValue (swc.Grid.ColumnProperty, x);
 				control.SetValue (swc.Grid.RowProperty, y);
 				SetMargins (control, x, y);
@@ -207,17 +245,33 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Move (Control child, int x, int y)
 		{
-			var control = (sw.FrameworkElement)child.ControlObject;
-			control.SetValue (swc.Grid.ColumnProperty, x);
-			control.SetValue (swc.Grid.RowProperty, y);
-			SetMargins (control, x, y);
+			var control = child.GetContainerControl ();
+			var oldx = swc.Grid.GetColumn (control);
+			var oldy = swc.Grid.GetRow (control);
+
+			Remove (x, y);
+
+ 			control.SetValue (swc.Grid.ColumnProperty, x);
+ 			control.SetValue (swc.Grid.RowProperty, y);
+ 			SetMargins (control, x, y);
 			SetSizes (control, x, y);
+			SetSizes (control, x, y);
+			Control.Children.Add (EmptyCell (oldx, oldy));
+			controls[x, y] = child;
 		}
 
 		public void Remove (Control child)
 		{
-			var control = (System.Windows.UIElement)child.ControlObject;
+			Remove (child.GetContainerControl ());
+		}
+
+		public override void Remove (sw.FrameworkElement control)
+		{
+			var x = swc.Grid.GetColumn (control);
+			var y = swc.Grid.GetRow (control);
 			Control.Children.Remove (control);
+			controls[x, y] = null;
+			Control.Children.Add (EmptyCell (x, y));
 			SetSizes ();
 		}
 	}

@@ -14,6 +14,10 @@ namespace Eto.Forms
 		BorderType Border { get; set; }
 
 		Rectangle VisibleRect { get; }
+
+		bool ExpandContentWidth { get; set; }
+
+		bool ExpandContentHeight { get; set; }
 	}
 	
 	public class ScrollEventArgs : EventArgs
@@ -92,5 +96,14 @@ namespace Eto.Forms
 			get { return handler.VisibleRect; }
 		}
 
+		public bool ExpandContentWidth {
+			get { return handler.ExpandContentWidth; }
+			set { handler.ExpandContentWidth = value; }
+		}
+
+		public bool ExpandContentHeight {
+			get { return handler.ExpandContentHeight; }
+			set { handler.ExpandContentHeight = value; }
+		}
 	}
 }

@@ -82,8 +82,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 
 			Font font;
-			public override Eto.Drawing.Font Font {
-				get { return font; }
+			public override Eto.Drawing.Font Font
+			{
+				get {
+					if (font == null)
+						font = new Font (Column.Generator, new FontHandler (Args.CellStyle.Font));
+					return font;
+				}
 				set {
 					font = value;
 					if (font != null)
@@ -94,13 +99,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 
 			public override Eto.Drawing.Color BackgroundColor {
-				get { return Generator.Convert (Args.CellStyle.BackColor); }
-				set { Args.CellStyle.BackColor = Generator.Convert (value); }
+				get { return Args.CellStyle.BackColor.ToEto (); }
+				set { Args.CellStyle.BackColor = value.ToSD (); }
 			}
 
 			public override Eto.Drawing.Color ForegroundColor {
-				get { return Generator.Convert (Args.CellStyle.ForeColor); }
-				set { Args.CellStyle.ForeColor = Generator.Convert (value); }
+				get { return Args.CellStyle.ForeColor.ToEto (); }
+				set { Args.CellStyle.ForeColor = value.ToSD (); }
 			}
 		}
 
@@ -144,7 +149,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			columns = new ColumnCollection { Handler = this };

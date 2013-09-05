@@ -7,7 +7,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.Mac
 {
-	public class EtoEnvironmentHandler : IEtoEnvironment
+	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
 		void Convert (EtoSpecialFolder folder, out NSSearchPathDirectory dir, out NSSearchPathDomain domain)
 		{
@@ -44,16 +44,6 @@ namespace Eto.Platform.Mac
 				return NSSearchPath.GetDirectories (dir, domain, true).FirstOrDefault ();
 			}
 		}
-
-		#region IWidget implementation
-		
-		public void Initialize ()
-		{
-		}
-
-		public Widget Widget { get; set; }
-		
-		#endregion
 	}
 }
 

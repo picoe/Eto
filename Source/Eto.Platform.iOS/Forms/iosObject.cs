@@ -1,61 +1,33 @@
 using System;
 using System.Collections.Generic;
 using MonoTouch.Foundation;
+using MonoTouch.UIKit;
+using MonoTouch.ObjCRuntime;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public class iosObject<T, W> : WidgetHandler<T, W>
+	public class iosObject<T, W> : MacBase<T, W>
 		where T: NSObject 
 		where W: InstanceWidget
 	{
-		List<NSObject> notifications;
-		List<ControlObserver> observers;
-		
-		class ControlObserver : NSObject
+		public virtual object EventObject
 		{
-			public Action Action { get; set; }
-			public NSString KeyPath { get; set; }
-
-			public override void ObserveValue (NSString keyPath, NSObject ofObject, NSDictionary change, IntPtr context)
-			{
-				Action();
-			}
-		}
-		
-		
-		protected void AddObserver(NSString key, Action<NSNotification> notification)
-		{
-			if (notifications == null) notifications = new List<NSObject>();
-			notifications.Add(NSNotificationCenter.DefaultCenter.AddObserver(key, notification, Control));
+			get { return Control; }
 		}
 
-		protected void AddObserver(NSObject obj, NSString key, Action<NSNotification> notification)
+		public new void AddMethod (Selector selector, Delegate action, string arguments, object control = null)
 		{
-			if (notifications == null) notifications = new List<NSObject>();
-			notifications.Add(NSNotificationCenter.DefaultCenter.AddObserver(key, notification, obj));
+			base.AddMethod (selector, action, arguments, control ?? EventObject);
 		}
 		
-		protected void AddControlObserver(NSString key, Action action)
+		public new NSObject AddObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
 		{
-			if (observers == null) observers = new List<ControlObserver>();
-			var observer = new ControlObserver{ Action = action, KeyPath = key };
-			observers.Add (observer);
-			Control.AddObserver(observer, key, NSKeyValueObservingOptions.New, IntPtr.Zero);
+			return base.AddObserver (key, action, control ?? Control);
 		}
-
-		protected override void Dispose (bool disposing)
+		
+		public new void AddControlObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
 		{
-			base.Dispose (disposing);
-			if (observers != null) {
-				foreach (var observer in observers)
-					Control.RemoveObserver(observer, observer.KeyPath);
-			}
-			
-			// dispose in finalizer as well
-			if (notifications != null) {
-				NSNotificationCenter.DefaultCenter.RemoveObservers(notifications);
-				notifications = null;
-			}
+			base.AddControlObserver (key, action, control ?? Control);
 		}
 	}
 }

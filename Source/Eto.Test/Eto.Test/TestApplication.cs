@@ -16,7 +16,7 @@ namespace Eto.Test
 
 		public override void OnInitialized (EventArgs e)
 		{
-			this.MainForm = new MainForm ();
+			this.MainForm = new MainForm (TestSectionList.TopNodes);
 			HandleEvent (Application.TerminatingEvent);
 			
 			base.OnInitialized (e);
@@ -25,6 +25,7 @@ namespace Eto.Test
 			this.MainForm.Show ();
 		}
 		
+#if DESKTOP
 		public override void OnTerminating (System.ComponentModel.CancelEventArgs e)
 		{
 			base.OnTerminating (e);
@@ -33,6 +34,7 @@ namespace Eto.Test
 			var result = MessageBox.Show (this.MainForm, "Are you sure you want to quit?", MessageBoxButtons.YesNo, MessageBoxType.Question);
 			if (result == DialogResult.No) e.Cancel = true;
 		}
+#endif
 	}
 }
 

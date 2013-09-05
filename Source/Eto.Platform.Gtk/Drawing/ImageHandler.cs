@@ -13,40 +13,33 @@ namespace Eto.Platform.GtkSharp.Drawing
 	
 	public interface IImageHandler
 	{
-		void DrawImage (GraphicsHandler graphics, int x, int y);
+		void DrawImage (GraphicsHandler graphics, float x, float y);
 
-		void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height);
+		void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height);
 
-		void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination);
+		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
 		
-		void SetImage (Gtk.Image imageView);
-		
+		void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize);
 	}
 	
 	public abstract class ImageHandler<T, W> : WidgetHandler<T, W>, IImage, IImageHandler
 		where W: Image
 	{
 
-		#region IImage Members
-
 		public abstract Size Size { get; }
 		
-		public abstract void SetImage (Gtk.Image imageView);
+		public abstract void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize);
 
-		#endregion
-
-
-		public virtual void DrawImage (GraphicsHandler graphics, int x, int y)
+		public virtual void DrawImage (GraphicsHandler graphics, float x, float y)
 		{
 			DrawImage (graphics, x, y, Size.Width, Size.Height);
 		}
 
-		public virtual void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height)
+		public virtual void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
 		{
-			DrawImage (graphics, new Rectangle (new Point (0, 0), Size), new Rectangle (x, y, width, height));
+			DrawImage (graphics, new RectangleF (new Point (0, 0), Size), new RectangleF (x, y, width, height));
 		}
 
-		public abstract void DrawImage (GraphicsHandler graphics, Rectangle source, Rectangle destination);
-
+		public abstract void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
 	}
 }

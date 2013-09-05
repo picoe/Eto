@@ -22,7 +22,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public override void Initialize ()
+		protected override void Initialize ()
 		{
 			base.Initialize ();
 			Selectable = true;
@@ -39,8 +39,5 @@ namespace Eto.Platform.Mac
 		{
 			Widget.OnClick(EventArgs.Empty);
 		}
-		
 	}
-
-
 }

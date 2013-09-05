@@ -26,6 +26,8 @@ namespace Eto.Forms
 		string ExecuteScript (string script);
 
 		void ShowPrintDialog();
+
+		bool BrowserContextMenuEnabled { get; set; }
 	}
 	
 	public class WebViewLoadedEventArgs : EventArgs
@@ -74,11 +76,33 @@ namespace Eto.Forms
 	
 	public class WebView : Control
 	{
-		IWebView handler;
+		new IWebView Handler { get { return (IWebView)base.Handler; } }
 		
 		#region Events
-		
-		public const string DocumentLoadedEvent = "WebView.DocumentLoaded";
+
+        #region Navigated
+        public const string NavigatedEvent = "WebView.Navigated";
+        EventHandler<WebViewLoadedEventArgs> navigated;
+
+        public event EventHandler<WebViewLoadedEventArgs> Navigated
+        {
+            add
+            {
+                HandleEvent(NavigatedEvent);
+                navigated += value;
+            }
+            remove { navigated -= value; }
+        }
+
+        public virtual void OnNavigated(WebViewLoadedEventArgs e)
+        {
+            if (navigated != null)
+                navigated(this, e);
+        }
+
+        #endregion
+
+        public const string DocumentLoadedEvent = "WebView.DocumentLoaded";
 		EventHandler<WebViewLoadedEventArgs> documentLoaded;
 
 		public event EventHandler<WebViewLoadedEventArgs> DocumentLoaded {
@@ -163,67 +187,71 @@ namespace Eto.Forms
 		protected WebView (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IWebView)Handler;
 		}
 		
 		public void GoBack ()
 		{
-			handler.GoBack ();
+			Handler.GoBack ();
 		}
 		
 		public bool CanGoBack {
-			get{ return handler.CanGoBack; }
+			get{ return Handler.CanGoBack; }
 		}
 		
 		public void GoForward ()
 		{
-			handler.GoForward ();
+			Handler.GoForward ();
 		}
 		
 		public bool CanGoForward {
-			get { return handler.CanGoForward; }
+			get { return Handler.CanGoForward; }
 		}
 
 		public Uri Url {
-			get { return handler.Url; }
-			set { handler.Url = value; }
+			get { return Handler.Url; }
+			set { Handler.Url = value; }
 		}
 		
 		public void Stop ()
 		{
-			handler.Stop ();
+			Handler.Stop ();
 		}
 		
 		public void Reload ()
 		{
-			handler.Reload ();
+			Handler.Reload ();
 		}
 		
 		public string ExecuteScript (string script)
 		{
-			return handler.ExecuteScript (script);
+			return Handler.ExecuteScript (script);
 		}
 
 		public string DocumentTitle {
-			get { return handler.DocumentTitle; }
+			get { return Handler.DocumentTitle; }
 		}
 
 		public void LoadHtml (Stream stream, Uri baseUri = null)
 		{
 			using (var reader = new StreamReader(stream)) {
-				handler.LoadHtml (reader.ReadToEnd (), baseUri);
+				Handler.LoadHtml (reader.ReadToEnd (), baseUri);
 			}
 		}
 		
 		public void LoadHtml (string html, Uri baseUri = null)
 		{
-			handler.LoadHtml (html, baseUri);
+			Handler.LoadHtml (html, baseUri);
 		}
 
-        public void ShowPrintDialog ()
-        {
-            handler.ShowPrintDialog();
-        }
+		public void ShowPrintDialog ()
+		{
+			Handler.ShowPrintDialog ();
+		}
+
+		public bool BrowserContextMenuEnabled {
+			get { return Handler.BrowserContextMenuEnabled; }
+			set { Handler.BrowserContextMenuEnabled = value; }
+		}
 	}
 }
 

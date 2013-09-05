@@ -18,7 +18,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			Gtk.Toolbar tb = handler.Control;
 
-			Control = new Gtk.ToolButton(Image, this.Text);
+			Control = new Gtk.ToolButton(GtkImage, this.Text);
 			Control.Clicked += button_Clicked;
 			Control.IsImportant = true;
 			Control.Sensitive = this.Enabled;

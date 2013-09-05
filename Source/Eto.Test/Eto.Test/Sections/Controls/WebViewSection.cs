@@ -4,47 +4,62 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class WebViewSection : Panel
+	public class WebViewSection : Scrollable
 	{
 		WebView webView;
 		Button goBack;
 		Button goForward;
 		Button stopButton;
 		Label titleLabel;
+		CheckBox cancelLoad;
 		
 		public WebViewSection ()
 		{
-			var layout = new TableLayout (this, 1, 3);
-			
-			int row = 0;
-			layout.Add (Buttons (), 0, row++);
-			layout.Add (TitleLabel (), 0, row++);
-			layout.Add (WebView (), 0, row++, true, true);
+			var layout = new DynamicLayout (this);
+
+			var webContainer = WebView ();
+			layout.Add (Buttons ());
+			layout.AddSeparateRow (TitleLabel (), null, CancelLoad (), EnableContextMenu ());
+			layout.Add (webContainer, yscale: true);
+
+			if (webView != null)
+				LoadHtml();
+		}
+
+		Control CancelLoad ()
+		{
+			return cancelLoad = new CheckBox { Text = "Cancel Load" };
 		}
 		
 		Control WebView ()
 		{
 			try {
-				var control = webView = new WebView ();
-			
-				control.DocumentLoading += delegate(object sender, WebViewLoadingEventArgs e) {
-					Log.Write (control, "Document loading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
+				webView = new WebView ();
+
+				webView.Navigated += (sender, e) => {
+					Log.Write (webView, "Navigated, Uri: {0}", e.Uri);
 					UpdateButtons ();
-					stopButton.Enabled = true;
 				};
-				control.DocumentLoaded += delegate(object sender, WebViewLoadedEventArgs e) {
-					Log.Write (control, "Document loaded, Uri: {0}", e.Uri);
+				webView.DocumentLoading += (sender, e) => {
+					Log.Write (webView, "DocumentLoading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
+					e.Cancel = cancelLoad.Checked ?? false;
+					if (!e.Cancel) {
+						UpdateButtons ();
+						stopButton.Enabled = true;
+					}
+				};
+				webView.DocumentLoaded += (sender, e) => {
+					Log.Write (webView, "DocumentLoaded, Uri: {0}", e.Uri);
 					UpdateButtons ();
 					stopButton.Enabled = false;
 				};
-				control.OpenNewWindow += (sender, e) => {
-					Log.Write (control, "Open new window with name '{0}', Url: {1}", e.NewWindowName, e.Uri);
+				webView.OpenNewWindow += (sender, e) => {
+					Log.Write (webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
 				};
-				control.DocumentTitleChanged += delegate(object sender, WebViewTitleEventArgs e) {
+				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e) {
 					titleLabel.Text = e.Title;
 				};
-				LoadHtml();
-				return control;
+				return webView;
 
 			} catch (HandlerInvalidException) {
 				var control = new Label { 
@@ -66,6 +81,13 @@ namespace Eto.Test.Sections.Controls
 		{
 			titleLabel = new Label{};
 			return titleLabel;
+		}
+
+		Control EnableContextMenu ()
+		{
+			var control = new CheckBox { Text = "Enable Context Menu" };
+			control.Bind (r => r.Checked, this.webView, w => w.BrowserContextMenuEnabled);
+			return control;
 		}
 		
 		void UpdateButtons ()

@@ -8,9 +8,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-#if XAML
 	[ContentProperty("Rows")]
-#endif
 	public class DynamicLayout : Layout
 	{
 		DynamicTable topTable;
@@ -96,11 +94,15 @@ namespace Eto.Forms
 			public void OnLoad ()
 			{
 			}
-
+			
 			public void OnLoadComplete ()
 			{
 			}
 
+			public void OnUnLoad ()
+			{
+			}
+			
 			public void Update ()
 			{
 			}
@@ -173,17 +175,17 @@ namespace Eto.Forms
 				this.Container.Layout = this;
 		}
 
-		public void BeginVertical (bool xscale, bool? yscale = null)
+		public DynamicTable  BeginVertical (bool xscale, bool? yscale = null)
 		{
-			BeginVertical (null, null, xscale, yscale);
+			return BeginVertical (null, null, xscale, yscale);
 		}
 		
-		public void BeginVertical (Size spacing, bool? xscale = null, bool? yscale = null)
+		public DynamicTable BeginVertical (Size spacing, bool? xscale = null, bool? yscale = null)
 		{
-			BeginVertical (null, spacing, xscale, yscale);
+			return BeginVertical (null, spacing, xscale, yscale);
 		}
 		
-		public void BeginVertical (Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		public DynamicTable BeginVertical (Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
@@ -196,6 +198,7 @@ namespace Eto.Forms
 			};
 			currentItem.Add (newItem);
 			currentItem = newItem;
+			return newItem;
 		}
 		
 		public void EndVertical ()
@@ -205,24 +208,25 @@ namespace Eto.Forms
 			currentItem = currentItem.Parent ?? topTable;
 		}
 		
-		public void EndBeginVertical (Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		public DynamicTable EndBeginVertical (Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
 			EndVertical ();
-			BeginVertical (padding, spacing, xscale, yscale);
+			return BeginVertical (padding, spacing, xscale, yscale);
 		}
 		
-		public void EndBeginHorizontal (bool? yscale = null)
+		public DynamicRow EndBeginHorizontal (bool? yscale = null)
 		{
 			EndHorizontal ();
-			BeginHorizontal (yscale);
+			return BeginHorizontal (yscale);
 		}
 		
-		public void BeginHorizontal (bool? yscale = null)
+		public DynamicRow BeginHorizontal (bool? yscale = null)
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
 			currentItem.AddRow (currentItem.CurrentRow = new DynamicRow ());
 			this.yscale = yscale;
+			return currentItem.CurrentRow;
 		}
 		
 		public void EndHorizontal ()
@@ -235,7 +239,7 @@ namespace Eto.Forms
 				currentItem.CurrentRow = null;
 		}
 
-		public void Add (Control control, bool? xscale = null, bool? yscale = null)
+		public DynamicControl Add (Control control, bool? xscale = null, bool? yscale = null)
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException ();
@@ -244,7 +248,9 @@ namespace Eto.Forms
 			yscale = yscale ?? this.yscale;
 			if (yscale == null && currentItem.CurrentRow == null && control == null)
 				yscale = true;
-			currentItem.Add (new DynamicControl{ Control = control, XScale = xscale, YScale = yscale });
+			var dynamicControl = new DynamicControl{ Control = control, XScale = xscale, YScale = yscale };
+			currentItem.Add (dynamicControl);
+			return dynamicControl;
 		}
 
 		public DynamicRow AddSeparateRow (params Control[] controls)
@@ -276,12 +282,12 @@ namespace Eto.Forms
 
 		public void AddCentered (Control control, bool? xscale, bool? yscale = null)
 		{
-			AddCentered (control, null, null, xscale, yscale, true, true);
+			AddCentered (control, Drawing.Padding.Empty, Size.Empty, xscale, yscale, true, true);
 		}
 
 		public void AddCentered (Control control, Size spacing, bool? xscale = null, bool? yscale = null)
 		{
-			AddCentered (control, null, spacing, xscale, yscale, true, true);
+			AddCentered (control, Drawing.Padding.Empty, spacing, xscale, yscale, true, true);
 		}
 		
 		public void AddCentered (Control control, Padding padding, Size? spacing = null, bool? xscale = null, bool? yscale = null)
@@ -291,7 +297,7 @@ namespace Eto.Forms
 
 		public void AddCentered (Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool horizontalCenter = true, bool verticalCenter = true)
 		{
-			this.BeginVertical (padding, spacing, xscale, yscale);
+			this.BeginVertical (padding ?? Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
 			if (verticalCenter)
 				this.Add (null, null, true);
 			

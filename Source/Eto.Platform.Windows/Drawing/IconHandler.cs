@@ -21,10 +21,12 @@ namespace Eto.Platform.Windows.Drawing
 		}
 
 		public Size Size {
-			get { return new Size (Control.Width, Control.Height); }
+			get 
+			{
+				var icon = GetLargestIcon();
+				return new Size (icon.Width, icon.Height);
+			}
 		}
-
-		#region IIcon Members
 
 		public void Create (Stream stream)
 		{
@@ -35,9 +37,6 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			Control = new SD.Icon (fileName);
 		}
-
-		#endregion
-		
 
 		public SD.Icon GetLargestIcon ()
 		{
@@ -60,7 +59,7 @@ namespace Eto.Platform.Windows.Drawing
 				if (icon.Width > width && icon.Width - width < curicon.Width - width)
 					curicon = icon;
 			}
-			return curicon;
+			return GetLargestIcon ();
 		}
 		
 		private const int sICONDIR = 6;            // sizeof(ICONDIR) 
@@ -138,7 +137,26 @@ namespace Eto.Platform.Windows.Drawing
 				var icon = GetIconClosestToSize (size.Value);
 				return icon.ToBitmap ();
 			}
-			else return Control.ToBitmap ();
+			else return this.GetLargestIcon().ToBitmap ();
+		}
+
+
+		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			var image = GetImageWithSize((int)Math.Max(destination.Width, destination.Height));
+			graphics.Control.DrawImage (image, destination.ToSD (), source.ToSD (), SD.GraphicsUnit.Pixel);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y)
+		{
+			var image = GetLargestIcon ().ToBitmap();
+			graphics.Control.DrawImage (image, x, y);
+		}
+
+		public void DrawImage (GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			var image = GetImageWithSize ((int)Math.Max (width, height));
+			graphics.Control.DrawImage (image, x, y, width, height);
 		}
 	}
 }
