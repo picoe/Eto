@@ -12,21 +12,39 @@ namespace Eto.Platform.Wpf.CustomControls
 {
 	public class SelectableTreeView : TreeView
 	{
-		public static DependencyProperty CurrentItemProperty = DependencyProperty.RegisterAttached (
-			"CurrentItem", typeof (object), typeof (SelectableTreeView),
-			new PropertyMetadata (new object (), OnCurrentItemChanged));
-
-		public static RoutedEvent CurrentItemChangedEvent;
-
 		static SelectableTreeView ()
 		{
-			SelectableTreeView.CurrentItemChangedEvent = EventManager.RegisterRoutedEvent ("CurrentItemChangedEvent", RoutingStrategy.Bubble, typeof (RoutedPropertyChangedEventHandler<object>), typeof (SelectableTreeView));
 		}
 
 		public SelectableTreeView ()
 		{
 			this.SelectedItemChanged += TreeViewItemChanged;
 		}
+
+		public static DependencyProperty CurrentTreeViewItemProperty = DependencyProperty.RegisterAttached(
+			"CurrentTreeViewItem", typeof(TreeViewItem), typeof(SelectableTreeView),
+			new PropertyMetadata());
+
+		public static TreeViewItem GetCurrentTreeViewItem(TreeView treeView)
+		{
+			return (TreeViewItem)treeView.GetValue(CurrentTreeViewItemProperty);
+		}
+
+		public static void SetCurrentTreeViewItem(TreeView treeView, TreeViewItem value)
+		{
+			treeView.SetValue(CurrentTreeViewItemProperty, value);
+		}
+
+		public TreeViewItem CurrentTreeViewItem
+		{
+			get { return GetCurrentTreeViewItem(this); }
+			set { SetCurrentTreeViewItem(this, value); }
+		}
+
+
+		public static RoutedEvent CurrentItemChangedEvent = EventManager.RegisterRoutedEvent (
+			"CurrentItemChangedEvent", RoutingStrategy.Bubble, typeof (RoutedPropertyChangedEventHandler<object>), typeof (SelectableTreeView)
+			);
 
 		public event RoutedPropertyChangedEventHandler<object> CurrentItemChanged
 		{
@@ -38,6 +56,10 @@ namespace Eto.Platform.Wpf.CustomControls
 		{
 			base.RaiseEvent (e);
 		}
+
+		public static DependencyProperty CurrentItemProperty = DependencyProperty.RegisterAttached(
+			"CurrentItem", typeof(object), typeof(SelectableTreeView),
+			new PropertyMetadata(new object(), OnCurrentItemChanged));
 
 		public static object GetCurrentItem (TreeView treeView)
 		{
@@ -55,6 +77,11 @@ namespace Eto.Platform.Wpf.CustomControls
 			set { SetCurrentItem (this, value); }
 		}
 
+        public bool Refreshing
+        {
+            get { return refreshing; }
+        }
+
 		bool refreshing;
 		public void RefreshData ()
 		{
@@ -65,11 +92,10 @@ namespace Eto.Platform.Wpf.CustomControls
 			FindItem (selectedItem, this).ContinueWith (t => {
 				if (t.Result != null)
 				{
-					Dispatcher.BeginInvoke(new Action(() => {
-						t.Result.IsSelected = true;
-					}));
+					t.Result.IsSelected = true;
 				}
-			});
+			}, TaskScheduler.FromCurrentSynchronizationContext());
+            //this.CurrentItem = selectedItem;
 		}
 
 		protected override void OnItemsChanged (System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
@@ -85,10 +111,19 @@ namespace Eto.Platform.Wpf.CustomControls
 				return;
 			treeView.SelectedItemChanged -= TreeViewItemChanged;
 			var treeViewItem = SelectTreeViewItemForBinding (args.NewValue, treeView);
+			var newValue = args.NewValue;
 			if (treeViewItem != null)
+			{
 				treeViewItem.IsSelected = true;
+				treeView.CurrentTreeViewItem = treeViewItem;
+			}
+			else
+			{
+				newValue = treeView.SelectedItem;
+				SetCurrentItem(treeView, newValue);
+			}
 			treeView.SelectedItemChanged += TreeViewItemChanged;
-			treeView.OnCurrentItemChanged (new RoutedPropertyChangedEventArgs<object>(args.OldValue, args.NewValue, CurrentItemChangedEvent));
+			treeView.OnCurrentItemChanged (new RoutedPropertyChangedEventArgs<object>(args.OldValue, newValue, CurrentItemChangedEvent));
 		}
 
 		static void TreeViewItemChanged (object sender, RoutedPropertyChangedEventArgs<object> e)
@@ -186,6 +221,11 @@ namespace Eto.Platform.Wpf.CustomControls
 			}
 		}
 
+		public Task<TreeViewItem> FindTreeViewItem(object dataItem)
+		{
+			return FindItem(dataItem, this);
+		}
+
 		static Task<TreeViewItem> FindItem (object dataItem, ItemsControl ic)
 		{
 			var helper = new Helper { SelectedItem = dataItem };
@@ -235,7 +275,10 @@ namespace Eto.Platform.Wpf.CustomControls
 			return null;
 		}
 
-
+		public TreeViewItem GetTreeViewItemForItem(object dataItem)
+		{
+			return SelectTreeViewItemForBinding(dataItem, this);
+		}
 
 		static TreeViewItem SelectTreeViewItemForBinding (object dataItem, ItemsControl ic)
 		{

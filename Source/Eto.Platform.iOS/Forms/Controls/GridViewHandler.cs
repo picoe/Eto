@@ -11,14 +11,14 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		Collection store;
 
-		public class GridTableDelegate : GridHandler<UITableView, GridView>.TableDelegate
+		public class GridTableDelegate : EtoTableDelegate
 		{
-			public GridViewHandler TreeHandler { get; set; }
-
-			public override GridHandler<UITableView, GridView> Handler {
-				get { return TreeHandler; }
-				set { }
+			public new GridViewHandler Handler
+			{
+				get { return (GridViewHandler)base.Handler; }
+				set { base.Handler = value; }
 			}
+
 		}
 
 
@@ -40,7 +40,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new GridTableDelegate { TreeHandler  = this };
+			return new GridTableDelegate { Handler  = this };
 		}
 
 		public GridViewHandler ()

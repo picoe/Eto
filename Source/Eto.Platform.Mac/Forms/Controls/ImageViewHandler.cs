@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoImageView { Handler = this, ImageScaling = NSImageScale.ProportionallyUpOrDown };
 		}
 
-		protected override Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			if (image != null)
 				return image.Size;

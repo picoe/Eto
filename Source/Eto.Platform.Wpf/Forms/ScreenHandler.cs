@@ -29,12 +29,12 @@ namespace Eto.Platform.Wpf.Forms
 
 		static swf.Screen GetCurrentScreen (sw.Window window)
 		{
-			var centerPoint = new sd.Point ((int)(window.Left + window.Width / 2), (int)(window.Top + window.Height / 2));
+			var centerPoint = new sd.Point ((int)(window.Left + window.ActualWidth / 2), (int)(window.Top + window.ActualHeight / 2));
 			foreach (var s in swf.Screen.AllScreens) {
 				if (s.Bounds.Contains (centerPoint))
 					return s;
 			}
-			return null;
+			return swf.Screen.PrimaryScreen;
 		}
 		public float RealScale
 		{

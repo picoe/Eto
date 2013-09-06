@@ -11,20 +11,19 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		Collection store;
 
-		public class TreeGridTableDelegate : GridHandler<UITableView, TreeGridView>.TableDelegate
+		public class TreeGridTableDelegate : EtoTableDelegate
 		{
-			public TreeGridViewHandler TreeHandler { get; set; }
-
-			public override GridHandler<UITableView, TreeGridView> Handler {
-				get { return TreeHandler; }
-				set { }
+			public new TreeGridViewHandler Handler
+			{
+				get { return (TreeGridViewHandler)base.Handler; }
+				set { base.Handler = value; }
 			}
 
 			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
 			{
 				base.RowSelected (tableView, indexPath);
 
-				TreeHandler.Widget.OnSelectedItemChanged(EventArgs.Empty);
+				Handler.Widget.OnSelectedItemChanged(EventArgs.Empty);
 			}
 		}
 
@@ -47,7 +46,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new TreeGridTableDelegate { TreeHandler  = this };
+			return new TreeGridTableDelegate { Handler  = this };
 		}
 
 		public TreeGridViewHandler ()

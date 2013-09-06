@@ -50,9 +50,9 @@ namespace Eto.Platform.Wpf.Forms
 					Control.SourceInitialized += HandleSourceInitialized;
 				}
 			}
-
 			Control.ShowDialog ();
-			return Widget.DialogResult;
+            WpfFrameworkElementHelper.ShouldCaptureMouse = false;
+            return Widget.DialogResult;
 		}
 
 		void HandleSourceInitialized (object sender, EventArgs e)

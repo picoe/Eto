@@ -13,9 +13,12 @@ using Eto.Platform.Mac.Forms.Controls;
 using Eto.Platform.Mac.Forms.Printing;
 using Eto.Platform.Mac.Forms;
 using Eto.Platform.Mac.Forms.Menu;
+using Eto.Platform.Mac.Threading;
+using Eto.Threading;
 
 namespace Eto.Platform.Mac
 {
+	[Preserve(AllMembers = true)]
 	public class Generator : Eto.Generator
 	{
 #if XAMMAC
@@ -125,6 +128,7 @@ namespace Eto.Platform.Mac
 
 			// General
 			g.Add <IEtoEnvironment> (() => new EtoEnvironmentHandler ());
+			g.Add <IThread> (() => new ThreadHandler ());
 		}
 
 		public override IDisposable ThreadStart ()
