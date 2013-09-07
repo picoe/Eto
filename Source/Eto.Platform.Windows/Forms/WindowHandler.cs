@@ -189,7 +189,7 @@ namespace Eto.Platform.Windows
 
         protected virtual swf.FormBorderStyle DefaultWindowStyle
         {
-            get { return swf.FormBorderStyle.Fixed3D; }
+            get { return swf.FormBorderStyle.Sizable; }
         }
 
 		public virtual bool Resizable
