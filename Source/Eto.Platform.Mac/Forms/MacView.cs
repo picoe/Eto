@@ -157,7 +157,7 @@ namespace Eto.Platform.Mac.Forms
 			this.AutoSize = true;
 		}
 		
-		protected virtual Size GetNaturalSize ()
+		protected virtual Size GetNaturalSize (Size availableSize)
 		{
 			if (naturalSize != null) 
 				return naturalSize.Value;
@@ -175,7 +175,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual Size GetPreferredSize (Size availableSize)
 		{
-			var size = GetNaturalSize ();
+			var size = GetNaturalSize (availableSize);
 			if (!AutoSize && PreferredSize != null) {
 				var preferredSize = PreferredSize.Value;
 				if (preferredSize.Width >= 0)

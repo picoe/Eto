@@ -23,7 +23,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			//Control.DisplayMemberPath = "Text";
 			var template = new sw.DataTemplate (typeof (IListItem));
 
-			template.VisualTree = WpfListItemHelper.ItemTemplate ();
+			template.VisualTree = WpfListItemHelper.ItemTemplate (false);
 			Control.ItemTemplate = template;
 			Control.SelectionChanged += delegate {
 				Widget.OnSelectedIndexChanged (EventArgs.Empty);

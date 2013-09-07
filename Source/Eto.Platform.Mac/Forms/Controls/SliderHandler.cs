@@ -28,7 +28,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxValue = 100;
 		}
 		
-		protected override Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			if (Orientation == SliderOrientation.Horizontal)
 				return new Size (80, 30);

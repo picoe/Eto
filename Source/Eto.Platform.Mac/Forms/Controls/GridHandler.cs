@@ -337,7 +337,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return ScrollView.VisibleRect ();
 		}
 
-		protected override Eto.Drawing.Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			var width = Widget.Columns.Sum (r => r.Width);
 			if (width == 0) width = 100;

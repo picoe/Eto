@@ -259,9 +259,17 @@ namespace Eto.Platform.GtkSharp.Drawing
 			((IImageHandler)image.Handler).DrawImage (this, source, destination);
 		}
 
+		Pango.Layout CreateLayout ()
+		{
+			if (PangoContext != null)
+				return new Pango.Layout (PangoContext);
+			else
+				return Pango.CairoHelper.CreateLayout (Control);
+		}
+
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
-			using (var layout = new Pango.Layout (PangoContext)) {
+			using (var layout = CreateLayout ()) {
 				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
 				Control.Save ();
@@ -275,7 +283,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public SizeF MeasureString (Font font, string text)
 		{
-			using (var layout = new Pango.Layout (PangoContext)) {
+			using (var layout = CreateLayout ()) {
 				layout.FontDescription = ((FontHandler)font.Handler).Control;
 				layout.SetText (text);
 				int width, height;

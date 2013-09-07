@@ -9,17 +9,6 @@ namespace Eto.Forms
 {
 	public interface ITreeItem : IImageListItem, ITreeStore, ITreeItem<ITreeItem>
 	{
-        /// <summary>
-        /// Used only by the back-ends, maps to a TreeNode
-        /// or its equivalent
-        /// </summary>
-        object Handler { get; set; }
-
-        object Tag { get; set; }
-
-        object InternalTag { get; set; }
-
-        ITreeItem Clone();
 	}
 
 	public class TreeItemCollection : DataStoreCollection<ITreeItem>, ITreeStore
@@ -27,9 +16,15 @@ namespace Eto.Forms
 	}
 	
 	[ContentProperty("Children")]
-	public class TreeItem : ImageListItem, ITreeItem
+	public class TreeItem : ImageListItem, ITreeItem, INotifyCollectionChanged
 	{
 		TreeItemCollection children;
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged
+		{
+			add { Children.CollectionChanged += value; }
+			remove { Children.CollectionChanged -= value; }
+		}
 
 		public TreeItemCollection Children
 		{
@@ -71,18 +66,6 @@ namespace Eto.Forms
 		{
 			this.Children.AddRange (children);
 		}
-
-        /// <summary>
-        /// Used internally to reference the UI item
-        /// </summary>
-        public object InternalTag { get; set; }
-
-        public ITreeItem Clone()
-        {
-            throw new NotImplementedException();
-        }
-
-        public object Handler { get; set; }
     }
 }
 

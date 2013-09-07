@@ -15,6 +15,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			public GridViewHandler Handler { get; set; }
 
+
 			public override void AddItem(object item)
 			{
 				Handler.ReloadData();
@@ -35,7 +36,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new GridTableDelegate { GridViewHandler  = this };
+			return new GridTableDelegate { Handler  = this };
 		}
 
 		public GridViewHandler ()
