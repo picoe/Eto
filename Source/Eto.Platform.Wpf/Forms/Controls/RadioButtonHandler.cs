@@ -37,8 +37,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return Control.Content as string; }
-			set { Control.Content = value; }
+			get { return (Control.Content as string).ToEtoMneumonic(); }
+			set { Control.Content = value.ToWpfMneumonic(); }
 		}
 	}
 }

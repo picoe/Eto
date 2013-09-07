@@ -65,7 +65,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return Conversions.ConvertMneumonicFromWPF ((string)label.Content); }
+			get { return (label.Content as string).ToEtoMneumonic(); }
 			set {
 				label.Content = value.ToWpfMneumonic ();
 				SetImagePosition ();

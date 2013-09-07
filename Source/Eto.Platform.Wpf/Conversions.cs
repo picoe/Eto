@@ -120,9 +120,8 @@ namespace Eto.Platform.Wpf
 			return value.Replace ("&&", "&");
 		}
 
-		public static string ConvertMneumonicFromWPF (object obj)
+		public static string ToEtoMneumonic (this string value)
 		{
-			var value = obj as string;
 			if (value == null)
 				return null;
 			var match = Regex.Match (value, @"(?<=([^_](?:[_]{2})*)|^)[_](?![_])");
