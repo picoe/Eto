@@ -17,8 +17,6 @@ namespace Eto.Platform.Windows
 		Image image;
 		Size defaultSize;
 
-		public override swf.DockStyle DockStyle { get { return swf.DockStyle.None; } }
-
 		public class EtoButton : swf.Button
 		{
 			public override sd.Size GetPreferredSize (sd.Size proposedSize)
