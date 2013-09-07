@@ -161,6 +161,6 @@ namespace Eto.Platform
 		public static extern int SetWindowLong (IntPtr hWnd, GWL nIndex, uint dwNewLong);
 
 		[DllImport("user32.dll")]
-		public static extern int SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
+		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
 	}
 }
