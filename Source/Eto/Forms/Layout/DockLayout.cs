@@ -156,7 +156,10 @@ namespace Eto.Forms
 			get { return Handler.Content; }
 			set {
 				if (control != value) {
-					var old = control;
+					if (control != null)
+					{
+						control.SetParentLayout(null);
+					}
 					control = value;
 					if (control != null) {
 						control.SetParentLayout (this);
@@ -171,9 +174,6 @@ namespace Eto.Forms
 					}
 					else
 						Handler.Content = control;
-					if (old != null) {
-						old.SetParentLayout(null);
-					}
 				}
 			}
 		}
