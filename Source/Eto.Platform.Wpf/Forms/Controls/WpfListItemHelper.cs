@@ -37,10 +37,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		static sw.PropertyPath TextPath = PropertyPathHelper.Create("(Eto.Forms.IListItem,Eto.Text)");
+
 		public static sw.FrameworkElementFactory TextBlock()
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(swc.TextBlock));
-			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = new sw.PropertyPath("Text") });
+			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = TextPath });
 			factory.SetValue(swc.TextBlock.MarginProperty, new sw.Thickness(2));
 			return factory;
 		}
@@ -48,7 +50,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public static sw.FrameworkElementFactory EditableBlock()
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(EditableTextBlock));
-			factory.SetBinding(EditableTextBlock.TextProperty, new sw.Data.Binding { Path = new sw.PropertyPath("Text") });
+			factory.SetBinding(EditableTextBlock.TextProperty, new sw.Data.Binding { Path = TextPath });
 			return factory;
 		}
 

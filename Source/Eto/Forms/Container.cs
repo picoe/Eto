@@ -100,7 +100,7 @@ namespace Eto.Forms
 				control.OnUnLoad (e);
 			}
 			
-			base.OnLoad (e);
+			base.OnUnLoad (e);
 			
 			if (Layout != null)
 				Layout.OnUnLoad (e);

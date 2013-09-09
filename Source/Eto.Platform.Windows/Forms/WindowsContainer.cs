@@ -13,6 +13,11 @@ namespace Eto.Platform.Windows
 	{
 		Size? minimumSize;
 
+		public WindowsContainer()
+		{
+			EnableRedrawDuringSuspend = false;
+		}
+
 		protected IWindowsLayout WindowsLayout
 		{
 			get { return Widget.Layout != null && Widget.Layout.InnerLayout != null ? Widget.Layout.InnerLayout.Handler as IWindowsLayout : null; }
@@ -80,44 +85,25 @@ namespace Eto.Platform.Windows
 			set { base.ClientSize = value; }
 		}
 
+		bool restoreRedraw;
 		
 		public override void SuspendLayout ()
 		{
 			base.SuspendLayout ();
-			if (Widget.Layout != null)
+			if (!EnableRedrawDuringSuspend && Control.IsHandleCreated)
 			{
-				var layout = Widget.Layout.Handler as IWindowsLayout;
-				if (layout != null)
-				{
-					var control = layout.LayoutObject as SWF.Control;
-					if (control != null)
-					{
-						control.SuspendLayout ();
-						if (!EnableRedrawDuringSuspend && control.IsHandleCreated)
-							Win32.SendMessage (control.Handle, Win32.WM.SETREDRAW, IntPtr.Zero, IntPtr.Zero);
-					}
-				}
-				
+				restoreRedraw = (int)Win32.SendMessage(Control.Handle, Win32.WM.SETREDRAW, IntPtr.Zero, IntPtr.Zero) == 0;
 			}
 		}
 		
 		public override void ResumeLayout ()
 		{
-			base.ResumeLayout ();
-			if (Widget.Layout != null)
+			base.ResumeLayout();
+			if (restoreRedraw)
 			{
-				var layout = Widget.Layout.Handler as IWindowsLayout;
-				if (layout != null)
-				{
-					var control = layout.LayoutObject as SWF.Control;
-					if (control != null)
-					{
-						if (!EnableRedrawDuringSuspend && control.IsHandleCreated)
-							Win32.SendMessage (control.Handle, Win32.WM.SETREDRAW, new IntPtr(1), IntPtr.Zero);
-						control.ResumeLayout ();
-					}
-				}
-				
+				Win32.SendMessage(Control.Handle, Win32.WM.SETREDRAW, new IntPtr(1), IntPtr.Zero);
+				Control.Refresh();
+				restoreRedraw = false;
 			}
 		}
 

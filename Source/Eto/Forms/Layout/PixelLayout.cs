@@ -85,7 +85,7 @@ namespace Eto.Forms
 		
 		public void Move (Control child, int x, int y)
 		{
-			child.Properties[LocationProperty] = new Point (x, y);
+			child.Properties[LocationProperty] = new Point(x, y);
 			inner.Move (child, x, y);
 		}
 		
@@ -102,8 +102,11 @@ namespace Eto.Forms
 		
 		public void Remove (Control child)
 		{
-			if (controls.Remove (child))
-				inner.Remove (child);
+			if (controls.Remove(child))
+			{
+				inner.Remove(child);
+				child.SetParentLayout(null);
+			}
 		}
 
 		[OnDeserialized]

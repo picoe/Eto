@@ -12,6 +12,7 @@ namespace Eto.Platform.Wpf.CustomControls
 {
 	public class SelectableTreeView : TreeView
 	{
+
 		static SelectableTreeView ()
 		{
 		}
@@ -89,13 +90,26 @@ namespace Eto.Platform.Wpf.CustomControls
 			refreshing = true;
 			Items.Refresh ();
 			refreshing = false;
-			FindItem (selectedItem, this).ContinueWith (t => {
+			if (this.IsLoaded)
+			{
+				SetSelected(selectedItem);
+			}
+			else
+			{
+				this.Loaded += (sender, e) => SetSelected(selectedItem);
+			}
+            //this.CurrentItem = selectedItem;
+		}
+
+		void SetSelected(object selectedItem)
+		{
+			FindItem(selectedItem, this).ContinueWith(t =>
+			{
 				if (t.Result != null)
 				{
 					t.Result.IsSelected = true;
 				}
 			}, TaskScheduler.FromCurrentSynchronizationContext());
-            //this.CurrentItem = selectedItem;
 		}
 
 		protected override void OnItemsChanged (System.Collections.Specialized.NotifyCollectionChangedEventArgs e)

@@ -29,17 +29,10 @@ namespace Eto.Platform.Windows
 		public PanelHandler ()
 		{
 			Control = new EtoPanel ();
-			this.Control.SuspendLayout ();
 			this.Control.Size = sd.Size.Empty;
 			this.Control.MinimumSize = sd.Size.Empty;
 			this.Control.AutoSize = true;
 			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-		}
-
-		public override void OnLoad (EventArgs e)
-		{
-			base.OnLoad (e);
-			Control.ResumeLayout ();
 		}
 	}
 }

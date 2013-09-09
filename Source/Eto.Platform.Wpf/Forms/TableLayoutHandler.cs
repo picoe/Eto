@@ -7,6 +7,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using System.Diagnostics;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -18,6 +19,8 @@ namespace Eto.Platform.Wpf.Forms
 		bool lastColumnScale;
 		bool[] rowScale;
 		bool lastRowScale;
+
+		public Size Adjust { get; set; }
 
 		public override sw.Size GetPreferredSize (sw.Size? constraint)
 		{
@@ -78,13 +81,18 @@ namespace Eto.Platform.Wpf.Forms
 			for (int x = 0; x < Control.ColumnDefinitions.Count; x++) {
 
 				var max = Control.ColumnDefinitions[x].ActualWidth;
-				foreach (var child in ColumnControls (x)) {
+				if (x == Control.ColumnDefinitions.Count - 1)
+					max += Adjust.Width;
+				foreach (var child in ColumnControls(x))
+				{
 					if (!double.IsNaN(child.Width))
 						child.Width = Math.Max(0, max - child.Margin.Horizontal ());
 				}
 			}
 			for (int y = 0; y < Control.RowDefinitions.Count; y++) {
 				var max = Control.RowDefinitions[y].ActualHeight;
+				if (y == Control.RowDefinitions.Count - 1)
+					max += Adjust.Height;
 				foreach (var child in RowControls (y)) {
 					if (!double.IsNaN (child.Height))
 						child.Height = Math.Max(0, max - child.Margin.Vertical ());
