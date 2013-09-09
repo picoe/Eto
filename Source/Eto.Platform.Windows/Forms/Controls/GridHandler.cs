@@ -22,7 +22,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		ContextMenu contextMenu;
 		ColumnCollection columns;
 
-		protected abstract IGridItem GetItemAtRow (int row);
+		protected abstract object GetItemAtRow (int row);
 
 		public GridHandler ()
 		{
@@ -38,18 +38,34 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 			Control.CellValueNeeded += (sender, e) => {
 				var item = GetItemAtRow(e.RowIndex);
-				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
-				if (item != null && col != null)
-					e.Value = col.GetCellValue (item);
+				if (Widget.Columns.Count > e.ColumnIndex)
+				{
+					var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+					if (item != null && col != null)
+						e.Value = col.GetCellValue(item);
+				}
 			};
 
 			Control.CellValuePushed += (sender, e) => {
 				var item = GetItemAtRow(e.RowIndex);
-				var col = Widget.Columns [e.ColumnIndex].Handler as GridColumnHandler;
-				if (item != null && col != null)
-					col.SetCellValue (item, e.Value);
+				if (Widget.Columns.Count > e.ColumnIndex)
+				{
+					var col = Widget.Columns[e.ColumnIndex].Handler as GridColumnHandler;
+					if (item != null && col != null)
+						col.SetCellValue(item, e.Value);
+				}
 			};
 			Control.RowPostPaint += HandleRowPostPaint;
+
+			// The DataGridView automatically selects the first row, which
+			// is problematic and also not consistent across platforms.
+			// So we always get rid of the first selection.
+			var isFirstSelection = true;
+			Control.SelectionChanged += (s, e) => {
+				if (isFirstSelection)
+					Control.ClearSelection();
+				isFirstSelection = false;
+			};
 		}
 
 		bool handledAutoSize = false;
@@ -133,7 +149,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				break;
 			case Grid.SelectionChangedEvent:
 				Control.SelectionChanged += delegate {
-					Widget.OnSelectionChanged (EventArgs.Empty);
+					Widget.OnSelectionChanged ();
 				};
 				break;
 			case Grid.CellFormattingEvent:

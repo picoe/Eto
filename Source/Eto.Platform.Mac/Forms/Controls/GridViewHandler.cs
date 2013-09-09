@@ -64,10 +64,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
 			}
-			
+					
 			public override void SelectionDidChange (NSNotification notification)
 			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+				Handler.Widget.OnSelectionChanged ();
+
+				// Trigger CellClick
+				var tableView = Handler.Control;
+				var row = tableView.SelectedRow;
+				var col = tableView.SelectedColumn;
+				if (row >= 0) // && col >= 0) TODO: Fix the column
+					Handler.Widget.OnCellClick (
+						new GridViewCellArgs (null, // TODO: col is always -1 currently, so this does not work: Handler.GetColumn (tableView.ClickedColumn).Widget,
+		                     row, col, Handler.collection.Collection [row]));					
 			}
 
 			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
@@ -141,26 +150,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.Initialize ();
 		}
 		
-		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
-			public override int IndexOf (IGridItem item)
+			public override int IndexOf (object item)
 			{
 				return -1; // not needed
 			}
 			
-			public override void AddRange (IEnumerable<IGridItem> items)
+			public override void AddRange (IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData ();
 			}
 
-			public override void AddItem (IGridItem item)
+			public override void AddItem (object item)
 			{
 				Handler.Control.ReloadData ();
 			}
 
-			public override void InsertItem (int index, IGridItem item)
+			public override void InsertItem (int index, object item)
 			{
 				Handler.Control.ReloadData ();
 			}
@@ -176,7 +185,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)

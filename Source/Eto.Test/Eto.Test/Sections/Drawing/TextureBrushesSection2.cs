@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Drawing
 {
 	class TextureBrushesSection2 : Scrollable
 	{
-		Bitmap image = Bitmap.FromResource("Eto.Test.Textures.png");
+		Bitmap image = TestIcons.Textures;
 		public TextureBrushesSection2()
 		{
 			var w = image.Size.Width / 3; // same as height

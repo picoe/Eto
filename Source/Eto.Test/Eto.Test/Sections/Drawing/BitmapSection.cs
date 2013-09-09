@@ -66,14 +66,14 @@ namespace Eto.Test.Sections.Drawing
 
 		Control Cloning ()
 		{
-			var image = Bitmap.FromResource ("Eto.Test.TestImage.png");
+			var image = TestIcons.TestImage;
 			image = image.Clone ();
 			return new ImageView { Image = image };
 		}
 
 		Control CloningRectangle ()
 		{
-			var image = Bitmap.FromResource ("Eto.Test.TestImage.png");
+			var image = TestIcons.TestImage;
 			image = image.Clone (new Rectangle (32, 32, 64, 64));
 			return new ImageView { Image = image };
 		}

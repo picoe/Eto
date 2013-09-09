@@ -36,9 +36,20 @@ namespace Eto.Platform.Windows.Drawing
 		{
 		}
 
-		public GraphicsHandler (sd.Graphics graphics)
+		bool shouldDisposeGraphics = true;
+
+		public GraphicsHandler(sd.Graphics graphics, bool shouldDisposeGraphics = true)
 		{
 			this.Control = graphics;
+			this.shouldDisposeGraphics = shouldDisposeGraphics;
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (!shouldDisposeGraphics)
+				Control = null;
+
+			base.Dispose(disposing);
 		}
 		
 		public bool Antialias

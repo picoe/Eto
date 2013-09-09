@@ -73,7 +73,7 @@ namespace Eto.Test.Sections.Controls
 		
 		class VirtualList : IListStore
 		{
-			Icon image = Icon.FromResource ("Eto.Test.TestIcon.ico");
+			Icon image = TestIcons.TestIcon;
 			
 			public int Count {
 				get { return 1000; }

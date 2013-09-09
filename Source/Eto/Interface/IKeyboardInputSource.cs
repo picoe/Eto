@@ -7,5 +7,6 @@ namespace Eto.Interface
     {
         event EventHandler<KeyEventArgs> KeyUp;
         event EventHandler<KeyEventArgs> KeyDown;
+		event EventHandler<TextInputEventArgs> TextInput;
     }
 }

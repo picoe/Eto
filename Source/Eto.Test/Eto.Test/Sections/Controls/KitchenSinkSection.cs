@@ -8,8 +8,8 @@ namespace Eto.Test.Sections.Controls
 {
 	public class KitchenSinkSection : Panel
 	{
-		Bitmap bitmap1 = Bitmap.FromResource ("Eto.Test.TestImage.png");
-		Icon icon1 = Icon.FromResource ("Eto.Test.TestIcon.ico");
+		Bitmap bitmap1 = TestIcons.TestImage;
+		Icon icon1 = TestIcons.TestIcon;
 		
 		public KitchenSinkSection ()
 		{

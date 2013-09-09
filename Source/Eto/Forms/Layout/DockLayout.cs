@@ -155,25 +155,26 @@ namespace Eto.Forms
 		public Control Content {
 			get { return Handler.Content; }
 			set {
-				if (control != value) {
-					var old = control;
-					control = value;
-					if (control != null) {
-						control.SetParentLayout (this);
-						var load = Loaded && !control.Loaded;
-						if (load) {
-							control.OnPreLoad (EventArgs.Empty);
-							control.OnLoad (EventArgs.Empty);
-						}
-						Handler.Content = control;
-						if (load)
-							control.OnLoadComplete (EventArgs.Empty);
+				var old = control;
+				control = value;
+				if (control != null)
+				{
+					control.SetParentLayout(this);
+					var load = Loaded && !control.Loaded;
+					if (load)
+					{
+						control.OnPreLoad(EventArgs.Empty);
+						control.OnLoad(EventArgs.Empty);
 					}
-					else
-						Handler.Content = control;
-					if (old != null) {
-						old.SetParentLayout(null);
-					}
+					Handler.Content = control;
+					if (load)
+						control.OnLoadComplete(EventArgs.Empty);
+				}
+				else
+					Handler.Content = control;
+				if (value != old && old != null)
+				{
+					old.SetParentLayout(null);
 				}
 			}
 		}

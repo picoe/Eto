@@ -19,6 +19,23 @@ namespace Eto.Platform.Windows
 			Control.Panel2MinSize = 0;
 		}
 		
+		public override void AttachEvent (string handler)
+		{
+			switch (handler)
+			{
+				case Eto.Forms.Splitter.SplitterMovedEvent:
+					// Hook SplitterMoving, not SplitterMoved,
+					// because the latter fires even when the
+					// splitter distance is changed programmatically.
+					Control.SplitterMoving += (s, e) => {
+						Widget.OnSplitterMoved(e);
+					};
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
+		}
 		public int Position {
 			get { return Control.SplitterDistance; }
 			set { position = value; Control.SplitterDistance = value; }
@@ -28,7 +45,7 @@ namespace Eto.Platform.Windows
 		{
 			base.OnLoadComplete (e);
 			if (position != null) {
-			    Control.SplitterDistance = position.Value;
+				Control.SplitterDistance = position.Value;
 			}
 			Control.Panel1Collapsed = panel1 == null || !(panel1.GetWindowsControl()).InternalVisible;
 			Control.Panel2Collapsed = panel2 == null || !(panel2.GetWindowsControl()).InternalVisible;

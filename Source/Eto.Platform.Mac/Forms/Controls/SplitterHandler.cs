@@ -11,6 +11,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Control panel2;
 		int? position;
 		SplitterFixedPanel fixedPanel;
+		bool raiseSplitterMoved;
+
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				case Splitter.SplitterMovedEvent:
+					this.raiseSplitterMoved = true;
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
+		}
 		
 		static void ResizeSubviews (SplitterHandler handler, System.Drawing.SizeF oldSize)
 		{
@@ -108,6 +122,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 						Handler.position = (int)subview.Frame.Height;
 					}
 				}
+				if (Handler.raiseSplitterMoved)
+					Handler.Widget.OnSplitterMoved(new EventArgs());
 			}
 		}
 		

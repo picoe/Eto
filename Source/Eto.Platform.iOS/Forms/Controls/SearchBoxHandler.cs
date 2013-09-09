@@ -5,11 +5,11 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class TextBoxHandler : iosControl<UITextField, TextBox>, ITextBox
+	public class SearchBoxHandler : iosControl<UISearchBar, SearchBox>, ISearchBox
 	{
-		public override UITextField CreateControl ()
+		public override UISearchBar CreateControl ()
 		{
-			return new UITextField ();
+			return new UISearchBar();
 		}
 
 		protected override Eto.Drawing.Size GetNaturalSize ()
@@ -21,23 +21,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			base.Initialize ();
 			MaxLength = Int32.MaxValue;
-			Control.BorderStyle = UITextBorderStyle.RoundedRect;
-			Control.ShouldChangeCharacters = delegate(UITextField textField, MonoTouch.Foundation.NSRange range, string replacementString) {
-				var text = textField.Text;
-				if (text.Length + replacementString.Length - range.Length > MaxLength) {
-
-					if (range.Length > 0)
-						text = text.Remove (range.Location, range.Length);
-					replacementString = replacementString.Substring (0, MaxLength - text.Length + range.Length);
-					text = text.Insert (range.Location, replacementString);
-					//UIApplication.SharedApplication.BeginInvokeOnMainThread(delegate {
-
-					//});
-					textField.Text = text;
-					return false;
-				}
-				return !ReadOnly;
-			};
 		}
 
 		public override void AttachEvent(string handler)
@@ -45,7 +28,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			switch (handler)
 			{
 				case Eto.Forms.Control.TextChangedEvent:
-					Control.EditingChanged += (s, e) => Widget.OnTextChanged(e);
+					Control.TextChanged += (s, e) => Widget.OnTextChanged(e);
 					break;
 				default:
 					base.AttachEvent(handler);

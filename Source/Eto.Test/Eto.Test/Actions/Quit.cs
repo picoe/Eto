@@ -15,7 +15,7 @@ namespace Eto.Test.Actions
 			this.ToolBarText = "Quit";
 			this.TooltipText = "Close the application";
 			this.Accelerator = Key.Q | Application.Instance.CommonModifier;
-			this.Image = Bitmap.FromResource ("Eto.Test.TestImage.png");
+			this.Image = TestIcons.TestImage;
 		}
 		
 		protected override void OnActivated (EventArgs e)

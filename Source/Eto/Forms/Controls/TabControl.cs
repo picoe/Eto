@@ -141,7 +141,6 @@ namespace Eto.Forms
 				tab.UpdateBindings();
 			}
 		}
-
 		public ObjectBinding<TabControl, int> SelectedIndexBinding
 		{
 			get

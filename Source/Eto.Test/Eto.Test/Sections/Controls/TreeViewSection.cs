@@ -12,7 +12,7 @@ namespace Eto.Test.Sections.Controls
 		CheckBox allowExpanding;
 		TreeView treeView;
 		int newItemCount;
-		static Image Image = Icon.FromResource("Eto.Test.TestIcon.ico");
+		static Image Image = TestIcons.TestIcon;
 		Label hoverNodeLabel;
 		bool cancelLabelEdit;
 

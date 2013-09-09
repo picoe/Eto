@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class PixelOffsetSection : Scrollable
 	{
-		static Image image = Bitmap.FromResource ("Eto.Test.TestImage.png");
+		static Image image = TestIcons.TestImage;
 		Size canvasSize = new Size(501, 221);
 
 
