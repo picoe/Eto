@@ -286,6 +286,20 @@ namespace Eto.Forms
 		{
 			return new ListItemCollection ();
 		}
+
+		public ObjectBinding<RadioButtonList, IListItem> SelectedValueBinding
+		{
+			get
+			{
+				return new ObjectBinding<RadioButtonList, IListItem>(
+					this, 
+					c => c.SelectedValue, 
+					(c, v) => c.SelectedValue = v, 
+					(c, h) => c.SelectedValueChanged += h, 
+					(c, h) => c.SelectedValueChanged -= h
+					);
+			}
+		}
 	}
 }
 
