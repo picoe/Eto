@@ -36,7 +36,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new GridTableDelegate { Handler  = this };
+			return new GridTableDelegate(this);
 		}
 
 		public GridViewHandler ()
@@ -134,12 +134,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 	public class GridTableDelegate : GridHandlerTableDelegate
 	{
-		public GridViewHandler GridViewHandler { get; set; }
+		private GridViewHandler GridViewHandler { get { return this.Handler as GridViewHandler; } }
 
-		public override IGrid Handler
+		public GridTableDelegate(IGrid handler)
+			: base(handler)
 		{
-			get { return GridViewHandler; }
-			set { }
 		}
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)

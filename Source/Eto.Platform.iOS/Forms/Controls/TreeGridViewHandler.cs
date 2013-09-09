@@ -29,7 +29,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new TreeGridTableDelegate { Handler  = this };
+			return new TreeGridTableDelegate(this);
 		}
 
 		public TreeGridViewHandler ()
@@ -124,12 +124,10 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 	public class TreeGridTableDelegate : GridHandlerTableDelegate
 	{
-		public TreeGridViewHandler TreeHandler { get; set; }
+		private TreeGridViewHandler TreeHandler { get { return Handler as TreeGridViewHandler; } }
 
-		public override IGrid Handler
+		public TreeGridTableDelegate(IGrid handler) : base(handler)
 		{
-			get { return TreeHandler; }
-			set { }
 		}
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)

@@ -26,7 +26,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected virtual UITableViewDelegate CreateDelegate()
 		{
-			return new GridHandlerTableDelegate { Handler = this };
+			return new GridHandlerTableDelegate(this);
 		}
 
 		protected override void Initialize ()
@@ -78,16 +78,21 @@ namespace Eto.Platform.iOS.Forms.Controls
 				var i = Control.IndexPathsForSelectedRows;
 				if (i != null)
 					foreach (var s in i)
-						yield return s.Section;
+						yield return s.Row;
 			}
 		}
 	}
 
 	public class GridHandlerTableDelegate : UITableViewDelegate
 	{
-		public virtual IGrid Handler { get; set; }
+		public IGrid Handler { get; private set; }
 
 		public Grid Widget { get { return Handler.Widget as Grid; } }
+
+		public GridHandlerTableDelegate(IGrid handler)
+		{
+			this.Handler = handler;
+		}
 
 		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
 		{
