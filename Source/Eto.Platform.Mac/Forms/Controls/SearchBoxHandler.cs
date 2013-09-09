@@ -1,9 +1,7 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
-using Eto.Platform.Mac.Forms.Controls;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -49,9 +47,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxLength = -1;
 		}
 
-		protected override Eto.Drawing.Size GetNaturalSize ()
+		protected override Size GetNaturalSize(Size availableSize)
 		{
-			var size = base.GetNaturalSize ();
+			var size = base.GetNaturalSize (availableSize);
 			size.Width = Math.Max (100, size.Height);
 			return size;
 		}
