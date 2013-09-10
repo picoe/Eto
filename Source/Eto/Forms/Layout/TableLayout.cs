@@ -32,7 +32,7 @@ namespace Eto.Forms
 		Padding Padding { get; set; }
 	}
 
-	[ContentProperty("Children")]
+	[ContentProperty("Contents")]
 	public class TableLayout : Layout
 	{
 		new ITableLayout Handler { get { return (ITableLayout)base.Handler; } }
@@ -52,7 +52,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public List<Control> Children
+		public List<Control> Contents
 		{
 			get
 			{

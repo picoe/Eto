@@ -3,104 +3,114 @@ using Eto.Drawing;
 using System.Collections.Generic;
 using System.Collections;
 using System.Runtime.Serialization;
-
+using System.Linq;
 
 #if XAML
 using System.Windows.Markup;
 using System.Xaml;
-#endif
 
+#endif
 namespace Eto.Forms
 {
 	public interface IPixelLayout : IPositionalLayout
 	{
 	}
 
-	[ContentProperty ("Children")]
+	[ContentProperty ("Contents")]
 	public class PixelLayout : Layout
 	{
 		new IPixelLayout Handler { get { return (IPixelLayout)base.Handler; } }
 
 		List<Control> children;
-		List<Control> controls = new List<Control> ();
-		
-		public override IEnumerable<Control> Controls {
-			get {
+		List<Control> controls = new List<Control>();
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
 				return controls;
 			}
 		}
 
-		public List<Control> Children {
-			get {
+		public List<Control> Contents
+		{
+			get
+			{
 				if (children == null)
-					children = new List<Control> ();
+					children = new List<Control>();
 				return children;
 			}
 		}
 
-		public PixelLayout ()
+		public PixelLayout()
 			: this(null)
 		{
 		}
 
-		public PixelLayout (DockContainer container)
+		public PixelLayout(DockContainer container)
 			: base (container != null ? container.Generator : Generator.Current, container, typeof (IPixelLayout), true)
 		{
 		}
-		
-		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier (typeof (PixelLayout), "Location");
 
-		public static Point GetLocation (Control control)
+		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
+
+		public static Point GetLocation(Control control)
 		{
-			return control.Properties.Get<Point> (LocationProperty, Point.Empty);
+			return control.Properties.Get<Point>(LocationProperty, Point.Empty);
 		}
 
-		public static void SetLocation (Control control, Point value)
+		public static void SetLocation(Control control, Point value)
 		{
 			control.Properties[LocationProperty] = value;
 			var layout = control.ParentLayout as PixelLayout;
 			if (layout != null)
-				layout.Move (control, value);
+				layout.Move(control, value);
 		}
 
-		public void Add (Control control, int x, int y)
+		public void Add(Control control, int x, int y)
 		{
-			control.Properties[LocationProperty] = new Point (x, y);
-			controls.Add (control);
+			control.Properties[LocationProperty] = new Point(x, y);
+			controls.Add(control);
 			control.SetParent(this);
 			var load = Loaded && !control.Loaded;
-			if (load) {
-				control.OnPreLoad (EventArgs.Empty);
-				control.OnLoad (EventArgs.Empty);
-			}
-			Handler.Add (control, x, y);
 			if (load)
-				control.OnLoadComplete (EventArgs.Empty);
+			{
+				control.OnPreLoad(EventArgs.Empty);
+				control.OnLoad(EventArgs.Empty);
+			}
+			Handler.Add(control, x, y);
+			if (load)
+				control.OnLoadComplete(EventArgs.Empty);
 		}
 
-		public void Add (Control child, Point p)
+		public void Add(Control child, Point p)
 		{
-			Add (child, p.X, p.Y);
+			Add(child, p.X, p.Y);
 		}
-		
-		public void Move (Control child, int x, int y)
+
+		public void Move(Control child, int x, int y)
 		{
 			child.Properties[LocationProperty] = new Point(x, y);
-			Handler.Move (child, x, y);
+			Handler.Move(child, x, y);
 		}
-		
-		public void Move (Control child, Point p)
+
+		public void Move(Control child, Point p)
 		{
-			Move (child, p.X, p.Y);
+			Move(child, p.X, p.Y);
 		}
-		
-		public void Remove (IEnumerable<Control> controls)
+
+		public void Remove(IEnumerable<Control> controls)
 		{
 			foreach (var control in controls)
-				Remove (control);
+				Remove(control);
 		}
-		
-		public void Remove (Control child)
+
+		public void RemoveAll()
+		{
+			Remove(this.Controls.ToArray());
+		}
+
+		public void Remove(Control child)
 		{
 			if (controls.Remove(child))
 			{
@@ -110,31 +120,36 @@ namespace Eto.Forms
 		}
 
 		[OnDeserialized]
-		internal void OnDeserialized (StreamingContext context)
+		internal void OnDeserialized(StreamingContext context)
 		{
-			OnDeserialized ();
+			OnDeserialized();
 		}
 
-		public override void EndInit ()
+		public override void EndInit()
 		{
-			base.EndInit ();
-			OnDeserialized (ParentLayout != null); // mono calls EndInit BEFORE setting to parent
+			base.EndInit();
+			OnDeserialized(ParentLayout != null); // mono calls EndInit BEFORE setting to parent
 		}
 
-		void OnDeserialized (bool direct = false)
+		void OnDeserialized(bool direct = false)
 		{
-			if (Loaded || direct) {
-				if (children != null) {
-					foreach (var control in children) {
-						Add (control, GetLocation (control));
+			if (Loaded || direct)
+			{
+				if (children != null)
+				{
+					foreach (var control in children)
+					{
+						Add(control, GetLocation(control));
 					}
 				}
-			} else {
+			}
+			else
+			{
 				this.PreLoad += HandleDeserialized;
 			}
 		}
-		
-		void HandleDeserialized (object sender, EventArgs e)
+
+		void HandleDeserialized(object sender, EventArgs e)
 		{
 			OnDeserialized(true);
 			this.PreLoad -= HandleDeserialized;

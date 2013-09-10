@@ -5,7 +5,6 @@ using System.Text;
 using Eto.Drawing;
 using System.ComponentModel;
 
-
 #if XAML
 using System.Windows.Markup;
 #endif

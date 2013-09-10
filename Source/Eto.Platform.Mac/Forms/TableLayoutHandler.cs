@@ -263,22 +263,18 @@ namespace Eto.Platform.Mac.Forms
 			if (Widget.Loaded)
 				LayoutParent ();
 		}
-		
+
+		bool sizeChangedAdded;
 		public override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
-			#if OSX
-			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs oa) { 
-				var handler = oa.Widget.Handler as TableLayoutHandler;
-				handler.LayoutChildren ();
-			});
-			#elif IOS
-			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
-				Layout ();
-			};
-			Layout ();
-			#endif
+			if (!sizeChangedAdded)
+			{
+				Widget.SizeChanged += (sender, ev) => {
+					this.LayoutChildren();
+				};
+				sizeChangedAdded = true;
+			}
 		}
 		
 		public void CreateControl (int cols, int rows)

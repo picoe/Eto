@@ -132,7 +132,7 @@ namespace Eto.Platform.Mac.Forms
 			get { return base.MinimumSize; }
 			set
 			{
-				MinimumSize = value;
+				base.MinimumSize = value;
 				if (value != Size.Empty)
 				{
 					Control.WillResize = (sender, frameSize) => {

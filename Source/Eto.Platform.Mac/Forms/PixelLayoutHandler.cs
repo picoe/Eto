@@ -11,7 +11,6 @@ namespace Eto.Platform.Mac.Forms
 {
 	public class PixelLayoutHandler : MacContainer<NSView, PixelLayout>, IPixelLayout
 	{
-		bool loaded;
 		Dictionary<Control, Point> points = new Dictionary<Control, Point> ();
 
 		public override NSView ContainerControl { get { return Control; } }
@@ -40,17 +39,19 @@ namespace Eto.Platform.Mac.Forms
 			}
 			return size;
 		}
+
+		bool sizeChangedAdded;
 		
 		public override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
-			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs oa) { 
-				var handler = oa.Widget.Handler as PixelLayoutHandler;
-				handler.LayoutChildren ();
+			if (!sizeChangedAdded)
+			{
+				Widget.SizeChanged += (sender, ev) => {
+					this.LayoutChildren();
+				};
+				sizeChangedAdded = true;
 			}
-			);
-			loaded = true;
 		}
 		
 		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
@@ -93,12 +94,12 @@ namespace Eto.Platform.Mac.Forms
 			var location = new Point (x, y);
 			points [child] = location;
 			var childView = child.GetContainerView ();
-			if (loaded) {
+			if (Widget.Loaded) {
 				var frameHeight = Control.Frame.Height;
 				SetPosition (child, location, frameHeight, Control.IsFlipped);
 			}
 			Control.AddSubview (childView);
-			if (loaded)
+			if (Widget.Loaded)
 				LayoutParent ();
 		}
 
@@ -107,7 +108,7 @@ namespace Eto.Platform.Mac.Forms
 			var location = new Point (x, y);
 			if (points [child] != location) {
 				points [child] = location;
-				if (loaded) {
+				if (Widget.Loaded) {
 					var frameHeight = Control.Frame.Height;
 					SetPosition (child, location, frameHeight, Control.IsFlipped);
 					LayoutParent ();
@@ -120,7 +121,7 @@ namespace Eto.Platform.Mac.Forms
 			var childView = child.GetContainerView ();
 			points.Remove (child);
 			childView.RemoveFromSuperview ();
-			if (loaded)
+			if (Widget.Loaded)
 				LayoutParent ();
 		}
 	}

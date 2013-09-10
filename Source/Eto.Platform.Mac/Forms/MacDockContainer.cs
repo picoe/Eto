@@ -117,16 +117,19 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
+		bool sizeChangedAdded;
+
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
 
-			ContentControl.PostsFrameChangedNotifications = true;
-			this.AddObserver(NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs oa)
-			{ 
-				var handler = (IMacContainer)oa.Widget.Handler;
-				handler.LayoutChildren();
-			}, ContentControl);
+			if (!sizeChangedAdded)
+			{
+				Widget.SizeChanged += (sender, ev) => {
+					this.LayoutChildren();
+				};
+				sizeChangedAdded = true;
+			}
 		}
 	}
 }

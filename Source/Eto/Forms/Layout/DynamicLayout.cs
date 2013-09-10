@@ -21,7 +21,7 @@ namespace Eto.Forms
 			get { return topTable.Rows; }
 		}
 
-		[Obsolete("Use the DynamicLayout directly as a control")]
+		[Obsolete("Use DynamicLayout directly as a control")]
 		public Container Container
 		{
 			get { return this.Parent; }
@@ -91,28 +91,13 @@ namespace Eto.Forms
 			base.OnLoad(e);
 		}
 
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-		}
-
 		public DynamicLayout()
-			: this(null, null, null)
+			: this((Padding?)null, (Size?)null, (Generator)null)
 		{
 		}
 
-		public DynamicLayout(Padding? padding, Size? spacing = null)
-			: this(null, padding, spacing)
-		{
-		}
-
-		public DynamicLayout(DockContainer container, Size? spacing)
-			: this (container, null, spacing)
-		{
-		}
-
-		public DynamicLayout(DockContainer container, Padding? padding = null, Size? spacing = null)
-			: base (container != null ? container.Generator : Generator.Current)
+		public DynamicLayout(Padding? padding, Size? spacing = null, Generator generator = null)
+			: base(generator)
 		{
 			topTable = new DynamicTable
 			{ 
@@ -120,7 +105,18 @@ namespace Eto.Forms
 				Spacing = spacing
 			};
 			currentItem = topTable;
-			Initialize();
+		}
+
+		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
+		public DynamicLayout(DockContainer container, Size? spacing)
+			: this (container, null, spacing)
+		{
+		}
+
+		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
+		public DynamicLayout(DockContainer container, Padding? padding = null, Size? spacing = null)
+			: this (padding, spacing, container != null ? container.Generator : null)
+		{
 			if (container != null)
 				container.Content = this;
 		}
