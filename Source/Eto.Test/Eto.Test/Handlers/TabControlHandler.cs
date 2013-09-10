@@ -7,23 +7,25 @@ using Eto.Drawing;
 
 namespace Eto.Test.Handlers
 {
-    public class TabControlHandler : ThemedContainerHandler<Panel, TabControl>, ITabControl
-    {
-        /// <summary>
-        /// Contains the tabs
-        /// </summary>
+	public class TabControlHandler : ThemedContainerHandler<Panel, TabControl>, ITabControl
+	{
+		/// <summary>
+		/// Contains the tabs
+		/// </summary>
 		private Tabs Tabs { get; set; }
+
 		/// <summary>
 		/// The content for the currently selected tab
 		/// </summary>
-        public Panel ContentPanel {get; private set;}
+		public Panel ContentPanel { get; private set; }
+
 		public Action NewTabClicked { get; set; }
 
 		public Action<Panel> SetContentPanelDelegate { get; set; }
 
-        public TabControlHandler()
-        {
-            this.Control = new Panel { };
+		public TabControlHandler()
+		{
+			this.Control = new Panel { };
 			this.Tabs = new Tabs
 			{
 				SelectionChanged = e => {
@@ -31,8 +33,8 @@ namespace Eto.Test.Handlers
 					Panel tabContentPanel = null;
 					TabPageHandler h = null;
 					if (tab != null &&
-						(h = tab.Tag as TabPageHandler) != null &&
-						this.ContentPanel != null)
+					    (h = tab.Tag as TabPageHandler) != null &&
+					    this.ContentPanel != null)
 					{
 						tabContentPanel = h.Control;
 						if (SetContentPanelDelegate != null)
@@ -42,53 +44,50 @@ namespace Eto.Test.Handlers
 					}
 				},
 			};
- 			ClearTabs();
+			ClearTabs();
 			this.ContentPanel = new Panel { BackgroundColor = Colors.White };
 			Control.LoadComplete += (s, e) =>
-				{
-					var tableLayout = new TableLayout(Control, 2, 1) { Padding = Padding.Empty, Spacing = Size.Empty };
-					tableLayout.SetRowScale(0, scale: false);
-					tableLayout.Add(Tabs, 0, 0);
-					tableLayout.Add(ContentPanel, 1, 0);
-				};
-        }
+			{
+				var tableLayout = new TableLayout(Control, 2, 1) { Padding = Padding.Empty, Spacing = Size.Empty };
+				tableLayout.SetRowScale(0, scale: false);
+				tableLayout.Add(Tabs, 0, 0);
+				tableLayout.Add(ContentPanel, 1, 0);
+			};
+		}
 
-        public int SelectedIndex
-        {
-            get
-            {
-                return Tabs != null ? Tabs.SelectedIndex : -1;
-            }
-            set
-            {
-                if (Tabs != null)
-                    Tabs.SelectedIndex = value;
-            }
-        }
+		public int SelectedIndex
+		{
+			get
+			{
+				return Tabs != null ? Tabs.SelectedIndex : -1;
+			}
+			set
+			{
+				if (Tabs != null)
+					Tabs.SelectedIndex = value;
+			}
+		}
 
-        public void InsertTab(int index, TabPage page)
-        {
-            var p = page != null
-                ? page.Handler as TabPageHandler
-                : null;
+		public void InsertTab(int index, TabPage page)
+		{
+			var p = page != null ? page.Handler as TabPageHandler : null;
 
-            if (this.Tabs != null &&
-                p != null)
-                this.Tabs.Insert(p.Tab, index); 
-        }
+			if (this.Tabs != null && p != null)
+				this.Tabs.Insert(p.Tab, index); 
+		}
 
-        public void ClearTabs()
-        {
+		public void ClearTabs()
+		{
 			if (this.Tabs != null)
 				this.Tabs.RemoveAll();
-        }
+		}
 
-        public void RemoveTab(int index, TabPage page)
-        {
-            if (this.Tabs != null)
-                this.Tabs.Remove(index);
-        }
-    }
+		public void RemoveTab(int index, TabPage page)
+		{
+			if (this.Tabs != null)
+				this.Tabs.Remove(index);
+		}
+	}
 
 	class Tab : Button
 	{
@@ -132,12 +131,14 @@ namespace Eto.Test.Handlers
 
 		internal void Remove(int index)
 		{
+			Items[index].Click -= HandleClick;
 			Items.RemoveAt(index);
 			this.LayoutItems();
 		}
 
 		internal void RemoveAll()
 		{
+			Items.ForEach(r => r.Click -= HandleClick);
 			Items.Clear();
 			LayoutItems();
 		}
@@ -145,7 +146,7 @@ namespace Eto.Test.Handlers
 		internal void Insert(Tab tab, int index)
 		{
 			Items.Insert(index, tab);
-			tab.MouseUp += (s, e) => SelectedTab = tab;
+			tab.Click += HandleClick;;
 			LayoutItems();
 			if (SelectedTab == null)
 				SelectedTab = tab;
@@ -154,10 +155,17 @@ namespace Eto.Test.Handlers
 		private void LayoutItems()
 		{
 			var layout = new DynamicLayout(padding: Padding.Empty, spacing: Size.Empty);
-			this.Layout = layout;
 			layout.BeginVertical();
 			foreach (var tab in Items)
 				layout.Add(tab, xscale: true, yscale:false);
+			layout.Add(null);
+			layout.EndVertical();
+			this.Content = layout;
+		}
+
+		void HandleClick (object sender, EventArgs e)
+		{
+			SelectedTab = (Tab)sender;
 		}
 
 		public int SelectedIndex

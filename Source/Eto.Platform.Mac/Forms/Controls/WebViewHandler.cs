@@ -14,7 +14,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		static Selector selIgnore = new Selector ("ignore");
 		static Selector selUse = new Selector ("use");
-		
+
+		public override NSView ContainerControl { get { return Control; } }
+
 		NewWindowHandler newWindowHandler;
 		public WebViewHandler ()
 		{

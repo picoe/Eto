@@ -67,22 +67,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public override Size? MinimumSize
+		public override Size MinimumSize
 		{
 			get
 			{
-				if (Control.MinHeight == 0 && Control.MinWidth == 0)
-					return null;
 				return new Eto.Drawing.Size ((int)Control.MinHeight, (int)Control.MinWidth);
 			}
 			set
 			{
-				if (value != null) {
-					Control.MinHeight = value.Value.Height;
-					Control.MinWidth = value.Value.Width;
-				}
-				else
-					Control.MinWidth = Control.MinHeight = 0;
+				Control.MinHeight = value.Value.Height;
+				Control.MinWidth = value.Value.Width;
 			}
 		}
 

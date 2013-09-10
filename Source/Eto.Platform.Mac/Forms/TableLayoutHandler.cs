@@ -19,7 +19,7 @@ namespace Eto.Platform.Mac.Forms
 #if IOS
 		iosLayout<NSView, TableLayout>, 
 #elif OSX
-		MacLayout<NSView, TableLayout>, 
+		MacContainer<NSView, TableLayout>, 
 #endif
 		ITableLayout
 	{
@@ -28,14 +28,15 @@ namespace Eto.Platform.Mac.Forms
 		bool[] yscaling;
 		Size spacing;
 		Padding padding;
-		bool loaded;
-		
+
+		public override NSView ContainerControl { get { return Control; } }
+
 		public Eto.Drawing.Size Spacing {
 			get { return spacing; }
 			set {
 				spacing = value;
-				if (loaded)
-					UpdateParentLayout ();
+				if (Widget.Loaded)
+					LayoutParent ();
 			}
 		}
 		
@@ -43,23 +44,14 @@ namespace Eto.Platform.Mac.Forms
 			get { return padding; }
 			set {
 				padding = value;
-				if (loaded)
-					UpdateParentLayout ();
-			}
-		}
-		
-		public override NSView Control {
-			get {
-				return Widget.Container != null ? (NSView)Widget.Container.ContainerObject : null;
-			}
-			protected set {
-				base.Control = value;
+				if (Widget.Loaded)
+					LayoutParent ();
 			}
 		}
 		
 		public TableLayoutHandler ()
 		{
-			DisposeControl = false;
+			Control = new NSView();
 		}
 
 		protected override void Initialize ()
@@ -179,7 +171,7 @@ namespace Eto.Platform.Mac.Forms
 				}
 				widths [widths.Length - 1] = totalx;
 			}
-			
+
 			var chunkx = (numx > 0) ? (float)Math.Truncate (Math.Max (totalx, 0) / numx) : totalx;
 			var chunky = (numy > 0) ? (float)Math.Truncate (Math.Max (totaly, 0) / numy) : totaly;
 			
@@ -232,12 +224,12 @@ namespace Eto.Platform.Mac.Forms
 			views [y, x] = child;
 			if (child != null) {
 				var view = child.GetContainerView ();
-				if (loaded)
-					UpdateParentLayout ();
+				if (Widget.Loaded)
+					LayoutParent ();
 				Control.AddSubview (view);
 			}
-			else if (loaded)
-				UpdateParentLayout ();
+			else if (Widget.Loaded)
+				LayoutParent ();
 		}
 		
 		public void Move (Control child, int x, int y)
@@ -255,8 +247,8 @@ namespace Eto.Platform.Mac.Forms
 				}
 
 			views [y, x] = child;
-			if (loaded)
-				UpdateParentLayout ();
+			if (Widget.Loaded)
+				LayoutParent ();
 		}
 		
 		public void Remove (Control child)
@@ -268,27 +260,25 @@ namespace Eto.Platform.Mac.Forms
 					if (views [y, x] == child)
 						views [y, x] = null;
 				}
-			if (loaded)
-				UpdateParentLayout ();
+			if (Widget.Loaded)
+				LayoutParent ();
 		}
 		
-		public override void OnLoadComplete ()
+		public override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoadComplete ();
-#if OSX
+			base.OnLoadComplete (e);
+			#if OSX
 			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
-				var handler = e.Widget.Handler as TableLayoutHandler;
+			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs oa) { 
+				var handler = oa.Widget.Handler as TableLayoutHandler;
 				handler.LayoutChildren ();
 			});
-#elif IOS
+			#elif IOS
 			Widget.Container.SizeChanged += delegate(object sender, EventArgs e) {
 				Layout ();
 			};
 			Layout ();
-#endif
-			
-			loaded = true;
+			#endif
 		}
 		
 		public void CreateControl (int cols, int rows)
@@ -301,8 +291,8 @@ namespace Eto.Platform.Mac.Forms
 		public void SetColumnScale (int column, bool scale)
 		{
 			xscaling [column] = scale;
-			if (loaded)
-				UpdateParentLayout();
+			if (Widget.Loaded)
+				LayoutParent();
 		}
 
 		public bool GetColumnScale (int column)
@@ -313,8 +303,8 @@ namespace Eto.Platform.Mac.Forms
 		public void SetRowScale (int row, bool scale)
 		{
 			yscaling [row] = scale;
-			if (loaded)
-				UpdateParentLayout();
+			if (Widget.Loaded)
+				LayoutParent();
 		}
 
 		public bool GetRowScale (int row)

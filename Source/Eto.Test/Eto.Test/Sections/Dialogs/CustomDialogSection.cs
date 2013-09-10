@@ -75,8 +75,10 @@ namespace Eto.Test.Sections.Dialogs
 			control.Click += delegate {
 				var dialog = new Dialog ();
 #if DESKTOP
+				dialog.Minimizable = true;
+				dialog.Resizable = false;
+				dialog.Maximizable = true;
 				dialog.WindowState = WindowState.Maximized;
-				dialog.Resizable = true;
 #endif
 				dialog.Title = "Kitchen Sink Dialog";
 				dialog.AddDockedControl(new Controls.KitchenSinkSection());

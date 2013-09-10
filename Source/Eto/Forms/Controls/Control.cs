@@ -36,9 +36,7 @@ namespace Eto.Forms
 
 		void OnUnLoad (EventArgs e);
 
-		void SetParent (Control parent);
-
-		void SetParentLayout (Layout layout);
+		void SetParent (Container parent);
 
 		void MapPlatformAction (string systemAction, BaseAction action);
 
@@ -443,10 +441,11 @@ namespace Eto.Forms
 			get { return base.DataContext ?? (Parent != null ? Parent.DataContext : null); }
 			set { base.DataContext = value; }
 		}
+
+		[Obsolete("Use Parent instead")]
+		public Container ParentLayout { get { return Parent; } }
 		
-		public Layout ParentLayout { get; private set; }
-		
-		public Control Parent { get; private set; }
+		public Container Parent { get; private set; }
 
 		public T FindParent<T> (string id)
 			where T: class
@@ -473,7 +472,7 @@ namespace Eto.Forms
 			return default (T);
 		}
 		
-		public void SetParent (Control parent)
+		internal void SetParent (Container parent)
 		{
 			var loaded = this.Loaded;
 			Handler.SetParent (parent);
@@ -482,13 +481,6 @@ namespace Eto.Forms
 			if (parent == null && loaded) {
 				this.OnUnLoad (EventArgs.Empty);
 			}
-		}
-
-		public void SetParentLayout (Layout layout)
-		{
-			Handler.SetParentLayout (layout);
-			this.ParentLayout = layout;
-			this.SetParent (layout != null ? layout.Container : null);
 		}
 
 		public Color BackgroundColor

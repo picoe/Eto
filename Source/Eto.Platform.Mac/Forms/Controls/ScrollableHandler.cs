@@ -9,12 +9,17 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class ScrollableHandler : MacContainer<NSScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : MacDockContainer<NSScrollView, Scrollable>, IScrollable
 	{
 		NSScrollView control;
 		NSView view;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
+
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
 
 		class EtoScrollView : NSScrollView, IMacControl
 		{
@@ -97,11 +102,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 		}
-		
-		public override object ContainerObject {
+
+		public override NSView ContentControl
+		{
 			get { return view; }
 		}
-		
+
 		public override void LayoutChildren ()
 		{
 			base.LayoutChildren ();
@@ -115,14 +121,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override Size GetPreferredSize (Size availableSize)
 		{
-			return Size.Min (base.GetPreferredSize (availableSize), availableSize);
+			return Size.Min (base.GetBasePreferredSize(availableSize), availableSize);
 		}
 
 		protected override Size GetNaturalSize (Size availableSize)
 		{
 			return base.GetNaturalSize (availableSize) + GetBorderSize ();
 		}
-		
+
 		void InternalSetFrameSize (SD.SizeF size)
 		{
 			if (size != view.Frame.Size) {
@@ -189,9 +195,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override void SetContentSize (SD.SizeF contentSize)
 		{
-			if (MinimumSize != null) {
-				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
-				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
+			if (MinimumSize != Size.Empty) {
+				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Width);
+				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Height);
 			}
 			if (ExpandContentWidth)
 				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);

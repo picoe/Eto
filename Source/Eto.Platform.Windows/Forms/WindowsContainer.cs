@@ -11,7 +11,7 @@ namespace Eto.Platform.Windows
 		where T: System.Windows.Forms.Control
 		where W: Container
 	{
-		Size? minimumSize;
+		Size minimumSize;
 
 		public WindowsContainer()
 		{
@@ -60,11 +60,11 @@ namespace Eto.Platform.Windows
 			base.SetScale (xscale, yscale);
 		}
 		
-		public Size? MinimumSize {
+		public Size MinimumSize {
 			get { return minimumSize; }
 			set {
 				minimumSize = value;
-				this.Control.MinimumSize = (value ?? Size.Empty).ToSD ();
+				this.Control.MinimumSize = value.ToSD ();
 			}
 		}
 

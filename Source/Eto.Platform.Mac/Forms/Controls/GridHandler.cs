@@ -95,7 +95,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	}
 
 	
-	public abstract class GridHandler<T, W> : MacView<T, W>, IGrid, IDataViewHandler, IGridHandler
+	public abstract class GridHandler<T, W> : MacControl<T, W>, IGrid, IDataViewHandler, IGridHandler
 		where T: NSTableView
 		where W: Grid
 	{
@@ -261,11 +261,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override bool Enabled {
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-		
 		public bool AllowColumnReordering {
 			get { return Control.AllowsColumnReordering; }
 			set { Control.AllowsColumnReordering = value; }

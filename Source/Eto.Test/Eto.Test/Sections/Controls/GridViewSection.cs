@@ -35,7 +35,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label { Text = "No Header,\nNon-Editable" }, NoHeader ());
 #if DESKTOP
 			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&&Filter" });
+			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
 			layout.BeginVertical();
 			layout.Add(filterText = new TextBox { PlaceholderText = "Filter" });
 			var withContextMenuAndFilter = WithContextMenuAndFilter();

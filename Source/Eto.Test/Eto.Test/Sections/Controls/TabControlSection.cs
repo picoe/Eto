@@ -8,122 +8,130 @@ namespace Eto.Test.Sections.Controls
 	{
 		TabControl tabControl;
 
-		public TabControlSection ()
+		public TabControlSection()
 		{
-			Create ();			
+			Create();			
 		}
 
-		protected virtual void Create ()
+		protected virtual void Create()
 		{
-			var layout = new DynamicLayout (this);
-			layout.AddSeparateRow (null, AddTab (), RemoveTab (), null);
-			layout.AddSeparateRow (tabControl = DefaultTabs ());
+			var layout = new DynamicLayout(this);
+			layout.AddSeparateRow(null, AddTab(), RemoveTab(), null);
+			layout.AddSeparateRow(tabControl = DefaultTabs());
 		}
 
-		Control AddTab ()
+		Control AddTab()
 		{
 			var control = new Button { Text = "Add Tab" };
 			control.Click += (s, e) => {
-				var tab = new TabPage { Text = "Tab " + (tabControl.TabPages.Count + 1) };
-				tabControl.TabPages.Add (tab);
+				var tab = new TabPage(tabControl.Generator) { Text = "Tab " + (tabControl.TabPages.Count + 1) };
+				tabControl.TabPages.Add(tab);
 			};
 			return control;
 		}
 
-		Control RemoveTab ()
+		Control RemoveTab()
 		{
 			var control = new Button { Text = "Remove Tab" };
 			control.Click += (s, e) => {
-				if (tabControl.SelectedIndex >= 0 && tabControl.TabPages.Count > 0) {
-					tabControl.TabPages.RemoveAt (tabControl.SelectedIndex);
+				if (tabControl.SelectedIndex >= 0 && tabControl.TabPages.Count > 0)
+				{
+					tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
 				}
 			};
 			return control;
 		}
 
-		TabControl DefaultTabs ()
+		TabControl DefaultTabs()
 		{
-			var control = new TabControl ();
-			LogEvents (control);
+			var control = new TabControl();
+			LogEvents(control);
 			
 			var page = new TabPage { Text = "Tab 1" };
-			page.AddDockedControl (TabOne ());
-			control.TabPages.Add (page);
+			page.AddDockedControl(TabOne());
+			control.TabPages.Add(page);
 			
-			LogEvents (page);
+			LogEvents(page);
 			
-			page = new TabPage { 
+			page = new TabPage
+			{ 
 				Text = "Tab 2",
 				Image = TestIcons.TestIcon,
 			};
-			LogEvents (page);
-			page.AddDockedControl (TabTwo ());
-			control.TabPages.Add (page);
+			LogEvents(page);
+			page.AddDockedControl(TabTwo());
+			control.TabPages.Add(page);
 
-			page = new TabPage { 
+			page = new TabPage
+			{ 
 				Text = "Tab 3"
 			};
-			LogEvents (page);
-			control.TabPages.Add (page);
+			LogEvents(page);
+			control.TabPages.Add(page);
 			
 			return control;
 			
 		}
-		
-		Control TabOne ()
+
+		Control TabOne()
 		{
-			var control = new Panel ();
+			var control = new Panel();
 			
-			control.AddDockedControl (new LabelSection());
+			control.AddDockedControl(new LabelSection());
 			
 			return control;
 		}
 
-		Control TabTwo ()
+		Control TabTwo()
 		{
-			var control = new Panel ();
+			var control = new Panel();
 			
-			control.AddDockedControl (new TextAreaSection { Border = BorderType.None });
+			control.AddDockedControl(new TextAreaSection { Border = BorderType.None });
 			
 			return control;
 		}
-		
-		void LogEvents (TabControl control)
+
+		void LogEvents(TabControl control)
 		{
-			control.SelectedIndexChanged += delegate {
-				Log.Write (control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);	
+			control.SelectedIndexChanged += delegate
+			{
+				Log.Write(control, "SelectedIndexChanged, Index: {0}", control.SelectedIndex);	
 			};
 		}
-		
-		void LogEvents (TabPage control)
+
+		void LogEvents(TabPage control)
 		{
-			control.Click += delegate {
-				Log.Write (control, "Click, Item: {0}", control.Text);
+			control.Click += delegate
+			{
+				Log.Write(control, "Click, Item: {0}", control.Text);
 			};
 		}
 	}
 
 	public class ThemedTabControlSection : TabControlSection
 	{
-		protected override void Create ()
+		protected override void Create()
 		{
 			// Clone the current generator and add handlers
 			// for TabControl and TabPage. Create a TabControlSection
 			// using the new generator and then restore the previous generator.
 			var currentGenerator = Generator.Current;
-			try {
-				var generator = Activator.CreateInstance (currentGenerator.GetType ()) as Generator;
-				Generator.Initialize (generator);
+			try
+			{
+				var generator = Activator.CreateInstance(currentGenerator.GetType()) as Generator;
+				Generator.Initialize(generator);
 
-				generator.Add<ITabControl> (() => new Eto.Test.Handlers.TabControlHandler ());
-				generator.Add<ITabPage> (() => new Eto.Test.Handlers.TabPageHandler ());
+				generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
+				generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());
 
-				base.Create ();
-			} finally {
-			
-				Generator.Initialize (currentGenerator); // restore
+				base.Create();
 			}
-		}		
+			finally
+			{
+			
+				Generator.Initialize(currentGenerator); // restore
+			}
+		}
 	}
 }
 

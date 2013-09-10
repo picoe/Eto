@@ -30,7 +30,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public abstract void SetLayout (Layout layout);
 
-		public abstract Size? MinimumSize { get; set; }
+		public abstract Size MinimumSize { get; set; }
 
 		public override void Invalidate ()
 		{

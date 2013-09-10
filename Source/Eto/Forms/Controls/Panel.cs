@@ -3,11 +3,11 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IPanel : IContainer
+	public interface IPanel : IDockContainer
 	{
 	}
 	
-	public class Panel : Container
+	public class Panel : DockContainer
 	{
 		
 		public Panel () : this (Generator.Current)

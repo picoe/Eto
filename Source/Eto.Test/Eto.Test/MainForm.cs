@@ -27,11 +27,11 @@ namespace Eto.Test
 			}
 		}
 
-		public MainForm(Func<IEnumerable<Section>> topNodes)
+		public MainForm(Func<IEnumerable<Section>> topNodes = null)
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-			this.SectionList = new SectionList(topNodes);
+			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes);
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;

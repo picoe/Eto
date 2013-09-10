@@ -10,11 +10,16 @@ using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TabPageHandler : MacContainer<NSView, TabPage>, ITabPage, IMacContainer
+	public class TabPageHandler : MacDockContainer<NSView, TabPage>, ITabPage, IMacContainer
 	{
 		const int ICON_PADDING = 2;
 		Image image;
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
 
 		public NSTabViewItem TabViewItem { get; private set; }
 		
@@ -77,10 +82,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override object ContainerObject {
-			get {
-				return TabViewItem.View;
-			}
+		public override NSView ContentControl
+		{
+			get { return TabViewItem.View; }
 		}
 
 		public override bool Enabled { get; set; }

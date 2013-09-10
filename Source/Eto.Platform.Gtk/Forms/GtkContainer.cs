@@ -74,8 +74,6 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public Size? MinimumSize {
-			get; set;
-		}
+		public Size MinimumSize { get; set; }
 	}
 }

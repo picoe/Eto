@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -9,9 +10,17 @@ namespace Eto.Forms
 		void Pop ();
 	}
 	
-	public class Navigation : Control
+	public class Navigation : Container
 	{
 		INavigation inner;
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
+				yield break;
+			}
+		}
 
 		public static bool Supported { get { return Generator.Current.Supports<INavigation> (); } }
 

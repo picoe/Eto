@@ -19,7 +19,8 @@ namespace Eto.Forms
 	[ContentProperty ("Children")]
 	public class PixelLayout : Layout
 	{
-		IPixelLayout inner;
+		new IPixelLayout Handler { get { return (IPixelLayout)base.Handler; } }
+
 		List<Control> children;
 		List<Control> controls = new List<Control> ();
 		
@@ -42,10 +43,9 @@ namespace Eto.Forms
 		{
 		}
 
-		public PixelLayout (Container container)
+		public PixelLayout (DockContainer container)
 			: base (container != null ? container.Generator : Generator.Current, container, typeof (IPixelLayout), true)
 		{
-			inner = (IPixelLayout)Handler;
 		}
 		
 		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier (typeof (PixelLayout), "Location");
@@ -58,7 +58,7 @@ namespace Eto.Forms
 		public static void SetLocation (Control control, Point value)
 		{
 			control.Properties[LocationProperty] = value;
-			var layout = control.ParentLayout as TableLayout;
+			var layout = control.ParentLayout as PixelLayout;
 			if (layout != null)
 				layout.Move (control, value);
 		}
@@ -67,13 +67,13 @@ namespace Eto.Forms
 		{
 			control.Properties[LocationProperty] = new Point (x, y);
 			controls.Add (control);
-			control.SetParentLayout (this);
+			control.SetParent(this);
 			var load = Loaded && !control.Loaded;
 			if (load) {
 				control.OnPreLoad (EventArgs.Empty);
 				control.OnLoad (EventArgs.Empty);
 			}
-			inner.Add (control, x, y);
+			Handler.Add (control, x, y);
 			if (load)
 				control.OnLoadComplete (EventArgs.Empty);
 		}
@@ -86,7 +86,7 @@ namespace Eto.Forms
 		public void Move (Control child, int x, int y)
 		{
 			child.Properties[LocationProperty] = new Point(x, y);
-			inner.Move (child, x, y);
+			Handler.Move (child, x, y);
 		}
 		
 		public void Move (Control child, Point p)
@@ -104,8 +104,8 @@ namespace Eto.Forms
 		{
 			if (controls.Remove(child))
 			{
-				inner.Remove(child);
-				child.SetParentLayout(null);
+				Handler.Remove(child);
+				child.SetParent(null);
 			}
 		}
 
@@ -118,7 +118,7 @@ namespace Eto.Forms
 		public override void EndInit ()
 		{
 			base.EndInit ();
-			OnDeserialized (Container != null); // mono calls EndInit BEFORE setting to parent
+			OnDeserialized (ParentLayout != null); // mono calls EndInit BEFORE setting to parent
 		}
 
 		void OnDeserialized (bool direct = false)

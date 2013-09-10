@@ -13,6 +13,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 		SplitterFixedPanel fixedPanel;
 		bool raiseSplitterMoved;
 
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
+
+		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
+
 		public override void AttachEvent(string handler)
 		{
 			switch (handler)
@@ -243,8 +250,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			Size size = new Size ();
 
-			var p1 = panel1 != null ? panel1.Handler as IMacAutoSizing : null;
-			var p2 = panel2 != null ? panel2.Handler as IMacAutoSizing : null;
+			var p1 = panel1.GetMacAutoSizing();
+			var p2 = panel2.GetMacAutoSizing();
 			var p1size = p1 != null ? p1.GetPreferredSize (availableSize) : Size.Empty;
 			var p2size = p2 != null ? p2.GetPreferredSize (availableSize) : Size.Empty;
 			if (Control.IsVertical) {

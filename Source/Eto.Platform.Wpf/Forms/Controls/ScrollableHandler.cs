@@ -214,25 +214,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			content.Child = control;
 		}
 
-		public Eto.Drawing.Size? MinimumSize
+		public Eto.Drawing.Size MinimumSize
 		{
 			get
 			{
-				if (Control.MinWidth == 0 && Control.MinHeight == 0)
-					return new Eto.Drawing.Size ((int)Control.MinWidth, (int)Control.MinHeight);
-				else
-					return null;
+				return new Eto.Drawing.Size ((int)Control.MinWidth, (int)Control.MinHeight);
 			}
 			set
 			{
-				if (value != null) {
-					Control.MinWidth = value.Value.Width;
-					Control.MinHeight = value.Value.Height;
-				}
-				else {
-					Control.MinHeight = 0;
-					Control.MinWidth = 0;
-				}
+				Control.MinWidth = value.Value.Width;
+				Control.MinHeight = value.Value.Height;
 			}
 		}
 
