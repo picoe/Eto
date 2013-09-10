@@ -145,9 +145,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 				context.Scale (scalex, scaley);
 			}
 			Gdk.CairoHelper.SetSourcePixbuf (context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
-			var pattern = context.Source as Cairo.SurfacePattern;
-			pattern.Filter = graphics.ImageInterpolation.ToCairo ();
-			context.Fill ();
+			using (var pattern = context.Source as Cairo.SurfacePattern)
+			{
+				pattern.Filter = graphics.ImageInterpolation.ToCairo();
+				context.Fill();
+			}
 			context.Restore ();
 			
 			/*

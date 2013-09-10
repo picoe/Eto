@@ -97,9 +97,6 @@
     <Compile Include="Forms\DialogHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\DockLayoutHandler.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\FormHandler.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -107,9 +104,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\GtkFileDialog.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\GtkLayout.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\MessageBoxHandler.cs">
@@ -243,6 +237,9 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MouseHandler.cs" />
+    <Compile Include="Forms\GtkDockContainer.cs">
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

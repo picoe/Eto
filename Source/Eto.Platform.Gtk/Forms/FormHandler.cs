@@ -12,7 +12,12 @@ namespace Eto.Platform.GtkSharp
 			Control.AllowShrink = true;
 			Control.SetSizeRequest(100,100);
 			Control.SetPosition(Gtk.WindowPosition.Center);
-			Control.Add(vbox);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Add(ContainerControl);
 		}
 
 		public void Show()

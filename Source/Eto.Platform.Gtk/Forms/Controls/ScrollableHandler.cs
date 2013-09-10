@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class ScrollableHandler : GtkContainer<Gtk.ScrolledWindow, Scrollable>, IScrollable
+	public class ScrollableHandler : GtkDockContainer<Gtk.ScrolledWindow, Scrollable>, IScrollable
 	{
 		Gtk.Viewport vp;
 		Gtk.HBox hbox;
@@ -13,13 +13,7 @@ namespace Eto.Platform.GtkSharp
 		bool autoSize = true;
 		bool expandWidth = true;
 		bool expandHeight = true;
-		Gtk.Widget layoutObject;
-		
-		public override object ContainerObject {
-			get {
-				return Control;
-			}
-		}
+		Gtk.Widget layoutWidget;
 		
 		public BorderType Border {
 			get {
@@ -103,21 +97,25 @@ namespace Eto.Platform.GtkSharp
 		{
 			Widget.OnSizeChanged (EventArgs.Empty);
 		}
-		
-		public override void SetLayout (Layout layout)
+
+		protected override void SetContent(Eto.Forms.Control content)
 		{
 			foreach (Gtk.Widget child in hbox.Children)
 				hbox.Remove (child);
-			IGtkLayout gtklayout = (IGtkLayout)layout.Handler;
-			layoutObject = gtklayout.ContainerObject;
-			hbox.PackStart (layoutObject, false, true, 0);
+			var containerWidget = layoutWidget = content.GetContainerWidget();
+			if (containerWidget != null)
+			{
+				if (containerWidget.Parent != null)
+					containerWidget.Reparent(hbox);
+				hbox.PackStart(containerWidget, false, true, 0);
+			}
 			SetPacking ();
 		}
 
 		void SetPacking ()
 		{
-			if (layoutObject != null)
-				hbox.SetChildPacking(layoutObject, expandWidth, expandWidth, 0, Gtk.PackType.Start);
+			if (layoutWidget != null)
+				hbox.SetChildPacking(layoutWidget, expandWidth, expandWidth, 0, Gtk.PackType.Start);
 			vbox.SetChildPacking(hbox, expandHeight, expandHeight, 0, Gtk.PackType.Start);
 		}
 

@@ -14,7 +14,7 @@ namespace Eto.Platform.GtkSharp
 		Gtk.Window Control { get; }
 	}
 
-	public abstract class GtkWindow<T, W> : GtkContainer<T, W>, IWindow, IGtkWindow
+	public abstract class GtkWindow<T, W> : GtkDockContainer<T, W>, IWindow, IGtkWindow
 		where T: Gtk.Window
 		where W: Window
 	{
@@ -45,8 +45,9 @@ namespace Eto.Platform.GtkSharp
 			bottomToolbarBox = new Gtk.VBox ();
 		}
 		
-		public override object ContainerObject {
-			get { return containerBox; }
+		public override Gtk.Widget ContainerContentControl
+		{
+			get { return vbox; }
 		}
 
 		public bool Resizable
@@ -259,15 +260,19 @@ namespace Eto.Platform.GtkSharp
 			
 		}
 
-		public override void SetLayout (Layout inner)
+		protected override void SetContent(Control content)
 		{
-			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
 			if (containerBox.Children.Length > 0)
 				foreach (Gtk.Widget child in containerBox.Children)
 					containerBox.Remove (child);
-			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
-			containerBox.PackStart (containerWidget, true, true, 0);
-			containerWidget.ShowAll ();
+			var containerWidget = content.GetContainerWidget();
+			if (containerWidget != null)
+			{
+				if (containerWidget.Parent != null)
+					containerWidget.Reparent(containerBox);
+				containerBox.PackStart(containerWidget, true, true, 0);
+				containerWidget.ShowAll();
+			}
 		}
 
 		public string Title {

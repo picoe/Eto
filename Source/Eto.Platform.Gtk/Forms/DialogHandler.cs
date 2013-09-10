@@ -12,9 +12,14 @@ namespace Eto.Platform.GtkSharp
 			Control.AllowShrink = false;
 			Control.AllowGrow = false;
 			//control.SetSizeRequest(100,100);
-			vbox = Control.VBox;
 			Control.HasSeparator = false;
 			//control.Resizable = true;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.VBox.Add(ContainerControl);
 		}
 		
 		public Button AbortButton {
@@ -54,9 +59,12 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnLoad (EventArgs.Empty);
 
 			if (DefaultButton != null) {
-				var widget = DefaultButton.ControlObject as Gtk.Widget;
-				widget.SetFlag (Gtk.WidgetFlags.CanDefault);
-				Control.Default = widget;
+				var widget = DefaultButton.GetContainerWidget();
+				if (widget != null)
+				{
+					widget.SetFlag(Gtk.WidgetFlags.CanDefault);
+					Control.Default = widget;
+				}
 			}
 			// TODO: implement cancel button somehow?
 			

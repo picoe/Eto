@@ -76,7 +76,7 @@ namespace Eto.Test.Sections.Dialogs
 				var dialog = new Dialog ();
 #if DESKTOP
 				dialog.Minimizable = true;
-				dialog.Resizable = false;
+				dialog.Resizable = true;
 				dialog.Maximizable = true;
 				dialog.WindowState = WindowState.Maximized;
 #endif

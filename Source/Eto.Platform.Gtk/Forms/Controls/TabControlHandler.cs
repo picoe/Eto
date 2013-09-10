@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class TabControlHandler : GtkControl<Gtk.Notebook, TabControl>, ITabControl
+	public class TabControlHandler : GtkContainer<Gtk.Notebook, TabControl>, ITabControl
 	{
 		public TabControlHandler()
 		{
@@ -30,14 +30,14 @@ namespace Eto.Platform.GtkSharp
 			var pageHandler = (TabPageHandler)page.Handler;
 
 			if (Widget.Loaded) {
-				pageHandler.Control.ShowAll ();
+				pageHandler.ContainerControl.ShowAll ();
 				pageHandler.LabelControl.ShowAll ();
 			}
 			
 			if (index == -1)
-				Control.AppendPage(pageHandler.Control, pageHandler.LabelControl);
+				Control.AppendPage(pageHandler.ContainerControl, pageHandler.LabelControl);
 			else
-				Control.InsertPage(pageHandler.Control, pageHandler.LabelControl, index);
+				Control.InsertPage(pageHandler.ContainerControl, pageHandler.LabelControl, index);
 		}
 		
 		public void ClearTabs ()
