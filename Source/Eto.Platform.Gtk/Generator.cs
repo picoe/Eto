@@ -92,9 +92,7 @@ namespace Eto.Platform.GtkSharp
 			g.Add <ITextBox> (() => new TextBoxHandler ());
 			g.Add <ITreeGridView> (() => new TreeGridViewHandler ());
 			g.Add <ITreeView> (() => new TreeViewHandler ());
-#if GTK2
 			g.Add <IWebView> (() => new WebViewHandler ());
-#endif
 			g.Add <IScreens> (() => new ScreensHandler ());
 			
 			// Forms.Menu

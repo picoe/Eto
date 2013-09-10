@@ -62,6 +62,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			case WebView.DocumentLoadingEvent:
+#if GTK2
 				Control.NavigationRequested += (sender, args) => {
 					if (args.Request.Uri.StartsWith (EtoReturnPrefix)) {
 						// pass back the response to ExecuteScript()
@@ -77,14 +78,36 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 							args.RetVal = WebKit.NavigationResponse.Accept;
 					}
 				};
+#else
+				Control.NavigationPolicyDecisionRequested += (sender, args) => {
+					if (args.Request.Uri.StartsWith (EtoReturnPrefix)) {
+						// pass back the response to ExecuteScript()
+						this.scriptReturnValue = HttpUtility.UrlDecode (args.Request.Uri.Substring (EtoReturnPrefix.Length));
+						returnResetEvent.Set ();
+						args.PolicyDecision.Ignore();
+					} else {
+						var e = new WebViewLoadingEventArgs (new Uri(args.Request.Uri), false);
+						Widget.OnDocumentLoading (e);
+						if (e.Cancel)
+							args.PolicyDecision.Ignore();
+						else
+							args.PolicyDecision.Use();
+					}
+				};
+#endif
 				break;
 			case WebView.OpenNewWindowEvent:
 				// note: requires libwebkitgtk 1.1.4+
 				Control.NewWindowPolicyDecisionRequested += (sender, args) => {
 					var e = new WebViewNewWindowEventArgs (new Uri(args.Request.Uri), args.Frame.Name);
 					Widget.OnOpenNewWindow (e);
+#if GTK2
 					if (e.Cancel) args.Decision.Ignore ();
 					else args.Decision.Use ();
+#else
+					if (e.Cancel) args.PolicyDecision.Ignore();
+					else args.PolicyDecision.Use ();
+#endif
 					args.RetVal = true;
 				};
 				break;
