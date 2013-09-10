@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -115,6 +115,7 @@
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
+    <Compile Include="TestIcons.cs" />
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
@@ -148,7 +149,13 @@
   <ItemGroup>
     <EmbeddedResource Include="Textures.png" />
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup />
-  <ItemGroup />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

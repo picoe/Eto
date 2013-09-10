@@ -1,20 +1,28 @@
 using System;
 using System.Collections;
 using System.Reflection;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using System.Collections.Generic;
 
 namespace Eto.Platform.Windows
 {
-	public class RadioButtonHandler : WindowsControl<SWF.RadioButton, RadioButton>, IRadioButton
+	public class RadioButtonHandler : WindowsControl<swf.RadioButton, RadioButton>, IRadioButton
 	{
 		List<RadioButton> group;
+
+		public class EtoRadioButton : swf.RadioButton
+		{
+			public EtoRadioButton()
+			{
+				this.SetStyle(swf.ControlStyles.StandardClick | swf.ControlStyles.StandardDoubleClick, true);
+			}
+		}
 		
 		public RadioButtonHandler()
 		{
-			Control = new SWF.RadioButton();
+			Control = new EtoRadioButton();
 			Control.AutoSize = true;
 			Control.Click += delegate {
 				Widget.OnClick (EventArgs.Empty);	

@@ -45,8 +45,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public string Text
 		{
-			get { return label.Text; }
-			set { label.Text = value; }
+			get { return label.Text.ToEtoMneumonic(); }
+			set { label.Text = value.ToWpfMneumonic(); }
 		}
 
 		public string ToolTip

@@ -7,28 +7,26 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public abstract class GridHandler<T, W> : iosControl<T, W>, IGrid
+	public abstract class GridHandler<T, W> : iosControl<T, W>, IGrid, IiosViewController
 		where T: UITableView
 		where W: Grid
 	{
-		public class TableDelegate : UITableViewDelegate
-		{
-			public virtual GridHandler<T, W> Handler { get; set; }
+		RotatableTableViewController tableViewController;
 
-			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
-			{
-				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
-			}
+		public override UIViewController Controller
+		{
+			get { return tableViewController; }
 		}
 
 		public override T CreateControl ()
 		{
-			return (T)new UITableView ();
+			tableViewController = new RotatableTableViewController { Control = this.Widget };
+			return (T)tableViewController.TableView;
 		}
 
 		protected virtual UITableViewDelegate CreateDelegate()
 		{
-			return new TableDelegate { Handler = this };
+			return new GridHandlerTableDelegate(this);
 		}
 
 		protected override void Initialize ()
@@ -75,7 +73,57 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		public IEnumerable<int> SelectedRows {
-			get { return null; }
+			get 
+			{
+				var i = Control.IndexPathsForSelectedRows;
+				if (i != null)
+					foreach (var s in i)
+						yield return s.Row;
+			}
+		}
+	}
+
+	public class GridHandlerTableDelegate : UITableViewDelegate
+	{
+		public IGrid Handler { get; private set; }
+
+		public Grid Widget { get { return Handler.Widget as Grid; } }
+
+		public GridHandlerTableDelegate(IGrid handler)
+		{
+			this.Handler = handler;
+		}
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			Widget.OnSelectionChanged();
+		}
+	}
+
+	internal class RotatableTableViewController : UITableViewController
+	{
+		public object Control { get; set; }
+
+		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
+		{
+			return UIInterfaceOrientationMask.All;
+		}
+
+		[Obsolete]
+		public override bool ShouldAutorotateToInterfaceOrientation(UIInterfaceOrientation toInterfaceOrientation)
+		{
+			return true;
+		}
+
+		protected override void Dispose(bool disposing) // TODO: Is this needed? RotatableViewController implements Dispose but RotatableNavigationController does not.
+		{
+			var c = Control as IDisposable;
+			if (c != null)
+			{
+				c.Dispose();
+				c = null;
+			}
+			base.Dispose(disposing);
 		}
 	}
 }

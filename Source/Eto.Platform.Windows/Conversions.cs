@@ -161,6 +161,11 @@ namespace Eto.Platform.Windows
 			return ret;
 		}
 
+		public static Point ToEto (this sd.Point point)
+		{
+			return new Point (point.X, point.Y);
+		}
+
 		public static PointF ToEto (this sd.PointF point)
 		{
 			return new PointF (point.X, point.Y);
@@ -201,9 +206,19 @@ namespace Eto.Platform.Windows
 			return new sd.SizeF (size.Width, size.Height);
 		}
 
+		public static Rectangle ToEto (this sd.Rectangle rect)
+		{
+			return new Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
 		public static RectangleF ToEto (this sd.RectangleF rect)
 		{
 			return new RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static sd.Rectangle ToSD (this Rectangle rect)
+		{
+			return new sd.Rectangle (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
 		public static sd.RectangleF ToSD (this RectangleF rect)
@@ -211,7 +226,7 @@ namespace Eto.Platform.Windows
 			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		public static sd.Rectangle ToSDRectangle (this RectangleF rect)
+		public static sd.Rectangle ToSDRectangle(this RectangleF rect)
 		{
 			return new sd.Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 		}
@@ -369,6 +384,14 @@ namespace Eto.Platform.Windows
 			return (float)Math.PI * angle / 180.0f;
 		}
 
+        public static ITreeItem ToEto(this swf.TreeNode treeNode)
+        {
+            return
+                treeNode != null
+                ? treeNode.Tag as ITreeItem
+                : null;
+        }
+
 		public static sd.Pen ToSD (this Pen pen)
 		{
 			return (sd.Pen)pen.ControlObject;
@@ -520,7 +543,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static bool ToEtoResizable (this swf.FormBorderStyle style)
+		public static bool IsResizable (this swf.FormBorderStyle style)
 		{
 			switch (style) {
 			case swf.FormBorderStyle.Fixed3D:
@@ -542,9 +565,9 @@ namespace Eto.Platform.Windows
 			switch (style) {
 			case swf.FormBorderStyle.Fixed3D:
 			case swf.FormBorderStyle.Sizable:
-				return WindowStyle.Default;
-			case swf.FormBorderStyle.SizableToolWindow:
-			case swf.FormBorderStyle.FixedDialog:
+            case swf.FormBorderStyle.SizableToolWindow:
+            case swf.FormBorderStyle.FixedDialog:
+                return WindowStyle.Default;
 			case swf.FormBorderStyle.None:
 				return WindowStyle.None;
 			default:
@@ -552,16 +575,25 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static swf.FormBorderStyle ToSWF (this WindowStyle style, bool resizable)
+        public static swf.FormBorderStyle ToSWF(this WindowStyle style, bool resizable, swf.FormBorderStyle defaultStyle)
+        {
+            switch (style)
+            {
+                case WindowStyle.Default:
+                    return resizable ? swf.FormBorderStyle.Sizable : defaultStyle;
+                case WindowStyle.None:
+                    return swf.FormBorderStyle.None;
+                default:
+                    throw new NotSupportedException();
+            }
+        }
+
+		public static DrawableCellState ToEto(this swf.DataGridViewElementStates state)
 		{
-			switch (style) {
-			case WindowStyle.Default:
-				return resizable ? swf.FormBorderStyle.Sizable : swf.FormBorderStyle.Fixed3D;
-			case WindowStyle.None:
-				return swf.FormBorderStyle.None;
-			default:
-				throw new NotSupportedException ();
-			}
-		}
+			if ( (state & swf.DataGridViewElementStates.Selected) == swf.DataGridViewElementStates.Selected)
+				return DrawableCellState.Selected;
+
+			return DrawableCellState.Normal;
+		}		
 	}
 }

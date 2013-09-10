@@ -16,7 +16,6 @@ namespace Eto.Platform.Windows
 				AutoSize = true,
 				AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink
 			};
-			Control.SuspendLayout ();
 			content = new SWF.Panel {
 				Font = SD.SystemFonts.DefaultFont,
 				Dock = SWF.DockStyle.Fill,
@@ -34,7 +33,6 @@ namespace Eto.Platform.Windows
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
-			Control.ResumeLayout ();
 		}
 
 		public override SWF.Control ContentContainer

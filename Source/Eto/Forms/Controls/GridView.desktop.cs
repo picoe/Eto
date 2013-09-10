@@ -12,8 +12,8 @@ namespace Eto.Forms
 	{
 		public ContextMenu ContextMenu
 		{
-			get { return handler.ContextMenu; }
-			set { handler.ContextMenu = value; }
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
 		}
 
 	}

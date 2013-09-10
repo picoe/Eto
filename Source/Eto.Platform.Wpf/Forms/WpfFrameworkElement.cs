@@ -39,6 +39,11 @@ namespace Eto.Platform.Wpf.Forms
         }
 	}
 
+    public static class WpfFrameworkElementHelper
+    {
+        public static bool ShouldCaptureMouse;
+    }
+
 	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl, IWpfFrameworkElement
 		where T : System.Windows.FrameworkElement
 		where W : Control
@@ -69,7 +74,7 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get {
 				var newSize = this.newSize;
-				if (!Widget.Loaded && size != null) return size.Value;
+				if (!Control.IsLoaded && size != null) return size.Value;
 				else if (newSize != null) return newSize.Value;
 				else return Conversions.GetSize (Control); 
 			}
@@ -311,14 +316,16 @@ namespace Eto.Platform.Wpf.Forms
 
 		void HandleMouseDown (object sender, swi.MouseButtonEventArgs e)
 		{
+            WpfFrameworkElementHelper.ShouldCaptureMouse = true;
 			isMouseCaptured = false;
 			var args = e.ToEto (Control);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Widget.OnMouseDoubleClick (args);
 			if (!args.Handled)
 				Widget.OnMouseDown (args);
-			e.Handled = args.Handled;
-			if (!UseMousePreview || e.Handled) {
+            e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
+            if (WpfFrameworkElementHelper.ShouldCaptureMouse && (!UseMousePreview || e.Handled))
+            {
 				e.Handled = true;
 				isMouseCaptured = true;
 				Control.CaptureMouse ();

@@ -40,9 +40,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.Mode = DateTimePicker.DefaultMode;
 		}
 		
-		protected override Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
-			return Size.Max (new Size (mode == DateTimePickerMode.DateTime ? 180 : 120, 10), base.GetNaturalSize ());
+			return Size.Max (new Size (mode == DateTimePickerMode.DateTime ? 180 : 120, 10), base.GetNaturalSize (availableSize));
 		}
 		
 		public override void OnLoad (EventArgs e)

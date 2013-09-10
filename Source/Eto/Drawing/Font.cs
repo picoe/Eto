@@ -86,6 +86,17 @@ namespace Eto.Drawing
 		/// Italic font style
 		/// </summary>
 		Italic = 1 << 1,
+
+        /// <summary>
+        /// Underline font style
+        /// </summary>
+        Underline = 1 << 2,
+
+        /// <summary>
+        /// Strikeout font style
+        /// </summary>
+        Strikeout = 1 << 3,
+
 	}
 	
 	/// <summary>
@@ -334,6 +345,22 @@ namespace Eto.Drawing
 		{
 			get { return FontStyle.HasFlag (FontStyle.Italic); }
 		}
+
+        /// <summary>
+        /// Gets a value indicating that this font has an underline style
+        /// </summary>
+        public bool Underline
+        {
+            get { return FontStyle.HasFlag(FontStyle.Underline); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating that this font has a strikeout style
+        /// </summary>
+        public bool Strikeout
+        {
+            get { return FontStyle.HasFlag(FontStyle.Strikeout); }
+        }
 
 		/// <summary>
 		/// Gets a string representation of the font object

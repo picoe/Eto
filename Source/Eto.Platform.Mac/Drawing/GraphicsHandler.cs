@@ -10,19 +10,18 @@ using Eto.Platform.Mac.Forms;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+
+namespace Eto.Platform.Mac.Drawing
 #elif IOS
 using Eto.Platform.iOS.Forms;
 using MonoTouch.CoreGraphics;
 using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using NSView = MonoTouch.UIKit.UIView;
-#endif
 
-#if OSX
-namespace Eto.Platform.Mac.Drawing
-#elif IOS
 namespace Eto.Platform.iOS.Drawing
 #endif
+
 {
 	/// <summary>
 	/// Handler for the <see cref="IGraphics"/>
@@ -39,6 +38,7 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 		NSGraphicsContext graphicsContext;
 #endif
+		bool disposeContext;
 		NSView view;
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
@@ -82,6 +82,7 @@ namespace Eto.Platform.iOS.Drawing
 			DisposeControl = false;
 #if OSX
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
+			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
 			this.Flipped = view.IsFlipped;
 
@@ -196,6 +197,7 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 			var rep = handler.Control.Representations ().OfType<NSBitmapImageRep> ().FirstOrDefault ();
 			graphicsContext = NSGraphicsContext.FromBitmap (rep);
+			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
 #elif IOS
 			var cgimage = handler.Control.CGImage;
@@ -367,9 +369,10 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
 			pen.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			var centerY = rect.GetMidY();
+			var centerY = RectangleFExtensions.GetMidY(rect);
+			var centerX = RectangleFExtensions.GetMidX(rect);
 			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
-			Control.AddArc (rect.GetMidX(), centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddArc (centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
 			Control.StrokePath ();
 			EndDrawing ();
 		}
@@ -381,11 +384,12 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true, true);
 			brush.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			var centerY = rect.GetMidY();
+			var centerY = RectangleFExtensions.GetMidY(rect);
+			var centerX = RectangleFExtensions.GetMidX(rect);
 			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
-			Control.MoveTo (rect.GetMidX(), centerY);
-			Control.AddArc (rect.GetMidX(), centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
-			Control.AddLineToPoint (rect.GetMidX(), centerY);
+			Control.MoveTo (centerX, centerY);
+			Control.AddArc (centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
+			Control.AddLineToPoint (centerX, centerY);
 			Control.ClosePath ();
 			Control.FillPath ();
 			EndDrawing ();
@@ -454,7 +458,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawText(Font font, Color color, float x, float y, string text)
+		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
 			if (string.IsNullOrEmpty(text)) return;
 
@@ -463,7 +467,7 @@ namespace Eto.Platform.iOS.Drawing
 			var nsfont = FontHandler.GetControl (font);
 			var str = new NSString (text);
 			var dic = new NSMutableDictionary ();
-			dic.Add (NSAttributedString.ForegroundColorAttributeName, color.ToNS ());
+			dic.Add (NSAttributedString.ForegroundColorAttributeName, brush.Color.ToNS ());
 			dic.Add (NSAttributedString.FontAttributeName, nsfont);
 			//context.SetShouldAntialias(true);
 			if (!Flipped) {
@@ -478,7 +482,7 @@ namespace Eto.Platform.iOS.Drawing
 			var str = new NSString (text);
 			var size = str.StringSize (uifont);
 			//context.SetShouldAntialias(true);
-			Control.SetFillColor(color.ToCGColor ());
+			Control.SetFillColor(brush.Color.ToCGColor());
 			str.DrawString (TranslateView (new SD.PointF(x, y), elementHeight: size.Height), uifont);
 #endif
 
@@ -506,10 +510,10 @@ namespace Eto.Platform.iOS.Drawing
 		protected override void Dispose (bool disposing)
 		{
 			if (disposing) {
-				if (graphicsContext != null)
+				if (disposeContext && graphicsContext != null)
 					graphicsContext.FlushGraphics ();
 				Reset ();
-				if (graphicsContext != null)
+				if (disposeContext && graphicsContext != null)
 					graphicsContext.Dispose ();
 			}
 			base.Dispose (disposing);

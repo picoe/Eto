@@ -63,23 +63,25 @@ namespace Eto.Platform.Windows
 		public Control Content {
 			get { return child; }
 			set {
-				if (child == value)
-					return;
+				// Always add value to Control
+				// even if it is currently added.
+
 				Control.SuspendLayout ();
 	
 				SWF.Control childControl;
 
+				if (this.child != null)
+				{
+					child.SetScale(false, false);
+					childControl = this.child.GetContainerControl();
+					Control.Controls.Remove(childControl);
+				}
+	
 				if (value != null) {
 					childControl = value.GetContainerControl();
 					childControl.Dock = SWF.DockStyle.Fill;
 					value.SetScale (XScale, YScale);
 					Control.Controls.Add (childControl, 0, 0);
-				}
-	
-				if (this.child != null) {
-					child.SetScale (false, false);
-					childControl = this.child.GetContainerControl ();
-					Control.Controls.Remove (childControl);
 				}
 	
 				this.child = value;

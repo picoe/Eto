@@ -75,14 +75,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				disableSelectedIndexChanged = false;
 			}
 		}
-		
-		protected override Size GetNaturalSize ()
+
+		protected override Size GetNaturalSize (Size availableSize)
 		{
-			Size size = base.GetNaturalSize();
+			Size size = base.GetNaturalSize(availableSize);
 			foreach (var tab in Widget.TabPages) {
-				var tabsizing = tab.Handler as IMacAutoSizing;
-				if (tabsizing != null)
-					size = Size.Max (size, tabsizing.GetPreferredSize (Size.MaxValue));
+				size = Size.Max (size, tab.GetPreferredSize(availableSize));
 			}
 			return size;
 		}

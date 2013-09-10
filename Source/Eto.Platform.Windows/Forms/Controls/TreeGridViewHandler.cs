@@ -25,7 +25,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		TreeController controller;
 
-		protected override IGridItem GetItemAtRow (int row)
+		protected override object GetItemAtRow (int row)
 		{
 			return controller[row];
 		}

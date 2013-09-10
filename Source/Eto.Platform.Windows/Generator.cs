@@ -49,6 +49,7 @@ namespace Eto.Platform.Windows
 			g.Add <IImageTextCell> (() => new ImageTextCellHandler ());
 			g.Add <IImageViewCell> (() => new ImageViewCellHandler ());
 			g.Add <ITextBoxCell> (() => new TextBoxCellHandler ());
+			g.Add <IDrawableCell> (() => new DrawableCellHandler());
 			
 			// Forms.Controls
 			g.Add <IButton> (() => new ButtonHandler ());
@@ -68,6 +69,7 @@ namespace Eto.Platform.Windows
 			g.Add <IProgressBar> (() => new ProgressBarHandler ());
 			g.Add <IRadioButton> (() => new RadioButtonHandler ());
 			g.Add <IScrollable> (() => new ScrollableHandler ());
+			g.Add <ISearchBox>(() => new SearchBoxHandler());
 			g.Add <ISlider> (() => new SliderHandler ());
 			g.Add <ISplitter> (() => new SplitterHandler ());
 			g.Add <ITabControl> (() => new TabControlHandler ());

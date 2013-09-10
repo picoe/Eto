@@ -39,8 +39,8 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public string Text
 		{
-			get { return Conversions.ConvertMneumonicFromWPF (Control.Header); }
-			set { Control.Header = value.ToWpfMneumonic (); }
+			get { return (Control.Header as string).ToEtoMneumonic(); }
+			set { Control.Header = value.ToWpfMneumonic(); }
 		}
 
 		public string ToolTip

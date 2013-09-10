@@ -52,12 +52,15 @@ namespace Eto.Forms
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
-	public abstract partial class Control : InstanceWidget
+	public abstract partial class Control : 
+        InstanceWidget, 
+        IMouseInputSource,
+        IKeyboardInputSource
 	{
 		new IControl Handler { get { return (IControl)base.Handler; } }
 		
 		public bool Loaded { get; private set; }
-		
+
 		#region Events
 		
 		public const string SizeChangedEvent = "Control.SizeChanged";
@@ -140,6 +143,25 @@ namespace Eto.Forms
 		{
 			if (textChanged != null)
 				textChanged (this, e);
+		}
+
+		public const string TextInputEvent = "Control.TextInput";
+		EventHandler<TextInputEventArgs> textInput;
+
+		public event EventHandler<TextInputEventArgs> TextInput
+		{
+			add
+			{
+				HandleEvent(TextInputEvent);
+				textInput += value;
+			}
+			remove { textInput -= value; }
+		}
+
+		public virtual void OnTextInput(TextInputEventArgs e)
+		{
+			if (textInput != null)
+				textInput(this, e);
 		}
 
 		public const string MouseDownEvent = "Control.MouseDown";

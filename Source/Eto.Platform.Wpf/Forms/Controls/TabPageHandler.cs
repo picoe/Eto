@@ -33,8 +33,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return headerText.Text; }
-			set { headerText.Text = value; }
+			get { return headerText.Text.ToEtoMneumonic(); }
+			set { headerText.Text = value.ToWpfMneumonic(); }
 		}
 
 		public Eto.Drawing.Image Image

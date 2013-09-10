@@ -16,9 +16,15 @@ namespace Eto.Forms
 	}
 	
 	[ContentProperty("Children")]
-	public class TreeItem : ImageListItem, ITreeItem
+	public class TreeItem : ImageListItem, ITreeItem, INotifyCollectionChanged
 	{
 		TreeItemCollection children;
+
+		public event NotifyCollectionChangedEventHandler CollectionChanged
+		{
+			add { Children.CollectionChanged += value; }
+			remove { Children.CollectionChanged -= value; }
+		}
 
 		public TreeItemCollection Children
 		{
@@ -60,6 +66,6 @@ namespace Eto.Forms
 		{
 			this.Children.AddRange (children);
 		}
-	}
+    }
 }
 

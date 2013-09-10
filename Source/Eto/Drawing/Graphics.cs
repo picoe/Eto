@@ -143,11 +143,11 @@ namespace Eto.Drawing
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
 		/// </summary>
 		/// <param name="font">Font to draw the text with</param>
-		/// <param name="color">Color of the text</param>
+		/// <param name="brush">A brush with the color of the text</param>
 		/// <param name="x">X co-ordinate of where to start drawing the text</param>
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		void DrawText (Font font, Color color, float x, float y, string text);
+		void DrawText (Font font, SolidBrush brush, float x, float y, string text);
 
 		/// <summary>
 		/// Measures the string with the given <paramref name="font"/>
@@ -871,13 +871,19 @@ namespace Eto.Drawing
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
 		/// </summary>
 		/// <param name="font">Font to draw the text with</param>
-		/// <param name="color">Color of the text</param>
+		/// <param name="brush">Color of the text</param>
 		/// <param name="x">X co-ordinate of where to start drawing the text</param>
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		public void DrawText (Font font, Color color, float x, float y, string text)
+		public void DrawText (Font font, SolidBrush brush, float x, float y, string text)
 		{
-			Handler.DrawText (font, color, x, y, text);
+			Handler.DrawText (font, brush, x, y, text);
+		}
+
+		public void DrawText(Font font, Color color, float x, float y, string text)
+		{
+			using (var brush = new SolidBrush(color))
+				Handler.DrawText(font, brush, x, y, text);			
 		}
 
 		/// <summary>
@@ -887,9 +893,15 @@ namespace Eto.Drawing
 		/// <param name="color">Color of the text</param>
 		/// <param name="location">Location of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		public void DrawText (Font font, Color color, PointF location, string text)
+		public void DrawText (Font font, SolidBrush brush, PointF location, string text)
 		{
-			Handler.DrawText (font, color, location.X, location.Y, text);
+			Handler.DrawText (font, brush, location.X, location.Y, text);
+		}
+
+		public void DrawText(Font font, Color color, PointF location, string text)
+		{
+			using (var brush = new SolidBrush(color))
+				Handler.DrawText(font, brush, location.X, location.Y, text);
 		}
 
 		/// <summary>

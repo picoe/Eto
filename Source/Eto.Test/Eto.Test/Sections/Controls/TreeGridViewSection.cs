@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 		int expanded;
 		CheckBox allowCollapsing;
 		CheckBox allowExpanding;
-		static Image Image = Icon.FromResource ("Eto.Test.TestIcon.ico");
+		static Image Image = TestIcons.TestIcon;
 		
 		public TreeGridViewSection ()
 		{

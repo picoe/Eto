@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -51,6 +51,8 @@
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\MacTextControl.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -186,6 +188,7 @@
     <Compile Include="NSImageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
+    <Compile Include="Threading\ThreadHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -202,8 +205,15 @@
     </Content>
   </ItemGroup>
   <ItemGroup />
-  <ItemGroup />
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

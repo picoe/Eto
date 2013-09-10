@@ -103,6 +103,7 @@
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
     <Compile Include="Forms\Controls\RadioButton.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
     <Compile Include="Forms\Controls\TabControlHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
@@ -181,6 +182,8 @@
     <Compile Include="NSImageExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
+    <Compile Include="Threading\ThreadHandler.cs" />
+    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -190,6 +193,15 @@
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
-  <ItemGroup />
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

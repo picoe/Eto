@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -71,14 +71,18 @@
     </Compile>
     <Compile Include="Forms\Controls\Drawable.mobile.cs" />
     <Compile Include="Forms\Controls\Grid.cs" />
+    <Compile Include="Forms\Controls\GridViewSelection.cs" />
     <Compile Include="Forms\Controls\PasswordBox.cs" />
     <Compile Include="Forms\Controls\ProgressBar.cs" />
     <Compile Include="Forms\Controls\Scrollable.mobile.cs" />
+    <Compile Include="Forms\Controls\SearchBox.cs" />
+    <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
     <Compile Include="Forms\Controls\ThemedContainerHandler.cs" />
     <Compile Include="Forms\Controls\ThemedControlHandler.cs" />
     <Compile Include="Forms\Controls\TreeItem.cs" />
     <Compile Include="Forms\Controls\TreeView.cs" />
     <Compile Include="Forms\Controls\TreeView.desktop.cs" />
+    <Compile Include="Forms\DataStoreView.cs" />
     <Compile Include="Forms\DataStoreVirtualCollection.cs" />
     <Compile Include="Forms\Layout\DynamicControl.cs" />
     <Compile Include="Forms\Layout\DynamicItem.cs" />
@@ -321,6 +325,7 @@
     <Compile Include="Forms\Controls\GridColumn.cs" />
     <Compile Include="Forms\Cells\Cell.cs" />
     <Compile Include="Forms\Cells\ComboBoxCell.cs" />
+    <Compile Include="Forms\Cells\DrawableCell.cs" />
     <Compile Include="Forms\Cells\ImageTextCell.cs" />
     <Compile Include="Forms\Cells\SingleValueCell.cs" />
     <Compile Include="Forms\Controls\TreeGridItem.cs" />
@@ -373,6 +378,9 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Binding\DelegateBinding.cs" />
+    <Compile Include="Forms\IKeyboardInputSource.cs" />
+    <Compile Include="Forms\IMouseInputSource.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
@@ -390,4 +398,15 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="DoNotCare" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+          <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

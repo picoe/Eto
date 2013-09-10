@@ -118,9 +118,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return Size.Min (base.GetPreferredSize (availableSize), availableSize);
 		}
 
-		protected override Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
-			return base.GetNaturalSize () + GetBorderSize ();
+			return base.GetNaturalSize (availableSize) + GetBorderSize ();
 		}
 		
 		void InternalSetFrameSize (SD.SizeF size)
@@ -132,7 +132,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public void UpdateScrollSizes ()
 		{
-			var contentSize = base.GetNaturalSize ();
+			var contentSize = base.GetNaturalSize (Size.MaxValue);
 
 			if (ExpandContentWidth)
 				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);

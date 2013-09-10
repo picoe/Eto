@@ -115,7 +115,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual Size GetPreferredSize (Size availableSize)
 		{
-			if (Widget.Layout != null) {
+			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
 				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
 				if (layout != null)
 					return layout.GetPreferredSize (availableSize);
@@ -214,6 +214,7 @@ namespace Eto.Platform.Mac.Forms
 				// TODO
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
+				{
 				Size? oldSize = null;
 				AddControlObserver ((NSString)"frame", e => {
 					var widget = (Window)e.Widget;
@@ -223,8 +224,10 @@ namespace Eto.Platform.Mac.Forms
 						oldSize = newSize;
 					}
 				});
+				}
 				break;
 			case Window.LocationChangedEvent:
+				{
 				Point? oldLocation = null;
 				AddControlObserver ((NSString)"frame", e => {
 					var widget = (Window)e.Widget;
@@ -234,6 +237,7 @@ namespace Eto.Platform.Mac.Forms
 						oldLocation = newLocation;
 					}
 				});
+				}
 				break;
 			default:
 				base.AttachEvent (handler);

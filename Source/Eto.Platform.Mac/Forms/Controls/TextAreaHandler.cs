@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
+using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -75,7 +76,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 		}
 
-		protected override Eto.Drawing.Size GetNaturalSize ()
+		protected override Size GetNaturalSize (Size availableSize)
 		{
 			return TextArea.DefaultSize;
 		}

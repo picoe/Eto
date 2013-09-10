@@ -29,7 +29,6 @@ namespace Eto.Platform.Windows
 		public TableLayoutHandler()
 		{
 			Control = new SWF.TableLayoutPanel();
-			this.Control.SuspendLayout ();
 			this.Control.Margin = SWF.Padding.Empty;
 			this.Control.Dock = SWF.DockStyle.Fill;
 			this.Control.Size = SD.Size.Empty;
@@ -40,12 +39,6 @@ namespace Eto.Platform.Windows
 			this.Padding = TableLayout.DefaultPadding;
 		}
 
-		public override void OnLoad ()
-		{
-			base.OnLoad ();
-			this.Control.ResumeLayout ();
-		}
-		
 		public override void Update ()
 		{
 			this.Control.Update();

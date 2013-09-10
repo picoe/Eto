@@ -110,20 +110,14 @@ namespace Eto.Platform.Windows
 		{
 			var modifiers = swf.Control.ModifierKeys.ToEto ();
 			var delta = new SizeF (0, Win32.GetWheelDeltaWParam (be.Message.WParam) / Conversions.WHEEL_DELTA);
-			var position = new Point (Win32.SignedLOWORD (be.Message.LParam), Win32.SignedHIWORD (be.Message.LParam));
 			var buttons = Win32.GetMouseButtonWParam (be.Message.WParam).ToEto ();
 			if (modifyButtons != null)
 				buttons = modifyButtons (buttons);
-			var me = new MouseEventArgs (buttons, modifiers, position, delta);
 			var handler = be.WindowsControl;
 			var mousePosition = swf.Control.MousePosition.ToEto ();
 			var ret = false;
-			var first = true;
 			foreach (var control in be.Parents) {
-				if (!first)
-					me = new MouseEventArgs (me.Buttons, modifiers, control.PointFromScreen (mousePosition), delta);
-				else
-					first = false;
+				var me = new MouseEventArgs(buttons, modifiers, control.PointFromScreen(mousePosition), delta);
 				action (control, me);
 				if (me.Handled) {
 					ret = true;

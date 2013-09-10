@@ -189,6 +189,7 @@ namespace Eto.Platform.GtkSharp
 				};
 				break;
 			case Window.WindowStateChangedEvent:
+				{
 				var oldState = this.WindowState;
 				Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
 					var newState = this.WindowState;
@@ -197,8 +198,10 @@ namespace Eto.Platform.GtkSharp
 						Widget.OnWindowStateChanged (EventArgs.Empty);
 					}
 				};
+				}
 				break;
 			case Window.SizeChangedEvent:
+				{
 				Size? oldSize = null;
 				Control.SizeAllocated += (o, args) => {
 					var newSize = this.Size;
@@ -207,6 +210,7 @@ namespace Eto.Platform.GtkSharp
 						oldSize = newSize;
 					}
 				};
+				}
 				break;
 			case Window.LocationChangedEvent:
 				Control.ConfigureEvent += HandleConfigureEvent;

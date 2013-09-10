@@ -17,15 +17,15 @@ namespace Eto.Forms
 {
 	public interface ITableLayout : IPositionalLayout
 	{
-		void CreateControl (int cols, int rows);
+		void CreateControl(int cols, int rows);
 
-		bool GetColumnScale (int column);
+		bool GetColumnScale(int column);
 
-		void SetColumnScale (int column, bool scale);
+		void SetColumnScale(int column, bool scale);
 
-		bool GetRowScale (int row);
+		bool GetRowScale(int row);
 
-		void SetRowScale (int row, bool scale);
+		void SetRowScale(int row, bool scale);
 
 		Size Spacing { get; set; }
 
@@ -39,33 +39,39 @@ namespace Eto.Forms
 		Control[,] controls;
 		Size size;
 		List<Control> children;
-		public static Size DefaultSpacing = new Size (5, 5);
-		public static Padding DefaultPadding = new Padding (5);
-		
-		public override IEnumerable<Control> Controls {
-			get {
+		public static Size DefaultSpacing = new Size(5, 5);
+		public static Padding DefaultPadding = new Padding(5);
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
 				if (controls == null)
-					return Enumerable.Empty<Control> ();
-				return controls.OfType<Control> ();
+					return Enumerable.Empty<Control>();
+				return controls.OfType<Control>();
 			}
 		}
 
 		public List<Control> Children
 		{
-			get { 
+			get
+			{
 				if (children == null)
-					children = new List<Control> ();
-				return children; 
+					children = new List<Control>();
+				return children;
 			}
 		}
-		
-		public Size Size {
+
+		public Size Size
+		{
 			get { return size; }
-			set {
+			set
+			{
 				size = value;
-				if (!size.IsEmpty) {
+				if (!size.IsEmpty)
+				{
 					controls = new Control[size.Width, size.Height];
-					inner.CreateControl (size.Width, size.Height);
+					inner.CreateControl(size.Width, size.Height);
 				}
 			}
 		}
@@ -73,240 +79,271 @@ namespace Eto.Forms
 		[TypeConverter(typeof(Int32ArrayConverter))]
 		public int[] ColumnScale
 		{
-			set {
-				for (int col = 0; col < Size.Width; col++) {
-					SetColumnScale (col, false);
+			set
+			{
+				for (int col = 0; col < Size.Width; col++)
+				{
+					SetColumnScale(col, false);
 				}
-				foreach (var col in value) {
-					SetColumnScale (col, true);
+				foreach (var col in value)
+				{
+					SetColumnScale(col, true);
 				}
 			}
-			get {
+			get
+			{
 				var vals = new List<int>();
-				for (int col = 0; col < Size.Width; col++) {
-					if (GetColumnScale (col))
+				for (int col = 0; col < Size.Width; col++)
+				{
+					if (GetColumnScale(col))
 						vals.Add(col);
 				}
-				return vals.ToArray ();
+				return vals.ToArray();
 			}
 		}
 
-		[TypeConverter (typeof (Int32ArrayConverter))]
+		[TypeConverter(typeof(Int32ArrayConverter))]
 		public int[] RowScale
 		{
-			set {
-				for (int row = 0; row < Size.Height; row++) {
-					SetRowScale (row, false);
+			set
+			{
+				for (int row = 0; row < Size.Height; row++)
+				{
+					SetRowScale(row, false);
 				}
-				foreach (var row in value) {
-					SetRowScale (row, true);
+				foreach (var row in value)
+				{
+					SetRowScale(row, true);
 				}
 			}
-			get {
+			get
+			{
 				var vals = new List<int>();
-				for (int row = 0; row < Size.Height; row++) {
-					if (GetRowScale (row))
-						vals.Add (row);
+				for (int row = 0; row < Size.Height; row++)
+				{
+					if (GetRowScale(row))
+						vals.Add(row);
 				}
-				return vals.ToArray ();
+				return vals.ToArray();
 			}
 		}
 
 		#region Attached Properties
 
-		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier (typeof(TableLayout), "Location");
-		
-		public static Point GetLocation (Control control)
+		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
+
+		public static Point GetLocation(Control control)
 		{
-			return control.Properties.Get<Point> (LocationProperty, Point.Empty);
+			return control.Properties.Get<Point>(LocationProperty, Point.Empty);
 		}
-		
-		public static void SetLocation (Control control, Point value)
+
+		public static void SetLocation(Control control, Point value)
 		{
 			control.Properties[LocationProperty] = value;
 			var layout = control.ParentLayout as TableLayout;
 			if (layout != null)
-				layout.Move (control, value);
+				layout.Move(control, value);
 		}
 
-		static EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier (typeof(TableLayout), "ColumnScale");
-		
-		public static bool GetColumnScale (Control control)
+		static EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "ColumnScale");
+
+		public static bool GetColumnScale(Control control)
 		{
-			return control.Properties.Get<bool> (ColumnScaleProperty, false);
+			return control.Properties.Get<bool>(ColumnScaleProperty, false);
 		}
-		
-		public static void SetColumnScale (Control control, bool value)
+
+		public static void SetColumnScale(Control control, bool value)
 		{
 			control.Properties[ColumnScaleProperty] = value;
 		}
 
-		static EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier (typeof(TableLayout), "RowScale");
-		
-		public static bool GetRowScale (Control control)
+		static EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "RowScale");
+
+		public static bool GetRowScale(Control control)
 		{
-			return control.Properties.Get<bool> (RowScaleProperty, false);
+			return control.Properties.Get<bool>(RowScaleProperty, false);
 		}
-		
-		public static void SetRowScale (Control control, bool value)
+
+		public static void SetRowScale(Control control, bool value)
 		{
 			control.Properties[RowScaleProperty] = value;
 		}
 
 		#endregion
 
-		public static Control AutoSized (Control control, Padding? padding = null, bool centered = false)
+		public static Control AutoSized(Control control, Padding? padding = null, bool centered = false)
 		{
 			var layout = new TableLayout(new Panel(), 3, 3);
 			layout.Padding = padding ?? Padding.Empty;
 			layout.Spacing = Size.Empty;
 			if (centered)
 			{
-				layout.SetColumnScale (0);
-				layout.SetColumnScale (2);
-				layout.SetRowScale (0);
-				layout.SetRowScale (2);
+				layout.SetColumnScale(0);
+				layout.SetColumnScale(2);
+				layout.SetRowScale(0);
+				layout.SetRowScale(2);
 			}
-			layout.Add (control, 1, 1);
+			layout.Add(control, 1, 1);
 			return layout.Container;
 		}
-		
-		public TableLayout ()
+
+		public TableLayout()
 			: this(null, Size.Empty)
 		{
 		}
 
-		public TableLayout (Size size)
+		public TableLayout(Size size)
 			: this(null, size)
 		{
 		}
-		
-		public TableLayout (Container container, int width, int height)
+
+		public TableLayout(Container container, int width, int height)
 			: this(container, new Size(width, height))
 		{
 		}
 
-		public TableLayout (Container container, Size size)
+		public TableLayout(Container container, Size size)
 			: base(container != null ? container.Generator : Generator.Current, container, typeof(ITableLayout), false)
 		{
 			inner = (ITableLayout)Handler;
 			this.Size = size;
-			Initialize ();
+			Initialize();
 			if (this.Container != null)
 				this.Container.Layout = this;
 		}
 
-		public void SetColumnScale (int column, bool scale = true)
+		public void SetColumnScale(int column, bool scale = true)
 		{
-			inner.SetColumnScale (column, scale);
+			inner.SetColumnScale(column, scale);
 		}
 
-		public bool GetColumnScale (int column)
+		public bool GetColumnScale(int column)
 		{
-			return inner.GetColumnScale (column);
+			return inner.GetColumnScale(column);
 		}
 
-		public void SetRowScale (int row, bool scale = true)
+		public void SetRowScale(int row, bool scale = true)
 		{
-			inner.SetRowScale (row, scale);
+			inner.SetRowScale(row, scale);
 		}
 
-		public bool GetRowScale (int row)
+		public bool GetRowScale(int row)
 		{
-			return inner.GetRowScale (row);
+			return inner.GetRowScale(row);
 		}
 
-		public void Add (Control control, int x, int y)
+		public void Add(Control control, int x, int y)
 		{
 			if (control != null)
-				control.Properties [LocationProperty] = new Point (x, y);
-			InnerAdd (control, x, y);
+				control.Properties[LocationProperty] = new Point(x, y);
+			InnerAdd(control, x, y);
 		}
 
-		void InnerAdd (Control control, int x, int y)
+		void InnerAdd(Control control, int x, int y)
 		{
-			controls [x, y] = control;
+			var old = controls[x, y];
+			if (old != null)
+			{
+				old.SetParentLayout(null);
+			}
+			controls[x, y] = control;
 			bool load = Loaded;
-			if (control != null) {
-				control.SetParentLayout (this);
+			if (control != null)
+			{
+				control.SetParentLayout(this);
 				load &= !control.Loaded;
-				if (load) {
-					control.OnPreLoad (EventArgs.Empty);
-					control.OnLoad (EventArgs.Empty);
+				if (load)
+				{
+					control.OnPreLoad(EventArgs.Empty);
+					control.OnLoad(EventArgs.Empty);
 				}
 			}
-			inner.Add (control, x, y);
+			inner.Add(control, x, y);
 			if (control != null && load)
-				control.OnLoadComplete (EventArgs.Empty);
+				control.OnLoadComplete(EventArgs.Empty);
 		}
 
-		public void Add (Control child, int x, int y, bool xscale, bool yscale)
+		public void Add(Control child, int x, int y, bool xscale, bool yscale)
 		{
 			child.Properties[LocationProperty] = new Point(x, y);
-			SetColumnScale (x, xscale);
-			SetRowScale (y, yscale);
-			Add (child, x, y);
-		}
-		
-		public void Add (Control child, Point p)
-		{
-			Add (child, p.X, p.Y);
+			SetColumnScale(x, xscale);
+			SetRowScale(y, yscale);
+			Add(child, x, y);
 		}
 
-		public void Move (Control child, int x, int y)
+		public void Add(Control child, Point p)
 		{
+			Add(child, p.X, p.Y);
+		}
+
+		public void Move(Control child, int x, int y)
+		{
+			var old = controls[x, y];
+			if (old != null)
+			{
+				old.SetParentLayout(null);
+			}
+			controls[x, y] = child;
 			child.Properties[LocationProperty] = new Point(x, y);
-			inner.Move (child, x, y);
+			inner.Move(child, x, y);
 		}
-		
-		public void Move (Control child, Point p)
+
+		public void Move(Control child, Point p)
 		{
-			Move (child, p.X, p.Y);
+			Move(child, p.X, p.Y);
 		}
-		
-		public Size Spacing {
+
+		public Size Spacing
+		{
 			get { return inner.Spacing; }
 			set { inner.Spacing = value; }
 		}
-		
-		public Padding Padding {
+
+		public Padding Padding
+		{
 			get { return inner.Padding; }
-			set { 
+			set
+			{
 				inner.Padding = value;
 			}
 		}
 
 		[OnDeserialized]
-		internal void OnDeserialized (StreamingContext context)
+		internal void OnDeserialized(StreamingContext context)
 		{
-			OnDeserialized ();
+			OnDeserialized();
 		}
 
-		public override void EndInit ()
+		public override void EndInit()
 		{
-			base.EndInit ();
-			OnDeserialized (Container != null); // mono calls EndInit BEFORE setting to parent
+			base.EndInit();
+			OnDeserialized(Container != null); // mono calls EndInit BEFORE setting to parent
 		}
 
-		void OnDeserialized (bool direct = false)
+		void OnDeserialized(bool direct = false)
 		{
-			if (Loaded || direct) {
-				if (children != null) {
-					foreach (var control in children) {
-						var location = GetLocation (control);
-						Add (control, location);
+			if (Loaded || direct)
+			{
+				if (children != null)
+				{
+					foreach (var control in children)
+					{
+						var location = GetLocation(control);
+						Add(control, location);
 						if (GetColumnScale(control))
-							SetColumnScale (location.X);
+							SetColumnScale(location.X);
 						if (GetRowScale(control))
-							SetRowScale (location.Y);
+							SetRowScale(location.Y);
 					}
 				}
-			} else {
+			}
+			else
+			{
 				this.PreLoad += HandleDeserialized;
 			}
 		}
-		
-		void HandleDeserialized (object sender, EventArgs e)
+
+		void HandleDeserialized(object sender, EventArgs e)
 		{
 			OnDeserialized(true);
 			this.PreLoad -= HandleDeserialized;

@@ -17,7 +17,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		
 		public GroupBoxHandler ()
 		{
-			Control = new swc.GroupBox ();
+			Control = new swc.GroupBox();
 		}
 		
 		public override Size ClientSize
@@ -38,6 +38,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override void SetLayout (Layout layout)
 		{
 			Control.Content = (System.Windows.UIElement)layout.ControlObject;
+			var tableLayout = layout.Handler as TableLayoutHandler;
+			if (tableLayout != null)
+				tableLayout.Adjust = new Size(0, -1);
 		}
 
 		public override Color BackgroundColor

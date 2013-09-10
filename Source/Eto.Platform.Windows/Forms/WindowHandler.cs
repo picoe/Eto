@@ -27,7 +27,7 @@ namespace Eto.Platform.Windows
 		swf.Panel content;
 		swf.Panel toolbarHolder;
 		swf.ToolTip tooltips = new swf.ToolTip();
-		bool resizable = true;
+        bool resizable;
 
 		public override Size DesiredSize
 		{
@@ -71,7 +71,10 @@ namespace Eto.Platform.Windows
 		{
 			base.Initialize ();
 			Control.KeyPreview = true;
-			content = new swf.Panel {
+            Control.FormBorderStyle = DefaultWindowStyle;
+            resizable = Control.FormBorderStyle.IsResizable();
+            content = new swf.Panel
+            {
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
 				Dock = swf.DockStyle.Fill
@@ -184,15 +187,22 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+        protected virtual swf.FormBorderStyle DefaultWindowStyle
+        {
+            get { return swf.FormBorderStyle.Sizable; }
+        }
+
 		public virtual bool Resizable
 		{
 			get { return resizable; }
-			set {
-				if (value != resizable) {
-					resizable = value;
-					Control.FormBorderStyle = Control.FormBorderStyle.ToEto ().ToSWF (value);
-				}
-			}
+            set
+            {
+                if (value != resizable)
+                {
+                    Control.FormBorderStyle = Control.FormBorderStyle.ToEto().ToSWF(value, DefaultWindowStyle);
+                    resizable = value;
+                }
+            }
 		}
 
 		public virtual bool Maximizable
@@ -343,8 +353,8 @@ namespace Eto.Platform.Windows
 
         public WindowStyle WindowStyle
         {
-			get { return Control.FormBorderStyle.ToEto (); }
-			set { Control.FormBorderStyle = value.ToSWF (resizable); }
+            get { return Control.FormBorderStyle.ToEto(); }
+            set { Control.FormBorderStyle = value.ToSWF(resizable, DefaultWindowStyle); }
         }
 
 		public void BringToFront ()
