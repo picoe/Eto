@@ -121,6 +121,7 @@
     <Compile Include="Sections\Behaviors\MousePositionSection.cs" />
     <Compile Include="Sections\Drawing\UnitTestSection.cs" />
     <Compile Include="UnitTests\TestRunner.cs" />
+    <Compile Include="TestIcons.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />
