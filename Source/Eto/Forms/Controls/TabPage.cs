@@ -19,7 +19,9 @@ namespace Eto.Forms
 		public TabPage (Control control, Padding? padding = null)
 			: this (control.Generator)
 		{
-			this.AddDockedControl (control, padding);
+			if (padding != null)
+				this.Padding = padding.Value;
+			this.Content = control;
 		}
 
 		public TabPage ()

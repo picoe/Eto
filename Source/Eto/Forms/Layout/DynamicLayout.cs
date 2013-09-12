@@ -96,6 +96,11 @@ namespace Eto.Forms
 		{
 		}
 
+		public DynamicLayout(Size? spacing)
+			: this ((Padding?)null, spacing, (Generator)null)
+		{
+		}
+
 		public DynamicLayout(Padding? padding, Size? spacing = null, Generator generator = null)
 			: base(generator)
 		{
