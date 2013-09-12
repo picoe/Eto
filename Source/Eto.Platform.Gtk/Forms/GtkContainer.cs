@@ -9,6 +9,13 @@ namespace Eto.Platform.GtkSharp
 		where W: Container
 	{
 
-		public virtual Size ClientSize { get; set; }
+		public virtual Size ClientSize
+		{
+			get { return this.Size; }
+			set
+			{
+				this.Size = value;
+			}
+		}
 	}
 }

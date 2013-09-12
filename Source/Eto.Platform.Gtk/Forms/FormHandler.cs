@@ -17,7 +17,7 @@ namespace Eto.Platform.GtkSharp
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.Add(ContainerControl);
+			Control.Add(WindowContentControl);
 		}
 
 		public void Show()

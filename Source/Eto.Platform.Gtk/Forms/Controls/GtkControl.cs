@@ -32,6 +32,19 @@ namespace Eto.Platform.GtkSharp
 				return controlObject.GetContainerWidget();
 			return control.ControlObject as Gtk.Widget;
 		}
+
+		public static IGtkControl GetGtkControlHandler(this Control control)
+		{
+			if (control == null)
+				return null;
+			var containerHandler = control.Handler as IGtkControl;
+			if (containerHandler != null)
+				return containerHandler;
+			var controlObject = control.ControlObject as Control;
+			if (controlObject != null)
+				return controlObject.GetGtkControlHandler();
+			return null;
+		}
 	}
 
 	public abstract class GtkControl<T, W> : WidgetHandler<T, W>, IControl, IGtkControl
@@ -211,6 +224,11 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual void SetParent(Eto.Forms.Container parent)
 		{
+			if (parent == null)
+			{
+				if (ContainerControl.Parent != null)
+					((Gtk.Container)ContainerControl.Parent).Remove(ContainerControl);
+			}
 		}
 
 		public virtual void OnPreLoad(EventArgs e)

@@ -15,13 +15,13 @@ namespace Eto.Platform.GtkSharp
 			Control.HasSeparator = false;
 			//control.Resizable = true;
 		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.VBox.Add(ContainerControl);
+			Control.Add(WindowContentControl);
 		}
-		
+
+
 		public Button AbortButton {
 			get;
 			set;
@@ -33,18 +33,6 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		
-		/*
-		private Gtk.Window FindParentWindow(Gtk.Widget widget)
-		{
-			while (widget != null && !(widget is Gtk.Window))
-			{
-				widget = widget.Parent;
-			}
-			return (Gtk.Window)widget;
-			
-		}
-		 */
-
 		public DialogDisplayMode DisplayMode { get; set; }
 
 		public DialogResult ShowDialog (Control parent)
@@ -52,7 +40,7 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnPreLoad (EventArgs.Empty);
 			
 			if (parent != null) {
-				Control.TransientFor = ((Gtk.Window)(parent.ParentWindow).ControlObject); //FindParentWindow((Gtk.Widget)parent.ControlObject);
+				Control.TransientFor = ((Gtk.Window)(parent.ParentWindow).ControlObject);
 				Control.Modal = true;
 			}
 			Control.ShowAll ();
@@ -71,7 +59,7 @@ namespace Eto.Platform.GtkSharp
 			Control.Run ();
 			Control.HideAll ();
 									
-			return Widget.DialogResult; // Generator.Convert((Gtk.ResponseType)result);
+			return Widget.DialogResult;
 		}
 
 	}

@@ -15,19 +15,9 @@ namespace Eto.Platform.GtkSharp
 			Control.Add(box);
 		}
 
-		protected override void SetContent(Control content)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			if (box.Children.Length > 0)
-				foreach (Gtk.Widget child in box.Children)
-					box.Remove(child);
-			var containerWidget = content.GetContainerWidget();
-			if (containerWidget != null)
-			{
-				if (containerWidget.Parent != null)
-					containerWidget.Reparent(box);
-				box.Add(containerWidget);
-				containerWidget.ShowAll();
-			}
+			box.Add(content);
 		}
 	}
 }

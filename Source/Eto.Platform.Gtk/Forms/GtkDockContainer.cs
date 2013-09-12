@@ -11,35 +11,21 @@ namespace Eto.Platform.GtkSharp
 		Gtk.Alignment alignment;
 		Control content;
 
-		public sealed override Gtk.Widget ContainerControl
-		{
-			get { return alignment; }
-		}
-
 		public override Gtk.Widget ContainerContentControl
 		{
 			get { return Control; }
 		}
 
-		public virtual Size ClientSize
-		{
-			get { return this.Size; }
-			set
-			{
-				this.Size = value;
-			}
-		}
-
 		public GtkDockContainer()
 		{
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
-			this.Padding = DockLayout.DefaultPadding;
+			this.Padding = DockContainer.DefaultPadding;
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
-			alignment.Child = ContainerContentControl;
+			SetContainerContent(alignment);
 		}
 
 		bool loaded;
@@ -85,12 +71,21 @@ namespace Eto.Platform.GtkSharp
 			{
 				if (content != value)
 				{
+					foreach (var child in alignment.Children)
+						alignment.Remove(child);
 					content = value;
-					SetContent(content);
+					var widget = content.GetContainerWidget();
+					if (widget != null)
+					{
+						if (widget.Parent != null)
+							((Gtk.Container)widget.Parent).Remove(widget);
+						alignment.Child = widget;
+						widget.ShowAll();
+					}
 				}
 			}
 		}
 
-		protected abstract void SetContent(Control content);
+		protected abstract void SetContainerContent(Gtk.Widget content);
 	}
 }

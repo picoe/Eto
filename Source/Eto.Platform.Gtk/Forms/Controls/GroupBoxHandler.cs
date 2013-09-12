@@ -43,17 +43,9 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		protected override void SetContent(Eto.Forms.Control content)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			if (Control.Child != null)
-				Control.Remove (Control.Child);
-			var containerWidget = content.GetContainerWidget();
-			if (containerWidget != null)
-			{
-				if (containerWidget.Parent != null)
-					containerWidget.Reparent(Control);
-				Control.Add(containerWidget);
-			}
+			Control.Add(content);
 
 			/*if (clientSize != null) {
 				var label = Control.LabelWidget;

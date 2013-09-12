@@ -58,19 +58,9 @@ namespace Eto.Platform.GtkSharp
 			return new Graphics(Widget.Generator, new GraphicsHandler(Control, Control.GdkWindow));
 		}
 
-		protected override void SetContent(Eto.Forms.Control content)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			if (this.content.Children.Length > 0)
-				foreach (Gtk.Widget child in this.content.Children)
-					this.content.Remove(child);
-			var containerWidget = content.GetContainerWidget();
-			if (containerWidget != null)
-			{
-				if (containerWidget.Parent != null)
-					containerWidget.Reparent(this.content);
-				this.content.Add(containerWidget);
-				containerWidget.ShowAll();
-			}
+			this.content.Add(content);
 		}
 	}
 }

@@ -27,19 +27,9 @@ namespace Eto.Platform.GtkSharp
 			get { return tab; }
 		}
 
-		protected override void SetContent(Eto.Forms.Control content)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			if (Control.Children.Length > 0)
-				foreach (Gtk.Widget child in Control.Children)
-					Control.Remove(child);
-			var containerWidget = content.GetContainerWidget();
-			if (containerWidget != null)
-			{
-				if (containerWidget.Parent != null)
-					containerWidget.Reparent(Control);
-				Control.PackStart(containerWidget);
-				containerWidget.ShowAll();
-			}
+			Control.PackStart(content);
 		}
 		
 		public Eto.Drawing.Image Image {

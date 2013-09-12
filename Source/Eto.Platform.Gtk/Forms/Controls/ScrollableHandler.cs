@@ -98,18 +98,11 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnSizeChanged (EventArgs.Empty);
 		}
 
-		protected override void SetContent(Eto.Forms.Control content)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			foreach (Gtk.Widget child in hbox.Children)
-				hbox.Remove (child);
-			var containerWidget = layoutWidget = content.GetContainerWidget();
-			if (containerWidget != null)
-			{
-				if (containerWidget.Parent != null)
-					containerWidget.Reparent(hbox);
-				hbox.PackStart(containerWidget, false, true, 0);
-			}
-			SetPacking ();
+			layoutWidget = content;
+			hbox.PackStart(content, false, true, 0);
+			SetPacking();
 		}
 
 		void SetPacking ()

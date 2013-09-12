@@ -106,6 +106,18 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				case Eto.Forms.Control.TextChangedEvent:
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
+		}
+
 		public virtual Color TextColor
 		{
 			get { return Control.Style.Foreground(Gtk.StateType.Normal).ToEto(); }
