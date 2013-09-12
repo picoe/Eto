@@ -5,9 +5,9 @@ namespace Eto.Forms
 {
 	public partial interface IDrawable : IDockContainer
 	{
-		void Create ();
-		
-		void Update (Rectangle rect);
+		void Create();
+
+		void Update(Rectangle rect);
 
 		bool CanFocus { get; set; }
 
@@ -19,71 +19,74 @@ namespace Eto.Forms
 		Graphics graphics;
 		Rectangle clipRectangle;
 
-		public PaintEventArgs (Graphics graphics,Rectangle clipRectangle)
+		public PaintEventArgs(Graphics graphics, Rectangle clipRectangle)
 		{
 			this.clipRectangle = clipRectangle;
 			this.graphics = graphics;
 		}
 
-		public Graphics Graphics {
+		public Graphics Graphics
+		{
 			get { return graphics; }
 		}
 
-		public Rectangle ClipRectangle {
+		public Rectangle ClipRectangle
+		{
 			get { return clipRectangle; }
 		}
 	}
 
-	public delegate void PaintEventHandler (object sender, PaintEventArgs pe);
+	public delegate void PaintEventHandler(object sender, PaintEventArgs pe);
 
 	public partial class Drawable : DockContainer
 	{
-		IDrawable handler;
+		new IDrawable Handler { get { return (IDrawable)base.Handler; } }
 
 		public event PaintEventHandler Paint;
 
-		public Drawable () : this(Generator.Current)
+		public Drawable()
+			: this(Generator.Current)
 		{
 		}
 
-		public Drawable (Generator g) : this(g, typeof(IDrawable))
+		public Drawable(Generator generator)
+			: this(generator, typeof(IDrawable))
 		{
 		}
-		
-		protected Drawable (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, false)
+
+		protected Drawable(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, false)
 		{
-			handler = (IDrawable)Handler;
-			handler.Create ();
-			if (initialize) Initialize ();
+			Handler.Create();
+			if (initialize) Initialize();
 		}
 
 
-		public Drawable (Generator generator, IDrawable handler, bool initialize = true) 
-			: base (generator, handler, initialize)
+		public Drawable(Generator generator, IDrawable handler, bool initialize = true)
+			: base(generator, handler, initialize)
 		{
-			this.handler = handler;
 		}
 
-		public virtual void OnPaint (PaintEventArgs pe)
+		public virtual void OnPaint(PaintEventArgs pe)
 		{
 			if (Paint != null)
-				Paint (this, pe);
+				Paint(this, pe);
 		}
 
 		public Graphics CreateGraphics()
 		{
-			return handler.CreateGraphics();
-		}
-		
-		public bool CanFocus {
-			get { return handler.CanFocus; }
-			set { handler.CanFocus = value; }
+			return Handler.CreateGraphics();
 		}
 
-		public void Update (Rectangle rect)
+		public bool CanFocus
 		{
-			handler.Update (rect);
+			get { return Handler.CanFocus; }
+			set { Handler.CanFocus = value; }
+		}
+
+		public void Update(Rectangle rect)
+		{
+			Handler.Update(rect);
 		}
 
 	}

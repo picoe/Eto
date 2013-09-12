@@ -46,14 +46,18 @@ namespace Eto.Forms
 	/// This layout is used to fill an entire container with a single content control.
 	/// </remarks>
 	[ContentProperty("Content")]
-	[Obsolete("use the DockContainer.Content property instead, or use a Panel")]
+	[Obsolete("Use the DockContainer.Content property instead, or use a Panel")]
 	public class DockLayout : Panel
 	{
-		DockContainer container;
 		/// <summary>
 		/// Gets or sets the default amount of padding for all new DockLayout objects
 		/// </summary>
-		public static Padding DefaultPadding = Padding.Empty;
+		[Obsolete("Use DockContainer.DefaultPadding instead")]
+		public static Padding DefaultPadding
+		{
+			get { return DockContainer.DefaultPadding; }
+			set { DockContainer.DefaultPadding = value; }
+		}
 
 		[Obsolete("Use Panel directly instead")]
 		public Container Container { get { return Parent; } }
@@ -99,9 +103,8 @@ namespace Eto.Forms
 		public DockLayout (DockContainer container)
 			: base ()
 		{
-			this.container = container;
-			if (this.container != null)
-				this.container.Content = this;
+			if (container != null)
+				container.Content = this;
 		}
 
 		/// <summary>

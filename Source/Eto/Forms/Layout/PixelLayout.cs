@@ -42,14 +42,17 @@ namespace Eto.Forms
 			}
 		}
 
-		public PixelLayout()
-			: this(null)
+		public PixelLayout(Generator generator = null)
+			: base(generator, typeof(IPixelLayout))
 		{
 		}
 
+		[Obsolete("Add a PixelLayout to a DockContainer using the DockContainer.Content property")]
 		public PixelLayout(DockContainer container)
-			: base (container != null ? container.Generator : Generator.Current, container, typeof (IPixelLayout), true)
+			: this(container != null ? container.Generator : null)
 		{
+			if (container != null)
+				container.Content = this;
 		}
 
 		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
@@ -62,16 +65,16 @@ namespace Eto.Forms
 		public static void SetLocation(Control control, Point value)
 		{
 			control.Properties[LocationProperty] = value;
-			var layout = control.ParentLayout as PixelLayout;
+			var layout = control.Parent as PixelLayout;
 			if (layout != null)
 				layout.Move(control, value);
 		}
 
 		public void Add(Control control, int x, int y)
 		{
+			control.SetParent(null, false);
 			control.Properties[LocationProperty] = new Point(x, y);
 			controls.Add(control);
-			control.SetParent(this);
 			var load = Loaded && !control.Loaded;
 			if (load)
 			{
@@ -79,6 +82,7 @@ namespace Eto.Forms
 				control.OnLoad(EventArgs.Empty);
 			}
 			Handler.Add(control, x, y);
+			control.SetParent(this);
 			if (load)
 				control.OnLoadComplete(EventArgs.Empty);
 		}
@@ -128,7 +132,7 @@ namespace Eto.Forms
 		public override void EndInit()
 		{
 			base.EndInit();
-			OnDeserialized(ParentLayout != null); // mono calls EndInit BEFORE setting to parent
+			OnDeserialized(Parent != null); // mono calls EndInit BEFORE setting to parent
 		}
 
 		void OnDeserialized(bool direct = false)

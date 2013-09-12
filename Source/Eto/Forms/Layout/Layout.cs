@@ -63,33 +63,20 @@ namespace Eto.Forms
 	public abstract class Layout : Container, ISupportInitialize
 	{
 		new ILayout Handler { get { return (ILayout)base.Handler; } }
-		Container container;
 
 		public bool Initializing { get; private set; }
 
 		[Obsolete("Use Parent instead")]
 		public Container Container { get { return Parent; } }
 		
-		protected Layout (Generator g, DockContainer container, Type type, bool initialize = true)
-			: base(g, type, false)
+		protected Layout (Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
 		{
-			this.container = container;
-			if (initialize) {
-				Initialize ();
-				if (container != null)
-					container.Content = this;
-			}
 		}
 
-		protected Layout (Generator g, DockContainer container, ILayout handler, bool initialize = true)
-			: base (g, handler, false)
+		protected Layout (Generator g, ILayout handler, bool initialize = true)
+			: base (g, handler, initialize)
 		{
-			this.container = container;
-			if (initialize) {
-				Initialize ();
-				if (container != null)
-					container.Content = this;
-			}
 		}
 		
 		public virtual void Update ()

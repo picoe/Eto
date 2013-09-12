@@ -173,7 +173,7 @@ namespace Eto.Forms
 
 		public static Control AutoSized(Control control, Padding? padding = null, bool centered = false)
 		{
-			var layout = new TableLayout(new Panel(), 3, 3);
+			var layout = new TableLayout(3, 3);
 			layout.Padding = padding ?? Padding.Empty;
 			layout.Spacing = Size.Empty;
 			if (centered)
@@ -184,35 +184,37 @@ namespace Eto.Forms
 				layout.SetRowScale(2);
 			}
 			layout.Add(control, 1, 1);
-			return layout.Parent;
+			return layout;
 		}
 
 		public TableLayout()
-			: this(null, Size.Empty)
+			: this(Size.Empty, null)
 		{
 		}
 
-		public TableLayout(Size size)
-			: this(null, size)
+		public TableLayout(int width, int height, Generator generator = null)
+			: this(new Size(width, height), generator)
 		{
 		}
 
-		public TableLayout(int width, int height)
-			: this(null, new Size(width, height))
+		public TableLayout(Size size, Generator generator = null)
+			: base(generator, typeof(ITableLayout), false)
 		{
+			this.Size = size;
+			Initialize();
 		}
 
 
+		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
 		public TableLayout(DockContainer container, int width, int height)
 			: this(container, new Size(width, height))
 		{
 		}
 
+		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
 		public TableLayout(DockContainer container, Size size)
-			: base(container != null ? container.Generator : Generator.Current, container, typeof(ITableLayout), false)
+			: this(size, container != null ? container.Generator : Generator.Current)
 		{
-			this.Size = size;
-			Initialize();
 			if (container != null)
 				container.Content = this;
 		}
@@ -255,17 +257,22 @@ namespace Eto.Forms
 			bool load = Loaded;
 			if (control != null)
 			{
-				control.SetParent(this);
+				control.SetParent(null, false);
 				load &= !control.Loaded;
 				if (load)
 				{
 					control.OnPreLoad(EventArgs.Empty);
 					control.OnLoad(EventArgs.Empty);
 				}
+				Handler.Add(control, x, y);
+				control.SetParent(this);
+				if (load)
+					control.OnLoadComplete(EventArgs.Empty);
 			}
-			Handler.Add(control, x, y);
-			if (control != null && load)
-				control.OnLoadComplete(EventArgs.Empty);
+			else
+			{
+				Handler.Add(null, x, y);
+			}
 		}
 
 		public void Add(Control child, int x, int y, bool xscale, bool yscale)

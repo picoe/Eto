@@ -28,6 +28,8 @@ namespace Eto.Forms
 	{
 		new IDockContainer Handler { get { return (IDockContainer)base.Handler; } }
 
+		public static Padding DefaultPadding = Padding.Empty;
+
 		public override IEnumerable<Control> Controls
 		{
 			get
@@ -52,13 +54,14 @@ namespace Eto.Forms
 					if (old != null)
 						old.SetParent(null);
 					if (value != null) {
-						value.SetParent (this);
+						value.SetParent(null, false);
 						var load = Loaded && !value.Loaded;
 						if (load) {
 							value.OnPreLoad (EventArgs.Empty);
 							value.OnLoad (EventArgs.Empty);
 						}
 						Handler.Content = value;
+						value.SetParent(this);
 						if (load)
 							value.OnLoadComplete (EventArgs.Empty);
 					}
