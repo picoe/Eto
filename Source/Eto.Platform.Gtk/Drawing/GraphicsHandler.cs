@@ -304,7 +304,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 				surface.Dispose();
 				surface = null;
 			}
-			
+
 			base.Dispose (disposing);
 		}
 

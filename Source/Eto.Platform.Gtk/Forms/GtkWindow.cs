@@ -45,6 +45,11 @@ namespace Eto.Platform.GtkSharp
 			bottomToolbarBox = new Gtk.VBox ();
 		}
 
+		protected override Color DefaultBackgroundColor
+		{
+			get { return Control.Style.Background(Gtk.StateType.Normal).ToEto(); }
+		}
+
 		public Gtk.Widget WindowContentControl
 		{
 			get { return vbox; }

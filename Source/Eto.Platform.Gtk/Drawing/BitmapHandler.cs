@@ -12,17 +12,17 @@ namespace Eto.Platform.GtkSharp.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+		public BitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(image, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
-		public override uint TranslateArgbToData (uint argb)
+		public override uint TranslateArgbToData(uint argb)
 		{
 			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
 		}
 
-		public override uint TranslateDataToArgb (uint bitmapData)
+		public override uint TranslateDataToArgb(uint bitmapData)
 		{
 			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
 		}
@@ -35,94 +35,97 @@ namespace Eto.Platform.GtkSharp.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : ImageHandler<Gdk.Pixbuf, Bitmap>, IBitmap, IGtkPixbuf
 	{
-		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf> ();
+		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 
 		public bool Alpha { get; set; }
-		
-		public BitmapHandler ()
+
+		public BitmapHandler()
 		{
 		}
 
-		public BitmapHandler (Gdk.Pixbuf pixbuf)
+		public BitmapHandler(Gdk.Pixbuf pixbuf)
 		{
 			this.Control = pixbuf;
 		}
-		
-		public void Create (string fileName)
+
+		public void Create(string fileName)
 		{
-			Control = new Gdk.Pixbuf (fileName);
+			Control = new Gdk.Pixbuf(fileName);
 		}
 
-		public void Create (Stream stream)
+		public void Create(Stream stream)
 		{
-			Control = new Gdk.Pixbuf (stream);
+			Control = new Gdk.Pixbuf(stream);
 		}
 
-		public void Create (int width, int height, PixelFormat pixelFormat)
+		public void Create(int width, int height, PixelFormat pixelFormat)
 		{
-			switch (pixelFormat) {
-			case PixelFormat.Format32bppRgba:
-				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
-				Control.Fill(0);
-				Alpha = true;
-				break;
-			case PixelFormat.Format32bppRgb:
-				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, true, 8, width, height);
-				Control.Fill(0x000000FF);
-				break;
-			case PixelFormat.Format24bppRgb:
-				Control = new Gdk.Pixbuf (Gdk.Colorspace.Rgb, false, 8, width, height);
-				break;
-			/*case PixelFormat.Format16bppRgb555:
-					control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
-					break;*/
-			default:
-				throw new NotSupportedException ();
+			switch (pixelFormat)
+			{
+				case PixelFormat.Format32bppRgba:
+					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, width, height);
+					Control.Fill(0);
+					Alpha = true;
+					break;
+				case PixelFormat.Format32bppRgb:
+					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, true, 8, width, height);
+					Control.Fill(0x000000FF);
+					break;
+				case PixelFormat.Format24bppRgb:
+					Control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 8, width, height);
+					break;
+				/*case PixelFormat.Format16bppRgb555:
+						control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
+						break;*/
+				default:
+					throw new NotSupportedException();
 			}
 		}
 
 		public void Create(int width, int height, Graphics graphics)
 		{
-			Create (width, height, PixelFormat.Format32bppRgba);
+			Create(width, height, PixelFormat.Format32bppRgba);
 		}
 
-		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			var pixbuf = image.ToGdk ();
-			Control = pixbuf.ScaleSimple (width, height, interpolation.ToGdk ());
+			var pixbuf = image.ToGdk();
+			Control = pixbuf.ScaleSimple(width, height, interpolation.ToGdk());
 		}
 
-		public BitmapData Lock ()
+		public BitmapData Lock()
 		{
-			return new BitmapDataHandler (Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null);
+			return new BitmapDataHandler(Widget, Control.Pixels, Control.Rowstride, Control.HasAlpha ? 32 : 24, null);
 		}
 
-		public void Unlock (BitmapData bitmapData)
+		public void Unlock(BitmapData bitmapData)
 		{
-			sizes.Clear ();
+			sizes.Clear();
 		}
 
-		public void Save (Stream stream, ImageFormat format)
+		public void Save(Stream stream, ImageFormat format)
 		{
-			string fileName = Guid.NewGuid ().ToString ();
-			Control.Save (fileName, format.ToGdk ());
-			Stream fileStream = File.OpenRead (fileName);
+			string fileName = Guid.NewGuid().ToString();
+			Control.Save(fileName, format.ToGdk());
+			Stream fileStream = File.OpenRead(fileName);
 			byte[] buffer = new byte[4096];
 
-			int size = fileStream.Read (buffer, 0, buffer.Length);
-			while (size > 0) {
-				stream.Write (buffer, 0, size);
-				size = fileStream.Read (buffer, 0, buffer.Length);
+			int size = fileStream.Read(buffer, 0, buffer.Length);
+			while (size > 0)
+			{
+				stream.Write(buffer, 0, size);
+				size = fileStream.Read(buffer, 0, buffer.Length);
 			}
-			fileStream.Close ();
-			File.Delete (fileName);
+			fileStream.Close();
+			File.Delete(fileName);
 		}
 
-		public override Size Size {
-			get { return new Size (Control.Width, Control.Height); }
+		public override Size Size
+		{
+			get { return new Size(Control.Width, Control.Height); }
 		}
 
-		public override void SetImage (Gtk.Image imageView, Gtk.IconSize? iconSize)
+		public override void SetImage(Gtk.Image imageView, Gtk.IconSize? iconSize)
 		{
 			if (iconSize != null)
 				imageView.SetFromIconSet(new Gtk.IconSet(Control), iconSize.Value);
@@ -130,28 +133,27 @@ namespace Eto.Platform.GtkSharp.Drawing
 				imageView.Pixbuf = Control;
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var context = graphics.Control;
-			context.Save ();
+			context.Save();
 			destination.X += (float)graphics.InverseOffset;
 			destination.Y += (float)graphics.InverseOffset;
-			context.Rectangle (destination.ToCairo ());
+			context.Rectangle(destination.ToCairo());
 			double scalex = 1;
 			double scaley = 1;
-			if (source.Width != destination.Width || source.Height != destination.Height) {
+			if (source.Width != destination.Width || source.Height != destination.Height)
+			{
 				scalex = (double)destination.Width / (double)source.Width;
 				scaley = (double)destination.Height / (double)source.Height;
-				context.Scale (scalex, scaley);
+				context.Scale(scalex, scaley);
 			}
-			Gdk.CairoHelper.SetSourcePixbuf (context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
-			using (var pattern = context.Source as Cairo.SurfacePattern)
-			{
-				pattern.Filter = graphics.ImageInterpolation.ToCairo();
-				context.Fill();
-			}
-			context.Restore ();
-			
+			Gdk.CairoHelper.SetSourcePixbuf(context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
+			var pattern = context.Source as Cairo.SurfacePattern;
+			pattern.Filter = graphics.ImageInterpolation.ToCairo();
+			context.Fill();
+			context.Restore();
+
 			/*
 			Gdk.Pixbuf pb = Control;
 			
@@ -184,30 +186,35 @@ namespace Eto.Platform.GtkSharp.Drawing
 				pb.Dispose ();*/
 		}
 
-		public Gdk.Pixbuf Pixbuf {
-			get {
+		public Gdk.Pixbuf Pixbuf
+		{
+			get
+			{
 				return Control;
 			}
 		}
-		
-		public Gdk.Pixbuf GetPixbuf (Size maxSize)
+
+		public Gdk.Pixbuf GetPixbuf(Size maxSize)
 		{
 			Gdk.Pixbuf pixbuf = Control;
-			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height) {
-				if (!sizes.TryGetValue (maxSize, out pixbuf)) {
-					pixbuf = Control.ScaleSimple (maxSize.Width, maxSize.Height, Gdk.InterpType.Bilinear);
-					sizes [maxSize] = pixbuf;
+			if (pixbuf.Width > maxSize.Width && pixbuf.Height > maxSize.Height)
+			{
+				if (!sizes.TryGetValue(maxSize, out pixbuf))
+				{
+					pixbuf = Control.ScaleSimple(maxSize.Width, maxSize.Height, Gdk.InterpType.Bilinear);
+					sizes[maxSize] = pixbuf;
 				}
 			}
-			
+
 			return pixbuf;
 		}
 
-		public Bitmap Clone (Rectangle? rectangle = null)
+		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			if (rectangle == null)
-				return new Bitmap(Generator, new BitmapHandler (Control.Copy ()));
-			else {
+				return new Bitmap(Generator, new BitmapHandler(Control.Copy()));
+			else
+			{
 				var rect = rectangle.Value;
 				PixelFormat format;
 				if (Control.BitsPerSample == 24)
@@ -216,30 +223,34 @@ namespace Eto.Platform.GtkSharp.Drawing
 					format = PixelFormat.Format32bppRgba;
 				else
 					format = PixelFormat.Format32bppRgb;
-				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
-				Control.CopyArea (rect.X, rect.Y, rect.Width, rect.Height, bmp.ToGdk (), 0, 0);
+				var bmp = new Bitmap(rect.Width, rect.Height, format, Generator);
+				Control.CopyArea(rect.X, rect.Y, rect.Width, rect.Height, bmp.ToGdk(), 0, 0);
 				return bmp;
 			}
 		}
-		
-		public Color GetPixel (int x, int y)
+
+		public Color GetPixel(int x, int y)
 		{
-			using (var data = Lock ()) {
-				unsafe {
+			using (var data = Lock())
+			{
+				unsafe
+				{
 					byte* srcrow = (byte*)data.Data;
 					srcrow += y * data.ScanWidth;
 					srcrow += x * data.BytesPerPixel;
-					if (data.BytesPerPixel == 4) {
-						return Color.FromArgb (data.TranslateDataToArgb (*(uint*)srcrow));
+					if (data.BytesPerPixel == 4)
+					{
+						return Color.FromArgb(data.TranslateDataToArgb(*(uint*)srcrow));
 					}
-					else if (data.BytesPerPixel == 3) {
-						var b = *(srcrow ++);
-						var g = *(srcrow ++);
-						var r = *(srcrow ++);
-						return Color.FromArgb (r, g, b);
+					else if (data.BytesPerPixel == 3)
+					{
+						var b = *(srcrow++);
+						var g = *(srcrow++);
+						var r = *(srcrow++);
+						return Color.FromArgb(r, g, b);
 					}
 					else
-						throw new NotSupportedException ();
+						throw new NotSupportedException();
 				}
 			}
 		}

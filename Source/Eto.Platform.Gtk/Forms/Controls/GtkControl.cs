@@ -16,6 +16,10 @@ namespace Eto.Platform.GtkSharp
 		Point CurrentLocation { get; set; }
 
 		Gtk.Widget ContainerControl { get; }
+
+		Color SelectedBackgroundColor { get; }
+
+		void SetBackgroundColor();
 	}
 
 	public static class GtkControlExtensions
@@ -56,7 +60,7 @@ namespace Eto.Platform.GtkSharp
 		Size asize;
 		bool mouseDownHandled;
 		Cursor cursor;
-		Color? originalBackgroundColor;
+		Color? cachedBackgroundColor;
 		Color? backgroundColor;
 		public static float SCROLL_AMOUNT = 2f;
 
@@ -161,29 +165,63 @@ namespace Eto.Platform.GtkSharp
 			Control.QueueDrawArea(rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		Color GetOriginalBackgroundColor()
+		protected virtual bool IsTransparentControl { get { return true; } }
+
+		protected virtual Color DefaultBackgroundColor
 		{
-			if (originalBackgroundColor == null)
-				originalBackgroundColor = ContainerContentControl.Style.Background(Gtk.StateType.Normal).ToEto();
-			return originalBackgroundColor.Value;
+			get { return ContainerContentControl.Style.Background(Gtk.StateType.Normal).ToEto(); }
 		}
+
+		public virtual Color SelectedBackgroundColor
+		{
+			get
+			{
+				if (cachedBackgroundColor != null)
+					return cachedBackgroundColor.Value;
+				Color col;
+				if (IsTransparentControl)
+				{
+					var parent = Widget.Parent.GetGtkControlHandler();
+					if (parent != null)
+						col = parent.SelectedBackgroundColor;
+					else
+						col = DefaultBackgroundColor;
+				}
+				else
+					col = DefaultBackgroundColor;
+				if (backgroundColor != null)
+				{
+					col = Color.Blend(col, backgroundColor.Value);
+				}
+				cachedBackgroundColor = col;
+				return col;
+			}
+		}
+
+		public virtual void SetBackgroundColor()
+		{
+			cachedBackgroundColor = null;
+			SetBackgroundColor(SelectedBackgroundColor);
+		}
+
+		protected virtual void SetBackgroundColor(Color color)
+		{
+			ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.ToGdk());
+		}
+
 
 		public virtual Color BackgroundColor
 		{
 			get
 			{
-				return backgroundColor ?? GetOriginalBackgroundColor();
+				return backgroundColor ?? SelectedBackgroundColor;
 			}
 			set
 			{
 				if (backgroundColor != value)
 				{
 					backgroundColor = value;
-					var col = Color.Blend(GetOriginalBackgroundColor(), value);
-					var eb = ContainerContentControl as Gtk.EventBox;
-					if (eb != null && value.A > 0)
-						eb.VisibleWindow = true;
-					ContainerContentControl.ModifyBg(Gtk.StateType.Normal, col.ToGdk());
+					SetBackgroundColor();
 				}
 			}
 		}
@@ -241,20 +279,26 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
-			if (cursor != null)
-			{
+			if (!Control.IsRealized)
 				Control.Realized += HandleControlRealized;
-			}
+			else
+				RealizedSetup();
 		}
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
 		}
 
-		void HandleControlRealized(object sender, EventArgs e)
+		void RealizedSetup()
 		{
 			if (cursor != null)
 				Control.GdkWindow.Cursor = cursor.ControlObject as Gdk.Cursor;
+			SetBackgroundColor();
+		}
+
+		void HandleControlRealized(object sender, EventArgs e)
+		{
+			RealizedSetup();
 			Control.Realized -= HandleControlRealized;
 		}
 

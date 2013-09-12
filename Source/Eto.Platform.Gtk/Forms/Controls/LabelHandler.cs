@@ -55,7 +55,7 @@ namespace Eto.Platform.GtkSharp
 		public LabelHandler()
 		{
 			eventBox = new Gtk.EventBox();
-			eventBox.VisibleWindow = false;
+			//eventBox.VisibleWindow = false;
 			Control = new EtoLabel
 			{
 				SingleLineMode = false,

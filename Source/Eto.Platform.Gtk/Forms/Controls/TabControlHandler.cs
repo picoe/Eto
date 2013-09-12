@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -11,7 +12,17 @@ namespace Eto.Platform.GtkSharp
 			Control = new Gtk.Notebook();
 		}
 
-		public override void OnLoadComplete (EventArgs e)
+		protected override bool IsTransparentControl
+		{
+			get { return false; }
+		}
+
+		protected override Color DefaultBackgroundColor
+		{
+			get { return ContainerContentControl.Style.Base(Gtk.StateType.Normal).ToEto(); }
+		}
+
+		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete (e);
 			Control.SwitchPage += delegate {
