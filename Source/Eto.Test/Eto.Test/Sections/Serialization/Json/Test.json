@@ -39,7 +39,7 @@
 					Text: "Table Layout",
 					Layout: {
 						$type: "TableLayout",
-						Size: "3,3",
+						CellSize: "3,3",
 						ColumnScale: [ 0, 2 ],
 						RowScale:  [ 0, 2 ],
 						Contents: [

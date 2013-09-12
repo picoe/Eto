@@ -19,15 +19,17 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 			layout.Add (DifferentSizes (), 2, 0, true, true);
 		}
 
-		void FillTable (TableLayout layout)
+		void FillTable(TableLayout layout)
 		{
-			for (int y = 0; y < layout.Size.Height; y++)
-				for (int x = 0; x < layout.Size.Width; x++) {
-					var panel = new Panel { 
+			for (int y = 0; y < layout.CellSize.Height; y++)
+				for (int x = 0; x < layout.CellSize.Width; x++)
+				{
+					var panel = new Panel
+					{ 
 						Size = SquareSize, 
-						BackgroundColor = (x+y*layout.Size.Width) % 2 == 0 ? Colors.Lime : Colors.Red 
+						BackgroundColor = (x+y*layout.CellSize.Width) % 2 == 0 ? Colors.Lime : Colors.Red 
 					};
-					layout.Add (panel, x, y);
+					layout.Add(panel, x, y);
 				}
 		}
 
