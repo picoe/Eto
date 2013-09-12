@@ -11,7 +11,7 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class GroupBoxHandler : WpfContainer<swc.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WpfDockContainer<swc.GroupBox, GroupBox>, IGroupBox
 	{
 		Font font;
 		
@@ -30,17 +30,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public override object ContainerObject
+		public override void SetContainerContent(sw.FrameworkElement content)
 		{
-			get { return Control; }
-		}
-
-		public override void SetLayout (Layout layout)
-		{
-			Control.Content = (System.Windows.UIElement)layout.ControlObject;
-			var tableLayout = layout.Handler as TableLayoutHandler;
+			Control.Content = content;
+			/*var tableLayout = layout.Handler as TableLayoutHandler;
 			if (tableLayout != null)
-				tableLayout.Adjust = new Size(0, -1);
+				tableLayout.Adjust = new Size(0, -1);*/
 		}
 
 		public override Color BackgroundColor
@@ -64,19 +59,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				font = value;
 				FontHandler.Apply (Control, font);
-			}
-		}
-
-		public override Size MinimumSize
-		{
-			get
-			{
-				return new Eto.Drawing.Size ((int)Control.MinHeight, (int)Control.MinWidth);
-			}
-			set
-			{
-				Control.MinHeight = value.Value.Height;
-				Control.MinWidth = value.Value.Width;
 			}
 		}
 

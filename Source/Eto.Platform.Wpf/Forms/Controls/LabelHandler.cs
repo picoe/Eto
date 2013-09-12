@@ -136,15 +136,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public Color TextColor
 		{
-			get
-			{
-				var b = (swm.SolidColorBrush)text.Foreground;
-				return b.Color.ToEto ();
-			}
-			set
-			{
-				text.Foreground = new swm.SolidColorBrush (value.ToWpf ());
-			}
+			get { return text.Foreground.ToEtoColor(); }
+			set { text.Foreground = value.ToWpfBrush(text.Foreground); }
 		}
 
 		public string Text

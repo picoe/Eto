@@ -14,13 +14,17 @@ using System.Threading;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ScrollableHandler : WpfFrameworkElement<swc.Border, Scrollable>, IScrollable
+	public class ScrollableHandler : WpfDockContainer<swc.Border, Scrollable>, IScrollable
 	{
 		BorderType borderType;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 		EtoScrollViewer scroller;
 		swc.Border content;
+
+		public sw.FrameworkElement ContentControl { get { return content; } }
+
+		protected override bool UseContentSize { get { return false; } }
 
 		public class EtoScrollViewer : swc.ScrollViewer
 		{
@@ -31,28 +35,30 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var size = base.MeasureOverride (constraint);
 				var content = (swc.Border)Content;
 				var info = this.ScrollInfo;
-				var layoutHandler = Handler.Widget.GetWpfLayout ();
-				if (layoutHandler != null) {
-					var preferredSize = layoutHandler.GetPreferredSize (null);
+				var contentHandler = Handler.Content.GetWpfFrameworkElement();
+				if (contentHandler != null)
+				{
+					var preferredSize = contentHandler.GetPreferredSize(null);
 					if (Handler.ExpandContentWidth)
-						content.Width = Math.Max (0, Math.Max (content.MinWidth, Math.Max (preferredSize.Width, info.ViewportWidth)));
+						content.Width = Math.Max(0, Math.Max(content.MinWidth, Math.Max(preferredSize.Width, info.ViewportWidth)));
 					else
 						content.Width = preferredSize.Width;
 
-					if (Handler.ExpandContentHeight) {
+					if (Handler.ExpandContentHeight)
+					{
 						var viewportHeight = info.ViewportHeight;
 						var extentHeight = info.ExtentHeight;
 						// fix issue with GroupBox that makes the control grow continuously
 						if (viewportHeight < extentHeight || viewportHeight > extentHeight + 1)
-							content.Height = Math.Max (0, Math.Max (content.MinHeight, Math.Max (preferredSize.Height, viewportHeight)));
-					} else
+							content.Height = Math.Max(0, Math.Max(content.MinHeight, Math.Max(preferredSize.Height, viewportHeight)));
+					}
+					else
 						content.Height = preferredSize.Height;
-					//Debug.WriteLine ("Content Size: {0}x{1}", content.Width, content.Height);
 				}
 				return size;
 			}
 
-			public swc.Primitives.IScrollInfo GetScrollInfo ()
+			public swc.Primitives.IScrollInfo GetScrollInfo()
 			{
 				return base.ScrollInfo;
 			}
@@ -60,16 +66,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = content.Background as swm.SolidColorBrush;
-				if (brush != null) return brush.Color.ToEto ();
-				else return Colors.Black;
-			}
-			set
-			{
-				content.Background = new swm.SolidColorBrush (value.ToWpf ());
-			}
+			get { return content.Background.ToEtoColor(); }
+			set { content.Background = value.ToWpfBrush(content.Background); }
 		}
 
 		public ScrollableHandler ()
@@ -118,8 +116,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void UpdateScrollSizes ()
 		{
-			var layout = Widget.GetWpfLayout();
-			if (layout != null) layout.AutoSize ();
 			Control.InvalidateMeasure ();
 			UpdateSizes ();
 		}
@@ -179,7 +175,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public Eto.Drawing.Size ClientSize
+		public override Size ClientSize
 		{
 			get
 			{
@@ -203,28 +199,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return new Eto.Drawing.Rectangle (ScrollPosition, ClientSize); }
 		}
 
-		public object ContainerObject
+		public override void SetContainerContent(sw.FrameworkElement content)
 		{
-			get { return content; }
-		}
-
-		public void SetLayout (Layout layout)
-		{
-			var control = layout.ControlObject as sw.UIElement;
-			content.Child = control;
-		}
-
-		public Eto.Drawing.Size MinimumSize
-		{
-			get
-			{
-				return new Eto.Drawing.Size ((int)Control.MinWidth, (int)Control.MinHeight);
-			}
-			set
-			{
-				Control.MinWidth = value.Value.Width;
-				Control.MinHeight = value.Value.Height;
-			}
+			this.content.Child = content;
 		}
 
 		public override void AttachEvent (string handler)

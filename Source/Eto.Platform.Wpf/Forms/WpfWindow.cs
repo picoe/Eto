@@ -18,7 +18,7 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<T, W> : WpfContainer<T, W>, IWindow, IWpfWindow
+	public abstract class WpfWindow<T, W> : WpfDockContainer<T, W>, IWindow, IWpfWindow
 		where T : sw.Window
 		where W : Window
 	{
@@ -34,19 +34,14 @@ namespace Eto.Platform.Wpf.Forms
 		bool maximizable = true;
 		bool minimizable = true;
 
-		public swc.DockPanel Content
-		{
-			get { return content; }
-		}
-
 		protected override void Initialize ()
 		{
-			base.Initialize ();
-
+			content = new swc.DockPanel();
+			
+			base.Initialize();
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
 			Control.UseLayoutRounding = true;
-			main = new swc.DockPanel ();
-			content = new swc.DockPanel ();
+			main = new swc.DockPanel();
 			menuHolder = new swc.ContentControl { IsTabStop = false };
 			toolBarHolder = new swc.ContentControl { IsTabStop = false };
 			content.Background = System.Windows.SystemColors.ControlBrush;
@@ -280,17 +275,6 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public override object ContainerObject
-		{
-			get { return Control; }
-		}
-
-		public override void SetLayout (Layout layout)
-		{
-			content.Children.Clear ();
-			content.Children.Add ((sw.UIElement)layout.ControlObject);
-		}
-
 		public string Title
 		{
 			get { return Control.Title; }
@@ -353,29 +337,6 @@ namespace Eto.Platform.Wpf.Forms
 		public Rectangle? RestoreBounds
 		{
 			get { return Control.RestoreBounds.ToEto (); }
-		}
-
-
-		public override Size? MinimumSize
-		{
-			get
-			{
-				if (Control.MinWidth > 0 && Control.MinHeight > 0)
-					return new Size ((int)Control.MinWidth, (int)Control.MinHeight);
-				else
-					return null;
-			}
-			set
-			{
-				if (value != null) {
-					Control.MinWidth = value.Value.Width;
-					Control.MinHeight = value.Value.Height;
-				}
-				else {
-					Control.MinHeight = 0;
-					Control.MinWidth = 0;
-				}
-			}
 		}
 
 		sw.Window IWpfWindow.Control
@@ -456,6 +417,11 @@ namespace Eto.Platform.Wpf.Forms
 		public Screen Screen
 		{
 			get { return new Screen (Generator, new ScreenHandler (Control)); }
+		}
+
+		public override void SetContainerContent(sw.FrameworkElement content)
+		{
+			this.content.Children.Add(content);
 		}
     }
 }

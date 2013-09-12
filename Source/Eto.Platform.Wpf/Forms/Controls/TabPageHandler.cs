@@ -11,7 +11,7 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TabPageHandler : WpfControl<swc.TabItem, TabPage>, ITabPage
+	public class TabPageHandler : WpfDockContainer<swc.TabItem, TabPage>, ITabPage
 	{
 		Eto.Drawing.Image image;
 		swc.DockPanel content;
@@ -33,8 +33,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return headerText.Text.ToEtoMneumonic(); }
-			set { headerText.Text = value.ToWpfMneumonic(); }
+			get { return headerText.Text; }
+			set { headerText.Text = value; }
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		public Eto.Drawing.Image Image
@@ -66,23 +72,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return Control.Content; }
 		}
 
-		public void SetLayout (Layout layout)
+		public override void SetContainerContent(sw.FrameworkElement content)
 		{
-			content.Children.Clear ();
-			content.Children.Add ((sw.UIElement)layout.ControlObject);
-		}
-
-		public Size MinimumSize
-		{
-			get
-			{
-				return new Size ((int)Control.MinWidth, (int)Control.MinHeight);
-			}
-			set
-			{
-				Control.MinWidth = value.Value.Width;
-				Control.MinHeight = value.Value.Height;
-			}
+			this.content.Children.Clear();
+			this.content.Children.Add(content);
 		}
 	}
 }

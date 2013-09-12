@@ -16,16 +16,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-                if (brush != null) return brush.Color.ToEto ();
-                else return Colors.Transparent;
-			}
-			set
-			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		public Font Font
