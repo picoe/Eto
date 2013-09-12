@@ -52,21 +52,24 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
+		protected virtual bool UseContentSize { get { return true; } }
+
 		public override Size GetPreferredSize(Size availableSize)
 		{
-			return Size.Max(base.GetPreferredSize(availableSize), Widget.Content.GetPreferredSize(availableSize) + Padding.Size);
-		}
-
-		protected Size GetBasePreferredSize(Size availableSize)
-		{
-			return base.GetPreferredSize(availableSize);
+			if (UseContentSize)
+				return Size.Max(base.GetPreferredSize(availableSize), Widget.Content.GetPreferredSize(availableSize) + Padding.Size);
+			else
+				return base.GetPreferredSize(availableSize);
 		}
 
 		protected override Size GetNaturalSize(Size availableSize)
 		{
-			var layout = Widget.Content.GetMacAutoSizing();
-			if (layout != null)
-				return layout.GetPreferredSize(availableSize);
+			if (UseContentSize)
+			{
+				var content = Widget.Content.GetMacAutoSizing();
+				if (content != null)
+					return content.GetPreferredSize(availableSize);
+			}
 			return base.GetNaturalSize(availableSize);
 		}
 
