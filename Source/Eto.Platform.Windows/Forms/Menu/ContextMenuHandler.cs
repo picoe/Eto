@@ -39,7 +39,7 @@ namespace Eto.Platform.Windows
 		public void Show (Control relativeTo)
 		{
 			if (relativeTo != null) {
-                var control = relativeTo.GetSwfControl();
+				var control = relativeTo.GetContainerControl();
 				this.Control.Show (control, 0, 0);
 			} else
 				this.Control.Show ();
