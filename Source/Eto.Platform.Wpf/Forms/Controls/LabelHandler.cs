@@ -36,6 +36,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.Target = Control;
 		}
 
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				case TextControl.TextChangedEvent:
+					// do nothing, label doesn't get updated by the user
+					break;
+
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
+		}
+
 		public HorizontalAlign HorizontalAlign
 		{
 			get { 
