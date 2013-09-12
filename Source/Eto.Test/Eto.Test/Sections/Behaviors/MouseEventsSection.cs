@@ -9,64 +9,71 @@ namespace Eto.Test.Sections.Behaviors
 		CheckBox handleEvents;
 		CheckBox showParentEvents;
 
-		public MouseEventsSection ()
+		public MouseEventsSection()
 		{
-			LogEvents (this);
+			LogEvents(this);
 		}
-		
-		void LogMouseEvent (object sender, string type, MouseEventArgs e)
+
+		void LogMouseEvent(object sender, string type, MouseEventArgs e)
 		{
 			if (!showParentEvents.Checked == true && sender == this)
 				return;
-			Log.Write (sender, "{0}, Location: {1}, Buttons: {2}, Modifiers: {3}, Delta: {4}", type, e.Location, e.Buttons, e.Modifiers, e.Delta);
+			Log.Write(sender, "{0}, Location: {1}, Buttons: {2}, Modifiers: {3}, Delta: {4}", type, e.Location, e.Buttons, e.Modifiers, e.Delta);
 			if (handleEvents.Checked == true)
 				e.Handled = true;
 		}
 
-		protected override Control GenerateOptions ()
+		protected override Control GenerateOptions()
 		{
-			var layout = new DynamicLayout (new Panel ());
+			var layout = new DynamicLayout();
 
-			layout.AddRow (null, Handled (), ShowParentEvents (), null);
-			layout.Add (null);
+			layout.AddRow(null, Handled(), ShowParentEvents(), null);
+			layout.Add(null);
 
-			return layout.Container;
+			return layout;
 		}
 
-		Control Handled ()
+		Control Handled()
 		{
 			return handleEvents = new CheckBox { Text = "Handle mouse events" };
 		}
-		
-		Control ShowParentEvents ()
+
+		Control ShowParentEvents()
 		{
 			return showParentEvents = new CheckBox { Text = "Show parent events (bubbled)" };
 		}
-		
-		protected override void LogEvents (Control control)
+
+		protected override void LogEvents(Control control)
 		{
-			base.LogEvents (control);
+			base.LogEvents(control);
 			
-			control.MouseDoubleClick += delegate(object sender, MouseEventArgs e) {
-				LogMouseEvent (control, "MouseDoubleClick", e);
+			control.MouseDoubleClick += delegate(object sender, MouseEventArgs e)
+			{
+				LogMouseEvent(control, "MouseDoubleClick", e);
 			};
-			control.MouseWheel += delegate(object sender, MouseEventArgs e) {
-				LogMouseEvent (control, "MouseWheel", e);
+			control.MouseWheel += delegate(object sender, MouseEventArgs e)
+			{
+				LogMouseEvent(control, "MouseWheel", e);
 			};
-			control.MouseMove += delegate(object sender, MouseEventArgs e) {
-				LogMouseEvent (control, "MouseMove", e);
+			control.MouseMove += delegate(object sender, MouseEventArgs e)
+			{
+				LogMouseEvent(control, "MouseMove", e);
 			};
-			control.MouseUp += delegate(object sender, MouseEventArgs e) {
-				LogMouseEvent (control, "MouseUp", e);
+			control.MouseUp += delegate(object sender, MouseEventArgs e)
+			{
+				LogMouseEvent(control, "MouseUp", e);
 			};
-			control.MouseDown += delegate(object sender, MouseEventArgs e) {
-				LogMouseEvent (control, "MouseDown", e);
+			control.MouseDown += delegate(object sender, MouseEventArgs e)
+			{
+				LogMouseEvent(control, "MouseDown", e);
 			};
-			control.MouseEnter += delegate(object sender, MouseEventArgs e) {
-				LogMouseEvent (control, "MouseEnter", e);
+			control.MouseEnter += delegate(object sender, MouseEventArgs e)
+			{
+				LogMouseEvent(control, "MouseEnter", e);
 			};
-			control.MouseLeave += delegate(object sender, MouseEventArgs e) {
-				LogMouseEvent (control, "MouseLeave", e);
+			control.MouseLeave += delegate(object sender, MouseEventArgs e)
+			{
+				LogMouseEvent(control, "MouseLeave", e);
 			};
 		}
 	}

@@ -13,57 +13,65 @@ namespace Eto.Test.Sections.Controls
 		Button stopButton;
 		Label titleLabel;
 		CheckBox cancelLoad;
-		
-		public WebViewSection ()
-		{
-			var layout = new DynamicLayout (this);
 
-			var webContainer = WebView ();
-			layout.Add (Buttons ());
-			layout.AddSeparateRow (TitleLabel (), null, CancelLoad (), EnableContextMenu ());
-			layout.Add (webContainer, yscale: true);
+		public WebViewSection()
+		{
+			var layout = new DynamicLayout();
+
+			var webContainer = WebView();
+			layout.Add(Buttons());
+			layout.AddSeparateRow(TitleLabel(), null, CancelLoad(), EnableContextMenu());
+			layout.Add(webContainer, yscale: true);
 
 			if (webView != null)
 				LoadHtml();
+
+			Content = layout;
 		}
 
-		Control CancelLoad ()
+		Control CancelLoad()
 		{
 			return cancelLoad = new CheckBox { Text = "Cancel Load" };
 		}
-		
-		Control WebView ()
+
+		Control WebView()
 		{
-			try {
-				webView = new WebView ();
+			try
+			{
+				webView = new WebView();
 
 				webView.Navigated += (sender, e) => {
-					Log.Write (webView, "Navigated, Uri: {0}", e.Uri);
-					UpdateButtons ();
+					Log.Write(webView, "Navigated, Uri: {0}", e.Uri);
+					UpdateButtons();
 				};
 				webView.DocumentLoading += (sender, e) => {
-					Log.Write (webView, "DocumentLoading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
+					Log.Write(webView, "DocumentLoading, Uri: {0}, IsMainFrame: {1}", e.Uri, e.IsMainFrame);
 					e.Cancel = cancelLoad.Checked ?? false;
-					if (!e.Cancel) {
-						UpdateButtons ();
+					if (!e.Cancel)
+					{
+						UpdateButtons();
 						stopButton.Enabled = true;
 					}
 				};
 				webView.DocumentLoaded += (sender, e) => {
-					Log.Write (webView, "DocumentLoaded, Uri: {0}", e.Uri);
-					UpdateButtons ();
+					Log.Write(webView, "DocumentLoaded, Uri: {0}", e.Uri);
+					UpdateButtons();
 					stopButton.Enabled = false;
 				};
 				webView.OpenNewWindow += (sender, e) => {
-					Log.Write (webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
+					Log.Write(webView, "OpenNewWindow: {0}, Url: {1}", e.NewWindowName, e.Uri);
 				};
-				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e) {
+				webView.DocumentTitleChanged += delegate (object sender, WebViewTitleEventArgs e)
+				{
 					titleLabel.Text = e.Title;
 				};
 				return webView;
 
-			} catch (HandlerInvalidException) {
-				var control = new Label { 
+			}
+			catch (HandlerInvalidException)
+			{
+				var control = new Label
+				{ 
 					Text = string.Format ("WebView not supported on this platform with the {0} generator", Generator.ID),
 					BackgroundColor = Colors.Red,
 					HorizontalAlign = HorizontalAlign.Center,
@@ -71,128 +79,141 @@ namespace Eto.Test.Sections.Controls
 					TextColor = Colors.White
 				};
 				if (Generator.ID == Generators.Gtk)
-					Log.Write (this, "You must install webkit-sharp for WebView to work under GTK. Note that GTK does not support webkit-sharp on any platform other than Linux.");
+					Log.Write(this, "You must install webkit-sharp for WebView to work under GTK. Note that GTK does not support webkit-sharp on any platform other than Linux.");
 				return control;
 			}
 
 			
 		}
 
-		Control TitleLabel ()
+		Control TitleLabel()
 		{
-			titleLabel = new Label{};
+			titleLabel = new Label { };
 			return titleLabel;
 		}
 
-		Control EnableContextMenu ()
+		Control EnableContextMenu()
 		{
 			var control = new CheckBox { Text = "Enable Context Menu" };
-			control.Bind (r => r.Checked, this.webView, w => w.BrowserContextMenuEnabled);
+			control.Bind(r => r.Checked, this.webView, w => w.BrowserContextMenuEnabled);
 			return control;
 		}
-		
-		void UpdateButtons ()
+
+		void UpdateButtons()
 		{
 			goBack.Enabled = webView.CanGoBack;
 			goForward.Enabled = webView.CanGoForward;
 		}
-		
-		Control Buttons ()
+
+		Control Buttons()
 		{
-			var layout = new DynamicLayout (new Panel (), spacing: Size.Empty);
+			var layout = new DynamicLayout(spacing: Size.Empty);
 
-			layout.BeginHorizontal ();
-			layout.Add (null);
-			layout.Add (BackButton ());
-			layout.Add (ForwardButton ());
-			layout.Add (LoadHtmlButton ());
-			layout.Add (LoadUrl ());
-			layout.Add (ReloadButton ());
-			layout.Add (StopButton ());
-			layout.Add (ExecuteScriptButton ());
-			layout.Add (PrintButton ());
-			layout.Add (null);
-			layout.EndHorizontal ();
+			layout.BeginHorizontal();
+			layout.Add(null);
+			layout.Add(BackButton());
+			layout.Add(ForwardButton());
+			layout.Add(LoadHtmlButton());
+			layout.Add(LoadUrl());
+			layout.Add(ReloadButton());
+			layout.Add(StopButton());
+			layout.Add(ExecuteScriptButton());
+			layout.Add(PrintButton());
+			layout.Add(null);
+			layout.EndHorizontal();
 
-			
-			return layout.Container;
+			return layout;
 		}
-		
-		Control BackButton ()
+
+		Control BackButton()
 		{
-			var control = goBack = new Button{
+			var control = goBack = new Button
+			{
 				Text = "Back"
 			};
-			control.Click += delegate {
-				webView.GoBack ();
+			control.Click += delegate
+			{
+				webView.GoBack();
 			};
 			return control;
 		}
 
-		Control ForwardButton ()
+		Control ForwardButton()
 		{
-			var control = goForward = new Button{
+			var control = goForward = new Button
+			{
 				Text = "Forward"
 			};
-			control.Click += delegate {
-				webView.GoForward ();
+			control.Click += delegate
+			{
+				webView.GoForward();
 			};
 			return control;
 		}
 
-		Control ReloadButton ()
+		Control ReloadButton()
 		{
-			var control = new Button{
+			var control = new Button
+			{
 				Text = "Reload"
 			};
-			control.Click += delegate {
-				webView.Reload ();
+			control.Click += delegate
+			{
+				webView.Reload();
 			};
 			return control;
 		}
 
-		Control StopButton ()
+		Control StopButton()
 		{
-			var control = stopButton = new Button{
+			var control = stopButton = new Button
+			{
 				Text = "Stop",
 				Enabled = false
 			};
-			control.Click += delegate {
-				webView.Stop ();
+			control.Click += delegate
+			{
+				webView.Stop();
 				stopButton.Enabled = false;
 			};
 			return control;
 		}
 
-		Control PrintButton ()
+		Control PrintButton()
 		{
-			var control = new Button {
+			var control = new Button
+			{
 				Text = "Print",
 			};
-			control.Click += delegate {
-				webView.ShowPrintDialog ();
-			};
-			return control;
-		}
-		
-		Control ExecuteScriptButton ()
-		{
-			var control = new Button{
-				Text = "Execute Script"
-			};
-			control.Click += delegate {
-				var ret = webView.ExecuteScript ("alert('this is called from code'); return 'return value from ExecuteScript';");
-				Log.Write (this, "ExecuteScript, Return: {0}", ret);
+			control.Click += delegate
+			{
+				webView.ShowPrintDialog();
 			};
 			return control;
 		}
 
-		Control LoadHtmlButton ()
+		Control ExecuteScriptButton()
 		{
-			var control = new Button{
+			var control = new Button
+			{
+				Text = "Execute Script"
+			};
+			control.Click += delegate
+			{
+				var ret = webView.ExecuteScript("alert('this is called from code'); return 'return value from ExecuteScript';");
+				Log.Write(this, "ExecuteScript, Return: {0}", ret);
+			};
+			return control;
+		}
+
+		Control LoadHtmlButton()
+		{
+			var control = new Button
+			{
 				Text = "Load HTML"
 			};
-			control.Click += delegate {
+			control.Click += delegate
+			{
 				LoadHtml();
 			};
 			return control;
@@ -200,7 +221,7 @@ namespace Eto.Test.Sections.Controls
 
 		void LoadHtml()
 		{
-			webView.LoadHtml (@"<html>
+			webView.LoadHtml(@"<html>
 <head><title>Hello!</title></head>
 <body>
 	<h1>Some custom html</h1>
@@ -246,36 +267,41 @@ namespace Eto.Test.Sections.Controls
 </html>");
 		}
 
-		Control LoadUrl ()
+		Control LoadUrl()
 		{
-			var control = new Button{
+			var control = new Button
+			{
 				Text = "Load Url"
 			};
-			control.Click += delegate {
+			control.Click += delegate
+			{
 				var dialog = new Dialog();
 #if DESKTOP
 				dialog.MinimumSize = new Size(300, 0);
 #endif
-				var layout = new DynamicLayout(dialog);
+				var layout = new DynamicLayout();
 				var textBox = new TextBox { Text = "http://google.com" };
 				var goButton = new Button { Text = "Go" };
 				dialog.DefaultButton = goButton;
 				goButton.Click += (sender, e) => {
 					dialog.DialogResult = DialogResult.Ok;
-					dialog.Close ();
+					dialog.Close();
 				};
 				var cancelButton = new Button { Text = "Cancel" };
 				dialog.AbortButton = cancelButton;
 				cancelButton.Click += (sender, e) => {
-					dialog.Close ();
+					dialog.Close();
 				};
-				layout.BeginVertical ();
-				layout.AddRow (new Label { Text = "Url" }, textBox);
-				layout.EndBeginVertical ();
-				layout.AddRow (null, cancelButton, goButton);
-				layout.EndVertical ();
+				layout.BeginVertical();
+				layout.AddRow(new Label { Text = "Url" }, textBox);
+				layout.EndBeginVertical();
+				layout.AddRow(null, cancelButton, goButton);
+				layout.EndVertical();
 
-				if (dialog.ShowDialog (this) == DialogResult.Ok) {
+				dialog.Content = layout;
+
+				if (dialog.ShowDialog(this) == DialogResult.Ok)
+				{
 					Uri uri;
 					if (Uri.TryCreate(textBox.Text, UriKind.Absolute, out uri))
 						webView.Url = uri;

@@ -73,13 +73,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 				: base(generator)
 			{
 				this.MinimumSize = new Size (400, 0);
-				var layout = new DynamicLayout (this, padding: new Padding (20, 10));
+				var layout = new DynamicLayout (padding: new Padding (20, 10));
 				layout.BeginVertical (padding: Padding.Empty, spacing: new Size (10, 10));
 				layout.Add (prompt = new Label ());
 				layout.Add (textBox = new TextBox (), yscale: true);
 				layout.BeginVertical (padding: Padding.Empty);
 				layout.AddRow (null, CancelButton (), OkButton ());
 				layout.EndVertical ();
+
+				Content = layout;
 			}
 
 			Control CancelButton ()

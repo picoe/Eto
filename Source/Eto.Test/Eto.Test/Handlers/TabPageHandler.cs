@@ -1,5 +1,6 @@
 using Eto.Drawing;
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.Test.Handlers
 {
@@ -9,7 +10,7 @@ namespace Eto.Test.Handlers
 
 		public Tab Tab { get; private set; }
 
-		public Control Content { get { return Control.Content; } set { Control.Content = value; }  }
+		public Control Content { get { return Control != null ? Control.Content : null; } set { Control.Content = value; } }
 
 		public Size MinimumSize { get { return Control.MinimumSize; } set { Control.MinimumSize = value; } }
 

@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Handlers
 {
-	public class TabControlHandler : ThemedContainerHandler<Panel, TabControl>, ITabControl
+	public class TabControlHandler : ThemedContainerHandler<Container, TabControl>, ITabControl
 	{
 		/// <summary>
 		/// Contains the tabs
@@ -25,7 +25,6 @@ namespace Eto.Test.Handlers
 
 		public TabControlHandler()
 		{
-			this.Control = new Panel { };
 			this.Tabs = new Tabs
 			{
 				SelectionChanged = e => {
@@ -40,19 +39,19 @@ namespace Eto.Test.Handlers
 						if (SetContentPanelDelegate != null)
 							SetContentPanelDelegate(tabContentPanel);
 						else
-							this.ContentPanel.AddDockedControl(tabContentPanel); // can be null
+							this.ContentPanel.Content = tabContentPanel; // can be null
 					}
 				},
 			};
 			ClearTabs();
+
 			this.ContentPanel = new Panel { BackgroundColor = Colors.White };
-			Control.LoadComplete += (s, e) =>
-			{
-				var tableLayout = new TableLayout(Control, 2, 1) { Padding = Padding.Empty, Spacing = Size.Empty };
-				tableLayout.SetRowScale(0, scale: false);
-				tableLayout.Add(Tabs, 0, 0);
-				tableLayout.Add(ContentPanel, 1, 0);
-			};
+			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = Size.Empty };
+			layout.BeginHorizontal();
+			layout.Add(Tabs);
+			layout.Add(ContentPanel, xscale: true);
+			layout.EndHorizontal();
+			Control = layout;
 		}
 
 		public int SelectedIndex
@@ -115,7 +114,8 @@ namespace Eto.Test.Handlers
 				{
 					if (selectedTab != null)
 						selectedTab.Selected = false;
-					if ((selectedTab = value) != null) // note: assignment
+					selectedTab = value;
+					if (selectedTab != null)
 						selectedTab.Selected = true;
 					if (SelectionChanged != null) SelectionChanged(value);
 				}
@@ -157,7 +157,7 @@ namespace Eto.Test.Handlers
 			var layout = new DynamicLayout(padding: Padding.Empty, spacing: Size.Empty);
 			layout.BeginVertical();
 			foreach (var tab in Items)
-				layout.Add(tab, xscale: true, yscale:false);
+				layout.Add(tab);
 			layout.Add(null);
 			layout.EndVertical();
 			this.Content = layout;

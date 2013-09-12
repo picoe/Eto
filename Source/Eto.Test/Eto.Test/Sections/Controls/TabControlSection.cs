@@ -48,7 +48,7 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control);
 			
 			var page = new TabPage { Text = "Tab 1" };
-			page.AddDockedControl(TabOne());
+			page.Content = TabOne();
 			control.TabPages.Add(page);
 			
 			LogEvents(page);
@@ -59,7 +59,7 @@ namespace Eto.Test.Sections.Controls
 				Image = TestIcons.TestIcon,
 			};
 			LogEvents(page);
-			page.AddDockedControl(TabTwo());
+			page.Content = TabTwo();
 			control.TabPages.Add(page);
 
 			page = new TabPage
@@ -77,7 +77,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Panel();
 			
-			control.AddDockedControl(new LabelSection());
+			control.Content = new LabelSection();
 			
 			return control;
 		}
@@ -86,7 +86,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new Panel();
 			
-			control.AddDockedControl(new TextAreaSection { Border = BorderType.None });
+			control.Content = new TextAreaSection { Border = BorderType.None };
 			
 			return control;
 		}

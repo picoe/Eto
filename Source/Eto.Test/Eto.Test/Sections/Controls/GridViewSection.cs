@@ -9,15 +9,15 @@ namespace Eto.Test.Sections.Controls
 	{
 		public int Row { get; set; }
 
-		public LogGridItem (params object[] values)
+		public LogGridItem(params object[] values)
 			: base (values)
 		{
 		}
 
-		public override void SetValue (int column, object value)
+		public override void SetValue(int column, object value)
 		{
-			base.SetValue (column, value);
-			Log.Write (this, "SetValue, Row: {0}, Column: {1}, Value: {2}", Row, column, value);
+			base.SetValue(column, value);
+			Log.Write(this, "SetValue, Row: {0}, Column: {1}, Value: {2}", Row, column, value);
 		}
 	}
 
@@ -26,13 +26,13 @@ namespace Eto.Test.Sections.Controls
 		static Image image1 = TestIcons.TestImage;
 		static Image image2 = TestIcons.TestIcon;
 		TextBox filterText = null;
-			
-		public GridViewSection ()
+
+		public GridViewSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 			
-			layout.AddRow (new Label { Text = "Default" }, Default ());
-			layout.AddRow (new Label { Text = "No Header,\nNon-Editable" }, NoHeader ());
+			layout.AddRow(new Label { Text = "Default" }, Default());
+			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
 #if DESKTOP
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
@@ -53,8 +53,10 @@ namespace Eto.Test.Sections.Controls
 			};
 			layout.EndHorizontal();
 #endif
+
+			Content = layout;
 		}
-		
+
 		/// <summary>
 		/// POCO (Plain Old CLR Object) to test property bindings
 		/// </summary>
@@ -63,55 +65,61 @@ namespace Eto.Test.Sections.Controls
 			bool? check;
 			string text;
 			string dropDownKey;
-			
+
 			public int Row { get; set; }
-			
-			void Log (string property, object value)
+
+			void Log(string property, object value)
 			{
-				Eto.Test.Log.Write (this, "SetValue, Row: {0}, Column: {1}, Value: {2}", Row, property, value);
+				Eto.Test.Log.Write(this, "SetValue, Row: {0}, Column: {1}, Value: {2}", Row, property, value);
 			}
-			
-			public bool? Check {
+
+			public bool? Check
+			{
 				get { return check; }
-				set {
+				set
+				{
 					check = value;
-					Log ("Check", value);
-				}
-			}
-			
-			public string Text {
-				get { return text; }
-				set {
-					text = value;
-					Log ("Text", value);
-				}
-			}
-			
-			public Image Image { get; set; }
-			
-			public string DropDownKey {
-				get { return dropDownKey; }
-				set {
-					dropDownKey = value;
-					Log ("DropDownKey", value);
+					Log("Check", value);
 				}
 			}
 
-			public Color Color { get; set; } // used for owner-drawn cells
-			
-			public MyGridItem (Random rand, int row, ComboBoxCell dropDown)
+			public string Text
+			{
+				get { return text; }
+				set
+				{
+					text = value;
+					Log("Text", value);
+				}
+			}
+
+			public Image Image { get; set; }
+
+			public string DropDownKey
+			{
+				get { return dropDownKey; }
+				set
+				{
+					dropDownKey = value;
+					Log("DropDownKey", value);
+				}
+			}
+
+			public Color Color { get; set; }
+			// used for owner-drawn cells
+			public MyGridItem(Random rand, int row, ComboBoxCell dropDown)
 			{
 				// initialize to random values
 				this.Row = row;
-				var val = rand.Next (3);
+				var val = rand.Next(3);
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
-				val = rand.Next (3);
+				val = rand.Next(3);
 				Image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
 
-				text = string.Format ("Col 1 Row {0}", row);
+				text = string.Format("Col 1 Row {0}", row);
 
-				Color = new Color(rand.Next(256), rand.Next(256), rand.Next(256));
+				Color = Color.FromArgb(rand.Next(256), rand.Next(256), rand.Next(256));
 
 				if (dropDown != null)
 				{
@@ -121,30 +129,31 @@ namespace Eto.Test.Sections.Controls
 			}
 		}
 
-		ComboBoxCell MyDropDown (string bindingProperty)
+		ComboBoxCell MyDropDown(string bindingProperty)
 		{
-			var combo = new ComboBoxCell (bindingProperty);
-			var items = new ListItemCollection ();
-			items.Add (new ListItem{ Text = "Item 1" });
-			items.Add (new ListItem{ Text = "Item 2" });
-			items.Add (new ListItem{ Text = "Item 3" });
-			items.Add (new ListItem{ Text = "Item 4" });
+			var combo = new ComboBoxCell(bindingProperty);
+			var items = new ListItemCollection();
+			items.Add(new ListItem { Text = "Item 1" });
+			items.Add(new ListItem { Text = "Item 2" });
+			items.Add(new ListItem { Text = "Item 3" });
+			items.Add(new ListItem { Text = "Item 4" });
 			combo.DataStore = items;
 			return combo;
 		}
-		
-		GridView Default (bool addItems = true)
+
+		GridView Default(bool addItems = true)
 		{
-			var control = new GridView {
+			var control = new GridView
+			{
 				Size = new Size (300, 100)
 			};
-			LogEvents (control);
+			LogEvents(control);
 			
-			var dropDown = MyDropDown ("DropDownKey");
-			control.Columns.Add (new GridColumn{ DataCell = new CheckBoxCell ("Check"), Editable = true, AutoSize = true, Resizable = false});
-			control.Columns.Add (new GridColumn{ HeaderText = "Image", DataCell = new ImageViewCell ("Image") });
-			control.Columns.Add (new GridColumn{ HeaderText = "Text", DataCell = new TextBoxCell ("Text"), Editable = true, Sortable = true });
-			control.Columns.Add (new GridColumn{ HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
+			var dropDown = MyDropDown("DropDownKey");
+			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell ("Check"), Editable = true, AutoSize = true, Resizable = false });
+			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell ("Image") });
+			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell ("Text"), Editable = true, Sortable = true });
+			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
 
 #if Windows // Drawable cells - need to implement on other platforms.
 			var drawableCell = new DrawableCell
@@ -171,21 +180,21 @@ namespace Eto.Test.Sections.Controls
 
 			return control;
 		}
-		
-		GridView NoHeader ()
+
+		GridView NoHeader()
 		{
-			var control = Default ();
-			foreach (var col in control.Columns) {
+			var control = Default();
+			foreach (var col in control.Columns)
+			{
 				col.Editable = false;
 			}
 			control.ShowHeader = false;
 			return control;
 		}
-
-#if DESKTOP
-		GridView WithContextMenuAndFilter ()
+		#if DESKTOP
+		GridView WithContextMenuAndFilter()
 		{
-			var control = Default ();
+			var control = Default();
 			control.AllowMultipleSelection = true;
 			var items = control.DataStore as GridItemCollection;
 
@@ -195,33 +204,35 @@ namespace Eto.Test.Sections.Controls
 				
 				// Set the filter delegate on the GridView
 				control.Filter = (filterItems.Length == 0) 
-				? (Func<object, bool>) null
+				? (Func<object, bool>)null
 				: o => {
 					var i = o as MyGridItem;					
 					var matches = true;
 
 					// Every item in the split filter string should be within the Text property
-					foreach(var filterItem in filterItems)
+					foreach (var filterItem in filterItems)
 						if (!i.Text.Contains(filterItem))
 						{
 							matches = false;
 							break;
-						};
+						}
+					;
 
 					return matches;
 				};
 			};
 			
 			// Context menu
-			var menu = new ContextMenu ();
-			var item = new ImageMenuItem{ Text = "Click Me!"};
-			item.Click += delegate {
-				if (control.SelectedRows.Count () > 0)
-					Log.Write (item, "Click, Rows: {0}", SelectedRowsString (control));
+			var menu = new ContextMenu();
+			var item = new ImageMenuItem { Text = "Click Me!" };
+			item.Click += delegate
+			{
+				if (control.SelectedRows.Count() > 0)
+					Log.Write(item, "Click, Rows: {0}", SelectedRowsString(control));
 				else
-					Log.Write (item, "Click, no item selected");
+					Log.Write(item, "Click, no item selected");
 			};
-			menu.MenuItems.Add (item);
+			menu.MenuItems.Add(item);
 
 			// Delete menu item: deletes the item from the store, the UI updates via the binding.
 			var deleteItem = new ImageMenuItem { Text = "Delete Item" };
@@ -245,27 +256,28 @@ namespace Eto.Test.Sections.Controls
 			control.ContextMenu = menu;
 			return control;
 		}
-#endif
-
-		protected virtual void LogEvents (GridView control)
+		#endif
+		protected virtual void LogEvents(GridView control)
 		{
 			control.BeginCellEdit += (sender, e) => {
-				Log.Write (control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+				Log.Write(control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
 			control.EndCellEdit += (sender, e) => {
-				Log.Write (control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
+				Log.Write(control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
-			control.SelectionChanged += delegate {
-				Log.Write (control, "Selection Changed, Rows: {0}", SelectedRowsString (control));
+			control.SelectionChanged += delegate
+			{
+				Log.Write(control, "Selection Changed, Rows: {0}", SelectedRowsString(control));
 			};
-			control.ColumnHeaderClick += delegate(object sender, GridColumnEventArgs e) {
-				Log.Write (control, "Column Header Clicked: {0}", e.Column);
+			control.ColumnHeaderClick += delegate(object sender, GridColumnEventArgs e)
+			{
+				Log.Write(control, "Column Header Clicked: {0}", e.Column);
 			};
 		}
 
-		string SelectedRowsString (GridView control)
+		string SelectedRowsString(GridView control)
 		{
-			return string.Join (",", control.SelectedRows.Select (r => r.ToString ()).OrderBy (r => r));
+			return string.Join(",", control.SelectedRows.Select(r => r.ToString()).OrderBy(r => r));
 		}
 	}
 }
