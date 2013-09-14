@@ -52,15 +52,29 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				if (UseContentDesiredSize)
+				var desiredSize = base.DesiredSize;
+
+				var handler = content.GetWindowsHandler();
+				if (handler != null)
 				{
-					var handler = content.GetWindowsHandler();
-					if (handler != null)
+					var desiredContentSize = handler.DesiredSize;
+					if (!handler.XScale)
 					{
-						return Size.Max(base.DesiredSize, handler.DesiredSize);
+						if (desiredSize.Width > 0)
+							desiredSize.Width = Math.Max(desiredSize.Width, desiredContentSize.Width);
+						else
+							desiredSize.Width = desiredContentSize.Width;
+					}
+
+					if (!handler.YScale)
+					{
+						if (desiredSize.Height > 0)
+							desiredSize.Height = Math.Max(desiredSize.Height, desiredContentSize.Height);
+						else
+							desiredSize.Height = desiredContentSize.Height;
 					}
 				}
-				return base.DesiredSize;
+				return desiredSize + Padding.Size;
 			}
 		}
 
