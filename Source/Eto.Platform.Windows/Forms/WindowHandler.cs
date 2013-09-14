@@ -60,7 +60,9 @@ namespace Eto.Platform.Windows
 					Control.Size = new sd.Size(value.Width + size.Width, value.Height + size.Height);
 				}
 				else
-					content.MinimumSize = value.ToSD();
+				{
+					content.MinimumSize = content.MaximumSize = value.ToSD();
+				}
 			}
 		}
 
@@ -96,6 +98,7 @@ namespace Eto.Platform.Windows
 			Control.Load += (sender, e) =>
 			{
 				content.MinimumSize = sd.Size.Empty;
+				content.MaximumSize = sd.Size.Empty;
 			};
 			Control.Size = sd.Size.Empty;
 
@@ -403,23 +406,6 @@ namespace Eto.Platform.Windows
 		public Screen Screen
 		{
 			get { return new Screen(Generator, new ScreenHandler(swf.Screen.FromControl(Control))); }
-		}
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			WriteControls(Control, 0);
-		}
-
-		void WriteControls(swf.Control control, int level)
-		{
-			foreach (swf.Control ctl in control.Controls)
-			{
-				for (int i = 0; i < level; i++)
-					Debug.Write("  ");
-				Debug.Print("{0}", ctl.GetType());
-				WriteControls(ctl, level + 1);
-			}
 		}
 	}
 }

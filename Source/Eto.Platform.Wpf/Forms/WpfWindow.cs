@@ -52,10 +52,13 @@ namespace Eto.Platform.Wpf.Forms
 			main.Children.Add (toolBarHolder);
 			main.Children.Add (content);
 			Control.Content = main;
-			Control.Loaded += delegate {
-				if (initialClientSize != null) {
-					UpdateClientSize (initialClientSize.Value);
+			Control.Loaded += delegate
+			{
+				if (initialClientSize != null)
+				{
 					initialClientSize = null;
+					Control.SizeToContent = sw.SizeToContent.Manual;
+					SetContentSize();
 				}
 			};
 			// needed to handle Application.Terminating event
@@ -258,9 +261,29 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (Control.IsLoaded)
-					UpdateClientSize (value);
+					UpdateClientSize(value);
 				else
+				{
 					initialClientSize = value;
+					SetContentSize();
+				}
+			}
+		}
+
+		void SetContentSize()
+		{
+			if (initialClientSize != null)
+			{
+				var value = initialClientSize.Value;
+				content.MinWidth = value.Width >= 0 ? value.Width : 0;
+				content.MinHeight = value.Height >= 0 ? value.Height : 0;
+				content.MaxWidth = value.Width >= 0 ? value.Width : double.PositiveInfinity;
+				content.MaxHeight = value.Height >= 0 ? value.Height : double.PositiveInfinity;
+			}
+			else
+			{
+				content.MinWidth = content.MinHeight = 0;
+				content.MaxWidth = content.MaxHeight = double.PositiveInfinity;
 			}
 		}
 
@@ -272,7 +295,10 @@ namespace Eto.Platform.Wpf.Forms
 				Control.SizeToContent = sw.SizeToContent.Manual;
 				base.Size = value;
 				if (!Control.IsLoaded)
+				{
 					initialClientSize = null;
+					SetContentSize();
+				}
 			}
 		}
 
@@ -402,18 +428,9 @@ namespace Eto.Platform.Wpf.Forms
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return brush.Color.ToEto ();
-				else return Colors.Black;
-			}
-			set
-			{
-				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
-            }
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
-
 
 		public Screen Screen
 		{
