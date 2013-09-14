@@ -15,9 +15,10 @@ namespace Eto.Test.Sections.Controls
 
 		protected virtual void Create()
 		{
-			var layout = new DynamicLayout(this);
+			var layout = new DynamicLayout();
 			layout.AddSeparateRow(null, AddTab(), RemoveTab(), null);
 			layout.AddSeparateRow(tabControl = DefaultTabs());
+			Content = layout;
 		}
 
 		Control AddTab()
