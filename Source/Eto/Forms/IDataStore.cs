@@ -93,7 +93,7 @@ namespace Eto.Forms
 			// http://stackoverflow.com/a/851129/90291
 
 			var itemList = items as IList ?? items.ToArray(); // don't enumerate more than once
-			var oldIndex = itemList.Count;
+			var oldIndex = Items.Count;
 			foreach (T item in itemList)  
 				Items.Add(item);
 
