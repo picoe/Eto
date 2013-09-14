@@ -14,6 +14,7 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout>, ITableLayout
 	{
+		swc.Border border;
 		Eto.Drawing.Size spacing;
 		Control[,] controls;
 		bool[] columnScale;
@@ -22,6 +23,11 @@ namespace Eto.Platform.Wpf.Forms
 		bool lastRowScale;
 
 		public Size Adjust { get; set; }
+
+		public override sw.FrameworkElement ContainerControl
+		{
+			get { return border; }
+		}
 
 		public override Color BackgroundColor
 		{
@@ -66,16 +72,22 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				Height = GetRowHeight(i)
 			});
-			Spacing = TableLayout.DefaultSpacing;
-			Padding = TableLayout.DefaultPadding;
-			Control.SizeChanged += delegate
-			{
-				SetSizes();
-			};
+			Control.SizeChanged += HandleControlSizeChanged;
+			Control.Loaded += HandleControlSizeChanged;
 
 			for (int y = 0; y < rows; y++)
 				for (int x = 0; x < cols; x++)
 					Control.Children.Add(EmptyCell(x, y));
+
+			border = new swc.Border { Child = Control };
+
+			Spacing = TableLayout.DefaultSpacing;
+			Padding = TableLayout.DefaultPadding;
+		}
+
+		void HandleControlSizeChanged(object sender, EventArgs e)
+		{
+			SetSizes();
 		}
 
 		sw.FrameworkElement EmptyCell(int x, int y)
@@ -87,58 +99,43 @@ namespace Eto.Platform.Wpf.Forms
 			return empty;
 		}
 
-		void SetSizes()
+		public override void OnLoadComplete(EventArgs e)
 		{
-			if (!Widget.Loaded) return;
-			for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
-			{
-
-				var max = Control.ColumnDefinitions[x].ActualWidth;
-				if (x == Control.ColumnDefinitions.Count - 1)
-					max += Adjust.Width;
-				foreach (var child in ColumnControls(x))
-				{
-					if (!double.IsNaN(child.Width))
-						child.Width = Math.Max(0, max - child.Margin.Horizontal());
-				}
-			}
-			for (int y = 0; y < Control.RowDefinitions.Count; y++)
-			{
-				var max = Control.RowDefinitions[y].ActualHeight;
-				if (y == Control.RowDefinitions.Count - 1)
-					max += Adjust.Height;
-				foreach (var child in RowControls(y))
-				{
-					if (!double.IsNaN(child.Height))
-						child.Height = Math.Max(0, max - child.Margin.Vertical());
-				}
-			}
+			base.OnLoadComplete(e);
+			if (Control.IsLoaded)
+				SetSizes();
 		}
 
-		void SetSizes(sw.FrameworkElement control, int col, int row)
+		void SetSizes()
 		{
-			if (!Widget.Loaded) return;
-			var maxWidth = double.IsNaN(control.Width) ? 0 : control.Width;
-			var maxHeight = double.IsNaN(control.Height) ? 0 : control.Height;
-			for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
-			{
+			if (!Control.IsLoaded) return;
+			var inGroupBox = Widget.FindParent<GroupBox>() != null;
 
-				var max = Control.ColumnDefinitions[x].ActualWidth;
-				if (x == col && max < maxWidth) max = maxWidth;
-				foreach (var child in ColumnControls(x))
-				{
-					if (!double.IsNaN(child.Width))
-						child.Width = Math.Max(0, max - child.Margin.Horizontal());
-				}
-			}
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
-				var max = Control.RowDefinitions[y].ActualHeight;
-				if (y == row && max < maxHeight) max = maxHeight;
-				foreach (var child in RowControls(y))
+				var rowdef = Control.RowDefinitions[y];
+				
+				// hack for ever-expanding group boxes
+				int adj = 0;
+				if (inGroupBox && rowdef.Height.IsStar)
 				{
-					if (!double.IsNaN(child.Height))
-						child.Height = Math.Max(0, max - child.Margin.Vertical());
+					adj = 1;
+					inGroupBox = false;
+				}
+				var maxy = rowdef.ActualHeight;
+				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
+				{
+					var maxx = Control.ColumnDefinitions[x].ActualWidth;
+					var child = controls[x, y];
+					var childControl = child.GetContainerControl();
+					if (childControl != null)
+					{
+						var margin = childControl.Margin;
+						if (!double.IsNaN(childControl.Width))
+							childControl.Width = Math.Max(0, maxx - margin.Horizontal());
+						if (!double.IsNaN(childControl.Height))
+							childControl.Height = Math.Max(0, maxy - margin.Vertical() - adj);
+					}
 				}
 			}
 		}
@@ -238,10 +235,10 @@ namespace Eto.Platform.Wpf.Forms
 			c.Margin = margin;
 		}
 
-		public Eto.Drawing.Padding Padding
+		public Padding Padding
 		{
-			get { return Control.Margin.ToEto(); }
-			set { Control.Margin = value.ToWpf(); }
+			get { return border.Padding.ToEto(); }
+			set { border.Padding = value.ToWpf(); }
 		}
 
 		void Remove(int x, int y)
@@ -267,7 +264,7 @@ namespace Eto.Platform.Wpf.Forms
 				control.SetValue(swc.Grid.RowProperty, y);
 				SetMargins(control, x, y);
 				Control.Children.Add(control);
-				SetSizes(control, x, y);
+				SetSizes();
 			}
 		}
 
@@ -282,8 +279,7 @@ namespace Eto.Platform.Wpf.Forms
 			control.SetValue(swc.Grid.ColumnProperty, x);
 			control.SetValue(swc.Grid.RowProperty, y);
 			SetMargins(control, x, y);
-			SetSizes(control, x, y);
-			SetSizes(control, x, y);
+			SetSizes();
 			Control.Children.Add(EmptyCell(oldx, oldy));
 			controls[x, y] = child;
 		}
