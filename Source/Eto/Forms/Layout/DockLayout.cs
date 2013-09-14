@@ -35,6 +35,8 @@ namespace Eto.Forms
 		public static Container AddDockedControl (this DockContainer container, Control control, Padding? padding = null)
 		{
 			container.Content = control;
+			if (padding != null)
+				container.Padding = padding.Value;
 			return container;
 		}
 	}
