@@ -26,6 +26,10 @@ namespace Eto.Platform.Windows
 		void SetScale(bool xscale, bool yscale);
 
 		bool ShouldCaptureMouse { get; }
+
+		bool XScale { get; }
+
+		bool YScale { get; }
 	}
 
 	public static class WindowsControlExtensions
@@ -81,8 +85,10 @@ namespace Eto.Platform.Windows
 		string tooltip;
 		Size desiredSize = new Size(-1, -1);
 		Size parentMinimumSize;
-		protected bool XScale { get; set; }
-		protected bool YScale { get; set; }
+
+		public bool XScale { get; set; }
+
+		public bool YScale { get; set; }
 
 		public virtual Size? DefaultSize { get { return null; } }
 
@@ -137,17 +143,12 @@ namespace Eto.Platform.Windows
 			get { return SWF.DockStyle.Fill; }
 		}
 
-		protected virtual Size CalculateMinimumSize()
+		protected void SetMinimumSize()
 		{
 			var size = this.DesiredSize;
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
-			return size;
-		}
-
-		protected void SetMinimumSize()
-		{
-			SetMinimumSize(CalculateMinimumSize());
+			SetMinimumSize(size);
 		}
 
 		protected virtual void SetMinimumSize(Size size)
