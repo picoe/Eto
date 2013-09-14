@@ -57,6 +57,13 @@ namespace Eto.Platform.Windows
 			get { return content; }
 		}
 
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			if (Content != null)
+				Content.SetScale(ExpandContentWidth, ExpandContentHeight);
+		}
+
 		public BorderType Border
 		{
 			get
