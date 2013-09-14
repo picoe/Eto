@@ -116,18 +116,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			UnRegisterScrollable();
 		}
 
-		public override Size Size
-		{
-			get { return base.Size; }
-			set
-			{
-				if (value != base.Size)
-				{
-					base.Size = value;
-				}
-			}
-		}
-
 		public DrawableHandler()
 		{
 			AllowTiling = true;
@@ -366,19 +354,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get { return Control.Background.ToEtoColor(); }
 			set { Control.Background = value.ToWpfBrush(Control.Background); }
-		}
-
-		public override Size MinimumSize
-		{
-			get
-			{
-				return new Size((int)Control.MinWidth, (int)Control.MinHeight);
-			}
-			set
-			{
-				Control.MinWidth = value.Width;
-				Control.MinHeight = value.Height;
-			}
 		}
 	}
 }

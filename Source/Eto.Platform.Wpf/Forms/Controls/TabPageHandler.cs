@@ -18,14 +18,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		swc.Image headerImage;
 		swc.TextBlock headerText;
 
-		public TabPageHandler ()
+		public TabPageHandler()
 		{
-			Control = new swc.TabItem ();
+			Control = new swc.TabItem();
 			var header = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			headerImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
-			headerText = new swc.TextBlock ();
-			header.Children.Add (headerImage);
-			header.Children.Add (headerText);
+			headerText = new swc.TextBlock();
+			header.Children.Add(headerImage);
+			header.Children.Add(headerText);
 			Control.Header = header;
 
 			Control.Content = content = new swc.DockPanel { };
@@ -50,26 +50,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				image = value;
 				if (image != null)
-					headerImage.Source = ((IWpfImage)image.Handler).GetImageClosestToSize (16);
+					headerImage.Source = ((IWpfImage)image.Handler).GetImageClosestToSize(16);
 				else
 					headerImage.Source = null;
 			}
 		}
 
-		public Eto.Drawing.Size ClientSize
+		public override Size ClientSize
 		{
-			get {
-				return new Eto.Drawing.Size ((int)content.Width, (int)content.Height);
-			}
-			set {
+			get { return new Size((int)content.Width, (int)content.Height); }
+			set
+			{
 				content.Width = value.Width;
 				content.Height = value.Height;
 			}
-		}
-
-		public object ContainerObject
-		{
-			get { return Control.Content; }
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)

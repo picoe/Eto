@@ -67,8 +67,7 @@ namespace Eto.Platform.Wpf.Forms
 		where W : Control
 	{
 		Size? size;
-		double preferredWidth = double.NaN;
-		double preferredHeight = double.NaN;
+		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
 		Cursor cursor;
 		bool loaded;
@@ -96,23 +95,25 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				size = value;
-				preferredWidth = value.Width == -1 ? double.NaN : (double)value.Width;
-				preferredHeight = value.Height == -1 ? double.NaN : (double)value.Height;
+				preferredSize.Width = (value.Width >= 0) ? value.Width : double.NaN;
+				preferredSize.Height = (value.Height >= 0) ? value.Height : double.NaN;
 				Conversions.SetSize(Control, value);
 			}
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size? constraint = null)
 		{
-			if (double.IsNaN(preferredWidth) || double.IsNaN(preferredHeight) || constraint != null)
+			var size = preferredSize;
+			if (double.IsNaN(size.Width) || double.IsNaN(size.Height) || constraint != null)
 			{
 				ContainerControl.Measure(constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity));
-				if (double.IsNaN(preferredWidth))
-					preferredWidth = ContainerControl.DesiredSize.Width;
-				if (double.IsNaN(preferredHeight))
-					preferredHeight = ContainerControl.DesiredSize.Height;
+				var desired = ContainerControl.DesiredSize;
+				if (double.IsNaN(size.Width))
+					size.Width = desired.Width;
+				if (double.IsNaN(size.Height))
+					size.Height = desired.Height;
 			}
-			return new sw.Size(preferredWidth, preferredHeight);
+			return size;
 		}
 
 		public bool Enabled

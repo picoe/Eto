@@ -14,42 +14,24 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class GroupBoxHandler : WpfDockContainer<swc.GroupBox, GroupBox>, IGroupBox
 	{
 		Font font;
-		
-		public GroupBoxHandler ()
+
+		public GroupBoxHandler()
 		{
 			Control = new swc.GroupBox();
-		}
-		
-		public override Size ClientSize
-		{
-			get { return this.Size; }
-			set
-			{
-				// TODO
-				this.Size = value;
-			}
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
 			Control.Content = content;
-			/*var tableLayout = layout.Handler as TableLayoutHandler;
-			if (tableLayout != null)
-				tableLayout.Adjust = new Size(0, -1);*/
+			var margin = content.Margin;
+			margin.Bottom = 10;
+			content.Margin = margin;
 		}
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return brush.Color.ToEto ();
-				else return Colors.Black;
-			}
-			set
-			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		public Font Font
@@ -58,7 +40,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				font = value;
-				FontHandler.Apply (Control, font);
+				FontHandler.Apply(Control, font);
 			}
 		}
 

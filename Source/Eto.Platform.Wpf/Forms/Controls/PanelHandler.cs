@@ -24,19 +24,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
-		public override Size MinimumSize
-		{
-			get
-			{
-				return new Size ((int)Control.MinWidth, (int)Control.MinHeight);
-			}
-			set
-			{
-				Control.MinWidth = value.Width;
-				Control.MinHeight = value.Height;
-			}
-		}
-
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
 			Control.Child = content;

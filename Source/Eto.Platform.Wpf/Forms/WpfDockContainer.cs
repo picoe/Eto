@@ -15,8 +15,23 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		Control content;
 		swc.Border border;
+		Size? clientSize;
 
 		protected virtual bool UseContentSize { get { return true; } }
+
+		public override Size ClientSize
+		{
+			get
+			{
+				if (!Control.IsLoaded && clientSize != null) return clientSize.Value;
+				else return Conversions.GetSize(border);
+			}
+			set
+			{
+				clientSize = value;
+				Conversions.SetSize(border, value);
+			}
+		}
 
 		public override sw.Size GetPreferredSize(sw.Size? constraint)
 		{
@@ -36,11 +51,13 @@ namespace Eto.Platform.Wpf.Forms
 			border = new swc.Border();
 			border.SizeChanged += (sender, e) =>
 			{
-				if (content != null)
+				var element = content.GetContainerControl();
+				if (element != null)
 				{
-					var element = (sw.FrameworkElement)content.ControlObject;
-					if (!double.IsNaN(element.Width)) element.Width = Math.Max(0, e.NewSize.Width - Padding.Horizontal);
-					if (!double.IsNaN(element.Height)) element.Height = Math.Max(0, e.NewSize.Height - Padding.Vertical);
+					if (!double.IsNaN(element.Width))
+						element.Width = Math.Max(0, e.NewSize.Width - Padding.Horizontal);
+					if (!double.IsNaN(element.Height))
+						element.Height = Math.Max(0, e.NewSize.Height - Padding.Vertical);
 				}
 			};
 		}
@@ -72,10 +89,15 @@ namespace Eto.Platform.Wpf.Forms
 				}
 				else
 					border.Child = null;
+				SetContent();
 			}
 		}
 
 		public abstract void SetContainerContent(sw.FrameworkElement content);
+
+		public virtual void SetContent()
+		{
+		}
 
 		public override void Remove(sw.FrameworkElement child)
 		{
