@@ -28,12 +28,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public LabelHandler ()
 		{
-			Control = new EtoLabel();
 			text = new swc.AccessText();
-			Control.Content = text;
+			Control = new EtoLabel
+			{
+				Padding = new sw.Thickness(0),
+				Content = text
+			};
+			Control.Target = Control;
 			HorizontalAlign = HorizontalAlign.Left;
 			VerticalAlign = VerticalAlign.Top;
-			Control.Target = Control;
 		}
 
 		public override void AttachEvent(string handler)
