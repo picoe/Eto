@@ -27,6 +27,7 @@ namespace Eto.Platform.GtkSharp
 			scroll = new Gtk.ScrolledWindow ();
 			scroll.ShadowType = Gtk.ShadowType.In;
 			Control = new Gtk.TreeView (new Gtk.TreeModelAdapter (model));
+			Size = new Size(80, 80);
 			//tree.FixedHeightMode = true;
 			Control.ShowExpanders = false;
 			scroll.Add (Control);

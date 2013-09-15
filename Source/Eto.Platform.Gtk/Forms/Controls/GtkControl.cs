@@ -69,6 +69,8 @@ namespace Eto.Platform.GtkSharp
 			size = Size.Empty;
 		}
 
+		public virtual Size DefaultSize { get { return new Size(-1, -1); } }
+
 		public virtual Gtk.Widget ContainerControl
 		{
 			get { return Control; }
@@ -132,6 +134,14 @@ namespace Eto.Platform.GtkSharp
 				if (size != value)
 				{
 					size = value;
+					if (size.Width == -1 || size.Height == -1)
+					{
+						var defSize = DefaultSize;
+						if (size.Width == -1)
+							size.Width = defSize.Width;
+						if (size.Height == -1)
+							size.Height = defSize.Height;
+					}
 					var alloc = Control.Allocation;
 					alloc.Size = value.ToGdk();
 					ContainerControl.SetSizeRequest(size.Width, size.Height);
