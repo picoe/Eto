@@ -90,7 +90,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the DockLayout with an unspecified container
 		/// </summary>
 		/// <remarks>
-		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(Container)"/> when
+		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(DockContainer)"/> when
 		/// calling through code.
 		/// </remarks>
 		public DockLayout ()
@@ -126,15 +126,5 @@ namespace Eto.Forms
 		{
 			Content = null;
 		}
-
-		/*
-		/// <summary>
-		/// Gets or sets the amount of padding around the child control
-		/// </summary>
-		public Padding Padding {
-			get { return Handler.Padding; }
-			set { Handler.Padding = value; }
-		}
-		*/
 	}
 }
