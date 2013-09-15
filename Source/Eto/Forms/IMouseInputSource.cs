@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 using MouseEventHandler = System.EventHandler<Eto.Forms.MouseEventArgs>;
 
-namespace Eto.Interface
+namespace Eto.Forms
 {
     public interface IMouseInputSource
     {

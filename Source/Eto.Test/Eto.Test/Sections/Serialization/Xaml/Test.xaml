@@ -80,7 +80,7 @@
 				</DynamicLayout>
 			</TabPage>
 			<TabPage Text="Table Layout">
-				<TableLayout Size="3,3" ColumnScale="0,2" RowScale="0,2">
+				<TableLayout CellSize="3,3" ColumnScale="0,2" RowScale="0,2">
 					<Label Text="Centered in tab" TableLayout.Location="1,1" />
 				</TableLayout>
 			</TabPage>

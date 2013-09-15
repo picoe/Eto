@@ -117,6 +117,20 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Fits this size to the specified <paramref name="constraint"/>, keeping the aspect
+		/// </summary>
+		/// <returns>The new size with the same aspect ratio with the width/height equal or within the constraint</returns>
+		/// <param name="constraint">Constraint to fit the new size into</param>
+		public Size FitTo (Size constraint)
+		{
+			double ratioX = (double) constraint.Width / (double) this.Width;
+			double ratioY = (double) constraint.Height / (double) this.Height;
+			// use whichever multiplier is smaller
+			double ratio = ratioX < ratioY ? ratioX : ratioY;
+			return new Size((int)(Width * ratio), (int)(Height * ratio));
+		}
+
+		/// <summary>
 		/// Gets a value indicating that the specified <paramref name="point"/> is within the <see cref="Width"/> and <see cref="Height"/> of this size
 		/// </summary>
 		/// <param name="point">Point to test</param>

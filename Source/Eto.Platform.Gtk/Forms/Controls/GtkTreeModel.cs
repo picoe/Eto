@@ -306,7 +306,7 @@ namespace Eto.Platform.GtkSharp
 		public bool IterParent (out Gtk.TreeIter parent, Gtk.TreeIter child)
 		{
 			var node = GetNodeAtIter (child);
-			if (node != null && node.Indices.Length > 1) {
+			if (node != null && node.Indices.Length > 1 && node.Item != null) {
 				var indices = new int[node.Indices.Length - 1];
 				Array.Copy (node.Indices, indices, indices.Length);
 				parent = GetIterFromItem((T)node.Item.Parent, indices);

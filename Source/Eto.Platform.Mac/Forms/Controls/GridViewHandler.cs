@@ -67,7 +67,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					
 			public override void SelectionDidChange (NSNotification notification)
 			{
-				Handler.Widget.OnSelectionChanged ();
+				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
 
 				// Trigger CellClick
 				var tableView = Handler.Control;

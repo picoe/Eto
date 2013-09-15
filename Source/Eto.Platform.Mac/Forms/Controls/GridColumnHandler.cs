@@ -71,28 +71,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var handler = this.DataViewHandler;
 			if (this.AutoSize && handler != null) {
-				Control.SizeToFit ();
 				float width = Control.DataCell.CellSize.Width;
 				var outlineView = handler.Table as NSOutlineView;
 				if (handler.ShowHeader)
 					width = Math.Max (Control.HeaderCell.CellSize.Width, width);
 					
 				if (dataCell != null) {
-					/* Auto size based on visible cells only*/
+					/* Auto size based on visible cells only */
 					var rect = handler.GetVisibleRect ();
 					var range = handler.Table.RowsInRect (rect);
-					/**
-					var range = new NSRange(0, handler.RowCount);
-					/**/
 
 					var cellSize = Control.DataCell.CellSize;
 					var dataCellHandler = ((ICellHandler)dataCell.Handler);
 					for (int i = range.Location; i < range.Location + range.Length; i++) {
-						//var dataCellRow = Control.DataCellForRow(i);
-						//var cellWidth = dataCellRow.CellSize.Width;
 						var cellWidth = GetRowWidth (dataCellHandler, i, cellSize) + 4;
 						if (outlineView != null && Column == 0)
-							cellWidth += (outlineView.LevelForRow (i) + 1) * outlineView.IndentationPerLevel;
+						{
+							cellWidth += (outlineView.LevelForRow(i) + 1) * outlineView.IndentationPerLevel;
+						}
 						width = Math.Max (width, cellWidth);
 					}
 				}

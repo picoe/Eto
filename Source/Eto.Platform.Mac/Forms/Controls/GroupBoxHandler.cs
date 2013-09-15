@@ -7,7 +7,7 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class GroupBoxHandler : MacContainer<NSBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : MacDockContainer<NSBox, GroupBox>, IGroupBox
 	{
 		Font font;
 
@@ -24,10 +24,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Enabled = true;
 		}
 
-		public override object ContainerObject {
-			get {
-				return Control.ContentView;
-			}
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
+
+		public override NSView ContentControl
+		{
+			get { return (NSView)Control.ContentView; }
 		}
 		
 		public override bool Enabled { get; set; }

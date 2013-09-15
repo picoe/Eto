@@ -14,12 +14,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public static class WpfListItemHelper
 	{
-		public static sw.FrameworkElementFactory ItemTemplate(bool editable)
+		public static sw.FrameworkElementFactory ItemTemplate(bool editable, swd.RelativeSource relativeSource = null)
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(swc.StackPanel));
 			factory.SetValue(swc.StackPanel.OrientationProperty, swc.Orientation.Horizontal);
 			factory.AppendChild(ImageBlock());
-			factory.AppendChild(editable ? EditableBlock() : TextBlock());
+			factory.AppendChild(editable ? EditableBlock(relativeSource) : TextBlock());
 			return factory;
 		}
 
@@ -37,18 +37,21 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		static sw.PropertyPath TextPath = PropertyPathHelper.Create("(Eto.Forms.IListItem,Eto.Text)");
+
 		public static sw.FrameworkElementFactory TextBlock()
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(swc.TextBlock));
-			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = new sw.PropertyPath("Text") });
+			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = TextPath });
 			factory.SetValue(swc.TextBlock.MarginProperty, new sw.Thickness(2));
 			return factory;
 		}
 
-		public static sw.FrameworkElementFactory EditableBlock()
+		public static sw.FrameworkElementFactory EditableBlock(swd.RelativeSource relativeSource)
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(EditableTextBlock));
-			factory.SetBinding(EditableTextBlock.TextProperty, new sw.Data.Binding { Path = new sw.PropertyPath("Text") });
+			var binding = new sw.Data.Binding { Path = TextPath, RelativeSource = relativeSource, Mode = swd.BindingMode.TwoWay, UpdateSourceTrigger = swd.UpdateSourceTrigger.PropertyChanged };
+			factory.SetBinding(EditableTextBlock.TextProperty, binding);
 			return factory;
 		}
 

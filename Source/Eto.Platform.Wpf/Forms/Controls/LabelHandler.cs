@@ -5,21 +5,52 @@ using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
+using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using swi = System.Windows.Input;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class LabelHandler : WpfControl<System.Windows.Controls.Label, Label>, ILabel
+	public class LabelHandler : WpfControl<swc.Label, Label>, ILabel
 	{
-		System.Windows.Controls.TextBlock text;
+		swc.AccessText text;
+
+		public class EtoLabel : swc.Label
+		{
+			protected override void OnAccessKey(swi.AccessKeyEventArgs e)
+			{
+				// move focus to the next control after the label
+				var tRequest = new swi.TraversalRequest(swi.FocusNavigationDirection.Next);
+				this.MoveFocus(tRequest);
+			}
+		}
 
 		public LabelHandler ()
 		{
-			Control = new System.Windows.Controls.Label ();
-			text = new System.Windows.Controls.TextBlock ();
-			Control.Content = text;
+			text = new swc.AccessText();
+			Control = new EtoLabel
+			{
+				Padding = new sw.Thickness(0),
+				Content = text
+			};
+			Control.Target = Control;
 			HorizontalAlign = HorizontalAlign.Left;
 			VerticalAlign = VerticalAlign.Top;
+		}
+
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				case TextControl.TextChangedEvent:
+					// do nothing, label doesn't get updated by the user
+					break;
+
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
 		}
 
 		public HorizontalAlign HorizontalAlign
@@ -122,21 +153,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public Color TextColor
 		{
-			get
-			{
-				var b = (swm.SolidColorBrush)text.Foreground;
-				return b.Color.ToEto ();
-			}
-			set
-			{
-				text.Foreground = new swm.SolidColorBrush (value.ToWpf ());
-			}
+			get { return text.Foreground.ToEtoColor(); }
+			set { text.Foreground = value.ToWpfBrush(text.Foreground); }
 		}
 
 		public string Text
 		{
-			get { return text.Text; }
-			set { text.Text = value; }
+			get { return text.Text.ToEtoMneumonic(); }
+			set { text.Text = value.ToWpfMneumonic(); ; }
 		}
 	}
 }

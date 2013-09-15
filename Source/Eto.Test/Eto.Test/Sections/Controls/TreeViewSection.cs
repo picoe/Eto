@@ -18,7 +18,7 @@ namespace Eto.Test.Sections.Controls
 
 		public TreeViewSection()
 		{
-			var layout = new DynamicLayout(this);
+			var layout = new DynamicLayout();
 			
 			layout.BeginHorizontal();
 			layout.Add(new Label { });
@@ -47,6 +47,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Panel(), HoverNodeLabel());
 
 			layout.Add (null, false, true);
+
+			Content = layout;
 		}
 
 		Control HoverNodeLabel()

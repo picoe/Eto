@@ -137,11 +137,10 @@ namespace Eto.Forms
 				e.Item);
 		}
 
-		public override void OnSelectionChanged()
+		public override void OnSelectionChanged(EventArgs e)
 		{
-			if (this.selection != null &&
-				!this.selection.SuppressSelectionChanged)
-				base.OnSelectionChanged();
+			if (this.selection != null && !this.selection.SuppressSelectionChanged)
+				base.OnSelectionChanged(e);
 		}
 
 		private Comparison<object> sortComparer;

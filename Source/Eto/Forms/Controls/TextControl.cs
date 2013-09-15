@@ -14,17 +14,16 @@ namespace Eto.Forms
 	[ContentProperty("Text")]
 	public abstract class TextControl : CommonControl
 	{
-		ITextControl handler;
+		new ITextControl Handler { get { return (ITextControl)base.Handler; } }
 		
 		protected TextControl(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
 		{
-			handler = (ITextControl)base.Handler;
 		}
 		
 		public virtual string Text
 		{
-			get { return handler.Text; }
-			set { handler.Text = value; }
+			get { return Handler.Text; }
+			set { Handler.Text = value; }
 		}
 
 		public ObjectBinding<TextControl, string> TextBinding

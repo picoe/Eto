@@ -17,7 +17,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Font font;
 		bool is106;
-		
+
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
+
 		class MyTextFieldCell : NSTextFieldCell
 		{
 			public LabelHandler Handler { get; set; }

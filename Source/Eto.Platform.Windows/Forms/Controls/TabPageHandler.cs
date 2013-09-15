@@ -1,19 +1,19 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
-	public class TabPageHandler : WindowsContainer<SWF.TabPage, TabPage>, ITabPage
+	public class TabPageHandler : WindowsDockContainer<swf.TabPage, TabPage>, ITabPage
 	{
 		Image image;
-		SWF.TabControl tabcontrol;
+		swf.TabControl tabcontrol;
 
 		public TabPageHandler ()
 		{
-			this.Control = new SWF.TabPage {
+			this.Control = new swf.TabPage {
 				UseVisualStyleBackColor = true
 			};
 		}
@@ -52,17 +52,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 				this.Control.ImageIndex = this.tabcontrol.ImageList.Images.IndexOfKey (this.Control.ImageKey);
 			}
 		}
-		
-		public override void SetParent (Control parent)
+
+		public override void SetParent(Container parent)
 		{
-			base.SetParent (parent);
-			tabcontrol = parent != null ? parent.ControlObject as SWF.TabControl : null;
+			base.SetParent(parent);
+			tabcontrol = parent != null ? parent.ControlObject as swf.TabControl : null;
 			SetImage ();
-		}
-		
-		public override void OnLoad (EventArgs e)
-		{
-			base.OnLoad (e);
 		}
 	}
 }

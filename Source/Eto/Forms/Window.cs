@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public partial interface IWindow : IContainer
+	public partial interface IWindow : IDockContainer
 	{
 		ToolBar ToolBar { get; set; }
 		
@@ -23,7 +23,7 @@ namespace Eto.Forms
 		//void ClearToolbars();
 	}
 	
-	public abstract partial class Window : Container
+	public abstract partial class Window : DockContainer
 	{
 		IWindow handler;
 		//ToolBarCollection toolBars;
@@ -87,8 +87,8 @@ namespace Eto.Forms
 
 		#endregion
 
-		protected Window (Generator g, Type type, bool initialize = true)
-			: base(g, type, false)
+		protected Window (Generator generator, Type type, bool initialize = true)
+			: base(generator, type, false)
 		{
 			handler = (IWindow)this.Handler;
 			//toolBars = new ToolBarCollection(this);

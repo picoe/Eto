@@ -88,7 +88,7 @@ namespace Eto.Test
 			}
 		}
 		
-		public override void OnSelectionChanged ()
+		public override void OnSelectionChanged (EventArgs e)
 		{
 			var sectionGenerator = this.SelectedItem as ISectionGenerator;
 			
@@ -97,7 +97,7 @@ namespace Eto.Test
 			} else 
 				SectionControl = null;
 
-			base.OnSelectionChanged ();
+			base.OnSelectionChanged (e);
 		}
 	}
 }

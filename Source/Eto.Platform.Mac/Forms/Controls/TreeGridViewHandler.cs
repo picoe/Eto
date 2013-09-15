@@ -67,7 +67,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void SelectionDidChange (NSNotification notification)
 			{
 				if (!skipSelectionChanged) {
-					Handler.Widget.OnSelectionChanged ();
+					Handler.Widget.OnSelectionChanged (EventArgs.Empty);
 					var item = Handler.SelectedItem;
 					if (!object.ReferenceEquals (item, lastSelected)) {
 						Handler.Widget.OnSelectedItemChanged (EventArgs.Empty);

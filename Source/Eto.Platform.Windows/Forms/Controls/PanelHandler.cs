@@ -5,7 +5,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class PanelHandler : WindowsContainer<PanelHandler.EtoPanel, Panel>, IPanel
+	public class PanelHandler : WindowsDockContainer<PanelHandler.EtoPanel, Panel>, IPanel
 	{
 		public class EtoPanel : swf.Panel
 		{
@@ -28,18 +28,13 @@ namespace Eto.Platform.Windows
 
 		public PanelHandler ()
 		{
-			Control = new EtoPanel ();
-			this.Control.SuspendLayout ();
-			this.Control.Size = sd.Size.Empty;
-			this.Control.MinimumSize = sd.Size.Empty;
-			this.Control.AutoSize = true;
-			this.Control.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-		}
-
-		public override void OnLoad (EventArgs e)
-		{
-			base.OnLoad (e);
-			Control.ResumeLayout ();
+			Control = new EtoPanel
+			{
+				Size = sd.Size.Empty,
+				MinimumSize = sd.Size.Empty,
+				AutoSize = true,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
+			};
 		}
 	}
 }

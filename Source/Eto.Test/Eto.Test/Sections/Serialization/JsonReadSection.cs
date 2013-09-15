@@ -5,9 +5,9 @@ namespace Eto.Test.Sections.Serialization
 {
 	public class JsonReadSection : Panel
 	{
-		public JsonReadSection() {
-			
-			this.AddDockedControl(new Json.Test());
+		public JsonReadSection()
+		{
+			Content = new Json.Test();
 		}
 	}
 }

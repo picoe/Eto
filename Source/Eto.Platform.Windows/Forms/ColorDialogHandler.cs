@@ -27,7 +27,7 @@ namespace Eto.Platform.Windows.Forms
 			if (customColors != null) this.Control.CustomColors = customColors;
 			
 			if (parent != null)
-                result = this.Control.ShowDialog(parent.GetSwfControl());
+                result = this.Control.ShowDialog(parent.GetContainerControl());
 			else
 				result = this.Control.ShowDialog ();
 			

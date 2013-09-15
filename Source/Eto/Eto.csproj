@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -368,8 +368,6 @@
     <Compile Include="Drawing\PenLineCap.cs" />
     <Compile Include="Drawing\TextureBrush.cs" />
     <Compile Include="Drawing\LinearGradientBrush.cs" />
-    <Compile Include="Interface\IKeyboardInputSource.cs" />
-    <Compile Include="Interface\IMouseInputSource.cs" />
     <Compile Include="Forms\Screen.cs" />
     <Compile Include="Helper.cs" />
     <Compile Include="Forms\Controls\RadioButtonList.cs" />
@@ -381,6 +379,8 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Binding\DelegateBinding.cs" />
+    <Compile Include="Forms\IKeyboardInputSource.cs" />
+    <Compile Include="Forms\IMouseInputSource.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

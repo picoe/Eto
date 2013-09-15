@@ -4,37 +4,44 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class PixelLayoutHandler : GtkLayout<Gtk.Fixed, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : GtkContainer<Gtk.Fixed, PixelLayout>, IPixelLayout
 	{
-		public PixelLayoutHandler ()
+		public PixelLayoutHandler()
 		{
-			Control = new Gtk.Fixed ();
+			Control = new Gtk.Fixed();
 		}
-		
-		public void Add (Control child, int x, int y)
+
+		public void Add(Control child, int x, int y)
 		{
 			var ctl = ((IGtkControl)child.Handler);
 
-			var gtkcontrol = child.GetContainerWidget ();
-			Control.Put (gtkcontrol, x, y);
-			ctl.CurrentLocation = new Point (x, y);
-			if (this.Control.Visible)
-				gtkcontrol.ShowAll ();
+			var widget = child.GetContainerWidget();
+			if (widget.Parent != null)
+				((Gtk.Container)widget.Parent).Remove(widget);
+			Control.Put(widget, x, y);
+			ctl.CurrentLocation = new Point(x, y);
+			widget.ShowAll();
 		}
 
-		public void Move (Control child, int x, int y)
+		public void Move(Control child, int x, int y)
 		{
 			var ctl = ((IGtkControl)child.Handler);
-			if (ctl.CurrentLocation.X != x || ctl.CurrentLocation.Y != y) {
-				Control.Move (child.GetContainerWidget (), x, y);
+			if (ctl.CurrentLocation.X != x || ctl.CurrentLocation.Y != y)
+			{
+				Control.Move(child.GetContainerWidget(), x, y);
 				
-				ctl.CurrentLocation = new Point (x, y);
+				ctl.CurrentLocation = new Point(x, y);
 			}
 		}
-		
-		public void Remove (Control child)
+
+		public void Remove(Control child)
 		{
-			Control.Remove (child.GetContainerWidget ());
+			Control.Remove(child.GetContainerWidget());
+		}
+
+		public void Update()
+		{
+			Control.ResizeChildren();
 		}
 	}
 }

@@ -7,7 +7,7 @@ using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class DrawableHandler : WindowsContainer<DrawableHandler.EtoDrawable, Drawable>, IDrawable
+	public class DrawableHandler : WindowsDockContainer<DrawableHandler.EtoDrawable, Drawable>, IDrawable
 	{
 		public class EtoDrawable : swf.Control
 		{

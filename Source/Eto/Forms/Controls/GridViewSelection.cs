@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -98,7 +98,7 @@ namespace Eto.Forms
 			state = GridViewSelectionState.SelectionChanging;
 			a(); // Causes GridView.OnSelectionChanged to trigger which calls SuppressSelectionChanged which returns true.
 			state = GridViewSelectionState.SelectionChanged;
-			gridView.OnSelectionChanged(); // Calls SuppressSelectionChanged which returns false.
+			gridView.OnSelectionChanged(EventArgs.Empty); // Calls SuppressSelectionChanged which returns false.
 			state = GridViewSelectionState.Normal; // This should already be done in SuppressSelectionChanged but repeated for robustness
 		}
 

@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using swc = System.Windows.Controls;
+using swm = System.Windows.Media;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TabControlHandler : WpfControl<swc.TabControl, TabControl>, ITabControl
+	public class TabControlHandler : WpfContainer<swc.TabControl, TabControl>, ITabControl
 	{
 		bool disableSelectedIndexChanged;
 		public TabControlHandler ()
@@ -20,6 +22,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				};
 			};
 		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
+		}
+
+		public override Size ClientSize { get; set; } // TODO
 
 		public int SelectedIndex
 		{
@@ -52,6 +62,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			} finally {
 				disableSelectedIndexChanged = false;
 			}
+		}
+
+		public override void Remove(System.Windows.FrameworkElement child)
+		{
+			// no need
 		}
 	}
 }

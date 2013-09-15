@@ -16,194 +16,208 @@ namespace Eto.Test.Sections.Dialogs
 		bool updating;
 		Drawable metricsPreview;
 
-		public FontDialogSection ()
+		public FontDialogSection()
 		{
-			var layout = new DynamicLayout (this, new Size (5, 5));
+			var layout = new DynamicLayout(new Size(5, 5));
 
-			layout.AddSeparateRow (null, PickFont (), PickFontWithStartingFont (), SetToFontFamily (), null);
-			layout.AddSeparateRow (null, new Label { Text = "Set Font Family", VerticalAlign = VerticalAlign.Middle }, PickFontFamily (), null);
+			layout.AddSeparateRow(null, PickFont(), PickFontWithStartingFont(), SetToFontFamily(), null);
+			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlign = VerticalAlign.Middle }, PickFontFamily(), null);
 
-			layout.AddSeparateRow (null, FontList (), FontStyles (), FontSizes (), null);
-			layout.AddSeparateRow (null, new Label { Text = "Style:"}, BoldFont (), ItalicFont (), null);
+			layout.AddSeparateRow(null, FontList(), FontStyles(), FontSizes(), null);
+			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), null);
 
-			var tabs = new TabControl ();
-			tabs.TabPages.Add (new TabPage (Preview ()) { Text = "Preview" });
-			tabs.TabPages.Add (new TabPage (Metrics ()) { Text = "Metrics" });
+			var tabs = new TabControl();
+			tabs.TabPages.Add(new TabPage(Preview()) { Text = "Preview" });
+			tabs.TabPages.Add(new TabPage(Metrics()) { Text = "Metrics" });
 
-			layout.Add (tabs, yscale: true);
-			UpdatePreview (Fonts.Serif (18, FontStyle.Bold));
+			layout.Add(tabs, yscale: true);
+			UpdatePreview(Fonts.Serif(18, FontStyle.Bold));
+
+			Content = layout;
 		}
 
-		Control PickFontFamily ()
+		Control PickFontFamily()
 		{
-			var fontFamilyName = new TextBox  { Text = "Times, serif", Size = new Size (200, -1) };
+			var fontFamilyName = new TextBox { Text = "Times, serif", Size = new Size (200, -1) };
 
 			var button = new Button { Text = "Set" };
 			button.Click += (sender, e) => {
 
-				try {
-					UpdatePreview (new Font (fontFamilyName.Text, selectedFont.Size));
-				} catch (Exception ex) {
-					Log.Write (this, "Exception: {0}", ex);
+				try
+				{
+					UpdatePreview(new Font(fontFamilyName.Text, selectedFont.Size));
+				}
+				catch (Exception ex)
+				{
+					Log.Write(this, "Exception: {0}", ex);
 				}
 			};
 
-			var layout = new DynamicLayout (new Panel (), Padding.Empty);
-			layout.BeginHorizontal ();
-			layout.AddCentered (fontFamilyName, Padding.Empty, Size.Empty);
-			layout.AddCentered (button, Padding.Empty, Size.Empty);
-			return layout.Container;
+			var layout = new DynamicLayout(Padding.Empty);
+			layout.BeginHorizontal();
+			layout.AddCentered(fontFamilyName, Padding.Empty, Size.Empty);
+			layout.AddCentered(button, Padding.Empty, Size.Empty);
+			return layout;
 		}
 
-		Control Descender ()
+		Control Descender()
 		{
 			var control = new Label { TextColor = Colors.Red };
-			control.Bind (r => r.Text, (Font f) => f.Descent);
+			control.Bind(r => r.Text, (Font f) => f.Descent);
 			return control;
 		}
-		
-		Control Ascender ()
+
+		Control Ascender()
 		{
 			var control = new Label { TextColor = Colors.Blue };
-			control.Bind (r => r.Text, (Font f) => f.Ascent);
+			control.Bind(r => r.Text, (Font f) => f.Ascent);
 			return control;
 		}
-		
-		Control XHeight ()
+
+		Control XHeight()
 		{
 			var control = new Label { TextColor = Colors.Green };
-			control.Bind (r => r.Text, (Font f) => f.XHeight);
+			control.Bind(r => r.Text, (Font f) => f.XHeight);
 			return control;
 		}
-		
-		Control LineHeight ()
+
+		Control LineHeight()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.Bind (r => r.Text, (Font f) => f.LineHeight);
+			control.Bind(r => r.Text, (Font f) => f.LineHeight);
 			return control;
 		}
-		
-		Control Leading ()
+
+		Control Leading()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.Bind (r => r.Text, (Font f) => f.Leading);
+			control.Bind(r => r.Text, (Font f) => f.Leading);
 			return control;
 		}
-		
-		Control BaseLine ()
+
+		Control BaseLine()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.Bind (r => r.Text, (Font f) => f.Baseline);
+			control.Bind(r => r.Text, (Font f) => f.Baseline);
 			return control;
 		}
-		
-		Control PickFont ()
+
+		Control PickFont()
 		{
 			var button = new Button { Text = "Pick Font" };
-			button.Click += delegate {
-				var dialog = new FontDialog ();
-				dialog.FontChanged += delegate {
+			button.Click += delegate
+			{
+				var dialog = new FontDialog();
+				dialog.FontChanged += delegate
+				{
 					// you need to handle this event for OS X, where the dialog is a floating window
-					UpdatePreview (dialog.Font);
-					Log.Write (dialog, "FontChanged, Font: {0}", dialog.Font);
+					UpdatePreview(dialog.Font);
+					Log.Write(dialog, "FontChanged, Font: {0}", dialog.Font);
 				};
-				var result = dialog.ShowDialog (this.ParentWindow);
-				Log.Write (dialog, "Result: {0}", result);
+				var result = dialog.ShowDialog(this.ParentWindow);
+				Log.Write(dialog, "Result: {0}", result);
 			};
 			return button;
 		}
 
-		Control PickFontWithStartingFont ()
+		Control PickFontWithStartingFont()
 		{
 			var button = new Button { Text = "Pick Font with initial starting font" };
-			button.Click += delegate {
-				var dialog = new FontDialog {
+			button.Click += delegate
+			{
+				var dialog = new FontDialog
+				{
 					Font = selectedFont
 				};
-				dialog.FontChanged += delegate {
+				dialog.FontChanged += delegate
+				{
 					// need to handle this event for OS X, where the dialog is a floating window
-					UpdatePreview (dialog.Font);
-					Log.Write (dialog, "FontChanged, Font: {0}", dialog.Font);
+					UpdatePreview(dialog.Font);
+					Log.Write(dialog, "FontChanged, Font: {0}", dialog.Font);
 				};
-				var result = dialog.ShowDialog (this.ParentWindow);
+				var result = dialog.ShowDialog(this.ParentWindow);
 				// do not get the font here, it may return immediately with a result of DialogResult.None on certain platforms
-				Log.Write (dialog, "Result: {0}", result);
+				Log.Write(dialog, "Result: {0}", result);
 			};
 			return button;
 		}
 
-		Control SetToFontFamily ()
+		Control SetToFontFamily()
 		{
 			var button = new Button { Text = "Set to a specific font family (Times New Roman 20pt)" };
-			button.Click += delegate {
-				var family = new FontFamily ("Times New Roman");
-				var font = new Font (family, 20);
-				UpdatePreview (font);
+			button.Click += delegate
+			{
+				var family = new FontFamily("Times New Roman");
+				var font = new Font(family, 20);
+				UpdatePreview(font);
 			};
 			return button;
 		}
 
-		Control FontList ()
+		Control FontList()
 		{
 			fontList = new ListBox { Size = new Size (300, 180) };
-			var lookup = Fonts.AvailableFontFamilies ().ToDictionary (r => r.Name);
-			fontList.Items.AddRange (lookup.Values.OrderBy (r => r.Name).Select (r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem> ());
+			var lookup = Fonts.AvailableFontFamilies().ToDictionary(r => r.Name);
+			fontList.Items.AddRange(lookup.Values.OrderBy(r => r.Name).Select(r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
 			fontList.SelectedIndexChanged += (sender, e) => {
 				if (updating || fontList.SelectedKey == null)
 					return;
-				var family = lookup [fontList.SelectedKey];
-				UpdatePreview (new Font (family.Typefaces.First (), selectedFont.Size));
+				var family = lookup[fontList.SelectedKey];
+				UpdatePreview(new Font(family.Typefaces.First(), selectedFont.Size));
 			};
 
 			return fontList;
 		}
 
-		Control FontStyles ()
+		Control FontStyles()
 		{
 			fontStyles = new ListBox { Size = new Size (150, 100) };
 			fontStyles.SelectedIndexChanged += (sender, e) => {
 				if (updating)
 					return;
-				var face = selectedFont.Family.Typefaces.FirstOrDefault (r => r.Name == fontStyles.SelectedKey);
-				if (face != null) {
-					UpdatePreview (new Font (face, selectedFont.Size));
+				var face = selectedFont.Family.Typefaces.FirstOrDefault(r => r.Name == fontStyles.SelectedKey);
+				if (face != null)
+				{
+					UpdatePreview(new Font(face, selectedFont.Size));
 				}
 			};
 			return fontStyles;
 		}
 
-		Control FontSizes ()
+		Control FontSizes()
 		{
 			fontSizes = new ListBox { Size = new Size (60, 100) };
-			for (int i = 6; i < 72; i++) {
-				fontSizes.Items.Add (i.ToString (), i.ToString ());
+			for (int i = 6; i < 72; i++)
+			{
+				fontSizes.Items.Add(i.ToString(), i.ToString());
 			}
 			fontSizes.SelectedIndexChanged += (sender, e) => {
 				if (updating)
 					return;
 				float size;
-				if (float.TryParse (fontSizes.SelectedKey, out size)) {
-					UpdatePreview (new Font (selectedFont.Typeface, size));
+				if (float.TryParse(fontSizes.SelectedKey, out size))
+				{
+					UpdatePreview(new Font(selectedFont.Typeface, size));
 				}
 			};
 			return fontSizes;
 		}
 
-		Control BoldFont ()
+		Control BoldFont()
 		{
 			var control = new CheckBox { Text = "Bold", Enabled = false };
-			control.Bind (r => r.Checked, (Font f) => f.Bold);
+			control.Bind(r => r.Checked, (Font f) => f.Bold);
 			return control;
 		}
 
-		Control ItalicFont ()
+		Control ItalicFont()
 		{
 			var control = new CheckBox { Text = "Italic", Enabled = false };
-			control.Bind (r => r.Checked, (Font f) => f.Italic);
+			control.Bind(r => r.Checked, (Font f) => f.Italic);
 			return control;
 		}
 
-		void UpdatePreview (Font font)
+		void UpdatePreview(Font font)
 		{
 			if (updating)
 				return;
@@ -212,24 +226,25 @@ namespace Eto.Test.Sections.Dialogs
 			selectedFont = font;
 			DataContext = selectedFont;
 			preview.Font = selectedFont;
-			preview.Invalidate ();
+			preview.Invalidate();
 
 			var family = selectedFont.Family;
-			if (newFamily) {
-				fontStyles.Items.Clear ();
-				fontStyles.Items.AddRange (family.Typefaces.Select (r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem> ());
+			if (newFamily)
+			{
+				fontStyles.Items.Clear();
+				fontStyles.Items.AddRange(family.Typefaces.Select(r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
 			}
 			fontStyles.SelectedKey = selectedFont.Typeface.Name;
 			fontList.SelectedKey = family.Name;
-			fontSizes.SelectedKey = font.Size.ToString ();
-			metricsPreview.Invalidate ();
+			fontSizes.SelectedKey = font.Size.ToString();
+			metricsPreview.Invalidate();
 
 			updating = false;
 		}
 
-		Control Metrics ()
+		Control Metrics()
 		{
-			var layout = new DynamicLayout (new Panel { }, Padding.Empty);
+			var layout = new DynamicLayout(Padding.Empty);
 			layout.BeginHorizontal ();
 			layout.BeginVertical ();
 			layout.Add (null);
@@ -249,7 +264,7 @@ namespace Eto.Test.Sections.Dialogs
 			layout.Add (null);
 			layout.EndVertical ();
 			layout.EndHorizontal ();
-			return layout.Container;
+			return layout;
 		}
 
 		Control MetricsPreview ()

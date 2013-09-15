@@ -3,135 +3,157 @@ using Eto.Drawing;
 using System.Collections.Generic;
 using System.Collections;
 using System.Runtime.Serialization;
-
+using System.Linq;
 
 #if XAML
 using System.Windows.Markup;
 using System.Xaml;
-#endif
 
+#endif
 namespace Eto.Forms
 {
 	public interface IPixelLayout : IPositionalLayout
 	{
 	}
 
-	[ContentProperty ("Children")]
+	[ContentProperty ("Contents")]
 	public class PixelLayout : Layout
 	{
-		IPixelLayout inner;
+		new IPixelLayout Handler { get { return (IPixelLayout)base.Handler; } }
+
 		List<Control> children;
-		List<Control> controls = new List<Control> ();
-		
-		public override IEnumerable<Control> Controls {
-			get {
+		List<Control> controls = new List<Control>();
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
 				return controls;
 			}
 		}
 
-		public List<Control> Children {
-			get {
+		public List<Control> Contents
+		{
+			get
+			{
 				if (children == null)
-					children = new List<Control> ();
+					children = new List<Control>();
 				return children;
 			}
 		}
 
-		public PixelLayout ()
-			: this(null)
+		public PixelLayout(Generator generator = null)
+			: base(generator, typeof(IPixelLayout))
 		{
 		}
 
-		public PixelLayout (Container container)
-			: base (container != null ? container.Generator : Generator.Current, container, typeof (IPixelLayout), true)
+		[Obsolete("Add a PixelLayout to a DockContainer using the DockContainer.Content property")]
+		public PixelLayout(DockContainer container)
+			: this(container != null ? container.Generator : null)
 		{
-			inner = (IPixelLayout)Handler;
-		}
-		
-		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier (typeof (PixelLayout), "Location");
-
-		public static Point GetLocation (Control control)
-		{
-			return control.Properties.Get<Point> (LocationProperty, Point.Empty);
+			if (container != null)
+				container.Content = this;
 		}
 
-		public static void SetLocation (Control control, Point value)
+		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
+
+		public static Point GetLocation(Control control)
+		{
+			return control.Properties.Get<Point>(LocationProperty, Point.Empty);
+		}
+
+		public static void SetLocation(Control control, Point value)
 		{
 			control.Properties[LocationProperty] = value;
-			var layout = control.ParentLayout as TableLayout;
+			var layout = control.Parent as PixelLayout;
 			if (layout != null)
-				layout.Move (control, value);
+				layout.Move(control, value);
 		}
 
-		public void Add (Control control, int x, int y)
+		public void Add(Control control, int x, int y)
 		{
-			control.Properties[LocationProperty] = new Point (x, y);
-			controls.Add (control);
-			control.SetParentLayout (this);
+			control.SetParent(null, false);
+			control.Properties[LocationProperty] = new Point(x, y);
+			controls.Add(control);
 			var load = Loaded && !control.Loaded;
-			if (load) {
-				control.OnPreLoad (EventArgs.Empty);
-				control.OnLoad (EventArgs.Empty);
-			}
-			inner.Add (control, x, y);
 			if (load)
-				control.OnLoadComplete (EventArgs.Empty);
+			{
+				control.OnPreLoad(EventArgs.Empty);
+				control.OnLoad(EventArgs.Empty);
+			}
+			Handler.Add(control, x, y);
+			control.SetParent(this);
+			if (load)
+				control.OnLoadComplete(EventArgs.Empty);
 		}
 
-		public void Add (Control child, Point p)
+		public void Add(Control child, Point p)
 		{
-			Add (child, p.X, p.Y);
+			Add(child, p.X, p.Y);
 		}
-		
-		public void Move (Control child, int x, int y)
+
+		public void Move(Control child, int x, int y)
 		{
-			child.Properties[LocationProperty] = new Point (x, y);
-			inner.Move (child, x, y);
+			child.Properties[LocationProperty] = new Point(x, y);
+			Handler.Move(child, x, y);
 		}
-		
-		public void Move (Control child, Point p)
+
+		public void Move(Control child, Point p)
 		{
-			Move (child, p.X, p.Y);
+			Move(child, p.X, p.Y);
 		}
-		
-		public void Remove (IEnumerable<Control> controls)
+
+		public void Remove(IEnumerable<Control> controls)
 		{
 			foreach (var control in controls)
-				Remove (control);
+				Remove(control);
 		}
-		
-		public void Remove (Control child)
+
+		public void RemoveAll()
 		{
-			if (controls.Remove (child))
-				inner.Remove (child);
+			Remove(this.Controls.ToArray());
+		}
+
+		public void Remove(Control child)
+		{
+			if (controls.Remove(child))
+			{
+				Handler.Remove(child);
+				child.SetParent(null);
+			}
 		}
 
 		[OnDeserialized]
-		internal void OnDeserialized (StreamingContext context)
+		internal void OnDeserialized(StreamingContext context)
 		{
-			OnDeserialized ();
+			OnDeserialized();
 		}
 
-		public override void EndInit ()
+		public override void EndInit()
 		{
-			base.EndInit ();
-			OnDeserialized (Container != null); // mono calls EndInit BEFORE setting to parent
+			base.EndInit();
+			OnDeserialized(Parent != null); // mono calls EndInit BEFORE setting to parent
 		}
 
-		void OnDeserialized (bool direct = false)
+		void OnDeserialized(bool direct = false)
 		{
-			if (Loaded || direct) {
-				if (children != null) {
-					foreach (var control in children) {
-						Add (control, GetLocation (control));
+			if (Loaded || direct)
+			{
+				if (children != null)
+				{
+					foreach (var control in children)
+					{
+						Add(control, GetLocation(control));
 					}
 				}
-			} else {
+			}
+			else
+			{
 				this.PreLoad += HandleDeserialized;
 			}
 		}
-		
-		void HandleDeserialized (object sender, EventArgs e)
+
+		void HandleDeserialized(object sender, EventArgs e)
 		{
 			OnDeserialized(true);
 			this.PreLoad -= HandleDeserialized;

@@ -6,22 +6,24 @@ namespace Eto.Test.Sections.Controls
 {
 	public class DateTimePickerSection : Panel
 	{
-		public DateTimePickerSection ()
+		public DateTimePickerSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 			
-			layout.AddRow (new Label{ Text = "Default" }, Default (), new Label { Text = "Default with Value" }, DefaultWithValue (), null);
-			layout.AddRow (new Label{ Text = "Date" }, DateControl (), new Label { Text = "Date with Value" }, DateControlWithValue ());
-			layout.AddRow (new Label{ Text = "Time" }, TimeControl (), new Label { Text = "Time with Value" }, TimeControlWithValue ());
-			layout.AddRow (new Label{ Text = "Date/Time" }, DateTimeControl (), new Label { Text = "Date/Time with Value" }, DateTimeControlWithValue ());
+			layout.AddRow(new Label { Text = "Default" }, Default(), new Label { Text = "Default with Value" }, DefaultWithValue(), null);
+			layout.AddRow(new Label { Text = "Date" }, DateControl(), new Label { Text = "Date with Value" }, DateControlWithValue());
+			layout.AddRow(new Label { Text = "Time" }, TimeControl(), new Label { Text = "Time with Value" }, TimeControlWithValue());
+			layout.AddRow(new Label { Text = "Date/Time" }, DateTimeControl(), new Label { Text = "Date/Time with Value" }, DateTimeControlWithValue());
 			
 			// growing space at end is blank!
-			layout.Add (null);
+			layout.Add(null);
+
+			Content = layout;
 		}
-		
-		DateTimePicker Default ()
+
+		DateTimePicker Default()
 		{
-			var control = new DateTimePicker{  };
+			var control = new DateTimePicker { };
 			LogEvents (control);
 			return control;
 		}

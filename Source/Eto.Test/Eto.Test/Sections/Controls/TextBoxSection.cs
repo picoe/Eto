@@ -6,76 +6,79 @@ namespace Eto.Test.Sections.Controls
 {
 	public class TextBoxSection : Scrollable
 	{
-		public TextBoxSection ()
+		public TextBoxSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 
-			layout.AddRow (new Label { Text = "Default" }, Default ());
-			layout.AddRow (new Label { Text = "Different Size" }, DifferentSize ());
-			layout.AddRow (new Label { Text = "Read Only" }, ReadOnly ());
-			layout.AddRow (new Label { Text = "Disabled" }, Disabled ());
-			layout.AddRow (new Label { Text = "Placeholder" }, Placeholder ());
-			layout.AddRow (new Label { Text = "Limit Length" }, LimitLength ());
+			layout.AddRow(new Label { Text = "Default" }, Default());
+			layout.AddRow(new Label { Text = "Different Size" }, DifferentSize());
+			layout.AddRow(new Label { Text = "Read Only" }, ReadOnly());
+			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
+			layout.AddRow(new Label { Text = "Placeholder" }, Placeholder());
+			layout.AddRow(new Label { Text = "Limit Length" }, LimitLength());
 
 			// growing space at end is blank!
-			layout.Add (null);
+			layout.Add(null);
+
+			Content = layout;
 		}
-		
-		Control Default ()
+
+		Control Default()
 		{
 			var control = new TextBox { Text = "Some Text" };
-			LogEvents (control);
+			LogEvents(control);
 
 			var selectAll = new Button { Text = "Select All" };
 			selectAll.Click += (object sender, EventArgs e) => {
-				control.SelectAll ();
+				control.SelectAll();
 			};
 
-			var layout = new DynamicLayout (new Panel (), Padding.Empty);
-			layout.Add (control);
-			layout.AddSeparateRow (null, selectAll, null);
-			return layout.Container;
+			var layout = new DynamicLayout(Padding.Empty);
+			layout.Add(control);
+			layout.AddSeparateRow(null, selectAll, null);
+			return layout;
 		}
-		
-		Control DifferentSize ()
+
+		Control DifferentSize()
 		{
-			var control = new TextBox{ Text = "Some Text", Size = new Size (100, 50) };
-			LogEvents (control);
-			return control;
-		}
-		
-		Control ReadOnly ()
-		{
-			var control = new TextBox{ Text = "Read only text", ReadOnly = true };
-			LogEvents (control);
+			var control = new TextBox { Text = "Some Text", Size = new Size (100, 50) };
+			LogEvents(control);
 			return control;
 		}
 
-		Control Disabled ()
+		Control ReadOnly()
+		{
+			var control = new TextBox { Text = "Read only text", ReadOnly = true };
+			LogEvents(control);
+			return control;
+		}
+
+		Control Disabled()
 		{
 			var control = new TextBox { Text = "Disabled Text", Enabled = false };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control LimitLength ()
+		Control LimitLength()
 		{
 			var control = new TextBox { Text = "Limited to 30 characters", MaxLength = 30 };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control Placeholder ()
+		Control Placeholder()
 		{
 			var control = new TextBox { PlaceholderText = "Some Placeholder" };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		void LogEvents (TextBox control)
+		void LogEvents(TextBox control)
 		{
-			control.TextChanged += delegate {
-				Log.Write (control, "TextChanged, Text: {0}", control.Text);
+			control.TextChanged += delegate
+			{
+				Log.Write(control, "TextChanged, Text: {0}", control.Text);
 			};
 		}
 	}
