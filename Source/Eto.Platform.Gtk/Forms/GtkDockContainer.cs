@@ -35,6 +35,7 @@ namespace Eto.Platform.GtkSharp
 			base.OnLoad(e);
 			if (!loaded)
 			{
+#if GTK2
 				ContainerContentControl.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args)
 				{
 					var alloc = args.Requisition;
@@ -44,6 +45,10 @@ namespace Eto.Platform.GtkSharp
 						alloc.Height = Math.Max(alloc.Height, MinimumSize.Height);
 					args.Requisition = alloc;
 				};
+#else
+				if (MinimumSize != Size.Empty)
+					ContainerContentControl.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
+#endif
 				loaded = true;
 			}
 		}

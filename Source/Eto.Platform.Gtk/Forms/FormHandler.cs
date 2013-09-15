@@ -21,7 +21,10 @@ namespace Eto.Platform.GtkSharp
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.Add(WindowContentControl);
+			var vbox = new Gtk.VBox();
+			vbox.PackStart(WindowActionControl, false, true, 0);
+			vbox.PackStart(WindowContentControl, true, true, 0);
+			Control.Add(vbox);
 		}
 
 		public void Show()

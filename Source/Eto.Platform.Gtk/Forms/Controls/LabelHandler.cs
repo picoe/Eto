@@ -49,17 +49,10 @@ namespace Eto.Platform.GtkSharp
 
 #endif
 			
-			protected override void OnSizeAllocated (Gdk.Rectangle allocation)
-			{
-				base.OnSizeAllocated (allocation);
-				//SetWrapWidth(allocation.Width);
-=======
-
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated(allocation);
 				SetWrapWidth(allocation.Width);
->>>>>>> cw-develop
 			}
 
 			void SetWrapWidth(int width)

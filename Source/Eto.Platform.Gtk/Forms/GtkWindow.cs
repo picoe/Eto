@@ -57,6 +57,11 @@ namespace Eto.Platform.GtkSharp
 			get { return vbox; }
 		}
 
+		public Gtk.Widget WindowActionControl
+		{
+			get { return actionvbox; }
+		}
+
 		public override Gtk.Widget ContainerContentControl
 		{
 			get { return containerBox; }
@@ -260,11 +265,7 @@ namespace Eto.Platform.GtkSharp
 				// set accelerators
 				menuBar = value;
 				SetAccelerators (menuBar);
-#if GTK2
-				menuBox.PackStart ((Gtk.Widget)value.ControlObject); //, false, false, 0);
-#else
 				menuBox.PackStart ((Gtk.Widget)value.ControlObject, true, true, 0);
-#endif
 				((Gtk.Widget)value.ControlObject).ShowAll ();
 			}
 		}

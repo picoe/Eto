@@ -127,9 +127,12 @@ namespace Eto.Platform.GtkSharp
 			vbox.SetChildPacking(hbox, expandHeight, expandHeight, 0, Gtk.PackType.Start);
 		}
 
-		protected override void SetBackgroundColor(Color color)
+		protected override void SetBackgroundColor(Color? color)
 		{
-			vp.ModifyBg(Gtk.StateType.Normal, color.ToGdk());
+			if (color != null)
+				vp.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+			else
+				vp.ModifyBg(Gtk.StateType.Normal);
 		}
 
 		public override Size ClientSize

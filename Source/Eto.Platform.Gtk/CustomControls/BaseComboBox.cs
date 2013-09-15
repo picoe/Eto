@@ -12,6 +12,27 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		{
 			this.AppPaintable = true;
 			this.Build ();
+#if GTK3
+			//popupButton.AppPaintable = true;
+			//popupButton.Drawn += popup_Drawn;
+			SetSizeRequest(150, 30);
+			foreach (var cls in PopupButton.StyleContext.ListClasses())
+				PopupButton.StyleContext.RemoveClass(cls);
+			foreach (var cls in Entry.StyleContext.ListClasses())
+			{
+				//Console.WriteLine(cls);
+				//Entry.StyleContext.RemoveClass(cls);
+			}
+
+
+#endif
+			//popupButton.Visible = false;
+			//popupButton.NoShowAll = true;
+
+			//entry.AppPaintable = true;
+			//popupButton.Drawn += (o, args) => {
+			//	args.RetVal = false;
+			//};
 		}
 
 #if GTK2
@@ -31,37 +52,53 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			return true;
 		}
 #else
+		//[GLib.ConnectBefore]
 		protected override bool OnDrawn (Cairo.Context cr)
 		{
+			bool ret = true;
 			var rect = this.Allocation;
 			if (rect.Width > 0 && rect.Height > 0) {
-				entry.StyleContext.RenderFrame (cr, 0, 0, rect.Width, rect.Height);
+				var arrowWidth = popupButton.Allocation.Width;
+				var arrowPos = rect.Width - arrowWidth + 4;
+				var arrowSize = 10;
+
+				StyleContext.Save ();
+                StyleContext.AddClass ("entry");
+                StyleContext.RenderBackground (cr, 0, 0, rect.Width, rect.Height);
+
+				ret = base.OnDrawn (cr);
+
+				StyleContext.RenderArrow(cr, Math.PI, arrowPos, (rect.Height - arrowSize) / 2, arrowSize);
+
+				cr.Color = new Cairo.Color(.8, .8, .8);
+				cr.Rectangle(arrowPos - 5, 2, 1, rect.Height - 4);
+				cr.Fill();
+
+				Entry.StyleContext.RenderFrame (cr, 0, 0, rect.Width, rect.Height);
+                StyleContext.Restore ();
+
 			}
-			return base.OnDrawn (cr);
+			return ret;
 		}
 
-		protected override void OnAdjustSizeRequest (Orientation orientation, out int minimum_size, out int natural_size)
+		class InvisibleButton : Gtk.Button
 		{
-			base.OnAdjustSizeRequest (orientation, out minimum_size, out natural_size);
-			if (orientation == Orientation.Horizontal)
-				natural_size = minimum_size = Math.Max (minimum_size, 150);
-			else if (orientation == Orientation.Vertical)
-				natural_size = minimum_size = Math.Max (minimum_size, 30);
+			public InvisibleButton()
+			{
+				AppPaintable = true;
+			}
+
+			protected override bool OnDrawn(Cairo.Context cr)
+			{
+				return false; //return base.OnDrawn(cr);
+			}
 		}
 
 #endif
 
-		public Entry Entry {
-			get {
-				return entry;
-			}
-		}
+		public Entry Entry { get { return entry; } }
 
-		public Button PopupButton {
-			get {
-				return popupButton;
-			}
-		}
+		public Button PopupButton { get { return popupButton; } }
 		
 		Gtk.Widget CreateEntry ()
 		{
@@ -71,9 +108,6 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				HasFrame = false
 			};
 
-#if GTK3
-			entry.MarginLeft = 2;
-#endif
 			entry.FocusInEvent += delegate {
 				QueueDraw ();
 			};
@@ -86,15 +120,14 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		
 		Gtk.Widget CreatePopupButton ()
 		{
-			this.popupButton = new Gtk.Button {
-				WidthRequest = 18,
-				CanFocus = false
-			};
 #if GTK3
-			//popupButton.MarginBottom = 4;
-			//popupButton.MarginTop = 4;
-#endif
+			popupButton = new InvisibleButton();
+#else
 
+			popupButton = new Gtk.Button();
+#endif
+			popupButton.WidthRequest = 25;
+			popupButton.CanFocus = false;
 			return popupButton;
 		}
         
@@ -103,11 +136,16 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			var vbox = new Gtk.VBox();
 			var hbox = new Gtk.HBox ();
 
-			hbox.PackStart (CreateEntry (), true, true, 5);
-
-			hbox.PackEnd (CreatePopupButton (), true, false, 1);
-
+#if GTK2
+			hbox.PackStart (CreateEntry (), true, true, 2);
+			hbox.PackEnd (CreatePopupButton (), true, false, 2);
 			vbox.PackStart(hbox, true, true, 4);
+#else
+			hbox.PackStart (CreateEntry (), true, true, 1);
+			hbox.PackEnd (CreatePopupButton (), true, false, 0);
+			vbox.PackStart(hbox, true, true, 1);
+#endif
+
 			this.Add (vbox);
 		}
 		

@@ -29,7 +29,7 @@ namespace Eto.Platform.GtkSharp
 
 		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			Control.PackStart(content);
+			Control.PackStart(content, true, true, 0);
 		}
 		
 		public Eto.Drawing.Image Image {

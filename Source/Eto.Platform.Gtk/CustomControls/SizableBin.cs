@@ -21,6 +21,32 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				requisition = this.Child.SizeRequest ();
 			}
 		}
+#else
+		protected override void OnAdjustSizeRequest(Orientation orientation, out int minimum_size, out int natural_size)
+		{
+			if (this.Child != null)
+			{
+				Requisition minimum, natural;
+				this.Child.GetPreferredSize(out minimum, out natural);
+				if (orientation == Orientation.Horizontal)
+				{
+					minimum_size = minimum.Width;
+					natural_size = natural.Width;
+				}
+				else if (orientation == Orientation.Vertical)
+				{
+					minimum_size = minimum.Height;
+					natural_size = natural.Height;
+				}
+				else
+					base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);
+			}
+			else
+			{
+				base.OnAdjustSizeRequest(orientation, out minimum_size, out natural_size);
+			}
+		}
+
 #endif
 	}
 }

@@ -61,6 +61,10 @@ namespace Eto.Platform.GtkSharp
 				args.Event.Window.DrawLayout (gc, 2, (currentHeight - height) / 2 + 1, placeholderLayout);
 			}
 		}
+#else
+		protected override void SetBackgroundColor(Eto.Drawing.Color? color)
+		{
+		}
 #endif
 
 		public override Eto.Drawing.Font Font
