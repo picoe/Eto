@@ -1,5 +1,5 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("Eto Platform for GTK")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Eto.Forms - GTK Platform")]
+[assembly: AssemblyDescription("GTK Platform for the Eto.Forms UI Framework")]
