@@ -94,7 +94,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				var cell = Control.Cell as MyButtonCell;
-				cell.Color = value;
+				cell.Color = value.A > 0 ? (Color?)value : null;
 				Control.SetNeedsDisplay ();
 			}
 		}

@@ -3,14 +3,14 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IGroupBox : IContainer
+	public interface IGroupBox : IDockContainer
 	{
 		Font Font { get; set; }
 
 		string Text { get; set; }
 	}
 	
-	public class GroupBox : Container
+	public class GroupBox : DockContainer
 	{
 		IGroupBox handler;
 		

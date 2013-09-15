@@ -9,28 +9,35 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfContainer<T, W> : WpfFrameworkElement<T, W>, IContainer
+	public interface IWpfContainer
+	{
+		void Remove(sw.FrameworkElement child);
+	}
+
+	public abstract class WpfContainer<T, W> : WpfFrameworkElement<T, W>, IContainer, IWpfContainer
 		where T: sw.FrameworkElement
 		where W: Container
 	{
+		public abstract void Remove(sw.FrameworkElement child);
 
-		public override sw.Size GetPreferredSize(sw.Size? constraint)
+		public virtual Size ClientSize
 		{
-			var size = sw.Size.Empty;
-			var layout = this.Widget.GetWpfLayout ();
-			if (layout != null)
-				size = layout.GetPreferredSize(constraint);
-			var baseSize = base.GetPreferredSize(constraint);
-			return new sw.Size (Math.Max (size.Width, baseSize.Width), Math.Max (size.Height, baseSize.Height));
+			get { return Size; }
+			set { Size = value; }
 		}
 
-		public abstract Eto.Drawing.Size ClientSize { get; set; }
-
-		public abstract object ContainerObject { get; }
-
-		public abstract void SetLayout (Layout layout);
-
-		public abstract Size? MinimumSize { get; set; }
+		public virtual Size MinimumSize
+		{
+			get
+			{
+				return new Size((int)Control.MinWidth, (int)Control.MinHeight);
+			}
+			set
+			{
+				Control.MinWidth = value.Width;
+				Control.MinHeight = value.Height;
+			}
+		}
 
 		public override void Invalidate ()
 		{

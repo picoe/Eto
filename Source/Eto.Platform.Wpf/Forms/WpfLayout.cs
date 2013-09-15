@@ -7,47 +7,14 @@ using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public interface IWpfLayout
-	{
-		void AutoSize ();
-		sw.Size GetPreferredSize (sw.Size? constraint);
-		void Remove (sw.FrameworkElement child);
-	}
-
-	public abstract class WpfLayout<T, W> : WidgetHandler<T, W>, ILayout, IWpfLayout
+	public abstract class WpfLayout<T, W> : WpfContainer<T, W>, ILayout
 		where T: System.Windows.FrameworkElement
 		where W: Layout
 	{
-		public abstract sw.Size GetPreferredSize (sw.Size? constraint = null);
 
-		public abstract void Remove (sw.FrameworkElement child);
-
-		public virtual void AutoSize ()
+		public virtual void Update()
 		{
-		}
-
-		public virtual void OnLoad ()
-		{
-		}
-
-		public virtual void OnLoadComplete ()
-		{
-		}
-
-		public virtual void OnUnLoad ()
-		{
-		}
-
-		public virtual void Update ()
-		{
-		}
-
-		public virtual void OnPreLoad ()
-		{
-		}
-
-		public virtual void AttachedToContainer ()
-		{
+			Control.UpdateLayout();
 		}
 	}
 }

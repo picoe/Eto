@@ -243,10 +243,10 @@ namespace Eto.Drawing
 				color = Color.FromArgb (array2[0]);
 				return true;
 			case 3:
-				color = new Color (array2[0], array2[1], array2[2]);
+				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
 				return true;
 			case 4:
-				color = new Color (array2[0], array2[1], array2[2], array2[3]);
+				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2], (int)array2[3]);
 				return true;
 			}
 			color = Colors.Transparent;

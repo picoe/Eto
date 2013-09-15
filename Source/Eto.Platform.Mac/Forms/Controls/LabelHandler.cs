@@ -10,6 +10,7 @@ using MonoMac.ObjCRuntime;
 using MonoMac.CoreText;
 using System.Text.RegularExpressions;
 using System.Linq;
+using VerticalAlign = Eto.Forms.VerticalAlign;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -17,7 +18,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Font font;
 		bool is106;
-		
+
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
+
 		class MyTextFieldCell : NSTextFieldCell
 		{
 			public LabelHandler Handler { get; set; }

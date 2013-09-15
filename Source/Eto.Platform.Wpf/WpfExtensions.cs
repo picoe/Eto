@@ -5,7 +5,9 @@ using System.Text;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
+using swc = System.Windows.Controls;
 using Eto.Platform.Wpf.Forms;
+using Eto.Forms;
 
 namespace Eto.Platform.Wpf
 {
@@ -59,6 +61,15 @@ namespace Eto.Platform.Wpf
 			}
 
 			return foundChild;
+		}
+
+		public static void RemoveFromParent(this Control control)
+		{
+			if (control.Parent == null)
+				return;
+			var parent = control.Parent.Handler as IWpfContainer;
+			if (parent != null)
+				parent.Remove(control.GetContainerControl());
 		}
 
 		public static bool HasFocus (this sw.DependencyObject control, sw.DependencyObject focusScope, bool checkChildren = true)

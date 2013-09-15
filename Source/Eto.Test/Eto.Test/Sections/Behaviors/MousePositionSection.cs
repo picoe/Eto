@@ -12,7 +12,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		public MousePositionSection ()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout ();
 
 			layout.AddSeparateRow (null, new Label { Text = "Mouse Position (in screen co-ordinates)"}, MousePositionLabel (), null);
 			layout.AddSeparateRow (null, new Label { Text = "PointFromScreen" }, PointFromScreen (), null);
@@ -23,6 +23,8 @@ namespace Eto.Test.Sections.Behaviors
 			HandleEvent (Control.MouseMoveEvent, Control.MouseDownEvent, Control.MouseUpEvent);
 
 			SetLabels ();
+
+			Content = layout;
 		}
 
 		Control MousePositionLabel ()
@@ -57,7 +59,7 @@ namespace Eto.Test.Sections.Behaviors
 			// convert back to world co-ordinates
 			position = this.PointToScreen (position);
 			pointToScreenLabel.Text = position.ToString ();
-
+			
 			buttonsLabel.Text = Mouse.GetButtons ().ToString ();
 		}
 

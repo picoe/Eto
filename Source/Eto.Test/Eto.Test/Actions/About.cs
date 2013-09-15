@@ -13,7 +13,7 @@ namespace Eto.Test.Actions
 			this.ID = ActionID;
 			this.MenuText = "About Test Application";
 			this.ToolBarText = "About";
-			this.Image = Icon.FromResource ("Eto.Test.TestIcon.ico");
+			this.Image = TestIcons.TestIcon;
 			this.Accelerator = Key.F11;
 		}
 		

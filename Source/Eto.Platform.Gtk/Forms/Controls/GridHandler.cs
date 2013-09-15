@@ -73,7 +73,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			case Grid.SelectionChangedEvent:
 				Tree.Selection.Changed += delegate {
 					if (!SkipSelectedChange)
-						Widget.OnSelectionChanged (EventArgs.Empty);
+							Widget.OnSelectionChanged (EventArgs.Empty);
 				};
 				break;
 			default:
@@ -176,14 +176,14 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public void EndCellEditing (Gtk.TreePath path, int column)
 		{
 			var row = path.Indices.Length > 0 ? path.Indices [0] : -1;
-			var item = GetItem (path) as IGridItem;
+			var item = GetItem (path) as object;
 			Widget.OnEndCellEdit (new GridViewCellArgs (Widget.Columns [column], row, column, item));
 		}
 
 		public void BeginCellEditing (Gtk.TreePath path, int column)
 		{
 			var row = path.Indices.Length > 0 ? path.Indices [0] : -1;
-			var item = GetItem (path) as IGridItem;
+			var item = GetItem (path) as object;
 			Widget.OnBeginCellEdit (new GridViewCellArgs (Widget.Columns [column], row, column, item));
 		}
 		

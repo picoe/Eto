@@ -28,12 +28,29 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public LabelHandler ()
 		{
-			Control = new EtoLabel();
 			text = new swc.AccessText();
-			Control.Content = text;
+			Control = new EtoLabel
+			{
+				Padding = new sw.Thickness(0),
+				Content = text
+			};
+			Control.Target = Control;
 			HorizontalAlign = HorizontalAlign.Left;
 			VerticalAlign = VerticalAlign.Top;
-			Control.Target = Control;
+		}
+
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				case TextControl.TextChangedEvent:
+					// do nothing, label doesn't get updated by the user
+					break;
+
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
 		}
 
 		public HorizontalAlign HorizontalAlign
@@ -136,15 +153,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public Color TextColor
 		{
-			get
-			{
-				var b = (swm.SolidColorBrush)text.Foreground;
-				return b.Color.ToEto ();
-			}
-			set
-			{
-				text.Foreground = new swm.SolidColorBrush (value.ToWpf ());
-			}
+			get { return text.Foreground.ToEtoColor(); }
+			set { text.Foreground = value.ToWpfBrush(text.Foreground); }
 		}
 
 		public string Text

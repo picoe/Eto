@@ -115,6 +115,7 @@
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
+    <Compile Include="TestIcons.cs" />
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
@@ -122,6 +123,7 @@
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
     <Compile Include="Sections\Behaviors\ScreenSection.cs" />
     <Compile Include="Sections\Behaviors\MousePositionSection.cs" />
+    <Compile Include="Sections\Dialogs\MessageBoxSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">

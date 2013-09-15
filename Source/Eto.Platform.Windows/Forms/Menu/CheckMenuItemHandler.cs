@@ -51,7 +51,6 @@ namespace Eto.Platform.Windows
 			{
 				var key = value.ToSWF ();
 				if (SWF.ToolStripManager.IsValidShortcut(key)) Control.ShortcutKeys = key;
-				else this.Control.ShortcutKeyDisplayString = KeyMap.KeyToString(value);
 			}
 		}
 

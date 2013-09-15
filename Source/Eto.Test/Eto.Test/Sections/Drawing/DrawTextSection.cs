@@ -9,25 +9,28 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class DrawTextSection : Scrollable
 	{
-		public DrawTextSection ()
+		public DrawTextSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 
-			layout.AddRow (
-				new Label { Text = "Default" }, Default (),
+			layout.AddRow(
+				new Label { Text = "Default" }, Default(),
 				null
 			);
 
-			layout.Add (null);
+			layout.Add(null);
+
+			Content = layout;
 		}
 
 		class DrawInfo
 		{
 			public Font Font { get; set; }
+
 			public string Text { get; set; }
 		}
 
-		IEnumerable<DrawInfo> GetDrawInfo ()
+		IEnumerable<DrawInfo> GetDrawInfo()
 		{
 			yield return new DrawInfo { Font = new Font (SystemFont.Default), Text = "System Font & Size" };
 			yield return new DrawInfo { Font = new Font (SystemFont.Default, 20), Text = "System Font, 20pt" };
@@ -57,7 +60,7 @@ namespace Eto.Test.Sections.Drawing
 			yield return new DrawInfo { Font = Fonts.Fantasy (12, FontStyle.Bold | FontStyle.Italic), Text = "Fantasy Bold & Italic, 12pt" };
 		}
 
-		Control Default ()
+		Control Default()
 		{
 			var control = new Drawable { Size = new Size (400, 500), BackgroundColor = Colors.Black };
 
@@ -65,9 +68,10 @@ namespace Eto.Test.Sections.Drawing
 				var g = e.Graphics;
 
 				float y = 0;
-				foreach (var info in GetDrawInfo ()) {
-					var size = g.MeasureString (info.Font, info.Text);
-					g.DrawText (info.Font, Colors.White, 10, (int)y, info.Text);
+				foreach (var info in GetDrawInfo ())
+				{
+					var size = g.MeasureString(info.Font, info.Text);
+					g.DrawText(info.Font, Colors.White, 10, (int)y, info.Text);
 					y += size.Height;
 				}
 			};

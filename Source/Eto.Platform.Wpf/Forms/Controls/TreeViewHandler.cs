@@ -31,7 +31,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		sw.HierarchicalDataTemplate template1;
 		sw.HierarchicalDataTemplate template2;
 
-		public class EtoTreeViewItem : swc.TreeViewItem
+		public class EtoTreeViewItem : swc.TreeViewItem, INotifyPropertyChanged
 		{
 			public static readonly sw.RoutedEvent CollapsingEvent =
 					sw.EventManager.RegisterRoutedEvent("Collapsing",
@@ -53,6 +53,49 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				remove { RemoveHandler(ExpandingEvent, value); }
 			}
 
+			public TreeViewHandler Handler
+			{
+				get { return this.GetParent<EtoTreeView>().Handler; }
+			}
+
+			public string Text
+			{
+				get
+				{
+					var item = DataContext as ITreeItem;
+					if (item != null)
+						return item.Text;
+					return null;
+				}
+				set
+				{
+					var item = DataContext as ITreeItem;
+					if (item != null)
+						item.Text = value;
+				}
+			}
+
+			bool isInEditMode;
+
+			public bool IsInEditMode
+			{
+				get { return isInEditMode; }
+				set
+				{
+					if (isInEditMode != value)
+					{
+						isInEditMode = value;
+						OnPropertyChanged("IsInEditMode");
+					}
+				}
+			}
+
+			protected void OnPropertyChanged(string name)
+			{
+				if (PropertyChanged != null)
+					PropertyChanged(this, new PropertyChangedEventArgs(name));
+			}
+
 			bool cancelEvents;
 
 			protected override void OnExpanded(sw.RoutedEventArgs e)
@@ -69,6 +112,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					cancelEvents = false;
 				}
 			}
+
 			protected override void OnCollapsed(sw.RoutedEventArgs e)
 			{
 				if (cancelEvents) return;
@@ -112,10 +156,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					}
 				}
 			}
+
+			public event PropertyChangedEventHandler PropertyChanged;
 		}
 
 		public class EtoTreeView : SelectableTreeView
 		{
+			public TreeViewHandler Handler { get; set; }
+
 			protected override sw.DependencyObject GetContainerForItemOverride()
 			{
 				return new EtoTreeViewItem();
@@ -131,7 +179,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public TreeViewHandler()
 		{
-			Control = new EtoTreeView();
+			Control = new EtoTreeView { Handler = this };
 			SetTemplate();
 
 			var style = new sw.Style(typeof(swc.TreeViewItem));
@@ -142,13 +190,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void SetTemplate()
 		{
+			var source = new swd.RelativeSource(swd.RelativeSourceMode.FindAncestor, typeof(swc.TreeViewItem), 1);
 			template1 = new sw.HierarchicalDataTemplate(typeof(ITreeItem));
-			template1.VisualTree = WpfListItemHelper.ItemTemplate(LabelEdit);
+			template1.VisualTree = WpfListItemHelper.ItemTemplate(LabelEdit, source);
 			template1.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
 			Control.ItemTemplate = template1;
 
 			template2 = new sw.HierarchicalDataTemplate(typeof(ITreeItem));
-			template2.VisualTree = WpfListItemHelper.ItemTemplate(LabelEdit);
+			template2.VisualTree = WpfListItemHelper.ItemTemplate(LabelEdit, source);
 			template2.ItemsSource = new swd.Binding { Converter = new WpfTreeItemHelper.ChildrenConverter() };
 		}
 

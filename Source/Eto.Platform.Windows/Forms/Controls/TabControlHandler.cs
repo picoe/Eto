@@ -6,7 +6,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows.Forms.Controls
 {
-	public class TabControlHandler : WindowsControl<SWF.TabControl, TabControl>, ITabControl
+	public class TabControlHandler : WindowsContainer<SWF.TabControl, TabControl>, ITabControl
 	{
 		bool disableSelectedIndexChanged;
 		public TabControlHandler ()

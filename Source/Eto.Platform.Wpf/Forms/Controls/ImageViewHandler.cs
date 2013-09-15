@@ -16,21 +16,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return brush.Color.ToEto ();
-				else return Colors.Black;
-			}
-			set
-			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
-		public ImageViewHandler ()
+		public ImageViewHandler()
 		{
-			Control = new CustomControls.MultiSizeImage {
+			Control = new CustomControls.MultiSizeImage
+			{
+				UseSmallestSpace = true,
 				Stretch = swm.Stretch.Uniform,
 				StretchDirection = swc.StretchDirection.Both
 			};
@@ -38,7 +32,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override Size Size
 		{
-			get { return base.Size;	}
+			get { return base.Size; }
 			set { base.Size = value; }
 		}
 

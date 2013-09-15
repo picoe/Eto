@@ -36,12 +36,10 @@ namespace Eto.Platform.iOS.Drawing
 				graphics.Control.SetFillColorSpace (patternColorSpace);
 
 				// make current transform apply to the pattern
-#if OSX
-				var currentTransform = graphics.Control.GetCTM ();
-#elif IOS
-				var currentTransform = graphics.CurrentTransform;
-#endif
-				if (graphics.DisplayView != null) {
+				var currentTransform = graphics.Control.GetCTM();
+
+				if (graphics.DisplayView != null)
+				{
 					var pos = graphics.DisplayView.ConvertPointToView (sd.PointF.Empty, null);
 					currentTransform.Translate(pos.X, pos.Y);
 					graphics.Control.SetPatternPhase(new sd.SizeF(-pos.X, -pos.Y));

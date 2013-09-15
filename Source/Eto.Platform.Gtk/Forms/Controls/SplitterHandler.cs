@@ -3,7 +3,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class SplitterHandler : GtkControl<Gtk.Paned, Splitter>, ISplitter
+	public class SplitterHandler : GtkContainer<Gtk.Paned, Splitter>, ISplitter
 	{
 		Gtk.Alignment container;
 		Control panel1;

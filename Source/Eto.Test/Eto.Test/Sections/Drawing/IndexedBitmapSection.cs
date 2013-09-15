@@ -9,39 +9,47 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class IndexedBitmapSection : Scrollable
 	{
-		public IndexedBitmapSection ()
+		public IndexedBitmapSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 
-			layout.AddRow (
-				new Label { Text = "Indexed Bitmap on ImageView" }, CreateIndexedImageView (),
-				new Label { Text = "Indexed Bitmap on Drawable" }, CreateIndexedDrawable (),
+			layout.AddRow(
+				new Label { Text = "Indexed Bitmap on ImageView" }, CreateIndexedImageView(),
+				new Label { Text = "Indexed Bitmap on Drawable" }, CreateIndexedDrawable(),
 				null
-				);
+			);
 
-			layout.Add (null);
+			layout.Add(null);
+
+			Content = layout;
 		}
-		
+
 		IndexedBitmap CreateImage()
 		{
-			var image = new IndexedBitmap (100, 100, 8);
-			var ega = Palette.GetEgaPalette ();
-			var pal = new Palette (ega);
+			var image = new IndexedBitmap(100, 100, 8);
+			var ega = Palette.GetEgaPalette();
+			var pal = new Palette(ega);
 			
 			// must have at least 256 colors for an 8-bit bitmap
 			while (pal.Count < 256)
-				pal.Add (Colors.Black);
+				pal.Add(Colors.Black);
 			image.Palette = pal;
-			using (var bd = image.Lock ()) {
-				unsafe {
+			using (var bd = image.Lock ())
+			{
+				unsafe
+				{
 					int col = 0;
 					byte* brow = (byte*)bd.Data;
-					for (int y = 0; y < image.Size.Height; y++) {
+					for (int y = 0; y < image.Size.Height; y++)
+					{
 						byte* b = brow;
 						col = -y;
-						for (int x = 0; x < image.Size.Width; x++) {
-							while (col < 0) col = ega.Count + col;
-							while (col >= ega.Count) col -= ega.Count;
+						for (int x = 0; x < image.Size.Width; x++)
+						{
+							while (col < 0)
+								col = ega.Count + col;
+							while (col >= ega.Count)
+								col -= ega.Count;
 							*b = (byte)col++;
 							b++;
 						}
@@ -53,19 +61,20 @@ namespace Eto.Test.Sections.Drawing
 			
 		}
 
-		Control CreateIndexedImageView ()
+		Control CreateIndexedImageView()
 		{
 			return new ImageView { Image = CreateImage () };
 		}
-		Control CreateIndexedDrawable ()
+
+		Control CreateIndexedDrawable()
 		{
 			var control = new Drawable { Size = new Size(100, 100) };
 			var image = CreateImage();
-			control.Paint += delegate(object sender, PaintEventArgs pe) {
-				pe.Graphics.DrawImage (image, 0, 0);
+			control.Paint += delegate(object sender, PaintEventArgs pe)
+			{
+				pe.Graphics.DrawImage(image, 0, 0);
 			};
 			return control;
 		}
-
 	}
 }

@@ -6,10 +6,11 @@ using Eto.Forms;
 using swm = System.Windows.Media;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class SplitterHandler : WpfPanel<swc.Grid, Splitter>, ISplitter
+	public class SplitterHandler : WpfContainer<swc.Grid, Splitter>, ISplitter
 	{
 		swc.GridSplitter splitter;
 		swc.DockPanel pane1;
@@ -130,6 +131,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				splitter.Width = double.NaN;
 				splitter.Height = 5;
 			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		void UpdateColumnSizing ()
@@ -289,11 +296,19 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public override void OnLoadComplete (EventArgs e)
+		public override void Remove(sw.FrameworkElement child)
 		{
-			base.OnLoadComplete (e);
+			if (pane1.Children.Contains(child))
+			{
+				panel1 = null;
+				pane1.Children.Remove(child);
+			}
+			else if (pane2.Children.Contains(child))
+			{
+				panel2 = null;
+				pane2.Children.Remove(child);
+			}
 		}
-
 	}
 }
 

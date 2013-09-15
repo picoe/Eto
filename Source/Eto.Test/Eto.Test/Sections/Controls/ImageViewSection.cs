@@ -9,80 +9,85 @@ namespace Eto.Test.Sections.Controls
 {
 	public class ImageViewSection : Panel
 	{
-		public ImageViewSection ()
+		public ImageViewSection()
 		{
-			var tabs = new TabControl ();
+			var tabs = new TabControl();
 
-			tabs.TabPages.Add (FixedSize ());
-			tabs.TabPages.Add (ScaledSize ());
+			tabs.TabPages.Add(FixedSize());
+			tabs.TabPages.Add(ScaledSize());
 
-			this.AddDockedControl (tabs);
+			Content = tabs;
 		}
 
-		TabPage FixedSize ()
+		TabPage FixedSize()
 		{
-			var layout = new DynamicLayout (new Scrollable { Border = BorderType.None, ExpandContentWidth = false, ExpandContentHeight = false });
-			AddHeaders (layout);
+			var layout = new DynamicLayout();
+			AddHeaders(layout);
 
-			layout.AddRow (new Label { Text = "Auto Sized" }, AutoSized (GetBitmap ()), AutoSized (GetIcon ()));
-			layout.AddRow (new Label { Text = "Small Size" }, SmallSize (GetBitmap ()), SmallSize (GetIcon ()));
-			layout.AddRow (new Label { Text = "Large Size" }, LargeSize (GetBitmap ()), LargeSize (GetIcon ()));
+			layout.AddRow(new Label { Text = "Auto Sized" }, AutoSized(GetBitmap()), AutoSized(GetIcon()));
+			layout.AddRow(new Label { Text = "Small Size" }, SmallSize(GetBitmap()), SmallSize(GetIcon()));
+			layout.AddRow(new Label { Text = "Large Size" }, LargeSize(GetBitmap()), LargeSize(GetIcon()));
 
 			var page = new TabPage { Text = "Fixed Size" };
-			page.AddDockedControl (layout.Container);
+			page.Content = new Scrollable
+			{
+				Border = BorderType.None,
+				ExpandContentWidth = false,
+				ExpandContentHeight = false,
+				Content = layout
+			};
 			return page;
 		}
 
-		TabPage ScaledSize ()
+		TabPage ScaledSize()
 		{
-			var layout = new DynamicLayout (new Scrollable { Border = BorderType.None });
-			AddHeaders (layout);
+			var layout = new DynamicLayout();
+			AddHeaders(layout);
 
-			layout.AddRow (new Label { Text = "Scaled Size" }, Scaled (GetBitmap ()), Scaled (GetIcon ()));
+			layout.AddRow(new Label { Text = "Scaled Size" }, Scaled(GetBitmap()), Scaled(GetIcon()));
 
 			var page = new TabPage { Text = "Scaled Size" };
-			page.AddDockedControl (layout.Container);
+			page.Content = new Scrollable { Border = BorderType.None, Content = layout };
 			return page;
 		}
 
-		static void AddHeaders (DynamicLayout layout)
+		static void AddHeaders(DynamicLayout layout)
 		{
-			layout.BeginHorizontal ();
-			layout.Add (null, xscale: false);
-			layout.Add (new Label { Text = "Bitmap", HorizontalAlign = HorizontalAlign.Center }, xscale: true);
-			layout.Add (new Label { Text = "Icon", HorizontalAlign = HorizontalAlign.Center }, xscale: true);
-			layout.EndHorizontal ();
+			layout.BeginHorizontal();
+			layout.Add(null, xscale: false);
+			layout.Add(new Label { Text = "Bitmap", HorizontalAlign = HorizontalAlign.Center }, xscale: true);
+			layout.Add(new Label { Text = "Icon", HorizontalAlign = HorizontalAlign.Center }, xscale: true);
+			layout.EndHorizontal();
 		}
 
-		Icon GetIcon ()
+		Icon GetIcon()
 		{
-			return Icon.FromResource ("Eto.Test.TestIcon.ico");
+			return TestIcons.TestIcon;
 		}
 
-		Bitmap GetBitmap ()
+		Bitmap GetBitmap()
 		{
-			return Bitmap.FromResource ("Eto.Test.TestImage.png");
+			return TestIcons.TestImage;
 		}
 
-		Control AutoSized (Image image)
+		Control AutoSized(Image image)
 		{
 			return TableLayout.AutoSized(new ImageView { Image = image }, centered: true);
 		}
 
-		Control LargeSize (Image image)
+		Control LargeSize(Image image)
 		{
 			return new ImageView { Image = image, Size = new Size (200, 200) };
 		}
 
-		Control SmallSize (Image image)
+		Control SmallSize(Image image)
 		{
 			return new ImageView { Image = image, Size = new Size (64, 64) };
 		}
 
-		Control Scaled (Image image)
+		Control Scaled(Image image)
 		{
 			return new ImageView { Image = image };
 		}
-
 	}
 }

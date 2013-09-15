@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class SliderHandler : MacView<NSSlider, Slider>, ISlider
+	public class SliderHandler : MacControl<NSSlider, Slider>, ISlider
 	{
 		SliderOrientation orientation;
 		
@@ -76,11 +76,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 		
-		public override bool Enabled {
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
-		}
-
 		public SliderOrientation Orientation {
 			get {
 				return orientation;

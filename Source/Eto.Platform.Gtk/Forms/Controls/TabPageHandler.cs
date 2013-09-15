@@ -5,7 +5,7 @@ using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class TabPageHandler : GtkContainer<Gtk.VBox, TabPage>, ITabPage
+	public class TabPageHandler : GtkDockContainer<Gtk.VBox, TabPage>, ITabPage
 	{
 		Gtk.Label label;
 		Gtk.HBox tab;
@@ -26,22 +26,10 @@ namespace Eto.Platform.GtkSharp
 		public Gtk.Widget LabelControl {
 			get { return tab; }
 		}
-		
-		public override object ContainerObject {
-			get {
-				return Control;
-			}
-		}
 
-		public override void SetLayout(Layout inner)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			if (Control.Children.Length > 0)
-				foreach (Gtk.Widget child in Control.Children)
-					Control.Remove(child);
-			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
-			Control.PackStart(containerWidget);
-			containerWidget.ShowAll ();
+			Control.PackStart(content);
 		}
 		
 		public Eto.Drawing.Image Image {

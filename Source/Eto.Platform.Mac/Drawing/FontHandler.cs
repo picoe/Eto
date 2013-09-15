@@ -43,13 +43,7 @@ namespace Eto.Platform.Mac.Drawing
 #elif IOS
 		public static float LineHeight(this NSFont font)
 		{
-			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
-			var lineHeight = (float)(Math.Floor(font.Ascender + 0.5f) - Math.Floor (font.Descender + 0.5f) + leading);
-
-			if (leading > 0)
-				return lineHeight;
-			else
-				return (float)(lineHeight + Math.Floor(0.2 * lineHeight + 0.5));
+			return font.LineHeight;
 		}
 #endif
 	}
@@ -132,7 +126,7 @@ namespace Eto.Platform.Mac.Drawing
 		public float LineHeight
 		{
 			get {
-				return Control.LineHeight ();
+				return Control.LineHeight(); // LineHeight() is the extension method above
 			}
 		}
 		

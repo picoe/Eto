@@ -181,7 +181,7 @@ namespace Eto.Forms
 			set { handler.DataStore = value; }
 		}
 
-		public override IEnumerable<IGridItem> SelectedItems
+		public override IEnumerable<object> SelectedItems
 		{
 			get
 			{

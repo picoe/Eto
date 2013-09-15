@@ -13,7 +13,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSStepper stepper;
 		Font font;
 		Size? naturalSize;
-		
+
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
+
 		class MyView : NSView
 		{
 			public override void SetFrameSize (System.Drawing.SizeF newSize)
