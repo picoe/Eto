@@ -9,28 +9,25 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public class PixelLayoutHandler : MacLayout<NSView, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : MacContainer<NSView, PixelLayout>, IPixelLayout
 	{
-		bool loaded;
 		Dictionary<Control, Point> points = new Dictionary<Control, Point> ();
-		
-		public override NSView Control {
-			get {
-				return Widget.Container != null ? (NSView)Widget.Container.ContainerObject : null;
-			}
-			protected set {
-				base.Control = value;
-			}
+
+		public override NSView ContainerControl { get { return Control; } }
+
+		public PixelLayoutHandler()
+		{
+			Control = new NSView();
 		}
 		
-		public override SD.RectangleF GetPosition (Control control)
+		public SD.RectangleF GetPosition (Control control)
 		{
 			Point point;
 			if (points.TryGetValue (control, out point)) {
 				var frameSize = ((NSView)control.ControlObject).Frame.Size;
 				return new SD.RectangleF (point.ToSDPointF (), frameSize);
 			}
-			return base.GetPosition (control);
+			return control.GetContainerView().Frame;
 		}
 		
 		public override Size GetPreferredSize (Size availableSize)
@@ -42,17 +39,19 @@ namespace Eto.Platform.Mac.Forms
 			}
 			return size;
 		}
+
+		bool sizeChangedAdded;
 		
-		public override void OnLoadComplete ()
+		public override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoadComplete ();
-			Control.PostsFrameChangedNotifications = true;
-			this.AddObserver (NSView.NSViewFrameDidChangeNotification, delegate(ObserverActionArgs e) { 
-				var handler = e.Widget.Handler as PixelLayoutHandler;
-				handler.LayoutChildren ();
+			base.OnLoadComplete (e);
+			if (!sizeChangedAdded)
+			{
+				Widget.SizeChanged += (sender, ev) => {
+					this.LayoutChildren();
+				};
+				sizeChangedAdded = true;
 			}
-			);
-			loaded = true;
 		}
 		
 		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
@@ -95,13 +94,13 @@ namespace Eto.Platform.Mac.Forms
 			var location = new Point (x, y);
 			points [child] = location;
 			var childView = child.GetContainerView ();
-			if (loaded) {
+			if (Widget.Loaded) {
 				var frameHeight = Control.Frame.Height;
 				SetPosition (child, location, frameHeight, Control.IsFlipped);
 			}
 			Control.AddSubview (childView);
-			if (loaded)
-				UpdateParentLayout ();
+			if (Widget.Loaded)
+				LayoutParent ();
 		}
 
 		public void Move (Control child, int x, int y)
@@ -109,10 +108,10 @@ namespace Eto.Platform.Mac.Forms
 			var location = new Point (x, y);
 			if (points [child] != location) {
 				points [child] = location;
-				if (loaded) {
+				if (Widget.Loaded) {
 					var frameHeight = Control.Frame.Height;
 					SetPosition (child, location, frameHeight, Control.IsFlipped);
-					UpdateParentLayout ();
+					LayoutParent ();
 				}
 			}
 		}
@@ -122,8 +121,8 @@ namespace Eto.Platform.Mac.Forms
 			var childView = child.GetContainerView ();
 			points.Remove (child);
 			childView.RemoveFromSuperview ();
-			if (loaded)
-				UpdateParentLayout ();
+			if (Widget.Loaded)
+				LayoutParent ();
 		}
 	}
 }

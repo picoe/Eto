@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			ExpandContentWidth = true;
 			ExpandContentHeight = true;
-			var layout = new DynamicLayout(this);
+			var layout = new DynamicLayout();
 
 			layout.AddAutoSized(NormalButton(), centered: true);
 			layout.AddAutoSized(LongerButton(), centered: true);
@@ -39,6 +39,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddSeparateRow(null, TableLayout.AutoSized(ImageButton(largeImage)), TableLayout.AutoSized(ImageTextButton(largeImage)), null);
 
 			layout.Add(null);
+
+			Content = layout;
 		}
 
 		Control NormalButton()
@@ -72,9 +74,9 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control2);
 			Button.DefaultSize = old;
 
-			var layout = new DynamicLayout(new Panel(), Padding.Empty);
+			var layout = new DynamicLayout(Padding.Empty);
 			layout.AddRow(new Label { Text = "With Default Size of 50x50:", VerticalAlign = VerticalAlign.Middle }, control, control2);
-			return layout.Container;
+			return layout;
 		}
 
 		Control ColourButton()

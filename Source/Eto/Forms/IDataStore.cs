@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
+using System.Collections;
 
 namespace Eto.Forms
 {
@@ -90,12 +91,17 @@ namespace Eto.Forms
 			// Instead we add all items to the underlying collection
 			// and then trigger a single notification for the range
 			// http://stackoverflow.com/a/851129/90291
-			
-			var oldIndex = Items.Count;
-			foreach (var i in items)  
-				Items.Add(i);
 
-			OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, new List<T>(items), oldIndex));
+			var itemList = items as IList ?? items.ToArray(); // don't enumerate more than once
+			var oldIndex = Items.Count;
+			foreach (T item in itemList)  
+				Items.Add(item);
+
+			// range is not supported by WPF, so send a reset
+			if (Generator.Current.IsWpf)
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			else
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemList, oldIndex));
 		}
 	}
 }

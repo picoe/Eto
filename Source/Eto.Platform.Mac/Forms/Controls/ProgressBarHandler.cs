@@ -13,6 +13,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		}
 
+		public override NSView ContainerControl { get { return Control; } }
+
 		public ProgressBarHandler ()
 		{
 			Control = new EtoSlider { Handler = this, Indeterminate = false };

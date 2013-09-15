@@ -25,7 +25,12 @@
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>x86</PlatformTarget>
-    <Optimize>false</Optimize>
+    <Optimize>False</Optimize>
+    <EnvironmentVariables>
+      <EnvironmentVariables>
+        <Variable name="MONO_CAIRO_DEBUG_DISPOSE" value="true" />
+      </EnvironmentVariables>
+    </EnvironmentVariables>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <OutputPath>..\..\..\BuildOutput\Release</OutputPath>

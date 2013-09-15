@@ -311,8 +311,16 @@ namespace Eto.Platform.GtkSharp.Drawing
 		protected override void Dispose (bool disposing)
 		{
 			if (image != null)
-				Flush ();
-			
+			{
+				Flush();
+				image = null;
+			}
+			if (surface != null)
+			{
+				surface.Dispose();
+				surface = null;
+			}
+
 			base.Dispose (disposing);
 		}
 

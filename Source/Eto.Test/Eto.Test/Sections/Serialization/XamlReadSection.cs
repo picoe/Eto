@@ -6,11 +6,10 @@ namespace Eto.Test.Sections.Serialization
 {
 	public class XamlReadSection : Panel
 	{
-		public XamlReadSection() {
-			
-			this.AddDockedControl(new Xaml.Test());
+		public XamlReadSection()
+		{
+			Content = new Xaml.Test();
 		}
 	}
 }
-
 #endif

@@ -120,42 +120,49 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			// copy to a surface
-			var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, (int)source.Width, (int)source.Height);
-			unsafe {
-				byte* destrow = (byte*)surface.DataPtr;
-				fixed (byte* srcdata = this.Control) {
-					byte* srcrow = srcdata + ((int)source.Top * rowStride) + (int)source.Left;
-					for (int y = (int)source.Top; y < (int)source.Bottom; y++) {
-						byte* src = (byte*)srcrow;
-						uint* dest = (uint*)destrow;
-						for (int x = (int)source.Left; x < (int)source.Right; x++) {
-							*
+			using (var surface = new Cairo.ImageSurface (Cairo.Format.Rgb24, (int)source.Width, (int)source.Height))
+			{
+				unsafe
+				{
+					byte* destrow = (byte*)surface.DataPtr;
+					fixed (byte* srcdata = this.Control)
+					{
+						byte* srcrow = srcdata + ((int)source.Top * rowStride) + (int)source.Left;
+						for (int y = (int)source.Top; y < (int)source.Bottom; y++)
+						{
+							byte* src = (byte*)srcrow;
+							uint* dest = (uint*)destrow;
+							for (int x = (int)source.Left; x < (int)source.Right; x++)
+							{
+								*
 							dest = colors[*src];
-							src++;
-							dest++;
-						}
+								src++;
+								dest++;
+							}
 
-						srcrow += rowStride;
-						destrow += surface.Stride;
+							srcrow += rowStride;
+							destrow += surface.Stride;
+						}
 					}
 				}
-			}
 
-			var context = graphics.Control;
-			context.Save ();
-			destination.X += (float)graphics.InverseOffset;
-			destination.Y += (float)graphics.InverseOffset;
-			context.Rectangle (destination.ToCairo ());
-			double scalex = 1;
-			double scaley = 1;
-			if (source.Width != destination.Width || source.Height != destination.Height) {
-				scalex = (double)destination.Width / (double)source.Width;
-				scaley = (double)destination.Height / (double)source.Height;
-				context.Scale (scalex, scaley);
+				var context = graphics.Control;
+				context.Save();
+				destination.X += (float)graphics.InverseOffset;
+				destination.Y += (float)graphics.InverseOffset;
+				context.Rectangle(destination.ToCairo());
+				double scalex = 1;
+				double scaley = 1;
+				if (source.Width != destination.Width || source.Height != destination.Height)
+				{
+					scalex = (double)destination.Width / (double)source.Width;
+					scaley = (double)destination.Height / (double)source.Height;
+					context.Scale(scalex, scaley);
+				}
+				context.SetSourceSurface(surface, (int)destination.Left, (int)destination.Top);
+				context.Fill();
+				context.Restore();
 			}
-			context.SetSourceSurface (surface, (int)destination.Left, (int)destination.Top);
-			context.Fill ();
-			context.Restore ();
 
 
 			/*

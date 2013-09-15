@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 
 #if XAML
 using System.Windows.Markup;
@@ -8,7 +9,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-	public interface ITabControl : IControl
+	public interface ITabControl : IContainer
 	{
 		int SelectedIndex { get; set; }
 
@@ -20,10 +21,15 @@ namespace Eto.Forms
 	}
 	
 	[ContentProperty("TabPages")]
-	public class TabControl : Control
+	public class TabControl : Container
 	{
 		TabPageCollection pages;
 		ITabControl handler;
+
+		public override IEnumerable<Control> Controls
+		{
+			get { return pages; }
+		}
 		
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
@@ -88,59 +94,6 @@ namespace Eto.Forms
 			handler.ClearTabs();
 		}
 
-		public override void OnPreLoad(EventArgs e)
-		{
-			base.OnPreLoad(e);
-			foreach (var page in pages)
-			{
-				page.OnPreLoad(e);
-			}
-		}
-		
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			foreach (var page in pages)
-			{
-				page.OnLoad(e);
-			}
-		}
-		
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			foreach (var page in pages)
-			{
-				page.OnLoadComplete(e);
-			}
-		}
-
-		public override void OnUnLoad(EventArgs e)
-		{
-			base.OnUnLoad(e);
-			foreach (var page in pages)
-			{
-				page.OnUnLoad(e);
-			}
-		}
-		
-		internal protected override void OnDataContextChanged(EventArgs e)
-		{
-			base.OnDataContextChanged(e);
-			foreach (var tab in TabPages)
-			{
-				tab.OnDataContextChanged(e);
-			}
-		}
-
-		public override void UpdateBindings()
-		{
-			base.UpdateBindings();
-			foreach (var tab in TabPages)
-			{
-				tab.UpdateBindings();
-			}
-		}
 		public ObjectBinding<TabControl, int> SelectedIndexBinding
 		{
 			get

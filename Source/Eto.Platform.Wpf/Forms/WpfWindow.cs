@@ -18,7 +18,7 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<T, W> : WpfContainer<T, W>, IWindow, IWpfWindow
+	public abstract class WpfWindow<T, W> : WpfDockContainer<T, W>, IWindow, IWpfWindow
 		where T : sw.Window
 		where W : Window
 	{
@@ -34,19 +34,15 @@ namespace Eto.Platform.Wpf.Forms
 		bool maximizable = true;
 		bool minimizable = true;
 
-		public swc.DockPanel Content
-		{
-			get { return content; }
-		}
-
 		protected override void Initialize ()
 		{
-			base.Initialize ();
-
+			content = new swc.DockPanel();
+			
+			base.Initialize();
 			Control.SizeToContent = sw.SizeToContent.WidthAndHeight;
+			Control.SnapsToDevicePixels = true;
 			Control.UseLayoutRounding = true;
-			main = new swc.DockPanel ();
-			content = new swc.DockPanel ();
+			main = new swc.DockPanel();
 			menuHolder = new swc.ContentControl { IsTabStop = false };
 			toolBarHolder = new swc.ContentControl { IsTabStop = false };
 			content.Background = System.Windows.SystemColors.ControlBrush;
@@ -56,10 +52,13 @@ namespace Eto.Platform.Wpf.Forms
 			main.Children.Add (toolBarHolder);
 			main.Children.Add (content);
 			Control.Content = main;
-			Control.Loaded += delegate {
-				if (initialClientSize != null) {
-					UpdateClientSize (initialClientSize.Value);
+			Control.Loaded += delegate
+			{
+				if (initialClientSize != null)
+				{
 					initialClientSize = null;
+					Control.SizeToContent = sw.SizeToContent.Manual;
+					SetContentSize();
 				}
 			};
 			// needed to handle Application.Terminating event
@@ -262,9 +261,29 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (Control.IsLoaded)
-					UpdateClientSize (value);
+					UpdateClientSize(value);
 				else
+				{
 					initialClientSize = value;
+					SetContentSize();
+				}
+			}
+		}
+
+		void SetContentSize()
+		{
+			if (initialClientSize != null)
+			{
+				var value = initialClientSize.Value;
+				content.MinWidth = value.Width >= 0 ? value.Width : 0;
+				content.MinHeight = value.Height >= 0 ? value.Height : 0;
+				content.MaxWidth = value.Width >= 0 ? value.Width : double.PositiveInfinity;
+				content.MaxHeight = value.Height >= 0 ? value.Height : double.PositiveInfinity;
+			}
+			else
+			{
+				content.MinWidth = content.MinHeight = 0;
+				content.MaxWidth = content.MaxHeight = double.PositiveInfinity;
 			}
 		}
 
@@ -276,19 +295,11 @@ namespace Eto.Platform.Wpf.Forms
 				Control.SizeToContent = sw.SizeToContent.Manual;
 				base.Size = value;
 				if (!Control.IsLoaded)
+				{
 					initialClientSize = null;
+					SetContentSize();
+				}
 			}
-		}
-
-		public override object ContainerObject
-		{
-			get { return Control; }
-		}
-
-		public override void SetLayout (Layout layout)
-		{
-			content.Children.Clear ();
-			content.Children.Add ((sw.UIElement)layout.ControlObject);
 		}
 
 		public string Title
@@ -355,29 +366,6 @@ namespace Eto.Platform.Wpf.Forms
 			get { return Control.RestoreBounds.ToEto (); }
 		}
 
-
-		public override Size? MinimumSize
-		{
-			get
-			{
-				if (Control.MinWidth > 0 && Control.MinHeight > 0)
-					return new Size ((int)Control.MinWidth, (int)Control.MinHeight);
-				else
-					return null;
-			}
-			set
-			{
-				if (value != null) {
-					Control.MinWidth = value.Value.Width;
-					Control.MinHeight = value.Value.Height;
-				}
-				else {
-					Control.MinHeight = 0;
-					Control.MinWidth = 0;
-				}
-			}
-		}
-
 		sw.Window IWpfWindow.Control
 		{
 			get { return this.Control; }
@@ -440,22 +428,18 @@ namespace Eto.Platform.Wpf.Forms
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return brush.Color.ToEto ();
-				else return Colors.Black;
-			}
-			set
-			{
-				Control.Background = new swm.SolidColorBrush (value.ToWpf ());
-            }
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
-
 
 		public Screen Screen
 		{
 			get { return new Screen (Generator, new ScreenHandler (Control)); }
+		}
+
+		public override void SetContainerContent(sw.FrameworkElement content)
+		{
+			this.content.Children.Add(content);
 		}
     }
 }

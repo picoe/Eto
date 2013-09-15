@@ -11,7 +11,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TreeViewHandler : MacView<NSOutlineView, TreeView>, ITreeView
+	public class TreeViewHandler : MacControl<NSOutlineView, TreeView>, ITreeView
 	{
 		ITreeStore top;
 		ContextMenu contextMenu;
@@ -261,8 +261,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 		}
 
-		private static readonly IntPtr selDoubleActionHandle = Selector.GetHandle("doubleAction");
-
 		public override void AttachEvent(string handler)
 		{
 			switch (handler)
@@ -364,12 +362,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Control.SelectRow(row.Value, false);
 				}
 			}
-		}
-
-		public override bool Enabled
-		{
-			get { return Control.Enabled; }
-			set { Control.Enabled = value; }
 		}
 
 		public ContextMenu ContextMenu

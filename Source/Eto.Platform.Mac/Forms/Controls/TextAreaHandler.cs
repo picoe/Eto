@@ -137,7 +137,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Control.Value;
 			}
 			set {
-				Control.Value = value;
+				Control.Value = value ?? string.Empty;
 				this.Control.DisplayIfNeeded ();
 			}
 		}

@@ -25,114 +25,116 @@ namespace Eto.Test.Sections.Drawing
 
 		public float PenThickness { get; set; }
 
-		public PenSection ()
+		public PenSection()
 		{
 			PenThickness = 4;
 
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 
-			layout.AddSeparateRow (null, PenJoinControl (), PenCapControl (), DashStyleControl (), null);
-			layout.AddSeparateRow (null, PenThicknessControl (), null);
-			layout.AddSeparateRow (GetDrawable ());
+			layout.AddSeparateRow(null, PenJoinControl(), PenCapControl(), DashStyleControl(), null);
+			layout.AddSeparateRow(null, PenThicknessControl(), null);
+			layout.AddSeparateRow(GetDrawable());
+
+			Content = layout;
 		}
 
-		Control PenJoinControl ()
+		Control PenJoinControl()
 		{
-			var control = new EnumComboBox<PenLineJoin> ();
-			control.Bind (c => c.SelectedValue, this, r => r.LineJoin);
+			var control = new EnumComboBox<PenLineJoin>();
+			control.Bind(c => c.SelectedValue, this, r => r.LineJoin);
 			control.SelectedValueChanged += Refresh;
 			return control;
 		}
 
-		Control PenCapControl ()
+		Control PenCapControl()
 		{
-			var control = new EnumComboBox<PenLineCap> ();
-			control.Bind (c => c.SelectedValue, this, r => r.LineCap);
+			var control = new EnumComboBox<PenLineCap>();
+			control.Bind(c => c.SelectedValue, this, r => r.LineCap);
 			control.SelectedValueChanged += Refresh;
 			return control;
 		}
 
-		Control PenThicknessControl ()
+		Control PenThicknessControl()
 		{
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 10 };
-			control.Bind (c => c.Value, this, r => r.PenThickness);
+			control.Bind(c => c.Value, this, r => r.PenThickness);
 			control.ValueChanged += Refresh;
 			
-			var layout = new DynamicLayout (new Panel (), Padding.Empty);
-			layout.AddRow (new Label { Text = "Thickness Step:", VerticalAlign = VerticalAlign.Middle}, control);
-			return layout.Container;
+			var layout = new DynamicLayout(Padding.Empty);
+			layout.AddRow(new Label { Text = "Thickness Step:", VerticalAlign = VerticalAlign.Middle }, control);
+			return layout;
 		}
-
 
 		class DashStyleItem : ListItem
 		{
 			public DashStyle Style { get; set; }
 		}
 
-		Control DashStyleControl ()
+		Control DashStyleControl()
 		{
-			var control = new ComboBox ();
-			control.Items.Add (new DashStyleItem { Text = "Solid", Style = DashStyles.Solid });
-			control.Items.Add (new DashStyleItem { Text = "Dash", Style = DashStyles.Dash });
-			control.Items.Add (new DashStyleItem { Text = "Dot", Style = DashStyles.Dot });
-			control.Items.Add (new DashStyleItem { Text = "Dash Dot", Style = DashStyles.DashDot });
-			control.Items.Add (new DashStyleItem { Text = "Dash Dot Dot", Style = DashStyles.DashDotDot });
+			var control = new ComboBox();
+			control.Items.Add(new DashStyleItem { Text = "Solid", Style = DashStyles.Solid });
+			control.Items.Add(new DashStyleItem { Text = "Dash", Style = DashStyles.Dash });
+			control.Items.Add(new DashStyleItem { Text = "Dot", Style = DashStyles.Dot });
+			control.Items.Add(new DashStyleItem { Text = "Dash Dot", Style = DashStyles.DashDot });
+			control.Items.Add(new DashStyleItem { Text = "Dash Dot Dot", Style = DashStyles.DashDotDot });
 			control.SelectedIndex = 0;
 			control.SelectedIndexChanged += (sender, e) => {
 				this.DashStyle = ((DashStyleItem)control.SelectedValue).Style;
-				Refresh (sender, e);
+				Refresh(sender, e);
 			};
 			return control;
 		}
 
-		void Refresh (object sender, EventArgs e)
+		void Refresh(object sender, EventArgs e)
 		{
-			drawable.Invalidate ();
+			drawable.Invalidate();
 		}
 
-		Drawable GetDrawable ()
+		Drawable GetDrawable()
 		{
-			drawable = new Drawable {
+			drawable = new Drawable
+			{
 				Size = new Size (560, 300)
 			};
 			drawable.Paint += (sender, pe) => {
-				Draw (pe.Graphics, null);
+				Draw(pe.Graphics, null);
 			};
 			return drawable;
 		}
 
-		void Draw (Graphics g, Action<Pen> action)
+		void Draw(Graphics g, Action<Pen> action)
 		{
-			var path = new GraphicsPath ();
-			path.AddLines (new PointF (0, 0), new PointF (100, 40), new PointF (0, 30), new PointF (50, 70));
+			var path = new GraphicsPath();
+			path.AddLines(new PointF(0, 0), new PointF(100, 40), new PointF(0, 30), new PointF(50, 70));
 
-			for (int i = 0; i < 4; i++) {
+			for (int i = 0; i < 4; i++)
+			{
 				float thickness = 1f + i * PenThickness;
-				var pen = new Pen (Colors.Black, thickness);
+				var pen = new Pen(Colors.Black, thickness);
 				pen.LineCap = this.LineCap;
 				pen.LineJoin = this.LineJoin;
 				pen.DashStyle = this.DashStyle;
 				if (action != null)
-					action (pen);
+					action(pen);
 				var y = i * 20;
-				g.DrawLine (pen, 10, y, 110, y);
+				g.DrawLine(pen, 10, y, 110, y);
 				
 				y = 80 + i * 50;
-				g.DrawRectangle (pen, 10, y, 100, 30);
+				g.DrawRectangle(pen, 10, y, 100, 30);
 
 				y = i * 70;
-				g.DrawArc (pen, 140, y, 100, 80, 160, 160);
+				g.DrawArc(pen, 140, y, 100, 80, 160, 160);
 				
 				y = i * 70;
-				g.DrawEllipse (pen, 260, y, 100, 50);
+				g.DrawEllipse(pen, 260, y, 100, 50);
 				
-				g.SaveTransform ();
+				g.SaveTransform();
 				y = i * 70;
-				g.TranslateTransform (400, y);
-				g.DrawPath (pen, path);
-				g.RestoreTransform ();
+				g.TranslateTransform(400, y);
+				g.DrawPath(pen, path);
+				g.RestoreTransform();
 			}
 		}
-
 	}
 }

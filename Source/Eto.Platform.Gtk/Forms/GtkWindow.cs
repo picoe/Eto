@@ -14,12 +14,12 @@ namespace Eto.Platform.GtkSharp
 		Gtk.Window Control { get; }
 	}
 
-	public abstract class GtkWindow<T, W> : GtkContainer<T, W>, IWindow, IGtkWindow
+	public abstract class GtkWindow<T, W> : GtkDockContainer<T, W>, IWindow, IGtkWindow
 		where T: Gtk.Window
 		where W: Window
 	{
-		protected Gtk.VBox vbox;
-		protected Gtk.VBox actionvbox;
+		Gtk.VBox vbox;
+		Gtk.VBox actionvbox;
 		Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
 		Gtk.Box containerBox;
@@ -46,8 +46,19 @@ namespace Eto.Platform.GtkSharp
 
 			bottomToolbarBox = new Gtk.VBox ();
 		}
-		
-		public override object ContainerObject {
+
+		protected override Color DefaultBackgroundColor
+		{
+			get { return Control.Style.Background(Gtk.StateType.Normal).ToEto(); }
+		}
+
+		public Gtk.Widget WindowContentControl
+		{
+			get { return vbox; }
+		}
+
+		public override Gtk.Widget ContainerContentControl
+		{
 			get { return containerBox; }
 		}
 
@@ -273,15 +284,9 @@ namespace Eto.Platform.GtkSharp
 			
 		}
 
-		public override void SetLayout (Layout inner)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			if (containerBox.Children.Length > 0)
-				foreach (Gtk.Widget child in containerBox.Children)
-					containerBox.Remove (child);
-			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
-			containerBox.PackStart (containerWidget, true, true, 0);
-			containerWidget.ShowAll ();
+			containerBox.PackStart(content, true, true, 0);
 		}
 
 		public string Title {

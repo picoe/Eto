@@ -13,29 +13,31 @@ namespace Eto.Platform.Mac.Forms.Controls
 		where W: Control
 	{
 		Font font;
-		
-		public override bool Enabled {
-			get {
-				return Control.Enabled;
-			}
-			set {
-				Control.Enabled = value;
-			}
+
+		public override NSView ContainerControl { get { return Control; } }
+
+		public override bool Enabled
+		{
+			get { return Control.Enabled; }
+			set { Control.Enabled = value; }
 		}
-		
-		public virtual Font Font {
-			get {
+
+		public virtual Font Font
+		{
+			get
+			{
 				if (font == null)
-					font = new Font (Widget.Generator, new FontHandler (Control.Font));
+					font = new Font(Widget.Generator, new FontHandler(Control.Font));
 				return font;
 			}
-			set {
+			set
+			{
 				font = value;
 				if (font != null)
 					Control.Font = font.ControlObject as NSFont;
 				else
 					Control.Font = null;
-				Control.SizeToFit ();
+				Control.SizeToFit();
 				LayoutIfNeeded();
 			}
 		}

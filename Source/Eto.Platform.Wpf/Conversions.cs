@@ -25,9 +25,28 @@ namespace Eto.Platform.Wpf
 			return swm.Color.FromArgb ((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
 		}
 
+		public static swm.Brush ToWpfBrush(this Color value, swm.Brush brush)
+		{
+			var solidBrush = brush as swm.SolidColorBrush;
+			if (solidBrush == null || solidBrush.IsSealed)
+			{
+				solidBrush = new swm.SolidColorBrush();
+			}
+			solidBrush.Color = value.ToWpf();
+			return solidBrush;
+		}
+
 		public static Color ToEto (this swm.Color value)
 		{
 			return new Color { A = value.A / 255f, R = value.R / 255f, G = value.G / 255f, B = value.B / 255f };
+		}
+
+		public static Color ToEtoColor(this swm.Brush brush)
+		{
+			var solidBrush = brush as swm.SolidColorBrush;
+			if (solidBrush != null)
+				return solidBrush.Color.ToEto();
+			return Colors.Transparent;
 		}
 
 		public static Padding ToEto (this sw.Thickness value)
@@ -446,14 +465,6 @@ namespace Eto.Platform.Wpf
 			default:
 				throw new NotSupportedException ();
 			}
-		}
-
-		public static IWpfLayout GetWpfLayout (this Container widget)
-		{
-			if (widget.Layout != null && widget.Layout.InnerLayout != null)
-				return widget.Layout.InnerLayout.Handler as IWpfLayout;
-			else
-				return null;
 		}
 
 		public static WindowStyle ToEto (this sw.WindowStyle style)

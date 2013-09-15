@@ -5,13 +5,13 @@ using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class DrawableHandler : GtkContainer<Gtk.EventBox, Drawable>, IDrawable
+	public class DrawableHandler : GtkDockContainer<Gtk.EventBox, Drawable>, IDrawable
 	{
 		Gtk.VBox content;
 
-		public void Create ()
+		public void Create()
 		{
-			Control = new Gtk.EventBox ();
+			Control = new Gtk.EventBox();
 #if GTK2
 			Control.ExposeEvent += control_ExposeEvent;
 #else
@@ -25,26 +25,28 @@ namespace Eto.Platform.GtkSharp
 			Control.Events |= Gdk.EventMask.ButtonPressMask;
 			Control.ButtonPressEvent += (o, args) => {
 				if (CanFocus)
-					Control.GrabFocus ();
+					Control.GrabFocus();
 			};
 
 			content = new Gtk.VBox();
 
-			Control.Add (content);
+			Control.Add(content);
 		}
 
-		public bool CanFocus {
+		public bool CanFocus
+		{
 			get { return Control.CanFocus; }
 			set { Control.CanFocus = value; }
 		}
 
 #if GTK2
-		void control_ExposeEvent (object o, Gtk.ExposeEventArgs args)
+		void control_ExposeEvent(object o, Gtk.ExposeEventArgs args)
 		{
 			Gdk.EventExpose ev = args.Event;
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window))) {
-				Rectangle rect = ev.Region.Clipbox.ToEto ();
-				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window)))
+			{
+				Rectangle rect = ev.Region.Clipbox.ToEto();
+				Widget.OnPaint(new PaintEventArgs(graphics, rect));
 			}
 		}
 #else
@@ -58,10 +60,11 @@ namespace Eto.Platform.GtkSharp
 #endif
 
 
-		public void Update (Rectangle rect)
+		public void Update(Rectangle rect)
 		{
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow))) {
-				Widget.OnPaint (new PaintEventArgs (graphics, rect));
+			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow)))
+			{
+				Widget.OnPaint(new PaintEventArgs(graphics, rect));
 			}
 		}
 
@@ -70,20 +73,9 @@ namespace Eto.Platform.GtkSharp
 			return new Graphics(Widget.Generator, new GraphicsHandler(Control, Control.GdkWindow));
 		}
 
-		public override object ContainerObject
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			get { return content; }
-		}
-
-		public override void SetLayout (Layout inner)
-		{
-			if (content.Children.Length > 0)
-				foreach (Gtk.Widget child in content.Children)
-					content.Remove (child);
-			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			var containerWidget = (Gtk.Widget)gtklayout.ContainerObject;
-			content.Add (containerWidget);
-			containerWidget.ShowAll ();
+			this.content.Add(content);
 		}
 	}
 }

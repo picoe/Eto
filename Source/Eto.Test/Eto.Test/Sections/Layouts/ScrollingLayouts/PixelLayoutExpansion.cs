@@ -7,56 +7,59 @@ namespace Eto.Test.Sections.Layouts.ScrollingLayouts
 	public class PixelLayoutExpansion : Panel
 	{
 		Scrollable defaultScrollable;
-		public PixelLayoutExpansion ()
+
+		public PixelLayoutExpansion()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 
 			defaultScrollable = new Scrollable();
-			layout.AddSeparateRow (null, ExpandContentWidth (), ExpandContentHeight (), null);
-			layout.Add (Default (), yscale: true);
-			layout.Add (ExpandedWidth (), yscale: true);
-			layout.Add (ExpandedHeight (), yscale: true);
+			layout.AddSeparateRow(null, ExpandContentWidth(), ExpandContentHeight(), null);
+			layout.Add(Default(), yscale: true);
+			layout.Add(ExpandedWidth(), yscale: true);
+			layout.Add(ExpandedHeight(), yscale: true);
+
+			Content = layout;
 		}
 
-		Control Default ()
+		Control Default()
 		{
-			var layout = new PixelLayout (defaultScrollable);
+			var layout = new PixelLayout();
 
-			layout.Add (new Label { BackgroundColor = Colors.Red, Text = "Expanded Width/Height (default)" }, 50, 50);
-			return layout.Container;
+			layout.Add(new Label { BackgroundColor = Colors.Red, Text = "Expanded Width/Height (default)" }, 50, 50);
+
+			defaultScrollable.Content = layout;
+			return defaultScrollable;
 		}
 
-		Control ExpandContentWidth ()
+		Control ExpandContentWidth()
 		{
 			var control = new CheckBox { Text = "ExpandContentWidth" };
-			control.Bind (r => r.Checked, defaultScrollable, s => s.ExpandContentWidth);
+			control.Bind(r => r.Checked, defaultScrollable, s => s.ExpandContentWidth);
 			return control;
 		}
 
-		Control ExpandContentHeight ()
+		Control ExpandContentHeight()
 		{
 			var control = new CheckBox { Text = "ExpandContentHeight" };
-			control.Bind (r => r.Checked, defaultScrollable, s => s.ExpandContentHeight);
+			control.Bind(r => r.Checked, defaultScrollable, s => s.ExpandContentHeight);
 			return control;
 		}
 
-		Control ExpandedWidth ()
+		Control ExpandedWidth()
 		{
-			var layout = new PixelLayout (new Scrollable { ExpandContentHeight = false });
+			var layout = new PixelLayout();
 
-			layout.Add (new Label { BackgroundColor = Colors.Red, Text = "Expanded Width" }, 50, 50);
-			return layout.Container;
+			layout.Add(new Label { BackgroundColor = Colors.Red, Text = "Expanded Width" }, 50, 50);
+			return new Scrollable { ExpandContentHeight = false, Content = layout };
 		}
 
-		Control ExpandedHeight ()
+		Control ExpandedHeight()
 		{
-			var layout = new PixelLayout (new Scrollable { ExpandContentWidth = false });
+			var layout = new PixelLayout();
 
-			layout.Add (new Label { BackgroundColor = Colors.Red, Text = "Expanded Height" }, 50, 50);
-			return layout.Container;
+			layout.Add(new Label { BackgroundColor = Colors.Red, Text = "Expanded Height" }, 50, 50);
+			return new Scrollable { ExpandContentWidth = false, Content = layout };
 		}
-
-
 	}
 }
 

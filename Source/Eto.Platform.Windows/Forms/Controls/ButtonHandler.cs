@@ -37,10 +37,12 @@ namespace Eto.Platform.Windows
 
 		public ButtonHandler ()
 		{
-			Control = new EtoButton ();
-			Control.AutoSizeMode = swf.AutoSizeMode.GrowAndShrink;
-			Control.TextImageRelation = swf.TextImageRelation.ImageBeforeText;
-			Control.AutoSize = true;
+			Control = new EtoButton
+			{
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
+				TextImageRelation = swf.TextImageRelation.ImageBeforeText,
+				AutoSize = true
+			};
 			Control.Click += delegate {
 				Widget.OnClick (EventArgs.Empty);
 			};

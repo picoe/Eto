@@ -25,7 +25,6 @@ namespace Eto.Platform.GtkSharp
 #if GTK2
 			Control.AllowShrink = false;
 			Control.AllowGrow = false;
-			vbox = Control.VBox;
 			Control.HasSeparator = false;
 #else
 			Control.Resizable = false;
@@ -34,7 +33,13 @@ namespace Eto.Platform.GtkSharp
 			Control.ContentArea.Add (vbox);
 #endif
 		}
-		
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Add(WindowContentControl);
+		}
+
+
 		public Button AbortButton {
 			get;
 			set;
@@ -46,18 +51,6 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		
-		/*
-		private Gtk.Window FindParentWindow(Gtk.Widget widget)
-		{
-			while (widget != null && !(widget is Gtk.Window))
-			{
-				widget = widget.Parent;
-			}
-			return (Gtk.Window)widget;
-			
-		}
-		 */
-
 		public DialogDisplayMode DisplayMode { get; set; }
 
 		public DialogResult ShowDialog (Control parent)
@@ -65,27 +58,30 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnPreLoad (EventArgs.Empty);
 			
 			if (parent != null) {
-				Control.TransientFor = ((Gtk.Window)(parent.ParentWindow).ControlObject); //FindParentWindow((Gtk.Widget)parent.ControlObject);
+				Control.TransientFor = ((Gtk.Window)(parent.ParentWindow).ControlObject);
 				Control.Modal = true;
 			}
 			Control.ShowAll ();
 			Widget.OnLoad (EventArgs.Empty);
 
 			if (DefaultButton != null) {
-				var widget = DefaultButton.ControlObject as Gtk.Widget;
+				var widget = DefaultButton.GetContainerWidget();
+				if (widget != null)
+				{
 #if GTK2
-				widget.SetFlag (Gtk.WidgetFlags.CanDefault);
+					widget.SetFlag(Gtk.WidgetFlags.CanDefault);
 #else
-				widget.CanDefault = true;
+					widget.CanDefault = true;
 #endif
-				Control.Default = widget;
+					Control.Default = widget;
+				}
 			}
 			// TODO: implement cancel button somehow?
 			
 			Control.Run ();
 			Control.Hide ();
 									
-			return Widget.DialogResult; // Generator.Convert((Gtk.ResponseType)result);
+			return Widget.DialogResult;
 		}
 
 	}

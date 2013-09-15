@@ -20,9 +20,7 @@ namespace Eto.Forms
 	/// <typeparam name="T">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
 	/// <typeparam name="W">The control being implemented, eg TabControl</typeparam>
 	/// </summary>
-	public class ThemedControlHandler<T, W>
-		: WidgetHandler<T, W>,
-		IControl
+	public class ThemedControlHandler<T, W> : WidgetHandler<T, W>, IControl
 		where T : Control
 		where W : Control
 	{
@@ -99,16 +97,9 @@ namespace Eto.Forms
 			Control.OnUnLoad(e);
 		}
 		
-		public void SetParent(Control parent)
+		public void SetParent(Container parent)
 		{
-			if (this.Control != null)
-				this.Control.SetParent(parent);
-		}
-
-		public void SetParentLayout(Layout layout)
-		{
-			if (this.Control != null)
-				this.Control.SetParentLayout(layout);
+			this.Control.SetParent(parent);
 		}
 
 		public PointF PointFromScreen (PointF point)

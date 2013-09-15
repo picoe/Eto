@@ -16,8 +16,12 @@ namespace Eto.Platform.GtkSharp
 #endif
 			Control.SetSizeRequest(100,100);
 			Control.SetPosition(Gtk.WindowPosition.Center);
-			Control.Add (vbox);
-			actionvbox = vbox;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Add(WindowContentControl);
 		}
 
 		public void Show()

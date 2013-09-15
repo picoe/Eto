@@ -5,78 +5,86 @@ namespace Eto.Test.Sections.Controls
 {
 	public class CheckBoxSection : Scrollable
 	{
-		public CheckBoxSection ()
+		public CheckBoxSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 			
-			layout.Add (Default ());
+			layout.Add(Default());
 
-			layout.Add (Disabled ());
+			layout.Add(Disabled());
 			
-			layout.Add (SetInitialValue ());
+			layout.Add(SetInitialValue());
 			
-			layout.Add (ThreeState ());
+			layout.Add(ThreeState());
 			
-			layout.Add (ThreeStateInitialValue ());
+			layout.Add(ThreeStateInitialValue());
 			
-			layout.Add (null, false, true);
+			layout.Add(null, false, true);
+
+			Content = layout;
 		}
-		
-		Control Default ()
+
+		Control Default()
 		{
-			var control = new CheckBox {
+			var control = new CheckBox
+			{
 				Text = "Default"
 			};
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
-		
-		Control Disabled ()
+
+		Control Disabled()
 		{
-			var control = new CheckBox {
+			var control = new CheckBox
+			{
 				Text = "Disabled",
 				Enabled = false
 			};
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
-		
-		Control SetInitialValue ()
+
+		Control SetInitialValue()
 		{
-			var control = new CheckBox{
+			var control = new CheckBox
+			{
 				Text = "Set initial value",
 				Checked = true
 			};
-			LogEvents (control);
+			LogEvents(control);
 			
 			return control;
 		}
-		
-		Control ThreeState ()
+
+		Control ThreeState()
 		{
-			var control = new CheckBox {
+			var control = new CheckBox
+			{
 				Text = "Three State",
 				ThreeState = true
 			};
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
-		
-		Control ThreeStateInitialValue ()
+
+		Control ThreeStateInitialValue()
 		{
-			var control = new CheckBox {
+			var control = new CheckBox
+			{
 				Text = "Three State with Initial Value",
 				ThreeState = true,
 				Checked = null
 			};
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
-		
-		void LogEvents (CheckBox control)
+
+		void LogEvents(CheckBox control)
 		{
-			control.CheckedChanged += delegate {
-				Log.Write (control, "CheckedChanged, Value: {0}", control.Checked);
+			control.CheckedChanged += delegate
+			{
+				Log.Write(control, "CheckedChanged, Value: {0}", control.Checked);
 			};
 		}
 	}

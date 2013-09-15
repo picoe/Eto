@@ -5,21 +5,23 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	public interface ITabPage : IContainer
+	public interface ITabPage : IDockContainer
 	{
 		string Text { get; set; }
 
 		Image Image { get; set; }
 	}
 
-	public class TabPage : Container, IImageListItem
+	public class TabPage : DockContainer, IImageListItem
 	{
 		ITabPage handler;
 		
 		public TabPage (Control control, Padding? padding = null)
 			: this (control.Generator)
 		{
-			this.AddDockedControl (control, padding);
+			if (padding != null)
+				this.Padding = padding.Value;
+			this.Content = control;
 		}
 
 		public TabPage ()

@@ -7,52 +7,61 @@ namespace Eto.Test.Sections.Dialogs
 {
 	public class ColorDialogSection : Panel
 	{
-		public ColorDialogSection ()
+		public ColorDialogSection()
 		{
-			var layout = new DynamicLayout (this, new Size (20, 20));
+			var layout = new DynamicLayout(new Size(20, 20));
 
-			layout.AddRow (null, PickColor (), null);
-			layout.AddRow (null, PickColorWithStartingColor (), null);
+			layout.AddRow(null, PickColor(), null);
+			layout.AddRow(null, PickColorWithStartingColor(), null);
 
-			layout.Add (null);
+			layout.Add(null);
+
+			Content = layout;
 		}
 
-		Control PickColor ()
+		Control PickColor()
 		{
 			var button = new Button { Text = "Pick Color" };
-			button.Click += delegate {
-				var dialog = new ColorDialog ();
-				dialog.ColorChanged += delegate {
+			button.Click += delegate
+			{
+				var dialog = new ColorDialog();
+				dialog.ColorChanged += delegate
+				{
 					// you need to handle this event for OS X, where the dialog is a floating window
-					Log.Write (dialog, "ColorChanged, Color: {0}", dialog.Color);
+					Log.Write(dialog, "ColorChanged, Color: {0}", dialog.Color);
 				};
-				var result = dialog.ShowDialog (this.ParentWindow);
-				if (result == DialogResult.Ok) {
-					Log.Write (dialog, "Result: {0}, Color: {1}", result, dialog.Color);
+				var result = dialog.ShowDialog(this.ParentWindow);
+				if (result == DialogResult.Ok)
+				{
+					Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);
 				}
 				else
-					Log.Write (dialog, "Result: {0}", result);
+					Log.Write(dialog, "Result: {0}", result);
 			};
 			return button;
 		}
 
-		Control PickColorWithStartingColor ()
+		Control PickColorWithStartingColor()
 		{
 			var button = new Button { Text = "Pick Color with initial starting color (green)" };
-			button.Click += delegate {
-				var dialog = new ColorDialog {
+			button.Click += delegate
+			{
+				var dialog = new ColorDialog
+				{
 					Color = Colors.Lime
 				};
-				dialog.ColorChanged += delegate {
+				dialog.ColorChanged += delegate
+				{
 					// need to handle this event for OS X, where the dialog is a floating window
-					Log.Write (dialog, "ColorChanged, Color: {0}", dialog.Color);
+					Log.Write(dialog, "ColorChanged, Color: {0}", dialog.Color);
 				};
-				var result = dialog.ShowDialog (this.ParentWindow);
-				if (result == DialogResult.Ok) {
-					Log.Write (dialog, "Result: {0}, Color: {1}", result, dialog.Color);
+				var result = dialog.ShowDialog(this.ParentWindow);
+				if (result == DialogResult.Ok)
+				{
+					Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);
 				}
 				else
-					Log.Write (dialog, "Result: {0}", result);
+					Log.Write(dialog, "Result: {0}", result);
 			};
 			return button;
 		}
