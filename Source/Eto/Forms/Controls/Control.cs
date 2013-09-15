@@ -472,7 +472,7 @@ namespace Eto.Forms
 			return default(T);
 		}
 
-		internal void SetParent(Container parent, bool changeContext = true)
+		public void SetParent(Container parent, bool changeContext = true)
 		{
 			if (this.Parent != parent)
 			{
