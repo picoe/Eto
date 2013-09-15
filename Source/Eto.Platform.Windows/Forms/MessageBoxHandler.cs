@@ -13,34 +13,42 @@ namespace Eto.Platform.Windows
 
 		public MessageBoxType Type { get; set; }
 
+		public MessageBoxButtons Buttons { get; set; }
+
+		public MessageBoxDefaultButton DefaultButton { get; set; }
+
 		public DialogResult ShowDialog(Control parent)
 		{
-			swf.Control c = (parent == null) ? null : (swf.Control)parent.ControlObject;
 			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
-			swf.DialogResult result = swf.MessageBox.Show(c, Text, caption, swf.MessageBoxButtons.OK, Convert(Type));
+			swf.Control c = (parent == null) ? null : (swf.Control)parent.ControlObject;
+			swf.DialogResult result = swf.MessageBox.Show(c, Text, caption, Convert(Buttons), Convert(Type), Convert(DefaultButton, Buttons));
 			return result.ToEto();
 		}
 
-		public DialogResult ShowDialog(Control parent, MessageBoxButtons buttons)
+		public static swf.MessageBoxDefaultButton Convert(MessageBoxDefaultButton defaultButton, MessageBoxButtons buttons)
 		{
-			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
-			swf.Control c = (parent == null) ? null : (swf.Control)parent.ControlObject;
-			swf.DialogResult result = swf.MessageBox.Show(c, Text, caption, Convert(buttons), Convert(Type), DefaultButton(buttons));
-			return result.ToEto();
-		}
-
-		public static swf.MessageBoxDefaultButton DefaultButton(MessageBoxButtons buttons)
-		{
-			switch (buttons)
+			switch (defaultButton)
 			{
-				default:
-				case MessageBoxButtons.OK:
+				case MessageBoxDefaultButton.OK:
 					return swf.MessageBoxDefaultButton.Button1;
-				case MessageBoxButtons.YesNo:
-				case MessageBoxButtons.OKCancel:
+				case MessageBoxDefaultButton.No:
+				case MessageBoxDefaultButton.Cancel:
 					return swf.MessageBoxDefaultButton.Button2;
-				case MessageBoxButtons.YesNoCancel:
-					return swf.MessageBoxDefaultButton.Button3;
+				case MessageBoxDefaultButton.Default:
+					switch (buttons)
+					{
+						case MessageBoxButtons.OK:
+							return swf.MessageBoxDefaultButton.Button1;
+						case MessageBoxButtons.YesNo:
+						case MessageBoxButtons.OKCancel:
+							return swf.MessageBoxDefaultButton.Button2;
+						case MessageBoxButtons.YesNoCancel:
+							return swf.MessageBoxDefaultButton.Button3;
+						default:
+							throw new NotSupportedException();
+					}
+				default:
+					throw new NotSupportedException();
 			}
 		}
 
