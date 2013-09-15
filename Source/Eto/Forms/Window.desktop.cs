@@ -18,7 +18,7 @@ namespace Eto.Forms
 		None
 	}
 
-	public partial interface IWindow : IContainer
+	public partial interface IWindow
 	{
 		MenuBar Menu { get; set; }
 
@@ -45,7 +45,7 @@ namespace Eto.Forms
 		void SendToBack ();
 	}
 
-	public abstract partial class Window : Container
+	public abstract partial class Window
 	{
 
 		public const string WindowStateChangedEvent = "Window.WindowStateChanged";

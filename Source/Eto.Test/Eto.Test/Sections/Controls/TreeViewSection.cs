@@ -12,13 +12,13 @@ namespace Eto.Test.Sections.Controls
 		CheckBox allowExpanding;
 		TreeView treeView;
 		int newItemCount;
-		static Image Image = Icon.FromResource("Eto.Test.TestIcon.ico");
+		static Image Image = TestIcons.TestIcon;
 		Label hoverNodeLabel;
 		bool cancelLabelEdit;
 
 		public TreeViewSection()
 		{
-			var layout = new DynamicLayout(this);
+			var layout = new DynamicLayout();
 			
 			layout.BeginHorizontal();
 			layout.Add(new Label { });
@@ -47,6 +47,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Panel(), HoverNodeLabel());
 
 			layout.Add (null, false, true);
+
+			Content = layout;
 		}
 
 		Control HoverNodeLabel()

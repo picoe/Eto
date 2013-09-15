@@ -11,50 +11,27 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class GroupBoxHandler : WpfContainer<swc.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WpfDockContainer<swc.GroupBox, GroupBox>, IGroupBox
 	{
 		Font font;
-		
-		public GroupBoxHandler ()
+
+		public GroupBoxHandler()
 		{
 			Control = new swc.GroupBox();
 		}
-		
-		public override Size ClientSize
-		{
-			get { return this.Size; }
-			set
-			{
-				// TODO
-				this.Size = value;
-			}
-		}
 
-		public override object ContainerObject
+		public override void SetContainerContent(sw.FrameworkElement content)
 		{
-			get { return Control; }
-		}
-
-		public override void SetLayout (Layout layout)
-		{
-			Control.Content = (System.Windows.UIElement)layout.ControlObject;
-			var tableLayout = layout.Handler as TableLayoutHandler;
-			if (tableLayout != null)
-				tableLayout.Adjust = new Size(0, -1);
+			Control.Content = content;
+			var margin = content.Margin;
+			margin.Bottom = 10;
+			content.Margin = margin;
 		}
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return brush.Color.ToEto ();
-				else return Colors.Black;
-			}
-			set
-			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		public Font Font
@@ -63,26 +40,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				font = value;
-				FontHandler.Apply (Control, font);
-			}
-		}
-
-		public override Size? MinimumSize
-		{
-			get
-			{
-				if (Control.MinHeight == 0 && Control.MinWidth == 0)
-					return null;
-				return new Eto.Drawing.Size ((int)Control.MinHeight, (int)Control.MinWidth);
-			}
-			set
-			{
-				if (value != null) {
-					Control.MinHeight = value.Value.Height;
-					Control.MinWidth = value.Value.Width;
-				}
-				else
-					Control.MinWidth = Control.MinHeight = 0;
+				FontHandler.Apply(Control, font);
 			}
 		}
 

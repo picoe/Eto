@@ -1,6 +1,6 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 
 namespace Eto.Platform.Windows
@@ -10,48 +10,70 @@ namespace Eto.Platform.Windows
 		public string Text { get; set; }
 
 		public string Caption { get; set; }
-		
+
 		public MessageBoxType Type { get; set; }
 
+		public MessageBoxButtons Buttons { get; set; }
+
+		public MessageBoxDefaultButton DefaultButton { get; set; }
 
 		public DialogResult ShowDialog(Control parent)
 		{
-			SWF.Control c = (parent == null) ? null : (SWF.Control)parent.ControlObject;
-            var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
-            SWF.DialogResult result = SWF.MessageBox.Show(c, Text, caption, SWF.MessageBoxButtons.OK, Convert(Type));
-			return result.ToEto ();
+			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
+			swf.Control c = (parent == null) ? null : (swf.Control)parent.ControlObject;
+			swf.DialogResult result = swf.MessageBox.Show(c, Text, caption, Convert(Buttons), Convert(Type), Convert(DefaultButton, Buttons));
+			return result.ToEto();
 		}
 
-		public DialogResult ShowDialog(Control parent, MessageBoxButtons buttons)
+		public static swf.MessageBoxDefaultButton Convert(MessageBoxDefaultButton defaultButton, MessageBoxButtons buttons)
 		{
-			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
-            SWF.Control c = (parent == null) ? null : (SWF.Control)parent.ControlObject;
-			SWF.DialogResult result = SWF.MessageBox.Show(c, Text, caption, Convert(buttons), Convert(Type));
-			return result.ToEto ();
+			switch (defaultButton)
+			{
+				case MessageBoxDefaultButton.OK:
+					return swf.MessageBoxDefaultButton.Button1;
+				case MessageBoxDefaultButton.No:
+				case MessageBoxDefaultButton.Cancel:
+					return swf.MessageBoxDefaultButton.Button2;
+				case MessageBoxDefaultButton.Default:
+					switch (buttons)
+					{
+						case MessageBoxButtons.OK:
+							return swf.MessageBoxDefaultButton.Button1;
+						case MessageBoxButtons.YesNo:
+						case MessageBoxButtons.OKCancel:
+							return swf.MessageBoxDefaultButton.Button2;
+						case MessageBoxButtons.YesNoCancel:
+							return swf.MessageBoxDefaultButton.Button3;
+						default:
+							throw new NotSupportedException();
+					}
+				default:
+					throw new NotSupportedException();
+			}
 		}
-		
-		public static SWF.MessageBoxButtons Convert(MessageBoxButtons buttons)
+
+		public static swf.MessageBoxButtons Convert(MessageBoxButtons buttons)
 		{
 			switch (buttons)
 			{
 				default:
-				case MessageBoxButtons.OK: return SWF.MessageBoxButtons.OK;
-				case MessageBoxButtons.OKCancel: return SWF.MessageBoxButtons.OKCancel;
-				case MessageBoxButtons.YesNo: return SWF.MessageBoxButtons.YesNo;
-				case MessageBoxButtons.YesNoCancel: return SWF.MessageBoxButtons.YesNoCancel;
+				case MessageBoxButtons.OK: return swf.MessageBoxButtons.OK;
+				case MessageBoxButtons.OKCancel: return swf.MessageBoxButtons.OKCancel;
+				case MessageBoxButtons.YesNo: return swf.MessageBoxButtons.YesNo;
+				case MessageBoxButtons.YesNoCancel: return swf.MessageBoxButtons.YesNoCancel;
 			}
 		}
-		
-		public static SWF.MessageBoxIcon Convert(MessageBoxType type)
+
+		public static swf.MessageBoxIcon Convert(MessageBoxType type)
 		{
 			switch (type)
 			{
-			case MessageBoxType.Error: return SWF.MessageBoxIcon.Error;
-			case MessageBoxType.Warning: return SWF.MessageBoxIcon.Warning;
-			case MessageBoxType.Information: return SWF.MessageBoxIcon.Information;
-			case MessageBoxType.Question: return SWF.MessageBoxIcon.Question;
-			default:
-				throw new NotSupportedException();
+				case MessageBoxType.Error: return swf.MessageBoxIcon.Error;
+				case MessageBoxType.Warning: return swf.MessageBoxIcon.Warning;
+				case MessageBoxType.Information: return swf.MessageBoxIcon.Information;
+				case MessageBoxType.Question: return swf.MessageBoxIcon.Question;
+				default:
+					throw new NotSupportedException();
 			}
 		}
 	}

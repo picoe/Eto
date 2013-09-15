@@ -54,7 +54,6 @@ namespace Eto.Platform.Mac.Forms
 		bool AutoSize { get; }
 		
 		Size GetPreferredSize (Size availableSize);
-		
 	}
 
 	public interface IMacViewHandler : IMacAutoSizing
@@ -63,7 +62,7 @@ namespace Eto.Platform.Mac.Forms
 		
 		Size? PreferredSize { get; }
 		
-		Size? MinimumSize { get; set; }
+		Size MinimumSize { get; set; }
 		
 		Control Widget { get; }
 		
@@ -77,23 +76,14 @@ namespace Eto.Platform.Mac.Forms
 	public interface IMacContainerControl
 	{
 		NSView ContainerControl { get; }
+
+		NSView ContentControl { get; }
+
+		NSView EventControl { get; }
 	}
-	
-	public static class MacViewExtensions
-	{
-		public static NSView GetContainerView(this Control control)
-		{
-			if (control == null)
-				return null;
-			var containerHandler = control.Handler as IMacContainerControl;
-			if (containerHandler != null)
-				return containerHandler.ContainerControl;
-			return control.ControlObject as NSView;
-		}
-	}
-	
+
 	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacViewHandler, IMacContainerControl
-		where T: NSView
+		where T: NSResponder
 		where W: Control
 	{
 		bool focus;
@@ -105,7 +95,11 @@ namespace Eto.Platform.Mac.Forms
 		Size? oldFrameSize;
 		Size? naturalSize;
 		
-		public virtual NSView ContainerControl { get { return (NSView)Control; } }
+		public abstract NSView ContainerControl { get; }
+
+		public virtual NSView ContentControl { get { return ContainerControl; } }
+
+		public virtual NSView EventControl { get { return ContainerControl; } }
 		
 		public virtual bool AutoSize { get; protected set; }
 
@@ -128,16 +122,16 @@ namespace Eto.Platform.Mac.Forms
 				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize ();
 				var newSize = GetPreferredSize (Size.MaxValue);
 				if (newSize != oldSize || force) {
-					var layout = Widget.ParentLayout.Handler as IMacLayout;
-					if (layout != null)
-						layout.UpdateParentLayout (true);
+					var container = Widget.Parent.GetMacContainer();
+					if (container != null)
+						container.LayoutParent (true);
 					return true;
 				}
 			}
 			return false;
 		}
 
-		public virtual Size? MinimumSize {
+		public virtual Size MinimumSize {
 			get;
 			set;
 		}
@@ -183,8 +177,8 @@ namespace Eto.Platform.Mac.Forms
 				if (preferredSize.Height >= 0)
 					size.Height = preferredSize.Height;
 			}
-			if (MinimumSize != null)
-				size = Size.Max (size, MinimumSize.Value);
+			if (MinimumSize != Size.Empty)
+				size = Size.Max (size, MinimumSize);
 			if (MaximumSize != null)
 				size = Size.Min (size, MaximumSize.Value);
 			return size;
@@ -197,22 +191,18 @@ namespace Eto.Platform.Mac.Forms
 			if (!mouseMove)
 				return;
 			if (tracking != null)
-				Control.RemoveTrackingArea (tracking);
+				EventControl.RemoveTrackingArea (tracking);
 			//Console.WriteLine ("Adding mouse tracking {0} for area {1}", this.Widget.GetType ().FullName, Control.Frame.Size);
 			if (mouseDelegate == null)
-				mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = Control };
-			tracking = new NSTrackingArea (new SD.RectangleF (new SD.PointF (0, 0), Control.Frame.Size), 
+				mouseDelegate = new MouseDelegate{ Widget = this.Widget, View = EventControl };
+			tracking = new NSTrackingArea (new SD.RectangleF (new SD.PointF (0, 0), EventControl.Frame.Size), 
 				NSTrackingAreaOptions.ActiveAlways | mouseOptions | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect, 
 			    mouseDelegate, 
 				new NSDictionary ());
-			Control.AddTrackingArea (tracking);
+			EventControl.AddTrackingArea (tracking);
 		}
 
-		public virtual void SetParentLayout (Layout layout)
-		{
-		}
-		
-		public virtual void SetParent (Control parent)
+		public virtual void SetParent (Container parent)
 		{
 		}
 
@@ -249,7 +239,7 @@ namespace Eto.Platform.Mac.Forms
 				AddMethod (selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr> (TriggerMouseDragged), "v@:@");
 				break;
 			case Eto.Forms.Control.SizeChangedEvent:
-				Control.PostsFrameChangedNotifications = true;
+				ContainerControl.PostsFrameChangedNotifications = true;
 				this.AddObserver (NSView.NSViewFrameDidChangeNotification, e => {
 					var w = (Control)e.Widget;
 					var h = ((MacView<T, W>)(e.Widget.Handler));
@@ -399,14 +389,14 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual void Invalidate ()
 		{
-			Control.NeedsDisplay = true;
+			ContainerControl.NeedsDisplay = true;
 		}
 
 		public virtual void Invalidate (Rectangle rect)
 		{
 			var region = rect.ToSDRectangleF ();
-			region.Y = Control.Frame.Height - region.Y - region.Height;
-			Control.SetNeedsDisplayInRect (region);
+			region.Y = EventControl.Frame.Height - region.Y - region.Height;
+			EventControl.SetNeedsDisplayInRect (region);
 		}
 
 		public void SuspendLayout ()
@@ -419,8 +409,8 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual void Focus ()
 		{
-			if (Control.Window != null)
-				Control.Window.MakeFirstResponder (Control);
+			if (EventControl.Window != null)
+				EventControl.Window.MakeFirstResponder (EventControl);
 			else
 				focus = true;
 		}
@@ -429,20 +419,20 @@ namespace Eto.Platform.Mac.Forms
 		{
 			get
 			{
-				if (!Control.WantsLayer)
-					Control.WantsLayer = true;
-				return Control.Layer.BackgroundColor.ToEtoColor ();
+				if (!EventControl.WantsLayer)
+					EventControl.WantsLayer = true;
+				return EventControl.Layer.BackgroundColor.ToEtoColor ();
 			}
 			set
 			{
 				if (value.A > 0) {
-					if (!Control.WantsLayer)
-						Control.WantsLayer = true;
-					Control.Layer.BackgroundColor = value.ToCGColor ();
+					if (!EventControl.WantsLayer)
+						EventControl.WantsLayer = true;
+					EventControl.Layer.BackgroundColor = value.ToCGColor ();
 				} else {
-					Control.WantsLayer = false;
-					if (Control.Layer != null)
-						Control.Layer.BackgroundColor = value.ToCGColor ();
+					EventControl.WantsLayer = false;
+					if (EventControl.Layer != null)
+						EventControl.Layer.BackgroundColor = null;
 				}
 			}
 		}
@@ -451,34 +441,34 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual bool HasFocus {
 			get {
-				return Control.Window != null && Control.Window.FirstResponder == Control;
+				return EventControl.Window != null && EventControl.Window.FirstResponder == Control;
 			}
 		}
 
-		public bool Visible {
-			get { return !Control.Hidden; }
+		public virtual bool Visible {
+			get { return !ContentControl.Hidden; }
 			set { 
-				if (Control.Hidden == value) {
+				if (ContentControl.Hidden == value) {
 					var oldSize = this.GetPreferredSize (Size.MaxValue);
-					Control.Hidden = !value;
+					ContentControl.Hidden = !value;
 					LayoutIfNeeded (oldSize, true);
 				}
 			}
 		}
 		
-		public Cursor Cursor {
+		public virtual Cursor Cursor {
 			get { return cursor; }
 			set { cursor = value; }
 		}
 		
 		public string ToolTip {
-			get { return Control.ToolTip; }
-			set { Control.ToolTip = value; }
+			get { return ContentControl.ToolTip; }
+			set { ContentControl.ToolTip = value; }
 		}
 
 		public void Print (PrintSettings settings)
 		{
-			var op = NSPrintOperation.FromView(Control);
+			var op = NSPrintOperation.FromView(EventControl);
 			if (settings != null)
 				op.PrintInfo = ((PrintSettingsHandler)settings.Handler).Control;
 			op.ShowsPrintPanel = false;
@@ -495,8 +485,8 @@ namespace Eto.Platform.Mac.Forms
 		
 		public virtual void OnLoadComplete (EventArgs e)
 		{
-			if (focus && Control.Window != null)
-				Control.Window.MakeFirstResponder (Control);
+			if (focus && EventControl.Window != null)
+				EventControl.Window.MakeFirstResponder (Control);
 		}
 
 		public virtual void OnUnLoad (EventArgs e)
@@ -509,33 +499,33 @@ namespace Eto.Platform.Mac.Forms
 
 		Control IMacViewHandler.Widget { get { return this.Widget; } }
 
-        public PointF PointFromScreen (PointF point)
+        public virtual PointF PointFromScreen (PointF point)
         {
 			var sdpoint = point.ToSD ();
-			if (Control.Window != null) {
-				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
-				sdpoint = Control.Window.ConvertScreenToBase (sdpoint);
+			if (EventControl.Window != null) {
+				sdpoint.Y = ContentControl.Window.Screen.Frame.Height - sdpoint.Y;
+				sdpoint = ContentControl.Window.ConvertScreenToBase (sdpoint);
 			}
-			sdpoint = Control.ConvertPointFromView (sdpoint, null);
-			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
+			sdpoint = ContentControl.ConvertPointFromView (sdpoint, null);
+			sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
 			return Platform.Conversions.ToEto (sdpoint);
 		}
 
-        public PointF PointToScreen (PointF point)
+        public virtual PointF PointToScreen (PointF point)
         {
 			var sdpoint = point.ToSD ();
-			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
-			sdpoint = Control.ConvertPointToView (sdpoint, null);
-			if (Control.Window != null) {
-				sdpoint = Control.Window.ConvertBaseToScreen (sdpoint);
-				sdpoint.Y = Control.Window.Screen.Frame.Height - sdpoint.Y;
+			sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
+			sdpoint = ContentControl.ConvertPointToView (sdpoint, null);
+			if (ContentControl.Window != null) {
+				sdpoint = ContentControl.Window.ConvertBaseToScreen (sdpoint);
+				sdpoint.Y = ContentControl.Window.Screen.Frame.Height - sdpoint.Y;
 			}
 			return Platform.Conversions.ToEto (sdpoint);
         }
 
-        public Point Location
+        Point IControl.Location
         {
-            get { return Platform.Conversions.ToEtoPoint (Control.Frame.Location); }
+			get { return Platform.Conversions.ToEtoPoint (ContentControl.Frame.Location); }
         }
 
 		static void TriggerSystemAction (IntPtr sender, IntPtr sel, IntPtr e)

@@ -14,48 +14,87 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 		}
 
-		protected override IGridItem GetItemAtRow (int row)
+		protected override object GetItemAtRow (int row)
 		{
-			if (collection == null) return null;
-			return collection.Collection[row];
+			if (collection != null && collection.Collection != null && collection.Collection.Count > row) 			
+				return collection.Collection[row];
+			return null;
 		}
 
-		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
+		public override void AttachEvent(string handler)
+		{
+			switch (handler) {
+			case GridView.CellClickEvent:
+				Control.CellClick += (sender, e) => {
+					var item = GetItemAtRow (e.RowIndex);
+					var column = Widget.Columns [e.ColumnIndex];
+					Widget.OnCellClick (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+				};
+				break;
+			default:
+				base.AttachEvent(handler);
+				break;
+			}
+		}
+
+		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
 			
-			public override void AddRange (IEnumerable<IGridItem> items)
+			public override void AddRange (IEnumerable<object> items)
 			{
-				Handler.Control.Refresh ();
-				Handler.Control.RowCount = Collection.Count;
+				Handler.SetRowCount();
 			}
 			
-			public override void AddItem (IGridItem item)
+			public override void AddItem (object item)
 			{
-				Handler.Control.RowCount ++;
-				Handler.Control.Refresh ();
+				Handler.IncrementRowCountBy(1);
 			}
 
-			public override void InsertItem (int index, IGridItem item)
+			public override void InsertItem (int index, object item)
 			{
-				Handler.Control.RowCount ++;
-				Handler.Control.Refresh ();
+				Handler.IncrementRowCountBy(1);
+			}
+
+			public override void InsertRange(int index, IEnumerable<object> items)
+			{
+				Handler.SetRowCount();
 			}
 
 			public override void RemoveItem (int index)
 			{
-				Handler.Control.RowCount --;
-				Handler.Control.Refresh ();
+				Handler.IncrementRowCountBy(-1);
+			}
+
+			public override void RemoveRange(int index, int count)
+			{
+				Handler.SetRowCount();				
+			}
+
+			public override void RemoveRange(IEnumerable<object> items)
+			{
+				Handler.SetRowCount();
 			}
 
 			public override void RemoveAllItems ()
 			{
-				Handler.Control.RowCount = 0;
-				Handler.Control.Refresh ();
+				Handler.SetRowCount();
 			}
 		}
 
-		public IGridStore DataStore {
+		private void SetRowCount()
+		{
+			Control.RowCount = collection.Collection != null ? collection.Collection.Count : 0;
+			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
+		}
+
+		private void IncrementRowCountBy(int increment)
+		{
+			Control.RowCount += increment;
+			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
+		}
+
+		public IDataStore DataStore {
 			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)

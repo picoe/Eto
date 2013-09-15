@@ -21,7 +21,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		TreeController controller;
 		ITreeGridItem lastSelected;
 
-		protected override IGridItem GetItemAtRow (int row)
+		protected override object GetItemAtRow (int row)
 		{
 			return controller[row];
 		}

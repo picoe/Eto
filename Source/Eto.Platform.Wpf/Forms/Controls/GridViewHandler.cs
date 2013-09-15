@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<swc.DataGrid, GridView>, IGridView
 	{
-		IGridStore store;
+		IDataStore store;
 
 		public GridViewHandler ()
 		{
@@ -24,23 +24,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.GridLinesVisibility = swc.DataGridGridLinesVisibility.None;
 		}
 
-		protected override IGridItem GetItemAtRow (int row)
+		protected override object GetItemAtRow (int row)
 		{
 			if (store == null) return null;
 			return store[row];
 		}
 
-		public IGridStore DataStore
+		public IDataStore DataStore
 		{
 			get { return store; }
 			set
 			{
 				store = value;
 				// must use observable collection for editing
-				if (store is ObservableCollection<IGridItem>)
-					Control.ItemsSource = store as ObservableCollection<IGridItem>;
+				if (store is ObservableCollection<object>)
+					Control.ItemsSource = store as ObservableCollection<object>;
 				else
-					Control.ItemsSource = new ObservableCollection<IGridItem> (store.AsEnumerable());
+					Control.ItemsSource = new ObservableCollection<object> (store.AsEnumerable());
 			}
 		}
 	}

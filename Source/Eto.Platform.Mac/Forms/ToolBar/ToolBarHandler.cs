@@ -134,21 +134,5 @@ namespace Eto.Platform.Mac
 
 		#endregion
 
-		public virtual void SetParentLayout (Layout layout)
-		{
-		}
-		
-		public virtual void SetParent (Control parent)
-		{
-		}
-
-		public virtual void OnLoad (EventArgs e)
-		{
-		}
-
-		public virtual void OnLoadComplete (EventArgs e)
-		{
-		}
-		
 	}
 }

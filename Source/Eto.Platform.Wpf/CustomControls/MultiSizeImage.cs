@@ -26,6 +26,7 @@ namespace Eto.Platform.Wpf.CustomControls
 	public class MultiSizeImage : Image
 	{
 		Brush background;
+		bool useSmallestSpace;
 
 		public Brush Background
 		{
@@ -35,6 +36,19 @@ namespace Eto.Platform.Wpf.CustomControls
 				if (background != value) {
 					background = value;
 					InvalidateVisual ();
+				}
+			}
+		}
+
+		public bool UseSmallestSpace
+		{
+			get { return useSmallestSpace; }
+			set
+			{
+				if (useSmallestSpace != value)
+				{
+					useSmallestSpace = value;
+					InvalidateMeasure();
 				}
 			}
 		}
@@ -156,8 +170,22 @@ namespace Eto.Platform.Wpf.CustomControls
 
 			size = new Size (first.Width, first.Height);
 
-			Size size2 = ComputeScaleFactor (inputSize, size, this.Stretch, this.StretchDirection);
-			return new Size (size.Width * size2.Width, size.Height * size2.Height);
+			Size scale = ComputeScaleFactor (inputSize, size, this.Stretch, this.StretchDirection);
+			if (UseSmallestSpace)
+			{
+				if (double.IsPositiveInfinity(inputSize.Width) && scale.Width > 1)
+				{
+					scale.Width = 1;
+					scale.Height = 1;
+				}
+				if (double.IsPositiveInfinity(inputSize.Height) && scale.Height > 1)
+				{
+					scale.Width = 1;
+					scale.Height = 1;
+				}
+			}
+
+			return new Size (size.Width * scale.Width, size.Height * scale.Height);
 		}
 		/// <summary>
 		/// Scans the ImageSource for available frames and stores 

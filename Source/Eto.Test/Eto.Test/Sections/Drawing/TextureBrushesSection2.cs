@@ -9,7 +9,8 @@ namespace Eto.Test.Sections.Drawing
 {
 	class TextureBrushesSection2 : Scrollable
 	{
-		Bitmap image = Bitmap.FromResource("Eto.Test.Textures.png");
+		Bitmap image = TestIcons.Textures;
+
 		public TextureBrushesSection2()
 		{
 			var w = image.Size.Width / 3; // same as height
@@ -17,10 +18,12 @@ namespace Eto.Test.Sections.Drawing
 			var brush = new TextureBrush(img);
 			var drawable = new Drawable();
 			var font = new Font(SystemFont.Default);
-			this.AddDockedControl(drawable);
-			var location = new PointF (100, 100);
+			this.Content = drawable;
+			var location = new PointF(100, 100);
 			drawable.BackgroundColor = Colors.Green;
-			drawable.MouseMove += (s, e) => { location = e.Location; drawable.Invalidate(); };
+			drawable.MouseMove += (s, e) => {
+				location = e.Location;
+				drawable.Invalidate(); };
 			drawable.Paint += (s, e) => {
 				e.Graphics.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the image.");
 

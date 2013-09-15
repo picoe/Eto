@@ -78,12 +78,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\DialogHandler.cs" />
-    <Compile Include="Forms\DockLayoutHandler.cs" />
     <Compile Include="Forms\MessageBoxHandler.cs" />
     <Compile Include="Forms\OpenFileDialog.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
-    <Compile Include="Forms\MacLayout.cs" />
     <Compile Include="Forms\MacView.cs" />
     <Compile Include="Forms\MacObject.cs" />
     <Compile Include="Forms\MacWindow.cs">
@@ -103,6 +101,7 @@
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
     <Compile Include="Forms\Controls\RadioButton.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
     <Compile Include="Forms\Controls\TabControlHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
@@ -182,6 +181,8 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
+    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
+    <Compile Include="Forms\MacDockContainer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

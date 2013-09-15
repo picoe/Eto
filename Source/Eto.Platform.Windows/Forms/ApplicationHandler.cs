@@ -126,7 +126,7 @@ namespace Eto.Platform.Windows
 		public void Invoke (Action action)
 		{
 			if (Widget.MainForm != null) {
-				var window = this.Widget.MainForm.GetSwfControl();
+				var window = this.Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired) {
@@ -140,7 +140,7 @@ namespace Eto.Platform.Windows
 		public void AsyncInvoke (Action action)
 		{
 			if (Widget.MainForm != null) {
-				var window = this.Widget.MainForm.GetSwfControl();
+				var window = this.Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired) {

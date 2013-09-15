@@ -6,30 +6,32 @@ namespace Eto.Test.Sections.Controls
 {
 	public class SliderSection : Panel
 	{
-		public SliderSection ()
+		public SliderSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 			
-			layout.AddRow (new Label { Text = "Default" }, Default ());
-			layout.AddRow (new Label { Text = "SetInitialValue" }, SetInitialValue ());
-            layout.AddRow (new Label { Text = "Snap To Tick" }, SnapToTick ());
-            layout.AddRow (new Label { Text = "Disabled" }, Disabled ());
-			layout.AddRow (new Label { Text = "Vertical" }, Vertical ());
+			layout.AddRow(new Label { Text = "Default" }, Default());
+			layout.AddRow(new Label { Text = "SetInitialValue" }, SetInitialValue());
+			layout.AddRow(new Label { Text = "Snap To Tick" }, SnapToTick());
+			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
+			layout.AddRow(new Label { Text = "Vertical" }, Vertical());
 			
-			layout.Add (null, null, true);
-			
+			layout.Add(null, null, true);
+
+			Content = layout;
 		}
-		
-		Control Default ()
+
+		Control Default()
 		{
-			var control = new Slider ();
+			var control = new Slider();
 			LogEvents(control);
 			return control;
 		}
-		
-		Slider SetInitialValue ()
+
+		Slider SetInitialValue()
 		{
-			var control = new Slider{
+			var control = new Slider
+			{
 				MinValue = 0,
 				MaxValue = 1000, 
 				TickFrequency = 100,
@@ -39,34 +41,35 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-        Control SnapToTick ()
-        {
-            var control = SetInitialValue ();
-            control.SnapToTick = true;
-            return control;
-        }
-		
-		Control Disabled ()
+		Control SnapToTick()
 		{
-			var control = SetInitialValue ();
+			var control = SetInitialValue();
+			control.SnapToTick = true;
+			return control;
+		}
+
+		Control Disabled()
+		{
+			var control = SetInitialValue();
 			control.Enabled = false;
 			return control;
 		}
 
-		Control Vertical ()
+		Control Vertical()
 		{
-			var control = SetInitialValue ();
+			var control = SetInitialValue();
 			control.Size = new Size(-1, 150);
 			control.Orientation = SliderOrientation.Vertical;
-			var layout = new DynamicLayout (new Panel ());
-			layout.AddCentered (control);
-			return layout.Container;
+			var layout = new DynamicLayout();
+			layout.AddCentered(control);
+			return layout;
 		}
-		
-		void LogEvents (Slider control)
+
+		void LogEvents(Slider control)
 		{
-			control.ValueChanged += delegate {
-				Log.Write (control, "ValueChanged, Value: {0}", control.Value);
+			control.ValueChanged += delegate
+			{
+				Log.Write(control, "ValueChanged, Value: {0}", control.Value);
 			};
 		}
 	}

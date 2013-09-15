@@ -342,10 +342,12 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		Cairo.Context Playback ()
 		{
-			var surface = new Cairo.ImageSurface (Cairo.Format.ARGB32, 10, 10);
-			var context = new Cairo.Context (surface);
-			Apply (context);
-			return context;
+			using (var surface = new Cairo.ImageSurface (Cairo.Format.ARGB32, 10, 10))
+			{
+				var context = new Cairo.Context(surface);
+				Apply(context);
+				return context;
+			}
 		}
 
 		public object ControlObject

@@ -1,88 +1,111 @@
 using System;
 using Eto.Forms;
-using Eto.Drawing;
-using MonoMac.AppKit;
-using MonoMac.Foundation;
 using SD = System.Drawing;
+using MonoMac.Foundation;
+using MonoMac.AppKit;
 using System.Linq;
+using Eto.Drawing;
+using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
 	public interface IMacContainer : IMacAutoSizing
 	{
-		void SetContentSize (SD.SizeF contentSize);
-		
-		void LayoutChildren ();
+		void SetContentSize(SD.SizeF contentSize);
+
+		void LayoutParent(bool updateSize);
+
+		void LayoutChildren();
+
+		void LayoutAllChildren();
+
+		bool InitialLayout { get; }
 	}
-	
+
 	public abstract class MacContainer<T, W> : MacView<T, W>, IContainer, IMacContainer
-		where T: NSView
+		where T: NSResponder
 		where W: Container
 	{
-	
+		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
-		public abstract object ContainerObject {
-			get;
-		}
-		
-		public virtual Size ClientSize {
-			get { return Size; }
-			set { Size = value; }
-		}
-		
-		public override Size? MinimumSize {
-			get;
-			set;
-		}
-		
-		public virtual void SetLayout (Layout layout)
+		public override bool Enabled { get; set; }
+
+		public bool InitialLayout { get; private set; }
+
+		public virtual void Update()
 		{
-			var maclayout = layout.Handler as IMacLayout;
-			if (maclayout == null)
+			LayoutChildren();	
+		}
+
+		public virtual void SetContentSize(SD.SizeF contentSize)
+		{
+		}
+
+		public virtual void LayoutChildren()
+		{
+		}
+
+		public void LayoutAllChildren()
+		{
+			LayoutChildren();
+			foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
+			{
+				child.LayoutAllChildren();
+			}
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+
+			var parent = Widget.Parent.GetMacContainer();
+			if (parent == null || parent.InitialLayout)
+			{
+				this.InitialLayout = true;
+				LayoutAllChildren();
+			}
+		}
+
+		public void LayoutParent(bool updateSize = true)
+		{
+			var container = Widget.Parent.GetMacContainer();
+			if (container != null)
+			{
+				// traverse up the tree to update everything we own
+				if (updateSize)
+				{
+					if (!AutoSize)
+					{
+						foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
+						{
+							var size = child.GetPreferredSize(Size.MaxValue);
+							child.SetContentSize(size.ToSDSizeF());
+						}
+						updateSize = false;
+					}
+				}
+				container.LayoutParent(updateSize);
 				return;
-			var control = maclayout.LayoutObject as NSView;
-			if (control != null) {
-				var container = ContainerObject as NSView;
-				//control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
-				control.SetFrameSize (container.Frame.Size);
-				container.AddSubview (control);
+			} 
+			if (updateSize)
+			{
+				if (AutoSize)
+				{
+					var size = GetPreferredSize(Size.MaxValue);
+					SetContentSize(size.ToSDSizeF());
+				}
+				else
+				{
+					foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
+					{
+						var size = child.GetPreferredSize(Size.MaxValue);
+						child.SetContentSize(size.ToSDSizeF());
+					}
+				}
 			}
-		}
 
-		protected override Size GetNaturalSize (Size availableSize)
-		{
-			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
-				var layout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-				if (layout != null)
-					return layout.GetPreferredSize (availableSize);
-			}
-			return base.GetNaturalSize (availableSize);
-		}
-		
-		public virtual void SetContentSize (SD.SizeF contentSize)
-		{
-			if (MinimumSize != null) {
-				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
-				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
-			}
-			if ((Control.AutoresizingMask & (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) == (NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable)) {
-				if (Widget.ParentLayout != null) {
-					var layout = Widget.ParentLayout.InnerLayout.Handler as IMacLayout;
-					if (layout != null)
-						layout.SetContainerSize (contentSize);
-				}
-			}
-		}
-		
-		public virtual void LayoutChildren ()
-		{
-			if (Widget.Layout != null && Widget.Layout.InnerLayout != null) {
-				var childLayout = Widget.Layout.InnerLayout.Handler as IMacLayout;
-				if (childLayout != null) {
-					childLayout.LayoutChildren ();
-				}
-			}
+			// layout everything!
+			LayoutAllChildren();
 		}
 	}
 }
-

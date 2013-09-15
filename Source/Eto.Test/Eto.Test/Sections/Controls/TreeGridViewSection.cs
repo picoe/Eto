@@ -10,14 +10,14 @@ namespace Eto.Test.Sections.Controls
 		int expanded;
 		CheckBox allowCollapsing;
 		CheckBox allowExpanding;
-		static Image Image = Icon.FromResource ("Eto.Test.TestIcon.ico");
-		
-		public TreeGridViewSection ()
+		static Image Image = TestIcons.TestIcon;
+
+		public TreeGridViewSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 		
-			layout.BeginHorizontal ();
-			layout.Add (new Label { });
+			layout.BeginHorizontal();
+			layout.Add(new Label { });
 			layout.BeginVertical ();
 			layout.BeginHorizontal ();
 			layout.Add (null);
@@ -34,6 +34,8 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
 			
 			layout.Add (null, false, true);
+
+			Content = layout;
 		}
 		
 		TreeGridItem CreateSimpleTreeItem (int level, string name)

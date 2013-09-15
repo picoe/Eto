@@ -17,7 +17,7 @@ namespace Eto.Forms
 		T Parent { get; set; }
 	}
 	
-	public interface ITreeGridItem : IGridItem, ITreeItem<ITreeGridItem>
+	public interface ITreeGridItem : ITreeItem<ITreeGridItem>
 	{
 	}
 
@@ -50,10 +50,21 @@ namespace Eto.Forms
 					return children;
 				children = new TreeGridItemCollection ();
 				children.CollectionChanged += (sender, e) => {
-					if (e.Action == NotifyCollectionChangedAction.Add) {
-						foreach (ITreeGridItem item in e.NewItems) {
-							item.Parent = this;
-						}
+					switch (e.Action)
+					{
+						case NotifyCollectionChangedAction.Reset:
+							foreach (var item in children)
+							{
+								item.Parent = this;
+							}
+							break;
+						case NotifyCollectionChangedAction.Add:
+						case NotifyCollectionChangedAction.Replace:
+							foreach (ITreeGridItem item in e.NewItems)
+							{
+								item.Parent = this;
+							}
+							break;
 					}
 				};
 				return children; 

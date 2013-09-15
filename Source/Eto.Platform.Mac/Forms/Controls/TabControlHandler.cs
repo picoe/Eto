@@ -10,11 +10,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class TabControlHandler : MacView<NSTabView, TabControl>, ITabControl
 	{
 		bool disableSelectedIndexChanged;
+
+		public override NSView ContainerControl
+		{
+			get { return Control; }
+		}
+
 		public class EtoTabView : NSTabView, IMacControl
 		{
 			public object Handler { get; set; }
 		}
-		
+
+		// CWEN: should have some form of implementation here
+		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
+
 		public TabControlHandler ()
 		{
 			Enabled = true;
@@ -43,9 +52,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set { Control.SelectAt (value); }
 		}
 
-		public override bool Enabled {
-			get; set;
-		}
+		public override bool Enabled { get; set; }
 		
 		public void InsertTab (int index, TabPage page)
 		{

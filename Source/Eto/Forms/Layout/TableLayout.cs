@@ -7,12 +7,11 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
-
 #if XAML
 using System.Windows.Markup;
 using System.Xaml;
-#endif
 
+#endif
 namespace Eto.Forms
 {
 	public interface ITableLayout : IPositionalLayout
@@ -32,12 +31,13 @@ namespace Eto.Forms
 		Padding Padding { get; set; }
 	}
 
-	[ContentProperty("Children")]
+	[ContentProperty("Contents")]
 	public class TableLayout : Layout
 	{
-		ITableLayout inner;
+		new ITableLayout Handler { get { return (ITableLayout)base.Handler; } }
+
 		Control[,] controls;
-		Size size;
+		Size cellSize;
 		List<Control> children;
 		public static Size DefaultSpacing = new Size(5, 5);
 		public static Padding DefaultPadding = new Padding(5);
@@ -52,7 +52,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public List<Control> Children
+		public List<Control> Contents
 		{
 			get
 			{
@@ -62,16 +62,19 @@ namespace Eto.Forms
 			}
 		}
 
-		public Size Size
+		public Size CellSize
 		{
-			get { return size; }
+			get { return cellSize; }
 			set
 			{
-				size = value;
-				if (!size.IsEmpty)
+				if (controls != null)
+					throw new InvalidOperationException("Can only set the cell size of a table once");
+				cellSize = value;
+				if (!cellSize.IsEmpty)
 				{
-					controls = new Control[size.Width, size.Height];
-					inner.CreateControl(size.Width, size.Height);
+					controls = new Control[cellSize.Width, cellSize.Height];
+					Handler.CreateControl(cellSize.Width, cellSize.Height);
+					Initialize();
 				}
 			}
 		}
@@ -81,7 +84,7 @@ namespace Eto.Forms
 		{
 			set
 			{
-				for (int col = 0; col < Size.Width; col++)
+				for (int col = 0; col < CellSize.Width; col++)
 				{
 					SetColumnScale(col, false);
 				}
@@ -93,7 +96,7 @@ namespace Eto.Forms
 			get
 			{
 				var vals = new List<int>();
-				for (int col = 0; col < Size.Width; col++)
+				for (int col = 0; col < CellSize.Width; col++)
 				{
 					if (GetColumnScale(col))
 						vals.Add(col);
@@ -107,7 +110,7 @@ namespace Eto.Forms
 		{
 			set
 			{
-				for (int row = 0; row < Size.Height; row++)
+				for (int row = 0; row < CellSize.Height; row++)
 				{
 					SetRowScale(row, false);
 				}
@@ -119,7 +122,7 @@ namespace Eto.Forms
 			get
 			{
 				var vals = new List<int>();
-				for (int row = 0; row < Size.Height; row++)
+				for (int row = 0; row < CellSize.Height; row++)
 				{
 					if (GetRowScale(row))
 						vals.Add(row);
@@ -127,9 +130,7 @@ namespace Eto.Forms
 				return vals.ToArray();
 			}
 		}
-
 		#region Attached Properties
-
 		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
 
 		public static Point GetLocation(Control control)
@@ -140,7 +141,7 @@ namespace Eto.Forms
 		public static void SetLocation(Control control, Point value)
 		{
 			control.Properties[LocationProperty] = value;
-			var layout = control.ParentLayout as TableLayout;
+			var layout = control.Parent as TableLayout;
 			if (layout != null)
 				layout.Move(control, value);
 		}
@@ -168,12 +169,10 @@ namespace Eto.Forms
 		{
 			control.Properties[RowScaleProperty] = value;
 		}
-
 		#endregion
-
 		public static Control AutoSized(Control control, Padding? padding = null, bool centered = false)
 		{
-			var layout = new TableLayout(new Panel(), 3, 3);
+			var layout = new TableLayout(3, 3);
 			layout.Padding = padding ?? Padding.Empty;
 			layout.Spacing = Size.Empty;
 			if (centered)
@@ -184,52 +183,57 @@ namespace Eto.Forms
 				layout.SetRowScale(2);
 			}
 			layout.Add(control, 1, 1);
-			return layout.Container;
+			return layout;
 		}
 
 		public TableLayout()
-			: this(null, Size.Empty)
+			: this(Size.Empty, null)
 		{
 		}
 
-		public TableLayout(Size size)
-			: this(null, size)
+		public TableLayout(int width, int height, Generator generator = null)
+			: this(new Size(width, height), generator)
 		{
 		}
 
-		public TableLayout(Container container, int width, int height)
+		public TableLayout(Size size, Generator generator = null)
+			: base(generator, typeof(ITableLayout), false)
+		{
+			this.CellSize = size;
+		}
+
+		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
+		public TableLayout(DockContainer container, int width, int height)
 			: this(container, new Size(width, height))
 		{
 		}
 
-		public TableLayout(Container container, Size size)
-			: base(container != null ? container.Generator : Generator.Current, container, typeof(ITableLayout), false)
+		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
+		public TableLayout(DockContainer container, Size size)
+			: this(size, container != null ? container.Generator : Generator.Current)
 		{
-			inner = (ITableLayout)Handler;
-			this.Size = size;
-			Initialize();
-			if (this.Container != null)
-				this.Container.Layout = this;
+			if (container != null)
+				container.Content = this;
 		}
 
 		public void SetColumnScale(int column, bool scale = true)
 		{
-			inner.SetColumnScale(column, scale);
+			Handler.SetColumnScale(column, scale);
 		}
 
 		public bool GetColumnScale(int column)
 		{
-			return inner.GetColumnScale(column);
+			return Handler.GetColumnScale(column);
 		}
 
 		public void SetRowScale(int row, bool scale = true)
 		{
-			inner.SetRowScale(row, scale);
+			Handler.SetRowScale(row, scale);
 		}
 
 		public bool GetRowScale(int row)
 		{
-			return inner.GetRowScale(row);
+			return Handler.GetRowScale(row);
 		}
 
 		public void Add(Control control, int x, int y)
@@ -244,23 +248,28 @@ namespace Eto.Forms
 			var old = controls[x, y];
 			if (old != null)
 			{
-				old.SetParentLayout(null);
+				old.SetParent(null);
 			}
 			controls[x, y] = control;
 			bool load = Loaded;
 			if (control != null)
 			{
-				control.SetParentLayout(this);
+				control.SetParent(null, false);
 				load &= !control.Loaded;
 				if (load)
 				{
 					control.OnPreLoad(EventArgs.Empty);
 					control.OnLoad(EventArgs.Empty);
 				}
+				Handler.Add(control, x, y);
+				control.SetParent(this);
+				if (load)
+					control.OnLoadComplete(EventArgs.Empty);
 			}
-			inner.Add(control, x, y);
-			if (control != null && load)
-				control.OnLoadComplete(EventArgs.Empty);
+			else
+			{
+				Handler.Add(null, x, y);
+			}
 		}
 
 		public void Add(Control child, int x, int y, bool xscale, bool yscale)
@@ -281,11 +290,11 @@ namespace Eto.Forms
 			var old = controls[x, y];
 			if (old != null)
 			{
-				old.SetParentLayout(null);
+				old.SetParent(null);
 			}
 			controls[x, y] = child;
 			child.Properties[LocationProperty] = new Point(x, y);
-			inner.Move(child, x, y);
+			Handler.Move(child, x, y);
 		}
 
 		public void Move(Control child, Point p)
@@ -295,16 +304,16 @@ namespace Eto.Forms
 
 		public Size Spacing
 		{
-			get { return inner.Spacing; }
-			set { inner.Spacing = value; }
+			get { return Handler.Spacing; }
+			set { Handler.Spacing = value; }
 		}
 
 		public Padding Padding
 		{
-			get { return inner.Padding; }
+			get { return Handler.Padding; }
 			set
 			{
-				inner.Padding = value;
+				Handler.Padding = value;
 			}
 		}
 
@@ -317,7 +326,7 @@ namespace Eto.Forms
 		public override void EndInit()
 		{
 			base.EndInit();
-			OnDeserialized(Container != null); // mono calls EndInit BEFORE setting to parent
+			OnDeserialized(Parent != null); // mono calls EndInit BEFORE setting to parent
 		}
 
 		void OnDeserialized(bool direct = false)

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -16,7 +17,7 @@ namespace Eto.Forms
 		None
 	}
 
-	public interface ISplitter : IControl
+	public interface ISplitter : IContainer
 	{
 		SplitterOrientation Orientation { get; set; }
 		
@@ -29,12 +30,48 @@ namespace Eto.Forms
 		Control Panel2 { get; set; }
 	}
 	
-	public class Splitter : Control
+	public class Splitter : Container
 	{
 		ISplitter handler;
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
+				if (Panel1 != null)
+					yield return Panel1;
+				if (Panel2 != null)
+					yield return Panel2;
+			}
+		}
 		
 		public static bool Supported { get { return Generator.Current.Supports<ISplitter> (); } }
-		
+
+		#region Events
+		public const string SplitterMovedEvent = "Control.SplitterMoved";
+		EventHandler<EventArgs> splitterMoved;
+
+		/// <summary>
+		/// Raised when the user moves the splitter.
+		/// </summary>
+		public event EventHandler<EventArgs> SplitterMoved
+		{
+			add
+			{
+				HandleEvent(SplitterMovedEvent);
+				splitterMoved += value;
+			}
+			remove { splitterMoved -= value; }
+		}
+
+		public virtual void OnSplitterMoved(EventArgs e)
+		{
+			if (splitterMoved != null)
+				splitterMoved(this, e);
+		}
+
+		#endregion
+
 		public Splitter () : this (Generator.Current)
 		{
 		}
@@ -100,42 +137,6 @@ namespace Eto.Forms
 				if (load)
 					value.OnLoadComplete (EventArgs.Empty);
 			}
-		}
-		
-		public override void OnPreLoad (EventArgs e)
-		{
-			if (Panel1 != null)
-				Panel1.OnPreLoad (e);
-			if (Panel2 != null)
-				Panel2.OnPreLoad (e);
-			base.OnPreLoad (e);
-		}
-
-		public override void OnLoad (EventArgs e)
-		{
-			if (Panel1 != null)
-				Panel1.OnLoad (e);
-			if (Panel2 != null)
-				Panel2.OnLoad (e);
-			base.OnLoad (e);
-		}
-
-		public override void OnLoadComplete (EventArgs e)
-		{
-			if (Panel1 != null)
-				Panel1.OnLoadComplete (e);
-			if (Panel2 != null)
-				Panel2.OnLoadComplete (e);
-			base.OnLoadComplete (e);
-		}
-		
-		public override void OnUnLoad (EventArgs e)
-		{
-			if (Panel1 != null)
-				Panel1.OnUnLoad (e);
-			if (Panel2 != null)
-				Panel2.OnUnLoad (e);
-			base.OnUnLoad (e);
 		}
 	}
 }

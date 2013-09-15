@@ -3,23 +3,29 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
+#if OBSOLETE
 	public interface IGridItem
 	{
 	}
+#endif
 
-	public class GridItemCollection : DataStoreCollection<IGridItem>, IGridStore
+	/// <summary>
+	/// This should be renamed to DataStoreCollection, since there isn't
+	/// any Grid-ness about it anymore.
+	/// </summary>
+	public class GridItemCollection : DataStoreCollection<object>, IDataStore
 	{
 		public GridItemCollection ()
 		{
 		}
 
-		public GridItemCollection (IEnumerable<IGridItem> items)
+		public GridItemCollection (IEnumerable<object> items)
 			: base (items)
 		{
 		}
 	}
 
-	public class GridItem : IGridItem, IColumnItem
+	public class GridItem : object, IColumnItem
 	{
 		public GridItem ()
 		{
