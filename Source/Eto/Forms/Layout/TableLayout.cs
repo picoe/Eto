@@ -287,6 +287,11 @@ namespace Eto.Forms
 
 		public void Move(Control child, int x, int y)
 		{
+			var controlList = ((IList)controls);
+			var index = controlList.IndexOf(child);
+			if (index >= 0)
+				controlList[index] = null;
+
 			var old = controls[x, y];
 			if (old != null)
 			{
@@ -300,6 +305,18 @@ namespace Eto.Forms
 		public void Move(Control child, Point p)
 		{
 			Move(child, p.X, p.Y);
+		}
+
+		public override void Remove(Control child)
+		{
+			var controlList = ((IList)controls);
+			var index = controlList.IndexOf(child);
+			if (index >= 0)
+			{
+				controlList[index] = null;
+				Handler.Remove(child);
+				child.SetParent(null);
+			}
 		}
 
 		public Size Spacing

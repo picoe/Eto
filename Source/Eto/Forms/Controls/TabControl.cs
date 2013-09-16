@@ -24,7 +24,7 @@ namespace Eto.Forms
 	public class TabControl : Container
 	{
 		TabPageCollection pages;
-		ITabControl handler;
+		new ITabControl Handler { get { return (ITabControl)base.Handler; } }
 
 		public override IEnumerable<Control> Controls
 		{
@@ -51,7 +51,6 @@ namespace Eto.Forms
 			: base (generator, type, initialize)
 		{
 			pages = new TabPageCollection(this);
-			handler = (ITabControl)base.Handler;
 		}
 
 		protected TabControl(Generator generator, ITabControl handler, bool initialize = true)
@@ -63,8 +62,8 @@ namespace Eto.Forms
 
 		public int SelectedIndex
 		{
-			get { return handler.SelectedIndex; }
-			set { handler.SelectedIndex = value; }
+			get { return Handler.SelectedIndex; }
+			set { Handler.SelectedIndex = value; }
 		}
 		
 		public TabPage SelectedPage
@@ -87,18 +86,32 @@ namespace Eto.Forms
 				page.OnLoadComplete(EventArgs.Empty);
 			}
 			page.SetParent(this);
-			handler.InsertTab(index, page);
+			Handler.InsertTab(index, page);
 		}
 
 		internal void RemoveTab(int index, TabPage page)
 		{
-			handler.RemoveTab(index, page);
+			Handler.RemoveTab(index, page);
 			page.SetParent(null);
 		}
 		
 		internal void ClearTabs()
 		{
-			handler.ClearTabs();
+			Handler.ClearTabs();
+		}
+
+		public override void Remove(Control child)
+		{
+			var childPage = child as TabPage;
+			if (childPage != null)
+			{
+				var index = pages.IndexOf(childPage);
+				if (index >= 0)
+				{
+					RemoveTab(index, childPage);
+					childPage.SetParent(null);
+				}
+			}
 		}
 
 		public ObjectBinding<TabControl, int> SelectedIndexBinding

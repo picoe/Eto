@@ -523,6 +523,12 @@ namespace Eto.Forms
 			}
 		}
 
+		public void RemoveFromParent()
+		{
+			if (Parent != null)
+				Parent.Remove(this);
+		}
+
 		public Color BackgroundColor
 		{
 			get { return Handler.BackgroundColor; }

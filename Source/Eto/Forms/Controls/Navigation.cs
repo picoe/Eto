@@ -78,6 +78,11 @@ namespace Eto.Forms
 		{
 			inner.Pop ();
 		}
+
+		public override void Remove(Control child)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
 
