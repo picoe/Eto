@@ -2,11 +2,13 @@ Eto.Forms
 =========
 ### A cross platform desktop and mobile user interface framework
 
-Discussion
-----------
+Links
+-----
 
 * Join the [forums](http://groups.google.com/group/eto-forms)
 * Chat in [#eto.forms](http://chat.mibbit.com/?server=irc.gimp.org&channel=%23eto.forms) on irc.gimp.org
+* Download using [nuget](https://www.nuget.org/packages/Eto.Forms.Sample/) with Visual Studio or [Xamarin Studio nuget addin](https://github.com/mrward/monodevelop-nuget-addin)
+
 
 Description
 -----------
@@ -31,8 +33,7 @@ This framework was built so that using it in .NET is natural. For example, a sim
 		{
 			Text = "My Cross-Platform App";
 			Size = new Size (200, 200);
-			var label = new Label { Text = "Hello World!" };
-			this.AddDockedControl (label);
+			Content = new Label { Text = "Hello World!" };
 		}
 		
 		[STAThread]
@@ -46,16 +47,11 @@ This framework was built so that using it in .NET is natural. For example, a sim
 		}
 	}
 
-Download
---------
-
-Binaries are available in the [Downloads](https://github.com/picoe/Eto/downloads) section
-
 Applications
 ------------
 * [Manager](https://www.manager.io) - Accounting Software
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
-* [JabbR.Eto](https://github.com/cwensley/JabbR.Eto) - JabbR client
+* [JabbR.Desktop](https://github.com/JabbR/JabbR.Desktop) - JabbR client
 * [Notedown by Mod Monkeys](https://github.com/modmonkeys/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
 
@@ -70,7 +66,7 @@ Namespaces
 Currently supported targets
 ---------------------------
 
-* OS X: MonoMac (Cocoa)
+* OS X: MonoMac or Xamarin.Mac (Cocoa)
 * Linux: GTK#
 * Windows: Windows Forms or WPF
 	
