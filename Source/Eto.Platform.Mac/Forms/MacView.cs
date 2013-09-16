@@ -545,11 +545,14 @@ namespace Eto.Platform.Mac.Forms
 			var menuItem = new NSMenuItem (item);
 			
 			var control = Runtime.GetNSObject (sender);
-			var handler = (MacView<T,W>)((IMacControl)control).Handler;
-			BaseAction action;
-			if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue (menuItem.Action.Name, out action)) {
-				if (action != null)
-					return action.Enabled;
+			var macControl = control as IMacControl;
+			if (macControl != null) {
+				var handler = (MacView<T,W>)macControl.Handler;
+				BaseAction action;
+				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue (menuItem.Action.Name, out action)) {
+					if (action != null)
+						return action.Enabled;
+				}
 			}
 			return false;
 		}
