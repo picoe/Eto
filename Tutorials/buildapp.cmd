@@ -13,6 +13,7 @@ SET eto_bin_dir=%eto_dir%\BuildOutput\Release
 SET input_app=%eto_dir%\Resources\MacAppTemplate.app
 SET output_app=%target_dir%\%project_name%.app
 
+SET output_mono=%output_app%\Contents\MonoBundle
 SET output_res=%output_app%\Contents\Resources
 SET output_macos=%output_app%\Contents\MacOS
 
@@ -30,21 +31,18 @@ del /s /q "%output_app%"
 %cp% /e "%input_app%" "%output_app%"
 
 echo Copy assemblies into %project_name%.app bundle
-%cp% "%target_dir%\%assembly%" "%output_res%"
-%cp% "%target_dir%\*.dll" "%output_res%"
-del /q "%output_res%\Eto.*"
+%cp% "%target_dir%\%assembly%" "%output_mono%"
+%cp% "%target_dir%\*.dll" "%output_mono%"
+del /q "%output_mono%\Eto.*"
 
 echo Copy Eto Mac platform into .app bundle
-%cp% "%eto_bin_dir%\Eto.dll" "%output_res%"
-%cp% "%eto_bin_dir%\Eto.Platform.Mac.dll" "%output_res%"
-%cp% "%eto_bin_dir%\MonoMac.dll" "%output_res%"
+%cp% "%eto_bin_dir%\Eto.dll" "%output_mono%"
+%cp% "%eto_bin_dir%\Eto.Platform.Mac.dll" "%output_mono%"
+%cp% "%eto_bin_dir%\MonoMac.dll" "%output_mono%"
 
-echo Update Launcher to execute %assembly%
-call :replacetext """MyApp.exe""" """%assembly%""" "%output_macos%" Launcher
-call :replacetext ""MyApp"" """%project_name%""" "%output_macos%" Launcher
-
-echo Update Info.plist to use our project name as the app name
+echo Update Info.plist app name and assembly
 call :replacetext """>MyApp<""" """>%project_name%<""" "%output_app%\Contents\" Info.plist
+call :replacetext """>MyApp.exe<""" """>%assembly%<""" "%output_app%\Contents\" Info.plist
 
 GOTO :eof
 

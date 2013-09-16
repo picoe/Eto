@@ -11,21 +11,24 @@ namespace Tutorial1
 			this.ClientSize = new Size(600, 400);
 			
 			this.Title = "Hello, Eto.Forms";
+
+			this.Content = new Label { Text = "Some content" };
 		}
 	}
-	
+
 	class MainClass
 	{
 		[STAThread]
-		public static void Main (string[] args)
+		public static void Main(string[] args)
 		{
-			var app = new Application ();
+			var app = new Application();
 			
-			app.Initialized += delegate {
-				app.MainForm = new MyForm ();
-				app.MainForm.Show ();
+			app.Initialized += delegate
+			{
+				app.MainForm = new MyForm();
+				app.MainForm.Show();
 			};
-			app.Run (args);
+			app.Run(args);
 		}
 	}
 }

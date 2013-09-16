@@ -7,8 +7,8 @@ namespace Tutorial2
 	public class MyAction : ButtonAction
 	{
 		public const string ActionID = "my_action";
-		
-		public MyAction ()
+
+		public MyAction()
 		{
 			this.ID = ActionID;
 			this.MenuText = "C&lick Me";
@@ -17,16 +17,15 @@ namespace Tutorial2
 			//this.Icon = Icon.FromResource ("MyResourceName.ico");
 			this.Accelerator = Application.Instance.CommonModifier | Key.M;  // control+M or cmd+M
 		}
-		
-		protected override void OnActivated (EventArgs e)
+
+		protected override void OnActivated(EventArgs e)
 		{
-			base.OnActivated (e);
+			base.OnActivated(e);
 			
-			MessageBox.Show (Application.Instance.MainForm, "You clicked me!", "Tutorial 2", MessageBoxButtons.OK);
+			MessageBox.Show(Application.Instance.MainForm, "You clicked me!", "Tutorial 2", MessageBoxButtons.OK);
 		}
 	}
-	
-	
+
 	public class MyForm : Form
 	{
 		public MyForm()
@@ -36,43 +35,41 @@ namespace Tutorial2
 
 			GenerateActions();
 		}
-		
-		void GenerateActions ()
+
+		void GenerateActions()
 		{
 			var actions = new GenerateActionArgs(this);
 
-			Application.Instance.GetSystemActions (actions, true);
+			Application.Instance.GetSystemActions(actions, true);
+
+			var myAction = new MyAction();
 				
-			// define action
-			actions.Actions.Add (new MyAction());
+			// add action to file sub-menu
+			var file = actions.Menu.FindAddSubMenu("&File");
+			file.Actions.Add(myAction);
 
 			// add action to toolbar
-			actions.ToolBar.Add (MyAction.ActionID);
-			
-			// add action to file sub-menu
-			var file = actions.Menu.FindAddSubMenu ("&File");
-			file.Actions.Add (MyAction.ActionID);
-			
-			// generate menu & toolbar
+			actions.ToolBar.Add(myAction);
 
-			this.Menu = actions.Menu.GenerateMenuBar ();
-			
-			this.ToolBar = actions.ToolBar.GenerateToolBar ();
+			// generate menu & toolbar
+			this.Menu = actions.Menu.GenerateMenuBar();
+			this.ToolBar = actions.ToolBar.GenerateToolBar();
 		}
 	}
-	
+
 	class MainClass
 	{
 		[STAThread]
-		public static void Main (string[] args)
+		public static void Main(string[] args)
 		{
-			var app = new Application ();
+			var app = new Application();
 			
-			app.Initialized += delegate {
-				app.MainForm = new MyForm ();
-				app.MainForm.Show ();
+			app.Initialized += delegate
+			{
+				app.MainForm = new MyForm();
+				app.MainForm.Show();
 			};
-			app.Run (args);
+			app.Run(args);
 		}
 	}
 }
