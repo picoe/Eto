@@ -27,19 +27,16 @@ namespace Eto.Platform.GtkSharp.Drawing
 					graphics.Control.Transform (Transform);
 				
 				Gdk.CairoHelper.SetSourcePixbuf (graphics.Control, Pixbuf, 0, 0);
-				using (var pattern = graphics.Control.Source as Cairo.Pattern)
+				var surfacePattern = graphics.Control.Source as Cairo.SurfacePattern;
+				if (surfacePattern != null)
+					surfacePattern.Extend = Cairo.Extend.Repeat;
+				if (Opacity < 1.0f)
 				{
-					var surfacePattern = pattern as Cairo.SurfacePattern;
-					if (surfacePattern != null)
-						surfacePattern.Extend = Cairo.Extend.Repeat;
-					if (Opacity < 1.0f)
-					{
-						graphics.Control.Clip();
-						graphics.Control.PaintWithAlpha(Opacity);
-					}
-					else
-						graphics.Control.Fill();
+					graphics.Control.Clip();
+					graphics.Control.PaintWithAlpha(Opacity);
 				}
+				else
+					graphics.Control.Fill();
 			}
 		}
 

@@ -13,6 +13,7 @@ input_app="$eto_dir/Resources/MacAppTemplate.app"
 output_app="$target_dir/$project_name.app"
 
 output_res="$output_app/Contents/Resources"
+output_mono="$output_app/Contents/MonoBundle"
 output_macos="$output_app/Contents/MacOS"
 
 # copy Eto files to output for Gtk & Windows platforms
@@ -27,18 +28,15 @@ rm -Rf "$output_app"
 cp -Rf "$input_app" "$output_app"
 
 # copy assemblies into .app bundle
-cp "$target_dir"/$assembly "$output_res"
-cp "$target_dir"/*.dll "$output_res"
-rm -Rf "$output_res"/Eto.*
+cp "$target_dir"/$assembly "$output_mono"
+cp "$target_dir"/*.dll "$output_mono"
+rm -Rf "$output_mono"/Eto.*
 
 # copy Eto Mac platform into .app bundle
-cp "$eto_bin_dir"/Eto.dll "$output_res"
-cp "$eto_bin_dir"/Eto.Platform.Mac.dll "$output_res"
-cp "$eto_bin_dir"/MonoMac.dll "$output_res"
-
-# update launcher to execute our executable
-sed -i"" -e "s/\"MyApp.exe\"/\"$assembly\"/" "$output_macos/Launcher"
-sed -i"" -e "s/\"MyApp\"/\"$project_name\"/" "$output_macos/Launcher"
+cp "$eto_bin_dir"/Eto.dll "$output_mono"
+cp "$eto_bin_dir"/Eto.Platform.Mac.dll "$output_mono"
+cp "$eto_bin_dir"/MonoMac.dll "$output_mono"
 
 # update Info.plist to use our project name as the app name
-sed -i"" -e "s/>MyApp</>$project_name</" "$output_app/Contents/Info.plist"
+sed -i -e "s/>MyApp</>$project_name</" "$output_app/Contents/Info.plist"
+sed -i -e "s/>MyApp.exe</>$assembly</" "$output_app/Contents/Info.plist"
