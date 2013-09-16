@@ -122,6 +122,7 @@
     <Compile Include="Sections\Drawing\UnitTestSection.cs" />
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="TestIcons.cs" />
+    <Compile Include="Sections\Dialogs\MessageBoxSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

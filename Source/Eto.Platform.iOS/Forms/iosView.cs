@@ -23,29 +23,6 @@ namespace Eto.Platform.iOS.Forms
 		UIViewController Controller { get; }
 	}
 
-	public static class ViewExtensions
-	{
-		public static void AddSubView(this Container parent, Control control)
-		{
-
-			var parentViewController = parent.Handler as IiosViewController;
-			if (parentViewController != null) {
-				var viewController = control.Handler as IiosViewController;
-				if (viewController != null) {
-					parentViewController.Controller.AddChildViewController(viewController.Controller);
-					return;
-				}
-			}
-			var viewHandler = control.Handler as IiosView;
-			var view = viewHandler != null ? viewHandler.ContainerControl : control.ControlObject as UIView;
-
-			var parentView = parent.Handler as IiosContainer;
-			if (parentView != null && view != null) {
-				parentView.ContentControl.AddSubview (view);
-			}
-		}
-	}
-
 
 	public abstract class iosView<T, W> : iosObject<T, W>, IControl, IiosView
 		where T: UIView
@@ -135,11 +112,7 @@ namespace Eto.Platform.iOS.Forms
 			*/
 		}
 
-		public virtual void SetParentLayout (Layout layout)
-		{
-		}
-
-		public virtual void SetParent (Control parent)
+		public virtual void SetParent (Container parent)
 		{
 		}
 

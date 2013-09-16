@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class ScrollableHandler : iosContainer<UIScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : iosDockContainer<UIScrollView, Scrollable>, IScrollable
 	{
 		UIView Child { get; set; }
 		BorderType border;

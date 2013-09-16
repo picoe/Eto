@@ -6,7 +6,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public abstract class iosWindow<T, W> : iosContainer<T, W>, IWindow
+	public abstract class iosWindow<T, W> : iosDockContainer<T, W>, IWindow
 		where T: UIView
 		where W: Window
 	{

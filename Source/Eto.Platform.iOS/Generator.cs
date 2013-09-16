@@ -104,7 +104,6 @@ namespace Eto.Platform.iOS
 			//g.Add <IColorDialog> (() => new ColorDialogHandler ());
 			//g.Add <ICursor> (() => new CursorHandler ());
 			g.Add <IDialog> (() => new DialogHandler ());
-			g.Add <IDockLayout> (() => new DockLayoutHandler ());
 			//g.Add <IFontDialog> (() => new FontDialogHandler ());
 			g.Add <IForm> (() => new FormHandler ());
 			g.Add <IMessageBox> (() => new MessageBoxHandler ());

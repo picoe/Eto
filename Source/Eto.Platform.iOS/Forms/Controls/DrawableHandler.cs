@@ -13,7 +13,7 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class DrawableHandler : iosContainer<DrawableHandler.MyView, Drawable>, IDrawable
+	public class DrawableHandler : iosDockContainer<DrawableHandler.MyView, Drawable>, IDrawable
 	{
 		/*
 		[Register("FastLayer")]

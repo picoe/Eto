@@ -18,15 +18,6 @@ namespace Eto.Platform.iOS.Forms
 			DisposeControl = false;
 		}
 		
-		public override UIView Control {
-			get {
-				return (UIView)Widget.Container.ContainerObject;
-			}
-			protected set {
-				base.Control = value;
-			}
-		}
-
 		/*
 		public sd.RectangleF GetPosition (Control control)
 		{
@@ -48,9 +39,9 @@ namespace Eto.Platform.iOS.Forms
 			return size;
 		}
 		
-		public override void OnLoadComplete ()
+		public override void OnLoadComplete (EventArgs e)
 		{
-			base.OnLoadComplete ();
+			base.OnLoadComplete (e);
 			Layout();
 			loaded = true;
 		}

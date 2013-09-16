@@ -31,12 +31,12 @@ namespace Eto.Platform.iOS.Forms
 		}
 		protected override Eto.Drawing.Size GetNaturalSize ()
 		{
-			var layout = 
+			/*var layout = 
 				Widget != null && Widget.Layout != null && Widget.Layout.InnerLayout != null
 				? Widget.Layout.InnerLayout.Handler as IiosLayout : null;
 			if (layout != null)
 				return layout.GetPreferredSize (Size.MaxValue);
-			else
+			else*/
 				return base.GetNaturalSize ();
 		}
 
@@ -62,10 +62,15 @@ namespace Eto.Platform.iOS.Forms
 			set { this.Size = value; }
 		}
 
-		public object ContainerObject {
-			get { return this.ContentControl; }
+		public virtual void LayoutParent()
+		{
 		}
 
+		public virtual void Layout()
+		{
+		}
+
+		/*
 		bool disposed;
 
 		protected override void Dispose (bool disposing)
@@ -81,7 +86,7 @@ namespace Eto.Platform.iOS.Forms
 				disposed = true;
 			}
 			base.Dispose (disposing);
-		}
+		}*/
 	}
 }
 

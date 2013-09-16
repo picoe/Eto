@@ -242,15 +242,13 @@
     <Compile Include="Forms\Controls\EnumRadioButtonList.cs" />
     <Compile Include="Forms\Controls\RadioButtonList.cs" />
     <Compile Include="Forms\Controls\KeyEventArgs.cs" />
-    <Compile Include="Interface\IKeyboardInputSource.cs" />
-    <Compile Include="Interface\IMouseInputSource.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\Mouse.cs" />
     <Compile Include="Binding\DelegateBinding.cs" />
-    <Compile Include="Forms\Controls\GridViewSelection.cs" />
-    <Compile Include="Forms\Controls\SearchBox.cs" />
     <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
+    <Compile Include="Forms\Controls\GridViewSelection.cs" />
     <Compile Include="Forms\DataStoreView.cs" />
+    <Compile Include="Forms\Controls\SearchBox.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

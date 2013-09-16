@@ -7,7 +7,7 @@ using System.Diagnostics;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class SplitterHandler : iosControl<UIView, Splitter>, ISplitter, IiosViewController
+	public class SplitterHandler : iosContainer<UIView, Splitter>, ISplitter, IiosViewController
 	{
 		public override UIViewController Controller { get { return (UIViewController)MGSplitController ?? SplitController; } }
 		

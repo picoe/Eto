@@ -71,7 +71,6 @@
     <Compile Include="InvokeHelper.cs" />
     <Compile Include="Forms\iosView.cs" />
     <Compile Include="Forms\DialogHandler.cs" />
-    <Compile Include="Forms\DockLayoutHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
     <Compile Include="Forms\iosLayout.cs" />
     <Compile Include="Forms\iosObject.cs" />
@@ -168,6 +167,7 @@
       <Link>Forms\MacBase.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Forms\iosDockContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - iOS.csproj">

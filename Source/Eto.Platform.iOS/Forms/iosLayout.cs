@@ -12,8 +12,8 @@ namespace Eto.Platform.iOS.Forms
 		Size GetPreferredSize (Size availableSize);
 	}
 	
-	public abstract class iosLayout<T, W> : iosObject<T, W>, ILayout, IiosLayout
-		where T: NSObject
+	public abstract class iosLayout<T, W> : iosContainer<T, W>, ILayout, IiosLayout
+		where T: UIView
 		where W: Layout
 	{
 		public virtual object LayoutObject
@@ -25,36 +25,14 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 		
-		public virtual void OnPreLoad ()
-		{
-		}
-		
-		public virtual void OnLoad()
-		{
-		}
-		
-		public virtual void OnLoadComplete ()
-		{
-		}
-		
-		public virtual void OnUnLoad()
-		{
-		}
-		
 		public virtual void Update()
 		{
 			Layout ();
 		}
 
-		public virtual void AttachedToContainer ()
+		public virtual void UpdateParentLayout()
 		{
 		}
-		
-		protected void UpdateParentLayout()
-		{
-		}
-		
-		public abstract Size GetPreferredSize (Size availableSize);
 
 		public virtual void Layout()
 		{
