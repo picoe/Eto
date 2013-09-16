@@ -12,24 +12,10 @@ namespace Eto.Forms
 		where T: Container
 		where W : Control
 	{
-		/*
-#if DESKTOP
-		public Size MinimumSize
-		{
-			get { return Control.MinimumSize; }
-			set { Control.MinimumSize = value; }
-		}
-#endif
-*/
 		public Size ClientSize
 		{
 			get { return Control.ClientSize; }
 			set { Control.ClientSize = value; }
-		}
-
-		public object ContainerObject
-		{
-			get { return Control; }
 		}
 	}
 }

@@ -78,7 +78,7 @@ namespace Eto.Test.Handlers
 		public void ClearTabs()
 		{
 			if (this.Tabs != null)
-				this.Tabs.RemoveAll();
+				this.Tabs.RemoveAllTabs();
 		}
 
 		public void RemoveTab(int index, TabPage page)
@@ -136,7 +136,7 @@ namespace Eto.Test.Handlers
 			this.LayoutItems();
 		}
 
-		internal void RemoveAll()
+		internal void RemoveAllTabs()
 		{
 			Items.ForEach(r => r.Click -= HandleClick);
 			Items.Clear();

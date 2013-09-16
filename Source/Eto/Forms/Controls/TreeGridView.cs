@@ -171,7 +171,7 @@ namespace Eto.Forms
 			handler = (ITreeGridView)Handler;
 		}
 		
-		public ITreeGridItem SelectedItem {
+		public new ITreeGridItem SelectedItem {
 			get { return handler.SelectedItem; }
 			set { handler.SelectedItem = value; }
 		}
