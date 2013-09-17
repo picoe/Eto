@@ -1,0 +1,3 @@
+﻿This file lists the breaking changes made to Eto, most recent first.
+
+- Empty interface Eto.Forms.IGridItem was removed
