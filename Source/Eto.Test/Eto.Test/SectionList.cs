@@ -77,8 +77,6 @@ namespace Eto.Test
 
 		private Func<IEnumerable<Section>> TopNodes { get; set; }
 
-		public Control SectionControl { get; private set; }
-
 		public string SectionTitle {
 			get {
 				var section = this.SelectedItem as Section;
@@ -88,16 +86,23 @@ namespace Eto.Test
 			}
 		}
 		
-		public override void OnSelectionChanged (EventArgs e)
+		public void Show(Navigation navigation, Panel contentContainer)
 		{
 			var sectionGenerator = this.SelectedItem as ISectionGenerator;
-			
-			if (sectionGenerator != null) {
-				SectionControl = sectionGenerator.GenerateControl ();
-			} else 
-				SectionControl = null;
 
-			base.OnSelectionChanged (e);
+			var sectionControl = sectionGenerator != null ? sectionGenerator.GenerateControl() : null;
+
+			if (navigation != null)
+			{
+				if (sectionControl != null)
+					navigation.Push(sectionControl, this.SectionTitle);
+			}
+			else
+			{
+				contentContainer.SuspendLayout();
+				contentContainer.Content = sectionControl;
+				contentContainer.ResumeLayout();
+			}
 		}
 	}
 }

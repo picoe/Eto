@@ -74,18 +74,7 @@ namespace Eto.Test
 				SectionList.Focus();
 			};
 			SectionList.SelectedItemChanged += (sender, e) => {
-				var control = SectionList.SectionControl;
-				if (navigation != null)
-				{
-					if (control != null)
-						navigation.Push(control, SectionList.SectionTitle);
-				}
-				else
-				{
-					contentContainer.SuspendLayout();
-					contentContainer.Content = control;
-					contentContainer.ResumeLayout();
-				}
+				SectionList.Show(navigation, contentContainer);
 			};
 
 			if (Splitter.Supported)
