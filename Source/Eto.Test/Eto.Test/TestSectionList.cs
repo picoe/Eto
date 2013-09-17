@@ -12,6 +12,7 @@ namespace Eto.Test
 	{
 		public static IEnumerable<Section> TopNodes()
 		{
+			yield return new Section("Forms", FormsSection());
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
 			yield return new Section("Controls", ControlSection());
@@ -128,6 +129,11 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
 			yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
 #endif
+		}
+
+		static IEnumerable<Section> FormsSection()
+		{
+			yield return new Sections.FormsSection.ImageViewFormSection { Text = "ImageView Form" };			
 		}
 	}
 }

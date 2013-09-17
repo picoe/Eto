@@ -51,8 +51,17 @@ namespace Eto.Test
 
 		public void Show(Navigation navigation, Panel contentContainer, string sectionTitle)
 		{
-			var sectionControl = this.GenerateControl();
+			Control sectionControl = null;
 
+			try
+			{
+				sectionControl = this.GenerateControl();
+			}
+			catch (Exception ex)
+			{
+				Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+			}
+		
 			if (navigation != null)
 			{
 				if (sectionControl != null)
@@ -72,16 +81,58 @@ namespace Eto.Test
 	{
 		public override Control GenerateControl ()
 		{
-			try {
-				return new T ();
-			}
-			catch (Exception ex) {
-				Log.Write (this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
-				return null;
-			}
+			return new T();
 		}
 	}
 
+	/// <summary>
+	/// Tests for dialogs and forms use this.
+	/// </summary>
+	public class WindowSectionMethod : Section, ISectionGenerator
+	{
+		private Func<Window> Func { get; set; }
+
+		public WindowSectionMethod(string text, Func<Window> f) { Func = f; Text = text; }
+
+		protected WindowSectionMethod(string text = null)
+		{
+		}
+
+		protected virtual Window GetWindow()
+		{
+			return null;
+		}
+
+		public void Show(Navigation navigation, Panel contentContainer, string sectionTitle)
+		{
+			try
+			{
+				var window = Func != null ? Func() : null; // First try the delegate method
+				if (window == null)
+					window = GetWindow(); // then the virtual method
+
+				if (window != null)
+				{
+					var dialog = window as Dialog;
+					if (dialog != null)
+					{
+						dialog.ShowDialog(null);
+						return;
+					}
+					var form = window as Form;
+					if (form != null)
+					{
+						form.Show();
+						return;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+			}
+		}
+	}
 		
 	public class SectionList : TreeGridView
 	{
