@@ -25,7 +25,7 @@ namespace Eto.Test.Sections.Controls
 	{
 		static Image image1 = TestIcons.TestImage;
 		static Image image2 = TestIcons.TestIcon;
-		TextBox filterText = null;
+		SearchBox filterText = null;
 
 		public GridViewSection()
 		{
@@ -37,7 +37,7 @@ namespace Eto.Test.Sections.Controls
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
 			layout.BeginVertical();
-			layout.Add(filterText = new TextBox { PlaceholderText = "Filter" });
+			layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
 			var withContextMenuAndFilter = WithContextMenuAndFilter();
 			layout.Add(withContextMenuAndFilter);
 			var selectionGridView = Default(addItems: false);
