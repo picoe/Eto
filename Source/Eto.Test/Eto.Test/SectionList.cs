@@ -12,7 +12,7 @@ namespace Eto.Test
 	{
 		string Text { get; }
 
-		Control GenerateControl ();
+		void Show(Navigation navigation, Panel contentContainer, string sectionTitle);
 	}
 	
 	public class Section : List<Section>, ITreeGridItem<Section>
@@ -44,11 +44,33 @@ namespace Eto.Test
 			this.ForEach (r => r.Parent = this);
 		}
 	}
-	
-	public class Section<T> : Section, ISectionGenerator
+
+	public abstract class SectionBase : Section, ISectionGenerator
+	{
+		public abstract Control GenerateControl();
+
+		public void Show(Navigation navigation, Panel contentContainer, string sectionTitle)
+		{
+			var sectionControl = this.GenerateControl();
+
+			if (navigation != null)
+			{
+				if (sectionControl != null)
+					navigation.Push(sectionControl, sectionTitle);
+			}
+			else
+			{
+				contentContainer.SuspendLayout();
+				contentContainer.Content = sectionControl;
+				contentContainer.ResumeLayout();
+			}
+		}
+	}
+
+	public class Section<T> : SectionBase
 		where T: Control, new()
 	{
-		public Control GenerateControl ()
+		public override Control GenerateControl ()
 		{
 			try {
 				return new T ();
@@ -89,20 +111,8 @@ namespace Eto.Test
 		public void Show(Navigation navigation, Panel contentContainer)
 		{
 			var sectionGenerator = this.SelectedItem as ISectionGenerator;
-
-			var sectionControl = sectionGenerator != null ? sectionGenerator.GenerateControl() : null;
-
-			if (navigation != null)
-			{
-				if (sectionControl != null)
-					navigation.Push(sectionControl, this.SectionTitle);
-			}
-			else
-			{
-				contentContainer.SuspendLayout();
-				contentContainer.Content = sectionControl;
-				contentContainer.ResumeLayout();
-			}
+			if (sectionGenerator != null)
+				sectionGenerator.Show(navigation, contentContainer, this.SectionTitle);
 		}
 	}
 }
