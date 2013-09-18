@@ -7,6 +7,7 @@ using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Platform.Mac.Drawing;
 using Eto.Drawing;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -96,6 +97,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridViewHandler ()
 		{
+		}
+
+		public bool ShowCellBorders
+		{
+			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : new sd.SizeF(0, 0); } 
 		}
 
 		public override void AttachEvent (string handler)
