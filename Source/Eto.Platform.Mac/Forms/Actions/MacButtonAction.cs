@@ -14,10 +14,9 @@ namespace Eto.Platform.Mac.Forms.Actions
 		{
 			this.Selector = new Selector(selector);
 		}
-
-		public override MenuItem Generate (ActionItem actionItem, ISubMenuWidget menu)
+		public override MenuItem GenerateMenuItem(Eto.Generator generator)
 		{
-			var item = base.GenerateMenuItem(actionItem, menu.Generator) as ImageMenuItem;
+			var item = base.GenerateMenuItem(generator) as ImageMenuItem;
 			var menuItem = (NSMenuItem)item.ControlObject;
 			menuItem.Target = null;
 			menuItem.Action = Selector;
@@ -25,7 +24,7 @@ namespace Eto.Platform.Mac.Forms.Actions
 			return item;
 		}
 
-		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Eto.Generator generator, ToolBarTextAlign textAlign)
 		{
 			var item = base.GenerateToolBarItem (actionItem, generator, textAlign);
 			var tb = (NSToolbarItem)item.ControlObject;
