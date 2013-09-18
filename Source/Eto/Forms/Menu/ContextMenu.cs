@@ -37,7 +37,9 @@ namespace Eto.Forms
 		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (var ai in actionItems) {
-				ai.Generate (this);
+				var mi = ai.Generate (this.Generator);
+				if (mi != null)
+					this.menuItems.Add(mi);
 			}
 		}
 

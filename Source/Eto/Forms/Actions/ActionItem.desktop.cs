@@ -5,55 +5,54 @@ namespace Eto.Forms
 {
 	public partial interface IActionItem
 	{
-		void Generate(ISubMenuWidget menu);
+		MenuItem Generate(Generator generator);
 	}
 	
 	public abstract partial class ActionItemBase
 	{
-		public abstract void Generate(ISubMenuWidget menu);
+		public abstract MenuItem Generate(Generator generator);
 	}
 	
 	public partial class ActionItemSeparator : ActionItemBase
 	{
-		public override void Generate(ISubMenuWidget menu)
+		public override MenuItem Generate(Generator generator)
 		{
-			var mi = new SeparatorMenuItem(menu.Generator);
-			if (!string.IsNullOrEmpty (MenuItemStyle))
+			var mi = new SeparatorMenuItem(generator);
+			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
-			menu.MenuItems.Add(mi);
+			return mi;
 		}
 	}
-	
-	
+		
 	public partial class ActionItemSubMenu
 	{
-		public override void Generate(ISubMenuWidget menu)
+		public override MenuItem Generate(Generator generator)
 		{
+			ImageMenuItem item = null;
 			if (Actions.Count > 0)
 			{
-				var item = new ImageMenuItem(menu.Generator);
+				item = new ImageMenuItem(generator);
 				item.Text = SubMenuText;
-				if (!string.IsNullOrEmpty (MenuItemStyle))
+				if (!string.IsNullOrEmpty(MenuItemStyle))
 					item.Style = MenuItemStyle;
 				Actions.Generate(item);
-				menu.MenuItems.Add(item);
 			}
+			return item;
 		}
 	}
 	
 	public partial class ActionItem
 	{
-		public override void Generate(ISubMenuWidget menu)
+		public override MenuItem Generate(Generator generator)
 		{
-			var item = this.Action.Generate(this, menu);
-			if (item != null) {
-				if (!string.IsNullOrEmpty (MenuItemStyle))
+			var item = this.Action.Generate(this, generator);
+			if (item != null)
+			{
+				if (!string.IsNullOrEmpty(MenuItemStyle))
 					item.Style = MenuItemStyle;
-				menu.MenuItems.Add (item);
 			}
+			return item;
 		}
 	}
-	
-	
 }
 #endif
