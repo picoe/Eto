@@ -160,8 +160,8 @@ namespace Eto.Forms
 		{
 			OnActivated(EventArgs.Empty);
 		}
-		
-		public abstract ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar);
+
+		public abstract ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign);
 	}
 
 }
