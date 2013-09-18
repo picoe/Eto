@@ -33,6 +33,7 @@ namespace Eto.Forms
 			{
 				item = new ImageMenuItem(generator);
 				item.Text = SubMenuText;
+				item.ID = this.ID;
 				if (!string.IsNullOrEmpty(MenuItemStyle))
 					item.Style = MenuItemStyle;
 				Actions.Generate(item);
