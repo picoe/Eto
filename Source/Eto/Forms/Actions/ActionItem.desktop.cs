@@ -46,7 +46,7 @@ namespace Eto.Forms
 	{
 		public override MenuItem Generate(Generator generator)
 		{
-			var item = this.Action.GenerateMenuItem(this, generator);
+			var item = this.Action.GenerateMenuItem(generator);
 			if (item != null)
 			{
 				if (!string.IsNullOrEmpty(MenuItemStyle))

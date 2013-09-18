@@ -9,7 +9,7 @@ namespace Eto.Forms
 {
 	public abstract partial class BaseAction
 	{
-		public abstract MenuItem GenerateMenuItem(ActionItem actionItem, Generator generator);
+		public abstract MenuItem GenerateMenuItem(Generator generator);
 	}
 }
 #endif

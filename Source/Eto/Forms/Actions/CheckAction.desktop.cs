@@ -8,7 +8,7 @@ namespace Eto.Forms
 {
 	public partial class CheckAction : BaseAction
 	{
-		public override MenuItem GenerateMenuItem(ActionItem actionItem, Generator generator)
+		public override MenuItem GenerateMenuItem(Generator generator)
 		{
 			CheckMenuItem mi = new CheckMenuItem(generator);
 			mi.Text = MenuText;

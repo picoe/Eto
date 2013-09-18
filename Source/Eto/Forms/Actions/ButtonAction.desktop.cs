@@ -9,7 +9,7 @@ namespace Eto.Forms
 	
 	public partial class ButtonAction : BaseAction
 	{
-		public override MenuItem GenerateMenuItem(ActionItem actionItem, Generator generator)
+		public override MenuItem GenerateMenuItem(Generator generator)
 		{
 			ImageMenuItem mi = new ImageMenuItem(generator);
 			mi.Text = MenuText;

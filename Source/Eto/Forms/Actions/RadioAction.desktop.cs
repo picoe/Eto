@@ -8,7 +8,7 @@ namespace Eto.Forms
 	{
 		RadioMenuItem menuItem;
 
-		public override MenuItem GenerateMenuItem(ActionItem actionItem, Generator generator)
+		public override MenuItem GenerateMenuItem(Generator generator)
 		{
 			RadioMenuItem mi = new RadioMenuItem(generator, (Controller != null) ? Controller.menuItem : null);
 			mi.Text = MenuText;
