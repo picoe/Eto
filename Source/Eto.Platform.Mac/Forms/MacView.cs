@@ -415,13 +415,12 @@ namespace Eto.Platform.Mac.Forms
 				focus = true;
 		}
 
+		Color? backgroundColor;
 		public virtual Color BackgroundColor
 		{
 			get
 			{
-				if (!EventControl.WantsLayer)
-					EventControl.WantsLayer = true;
-				return EventControl.Layer.BackgroundColor.ToEtoColor ();
+				return backgroundColor ?? Colors.Transparent;
 			}
 			set
 			{
@@ -434,8 +433,11 @@ namespace Eto.Platform.Mac.Forms
 					if (EventControl.Layer != null)
 						EventControl.Layer.BackgroundColor = null;
 				}
+				backgroundColor = value;
 			}
 		}
+
+
 
 		public abstract bool Enabled { get; set; }
 
