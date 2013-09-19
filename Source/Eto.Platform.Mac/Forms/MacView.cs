@@ -418,10 +418,7 @@ namespace Eto.Platform.Mac.Forms
 		Color? backgroundColor;
 		public virtual Color BackgroundColor
 		{
-			get
-			{
-				return backgroundColor ?? Colors.Transparent;
-			}
+			get { return backgroundColor ?? Colors.Transparent; }
 			set
 			{
 				if (value.A > 0) {
