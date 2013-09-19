@@ -88,6 +88,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return true;
 			}
 
+			public override void WillDisplayCell(NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)
+			{
+				base.WillDisplayCell(outlineView, cell, tableColumn, item);
+				var c = cell as NSTextFieldCell;
+				if (c != null &&
+					Handler.textColor != null)
+					c.TextColor = Handler.textColor.Value.ToNS();				
+			}
+
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				if (!Handler.selectionChanging)
@@ -548,6 +557,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return item.Item;
 			}
 			return null;
+		}
+
+		Color? textColor = null;
+		public Color TextColor
+		{
+			get { return textColor ?? Colors.Transparent; }
+			set { textColor = value; }
 		}
 
 		public bool LabelEdit

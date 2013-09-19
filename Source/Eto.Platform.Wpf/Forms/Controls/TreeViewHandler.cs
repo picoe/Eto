@@ -409,6 +409,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			return null;
 		}
 
+		public Color TextColor
+		{
+			get { return this.Control.Foreground.ToEtoColor(); }
+			set { this.Control.Foreground = value.ToWpfBrush(this.Control.Foreground); }
+		}
+
 		public bool LabelEdit
 		{
 			get { return labelEdit; }
