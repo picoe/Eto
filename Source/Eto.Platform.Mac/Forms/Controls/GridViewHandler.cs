@@ -29,7 +29,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var backgroundColor = Handler.BackgroundColor;
 				if (backgroundColor != Colors.Transparent) {
-					Handler.BackgroundColor.ToNS ().Set ();
+					backgroundColor.ToNS ().Set ();
 					NSGraphics.RectFill (clipRect);
 				} else
 					base.DrawBackground (clipRect);
