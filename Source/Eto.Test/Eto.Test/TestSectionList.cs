@@ -78,6 +78,7 @@ namespace Eto.Test
 			yield return new Section("Table Layout", TableLayoutsSection());
 			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
 			yield return new Section("Pixel Layout", PixelLayoutSection());
+			yield return new Section("Dynamic Layout", DynamicLayoutSection());
 		}
 		
 		static IEnumerable<Section> TableLayoutsSection()
@@ -97,6 +98,11 @@ namespace Eto.Test
 		static IEnumerable<Section> PixelLayoutSection()
 		{
 			yield return new Section<Sections.Layouts.PixelLayoutSection.AnchorSection > { Text = "Anchor using PixelLayout" };
+		}
+
+		static IEnumerable<Section> DynamicLayoutSection()
+		{
+			yield return new Section<Sections.Layouts.DynamicLayoutSection.RowsSection> { Text = "Rows" };
 		}
 				
 		static IEnumerable<Section> DialogsSection()
