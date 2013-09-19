@@ -27,7 +27,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			/// </summary>
 			public override void DrawBackground(sd.RectangleF clipRect)
 			{
-				Handler.BackgroundColor.ToNS().Set();
+				Handler.Control.BackgroundColor.Set();
 				NSGraphics.RectFill(clipRect);
 			}
 		}
