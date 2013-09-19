@@ -9,12 +9,16 @@ namespace Eto.Test
 	public static class TestIcons
 	{
 		public static string TestIconName = "Eto.Test.TestIcon.ico"; // static not const so test apps can override
-		public static Icon TestIcon { get { return Icon.FromResource(TestIconName); } }
+
+		static Icon testIcon;
+		public static Icon TestIcon { get { return testIcon = testIcon ?? Icon.FromResource(TestIconName); } }
 
 		public static string TestImageName = "Eto.Test.TestImage.png"; // static not const so test apps can override
-		public static Bitmap TestImage { get { return Bitmap.FromResource(TestImageName); } }
+		static Bitmap testImage;
+		public static Bitmap TestImage { get { return testImage = testImage ?? Bitmap.FromResource(TestImageName); } }
 
 		public static string TexturesName = "Eto.Test.Textures.png"; // static not const so test apps can override
-		public static Bitmap Textures { get { return Bitmap.FromResource(TexturesName); } }
+		static Bitmap textures;
+		public static Bitmap Textures { get { return textures = textures ?? Bitmap.FromResource(TexturesName); } }
 	}
 }
