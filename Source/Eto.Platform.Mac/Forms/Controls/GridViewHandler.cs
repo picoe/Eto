@@ -20,6 +20,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public GridViewHandler Handler { get; set; }
 
 			object IMacControl.Handler { get { return Handler; } }
+
+			/// <summary>
+			/// The area to the right and below the rows is not filled with the background
+			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
+			/// </summary>
+			public override void DrawBackground(sd.RectangleF clipRect)
+			{
+				base.DrawBackground(clipRect);
+				Handler.BackgroundColor.ToNS().Set();
+				NSGraphics.RectFill(clipRect);
+			}
 		}
 		
 		class EtoTableViewDataSource : NSTableViewDataSource
