@@ -235,7 +235,12 @@ namespace Eto.Platform.iOS.Drawing
 			Control.Dispose ();
 		}
 	
-		public FillMode FillMode { get; set; }
+		FillMode fillMode = FillMode.Alternate;
+		public FillMode FillMode 
+		{
+			get { return fillMode; }
+			set { fillMode = value;}
+		}
 
 		public IGraphicsPath Clone ()
 		{
