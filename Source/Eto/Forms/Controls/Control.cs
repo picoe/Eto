@@ -56,11 +56,10 @@ namespace Eto.Forms
 
 		public bool Loaded { get; private set; }
 
-		PropertyStore properties;
-
 		/// <summary>
 		/// Gets the attached properties for this widget
 		/// </summary>
+		PropertyStore properties;
 		public PropertyStore Properties
 		{
 			get
@@ -69,6 +68,20 @@ namespace Eto.Forms
 				return properties;
 			}
 		}
+
+		/// <summary>
+		/// Gets the collection of bindings that are attached to this widget
+		/// </summary>
+		BindingCollection bindings;
+		public BindingCollection Bindings
+		{
+			get
+			{
+				if (bindings == null) bindings = new BindingCollection();
+				return bindings;
+			}
+		}
+
 
 		#region Events
 
@@ -589,6 +602,37 @@ namespace Eto.Forms
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
+		/// </summary>
+		public virtual void Unbind()
+		{
+			if (bindings != null)
+			{
+				bindings.Unbind();
+				bindings = null;
+			}
+		}
+
+		/// <summary>
+		/// Updates all bindings in this widget
+		/// </summary>
+		public virtual void UpdateBindings()
+		{
+			if (bindings != null)
+			{
+				bindings.Update();
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			Unbind();
+
+			base.Dispose(disposing);
+		}
+
 	}
 
 	public class ControlCollection : List<Control>

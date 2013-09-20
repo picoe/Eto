@@ -208,7 +208,7 @@ namespace Eto.Test.Sections.Printing
 		Control Copies()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
-			control.Bind(r => r.Value, (PrintSettings s) => s.Copies, defaultWidgetValue: 1);
+			control.Bind(r => r.Value, (PrintSettings s) => s.Copies, defaultControlValue: 1);
 			return control;
 		}
 
