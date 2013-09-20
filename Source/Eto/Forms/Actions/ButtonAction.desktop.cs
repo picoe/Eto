@@ -9,14 +9,14 @@ namespace Eto.Forms
 	
 	public partial class ButtonAction : BaseAction
 	{
-		public override MenuItem Generate(ActionItem actionItem, ISubMenuWidget menu)
+		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			ImageMenuItem mi = new ImageMenuItem(menu.Generator);
+			ImageMenuItem mi = new ImageMenuItem(generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = this.Enabled;
 			if (Image != null) mi.Image = Image;
-			if (!string.IsNullOrEmpty (MenuItemStyle))
+			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
 			new MenuConnector(this, mi);
 			return mi;

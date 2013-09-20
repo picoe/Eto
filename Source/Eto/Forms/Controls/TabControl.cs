@@ -54,6 +54,13 @@ namespace Eto.Forms
 			handler = (ITabControl)base.Handler;
 		}
 
+		protected TabControl(Generator generator, ITabControl handler, bool initialize = true)
+			: base(generator, handler, initialize)
+		{
+			pages = new TabPageCollection(this);
+			this.handler = handler;
+		}
+
 		public int SelectedIndex
 		{
 			get { return handler.SelectedIndex; }

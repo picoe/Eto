@@ -43,5 +43,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					Control.ItemsSource = new ObservableCollection<object> (store.AsEnumerable());
 			}
 		}
+
+		public bool ShowCellBorders
+		{
+			set { } // TODO
+		}
 	}
 }

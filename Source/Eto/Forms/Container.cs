@@ -34,7 +34,7 @@ namespace Eto.Forms
 		{
 			get
 			{ 
-				var content = Handler.Content;
+				var content = Handler != null ? Handler.Content : null;
 				if (content != null)
 					yield return content; 
 			}

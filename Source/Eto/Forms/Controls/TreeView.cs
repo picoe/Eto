@@ -23,6 +23,8 @@ namespace Eto.Forms
 		ITreeItem GetNodeAt(PointF point);
 
 		bool LabelEdit { get; set; }
+
+		Color TextColor { get; set; }
 	}
 
 	public class TreeViewItemEventArgs : EventArgs
@@ -59,6 +61,7 @@ namespace Eto.Forms
 	public partial class TreeView : Control
 	{
 		ITreeView handler;
+
 		#region Events
 		public const string ActivatedEvent = "TreeView.Activated";
 		EventHandler<TreeViewItemEventArgs> _Activated;
@@ -242,6 +245,7 @@ namespace Eto.Forms
 				_NodeMouseClick(this, e);
 		}
 		#endregion
+
 		public TreeView() : this (Generator.Current)
 		{
 		}
@@ -273,6 +277,12 @@ namespace Eto.Forms
 		{
 			get { return handler.DataStore; }
 			set { handler.DataStore = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return handler.TextColor; }
+			set { handler.TextColor = value; }
 		}
 
 		public void RefreshData()

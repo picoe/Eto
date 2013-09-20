@@ -82,13 +82,13 @@ namespace Eto.Forms
 		public ButtonAction()
 		{
 		}
-		
-		public override ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar)
+
+		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			ToolBarButton tbb = new ToolBarButton(toolBar.Generator);
+			ToolBarButton tbb = new ToolBarButton(generator);
 			tbb.ID = this.ID;
 			tbb.Enabled = this.Enabled;
-			if (ShowLabel || actionItem.ShowLabel || toolBar.TextAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
+			if (ShowLabel || actionItem.ShowLabel || textAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			//Console.WriteLine("Adding toolbar {0}", ToolBarText);
 			if (Image != null) tbb.Image = Image;
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))

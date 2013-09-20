@@ -147,8 +147,10 @@ namespace Eto.Forms
 				
 				if ((lastSeparator && isSeparator) || (isSeparator && (i == 0 || i == list.Count - 1)))
 					continue;
-				
-				ai.Generate(toolBar);
+
+				var tbb = ai.GenerateToolBarItem(toolBar.Generator, toolBar.TextAlign);
+				if (tbb != null)
+					toolBar.Items.Add(tbb);
 				lastSeparator = isSeparator;	
 			}
 		}

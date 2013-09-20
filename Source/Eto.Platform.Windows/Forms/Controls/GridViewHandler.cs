@@ -14,6 +14,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 		}
 
+		public bool ShowCellBorders
+		{
+			set { Control.CellBorderStyle = value ? swf.DataGridViewCellBorderStyle.Single : swf.DataGridViewCellBorderStyle.None; }
+		}
+
 		protected override object GetItemAtRow (int row)
 		{
 			if (collection != null && collection.Collection != null && collection.Collection.Count > row) 			

@@ -94,21 +94,6 @@ namespace Eto
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract partial class Widget : IHandlerSource, IDisposable, IGeneratorSource
 	{
-		BindingCollection bindings;
-		PropertyStore properties;
-
-		/// <summary>
-		/// Gets the attached properties for this widget
-		/// </summary>
-		public PropertyStore Properties
-		{
-			get
-			{
-				if (properties == null) properties = new PropertyStore (this);
-				return properties;
-			}
-		}
-
 		/// <summary>
 		/// Gets the generator that was used to create the <see cref="Handler"/> for this widget
 		/// </summary>
@@ -118,25 +103,6 @@ namespace Eto
 		/// </remarks>
 		public Generator Generator { get { return ((IWidget)Handler).Generator; } }
 		
-		/// <summary>
-		/// Gets the collection of bindings that are attached to this widget
-		/// </summary>
-		public BindingCollection Bindings {
-			get {
-				if (bindings == null) bindings = new BindingCollection (); 
-				return bindings;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets a user-defined object that contains data about the control
-		/// </summary>
-		/// <remarks>
-		/// A common use of the tag property is to store data that is associated with the control that you can later
-		/// retrieve.
-		/// </remarks>
-		public object Tag { get; set; }
-
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
@@ -216,35 +182,13 @@ namespace Eto
 		}
 		
 		#endregion
-		
-		/// <summary>
-		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
-		/// </summary>
-		public virtual void Unbind ()
-		{
-			if (bindings != null) {
-				bindings.Unbind();
-				bindings = null;
-			}
-		}
-		
-		/// <summary>
-		/// Updates all bindings in this widget
-		/// </summary>
-		public virtual void UpdateBindings ()
-		{
-			if (bindings != null) {
-				bindings.Update ();
-			}
-		}
-		
+				
 		/// <summary>
 		/// Handles the disposal of this widget
 		/// </summary>
 		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if this is called from the finalizer</param>
 		protected virtual void Dispose (bool disposing)
 		{
-			Unbind ();
 			if (disposing) {
 				var handler = this.Handler as IDisposable;
 				if (handler != null)

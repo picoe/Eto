@@ -88,6 +88,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return true;
 			}
 
+			public override void WillDisplayCell(NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)
+			{
+				var c = cell as NSTextFieldCell;
+				if (c != null &&
+					Handler.textColor != null)
+					c.TextColor = Handler.textColor.Value.ToNS();				
+			}
+
 			public override void SelectionDidChange(NSNotification notification)
 			{
 				if (!Handler.selectionChanging)
@@ -217,7 +225,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoOutlineView : NSOutlineView, IMacControl
 		{
-			public object Handler { get; set; }
+			public TreeViewHandler Handler { get; set; }
+			object IMacControl.Handler { get { return Handler; } }
+
+			/// <summary>
+			/// The area to the right and below the rows is not filled with the background
+			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
+			/// </summary>
+			public override void DrawBackground(sd.RectangleF clipRect)
+			{
+				var backgroundColor = Handler.BackgroundColor;
+				if (backgroundColor != Colors.Transparent) {
+					backgroundColor.ToNS ().Set ();
+					NSGraphics.RectFill (clipRect);
+				} else
+					base.DrawBackground (clipRect);
+			}
 		}
 
 		public override NSView ContainerControl
@@ -548,6 +571,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return item.Item;
 			}
 			return null;
+		}
+
+		Color? textColor = null;
+		public Color TextColor
+		{
+			get { return textColor ?? Colors.Transparent; }
+			set { textColor = value; }
 		}
 
 		public bool LabelEdit
