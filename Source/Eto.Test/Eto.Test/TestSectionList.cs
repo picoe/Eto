@@ -103,6 +103,7 @@ namespace Eto.Test
 		static IEnumerable<Section> DynamicLayoutSection()
 		{
 			yield return new Section<Sections.Layouts.DynamicLayoutSection.RowsSection> { Text = "Rows" };
+			yield return new Sections.Layouts.DynamicLayoutSection.ComplexLayoutSection { Text = "Complex layout" };
 		}
 				
 		static IEnumerable<Section> DialogsSection()
