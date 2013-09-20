@@ -104,15 +104,6 @@ namespace Eto
 		public Generator Generator { get { return ((IWidget)Handler).Generator; } }
 		
 		/// <summary>
-		/// Gets or sets a user-defined object that contains data about the control
-		/// </summary>
-		/// <remarks>
-		/// A common use of the tag property is to store data that is associated with the control that you can later
-		/// retrieve.
-		/// </remarks>
-		public object Tag { get; set; }
-
-		/// <summary>
 		/// Gets the platform-specific handler for this widget
 		/// </summary>
 		public object Handler { get; internal set; }

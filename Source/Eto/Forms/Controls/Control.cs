@@ -82,6 +82,14 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets a user-defined object that contains data about the control
+		/// </summary>
+		/// <remarks>
+		/// A common use of the tag property is to store data that is associated with the control that you can later
+		/// retrieve.
+		/// </remarks>
+		public object Tag { get; set; }
 
 		#region Events
 
