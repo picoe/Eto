@@ -3,12 +3,6 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-#if OBSOLETE
-	public interface IGridItem
-	{
-	}
-#endif
-
 	/// <summary>
 	/// This should be renamed to DataStoreCollection, since there isn't
 	/// any Grid-ness about it anymore.

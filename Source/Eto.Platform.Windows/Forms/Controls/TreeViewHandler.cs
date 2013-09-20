@@ -287,6 +287,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 			return item != null ? item.Tag as ITreeItem : null;
 		}
 
+		public Color TextColor
+		{
+			get { return this.Control.ForeColor.ToEto(); }
+			set { this.Control.ForeColor = value.ToSD(); }
+		}
+
 		public bool LabelEdit
 		{
 			get { return this.Control.LabelEdit; }

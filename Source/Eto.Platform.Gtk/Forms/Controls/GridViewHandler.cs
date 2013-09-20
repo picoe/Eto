@@ -68,6 +68,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 
+		public bool ShowCellBorders
+		{
+			set { } // TODO
+		}
+
 		public override Gtk.TreeIter GetIterAtRow (int row)
 		{
 			return model.GetIterAtRow (row);

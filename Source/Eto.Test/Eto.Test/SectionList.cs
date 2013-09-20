@@ -12,7 +12,7 @@ namespace Eto.Test
 	{
 		string Text { get; }
 
-		Control GenerateControl ();
+		void Show(Navigation navigation, Panel contentContainer, string sectionTitle);
 	}
 	
 	public class Section : List<Section>, ITreeGridItem<Section>
@@ -44,22 +44,95 @@ namespace Eto.Test
 			this.ForEach (r => r.Parent = this);
 		}
 	}
-	
-	public class Section<T> : Section, ISectionGenerator
-		where T: Control, new()
+
+	public abstract class SectionBase : Section, ISectionGenerator
 	{
-		public Control GenerateControl ()
+		public abstract Control GenerateControl();
+
+		public void Show(Navigation navigation, Panel contentContainer, string sectionTitle)
 		{
-			try {
-				return new T ();
+			Control sectionControl = null;
+
+			try
+			{
+				sectionControl = this.GenerateControl();
 			}
-			catch (Exception ex) {
-				Log.Write (this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
-				return null;
+			catch (Exception ex)
+			{
+				Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+			}
+		
+			if (navigation != null)
+			{
+				if (sectionControl != null)
+					navigation.Push(sectionControl, sectionTitle);
+			}
+			else
+			{
+				contentContainer.SuspendLayout();
+				contentContainer.Content = sectionControl;
+				contentContainer.ResumeLayout();
 			}
 		}
 	}
 
+	public class Section<T> : SectionBase
+		where T: Control, new()
+	{
+		public override Control GenerateControl ()
+		{
+			return new T();
+		}
+	}
+
+	/// <summary>
+	/// Tests for dialogs and forms use this.
+	/// </summary>
+	public class WindowSectionMethod : Section, ISectionGenerator
+	{
+		private Func<Window> Func { get; set; }
+
+		public WindowSectionMethod(string text, Func<Window> f) { Func = f; Text = text; }
+
+		protected WindowSectionMethod(string text = null)
+		{
+		}
+
+		protected virtual Window GetWindow()
+		{
+			return null;
+		}
+
+		public void Show(Navigation navigation, Panel contentContainer, string sectionTitle)
+		{
+			try
+			{
+				var window = Func != null ? Func() : null; // First try the delegate method
+				if (window == null)
+					window = GetWindow(); // then the virtual method
+
+				if (window != null)
+				{
+					var dialog = window as Dialog;
+					if (dialog != null)
+					{
+						dialog.ShowDialog(null);
+						return;
+					}
+					var form = window as Form;
+					if (form != null)
+					{
+						form.Show();
+						return;
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+			}
+		}
+	}
 		
 	public class SectionList : TreeGridView
 	{
@@ -77,8 +150,6 @@ namespace Eto.Test
 
 		private Func<IEnumerable<Section>> TopNodes { get; set; }
 
-		public Control SectionControl { get; private set; }
-
 		public string SectionTitle {
 			get {
 				var section = this.SelectedItem as Section;
@@ -88,16 +159,11 @@ namespace Eto.Test
 			}
 		}
 		
-		public override void OnSelectionChanged (EventArgs e)
+		public void Show(Navigation navigation, Panel contentContainer)
 		{
 			var sectionGenerator = this.SelectedItem as ISectionGenerator;
-			
-			if (sectionGenerator != null) {
-				SectionControl = sectionGenerator.GenerateControl ();
-			} else 
-				SectionControl = null;
-
-			base.OnSelectionChanged (e);
+			if (sectionGenerator != null)
+				sectionGenerator.Show(navigation, contentContainer, this.SectionTitle);
 		}
 	}
 }

@@ -370,6 +370,13 @@ namespace Eto.Platform.GtkSharp.Forms
 			get { return textCell.Editable; }
 			set { textCell.Editable = value; }
 		}
+
+
+		public Color TextColor
+		{
+			get { throw new NotImplementedException(); }
+			set { throw new NotImplementedException(); }
+		}
 	}
 }
 

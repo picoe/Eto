@@ -82,13 +82,13 @@ namespace Eto.Forms
 			action.Checked = !action.Checked;
 		}
 
-		public override ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar)
+		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			CheckToolBarButton tbb = new CheckToolBarButton(toolBar.Generator);
+			CheckToolBarButton tbb = new CheckToolBarButton(generator);
 			tbb.ID = this.ID;
 			tbb.Checked = Checked;
 			tbb.Enabled = this.Enabled;
-			if (ShowLabel || actionItem.ShowLabel || toolBar.TextAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
+			if (ShowLabel || actionItem.ShowLabel || textAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			if (Image != null) tbb.Image = Image;
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))
 				tbb.Style = ToolBarItemStyle;

@@ -7,6 +7,7 @@ using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Platform.Mac.Drawing;
 using Eto.Drawing;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -19,6 +20,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public GridViewHandler Handler { get; set; }
 
 			object IMacControl.Handler { get { return Handler; } }
+
+			/// <summary>
+			/// The area to the right and below the rows is not filled with the background
+			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
+			/// </summary>
+			public override void DrawBackground(sd.RectangleF clipRect)
+			{
+				var backgroundColor = Handler.BackgroundColor;
+				if (backgroundColor != Colors.Transparent) {
+					backgroundColor.ToNS ().Set ();
+					NSGraphics.RectFill (clipRect);
+				} else
+					base.DrawBackground (clipRect);
+			}
 		}
 		
 		class EtoTableViewDataSource : NSTableViewDataSource
@@ -96,6 +111,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridViewHandler ()
 		{
+		}
+
+		public bool ShowCellBorders
+		{
+			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : new sd.SizeF(0, 0); } 
 		}
 
 		public override void AttachEvent (string handler)

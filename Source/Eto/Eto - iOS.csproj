@@ -247,6 +247,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\Mouse.cs" />
     <Compile Include="Binding\DelegateBinding.cs" />
+    <Compile Include="Forms\Controls\GridViewSelection.cs" />
+    <Compile Include="Forms\Controls\SearchBox.cs" />
+    <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
+    <Compile Include="Forms\DataStoreView.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

@@ -6,19 +6,19 @@ namespace Eto.Test.Sections.Controls
 {
 	public class TabControlSection : Panel
 	{
-		TabControl tabControl;
+		protected TabControl tabControl;
 
 		public TabControlSection()
 		{
-			Create();			
+			Content = Create();			
 		}
 
-		protected virtual void Create()
+		protected virtual Control Create()
 		{
 			var layout = new DynamicLayout();
 			layout.AddSeparateRow(null, AddTab(), RemoveTab(), null);
 			layout.AddSeparateRow(tabControl = DefaultTabs());
-			Content = layout;
+			return layout;
 		}
 
 		Control AddTab()
@@ -45,7 +45,7 @@ namespace Eto.Test.Sections.Controls
 
 		TabControl DefaultTabs()
 		{
-			var control = new TabControl();
+			var control = CreateTabControl();
 			LogEvents(control);
 			
 			var page = new TabPage { Text = "Tab 1" };
@@ -72,6 +72,11 @@ namespace Eto.Test.Sections.Controls
 			
 			return control;
 			
+		}
+
+		protected virtual TabControl CreateTabControl()
+		{
+			return new TabControl();
 		}
 
 		Control TabOne()
@@ -111,7 +116,7 @@ namespace Eto.Test.Sections.Controls
 
 	public class ThemedTabControlSection : TabControlSection
 	{
-		protected override void Create()
+		protected override Control Create()
 		{
 			// Clone the current generator and add handlers
 			// for TabControl and TabPage. Create a TabControlSection
@@ -125,11 +130,10 @@ namespace Eto.Test.Sections.Controls
 				generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
 				generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());
 
-				base.Create();
+				return base.Create();
 			}
 			finally
-			{
-			
+			{			
 				Generator.Initialize(currentGenerator); // restore
 			}
 		}

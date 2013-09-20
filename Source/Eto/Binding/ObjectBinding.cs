@@ -41,7 +41,7 @@ namespace Eto
 
 		public DualBinding Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			return BindingExtensions.Bind(widgetBinding: this, dataContextBinding: binding, mode: mode);
+			return BindingExtensions.Bind(controlBinding: this, dataContextBinding: binding, mode: mode);
 		}
 
 		public DualBinding Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
@@ -52,7 +52,7 @@ namespace Eto
 		public DualBinding Bind<TObject>(TObject objectValue, DelegateBinding<TObject, TValue> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			var valueBinding = new ObjectBinding(objectValue, objectBinding);
-			return BindingExtensions.Bind(widgetBinding: this, valueBinding: valueBinding, mode: mode);
+			return BindingExtensions.Bind(controlBinding: this, valueBinding: valueBinding, mode: mode);
 		}
 	}
 

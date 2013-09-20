@@ -12,6 +12,7 @@ namespace Eto.Test
 	{
 		public static IEnumerable<Section> TopNodes()
 		{
+			yield return new Section("Forms", FormsSection());
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
 			yield return new Section("Controls", ControlSection());
@@ -76,6 +77,8 @@ namespace Eto.Test
 		{
 			yield return new Section("Table Layout", TableLayoutsSection());
 			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
+			yield return new Section("Pixel Layout", PixelLayoutSection());
+			yield return new Section("Dynamic Layout", DynamicLayoutSection());
 		}
 		
 		static IEnumerable<Section> TableLayoutsSection()
@@ -91,7 +94,18 @@ namespace Eto.Test
 			yield return new Section<Sections.Layouts.ScrollingLayouts.DockLayoutExpansion> { Text = "Dock Layout Expansion" };
 			yield return new Section<Sections.Layouts.ScrollingLayouts.PixelLayoutExpansion> { Text = "Pixel Layout Expansion" };
 		}
-		
+
+		static IEnumerable<Section> PixelLayoutSection()
+		{
+			yield return new Section<Sections.Layouts.PixelLayoutSection.AnchorSection > { Text = "Anchor using PixelLayout" };
+		}
+
+		static IEnumerable<Section> DynamicLayoutSection()
+		{
+			yield return new Section<Sections.Layouts.DynamicLayoutSection.RowsSection> { Text = "Rows" };
+			yield return new Sections.Layouts.DynamicLayoutSection.ComplexLayoutSection { Text = "Complex layout" };
+		}
+				
 		static IEnumerable<Section> DialogsSection()
 		{
 			yield return new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" };
@@ -128,6 +142,11 @@ namespace Eto.Test
 			yield return new Section<Sections.Behaviors.ContextMenuSection> { Text = "Context Menu" };
 			yield return new Section<Sections.Behaviors.WindowsSection> { Text = "Windows" };
 #endif
+		}
+
+		static IEnumerable<Section> FormsSection()
+		{
+			yield return new Sections.FormsSection.ImageViewFormSection { Text = "ImageView Form" };			
 		}
 	}
 }
