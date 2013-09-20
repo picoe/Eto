@@ -56,6 +56,20 @@ namespace Eto.Forms
 
 		public bool Loaded { get; private set; }
 
+		PropertyStore properties;
+
+		/// <summary>
+		/// Gets the attached properties for this widget
+		/// </summary>
+		public PropertyStore Properties
+		{
+			get
+			{
+				if (properties == null) properties = new PropertyStore(this);
+				return properties;
+			}
+		}
+
 		#region Events
 
 		public const string SizeChangedEvent = "Control.SizeChanged";

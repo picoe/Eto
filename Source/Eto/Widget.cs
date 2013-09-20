@@ -95,19 +95,6 @@ namespace Eto
 	public abstract partial class Widget : IHandlerSource, IDisposable, IGeneratorSource
 	{
 		BindingCollection bindings;
-		PropertyStore properties;
-
-		/// <summary>
-		/// Gets the attached properties for this widget
-		/// </summary>
-		public PropertyStore Properties
-		{
-			get
-			{
-				if (properties == null) properties = new PropertyStore (this);
-				return properties;
-			}
-		}
 
 		/// <summary>
 		/// Gets the generator that was used to create the <see cref="Handler"/> for this widget
