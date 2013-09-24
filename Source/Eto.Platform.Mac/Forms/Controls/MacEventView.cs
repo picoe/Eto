@@ -31,6 +31,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			image.UnlockFocus ();
 			
 			var ciImage = CIImage.FromData (image.AsTiff ());
+			image.Dispose();
 			
 			if (control.IsFlipped) {
 				SD.SizeF realSize;
@@ -65,20 +66,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var rep = NSCIImageRep.FromCIImage (ciImage);
 			image.AddRepresentation (rep);
 			image.Draw (SD.PointF.Empty, new SD.RectangleF (SD.PointF.Empty, size), NSCompositingOperation.SourceOver, 1);
+			image.Dispose();
 			/* Use this when implemented in maccore:
 			ciImage.Draw (SD.PointF.Empty, new SD.RectangleF (SD.PointF.Empty, size), NSCompositingOperation.SourceOver, 1);
 			 */
 		}
 
-		WeakReference handler;
-		
-		public IMacViewHandler Handler {
-			get { return handler.Target as IMacViewHandler; }
-			set { handler = new WeakReference (value); }
+		public WeakReference WeakHandler { get; set; }
+
+		public IMacViewHandler Handler
+		{ 
+			get { return (IMacViewHandler)WeakHandler.Target; }
+			set { WeakHandler = new WeakReference(value); } 
 		}
-		
-		object IMacControl.Handler { get { return Handler; } }
-		
+
 		public Control Widget {
 			get { return Handler != null ? Handler.Widget : null; }
 		}
@@ -116,94 +117,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				this.AddCursorRect (new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
-
-		/*
-		public override void KeyDown (NSEvent theEvent)
-		{
-			//base.InterpretKeyEvents (new NSEvent [] { theEvent });
-			if (!KeyDown (Widget, theEvent))
-				base.KeyDown (theEvent);
-		}
-		*/
-		
-		/*
-		public override void MouseDragged (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseMove (args);
-				if (!args.Handled)
-					base.MouseDragged (theEvent);
-			} else
-				base.MouseDragged (theEvent);
-		}
-		
-		public override void MouseUp (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseUp (args);
-				if (!args.Handled)
-					base.MouseUp (theEvent);
-			} else
-				base.MouseUp (theEvent);
-		}
-
-		public override void MouseDown (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				if (theEvent.ClickCount >= 2)
-					Widget.OnMouseDoubleClick (args);
-				
-				if (!args.Handled) {
-					Widget.OnMouseDown (args);
-				}
-					
-				if (!args.Handled)
-					base.MouseDown (theEvent);
-			} else
-				base.MouseDown (theEvent);
-		}
-		
-		public override void RightMouseDown (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				if (theEvent.ClickCount >= 2)
-					Widget.OnMouseDoubleClick (args);
-				
-				if (!args.Handled) {
-					Widget.OnMouseDown (args);
-				}
-				if (!args.Handled)
-					base.RightMouseDown (theEvent);
-			} else
-				base.RightMouseDown (theEvent);
-		}
-			
-		public override void RightMouseUp (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseUp (args);
-				if (!args.Handled)
-					base.RightMouseUp (theEvent);
-			} else
-				base.RightMouseUp (theEvent);
-		}
-			
-		public override void RightMouseDragged (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseMove (args);
-				if (!args.Handled)
-					base.RightMouseDragged (theEvent);
-			} else
-				base.RightMouseDragged (theEvent);
-		}
-		*/
 	}
 }
 

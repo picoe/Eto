@@ -113,7 +113,7 @@ namespace Eto
 		/// </summary>
 		~Widget ()
 		{
-			//Console.WriteLine ("GC: {0}", this.GetType ().FullName);
+			//Console.WriteLine("GC: {0}", this.GetType().FullName);
 			Dispose (false);
 		}
 		
@@ -190,6 +190,7 @@ namespace Eto
 		protected virtual void Dispose (bool disposing)
 		{
 			if (disposing) {
+				Unbind();
 				var handler = this.Handler as IDisposable;
 				if (handler != null)
 					handler.Dispose ();

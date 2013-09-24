@@ -13,71 +13,82 @@ namespace Eto.Platform.Mac.Forms.Controls
 		int MaxLength { get; set; }
 	}
 
-	public class MyFormatter : NSFormatter
+	public class EtoFormatter : NSFormatter
 	{
-		public ITextBoxWithMaxLength Handler { get; set; }
-		
-		public override string StringFor (NSObject value)
+		WeakReference handler;
+
+		public ITextBoxWithMaxLength Handler { get { return (ITextBoxWithMaxLength)handler.Target; } set { handler = new WeakReference(value); } }
+
+		public override string StringFor(NSObject value)
 		{
 			if (value == null)
 				return string.Empty;
 			var str = value as NSString;
 			//if (str != null && value.Handle != IntPtr.Zero)
-			return str.ToString ();
+			return str.ToString();
 		}
 
 		[Export("getObjectValue:forString:errorDescription:")]
-		public bool GetObjectValue (ref IntPtr obj, IntPtr value, ref IntPtr error)
+		public bool GetObjectValue(ref IntPtr obj, IntPtr value, ref IntPtr error)
 		{
 			obj = value;
 			return true;
 		}
-		
+
 		[Export("isPartialStringValid:proposedSelectedRange:originalString:originalSelectedRange:errorDescription:")]
-		public bool IsPartialStringValid (ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
+		public bool IsPartialStringValid(ref NSString value, IntPtr proposedSelRange, NSString origString, NSRange origSelRange, ref IntPtr error)
 		{
-			if (Handler.MaxLength >= 0) {
+			if (Handler.MaxLength >= 0)
+			{
 				int size = value.Length;
-				if (size > Handler.MaxLength) {
+				if (size > Handler.MaxLength)
+				{
 					return false;
 				}
 			}
 			return true;
 		}
-		
+
 		[Export("attributedStringForObjectValue:withDefaultAttributes:")]
-		public NSAttributedString AttributedStringForObjectValue (IntPtr anObject, NSDictionary attributes)
+		public NSAttributedString AttributedStringForObjectValue(IntPtr anObject, NSDictionary attributes)
 		{
 			return null;
 		}
 	}
 
-	public class TextBoxHandler : MacText<NSTextField, TextBox>, ITextBox, ITextBoxWithMaxLength
+	public class EtoTextField : NSTextField, IMacControl
 	{
-		
-		class EtoTextField : NSTextField, IMacControl
-		{
-			object IMacControl.Handler { get { return Handler; } }
+		public WeakReference WeakHandler { get; set; }
 
-			public TextBoxHandler Handler { get; set; }
-			
+		public TextBoxHandler Handler
+		{ 
+			get { return (TextBoxHandler)WeakHandler.Target; }
+			set { WeakHandler = new WeakReference(value); } 
 		}
-		
-		public override bool HasFocus {
-			get {
-				if (Widget.ParentWindow == null) return false;
+	}
+
+	public class TextBoxHandler : MacText<EtoTextField, TextBox>, ITextBox, ITextBoxWithMaxLength
+	{
+
+		public override bool HasFocus
+		{
+			get
+			{
+				if (Widget.ParentWindow == null)
+					return false;
 				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
 			}
 		}
-		
-		public override NSTextField CreateControl()
+
+		public override EtoTextField CreateControl()
 		{
-			return new EtoTextField {
+			return new EtoTextField
+			{
 				Handler = this,
 				Bezeled = true,
 				Editable = true,
 				Selectable = true,
-				Formatter = new MyFormatter{ Handler = this }
+				Formatter = new EtoFormatter{ Handler = this }
 			};
 		}
 
@@ -91,45 +102,53 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxLength = -1;
 		}
 
-		protected override Size GetNaturalSize (Size availableSize)
+		protected override Size GetNaturalSize(Size availableSize)
 		{
-			var size = base.GetNaturalSize (availableSize);
-			size.Width = Math.Max (100, size.Height);
+			var size = base.GetNaturalSize(availableSize);
+			size.Width = Math.Max(100, size.Height);
 			return size;
 		}
-		
-		public override void AttachEvent (string handler)
+
+		public override void AttachEvent(string handler)
 		{
-			switch (handler) {
-			case TextArea.TextChangedEvent:
-				Control.Changed += delegate {
-					Widget.OnTextChanged (EventArgs.Empty);
-				};
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+			switch (handler)
+			{
+				case TextArea.TextChangedEvent:
+					Control.Changed += HandleTextChanged;
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
 			}
 		}
-		
-		public bool ReadOnly {
+
+		static void HandleTextChanged (object sender, EventArgs e)
+		{
+			var h = ((IMacControl)((NSNotification)sender).Object).WeakHandler.Target as TextBoxHandler;
+			h.Widget.OnTextChanged(EventArgs.Empty);
+		}
+
+		public bool ReadOnly
+		{
 			get { return !Control.Editable; }
 			set { Control.Editable = !value; }
 		}
-		
-		public int MaxLength {
+
+		public int MaxLength
+		{
 			get;
 			set;
 		}
-		
-		public string PlaceholderText {
+
+		public string PlaceholderText
+		{
 			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
 		}
 
 		public void SelectAll()
 		{
-			Control.SelectText (Control);
+			Control.SelectText(Control);
 		}
 	}
 }

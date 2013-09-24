@@ -17,10 +17,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoTableView : NSTableView, IMacControl
 		{
-			public GridViewHandler Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
 
-			object IMacControl.Handler { get { return Handler; } }
-
+			public GridViewHandler Handler
+			{ 
+				get { return (GridViewHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+			
 			/// <summary>
 			/// The area to the right and below the rows is not filled with the background
 			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
@@ -38,7 +42,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		class EtoTableViewDataSource : NSTableViewDataSource
 		{
-			public GridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 			
 			public override int GetRowCount (NSTableView tableView)
 			{
@@ -69,7 +74,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class EtoTableDelegate : NSTableViewDelegate
 		{
-			public GridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
 			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{

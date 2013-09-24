@@ -17,9 +17,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSTableView Table { get; }
 	}
 
-	class EtoScrollView : NSScrollView
+	class EtoGridScrollView : NSScrollView
 	{
-		public IGridHandler Handler { get; set; }
+		WeakReference handler;
+
+		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 		bool autoSized;
 
@@ -43,7 +45,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 	class EtoTableHeaderView : NSTableHeaderView
 	{
-		public IGridHandler Handler { get; set; }
+		WeakReference handler;
+
+		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 		public override void MouseDown(NSEvent theEvent)
 		{
@@ -214,7 +218,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridHandler()
 		{
-			ScrollView = new EtoScrollView
+			ScrollView = new EtoGridScrollView
 			{
 				Handler = this,
 				HasVerticalScroller = true,
@@ -224,21 +228,23 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 
 			ScrollView.ContentView.PostsBoundsChangedNotifications = true;
-			this.AddObserver(NSView.NSViewBoundsDidChangeNotification, e => {
-				var handler = (GridHandler<T,W>)e.Handler;
-				if (handler.Widget.Loaded)
+			this.AddControlObserver(NSView.BoundsChangedNotification, HandleScrolled, ScrollView.ContentView);
+		}
+
+		static void HandleScrolled(ObserverActionArgs e)
+		{
+			var handler = (GridHandler<T,W>)e.Handler;
+			if (handler.Widget.Loaded)
+			{
+				var rect = handler.Table.VisibleRect();
+				if (!rect.IsEmpty)
 				{
-					var rect = handler.Table.VisibleRect();
-					if (!rect.IsEmpty)
+					foreach (var col in handler.Widget.Columns)
 					{
-						foreach (var col in handler.Widget.Columns)
-						{
-							((GridColumnHandler)col.Handler).Resize();
-						}
+						((GridColumnHandler)col.Handler).Resize();
 					}
 				}
-			}, ScrollView.ContentView);
-
+			}
 		}
 
 		public override void AttachEvent(string handler)

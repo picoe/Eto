@@ -12,8 +12,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		public class EtoCell : MacImageListItemCell, IMacControl
 		{
-			public object Handler { get; set; }
-			
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
 			public EtoCell ()
 			{
 			}

@@ -13,10 +13,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{		
 		class EtoTextField : NSSearchField, IMacControl
 		{
-			object IMacControl.Handler { get { return Handler; } }
+			public WeakReference WeakHandler { get; set; }
 
-			public SearchBoxHandler Handler { get; set; }
-			
+			public SearchBoxHandler Handler
+			{ 
+				get { return (SearchBoxHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
 		}
 		
 		public override bool HasFocus {
@@ -33,7 +37,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Bezeled = true,
 				Editable = true,
 				Selectable = true,
-				Formatter = new MyFormatter{ Handler = this }
+				Formatter = new EtoFormatter{ Handler = this }
 			};
 		}
 

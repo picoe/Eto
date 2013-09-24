@@ -3,6 +3,7 @@ using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
 using System.Diagnostics;
+using Eto.Platform.Mac.Forms.Controls;
 
 #if IOS
 using MonoTouch.UIKit;
@@ -55,7 +56,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public TableLayoutHandler()
 		{
-			Control = new NSView();
+			Control = new MacEventView { Handler = this };
 		}
 
 		protected override void Initialize()

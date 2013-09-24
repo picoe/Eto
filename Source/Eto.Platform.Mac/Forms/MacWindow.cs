@@ -75,7 +75,9 @@ namespace Eto.Platform.Mac.Forms
 
 	public class CustomFieldEditor : NSTextView
 	{
-		public Control Widget { get; set; }
+		WeakReference widget;
+
+		public Control Widget { get { return (Control)widget.Target; } set { widget = new WeakReference(value); } }
 
 		public CustomFieldEditor()
 		{
@@ -294,7 +296,7 @@ namespace Eto.Platform.Mac.Forms
 				var control = forObject as IMacControl;
 				if (control != null)
 				{
-					var handler = control.Handler as IMacViewHandler;
+					var handler = control.WeakHandler.Target as IMacViewHandler;
 					if (handler != null && handler.IsEventHandled(TextBox.KeyDownEvent))
 					{
 						if (fieldEditor == null)

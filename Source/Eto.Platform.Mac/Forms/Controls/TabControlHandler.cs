@@ -18,7 +18,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoTabView : NSTabView, IMacControl
 		{
-			public object Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 		}
 
 		// CWEN: should have some form of implementation here
@@ -33,17 +39,28 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
-			Control.DidSelect += delegate {
-				if (!disableSelectedIndexChanged)
-					this.Widget.OnSelectedIndexChanged (EventArgs.Empty);
-			};
-			Control.ShouldSelectTabViewItem += (tabView, item) => {
-				var tab = this.Widget.TabPages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
-				if (tab != null)
-					return tab.Enabled;
-				else
-					return true;
-			}; 
+			Control.ShouldSelectTabViewItem += HandleShouldSelectTabViewItem;
+			Control.DidSelect += HandleDidSelect;
+		}
+
+		static bool HandleShouldSelectTabViewItem(NSTabView tabView, NSTabViewItem item)
+		{
+			var handler = ((EtoTabView)tabView).WeakHandler.Target as TabControlHandler;
+			var tab = handler.Widget.TabPages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
+			if (tab != null)
+				return tab.Enabled;
+			else
+				return true;
+		}
+
+		static void HandleDidSelect (object sender, NSTabViewItemEventArgs e)
+		{
+			var handler = ((IMacControl)sender).WeakHandler.Target as TabControlHandler;
+			if (handler != null)
+			{
+				if (!handler.disableSelectedIndexChanged)
+					handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+			}
 		}
 
 		public int SelectedIndex

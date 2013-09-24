@@ -25,28 +25,37 @@ namespace Eto.Platform.Mac.Forms.Controls
 		class MyButtonCell : NSButtonCell
 		{
 			public Color? Color { get; set; }
-			
-			public override void DrawBezelWithFrame (System.Drawing.RectangleF frame, NSView controlView)
+
+			public override void DrawBezelWithFrame(System.Drawing.RectangleF frame, NSView controlView)
 			{
-				if (Color != null) {
-					MacEventView.Colourize (controlView, Color.Value, delegate {
-						base.DrawBezelWithFrame (frame, controlView);
+				if (Color != null)
+				{
+					MacEventView.Colourize(controlView, Color.Value, delegate
+					{
+						base.DrawBezelWithFrame(frame, controlView);
 					});
-				} else 
-					base.DrawBezelWithFrame (frame, controlView);
+				}
+				else 
+					base.DrawBezelWithFrame(frame, controlView);
 			}
 		}
-		
+
 		class EtoButton : NSButton, IMacControl
 		{
-			
-			public ButtonHandler Handler { get; set; }
-			
-			public override void SizeToFit ()
+			public WeakReference WeakHandler { get; set; }
+
+			public ButtonHandler Handler
+			{ 
+				get { return (ButtonHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			public override void SizeToFit()
 			{
-				base.SizeToFit ();
+				base.SizeToFit();
 				
-				if (Handler.AutoSize) {
+				if (Handler.AutoSize)
+				{
 					var frame = this.Frame;
 					if (frame.Width < Handler.defaultSize.Width)
 						frame.Width = Handler.defaultSize.Width;
@@ -55,14 +64,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 					this.Frame = frame;
 				}
 			}
-			
-			object IMacControl.Handler { get { return Handler; } }
 		}
-		
-		
-		public ButtonHandler ()
+
+		public ButtonHandler()
 		{
-			Control = new EtoButton{ 
+			Control = new EtoButton
+			{ 
 				Handler = this,
 				Cell = new MyButtonCell (),
 				Title = string.Empty,
@@ -70,32 +77,43 @@ namespace Eto.Platform.Mac.Forms.Controls
 				ImagePosition = NSCellImagePosition.ImageLeft
 			};
 			defaultSize = Button.DefaultSize;
-			Control.SetButtonType (NSButtonType.MomentaryPushIn);
-			Control.SetFrameSize (defaultSize.ToSDSizeF ());
-			Control.Activated += delegate {
-				Widget.OnClick (EventArgs.Empty);
-			};
-			SetBezel ();
+			Control.SetButtonType(NSButtonType.MomentaryPushIn);
+			Control.SetFrameSize(defaultSize.ToSDSizeF());
+			Control.Activated += HandleActivated;
+			SetBezel();
 		}
-		
-		public override void AttachEvent (string handler)
+
+		static void HandleActivated(object sender, EventArgs e)
 		{
-			switch (handler) {
-			default:
-				base.AttachEvent (handler);
-				break;
+			var handler = ((IMacControl)sender).WeakHandler.Target as ButtonHandler;
+			if (handler != null)
+			{
+				handler.Widget.OnClick(EventArgs.Empty);
 			}
 		}
 
-		public override Color BackgroundColor {
-			get {
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
+		}
+
+		public override Color BackgroundColor
+		{
+			get
+			{
 				var cell = Control.Cell as MyButtonCell;
 				return cell.Color ?? Colors.Transparent;
 			}
-			set {
+			set
+			{
 				var cell = Control.Cell as MyButtonCell;
 				cell.Color = value.A > 0 ? (Color?)value : null;
-				Control.SetNeedsDisplay ();
+				Control.SetNeedsDisplay();
 			}
 		}
 
@@ -104,10 +122,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return image; }
 			set
 			{
-				var oldSize = GetPreferredSize (Size.MaxValue);
+				var oldSize = GetPreferredSize(Size.MaxValue);
 				image = value;
-				Control.Image = image.ToNS ();
-				SetBezel ();
+				Control.Image = image.ToNS();
+				SetBezel();
 				LayoutIfNeeded(oldSize);
 			}
 		}
@@ -118,13 +136,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				base.Size = value;
-				SetBezel ();
+				SetBezel();
 			}
 		}
 
 		bool NeedsBiggerBezel
 		{
-			get {
+			get
+			{
 				var size = PreferredSize ?? defaultSize;
 				if (size.Height > 26)
 					return true;
@@ -132,16 +151,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return false;
 				if (image.Size.Height > 18)
 					return true;
-				switch (Control.ImagePosition) {
-				case NSCellImagePosition.ImageAbove:
-				case NSCellImagePosition.ImageBelow:
-					return !string.IsNullOrEmpty (this.Text);
+				switch (Control.ImagePosition)
+				{
+					case NSCellImagePosition.ImageAbove:
+					case NSCellImagePosition.ImageBelow:
+						return !string.IsNullOrEmpty(this.Text);
 				}
 				return false;
 			}
 		}
 
-		void SetBezel ()
+		void SetBezel()
 		{
 			Control.BezelStyle = NeedsBiggerBezel ? NSBezelStyle.RegularSquare : NSBezelStyle.Rounded;
 		}
@@ -152,27 +172,29 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				base.Text = value;
-				SetImagePosition ();
+				SetImagePosition();
 			}
 		}
 
-		void SetImagePosition ()
+		void SetImagePosition()
 		{
-			var position = imagePosition.ToNS ();
+			var position = imagePosition.ToNS();
 			if ((position == NSCellImagePosition.ImageAbove || position == NSCellImagePosition.ImageBelow) && string.IsNullOrEmpty(this.Text))
 				position = NSCellImagePosition.ImageOnly;
 			Control.ImagePosition = position;
-			SetBezel ();
+			SetBezel();
 		}
 
 		public ButtonImagePosition ImagePosition
 		{
 			get { return imagePosition; }
-			set {
-				if (imagePosition != value) {
-					var oldSize = GetPreferredSize (Size.MaxValue);
+			set
+			{
+				if (imagePosition != value)
+				{
+					var oldSize = GetPreferredSize(Size.MaxValue);
 					imagePosition = value;
-					SetImagePosition ();
+					SetImagePosition();
 					LayoutIfNeeded(oldSize);
 				}
 			}

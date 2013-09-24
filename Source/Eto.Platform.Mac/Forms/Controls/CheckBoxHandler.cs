@@ -10,31 +10,45 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public class EtoCheckBoxButton : NSButton, IMacControl
 		{
-			public object Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 		}
 
-		public CheckBoxHandler ()
+		public CheckBoxHandler()
 		{
 			Control = new EtoCheckBoxButton { Handler = this };
-			Control.SetButtonType (NSButtonType.Switch);
-			Control.Activated += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
+			Control.SetButtonType(NSButtonType.Switch);
+			Control.Activated += HandleActivated;
 		}
 
-		public bool? Checked {
-			get { 
-				switch (Control.State) {
-				case NSCellStateValue.On:
-					return true;
-				case NSCellStateValue.Off:
-					return false;
-				default:
-				case NSCellStateValue.Mixed:
-					return null;
+		static void HandleActivated(object sender, EventArgs e)
+		{
+			var handler = ((IMacControl)sender).WeakHandler.Target as CheckBoxHandler;
+			handler.Widget.OnCheckedChanged(EventArgs.Empty);
+		}
+
+		public bool? Checked
+		{
+			get
+			{ 
+				switch (Control.State)
+				{
+					case NSCellStateValue.On:
+						return true;
+					case NSCellStateValue.Off:
+						return false;
+					default:
+					case NSCellStateValue.Mixed:
+						return null;
 				}
 			}
-			set { 
+			set
+			{ 
 				if (value == null)
 					Control.State = NSCellStateValue.Mixed;
 				else if (value.Value)
@@ -43,8 +57,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Control.State = NSCellStateValue.Off;
 			}
 		}
-		
-		public bool ThreeState {
+
+		public bool ThreeState
+		{
 			get { return Control.AllowsMixedState; }
 			set { Control.AllowsMixedState = value; }
 		}

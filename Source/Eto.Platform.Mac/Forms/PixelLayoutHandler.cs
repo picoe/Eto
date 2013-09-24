@@ -6,6 +6,7 @@ using SD = System.Drawing;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Platform.Mac.Drawing;
+using Eto.Platform.Mac.Forms.Controls;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -17,7 +18,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public PixelLayoutHandler()
 		{
-			Control = new NSView();
+			Control = new MacEventView { Handler = this };
 		}
 		
 		public SD.RectangleF GetPosition (Control control)

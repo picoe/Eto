@@ -28,11 +28,12 @@
     <EnableCodeSigning>False</EnableCodeSigning>
     <CreatePackage>False</CreatePackage>
     <EnablePackageSigning>False</EnablePackageSigning>
-    <IncludeMonoRuntime>False</IncludeMonoRuntime>
+    <IncludeMonoRuntime>true</IncludeMonoRuntime>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>3rd Party Mac Developer Installer</PackageSigningKey>
-    <UseSGen>False</UseSGen>
-    <I18n />
+    <UseSGen>true</UseSGen>
+    <I18n>
+    </I18n>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
@@ -45,7 +46,8 @@
     <UseSGen>True</UseSGen>
     <CodeSigningKey>Mac Developer</CodeSigningKey>
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
-    <I18n />
+    <I18n>
+    </I18n>
   </PropertyGroup>
   <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <ItemGroup>
@@ -55,6 +57,9 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="XamMac" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\..\Libraries\Json.NET\Bin\Net40\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Startup.cs" />

@@ -32,7 +32,8 @@ namespace Eto.Platform.Mac.Forms
 			{
 				if (content != null)
 				{ 
-					content.GetContainerView().RemoveFromSuperview(); 
+					var oldContent = content.GetContainerView();
+					oldContent.RemoveFromSuperview();
 				}
 
 				content = value;
@@ -120,19 +121,12 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		bool sizeChangedAdded;
-
-		public override void OnLoadComplete(EventArgs e)
+		protected override void Initialize()
 		{
-			base.OnLoadComplete(e);
-
-			if (!sizeChangedAdded)
-			{
-				Widget.SizeChanged += (sender, ev) => {
-					this.LayoutChildren();
-				};
-				sizeChangedAdded = true;
-			}
+			base.Initialize();
+			Widget.SizeChanged += (sender, ev) => {
+				this.LayoutChildren();
+			};
 		}
 	}
 }

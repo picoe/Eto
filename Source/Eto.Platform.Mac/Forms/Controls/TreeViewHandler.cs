@@ -225,8 +225,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoOutlineView : NSOutlineView, IMacControl
 		{
-			public TreeViewHandler Handler { get; set; }
-			object IMacControl.Handler { get { return Handler; } }
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 
 			/// <summary>
 			/// The area to the right and below the rows is not filled with the background
@@ -274,8 +279,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.AddColumn(column);
 			Control.OutlineTableColumn = column;
 			
-			Scroll = new NSScrollView
+			Scroll = new EtoScrollView
 			{
+				Handler = this,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,

@@ -24,7 +24,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			switch (handler)
 			{
-				case Splitter.SplitterMovedEvent:
+				case Splitter.PositionChangedEvent:
 					this.raiseSplitterMoved = true;
 					break;
 				default:
@@ -145,15 +145,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 					}
 				}
 				if (Handler.raiseSplitterMoved)
-					Handler.Widget.OnSplitterMoved(new EventArgs());
+					Handler.Widget.OnPositionChanged(EventArgs.Empty);
 			}
 		}
 		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
 		class EtoSplitView : NSSplitView, IMacControl
 		{
-			public SplitterHandler Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
 
-			object IMacControl.Handler { get { return Handler; } }
+			public SplitterHandler Handler
+			{ 
+				get { return (SplitterHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 
 			public override void MouseDown(NSEvent theEvent)
 			{

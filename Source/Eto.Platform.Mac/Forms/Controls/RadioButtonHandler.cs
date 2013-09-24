@@ -10,29 +10,40 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class RadioButtonHandler : MacButton<NSButton, RadioButton>, IRadioButton
 	{
 		List<RadioButton> group;
-		
+
 		public event EventHandler<EventArgs> Activated;
-		
+
 		public class EtoRadioButton : NSButton, IMacControl
 		{
-			public object Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 		}
-		
+
 		public RadioButtonHandler()
 		{
-			Control = new EtoRadioButton{ Handler = this };
+			Control = new EtoRadioButton { Handler = this };
 			Control.SetButtonType(NSButtonType.Radio);
-			Control.Activated += control_Activated;
+			Control.Activated += HandleActivated;
 		}
-		
-		void control_Activated(object sender, EventArgs e)
+
+		static void HandleActivated(object sender, EventArgs e)
 		{
-			if (Activated != null) Activated(this, e);
-			Widget.OnClick(EventArgs.Empty);
-			Widget.OnCheckedChanged(EventArgs.Empty);
-			
-			if (Control.AcceptsFirstResponder () && Control.Window != null) 
-				Control.Window.MakeFirstResponder (Control);
+			var handler = GetHandler(sender) as RadioButtonHandler;
+			if (handler != null)
+			{
+				if (handler.Activated != null)
+					handler.Activated(handler, e);
+				handler.Widget.OnClick(EventArgs.Empty);
+				handler.Widget.OnCheckedChanged(EventArgs.Empty);
+
+				if (handler.Control.AcceptsFirstResponder() && handler.Control.Window != null) 
+					handler.Control.Window.MakeFirstResponder(handler.Control);
+			}
 		}
 
 		public void Create(RadioButton controller)
@@ -64,20 +75,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 		}
-		
+
 		public bool Checked
 		{
 			get { return Control.State == NSCellStateValue.On; }
-			set { 
+			set
+			{ 
 				if (value != Checked)
 				{
 					Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off;
 					Widget.OnCheckedChanged(EventArgs.Empty);
-					if (Activated != null) Activated(this, EventArgs.Empty);
+					if (Activated != null)
+						Activated(this, EventArgs.Empty);
 					
 				}
 			}
 		}
-		
 	}
 }
