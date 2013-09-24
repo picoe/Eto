@@ -12,69 +12,94 @@ namespace Eto.Platform.Windows
 	{
 		public class MyLabel : swf.Label
 		{
+			sd.StringFormat stringFormat;
+			WrapMode wrapMode;
+			HorizontalAlign horizontalAlign;
+
 			public LabelHandler Handler { get; set; }
 
-			public WrapMode Wrap { get; set; }
+			public WrapMode Wrap
+			{
+				get { return wrapMode; }
+				set
+				{
+					wrapMode = value;
+					SetStringFormat();
+				}
+			}
 
-			public HorizontalAlign HorizontalAlign { get; set; }
+			public HorizontalAlign HorizontalAlign
+			{
+				get { return horizontalAlign; }
+				set
+				{
+					horizontalAlign = value;
+					SetStringFormat();
+				}
+			}
 
 			public Eto.Forms.VerticalAlign VerticalAlign { get; set; }
 
 			public MyLabel()
 			{
+				stringFormat = new sd.StringFormat();
 				Wrap = WrapMode.Word;
 			}
 
+			static sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				using (var format = CreateStringFormat())
-				using (var g = sd.Graphics.FromHwnd(this.Handle))
-				{
-					var bordersAndPadding = this.Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
-					proposedSize -= bordersAndPadding;
-					proposedSize.Height = Math.Max(0, proposedSize.Height);
-					if (proposedSize.Width <= 1)
-						proposedSize.Width = int.MaxValue;
+				var bordersAndPadding = this.Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
+				proposedSize -= bordersAndPadding;
+				proposedSize.Height = Math.Max(0, proposedSize.Height);
+				if (proposedSize.Width <= 1)
+					proposedSize.Width = int.MaxValue;
 
-					var size = g.MeasureString(this.Text, this.Font, proposedSize.Width, format);
+				var size = graphics.MeasureString(this.Text, this.Font, proposedSize.Width, stringFormat);
 
-					size += bordersAndPadding;
-					if (size.Width < MinimumSize.Width)
-						size.Width = MinimumSize.Width;
-					if (size.Height < MinimumSize.Height)
-						size.Height = MinimumSize.Height;
-					return sd.Size.Ceiling(size);
-				}
+				size += bordersAndPadding;
+				if (size.Width < MinimumSize.Width)
+					size.Width = MinimumSize.Width;
+				if (size.Height < MinimumSize.Height)
+					size.Height = MinimumSize.Height;
+				return sd.Size.Ceiling(size);
 			}
 
-			sd.StringFormat CreateStringFormat()
+			void SetStringFormat()
 			{
-				var format = new sd.StringFormat();
-				format.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
+				stringFormat.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
 				switch (this.Wrap)
 				{
 					case WrapMode.None:
-						format.Trimming = System.Drawing.StringTrimming.None;
-						format.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
+						stringFormat.Trimming = System.Drawing.StringTrimming.None;
+						stringFormat.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
 						break;
 					case WrapMode.Word:
-						format.Trimming = System.Drawing.StringTrimming.Word;
-						format.FormatFlags = 0;
+						stringFormat.Trimming = System.Drawing.StringTrimming.Word;
+						stringFormat.FormatFlags = 0;
 						break;
 					case WrapMode.Character:
-						format.Trimming = System.Drawing.StringTrimming.Character;
-						format.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
+						stringFormat.Trimming = System.Drawing.StringTrimming.Character;
+						stringFormat.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
 						break;
 				}
-				return format;
+				switch (this.HorizontalAlign)
+				{
+					case HorizontalAlign.Right:
+						stringFormat.Alignment = System.Drawing.StringAlignment.Far;
+						break;
+					case HorizontalAlign.Center:
+						stringFormat.Alignment = System.Drawing.StringAlignment.Center;
+						break;
+				}
+
 			}
 
 			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 			{
-				using (var format = CreateStringFormat())
 				using (var b = new sd.SolidBrush(this.ForeColor))
 				{
-
 					if (this.Wrap == WrapMode.Character)
 					{
 						// draw string one line at a time to trim to character..
@@ -85,9 +110,9 @@ namespace Eto.Platform.Windows
 						var height = font.GetHeight(e.Graphics);
 						while (!string.IsNullOrEmpty(text))
 						{
-							e.Graphics.MeasureString(text, font, this.Bounds.Size, format, out charactersFitted, out linesFilled);
+							e.Graphics.MeasureString(text, font, this.Bounds.Size, stringFormat, out charactersFitted, out linesFilled);
 
-							e.Graphics.DrawString(text.Substring(0, charactersFitted), font, b, drawPoint, format);
+							e.Graphics.DrawString(text.Substring(0, charactersFitted), font, b, drawPoint, stringFormat);
 
 							if (charactersFitted >= text.Length) break;
 							text = text.Substring(charactersFitted);
@@ -98,7 +123,7 @@ namespace Eto.Platform.Windows
 					else
 					{
 						var rect = new sd.RectangleF(Margin.Left, Margin.Top, this.Bounds.Width - Margin.Horizontal, this.Bounds.Height - Margin.Vertical);
-						var size = e.Graphics.MeasureString(this.Text, this.Font, (int)rect.Width, format);
+						var size = e.Graphics.MeasureString(this.Text, this.Font, (int)rect.Width, stringFormat);
 
 						if (size.Height < rect.Height)
 						{
@@ -130,17 +155,7 @@ namespace Eto.Platform.Windows
 							}
 						}
 
-						switch (this.HorizontalAlign)
-						{
-							case HorizontalAlign.Right:
-								format.Alignment = System.Drawing.StringAlignment.Far;
-								break;
-							case HorizontalAlign.Center:
-								format.Alignment = System.Drawing.StringAlignment.Center;
-								break;
-						}
-
-						e.Graphics.DrawString(this.Text, this.Font, b, rect, format);
+						e.Graphics.DrawString(this.Text, this.Font, b, rect, stringFormat);
 					}
 				}
 			}

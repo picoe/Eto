@@ -1,41 +1,53 @@
 using System;
 using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class NumericUpDownHandler : WindowsControl<SWF.NumericUpDown, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : WindowsControl<swf.NumericUpDown, NumericUpDown>, INumericUpDown
 	{
-		public NumericUpDownHandler ()
+		public NumericUpDownHandler()
 		{
-			Control = new SWF.NumericUpDown{
+			Control = new swf.NumericUpDown
+			{
 				Maximum = 100,
 				Minimum = 0,
 				Width = 80
 			};
-			this.Control.ValueChanged += delegate {
-				Widget.OnValueChanged (EventArgs.Empty);
+			Control.ValueChanged += delegate
+			{
+				Widget.OnValueChanged(EventArgs.Empty);
 			};
 		}
-		
-		public bool ReadOnly {
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			LeakHelper.UnhookObject(Control);
+		}
+
+		public bool ReadOnly
+		{
 			get { return Control.ReadOnly; }
 			set { Control.ReadOnly = value; }
 		}
-		
-		public double Value {
+
+		public double Value
+		{
 			get { return (double)Control.Value; }
 			set { Control.Value = (decimal)value; }
 		}
-		
-		public double MinValue {
+
+		public double MinValue
+		{
 			get { return (double)Control.Minimum; }
 			set { Control.Minimum = (decimal)value; }
 		}
 
-		public double MaxValue {
+		public double MaxValue
+		{
 			get { return (double)Control.Maximum; }
 			set { Control.Maximum = (decimal)value; }
 		}

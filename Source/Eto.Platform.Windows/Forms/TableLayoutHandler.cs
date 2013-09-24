@@ -75,19 +75,25 @@ namespace Eto.Platform.Windows
 
 		void SetScale(Control control, int x, int y)
 		{
-			var xscale = columnScale[x] || (x == columnScale.Length - 1 && lastColumnScale);
-			var yscale = rowScale[y] || (y == rowScale.Length - 1 && lastRowScale);
-			control.SetScale(this.XScale && xscale, this.YScale && yscale);
+			var xscale = this.XScale && ((x == columnScale.Length - 1 && lastColumnScale) || columnScale[x]);
+			var yscale = this.YScale && ((y == rowScale.Length - 1 && lastRowScale) || rowScale[y]);
+			control.SetScale(xscale, yscale);
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
 			for (int y = 0; y < rowScale.Length; y++)
+			{
+				var ys = yscale && ((y == rowScale.Length - 1 && lastRowScale) || rowScale[y]);
 				for (int x = 0; x < columnScale.Length; x++)
 				{
-					SetScale(views[x, y], x, y);
+					var xs = xscale && ((x == columnScale.Length - 1 && lastColumnScale) || columnScale[x]);
+					var control = views[x,y];
+					if (control != null)
+						control.SetScale(xs, ys);
 				}
+			}
 		}
 
 		public void Add(Control child, int x, int y)
