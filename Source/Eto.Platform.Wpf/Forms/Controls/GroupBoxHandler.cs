@@ -23,9 +23,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public override void SetContainerContent(sw.FrameworkElement content)
 		{
 			Control.Content = content;
-			var margin = content.Margin;
-			margin.Bottom = 10;
-			content.Margin = margin;
 		}
 
 		public override Color BackgroundColor

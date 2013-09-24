@@ -257,7 +257,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						row1.Height = new sw.GridLength (value, sw.GridUnitType.Pixel);
 						break;
 					case SplitterFixedPanel.Panel2:
-						row2.Height = new sw.GridLength (controlHeight - value, sw.GridUnitType.Pixel);
+						row2.Height = new sw.GridLength (Math.Max(0, controlHeight - value), sw.GridUnitType.Pixel);
 						break;
 					}
 				}

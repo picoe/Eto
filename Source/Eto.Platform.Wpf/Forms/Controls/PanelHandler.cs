@@ -14,8 +14,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		public PanelHandler ()
 		{
-			Control = new swc.Border ();
-			Control.Background = swm.Brushes.Transparent; // so we get mouse events
+			Control = new swc.Border
+			{
+				Focusable = false,
+				Background = swm.Brushes.Transparent // to get mouse events
+			};
 		}
 
 		public override Color BackgroundColor

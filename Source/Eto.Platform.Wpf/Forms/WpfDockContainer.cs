@@ -35,20 +35,76 @@ namespace Eto.Platform.Wpf.Forms
 
 		public override sw.Size GetPreferredSize(sw.Size? constraint)
 		{
-			var size = constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
-			size = new sw.Size(Math.Max(0, size.Width - Padding.Horizontal), Math.Max(0, size.Height - Padding.Vertical));
-			var baseSize = base.GetPreferredSize(size);
-			if (UseContentSize)
+			var size = PreferredSize;
+			if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
 			{
-				var preferredSize = content.GetPreferredSize(size);
-				baseSize = new sw.Size(Math.Max(baseSize.Width, preferredSize.Width + Padding.Horizontal), Math.Max(baseSize.Height, preferredSize.Height + Padding.Vertical));
+				var contentSize = constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
+				contentSize = new sw.Size(Math.Max(0, contentSize.Width - Padding.Horizontal), Math.Max(0, contentSize.Height - Padding.Vertical));
+				var baseSize = sw.Size.Empty;
+				if (UseContentSize)
+				{
+					var preferredSize = content.GetPreferredSize(contentSize);
+					baseSize = new sw.Size(Math.Max(0, Math.Max(baseSize.Width, preferredSize.Width + Padding.Horizontal)), Math.Max(0, Math.Max(baseSize.Height, preferredSize.Height + Padding.Vertical)));
+				}
+				else
+					baseSize = base.GetPreferredSize(contentSize);
+				if (double.IsNaN(size.Width))
+					size.Width = baseSize.Width;
+				if (double.IsNaN(size.Height))
+					size.Height = baseSize.Height;
 			}
-			return new sw.Size(Math.Max(0, baseSize.Width), Math.Max(0, baseSize.Height));
+			return new sw.Size(Math.Max(0, size.Width), Math.Max(0, size.Height));
 		}
+
+		public class EtoBorder : swc.Border
+		{
+
+			// Override the default Measure method of Panel 
+			protected override sw.Size MeasureOverride(sw.Size availableSize)
+			{
+				sw.Size panelDesiredSize = new sw.Size();
+
+				// In our example, we just have one child.  
+				// Report that our panel requires just the size of its only child. 
+				var child = Child as sw.FrameworkElement;
+				if (child != null)
+				{
+					child.Measure(availableSize);
+					panelDesiredSize = child.DesiredSize;
+					if (!double.IsPositiveInfinity(availableSize.Width))
+					{
+						panelDesiredSize.Width = availableSize.Width;
+						child.Width = availableSize.Width;
+					}
+					if (!double.IsPositiveInfinity(availableSize.Height))
+					{
+						panelDesiredSize.Height = availableSize.Height;
+						child.Height = availableSize.Height;
+					}
+				}
+
+				return panelDesiredSize;
+			}
+
+			protected override sw.Size ArrangeOverride(sw.Size finalSize)
+			{
+				var child = Child;
+				if (child != null)
+				{
+					child.Arrange(new sw.Rect(new sw.Point(), finalSize));
+				}
+				return finalSize; // Returns the final Arranged size
+			}
+		}
+
 
 		public WpfDockContainer()
 		{
-			border = new swc.Border();
+			border = new swc.Border
+			{
+				SnapsToDevicePixels = true,
+				Focusable = false,
+			};
 			border.SizeChanged += (sender, e) =>
 			{
 				var element = content.GetContainerControl();
