@@ -37,7 +37,7 @@ namespace Eto.Test
 		}
 		
 		public Section (string text, IEnumerable<Section> sections)
-			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase))
+			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
 		{
 			this.Text = text;
 			this.Expanded = true;
@@ -136,19 +136,16 @@ namespace Eto.Test
 		
 	public class SectionList : TreeGridView
 	{
-		public SectionList(Func<IEnumerable<Section>> topNodes)
+		public SectionList(IEnumerable<Section> topNodes)
 		{
-			this.TopNodes = topNodes;
 			this.Style = "sectionList";
 			this.ShowHeader = false;
 
 			Columns.Add (new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
-			this.DataStore = new Section ("Top", TopNodes ());
+			this.DataStore = new Section ("Top", topNodes);
 			HandleEvent (SelectionChangedEvent);
 		}
-
-		private Func<IEnumerable<Section>> TopNodes { get; set; }
 
 		public string SectionTitle {
 			get {

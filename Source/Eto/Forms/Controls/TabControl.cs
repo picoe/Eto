@@ -57,7 +57,6 @@ namespace Eto.Forms
 			: base(generator, handler, initialize)
 		{
 			pages = new TabPageCollection(this);
-			this.handler = handler;
 		}
 
 		public int SelectedIndex

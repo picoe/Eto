@@ -13,9 +13,9 @@ namespace Eto.Test.Sections.Controls
 			layout.BeginVertical();
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Default" });
-			layout.Add(this.Default(), true);
+			layout.Add(this.Default(), xscale: true);
 			layout.Add(new Label { Text = "With Background" });
-			layout.Add(this.WithBackground(), true);
+			layout.Add(this.WithBackground(), xscale: true);
 			layout.EndHorizontal();
 			layout.EndVertical();
 			layout.BeginVertical();

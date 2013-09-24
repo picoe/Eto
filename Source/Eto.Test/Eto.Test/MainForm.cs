@@ -29,11 +29,11 @@ namespace Eto.Test
 			}
 		}
 
-		public MainForm(Func<IEnumerable<Section>> topNodes = null)
+		public MainForm(IEnumerable<Section> topNodes = null)
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes);
+			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes());
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
@@ -75,6 +75,10 @@ namespace Eto.Test
 			};
 			SectionList.SelectedItemChanged += (sender, e) => {
 				SectionList.Show(navigation, contentContainer);
+				#if DEBUG
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				#endif
 			};
 
 			if (Splitter.Supported)
