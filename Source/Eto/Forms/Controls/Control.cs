@@ -642,7 +642,10 @@ namespace Eto.Forms
 
 		protected override void Dispose(bool disposing)
 		{
-			Unbind();
+			if (disposing)
+			{
+				Unbind();
+			}
 
 			base.Dispose(disposing);
 		}

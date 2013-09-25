@@ -20,19 +20,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 				get { return (SearchBoxHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
-
 		}
-		
-		public override bool HasFocus {
-			get {
-				if (Widget.ParentWindow == null) return false;
+
+		public override bool HasFocus
+		{
+			get
+			{
+				if (Widget.ParentWindow == null)
+					return false;
 				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
 			}
 		}
-		
+
 		public override NSSearchField CreateControl()
 		{
-			return new EtoTextField {
+			return new EtoTextField
+			{
 				Handler = this,
 				Bezeled = true,
 				Editable = true,
@@ -53,43 +56,54 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		protected override Size GetNaturalSize(Size availableSize)
 		{
-			var size = base.GetNaturalSize (availableSize);
-			size.Width = Math.Max (100, size.Height);
+			var size = base.GetNaturalSize(availableSize);
+			size.Width = Math.Max(100, size.Height);
 			return size;
 		}
-		
-		public override void AttachEvent (string handler)
+
+		public override void AttachEvent(string handler)
 		{
-			switch (handler) {
-			case TextArea.TextChangedEvent:
-				Control.Changed += delegate {
-					Widget.OnTextChanged (EventArgs.Empty);
-				};
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+			switch (handler)
+			{
+				case TextArea.TextChangedEvent:
+					Control.Changed += HandleTextChanged;
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
 			}
 		}
-		
-		public bool ReadOnly {
+
+		static void HandleTextChanged(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as SearchBoxHandler;
+			if (handler != null)
+			{
+				handler.Widget.OnTextChanged(EventArgs.Empty);
+			}
+		}
+
+		public bool ReadOnly
+		{
 			get { return !Control.Editable; }
 			set { Control.Editable = !value; }
 		}
-		
-		public int MaxLength {
+
+		public int MaxLength
+		{
 			get;
 			set;
 		}
-		
-		public string PlaceholderText {
+
+		public string PlaceholderText
+		{
 			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
 			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
 		}
 
 		public void SelectAll()
 		{
-			Control.SelectText (Control);
+			Control.SelectText(Control);
 		}
 	}
 }

@@ -58,7 +58,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
-			public TreeGridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			bool? collapsedItemIsSelected;
 			ITreeGridItem lastSelected;
@@ -146,8 +147,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 		class EtoDataSource : NSOutlineViewDataSource
 		{
-			public TreeGridViewHandler Handler { get; set; }
-			
+			WeakReference handler;
+			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
 			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
 			{
 				var myitem = byItem as EtoTreeItem;

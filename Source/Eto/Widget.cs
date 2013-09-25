@@ -190,7 +190,6 @@ namespace Eto
 		protected virtual void Dispose (bool disposing)
 		{
 			if (disposing) {
-				Unbind();
 				var handler = this.Handler as IDisposable;
 				if (handler != null)
 					handler.Dispose ();

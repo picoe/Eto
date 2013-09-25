@@ -74,7 +74,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
-			public TreeViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override bool ShouldEditTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
@@ -162,7 +163,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoDataSource : NSOutlineViewDataSource
 		{
-			public TreeViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override NSObject GetObjectValue(NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
 			{
@@ -227,9 +229,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			public WeakReference WeakHandler { get; set; }
 
-			public object Handler
+			public TreeViewHandler Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return (TreeViewHandler)WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
@@ -308,12 +310,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 							Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
 						}
 					};
-					Control.DoubleClick += (sender, e) => {
-						if (column.Editable)
-							Control.EditColumn(Control.ClickedColumn, Control.ClickedRow, new NSEvent(), true);
-						else
-							Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
-					};
+					Control.DoubleClick += HandleDoubleClick;
 					break;
 				case TreeView.AfterLabelEditEvent:
 				case TreeView.BeforeLabelEditEvent:
@@ -331,6 +328,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 				default:
 					base.AttachEvent(handler);
 					break;
+			}
+		}
+
+		static void HandleDoubleClick (object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as TreeViewHandler;
+			if (handler != null)
+			{
+				if (handler.column.Editable)
+					handler.Control.EditColumn(handler.Control.ClickedColumn, handler.Control.ClickedRow, new NSEvent(), true);
+				else
+					handler.Widget.OnActivated(new TreeViewItemEventArgs(handler.SelectedItem));
 			}
 		}
 
