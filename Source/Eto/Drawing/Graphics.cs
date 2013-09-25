@@ -1108,7 +1108,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public virtual bool IsVisible(RectangleF rectangle)
 		{
-			return this.ClipBounds.Intersects(rectangle);
+			return this.IsRetained || this.ClipBounds.Intersects(rectangle);
 		}
 		
 		/// <summary>
