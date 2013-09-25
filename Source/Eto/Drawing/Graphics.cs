@@ -1101,6 +1101,15 @@ namespace Eto.Drawing
 		{
 			Handler.ResetClip ();
 		}
+
+		/// <summary>
+		/// Returns true if the clip region intersects
+		/// the specified rectangle.
+		/// </summary>
+		public virtual bool IsVisible(RectangleF rectangle)
+		{
+			return this.ClipBounds.Intersects(rectangle);
+		}
 		
 		/// <summary>
 		/// Resets all pixels in the <see cref="ClipBounds"/> region with the specified <paramref name="brush"/>
