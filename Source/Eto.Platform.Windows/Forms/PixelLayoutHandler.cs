@@ -34,6 +34,7 @@ namespace Eto.Platform.Windows
 			var parent = Control;
 			var ctl = child.GetContainerControl();
 			var pt = new sd.Point(x, y);
+			ctl.Dock = swf.DockStyle.None;
 			ctl.Location = pt;
 			parent.Controls.Add(ctl);
 			ctl.BringToFront();
