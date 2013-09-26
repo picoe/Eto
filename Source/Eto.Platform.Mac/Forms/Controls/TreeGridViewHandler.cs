@@ -126,6 +126,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null) {
 					myitem.Item.Expanded = true;
 					Handler.Widget.OnExpanded (new TreeGridViewItemEventArgs (myitem.Item));
+					Handler.UpdateColumnSizes();
 				}
 			}
 			

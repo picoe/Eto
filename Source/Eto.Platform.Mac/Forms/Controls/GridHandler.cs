@@ -7,6 +7,8 @@ using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
+using MonoMac.ObjCRuntime;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -131,6 +133,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 		}
 
+		protected void UpdateColumnSizes()
+		{
+			if (Widget.Loaded)
+			{
+				var rect = Table.VisibleRect();
+				if (!rect.IsEmpty)
+				{
+					foreach (var col in Widget.Columns)
+					{
+						((GridColumnHandler)col.Handler).Resize();
+					}
+				}
+			}
+		}
+
 		public GridColumnHandler GetColumn(NSTableColumn tableColumn)
 		{
 			var str = tableColumn.Identifier;
@@ -224,27 +241,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
-				BorderType = NSBorderType.BezelBorder
+				BorderType = NSBorderType.BezelBorder,
 			};
-
 			ScrollView.ContentView.PostsBoundsChangedNotifications = true;
-			this.AddControlObserver(NSView.BoundsChangedNotification, HandleScrolled, ScrollView.ContentView);
+			this.AddObserver(NSView.BoundsChangedNotification, HandleScrolled, ScrollView.ContentView);
 		}
 
 		static void HandleScrolled(ObserverActionArgs e)
 		{
 			var handler = (GridHandler<T,W>)e.Handler;
-			if (handler.Widget.Loaded)
-			{
-				var rect = handler.Table.VisibleRect();
-				if (!rect.IsEmpty)
-				{
-					foreach (var col in handler.Widget.Columns)
-					{
-						((GridColumnHandler)col.Handler).Resize();
-					}
-				}
-			}
+			handler.UpdateColumnSizes();
 		}
 
 		public override void AttachEvent(string handler)
