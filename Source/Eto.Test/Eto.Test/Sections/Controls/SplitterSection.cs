@@ -1,17 +1,17 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
 
-namespace Eto.Test.Sections.Layouts.DynamicLayoutSection
+namespace Eto.Test.Sections.Controls
 {
-	public class ComplexLayoutSection : WindowSectionMethod
+	public class SplitterSection : WindowSectionMethod
 	{
 		protected override Forms.Window GetWindow()
 		{
-			// Add panels like this:
+			// Add splitters like this:
 			// |---------------------------
 			// |        |      |          |
 			// |  P0    |  P2  |   P4     |
@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Layouts.DynamicLayoutSection
 			var statusPanel = new Panel { };
 			var statusLayout = new DynamicLayout(Padding.Empty, Size.Empty);
 			statusLayout.BeginHorizontal();
-			for (var i = 0; i < 5; ++i)
+			for (var i = 0; i < status.Length; ++i)
 				statusLayout.Add(status[i], xscale: true);
 			statusLayout.EndHorizontal();
 			statusPanel.Content = statusLayout;
@@ -37,11 +37,11 @@ namespace Eto.Test.Sections.Layouts.DynamicLayoutSection
 			Panel[] p = new Panel[] { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
 			var colors = new Color[] { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
 			var count = 0;
-			for (var i = 0; i < 5; ++i)
+			for (var i = 0; i < p.Length; ++i)
 			{
 				var temp = i;
-				p[i].BackgroundColor = colors[i];
-				var button = new Button { Text = ": Click to update status " + i.ToString() };
+				//p[i].BackgroundColor = colors[i];
+				var button = new Button { Text = "Click to update status " + i.ToString(), BackgroundColor = colors[i] };
 				button.Click += (s, e) => status[temp].Text = "New count: " + (count++).ToString();
 				p[i].Content = button;
 			}
@@ -62,7 +62,7 @@ namespace Eto.Test.Sections.Layouts.DynamicLayoutSection
 			layout.Generate();
 			var form = new Form 
 			{ 
-				Size = new Size(1024, 768),
+				Size = new Size(800, 600),
 				Content = layout
 			};
 			return form;

@@ -50,6 +50,7 @@ namespace Eto.Test
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 			yield return new Section<ImageViewSection> { Text = "Image View" };
 			yield return new Section<RadioButtonListSection> { Text = "Radio Button List" };
+			yield return new Sections.Controls.SplitterSection { Text = "Splitter" };
 		}
 		
 		static IEnumerable<Section> DrawingSection()
@@ -78,7 +79,6 @@ namespace Eto.Test
 			yield return new Section("Table Layout", TableLayoutsSection());
 			yield return new Section("Scrollable Layout", ScrollableLayoutSection());
 			yield return new Section("Pixel Layout", PixelLayoutSection());
-			yield return new Section("Dynamic Layout", DynamicLayoutSection());
 		}
 		
 		static IEnumerable<Section> TableLayoutsSection()
@@ -86,6 +86,7 @@ namespace Eto.Test
 			yield return new Section<Sections.Layouts.TableLayoutSection.RuntimeSection> { Text = "Runtime Creation" };
 			yield return new Section<Sections.Layouts.TableLayoutSection.SpacingSection> { Text = "Spacing" };
 			yield return new Section<Sections.Layouts.TableLayoutSection.ScalingSection> { Text = "Scaling" };
+			yield return new Section<Sections.Layouts.TableLayoutSection.ChildWidthSection> { Text = "Child Width" };
 		}
 		
 		static IEnumerable<Section> ScrollableLayoutSection()
@@ -100,12 +101,6 @@ namespace Eto.Test
 			yield return new Section<Sections.Layouts.PixelLayoutSection.AnchorSection > { Text = "Anchor using PixelLayout" };
 		}
 
-		static IEnumerable<Section> DynamicLayoutSection()
-		{
-			yield return new Section<Sections.Layouts.DynamicLayoutSection.RowsSection> { Text = "Rows" };
-			yield return new Sections.Layouts.DynamicLayoutSection.ComplexLayoutSection { Text = "Complex layout" };
-		}
-				
 		static IEnumerable<Section> DialogsSection()
 		{
 			yield return new Section<Sections.Dialogs.ColorDialogSection> { Text = "Color Dialog" };
