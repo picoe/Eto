@@ -1,10 +1,7 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
 using Eto.Forms;
-using System.Runtime.InteropServices;
 
-namespace Eto.Platform.Windows
+namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public class SearchBoxHandler : TextBoxHandler, ISearchBox
 	{
@@ -13,3 +10,4 @@ namespace Eto.Platform.Windows
 		}
 	}
 }
+

@@ -72,6 +72,7 @@ namespace Eto.Platform.GtkSharp
 			g.Add <IProgressBar> (() => new ProgressBarHandler ());
 			g.Add <IRadioButton> (() => new RadioButtonHandler ());
 			g.Add <IScrollable> (() => new ScrollableHandler ());
+			g.Add <ISearchBox> (() => new SearchBoxHandler ());
 			g.Add <ISlider> (() => new SliderHandler ());
 			g.Add <ISplitter> (() => new SplitterHandler ());
 			g.Add <ITabControl> (() => new TabControlHandler ());
