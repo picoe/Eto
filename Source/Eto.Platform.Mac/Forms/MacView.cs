@@ -469,23 +469,24 @@ namespace Eto.Platform.Mac.Forms
 			get { return backgroundColor ?? Colors.Transparent; }
 			set
 			{
-				if (value.A > 0)
+				if (Widget.Loaded)
 				{
-					if (!EventControl.WantsLayer)
-						EventControl.WantsLayer = true;
-					EventControl.Layer.BackgroundColor = value.ToCGColor();
-				}
-				else
-				{
-					EventControl.WantsLayer = false;
-					if (EventControl.Layer != null)
-						EventControl.Layer.BackgroundColor = null;
+					if (value.A > 0)
+					{
+						if (!EventControl.WantsLayer)
+							EventControl.WantsLayer = true;
+						EventControl.Layer.BackgroundColor = value.ToCGColor();
+					}
+					else
+					{
+						EventControl.WantsLayer = false;
+						if (EventControl.Layer != null)
+							EventControl.Layer.BackgroundColor = null;
+					}
 				}
 				backgroundColor = value;
 			}
 		}
-
-
 
 		public abstract bool Enabled { get; set; }
 
@@ -544,6 +545,8 @@ namespace Eto.Platform.Mac.Forms
 		{
 			if (focus && EventControl.Window != null)
 				EventControl.Window.MakeFirstResponder(Control);
+			if (backgroundColor != null)
+				BackgroundColor = backgroundColor.Value;
 		}
 
 		public virtual void OnUnLoad(EventArgs e)
