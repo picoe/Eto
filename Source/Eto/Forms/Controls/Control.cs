@@ -523,7 +523,13 @@ namespace Eto.Forms
 			}
 		}
 
-		public void RemoveFromParent()
+		/// <summary>
+		/// Detaches the control by removing it from its parent
+		/// </summary>
+		/// <remarks>
+		/// This is essentially a shortcut to myControl.Parent.Remove(myControl);
+		/// </remarks>
+		public void Detach()
 		{
 			if (Parent != null)
 				Parent.Remove(this);
