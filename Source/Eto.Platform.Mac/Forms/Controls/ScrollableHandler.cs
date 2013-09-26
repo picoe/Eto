@@ -68,7 +68,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				case Scrollable.ScrollEvent:
 					Control.ContentView.PostsBoundsChangedNotifications = true;
-					this.AddControlObserver(NSView.BoundsChangedNotification, e => {
+					this.AddObserver(NSView.BoundsChangedNotification, e => {
 						var w = (Scrollable)e.Widget;
 						w.OnScroll(new ScrollEventArgs(w.ScrollPosition));
 					}, Control.ContentView);
@@ -134,7 +134,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override Size GetPreferredSize(Size availableSize)
 		{
-			return Size.Min(availableSize, base.GetPreferredSize(availableSize));
+				return Size.Min(availableSize, base.GetPreferredSize(availableSize));
 		}
 
 		protected override Size GetNaturalSize(Size availableSize)
