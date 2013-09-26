@@ -12,13 +12,35 @@ namespace Eto.Platform.Windows
 		Size spacing;
 		Control[,] views;
 		bool[] columnScale;
-		bool lastColumnScale;
+		int lastColumnScale;
 		bool[] rowScale;
-		bool lastRowScale;
+		int lastRowScale;
 
 		public override Size DesiredSize
 		{
 			get { return Control.PreferredSize.ToEto(); }
+		}
+
+		protected override void SetMinimumSize(Size size)
+		{
+			// ensure that our width doesn't get smaller than the non-scaled child controls
+			// to make it so the child controls are left-justified when the container
+			// is smaller than all the children
+			var widths = Control.GetColumnWidths();
+			var heights = Control.GetRowHeights();
+			var curSize = Size.Empty;
+			for (int i = 0; i < widths.Length; i++)
+			{
+				if (!columnScale[i] && i != lastColumnScale)
+					curSize.Width += widths[i];
+			}
+			for (int i = 0; i < heights.Length; i++)
+			{
+				if (!rowScale[i] && i != lastRowScale)
+					curSize.Height += heights[i];
+			}
+			size = Size.Max(size, curSize);
+			base.SetMinimumSize(size);
 		}
 
 		public TableLayoutHandler()
@@ -75,8 +97,8 @@ namespace Eto.Platform.Windows
 
 		void SetScale(Control control, int x, int y)
 		{
-			var xscale = this.XScale && ((x == columnScale.Length - 1 && lastColumnScale) || columnScale[x]);
-			var yscale = this.YScale && ((y == rowScale.Length - 1 && lastRowScale) || rowScale[y]);
+			var xscale = this.XScale && (x == lastColumnScale || columnScale[x]);
+			var yscale = this.YScale && (y == lastRowScale || rowScale[y]);
 			control.SetScale(xscale, yscale);
 		}
 
@@ -85,10 +107,10 @@ namespace Eto.Platform.Windows
 			base.SetScale(xscale, yscale);
 			for (int y = 0; y < rowScale.Length; y++)
 			{
-				var ys = yscale && ((y == rowScale.Length - 1 && lastRowScale) || rowScale[y]);
+				var ys = yscale && (y == lastRowScale || rowScale[y]);
 				for (int x = 0; x < columnScale.Length; x++)
 				{
-					var xs = xscale && ((x == columnScale.Length - 1 && lastColumnScale) || columnScale[x]);
+					var xs = xscale && (x == lastColumnScale || columnScale[x]);
 					var control = views[x,y];
 					if (control != null)
 						control.SetScale(xs, ys);
@@ -138,9 +160,9 @@ namespace Eto.Platform.Windows
 		{
 			views = new Control[cols, rows];
 			columnScale = new bool[cols];
-			lastColumnScale = true;
+			lastColumnScale = cols - 1;
 			rowScale = new bool[rows];
-			lastRowScale = true;
+			lastRowScale = rows - 1;
 			Control.RowCount = rows;
 			Control.ColumnCount = cols;
 			Control.ColumnStyles.Clear();
@@ -153,9 +175,7 @@ namespace Eto.Platform.Windows
 
 		swf.ColumnStyle GetColumnStyle(int column)
 		{
-			var scale = columnScale[column];
-			if (column == columnScale.Length - 1)
-				scale |= lastColumnScale;
+			var scale = columnScale[column] || column == lastColumnScale;
 			if (scale)
 				return new swf.ColumnStyle(swf.SizeType.Percent, 1f);
 			else
@@ -164,9 +184,7 @@ namespace Eto.Platform.Windows
 
 		swf.RowStyle GetRowStyle(int row)
 		{
-			var scale = rowScale[row];
-			if (row == rowScale.Length - 1)
-				scale |= lastRowScale;
+			var scale = rowScale[row] || row == lastRowScale;
 			if (scale)
 				return new swf.RowStyle(swf.SizeType.Percent, 1f);
 			else
@@ -175,9 +193,7 @@ namespace Eto.Platform.Windows
 
 		void ResetColumnScale(int column)
 		{
-			var xscale = columnScale[column];
-			if (column == columnScale.Length - 1)
-				xscale |= lastColumnScale;
+			var xscale = columnScale[column] || column == lastColumnScale;
 			for (int i = 0; i < rowScale.Length; i++)
 			{
 				var control = views[column, i];
@@ -187,9 +203,7 @@ namespace Eto.Platform.Windows
 
 		void ResetRowScale(int row)
 		{
-			var yscale = rowScale[row];
-			if (row == rowScale.Length - 1)
-				yscale |= lastRowScale;
+			var yscale = rowScale[row] || row == lastRowScale;
 			for (int i = 0; i < columnScale.Length; i++)
 			{
 				var control = views[i, row];
@@ -200,12 +214,12 @@ namespace Eto.Platform.Windows
 		public void SetColumnScale(int column, bool scale)
 		{
 			columnScale[column] = scale;
-			var lastScale = columnScale.Length == 1 || columnScale.Take(columnScale.Length - 1).All(r => !r);
+			var prev = lastColumnScale;
+			lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
 			Control.ColumnStyles[column] = GetColumnStyle(column);
 			ResetColumnScale(column);
-			if (lastScale != lastColumnScale)
+			if (prev != lastColumnScale && column != columnScale.Length - 1)
 			{
-				lastColumnScale = lastScale;
 				Control.ColumnStyles[columnScale.Length - 1] = GetColumnStyle(columnScale.Length - 1);
 				ResetColumnScale(columnScale.Length - 1);
 			}
@@ -219,12 +233,12 @@ namespace Eto.Platform.Windows
 		public void SetRowScale(int row, bool scale)
 		{
 			rowScale[row] = scale;
-			var lastScale = rowScale[rowScale.Length - 1] || rowScale.Take(rowScale.Length - 1).All(r => !r);
+			var prev = lastRowScale;
+			lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
 			Control.RowStyles[row] = GetRowStyle(row);
 			ResetRowScale(row);
-			if (lastScale != lastRowScale)
+			if (prev != lastRowScale && row != rowScale.Length - 1)
 			{
-				lastRowScale = lastScale;
 				Control.RowStyles[rowScale.Length - 1] = GetRowStyle(rowScale.Length - 1);
 				ResetRowScale(rowScale.Length - 1);
 			}
