@@ -21,8 +21,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Image image;
 		ButtonImagePosition imagePosition;
 		Size defaultSize;
+		static readonly Size originalSize;
 
-		class MyButtonCell : NSButtonCell
+		class EtoButtonCell : NSButtonCell
 		{
 			public Color? Color { get; set; }
 
@@ -42,6 +43,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class EtoButton : NSButton, IMacControl
 		{
+			bool setBezel = true;
 			public WeakReference WeakHandler { get; set; }
 
 			public ButtonHandler Handler
@@ -52,18 +54,35 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void SizeToFit()
 			{
+				setBezel = false;
 				base.SizeToFit();
-				
+
 				if (Handler.AutoSize)
 				{
-					var frame = this.Frame;
-					if (frame.Width < Handler.defaultSize.Width)
-						frame.Width = Handler.defaultSize.Width;
-					if (frame.Height < Handler.defaultSize.Height)
-						frame.Height = Handler.defaultSize.Height;
-					this.Frame = frame;
+					var size = this.Frame.Size;
+					if (size.Width < Handler.defaultSize.Width)
+						size.Width = Handler.defaultSize.Width;
+					if (size.Height < Handler.defaultSize.Height)
+						size.Height = Handler.defaultSize.Height;
+					this.SetFrameSize(size);
 				}
+				setBezel = true;
 			}
+
+			public override void SetFrameSize(SD.SizeF newSize)
+			{
+				base.SetFrameSize(newSize);
+				if (setBezel)
+					Handler.SetBezel();
+			}
+		}
+
+		static ButtonHandler()
+		{
+			// store the normal size for a rounded button, so we can determine what style to give it based on actual size
+			var b = new NSButton { BezelStyle = NSBezelStyle.Rounded };
+			b.SizeToFit();
+			originalSize = b.Frame.Size.ToEtoSize();
 		}
 
 		public ButtonHandler()
@@ -71,7 +90,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control = new EtoButton
 			{ 
 				Handler = this,
-				Cell = new MyButtonCell (),
+				Cell = new EtoButtonCell (),
 				Title = string.Empty,
 				BezelStyle = NSBezelStyle.Rounded,
 				ImagePosition = NSCellImagePosition.ImageLeft
@@ -106,12 +125,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				var cell = Control.Cell as MyButtonCell;
+				var cell = Control.Cell as EtoButtonCell;
 				return cell.Color ?? Colors.Transparent;
 			}
 			set
 			{
-				var cell = Control.Cell as MyButtonCell;
+				var cell = Control.Cell as EtoButtonCell;
 				cell.Color = value.A > 0 ? (Color?)value : null;
 				Control.SetNeedsDisplay();
 			}
@@ -140,30 +159,34 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		bool NeedsBiggerBezel
+		/// <summary>
+		/// Gets the bezel style of the button based on its size and image position
+		/// </summary>
+		NSBezelStyle GetBezelStyle()
 		{
-			get
+			var size = Control.Frame.Size.ToEtoSize();
+			if (size.Height > originalSize.Height)
+				return NSBezelStyle.RegularSquare;
+			if (size.Height < 22)
+				return NSBezelStyle.SmallSquare;
+			if (Image == null)
+				return NSBezelStyle.Rounded;
+			if (image.Size.Height > 18)
+				return NSBezelStyle.RegularSquare;
+			switch (Control.ImagePosition)
 			{
-				var size = PreferredSize ?? defaultSize;
-				if (size.Height > 26)
-					return true;
-				if (Image == null)
-					return false;
-				if (image.Size.Height > 18)
-					return true;
-				switch (Control.ImagePosition)
-				{
-					case NSCellImagePosition.ImageAbove:
-					case NSCellImagePosition.ImageBelow:
-						return !string.IsNullOrEmpty(this.Text);
-				}
-				return false;
+				case NSCellImagePosition.ImageAbove:
+				case NSCellImagePosition.ImageBelow:
+					if (!string.IsNullOrEmpty(this.Text))
+						return NSBezelStyle.RegularSquare;
+					break;
 			}
+			return NSBezelStyle.Rounded;
 		}
 
 		void SetBezel()
 		{
-			Control.BezelStyle = NeedsBiggerBezel ? NSBezelStyle.RegularSquare : NSBezelStyle.Rounded;
+			Control.BezelStyle = GetBezelStyle();
 		}
 
 		public override string Text
