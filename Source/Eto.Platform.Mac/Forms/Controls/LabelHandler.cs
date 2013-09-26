@@ -23,6 +23,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Control; }
 		}
 
+		public override Size GetPreferredSize(Size availableSize)
+		{
+			if (string.IsNullOrEmpty(this.Text))
+				return Size.Empty;
+			else
+				return base.GetPreferredSize(availableSize);
+		}
+
 		public class MyTextFieldCell : NSTextFieldCell
 		{
 			public VerticalAlign VerticalAlign { get; set; }
