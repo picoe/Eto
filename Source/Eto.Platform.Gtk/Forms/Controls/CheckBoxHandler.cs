@@ -9,11 +9,18 @@ namespace Eto.Platform.GtkSharp
 	{
 		Font font;
 		bool toggling;
+		Gtk.EventBox box;
+
+		public override Gtk.Widget ContainerControl
+		{
+			get { return box; }
+		}
 		
 		public CheckBoxHandler ()
 		{
 			Control = new Gtk.CheckButton ();
 			Control.Toggled += HandleControlToggled;
+			box = new Gtk.EventBox { Child = Control };
 		}
 
 		void HandleControlToggled (object sender, EventArgs e)
