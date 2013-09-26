@@ -137,7 +137,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleDoubleClick (object sender, EventArgs e)
 		{
-			var handler = ((IMacControl)sender).WeakHandler.Target as ListBoxHandler;
+			var handler = GetHandler(sender) as ListBoxHandler;
 			if (handler != null)
 				handler.Widget.OnActivated(EventArgs.Empty);
 		}

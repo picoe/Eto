@@ -133,8 +133,12 @@ namespace Eto.Platform.iOS.Forms
 
 		public static object GetHandler(object control)
 		{
-			var macControl = (IMacControl)control;
-			if (macControl.WeakHandler == null)
+			var notification = control as NSNotification;
+			if (notification != null)
+				control = notification.Object;
+
+			var macControl = control as IMacControl;
+			if (macControl == null || macControl.WeakHandler == null)
 				return null;
 			return macControl.WeakHandler.Target;
 		}

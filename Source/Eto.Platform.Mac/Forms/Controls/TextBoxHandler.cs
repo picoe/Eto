@@ -124,7 +124,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleTextChanged (object sender, EventArgs e)
 		{
-			var h = ((IMacControl)((NSNotification)sender).Object).WeakHandler.Target as TextBoxHandler;
+			var h = GetHandler(sender) as TextBoxHandler;
 			h.Widget.OnTextChanged(EventArgs.Empty);
 		}
 

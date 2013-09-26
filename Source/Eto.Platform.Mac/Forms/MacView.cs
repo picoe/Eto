@@ -590,7 +590,7 @@ namespace Eto.Platform.Mac.Forms
 		static void TriggerSystemAction(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var control = Runtime.GetNSObject(sender);
-			var handler = (MacView<T,W>)((IMacControl)control).WeakHandler.Target;
+			var handler = GetHandler(control) as MacView<T,W>;
 			if (handler != null)
 			{
 				BaseAction action;
@@ -606,7 +606,7 @@ namespace Eto.Platform.Mac.Forms
 			var menuItem = new NSMenuItem(item);
 			
 			var control = Runtime.GetNSObject(sender);
-			var handler = (MacView<T,W>)((IMacControl)control).WeakHandler.Target;
+			var handler = GetHandler(control) as MacView<T,W>;
 			if (handler != null)
 			{
 				BaseAction action;
@@ -624,7 +624,7 @@ namespace Eto.Platform.Mac.Forms
 			var toolbarItem = new NSToolbarItem(item);
 			
 			var control = Runtime.GetNSObject(sender);
-			var handler = (MacView<T,W>)((IMacControl)control).WeakHandler.Target;
+			var handler = GetHandler(control) as MacView<T,W>;
 			if (handler != null)
 			{
 				BaseAction action;

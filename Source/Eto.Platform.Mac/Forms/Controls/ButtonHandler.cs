@@ -85,7 +85,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleActivated(object sender, EventArgs e)
 		{
-			var handler = ((IMacControl)sender).WeakHandler.Target as ButtonHandler;
+			var handler = GetHandler(sender) as ButtonHandler;
 			if (handler != null)
 			{
 				handler.Widget.OnClick(EventArgs.Empty);

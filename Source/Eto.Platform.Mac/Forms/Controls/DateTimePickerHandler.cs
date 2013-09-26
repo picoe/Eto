@@ -88,8 +88,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleValidateProposedDateValue(object sender, NSDatePickerValidatorEventArgs e)
 		{
-			var datePicker = (NSDatePickerCell)sender;
-			var handler = ((IMacControl)datePicker.ControlView).WeakHandler.Target as DateTimePickerHandler;
+			var datePickerCell = (NSDatePickerCell)sender;
+			var handler = GetHandler(datePickerCell.ControlView) as DateTimePickerHandler;
 			var date = e.ProposedDateValue.ToEto();
 			if (date != handler.Control.DateValue.ToEto())
 			{

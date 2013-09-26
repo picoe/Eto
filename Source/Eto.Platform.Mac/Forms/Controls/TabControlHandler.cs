@@ -55,7 +55,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleDidSelect (object sender, NSTabViewItemEventArgs e)
 		{
-			var handler = ((IMacControl)sender).WeakHandler.Target as TabControlHandler;
+			var handler = GetHandler(sender) as TabControlHandler;
 			if (handler != null)
 			{
 				if (!handler.disableSelectedIndexChanged)

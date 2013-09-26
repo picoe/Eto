@@ -33,7 +33,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleActivated(object sender, EventArgs e)
 		{
-			var handler = ((IMacControl)sender).WeakHandler.Target as ComboBoxHandler;
+			var handler = GetHandler(sender) as ComboBoxHandler;
 			handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
 		}
 
