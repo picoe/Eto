@@ -128,6 +128,12 @@ namespace Eto.Platform.Mac.Forms
 				this.LayoutChildren();
 			};
 		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			LayoutChildren();
+		}
 	}
 }
 
