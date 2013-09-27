@@ -174,16 +174,6 @@ namespace Eto.Platform.Mac
 			return buttons;
 		}
 
-		public static void SetSizeWithAuto (NSView view, Size size)
-		{
-			var newSize = view.Frame.Size;
-			if (size.Width >= 0)
-				newSize.Width = size.Width;
-			if (size.Height >= 0)
-				newSize.Height = size.Height;
-			view.SetFrameSize (newSize);
-		}
-
 		public static CGImage ToCG (this Image image)
 		{
 			using (var imageSource = CGImageSource.FromData (image.ToNS ().AsTiff ())) {

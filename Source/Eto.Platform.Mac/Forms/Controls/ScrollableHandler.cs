@@ -16,10 +16,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 
-		public override NSView ContainerControl
-		{
-			get { return Control; }
-		}
+		public override NSView ContainerControl { get { return Control; } }
 
 		class EtoScrollView : NSScrollView, IMacControl
 		{
@@ -68,7 +65,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				case Scrollable.ScrollEvent:
 					Control.ContentView.PostsBoundsChangedNotifications = true;
-					this.AddObserver(NSView.BoundsChangedNotification, e => {
+					this.AddObserver(NSView.BoundsChangedNotification, e =>
+					{
 						var w = (Scrollable)e.Widget;
 						w.OnScroll(new ScrollEventArgs(w.ScrollPosition));
 					}, Control.ContentView);
@@ -134,7 +132,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override Size GetPreferredSize(Size availableSize)
 		{
-				return Size.Min(availableSize, base.GetPreferredSize(availableSize));
+			return Size.Min(availableSize, base.GetPreferredSize(availableSize));
 		}
 
 		protected override Size GetNaturalSize(Size availableSize)
@@ -241,7 +239,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			base.OnLoadComplete(e);
 			UpdateScrollSizes();
-			this.Widget.SizeChanged += (sender, ee) => {
+			this.Widget.SizeChanged += (sender, ee) =>
+			{
 				UpdateScrollSizes();
 			};
 		}

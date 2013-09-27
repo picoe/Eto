@@ -16,10 +16,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Image image;
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
-		public override NSView ContainerControl
-		{
-			get { return Control; }
-		}
+		public override NSView ContainerControl { get { return Control; } }
 
 		public NSTabViewItem TabViewItem { get; private set; }
 		

@@ -83,7 +83,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return new Range(range.Location, range.Length);
 			}
 			set {
-				Control.SelectedRange = new NSRange(value.Location, value.Length);
+				Control.SelectedRange = new NSRange(value.Start, value.Length);
 			}
 		}
 

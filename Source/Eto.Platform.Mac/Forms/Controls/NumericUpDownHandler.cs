@@ -16,10 +16,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Font font;
 		Size? naturalSize;
 
-		public override NSView ContainerControl
-		{
-			get { return Control; }
-		}
+		public override NSView ContainerControl { get { return Control; } }
 
 		public class EtoTextField : NSTextField, IMacControl
 		{

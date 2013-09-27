@@ -6,6 +6,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class WebViewHandler : iosView<UIWebView, WebView>, IWebView
 	{
+		public override UIView ContainerControl { get { return Control; } }
+
 		public override UIWebView CreateControl ()
 		{
 			return new UIWebView();

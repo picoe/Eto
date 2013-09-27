@@ -5,119 +5,124 @@ using Eto.Platform.iOS.Drawing;
 using SD = System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-
 	public interface IiosView
 	{
 		Size PositionOffset { get; }
-		Size GetPreferredSize (Size availableSize);
-		Size? MinimumSize { get; }
-		bool AutoSize { get; }
-		UIView ContainerControl { get; }
 	}
-	
+
 	public interface IiosViewController
 	{
 		UIViewController Controller { get; }
 	}
 
-	public static class ViewExtensions
-	{
-		public static void AddSubView(this Container parent, Control control)
-		{
-
-			var parentViewController = parent.Handler as IiosViewController;
-			if (parentViewController != null) {
-				var viewController = control.Handler as IiosViewController;
-				if (viewController != null) {
-					parentViewController.Controller.AddChildViewController(viewController.Controller);
-					return;
-				}
-			}
-			var viewHandler = control.Handler as IiosView;
-			var view = viewHandler != null ? viewHandler.ContainerControl : control.ControlObject as UIView;
-
-			var parentView = parent.Handler as IiosContainer;
-			if (parentView != null && view != null) {
-				parentView.ContentControl.AddSubview (view);
-			}
-		}
-	}
-
-
-	public abstract class iosView<T, W> : iosObject<T, W>, IControl, IiosView
-		where T: UIView
+	public abstract class iosView<T, W> : MacObject<T, W>, IControl, IiosView, IMacAutoSizing
+		where T: UIResponder
 		where W: Control
 	{
 		Size? naturalSize;
 
 		public virtual UIViewController Controller { get { return null; } }
 
-		public virtual UIView ContainerControl
-		{
-			get { return (UIView)Control; }
-		}
+		public virtual UIView ContentControl { get { return ContainerControl; } }
+
+		public virtual UIView EventControl { get { return ContainerControl; } }
+
+		public abstract UIView ContainerControl { get; }
 
 		public virtual bool AutoSize { get; protected set; }
 
 		public Size? PreferredSize { get; set; }
 
-		protected virtual Size GetNaturalSize ()
+		public virtual Size MinimumSize { get; set; }
+
+		public virtual Size? MaximumSize { get; set; }
+
+		public virtual Size Size
 		{
-			if (naturalSize != null) 
+			get { return ContainerControl.Frame.Size.ToEtoSize(); }
+			set
+			{ 
+				var oldSize = GetPreferredSize(Size.MaxValue);
+				this.PreferredSize = value;
+
+				var newSize = ContainerControl.Frame.Size;
+				if (value.Width >= 0)
+					newSize.Width = value.Width;
+				if (value.Height >= 0)
+					newSize.Height = value.Height;
+				ContainerControl.SetFrameSize(newSize);
+
+				AutoSize = value.Width == -1 && value.Height == -1;
+				CreateTracking();
+				LayoutIfNeeded(oldSize);
+			}
+		}
+
+		protected virtual bool LayoutIfNeeded(Size? oldPreferredSize = null, bool force = false)
+		{
+			naturalSize = null;
+			if (Widget.Loaded)
+			{
+				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize();
+				var newSize = GetPreferredSize(Size.MaxValue);
+				if (newSize != oldSize || force)
+				{
+					var container = Widget.Parent.GetMacContainer();
+					if (container != null)
+						container.LayoutParent(true);
+					return true;
+				}
+			}
+			return false;
+		}
+
+		protected virtual Size GetNaturalSize(Size availableSize)
+		{
+			if (naturalSize != null)
 				return naturalSize.Value;
 			var control = Control as UIView;
-			if (control != null) {
-				naturalSize = control.SizeThatFits(UIView.UILayoutFittingCompressedSize).ToEtoSize ();
+			if (control != null)
+			{
+				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
+				control.SizeToFit();
+				naturalSize = control.Frame.Size.ToEtoSize();
+				if (size != null)
+					control.SetFrameSize(size.Value);
 				return naturalSize.Value;
 			}
 			return Size.Empty;
 		}
-		
-		public virtual Size GetPreferredSize (Size availableSize)
+
+		public virtual Size GetPreferredSize(Size availableSize)
 		{
-			var size = GetNaturalSize ();
-			if (!AutoSize && PreferredSize != null) {
+			var size = GetNaturalSize(availableSize);
+			if (!AutoSize && PreferredSize != null)
+			{
 				var preferredSize = PreferredSize.Value;
 				if (preferredSize.Width >= 0)
 					size.Width = preferredSize.Width;
 				if (preferredSize.Height >= 0)
 					size.Height = preferredSize.Height;
 			}
-			if (MinimumSize != null)
-				size = Size.Max (size, MinimumSize.Value);
+			if (MinimumSize != Size.Empty)
+				size = Size.Max(size, MinimumSize);
 			if (MaximumSize != null)
-				size = Size.Min (size, MaximumSize.Value);
+				size = Size.Min(size, MaximumSize.Value);
 			return size;
 		}
 
-
-		public virtual Size? MinimumSize { get; set; }
-		public virtual Size? MaximumSize { get; set; }
-
-		public virtual Size Size {
-			get { return Control.Frame.Size.ToEtoSize (); }
-			set { 
-				if (value != this.Size) {
-					PreferredSize = value;
-					Control.SetFrameSize (value.ToSDSizeF ());
-					Widget.OnSizeChanged (EventArgs.Empty);
-					this.AutoSize = false;
-					CreateTracking ();
-				}
-			}
-		}
-
-		public iosView ()
+		public iosView()
 		{
 			this.AutoSize = true;
 		}
 
-		public virtual Size PositionOffset { get { return Size.Empty; } } 
+		public virtual Size PositionOffset { get { return Size.Empty; } }
 
-		void CreateTracking ()
+		void CreateTracking()
 		{
 			/*
 			 * use TOUCHES
@@ -135,34 +140,35 @@ namespace Eto.Platform.iOS.Forms
 			*/
 		}
 
-		public virtual void SetParentLayout (Layout layout)
+		public virtual void SetParent(Container parent)
 		{
 		}
 
-		public virtual void SetParent (Control parent)
-		{
-		}
+		static NSString frameKey = new NSString("frame");
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent(string handler)
 		{
-			switch (handler) {
-			case Eto.Forms.Control.MouseDownEvent:
-			case Eto.Forms.Control.MouseUpEvent:
-			case Eto.Forms.Control.MouseDoubleClickEvent:
-			case Eto.Forms.Control.MouseEnterEvent:
-			case Eto.Forms.Control.MouseLeaveEvent:
-			case Eto.Forms.Control.KeyDownEvent:
-			case Eto.Forms.Control.GotFocusEvent:
-			case Eto.Forms.Control.LostFocusEvent:
-				break;
-			case Eto.Forms.Control.MouseMoveEvent:
+			switch (handler)
+			{
+				case Eto.Forms.Control.MouseDownEvent:
+				case Eto.Forms.Control.MouseUpEvent:
+				case Eto.Forms.Control.MouseDoubleClickEvent:
+				case Eto.Forms.Control.MouseEnterEvent:
+				case Eto.Forms.Control.MouseLeaveEvent:
+				case Eto.Forms.Control.KeyDownEvent:
+				case Eto.Forms.Control.GotFocusEvent:
+				case Eto.Forms.Control.LostFocusEvent:
+					break;
+				case Eto.Forms.Control.MouseMoveEvent:
 				//mouseMove = true;
-				CreateTracking ();
-				break;
-			case Eto.Forms.Control.SizeChangedEvent:
-				this.AddControlObserver(new NSString("frame"), delegate {
-					Widget.OnSizeChanged (EventArgs.Empty);
-				});
+					CreateTracking();
+					break;
+				case Eto.Forms.Control.SizeChangedEvent:
+					this.AddControlObserver(frameKey, e =>
+					{
+						var h = e.Handler as iosView<T,W>;
+						h.Widget.OnSizeChanged(EventArgs.Empty);
+					});
 				/*UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
 				this.AddObserver(null, UIDevice.OrientationDidChangeNotification, delegate {
 					Widget.OnSizeChanged (EventArgs.Empty);
@@ -171,103 +177,109 @@ namespace Eto.Platform.iOS.Forms
 				this.AddObserver (UIView.UIViewFrameDidChangeNotification, delegate {
 					Widget.OnSizeChanged (EventArgs.Empty); 
 				});*/
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
 			}
 		}
 
-		public virtual void Invalidate ()
+		public virtual void Invalidate()
 		{
-			Control.SetNeedsDisplay();
+			EventControl.SetNeedsDisplay();
 		}
 
-		public virtual void Invalidate (Rectangle rect)
+		public virtual void Invalidate(Rectangle rect)
 		{
-			Control.SetNeedsDisplayInRect (rect.ToSDRectangleF ());
+			EventControl.SetNeedsDisplayInRect(rect.ToSDRectangleF());
 		}
 
-		public Graphics CreateGraphics ()
+		public Graphics CreateGraphics()
 		{
-			throw new NotSupportedException ();
+			throw new NotSupportedException();
 		}
 
-		public virtual void SuspendLayout ()
-		{
-		}
-
-		public virtual void ResumeLayout ()
+		public virtual void SuspendLayout()
 		{
 		}
 
-		public void Focus ()
+		public virtual void ResumeLayout()
+		{
+		}
+
+		public void Focus()
 		{
 			Control.BecomeFirstResponder();
 		}
 
-		public virtual Color BackgroundColor {
-			get { return Control.BackgroundColor.ToEto (); }
-			set { Control.BackgroundColor = value.ToUI (); }
+		public virtual Color BackgroundColor
+		{
+			get { return ContainerControl.BackgroundColor.ToEto(); }
+			set { ContainerControl.BackgroundColor = value.ToUI(); }
 		}
 
-		public virtual bool Enabled {
-			get { return Control.UserInteractionEnabled; }
-			set { Control.UserInteractionEnabled = value; }
+		public virtual bool Enabled
+		{
+			get { return EventControl.UserInteractionEnabled; }
+			set { EventControl.UserInteractionEnabled = value; }
 		}
 
-		public bool HasFocus {
+		public bool HasFocus
+		{
 			get { return Control.IsFirstResponder; }
 		}
 
-		public bool Visible {
-			get { return !Control.Hidden; }
-			set { Control.Hidden = !value; }
+		public bool Visible
+		{
+			get { return !ContainerControl.Hidden; }
+			set { ContainerControl.Hidden = !value; }
 		}
 
-		public virtual Font Font { 
-			get; set;
+		public virtual Font Font
+		{ 
+			get;
+			set;
 		}
-		
-		public virtual void OnPreLoad (EventArgs e)
-		{
-		}
-		
-		public virtual void OnLoad (EventArgs e)
-		{
-		}
-		
-		public virtual void OnLoadComplete (EventArgs e)
+
+		public virtual void OnPreLoad(EventArgs e)
 		{
 		}
 
-		public virtual void OnUnLoad (EventArgs e)
-		{
-		}
-		
-		public void MapPlatformAction (string systemAction, BaseAction action)
+		public virtual void OnLoad(EventArgs e)
 		{
 		}
 
-		public PointF PointFromScreen (PointF point)
+		public virtual void OnLoadComplete(EventArgs e)
 		{
-			var sdpoint = point.ToSD ();
-			sdpoint = Control.ConvertPointFromView (sdpoint, null);
-			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
-			return Platform.Conversions.ToEto (sdpoint);
 		}
-		
-		public PointF PointToScreen (PointF point)
+
+		public virtual void OnUnLoad(EventArgs e)
 		{
-			var sdpoint = point.ToSD ();
-			sdpoint.Y = Control.Frame.Height - sdpoint.Y;
-			sdpoint = Control.ConvertPointToView (sdpoint, null);
-			return Platform.Conversions.ToEto (sdpoint);
+		}
+
+		public void MapPlatformAction(string systemAction, BaseAction action)
+		{
+		}
+
+		public PointF PointFromScreen(PointF point)
+		{
+			var sdpoint = point.ToSD();
+			sdpoint = ContainerControl.ConvertPointFromView(sdpoint, null);
+			sdpoint.Y = ContainerControl.Frame.Height - sdpoint.Y;
+			return Platform.Conversions.ToEto(sdpoint);
+		}
+
+		public PointF PointToScreen(PointF point)
+		{
+			var sdpoint = point.ToSD();
+			sdpoint.Y = ContainerControl.Frame.Height - sdpoint.Y;
+			sdpoint = ContainerControl.ConvertPointToView(sdpoint, null);
+			return Platform.Conversions.ToEto(sdpoint);
 		}
 
 		public Point Location
 		{
-			get { return Control.Frame.Location.ToEtoPoint (); }
+			get { return ContainerControl.Frame.Location.ToEtoPoint(); }
 		}
 	}
 }

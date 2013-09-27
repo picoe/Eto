@@ -16,9 +16,11 @@ namespace Eto.Platform.Mac.Forms
 	class MouseDelegate : NSObject
 	{
 		WeakReference view;
+
 		public NSView View { get { return (NSView)view.Target; } set { view = new WeakReference(value); } }
 
 		WeakReference widget;
+
 		public Control Widget { get { return (Control)widget.Target; } set { widget = new WeakReference(value); } }
 
 		[Export("mouseMoved:")]
@@ -51,13 +53,6 @@ namespace Eto.Platform.Mac.Forms
 		}
 	}
 
-	public interface IMacAutoSizing
-	{
-		bool AutoSize { get; }
-
-		Size GetPreferredSize(Size availableSize);
-	}
-
 	public interface IMacViewHandler : IMacAutoSizing
 	{
 		Size PositionOffset { get; }
@@ -77,22 +72,13 @@ namespace Eto.Platform.Mac.Forms
 		void OnSizeChanged(EventArgs e);
 	}
 
-	public interface IMacContainerControl
-	{
-		NSView ContainerControl { get; }
-
-		NSView ContentControl { get; }
-
-		NSView EventControl { get; }
-	}
-
 	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacViewHandler, IMacContainerControl
 		where T: NSResponder
 		where W: Control
 	{
 		bool focus;
-		NSTrackingArea tracking;
 		bool mouseMove;
+		NSTrackingArea tracking;
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
 		Cursor cursor;
@@ -106,6 +92,12 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual bool AutoSize { get; protected set; }
 
+		public virtual Size MinimumSize { get; set; }
+
+		public virtual Size? MaximumSize { get; set; }
+
+		public Size? PreferredSize { get; set; }
+
 		public virtual Size Size
 		{
 			get { return ContainerControl.Frame.Size.ToEtoSize(); }
@@ -113,8 +105,15 @@ namespace Eto.Platform.Mac.Forms
 			{ 
 				var oldSize = GetPreferredSize(Size.MaxValue);
 				this.PreferredSize = value;
-				Conversions.SetSizeWithAuto(ContainerControl, value);
-				this.AutoSize = false;
+
+				var newSize = ContainerControl.Frame.Size;
+				if (value.Width >= 0)
+					newSize.Width = value.Width;
+				if (value.Height >= 0)
+					newSize.Height = value.Height;
+				ContainerControl.SetFrameSize(newSize);
+
+				AutoSize = value.Width == -1 && value.Height == -1;
 				CreateTracking();
 				LayoutIfNeeded(oldSize);
 			}
@@ -138,24 +137,6 @@ namespace Eto.Platform.Mac.Forms
 			return false;
 		}
 
-		public virtual Size MinimumSize
-		{
-			get;
-			set;
-		}
-
-		public virtual Size? MaximumSize
-		{
-			get;
-			set;
-		}
-
-		public Size? PreferredSize
-		{
-			get;
-			set;
-		}
-
 		public MacView()
 		{
 			this.AutoSize = true;
@@ -163,7 +144,7 @@ namespace Eto.Platform.Mac.Forms
 
 		protected virtual Size GetNaturalSize(Size availableSize)
 		{
-			if (naturalSize != null) 
+			if (naturalSize != null)
 				return naturalSize.Value;
 			var control = Control as NSControl;
 			if (control != null)
@@ -464,6 +445,7 @@ namespace Eto.Platform.Mac.Forms
 		}
 
 		Color? backgroundColor;
+
 		public virtual Color BackgroundColor
 		{
 			get { return backgroundColor ?? Colors.Transparent; }
@@ -657,18 +639,18 @@ namespace Eto.Platform.Mac.Forms
 		static IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
 		static Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>()
 		{
-			{ "cut", selCut },
-			{ "copy", selCopy },
-			{ "paste", selPaste },
-			{ "selectAll", selSelectAll },
-			{ "delete", selDelete },
-			{ "undo", selUndo },
-			{ "redo", selRedo },
-			{ "pasteAsPlainText", selPasteAsPlainText },
-			{ "performClose", selPerformClose },
-			{ "performZoom", selPerformZoom },
-			{ "arrangeInFront", selArrangeInFront },
-			{ "performMiniaturize", selPerformMiniaturize }
+ { "cut", selCut },
+ { "copy", selCopy },
+ { "paste", selPaste },
+ { "selectAll", selSelectAll },
+ { "delete", selDelete },
+ { "undo", selUndo },
+ { "redo", selRedo },
+ { "pasteAsPlainText", selPasteAsPlainText },
+ { "performClose", selPerformClose },
+ { "performZoom", selPerformZoom },
+ { "arrangeInFront", selArrangeInFront },
+ { "performMiniaturize", selPerformMiniaturize }
 		};
 
 		public virtual void MapPlatformAction(string systemAction, BaseAction action)

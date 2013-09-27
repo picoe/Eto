@@ -7,19 +7,19 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class SearchBoxHandler : iosControl<UISearchBar, SearchBox>, ISearchBox
 	{
-		public override UISearchBar CreateControl ()
+		public override UISearchBar CreateControl()
 		{
 			return new UISearchBar();
 		}
 
-		protected override Eto.Drawing.Size GetNaturalSize ()
+		protected override Size GetNaturalSize(Size availableSize)
 		{
-			return Size.Max (base.GetNaturalSize (), new Size(60, 0));
+			return Size.Max(base.GetNaturalSize(availableSize), new Size(60, 0));
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			MaxLength = Int32.MaxValue;
 		}
 
@@ -36,28 +36,33 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
-		public string Text {
+		public string Text
+		{
 			get { return Control.Text; }
 			set { Control.Text = value; }
 		}
 
-		public bool ReadOnly {
-			get; set;
-		}
-
-		public int MaxLength {
+		public bool ReadOnly
+		{
 			get;
 			set;
 		}
 
-		public string PlaceholderText {
+		public int MaxLength
+		{
+			get;
+			set;
+		}
+
+		public string PlaceholderText
+		{
 			get { return Control.Placeholder; }
 			set { Control.Placeholder = value; }
 		}
 
-		public void SelectAll ()
+		public void SelectAll()
 		{
-			Control.SelectAll ();
+			Control.SelectAll(Control);
 		}
 	}
 }
