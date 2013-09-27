@@ -213,7 +213,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			if (scroll != null)
 			{
 				// only show tiles in the visible rect of the scrollable
-				var visibleRect = scroll.VisibleRect;
+				var visibleRect = new Rectangle(scroll.ClientSize);
 				var scrollableHandler = scroll.Handler as ScrollableHandler;
 				visibleRect.Offset(-Control.TranslatePoint(new sw.Point(), scrollableHandler.ContentControl).ToEtoPoint());
 				rect.Intersect(visibleRect);

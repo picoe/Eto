@@ -55,7 +55,7 @@ namespace Eto.Forms
 		/// Gets or sets the default amount of padding for all new DockLayout objects
 		/// </summary>
 		[Obsolete("Use DockContainer.DefaultPadding instead")]
-		public static Padding DefaultPadding
+		public new static Padding DefaultPadding
 		{
 			get { return DockContainer.DefaultPadding; }
 			set { DockContainer.DefaultPadding = value; }
@@ -116,15 +116,6 @@ namespace Eto.Forms
 		public void Add (Control control)
 		{
 			Content = control;
-		}
-
-		/// <summary>
-		/// Obsolete. Use <see cref="Content"/> instead
-		/// </summary>
-		[Obsolete ("Use Content property instead")]
-		public void Remove (Control control)
-		{
-			Content = null;
 		}
 	}
 }

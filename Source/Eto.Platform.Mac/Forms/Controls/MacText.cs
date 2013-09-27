@@ -10,28 +10,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 		where T: NSTextField
 		where W: TextControl
 	{
-		public MacText ()
+		public override Color BackgroundColor
 		{
+			get { return Control.BackgroundColor.ToEto(); }
+			set { Control.BackgroundColor = value.ToNS(); }
 		}
-		
-		public override Color BackgroundColor {
-			get {
-				return Control.BackgroundColor.ToEto ();
-			}
-			set {
-				Control.BackgroundColor = value.ToNS ();
-			}
+
+		public virtual string Text
+		{
+			get { return Control.StringValue; }
+			set { Control.StringValue = value ?? string.Empty; }
 		}
-		
-		public virtual string Text {
-			get {
-				return Control.StringValue;
-			}
-			set {
-				Control.StringValue = value ?? string.Empty;
-			}
-		}
-		
 	}
 }
 

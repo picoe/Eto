@@ -29,7 +29,12 @@ namespace Eto.Platform.iOS
 		{
 			return class_addMethod (cls.Handle, selector, method, arguments);
 		}
-		
+
+		public static bool AddMethod (IntPtr classHandle, IntPtr selector, Delegate method, string arguments)
+		{
+			return class_addMethod (classHandle, selector, method, arguments);
+		}
+
 		[DllImport ("/usr/lib/libobjc.dylib")]
 		static extern bool method_exchangeImplementations (IntPtr method1, IntPtr method2);
 		

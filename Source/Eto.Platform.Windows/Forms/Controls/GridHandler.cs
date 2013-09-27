@@ -78,6 +78,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set { Control.BackgroundColor = value.ToSD(); }
 		}
 
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			LeakHelper.UnhookObject(Control);
+		}
+
 		bool handledAutoSize = false;
 		void HandleRowPostPaint (object sender, swf.DataGridViewRowPostPaintEventArgs e)
 		{

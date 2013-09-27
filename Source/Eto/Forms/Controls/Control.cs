@@ -523,6 +523,18 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Detaches the control by removing it from its parent
+		/// </summary>
+		/// <remarks>
+		/// This is essentially a shortcut to myControl.Parent.Remove(myControl);
+		/// </remarks>
+		public void Detach()
+		{
+			if (Parent != null)
+				Parent.Remove(this);
+		}
+
 		public Color BackgroundColor
 		{
 			get { return Handler.BackgroundColor; }
@@ -636,7 +648,10 @@ namespace Eto.Forms
 
 		protected override void Dispose(bool disposing)
 		{
-			Unbind();
+			if (disposing)
+			{
+				Unbind();
+			}
 
 			base.Dispose(disposing);
 		}

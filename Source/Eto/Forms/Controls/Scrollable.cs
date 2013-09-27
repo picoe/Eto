@@ -39,7 +39,8 @@ namespace Eto.Forms
 	
 	public partial class Scrollable : DockContainer
 	{
-		IScrollable handler;
+		new IScrollable Handler { get { return (IScrollable)base.Handler; } }
+
 		public const string ScrollEvent = "Scrollable.ScrollEvent";
 		
 		event EventHandler<ScrollEventArgs> scroll;
@@ -69,41 +70,40 @@ namespace Eto.Forms
 		protected Scrollable (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IScrollable)Handler;
 		}
 
 		public void UpdateScrollSizes ()
 		{
-			handler.UpdateScrollSizes ();
+			Handler.UpdateScrollSizes ();
 		}
 
 		public Point ScrollPosition {
-			get { return handler.ScrollPosition; }
-			set { handler.ScrollPosition = value; }
+			get { return Handler.ScrollPosition; }
+			set { Handler.ScrollPosition = value; }
 		}
 
 		public Size ScrollSize {
-			get { return handler.ScrollSize; }
-			set { handler.ScrollSize = value; }
+			get { return Handler.ScrollSize; }
+			set { Handler.ScrollSize = value; }
 		}
 		
 		public BorderType Border {
-			get { return handler.Border; }
-			set { handler.Border = value; }
+			get { return Handler.Border; }
+			set { Handler.Border = value; }
 		}
 		
 		public Rectangle VisibleRect {
-			get { return handler.VisibleRect; }
+			get { return Handler.VisibleRect; }
 		}
 
 		public bool ExpandContentWidth {
-			get { return handler.ExpandContentWidth; }
-			set { handler.ExpandContentWidth = value; }
+			get { return Handler.ExpandContentWidth; }
+			set { Handler.ExpandContentWidth = value; }
 		}
 
 		public bool ExpandContentHeight {
-			get { return handler.ExpandContentHeight; }
-			set { handler.ExpandContentHeight = value; }
+			get { return Handler.ExpandContentHeight; }
+			set { Handler.ExpandContentHeight = value; }
 		}
 	}
 }

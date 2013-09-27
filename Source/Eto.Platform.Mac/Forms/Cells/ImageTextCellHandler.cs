@@ -12,8 +12,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		public class EtoCell : MacImageListItemCell, IMacControl
 		{
-			public object Handler { get; set; }
-			
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
 			public EtoCell ()
 			{
 			}
@@ -93,7 +99,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var val = value as MacImageData;
 			if (val == null) return 0;
 			
-			var font = cell.Font ?? NSFont.SystemFontOfSize (NSFont.SystemFontSize);
+			var font = cell.Font ?? NSFont.BoldSystemFontOfSize (NSFont.SystemFontSize);
 			var str = val.Text;
 			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
 			

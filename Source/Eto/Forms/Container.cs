@@ -15,88 +15,12 @@ namespace Eto.Forms
 		Size ClientSize { get; set; }
 	}
 
-	public partial interface IDockContainer : IContainer
-	{
-		Control Content { get; set; }
-
-		Padding Padding { get; set; }
-	}
-
-
-	[ContentProperty("Content")]
-	public abstract partial class DockContainer : Container
-	{
-		new IDockContainer Handler { get { return (IDockContainer)base.Handler; } }
-
-		public static Padding DefaultPadding = Padding.Empty;
-
-		public override IEnumerable<Control> Controls
-		{
-			get
-			{ 
-				var content = Handler != null ? Handler.Content : null;
-				if (content != null)
-					yield return content; 
-			}
-		}
-
-		public Padding Padding
-		{
-			get { return Handler.Padding; }
-			set { Handler.Padding = value; }
-		}
-
-		public Control Content {
-			get { return Handler.Content; }
-			set {
-				var old = Handler.Content;
-				if (old != value) {
-					if (old != null)
-						old.SetParent(null);
-					if (value != null) {
-						value.SetParent(null, false);
-						var load = Loaded && !value.Loaded;
-						if (load) {
-							value.OnPreLoad (EventArgs.Empty);
-							value.OnLoad (EventArgs.Empty);
-						}
-						Handler.Content = value;
-						value.SetParent(this);
-						if (load)
-							value.OnLoadComplete (EventArgs.Empty);
-					}
-					else
-						Handler.Content = value;
-				}
-			}
-		}
-
-		[Obsolete("Use Content property instead")]
-		public Control Layout { get { return Content; } set { Content = value; } }
-	
-		protected DockContainer (Generator generator, Type type, bool initialize = true)
-			: base(generator, type, initialize)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Container with the specified handler
-		/// </summary>
-		/// <param name="generator">Generator for the widget</param>
-		/// <param name="handler">Pre-created handler to attach to this instance</param>
-		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		protected DockContainer (Generator generator, IDockContainer handler, bool initialize = true)
-			: base(generator, handler, initialize)
-		{
-		}
-
-	}
-
 	public abstract partial class Container : Control
 	{
 		new IContainer Handler { get { return (IContainer)base.Handler; } }
 
-		public Size ClientSize {
+		public Size ClientSize
+		{
 			get { return Handler.ClientSize; }
 			set { Handler.ClientSize = value; }
 		}
@@ -106,12 +30,16 @@ namespace Eto.Forms
 			get;
 		}
 
-		public IEnumerable<Control> Children {
-			get {
-				foreach (var control in Controls) {
+		public IEnumerable<Control> Children
+		{
+			get
+			{
+				foreach (var control in Controls)
+				{
 					yield return control;
 					var container = control as Container;
-					if (container != null) {
+					if (container != null)
+					{
 						foreach (var child in container.Children)
 							yield return child;
 					}
@@ -119,52 +47,57 @@ namespace Eto.Forms
 			}
 		}
 
-		protected internal override void OnDataContextChanged (EventArgs e)
+		protected internal override void OnDataContextChanged(EventArgs e)
 		{
-			base.OnDataContextChanged (e);
+			base.OnDataContextChanged(e);
 			
-			foreach (var control in Controls) {
-				control.OnDataContextChanged (e);
+			foreach (var control in Controls)
+			{
+				control.OnDataContextChanged(e);
 			}
 		}
 
-		public override void OnPreLoad (EventArgs e)
+		public override void OnPreLoad(EventArgs e)
 		{
-			base.OnPreLoad (e);
+			base.OnPreLoad(e);
 			
-			foreach (Control control in Controls) {
-				control.OnPreLoad (e);
+			foreach (Control control in Controls)
+			{
+				control.OnPreLoad(e);
 			}
-		}
-		
-		public override void OnLoad (EventArgs e)
-		{
-			foreach (Control control in Controls) {
-				control.OnLoad (e);
-			}
-			
-			base.OnLoad (e);
 		}
 
-		public override void OnLoadComplete (EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			foreach (Control control in Controls) {
-				control.OnLoadComplete (e);
+			foreach (Control control in Controls)
+			{
+				control.OnLoad(e);
 			}
 			
-			base.OnLoadComplete (e);
+			base.OnLoad(e);
 		}
 
-		public override void OnUnLoad (EventArgs e)
+		public override void OnLoadComplete(EventArgs e)
 		{
-			foreach (Control control in Controls) {
-				control.OnUnLoad (e);
+			foreach (Control control in Controls)
+			{
+				control.OnLoadComplete(e);
 			}
 			
-			base.OnUnLoad (e);
+			base.OnLoadComplete(e);
 		}
 
-		protected Container (Generator g, Type type, bool initialize = true)
+		public override void OnUnLoad(EventArgs e)
+		{
+			foreach (Control control in Controls)
+			{
+				control.OnUnLoad(e);
+			}
+			
+			base.OnUnLoad(e);
+		}
+
+		protected Container(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
 		}
@@ -175,25 +108,40 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		protected Container (Generator generator, IContainer handler, bool initialize = true)
+		protected Container(Generator generator, IContainer handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
 		}
 
-		public override void Unbind ()
+		public override void Unbind()
 		{
-			base.Unbind ();
-			foreach (var control in Controls) {
-				control.Unbind ();
+			base.Unbind();
+			foreach (var control in Controls)
+			{
+				control.Unbind();
 			}
 		}
-		
-		public override void UpdateBindings ()
+
+		public override void UpdateBindings()
 		{
-			base.UpdateBindings ();
-			foreach (var control in Controls) {
-				control.UpdateBindings ();
+			base.UpdateBindings();
+			foreach (var control in Controls)
+			{
+				control.UpdateBindings();
 			}
 		}
+
+		public virtual void Remove(IEnumerable<Control> controls)
+		{
+			foreach (var control in controls)
+				Remove(control);
+		}
+
+		public virtual void RemoveAll()
+		{
+			Remove(this.Controls.ToArray());
+		}
+
+		public abstract void Remove(Control child);
 	}
 }

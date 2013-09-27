@@ -12,10 +12,6 @@ namespace Eto.Platform.Windows
 	{
 		Control content;
 
-		protected virtual bool UseContentScale { get { return true; } }
-
-		protected virtual bool UseContentDesiredSize { get { return true; } }
-
 		public WindowsDockContainer()
 		{
 		}
@@ -81,7 +77,12 @@ namespace Eto.Platform.Windows
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
-			if (UseContentScale && content != null)
+			SetContentScale(xscale, yscale);
+		}
+
+		protected virtual void SetContentScale(bool xscale, bool yscale)
+		{
+			if (content != null)
 				content.SetScale(xscale, yscale);
 		}
 
@@ -96,12 +97,11 @@ namespace Eto.Platform.Windows
 			get { return content; }
 			set
 			{
-				Control.SuspendLayout();
+				ContainerContentControl.SuspendLayout();
 
 				if (content != null)
 				{
-					if (UseContentScale)
-						content.SetScale(false, false);
+					content.SetScale(false, false);
 					var childControl = this.content.GetContainerControl();
 					ContainerContentControl.Controls.Remove(childControl);
 				}
@@ -109,15 +109,19 @@ namespace Eto.Platform.Windows
 				content = value;
 				if (content != null)
 				{
-					if (UseContentScale)
-						content.SetScale(XScale, YScale);
+					SetContentScale(XScale, YScale);
 					var contentControl = content.GetContainerControl();
-					contentControl.Dock = swf.DockStyle.Fill;
-					ContainerContentControl.Controls.Add(contentControl);
+					SetContent(contentControl);
 				}
 
-				Control.ResumeLayout();
+				ContainerContentControl.ResumeLayout();
 			}
+		}
+
+		protected virtual void SetContent(swf.Control contentControl)
+		{
+			contentControl.Dock = swf.DockStyle.Fill;
+			ContainerContentControl.Controls.Add(contentControl);
 		}
 	}
 }

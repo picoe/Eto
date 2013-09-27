@@ -29,11 +29,11 @@ namespace Eto.Test
 			}
 		}
 
-		public MainForm(Func<IEnumerable<Section>> topNodes = null)
+		public MainForm(IEnumerable<Section> topNodes = null)
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes);
+			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes());
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
@@ -74,7 +74,33 @@ namespace Eto.Test
 				SectionList.Focus();
 			};
 			SectionList.SelectedItemChanged += (sender, e) => {
-				SectionList.Show(navigation, contentContainer);
+				try
+				{
+					var item = SectionList.SelectedItem;
+					Control content = item != null ? item.CreateContent() : null;
+
+					if (navigation != null)
+					{
+						if (content != null)
+							navigation.Push(content, item != null ? item.Text : null);
+					}
+					else
+					{
+						contentContainer.SuspendLayout();
+						contentContainer.Content = content;
+						contentContainer.ResumeLayout();
+					}
+				}
+				catch (Exception ex)
+				{
+					Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+					contentContainer.Content = null;
+				}
+
+				#if DEBUG
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				#endif
 			};
 
 			if (Splitter.Supported)

@@ -51,7 +51,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Graphics CreateGraphics ()
 		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control));
+			return new Graphics (Widget.Generator, new GraphicsHandler (Control, Widget));
 		}
 
 		public override bool Enabled { get; set; }

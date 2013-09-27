@@ -11,87 +11,86 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class MacEventView : NSView, IMacControl
 	{
-		static NSString CIInputImage = new NSString ("inputImage");
-		static NSString CIInputTransform = new NSString ("inputTransform");
-		static NSString CIInputSaturation = new NSString ("inputSaturation");
-		static NSString CIOutputImage = new NSString ("outputImage");
-		static NSString CIInputRVector = new NSString ("inputRVector");
-		static NSString CIInputGVector = new NSString ("inputGVector");
-		static NSString CIInputBVector = new NSString ("inputBVector");
-
+		static NSString CIInputImage = new NSString("inputImage");
+		static NSString CIInputTransform = new NSString("inputTransform");
+		static NSString CIInputSaturation = new NSString("inputSaturation");
+		static NSString CIOutputImage = new NSString("outputImage");
+		static NSString CIInputRVector = new NSString("inputRVector");
+		static NSString CIInputGVector = new NSString("inputGVector");
+		static NSString CIInputBVector = new NSString("inputBVector");
 		static Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
 
-		public static void Colourize (NSView control, Color color, Action drawAction)
+		public static void Colourize(NSView control, Color color, Action drawAction)
 		{
 			var size = control.Frame.Size;
-			var image = new NSImage (size);
+			if (size.Width <= 0 || size.Height <= 0)
+				return;
+			var image = new NSImage(size);
 			
-			image.LockFocusFlipped (control.IsFlipped);
-			drawAction ();
-			image.UnlockFocus ();
+			image.LockFocusFlipped(control.IsFlipped);
+			drawAction();
+			image.UnlockFocus();
 			
-			var ciImage = CIImage.FromData (image.AsTiff ());
-			
-			if (control.IsFlipped) {
-				SD.SizeF realSize;
-				if (control.RespondsToSelector (selConvertSizeToBacking))
-					realSize = control.ConvertSizeToBacking (size);
-				else
-					realSize = control.ConvertSizeToBase (size);
-				var affineTransform = new NSAffineTransform ();
-				affineTransform.Translate (0, realSize.Height);
-				affineTransform.Scale (1, -1);
-				var filter1 = CIFilter.FromName ("CIAffineTransform");
-				filter1.SetValueForKey (ciImage, CIInputImage);
-				filter1.SetValueForKey (affineTransform, CIInputTransform);
-				ciImage = filter1.ValueForKey (CIOutputImage) as CIImage;
+			var ciImage = CIImage.FromCGImage(image.CGImage);
+
+			SD.SizeF realSize;
+			if (control.RespondsToSelector(selConvertSizeToBacking))
+				realSize = control.ConvertSizeToBacking(size);
+			else
+				realSize = control.ConvertSizeToBase(size);
+
+			if (control.IsFlipped)
+			{
+				var affineTransform = new NSAffineTransform();
+				affineTransform.Translate(0, realSize.Height);
+				affineTransform.Scale(1, -1);
+				var filter1 = new CIAffineTransform();
+				filter1.Image = ciImage;
+				filter1.SetValueForKey(affineTransform, CIInputTransform);
+				ciImage = filter1.ValueForKey(CIOutputImage) as CIImage;
 			}
+
+			var filter2 = new CIColorControls();
+			filter2.SetDefaults();
+			filter2.Image = ciImage;
+			filter2.Saturation = 0.0f;
+			ciImage = filter2.ValueForKey(CIOutputImage) as CIImage;
 			
-			var filter2 = CIFilter.FromName ("CIColorControls");
-			filter2.SetDefaults ();
-			filter2.SetValueForKey (ciImage, CIInputImage);
-			filter2.SetValueForKey (new NSNumber (0.0f), CIInputSaturation);
-			ciImage = filter2.ValueForKey (CIOutputImage) as CIImage;
-			
-			var filter3 = CIFilter.FromName ("CIColorMatrix");
-			filter3.SetDefaults ();
-			filter3.SetValueForKey (ciImage, CIInputImage);
-			filter3.SetValueForKey (new CIVector (0, color.R, 0), CIInputRVector);
-			filter3.SetValueForKey (new CIVector (color.G, 0, 0), CIInputGVector);
-			filter3.SetValueForKey (new CIVector (0, 0, color.B), CIInputBVector);
-			ciImage = filter3.ValueForKey (CIOutputImage) as CIImage;
-			
-			image = new NSImage (size);
-			var rep = NSCIImageRep.FromCIImage (ciImage);
-			image.AddRepresentation (rep);
-			image.Draw (SD.PointF.Empty, new SD.RectangleF (SD.PointF.Empty, size), NSCompositingOperation.SourceOver, 1);
-			/* Use this when implemented in maccore:
-			ciImage.Draw (SD.PointF.Empty, new SD.RectangleF (SD.PointF.Empty, size), NSCompositingOperation.SourceOver, 1);
-			 */
+			var filter3 = new CIColorMatrix();
+			filter3.SetDefaults();
+			filter3.Image = ciImage;
+			filter3.RVector = new CIVector(0, color.R, 0);
+			filter3.GVector = new CIVector(color.G, 0, 0);
+			filter3.BVector = new CIVector(0, 0, color.B);
+			ciImage = filter3.ValueForKey(CIOutputImage) as CIImage;
+
+			ciImage.Draw(new SD.RectangleF(SD.PointF.Empty, size), new SD.RectangleF(SD.PointF.Empty, realSize), NSCompositingOperation.SourceOver, 1);
 		}
 
-		WeakReference handler;
-		
-		public IMacViewHandler Handler {
-			get { return handler.Target as IMacViewHandler; }
-			set { handler = new WeakReference (value); }
+		public WeakReference WeakHandler { get; set; }
+
+		public IMacViewHandler Handler
+		{ 
+			get { return (IMacViewHandler)WeakHandler.Target; }
+			set { WeakHandler = new WeakReference(value); } 
 		}
-		
-		object IMacControl.Handler { get { return Handler; } }
-		
-		public Control Widget {
+
+		public Control Widget
+		{
 			get { return Handler != null ? Handler.Widget : null; }
 		}
-		
-		public static bool KeyDown (Control control, NSEvent theEvent)
+
+		public static bool KeyDown(Control control, NSEvent theEvent)
 		{
-			if (control != null) {
-				var kpea = theEvent.ToEtoKeyPressEventArgs ();
-				control.OnKeyDown (kpea);
-				if (!kpea.Handled) {
+			if (control != null)
+			{
+				var kpea = theEvent.ToEtoKeyPressEventArgs();
+				control.OnKeyDown(kpea);
+				if (!kpea.Handled)
+				{
 					var handler = control.Handler as IMacViewHandler;
 					if (handler != null)
-						handler.PostKeyDown (kpea);
+						handler.PostKeyDown(kpea);
 				}
 
 				return kpea.Handled;
@@ -99,111 +98,25 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return false;
 		}
 
-		public static bool KeyUp (Control control, NSEvent theEvent)
+		public static bool KeyUp(Control control, NSEvent theEvent)
 		{
-			if (control != null) {
-				var kpea = theEvent.ToEtoKeyPressEventArgs ();
-				control.OnKeyUp (kpea);
+			if (control != null)
+			{
+				var kpea = theEvent.ToEtoKeyPressEventArgs();
+				control.OnKeyUp(kpea);
 				return kpea.Handled;
 			}
 			return false;
 		}
 
-		public override void ResetCursorRects ()
+		public override void ResetCursorRects()
 		{
 			var cursor = Handler.Cursor;
-			if (cursor != null) {
-				this.AddCursorRect (new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+			if (cursor != null)
+			{
+				this.AddCursorRect(new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
-
-		/*
-		public override void KeyDown (NSEvent theEvent)
-		{
-			//base.InterpretKeyEvents (new NSEvent [] { theEvent });
-			if (!KeyDown (Widget, theEvent))
-				base.KeyDown (theEvent);
-		}
-		*/
-		
-		/*
-		public override void MouseDragged (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseMove (args);
-				if (!args.Handled)
-					base.MouseDragged (theEvent);
-			} else
-				base.MouseDragged (theEvent);
-		}
-		
-		public override void MouseUp (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseUp (args);
-				if (!args.Handled)
-					base.MouseUp (theEvent);
-			} else
-				base.MouseUp (theEvent);
-		}
-
-		public override void MouseDown (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				if (theEvent.ClickCount >= 2)
-					Widget.OnMouseDoubleClick (args);
-				
-				if (!args.Handled) {
-					Widget.OnMouseDown (args);
-				}
-					
-				if (!args.Handled)
-					base.MouseDown (theEvent);
-			} else
-				base.MouseDown (theEvent);
-		}
-		
-		public override void RightMouseDown (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				if (theEvent.ClickCount >= 2)
-					Widget.OnMouseDoubleClick (args);
-				
-				if (!args.Handled) {
-					Widget.OnMouseDown (args);
-				}
-				if (!args.Handled)
-					base.RightMouseDown (theEvent);
-			} else
-				base.RightMouseDown (theEvent);
-		}
-			
-		public override void RightMouseUp (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseUp (args);
-				if (!args.Handled)
-					base.RightMouseUp (theEvent);
-			} else
-				base.RightMouseUp (theEvent);
-		}
-			
-		public override void RightMouseDragged (NSEvent theEvent)
-		{
-			if (Widget != null) {
-				var args = CreateMouseArgs (theEvent);
-				Widget.OnMouseMove (args);
-				if (!args.Handled)
-					base.RightMouseDragged (theEvent);
-			} else
-				base.RightMouseDragged (theEvent);
-		}
-		*/
 	}
 }
 

@@ -74,6 +74,8 @@ namespace Eto.Platform.Wpf.Forms
 		bool isMouseOver;
 		bool isMouseCaptured;
 
+		protected sw.Size PreferredSize { get { return preferredSize; } }
+
 		public abstract Color BackgroundColor { get; set; }
 
 		public virtual bool UseMousePreview { get { return false; } }
@@ -104,10 +106,13 @@ namespace Eto.Platform.Wpf.Forms
 		public virtual sw.Size GetPreferredSize(sw.Size? constraint = null)
 		{
 			var size = preferredSize;
-			if (double.IsNaN(size.Width) || double.IsNaN(size.Height) || constraint != null)
+			if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
 			{
-				ContainerControl.Measure(constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity));
-				var desired = ContainerControl.DesiredSize;
+				//constraint = constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
+				//if (!double.IsNaN(constraint.Value.Width))
+					//size.Width 
+				Control.Measure(constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity));
+				var desired = Control.DesiredSize;
 				if (double.IsNaN(size.Width))
 					size.Width = desired.Width;
 				if (double.IsNaN(size.Height))
@@ -206,7 +211,7 @@ namespace Eto.Platform.Wpf.Forms
 			switch (handler)
 			{
 				case Eto.Forms.Control.MouseMoveEvent:
-					Control.MouseMove += (sender, e) =>
+					ContainerControl.MouseMove += (sender, e) =>
 					{
 						var args = e.ToEto(Control);
 						Widget.OnMouseMove(args);
@@ -215,9 +220,9 @@ namespace Eto.Platform.Wpf.Forms
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					if (UseMousePreview)
-						Control.PreviewMouseDown += HandleMouseDown;
+						ContainerControl.PreviewMouseDown += HandleMouseDown;
 					else
-						Control.MouseDown += HandleMouseDown;
+						ContainerControl.MouseDown += HandleMouseDown;
 					HandleEvent(Eto.Forms.Control.MouseUpEvent);
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
@@ -231,13 +236,13 @@ namespace Eto.Platform.Wpf.Forms
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					if (UseMousePreview)
-						Control.PreviewMouseUp += HandleMouseUp;
+						ContainerControl.PreviewMouseUp += HandleMouseUp;
 					else
-						Control.MouseUp += HandleMouseUp;
+						ContainerControl.MouseUp += HandleMouseUp;
 					HandleEvent(Eto.Forms.Control.MouseDownEvent);
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
-					Control.MouseEnter += (sender, e) =>
+					ContainerControl.MouseEnter += (sender, e) =>
 					{
 						if (isMouseOver != Control.IsMouseOver)
 						{
@@ -249,7 +254,7 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
-					Control.MouseLeave += (sender, e) =>
+					ContainerControl.MouseLeave += (sender, e) =>
 					{
 						if (isMouseOver != Control.IsMouseOver)
 						{
@@ -261,7 +266,7 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
-					Control.PreviewMouseWheel += (sender, e) =>
+					ContainerControl.PreviewMouseWheel += (sender, e) =>
 					{
 						var args = e.ToEto(Control);
 						Widget.OnMouseLeave(args);
@@ -269,7 +274,7 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					Control.SizeChanged += (sender, e) =>
+					ContainerControl.SizeChanged += (sender, e) =>
 					{
 						this.newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
 						Widget.OnSizeChanged(EventArgs.Empty);
@@ -303,7 +308,7 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					Control.IsVisibleChanged += (sender, e) =>
+					ContainerControl.IsVisibleChanged += (sender, e) =>
 					{
 						if ((bool)e.NewValue)
 						{

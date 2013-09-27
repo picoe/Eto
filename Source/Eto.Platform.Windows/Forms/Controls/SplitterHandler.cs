@@ -18,17 +18,17 @@ namespace Eto.Platform.Windows
 			Control.Panel1MinSize = 0;
 			Control.Panel2MinSize = 0;
 		}
-		
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler)
 			{
-				case Eto.Forms.Splitter.SplitterMovedEvent:
+				case Eto.Forms.Splitter.PositionChangedEvent:
 					// Hook SplitterMoving, not SplitterMoved,
 					// because the latter fires even when the
 					// splitter distance is changed programmatically.
 					Control.SplitterMoving += (s, e) => {
-						Widget.OnSplitterMoved(e);
+						Widget.OnPositionChanged(e);
 					};
 					break;
 				default:

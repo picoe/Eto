@@ -113,7 +113,7 @@ namespace Eto
 		/// </summary>
 		~Widget ()
 		{
-			//Console.WriteLine ("GC: {0}", this.GetType ().FullName);
+			//Console.WriteLine("GC: {0}", this.GetType().FullName);
 			Dispose (false);
 		}
 		

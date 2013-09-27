@@ -4,6 +4,8 @@ using SD = System.Drawing;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
+using MonoMac.ObjCRuntime;
+using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -19,153 +21,186 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Control; }
 		}
 
-		class MyView : NSView
+		public class EtoTextField : NSTextField, IMacControl
 		{
-			public override void SetFrameSize (System.Drawing.SizeF newSize)
+			public WeakReference WeakHandler { get; set; }
+		}
+
+		class EtoNumericUpDownView : MacEventView
+		{
+			public override void SetFrameSize(System.Drawing.SizeF newSize)
 			{
-				base.SetFrameSize (newSize);
+				base.SetFrameSize(newSize);
 				var views = this.Subviews;
-				var text = views [0];
-				var splitter = views [1];
+				var text = views[0];
+				var splitter = views[1];
 				var offset = (newSize.Height - text.Frame.Height) / 2;
-				text.SetFrameOrigin (new SD.PointF (0, offset));
-				text.SetFrameSize (new SD.SizeF (newSize.Width - splitter.Frame.Width, text.Frame.Height));
+				text.SetFrameOrigin(new SD.PointF(0, offset));
+				text.SetFrameSize(new SD.SizeF(newSize.Width - splitter.Frame.Width, text.Frame.Height));
 				offset = (newSize.Height - splitter.Frame.Height) / 2;
-				splitter.SetFrameOrigin (new SD.PointF (newSize.Width - splitter.Frame.Width, offset));
+				splitter.SetFrameOrigin(new SD.PointF(newSize.Width - splitter.Frame.Width, offset));
 			}
 		}
-		
-		public override object EventObject {
-			get {
-				return text;
-			}
-		}
-		
-		public class EtoUpDownTextField : NSTextField, IMacControl
-		{
-			public NumericUpDownHandler Handler { get; set; }
 
-			object IMacControl.Handler { get { return Handler; } }
+		public override object EventObject
+		{
+			get { return text; }
 		}
 
-		public NumericUpDownHandler ()
+		public NumericUpDownHandler()
 		{
-			this.Control = new MyView {
+			this.Control = new EtoNumericUpDownView
+			{
+				Handler = this,
 				AutoresizesSubviews = false
 			};
-			text = new EtoUpDownTextField {
-				Handler = this,
+			text = new EtoTextField
+			{
+				WeakHandler = new WeakReference(this),
 				Bezeled = true,
 				Editable = true
 			};
-			text.Changed += delegate {
-				stepper.DoubleValue = text.DoubleValue;
-				Widget.OnValueChanged (EventArgs.Empty);
-			};
+			text.Changed += HandleTextChanged;
 			
-			stepper = new NSStepper ();
-			stepper.Activated += delegate {
-				text.DoubleValue = stepper.DoubleValue;
-				Widget.OnValueChanged (EventArgs.Empty);
-			};
+			stepper = new NSStepper();
+			stepper.Activated += HandleStepperActivated;
 			MinValue = 0;
 			MaxValue = 100;
 			Value = 0;
-			
-			Control.AddSubview (text);
-			Control.AddSubview (stepper);
-			var naturalSize = GetNaturalSize (Size.MaxValue);
-			Control.Frame = new System.Drawing.RectangleF (0, 0, naturalSize.Width, naturalSize.Height);
+			Control.AddSubview(text);
+			Control.AddSubview(stepper);
 		}
 
-		protected override void Initialize ()
+		static void HandleStepperActivated(object sender, EventArgs e)
 		{
-			base.Initialize ();
-			HandleEvent (NumericUpDown.KeyDownEvent);
+			var handler = GetHandler(((NSView)sender).Superview) as NumericUpDownHandler;
+			if (handler != null)
+			{
+				handler.text.DoubleValue = handler.stepper.DoubleValue;
+				handler.Widget.OnValueChanged(EventArgs.Empty);
+			}
 		}
 
-		public override void PostKeyDown (KeyEventArgs e)
+		static void HandleTextChanged(object sender, EventArgs e)
 		{
-			base.PostKeyDown (e);
-			if (e.KeyData == Key.Down) {
-				Value = Math.Max (Value - 1, MinValue);
-				Widget.OnValueChanged (EventArgs.Empty);
+			var handler = GetHandler(((NSView)((NSNotification)sender).Object).Superview) as NumericUpDownHandler;
+			if (handler != null)
+			{
+				handler.stepper.DoubleValue = handler.text.DoubleValue;
+				handler.Widget.OnValueChanged(EventArgs.Empty);
+			}
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			var naturalSize = GetNaturalSize(Size.MaxValue);
+			Control.Frame = new System.Drawing.RectangleF(0, 0, naturalSize.Width, naturalSize.Height);
+			HandleEvent(NumericUpDown.KeyDownEvent);
+		}
+
+		public override void PostKeyDown(KeyEventArgs e)
+		{
+			base.PostKeyDown(e);
+			if (e.KeyData == Key.Down)
+			{
+				Value = Math.Max(Value - 1, MinValue);
+				Widget.OnValueChanged(EventArgs.Empty);
 				e.Handled = true;
-			} else if (e.KeyData == Key.Up) {
-				Value = Math.Min (Value + 1, MaxValue);
-				Widget.OnValueChanged (EventArgs.Empty);
+			}
+			else if (e.KeyData == Key.Up)
+			{
+				Value = Math.Min(Value + 1, MaxValue);
+				Widget.OnValueChanged(EventArgs.Empty);
 				e.Handled = true;
 			}
 		}
 
-		protected override Size GetNaturalSize (Size availableSize)
+		protected override Size GetNaturalSize(Size availableSize)
 		{
-			if (naturalSize == null) {
-				text.SizeToFit ();
-				stepper.SizeToFit ();
-				var naturalHeight = Math.Max (text.Frame.Height, stepper.Frame.Height);
-				naturalSize = new Size (80, (int)naturalHeight);
+			if (naturalSize == null)
+			{
+				text.SizeToFit();
+				stepper.SizeToFit();
+				var naturalHeight = Math.Max(text.Frame.Height, stepper.Frame.Height);
+				naturalSize = new Size(80, (int)naturalHeight);
 			}
 			return naturalSize.Value;
 		}
-		
-		public bool ReadOnly {
+
+		public bool ReadOnly
+		{
 			get { return text.Enabled; }
-			set { 
+			set
+			{ 
 				text.Enabled = value;
 				stepper.Enabled = value;
 			}
 		}
-		
-		public double Value {
+
+		public double Value
+		{
 			get { return text.DoubleValue; }
-			set { 
+			set
+			{ 
 				text.DoubleValue = value;
 				stepper.DoubleValue = value;
 			}
 		}
-		
-		public double MinValue {
-			get {
+
+		public double MinValue
+		{
+			get
+			{
 				return stepper.MinValue;
 			}
-			set {
+			set
+			{
 				stepper.MinValue = value;
 			}
 		}
-		
-		public double MaxValue {
-			get {
+
+		public double MaxValue
+		{
+			get
+			{
 				return stepper.MaxValue;
 			}
-			set {
+			set
+			{
 				stepper.MaxValue = value;
 			}
 		}
-		
-		public override bool Enabled {
-			get {
+
+		public override bool Enabled
+		{
+			get
+			{
 				return stepper.Enabled;
 			}
-			set {
+			set
+			{
 				stepper.Enabled = value;
 				text.Enabled = value;
 			}
 		}
 
-		public Font Font {
-			get {
+		public Font Font
+		{
+			get
+			{
 				if (font == null)
-					font = new Font (Widget.Generator, new FontHandler (text.Font));
+					font = new Font(Widget.Generator, new FontHandler(text.Font));
 				return font;
 			}
-			set {
+			set
+			{
 				font = value;
 				if (font != null)
 					text.Font = font.ControlObject as NSFont;
 				else
 					text.Font = null;
-				text.SizeToFit ();
+				text.SizeToFit();
 				LayoutIfNeeded();
 			}
 		}

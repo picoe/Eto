@@ -7,19 +7,23 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-
 	public class PasswordBoxHandler : MacText<NSTextField, PasswordBox>, IPasswordBox, ITextBoxWithMaxLength
 	{
-
 		class EtoTextField : NSSecureTextField, IMacControl
 		{
-			object IMacControl.Handler { get { return Handler; } }
+			public WeakReference WeakHandler { get; set; }
 
-			public PasswordBoxHandler Handler { get; set; }
+			public PasswordBoxHandler Handler
+			{ 
+				get { return (PasswordBoxHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 		}
-		
-		public override bool HasFocus {
-			get {
+
+		public override bool HasFocus
+		{
+			get
+			{
 				if (Widget.ParentWindow == null)
 					return false;
 				return ((IMacWindow)Widget.ParentWindow.Handler).FieldEditorObject == Control;
@@ -28,12 +32,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override NSTextField CreateControl()
 		{
-			return new EtoTextField {
+			return new EtoTextField
+			{
 				Handler = this,
 				Bezeled = true,
 				Editable = true,
 				Selectable = true,
-				Formatter = new MyFormatter{ Handler = this }
+				Formatter = new EtoFormatter { Handler = this }
 			};
 		}
 
@@ -47,31 +52,40 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxLength = -1;
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent(string handler)
 		{
-			switch (handler) {
-			case TextArea.TextChangedEvent:
-				Control.Changed += delegate {
-					Widget.OnTextChanged (EventArgs.Empty);
-				};
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+			switch (handler)
+			{
+				case TextArea.TextChangedEvent:
+					Control.Changed += HandleChanged;
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
 			}
 		}
-		
-		public bool ReadOnly {
+
+		static void HandleChanged(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as PasswordBoxHandler;
+			if (handler != null)
+				handler.Widget.OnTextChanged(EventArgs.Empty);
+		}
+
+		public bool ReadOnly
+		{
 			get { return !Control.Editable; }
 			set { Control.Editable = !value; }
 		}
-		
-		public int MaxLength {
+
+		public int MaxLength
+		{
 			get;
 			set;
 		}
 
-		public Char PasswordChar { // not supported on OSX
+		public Char PasswordChar
+		{ // not supported on OSX
 			get { return '\0'; }
 			set { }
 		}

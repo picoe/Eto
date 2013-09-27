@@ -108,7 +108,6 @@
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
-    <Compile Include="Forms\Controls\RadioButton.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
     <Compile Include="Forms\Controls\TabControlHandler.cs" />
@@ -188,6 +187,7 @@
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="Forms\MacDockContainer.cs" />
+    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
