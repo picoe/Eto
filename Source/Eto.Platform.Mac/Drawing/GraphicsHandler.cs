@@ -38,8 +38,8 @@ namespace Eto.Platform.iOS.Drawing
 	{
 #if OSX
 		NSGraphicsContext graphicsContext;
-#endif
 		bool disposeContext;
+#endif
 		NSView view;
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;

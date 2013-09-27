@@ -3,25 +3,23 @@ using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
 using System.Diagnostics;
-using Eto.Platform.Mac.Forms.Controls;
 using sd = System.Drawing;
 
 #if IOS
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
 using IMacView = Eto.Platform.iOS.Forms.IiosView;
-using MacContainer = iosLayout;
-namespace Eto.Platform.iOS.Forms
+using MacContainer = Eto.Platform.iOS.Forms.iosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
 
 #elif OSX
-using MonoMac.AppKit;
 
-namespace Eto.Platform.Mac.Forms
+using MonoMac.AppKit;
+using Eto.Platform.Mac.Forms.Controls;
+using MacContainer = Eto.Platform.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout>;
 #endif
+namespace Eto.Platform.Mac.Forms
 {
-	public class TableLayoutHandler :
-		MacContainer<NSView, TableLayout>,
-		ITableLayout
+	public class TableLayoutHandler : MacContainer, ITableLayout
 	{
 		Control[,] views;
 		bool[] xscaling;
@@ -58,7 +56,11 @@ namespace Eto.Platform.Mac.Forms
 
 		public TableLayoutHandler()
 		{
+#if OSX
 			Control = new MacEventView { Handler = this };
+#elif IOS
+			Control = new NSView();
+#endif
 		}
 
 		protected override void Initialize()
@@ -67,10 +69,18 @@ namespace Eto.Platform.Mac.Forms
 
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
-			Widget.SizeChanged += (sender, ev) =>
+			Widget.SizeChanged += HandleSizeChanged;
+		}
+
+		bool isResizing;
+		void HandleSizeChanged (object sender, EventArgs e)
+		{
+			if (!isResizing)
 			{
-				this.LayoutChildren();
-			};
+				isResizing = true;
+				LayoutChildren();
+				isResizing = false;
+			}
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -128,7 +138,7 @@ namespace Eto.Platform.Mac.Forms
 				return;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
-			var controlFrame = Control.Frame;
+			var controlFrame = ContentControl.Frame;
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
 			var totalx = controlFrame.Width - totalxpadding;
@@ -229,8 +239,8 @@ namespace Eto.Platform.Mac.Forms
 							nsview.Frame = frame;
 						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height
 						         || frame.Right > oldFrameSize.Width || frame.Bottom > oldFrameSize.Height)
-							nsview.NeedsDisplay = true;
-						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
+							nsview.SetNeedsDisplay();
+						//Console.WriteLine("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					}
 					startx += widths[x] + Spacing.Width;
 				}

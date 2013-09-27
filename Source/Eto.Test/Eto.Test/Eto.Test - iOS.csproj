@@ -123,6 +123,10 @@
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="TestIcons.cs" />
     <Compile Include="Sections\Dialogs\MessageBoxSection.cs" />
+    <Compile Include="Sections\FormsSection\ImageViewFormSection.cs" />
+    <Compile Include="Sections\Layouts\PixelLayoutSection\AnchorSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ChildWidthSection.cs" />
+    <Compile Include="Sections\Controls\SplitterSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Reference Include="System" />

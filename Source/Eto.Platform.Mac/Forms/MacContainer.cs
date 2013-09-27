@@ -5,7 +5,11 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
-using Eto.Platform.Mac.Drawing;
+
+#if IOS
+using NSResponder = MonoTouch.UIKit.UIResponder;
+using Eto.Platform.iOS.Forms;
+#endif
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -22,7 +26,13 @@ namespace Eto.Platform.Mac.Forms
 		bool InitialLayout { get; }
 	}
 
-	public abstract class MacContainer<T, W> : MacView<T, W>, IContainer, IMacContainer
+	public abstract class MacContainer<T, W> : 
+#if OSX
+		MacView<T, W>, 
+#elif IOS
+		iosView<T, W>,
+#endif
+		IContainer, IMacContainer
 		where T: NSResponder
 		where W: Container
 	{

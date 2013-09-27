@@ -5,19 +5,18 @@ using MonoTouch.UIKit;
 using System.Collections.Generic;
 using sd = System.Drawing;
 using System.Linq;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
 	public class PixelLayoutHandler : iosLayout<UIView, PixelLayout>, IPixelLayout
 	{
-		bool loaded;
-		Dictionary<Control, Point> points = new Dictionary<Control, Point> ();
-		
-		public PixelLayoutHandler ()
+		Dictionary<Control, Point> points = new Dictionary<Control, Point>();
+
+		public PixelLayoutHandler()
 		{
-			DisposeControl = false;
+			Control = new UIView();
 		}
-		
 		/*
 		public sd.RectangleF GetPosition (Control control)
 		{
@@ -29,94 +28,97 @@ namespace Eto.Platform.iOS.Forms
 			return base.GetPosition (control);
 		}*/
 
-		public override Size GetPreferredSize (Size availableSize)
+		public override Size GetPreferredSize(Size availableSize)
 		{
 			Size size = Size.Empty;
-			foreach (var item in points) {
-				var frameSize = item.Key.GetPreferredSize (availableSize);
-				size = Size.Max (size, frameSize + new Size (item.Value));
+			foreach (var item in points)
+			{
+				var frameSize = item.Key.GetPreferredSize(availableSize);
+				size = Size.Max(size, frameSize + new Size(item.Value));
 			}
 			return size;
 		}
-		
-		public override void OnLoadComplete (EventArgs e)
+
+		public override void OnLoadComplete(EventArgs e)
 		{
-			base.OnLoadComplete (e);
-			Layout();
-			loaded = true;
+			base.OnLoadComplete(e);
 		}
-		
-		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
+
+		void SetPosition(Control control, Point point, float frameHeight, bool flipped)
 		{
 			var offset = ((IiosView)control.Handler).PositionOffset;
-			var childView = control.GetContainerView ();
+			var childView = control.GetContainerView();
 			
-			var preferredSize = control.GetPreferredSize (Size.MaxValue);
+			var preferredSize = control.GetPreferredSize(Size.MaxValue);
 			
 			sd.PointF origin;
 			if (flipped)
-				origin = new sd.PointF (
+				origin = new sd.PointF(
 					point.X + offset.Width,
 					point.Y + offset.Height
-					);
+				);
 			else
-				origin = new sd.PointF (
+				origin = new sd.PointF(
 					point.X + offset.Width,
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
-					);
+				);
 			
-			var frame = new sd.RectangleF (origin, preferredSize.ToSDSizeF());
-			if (frame != childView.Frame) {
+			var frame = new sd.RectangleF(origin, preferredSize.ToSDSizeF());
+			if (frame != childView.Frame)
+			{
 				childView.Frame = frame;
 			}
 		}
-		
-		public override void LayoutChildren ()
+
+		public override void LayoutChildren()
 		{
-			var controlPoints = points.ToArray ();
+			var controlPoints = points.ToArray();
 			var frameHeight = Control.Frame.Height;
 			var flipped = !Control.Layer.GeometryFlipped;
-			foreach (var item in controlPoints) {
-				SetPosition (item.Key, item.Value, frameHeight, flipped);
+			foreach (var item in controlPoints)
+			{
+				SetPosition(item.Key, item.Value, frameHeight, flipped);
 			}
 		}
-		
-		public void Add (Control child, int x, int y)
+
+		public void Add(Control child, int x, int y)
 		{
-			var location = new Point (x, y);
-			points [child] = location;
-			var childView = child.GetContainerView ();
-			if (loaded) {
+			var location = new Point(x, y);
+			points[child] = location;
+			var childView = child.GetContainerView();
+			if (Widget.Loaded)
+			{
 				var frameHeight = Control.Frame.Height;
-				SetPosition (child, location, frameHeight, false);
+				SetPosition(child, location, frameHeight, false);
 			}
-			Control.AddSubview (childView);
-			if (loaded)
-				UpdateParentLayout ();
+			Control.AddSubview(childView);
+			if (Widget.Loaded)
+				LayoutParent();
 		}
-		
-		public void Move (Control child, int x, int y)
+
+		public void Move(Control child, int x, int y)
 		{
-			var location = new Point (x, y);
-			if (points [child] != location) {
-				points [child] = location;
-				if (loaded) {
+			var location = new Point(x, y);
+			if (points[child] != location)
+			{
+				points[child] = location;
+				if (Widget.Loaded)
+				{
 					var frameHeight = Control.Frame.Height;
-					SetPosition (child, location, frameHeight, false);
-					UpdateParentLayout ();
+					SetPosition(child, location, frameHeight, false);
+					LayoutParent();
 				}
 			}
 		}
-		
-		public void Remove (Control child)
-		{
-			var childView = child.GetContainerView ();
-			points.Remove (child);
-			childView.RemoveFromSuperview ();
-			if (loaded)
-				UpdateParentLayout ();
-		}
 
+		public void Remove(Control child)
+		{
+			var childView = child.GetContainerView();
+			points.Remove(child);
+			childView.RemoveFromSuperview();
+			if (Widget.Loaded)
+				LayoutParent();
+		}
 		/*
 		public void Add(Control child, int x, int y)
 		{

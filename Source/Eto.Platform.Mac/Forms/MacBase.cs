@@ -1,20 +1,34 @@
 using System;
 using System.Collections.Generic;
-
-#if OSX
+using Eto.Drawing;
 using MonoMac.ObjCRuntime;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
-
-namespace Eto.Platform.Mac.Forms
-#elif IOS
 using MonoTouch.ObjCRuntime;
 using MonoTouch.Foundation;
-using NSView = MonoTouch.UIKit.UIView;
 
-namespace Eto.Platform.iOS.Forms
+#if IOS
+using NSView = MonoTouch.UIKit.UIView;
 #endif
+
+namespace Eto.Platform.Mac.Forms
 {
+	public interface IMacAutoSizing
+	{
+		bool AutoSize { get; }
+
+		Size GetPreferredSize(Size availableSize);
+	}
+
+	public interface IMacContainerControl
+	{
+		NSView ContainerControl { get; }
+
+		NSView ContentControl { get; }
+
+		NSView EventControl { get; }
+	}
+
 	[Register("ObserverHelper")]
 	public class ObserverHelper : NSObject
 	{
@@ -40,7 +54,7 @@ namespace Eto.Platform.iOS.Forms
 		static Selector selPerformAction = new Selector("performAction:");
 
 		[Export("performAction:")]
-		public void Doit(NSNotification notification)
+		public void PerformAction(NSNotification notification)
 		{
 			Action(new ObserverActionArgs(this, notification));
 		}

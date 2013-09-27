@@ -85,7 +85,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 	public class GridHandlerTableDelegate : UITableViewDelegate
 	{
-		public IGrid Handler { get; private set; }
+		WeakReference handler;
+		public IGrid Handler { get { return (IGrid)handler.Target; } set { handler = new WeakReference(value); } }
 
 		public Grid Widget { get { return Handler.Widget as Grid; } }
 
@@ -102,7 +103,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 	internal class RotatableTableViewController : UITableViewController
 	{
-		public object Control { get; set; }
+		WeakReference handler;
+		public object Control { get { return (object)handler.Target; } set { handler = new WeakReference(value); } }
 
 		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations()
 		{

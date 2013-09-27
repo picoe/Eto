@@ -1,16 +1,9 @@
 using System;
-#if DESKTOP
 using MonoMac.ObjCRuntime;
-#elif MOBILE
 using MonoTouch.ObjCRuntime;
-#endif
 using System.Runtime.InteropServices;
 
-#if DESKTOP
 namespace Eto.Platform.Mac
-#else
-namespace Eto.Platform.iOS
-#endif
 {
 	public static class ObjCExtensions
 	{

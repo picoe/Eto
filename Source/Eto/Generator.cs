@@ -20,12 +20,12 @@ namespace Eto
 		/// Gets the instance of the widget that was created
 		/// </summary>
 		public object Instance { get; private set; }
-		
+
 		/// <summary>
 		/// Initializes a new instance of the WidgetCreatedArgs class
 		/// </summary>
 		/// <param name="instance">Instance of the widget that was created</param>
-		public WidgetCreatedArgs (object instance)
+		public WidgetCreatedArgs(object instance)
 		{
 			this.Instance = instance;
 		}
@@ -49,9 +49,9 @@ namespace Eto
 		/// <typeparam name="T">Type of handler to create</typeparam>
 		/// <param name="generator">Generator to create the instance, or null to use the current generator</param>
 		/// <returns>A new instance of a handler</returns>
-		public static T Create<T> (this Generator generator)
+		public static T Create<T>(this Generator generator)
 		{
-			return (T)(generator ?? Generator.Current).Create (typeof (T));
+			return (T)(generator ?? Generator.Current).Create(typeof(T));
 		}
 
 		/// <summary>
@@ -65,9 +65,9 @@ namespace Eto
 		/// <param name="generator">Generator to create or get the shared instance, or null to use the current generator</param>
 		/// <typeparam name="T">The type of handler to get a shared instance for</typeparam>
 		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
-		public static T CreateShared<T> (this Generator generator)
+		public static T CreateShared<T>(this Generator generator)
 		{
-			return (T)(generator ?? Generator.Current).CreateShared (typeof(T));
+			return (T)(generator ?? Generator.Current).CreateShared(typeof(T));
 		}
 
 		/// <summary>
@@ -75,18 +75,18 @@ namespace Eto
 		/// </summary>
 		/// <typeparam name="T">Type of the handler interface (usually derived from <see cref="IWidget"/> or another type)</typeparam>
 		/// <returns>The delegate to use to create instances of the specified type</returns>
-		public static Func<T> Find<T> (this Generator generator)
+		public static Func<T> Find<T>(this Generator generator)
 			where T: class
 		{
-			return (Func<T>)(generator ?? Generator.Current).Find (typeof(T));
+			return (Func<T>)(generator ?? Generator.Current).Find(typeof(T));
 		}
 
-		public static Dictionary<K, V> Cache<K, V> (this Generator generator, object cacheKey)
+		public static Dictionary<K, V> Cache<K, V>(this Generator generator, object cacheKey)
 		{
-			return (generator ?? Generator.Current).GetSharedProperty <Dictionary<K, V>> (cacheKey, () => new Dictionary<K, V> ());
+			return (generator ?? Generator.Current).GetSharedProperty <Dictionary<K, V>>(cacheKey, () => new Dictionary<K, V>());
 		}
 	}
-	
+
 	/// <summary>
 	/// Base generator class for each platform
 	/// </summary>
@@ -105,18 +105,20 @@ namespace Eto
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Generator
 	{
-		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>> ();
-		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object> ();
-		Dictionary<object, object> properties = new Dictionary<object, object> ();
+		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
+		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
+		Dictionary<object, object> properties = new Dictionary<object, object>();
 		static Generator current;
 
-		internal T GetSharedProperty<T> (object key, Func<T> instantiator)
+		internal T GetSharedProperty<T>(object key, Func<T> instantiator)
 		{
 			object value;
-			lock (properties) {
-				if (!properties.TryGetValue (key, out value)) {
-					value = instantiator ();
-					properties [key] = value;
+			lock (properties)
+			{
+				if (!properties.TryGetValue(key, out value))
+				{
+					value = instantiator();
+					properties[key] = value;
 				}
 			}
 			return (T)value;
@@ -128,15 +130,15 @@ namespace Eto
 		/// Event to handle when widgets are created by this generator
 		/// </summary>
 		public event EventHandler<WidgetCreatedArgs> WidgetCreated;
-		
+
 		/// <summary>
 		/// Handles the <see cref="WidgetCreated"/> event
 		/// </summary>
 		/// <param name="e">Arguments for the event</param>
-		protected virtual void OnWidgetCreated (WidgetCreatedArgs e)
+		protected virtual void OnWidgetCreated(WidgetCreatedArgs e)
 		{
 			if (WidgetCreated != null)
-				WidgetCreated (this, e);
+				WidgetCreated(this, e);
 		}
 
 		#endregion
@@ -160,12 +162,12 @@ namespace Eto
 		{
 			get { return ID == Generators.Windows; }
 		}
-		
+
 		public virtual bool IsWpf
 		{
 			get { return ID == Generators.Wpf; }
 		}
-		
+
 		public virtual bool IsGtk
 		{
 			get { return ID == Generators.Gtk; }
@@ -175,11 +177,11 @@ namespace Eto
 		{
 			get { return ID == Generators.Ios; }
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of the Generator class
 		/// </summary>
-		protected Generator ()
+		protected Generator()
 		{
 		}
 
@@ -188,10 +190,10 @@ namespace Eto
 		/// </summary>
 		/// <typeparam name="T">type to test for</typeparam>
 		/// <returns>true if the specified type is supported, false otherwise</returns>
-		public virtual bool Supports<T> ()
+		public virtual bool Supports<T>()
 			where T: class
 		{
-			return this.Find<T> () != null;
+			return this.Find<T>() != null;
 		}
 
 		/// <summary>
@@ -210,7 +212,7 @@ namespace Eto
 			get
 			{
 				if (current == null)
-					throw new ApplicationException ("Generator has not been initialized");
+					throw new ApplicationException("Generator has not been initialized");
 				return current;
 			}
 		}
@@ -219,7 +221,7 @@ namespace Eto
 		/// Returns true if the current generator has been set.
 		/// </summary>
 		public static bool HasCurrent { get { return current != null; } }
-		
+
 		/// <summary>
 		/// Returns the current generator, or detects the generator to use if no current generator is set.
 		/// </summary>
@@ -239,7 +241,7 @@ namespace Eto
 
 				Generator detected = null;
 #if MOBILE
-				detected = Generator.GetGenerator (Generators.IosAssembly, true);
+				detected = Generator.GetGenerator(Generators.IosAssembly, true);
 #elif DESKTOP
 			
 				if (EtoEnvironment.Platform.IsMac) {
@@ -258,9 +260,9 @@ namespace Eto
 #endif
 				
 				if (detected == null)
-					throw new EtoException ("Could not detect platform. Are you missing a platform assembly?");
+					throw new EtoException("Could not detect platform. Are you missing a platform assembly?");
 					
-				Initialize (detected);
+				Initialize(detected);
 				return current;
 			}
 		}
@@ -281,11 +283,12 @@ namespace Eto
 		/// specified by ValidateGenerator
 		/// </summary>
 		/// <param name="generator"></param>
-		[Conditional ("DEBUG")]
-		public static void Validate (Generator generator)
+		[Conditional("DEBUG")]
+		public static void Validate(Generator generator)
 		{
-			if (ValidateGenerator != null && !object.ReferenceEquals (generator, ValidateGenerator)) {
-				throw new EtoException (string.Format ("Expected to use generator {0}", ValidateGenerator));
+			if (ValidateGenerator != null && !object.ReferenceEquals(generator, ValidateGenerator))
+			{
+				throw new EtoException(string.Format("Expected to use generator {0}", ValidateGenerator));
 			}
 		}
 
@@ -296,7 +299,7 @@ namespace Eto
 		/// This is called automatically by the <see cref="Forms.Application"/> when it is constructed
 		/// </remarks>
 		/// <param name="generator">Generator to set as the current generator</param>
-		public static void Initialize (Generator generator)
+		public static void Initialize(Generator generator)
 		{
 			current = generator;
 		}
@@ -315,23 +318,27 @@ namespace Eto
 		/// </summary>
 		/// <param name="generatorType">Type of the generator to get</param>
 		/// <returns>An instance of a Generator of the specified type</returns>
-		public static Generator GetGenerator (string generatorType)
+		public static Generator GetGenerator(string generatorType)
 		{
-			return GetGenerator (generatorType, false);
+			return GetGenerator(generatorType, false);
 		}
 
-		static Generator GetGenerator (string generatorType, bool allowNull)
+		static Generator GetGenerator(string generatorType, bool allowNull)
 		{
-			Type type = Type.GetType (generatorType);
-			if (type == null) {
-				if (allowNull) 
+			Type type = Type.GetType(generatorType);
+			if (type == null)
+			{
+				if (allowNull)
 					return null;
 				else
-					throw new EtoException ("Generator not found. Are you missing the platform assembly?");
+					throw new EtoException("Generator not found. Are you missing the platform assembly?");
 			}
-			try {
-				return (Generator)Activator.CreateInstance (type);
-			} catch {
+			try
+			{
+				return (Generator)Activator.CreateInstance(type);
+			}
+			catch
+			{
 				if (allowNull)
 					return null;
 				else
@@ -344,30 +351,30 @@ namespace Eto
 		/// </summary>
 		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
 		/// <typeparam name="T">The handler type to add the instantiator for (usually an interface derived from <see cref="IWidget"/>)</typeparam>
-		public void Add<T> (Func<T> instantiator)
+		public void Add<T>(Func<T> instantiator)
 			where T: class
 		{
-			Add (typeof(T), instantiator);
+			Add(typeof(T), instantiator);
 		}
-		
+
 		/// <summary>
 		/// Add the specified type and instantiator.
 		/// </summary>
 		/// <param name="type">Type of the handler (usually an interface derived from <see cref="IWidget"/>)</param>
 		/// <param name="instantiator">Instantiator to create an instance of the handler</param>
-		public void Add (Type type, Func<object> instantiator)
+		public void Add(Type type, Func<object> instantiator)
 		{
-			instantiatorMap [type] = instantiator;
+			instantiatorMap[type] = instantiator;
 		}
-		
+
 		/// <summary>
 		/// Find the delegate to create instances of the specified <paramref name="type"/>
 		/// </summary>
 		/// <param name="type">Type of the handler interface to get the instantiator for (usually derived from <see cref="IWidget"/> or another type)</param>
-		public Func<object> Find (Type type)
+		public Func<object> Find(Type type)
 		{
 			Func<object> activator;
-			if (instantiatorMap.TryGetValue (type, out activator))
+			if (instantiatorMap.TryGetValue(type, out activator))
 				return activator;
 			else
 				return null;
@@ -378,18 +385,21 @@ namespace Eto
 		/// </summary>
 		/// <param name="type">Type of handler to create</param>
 		/// <returns>A new instance of a handler</returns>
-		public object Create (Type type)
+		public object Create(Type type)
 		{
-			try {
-				var instantiator = Find (type);
+			try
+			{
+				var instantiator = Find(type);
 				if (instantiator == null)
-					throw new HandlerInvalidException (string.Format ("type {0} could not be found in this generator", type.FullName));
+					throw new HandlerInvalidException(string.Format("type {0} could not be found in this generator", type.FullName));
 
-				var handler = instantiator ();
-				OnWidgetCreated (new WidgetCreatedArgs (handler));
+				var handler = instantiator();
+				OnWidgetCreated(new WidgetCreatedArgs(handler));
 				return handler;
-			} catch (Exception e) {
-				throw new HandlerInvalidException (string.Format ("Could not create instance of type {0}", type), e);
+			}
+			catch (Exception e)
+			{
+				throw new HandlerInvalidException(string.Format("Could not create instance of type {0}", type), e);
 			}
 		}
 
@@ -398,14 +408,17 @@ namespace Eto
 		/// </summary>
 		/// <param name="type">The type of handler to get a shared instance for</param>
 		/// <returns>The shared instance of a handler of the given type, or a new instance if not already created</returns>
-		public object CreateShared (Type type)
+		public object CreateShared(Type type)
 		{
 			object instance;
-			lock (sharedInstances) {
-				if (!sharedInstances.TryGetValue (type, out instance)) {
-					instance = Create (type);
+			lock (sharedInstances)
+			{
+				if (!sharedInstances.TryGetValue(type, out instance))
+				{
+					instance = Create(type);
 					var widget = instance as IWidget;
-					if (widget != null) {
+					if (widget != null)
+					{
 						widget.Generator = this;
 					}
 					sharedInstances[type] = instance;
@@ -419,16 +432,16 @@ namespace Eto
 		/// </summary>
 		/// <param name="action">Action to invoke</param>
 		[Obsolete("Use Application.InvokeOnMainThread")]
-		public void ExecuteOnMainThread (System.Action action)
+		public void ExecuteOnMainThread(System.Action action)
 		{
-			Forms.Application.Instance.Invoke (action);
+			Forms.Application.Instance.Invoke(action);
 		}
 
 		/// <summary>
 		/// Used at the start of your custom threads
 		/// </summary>
 		/// <returns></returns>
-		public virtual IDisposable ThreadStart ()
+		public virtual IDisposable ThreadStart()
 		{
 			return null;
 		}

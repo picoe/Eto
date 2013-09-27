@@ -9,53 +9,64 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class NumericUpDownHandler : iosControl<UITextField, NumericUpDown>, INumericUpDown
 	{
-		public override UITextField CreateControl ()
+		public override UITextField CreateControl()
 		{
-			return new UITextField ();
+			return new UITextField();
 		}
-		
-		protected override Eto.Drawing.Size GetNaturalSize ()
+
+		protected override Size GetNaturalSize(Size availableSize)
 		{
-			return Size.Max (base.GetNaturalSize (), new Size(60, 0));
+			return Size.Max(base.GetNaturalSize(availableSize), new Size(60, 0));
 		}
-		
-		protected override void Initialize ()
+
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			Control.KeyboardType = UIKeyboardType.NumberPad;
 			Control.ReturnKeyType = UIReturnKeyType.Done;
 			Control.BorderStyle = UITextBorderStyle.RoundedRect;
-			Control.ShouldReturn = (textField) => {
-				textField.ResignFirstResponder ();
+			Control.ShouldReturn = (textField) =>
+			{
+				textField.ResignFirstResponder();
 				return true;
 			};
-			Control.EditingChanged += (sender, e) => {
-				Widget.OnValueChanged (EventArgs.Empty);
+			Control.EditingChanged += (sender, e) =>
+			{
+				Widget.OnValueChanged(EventArgs.Empty);
 			};
 		}
-		
-		public bool ReadOnly {
-			get; set;
+
+		public bool ReadOnly
+		{
+			get;
+			set;
 		}
 
-		public double Value {
-			get {
+		public double Value
+		{
+			get
+			{
 				double value;
-				if (double.TryParse (Control.Text, out value))
+				if (double.TryParse(Control.Text, out value))
 					return value;
 				return 0;
 			}
-			set {
-				Control.Text = value.ToString ();
+			set
+			{
+				Control.Text = value.ToString();
 			}
 		}
 
-		public double MinValue {
-			get; set;
+		public double MinValue
+		{
+			get;
+			set;
 		}
 
-		public double MaxValue {
-			get; set;
+		public double MaxValue
+		{
+			get;
+			set;
 		}
 	}
 }

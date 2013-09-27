@@ -188,6 +188,7 @@
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="Forms\MacDockContainer.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
+    <Compile Include="Forms\iosCompatibility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

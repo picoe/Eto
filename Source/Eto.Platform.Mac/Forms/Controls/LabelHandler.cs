@@ -18,10 +18,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Font font;
 		bool is106;
 
-		public override NSView ContainerControl
-		{
-			get { return Control; }
-		}
+		public override NSView ContainerControl { get { return Control; } }
 
 		public override Size GetPreferredSize(Size availableSize)
 		{
