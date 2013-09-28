@@ -32,13 +32,15 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 				Text = "Add Columns To Table"
 			};
 
+			Control left = null;
+
 			control.Click += delegate
 			{
 				toggle = !toggle;
 				this.SuspendLayout();
 				if (toggle)
 				{
-					mainTable.Add(VerticalSection(), 0, 0);
+					mainTable.Add(left = VerticalSection(), 0, 0);
 					rightSection.Content = VerticalSection();
 					middleTable.Add(HorizontalSection(), 0, 2);
 					topSection.Content = HorizontalSection();
@@ -46,7 +48,11 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 				}
 				else
 				{
-					mainTable.Add(null, 0, 0);
+					if (left != null)
+					{
+						left.Detach();
+						left = null;
+					}
 					rightSection.Content = null;
 					middleTable.Add(null, 0, 2);
 					topSection.Content = null;
@@ -81,8 +87,8 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		Control VerticalSection()
 		{
 			var layout = new DynamicLayout { BackgroundColor = Colors.Blue };
-			layout.Add(new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
-			layout.Add(new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
 			return layout;
 		}
 
@@ -90,8 +96,8 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		{
 			var layout = new DynamicLayout { BackgroundColor = Colors.Blue };
 			layout.BeginHorizontal();
-			layout.Add(new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
-			layout.Add(new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
 			layout.EndHorizontal();
 			return layout;
 		}

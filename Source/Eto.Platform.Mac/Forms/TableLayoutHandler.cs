@@ -11,8 +11,8 @@ using NSView = MonoTouch.UIKit.UIView;
 using IMacView = Eto.Platform.iOS.Forms.IiosView;
 using MacContainer = Eto.Platform.iOS.Forms.iosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
 
-#elif OSX
 
+#elif OSX
 using MonoMac.AppKit;
 using Eto.Platform.Mac.Forms.Controls;
 using MacContainer = Eto.Platform.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout>;
@@ -73,7 +73,8 @@ namespace Eto.Platform.Mac.Forms
 		}
 
 		bool isResizing;
-		void HandleSizeChanged (object sender, EventArgs e)
+
+		void HandleSizeChanged(object sender, EventArgs e)
 		{
 			if (!isResizing)
 			{
@@ -282,7 +283,7 @@ namespace Eto.Platform.Mac.Forms
 			for (int yy = 0; yy < views.GetLength(0); yy++)
 				for (int xx = 0; xx < views.GetLength(1); xx++)
 				{
-					if (views[yy, xx] == child)
+					if (object.ReferenceEquals(views[yy, xx], child))
 						views[yy, xx] = null;
 				}
 
@@ -293,16 +294,19 @@ namespace Eto.Platform.Mac.Forms
 
 		public void Remove(Control child)
 		{
-			var view = child.GetContainerView();
-			view.RemoveFromSuperview();
 			for (int y = 0; y < views.GetLength(0); y++)
 				for (int x = 0; x < views.GetLength(1); x++)
 				{
-					if (views[y, x] == child)
+					if (object.ReferenceEquals(views[y, x], child))
+					{
+						var view = child.GetContainerView();
+						view.RemoveFromSuperview();
 						views[y, x] = null;
+						if (Widget.Loaded)
+							LayoutParent();
+						return;
+					}
 				}
-			if (Widget.Loaded)
-				LayoutParent();
 		}
 
 		public void CreateControl(int cols, int rows)

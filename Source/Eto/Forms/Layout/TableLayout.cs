@@ -287,10 +287,9 @@ namespace Eto.Forms
 
 		public void Move(Control child, int x, int y)
 		{
-			var controlList = ((IList)controls);
-			var index = controlList.IndexOf(child);
-			if (index >= 0)
-				controlList[index] = null;
+			var index = controls.IndexOf(child);
+			if (index != null)
+				controls[index.Item1, index.Item2] = null;
 
 			var old = controls[x, y];
 			if (old != null)
@@ -309,11 +308,10 @@ namespace Eto.Forms
 
 		public override void Remove(Control child)
 		{
-			var controlList = ((IList)controls);
-			var index = controlList.IndexOf(child);
-			if (index >= 0)
+			var index = controls.IndexOf(child);
+			if (index != null)
 			{
-				controlList[index] = null;
+				controls[index.Item1, index.Item2] = null;
 				Handler.Remove(child);
 				child.SetParent(null);
 			}
