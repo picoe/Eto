@@ -193,16 +193,16 @@ namespace Eto.Test
 
 		void GenerateMenu(GenerateActionArgs args)
 		{
-			var file = args.Menu.FindAddSubMenu("&File", 100);
-			args.Menu.FindAddSubMenu("&Edit", 200);
-			args.Menu.FindAddSubMenu("&Window", 900);
-			var help = args.Menu.FindAddSubMenu("&Help", 1000);
+			var file = args.Menu.GetSubmenu("&File", 100);
+			args.Menu.GetSubmenu("&Edit", 200);
+			args.Menu.GetSubmenu("&Window", 900);
+			var help = args.Menu.GetSubmenu("&Help", 1000);
 
 			if (Generator.IsMac)
 			{
 				// have a nice OS X style menu
 
-				var main = args.Menu.FindAddSubMenu(Application.Instance.Name, 0);
+				var main = args.Menu.GetSubmenu(Application.Instance.Name, 0);
 				main.Actions.Add(Actions.About.ActionID, 0);
 				main.Actions.Add(Actions.Quit.ActionID, 1000);
 			}

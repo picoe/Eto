@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace Eto
 {
@@ -53,7 +54,7 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
 		/// </summary>
-		public WidgetHandler ()
+		protected WidgetHandler ()
 		{
 #if DEBUG
 			WidgetID = Ref.nextID++;
@@ -145,7 +146,7 @@ namespace Eto
 		{
 			// only use for desktop until mobile controls are working
 #if DESKTOP
-			throw new NotSupportedException (string.Format ("Event {0} not supported by this control", id));
+			throw new NotSupportedException (string.Format (CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 #endif
 		}
 		
@@ -211,7 +212,7 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
 		/// </summary>
-		public WidgetHandler()
+		protected WidgetHandler()
 		{
 			DisposeControl = true;
 		}

@@ -11,8 +11,6 @@ namespace Eto.Forms
 
 		public int CurrentPage { get; private set; }
 
-		public PageSettings PageSettings { get; private set; }
-
 		public PrintPageEventArgs (Graphics graphics, SizeF pageSize, int currentPage)
 		{
 			this.Graphics = graphics;

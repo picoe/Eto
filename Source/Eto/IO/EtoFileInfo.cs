@@ -6,7 +6,7 @@ namespace Eto.IO
 {
 	public abstract class EtoFileInfo : EtoSystemObjectInfo, IComparable<EtoFileInfo>
 	{
-		public EtoFileInfo()
+		protected EtoFileInfo()
 		{
 		}
 
@@ -67,7 +67,7 @@ namespace Eto.IO
 		{
 			var dir = obj as EtoFileInfo;
 			if (dir == null) return false;
-			return this.FullName.Equals (dir.FullName, StringComparison.InvariantCultureIgnoreCase);
+			return this.FullName.Equals (dir.FullName, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public override int GetHashCode ()
@@ -86,11 +86,9 @@ namespace Eto.IO
 			return !(file1 == file2);
 		}
 		
-		#region IComparable[EtoFileInfo] implementation
 		public virtual int CompareTo (EtoFileInfo other)
 		{
-			return this.FullName.CompareTo(other.FullName);
+			return string.Compare(this.FullName, other.FullName, StringComparison.CurrentCulture);
 		}
-		#endregion
 	}
 }

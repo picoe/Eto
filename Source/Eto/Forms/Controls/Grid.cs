@@ -51,7 +51,7 @@ namespace Eto.Forms
 
 		public abstract Color ForegroundColor { get; set; }
 
-		public GridCellFormatEventArgs (GridColumn column, object item, int row)
+		protected GridCellFormatEventArgs (GridColumn column, object item, int row)
 		{
 			this.Column = column;
 			this.Item = item;
@@ -61,7 +61,7 @@ namespace Eto.Forms
 
 	public abstract class Grid : Control
 	{
-		IGrid handler;
+		new IGrid Handler { get { return (IGrid)base.Handler; } }
 
 		public GridColumnCollection Columns { get; private set; }
 
@@ -167,25 +167,24 @@ namespace Eto.Forms
 		protected Grid (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, false)
 		{
-			handler = (IGrid)Handler;
 			Columns = new GridColumnCollection ();
 			if (initialize)
 				Initialize ();
 		}
 
 		public bool ShowHeader {
-			get { return handler.ShowHeader; }
-			set { handler.ShowHeader = value; }
+			get { return Handler.ShowHeader; }
+			set { Handler.ShowHeader = value; }
 		}
 
 		public bool AllowColumnReordering {
-			get { return handler.AllowColumnReordering; }
-			set { handler.AllowColumnReordering = value; }
+			get { return Handler.AllowColumnReordering; }
+			set { Handler.AllowColumnReordering = value; }
 		}
 
 		public bool AllowMultipleSelection {
-			get { return handler.AllowMultipleSelection; }
-			set { handler.AllowMultipleSelection = value; }
+			get { return Handler.AllowMultipleSelection; }
+			set { Handler.AllowMultipleSelection = value; }
 		}
 
 		public abstract IEnumerable<object> SelectedItems { get; }
@@ -206,33 +205,33 @@ namespace Eto.Forms
 		}
 
 		public virtual IEnumerable<int> SelectedRows {
-			get { return handler.SelectedRows; }
+			get { return Handler.SelectedRows; }
 		}
 
 		public int RowHeight
 		{
-			get { return handler.RowHeight; }
-			set { handler.RowHeight = value; }
+			get { return Handler.RowHeight; }
+			set { Handler.RowHeight = value; }
 		}
 
 		public virtual void SelectRow (int row)
 		{
-			handler.SelectRow (row);
+			Handler.SelectRow (row);
 		}
 
 		public virtual void SelectAll ()
 		{
-			handler.SelectAll ();
+			Handler.SelectAll ();
 		}
 
 		public virtual void UnselectRow(int row)
 		{
-			handler.UnselectRow (row);
+			Handler.UnselectRow (row);
 		}
 
 		public virtual void UnselectAll()
 		{
-			handler.UnselectAll ();
+			Handler.UnselectAll ();
 		}
 	}
 }

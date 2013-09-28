@@ -133,7 +133,7 @@ namespace Eto.Platform.Mac
 			//keymap.Add(30, Key.]);
 			//keymap.Add(33, Key.[);
 			keymap.Add(39, Key.Quote);
-			keymap.Add(41, Key.SemiColon);
+			keymap.Add(41, Key.Semicolon);
 			keymap.Add(44, Key.ForwardSlash);
 			keymap.Add(47, Key.Period);
 			keymap.Add(43, Key.Comma);
@@ -192,7 +192,7 @@ namespace Eto.Platform.Mac
 			inverse.Add (Key.Equal, "=");
 			inverse.Add (Key.Grave, "`");
 			inverse.Add (Key.Minus, "-");
-			inverse.Add (Key.SemiColon, ";");
+			inverse.Add (Key.Semicolon, ";");
 			inverse.Add (Key.Up, ((char)NSKey.UpArrow).ToString());
 			inverse.Add (Key.Down, ((char)NSKey.DownArrow).ToString());
 			inverse.Add (Key.Right, ((char)NSKey.RightArrow).ToString());

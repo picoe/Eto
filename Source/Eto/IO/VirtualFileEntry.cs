@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 
 namespace Eto.IO
 {
@@ -36,7 +37,7 @@ namespace Eto.IO
 
 		public override string ToString ()
 		{
-			return string.Format ("[VirtualFileEntry: Name={0}, Path={1}, IsDirectory={2}]", Name, Path, IsDirectory);
+			return string.Format (CultureInfo.InvariantCulture, "[VirtualFileEntry: Name={0}, Path={1}, IsDirectory={2}]", Name, Path, IsDirectory);
 		}
 	}
 }

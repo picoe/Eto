@@ -15,7 +15,7 @@ namespace Eto.Forms
 	
 	public partial class ListBox : ListControl
 	{
-		IListBox handler;
+		new IListBox Handler { get { return (IListBox)base.Handler; } }
 
 		public event EventHandler<EventArgs> Activated;
 
@@ -36,10 +36,7 @@ namespace Eto.Forms
 		protected ListBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IListBox)Handler;
 		}
-
-
 	}
 
 }

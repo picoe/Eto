@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -179,7 +180,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this object</returns>
 		public override string ToString ()
 		{
-			return string.Format ("Top={0}, Left={1}, Right={2}, Bottom={3}", Top, Left, Right, Bottom);
+			return string.Format (CultureInfo.InvariantCulture, "Top={0}, Left={1}, Right={2}, Bottom={3}", Top, Left, Right, Bottom);
 		}
 
 		/// <summary>

@@ -10,7 +10,7 @@ namespace Eto.IO
 	public abstract class EtoDirectoryInfo : EtoSystemObjectInfo, IComparable<EtoDirectoryInfo>
 	{
 		// TODO: should be a concurrent dictionary, but not supported on MonoTouch..
-		static Dictionary<string, VirtualDirectoryType> virtualDirectoryTypes = new Dictionary<string, VirtualDirectoryType>(StringComparer.InvariantCultureIgnoreCase);
+		static Dictionary<string, VirtualDirectoryType> virtualDirectoryTypes = new Dictionary<string, VirtualDirectoryType>(StringComparer.OrdinalIgnoreCase);
 
 		public static void AddVirtualDirectoryType(VirtualDirectoryType type)
 		{
@@ -53,7 +53,7 @@ namespace Eto.IO
 			get { return virtualDirectoryTypes.Values; }
 		}
 		
-		public EtoDirectoryInfo()
+		protected EtoDirectoryInfo()
 		{
 		}
 
@@ -142,7 +142,7 @@ namespace Eto.IO
 		{
 			var dir = obj as EtoDirectoryInfo;
 			if ((object)dir == null) return false;
-			else return this.FullName.Equals (dir.FullName, StringComparison.InvariantCultureIgnoreCase);
+			else return this.FullName.Equals (dir.FullName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static bool operator == (EtoDirectoryInfo dir1, EtoDirectoryInfo dir2)
@@ -156,11 +156,9 @@ namespace Eto.IO
 			return !(dir1 == dir2);
 		}
 		
-		#region IComparable[EtoDirectoryInfo] implementation
 		public virtual int CompareTo (EtoDirectoryInfo other)
 		{
-			return this.FullName.CompareTo (other.FullName);
+			return string.Compare(this.FullName, other.FullName, StringComparison.CurrentCulture);
 		}
-		#endregion
 	}
 }

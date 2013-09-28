@@ -152,7 +152,7 @@ namespace Eto.Platform.Windows
 			for (int y = 0; y < views.GetLength(0); y++)
 				for (int x = 0; x < views.GetLength(1); x++)
 				{
-					if (views[y, x] == child) views[y, x] = null;
+					if (object.ReferenceEquals(views[y, x], child)) views[y, x] = null;
 				}
 		}
 

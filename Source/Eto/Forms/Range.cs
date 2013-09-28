@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Eto.Forms
 {
@@ -50,7 +51,7 @@ namespace Eto.Forms
 
 		public override string ToString ()
 		{
-			return string.Format ("Start={0}, Length={1}", Start, Length);
+			return string.Format (CultureInfo.InvariantCulture, "Start={0}, Length={1}", Start, Length);
 		}
 
 		public bool Equals (Range other)

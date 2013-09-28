@@ -22,7 +22,7 @@ namespace Eto.Forms
 		public static CheckAction AddCheck(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
 		{
 			Icon icon = null;
-			if (iconResource != string.Empty) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
+			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
 			CheckAction action = new CheckAction(id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
@@ -77,9 +77,11 @@ namespace Eto.Forms
 
 		public static void Toggle(object sender, EventArgs args)
 		{
-			if (!(sender is CheckAction)) return;
-			CheckAction action = (CheckAction)sender;
-			action.Checked = !action.Checked;
+			var action = sender as CheckAction;
+			if (action != null)
+			{
+				action.Checked = !action.Checked;
+			}
 		}
 
 		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)

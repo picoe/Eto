@@ -49,7 +49,7 @@ namespace Eto.Forms
 				terminating (this, e);
 		}
 		
-		IApplication handler;
+		new IApplication Handler { get { return (IApplication)base.Handler; } }
 
 		public Form MainForm { get; set; }
 		
@@ -67,13 +67,12 @@ namespace Eto.Forms
 				: base(g, type, initialize)
 		{
 			Application.Instance = this;
-			handler = (IApplication)base.Handler;
 			Generator.Initialize(g); // make everything use this by default
 		}
 
 		public virtual void Run(params string[] args)
 		{
-			handler.Run(args);
+			Handler.Run(args);
 		}
 
 		[Obsolete("Use Invoke instead")]
@@ -84,43 +83,43 @@ namespace Eto.Forms
 
 		public virtual void Invoke (Action action)
 		{
-			handler.Invoke (action);
+			Handler.Invoke (action);
 		}
 
 		public virtual void AsyncInvoke (Action action)
 		{
-			handler.AsyncInvoke (action);
+			Handler.AsyncInvoke (action);
 		}
 		
 		public void Quit()
 		{
-			handler.Quit();
+			Handler.Quit();
 		}
 		
 		public void Open(string url)
 		{
-			handler.Open(url);
+			Handler.Open(url);
 		}
 		
 		public Key CommonModifier
 		{
-			get { return handler.CommonModifier; }
+			get { return Handler.CommonModifier; }
 		}
 		
 		public Key AlternateModifier
 		{
-			get { return handler.AlternateModifier; }
+			get { return Handler.AlternateModifier; }
 		}
 		
 		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
 		{
-			handler.GetSystemActions(args, addStandardItems);
+			Handler.GetSystemActions(args, addStandardItems);
 		}
 
 		public string BadgeLabel
 		{
-			get { return handler.BadgeLabel; }
-			set { handler.BadgeLabel = value; }
+			get { return Handler.BadgeLabel; }
+			set { Handler.BadgeLabel = value; }
 		}
 	}
 }

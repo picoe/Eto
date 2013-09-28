@@ -45,7 +45,7 @@ namespace Eto.Forms
 		{
 			if (controls == null)
 				return;
-			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
+			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
 			Items.AddRange (items.OfType<DynamicItem>());
 		}
 	}

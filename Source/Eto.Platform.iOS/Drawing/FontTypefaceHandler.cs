@@ -46,7 +46,7 @@ namespace Eto.Platform.iOS.Drawing
 		public FontStyle FontStyle {
 			get {
 				if (style == null) {
-					style = FontStyle.Normal;
+					style = FontStyle.None;
 					var name = this.Name;
 					if (name.Contains ("Bold"))
 						style |= FontStyle.Bold;

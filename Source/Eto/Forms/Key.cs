@@ -166,7 +166,11 @@ namespace Eto.Forms
 		Equal = 0x0055,
 
 		/// <summary>The Semicolon ';' Key</summary>
+		[Obsolete("Use Semicolon instead")]
 		SemiColon = 0x0056,
+
+		/// <summary>The Semicolon ';' Key</summary>
+		Semicolon = 0x0056,
 		/// <summary>The Quote ''' Key</summary>
 		Quote = 0x0057,
 
@@ -233,7 +237,7 @@ namespace Eto.Forms
 			{ Key.Backslash, "\\" },
 			{ Key.Equal, "=" },
 		
-			{ Key.SemiColon, ";" },
+			{ Key.Semicolon, ";" },
 			{ Key.Quote, "'" },
 		
 			{ Key.Comma, "," },

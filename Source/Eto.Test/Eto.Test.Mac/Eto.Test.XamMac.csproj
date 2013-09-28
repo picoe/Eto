@@ -34,6 +34,7 @@
     <UseSGen>true</UseSGen>
     <I18n>
     </I18n>
+    <MonoBundlingExtraArgs>--xml="${ProjectDir}/linker.xml"</MonoBundlingExtraArgs>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
@@ -48,13 +49,13 @@
     <PackageSigningKey>Developer ID Installer</PackageSigningKey>
     <I18n>
     </I18n>
+    <MonoBundlingExtraArgs>--xml="${ProjectDir}/linker.xml"</MonoBundlingExtraArgs>
+    <LinkMode>SdkOnly</LinkMode>
   </PropertyGroup>
   <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
   <ItemGroup>
     <Reference Include="System" />
-    <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Drawing" />
     <Reference Include="XamMac" />
     <Reference Include="Newtonsoft.Json">
@@ -66,6 +67,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Info.plist" />
+    <None Include="linker.xml" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(MSBuildExtensionsPath)\Mono\MonoMac\v0.0\Mono.MonoMac.targets" />

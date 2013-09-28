@@ -23,7 +23,7 @@ namespace Eto.Forms
 	
 	public class TextArea : TextControl
 	{
-		ITextArea handler;
+		new ITextArea Handler { get { return (ITextArea)base.Handler; } }
 
 		public static Size DefaultSize = new Size (100, 60);
 
@@ -79,43 +79,42 @@ namespace Eto.Forms
 		protected TextArea (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (ITextArea)base.Handler;
 		}
 		
 		public bool ReadOnly {
-			get { return handler.ReadOnly; }
-			set { handler.ReadOnly = value; }
+			get { return Handler.ReadOnly; }
+			set { Handler.ReadOnly = value; }
 		}
 		
 		public bool Wrap {
-			get { return handler.Wrap; }
-			set { handler.Wrap = value; }
+			get { return Handler.Wrap; }
+			set { Handler.Wrap = value; }
 		}
 
 		public string SelectedText {
-			get { return handler.SelectedText; }
-			set { handler.SelectedText = value; }
+			get { return Handler.SelectedText; }
+			set { Handler.SelectedText = value; }
 		}
 
 		public Range Selection {
-			get { return handler.Selection; }
-			set { handler.Selection = value; }
+			get { return Handler.Selection; }
+			set { Handler.Selection = value; }
 		}
 
 		public void SelectAll ()
 		{
-			handler.SelectAll ();
+			Handler.SelectAll ();
 		}
 
 		public int CaretIndex
 		{
-			get { return handler.CaretIndex; }
-			set { handler.CaretIndex = value; }
+			get { return Handler.CaretIndex; }
+			set { Handler.CaretIndex = value; }
 		}
 
 		public void Append (string text, bool scrollToCursor = false)
 		{
-			handler.Append (text, scrollToCursor);
+			Handler.Append (text, scrollToCursor);
 		}
 	}
 }

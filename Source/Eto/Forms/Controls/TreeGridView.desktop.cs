@@ -11,8 +11,8 @@ namespace Eto.Forms
 	public partial class TreeGridView
 	{
 		public ContextMenu ContextMenu {
-			get { return handler.ContextMenu; }
-			set { handler.ContextMenu = value; }
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
 		}
 	}
 }

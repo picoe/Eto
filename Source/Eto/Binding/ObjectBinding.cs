@@ -163,9 +163,9 @@ namespace Eto
 		/// <summary>
 		/// Hooks up the late bound events for this object
 		/// </summary>
-		protected override void HandleEvent (string handler)
+		protected override void HandleEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case DataValueChangedEvent:
 				if (dataValueChangedReference == null)
 					dataValueChangedReference = InnerBinding.AddValueChangedHandler (
@@ -174,7 +174,7 @@ namespace Eto
 						);
 				break;
 			default:
-				base.HandleEvent (handler);
+				base.HandleEvent (id);
 				break;
 			}
 		}
@@ -182,9 +182,9 @@ namespace Eto
 		/// <summary>
 		/// Removes the late bound events for this object
 		/// </summary>
-		protected override void RemoveEvent (string handler)
+		protected override void RemoveEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case DataValueChangedEvent:
 				if (dataValueChangedReference != null) {
 					InnerBinding.RemoveValueChangedHandler (
@@ -195,7 +195,7 @@ namespace Eto
 				}
 				break;
 			default:
-				base.RemoveEvent (handler);
+				base.RemoveEvent (id);
 				break;
 			}
 		}

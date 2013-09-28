@@ -7,7 +7,7 @@ namespace Eto
 	/// <summary>
 	/// Obsolete resource helper class
 	/// </summary>
-	[Obsolete]
+	[Obsolete("Use standard resource retrieval mechanisms")]
 	public static class Resources
 	{
 		/// <summary>

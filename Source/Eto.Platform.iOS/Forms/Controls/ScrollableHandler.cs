@@ -140,9 +140,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override Size GetNaturalSize(Size availableSize)
 		{
-			return availableSize;
-			var content = Content.GetMacAutoSizing();
-			if (content != null)
+			if (Content != null)
 			{
 				return Content.GetPreferredSize(availableSize);
 			}

@@ -13,7 +13,8 @@ namespace Eto.Forms
 	
 	public class UITimer : InstanceWidget
 	{
-		IUITimer handler;
+		new IUITimer Handler { get { return (IUITimer)base.Handler; } }
+
 		public static double DefaultInterval = 1.0; // 1 second
 		
 		public event EventHandler<EventArgs> Elapsed;
@@ -35,25 +36,24 @@ namespace Eto.Forms
 		protected UITimer (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (IUITimer)Handler;
 		}
 		
 		/// <summary>
 		/// Gets or sets the interval, in seconds
 		/// </summary>
 		public double Interval {
-			get { return handler.Interval; }
-			set { handler.Interval = value; }
+			get { return Handler.Interval; }
+			set { Handler.Interval = value; }
 		}
 		
 		public void Start ()
 		{
-			handler.Start ();
+			Handler.Start ();
 		}
 
 		public void Stop ()
 		{
-			handler.Stop ();
+			Handler.Stop ();
 		}
 	}
 }

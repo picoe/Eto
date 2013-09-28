@@ -30,7 +30,7 @@ namespace Eto.Xaml
 			var type = base.GetXamlType (xamlNamespace, name, typeArguments);
 			if (type == null && xamlNamespace == EtoFormsNamespace)
 				xamlNamespace = "clr-namespace:Eto.Forms;assembly=Eto";
-			if (type == null && xamlNamespace.StartsWith (clr_namespace))
+			if (type == null && xamlNamespace.StartsWith (clr_namespace, StringComparison.OrdinalIgnoreCase))
 			{
 				lock (this.cache_sync)
 				{

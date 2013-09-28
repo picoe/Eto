@@ -10,7 +10,7 @@ namespace Eto.Forms
 	
 	public class ColorDialog : CommonDialog
 	{
-		IColorDialog handler;
+		new IColorDialog Handler { get { return (IColorDialog)base.Handler; } }
 		
 		public event EventHandler<EventArgs> ColorChanged;
 		
@@ -33,12 +33,11 @@ namespace Eto.Forms
 		protected ColorDialog (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IColorDialog)Handler;
 		}
 		
 		public Color Color {
-			get { return handler.Color; }
-			set { handler.Color = value; }
+			get { return Handler.Color; }
+			set { Handler.Color = value; }
 		}
 	}
 }

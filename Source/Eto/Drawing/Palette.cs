@@ -174,7 +174,7 @@ namespace Eto.Drawing
 		public static Palette FromEGA (Palette palEGA)
 		{
 			if (palEGA.Count != 64)
-				throw new Exception ("source palette is not an EGA palette");
+				throw new EtoException ("source palette is not an EGA palette");
 			Palette output = new Palette ();
 			for (int i=0; i<EGAColors.Length; i++) {
 				output.Add (palEGA [EGAColors [i]]);

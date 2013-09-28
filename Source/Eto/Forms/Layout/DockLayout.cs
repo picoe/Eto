@@ -110,7 +110,7 @@ namespace Eto.Forms
 		}
 
 		/// <summary>
-		/// Obsolete. Use <see cref="Content"/> instead
+		/// Obsolete. Use <see cref="DockContainer.Content"/> instead
 		/// </summary>
 		[Obsolete ("Use Content property instead")]
 		public void Add (Control control)

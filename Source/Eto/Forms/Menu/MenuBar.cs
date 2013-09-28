@@ -12,7 +12,8 @@ namespace Eto.Forms
 	
 	public class MenuBar : Menu, ISubMenuWidget
 	{
-		IMenuBar handler;
+		new IMenuBar Handler { get { return (IMenuBar)base.Handler; } }
+
 		MenuItemCollection menuItems;
 		
 		public MenuBar () : this (Generator.Current)
@@ -26,8 +27,7 @@ namespace Eto.Forms
 		protected MenuBar (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IMenuBar)base.Handler;
-			menuItems = new MenuItemCollection (this, handler);
+			menuItems = new MenuItemCollection (this, Handler);
 		}
 
 		public MenuBar (Generator g, IEnumerable<IActionItem> actionItems) : this(g)

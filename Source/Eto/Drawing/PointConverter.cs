@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -35,7 +36,7 @@ namespace Eto.Drawing
 			if (text != null) {
 				var parts = text.Split (culture.TextInfo.ListSeparator.ToCharArray ());
 				if (parts.Length != 2)
-					throw new ArgumentException (string.Format ("Cannot parse value '{0}' as point.  Should be in the form of 'x,y'", text));
+					throw new ArgumentException (string.Format (CultureInfo.CurrentCulture, "Cannot parse value '{0}' as point.  Should be in the form of 'x,y'", text));
 
 				var converter = new Int32Converter ();
 				return new Point (

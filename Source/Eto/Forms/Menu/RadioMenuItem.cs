@@ -14,7 +14,7 @@ namespace Eto.Forms
 	
 	public class RadioMenuItem : MenuActionItem
 	{
-		IRadioMenuItem handler;
+		new IRadioMenuItem Handler { get { return (IRadioMenuItem)base.Handler; } }
 
 		public RadioMenuItem (RadioMenuItem controller = null) : this (Generator.Current, controller)
 		{
@@ -28,15 +28,14 @@ namespace Eto.Forms
 		protected RadioMenuItem (Generator generator, Type type, RadioMenuItem controller, bool initialize = true)
 			: base (generator, type, false)
 		{
-			handler = (IRadioMenuItem)base.Handler;
-			handler.Create (controller);
+			Handler.Create (controller);
 			if (initialize)
 				Initialize ();
 		}
 
 		public bool Checked {
-			get { return handler.Checked; }
-			set { handler.Checked = value; }
+			get { return Handler.Checked; }
+			set { Handler.Checked = value; }
 		}
 	}
 }

@@ -166,14 +166,14 @@ namespace Eto.Platform.Mac.Forms
 			args.Actions.Add (new MacButtonAction ("mac_print", "Print...", "print:") { Accelerator = Key.Application | Key.P });
 
 			if (addStandardItems) {
-				var application = args.Menu.FindAddSubMenu (Widget.Name ?? "Application", 100);
+				var application = args.Menu.GetSubmenu (Widget.Name ?? "Application", 100);
 				application.Actions.AddSeparator (800);
 				application.Actions.Add ("mac_hide", 800);
 				application.Actions.Add ("mac_hideothers", 800);
 				application.Actions.Add ("mac_showall", 800);
 				application.Actions.AddSeparator (801);
 
-				var file = args.Menu.FindAddSubMenu ("&File", 100);
+				var file = args.Menu.GetSubmenu ("&File", 100);
 				file.Actions.AddSeparator (900);
 				file.Actions.Add ("mac_performClose", 900);
 
@@ -183,7 +183,7 @@ namespace Eto.Platform.Mac.Forms
 					file.Actions.Add ("mac_print", 1000);
 				}
 
-				var edit = args.Menu.FindAddSubMenu ("&Edit", 200);
+				var edit = args.Menu.GetSubmenu ("&Edit", 200);
 				edit.Actions.AddSeparator (100);
 				edit.Actions.Add ("mac_undo", 100);
 				edit.Actions.Add ("mac_redo", 100);
@@ -197,7 +197,7 @@ namespace Eto.Platform.Mac.Forms
 				edit.Actions.Add ("mac_selectAll", 200);
 				edit.Actions.AddSeparator (201);
 				
-				var window = args.Menu.FindAddSubMenu ("&Window", 900);
+				var window = args.Menu.GetSubmenu ("&Window", 900);
 				window.Actions.AddSeparator (100);
 				window.Actions.Add ("mac_performMiniaturize", 100);
 				window.Actions.Add ("mac_performZoom", 100);
@@ -208,13 +208,13 @@ namespace Eto.Platform.Mac.Forms
 				window.Actions.AddSeparator (201);
 
 				if (AddFullScreenMenuItem) {
-					var view = args.Menu.FindAddSubMenu ("&View", 300);
+					var view = args.Menu.GetSubmenu ("&View", 300);
 					view.Actions.AddSeparator (900);
 					view.Actions.Add ("mac_toggleFullScreen", 900);
 					view.Actions.AddSeparator (901);
 				}
 				
-				var help = args.Menu.FindAddSubMenu ("&Help", 900);
+				var help = args.Menu.GetSubmenu ("&Help", 900);
 
 				// add separator so help menu is always shown even when empty
 				help.Actions.AddSeparator (0);
