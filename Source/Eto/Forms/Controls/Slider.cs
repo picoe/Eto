@@ -35,7 +35,7 @@ namespace Eto.Forms
 	
 	public class Slider : Control
 	{
-		ISlider handler;
+		new ISlider Handler { get { return (ISlider)base.Handler; } }
 		
 		public event EventHandler<EventArgs> ValueChanged;
 		
@@ -58,37 +58,36 @@ namespace Eto.Forms
 		protected Slider (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (ISlider)Handler;
 		}
 		
 		public int TickFrequency {
-			get { return handler.TickFrequency; }
-			set { handler.TickFrequency = value; }
+			get { return Handler.TickFrequency; }
+			set { Handler.TickFrequency = value; }
 		}
 
 		public bool SnapToTick {
-			get { return handler.SnapToTick; }
-			set { handler.SnapToTick = value; }
+			get { return Handler.SnapToTick; }
+			set { Handler.SnapToTick = value; }
 		}
 
 		public int MaxValue {
-			get { return handler.MaxValue; }
-			set { handler.MaxValue = value; }
+			get { return Handler.MaxValue; }
+			set { Handler.MaxValue = value; }
 		}
 
 		public int MinValue {
-			get { return handler.MinValue; }
-			set { handler.MinValue = value; }
+			get { return Handler.MinValue; }
+			set { Handler.MinValue = value; }
 		}
 
 		public int Value {
-			get { return handler.Value; }
-			set { handler.Value = value; }
+			get { return Handler.Value; }
+			set { Handler.Value = value; }
 		}
 
 		public SliderOrientation Orientation {
-			get { return handler.Orientation; }
-			set { handler.Orientation = value; }
+			get { return Handler.Orientation; }
+			set { Handler.Orientation = value; }
 		}
 	}
 }

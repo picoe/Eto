@@ -31,7 +31,7 @@ namespace Eto
 				{
 					if (sb.Length > 0)
 						sb.Append (',');
-					sb.Append(Convert.ToString(int32Converter.ConvertTo (context, culture, item, destinationType)));
+					sb.Append(Convert.ToString(int32Converter.ConvertTo (context, culture, item, destinationType), CultureInfo.InvariantCulture));
 				}
 				return sb.ToString ();
 			}

@@ -13,7 +13,7 @@ namespace Eto.Forms
 	
 	public class SelectFolderDialog : InstanceWidget
 	{
-		ISelectFolderDialog handler;
+		new ISelectFolderDialog Handler { get { return (ISelectFolderDialog)base.Handler; } }
 		
 		public SelectFolderDialog () : this (Generator.Current)
 		{
@@ -26,22 +26,21 @@ namespace Eto.Forms
 		protected SelectFolderDialog (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (ISelectFolderDialog)Handler;
 		}
 		
 		public string Title {
-			get { return handler.Title; }
-			set { handler.Title = value; }
+			get { return Handler.Title; }
+			set { Handler.Title = value; }
 		}
 		
 		public string Directory {
-			get { return handler.Directory; }
-			set { handler.Directory = value; }
+			get { return Handler.Directory; }
+			set { Handler.Directory = value; }
 		}
 		
 		public DialogResult ShowDialog (Window parent)
 		{
-			return handler.ShowDialog (parent);
+			return Handler.ShowDialog (parent);
 		}
 	}
 }

@@ -91,7 +91,7 @@ namespace Eto.Platform.Mac
 		
 		public static FontStyle ToEto (this NSFontTraitMask traits)
 		{
-			var style = FontStyle.Normal;
+			var style = FontStyle.None;
 			if (traits.HasFlag (NSFontTraitMask.Bold))
 				style |= FontStyle.Bold;
 			if (traits.HasFlag (NSFontTraitMask.Italic))

@@ -12,7 +12,7 @@ namespace Eto.Forms
 	
 	public class GroupBox : DockContainer
 	{
-		IGroupBox handler;
+		new IGroupBox Handler { get { return (IGroupBox)base.Handler; } }
 		
 		public GroupBox () : this(Generator.Current)
 		{
@@ -25,17 +25,16 @@ namespace Eto.Forms
 		protected GroupBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IGroupBox)base.Handler;
 		}
 
 		public Font Font {
-			get { return handler.Font; }
-			set { handler.Font = value; }
+			get { return Handler.Font; }
+			set { Handler.Font = value; }
 		}
 		
 		public string Text {
-			get { return handler.Text; }
-			set { handler.Text = value; }
+			get { return Handler.Text; }
+			set { Handler.Text = value; }
 		}
 
 	}

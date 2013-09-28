@@ -9,10 +9,25 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface ISolidBrush : IBrush
 	{
+		/// <summary>
+		/// Gets the current fill color of the specified brush
+		/// </summary>
+		/// <param name="widget">Widget to get the color for</param>
+		/// <returns>Color of the specified brush</returns>
 		Color GetColor (SolidBrush widget);
 
-		void SetColor (SolidBrush widget, Color color);
+		/// <summary>
+		/// Sets the fill color of the specified brush
+		/// </summary>
+		/// <param name="widget">Widget to set the color for</param>
+		/// <param name="color">Color to fill</param>
+		void SetColor(SolidBrush widget, Color color);
 
+		/// <summary>
+		/// Creates a new solid brush with the specified color
+		/// </summary>
+		/// <param name="color">Color of the brush</param>
+		/// <returns>ControlObject of the brush to store</returns>
 		object Create (Color color);
 	}
 	

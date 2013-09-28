@@ -42,6 +42,7 @@ namespace Eto.Drawing
 			var controlDispose = ControlObject as IDisposable;
 			if (controlDispose != null)
 				controlDispose.Dispose ();
+			GC.SuppressFinalize(this);
 		}
 	}
 }

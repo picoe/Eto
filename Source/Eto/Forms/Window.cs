@@ -25,7 +25,7 @@ namespace Eto.Forms
 	
 	public abstract partial class Window : DockContainer
 	{
-		IWindow handler;
+		new IWindow Handler { get { return (IWindow)base.Handler; } }
 		//ToolBarCollection toolBars;
 		
 		#region Events
@@ -90,14 +90,13 @@ namespace Eto.Forms
 		protected Window (Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
-			handler = (IWindow)this.Handler;
 			//toolBars = new ToolBarCollection(this);
 			if (initialize) Initialize (); 
 		}
 
 		public string Title {
-			get { return handler.Title; }
-			set { handler.Title = value; }
+			get { return Handler.Title; }
+			set { Handler.Title = value; }
 		}
 
 		[Obsolete("Use Title instead")]
@@ -107,34 +106,34 @@ namespace Eto.Forms
 		}
 		
 		public new Point Location {
-			get { return handler.Location; }
-			set { handler.Location = value; }
+			get { return Handler.Location; }
+			set { Handler.Location = value; }
 		}
 		
 		public Rectangle Bounds {
-			get { return new Rectangle (handler.Location, handler.Size); }
-			set { handler.Location = value.Location;
-				handler.Size = value.Size; }
+			get { return new Rectangle (Handler.Location, Handler.Size); }
+			set { Handler.Location = value.Location;
+				Handler.Size = value.Size; }
 		}
 		
 		public ToolBar ToolBar {
-			get { return handler.ToolBar; }
-			set { handler.ToolBar = value; }
+			get { return Handler.ToolBar; }
+			set { Handler.ToolBar = value; }
 		}
 
 		public double Opacity {
-			get { return handler.Opacity; }
-			set { handler.Opacity = value; }
+			get { return Handler.Opacity; }
+			set { Handler.Opacity = value; }
 		}
 		
 		public virtual void Close ()
 		{
-			handler.Close ();
+			Handler.Close ();
 		}
 		
 		public Screen Screen
 		{
-			get { return handler.Screen; }
+			get { return Handler.Screen; }
 		}
 		
 	}

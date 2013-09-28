@@ -567,6 +567,7 @@ namespace Eto.Drawing
 		public void Dispose ()
 		{
 			Handler.Dispose ();
+			GC.SuppressFinalize(this);
 		}
 
 		/// <summary>

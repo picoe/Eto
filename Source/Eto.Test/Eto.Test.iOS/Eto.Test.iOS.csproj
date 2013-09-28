@@ -26,7 +26,6 @@
     <Optimize>False</Optimize>
     <ConsolePause>False</ConsolePause>
     <MtouchDebug>True</MtouchDebug>
-    <MtouchLink>None</MtouchLink>
     <AssemblyName>EtoTest</AssemblyName>
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n />

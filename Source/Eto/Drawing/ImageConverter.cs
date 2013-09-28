@@ -24,7 +24,7 @@ namespace Eto.Drawing
 
 		static bool IsIcon (string fileName)
 		{
-			return fileName.EndsWith (".ico");
+			return fileName.EndsWith (".ico", StringComparison.OrdinalIgnoreCase);
 		}
 
 		/// <summary>
@@ -57,14 +57,14 @@ namespace Eto.Drawing
 
 		static Image LoadImage (string resourceName)
 		{
-			if (resourceName.StartsWith (ResourcePrefix)) {
+			if (resourceName.StartsWith (ResourcePrefix, StringComparison.OrdinalIgnoreCase)) {
 				resourceName = resourceName.Substring (ResourcePrefix.Length);
 				return LoadImage (new NamespaceInfo (resourceName));
 			}
 			else
 			{
 				var fileName = resourceName;
-				if (fileName.StartsWith(FilePrefix))
+				if (fileName.StartsWith(FilePrefix, StringComparison.OrdinalIgnoreCase))
 					fileName = fileName.Substring (FilePrefix.Length);
 				if (!Path.IsPathRooted (fileName))
 					fileName = Path.Combine (EtoEnvironment.GetFolderPath (EtoSpecialFolder.ApplicationResources), fileName);

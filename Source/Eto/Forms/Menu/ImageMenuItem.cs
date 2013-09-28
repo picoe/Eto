@@ -24,7 +24,8 @@ namespace Eto.Forms
 	
 	public class ImageMenuItem : MenuActionItem, ISubMenuWidget
 	{
-		IImageMenuItem handler;
+		new IImageMenuItem Handler { get { return (IImageMenuItem)base.Handler; } }
+
 		MenuItemCollection menuItems;
 		
 		public ImageMenuItem () : this (Generator.Current)
@@ -38,8 +39,7 @@ namespace Eto.Forms
 		protected ImageMenuItem (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IImageMenuItem)base.Handler;
-			menuItems = new MenuItemCollection (this, handler);
+			menuItems = new MenuItemCollection (this, Handler);
 		}
 
 		public MenuItemCollection MenuItems {
@@ -48,8 +48,8 @@ namespace Eto.Forms
 
 		public Image Image
 		{
-			get { return handler.Image; }
-			set { handler.Image = value; }
+			get { return Handler.Image; }
+			set { Handler.Image = value; }
 		}
 
 		[Obsolete ("Use Image instead")]

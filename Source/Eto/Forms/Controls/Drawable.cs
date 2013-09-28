@@ -36,13 +36,14 @@ namespace Eto.Forms
 		}
 	}
 
-	public delegate void PaintEventHandler(object sender, PaintEventArgs pe);
+	[Obsolete("Use EventHandler<PaintEventArgs> instead")]
+	public delegate void PaintEventHandler(object sender, PaintEventArgs e);
 
 	public partial class Drawable : DockContainer
 	{
 		new IDrawable Handler { get { return (IDrawable)base.Handler; } }
 
-		public event PaintEventHandler Paint;
+		public event EventHandler<PaintEventArgs> Paint;
 
 		public Drawable()
 			: this(Generator.Current)
@@ -67,10 +68,10 @@ namespace Eto.Forms
 		{
 		}
 
-		public virtual void OnPaint(PaintEventArgs pe)
+		public virtual void OnPaint(PaintEventArgs e)
 		{
 			if (Paint != null)
-				Paint(this, pe);
+				Paint(this, e);
 		}
 
 		public Graphics CreateGraphics()

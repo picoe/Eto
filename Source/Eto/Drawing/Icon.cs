@@ -35,7 +35,7 @@ namespace Eto.Drawing
 	/// </remarks>
 	public class Icon : Image
 	{
-		IIcon handler;
+		new IIcon Handler { get { return (IIcon)base.Handler; } }
 		
 		/// <summary>
 		/// Initializes a new instance of the Icon class with the specified handler
@@ -44,7 +44,6 @@ namespace Eto.Drawing
 		/// <param name="handler">Handler for the icon backend</param>
 		public Icon (Generator generator, IIcon handler) : base(generator, handler)
 		{
-			this.handler = handler;
 		}
 	
 		/// <summary>
@@ -53,8 +52,7 @@ namespace Eto.Drawing
 		/// <param name="stream">Stream to load the content from</param>
 		public Icon (Stream stream) : base(Generator.Current, typeof(IIcon))
 		{
-			handler = (IIcon)Handler;
-			handler.Create (stream);
+			Handler.Create (stream);
 		}
 
 		/// <summary>
@@ -63,8 +61,7 @@ namespace Eto.Drawing
 		/// <param name="fileName">Name of the file to loat the content from</param>
 		public Icon (string fileName) : base(Generator.Current, typeof(IIcon))
 		{
-			handler = (IIcon)Handler;
-			handler.Create (fileName);
+			Handler.Create (fileName);
 		}
 		
 		/// <summary>
@@ -105,13 +102,12 @@ namespace Eto.Drawing
 		[Obsolete("Use Icon.FromResource instead")]
 		public Icon (Assembly asm, string resourceName) : base(Generator.Current, typeof(IIcon))
 		{
-			handler = (IIcon)Handler;
 			if (asm == null)
 				asm = Assembly.GetCallingAssembly ();
 			using (var stream = asm.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (asm, resourceName);
-				handler.Create (stream);
+				Handler.Create (stream);
 			}
 		}
 	}

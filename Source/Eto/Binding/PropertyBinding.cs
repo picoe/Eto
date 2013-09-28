@@ -2,6 +2,7 @@ using System;
 using System.ComponentModel;
 using System.Collections;
 using System.Collections.ObjectModel;
+using System.Globalization;
 
 namespace Eto
 {
@@ -79,7 +80,7 @@ namespace Eto
 			if (descriptor != null && dataItem != null) {
 				if (value != null && !descriptor.PropertyType.IsAssignableFrom (value.GetType ()))
 				{
-					value = Convert.ChangeType (value, descriptor.PropertyType);
+					value = Convert.ChangeType (value, descriptor.PropertyType, CultureInfo.InvariantCulture);
 				}
 				descriptor.SetValue (dataItem, value);
 			}

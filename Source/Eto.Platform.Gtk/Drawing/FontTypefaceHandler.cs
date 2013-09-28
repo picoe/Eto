@@ -18,7 +18,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public FontStyle FontStyle
 		{
 			get {
-				var style = FontStyle.Normal;
+				var style = FontStyle.None;
 				var description = Control.Describe ();
 				if (description.Style.HasFlag (Pango.Style.Italic))
 					style |= FontStyle.Italic;

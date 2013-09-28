@@ -51,12 +51,11 @@ namespace Eto.Forms
 
 	public class Dialog : Window
 	{
-		IDialog handler;
+		new IDialog Handler { get { return (IDialog)base.Handler; } }
 
 		protected Dialog (Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
-			handler = (IDialog)this.Handler;
 			this.DialogResult = DialogResult.None;
 		}
 
@@ -70,22 +69,22 @@ namespace Eto.Forms
 
 		public DialogDisplayMode DisplayMode
 		{
-			get { return handler.DisplayMode; }
-			set { handler.DisplayMode = value; }
+			get { return Handler.DisplayMode; }
+			set { Handler.DisplayMode = value; }
 		}
 
 		public DialogResult DialogResult { get; set; }
 		
 		public Button AbortButton
 		{
-			get { return handler.AbortButton; }
-			set { handler.AbortButton = value; }
+			get { return Handler.AbortButton; }
+			set { Handler.AbortButton = value; }
 		}
 		
 		public Button DefaultButton
 		{
-			get { return handler.DefaultButton; }
-			set { handler.DefaultButton = value; }
+			get { return Handler.DefaultButton; }
+			set { Handler.DefaultButton = value; }
 		}
 
 		public DialogResult ShowDialog (Control parent)
@@ -97,7 +96,7 @@ namespace Eto.Forms
 				OnLoadComplete (EventArgs.Empty);
 			}
 			
-			this.DialogResult = handler.ShowDialog (parent);
+			this.DialogResult = Handler.ShowDialog (parent);
 			return DialogResult;
 		}
 

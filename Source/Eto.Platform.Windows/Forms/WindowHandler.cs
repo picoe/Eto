@@ -243,7 +243,7 @@ namespace Eto.Platform.Windows
 			set { Control.ShowInTaskbar = value; }
 		}
 
-		public virtual bool TopMost
+		public virtual bool Topmost
 		{
 			get { return Control.TopMost; }
 			set { Control.TopMost = value; }

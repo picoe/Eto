@@ -132,7 +132,7 @@ namespace Eto.Test.Sections.Behaviors
 			};
 			topMostCheckBox.CheckedChanged += (sender, e) => {
 				if (child != null)
-					child.TopMost = topMostCheckBox.Checked ?? false;
+					child.Topmost = topMostCheckBox.Checked ?? false;
 			};
 			return topMostCheckBox;
 		}
@@ -147,7 +147,7 @@ namespace Eto.Test.Sections.Behaviors
 				ClientSize = new Size (300, 200),
 				WindowStyle = styleCombo.SelectedValue,
 				WindowState = stateCombo.SelectedValue,
-				TopMost = topMostCheckBox.Checked ?? false,
+				Topmost = topMostCheckBox.Checked ?? false,
 				Resizable = resizableCheckBox.Checked ?? false,
 				Maximizable = maximizableCheckBox.Checked ?? false,
 				Minimizable = minimizableCheckBox.Checked ?? false,

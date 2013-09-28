@@ -11,8 +11,6 @@ namespace Eto.Forms
 
 	public class SearchBox: TextBox
 	{
-		new ISearchBox Handler { get { return (ISearchBox)base.Handler; }}
-		
 		public SearchBox () : this(Generator.Current)
 		{
 		}

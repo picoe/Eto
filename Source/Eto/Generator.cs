@@ -6,6 +6,7 @@ using System.Linq;
 using System.Diagnostics;
 using System.Linq.Expressions;
 using System.Threading;
+using System.Globalization;
 
 namespace Eto
 {
@@ -212,7 +213,7 @@ namespace Eto
 			get
 			{
 				if (current == null)
-					throw new ApplicationException("Generator has not been initialized");
+					throw new EtoException("Generator has not been initialized");
 				return current;
 			}
 		}
@@ -391,7 +392,7 @@ namespace Eto
 			{
 				var instantiator = Find(type);
 				if (instantiator == null)
-					throw new HandlerInvalidException(string.Format("type {0} could not be found in this generator", type.FullName));
+					throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "type {0} could not be found in this generator", type.FullName));
 
 				var handler = instantiator();
 				OnWidgetCreated(new WidgetCreatedArgs(handler));
@@ -399,7 +400,7 @@ namespace Eto
 			}
 			catch (Exception e)
 			{
-				throw new HandlerInvalidException(string.Format("Could not create instance of type {0}", type), e);
+				throw new HandlerInvalidException(string.Format(CultureInfo.CurrentCulture, "Could not create instance of type {0}", type), e);
 			}
 		}
 

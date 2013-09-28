@@ -66,7 +66,7 @@ namespace Eto
 			domain = domain ?? AppDomain.CurrentDomain;
 			domain.AssemblyResolve += (sender, args) => {
 				var assemblyName = new AssemblyName (args.Name);
-				if (assemblyName.Name.EndsWith (".resources")) return null;
+				if (assemblyName.Name.EndsWith (".resources", StringComparison.OrdinalIgnoreCase)) return null;
 
 				string resourceName = this.ResourceNamespace + "." + assemblyName.Name + ".dll";
 				Assembly loadedAssembly = null;

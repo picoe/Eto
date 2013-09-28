@@ -33,7 +33,7 @@ namespace Eto.IO
 			get; set;
 		}
 
-		public VirtualDirectoryInfo(EtoFileInfo fileInfo)
+		protected VirtualDirectoryInfo(EtoFileInfo fileInfo)
 			: this()
 		{
 			this.FileInfo = fileInfo;
@@ -51,7 +51,7 @@ namespace Eto.IO
 			}
 		}
 
-		public VirtualDirectoryInfo(Stream stream)
+		protected VirtualDirectoryInfo(Stream stream)
 			: this()
 		{
 			this.VirtualPath = string.Empty;
@@ -138,7 +138,7 @@ namespace Eto.IO
 			string dir = Path.Combine(VirtualPath, subDirectory);
 			foreach (var file in Files)
 			{
-				if (file.IsDirectory && string.Compare(file.Path, dir, true) == 0)
+				if (file.IsDirectory && string.Compare(file.Path, dir, StringComparison.OrdinalIgnoreCase) == 0)
 				{
 					return CreateDirectory(this, file.Path);
 				}
@@ -151,7 +151,7 @@ namespace Eto.IO
 			ReadEntries();
 			foreach (var file in Files)
 			{
-				if (file.IsDirectory && file.Path.Equals(VirtualPath, StringComparison.InvariantCultureIgnoreCase))
+				if (file.IsDirectory && file.Path.Equals(VirtualPath, StringComparison.OrdinalIgnoreCase))
 				{
 					yield return CreateDirectory(this, file.FullPath);
 				}
@@ -163,18 +163,18 @@ namespace Eto.IO
 			ReadEntries();
 			foreach (var file in Files)
 			{
-				if (!file.IsDirectory && file.Path.Equals(VirtualPath, StringComparison.InvariantCultureIgnoreCase))
+				if (!file.IsDirectory && file.Path.Equals(VirtualPath, StringComparison.OrdinalIgnoreCase))
 				{
 					yield return CreateFile(this, file.FullPath);
 				}
 			}
 		}
 
-		public override IEnumerable<EtoFileInfo> GetFiles(IEnumerable<string> searchPattern)
+		public override IEnumerable<EtoFileInfo> GetFiles(IEnumerable<string> patterns)
 		{
 			ReadEntries();
 			// convert search pattern to regular expression!
-			string filter = string.Join("|", searchPattern.ToArray());
+			string filter = string.Join("|", patterns.ToArray());
 			filter = filter.Replace(".", "\\.");
 			filter = filter.Replace("*", ".+");
 
@@ -186,7 +186,7 @@ namespace Eto.IO
 
 			foreach (var file in Files)
 			{
-				if (!file.IsDirectory && file.Path.Equals(VirtualPath, StringComparison.InvariantCultureIgnoreCase) && reg.IsMatch(file.Name))
+				if (!file.IsDirectory && file.Path.Equals(VirtualPath, StringComparison.OrdinalIgnoreCase) && reg.IsMatch(file.Name))
 				{
 					yield return CreateFile(this, file.FullPath);
 				}

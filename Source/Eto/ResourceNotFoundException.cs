@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Runtime.Serialization;
 using System.Reflection;
+using System.Globalization;
 
 namespace Eto
 {
@@ -40,7 +41,7 @@ namespace Eto
 		/// <param name="assembly">The assembly the resource was attempted to be retrieved from</param>
 		/// <param name="resourceName">Name of the resource</param>
 		public ResourceNotFoundException (Assembly assembly, string resourceName)
-			: this (string.Format ("Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName))
+			: this (string.Format (CultureInfo.CurrentCulture, "Resource '{0}' not found in assembly '{1}'", resourceName, assembly.FullName))
 		{ }
 		
 		/// <summary>

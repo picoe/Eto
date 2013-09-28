@@ -1,3 +1,4 @@
+#if XML
 using System;
 using System.Xml;
 
@@ -173,4 +174,4 @@ namespace Eto.Drawing
 		}
 	}
 }
-
+#endif

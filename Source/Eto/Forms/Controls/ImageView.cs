@@ -10,7 +10,7 @@ namespace Eto.Forms
 	
 	public class ImageView : Control
 	{
-		IImageView handler;
+		new IImageView Handler { get { return (IImageView)base.Handler; } }
 		
 		public ImageView ()
 			: this(Generator.Current)
@@ -25,14 +25,13 @@ namespace Eto.Forms
 		protected ImageView (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IImageView)Handler;
 		}
 
 		
 		public Image Image
 		{
-			get { return handler.Image; }
-			set { handler.Image = value; }
+			get { return Handler.Image; }
+			set { Handler.Image = value; }
 		}
 	}
 }
