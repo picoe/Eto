@@ -247,11 +247,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Gtk3Compatibility.cs" />
-    <Compile Include="MouseHandler.cs" />
     <Compile Include="Forms\GtkDockContainer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
+    <Compile Include="Forms\MouseHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
