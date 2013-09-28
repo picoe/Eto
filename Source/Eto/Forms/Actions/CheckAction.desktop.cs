@@ -8,14 +8,14 @@ namespace Eto.Forms
 {
 	public partial class CheckAction : BaseAction
 	{
-		public override MenuItem Generate(ActionItem actionItem, ISubMenuWidget menu)
+		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			CheckMenuItem mi = new CheckMenuItem(menu.Generator);
+			CheckMenuItem mi = new CheckMenuItem(generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = this.Enabled;
 			mi.Checked = Checked;
-			if (!string.IsNullOrEmpty (MenuItemStyle))
+			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
 
 			new MenuConnector(this, mi);

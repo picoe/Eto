@@ -287,6 +287,10 @@ namespace Eto.Forms
 
 		public void Move(Control child, int x, int y)
 		{
+			var index = controls.IndexOf(child);
+			if (index != null)
+				controls[index.Item1, index.Item2] = null;
+
 			var old = controls[x, y];
 			if (old != null)
 			{
@@ -300,6 +304,17 @@ namespace Eto.Forms
 		public void Move(Control child, Point p)
 		{
 			Move(child, p.X, p.Y);
+		}
+
+		public override void Remove(Control child)
+		{
+			var index = controls.IndexOf(child);
+			if (index != null)
+			{
+				controls[index.Item1, index.Item2] = null;
+				Handler.Remove(child);
+				child.SetParent(null);
+			}
 		}
 
 		public Size Spacing
@@ -318,7 +333,7 @@ namespace Eto.Forms
 		}
 
 		[OnDeserialized]
-		internal void OnDeserialized(StreamingContext context)
+		private void OnDeserialized(StreamingContext context)
 		{
 			OnDeserialized();
 		}

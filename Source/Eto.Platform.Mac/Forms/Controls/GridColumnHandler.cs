@@ -40,7 +40,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Cell dataCell;
 		Font font;
-		
+
 		public IDataViewHandler DataViewHandler { get; private set; }
 		
 		public int Column { get; private set; }

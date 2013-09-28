@@ -4,12 +4,15 @@ using MonoTouch.UIKit;
 using System.Linq;
 using MonoTouch.Foundation;
 using System.Diagnostics;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class SplitterHandler : iosControl<UIView, Splitter>, ISplitter, IiosViewController
+	public class SplitterHandler : MacContainer<UIView, Splitter>, ISplitter, IiosViewController
 	{
 		public override UIViewController Controller { get { return (UIViewController)MGSplitController ?? SplitController; } }
+
+		public override UIView ContainerControl { get { return Control; } }
 		
 		public UISplitViewController SplitController { get; set; }
 

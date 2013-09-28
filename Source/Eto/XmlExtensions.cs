@@ -1,7 +1,9 @@
+#if XML
 using System;
 using System.Xml;
 using System.Collections.Generic;
 using System.IO;
+using System.Globalization;
 
 namespace Eto
 {
@@ -175,7 +177,7 @@ namespace Eto
 		/// <param name="value">Value to set</param>
 		public static void SetAttribute<T>(this XmlElement element, string name, T value)
 		{
-			string attrValue = Convert.ToString(value);
+			string attrValue = Convert.ToString(value, CultureInfo.InvariantCulture);
 			if (!string.IsNullOrEmpty(attrValue))
 				element.SetAttribute(name, attrValue);
 		}
@@ -580,4 +582,4 @@ namespace Eto
 		}
 	}
 }
-
+#endif

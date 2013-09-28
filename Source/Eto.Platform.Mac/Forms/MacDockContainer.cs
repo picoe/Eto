@@ -5,6 +5,12 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using SD = System.Drawing;
 using System.Linq;
+using MonoTouch.UIKit;
+
+#if IOS
+using NSResponder = MonoTouch.UIKit.UIResponder;
+using NSView = MonoTouch.UIKit.UIView;
+#endif
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -32,7 +38,8 @@ namespace Eto.Platform.Mac.Forms
 			{
 				if (content != null)
 				{ 
-					content.GetContainerView().RemoveFromSuperview(); 
+					var oldContent = content.GetContainerView();
+					oldContent.RemoveFromSuperview();
 				}
 
 				content = value;
@@ -40,7 +47,11 @@ namespace Eto.Platform.Mac.Forms
 				if (control != null)
 				{
 					var container = ContentControl;
+#if OSX
 					control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+#elif IOS
+					control.AutoresizingMask = UIViewAutoresizing.FlexibleHeight | UIViewAutoresizing.FlexibleWidth;
+#endif
 					control.SetFrameSize(container.Frame.Size);
 					container.AddSubview(control);
 				}
@@ -120,19 +131,27 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		bool sizeChangedAdded;
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Widget.SizeChanged += HandleSizeChanged;
+		}
+
+		bool isResizing;
+		void HandleSizeChanged (object sender, EventArgs e)
+		{
+			if (!isResizing)
+			{
+				isResizing = true;
+				LayoutChildren();
+				isResizing = false;
+			}
+		}
 
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-
-			if (!sizeChangedAdded)
-			{
-				Widget.SizeChanged += (sender, ev) => {
-					this.LayoutChildren();
-				};
-				sizeChangedAdded = true;
-			}
+			LayoutChildren();
 		}
 	}
 }

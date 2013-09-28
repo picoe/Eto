@@ -14,7 +14,7 @@ namespace Eto.Forms
 		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
 		{
 			Icon icon = null;
-			if (iconResource != string.Empty) icon = Icon.FromResource(Assembly.GetCallingAssembly(), iconResource);
+			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource(Assembly.GetCallingAssembly(), iconResource);
 			RadioAction action = new RadioAction(controller, id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
@@ -57,15 +57,16 @@ namespace Eto.Forms
 
 		public static void Toggle(object sender, EventArgs args)
 		{
-			if (!(sender is RadioAction)) return;
-			RadioAction action = (RadioAction)sender;
-			action.Checked = true;
+			var action = sender as RadioAction;
+			if (action != null)
+			{
+				action.Checked = true;
+			}
 		}
 
-		public override ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar)
+		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
 			throw new NotImplementedException("cannot put radio buttons on the toolbar just yet");
-		}
-		
+		}		
 	}
 }

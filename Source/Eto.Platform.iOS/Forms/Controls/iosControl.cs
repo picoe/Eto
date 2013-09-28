@@ -11,6 +11,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		where T: UIView
 		where W: Control
 	{
+		public override UIView ContainerControl { get { return Control; } }
 
 	}
 }

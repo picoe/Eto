@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -123,6 +123,7 @@
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
@@ -209,12 +210,6 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <EmbeddedResource Include="..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll">
       <Link>CustomControls\Assemblies\Xceed.Wpf.Toolkit.dll</Link>
     </EmbeddedResource>
@@ -280,7 +275,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj">
+      <Project>{16289d2f-044c-49ef-83e9-9391aff8fd2b}</Project>
+      <Name>Eto</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

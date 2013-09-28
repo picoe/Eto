@@ -9,7 +9,7 @@ namespace Eto.Forms
 	
 	public class ComboBoxCell : SingleValueCell
 	{
-		IComboBoxCell handler;
+		new IComboBoxCell Handler { get { return (IComboBoxCell)base.Handler; } }
 		
 		public ComboBoxCell (int column)
 			: this()
@@ -31,12 +31,11 @@ namespace Eto.Forms
 		public ComboBoxCell (Generator generator)
 			: base (generator, typeof(IComboBoxCell), true)
 		{
-			handler = (IComboBoxCell)this.Handler;
 		}
 		
 		public IListStore DataStore {
-			get { return handler.DataStore; }
-			set { handler.DataStore = value; }
+			get { return Handler.DataStore; }
+			set { Handler.DataStore = value; }
 		}
 	}
 }

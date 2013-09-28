@@ -26,10 +26,16 @@ namespace Eto.Platform.Mac
 #else
 		public override string ID { get { return Generators.Mac; } }
 #endif
+
+		static bool initialized;
 		
 		public Generator ()
 		{
-			NSApplication.Init ();
+			if (!initialized)
+			{
+				NSApplication.Init();
+				initialized = true;
+			}
 			AddTo(this);
 		}
 

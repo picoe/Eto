@@ -23,6 +23,8 @@ namespace Eto.Forms
 		ITreeItem GetNodeAt(PointF point);
 
 		bool LabelEdit { get; set; }
+
+		Color TextColor { get; set; }
 	}
 
 	public class TreeViewItemEventArgs : EventArgs
@@ -58,7 +60,8 @@ namespace Eto.Forms
 
 	public partial class TreeView : Control
 	{
-		ITreeView handler;
+		new ITreeView Handler { get { return (ITreeView)base.Handler; } }
+
 		#region Events
 		public const string ActivatedEvent = "TreeView.Activated";
 		EventHandler<TreeViewItemEventArgs> _Activated;
@@ -242,6 +245,7 @@ namespace Eto.Forms
 				_NodeMouseClick(this, e);
 		}
 		#endregion
+
 		public TreeView() : this (Generator.Current)
 		{
 		}
@@ -253,13 +257,12 @@ namespace Eto.Forms
 		protected TreeView(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (ITreeView)Handler;
 		}
 
 		public ITreeItem SelectedItem
 		{
-			get { return handler.SelectedItem; }
-			set { handler.SelectedItem = value; }
+			get { return Handler.SelectedItem; }
+			set { Handler.SelectedItem = value; }
 		}
 
 		[Obsolete("Use DataStore property instead")]
@@ -271,57 +274,35 @@ namespace Eto.Forms
 
 		public ITreeStore DataStore
 		{
-			get { return handler.DataStore; }
-			set { handler.DataStore = value; }
+			get { return Handler.DataStore; }
+			set { Handler.DataStore = value; }
+		}
+
+		public Color TextColor
+		{
+			get { return Handler.TextColor; }
+			set { Handler.TextColor = value; }
 		}
 
 		public void RefreshData()
 		{
-			handler.RefreshData();
+			Handler.RefreshData();
 		}
 
 		public void RefreshItem(ITreeItem item)
 		{
-			handler.RefreshItem(item);
+			Handler.RefreshItem(item);
 		}
 
 		public ITreeItem GetNodeAt(PointF point)
 		{
-			return handler.GetNodeAt(point);
+			return Handler.GetNodeAt(point);
 		}
 
 		public bool LabelEdit
 		{
-			get { return handler.LabelEdit; }
-			set { handler.LabelEdit = value; }
-		}
-
-		private void EnsureVisible(ITreeItem value)
-		{
-			if (value != null)
-			{
-				// expand the parents
-				var items = new Stack<ITreeItem>();
-
-				var temp = value;
-				while (temp != null)
-				{
-					// start with the parent
-					temp = temp.Parent;
-
-					if (temp != null)
-						items.Push(temp);
-				}
-
-				while (items.Count > 0)
-				{
-					var item = items.Pop();
-
-					if (item != null)
-						item.Expanded = true;
-				}
-				RefreshData();
-			}
+			get { return Handler.LabelEdit; }
+			set { Handler.LabelEdit = value; }
 		}
 	}
 }

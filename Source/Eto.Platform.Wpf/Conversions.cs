@@ -316,7 +316,7 @@ namespace Eto.Platform.Wpf
 
 		public static FontStyle Convert (sw.FontStyle fontStyle, sw.FontWeight fontWeight)
 		{
-			var style = FontStyle.Normal;
+			var style = FontStyle.None;
 			if (fontStyle == sw.FontStyles.Italic)
 				style |= FontStyle.Italic;
 			if (fontStyle == sw.FontStyles.Oblique)

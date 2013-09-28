@@ -7,6 +7,7 @@ using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Platform.Mac.Drawing;
 using Eto.Drawing;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -16,14 +17,33 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoTableView : NSTableView, IMacControl
 		{
-			public GridViewHandler Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
 
-			object IMacControl.Handler { get { return Handler; } }
+			public GridViewHandler Handler
+			{ 
+				get { return (GridViewHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+			
+			/// <summary>
+			/// The area to the right and below the rows is not filled with the background
+			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
+			/// </summary>
+			public override void DrawBackground(sd.RectangleF clipRect)
+			{
+				var backgroundColor = Handler.BackgroundColor;
+				if (backgroundColor != Colors.Transparent) {
+					backgroundColor.ToNS ().Set ();
+					NSGraphics.RectFill (clipRect);
+				} else
+					base.DrawBackground (clipRect);
+			}
 		}
 		
 		class EtoTableViewDataSource : NSTableViewDataSource
 		{
-			public GridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 			
 			public override int GetRowCount (NSTableView tableView)
 			{
@@ -54,7 +74,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class EtoTableDelegate : NSTableViewDelegate
 		{
-			public GridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
 			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
@@ -96,6 +117,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridViewHandler ()
 		{
+		}
+
+		public bool ShowCellBorders
+		{
+			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : new sd.SizeF(0, 0); } 
 		}
 
 		public override void AttachEvent (string handler)

@@ -2,14 +2,13 @@ using System;
 using Eto.Drawing;
 using Eto.Forms;
 using System.ComponentModel;
-using VerticalAlign = Eto.Forms.VerticalAlign;
 
 namespace Eto.Test.Sections.Controls
 {
 	public class ButtonSection : Scrollable, INotifyPropertyChanged
 	{
-		Bitmap smallImage = new Bitmap(Bitmap.FromResource("Eto.Test.TestImage.png"), 16, 16);
-		Bitmap largeImage = Bitmap.FromResource("Eto.Test.TestImage.png");
+		Bitmap smallImage = new Bitmap(TestIcons.TestImage, 16, 16);
+		Bitmap largeImage = TestIcons.TestImage;
 		ButtonImagePosition imagePosition;
 
 		public ButtonImagePosition ImagePosition
@@ -24,8 +23,6 @@ namespace Eto.Test.Sections.Controls
 
 		public ButtonSection()
 		{
-			ExpandContentWidth = true;
-			ExpandContentHeight = true;
 			var layout = new DynamicLayout();
 
 			layout.AddAutoSized(NormalButton(), centered: true);

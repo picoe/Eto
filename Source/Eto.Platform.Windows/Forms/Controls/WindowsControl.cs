@@ -96,7 +96,7 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				var size = desiredSize;
+				var size = UserDesiredSize;
 				var defSize = DefaultSize;
 				if (defSize != null)
 				{
@@ -105,6 +105,14 @@ namespace Eto.Platform.Windows
 				}
 
 				return Size.Max(parentMinimumSize, size);
+			}
+		}
+
+		public Size UserDesiredSize
+		{
+			get
+			{
+				return desiredSize;
 			}
 		}
 
@@ -145,6 +153,8 @@ namespace Eto.Platform.Windows
 
 		protected void SetMinimumSize()
 		{
+			if (!Widget.Loaded)
+				return;
 			var size = this.DesiredSize;
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
@@ -390,7 +400,7 @@ namespace Eto.Platform.Windows
 		{
 			// This is needed to detach docking windows.
 			if (parent == null)
-				Control.Parent = null;
+				ContainerControl.Parent = null;
 		}
 
 		void Control_SizeChanged(object sender, EventArgs e)
@@ -409,6 +419,7 @@ namespace Eto.Platform.Windows
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			SetToolTip();
+			SetMinimumSize();
 		}
 
 		public virtual void OnUnLoad(EventArgs e)

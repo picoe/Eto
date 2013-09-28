@@ -6,7 +6,7 @@ namespace Eto.IO
 {
 	public abstract class EtoSystemObjectInfo
 	{
-		public EtoSystemObjectInfo()
+		protected EtoSystemObjectInfo()
 		{
 		}
 

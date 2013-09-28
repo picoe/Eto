@@ -1,9 +1,9 @@
 using System;
 using System.ComponentModel;
+
 #if XAML
 using System.Windows.Markup;
 #endif
-
 namespace Eto
 {
 	/// <summary>
@@ -54,7 +54,6 @@ namespace Eto
 		/// </summary>
 		T Control { get; }
 	}
-	
 
 	/// <summary>
 	/// Widget that represents an instance of an object
@@ -67,25 +66,25 @@ namespace Eto
 	/// 
 	/// InstanceWidgets also wrap the ability to handle late-bound events on the backend control.
 	/// </remarks>
-#if XAML
+	#if XAML
 	// Doesn't work in mono yet:
 	// [RuntimeNameProperty("ID")]
-#endif
+	#endif
 	public abstract class InstanceWidget : Widget, IControlObjectSource
 	{
 		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
+
 		string style;
 		object dataContext;
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
-		public string ID
-		{
+		public string ID {
 			get { return Handler.ID; }
 			set { Handler.ID = value; }
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the style of this widget
 		/// </summary>
@@ -108,14 +107,12 @@ namespace Eto
 		/// });
 		/// ]]></code>
 		/// </example>
-		public string Style
-		{
+		public string Style {
 			get { return style; }
-			set
-			{
+			set {
 				if (style != value) {
 					style = value;
-					OnStyleChanged(EventArgs.Empty);
+					OnStyleChanged (EventArgs.Empty);
 				}
 			}
 		}
@@ -143,7 +140,7 @@ namespace Eto
 			if (DataContextChanged != null)
 				DataContextChanged (this, e);
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the data context for this widget for binding
 		/// </summary>
@@ -152,8 +149,7 @@ namespace Eto
 		/// 
 		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
 		/// </remarks>
-		public virtual object DataContext
-		{
+		public virtual object DataContext {
 			get { return dataContext; }
 			set {
 				dataContext = value;
@@ -167,14 +163,15 @@ namespace Eto
 		/// Event to handle when the style of this widget is changed
 		/// </summary>
 		public event EventHandler<EventArgs> StyleChanged;
-		
+
 		/// <summary>
 		/// Handles the <see cref="StyleChanged"/> event
 		/// </summary>
-		protected virtual void OnStyleChanged(EventArgs e)
+		protected virtual void OnStyleChanged (EventArgs e)
 		{
-			Eto.Style.OnStyleWidget(this);
-			if (StyleChanged != null) StyleChanged(this, e);
+			Eto.Style.OnStyleWidget (this);
+			if (StyleChanged != null)
+				StyleChanged (this, e);
 		}
 
 		#endregion
@@ -186,7 +183,7 @@ namespace Eto
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
-			: base(generator, handler, false)
+			: base (generator, handler, false)
 		{
 			if (initialize)
 				Initialize ();
@@ -199,7 +196,7 @@ namespace Eto
 		/// <param name="handlerType">Type of the handler to create as the backend for this widget</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget (Generator generator, Type handlerType, bool initialize = true)
-			: base(generator, handlerType, false)
+			: base (generator, handlerType, false)
 		{
 			if (initialize)
 				Initialize ();
@@ -216,8 +213,7 @@ namespace Eto
 		/// For example, the <see cref="Forms.Application"/> object's handler for OS X has a AddFullScreenMenuItem
 		/// property to specify if you want full screen support in your app.
 		/// </remarks>
-		public object ControlObject
-		{
+		public object ControlObject {
 			get { return Handler.ControlObject; }
 		}
 
@@ -316,6 +312,5 @@ namespace Eto
 			base.Initialize ();
 			Eto.Style.OnStyleWidgetDefaults (this);
 		}
-
 	}
 }

@@ -16,16 +16,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 
-		public override NSView ContainerControl
-		{
-			get { return Control; }
-		}
+		public override NSView ContainerControl { get { return Control; } }
 
 		class EtoScrollView : NSScrollView, IMacControl
 		{
-			object IMacControl.Handler { get { return Handler; } }
+			public WeakReference WeakHandler { get; set; }
 
-			public ScrollableHandler Handler { get; set; }
+			public ScrollableHandler Handler
+			{ 
+				get { return (ScrollableHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 
 			public override void ResetCursorRects()
 			{
@@ -64,7 +65,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				case Scrollable.ScrollEvent:
 					Control.ContentView.PostsBoundsChangedNotifications = true;
-					this.AddObserver(NSView.NSViewBoundsDidChangeNotification, e => {
+					this.AddObserver(NSView.BoundsChangedNotification, e =>
+					{
 						var w = (Scrollable)e.Widget;
 						w.OnScroll(new ScrollEventArgs(w.ScrollPosition));
 					}, Control.ContentView);
@@ -237,7 +239,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			base.OnLoadComplete(e);
 			UpdateScrollSizes();
-			this.Widget.SizeChanged += (sender, ee) => {
+			this.Widget.SizeChanged += (sender, ee) =>
+			{
 				UpdateScrollSizes();
 			};
 		}

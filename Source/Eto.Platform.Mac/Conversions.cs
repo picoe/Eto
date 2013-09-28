@@ -91,7 +91,7 @@ namespace Eto.Platform.Mac
 		
 		public static FontStyle ToEto (this NSFontTraitMask traits)
 		{
-			var style = FontStyle.Normal;
+			var style = FontStyle.None;
 			if (traits.HasFlag (NSFontTraitMask.Bold))
 				style |= FontStyle.Bold;
 			if (traits.HasFlag (NSFontTraitMask.Italic))
@@ -172,16 +172,6 @@ namespace Eto.Platform.Mac
 				break;
 			}
 			return buttons;
-		}
-
-		public static void SetSizeWithAuto (NSView view, Size size)
-		{
-			var newSize = view.Frame.Size;
-			if (size.Width >= 0)
-				newSize.Width = size.Width;
-			if (size.Height >= 0)
-				newSize.Height = size.Height;
-			view.SetFrameSize (newSize);
 		}
 
 		public static CGImage ToCG (this Image image)

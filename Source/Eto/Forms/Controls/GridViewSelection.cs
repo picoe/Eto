@@ -38,11 +38,14 @@ namespace Eto.Forms
 		GridViewSelectionState state;
 		bool areAllObjectsSelected;
 		GridView gridView;
-		private IDataStore DataStore { get { return gridView != null ? gridView.DataStore : null; } }
-		private IDataStoreView DataStoreView { get { return gridView != null ? gridView.DataStoreView : null; } }
-		private IGridView Handler { get { return gridView != null ? gridView.Handler : null; } }
-		private bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
 
+		private IDataStore DataStore { get { return gridView != null ? gridView.DataStore : null; } }
+
+		private IDataStoreView DataStoreView { get { return gridView != null ? gridView.DataStoreView : null; } }
+
+		private IGridView Handler { get { return gridView != null ? gridView.Handler : null; } }
+
+		private bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
 
 		/// <summary>
 		/// Called when the underlying control's selection changes.
@@ -70,9 +73,11 @@ namespace Eto.Forms
 				}
 
 				// Don't suppress notifications when the state is Normal or SelectionChanged.
-				var suppressSelectionChanged = state == GridViewSelectionState.SelectionChanging;
 				if (state == GridViewSelectionState.SelectionChanged)
+				{
 					state = GridViewSelectionState.Normal;
+					return false;
+				}
 				return state == GridViewSelectionState.SelectionChanging;
 			}
 		}
@@ -82,6 +87,7 @@ namespace Eto.Forms
 		/// (not the view).
 		/// </summary>
 		SortedSet<int> selectedRows;
+
 		public IEnumerable<int> SelectedRows
 		{
 			get

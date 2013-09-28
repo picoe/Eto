@@ -13,8 +13,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoTextView : NSTextView, IMacControl
 		{
-			public object Handler {
-				get; set;
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
 
@@ -28,7 +32,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		// Remove use of delegate when events work correctly in MonoMac
 		public class EtoDelegate : NSTextViewDelegate
 		{
-			public TextAreaHandler Handler { get; set; }
+			WeakReference handler;
+			public TextAreaHandler Handler { get { return (TextAreaHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override void TextDidChange (NSNotification notification)
 			{
@@ -66,7 +71,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 			Control.TextContainer.WidthTracksTextView = true;
 
-			Scroll = new NSScrollView {
+			Scroll = new EtoScrollView {
+				Handler = this,
 				AutoresizesSubviews = true,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,

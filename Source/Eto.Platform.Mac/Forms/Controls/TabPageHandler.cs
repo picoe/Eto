@@ -16,16 +16,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Image image;
 		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
-		public override NSView ContainerControl
-		{
-			get { return Control; }
-		}
+		public override NSView ContainerControl { get { return Control; } }
 
 		public NSTabViewItem TabViewItem { get; private set; }
 		
 		class MyTabViewItem : NSTabViewItem
 		{
-			public TabPageHandler Handler { get; set; }
+			WeakReference handler;
+			public TabPageHandler Handler { get { return (TabPageHandler)handler.Target; } set { handler = new WeakReference(value); } }
 			
 			public override void DrawLabel (bool shouldTruncateLabel, SD.RectangleF labelRect)
 			{
@@ -62,7 +60,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			TabViewItem = new MyTabViewItem {
 				Handler = this,
-				Identifier = new NSString (Guid.NewGuid ().ToString ())
+				Identifier = new NSString (Guid.NewGuid ().ToString ()),
+				View = new MacEventView { Handler = this }
 			};
 			Control = TabViewItem.View;
 			Enabled = true;

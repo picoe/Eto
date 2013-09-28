@@ -9,12 +9,10 @@ namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsDockContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
+		swf.TableLayoutPanel table;
 		swf.Panel content;
 		bool expandWidth = true;
 		bool expandHeight = true;
-
-		protected override bool UseContentScale { get { return false; } }
-		protected override bool UseContentDesiredSize { get { return false; } }
 
 		public class CustomScrollable : System.Windows.Forms.Panel
 		{
@@ -54,14 +52,34 @@ namespace Eto.Platform.Windows
 
 		public override swf.Control ContainerContentControl
 		{
-			get { return content; }
+			get { return table; }
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
 		{
 			base.SetScale(xscale, yscale);
 			if (Content != null)
-				Content.SetScale(ExpandContentWidth, ExpandContentHeight);
+				Content.SetScale(!ExpandContentWidth, !ExpandContentHeight);
+		}
+
+		protected override void SetContentScale(bool xscale, bool yscale)
+		{
+			base.SetContentScale(!ExpandContentWidth, !ExpandContentHeight);
+		}
+
+		public override Size DesiredSize
+		{
+			get
+			{
+				var baseSize = base.UserDesiredSize;
+				var size = base.DesiredSize;
+				// if we have set to a specific size, then try to use that
+				if (baseSize.Width >= 0)
+					size.Width = baseSize.Width;
+				if (baseSize.Height >= 0)
+					size.Height = baseSize.Height;
+				return size;
+			}
 		}
 
 		public BorderType Border
@@ -116,12 +134,25 @@ namespace Eto.Platform.Windows
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
 
+			table = new swf.TableLayoutPanel
+			{
+				Dock = swf.DockStyle.Fill,
+				RowCount = 1,
+				ColumnCount = 1,
+				Size = sd.Size.Empty,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
+				AutoSize = true
+			};
+			table.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Percent, 1));
+			table.RowStyles.Add(new swf.RowStyle(swf.SizeType.Percent, 1));
+
 			content = new swf.Panel
 			{
 				Size = sd.Size.Empty,
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
+			content.Controls.Add(table);
 			Control.Controls.Add(content);
 		}
 
@@ -139,12 +170,17 @@ namespace Eto.Platform.Windows
 
 				Control.SuspendLayout();
 				// set the scale of the content based on whether we want it to or not
-				contentControl.SetScale(XScale && minSize.Width == 0, YScale && minSize.Height == 0);
+				contentControl.SetScale(!ExpandContentWidth, !ExpandContentHeight);
 				// set minimum size for the content if we want to extend to the size of the scrollable width/height
 				contentControl.ParentMinimumSize = minSize.ToEto();
 				UpdateScrollSizes();
 				Control.ResumeLayout();
 			}
+		}
+
+		protected override void SetContent(swf.Control contentControl)
+		{
+			table.Controls.Add(contentControl, 0, 0);
 		}
 
 		public override void AttachEvent(string handler)

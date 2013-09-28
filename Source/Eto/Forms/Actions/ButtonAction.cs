@@ -19,7 +19,7 @@ namespace Eto.Forms
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
 		{
 			Icon icon = null;
-			if (iconResource != string.Empty) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
+			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
 			ButtonAction action = new ButtonAction(id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
@@ -29,7 +29,7 @@ namespace Eto.Forms
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated)
 		{
 			Icon icon = null;
-			if (iconResource != string.Empty) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
+			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
 			ButtonAction action = new ButtonAction(id, text, icon, activated);
 			actions.Add(action);
 			return action;
@@ -82,13 +82,13 @@ namespace Eto.Forms
 		public ButtonAction()
 		{
 		}
-		
-		public override ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar)
+
+		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			ToolBarButton tbb = new ToolBarButton(toolBar.Generator);
+			ToolBarButton tbb = new ToolBarButton(generator);
 			tbb.ID = this.ID;
 			tbb.Enabled = this.Enabled;
-			if (ShowLabel || actionItem.ShowLabel || toolBar.TextAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
+			if (ShowLabel || actionItem.ShowLabel || textAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			//Console.WriteLine("Adding toolbar {0}", ToolBarText);
 			if (Image != null) tbb.Image = Image;
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))

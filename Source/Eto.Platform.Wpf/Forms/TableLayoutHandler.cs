@@ -31,26 +31,30 @@ namespace Eto.Platform.Wpf.Forms
 
 		public override Color BackgroundColor
 		{
-			get { return Control.Background.ToEtoColor(); }
-			set { Control.Background = value.ToWpfBrush(Control.Background); }
+			get { return border.Background.ToEtoColor(); }
+			set { border.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		public override sw.Size GetPreferredSize(sw.Size? constraint)
 		{
 			var size = constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
-			var padding = new sw.Size((columnScale.Length - 1) * Spacing.Width + Padding.Horizontal, (rowScale.Length - 1) * Spacing.Height + Padding.Vertical);
+			var padding = Padding.Size;
 			size = new sw.Size(Math.Max(0, size.Width - padding.Width), Math.Max(0, size.Height - padding.Height));
 			double[] widths = new double[columnScale.Length];
-			double[] heights = new double[rowScale.Length];
-			for (int y = 0; y < heights.Length; y++)
+			double height = 0;
+			for (int y = 0; y < rowScale.Length; y++)
+			{
+				double maxHeight = 0;
 				for (int x = 0; x < widths.Length; x++)
 				{
-					var preferredSize = controls[x, y].GetPreferredSize(size);
+					var preferredSize = controls[x, y].GetPreferredSize(null);
 					widths[x] = Math.Max(widths[x], preferredSize.Width);
-					heights[y] = Math.Max(heights[y], preferredSize.Height);
+					maxHeight = Math.Max(maxHeight, preferredSize.Height);
 				}
+				height += maxHeight;
+			}
 
-			return new sw.Size(widths.Sum() + padding.Width, heights.Sum() + padding.Height);
+			return new sw.Size(widths.Sum() + padding.Width, height + padding.Height);
 		}
 
 		public void CreateControl(int cols, int rows)

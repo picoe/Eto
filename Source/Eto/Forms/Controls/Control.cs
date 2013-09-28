@@ -56,6 +56,41 @@ namespace Eto.Forms
 
 		public bool Loaded { get; private set; }
 
+		/// <summary>
+		/// Gets the attached properties for this widget
+		/// </summary>
+		PropertyStore properties;
+		public PropertyStore Properties
+		{
+			get
+			{
+				if (properties == null) properties = new PropertyStore(this);
+				return properties;
+			}
+		}
+
+		/// <summary>
+		/// Gets the collection of bindings that are attached to this widget
+		/// </summary>
+		BindingCollection bindings;
+		public BindingCollection Bindings
+		{
+			get
+			{
+				if (bindings == null) bindings = new BindingCollection();
+				return bindings;
+			}
+		}
+
+		/// <summary>
+		/// Gets or sets a user-defined object that contains data about the control
+		/// </summary>
+		/// <remarks>
+		/// A common use of the tag property is to store data that is associated with the control that you can later
+		/// retrieve.
+		/// </remarks>
+		public object Tag { get; set; }
+
 		#region Events
 
 		public const string SizeChangedEvent = "Control.SizeChanged";
@@ -472,7 +507,7 @@ namespace Eto.Forms
 			return default(T);
 		}
 
-		internal void SetParent(Container parent, bool changeContext = true)
+		public void SetParent(Container parent, bool changeContext = true)
 		{
 			if (this.Parent != parent)
 			{
@@ -486,6 +521,18 @@ namespace Eto.Forms
 					this.OnUnLoad(EventArgs.Empty);
 				}
 			}
+		}
+
+		/// <summary>
+		/// Detaches the control by removing it from its parent
+		/// </summary>
+		/// <remarks>
+		/// This is essentially a shortcut to myControl.Parent.Remove(myControl);
+		/// </remarks>
+		public void Detach()
+		{
+			if (Parent != null)
+				Parent.Remove(this);
 		}
 
 		public Color BackgroundColor
@@ -575,6 +622,40 @@ namespace Eto.Forms
 		}
 
 		#endregion
+
+		/// <summary>
+		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
+		/// </summary>
+		public virtual void Unbind()
+		{
+			if (bindings != null)
+			{
+				bindings.Unbind();
+				bindings = null;
+			}
+		}
+
+		/// <summary>
+		/// Updates all bindings in this widget
+		/// </summary>
+		public virtual void UpdateBindings()
+		{
+			if (bindings != null)
+			{
+				bindings.Update();
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				Unbind();
+			}
+
+			base.Dispose(disposing);
+		}
+
 	}
 
 	public class ControlCollection : List<Control>

@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -553,7 +554,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this point</returns>
 		public override string ToString ()
 		{
-			return String.Format ("({0},{1})", x, y);
+			return String.Format (CultureInfo.InvariantCulture, "({0},{1})", x, y);
 		}
 		
 		/// <summary>

@@ -13,9 +13,9 @@ namespace Eto.Platform.GtkSharp
 
 		public void Add(Control child, int x, int y)
 		{
-			var ctl = ((IGtkControl)child.Handler);
+			var ctl = child.GetGtkControlHandler();
 
-			var widget = child.GetContainerWidget();
+			var widget = ctl.ContainerControl;
 			if (widget.Parent != null)
 				((Gtk.Container)widget.Parent).Remove(widget);
 			Control.Put(widget, x, y);
@@ -25,10 +25,10 @@ namespace Eto.Platform.GtkSharp
 
 		public void Move(Control child, int x, int y)
 		{
-			var ctl = ((IGtkControl)child.Handler);
+			var ctl = child.GetGtkControlHandler();
 			if (ctl.CurrentLocation.X != x || ctl.CurrentLocation.Y != y)
 			{
-				Control.Move(child.GetContainerWidget(), x, y);
+				Control.Move(ctl.ContainerControl, x, y);
 				
 				ctl.CurrentLocation = new Point(x, y);
 			}

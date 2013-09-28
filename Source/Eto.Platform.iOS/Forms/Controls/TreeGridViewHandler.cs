@@ -39,7 +39,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public class DataSource : UITableViewDataSource
 		{
-			public TreeGridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override int NumberOfSections (UITableView tableView)
 			{

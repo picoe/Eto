@@ -3,31 +3,32 @@ using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
 using System.Diagnostics;
+using sd = System.Drawing;
 
 #if IOS
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
 using IMacView = Eto.Platform.iOS.Forms.IiosView;
-namespace Eto.Platform.iOS.Forms
+using MacContainer = Eto.Platform.iOS.Forms.iosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
+
+
 #elif OSX
 using MonoMac.AppKit;
-
+using Eto.Platform.Mac.Forms.Controls;
+using MacContainer = Eto.Platform.Mac.Forms.MacContainer<MonoMac.AppKit.NSView, Eto.Forms.TableLayout>;
+#endif
 namespace Eto.Platform.Mac.Forms
-#endif
 {
-	public class TableLayoutHandler :
-#if IOS
-		iosLayout<NSView, TableLayout>, 
-#elif OSX
-		MacContainer<NSView, TableLayout>,
-#endif
-		ITableLayout
+	public class TableLayoutHandler : MacContainer, ITableLayout
 	{
 		Control[,] views;
 		bool[] xscaling;
 		bool[] yscaling;
+		int lastxscale;
+		int lastyscale;
 		Size spacing;
 		Padding padding;
+		sd.SizeF oldFrameSize;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -55,7 +56,11 @@ namespace Eto.Platform.Mac.Forms
 
 		public TableLayoutHandler()
 		{
+#if OSX
+			Control = new MacEventView { Handler = this };
+#elif IOS
 			Control = new NSView();
+#endif
 		}
 
 		protected override void Initialize()
@@ -64,12 +69,32 @@ namespace Eto.Platform.Mac.Forms
 
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
+			Widget.SizeChanged += HandleSizeChanged;
+		}
+
+		bool isResizing;
+
+		void HandleSizeChanged(object sender, EventArgs e)
+		{
+			if (!isResizing)
+			{
+				isResizing = true;
+				LayoutChildren();
+				isResizing = false;
+			}
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			LayoutChildren();
 		}
 
 		public override Size GetPreferredSize(Size availableSize)
 		{
+			var baseSize = base.GetPreferredSize(availableSize);
 			if (views == null)
-				return Size.Empty;
+				return baseSize;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
@@ -88,16 +113,11 @@ namespace Eto.Platform.Mac.Forms
 
 			for (int y = 0; y < heights.Length; y++)
 				for (int x = 0; x < widths.Length; x++)
-				{
+				{	
 					var view = views[y, x];
 					if (view != null && view.Visible)
 					{
-						var size = availableSize;
-						if (xscaling[x])
-							size.Width = 0;
-						if (yscaling[y])
-							size.Height = 0;
-						size = view.GetPreferredSize(size);
+						var size = view.GetPreferredSize(availableSize);
 						if (size.Width > widths[x])
 						{
 							requiredx += size.Width - widths[x];
@@ -110,7 +130,7 @@ namespace Eto.Platform.Mac.Forms
 						}
 					}
 				}
-			return new Size((int)requiredx, (int)requiredy);
+			return Size.Max(baseSize, new Size((int)requiredx, (int)requiredy));
 		}
 
 		public override void LayoutChildren()
@@ -119,7 +139,7 @@ namespace Eto.Platform.Mac.Forms
 				return;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
-			var controlFrame = Control.Frame;
+			var controlFrame = ContentControl.Frame;
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
 			float totalypadding = Padding.Vertical + Spacing.Height * (heights.Length - 1);
 			var totalx = controlFrame.Width - totalxpadding;
@@ -132,13 +152,13 @@ namespace Eto.Platform.Mac.Forms
 			for (int y = 0; y < heights.Length; y++)
 			{
 				heights[y] = 0;
-				if (yscaling[y])
+				if (yscaling[y] || lastyscale == y)
 					numy++;
 			}
 			for (int x = 0; x < widths.Length; x++)
 			{
 				widths[x] = 0;
-				if (xscaling[x])
+				if (xscaling[x] || lastxscale == x)
 					numx++;
 			}
 
@@ -150,12 +170,12 @@ namespace Eto.Platform.Mac.Forms
 					if (view != null && view.Visible)
 					{
 						var size = view.GetPreferredSize(availableSize);
-						if (!xscaling[x] && widths[x] < size.Width)
+						if (!xscaling[x] && lastxscale != x && widths[x] < size.Width)
 						{
 							requiredx += size.Width - widths[x];
 							widths[x] = size.Width;
 						}
-						if (!yscaling[y] && heights[y] < size.Height)
+						if (!yscaling[y] && lastyscale != y && heights[y] < size.Height)
 						{
 							requiredy += size.Height - heights[y];
 							heights[y] = size.Height;
@@ -168,40 +188,15 @@ namespace Eto.Platform.Mac.Forms
 			}
 			if (controlFrame.Height < requiredy)
 			{
-				//Console.WriteLine("restricting y from {0} to {1}", controlFrame.Height, requiredy);
 				totaly = requiredy - totalypadding;
 			}
 
-			if (numy > 0)
-			{
-				for (int y = 0; y < heights.Length; y++)
-					if (!yscaling[y])
-						totaly -= heights[y];
-			}
-			else
-			{
-				if (heights.Length > 1)
-				{
-					for (int y = 0; y < heights.Length - 1; y++)
-						totaly -= heights[y];
-				}
-				heights[heights.Length - 1] = totaly;
-			}
-			if (numx > 0)
-			{
-				for (int x = 0; x < widths.Length; x++)
-					if (!xscaling[x])
-						totalx -= widths[x];
-			}
-			else
-			{
-				if (widths.Length > 1)
-				{
-					for (int x = 0; x < widths.Length - 1; x++)
-						totalx -= widths[x];
-				}
-				widths[widths.Length - 1] = totalx;
-			}
+			for (int y = 0; y < heights.Length; y++)
+				if (!yscaling[y] && lastyscale != y)
+					totaly -= heights[y];
+			for (int x = 0; x < widths.Length; x++)
+				if (!xscaling[x] && lastxscale != x)
+					totalx -= widths[x];
 
 			var chunkx = (numx > 0) ? (float)Math.Truncate(Math.Max(totalx, 0) / numx) : totalx;
 			var chunky = (numy > 0) ? (float)Math.Truncate(Math.Max(totaly, 0) / numy) : totaly;
@@ -214,7 +209,7 @@ namespace Eto.Platform.Mac.Forms
 			float starty = Padding.Top;
 			for (int x = 0; x < widths.Length; x++)
 			{
-				if (xscaling[x])
+				if (xscaling[x] || lastxscale == x)
 				{
 					widths[x] = Math.Min(chunkx, totalx);
 					totalx -= chunkx;
@@ -223,7 +218,7 @@ namespace Eto.Platform.Mac.Forms
 
 			for (int y = 0; y < heights.Length; y++)
 			{
-				if (yscaling[y])
+				if (yscaling[y] || lastyscale == y)
 				{
 					heights[y] = Math.Min(chunky, totaly);
 					totaly -= chunky;
@@ -236,18 +231,23 @@ namespace Eto.Platform.Mac.Forms
 					{
 						var nsview = view.GetContainerView();
 						var frame = nsview.Frame;
+						var oldframe = frame;
 						frame.Width = widths[x];
 						frame.Height = heights[y];
-						frame.X = startx;
+						frame.X = Math.Max(0, startx);
 						frame.Y = flipped ? starty : controlFrame.Height - starty - frame.Height;
 						if (frame != nsview.Frame)
 							nsview.Frame = frame;
-						//Console.WriteLine ("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
+						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height
+						         || frame.Right > oldFrameSize.Width || frame.Bottom > oldFrameSize.Height)
+							nsview.SetNeedsDisplay();
+						//Console.WriteLine("*** x:{2} y:{3} view: {0} size: {1} totalx:{4} totaly:{5}", view, view.Size, x, y, totalx, totaly);
 					}
 					startx += widths[x] + Spacing.Width;
 				}
 				starty += heights[y] + Spacing.Height;
 			}
+			oldFrameSize = controlFrame.Size;
 		}
 
 		public void Add(Control child, int x, int y)
@@ -283,7 +283,7 @@ namespace Eto.Platform.Mac.Forms
 			for (int yy = 0; yy < views.GetLength(0); yy++)
 				for (int xx = 0; xx < views.GetLength(1); xx++)
 				{
-					if (views[yy, xx] == child)
+					if (object.ReferenceEquals(views[yy, xx], child))
 						views[yy, xx] = null;
 				}
 
@@ -294,43 +294,34 @@ namespace Eto.Platform.Mac.Forms
 
 		public void Remove(Control child)
 		{
-			var view = child.GetContainerView();
-			view.RemoveFromSuperview();
 			for (int y = 0; y < views.GetLength(0); y++)
 				for (int x = 0; x < views.GetLength(1); x++)
 				{
-					if (views[y, x] == child)
+					if (object.ReferenceEquals(views[y, x], child))
+					{
+						var view = child.GetContainerView();
+						view.RemoveFromSuperview();
 						views[y, x] = null;
+						if (Widget.Loaded)
+							LayoutParent();
+						return;
+					}
 				}
-			if (Widget.Loaded)
-				LayoutParent();
-		}
-
-		bool sizeChangedAdded;
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			if (!sizeChangedAdded)
-			{
-				Widget.SizeChanged += (sender, ev) =>
-				{
-					this.LayoutChildren();
-				};
-				sizeChangedAdded = true;
-			}
 		}
 
 		public void CreateControl(int cols, int rows)
 		{
 			views = new Control[rows, cols];
 			xscaling = new bool[cols];
+			lastxscale = cols - 1;
 			yscaling = new bool[rows];
+			lastyscale = rows - 1;
 		}
 
 		public void SetColumnScale(int column, bool scale)
 		{
 			xscaling[column] = scale;
+			lastxscale = xscaling.Any(r => r) ? -1 : xscaling.Length - 1;
 			if (Widget.Loaded)
 				LayoutParent();
 		}
@@ -343,6 +334,7 @@ namespace Eto.Platform.Mac.Forms
 		public void SetRowScale(int row, bool scale)
 		{
 			yscaling[row] = scale;
+			lastyscale = yscaling.Any(r => r) ? -1 : yscaling.Length - 1;
 			if (Widget.Loaded)
 				LayoutParent();
 		}

@@ -1,5 +1,5 @@
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly: AssemblyTitle("Eto Platform for Windows")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Eto.Forms - Windows Forms Platform")]
+[assembly: AssemblyDescription("Windows Forms Platform for the Eto.Forms UI Framework")]

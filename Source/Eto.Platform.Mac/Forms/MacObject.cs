@@ -1,7 +1,8 @@
 using System;
-using MonoMac.Foundation;
 using System.Collections.Generic;
+using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
+using MonoTouch.Foundation;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -13,12 +14,12 @@ namespace Eto.Platform.Mac.Forms
 		{
 			get { return Control; }
 		}
-		
-		public new void AddMethod (Selector selector, Delegate action, string arguments, object control = null)
+
+		public new void AddMethod (IntPtr selector, Delegate action, string arguments, object control = null)
 		{
 			base.AddMethod (selector, action, arguments, control ?? EventObject);
 		}
-		
+
 		public new NSObject AddObserver (NSString key, Action<ObserverActionArgs> action, NSObject control = null)
 		{
 			return base.AddObserver (key, action, control ?? Control);

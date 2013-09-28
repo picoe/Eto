@@ -7,6 +7,8 @@ using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
+using MonoMac.ObjCRuntime;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -17,9 +19,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSTableView Table { get; }
 	}
 
-	class EtoScrollView : NSScrollView
+	class EtoGridScrollView : NSScrollView
 	{
-		public IGridHandler Handler { get; set; }
+		WeakReference handler;
+
+		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 		bool autoSized;
 
@@ -43,11 +47,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 	class EtoTableHeaderView : NSTableHeaderView
 	{
-		public IGridHandler Handler { get; set; }
+		WeakReference handler;
+
+		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
+		static Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
 
 		public override void MouseDown(NSEvent theEvent)
 		{
-			var col = base.GetColumn(base.ConvertPointFromBase(theEvent.LocationInWindow));
+			var point = theEvent.LocationInWindow;
+			if (RespondsToSelector(selConvertPointFromBacking))
+				point = ConvertPointFromBacking(point);
+			else
+				point = ConvertPointFromBase(point);
+			var col = this.GetColumn(point);
 			if (col >= 0)
 			{
 				var column = Handler.Widget.Columns[col];
@@ -125,6 +138,21 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		protected virtual void UpdateColumns()
 		{
+		}
+
+		protected void UpdateColumnSizes()
+		{
+			if (Widget.Loaded)
+			{
+				var rect = Table.VisibleRect();
+				if (!rect.IsEmpty)
+				{
+					foreach (var col in Widget.Columns)
+					{
+						((GridColumnHandler)col.Handler).Resize();
+					}
+				}
+			}
 		}
 
 		public GridColumnHandler GetColumn(NSTableColumn tableColumn)
@@ -214,31 +242,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridHandler()
 		{
-			ScrollView = new EtoScrollView
+			ScrollView = new EtoGridScrollView
 			{
 				Handler = this,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
-				BorderType = NSBorderType.BezelBorder
+				BorderType = NSBorderType.BezelBorder,
 			};
-
 			ScrollView.ContentView.PostsBoundsChangedNotifications = true;
-			this.AddObserver(NSView.NSViewBoundsDidChangeNotification, e => {
-				var handler = (GridHandler<T,W>)e.Handler;
-				if (handler.Widget.Loaded)
-				{
-					var rect = handler.Table.VisibleRect();
-					if (!rect.IsEmpty)
-					{
-						foreach (var col in handler.Widget.Columns)
-						{
-							((GridColumnHandler)col.Handler).Resize();
-						}
-					}
-				}
-			}, ScrollView.ContentView);
+			this.AddObserver(NSView.BoundsChangedNotification, HandleScrolled, ScrollView.ContentView);
+		}
 
+		static void HandleScrolled(ObserverActionArgs e)
+		{
+			var handler = (GridHandler<T,W>)e.Handler;
+			handler.UpdateColumnSizes();
 		}
 
 		public override void AttachEvent(string handler)

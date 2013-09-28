@@ -25,7 +25,7 @@ namespace Eto.Test.Sections.Controls
 	{
 		static Image image1 = TestIcons.TestImage;
 		static Image image2 = TestIcons.TestIcon;
-		TextBox filterText = null;
+		SearchBox filterText = null;
 
 		public GridViewSection()
 		{
@@ -37,21 +37,24 @@ namespace Eto.Test.Sections.Controls
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Context Menu\n&& Multi-Select\n&& Filter" });
 			layout.BeginVertical();
-			layout.Add(filterText = new TextBox { PlaceholderText = "Filter" });
+			layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
 			var withContextMenuAndFilter = WithContextMenuAndFilter();
 			layout.Add(withContextMenuAndFilter);
-			var selectionGridView = Default(addItems: false);
 			layout.EndVertical();
 			layout.EndHorizontal();
+
+			var selectionGridView = Default(addItems: false);
 			layout.BeginHorizontal();
 			layout.Add(new Label { Text = "Selected Items" });
 			layout.Add(selectionGridView);
+			layout.EndHorizontal();
+
+			// hook up selection of main grid to the selection grid
 			withContextMenuAndFilter.SelectionChanged += (s, e) => {
 				var items = new GridItemCollection();
 				items.AddRange(withContextMenuAndFilter.SelectedItems);
 				selectionGridView.DataStore = items;
 			};
-			layout.EndHorizontal();
 #endif
 
 			Content = layout;
@@ -211,12 +214,11 @@ namespace Eto.Test.Sections.Controls
 
 					// Every item in the split filter string should be within the Text property
 					foreach (var filterItem in filterItems)
-						if (!i.Text.Contains(filterItem))
+						if (i.Text.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
 						{
 							matches = false;
 							break;
 						}
-					;
 
 					return matches;
 				};

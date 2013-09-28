@@ -3,6 +3,11 @@ using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 
+#if IOS
+using NSView = MonoTouch.UIKit.UIView;
+using NSControl = MonoTouch.UIKit.UIControl;
+#endif
+
 namespace Eto.Platform.Mac.Forms
 {
 	public static class MacControlExtensions
@@ -79,7 +84,6 @@ namespace Eto.Platform.Mac.Forms
 				return childControl.GetContentView();
 			return control.ControlObject as NSView;
 		}
-
 	}
 }
 

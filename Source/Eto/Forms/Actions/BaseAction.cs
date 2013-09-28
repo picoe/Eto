@@ -3,6 +3,7 @@ using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
+using System.Globalization;
 
 namespace Eto.Forms
 {
@@ -50,7 +51,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				return string.Format("{0}|{1}|{2}|{3}", MenuText, ToolBarText, TooltipText, Description);
+				return string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}|{3}", MenuText, ToolBarText, TooltipText, Description);
 			}
 			set
 			{
@@ -117,26 +118,26 @@ namespace Eto.Forms
 		
 		#endregion
 		
-		public BaseAction(string id, string text, Image image, EventHandler<EventArgs> activated)
+		protected BaseAction(string id, string text, Image image, EventHandler<EventArgs> activated)
 			: this(id, text, activated)
 		{
 			this.Image = image;
 
 		}
 
-		public BaseAction(string id, string text, EventHandler<EventArgs> activated)
+		protected BaseAction(string id, string text, EventHandler<EventArgs> activated)
 			: this(id, text)
 		{
 			Activated += activated;
 		}
 		
-		public BaseAction(string id, string text)
+		protected BaseAction(string id, string text)
 		{
 			this.ID = id;
 			this.Text = text;
 		}
 		
-		public BaseAction()
+		protected BaseAction()
 		{
 		}
 		
@@ -160,8 +161,8 @@ namespace Eto.Forms
 		{
 			OnActivated(EventArgs.Empty);
 		}
-		
-		public abstract ToolBarItem Generate(ActionItem actionItem, ToolBar toolBar);
+
+		public abstract ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign);
 	}
 
 }

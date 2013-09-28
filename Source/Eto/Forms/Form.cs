@@ -10,7 +10,7 @@ namespace Eto.Forms
 
 	public class Form : Window
 	{
-		IForm handler;
+		new IForm Handler { get { return (IForm)base.Handler; } }
 
 		public Form () : this(Generator.Current)
 		{
@@ -23,7 +23,6 @@ namespace Eto.Forms
 		protected Form (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (IForm)this.Handler;
 		}
 
 		public void Show ()
@@ -35,7 +34,7 @@ namespace Eto.Forms
 				OnLoadComplete (EventArgs.Empty);
 			}
 			
-			handler.Show ();
+			Handler.Show ();
 		}
 	}
 }

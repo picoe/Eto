@@ -12,7 +12,7 @@ namespace Eto.Forms
 	
 	public class OpenFileDialog : FileDialog
 	{
-		IOpenFileDialog handler;
+		new IOpenFileDialog Handler { get { return (IOpenFileDialog)base.Handler; } }
 		
 		public OpenFileDialog ()
 			: this(Generator.Current)
@@ -26,14 +26,13 @@ namespace Eto.Forms
 		protected OpenFileDialog (Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
-			handler = (IOpenFileDialog)Handler;
 		}
 
 		public bool MultiSelect { 
-			get { return handler.MultiSelect; }
-			set { handler.MultiSelect = value; }
+			get { return Handler.MultiSelect; }
+			set { Handler.MultiSelect = value; }
 		}
 		
-		public IEnumerable<string> Filenames { get { return handler.Filenames; } }
+		public IEnumerable<string> Filenames { get { return Handler.Filenames; } }
 	}
 }

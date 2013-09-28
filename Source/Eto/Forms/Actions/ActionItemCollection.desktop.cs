@@ -27,7 +27,9 @@ namespace Eto.Forms
 				
 				if ((lastSeparator && isSeparator) || (isSeparator && (i == 0 || i == list.Count - 1)))
 					continue;
-				ai.Generate(menu);
+				var mi = ai.Generate(menu.Generator);
+				if (mi != null)
+					menu.MenuItems.Add(mi);
 				lastSeparator = isSeparator;	
 			}
 		}

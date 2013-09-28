@@ -68,6 +68,22 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 		}
 
+		/// <summary>
+		/// Unlike other controls, DataGridView's background color is implemented
+		/// via the BackgroundColor property, not the BackColor property.
+		/// </summary>
+		public override Color BackgroundColor
+		{
+			get { return Control.BackgroundColor.ToEto(); }
+			set { Control.BackgroundColor = value.ToSD(); }
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			LeakHelper.UnhookObject(Control);
+		}
+
 		bool handledAutoSize = false;
 		void HandleRowPostPaint (object sender, swf.DataGridViewRowPostPaintEventArgs e)
 		{

@@ -94,6 +94,7 @@ namespace Eto
 		{
 			this.Source = source;
 			this.Destination = destination;
+			this.Mode = mode;
 			
 			if (mode == DualBindingMode.OneWay || mode == DualBindingMode.TwoWay)
 				source.DataValueChanged += HandleSourceChanged;

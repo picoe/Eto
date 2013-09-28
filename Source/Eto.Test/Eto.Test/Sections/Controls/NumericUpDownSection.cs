@@ -9,11 +9,11 @@ namespace Eto.Test.Sections.Controls
 		public NumericUpDownSection()
 		{
 			var layout = new DynamicLayout();
-			
+
 			layout.AddRow(new Label { Text = "Default" }, Default());
-			
+
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
-			
+
 			layout.AddRow(new Label { Text = "Set Min/Max" }, SetMinMax());
 
 			// growing space at end is blank!

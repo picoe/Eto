@@ -43,8 +43,7 @@ namespace Eto.Test.Sections.Behaviors
 				VerticalAlign = VerticalAlign.Middle,
 				Text = "Click on me!"
 			};
-			
-			label.MouseDown += delegate(object sender, MouseEventArgs e)
+			label.MouseDown += (sender, e) =>
 			{
 				var menu = CreateMenu();
 				menu.Show(label);

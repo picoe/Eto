@@ -75,7 +75,9 @@ namespace Eto.Platform.Mac.Forms
 
 	public class CustomFieldEditor : NSTextView
 	{
-		public Control Widget { get; set; }
+		WeakReference widget;
+
+		public Control Widget { get { return (Control)widget.Target; } set { widget = new WeakReference(value); } }
 
 		public CustomFieldEditor()
 		{
@@ -108,7 +110,7 @@ namespace Eto.Platform.Mac.Forms
 		bool setInitialSize;
 		WindowState? initialState;
 		bool maximizable = true;
-		bool topMost;
+		bool topmost;
 		bool setInitialPosition = true;
 
 		public override NSView ContainerControl { get { return Control.ContentView; } }
@@ -135,7 +137,8 @@ namespace Eto.Platform.Mac.Forms
 				base.MinimumSize = value;
 				if (value != Size.Empty)
 				{
-					Control.WillResize = (sender, frameSize) => {
+					Control.WillResize = (sender, frameSize) =>
+					{
 						if (value != Size.Empty)
 						{
 							return new SD.SizeF(Math.Max(frameSize.Width, value.Width), Math.Max(frameSize.Height, value.Height));
@@ -186,14 +189,16 @@ namespace Eto.Platform.Mac.Forms
 					};
 					break;
 				case Window.ClosingEvent:
-					Control.WindowShouldClose = (sender) => {
+					Control.WindowShouldClose = (sender) =>
+					{
 						var args = new CancelEventArgs();
 						Widget.OnClosing(args);
 						return !args.Cancel;
 					};
 					break;
 				case Window.WindowStateChangedEvent:
-					Control.ShouldZoom = (window, newFrame) => {
+					Control.ShouldZoom = (window, newFrame) =>
+					{
 						if (!Maximizable)
 							return false;
 						if (!window.IsZoomed)
@@ -236,7 +241,8 @@ namespace Eto.Platform.Mac.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					{
 						Size? oldSize = null;
-						AddControlObserver((NSString)"frame", e => {
+						AddControlObserver((NSString)"frame", e =>
+						{
 							var widget = (Window)e.Widget;
 							var newSize = widget.Size;
 							if (oldSize != newSize)
@@ -250,7 +256,8 @@ namespace Eto.Platform.Mac.Forms
 				case Window.LocationChangedEvent:
 					{
 						Point? oldLocation = null;
-						AddControlObserver((NSString)"frame", e => {
+						AddControlObserver((NSString)"frame", e =>
+						{
 							var widget = (Window)e.Widget;
 							var newLocation = widget.Location;
 							if (oldLocation != newLocation)
@@ -289,12 +296,13 @@ namespace Eto.Platform.Mac.Forms
 			Control.ShowsResizeIndicator = true;
 			Control.AutorecalculatesKeyViewLoop = true;
 			//Control.Delegate = new MacWindowDelegate{ Handler = this };
-			Control.WillReturnFieldEditor = (sender, forObject) => {
+			Control.WillReturnFieldEditor = (sender, forObject) =>
+			{
 				FieldEditorObject = forObject;
 				var control = forObject as IMacControl;
 				if (control != null)
 				{
-					var handler = control.Handler as IMacViewHandler;
+					var handler = control.WeakHandler.Target as IMacViewHandler;
 					if (handler != null && handler.IsEventHandled(TextBox.KeyDownEvent))
 					{
 						if (fieldEditor == null)
@@ -378,14 +386,14 @@ namespace Eto.Platform.Mac.Forms
 			set;
 		}
 
-		public bool TopMost
+		public bool Topmost
 		{
-			get { return topMost; }
+			get { return topmost; }
 			set
 			{
-				if (topMost != value)
+				if (topmost != value)
 				{
-					topMost = value;
+					topmost = value;
 					Control.Level = value ? NSWindowLevel.PopUpMenu : NSWindowLevel.Normal;
 				}
 			}
@@ -615,7 +623,9 @@ namespace Eto.Platform.Mac.Forms
 				setInitialPosition = false;
 			}
 		}
+
 		#region IMacContainer implementation
+
 		public override void SetContentSize(SD.SizeF contentSize)
 		{
 			if (MinimumSize != Size.Empty)
@@ -640,11 +650,14 @@ namespace Eto.Platform.Mac.Forms
 				}
 				Control.SetFrame(frame, false, false);
 			}
-			else 
+			else
 				Control.SetContentSize(contentSize);
 		}
+
 		#endregion
+
 		#region IMacWindow implementation
+
 		Rectangle? IMacWindow.RestoreBounds
 		{
 			get
@@ -666,7 +679,9 @@ namespace Eto.Platform.Mac.Forms
 		{
 			get { return this.Control; }
 		}
+
 		#endregion
+
 		public Screen Screen
 		{
 			get { return new Screen(Generator, new ScreenHandler(Control.Screen)); }

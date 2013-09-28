@@ -3,6 +3,7 @@ using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
+using Eto.Forms;
 
 
 #if OSX
@@ -37,8 +38,8 @@ namespace Eto.Platform.iOS.Drawing
 	{
 #if OSX
 		NSGraphicsContext graphicsContext;
-#endif
 		bool disposeContext;
+#endif
 		NSView view;
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
@@ -76,7 +77,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 		}
 
-		public GraphicsHandler (NSView view)
+		public GraphicsHandler (NSView view, Control ctl)
 		{
 			this.view = view;
 			DisposeControl = false;
@@ -95,8 +96,9 @@ namespace Eto.Platform.iOS.Drawing
 			Control.SaveState ();
 
 #if OSX
+
 			view.PostsFrameChangedNotifications = true;
-			AddObserver (NSView.NSViewFrameDidChangeNotification, FrameDidChange, view);
+			AddObserver (NSView.FrameChangedNotification, FrameDidChange, view);
 
 			// if control is in a scrollview, we need to trap when it's scrolled as well
 			var parent = view.Superview;
@@ -104,7 +106,7 @@ namespace Eto.Platform.iOS.Drawing
 				var scroll = parent as NSScrollView;
 				if (scroll != null) {
 					scroll.ContentView.PostsBoundsChangedNotifications = true;
-					AddObserver (NSView.NSViewBoundsDidChangeNotification, FrameDidChange, scroll.ContentView);
+					AddObserver (NSView.BoundsChangedNotification, FrameDidChange, scroll.ContentView);
 				}
 				parent = parent.Superview;
 			}
@@ -115,7 +117,7 @@ namespace Eto.Platform.iOS.Drawing
 
 #if OSX
 
-		void FrameDidChange (ObserverActionArgs e)
+		static void FrameDidChange (ObserverActionArgs e)
 		{
 			//Console.WriteLine ("Woooo!");
 			var h = e.Handler as GraphicsHandler;

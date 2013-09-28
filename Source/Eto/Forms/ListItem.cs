@@ -1,5 +1,8 @@
 using System;
 using Eto.Drawing;
+using System.Globalization;
+
+
 #if XAML
 using System.Windows.Markup;
 #endif
@@ -40,7 +43,7 @@ namespace Eto.Forms
 		
 		public virtual string Text
 		{
-			get { return Convert.ToString(Item); }
+			get { return Convert.ToString(Item, CultureInfo.CurrentCulture); }
 			set { }
 		}
 		

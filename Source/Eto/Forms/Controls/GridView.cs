@@ -14,6 +14,7 @@ namespace Eto.Forms
 	public partial interface IGridView : IGrid
 	{
 		IDataStore DataStore { get; set; }
+		bool ShowCellBorders { set; }
 	}
 
 	public class GridViewCellArgs : EventArgs
@@ -73,6 +74,7 @@ namespace Eto.Forms
 		protected GridView (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
+			this.ShowCellBorders = true;
 			// Always attach the SelectionChangedEvent
 			// since it is always handled in the GridView.
 			this.HandleEvent(Grid.SelectionChangedEvent);
@@ -100,6 +102,17 @@ namespace Eto.Forms
 				// Set the handler's data store to the sorted and filtered view.
 				Handler.DataStore = DataStoreView != null ? DataStoreView.View : null;
 			}
+		}
+
+		bool showCellBorders;
+		/// <summary>
+		/// If true, there is a 1-pixel space between cells.
+		/// If false, there is no space between cells.
+		/// </summary>
+		public bool ShowCellBorders
+		{
+			get { return showCellBorders; }
+			set { showCellBorders = Handler.ShowCellBorders = value; }
 		}
 
 		#region Events

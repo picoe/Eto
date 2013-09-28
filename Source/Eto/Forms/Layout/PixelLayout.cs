@@ -103,18 +103,7 @@ namespace Eto.Forms
 			Move(child, p.X, p.Y);
 		}
 
-		public void Remove(IEnumerable<Control> controls)
-		{
-			foreach (var control in controls)
-				Remove(control);
-		}
-
-		public void RemoveAll()
-		{
-			Remove(this.Controls.ToArray());
-		}
-
-		public void Remove(Control child)
+		public override void Remove(Control child)
 		{
 			if (controls.Remove(child))
 			{
@@ -124,7 +113,7 @@ namespace Eto.Forms
 		}
 
 		[OnDeserialized]
-		internal void OnDeserialized(StreamingContext context)
+		private void OnDeserialized(StreamingContext context)
 		{
 			OnDeserialized();
 		}

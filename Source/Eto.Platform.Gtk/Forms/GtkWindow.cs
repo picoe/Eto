@@ -31,7 +31,7 @@ namespace Eto.Platform.GtkSharp
 		Rectangle? restoreBounds;
 		WindowState state;
 		WindowStyle style;
-		bool topMost;
+		bool topmost;
 
 		public GtkWindow ()
 		{
@@ -91,13 +91,13 @@ namespace Eto.Platform.GtkSharp
 			set { Control.SkipTaskbarHint = !value; }
 		}
 
-		public bool TopMost
+		public bool Topmost
 		{
-			get { return topMost; }
+			get { return topmost; }
 			set { 
-				if (topMost != value) {
-					topMost = value;
-					Control.KeepAbove = topMost;
+				if (topmost != value) {
+					topmost = value;
+					Control.KeepAbove = topmost;
 				}
 			}
 		}

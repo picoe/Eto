@@ -58,7 +58,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
-			public TreeGridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			bool? collapsedItemIsSelected;
 			ITreeGridItem lastSelected;
@@ -125,6 +126,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null) {
 					myitem.Item.Expanded = true;
 					Handler.Widget.OnExpanded (new TreeGridViewItemEventArgs (myitem.Item));
+					Handler.UpdateColumnSizes();
 				}
 			}
 			
@@ -146,8 +148,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 		class EtoDataSource : NSOutlineViewDataSource
 		{
-			public TreeGridViewHandler Handler { get; set; }
-			
+			WeakReference handler;
+			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
 			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
 			{
 				var myitem = byItem as EtoTreeItem;
@@ -209,7 +212,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public class EtoOutlineView : NSOutlineView, IMacControl
 		{
-			public object Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 		}
 		
 		public override object EventObject {

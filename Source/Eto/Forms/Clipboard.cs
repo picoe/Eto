@@ -28,7 +28,7 @@ namespace Eto.Forms
 	
 	public class Clipboard : InstanceWidget
 	{
-		IClipboard handler;
+		new IClipboard Handler { get { return (IClipboard)base.Handler; } }
 		
 		public Clipboard ()
 			: this(Generator.Current)
@@ -38,11 +38,10 @@ namespace Eto.Forms
 		public Clipboard (Generator generator)
 			: base(generator, typeof(IClipboard))
 		{
-			handler = (IClipboard)Handler;
 		}
 		
 		public string[] Types {
-			get { return handler.Types; }
+			get { return Handler.Types; }
 		}
 		
 		public void SetDataStream (Stream stream, string type)
@@ -56,12 +55,12 @@ namespace Eto.Forms
 		
 		public void SetData (byte[] value, string type)
 		{
-			handler.SetData (value, type);
+			Handler.SetData (value, type);
 		}
 		
 		public byte[] GetData (string type)
 		{
-			return handler.GetData (type);
+			return Handler.GetData (type);
 		}
 		
 		public Stream GetDataStream (string type)
@@ -75,32 +74,32 @@ namespace Eto.Forms
 		
 		public void SetString (string value, string type)
 		{
-			handler.SetString (value, type);
+			Handler.SetString (value, type);
 		}
 		
 		public string GetString (string type)
 		{
-			return handler.GetString (type);
+			return Handler.GetString (type);
 		}
 		
 		public string Text {
-			get { return handler.Text; }
-			set { handler.Text = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
+			get { return Handler.Text; }
+			set { Handler.Text = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
 		}
 		
 		public string Html {
-			get { return handler.Html; }
-			set { handler.Html = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
+			get { return Handler.Html; }
+			set { Handler.Html = value ?? ""; } // null check for consistency across platforms (Winforms throws an exception)
 		}
 		
 		public Image Image {
-			get { return handler.Image; }
-			set { handler.Image = value; }
+			get { return Handler.Image; }
+			set { Handler.Image = value; }
 		}
 		
 		public void Clear ()
 		{
-			handler.Clear ();
+			Handler.Clear ();
 		}
 		
 	}

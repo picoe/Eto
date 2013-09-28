@@ -11,7 +11,7 @@ namespace Eto.Forms
 	
 	public class ContextMenu : Menu, ISubMenuWidget
 	{
-		IContextMenu handler;
+		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
 		MenuItemCollection menuItems;
 		
 		public ContextMenu () : this (Generator.Current)
@@ -25,8 +25,7 @@ namespace Eto.Forms
 		protected ContextMenu (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IContextMenu)this.Handler;
-			menuItems = new MenuItemCollection (this, handler);
+			menuItems = new MenuItemCollection (this, Handler);
 		}
 
 		public ContextMenu (Generator g, IEnumerable<IActionItem> actionItems) : this (g)
@@ -37,7 +36,9 @@ namespace Eto.Forms
 		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (var ai in actionItems) {
-				ai.Generate (this);
+				var mi = ai.Generate (this.Generator);
+				if (mi != null)
+					this.menuItems.Add(mi);
 			}
 		}
 
@@ -47,7 +48,7 @@ namespace Eto.Forms
 		
 		public void Show (Control relativeTo)
 		{
-			handler.Show (relativeTo);
+			Handler.Show (relativeTo);
 		}
 	}
 }

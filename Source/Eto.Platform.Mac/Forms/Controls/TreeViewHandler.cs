@@ -74,7 +74,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoOutlineDelegate : NSOutlineViewDelegate
 		{
-			public TreeViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override bool ShouldEditTableColumn(NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
@@ -86,6 +87,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return !args.Cancel;
 				}
 				return true;
+			}
+
+			public override void WillDisplayCell(NSOutlineView outlineView, NSObject cell, NSTableColumn tableColumn, NSObject item)
+			{
+				var c = cell as NSTextFieldCell;
+				if (c != null &&
+					Handler.textColor != null)
+					c.TextColor = Handler.textColor.Value.ToNS();				
 			}
 
 			public override void SelectionDidChange(NSNotification notification)
@@ -154,7 +163,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoDataSource : NSOutlineViewDataSource
 		{
-			public TreeViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override NSObject GetObjectValue(NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
 			{
@@ -217,7 +227,27 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoOutlineView : NSOutlineView, IMacControl
 		{
-			public object Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
+
+			public TreeViewHandler Handler
+			{ 
+				get { return (TreeViewHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			/// <summary>
+			/// The area to the right and below the rows is not filled with the background
+			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
+			/// </summary>
+			public override void DrawBackground(sd.RectangleF clipRect)
+			{
+				var backgroundColor = Handler.BackgroundColor;
+				if (backgroundColor != Colors.Transparent) {
+					backgroundColor.ToNS ().Set ();
+					NSGraphics.RectFill (clipRect);
+				} else
+					base.DrawBackground (clipRect);
+			}
 		}
 
 		public override NSView ContainerControl
@@ -251,8 +281,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.AddColumn(column);
 			Control.OutlineTableColumn = column;
 			
-			Scroll = new NSScrollView
+			Scroll = new EtoScrollView
 			{
+				Handler = this,
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
@@ -279,12 +310,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 							Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
 						}
 					};
-					Control.DoubleClick += (sender, e) => {
-						if (column.Editable)
-							Control.EditColumn(Control.ClickedColumn, Control.ClickedRow, new NSEvent(), true);
-						else
-							Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
-					};
+					Control.DoubleClick += HandleDoubleClick;
 					break;
 				case TreeView.AfterLabelEditEvent:
 				case TreeView.BeforeLabelEditEvent:
@@ -302,6 +328,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 				default:
 					base.AttachEvent(handler);
 					break;
+			}
+		}
+
+		static void HandleDoubleClick (object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as TreeViewHandler;
+			if (handler != null)
+			{
+				if (handler.column.Editable)
+					handler.Control.EditColumn(handler.Control.ClickedColumn, handler.Control.ClickedRow, new NSEvent(), true);
+				else
+					handler.Widget.OnActivated(new TreeViewItemEventArgs(handler.SelectedItem));
 			}
 		}
 
@@ -548,6 +586,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return item.Item;
 			}
 			return null;
+		}
+
+		Color? textColor = null;
+		public Color TextColor
+		{
+			get { return textColor ?? Colors.Transparent; }
+			set { textColor = value; }
 		}
 
 		public bool LabelEdit

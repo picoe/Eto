@@ -29,11 +29,11 @@ namespace Eto.Test
 			}
 		}
 
-		public MainForm(Func<IEnumerable<Section>> topNodes = null)
+		public MainForm(IEnumerable<Section> topNodes = null)
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes);
+			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes());
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
@@ -74,18 +74,33 @@ namespace Eto.Test
 				SectionList.Focus();
 			};
 			SectionList.SelectedItemChanged += (sender, e) => {
-				var control = SectionList.SectionControl;
-				if (navigation != null)
+				try
 				{
-					if (control != null)
-						navigation.Push(control, SectionList.SectionTitle);
+					var item = SectionList.SelectedItem;
+					Control content = item != null ? item.CreateContent() : null;
+
+					if (navigation != null)
+					{
+						if (content != null)
+							navigation.Push(content, item != null ? item.Text : null);
+					}
+					else
+					{
+						contentContainer.SuspendLayout();
+						contentContainer.Content = content;
+						contentContainer.ResumeLayout();
+					}
 				}
-				else
+				catch (Exception ex)
 				{
-					contentContainer.SuspendLayout();
-					contentContainer.Content = control;
-					contentContainer.ResumeLayout();
+					Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+					contentContainer.Content = null;
 				}
+
+				#if DEBUG
+				GC.Collect();
+				GC.WaitForPendingFinalizers();
+				#endif
 			};
 
 			if (Splitter.Supported)
@@ -178,16 +193,16 @@ namespace Eto.Test
 
 		void GenerateMenu(GenerateActionArgs args)
 		{
-			var file = args.Menu.FindAddSubMenu("&File", 100);
-			args.Menu.FindAddSubMenu("&Edit", 200);
-			args.Menu.FindAddSubMenu("&Window", 900);
-			var help = args.Menu.FindAddSubMenu("&Help", 1000);
+			var file = args.Menu.GetSubmenu("&File", 100);
+			args.Menu.GetSubmenu("&Edit", 200);
+			args.Menu.GetSubmenu("&Window", 900);
+			var help = args.Menu.GetSubmenu("&Help", 1000);
 
 			if (Generator.IsMac)
 			{
 				// have a nice OS X style menu
 
-				var main = args.Menu.FindAddSubMenu(Application.Instance.Name, 0);
+				var main = args.Menu.GetSubmenu(Application.Instance.Name, 0);
 				main.Actions.Add(Actions.About.ActionID, 0);
 				main.Actions.Add(Actions.Quit.ActionID, 1000);
 			}

@@ -81,7 +81,7 @@ namespace Eto.Forms
 		List<int> viewToModel = null;
 		Dictionary<int, int> modelToView = null;
 
-		public IDataStore model;
+		IDataStore model;
 		public IDataStore Model
 		{
 			get { return model; }
@@ -107,27 +107,27 @@ namespace Eto.Forms
 			get { return viewToModel ?? new List<int>(); }
 		}
 
-		public int ViewToModel(int viewIndex)
+		public int ViewToModel(int index)
 		{
-			var result = viewIndex;
+			var result = index;
 
 			if (HasSortOrFilter &&
 				viewToModel != null &&
-				viewIndex >= 0 &&
-				viewToModel.Count > viewIndex)
-				result = viewToModel[viewIndex];
+				index >= 0 &&
+				viewToModel.Count > index)
+				result = viewToModel[index];
 
 			return result;
 		}
 
-		public int? ModelToView(int modelIndex)
+		public int? ModelToView(int index)
 		{
 			if (!HasSortOrFilter)
-				return modelIndex;
+				return index;
 
 			var temp = 0;
 			if (modelToView != null &&
-				modelToView.TryGetValue(modelIndex, out temp))
+				modelToView.TryGetValue(index, out temp))
 				return temp;
 
 			return null;

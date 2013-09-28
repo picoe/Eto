@@ -37,7 +37,7 @@ namespace Eto.IO
 			}
 		}
 		
-		public override IEnumerable<EtoFileInfo> GetFiles (IEnumerable<string> searchPattern)
+		public override IEnumerable<EtoFileInfo> GetFiles (IEnumerable<string> patterns)
 		{
 			yield break;
 		}

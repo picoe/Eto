@@ -238,7 +238,7 @@ namespace Eto.Platform.Wpf.Forms
 			set { Control.ShowInTaskbar = value; }
 		}
 
-		public virtual bool TopMost
+		public virtual bool Topmost
 		{
 			get { return Control.Topmost; }
 			set { Control.Topmost = value; }
@@ -416,7 +416,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void SendToBack ()
 		{
-			if (TopMost)
+			if (Topmost)
 				return;
 			var hWnd = new sw.Interop.WindowInteropHelper (Control).Handle;
 			if (hWnd != IntPtr.Zero)

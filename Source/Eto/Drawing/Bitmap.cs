@@ -189,7 +189,8 @@ namespace Eto.Drawing
 		/// Initializes a new instance of a Bitmap from a file
 		/// </summary>
 		/// <param name="fileName">File to load as a bitmap</param>
-		public Bitmap (string fileName, Generator generator = null)
+		/// <param name="generator">Generator to create the bitmap</param>
+		public Bitmap(string fileName, Generator generator = null)
 			: this (generator)
 		{
 			Handler.Create (fileName);
@@ -199,7 +200,8 @@ namespace Eto.Drawing
 		/// Initializes a new instance of a Bitmap from a stream
 		/// </summary>
 		/// <param name="stream">Stream to load from the bitmap</param>
-		public Bitmap (Stream stream, Generator generator = null)
+		/// <param name="generator">Generator to create the bitmap</param>
+		public Bitmap(Stream stream, Generator generator = null)
 			: this (generator)
 		{
 			Handler.Create (stream);
@@ -210,7 +212,8 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the bitmap to create</param>
 		/// <param name="pixelFormat">Format of each pixel</param>
-		public Bitmap (Size size, PixelFormat pixelFormat, Generator generator = null)
+		/// <param name="generator">Generator to create the bitmap</param>
+		public Bitmap(Size size, PixelFormat pixelFormat, Generator generator = null)
 			: this(size.Width, size.Height, pixelFormat, generator)
 		{
 		}
@@ -221,7 +224,8 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the new bitmap</param>
 		/// <param name="height">Height of the new bitmap</param>
 		/// <param name="pixelFormat">Format of each pixel</param>
-		public Bitmap (int width, int height, PixelFormat pixelFormat, Generator generator = null)
+		/// <param name="generator">Generator to create the bitmap</param>
+		public Bitmap(int width, int height, PixelFormat pixelFormat, Generator generator = null)
 			: this (generator)
 		{
 			Handler.Create (width, height, pixelFormat);
@@ -258,9 +262,11 @@ namespace Eto.Drawing
 		/// Initializes a new instance of a Bitmap from a <paramref name="bytes"/> array
 		/// </summary>
 		/// <param name="bytes">Array of bytes containing the image data in one of the supported <see cref="ImageFormat"/> types</param>
-		public Bitmap (byte[] bytes, Generator generator = null)
+		/// <param name="generator">Generator to create the bitmap</param>
+		public Bitmap(byte[] bytes, Generator generator = null)
 			: this (generator)
 		{
+			Handler.Create(new MemoryStream(bytes, false));
 		}
 
 		Bitmap (Generator generator)

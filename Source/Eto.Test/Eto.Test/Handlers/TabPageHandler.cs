@@ -12,7 +12,9 @@ namespace Eto.Test.Handlers
 
 		public Control Content { get { return Control != null ? Control.Content : null; } set { Control.Content = value; } }
 
+#if DESKTOP
 		public Size MinimumSize { get { return Control.MinimumSize; } set { Control.MinimumSize = value; } }
+#endif
 
         public TabPageHandler()
         {

@@ -160,6 +160,7 @@ namespace Eto.Drawing
 		{
 			var handler = (ILockableImage)image.Handler;
 			handler.Unlock (this);
+			GC.SuppressFinalize(this);
 		}
 	}
 }
