@@ -216,9 +216,9 @@ namespace Eto.Drawing
 		/// <param name="point">Point to calculate the distance from</param>
 		public float Distance (Point point)
 		{
-			var x = Math.Abs (this.X - point.X);
-			var y = Math.Abs (this.Y - point.Y);
-			return (float)Math.Sqrt (x * x + y * y);
+			var dx = Math.Abs (X - point.X);
+			var dy = Math.Abs (Y - point.Y);
+			return (float)Math.Sqrt (dx * dx + dy * dy);
 		}
 		
 		/// <summary>
@@ -283,7 +283,7 @@ namespace Eto.Drawing
 		/// <param name="point">Point with X and Y values to add to this point</param>
 		public void Offset (Point point)
 		{
-			this.Offset (point.X, point.Y);
+			Offset(point.X, point.Y);
 		}
 		
 		/// <summary>
@@ -606,7 +606,7 @@ namespace Eto.Drawing
 		[Obsolete("Use Offset() instead")]
 		public void Add (Point point)
 		{
-			this.Add (point.X, point.Y);
+			Add(point.X, point.Y);
 		}
 		
 		/// <summary>

@@ -15,7 +15,7 @@ namespace Eto.Drawing
 	{
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
-		static object colormaplock = new object ();
+		static readonly object colormaplock = new object ();
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
@@ -229,7 +229,7 @@ namespace Eto.Drawing
 					return true;
 			}
 			string[] array = value.Split (listSeparator.ToCharArray ());
-			uint[] array2 = new uint[array.Length];
+			var array2 = new uint[array.Length];
 			for (int i = 0; i < array2.Length; i++) {
 				uint num;
 				if (!uint.TryParse (array[i], out num)) {
@@ -419,12 +419,12 @@ namespace Eto.Drawing
 		/// <returns>The element id value of this color</returns>
 		public int ToElementId ()
 		{
-			int result = (this.Rb & 0x7f) << 17
-				| (this.Gb & 0x7f) << 10
-				| (this.Bb & 0x7f) << 3
-				| ((this.Rb & 0x80) == 0x80 ? 4 : 0)
-				| ((this.Gb & 0x80) == 0x80 ? 2 : 0)
-				| ((this.Bb & 0x80) == 0x80 ? 1 : 0);
+			int result = (Rb & 0x7f) << 17
+				| (Gb & 0x7f) << 10
+				| (Bb & 0x7f) << 3
+				| ((Rb & 0x80) == 0x80 ? 4 : 0)
+				| ((Gb & 0x80) == 0x80 ? 2 : 0)
+				| ((Bb & 0x80) == 0x80 ? 1 : 0);
 			
 			return result;
 		}

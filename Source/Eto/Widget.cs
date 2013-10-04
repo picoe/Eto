@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Eto
 {
@@ -99,7 +98,7 @@ namespace Eto
 		/// </summary>
 		/// <remarks>
 		/// The generator is typically either passed to the constructor of the control, or the
-		/// <see cref="P:Generator.Current"/> is used.
+		/// <see cref="P:Eto.Generator.Current"/> is used.
 		/// </remarks>
 		public Generator Generator { get { return ((IWidget)Handler).Generator; } }
 		
@@ -190,10 +189,10 @@ namespace Eto
 		protected virtual void Dispose (bool disposing)
 		{
 			if (disposing) {
-				var handler = this.Handler as IDisposable;
+				var handler = Handler as IDisposable;
 				if (handler != null)
 					handler.Dispose ();
-				this.Handler = null;
+				Handler = null;
 			}
 		}		
 	}

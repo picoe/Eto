@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 
@@ -8,7 +7,7 @@ namespace Eto
 #if DEBUG
 	class Ref
 	{
-		public static int nextID = 0;
+		public static int NextID = 0;
 	}
 #endif
 
@@ -33,8 +32,8 @@ namespace Eto
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="W">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<W> : IWidget, IDisposable
-		where W: Widget
+	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
+		where TWidget: Widget
 	{
 		HashSet<string> eventHooks; 
 		Generator generator;
@@ -57,14 +56,14 @@ namespace Eto
 		protected WidgetHandler ()
 		{
 #if DEBUG
-			WidgetID = Ref.nextID++;
+			WidgetID = Ref.NextID++;
 #endif
 		}
 		
 		/// <summary>
 		/// Gets the widget that this platform handler is attached to
 		/// </summary>
-		public W Widget { get; private set; }
+		public TWidget Widget { get; private set; }
 
 		/// <summary>
 		/// Gets the generator that was used to create this handler
@@ -156,7 +155,7 @@ namespace Eto
 		Widget IWidget.Widget
 		{
 			get { return Widget; }
-			set { Widget = (W)value; }
+			set { Widget = (TWidget)value; }
 		}
 
 		#endregion
@@ -205,16 +204,15 @@ namespace Eto
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="T">Type of the platform-specific object</typeparam>
-	/// <typeparam name="W">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, W> : WidgetHandler<W>, IInstanceWidget<T, W>
-		where W: InstanceWidget
+	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
+	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget<T, TWidget>
+		where TWidget: InstanceWidget
 	{
 		/// <summary>
 		/// Initializes a new instance of the WidgetHandler class
 		/// </summary>
 		protected WidgetHandler()
 		{
-			DisposeControl = true;
 		}
 
 		/// <summary>
@@ -245,7 +243,7 @@ namespace Eto
 		/// </remarks>
 		protected override void Initialize ()
 		{
-			if (this.Control == null)
+			if (Control == null)
 				Control = CreateControl ();
 
 			base.Initialize ();
@@ -277,7 +275,7 @@ namespace Eto
 		/// </summary>
 		object IInstanceWidget.ControlObject {
 			get {
-				return this.Control;
+				return Control;
 			}
 		}
 		
@@ -289,11 +287,11 @@ namespace Eto
 		{
 			if (disposing && DisposeControl) {
 				//Console.WriteLine ("{0}: 1. Disposing control {1}, {2}", this.WidgetID, this.Control.GetType (), this.GetType ());
-				var control = this.Control as IDisposable;
+				var control = Control as IDisposable;
 				if (control != null) control.Dispose();
 			}
 			//Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
-			this.Control = default(T);
+			Control = default(T);
 			base.Dispose (disposing);
 		}
 
@@ -314,9 +312,9 @@ namespace Eto
 		/// </remarks>
 		/// <param name="widget">The widget to get the platform-specific control from</param>
 		/// <returns>The platform-specific control used for the specified widget</returns>
-		public static T GetControl (W widget)
+		public static T GetControl (TWidget widget)
 		{
-			var handler = (IInstanceWidget<T, W>)widget.Handler;
+			var handler = (IInstanceWidget<T, TWidget>)widget.Handler;
 			return handler.Control;
 		}
 	}
