@@ -5,16 +5,16 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>12.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{7A02E771-D30B-41A1-8A35-C78D3940FC33}</ProjectGuid>
+    <ProjectGuid>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
-    <RootNamespace>Eto.Platform.Android</RootNamespace>
-    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
-    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
-    <AssemblyName>Eto.Platform.Android</AssemblyName>
+    <RootNamespace>Eto.Json</RootNamespace>
     <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
     <AndroidResgenClass>Resource</AndroidResgenClass>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <AssemblyName>Eto.Json</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -22,52 +22,48 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
     <AndroidLinkMode>None</AndroidLinkMode>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>false</ConsolePause>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <ConsolePause>false</ConsolePause>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
     <Reference Include="System.Core" />
     <Reference Include="Mono.Android" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\..\Libraries\Json.NET\Bin\Portable\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <Compile Include="Resources\Resource.designer.cs" />
-    <Compile Include="Generator.cs" />
-    <Compile Include="Forms\AndroidWindow.cs" />
-    <Compile Include="Conversions.cs" />
-    <Compile Include="Forms\AndroidContainer.cs" />
-    <Compile Include="Forms\AndroidDockContainer.cs" />
-    <Compile Include="Forms\AndroidControl.cs" />
-    <Compile Include="Forms\AndroidExtensions.cs" />
-    <Compile Include="Forms\FormHandler.cs" />
-    <Compile Include="Forms\Controls\LabelHandler.cs" />
-    <Compile Include="Forms\Controls\AndroidCommonControl.cs" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="Resources\AboutResources.txt" />
-  </ItemGroup>
-  <ItemGroup>
-    <AndroidResource Include="Resources\values\Strings.xml" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="DefaultNamespaceManager.cs" />
+    <Compile Include="DelegateConverter.cs" />
+    <Compile Include="DynamicLayoutConverter.cs" />
+    <Compile Include="EtoBinder.cs" />
+    <Compile Include="EtoContractResolver.cs" />
+    <Compile Include="EventValueProvider.cs" />
+    <Compile Include="ImageConverter.cs" />
+    <Compile Include="JsonReader.cs" />
+    <Compile Include="NameConverter.cs" />
+    <Compile Include="NamespaceManager.cs" />
+    <Compile Include="PropertyStoreConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - Android.csproj">
       <Project>{73A5AD74-68BC-448C-A38C-CFBAF014A311}</Project>
       <Name>Eto - Android</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Forms\" />
-    <Folder Include="Forms\Controls\" />
   </ItemGroup>
 </Project>

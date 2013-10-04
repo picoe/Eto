@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>12.0.0</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}</ProjectGuid>
+    <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Eto.Test</RootNamespace>
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
+    <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
+    <AssemblyName>Eto.Test</AssemblyName>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG;</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidLinkMode>None</AndroidLinkMode>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Core" />
+    <Reference Include="Mono.Android" />
+  </ItemGroup>
+  <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
+  <ItemGroup>
+    <Compile Include="TestApplication.cs" />
+    <Compile Include="TestIcons.cs" />
+    <Compile Include="TestSectionList.cs" />
+    <Compile Include="DynamicLayoutExtensions.cs" />
+    <Compile Include="Log.cs" />
+    <Compile Include="MainForm.cs" />
+    <Compile Include="SectionList.cs" />
+    <Compile Include="UnitTests\TestRunner.cs" />
+    <Compile Include="Sections\Behaviors\AllControlsBase.cs" />
+    <Compile Include="Sections\Behaviors\BadgeLabelSection.cs" />
+    <Compile Include="Sections\Behaviors\ContextMenuSection.cs" />
+    <Compile Include="Sections\Behaviors\FocusEventsSection.cs" />
+    <Compile Include="Sections\Behaviors\KeyEventsSection.cs" />
+    <Compile Include="Sections\Behaviors\MouseEventsSection.cs" />
+    <Compile Include="Sections\Behaviors\MousePositionSection.cs" />
+    <Compile Include="Sections\Behaviors\ScreenSection.cs" />
+    <Compile Include="Sections\Behaviors\WindowsSection.cs" />
+    <Compile Include="Sections\Controls\ButtonSection.cs" />
+    <Compile Include="Sections\Controls\CheckBoxSection.cs" />
+    <Compile Include="Sections\Controls\ComboBoxSection.cs" />
+    <Compile Include="Sections\Controls\DateTimePickerSection.cs" />
+    <Compile Include="Sections\Controls\DrawableSection.cs" />
+    <Compile Include="Sections\Controls\GridCellFormattingSection.cs" />
+    <Compile Include="Sections\Controls\GridViewSection.cs" />
+    <Compile Include="Sections\Controls\GroupBoxSection.cs" />
+    <Compile Include="Sections\Controls\ImageViewSection.cs" />
+    <Compile Include="Sections\Controls\KitchenSinkSection.cs" />
+    <Compile Include="Sections\Controls\LabelSection.cs" />
+    <Compile Include="Sections\Controls\ListBoxSection.cs" />
+    <Compile Include="Sections\Controls\NumericUpDownSection.cs" />
+    <Compile Include="Sections\Controls\PasswordBoxSection.cs" />
+    <Compile Include="Sections\Controls\ProgressBarSection.cs" />
+    <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
+    <Compile Include="Sections\Controls\RadioButtonSection.cs" />
+    <Compile Include="Sections\Controls\ScrollableSection.cs" />
+    <Compile Include="Sections\Controls\SliderSection.cs" />
+    <Compile Include="Sections\Controls\SplitterSection.cs" />
+    <Compile Include="Sections\Controls\TabControlSection.cs" />
+    <Compile Include="Sections\Controls\TextAreaSection.cs" />
+    <Compile Include="Sections\Controls\TextBoxSection.cs" />
+    <Compile Include="Sections\Controls\TreeGridViewSection.cs" />
+    <Compile Include="Sections\Controls\TreeViewSection.cs" />
+    <Compile Include="Sections\Controls\WebViewSection.cs" />
+    <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\CustomDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\FileDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
+    <Compile Include="Sections\Dialogs\MessageBoxSection.cs" />
+    <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
+    <Compile Include="Sections\Drawing\AntialiasSection.cs" />
+    <Compile Include="Sections\Drawing\BitmapSection.cs" />
+    <Compile Include="Sections\Drawing\BrushSection.cs" />
+    <Compile Include="Sections\Drawing\ClearSection.cs" />
+    <Compile Include="Sections\Drawing\ClipSection.cs" />
+    <Compile Include="Sections\Drawing\DirectDrawingSection.cs" />
+    <Compile Include="Sections\Drawing\DrawTextSection.cs" />
+    <Compile Include="Sections\Drawing\FontsSection.cs" />
+    <Compile Include="Sections\Drawing\GraphicsPathSection.cs" />
+    <Compile Include="Sections\Drawing\IndexedBitmapSection.cs" />
+    <Compile Include="Sections\Drawing\InterpolationSection.cs" />
+    <Compile Include="Sections\Drawing\PenSection.cs" />
+    <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
+    <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
+    <Compile Include="Sections\Drawing\TextureBrushesSection2.cs" />
+    <Compile Include="Sections\Drawing\TransformSection.cs" />
+    <Compile Include="Sections\Drawing\UnitTestSection.cs" />
+    <Compile Include="Sections\FormsSection\ImageViewFormSection.cs" />
+    <Compile Include="Sections\Layouts\PixelLayoutSection\AnchorSection.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
+    <Compile Include="Sections\Layouts\ScrollingLayouts\TableLayoutExpansion.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ChildWidthSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ScalingSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\SpacingSection.cs" />
+    <Compile Include="Sections\Printing\PrintDialogSection.cs" />
+    <Compile Include="Sections\Serialization\Json\Test.cs" />
+    <Compile Include="Sections\Serialization\Xaml\Test.cs" />
+    <Compile Include="Sections\Serialization\JsonReadSection.cs" />
+    <Compile Include="Sections\Serialization\XamlReadSection.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Handlers\TabControlHandler.cs" />
+    <Compile Include="Handlers\TabPageHandler.cs" />
+    <Compile Include="Dialogs\About.cs" />
+    <Compile Include="Actions\About.cs" />
+    <Compile Include="Actions\Close.cs" />
+    <Compile Include="Actions\Quit.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="TestImage.png" />
+    <EmbeddedResource Include="Textures.png" />
+    <EmbeddedResource Include="TestIcon.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Sections\Serialization\Json\Test.json" />
+    <None Include="Sections\Serialization\Xaml\Test.xaml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Eto\Eto - Android.csproj">
+      <Project>{73A5AD74-68BC-448C-A38C-CFBAF014A311}</Project>
+      <Name>Eto - Android</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Eto.Json\Eto.Json - Android.csproj">
+      <Project>{757FCF9A-E2D0-4031-9A11-82A2A49FA892}</Project>
+      <Name>Eto.Json - Android</Name>
+    </ProjectReference>
+  </ItemGroup>
+</Project>

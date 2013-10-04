@@ -1,0 +1,44 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Android", "Eto.Test\Eto.Test.Android\Eto.Test.Android.csproj", "{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Android", "Eto.Platform.Android\Eto.Platform.Android.csproj", "{7A02E771-D30B-41A1-8A35-C78D3940FC33}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto - Android", "Eto\Eto - Android.csproj", "{73A5AD74-68BC-448C-A38C-CFBAF014A311}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test - Android", "Eto.Test\Eto.Test\Eto.Test - Android.csproj", "{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json - Android", "Eto.Json\Eto.Json - Android.csproj", "{757FCF9A-E2D0-4031-9A11-82A2A49FA892}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{22BE7E21-76D0-4C29-9D0A-6D6D432CC952}.Release|Any CPU.Build.0 = Release|Any CPU
+		{73A5AD74-68BC-448C-A38C-CFBAF014A311}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{73A5AD74-68BC-448C-A38C-CFBAF014A311}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{73A5AD74-68BC-448C-A38C-CFBAF014A311}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{73A5AD74-68BC-448C-A38C-CFBAF014A311}.Release|Any CPU.Build.0 = Release|Any CPU
+		{757FCF9A-E2D0-4031-9A11-82A2A49FA892}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{757FCF9A-E2D0-4031-9A11-82A2A49FA892}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{757FCF9A-E2D0-4031-9A11-82A2A49FA892}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{757FCF9A-E2D0-4031-9A11-82A2A49FA892}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A02E771-D30B-41A1-8A35-C78D3940FC33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BA9DB2EC-C210-4EB9-8A44-4351A1958E85}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Eto.Test\Eto.Test.Android\Eto.Test.Android.csproj
+	EndGlobalSection
+EndGlobal
