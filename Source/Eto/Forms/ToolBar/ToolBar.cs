@@ -30,12 +30,12 @@ namespace Eto.Forms
 	/// </summary>
 	public class ToolBar : InstanceWidget
 	{
-		IToolBar inner;
-		ToolbarItemCollection items;
+		new IToolBar Handler { get { return (IToolBar)base.Handler; } }
+		readonly ToolbarItemCollection items;
 	
 		public class ToolbarItemCollection : Collection<ToolBarItem>
 		{
-			ToolBar toolBar;
+			readonly ToolBar toolBar;
 			
 			protected internal ToolbarItemCollection(ToolBar toolBar)
 			{
@@ -45,20 +45,20 @@ namespace Eto.Forms
 			protected override void InsertItem (int index, ToolBarItem item)
 			{
 				base.InsertItem (index, item);
-				toolBar.inner.AddButton (item);
+				toolBar.Handler.AddButton (item);
 			}
 			
 			protected override void RemoveItem (int index)
 			{
 				var item = this[index];
 				base.RemoveItem (index);
-				toolBar.inner.RemoveButton (item);
+				toolBar.Handler.RemoveButton (item);
 			}
 			
 			protected override void ClearItems ()
 			{
 				base.ClearItems ();
-				toolBar.inner.Clear ();
+				toolBar.Handler.Clear ();
 			}
 		}
 		
@@ -69,14 +69,13 @@ namespace Eto.Forms
 		
 		public ToolBar(Generator g) : base(g, typeof(IToolBar))
 		{
-			inner = (IToolBar)Handler;
 			items = new ToolbarItemCollection(this);
 		}
 		
 		public ToolBarDock Dock
 		{
-			get { return inner.Dock; }
-			set { inner.Dock = value; }
+			get { return Handler.Dock; }
+			set { Handler.Dock = value; }
 		}
 
 		public ToolbarItemCollection Items
@@ -86,8 +85,8 @@ namespace Eto.Forms
 
 		public ToolBarTextAlign TextAlign
 		{
-			get { return inner.TextAlign; }
-			set { inner.TextAlign = value; }
+			get { return Handler.TextAlign; }
+			set { Handler.TextAlign = value; }
 		}
 
 	}

@@ -14,7 +14,7 @@ namespace Eto.Forms
 	{
 		public event EventHandler<EventArgs> CheckedChanged;
 
-		private ICheckBox inner;
+		new ICheckBox Handler { get { return (ICheckBox)base.Handler; } }
 
 		public virtual void OnCheckedChanged(EventArgs e)
 		{
@@ -33,19 +33,18 @@ namespace Eto.Forms
 		protected CheckBox(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
-			inner = (ICheckBox)base.Handler;
 		}
 
 		public virtual bool? Checked
 		{
-			get { return inner.Checked; }
-			set { inner.Checked = value; }
+			get { return Handler.Checked; }
+			set { Handler.Checked = value; }
 		}
 		
 		public bool ThreeState
 		{
-			get { return inner.ThreeState; }
-			set { inner.ThreeState = value; }
+			get { return Handler.ThreeState; }
+			set { Handler.ThreeState = value; }
 		}
 
 		public ObjectBinding<CheckBox, bool?> CheckedBinding
