@@ -235,16 +235,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			InternalSetFrameSize(contentSize);
 		}
 
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			UpdateScrollSizes();
-			this.Widget.SizeChanged += (sender, ee) =>
-			{
-				UpdateScrollSizes();
-			};
-		}
-
 		public Rectangle VisibleRect
 		{
 			get { return new Rectangle(ScrollPosition, Size.Min(ScrollSize, ClientSize)); }
