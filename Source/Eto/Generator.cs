@@ -1,11 +1,6 @@
 using System;
-using System.Collections;
-using System.Reflection;
 using System.Collections.Generic;
-using System.Linq;
 using System.Diagnostics;
-using System.Linq.Expressions;
-using System.Threading;
 using System.Globalization;
 
 namespace Eto
@@ -82,9 +77,9 @@ namespace Eto
 			return (Func<T>)(generator ?? Generator.Current).Find(typeof(T));
 		}
 
-		public static Dictionary<K, V> Cache<K, V>(this Generator generator, object cacheKey)
+		public static Dictionary<TKey, TValue> Cache<TKey, TValue>(this Generator generator, object cacheKey)
 		{
-			return (generator ?? Generator.Current).GetSharedProperty <Dictionary<K, V>>(cacheKey, () => new Dictionary<K, V>());
+			return (generator ?? Generator.Current).GetSharedProperty <Dictionary<TKey, TValue>>(cacheKey, () => new Dictionary<TKey, TValue>());
 		}
 	}
 
@@ -331,8 +326,7 @@ namespace Eto
 			{
 				if (allowNull)
 					return null;
-				else
-					throw new EtoException("Generator not found. Are you missing the platform assembly?");
+				throw new EtoException("Generator not found. Are you missing the platform assembly?");
 			}
 			try
 			{
@@ -342,8 +336,7 @@ namespace Eto
 			{
 				if (allowNull)
 					return null;
-				else
-					throw;
+				throw;
 			}
 		}
 
@@ -377,8 +370,7 @@ namespace Eto
 			Func<object> activator;
 			if (instantiatorMap.TryGetValue(type, out activator))
 				return activator;
-			else
-				return null;
+			return null;
 		}
 
 		/// <summary>
@@ -433,7 +425,7 @@ namespace Eto
 		/// </summary>
 		/// <param name="action">Action to invoke</param>
 		[Obsolete("Use Application.InvokeOnMainThread")]
-		public void ExecuteOnMainThread(System.Action action)
+		public void ExecuteOnMainThread(Action action)
 		{
 			Forms.Application.Instance.Invoke(action);
 		}

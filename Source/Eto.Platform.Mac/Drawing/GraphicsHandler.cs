@@ -80,7 +80,6 @@ namespace Eto.Platform.iOS.Drawing
 		public GraphicsHandler (NSView view, Control ctl)
 		{
 			this.view = view;
-			DisposeControl = false;
 #if OSX
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
 			disposeContext = true;
@@ -146,7 +145,6 @@ namespace Eto.Platform.iOS.Drawing
 			this.DisplayView = view;
 			this.height = height;
 			this.graphicsContext = graphicsContext;
-			DisposeControl = false;
 			this.Control = graphicsContext.GraphicsPort;
 			this.Flipped = flipped;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
@@ -163,7 +161,6 @@ namespace Eto.Platform.iOS.Drawing
 			if (height > 0) {
 				this.Flipped = flipped;
 			}
-			DisposeControl = false;
 			this.Control = context;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SaveState ();
@@ -173,7 +170,8 @@ namespace Eto.Platform.iOS.Drawing
 		}
 
 #endif
-		
+		protected override bool DisposeControl { get { return false; } }
+
 		public bool IsRetained { get { return false; } }
 
 		bool antialias;
@@ -206,7 +204,6 @@ namespace Eto.Platform.iOS.Drawing
 			Control = new CGBitmapContext (handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
 #endif
 
-			DisposeControl = false;
 			Flipped = false;
 			this.height = image.Size.Height;
 			Control.InterpolationQuality = CGInterpolationQuality.High;

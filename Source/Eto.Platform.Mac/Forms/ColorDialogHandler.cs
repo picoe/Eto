@@ -18,8 +18,9 @@ namespace Eto.Platform.Mac.Forms
 	class ColorHandler : NSWindowDelegate
 	{
 		public static ColorHandler Instance { get; set; }
-		public IColorDialogHandler Handler { get; set; }
-		
+		WeakReference handler;
+		public IColorDialogHandler Handler { get { return (IColorDialogHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
 		[Export("changeColor:")]
 		public void changeColor(NSColorPanel panel)
 		{

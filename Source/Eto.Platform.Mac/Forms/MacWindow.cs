@@ -18,7 +18,8 @@ namespace Eto.Platform.Mac.Forms
 		SD.RectangleF oldFrame;
 		bool zoom;
 
-		public IMacWindow Handler { get; set; }
+		WeakReference handler;
+		public IMacWindow Handler { get { return (IMacWindow)handler.Target; } set { handler = new WeakReference(value); } }
 
 		public MyWindow(SD.Rectangle rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)

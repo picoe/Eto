@@ -6,7 +6,7 @@ namespace Eto.Platform.Mac
 {
 	public interface IMenuHandler
 	{
-		void EnsureSubMenu ();
+		void EnsureSubMenu();
 	}
 
 	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget, IMenu, IMenuHandler
@@ -14,33 +14,32 @@ namespace Eto.Platform.Mac
 		where W: Menu
 	{
 		
-		public MenuHandler ()
+		public MenuHandler()
 		{
 		}
 
-		public void EnsureSubMenu ()
+		public void EnsureSubMenu()
 		{
 			if (!Control.HasSubmenu)
-				Control.Submenu = new NSMenu{ AutoEnablesItems = true, ShowsStateColumn = true, Title = Control.Title };
+				Control.Submenu = new NSMenu { AutoEnablesItems = true, ShowsStateColumn = true, Title = Control.Title };
 		}
 
-		public virtual void AddMenu (int index, MenuItem item)
+		public virtual void AddMenu(int index, MenuItem item)
 		{
-			EnsureSubMenu ();
-			Control.Submenu.InsertItem ((NSMenuItem)item.ControlObject, index);
+			EnsureSubMenu();
+			Control.Submenu.InsertItem((NSMenuItem)item.ControlObject, index);
 		}
 
-		public virtual void RemoveMenu (MenuItem item)
+		public virtual void RemoveMenu(MenuItem item)
 		{
 			if (Control.Submenu == null)
 				return;
-			Control.Submenu.RemoveItem ((NSMenuItem)item.ControlObject);
+			Control.Submenu.RemoveItem((NSMenuItem)item.ControlObject);
 		}
 
-		public virtual void Clear ()
+		public virtual void Clear()
 		{
 			Control.Submenu = null;
 		}
-
 	}
 }
