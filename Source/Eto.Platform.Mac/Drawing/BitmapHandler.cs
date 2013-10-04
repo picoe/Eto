@@ -17,27 +17,27 @@ namespace Eto.Platform.Mac.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapDataHandler : BitmapData
 	{
-		public BitmapDataHandler (Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
+		public BitmapDataHandler(Bitmap bitmap, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
 			: base(bitmap, data, scanWidth, bitsPerPixel, controlObject)
 		{
 		}
 
-		public static uint ArgbToData (uint argb)
-		{
-			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
-		}
-		
-		public static uint DataToArgb (uint bitmapData)
-		{
-			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
-		}
-		
-		public override uint TranslateArgbToData (uint argb)
+		public static uint ArgbToData(uint argb)
 		{
 			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
 		}
 
-		public override uint TranslateDataToArgb (uint bitmapData)
+		public static uint DataToArgb(uint bitmapData)
+		{
+			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
+		}
+
+		public override uint TranslateArgbToData(uint argb)
+		{
+			return (argb & 0xFF00FF00) | ((argb & 0xFF) << 16) | ((argb & 0xFF0000) >> 16);
+		}
+
+		public override uint TranslateDataToArgb(uint bitmapData)
 		{
 			return (bitmapData & 0xFF00FF00) | ((bitmapData & 0xFF) << 16) | ((bitmapData & 0xFF0000) >> 16);
 		}
@@ -55,175 +55,177 @@ namespace Eto.Platform.Mac.Drawing
 		NSImageRep rep;
 		NSBitmapImageRep bmprep;
 		bool alpha = true;
-		
-		public BitmapHandler ()
+
+		public BitmapHandler()
 		{
 		}
-		
-		public BitmapHandler (NSImage image)
+
+		public BitmapHandler(NSImage image)
 		{
 			Control = image;
 		}
 
-		public void Create (string fileName)
+		public void Create(string fileName)
 		{
-			if (!File.Exists (fileName))
-				throw new FileNotFoundException ("Icon not found", fileName);
-			Control = new NSImage (fileName);
+			if (!File.Exists(fileName))
+				throw new FileNotFoundException("Icon not found", fileName);
+			Control = new NSImage(fileName);
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
 			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
-		public void Create (Stream stream)
+		public void Create(Stream stream)
 		{
-			Control = new NSImage (NSData.FromStream (stream));
+			Control = new NSImage(NSData.FromStream(stream));
 			rep = Control.BestRepresentationForDevice(null);
 			bmprep = rep as NSBitmapImageRep;
 			Control.Size = new sd.SizeF(rep.PixelsWide, rep.PixelsHigh);
 		}
 
-		public void Create (int width, int height, PixelFormat pixelFormat)
+		public void Create(int width, int height, PixelFormat pixelFormat)
 		{			
-			switch (pixelFormat) {
-			case PixelFormat.Format32bppRgb:
-				{
-					alpha = false;
-					int numComponents = 4;
-					int bitsPerComponent = 8;
-					int bitsPerPixel = numComponents * bitsPerComponent;
-					int bytesPerPixel = bitsPerPixel / 8;
-					int bytesPerRow = bytesPerPixel * width;
+			switch (pixelFormat)
+			{
+				case PixelFormat.Format32bppRgb:
+					{
+						alpha = false;
+						int numComponents = 4;
+						int bitsPerComponent = 8;
+						int bitsPerPixel = numComponents * bitsPerComponent;
+						int bytesPerPixel = bitsPerPixel / 8;
+						int bytesPerRow = bytesPerPixel * width;
 
-					rep = bmprep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, 3, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
-					Control = new NSImage ();
-					Control.AddRepresentation (rep);
+						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, 3, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+						Control = new NSImage();
+						Control.AddRepresentation(rep);
 				
-					//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
-					//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-					//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
+						//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
+						//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+						//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
 				
-					break;
-				}
-			case PixelFormat.Format24bppRgb:
-				{
-					alpha = false;
-					int numComponents = 3;
-					int bitsPerComponent = 8;
-					int bitsPerPixel = numComponents * bitsPerComponent;
-					int bytesPerPixel = bitsPerPixel / 8;
-					int bytesPerRow = bytesPerPixel * width;
+						break;
+					}
+				case PixelFormat.Format24bppRgb:
+					{
+						alpha = false;
+						int numComponents = 3;
+						int bitsPerComponent = 8;
+						int bitsPerPixel = numComponents * bitsPerComponent;
+						int bytesPerPixel = bitsPerPixel / 8;
+						int bytesPerRow = bytesPerPixel * width;
 				
-					rep = bmprep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
-					Control = new NSImage ();
-					Control.AddRepresentation (rep);
+						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, false, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+						Control = new NSImage();
+						Control.AddRepresentation(rep);
 
-					//var provider = new CGDataProvider (data.ClassHandle);
-					//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-					//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
-					break;
-				}
-			case PixelFormat.Format32bppRgba: {
-					alpha = true;
-					int numComponents = 4;
-					int bitsPerComponent = 8;
-					int bitsPerPixel = numComponents * bitsPerComponent;
-					int bytesPerPixel = bitsPerPixel / 8;
-					int bytesPerRow = bytesPerPixel * width;
+						//var provider = new CGDataProvider (data.ClassHandle);
+						//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+						//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
+						break;
+					}
+				case PixelFormat.Format32bppRgba:
+					{
+						alpha = true;
+						int numComponents = 4;
+						int bitsPerComponent = 8;
+						int bitsPerPixel = numComponents * bitsPerComponent;
+						int bytesPerPixel = bitsPerPixel / 8;
+						int bytesPerRow = bytesPerPixel * width;
 
-					rep = bmprep = new NSBitmapImageRep (IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
-					Control = new NSImage ();
-					Control.AddRepresentation (rep);
+						rep = bmprep = new NSBitmapImageRep(IntPtr.Zero, width, height, bitsPerComponent, numComponents, true, false, NSColorSpace.DeviceRGB, bytesPerRow, bitsPerPixel);
+						Control = new NSImage();
+						Control.AddRepresentation(rep);
 
-					//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
-					//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
-					//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
+						//var provider = new CGDataProvider (data.Bytes, (int)data.Length);
+						//var cgImage = new CGImage (width, height, bitsPerComponent, bitsPerPixel, bytesPerRow, CGColorSpace.CreateDeviceRGB (), CGBitmapFlags.ByteOrder32Little | CGBitmapFlags.PremultipliedFirst, provider, null, true, CGColorRenderingIntent.Default);
+						//Control = new NSImage (cgImage, new System.Drawing.SizeF (width, height));
 
-					break;
-				}
+						break;
+					}
 			/*case PixelFormat.Format16bppRgb555:
 					control = new Gdk.Pixbuf(Gdk.Colorspace.Rgb, false, 5, width, height);
 					break;*/
-			default:
-				throw new ArgumentOutOfRangeException ("pixelFormat", pixelFormat, "Not supported");
+				default:
+					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, "Not supported");
 			}
 		}
 
 		public void Create(int width, int height, Graphics graphics)
 		{
-			Create (width, height, PixelFormat.Format32bppRgba);
+			Create(width, height, PixelFormat.Format32bppRgba);
 		}
 
-		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
+		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
 		{
-			var source = image.ToNS ();
-			Control = new NSImage (new sd.SizeF(width, height));
-			Control.LockFocus ();
-			NSGraphicsContext.CurrentContext.GraphicsPort.InterpolationQuality = interpolation.ToCG ();
-			source.DrawInRect (new sd.RectangleF(sd.PointF.Empty, Control.Size), new sd.RectangleF(sd.PointF.Empty, source.Size), NSCompositingOperation.SourceOver, 1f);
-			Control.UnlockFocus ();
+			var source = image.ToNS();
+			Control = source.Resize(new sd.Size(width, height), interpolation);
 		}
 
-		public override NSImage GetImage ()
+		public override NSImage GetImage()
 		{
 			return Control;
 		}
 
-		public BitmapData Lock ()
+		public BitmapData Lock()
 		{
 			if (bmprep != null)
-				return new BitmapDataHandler (Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
+				return new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
 			else
 				return null;
 		}
 
-		public void Unlock (BitmapData bitmapData)
+		public void Unlock(BitmapData bitmapData)
 		{
 		}
 
-		public void Save (Stream stream, ImageFormat format)
+		public void Save(Stream stream, ImageFormat format)
 		{
 			NSBitmapImageFileType type;
-			switch (format) {
-			case ImageFormat.Bitmap:
-				type = NSBitmapImageFileType.Bmp;
-				break;
-			case ImageFormat.Gif:
-				type = NSBitmapImageFileType.Gif;
-				break;
-			case ImageFormat.Jpeg:
-				type = NSBitmapImageFileType.Jpeg;
-				break;
-			case ImageFormat.Png:
-				type = NSBitmapImageFileType.Png;
-				break;
-			case ImageFormat.Tiff:
-				type = NSBitmapImageFileType.Tiff;
-				break;
-			default:
-				throw new NotSupportedException ();
+			switch (format)
+			{
+				case ImageFormat.Bitmap:
+					type = NSBitmapImageFileType.Bmp;
+					break;
+				case ImageFormat.Gif:
+					type = NSBitmapImageFileType.Gif;
+					break;
+				case ImageFormat.Jpeg:
+					type = NSBitmapImageFileType.Jpeg;
+					break;
+				case ImageFormat.Png:
+					type = NSBitmapImageFileType.Png;
+					break;
+				case ImageFormat.Tiff:
+					type = NSBitmapImageFileType.Tiff;
+					break;
+				default:
+					throw new NotSupportedException();
 			}
-			var reps = Control.Representations ();
+			var reps = Control.Representations();
 			if (reps == null)
-				throw new InvalidDataException ();
-			var newrep = reps.OfType<NSBitmapImageRep> ().FirstOrDefault ();
-			if (newrep == null) {
-				NSData tiff;
+				throw new InvalidDataException();
+			var newrep = reps.OfType<NSBitmapImageRep>().FirstOrDefault();
+			if (newrep == null)
+			{
+				CGImage img;
 				if (this.bmprep != null)
-					tiff = this.bmprep.TiffRepresentation;
+					img = this.bmprep.CGImage;
 				else
-					tiff = Control.AsTiff ();
-				newrep = new NSBitmapImageRep (tiff);
+					img = Control.CGImage;
+				newrep = new NSBitmapImageRep(img);
 			}
-			var data = newrep.RepresentationUsingTypeProperties (type, new NSDictionary ());
-			var datastream = data.AsStream ();
-			datastream.CopyTo (stream);
-			stream.Flush ();
-			datastream.Dispose ();
+			var data = newrep.RepresentationUsingTypeProperties(type, new NSDictionary());
+			var datastream = data.AsStream();
+			datastream.CopyTo(stream);
+			stream.Flush();
+			datastream.Dispose();
 		}
 
-		public override Size Size {
-			get {
+		public override Size Size
+		{
+			get
+			{
 				/*
 				NSImageRep rep = this.rep;
 				if (rep == null)
@@ -235,24 +237,25 @@ namespace Eto.Platform.Mac.Drawing
 				return Control.Size.ToEtoSize();
 			}
 		}
-		
-		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+
+		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = graphics.Translate (source.ToSD (), Control.Size.Height);
-			var destRect = graphics.TranslateView (destination.ToSD (), true, true);
-			graphics.FlipDrawing ();
+			var sourceRect = graphics.Translate(source.ToSD(), Control.Size.Height);
+			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
+			graphics.FlipDrawing();
 			destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
 			if (alpha)
-				Control.Draw (destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
 			else
-				Control.Draw (destRect, sourceRect, NSCompositingOperation.Copy, 1);
+				Control.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1);
 		}
 
-		public Bitmap Clone (Rectangle? rectangle = null)
+		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			if (rectangle == null)
-				return new Bitmap (Generator, new BitmapHandler ((NSImage)Control.Copy ()));
-			else {
+				return new Bitmap(Generator, new BitmapHandler((NSImage)Control.Copy()));
+			else
+			{
 				var rect = rectangle.Value;
 				PixelFormat format;
 				if (bmprep != null && bmprep.BitsPerPixel == 24)
@@ -262,9 +265,10 @@ namespace Eto.Platform.Mac.Drawing
 				else
 					format = PixelFormat.Format32bppRgb;
 
-				var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
-				using (var graphics = new Graphics (Generator, bmp)) {
-					graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
+				var bmp = new Bitmap(rect.Width, rect.Height, format, Generator);
+				using (var graphics = new Graphics (Generator, bmp))
+				{
+					graphics.DrawImage(Widget, rect, new Rectangle(rect.Size));
 				}
 				return bmp;
 			}
@@ -273,9 +277,20 @@ namespace Eto.Platform.Mac.Drawing
 		public Color GetPixel(int x, int y)
 		{
 			if (bmprep == null)
-				throw new InvalidOperationException (string.Format ("Cannot get pixel data for this type of bitmap ({0})", rep.GetType ()));
+				throw new InvalidOperationException(string.Format("Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
 
 			return bmprep.ColorAt(x, y).ToEto();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				var ctl = Control;
+				ctl.Autorelease();
+			}
+			else
+				base.Dispose(disposing);
 		}
 	}
 }

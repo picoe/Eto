@@ -18,7 +18,8 @@ namespace Eto.Platform.iOS.Threading
 	{
 		class Delegate : NSObject
 		{
-			public ThreadHandler Handler { get; set; }
+			WeakReference handler;
+			public ThreadHandler Handler { get { return (ThreadHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			[Export("execute")]
 			public void Execute()

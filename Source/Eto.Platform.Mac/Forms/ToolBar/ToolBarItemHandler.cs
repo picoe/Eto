@@ -13,27 +13,33 @@ namespace Eto.Platform.Mac
 	interface IToolBarBaseItemHandler
 	{
 		string Identifier { get; }
+
 		NSToolbarItem Control { get; }
+
 		bool Selectable { get; }
+
 		void ControlAdded(ToolBarHandler toolbar);
 	}
-	
+
 	interface IToolBarItemHandler : IToolBarBaseItemHandler
 	{
 		void OnClick();
+
 		bool Enabled { get; }
 	}
-	
+
 	class ToolBarItemHandlerTarget : NSObject
 	{
-		public IToolBarItemHandler Handler { get; set; }
-		
+		WeakReference handler;
+
+		public IToolBarItemHandler Handler { get { return (IToolBarItemHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
 		[Export("validateToolbarItem:")]
 		public bool ValidateToolbarItem(NSToolbarItem item)
 		{
 			return Handler.Enabled;
 		}
-		
+
 		[Export("action")]
 		public bool action()
 		{
@@ -49,7 +55,7 @@ namespace Eto.Platform.Mac
 		Image image;
 		NSButton button;
 		NSMenuItem menuItem;
-		sd.SizeF buttonSize = new sd.SizeF (42, 24);
+		sd.SizeF buttonSize = new sd.SizeF(42, 24);
 		Color? tint;
 
 		public sd.SizeF ButtonSize
@@ -65,9 +71,12 @@ namespace Eto.Platform.Mac
 		public bool UseButton
 		{
 			get { return Control.View != null; }
-			set {
-				if (button == null && value) {
-					button = new NSButton {
+			set
+			{
+				if (button == null && value)
+				{
+					button = new NSButton
+					{
 						BezelStyle = NSBezelStyle.TexturedRounded,
 						Frame = new sd.RectangleF(sd.PointF.Empty, buttonSize),
 						Target = Control.Target,
@@ -86,35 +95,38 @@ namespace Eto.Platform.Mac
 		public Color? Tint
 		{
 			get { return tint; }
-			set {
+			set
+			{
 				tint = value;
 			}
 		}
 
 		public virtual string Identifier { get; set; }
-		
+
 		public ToolBarItemHandler()
 		{
 			this.Identifier = Guid.NewGuid().ToString();
 		}
 
-		public void UseStandardButton (bool grayscale)
+		public void UseStandardButton(bool grayscale)
 		{
 			UseButton = true;
 			if (grayscale)
 				Tint = Colors.Gray;
 		}
 
-		public override T CreateControl ()
+		public override T CreateControl()
 		{
 			return (T)new NSToolbarItem(this.Identifier);
 		}
 
-		protected override void Initialize ()
+		static readonly Selector selAction = new Selector("action");
+
+		protected override void Initialize()
 		{
-			base.Initialize ();
-			Control.Target = new ToolBarItemHandlerTarget{ Handler = this };
-			Control.Action = new Selector("action");
+			base.Initialize();
+			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
+			Control.Action = selAction;
 			Control.Autovalidates = false;
 
 			menuItem = new NSMenuItem(string.Empty);
@@ -123,21 +135,23 @@ namespace Eto.Platform.Mac
 			Control.MenuFormRepresentation = menuItem;
 			Control.Enabled = true;
 		}
-		
+
 		public virtual void ControlAdded(ToolBarHandler toolbar)
 		{
 		}
-		
+
 		public virtual void InvokeButton()
 		{
 		}
-		
-		public string Text {
+
+		public string Text
+		{
 			get { return Control.Label; }
 			set { Control.Label = menuItem.Title = value ?? string.Empty; }
 		}
 
-		public string ToolTip {
+		public string ToolTip
+		{
 			get { return Control.ToolTip; }
 			set { menuItem.ToolTip = button.ToolTip = value ?? string.Empty; }
 		}
@@ -148,16 +162,16 @@ namespace Eto.Platform.Mac
 			set
 			{
 				this.image = value;
-				SetImage ();
+				SetImage();
 			}
 		}
 
-		void SetImage ()
+		void SetImage()
 		{
-			var nsimage = this.image.ToNS (UseButton ? (int?)20 : null);
+			var nsimage = this.image.ToNS(UseButton ? (int?)20 : null);
 			if (tint != null && nsimage != null)
-				nsimage = nsimage.Tint (tint.Value.ToNS ());
-			Control.Image =  nsimage;
+				nsimage = nsimage.Tint(tint.Value.ToNS());
+			Control.Image = nsimage;
 		}
 
 		public virtual bool Enabled
@@ -165,9 +179,9 @@ namespace Eto.Platform.Mac
 			get { return Control.Enabled; }
 			set { Control.Enabled = value; }
 		}
-	
+
 		public virtual bool Selectable { get; set; }
-		
+
 		public void OnClick()
 		{
 			this.InvokeButton();
@@ -178,6 +192,4 @@ namespace Eto.Platform.Mac
 			get { return (NSToolbarItem)this.Control; }
 		}
 	}
-
-
 }

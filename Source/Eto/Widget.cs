@@ -112,7 +112,6 @@ namespace Eto
 		/// </summary>
 		~Widget ()
 		{
-			//Console.WriteLine("GC: {0}", this.GetType().FullName);
 			Dispose (false);
 		}
 		
@@ -194,6 +193,7 @@ namespace Eto
 					handler.Dispose ();
 				Handler = null;
 			}
+			//Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", this.GetType ().Name);
 		}		
 	}
 }
