@@ -265,7 +265,7 @@ namespace Eto
 		/// <summary>
 		/// Gets or sets a value indicating that control should automatically be disposed when this widget is disposed
 		/// </summary>
-		protected bool DisposeControl { get; set; }
+		protected virtual bool DisposeControl { get { return true; } }
 
 		/// <summary>
 		/// Gets or sets the platform-specific control object

@@ -11,7 +11,9 @@ namespace Eto.Platform.Mac.Forms
 	{
 		Button button;
 		MacModal.ModalHelper session;
-		
+
+		protected override bool DisposeControl { get { return false; } }
+
 		class DialogWindow : MyWindow {
 			public new DialogHandler Handler
 			{
@@ -57,7 +59,6 @@ namespace Eto.Platform.Mac.Forms
 
 		public DialogHandler ()
 		{
-			this.DisposeControl = false;
 			var dlg = new DialogWindow();
 			dlg.Handler = this;
 			Control = dlg;
