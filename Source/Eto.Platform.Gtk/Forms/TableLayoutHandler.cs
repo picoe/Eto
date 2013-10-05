@@ -11,6 +11,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		const Gtk.AttachOptions SCALED_OPTIONS = Gtk.AttachOptions.Expand | Gtk.AttachOptions.Shrink | Gtk.AttachOptions.Fill;
 		Gtk.Alignment align;
+		Gtk.EventBox box;
 		bool[] columnScale;
 		int lastColumnScale;
 		bool[] rowScale;
@@ -20,7 +21,7 @@ namespace Eto.Platform.GtkSharp
 
 		public override Gtk.Widget ContainerControl
 		{
-			get { return align; }
+			get { return box; }
 		}
 
 		public Size Spacing
@@ -85,6 +86,7 @@ namespace Eto.Platform.GtkSharp
 			controls = new Control[rows, cols];
 			blank = new Gtk.Widget[rows, cols];
 			align.Add(Control);
+			box = new Gtk.EventBox { Child = align };
 
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
