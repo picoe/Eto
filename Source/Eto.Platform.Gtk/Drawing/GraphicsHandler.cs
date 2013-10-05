@@ -14,6 +14,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		RectangleF? clipBounds;
 		IGraphicsPath clipPath;
+		bool disposeControl = true;
 #if GTK2
 		Gdk.Drawable drawable;
 
@@ -31,11 +32,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 #endif
 
-		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext)
+		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext, bool dispose = true)
 		{
 			this.Control = context;
 			this.pangoContext = pangoContext;
+			this.disposeControl = dispose;
 		}
+
+		protected override bool DisposeControl { get { return disposeControl; } }
 
 		public PixelOffsetMode PixelOffsetMode
 		{
@@ -54,13 +58,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public GraphicsHandler ()
 		{
-		}
-
-		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext, bool dispose)
-		{
-			this.Control = context;
-			this.pangoContext = pangoContext;
-			DisposeControl = dispose;
 		}
 
 		public bool IsRetained { get { return false; } }
