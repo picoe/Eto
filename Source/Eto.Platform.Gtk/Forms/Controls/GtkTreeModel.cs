@@ -8,7 +8,7 @@ using System.Collections;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class GtkTreeModel<T, S> : GLib.Object, Gtk.TreeModelImplementor
+	public class GtkTreeModel<T, S> : GLib.Object, ITreeModelImplementor
 		where S: class, IDataStore<T>
 		where T: class, ITreeItem<T>
 	{
@@ -18,7 +18,7 @@ namespace Eto.Platform.GtkSharp
 		public GtkTreeModel ()
 		{
 		}
-		
+
 		class Node
 		{
 			public T Item { get; set; }

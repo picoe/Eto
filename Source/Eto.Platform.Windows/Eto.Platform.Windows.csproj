@@ -24,7 +24,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WINFORMS</DefineConstants>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

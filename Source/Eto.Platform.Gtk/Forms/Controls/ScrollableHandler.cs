@@ -51,6 +51,7 @@ namespace Eto.Platform.GtkSharp
 			vbox.PackStart(hbox, true, true, 0);
 			
 			// autosize the scrolled window to the size of the content
+#if GTK2
 			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args)
 			{
 				if (autoSize)
@@ -67,6 +68,7 @@ namespace Eto.Platform.GtkSharp
 					args.Requisition = size;
 				}
 			};
+#endif
 
 			Control.VScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
 			Control.HScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
@@ -125,9 +127,12 @@ namespace Eto.Platform.GtkSharp
 			vbox.SetChildPacking(hbox, expandHeight, expandHeight, 0, Gtk.PackType.Start);
 		}
 
-		protected override void SetBackgroundColor(Color color)
+		protected override void SetBackgroundColor(Color? color)
 		{
-			vp.ModifyBg(Gtk.StateType.Normal, color.ToGdk());
+			if (color != null)
+				vp.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+			else
+				vp.ModifyBg(Gtk.StateType.Normal);
 		}
 
 		public override Size ClientSize

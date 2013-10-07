@@ -19,6 +19,7 @@ namespace Eto.Platform.GtkSharp
 		where W: Window
 	{
 		Gtk.VBox vbox;
+		Gtk.VBox actionvbox;
 		Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
 		Gtk.Box containerBox;
@@ -35,6 +36,7 @@ namespace Eto.Platform.GtkSharp
 		public GtkWindow ()
 		{
 			vbox = new Gtk.VBox ();
+			actionvbox = new Gtk.VBox ();
 
 			menuBox = new Gtk.HBox ();
 			topToolbarBox = new Gtk.VBox ();
@@ -55,16 +57,29 @@ namespace Eto.Platform.GtkSharp
 			get { return vbox; }
 		}
 
+		public Gtk.Widget WindowActionControl
+		{
+			get { return actionvbox; }
+		}
+
 		public override Gtk.Widget ContainerContentControl
 		{
 			get { return containerBox; }
 		}
 
+#if GTK2
 		public bool Resizable
 		{
 			get { return Control.Resizable; }
 			set { Control.Resizable = value; }
 		}
+#else
+		public bool Resizable
+		{
+			get { return Control.Resizable; }
+			set { Control.Resizable = Control.HasResizeGrip = value; }
+		}
+#endif
 
 		public bool Minimizable { get; set; }
 
@@ -118,7 +133,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			set {
 				if (Control.Visible)
-					Control.Allocation = new Gdk.Rectangle (Control.Allocation.Location, value.ToGdk ());
+					Control.SizeAllocate (new Gdk.Rectangle (Control.Allocation.Location, value.ToGdk ()));
 				else
 					Control.SetDefaultSize (value.Width, value.Height);
 			}
@@ -154,8 +169,8 @@ namespace Eto.Platform.GtkSharp
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			vbox.PackStart (menuBox, false, false, 0);
-			vbox.PackStart (topToolbarBox, false, false, 0);
+			actionvbox.PackStart (menuBox, false, false, 0);
+			actionvbox.PackStart (topToolbarBox, false, false, 0);
 			vbox.PackStart (containerBox, true, true, 0);
 			vbox.PackStart (bottomToolbarBox, false, false, 0);
 			
@@ -250,7 +265,7 @@ namespace Eto.Platform.GtkSharp
 				// set accelerators
 				menuBar = value;
 				SetAccelerators (menuBar);
-				menuBox.PackStart ((Gtk.Widget)value.ControlObject); //, false, false, 0);
+				menuBox.PackStart ((Gtk.Widget)value.ControlObject, true, true, 0);
 				((Gtk.Widget)value.ControlObject).ShowAll ();
 			}
 		}

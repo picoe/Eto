@@ -9,8 +9,6 @@ namespace Eto.Forms
 	
 	public class ComboBox : ListControl
 	{
-		//private IComboBox inner;
-		
 		public ComboBox () : this (Generator.Current)
 		{
 		}
@@ -22,7 +20,6 @@ namespace Eto.Forms
 		protected ComboBox (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			//inner = (IComboBox)base.InnerControl;
 		}
 	}
 

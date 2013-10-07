@@ -14,7 +14,7 @@
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugType>full</DebugType>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>DEBUG;OSX;DESKTOP;XAMMAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -30,12 +30,12 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <ConsolePause>false</ConsolePause>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <DefineConstants>OSX;DESKTOP;XAMMAC</DefineConstants>
     <DebugSymbols>True</DebugSymbols>
     <EnableCodeSigning>false</EnableCodeSigning>

@@ -24,6 +24,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			int wrapWidth = 0;
 
+#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				//base.OnSizeRequested (ref requisition);
@@ -32,7 +33,22 @@ namespace Eto.Platform.GtkSharp
 				requisition.Width = width;
 				requisition.Height = height;
 			}
+#else
+			protected override void OnGetPreferredWidth (out int minimum_width, out int natural_width)
+			{
+				base.OnGetPreferredWidth (out minimum_width, out natural_width);
+				//minimum_width = natural_width; // = 500; //this.Layout.Width;
+			}
 
+			protected override void OnAdjustSizeRequest (Gtk.Orientation orientation, out int minimum_size, out int natural_size)
+			{
+				base.OnAdjustSizeRequest (orientation, out minimum_size, out natural_size);
+				if (orientation == Gtk.Orientation.Horizontal)
+					minimum_size = natural_size;
+			}
+
+#endif
+			
 			protected override void OnSizeAllocated(Gdk.Rectangle allocation)
 			{
 				base.OnSizeAllocated(allocation);

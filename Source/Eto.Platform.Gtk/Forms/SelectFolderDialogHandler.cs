@@ -22,7 +22,7 @@ namespace Eto.Platform.GtkSharp
 
 			int result = Control.Run();
 			
-			Control.HideAll();
+			Control.Hide ();
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
 			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);

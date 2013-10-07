@@ -19,7 +19,7 @@ namespace Eto.Platform.GtkSharp
 			Control = new Gtk.VBox();
 			tab = new Gtk.HBox();
 			label = new Gtk.Label();
-			tab.PackEnd (label);
+			tab.PackEnd (label, true, true, 0);
 			tab.ShowAll ();
 		}
 		
@@ -29,7 +29,7 @@ namespace Eto.Platform.GtkSharp
 
 		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			Control.PackStart(content);
+			Control.PackStart(content, true, true, 0);
 		}
 		
 		public Eto.Drawing.Image Image {
@@ -37,7 +37,7 @@ namespace Eto.Platform.GtkSharp
 			set {
 				if (gtkimage == null) {
 					gtkimage = new Gtk.Image();
-					tab.PackStart (gtkimage);
+					tab.PackStart (gtkimage, true, true, 0);
 				}
 				image = value;
 				if (image != null) {

@@ -31,6 +31,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+#if GTK2
 		void HandleExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			if (!string.IsNullOrEmpty(Control.Text) || args.Event.Window == Control.GdkWindow)
@@ -60,6 +61,11 @@ namespace Eto.Platform.GtkSharp
 				args.Event.Window.DrawLayout (gc, 2, (currentHeight - height) / 2 + 1, placeholderLayout);
 			}
 		}
+#else
+		protected override void SetBackgroundColor(Eto.Drawing.Color? color)
+		{
+		}
+#endif
 
 		public override Eto.Drawing.Font Font
 		{
@@ -88,11 +94,15 @@ namespace Eto.Platform.GtkSharp
 		public string PlaceholderText {
 			get { return placeholderText; }
 			set	{
+#if GTK2
 				if (!string.IsNullOrEmpty(placeholderText))
 					Control.ExposeEvent -= HandleExposeEvent;
 				placeholderText = value;
 				if (!string.IsNullOrEmpty (placeholderText))
 					Control.ExposeEvent += HandleExposeEvent;
+#else
+				placeholderText = value;
+#endif
 			}
 		}
 

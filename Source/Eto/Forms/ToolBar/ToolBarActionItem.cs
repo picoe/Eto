@@ -14,30 +14,29 @@ namespace Eto.Forms
 	
 	public class ToolBarActionItem : ToolBarItem
 	{
-		IToolBarActionItem inner;
+		new IToolBarActionItem Handler { get { return (IToolBarActionItem)base.Handler; } }
 		
 		public ToolBarActionItem(Generator g, Type type)
 			: base(g, type)
 		{
-			inner = (IToolBarActionItem)Handler;
 		}
 		
 		public string Text
 		{
-			get { return inner.Text; }
-			set { inner.Text = value; }
+			get { return Handler.Text; }
+			set { Handler.Text = value; }
 		}
 
 		public string ToolTip
 		{
-			get { return inner.ToolTip; }
-			set { inner.ToolTip = value; }
+			get { return Handler.ToolTip; }
+			set { Handler.ToolTip = value; }
 		}
 		
 		public Image Image
 		{
-			get { return inner.Image; }
-			set { inner.Image = value; }
+			get { return Handler.Image; }
+			set { Handler.Image = value; }
 		}
 
 		[Obsolete ("Use Image instead")]
@@ -49,8 +48,8 @@ namespace Eto.Forms
 
 		public bool Enabled
 		{
-			get { return inner.Enabled; }
-			set { inner.Enabled = value; }
+			get { return Handler.Enabled; }
+			set { Handler.Enabled = value; }
 		}
 	}
 }

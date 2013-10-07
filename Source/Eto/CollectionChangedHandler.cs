@@ -18,15 +18,15 @@ namespace Eto
 	/// This is a simple helper that is much easier to implement than handling
 	/// the <see cref="INotifyCollectionChanged.CollectionChanged"/> event directly.
 	/// </remarks>
-	/// <typeparam name="I">Type of the items in the collection</typeparam>
-	/// <typeparam name="C">Type of the collection</typeparam>
-	public abstract class CollectionChangedHandler<I, C>
-		where C: class
+	/// <typeparam name="TItem">Type of the items in the collection</typeparam>
+	/// <typeparam name="TCollection">Type of the collection</typeparam>
+	public abstract class CollectionChangedHandler<TItem, TCollection>
+		where TCollection: class
 	{
 		/// <summary>
 		/// Gets the collection that this handler is observing
 		/// </summary>
-		public C Collection { get; private set; }
+		public TCollection Collection { get; private set; }
 		
 		/// <summary>
 		/// Called when the object has been registered (attached) to a collection
@@ -48,9 +48,9 @@ namespace Eto
 		/// </summary>
 		/// <param name="collection">collection to observe</param>
 		/// <returns>true if the collection was registered, false otherwise</returns>
-		public bool Register (C collection)
+		public bool Register (TCollection collection)
 		{
-			this.Collection = collection;
+			Collection = collection;
 			
 			var notify = Collection as INotifyCollectionChanged;
 			if (notify != null) {
@@ -82,14 +82,12 @@ namespace Eto
 		/// </summary>
 		/// <param name="item">Item to find the index of</param>
 		/// <returns>Index of the item if contained in the collection, otherwise -1</returns>
-		public virtual int IndexOf (I item)
+		public virtual int IndexOf (TItem item)
 		{
 			var list = Collection as IList;
 			if (list != null)
-				return list.IndexOf (item);
-			else {
-				return InternalIndexOf (item);
-			}
+				return list.IndexOf(item);
+			return InternalIndexOf(item);
 		}
 		
 		/// <summary>
@@ -100,20 +98,20 @@ namespace Eto
 		/// </remarks>
 		/// <param name="item">Item to find the index</param>
 		/// <returns>index of the item in the collection, or -1 if the item is not found</returns>
-		protected abstract int InternalIndexOf (I item);
+		protected abstract int InternalIndexOf (TItem item);
 		
 		/// <summary>
 		/// Adds the item to the end of the collection
 		/// </summary>
 		/// <param name="item">Item to add to the collection</param>
-		public abstract void AddItem (I item);
+		public abstract void AddItem (TItem item);
 			
 		/// <summary>
 		/// Inserts an item at the specified index in the collection
 		/// </summary>
 		/// <param name="index">Index to insert the item to</param>
 		/// <param name="item">Item to insert</param>
-		public abstract void InsertItem (int index, I item);
+		public abstract void InsertItem (int index, TItem item);
 			
 		/// <summary>
 		/// Removes the item at the specified index
@@ -134,7 +132,7 @@ namespace Eto
 		/// Implementors should override this method if there is a faster mechanism to do so.
 		/// </remarks>
 		/// <param name="item">Item to remove from the collection</param>
-		public virtual void RemoveItem (I item)
+		public virtual void RemoveItem (TItem item)
 		{
 			var index = IndexOf (item);
 			if (index >= 0)
@@ -152,7 +150,7 @@ namespace Eto
 		/// should be overridden so the UI is updated after all items have been added.
 		/// </remarks>
 		/// <param name="items">Enumeration of items to add to the end of the collection</param>
-		public virtual void AddRange (IEnumerable<I> items)
+		public virtual void AddRange (IEnumerable<TItem> items)
 		{
 			foreach (var item in items)
 				AddItem (item);
@@ -170,7 +168,7 @@ namespace Eto
 		/// </remarks>
 		/// <param name="index">Index to start adding the items</param>
 		/// <param name="items">Enumeration of items to add</param>
-		public virtual void InsertRange (int index, IEnumerable<I> items)
+		public virtual void InsertRange (int index, IEnumerable<TItem> items)
 		{
 			foreach (var item in items)
 				InsertItem (index++, item);
@@ -205,7 +203,7 @@ namespace Eto
 		/// should be overridden so the UI is updated after all items have been removed.
 		/// </remarks>
 		/// <param name="items">List of items to remove</param>
-		public virtual void RemoveRange (IEnumerable<I> items)
+		public virtual void RemoveRange (IEnumerable<TItem> items)
 		{
 			foreach (var item in items) 
 				RemoveItem (item);
@@ -216,29 +214,29 @@ namespace Eto
 			switch (e.Action) {
 			case NotifyCollectionChangedAction.Add:
 				if (e.NewStartingIndex != -1) 
-					InsertRange (e.NewStartingIndex, e.NewItems.Cast<I> ());
+					InsertRange (e.NewStartingIndex, e.NewItems.Cast<TItem> ());
 				else
-					AddRange (e.NewItems.Cast<I> ());
+					AddRange (e.NewItems.Cast<TItem> ());
 				break;
 			case NotifyCollectionChangedAction.Move:
-				RemoveRange (e.OldItems.Cast<I> ());
-				InsertRange (e.NewStartingIndex, e.NewItems.Cast<I> ());
+				RemoveRange (e.OldItems.Cast<TItem> ());
+				InsertRange (e.NewStartingIndex, e.NewItems.Cast<TItem> ());
 				break;
 			case NotifyCollectionChangedAction.Remove:
 				if (e.OldStartingIndex != -1)
 					RemoveRange (e.OldStartingIndex, e.OldItems.Count);
 				else
-					RemoveRange (e.OldItems.Cast<I> ());
+					RemoveRange (e.OldItems.Cast<TItem> ());
 				break;
 			case NotifyCollectionChangedAction.Replace:
 				if (e.OldStartingIndex != -1) {
 					RemoveRange (e.OldStartingIndex, e.OldItems.Count);
-					InsertRange (e.OldStartingIndex, e.NewItems.Cast<I> ());
+					InsertRange (e.OldStartingIndex, e.NewItems.Cast<TItem> ());
 				} else {
 					for (int i = 0; i < e.OldItems.Count; i++) {
-						var index = IndexOf ((I)e.OldItems [i]);
+						var index = IndexOf ((TItem)e.OldItems [i]);
 						RemoveItem (index);
-						InsertItem (index, (I)e.NewItems [i]);
+						InsertItem (index, (TItem)e.NewItems [i]);
 					}
 				}
 				break;
@@ -261,10 +259,10 @@ namespace Eto
 	/// also implements <see cref="INotifyCollectionChanged"/> it will get changed events
 	/// otherwise you must register a new collection each time.
 	/// </remarks>
-	/// <typeparam name="I">Type of each item in the enumerable</typeparam>
-	/// <typeparam name="C">Type of collection</typeparam>
-	public abstract class EnumerableChangedHandler<I, C> : CollectionChangedHandler<I, C>
-		where C: class, IEnumerable
+	/// <typeparam name="TItem">Type of each item in the enumerable</typeparam>
+	/// <typeparam name="TCollection">Type of collection</typeparam>
+	public abstract class EnumerableChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>
+		where TCollection: class, IEnumerable
 	{
 		/// <summary>
 		/// Implements the mechanism for finding the index of an item (the slow way)
@@ -275,7 +273,7 @@ namespace Eto
 		/// </remarks>
 		/// <param name="item">Item to find in the collection</param>
 		/// <returns>Index of the item, or -1 if not found</returns>
-		protected override int InternalIndexOf (I item)
+		protected override int InternalIndexOf (TItem item)
 		{
 			int index = 0;
 			foreach (var child in Collection) {
@@ -292,7 +290,7 @@ namespace Eto
 		protected override void OnRegisterCollection (EventArgs e)
 		{
 			base.OnRegisterCollection (e);
-			AddRange (Collection.Cast<I>());
+			AddRange (Collection.Cast<TItem>());
 		}
 	}
 	
@@ -308,14 +306,14 @@ namespace Eto
 	/// If the object also implements <see cref="INotifyCollectionChanged"/>, it will get changed events.
 	/// Otherwise, you must register a new collection each time.
 	/// </remarks>
-	/// <typeparam name="I">Type of items in the data store</typeparam>
-	/// <typeparam name="C">Type of the data store to detect changes on</typeparam>
-	public abstract class DataStoreChangedHandler<I, C> : CollectionChangedHandler<I, C>, IEnumerable<I>
-		where C: class, IDataStore<I>
+	/// <typeparam name="TItem">Type of items in the data store</typeparam>
+	/// <typeparam name="TCollection">Type of the data store to detect changes on</typeparam>
+	public abstract class DataStoreChangedHandler<TItem, TCollection> : CollectionChangedHandler<TItem, TCollection>, IEnumerable<TItem>
+		where TCollection: class, IDataStore<TItem>
 	{
-		public IEnumerator<I> GetEnumerator ()
+		public IEnumerator<TItem> GetEnumerator ()
 		{
-			return new DataStoreVirtualCollection<I>(Collection).GetEnumerator ();
+			return new DataStoreVirtualCollection<TItem>(Collection).GetEnumerator ();
 		}
 
 		IEnumerator IEnumerable.GetEnumerator ()
@@ -341,7 +339,7 @@ namespace Eto
 		/// </remarks>
 		/// <param name="item">Item to find in the collection</param>
 		/// <returns>Index of the item, or -1 if not found</returns>
-		protected override int InternalIndexOf (I item)
+		protected override int InternalIndexOf (TItem item)
 		{
 			for (int i = 0; i < Collection.Count; i++) {
 				if (object.ReferenceEquals (item, Collection [i])) 

@@ -7,7 +7,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 	{
 		Pango.Context pangoContext;
 		Gtk.Widget widget;
-		Gdk.Drawable drawable;
 		Image image;
 		Cairo.ImageSurface surface;
 		double offset = 0.5;
@@ -15,7 +14,32 @@ namespace Eto.Platform.GtkSharp.Drawing
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		RectangleF? clipBounds;
 		IGraphicsPath clipPath;
+		bool disposeControl = true;
+#if GTK2
+		Gdk.Drawable drawable;
 
+		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable)
+		{
+			this.widget = widget;
+			this.drawable = drawable;
+			this.Control = Gdk.CairoHelper.Create (drawable);
+		}
+#else
+		public GraphicsHandler (Gtk.Widget widget, Gdk.Window drawable)
+		{
+			this.widget = widget;
+			this.Control = Gdk.CairoHelper.Create (drawable);
+		}
+#endif
+
+		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext, bool dispose = true)
+		{
+			this.Control = context;
+			this.pangoContext = pangoContext;
+			this.disposeControl = dispose;
+		}
+
+		protected override bool DisposeControl { get { return disposeControl; } }
 
 		public PixelOffsetMode PixelOffsetMode
 		{
@@ -34,19 +58,6 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public GraphicsHandler ()
 		{
-		}
-
-		public GraphicsHandler (Cairo.Context context, Pango.Context pangoContext)
-		{
-			this.Control = context;
-			this.pangoContext = pangoContext;
-		}
-		
-		public GraphicsHandler (Gtk.Widget widget, Gdk.Drawable drawable)
-		{
-			this.widget = widget;
-			this.drawable = drawable;
-			this.Control = Gdk.CairoHelper.Create (drawable);
 		}
 
 		public bool IsRetained { get { return false; } }
@@ -125,6 +136,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					handler.Unlock (bd);
 				}
 			}
+#if GTK2
 			if (Control != null) {
 				((IDisposable)Control).Dispose ();
 				if (surface != null) {
@@ -133,6 +145,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 					this.Control = Gdk.CairoHelper.Create (drawable);
 				}
 			}
+#endif
 		}
 
 		public void DrawLine (Pen pen, float startx, float starty, float endx, float endy)

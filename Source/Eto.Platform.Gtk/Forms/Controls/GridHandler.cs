@@ -28,7 +28,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			};
 		}
 
-		protected abstract Gtk.TreeModelImplementor CreateModelImplementor ();
+		protected abstract ITreeModelImplementor CreateModelImplementor ();
 
 		protected void UpdateModel ()
 		{

@@ -13,19 +13,31 @@ using Eto.Platform.GtkSharp.IO;
 
 namespace Eto.Platform.GtkSharp
 {
+	static class Helper
+	{
+		public static void Init ()
+		{
+			Gtk.Application.Init();
+			
+			Gdk.Threads.Enter ();
+		}
+	}
+
 	public class Generator : Eto.Generator
 	{ 	
-		public override string ID {
-			get { return Generators.Gtk; }
-		}
+#if GTK2
+		public override string ID { get { return Generators.Gtk; } }
+#else
+		public override string ID { get { return Generators.Gtk3; } }
+
+		static EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register ("Eto.Platform.GtkSharp.CustomControls.Assemblies");
+#endif
 		
 		public Generator ()
 		{
 			if (EtoEnvironment.Platform.IsWindows && Environment.Is64BitProcess)
 				throw new NotSupportedException("Please compile/run GTK in x86 mode (32-bit) on windows");
-			Gtk.Application.Init();
-			
-			Gdk.Threads.Enter ();
+			Helper.Init ();
 
 			AddTo (this);
 		}

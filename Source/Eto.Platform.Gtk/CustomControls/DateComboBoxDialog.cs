@@ -41,11 +41,12 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			}
 		}
 		
-		public DateComboBoxDialog (DateTime dateTime, DateTimePickerMode mode) : base(Gtk.WindowType.Popup)
+		public DateComboBoxDialog (DateTime dateTime, DateTimePickerMode mode)
+			: base(Gtk.WindowType.Popup)
 		{
 			this.mode = mode;
 			this.CreateControls ();
-			
+
 			if (HasDate) {
 				calendar.Date = dateTime;
 			}
@@ -74,7 +75,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			this.ShowAll ();
 			this.Grab ();
 		}
-		
+
+#if GTK2
 		protected override bool OnExposeEvent (Gdk.EventExpose args)
 		{
 			base.OnExposeEvent (args);
@@ -85,6 +87,14 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			
 			return false;
 		}
+#else
+		protected override bool OnDrawn (Cairo.Context cr)
+		{
+			base.OnDrawn (cr);
+			this.StyleContext.RenderFrame(cr, 0, 0, this.AllocatedWidth - 1, this.AllocatedHeight - 1);
+			return true;
+		}
+#endif
 
 		void Close ()
 		{
@@ -174,17 +184,21 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		
 		Gtk.Widget ClockControls ()
 		{
-			var vbox = new Gtk.VBox {
-				Spacing = 6
-			};
+
+#if GTK2
+			var vbox = new Gtk.VBox ();
+			var spinners = new Gtk.HBox ();
+#else
+			var vbox = new Gtk.HBox ();
+			var spinners = new Gtk.VBox ();
+#endif
+			vbox.Spacing = 6;
+			spinners.Spacing = 6;
 
 			this.clock = new AnalogClock ();
 			this.clock.SetSizeRequest (130, 130);
 			vbox.PackStart (this.clock, true, true, 0);
 
-			var spinners = new Gtk.HBox {
-				Spacing = 6
-			};
 
 			spinners.PackStart (new Gtk.Label ("Hour"), false, false, 0);
 			
@@ -212,7 +226,11 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			WindowPosition = Gtk.WindowPosition.CenterOnParent;
 			BorderWidth = 1;
 			Resizable = false;
+#if GTK2
 			AllowGrow = false;
+#else
+			Resizable = false;
+#endif
 			Decorated = false;
 			DestroyWithParent = true;
 			SkipPagerHint = true;
@@ -224,10 +242,10 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			};
 			
 			if (HasDate)
-				hbox.PackStart (CalendarControls ());
+				hbox.PackStart (CalendarControls (), true, true, 0);
 			
 			if (HasTime)
-				hbox.PackStart (ClockControls ());
+				hbox.PackStart (ClockControls (), true, true, 0);
 
 			this.Add (hbox);
 		}

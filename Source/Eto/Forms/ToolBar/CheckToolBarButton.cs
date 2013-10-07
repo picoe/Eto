@@ -10,20 +10,19 @@ namespace Eto.Forms
 	
 	public class CheckToolBarButton : ToolBarActionItem
 	{
-		ICheckToolBarButton inner;
+		new ICheckToolBarButton Handler { get { return (ICheckToolBarButton)base.Handler; } }
 		
 		public event EventHandler<EventArgs> Click;
 		public event EventHandler<EventArgs> CheckedChanged;
 		
 		public CheckToolBarButton(Generator g) : base(g, typeof(ICheckToolBarButton))
 		{
-			inner = (ICheckToolBarButton)Handler;
 		}
 		
 		public bool Checked
 		{
-			get { return inner.Checked; }
-			set { inner.Checked = value; }
+			get { return Handler.Checked; }
+			set { Handler.Checked = value; }
 		}
 		
 		public void OnClick(EventArgs e)

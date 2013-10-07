@@ -17,7 +17,7 @@ namespace Eto.Platform.GtkSharp
 
 		Gtk.Widget ContainerControl { get; }
 
-		Color SelectedBackgroundColor { get; }
+		Color? SelectedBackgroundColor { get; }
 
 		void SetBackgroundColor();
 	}
@@ -182,13 +182,13 @@ namespace Eto.Platform.GtkSharp
 			get { return ContainerContentControl.Style.Background(Gtk.StateType.Normal).ToEto(); }
 		}
 
-		public virtual Color SelectedBackgroundColor
+		public virtual Color? SelectedBackgroundColor
 		{
 			get
 			{
+				Color? col = null;
 				if (cachedBackgroundColor != null)
 					return cachedBackgroundColor.Value;
-				Color col;
 				if (IsTransparentControl)
 				{
 					var parent = Widget.Parent.GetGtkControlHandler();
@@ -201,7 +201,10 @@ namespace Eto.Platform.GtkSharp
 					col = DefaultBackgroundColor;
 				if (backgroundColor != null)
 				{
-					col = Color.Blend(col, backgroundColor.Value);
+					if (col != null)
+						col = Color.Blend(col.Value, backgroundColor.Value);
+					else
+						col = backgroundColor;
 				}
 				cachedBackgroundColor = col;
 				return col;
@@ -214,9 +217,12 @@ namespace Eto.Platform.GtkSharp
 			SetBackgroundColor(SelectedBackgroundColor);
 		}
 
-		protected virtual void SetBackgroundColor(Color color)
+		protected virtual void SetBackgroundColor(Color? color)
 		{
-			ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.ToGdk());
+			if (color != null)
+				ContainerContentControl.ModifyBg(Gtk.StateType.Normal, color.Value.ToGdk());
+			else
+				ContainerContentControl.ModifyBg(Gtk.StateType.Normal);
 		}
 
 
@@ -224,7 +230,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			get
 			{
-				return backgroundColor ?? SelectedBackgroundColor;
+				return backgroundColor ?? SelectedBackgroundColor ?? Colors.Transparent;
 			}
 			set
 			{

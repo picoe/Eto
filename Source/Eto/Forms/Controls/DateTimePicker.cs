@@ -23,7 +23,8 @@ namespace Eto.Forms
 	
 	public class DateTimePicker : CommonControl
 	{
-		IDateTimePicker inner;
+		new IDateTimePicker Handler { get { return (IDateTimePicker)base.Handler; } }
+
 		public static DateTimePickerMode DefaultMode = DateTimePickerMode.Date;
 		
 		public event EventHandler<EventArgs> ValueChanged;
@@ -47,27 +48,26 @@ namespace Eto.Forms
 		protected DateTimePicker (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			inner = (IDateTimePicker)Handler;
 		}
 		
 		public DateTime MinDate {
-			get { return inner.MinDate; }
-			set { inner.MinDate = value; }
+			get { return Handler.MinDate; }
+			set { Handler.MinDate = value; }
 		}
 
 		public DateTime MaxDate {
-			get { return inner.MaxDate; }
-			set { inner.MaxDate = value; }
+			get { return Handler.MaxDate; }
+			set { Handler.MaxDate = value; }
 		}
 		
 		public DateTime? Value {
-			get { return inner.Value; }
-			set { inner.Value = value; }
+			get { return Handler.Value; }
+			set { Handler.Value = value; }
 		}
 		
 		public DateTimePickerMode Mode {
-			get { return inner.Mode; }
-			set { inner.Mode = value; }
+			get { return Handler.Mode; }
+			set { Handler.Mode = value; }
 		}
 		
 		

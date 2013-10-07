@@ -24,14 +24,14 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
-    <DefineConstants>CAIRO;DEBUG;TRACE</DefineConstants>
-    <Optimize>False</Optimize>
+    <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
+    <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
-    <DefineConstants>CAIRO;TRACE</DefineConstants>
-    <Optimize>True</Optimize>
+    <DefineConstants>CAIRO;TRACE;GTK2</DefineConstants>
+    <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
@@ -48,7 +48,7 @@
     <Reference Include="System.Core" />
     <Reference Include="Mono.Cairo" />
     <Reference Include="System.Web" />
-    <Reference Include="webkit-sharp">
+    <Reference Include="webkit-sharp, Version=1.1.15.0, Culture=neutral, PublicKeyToken=eaa1d335d2e19745">
       <HintPath>..\..\Libraries\webkit-sharp\webkit-sharp.dll</HintPath>
       <Private>False</Private>
     </Reference>
@@ -246,11 +246,12 @@
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MouseHandler.cs" />
+    <Compile Include="Gtk3Compatibility.cs" />
     <Compile Include="Forms\GtkDockContainer.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
+    <Compile Include="Forms\MouseHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

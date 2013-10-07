@@ -17,6 +17,18 @@ namespace Eto.Platform.GtkSharp
 			return new Cairo.Color((double)color.R, (double)color.G, (double)color.B, (double)color.A);
 		}
 
+#if GTK3
+		public static Cairo.Color ToCairo(this Gdk.RGBA color)
+		{
+			return new Cairo.Color(color.Red, color.Green, color.Blue, color.Alpha);
+		}
+
+		public static Gdk.RGBA ToRGBA(this Color color)
+		{
+			return new Gdk.RGBA { Red = color.R, Green = color.G, Blue = color.B, Alpha = color.A };
+		}
+#endif
+
 		public static Color ToEto(this Cairo.Color color)
 		{
 			return new Color((float)color.R, (float)color.G, (float)color.B, (float)color.A);

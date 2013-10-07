@@ -12,7 +12,7 @@ namespace Eto.Forms
 	
 	public class Navigation : Container
 	{
-		INavigation inner;
+		new INavigation Handler { get { return (INavigation)base.Handler; } }
 
 		public override IEnumerable<Control> Controls
 		{
@@ -40,7 +40,6 @@ namespace Eto.Forms
 		public Navigation (Generator g)
 			: base(g, typeof(INavigation))
 		{
-			inner = (INavigation)Handler;
 		}
 		
 		public Navigation (Control content, string title = null)
@@ -69,14 +68,14 @@ namespace Eto.Forms
 				item.Content.OnLoad (EventArgs.Empty);
 			}
 
-			inner.Push (item);
+			Handler.Push (item);
 			if (!loaded)
 				item.Content.OnLoadComplete (EventArgs.Empty);
 		}
 		
 		public virtual void Pop ()
 		{
-			inner.Pop ();
+			Handler.Pop ();
 		}
 
 		public override void Remove(Control child)

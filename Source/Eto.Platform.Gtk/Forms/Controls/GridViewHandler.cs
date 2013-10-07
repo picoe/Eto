@@ -17,7 +17,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		{
 		}
 
-		protected override Gtk.TreeModelImplementor CreateModelImplementor ()
+		protected override ITreeModelImplementor CreateModelImplementor ()
 		{
 			model = new GtkListModel<object, IDataStore> { Handler = this };
 			return model;

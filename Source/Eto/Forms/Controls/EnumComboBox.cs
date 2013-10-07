@@ -119,7 +119,10 @@ namespace Eto.Forms
 					(c, v) => c.SelectedValue = v, 
 					(c, h) => c.SelectedValueChanged += h, 
 					(c, h) => c.SelectedValueChanged -= h
-				);
+				)
+				{
+					SettingNullValue = default(T)
+				};
 			}
 		}
 	}

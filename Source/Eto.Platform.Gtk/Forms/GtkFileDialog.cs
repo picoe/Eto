@@ -106,8 +106,8 @@ namespace Eto.Platform.GtkSharp
 			if (parent != null) Control.TransientFor = (Gtk.Window)parent.ControlObject;
 
 			int result = Control.Run();
-			
-			Control.HideAll();
+
+			Control.Hide ();
 
 			DialogResult response = ((Gtk.ResponseType)result).ToEto ();
 			if (response == DialogResult.Ok) System.IO.Directory.SetCurrentDirectory(Control.CurrentFolder);

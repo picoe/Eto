@@ -2,7 +2,6 @@ using Eto;
 using Eto.Drawing;
 using Eto.Forms;
 using System;
-using Eto.Misc;
 using System.Reflection;
 
 namespace Eto.Test.Dialogs

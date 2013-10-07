@@ -23,6 +23,7 @@ namespace Eto.Platform.GtkSharp.Forms
 
 		class CellRendererTextImage : Gtk.CellRendererText
 		{
+#if GTK2
 			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
 			{
 				base.Render(window, widget, background_area, cell_area, expose_area, flags);
@@ -33,6 +34,17 @@ namespace Eto.Platform.GtkSharp.Forms
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
 				width += 16;
 			}
+#else
+			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
+			{
+				base.OnRender (cr, widget, background_area, cell_area, flags);
+			}
+
+			protected override void OnGetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
+			{
+				base.OnGetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
+			}
+#endif
 		}
 
 		public class CollectionHandler : DataStoreChangedHandler<ITreeItem, ITreeStore>
