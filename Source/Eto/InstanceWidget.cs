@@ -1,5 +1,4 @@
 using System;
-using System.ComponentModel;
 
 #if XAML
 using System.Windows.Markup;
@@ -35,7 +34,7 @@ namespace Eto
 		/// when users of the control only override the event's On... method.
 		/// </remarks>
 		/// <param name="id">ID of the event to handle</param>
-		void HandleEvent (string id);
+		void HandleEvent(string id);
 	}
 
 	/// <summary>
@@ -75,12 +74,12 @@ namespace Eto
 		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
 
 		string style;
-		object dataContext;
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
-		public string ID {
+		public string ID
+		{
 			get { return Handler.ID; }
 			set { Handler.ID = value; }
 		}
@@ -107,53 +106,16 @@ namespace Eto
 		/// });
 		/// ]]></code>
 		/// </example>
-		public string Style {
-			get { return style; }
-			set {
-				if (style != value) {
-					style = value;
-					OnStyleChanged (EventArgs.Empty);
-				}
-			}
-		}
-
-		/// <summary>
-		/// Event to handle when the <see cref="DataContext"/> has changed
-		/// </summary>
-		/// <remarks>
-		/// This may be fired in the event of a parent in the hierarchy setting the data context.
-		/// For example, the <see cref="Forms.Container"/> widget fires this event when it's event is fired.
-		/// </remarks>
-		public event EventHandler<EventArgs> DataContextChanged;
-
-		/// <summary>
-		/// Called to fire the <see cref="DataContextChanged"/> event
-		/// </summary>
-		/// <remarks>
-		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
-		/// This allows a control to be bound to its own <see cref="DataContext"/>, which would be set
-		/// on one of the parent control(s).
-		/// </remarks>
-		/// <param name="e">Event arguments</param>
-		protected internal virtual void OnDataContextChanged (EventArgs e)
+		public string Style
 		{
-			if (DataContextChanged != null)
-				DataContextChanged (this, e);
-		}
-
-		/// <summary>
-		/// Gets or sets the data context for this widget for binding
-		/// </summary>
-		/// <remarks>
-		/// Subclasses may override the standard behaviour so that hierarchy of widgets can be taken into account.
-		/// 
-		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
-		/// </remarks>
-		public virtual object DataContext {
-			get { return dataContext; }
-			set {
-				dataContext = value;
-				OnDataContextChanged (EventArgs.Empty);
+			get { return style; }
+			set
+			{
+				if (style != value)
+				{
+					style = value;
+					OnStyleChanged(EventArgs.Empty);
+				}
 			}
 		}
 
@@ -167,11 +129,11 @@ namespace Eto
 		/// <summary>
 		/// Handles the <see cref="StyleChanged"/> event
 		/// </summary>
-		protected virtual void OnStyleChanged (EventArgs e)
+		protected virtual void OnStyleChanged(EventArgs e)
 		{
-			Eto.Style.OnStyleWidget (this);
+			Eto.Style.OnStyleWidget(this);
 			if (StyleChanged != null)
-				StyleChanged (this, e);
+				StyleChanged(this, e);
 		}
 
 		#endregion
@@ -182,11 +144,11 @@ namespace Eto
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		protected InstanceWidget (Generator generator, IWidget handler, bool initialize = true)
+		protected InstanceWidget(Generator generator, IWidget handler, bool initialize = true)
 			: base (generator, handler, false)
 		{
 			if (initialize)
-				Initialize ();
+				Initialize();
 		}
 
 		/// <summary>
@@ -195,11 +157,11 @@ namespace Eto
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handlerType">Type of the handler to create as the backend for this widget</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		protected InstanceWidget (Generator generator, Type handlerType, bool initialize = true)
+		protected InstanceWidget(Generator generator, Type handlerType, bool initialize = true)
 			: base (generator, handlerType, false)
 		{
 			if (initialize)
-				Initialize ();
+				Initialize();
 		}
 
 		/// <summary>
@@ -213,7 +175,8 @@ namespace Eto
 		/// For example, the <see cref="Forms.Application"/> object's handler for OS X has a AddFullScreenMenuItem
 		/// property to specify if you want full screen support in your app.
 		/// </remarks>
-		public object ControlObject {
+		public object ControlObject
+		{
 			get { return Handler.ControlObject; }
 		}
 
@@ -247,9 +210,9 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
-		public void HandleEvent (string id)
+		public void HandleEvent(string id)
 		{
-			Handler.HandleEvent (id);
+			Handler.HandleEvent(id);
 		}
 
 		/// <summary>
@@ -290,10 +253,11 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="ids">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
-		public void HandleEvent (params string[] ids)
+		public void HandleEvent(params string[] ids)
 		{
-			foreach (var id in ids) {
-				HandleEvent (id);
+			foreach (var id in ids)
+			{
+				HandleEvent(id);
 			}
 		}
 
@@ -307,10 +271,10 @@ namespace Eto
 		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
 		/// after all of its logic has finished.
 		/// </remarks>
-		protected new void Initialize ()
+		protected new void Initialize()
 		{
-			base.Initialize ();
-			Eto.Style.OnStyleWidgetDefaults (this);
+			base.Initialize();
+			Eto.Style.OnStyleWidgetDefaults(this);
 		}
 	}
 }
