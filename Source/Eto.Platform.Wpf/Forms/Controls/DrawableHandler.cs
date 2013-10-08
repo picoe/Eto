@@ -130,6 +130,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				FocusVisualStyle = null,
 				Background = swm.Brushes.Transparent
 			};
+			Control.Loaded += Control_Loaded;
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			UpdateTiles(true);
 		}
 
 		public virtual Graphics CreateGraphics()
@@ -146,7 +152,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void SetMaxTiles()
 		{
-			maxTiles = new Size((Size.Width + tileSize.Width - 1) / tileSize.Width, (Size.Height + tileSize.Height - 1) / tileSize.Height);
+			maxTiles = new Size(((int)Control.ActualWidth + tileSize.Width - 1) / tileSize.Width, ((int)Control.ActualHeight + tileSize.Height - 1) / tileSize.Height);
 		}
 
 		void RebuildKeys()
@@ -204,10 +210,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void UpdateTiles(bool rebuildKeys = false)
 		{
-			if (!tiled)
+			if (!tiled || !Control.IsLoaded)
 				return;
 
-			var controlSize = this.Size;
+			var controlSize = new Size((int)Control.ActualWidth, (int)Control.ActualHeight);
 			var rect = new Rectangle(controlSize);
 			var scroll = scrollable;
 			if (scroll != null)
@@ -259,6 +265,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					var ypos = y * tileSize.Height;
 					var xsize = Math.Min(tileSize.Width, controlSize.Width - xpos);
 					var ysize = Math.Min(tileSize.Height, controlSize.Height - ypos);
+					if (xsize < 0 || ysize < 0)
+						continue;
 
 					var bounds = new Rectangle(xpos, ypos, xsize, ysize);
 					EtoTile tile;

@@ -2,19 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class ProgressBarHandler : WpfControl<swc.ProgressBar, ProgressBar>, IProgressBar
 	{
+		protected override Size DefaultSize { get { return new Size(-1, 22); } }
+
 		public ProgressBarHandler()
 		{
 			Control = new swc.ProgressBar {
 				Minimum = 0,
 				Maximum = 100,
-				Height = 24
 			};
 		}
 

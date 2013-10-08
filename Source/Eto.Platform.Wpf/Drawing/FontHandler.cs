@@ -66,9 +66,9 @@ namespace Eto.Platform.Wpf.Drawing
 			return points * (72.0 / 96.0);
 		}
 
-		public static void Apply (swc.Control control, Font font)
+		public static Font Apply (swc.Control control, Font font)
 		{
-			if (control == null) return;
+			if (control == null) return font;
 			if (font != null) {
 				((FontHandler)font.Handler).Apply (control);
 			}
@@ -78,6 +78,7 @@ namespace Eto.Platform.Wpf.Drawing
 				control.SetValue (swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
 				control.SetValue (swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
 			}
+			return font;
 
 		}
 

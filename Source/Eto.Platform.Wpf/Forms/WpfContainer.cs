@@ -12,12 +12,17 @@ namespace Eto.Platform.Wpf.Forms
 	public interface IWpfContainer
 	{
 		void Remove(sw.FrameworkElement child);
+
+		void UpdatePreferredSize();
 	}
 
 	public abstract class WpfContainer<T, W> : WpfFrameworkElement<T, W>, IContainer, IWpfContainer
-		where T: sw.FrameworkElement
-		where W: Container
+		where T : sw.FrameworkElement
+		where W : Container
 	{
+		Size minimumSize;
+		protected override Size DefaultSize { get { return minimumSize; } }
+
 		public abstract void Remove(sw.FrameworkElement child);
 
 		public virtual Size ClientSize
@@ -28,30 +33,36 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual Size MinimumSize
 		{
-			get
-			{
-				return new Size((int)Control.MinWidth, (int)Control.MinHeight);
-			}
+			get { return minimumSize; }
 			set
 			{
-				Control.MinWidth = value.Width;
-				Control.MinHeight = value.Height;
+				minimumSize = value;
+				SetSize();
 			}
 		}
 
-		public override void Invalidate ()
+		public virtual void UpdatePreferredSize()
 		{
-			base.Invalidate ();
-			foreach (var control in Widget.Children) {
-				control.Invalidate ();
+			var parent = Widget.Parent.GetWpfContainer();
+			if (parent != null)
+				parent.UpdatePreferredSize();
+		}
+
+		public override void Invalidate()
+		{
+			base.Invalidate();
+			foreach (var control in Widget.Children)
+			{
+				control.Invalidate();
 			}
 		}
 
-		public override void Invalidate (Rectangle rect)
+		public override void Invalidate(Rectangle rect)
 		{
-			base.Invalidate (rect);
-			foreach (var control in Widget.Children) {
-				control.Invalidate (rect);
+			base.Invalidate(rect);
+			foreach (var control in Widget.Children)
+			{
+				control.Invalidate(rect);
 			}
 		}
 	}

@@ -14,10 +14,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class GroupBoxHandler : WpfDockContainer<swc.GroupBox, GroupBox>, IGroupBox
 	{
 		Font font;
+		swc.Label Header { get; set; }
+		swc.AccessText AccessText { get { return (swc.AccessText)Header.Content; } }
 
 		public GroupBoxHandler()
 		{
 			Control = new swc.GroupBox();
+			Header = new swc.Label { Content = new swc.AccessText() };
 		}
 
 		public override void SetContainerContent(sw.FrameworkElement content)
@@ -34,17 +37,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public Font Font
 		{
 			get { return font; }
-			set
-			{
-				font = value;
-				FontHandler.Apply(Control, font);
-			}
+			set { font = FontHandler.Apply(Header, value); }
 		}
 
 		public string Text
 		{
-			get { return Control.Header as string; }
-			set { Control.Header = value; }
+			get { return AccessText.Text.ToEtoMneumonic(); }
+			set
+			{
+				AccessText.Text = value.ToWpfMneumonic();
+				Control.Header = string.IsNullOrEmpty(value) ? null : Header;
+			}
 		}
 	}
 }

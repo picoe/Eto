@@ -68,5 +68,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			// no need
 		}
+
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			foreach (var tab in Widget.TabPages)
+			{
+				var handler = tab.GetWpfFrameworkElement();
+				if (handler != null)
+					handler.SetScale(xscale, yscale);
+			}
+		}
 	}
 }

@@ -11,7 +11,7 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class PixelLayoutHandler : WpfLayout<swc.Canvas, PixelLayout>, IPixelLayout
 	{
-		public override sw.Size GetPreferredSize(sw.Size? constraint)
+		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			var size = new sw.Size();
 			foreach (var control in Widget.Controls)
@@ -46,6 +46,7 @@ namespace Eto.Platform.Wpf.Forms
 			swc.Canvas.SetLeft(element, x);
 			swc.Canvas.SetTop(element, y);
 			Control.Children.Add(element);
+			UpdatePreferredSize();
 		}
 
 		public void Move(Control child, int x, int y)
@@ -53,17 +54,20 @@ namespace Eto.Platform.Wpf.Forms
 			var element = child.GetContainerControl();
 			swc.Canvas.SetLeft(element, x);
 			swc.Canvas.SetTop(element, y);
+			UpdatePreferredSize();
 		}
 
 		public void Remove(Control child)
 		{
 			var element = child.GetContainerControl();
 			Control.Children.Remove(element);
+			UpdatePreferredSize();
 		}
 
 		public override void Remove(sw.FrameworkElement child)
 		{
 			Control.Children.Remove(child);
+			UpdatePreferredSize();
 		}
 	}
 }

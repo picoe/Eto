@@ -117,6 +117,15 @@ namespace Eto.Platform.Wpf.Forms
 			Control.SizeToContent = sw.SizeToContent.Manual;
 		}
 
+		protected override void SetSize()
+		{
+			// don't set the minimum size of a window, just the preferred size
+			ContainerControl.Width = PreferredSize.Width;
+			ContainerControl.Height = PreferredSize.Height;
+			ContainerControl.MinWidth = MinimumSize.Width;
+			ContainerControl.MinHeight = MinimumSize.Height;
+		}
+
 		public ToolBar ToolBar
 		{
 			get { return toolBar; }
