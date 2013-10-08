@@ -9,7 +9,6 @@ namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsDockContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
-		swf.TableLayoutPanel table;
 		swf.Panel content;
 		bool expandWidth = true;
 		bool expandHeight = true;
@@ -52,7 +51,7 @@ namespace Eto.Platform.Windows
 
 		public override swf.Control ContainerContentControl
 		{
-			get { return table; }
+			get { return content; }
 		}
 
 		public override void SetScale(bool xscale, bool yscale)
@@ -134,25 +133,12 @@ namespace Eto.Platform.Windows
 			Control.HorizontalScroll.SmallChange = 5;
 			Control.HorizontalScroll.LargeChange = 10;
 
-			table = new swf.TableLayoutPanel
-			{
-				Dock = swf.DockStyle.Fill,
-				RowCount = 1,
-				ColumnCount = 1,
-				Size = sd.Size.Empty,
-				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
-				AutoSize = true
-			};
-			table.ColumnStyles.Add(new swf.ColumnStyle(swf.SizeType.Percent, 1));
-			table.RowStyles.Add(new swf.RowStyle(swf.SizeType.Percent, 1));
-
 			content = new swf.Panel
 			{
 				Size = sd.Size.Empty,
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
-			content.Controls.Add(table);
 			Control.Controls.Add(content);
 		}
 
@@ -180,7 +166,8 @@ namespace Eto.Platform.Windows
 
 		protected override void SetContent(swf.Control contentControl)
 		{
-			table.Controls.Add(contentControl, 0, 0);
+			content.Controls.Clear();
+			content.Controls.Add(contentControl);
 		}
 
 		public override void AttachEvent(string handler)
