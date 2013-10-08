@@ -163,7 +163,11 @@ namespace Eto.Platform.Windows
 
 		protected virtual void SetMinimumSize(Size size)
 		{
-			Control.MinimumSize = size.ToSD();
+			var sdsize = size.ToSD();
+			if (Control.MinimumSize != sdsize)
+			{
+				Control.MinimumSize = sdsize;
+			}
 		}
 
 		public virtual void SetScale(bool xscale, bool yscale)
@@ -398,9 +402,6 @@ namespace Eto.Platform.Windows
 
 		public virtual void SetParent(Eto.Forms.Container parent)
 		{
-			// This is needed to detach docking windows.
-			if (parent == null)
-				ContainerControl.Parent = null;
 		}
 
 		void Control_SizeChanged(object sender, EventArgs e)
@@ -414,12 +415,12 @@ namespace Eto.Platform.Windows
 
 		public virtual void OnLoad(EventArgs e)
 		{
+			SetMinimumSize();
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			SetToolTip();
-			SetMinimumSize();
 		}
 
 		public virtual void OnUnLoad(EventArgs e)

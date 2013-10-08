@@ -154,13 +154,10 @@ namespace Eto.Platform.Windows
 				if (!ExpandContentHeight) minSize.Height = 0;
 				else minSize.Height = Math.Max(0, minSize.Height);
 
-				Control.SuspendLayout();
 				// set the scale of the content based on whether we want it to or not
 				contentControl.SetScale(!ExpandContentWidth, !ExpandContentHeight);
 				// set minimum size for the content if we want to extend to the size of the scrollable width/height
 				contentControl.ParentMinimumSize = minSize.ToEto();
-				UpdateScrollSizes();
-				Control.ResumeLayout();
 			}
 		}
 

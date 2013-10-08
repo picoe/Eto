@@ -56,6 +56,24 @@ namespace Eto.Platform.Windows
 			};
 			this.Spacing = TableLayout.DefaultSpacing;
 			this.Padding = TableLayout.DefaultPadding;
+			Control.SuspendLayout();
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			Control.ResumeLayout();
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Control.SuspendLayout();
 		}
 
 		public void Update()
@@ -120,40 +138,52 @@ namespace Eto.Platform.Windows
 
 		public void Add(Control child, int x, int y)
 		{
-			Control.SuspendLayout();
+			if (Widget.Loaded)
+				SuspendLayout();
+			
 			var old = views[x, y];
 			if (old != null)
-				Control.Controls.Remove(old.GetContainerControl());
+			{
+				old.GetContainerControl().Parent = null;
+			}
 			views[x, y] = child;
 			if (child != null)
 			{
 				var childControl = child.GetContainerControl();
-				if (childControl.Parent != null) childControl.Parent.Controls.Remove(childControl);
+				childControl.Parent = null;
 				childControl.Dock = child.GetWindowsHandler().DockStyle;
 				childControl.Margin = GetPadding(x, y);
 				SetScale(child, x, y);
 
 				Control.Controls.Add(childControl, x, y);
 			}
-			Control.ResumeLayout();
+			if (Widget.Loaded)
+				ResumeLayout();
 		}
 
 		public void Move(Control child, int x, int y)
 		{
+			if (Widget.Loaded)
+				SuspendLayout();
 			swf.Control childControl = child.GetContainerControl();
 			Control.SetCellPosition(childControl, new swf.TableLayoutPanelCellPosition(x, y));
 			SetScale(child, x, y);
+			if (Widget.Loaded)
+				ResumeLayout();
 		}
 
 		public void Remove(Control child)
 		{
 			swf.Control childControl = child.GetContainerControl();
-			if (childControl.Parent != null) childControl.Parent.Controls.Remove(childControl);
-			for (int y = 0; y < views.GetLength(0); y++)
-				for (int x = 0; x < views.GetLength(1); x++)
-				{
-					if (object.ReferenceEquals(views[y, x], child)) views[y, x] = null;
-				}
+			if (childControl.Parent == Control)
+			{
+				childControl.Parent = null;
+				for (int y = 0; y < views.GetLength(0); y++)
+					for (int x = 0; x < views.GetLength(1); x++)
+					{
+						if (object.ReferenceEquals(views[y, x], child)) views[y, x] = null;
+					}
+			}
 		}
 
 		public void CreateControl(int cols, int rows)
