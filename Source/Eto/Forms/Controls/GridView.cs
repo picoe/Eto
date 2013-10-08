@@ -156,7 +156,7 @@ namespace Eto.Forms
 				base.OnSelectionChanged(e);
 		}
 
-		private Comparison<object> sortComparer;
+		Comparison<object> sortComparer;
 		public Comparison<object> SortComparer
 		{
 			get { return sortComparer; }
@@ -253,14 +253,13 @@ namespace Eto.Forms
 			SelectNextViewRow(next: false);
 		}
 
-		private void SelectNextViewRow(bool next)
+		void SelectNextViewRow(bool next)
 		{
 			var increment = next ? 1 : -1;
 			int? modelRowToSelect = null; // If there are no selected rows, this is the default
 
 			var r = SelectedRows;
-			if (this.DataStoreView != null &&
-				r.Any())
+			if (this.DataStoreView != null && r.Any())
 			{
 				// Get the last (or first, if moving back) selected view row.
 				// This handles multiselection.

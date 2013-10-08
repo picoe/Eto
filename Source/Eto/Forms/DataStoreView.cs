@@ -111,10 +111,10 @@ namespace Eto.Forms
 		{
 			var result = index;
 
-			if (HasSortOrFilter &&
-				viewToModel != null &&
-				index >= 0 &&
-				viewToModel.Count > index)
+			if (HasSortOrFilter
+				&& viewToModel != null
+				&& index >= 0
+				&& viewToModel.Count > index)
 				result = viewToModel[index];
 
 			return result;
@@ -126,8 +126,7 @@ namespace Eto.Forms
 				return index;
 
 			var temp = 0;
-			if (modelToView != null &&
-				modelToView.TryGetValue(index, out temp))
+			if (modelToView != null && modelToView.TryGetValue(index, out temp))
 				return temp;
 
 			return null;
@@ -152,13 +151,14 @@ namespace Eto.Forms
 			}
 		}
 
+		Func<object, bool> filter;
+		
 		/// <summary>
 		/// Used to filter the displayed items.
 		/// If SortComparer or Filter is specified, the model items
 		/// should implement Equals so that model-to-view
 		/// mapping can be done.
 		/// </summary>
-		private Func<object, bool> filter;
 		public Func<object, bool> Filter
 		{
 			get { return filter; }
@@ -189,7 +189,7 @@ namespace Eto.Forms
 		/// 
 		/// BUGBUG: what happens if there was a sort or filter, but they are being removed?
 		/// </summary>
-		private void UpdateView()
+		void UpdateView()
 		{
 			if (view != null &&
 				model != null)
@@ -244,7 +244,7 @@ namespace Eto.Forms
 			}
 		}
 
-		private bool HasSortOrFilter
+		bool HasSortOrFilter
 		{
 			get { return SortComparer != null || Filter != null; }
 		}
@@ -255,8 +255,6 @@ namespace Eto.Forms
 		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public DataStoreView Handler { get; set; }
-
-			
 
 			public override void AddRange(IEnumerable<object> items)
 			{

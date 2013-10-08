@@ -10,7 +10,7 @@ namespace Eto.Test.Sections.Controls
 		public int Row { get; set; }
 
 		public LogGridItem(params object[] values)
-			: base (values)
+			: base(values)
 		{
 		}
 
@@ -30,7 +30,7 @@ namespace Eto.Test.Sections.Controls
 		public GridViewSection()
 		{
 			var layout = new DynamicLayout();
-			
+
 			layout.AddRow(new Label { Text = "Default" }, Default());
 			layout.AddRow(new Label { Text = "No Header,\nNon-Editable" }, NoHeader());
 #if DESKTOP
@@ -44,13 +44,11 @@ namespace Eto.Test.Sections.Controls
 			layout.EndHorizontal();
 
 			var selectionGridView = Default(addItems: false);
-			layout.BeginHorizontal();
-			layout.Add(new Label { Text = "Selected Items" });
-			layout.Add(selectionGridView);
-			layout.EndHorizontal();
+			layout.AddRow(new Label { Text = "Selected Items" }, selectionGridView);
 
 			// hook up selection of main grid to the selection grid
-			withContextMenuAndFilter.SelectionChanged += (s, e) => {
+			withContextMenuAndFilter.SelectionChanged += (s, e) =>
+			{
 				var items = new GridItemCollection();
 				items.AddRange(withContextMenuAndFilter.SelectedItems);
 				selectionGridView.DataStore = items;
@@ -148,14 +146,14 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new GridView
 			{
-				Size = new Size (300, 100)
+				Size = new Size(300, 100)
 			};
 			LogEvents(control);
-			
+
 			var dropDown = MyDropDown("DropDownKey");
-			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell ("Check"), Editable = true, AutoSize = true, Resizable = false });
-			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell ("Image") });
-			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell ("Text"), Editable = true, Sortable = true });
+			control.Columns.Add(new GridColumn { DataCell = new CheckBoxCell("Check"), Editable = true, AutoSize = true, Resizable = false });
+			control.Columns.Add(new GridColumn { HeaderText = "Image", DataCell = new ImageViewCell("Image") });
+			control.Columns.Add(new GridColumn { HeaderText = "Text", DataCell = new TextBoxCell("Text"), Editable = true, Sortable = true });
 			control.Columns.Add(new GridColumn { HeaderText = "Drop Down", DataCell = dropDown, Editable = true, Sortable = true });
 
 #if Windows // Drawable cells - need to implement on other platforms.
@@ -194,7 +192,7 @@ namespace Eto.Test.Sections.Controls
 			control.ShowHeader = false;
 			return control;
 		}
-		#if DESKTOP
+#if DESKTOP
 		GridView WithContextMenuAndFilter()
 		{
 			var control = Default();
@@ -202,14 +200,14 @@ namespace Eto.Test.Sections.Controls
 			var items = control.DataStore as GridItemCollection;
 
 			// Filter
-			filterText.TextChanged += (s, e) => {
+			filterText.TextChanged += (s, e) =>
+			{
 				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
-				
+
 				// Set the filter delegate on the GridView
-				control.Filter = (filterItems.Length == 0) 
-				? (Func<object, bool>)null
-				: o => {
-					var i = o as MyGridItem;					
+				control.Filter = (filterItems.Length == 0) ? (Func<object, bool>)null : o =>
+				{
+					var i = o as MyGridItem;
 					var matches = true;
 
 					// Every item in the split filter string should be within the Text property
@@ -223,7 +221,7 @@ namespace Eto.Test.Sections.Controls
 					return matches;
 				};
 			};
-			
+
 			// Context menu
 			var menu = new ContextMenu();
 			var item = new ImageMenuItem { Text = "Click Me!" };
@@ -248,23 +246,26 @@ namespace Eto.Test.Sections.Controls
 
 			// Insert item: inserts an item into the store, the UI updates via the binding.
 			var insertItem = new ImageMenuItem { Text = "Insert Item at the start of the list" };
-			insertItem.Click += (s, e) => {
+			insertItem.Click += (s, e) =>
+			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
 					items.Insert(0, new MyGridItem(new Random(), 0, null));
 			};
 			menu.MenuItems.Add(insertItem);
-			
+
 			control.ContextMenu = menu;
 			return control;
 		}
-		#endif
+#endif
 		protected virtual void LogEvents(GridView control)
 		{
-			control.BeginCellEdit += (sender, e) => {
+			control.BeginCellEdit += (sender, e) =>
+			{
 				Log.Write(control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
-			control.EndCellEdit += (sender, e) => {
+			control.EndCellEdit += (sender, e) =>
+			{
 				Log.Write(control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
 			control.SelectionChanged += delegate
