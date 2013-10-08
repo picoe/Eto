@@ -66,17 +66,12 @@ Namespaces
 Currently supported targets
 ---------------------------
 
-* OS X: MonoMac or Xamarin.Mac (Cocoa)
-* Linux: GTK#
-* Windows: Windows Forms or WPF
+* OS X: MonoMac and Xamarin.Mac
+* Linux: GTK# 2 and 3
+* Windows: Windows Forms and WPF
 	
 Under development
 -----------------
 
-* iOS using MonoTouch
-
-	
-Future plans
-------------
-
-* Android using Mono for Android (or equivalent)
+* iOS using Xamarin.iOS
+* Android using Xamarin.Android
