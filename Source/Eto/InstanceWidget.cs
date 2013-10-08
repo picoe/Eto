@@ -122,18 +122,11 @@ namespace Eto
 		#region Events
 
 		/// <summary>
-		/// Event to handle when the style of this widget is changed
-		/// </summary>
-		public event EventHandler<EventArgs> StyleChanged;
-
-		/// <summary>
-		/// Handles the <see cref="StyleChanged"/> event
+		/// Handles when the <see cref="Style"/> is changed.
 		/// </summary>
 		protected virtual void OnStyleChanged(EventArgs e)
 		{
 			Eto.Style.OnStyleWidget(this);
-			if (StyleChanged != null)
-				StyleChanged(this, e);
 		}
 
 		#endregion
