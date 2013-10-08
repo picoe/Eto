@@ -49,19 +49,18 @@ namespace Eto.Forms
 				if (old != value)
 				{
 					if (old != null)
-						old.SetParent(null);
+						RemoveParent(old, true);
 					if (value != null)
 					{
-						value.SetParent(null, false);
-						var load = Loaded && !value.Loaded;
-						if (load)
+						RemoveParent(value, false);
+						if (Loaded)
 						{
 							value.OnPreLoad(EventArgs.Empty);
 							value.OnLoad(EventArgs.Empty);
 						}
+						SetParent(value);
 						Handler.Content = value;
-						value.SetParent(this);
-						if (load)
+						if (Loaded)
 							value.OnLoadComplete(EventArgs.Empty);
 					}
 					else
@@ -94,7 +93,7 @@ namespace Eto.Forms
 			if (object.ReferenceEquals(Content, child))
 			{
 				Content = null;
-				child.SetParent(null);
+				RemoveParent(child, true);
 			}
 		}
 	}

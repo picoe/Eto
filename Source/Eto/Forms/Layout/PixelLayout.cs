@@ -72,7 +72,7 @@ namespace Eto.Forms
 
 		public void Add(Control control, int x, int y)
 		{
-			control.SetParent(null, false);
+			RemoveParent(control, false);
 			control.Properties[LocationProperty] = new Point(x, y);
 			controls.Add(control);
 			var load = Loaded && !control.Loaded;
@@ -81,8 +81,8 @@ namespace Eto.Forms
 				control.OnPreLoad(EventArgs.Empty);
 				control.OnLoad(EventArgs.Empty);
 			}
+			SetParent(control);
 			Handler.Add(control, x, y);
-			control.SetParent(this);
 			if (load)
 				control.OnLoadComplete(EventArgs.Empty);
 		}
@@ -108,7 +108,7 @@ namespace Eto.Forms
 			if (controls.Remove(child))
 			{
 				Handler.Remove(child);
-				child.SetParent(null);
+				RemoveParent(child, true);
 			}
 		}
 

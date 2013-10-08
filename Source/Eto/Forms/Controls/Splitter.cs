@@ -106,10 +106,10 @@ namespace Eto.Forms
 			set
 			{ 
 				if (Handler.Panel1 != null)
-					Handler.Panel1.SetParent(null);
+					RemoveParent(Handler.Panel1, true);
 				if (value != null)
 				{
-					value.SetParent(this);
+					SetParent(value);
 					if (Loaded && !value.Loaded)
 					{
 						value.OnPreLoad(EventArgs.Empty);
@@ -128,11 +128,11 @@ namespace Eto.Forms
 			set
 			{
 				if (Handler.Panel2 != null)
-					Handler.Panel2.SetParent(null);
+					RemoveParent(Handler.Panel2, true);
 				bool load = false;
 				if (value != null)
 				{
-					value.SetParent(this);
+					SetParent(value);
 					if (Loaded && !value.Loaded)
 					{
 						load = true;
@@ -151,12 +151,12 @@ namespace Eto.Forms
 			if (object.ReferenceEquals(Panel1, child))
 			{
 				Panel1 = null;
-				child.SetParent(null);
+				RemoveParent(Panel1, true);
 			}
 			else if (object.ReferenceEquals(Panel2, child))
 			{
 				Panel2 = null;
-				child.SetParent(null);
+				RemoveParent(Panel2, true);
 			}
 		}
 	}

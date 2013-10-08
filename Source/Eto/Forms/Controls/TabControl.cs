@@ -84,14 +84,14 @@ namespace Eto.Forms
 				page.OnLoad(EventArgs.Empty);
 				page.OnLoadComplete(EventArgs.Empty);
 			}
-			page.SetParent(this);
+			SetParent(page);
 			Handler.InsertTab(index, page);
 		}
 
 		internal void RemoveTab(int index, TabPage page)
 		{
 			Handler.RemoveTab(index, page);
-			page.SetParent(null);
+			RemoveParent(page, true);
 		}
 		
 		internal void ClearTabs()
@@ -108,7 +108,7 @@ namespace Eto.Forms
 				if (index >= 0)
 				{
 					RemoveTab(index, childPage);
-					childPage.SetParent(null);
+					RemoveParent(childPage, true);
 				}
 			}
 		}
