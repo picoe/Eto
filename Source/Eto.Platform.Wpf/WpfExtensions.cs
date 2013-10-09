@@ -89,13 +89,13 @@ namespace Eto.Platform.Wpf
 
 		public static void EnsureLoaded (this sw.FrameworkElement control)
 		{
-			if (!control.IsLoaded)
+			ApplicationHandler.InvokeIfNecessary(() =>
 			{
-				ApplicationHandler.InvokeIfNecessary(() =>
+				if (!control.IsLoaded)
 				{
 					control.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ContextIdle, null);
-				});
-			}
+				}
+			});
 		}
 
 		public static double Horizontal (this sw.Thickness thickness)
