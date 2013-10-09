@@ -17,8 +17,6 @@ namespace Eto.Platform.Windows
 		Image image;
 		Size defaultSize;
 
-		public override swf.DockStyle DockStyle { get { return swf.DockStyle.None; } }
-
 		public class EtoButton : swf.Button
 		{
 			public override sd.Size GetPreferredSize (sd.Size proposedSize)
@@ -39,10 +37,12 @@ namespace Eto.Platform.Windows
 
 		public ButtonHandler ()
 		{
-			Control = new EtoButton ();
-			Control.AutoSizeMode = swf.AutoSizeMode.GrowAndShrink;
-			Control.TextImageRelation = swf.TextImageRelation.ImageBeforeText;
-			Control.AutoSize = true;
+			Control = new EtoButton
+			{
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink,
+				TextImageRelation = swf.TextImageRelation.ImageBeforeText,
+				AutoSize = true
+			};
 			Control.Click += delegate {
 				Widget.OnClick (EventArgs.Empty);
 			};

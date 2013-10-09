@@ -13,19 +13,31 @@ using Eto.Platform.GtkSharp.IO;
 
 namespace Eto.Platform.GtkSharp
 {
+	static class Helper
+	{
+		public static void Init ()
+		{
+			Gtk.Application.Init();
+			
+			Gdk.Threads.Enter ();
+		}
+	}
+
 	public class Generator : Eto.Generator
 	{ 	
-		public override string ID {
-			get { return Generators.Gtk; }
-		}
+#if GTK2
+		public override string ID { get { return Generators.Gtk; } }
+#else
+		public override string ID { get { return Generators.Gtk3; } }
+
+		static EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register ("Eto.Platform.GtkSharp.CustomControls.Assemblies");
+#endif
 		
 		public Generator ()
 		{
 			if (EtoEnvironment.Platform.IsWindows && Environment.Is64BitProcess)
 				throw new NotSupportedException("Please compile/run GTK in x86 mode (32-bit) on windows");
-			Gtk.Application.Init();
-			
-			Gdk.Threads.Enter ();
+			Helper.Init ();
 
 			AddTo (this);
 		}
@@ -72,6 +84,7 @@ namespace Eto.Platform.GtkSharp
 			g.Add <IProgressBar> (() => new ProgressBarHandler ());
 			g.Add <IRadioButton> (() => new RadioButtonHandler ());
 			g.Add <IScrollable> (() => new ScrollableHandler ());
+			g.Add <ISearchBox> (() => new SearchBoxHandler ());
 			g.Add <ISlider> (() => new SliderHandler ());
 			g.Add <ISplitter> (() => new SplitterHandler ());
 			g.Add <ITabControl> (() => new TabControlHandler ());
@@ -108,7 +121,6 @@ namespace Eto.Platform.GtkSharp
 			g.Add <IColorDialog> (() => new ColorDialogHandler ());
 			g.Add <ICursor> (() => new CursorHandler ());
 			g.Add <IDialog> (() => new DialogHandler ());
-			g.Add <IDockLayout> (() => new DockLayoutHandler ());
 			g.Add <IFontDialog> (() => new FontDialogHandler ());
 			g.Add <IForm> (() => new FormHandler ());
 			g.Add <IMessageBox> (() => new MessageBoxHandler ());

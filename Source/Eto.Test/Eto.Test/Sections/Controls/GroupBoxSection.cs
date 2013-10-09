@@ -5,32 +5,34 @@ namespace Eto.Test.Sections.Controls
 {
 	public class GroupBoxSection : Panel
 	{
-		public GroupBoxSection ()
+		public GroupBoxSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 			
 			
-			layout.AddRow (new Label{ Text = "Default"}, Default ());
+			layout.AddRow(new Label { Text = "Default" }, Default());
 			
-			layout.AddRow (new Label { Text = "With Header" }, Header ());
+			layout.AddRow(new Label { Text = "With Header" }, Header());
 			
-			layout.Add (null, null, true);
-		}
-		
-		Control Default ()
-		{
-			var control = new GroupBox ();
+			layout.Add(null, null, true);
 
-			control.AddDockedControl (new CheckBoxSection { Border = BorderType.None });
+			Content = layout;
+		}
+
+		Control Default()
+		{
+			var control = new GroupBox();
+
+			control.Content = new CheckBoxSection { Border = BorderType.None };
 			return control;
 			
 		}
-		
-		Control Header ()
+
+		Control Header()
 		{
-			var control = new GroupBox{ Text = "Some Header" };
+			var control = new GroupBox { Text = "Some Header" };
 			
-			control.AddDockedControl (new LabelSection ());
+			control.Content = new LabelSection();
 			return control;
 		}
 	}

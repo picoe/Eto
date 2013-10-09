@@ -15,8 +15,8 @@ namespace Eto.Forms
 	
 	public class ProgressBar : Control
 	{
-		IProgressBar handler;
-		
+		new IProgressBar Handler { get { return (IProgressBar)base.Handler; } }
+
 		public ProgressBar ()
 			: this (Generator.Current)
 		{
@@ -30,27 +30,26 @@ namespace Eto.Forms
 		protected ProgressBar (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IProgressBar)Handler;
 		}
 
 		public int MaxValue {
-			get { return handler.MaxValue; }
-			set { handler.MaxValue = value; }
+			get { return Handler.MaxValue; }
+			set { Handler.MaxValue = value; }
 		}
 
 		public int MinValue {
-			get { return handler.MinValue; }
-			set { handler.MinValue = value; }
+			get { return Handler.MinValue; }
+			set { Handler.MinValue = value; }
 		}
 
 		public int Value {
-			get { return handler.Value; }
-			set { handler.Value = value; }
+			get { return Handler.Value; }
+			set { Handler.Value = value; }
 		}
 
 		public bool Indeterminate {
-			get { return handler.Indeterminate; }
-			set { handler.Indeterminate = value; }
+			get { return Handler.Indeterminate; }
+			set { Handler.Indeterminate = value; }
 		}
 	}
 }

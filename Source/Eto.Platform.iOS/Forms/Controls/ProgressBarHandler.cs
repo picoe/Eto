@@ -6,6 +6,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class ProgressBarHandler : iosView<UIProgressView, ProgressBar>, IProgressBar
 	{
+		public override UIView ContainerControl { get { return Control; } }
+
 		int minValue;
 		int maxValue = 100;
 

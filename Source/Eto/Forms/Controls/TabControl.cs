@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Linq;
+using System.Collections.Generic;
 
 #if XAML
 using System.Windows.Markup;
@@ -8,7 +9,7 @@ using System.Windows.Markup;
 
 namespace Eto.Forms
 {
-	public interface ITabControl : IControl
+	public interface ITabControl : IContainer
 	{
 		int SelectedIndex { get; set; }
 
@@ -20,10 +21,15 @@ namespace Eto.Forms
 	}
 	
 	[ContentProperty("TabPages")]
-	public class TabControl : Control
+	public class TabControl : Container
 	{
 		TabPageCollection pages;
-		ITabControl handler;
+		new ITabControl Handler { get { return (ITabControl)base.Handler; } }
+
+		public override IEnumerable<Control> Controls
+		{
+			get { return pages; }
+		}
 		
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
@@ -45,13 +51,18 @@ namespace Eto.Forms
 			: base (generator, type, initialize)
 		{
 			pages = new TabPageCollection(this);
-			handler = (ITabControl)base.Handler;
+		}
+
+		protected TabControl(Generator generator, ITabControl handler, bool initialize = true)
+			: base(generator, handler, initialize)
+		{
+			pages = new TabPageCollection(this);
 		}
 
 		public int SelectedIndex
 		{
-			get { return handler.SelectedIndex; }
-			set { handler.SelectedIndex = value; }
+			get { return Handler.SelectedIndex; }
+			set { Handler.SelectedIndex = value; }
 		}
 		
 		public TabPage SelectedPage
@@ -73,72 +84,32 @@ namespace Eto.Forms
 				page.OnLoad(EventArgs.Empty);
 				page.OnLoadComplete(EventArgs.Empty);
 			}
-			page.SetParent(this);
-			handler.InsertTab(index, page);
+			SetParent(page);
+			Handler.InsertTab(index, page);
 		}
 
 		internal void RemoveTab(int index, TabPage page)
 		{
-			handler.RemoveTab(index, page);
-			page.SetParent(null);
+			Handler.RemoveTab(index, page);
+			RemoveParent(page, true);
 		}
 		
 		internal void ClearTabs()
 		{
-			handler.ClearTabs();
+			Handler.ClearTabs();
 		}
 
-		public override void OnPreLoad(EventArgs e)
+		public override void Remove(Control child)
 		{
-			base.OnPreLoad(e);
-			foreach (var page in pages)
+			var childPage = child as TabPage;
+			if (childPage != null)
 			{
-				page.OnPreLoad(e);
-			}
-		}
-		
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
-			foreach (var page in pages)
-			{
-				page.OnLoad(e);
-			}
-		}
-		
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-			foreach (var page in pages)
-			{
-				page.OnLoadComplete(e);
-			}
-		}
-
-		public override void OnUnLoad(EventArgs e)
-		{
-			base.OnUnLoad(e);
-			foreach (var page in pages)
-			{
-				page.OnUnLoad(e);
-			}
-		}
-		
-		internal protected override void OnDataContextChanged(EventArgs e)
-		{
-			base.OnDataContextChanged(e);
-			foreach (var tab in TabPages)
-			{
-				tab.OnDataContextChanged(e);
-			}
-		}
-
-		public override void UpdateBindings()
-		{
-			base.UpdateBindings();
-			foreach (var tab in TabPages)
-			{
-				tab.UpdateBindings();
+				var index = pages.IndexOf(childPage);
+				if (index >= 0)
+				{
+					RemoveTab(index, childPage);
+					RemoveParent(childPage, true);
+				}
 			}
 		}
 

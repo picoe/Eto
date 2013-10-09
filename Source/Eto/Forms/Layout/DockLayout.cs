@@ -12,22 +12,6 @@ using System.Windows.Markup;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Platform handler for the <see cref="DockLayout"/> class
-	/// </summary>
-	public interface IDockLayout : ILayout
-	{
-		/// <summary>
-		/// Gets or sets the padding around the content
-		/// </summary>
-		Padding Padding { get; set; }
-
-		/// <summary>
-		/// Gets or sets the content of the container
-		/// </summary>
-		Control Content { get; set; }
-	}
-	
-	/// <summary>
 	/// Extensions related to the <see cref="DockLayout"/> class
 	/// </summary>
 	public static class DockLayoutExtensions
@@ -47,14 +31,12 @@ namespace Eto.Forms
 		/// <param name="control">Control to add to the container</param>
 		/// <param name="padding">Amount of padding around the control, inside the container</param>
 		/// <returns></returns>
-		public static Container AddDockedControl (this Container container, Control control, Padding? padding = null)
+		[Obsolete("use the DockContainer.Content property instead")]
+		public static Container AddDockedControl (this DockContainer container, Control control, Padding? padding = null)
 		{
-			var layout = container.Layout as DockLayout;
-			if (layout == null)
-				layout = new DockLayout (container);
+			container.Content = control;
 			if (padding != null)
-				layout.Padding = padding.Value;
-			layout.Content = control;
+				container.Padding = padding.Value;
 			return container;
 		}
 	}
@@ -66,28 +48,22 @@ namespace Eto.Forms
 	/// This layout is used to fill an entire container with a single content control.
 	/// </remarks>
 	[ContentProperty("Content")]
-	public class DockLayout : Layout
+	[Obsolete("Use the DockContainer.Content property instead, or use a Panel")]
+	public class DockLayout : Panel
 	{
-		new IDockLayout Handler { get { return (IDockLayout)base.Handler; } }
-		Control control;
-
 		/// <summary>
 		/// Gets or sets the default amount of padding for all new DockLayout objects
 		/// </summary>
-		public static Padding DefaultPadding = Padding.Empty;
-		
-		/// <summary>
-		/// Gets an enumeration of all controls in this layout
-		/// </summary>
-		public override IEnumerable<Control> Controls {
-			get {
-				if (control != null)
-					yield return control;
-				else
-					yield break;
-			}
+		[Obsolete("Use DockContainer.DefaultPadding instead")]
+		public new static Padding DefaultPadding
+		{
+			get { return DockContainer.DefaultPadding; }
+			set { DockContainer.DefaultPadding = value; }
 		}
-		
+
+		[Obsolete("Use Panel directly instead")]
+		public Container Container { get { return Parent; } }
+
 		/// <summary>
 		/// Creates a new <see cref="Panel"/> with a DockLayout and the specified content <paramref name="control"/>.
 		/// </summary>
@@ -114,7 +90,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the DockLayout with an unspecified container
 		/// </summary>
 		/// <remarks>
-		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(Container)"/> when
+		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(DockContainer)"/> when
 		/// calling through code.
 		/// </remarks>
 		public DockLayout ()
@@ -126,64 +102,20 @@ namespace Eto.Forms
 		/// Initializes a new instance of the DockLayout for the specified container
 		/// </summary>
 		/// <param name="container">Container for the dock layout to manage</param>
-		public DockLayout (Container container)
-			: base (container != null ? container.Generator : Generator.Current, container, typeof (IDockLayout))
+		public DockLayout (DockContainer container)
+			: base ()
 		{
+			if (container != null)
+				container.Content = this;
 		}
-		
+
 		/// <summary>
-		/// Obsolete. Use <see cref="Content"/> instead
+		/// Obsolete. Use <see cref="DockContainer.Content"/> instead
 		/// </summary>
 		[Obsolete ("Use Content property instead")]
 		public void Add (Control control)
 		{
 			Content = control;
-		}
-
-		/// <summary>
-		/// Obsolete. Use <see cref="Content"/> instead
-		/// </summary>
-		[Obsolete ("Use Content property instead")]
-		public void Remove (Control control)
-		{
-			Content = null;
-		}
-		
-		/// <summary>
-		/// Gets or sets the control to fill the content of the container
-		/// </summary>
-		public Control Content {
-			get { return Handler.Content; }
-			set {
-				if (control != value) {
-					var old = control;
-					control = value;
-					if (control != null) {
-						control.SetParentLayout (this);
-						var load = Loaded && !control.Loaded;
-						if (load) {
-							control.OnPreLoad (EventArgs.Empty);
-							control.OnLoad (EventArgs.Empty);
-						}
-						Handler.Content = control;
-						if (load)
-							control.OnLoadComplete (EventArgs.Empty);
-					}
-					else
-						Handler.Content = control;
-					if (old != null) {
-						old.SetParentLayout(null);
-					}
-				}
-			}
-		}
-		
-		/// <summary>
-		/// Gets or sets the amount of padding around the child control
-		/// </summary>
-		public Padding Padding {
-			get { return Handler.Padding; }
-			set { Handler.Padding = value; }
 		}
 	}
 }

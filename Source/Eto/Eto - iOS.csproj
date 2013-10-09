@@ -245,6 +245,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\Mouse.cs" />
     <Compile Include="Binding\DelegateBinding.cs" />
+    <Compile Include="Forms\Controls\TextInputEventArgs.cs" />
+    <Compile Include="Forms\Controls\GridViewSelection.cs" />
+    <Compile Include="Forms\DataStoreView.cs" />
+    <Compile Include="Forms\Controls\SearchBox.cs" />
+    <Compile Include="Forms\DockContainer.cs" />
+    <Compile Include="Forms\IKeyboardInputSource.cs" />
+    <Compile Include="Forms\IMouseInputSource.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />
@@ -254,4 +261,14 @@
   <ItemGroup>
     <None Include="Info.plist" />
   </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties>
+        <Policies>
+          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
+          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" WhileNewLinePlacement="DoNotCare" ArrayInitializerWrapping="DoNotChange" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
+        </Policies>
+      </Properties>
+    </MonoDevelop>
+  </ProjectExtensions>
 </Project>

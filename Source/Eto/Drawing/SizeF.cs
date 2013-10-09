@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -85,6 +86,20 @@ namespace Eto.Drawing
 		public SizeF (PointF point)
 			: this(point.X, point.Y)
 		{
+		}
+
+		/// <summary>
+		/// Fits this size to the specified <paramref name="constraint"/>, keeping the aspect
+		/// </summary>
+		/// <returns>The new size with the same aspect ratio with the width/height equal or within the constraint</returns>
+		/// <param name="constraint">Constraint to fit the new size into</param>
+		public SizeF FitTo (SizeF constraint)
+		{
+			float ratioX = constraint.Width / this.Width;
+			float ratioY = constraint.Height / this.Height;
+			// use whichever multiplier is smaller
+			float ratio = ratioX < ratioY ? ratioX : ratioY;
+			return new SizeF(Width * ratio, Height * ratio);
 		}
 
 		/// <summary>
@@ -302,7 +317,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this SizeF</returns>
 		public override string ToString ()
 		{
-			return String.Format ("Width={0} Height={1}", Width, Height);
+			return String.Format (CultureInfo.InvariantCulture, "Width={0} Height={1}", Width, Height);
 		}
 
 		/// <summary>

@@ -5,7 +5,6 @@ using System.Text;
 using Eto.Drawing;
 using System.ComponentModel;
 
-
 #if XAML
 using System.Windows.Markup;
 #endif
@@ -46,7 +45,7 @@ namespace Eto.Forms
 		{
 			if (controls == null)
 				return;
-			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = r != null ? null : (bool?)true });
+			var items = controls.Select (r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
 			Items.AddRange (items.OfType<DynamicItem>());
 		}
 	}
@@ -62,7 +61,7 @@ namespace Eto.Forms
 			get { return rows; }
 		}
 
-		public TableLayout Layout { get; private set; }
+		public TableLayout Table { get; private set; }
 
 		public DynamicTable Parent { get; set; }
 
@@ -72,18 +71,16 @@ namespace Eto.Forms
 
 		public bool Visible
 		{
-			get { return Container != null ? Container.Visible : visible; }
+			get { return Table != null ? Table.Visible : visible; }
 			set {
-				if (Container != null)
-					Container.Visible = value;
+				if (Table != null)
+					Table.Visible = value;
 				else
 					visible = value;
 			}
 		}
 
 		internal DynamicRow CurrentRow { get; set; }
-
-		public Container Container { get; internal set; }
 
 		public void Add (DynamicItem item)
 		{
@@ -113,15 +110,8 @@ namespace Eto.Forms
 				return null;
 			int cols = rows.Where (r => r != null).Max (r => r.Items.Count);
 
-			if (Container == null) {
-				Container = new Panel { Visible = visible };
-				this.Layout = new TableLayout (Container, cols, rows.Count);
-			}
-			else {
-				this.Layout = new TableLayout (null, cols, rows.Count);
-				layout.SetBaseInnerLayout();
-			}
-			var tableLayout = this.Layout;
+			this.Table = new TableLayout (cols, rows.Count);
+			var tableLayout = this.Table;
 			var padding = this.Padding ?? layout.DefaultPadding;
 			if (padding != null)
 				tableLayout.Padding = padding.Value;
@@ -141,7 +131,7 @@ namespace Eto.Forms
 					item.Generate (layout, tableLayout, cx, cy);
 				}
 			}
-			return Container;
+			return Table;
 		}
 
 		void ISupportInitialize.BeginInit ()

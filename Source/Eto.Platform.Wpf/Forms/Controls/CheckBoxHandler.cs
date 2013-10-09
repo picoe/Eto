@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
 
@@ -9,18 +10,32 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class CheckBoxHandler : WpfControl<swc.CheckBox, CheckBox>, ICheckBox
 	{
+		swc.Border border;
+
+		public override sw.FrameworkElement ContainerControl
+		{
+			get { return border; }
+		}
+
 		public CheckBoxHandler ()
 		{
 			Control = new swc.CheckBox {
-				IsThreeState = false
+				IsThreeState = false,
+				VerticalAlignment = sw.VerticalAlignment.Center
 			};
-
 			Control.Checked += delegate {
 				Widget.OnCheckedChanged (EventArgs.Empty);
 			};
 			Control.Unchecked += delegate {
 				Widget.OnCheckedChanged (EventArgs.Empty);
 			};
+			border = new swc.Border { Child = Control };
+		}
+
+		public override Eto.Drawing.Color BackgroundColor
+		{
+			get { return border.Background.ToEtoColor(); }
+			set { border.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		public override bool UseMousePreview { get { return true; } }
@@ -33,8 +48,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return Control.Content as string; }
-			set { Control.Content = value; }
+			get { return (Control.Content as string).ToEtoMneumonic(); }
+			set { Control.Content = value.ToWpfMneumonic(); }
 		}
 
 		public bool ThreeState

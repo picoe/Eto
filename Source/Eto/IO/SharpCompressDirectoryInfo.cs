@@ -1,3 +1,4 @@
+#if !IOS
 using System;
 using SharpCompress.Reader;
 using SharpCompress.Archive;
@@ -85,3 +86,4 @@ namespace Eto.IO
 		}
 	}
 }
+#endif

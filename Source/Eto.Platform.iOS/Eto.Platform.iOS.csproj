@@ -71,10 +71,8 @@
     <Compile Include="InvokeHelper.cs" />
     <Compile Include="Forms\iosView.cs" />
     <Compile Include="Forms\DialogHandler.cs" />
-    <Compile Include="Forms\DockLayoutHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
     <Compile Include="Forms\iosLayout.cs" />
-    <Compile Include="Forms\iosObject.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
@@ -84,7 +82,6 @@
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
     <Compile Include="Forms\Controls\NavigationHandler.cs" />
-    <Compile Include="Forms\iosContainer.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="..\Eto.Platform.Mac\Drawing\FontHandler.cs">
@@ -111,6 +108,7 @@
     <Compile Include="Forms\Cells\ImageTextCellHandler.cs" />
     <Compile Include="Forms\Controls\TextAreaHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
@@ -167,6 +165,19 @@
       <Link>Forms\MacBase.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Forms\MacDockContainer.cs">
+      <Link>Forms\MacDockContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Forms\MacContainer.cs">
+      <Link>Forms\MacContainer.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Forms\MacObject.cs">
+      <Link>Forms\MacObject.cs</Link>
+    </Compile>
+    <Compile Include="..\Eto.Platform.Mac\Forms\MacControlExtensions.cs">
+      <Link>Forms\Controls\MacControlExtensions.cs</Link>
+    </Compile>
+    <Compile Include="Forms\MacCompatibility.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - iOS.csproj">

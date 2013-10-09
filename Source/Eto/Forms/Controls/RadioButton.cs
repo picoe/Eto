@@ -15,7 +15,7 @@ namespace Eto.Forms
 		public event EventHandler<EventArgs> CheckedChanged;
 		public event EventHandler<EventArgs> Click;
 
-		private IRadioButton inner;
+		new IRadioButton Handler { get { return (IRadioButton)base.Handler; } }
 
 		public void OnClick (EventArgs e)
 		{
@@ -41,15 +41,14 @@ namespace Eto.Forms
 		protected RadioButton (Generator generator, Type type, RadioButton controller, bool initialize = true)
 			: base (generator, type, false)
 		{
-			inner = (IRadioButton)base.Handler;
-			inner.Create (controller);
+			Handler.Create (controller);
 			if (initialize)
 				Initialize ();
 		}
 
 		public virtual bool Checked {
-			get { return inner.Checked; }
-			set { inner.Checked = value; }
+			get { return Handler.Checked; }
+			set { Handler.Checked = value; }
 		}
 
 	}

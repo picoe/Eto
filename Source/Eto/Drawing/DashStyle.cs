@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -46,6 +47,14 @@ namespace Eto.Drawing
 			get { return Dashes == null || Dashes.Length == 0; }
 		}
 
+		/// <summary>
+		/// Attempts to parse the specified <paramref name="value"/> into a dash style.  This can be one of the
+		/// system styles (solid, dash, dot, dashdot, dashdotdot), or a series of numbers separated by commas 
+		/// specifying the solid and gap parts (see <see cref="Dashes"/>)
+		/// </summary>
+		/// <param name="value">String value to parse</param>
+		/// <param name="style">DashStyle representation of the specified value if successful</param>
+		/// <returns>True if successful, or false if the value could not be parsed</returns>
 		public static bool TryParse (string value, out DashStyle style)
 		{
 			if (string.IsNullOrEmpty (value)) {
@@ -94,7 +103,15 @@ namespace Eto.Drawing
 			return true;
 		}
 
-		public static DashStyle Parse (string value)
+		/// <summary>
+		/// Attempts to parse the specified <paramref name="value"/> into a dash style.  This can be one of the
+		/// system styles (solid, dash, dot, dashdot, dashdotdot), or a series of numbers separated by commas 
+		/// specifying the solid and gap parts (see <see cref="Dashes"/>). 
+		/// </summary>
+		/// <exception cref="ArgumentOutOfRangeException">Raised when the value could not be converted</exception>
+		/// <param name="value">String value to parse</param>
+		/// <returns>DashStyle representation of the specified value if successful</returns>
+		public static DashStyle Parse(string value)
 		{
 			DashStyle style;
 			if (TryParse (value, out style))
@@ -187,7 +204,7 @@ namespace Eto.Drawing
 			else if (object.ReferenceEquals(this, DashStyles.Solid))
 				return "solid";
 			else
-				return string.Format ("{0},{1}", Offset, string.Join (",", Dashes.Select (r => r.ToString ())));
+				return string.Format (CultureInfo.InvariantCulture, "{0},{1}", Offset, string.Join (",", Dashes.Select (r => r.ToString ())));
 		}
 
 		/// <summary>

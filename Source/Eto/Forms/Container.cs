@@ -13,103 +13,93 @@ namespace Eto.Forms
 	public partial interface IContainer : IControl
 	{
 		Size ClientSize { get; set; }
-
-		object ContainerObject { get; }
-
-		void SetLayout (Layout layout);
 	}
-	
-	[ContentProperty("Layout")]
+
 	public abstract partial class Container : Control
 	{
-		IContainer handler;
-		Layout layout;
-		
-		protected internal override void OnDataContextChanged (EventArgs e)
+		new IContainer Handler { get { return (IContainer)base.Handler; } }
+
+		public Size ClientSize
 		{
-			base.OnDataContextChanged (e);
-			
-			foreach (var control in Controls) {
-				control.OnDataContextChanged (e);
-			}
+			get { return Handler.ClientSize; }
+			set { Handler.ClientSize = value; }
 		}
 
-		public IEnumerable<Control> Controls {
-			get { 
-				if (Layout != null)
-					return Layout.Controls;
-				else
-					return Enumerable.Empty<Control> ();
-			}
+		public abstract IEnumerable<Control> Controls
+		{
+			get;
 		}
-		
-		public IEnumerable<Control> Children {
-			get {
-				if (Layout != null) {
-					foreach (var control in Layout.Controls) {
-						yield return control;
-						var container = control as Container;
-						if (container != null) {
-							foreach (var child in container.Children)
-								yield return child;
-						}
+
+		public IEnumerable<Control> Children
+		{
+			get
+			{
+				foreach (var control in Controls)
+				{
+					yield return control;
+					var container = control as Container;
+					if (container != null)
+					{
+						foreach (var child in container.Children)
+							yield return child;
 					}
 				}
 			}
 		}
-		
-		public override void OnPreLoad (EventArgs e)
+
+		protected internal override void OnDataContextChanged(EventArgs e)
 		{
-			base.OnPreLoad (e);
+			base.OnDataContextChanged(e);
 			
-			if (Layout != null)
-				Layout.OnPreLoad (e);
-			
-			foreach (Control control in Controls) {
-				control.OnPreLoad (e);
+			foreach (var control in Controls)
+			{
+				control.OnDataContextChanged(e);
 			}
-		}
-		
-		public override void OnLoad (EventArgs e)
-		{
-			foreach (Control control in Controls) {
-				control.OnLoad (e);
-			}
-			
-			base.OnLoad (e);
-			
-			if (Layout != null)
-				Layout.OnLoad (e);
 		}
 
-		public override void OnLoadComplete (EventArgs e)
+		public override void OnPreLoad(EventArgs e)
 		{
-			foreach (Control control in Controls) {
-				control.OnLoadComplete (e);
+			base.OnPreLoad(e);
+			
+			foreach (Control control in Controls)
+			{
+				control.OnPreLoad(e);
 			}
-			
-			base.OnLoadComplete (e);
-			
-			if (Layout != null)
-				Layout.OnLoadComplete (e);
 		}
 
-		public override void OnUnLoad (EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			foreach (Control control in Controls) {
-				control.OnUnLoad (e);
+			foreach (Control control in Controls)
+			{
+				control.OnLoad(e);
 			}
 			
-			base.OnLoad (e);
-			
-			if (Layout != null)
-				Layout.OnUnLoad (e);
+			base.OnLoad(e);
 		}
 
-		protected Container (Generator g, Type type, bool initialize = true)
+		public override void OnLoadComplete(EventArgs e)
+		{
+			foreach (Control control in Controls)
+			{
+				control.OnLoadComplete(e);
+			}
+			
+			base.OnLoadComplete(e);
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			foreach (Control control in Controls)
+			{
+				control.OnUnLoad(e);
+			}
+			
+			base.OnUnLoad(e);
+		}
+
+		protected Container(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
-			handler = (IContainer)base.Handler;
 		}
 
 		/// <summary>
@@ -118,59 +108,50 @@ namespace Eto.Forms
 		/// <param name="generator">Generator for the widget</param>
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
-		protected Container (Generator generator, IContainer handler, bool initialize = true)
+		protected Container(Generator generator, IContainer handler, bool initialize = true)
 			: base(generator, handler, initialize)
 		{
-			this.handler = handler;
 		}
 
-		
-		public object ContainerObject {
-			get { return handler.ContainerObject; }
-		}
-		
-		public Layout Layout {
-			get { return layout; }
-			set {
-				layout = value;
-				layout.Container = this;
-				SetInnerLayout (true);
+		public override void Unbind()
+		{
+			base.Unbind();
+			foreach (var control in Controls)
+			{
+				control.Unbind();
 			}
 		}
 
-		internal void SetInnerLayout (bool load)
+		public override void UpdateBindings()
 		{
-			var innerLayout = layout.InnerLayout;
-			if (innerLayout != null) {
-				innerLayout.Container = this;
-				handler.SetLayout (innerLayout);
-				if (Loaded && !layout.Loaded && load) {
-					layout.OnPreLoad (EventArgs.Empty);
-					layout.OnLoad (EventArgs.Empty);
-					layout.OnLoadComplete (EventArgs.Empty);
-				}
+			base.UpdateBindings();
+			foreach (var control in Controls)
+			{
+				control.UpdateBindings();
 			}
 		}
-		
-		public Size ClientSize {
-			get { return handler.ClientSize; }
-			set { handler.ClientSize = value; }
-		}
-		
-		public override void Unbind ()
+
+		public virtual void Remove(IEnumerable<Control> controls)
 		{
-			base.Unbind ();
-			foreach (var control in Controls) {
-				control.Unbind ();
-			}
+			foreach (var control in controls)
+				Remove(control);
 		}
-		
-		public override void UpdateBindings ()
+
+		public virtual void RemoveAll()
 		{
-			base.UpdateBindings ();
-			foreach (var control in Controls) {
-				control.UpdateBindings ();
-			}
+			Remove(this.Controls.ToArray());
+		}
+
+		public abstract void Remove(Control child);
+
+		protected void RemoveParent(Control child, bool changeContext)
+		{
+			child.SetParent(null, changeContext);
+		}
+
+		protected void SetParent(Control child)
+		{
+			child.SetParent(this, true);
 		}
 	}
 }

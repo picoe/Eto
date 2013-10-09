@@ -41,7 +41,7 @@ namespace Eto
 
 		public DualBinding Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			return BindingExtensions.Bind(widgetBinding: this, dataContextBinding: binding, mode: mode);
+			return BindingExtensions.Bind(controlBinding: this, dataContextBinding: binding, mode: mode);
 		}
 
 		public DualBinding Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
@@ -52,7 +52,7 @@ namespace Eto
 		public DualBinding Bind<TObject>(TObject objectValue, DelegateBinding<TObject, TValue> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			var valueBinding = new ObjectBinding(objectValue, objectBinding);
-			return BindingExtensions.Bind(widgetBinding: this, valueBinding: valueBinding, mode: mode);
+			return BindingExtensions.Bind(controlBinding: this, valueBinding: valueBinding, mode: mode);
 		}
 	}
 
@@ -163,9 +163,9 @@ namespace Eto
 		/// <summary>
 		/// Hooks up the late bound events for this object
 		/// </summary>
-		protected override void HandleEvent (string handler)
+		protected override void HandleEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case DataValueChangedEvent:
 				if (dataValueChangedReference == null)
 					dataValueChangedReference = InnerBinding.AddValueChangedHandler (
@@ -174,7 +174,7 @@ namespace Eto
 						);
 				break;
 			default:
-				base.HandleEvent (handler);
+				base.HandleEvent (id);
 				break;
 			}
 		}
@@ -182,9 +182,9 @@ namespace Eto
 		/// <summary>
 		/// Removes the late bound events for this object
 		/// </summary>
-		protected override void RemoveEvent (string handler)
+		protected override void RemoveEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case DataValueChangedEvent:
 				if (dataValueChangedReference != null) {
 					InnerBinding.RemoveValueChangedHandler (
@@ -195,7 +195,7 @@ namespace Eto
 				}
 				break;
 			default:
-				base.RemoveEvent (handler);
+				base.RemoveEvent (id);
 				break;
 			}
 		}

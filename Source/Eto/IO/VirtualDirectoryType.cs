@@ -1,5 +1,6 @@
 using System;
 using System.IO;
+using System.Globalization;
 
 namespace Eto.IO
 {
@@ -10,7 +11,7 @@ namespace Eto.IO
 		
 		public string FileMask
 		{
-			get { return string.Format("*{0}", Extension); }
+			get { return string.Format(CultureInfo.InvariantCulture, "*{0}", Extension); }
 		}
 		
 		public virtual VirtualDirectoryInfo Create(EtoFileInfo fileInfo)

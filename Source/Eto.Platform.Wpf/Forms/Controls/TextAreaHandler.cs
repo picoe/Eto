@@ -12,17 +12,24 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	public class TextAreaHandler : WpfControl<swc.TextBox, TextArea>, ITextArea
 	{
 		int? lastCaretIndex;
+		Size defaultSize = TextArea.DefaultSize;
+
+		protected override Size DefaultSize { get { return defaultSize; } }
 
 		public TextAreaHandler ()
 		{
-			Control = new swc.TextBox {
-				Width = TextArea.DefaultSize.Width,
-				Height = TextArea.DefaultSize.Height,
+			Control = new swc.TextBox
+			{
 				AcceptsReturn = true,
 				AcceptsTab = true,
 				HorizontalScrollBarVisibility = swc.ScrollBarVisibility.Auto,
 				VerticalScrollBarVisibility = swc.ScrollBarVisibility.Auto
 			};
+		}
+
+		public override sw.Size GetPreferredSize(sw.Size constraint)
+		{
+			return base.GetPreferredSize(Conversions.ZeroSize);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

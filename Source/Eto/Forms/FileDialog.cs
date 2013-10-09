@@ -67,53 +67,52 @@ namespace Eto.Forms
 	
 	public abstract class FileDialog : CommonDialog
 	{
-		IFileDialog handler;
+		new IFileDialog Handler { get { return (IFileDialog)base.Handler; } }
 
 		protected FileDialog(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
 		{
-			handler = (IFileDialog)Handler;
 		}
 
 		public string FileName
 		{
-			get { return handler.FileName; }
-			set { handler.FileName = value; }
+			get { return Handler.FileName; }
+			set { Handler.FileName = value; }
 		}
 
 		public IEnumerable<IFileDialogFilter> Filters
 		{
-			get { return handler.Filters; }
-			set { handler.Filters = value; }
+			get { return Handler.Filters; }
+			set { Handler.Filters = value; }
 		}
 
 		public int CurrentFilterIndex
 		{
-			get { return handler.CurrentFilterIndex; }
-			set { handler.CurrentFilterIndex = value; }
+			get { return Handler.CurrentFilterIndex; }
+			set { Handler.CurrentFilterIndex = value; }
 		}
 
 		public IFileDialogFilter CurrentFilter
 		{
-			get { return handler.CurrentFilter; }
-			set { handler.CurrentFilter = value; }
+			get { return Handler.CurrentFilter; }
+			set { Handler.CurrentFilter = value; }
 		}
 
 		public bool CheckFileExists 
 		{
-			get { return handler.CheckFileExists; }
-			set { handler.CheckFileExists = value; }
+			get { return Handler.CheckFileExists; }
+			set { Handler.CheckFileExists = value; }
 		}
 
 		public string Title
 		{
-			get { return handler.Title; }
-			set { handler.Title = value; }
+			get { return Handler.Title; }
+			set { Handler.Title = value; }
 		}
 		
 		public Uri Directory
 		{
-			get { return handler.Directory; }
-			set { handler.Directory = value; }
+			get { return Handler.Directory; }
+			set { Handler.Directory = value; }
 		}
 	}
 }

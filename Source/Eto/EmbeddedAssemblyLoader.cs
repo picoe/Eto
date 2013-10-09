@@ -36,7 +36,6 @@ namespace Eto
 		/// </summary>
 		/// <param name="resourceNamespace">Namespace of where the embedded assemblies should be loaded</param>
 		/// <param name="assembly">Assembly to load the embedded assemblies from, or null to use the calling assembly</param>
-		/// <param name="domain">App domain to register this loader for, or null to use the current domain</param>
 		/// <returns>A new instance of an EmbeddedAssemblyLoader, registered for the specified namespace and assembly</returns>
 		public static EmbeddedAssemblyLoader Register (string resourceNamespace, Assembly assembly = null, AppDomain domain = null)
 		{
@@ -66,7 +65,7 @@ namespace Eto
 			domain = domain ?? AppDomain.CurrentDomain;
 			domain.AssemblyResolve += (sender, args) => {
 				var assemblyName = new AssemblyName (args.Name);
-				if (assemblyName.Name.EndsWith (".resources")) return null;
+				if (assemblyName.Name.EndsWith (".resources", StringComparison.OrdinalIgnoreCase)) return null;
 
 				string resourceName = this.ResourceNamespace + "." + assemblyName.Name + ".dll";
 				Assembly loadedAssembly = null;

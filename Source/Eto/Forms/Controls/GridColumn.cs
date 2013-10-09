@@ -29,7 +29,7 @@ namespace Eto.Forms
 	
 	public class GridColumn : InstanceWidget
 	{
-		IGridColumn handler;
+		new IGridColumn Handler { get { return (IGridColumn)base.Handler; } }
 
 		public GridColumn ()
 			: this (Generator.Current)
@@ -44,47 +44,46 @@ namespace Eto.Forms
 		protected GridColumn (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (IGridColumn)Handler;
 		}
 		
 		public string HeaderText {
-			get { return handler.HeaderText; }
-			set { handler.HeaderText = value; }
+			get { return Handler.HeaderText; }
+			set { Handler.HeaderText = value; }
 		}
 		
 		public bool Resizable {
-			get { return handler.Resizable; }
-			set { handler.Resizable = value; }
+			get { return Handler.Resizable; }
+			set { Handler.Resizable = value; }
 		}
 		
 		public bool AutoSize {
-			get { return handler.AutoSize; }
-			set { handler.AutoSize = value; }
+			get { return Handler.AutoSize; }
+			set { Handler.AutoSize = value; }
 		}
 		
 		public bool Sortable {
-			get { return handler.Sortable; }
-			set { handler.Sortable = value; }
+			get { return Handler.Sortable; }
+			set { Handler.Sortable = value; }
 		}
 		
 		public int Width {
-			get { return handler.Width; }
-			set { handler.Width = value; }
+			get { return Handler.Width; }
+			set { Handler.Width = value; }
 		}
 		
 		public Cell DataCell {
-			get { return handler.DataCell; }
-			set { handler.DataCell = value; }
+			get { return Handler.DataCell; }
+			set { Handler.DataCell = value; }
 		}
 		
 		public bool Editable {
-			get { return handler.Editable; }
-			set { handler.Editable = value; }
+			get { return Handler.Editable; }
+			set { Handler.Editable = value; }
 		}
 		
 		public bool Visible {
-			get { return handler.Visible; }
-			set { handler.Visible = value; }
+			get { return Handler.Visible; }
+			set { Handler.Visible = value; }
 		}
 	}
 }

@@ -7,6 +7,7 @@ using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Platform.Mac.Drawing;
 using Eto.Drawing;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -16,14 +17,33 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public class EtoTableView : NSTableView, IMacControl
 		{
-			public GridViewHandler Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
 
-			object IMacControl.Handler { get { return Handler; } }
+			public GridViewHandler Handler
+			{ 
+				get { return (GridViewHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+			
+			/// <summary>
+			/// The area to the right and below the rows is not filled with the background
+			/// color. This fixes that. See http://orangejuiceliberationfront.com/themeing-nstableview/
+			/// </summary>
+			public override void DrawBackground(sd.RectangleF clipRect)
+			{
+				var backgroundColor = Handler.BackgroundColor;
+				if (backgroundColor != Colors.Transparent) {
+					backgroundColor.ToNS ().Set ();
+					NSGraphics.RectFill (clipRect);
+				} else
+					base.DrawBackground (clipRect);
+			}
 		}
 		
 		class EtoTableViewDataSource : NSTableViewDataSource
 		{
-			public GridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 			
 			public override int GetRowCount (NSTableView tableView)
 			{
@@ -54,7 +74,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class EtoTableDelegate : NSTableViewDelegate
 		{
-			public GridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public GridViewHandler Handler { get { return (GridViewHandler)(handler != null ? handler.Target : null); } set { handler = new WeakReference(value); } }
 
 			public override bool ShouldEditTableColumn (NSTableView tableView, NSTableColumn tableColumn, int row)
 			{
@@ -64,10 +85,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler.Widget.OnBeginCellEdit (args);
 				return true;
 			}
-			
+					
 			public override void SelectionDidChange (NSNotification notification)
 			{
 				Handler.Widget.OnSelectionChanged (EventArgs.Empty);
+
+				// Trigger CellClick
+				var tableView = Handler.Control;
+				var row = tableView.SelectedRow;
+				var col = tableView.SelectedColumn;
+				if (row >= 0) // && col >= 0) TODO: Fix the column
+					Handler.Widget.OnCellClick (
+						new GridViewCellArgs (null, // TODO: col is always -1 currently, so this does not work: Handler.GetColumn (tableView.ClickedColumn).Widget,
+		                     row, col, Handler.collection.Collection [row]));					
 			}
 
 			public override void DidClickTableColumn (NSTableView tableView, NSTableColumn tableColumn)
@@ -87,6 +117,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public GridViewHandler ()
 		{
+		}
+
+		public bool ShowCellBorders
+		{
+			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : new sd.SizeF(0, 0); } 
 		}
 
 		public override void AttachEvent (string handler)
@@ -141,26 +176,26 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.Initialize ();
 		}
 		
-		class CollectionHandler : DataStoreChangedHandler<IGridItem, IGridStore>
+		class CollectionHandler : DataStoreChangedHandler<object, IDataStore>
 		{
 			public GridViewHandler Handler { get; set; }
 
-			public override int IndexOf (IGridItem item)
+			public override int IndexOf (object item)
 			{
 				return -1; // not needed
 			}
 			
-			public override void AddRange (IEnumerable<IGridItem> items)
+			public override void AddRange (IEnumerable<object> items)
 			{
 				Handler.Control.ReloadData ();
 			}
 
-			public override void AddItem (IGridItem item)
+			public override void AddItem (object item)
 			{
 				Handler.Control.ReloadData ();
 			}
 
-			public override void InsertItem (int index, IGridItem item)
+			public override void InsertItem (int index, object item)
 			{
 				Handler.Control.ReloadData ();
 			}
@@ -176,7 +211,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return collection != null ? collection.Collection : null; }
 			set {
 				if (collection != null)

@@ -8,6 +8,7 @@ using sw = System.Windows;
 using swd = System.Windows.Data;
 using Eto.Platform.Wpf.Drawing;
 using System.Collections;
+using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -16,26 +17,36 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		IListStore store;
 		ContextMenu contextMenu;
 
-		public ListBoxHandler ()
+		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
-			Control = new swc.ListBox ();
+			return base.GetPreferredSize(sw.Size.Empty);
+		}
+
+		public ListBoxHandler()
+		{
+			Control = new swc.ListBox();
 			Control.HorizontalAlignment = sw.HorizontalAlignment.Stretch;
 			//Control.DisplayMemberPath = "Text";
-			var template = new sw.DataTemplate (typeof (IListItem));
+			var template = new sw.DataTemplate(typeof(IListItem));
 
-			template.VisualTree = WpfListItemHelper.ItemTemplate ();
+			template.VisualTree = WpfListItemHelper.ItemTemplate(false);
 			Control.ItemTemplate = template;
-			Control.SelectionChanged += delegate {
-				Widget.OnSelectedIndexChanged (EventArgs.Empty);
+			Control.SelectionChanged += delegate
+			{
+				Widget.OnSelectedIndexChanged(EventArgs.Empty);
 			};
-			Control.MouseDoubleClick += delegate {
+			Control.MouseDoubleClick += delegate
+			{
 				if (SelectedIndex >= 0)
-					Widget.OnActivated (EventArgs.Empty);
+					Widget.OnActivated(EventArgs.Empty);
 			};
-			Control.KeyDown += (sender, e) => {
-				if (e.Key == sw.Input.Key.Return) {
-					if (SelectedIndex >= 0) {
-						Widget.OnActivated (EventArgs.Empty);
+			Control.KeyDown += (sender, e) =>
+			{
+				if (e.Key == sw.Input.Key.Return)
+				{
+					if (SelectedIndex >= 0)
+					{
+						Widget.OnActivated(EventArgs.Empty);
 						e.Handled = true;
 					}
 				}
@@ -51,17 +62,22 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable ();
+				if (store is ObservableCollection<IListItem>)
+					Control.ItemsSource = store as ObservableCollection<IListItem>;
+				else
+					Control.ItemsSource = new ObservableCollection<IListItem>(store.AsEnumerable());
 			}
 		}
 
 		public int SelectedIndex
 		{
 			get { return Control.SelectedIndex; }
-			set { 
+			set
+			{
 				Control.SelectedIndex = value;
-				if (value >= 0) {
-					var item = store.AsEnumerable ().Skip (value).FirstOrDefault ();
+				if (value >= 0)
+				{
+					var item = store.AsEnumerable().Skip(value).FirstOrDefault();
 					Control.ScrollIntoView(item);
 				}
 			}

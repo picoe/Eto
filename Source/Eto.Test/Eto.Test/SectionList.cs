@@ -8,13 +8,13 @@ using Eto.Test.Sections.Layouts;
 
 namespace Eto.Test
 {
-	public interface ISectionGenerator
+	public interface ISection
 	{
 		string Text { get; }
 
-		Control GenerateControl ();
+		Control CreateContent();
 	}
-	
+
 	public class Section : List<Section>, ITreeGridItem<Section>
 	{
 		public string Text { get; set; }
@@ -24,80 +24,127 @@ namespace Eto.Test
 		public bool Expandable { get { return Count > 0; } }
 
 		public ITreeGridItem Parent { get; set; }
-		
-		public new ITreeGridItem this [int index] {
-			get
-			{
-				return null;
-			}
+
+		public new ITreeGridItem this [int index]
+		{
+			get { return null; }
 		}
-		
-		public Section ()
+
+		public Section()
 		{
 		}
-		
-		public Section (string text, IEnumerable<Section> sections)
-			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase))
+
+		public Section(string text, IEnumerable<Section> sections)
+			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
 		{
 			this.Text = text;
 			this.Expanded = true;
-			this.ForEach (r => r.Parent = this);
-		}
-	}
-	
-	public class Section<T> : Section, ISectionGenerator
-		where T: Control, new()
-	{
-		public Control GenerateControl ()
-		{
-			try {
-				return new T ();
-			}
-			catch (Exception ex) {
-				Log.Write (this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
-				return null;
-			}
+			this.ForEach(r => r.Parent = this);
 		}
 	}
 
-		
+	public abstract class SectionBase : Section, ISection
+	{
+		public abstract Control CreateContent();
+	}
+
+	public class Section<T> : SectionBase
+		where T: Control, new()
+	{
+		public override Control CreateContent()
+		{
+			return new T();
+		}
+	}
+
+	/// <summary>
+	/// Tests for dialogs and forms use this.
+	/// </summary>
+	public class WindowSectionMethod : Section, ISection
+	{
+		private Func<Window> Func { get; set; }
+
+		public WindowSectionMethod(string text, Func<Window> f)
+		{
+			Func = f;
+			Text = text;
+		}
+
+		protected WindowSectionMethod(string text = null)
+		{
+		}
+
+		protected virtual Window GetWindow()
+		{
+			return null;
+		}
+
+		public Control CreateContent()
+		{
+			var button = new Button { Text = string.Format("Show the {0} test", this.Text) };
+			var layout = new DynamicLayout();
+			layout.AddCentered(button);
+			button.Click += (sender, e) => {
+
+				try
+				{
+					var window = Func != null ? Func() : null; // First try the delegate method
+					if (window == null)
+						window = GetWindow(); // then the virtual method
+
+					if (window != null)
+					{
+						var dialog = window as Dialog;
+						if (dialog != null)
+						{
+							dialog.ShowDialog(null);
+							return;
+						}
+						var form = window as Form;
+						if (form != null)
+						{
+							form.Show();
+							return;
+						}
+					}
+				}
+				catch (Exception ex)
+				{
+					Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+				}
+			};
+			return layout;
+		}
+	}
+
 	public class SectionList : TreeGridView
 	{
-		public SectionList(Func<IEnumerable<Section>> topNodes)
+		public new ISection SelectedItem
 		{
-			this.TopNodes = topNodes;
+			get { return base.SelectedItem as ISection; }
+		}
+
+
+		public SectionList(IEnumerable<Section> topNodes)
+		{
 			this.Style = "sectionList";
 			this.ShowHeader = false;
 
-			Columns.Add (new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
+			Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
-			this.DataStore = new Section ("Top", TopNodes ());
-			HandleEvent (SelectionChangedEvent);
+			this.DataStore = new Section("Top", topNodes);
+			HandleEvent(SelectionChangedEvent);
 		}
 
-		private Func<IEnumerable<Section>> TopNodes { get; set; }
-
-		public Control SectionControl { get; private set; }
-
-		public string SectionTitle {
-			get {
+		public string SectionTitle
+		{
+			get
+			{
 				var section = this.SelectedItem as Section;
 				if (section != null)
 					return section.Text;
 				return null;
 			}
-		}
-		
-		public override void OnSelectionChanged (EventArgs e)
-		{
-			var sectionGenerator = this.SelectedItem as ISectionGenerator;
-			
-			if (sectionGenerator != null) {
-				SectionControl = sectionGenerator.GenerateControl ();
-			} else 
-				SectionControl = null;
-
-			base.OnSelectionChanged (e);
 		}
 	}
 }

@@ -204,7 +204,7 @@ namespace Eto.Forms
 			if (!Loaded)
 				return;
 			this.SuspendLayout ();
-			var layout = new DynamicLayout (new Panel (), Padding.Empty, spacing);
+			var layout = new DynamicLayout (Padding.Empty, spacing);
 			var horizontal = orientation == RadioButtonListOrientation.Horizontal;
 			if (horizontal)
 				layout.BeginHorizontal ();
@@ -214,7 +214,7 @@ namespace Eto.Forms
 			layout.Add (null);
 			if (horizontal)
 				layout.EndHorizontal ();
-			this.AddDockedControl (layout.Container);
+			this.Content = layout;
 			this.ResumeLayout ();
 		}
 
@@ -285,6 +285,20 @@ namespace Eto.Forms
 		protected virtual ListItemCollection CreateDefaultItems ()
 		{
 			return new ListItemCollection ();
+		}
+
+		public ObjectBinding<RadioButtonList, IListItem> SelectedValueBinding
+		{
+			get
+			{
+				return new ObjectBinding<RadioButtonList, IListItem>(
+					this, 
+					c => c.SelectedValue, 
+					(c, v) => c.SelectedValue = v, 
+					(c, h) => c.SelectedValueChanged += h, 
+					(c, h) => c.SelectedValueChanged -= h
+					);
+			}
 		}
 	}
 }

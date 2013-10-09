@@ -26,7 +26,7 @@ namespace Eto.Platform.GtkSharp.Forms
 
 			Control.ShowAll ();
 			var response = (Gtk.ResponseType)Control.Run ();
-			Control.HideAll ();
+			Control.Hide ();
 			
 			if (response == Gtk.ResponseType.Ok) {
 				Widget.OnColorChanged(EventArgs.Empty);

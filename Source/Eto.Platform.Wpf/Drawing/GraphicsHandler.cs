@@ -26,6 +26,7 @@ namespace Eto.Platform.Wpf.Drawing
 		RectangleF? clipBounds;
 		IGraphicsPath clipPath;
 		sw.Rect bounds;
+		bool disposeControl;
 
 		Bitmap image;
 		sw.Size? dpi;
@@ -45,9 +46,11 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 		}
 
+		protected override bool DisposeControl { get { return disposeControl; } }
+
 		public GraphicsHandler (swm.Visual visual, swm.DrawingContext context, sw.Rect bounds, bool shouldDispose = true)
 		{
-			this.DisposeControl = shouldDispose;
+			this.disposeControl = shouldDispose;
 			this.visual = visual;
 			this.drawingVisual = visual as swm.DrawingVisual;
 
@@ -251,11 +254,11 @@ namespace Eto.Platform.Wpf.Drawing
 			Control.Pop ();
 		}
 
-		public void DrawText (Font font, Color color, float x, float y, string text)
+		public void DrawText (Font font, SolidBrush b, float x, float y, string text)
 		{
 			var fontHandler = font.Handler as FontHandler;
 			if (fontHandler != null) {
-				var brush = new swm.SolidColorBrush (color.ToWpf ());
+				var brush = new swm.SolidColorBrush (b.Color.ToWpf ()); // BUGBUG: FIX
 				var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
 				Control.DrawText (formattedText, new sw.Point (x, y));
 			}

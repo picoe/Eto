@@ -13,7 +13,6 @@ namespace Eto.Platform.Windows
 		public ToolBarHandler()
 		{
 			Control = new SWF.ToolStrip();
-			Control.SuspendLayout ();
 			Control.LayoutStyle = System.Windows.Forms.ToolStripLayoutStyle.StackWithOverflow;
 			Control.AutoSize = true;
 		}

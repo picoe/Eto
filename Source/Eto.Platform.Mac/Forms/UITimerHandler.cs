@@ -21,12 +21,26 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
+		class Helper
+		{
+			WeakReference handler;
+			public UITimerHandler Handler { get { return (UITimerHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
+			public void Elapsed()
+			{
+				var handler = Handler;
+				if (handler != null)
+				{
+					handler.Widget.OnElapsed(EventArgs.Empty);
+				}
+			}
+		}
+
 		public void Start ()
 		{
 			Stop();
-			Control = NSTimer.CreateRepeatingTimer(interval, delegate{ 
-				Widget.OnElapsed(EventArgs.Empty);
-			});
+			var helper = new Helper { Handler = this };
+			Control = NSTimer.CreateRepeatingTimer(interval, helper.Elapsed);
 			NSRunLoop.Current.AddTimer(Control, NSRunLoopMode.Default);
 		}
 

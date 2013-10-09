@@ -12,6 +12,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 	public class ListBoxHandler : iosView<UITableView, ListBox>, IListBox
 	{
 		CollectionChangedHandler<IListItem, IListStore> collection;
+
+		public override UIView ContainerControl { get { return Control; } }
 		
 		class DataSource : UITableViewDataSource
 		{

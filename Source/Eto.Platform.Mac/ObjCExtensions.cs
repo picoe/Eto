@@ -1,16 +1,9 @@
 using System;
-#if DESKTOP
 using MonoMac.ObjCRuntime;
-#elif MOBILE
 using MonoTouch.ObjCRuntime;
-#endif
 using System.Runtime.InteropServices;
 
-#if DESKTOP
 namespace Eto.Platform.Mac
-#else
-namespace Eto.Platform.iOS
-#endif
 {
 	public static class ObjCExtensions
 	{
@@ -29,7 +22,12 @@ namespace Eto.Platform.iOS
 		{
 			return class_addMethod (cls.Handle, selector, method, arguments);
 		}
-		
+
+		public static bool AddMethod (IntPtr classHandle, IntPtr selector, Delegate method, string arguments)
+		{
+			return class_addMethod (classHandle, selector, method, arguments);
+		}
+
 		[DllImport ("/usr/lib/libobjc.dylib")]
 		static extern bool method_exchangeImplementations (IntPtr method1, IntPtr method2);
 		

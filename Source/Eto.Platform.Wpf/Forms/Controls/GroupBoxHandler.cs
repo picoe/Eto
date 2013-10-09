@@ -11,82 +11,43 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class GroupBoxHandler : WpfContainer<swc.GroupBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : WpfDockContainer<swc.GroupBox, GroupBox>, IGroupBox
 	{
 		Font font;
-		
-		public GroupBoxHandler ()
+		swc.Label Header { get; set; }
+		swc.AccessText AccessText { get { return (swc.AccessText)Header.Content; } }
+
+		public GroupBoxHandler()
 		{
-			Control = new swc.GroupBox ();
-		}
-		
-		public override Size ClientSize
-		{
-			get { return this.Size; }
-			set
-			{
-				// TODO
-				this.Size = value;
-			}
+			Control = new swc.GroupBox();
+			Header = new swc.Label { Content = new swc.AccessText() };
 		}
 
-		public override object ContainerObject
+		public override void SetContainerContent(sw.FrameworkElement content)
 		{
-			get { return Control; }
-		}
-
-		public override void SetLayout (Layout layout)
-		{
-			Control.Content = (System.Windows.UIElement)layout.ControlObject;
+			Control.Content = content;
 		}
 
 		public override Color BackgroundColor
 		{
-			get
-			{
-				var brush = Control.Background as System.Windows.Media.SolidColorBrush;
-				if (brush != null) return brush.Color.ToEto ();
-				else return Colors.Black;
-			}
-			set
-			{
-				Control.Background = new System.Windows.Media.SolidColorBrush (value.ToWpf ());
-			}
+			get { return Control.Background.ToEtoColor(); }
+			set { Control.Background = value.ToWpfBrush(Control.Background); }
 		}
 
 		public Font Font
 		{
 			get { return font; }
-			set
-			{
-				font = value;
-				FontHandler.Apply (Control, font);
-			}
-		}
-
-		public override Size? MinimumSize
-		{
-			get
-			{
-				if (Control.MinHeight == 0 && Control.MinWidth == 0)
-					return null;
-				return new Eto.Drawing.Size ((int)Control.MinHeight, (int)Control.MinWidth);
-			}
-			set
-			{
-				if (value != null) {
-					Control.MinHeight = value.Value.Height;
-					Control.MinWidth = value.Value.Width;
-				}
-				else
-					Control.MinWidth = Control.MinHeight = 0;
-			}
+			set { font = FontHandler.Apply(Header, value); }
 		}
 
 		public string Text
 		{
-			get { return Control.Header as string; }
-			set { Control.Header = value; }
+			get { return AccessText.Text.ToEtoMneumonic(); }
+			set
+			{
+				AccessText.Text = value.ToWpfMneumonic();
+				Control.Header = string.IsNullOrEmpty(value) ? null : Header;
+			}
 		}
 	}
 }

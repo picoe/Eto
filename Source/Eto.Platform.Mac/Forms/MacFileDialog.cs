@@ -18,7 +18,8 @@ namespace Eto.Platform.Mac.Forms
  
     class SavePanelDelegate : NSOpenSavePanelDelegate
     {
-        public IMacFileDialog Handler { get; set; }
+		WeakReference handler;
+		public IMacFileDialog Handler { get { return (IMacFileDialog)handler.Target; } set { handler = new WeakReference(value); } }
      
         public override bool ShouldEnableUrl (NSSavePanel panel, NSUrl url)
         {

@@ -21,15 +21,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		swc.Label label;
 		swc.Grid grid;
 		ButtonImagePosition imagePosition;
+		Size defaultSize = Button.DefaultSize;
+
+		protected override Size DefaultSize { get { return defaultSize; } }
 
 		public ButtonHandler ()
 		{
-			Control = new swc.Button ();
+			Control = new swc.Button();
 			Control.Click += (sender, e) => {
 				Widget.OnClick (EventArgs.Empty);
 			};
-			Control.MinWidth = Button.DefaultSize.Width;
-			Control.MinHeight = Button.DefaultSize.Height;
 			label = new swc.Label {
 				VerticalAlignment = sw.VerticalAlignment.Center,
 				HorizontalAlignment = sw.HorizontalAlignment.Center,
@@ -65,7 +66,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string Text
 		{
-			get { return Conversions.ConvertMneumonicFromWPF ((string)label.Content); }
+			get { return (label.Content as string).ToEtoMneumonic(); }
 			set {
 				label.Content = value.ToWpfMneumonic ();
 				SetImagePosition ();

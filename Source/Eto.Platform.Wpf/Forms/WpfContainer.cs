@@ -9,42 +9,60 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfContainer<T, W> : WpfFrameworkElement<T, W>, IContainer
-		where T: sw.FrameworkElement
-		where W: Container
+	public interface IWpfContainer
 	{
+		void Remove(sw.FrameworkElement child);
 
-		public override sw.Size GetPreferredSize(sw.Size? constraint)
+		void UpdatePreferredSize();
+	}
+
+	public abstract class WpfContainer<T, W> : WpfFrameworkElement<T, W>, IContainer, IWpfContainer
+		where T : sw.FrameworkElement
+		where W : Container
+	{
+		Size minimumSize;
+		protected override Size DefaultSize { get { return minimumSize; } }
+
+		public abstract void Remove(sw.FrameworkElement child);
+
+		public virtual Size ClientSize
 		{
-			var size = sw.Size.Empty;
-			var layout = this.Widget.GetWpfLayout ();
-			if (layout != null)
-				size = layout.GetPreferredSize(constraint);
-			var baseSize = base.GetPreferredSize(constraint);
-			return new sw.Size (Math.Max (size.Width, baseSize.Width), Math.Max (size.Height, baseSize.Height));
+			get { return Size; }
+			set { Size = value; }
 		}
 
-		public abstract Eto.Drawing.Size ClientSize { get; set; }
-
-		public abstract object ContainerObject { get; }
-
-		public abstract void SetLayout (Layout layout);
-
-		public abstract Size? MinimumSize { get; set; }
-
-		public override void Invalidate ()
+		public virtual Size MinimumSize
 		{
-			base.Invalidate ();
-			foreach (var control in Widget.Children) {
-				control.Invalidate ();
+			get { return minimumSize; }
+			set
+			{
+				minimumSize = value;
+				SetSize();
 			}
 		}
 
-		public override void Invalidate (Rectangle rect)
+		public virtual void UpdatePreferredSize()
 		{
-			base.Invalidate (rect);
-			foreach (var control in Widget.Children) {
-				control.Invalidate (rect);
+			var parent = Widget.Parent.GetWpfContainer();
+			if (parent != null)
+				parent.UpdatePreferredSize();
+		}
+
+		public override void Invalidate()
+		{
+			base.Invalidate();
+			foreach (var control in Widget.Children)
+			{
+				control.Invalidate();
+			}
+		}
+
+		public override void Invalidate(Rectangle rect)
+		{
+			base.Invalidate(rect);
+			foreach (var control in Widget.Children)
+			{
+				control.Invalidate(rect);
 			}
 		}
 	}

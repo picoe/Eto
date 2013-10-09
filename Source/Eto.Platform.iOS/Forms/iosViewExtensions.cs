@@ -2,31 +2,13 @@ using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.Mac.Forms;
+using sd = System.Drawing;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public static class MacViewExtensions
+	public static class iosViewExtensions
 	{
-		public static UIView GetContainerView (this Control control)
-		{
-			if (control == null)
-				return null;
-			var viewHandler = control.Handler as IiosView;
-			if (viewHandler != null)
-				return viewHandler.ContainerControl;
-			return control.ControlObject as UIView;
-		}
-
-		public static UIView GetContentView (this Control control)
-		{
-			if (control == null)
-				return null;
-			var containerHandler = control.Handler as IiosContainer;
-			if (containerHandler != null)
-				return containerHandler.ContentControl;
-			return control.ControlObject as UIView;
-		}
-
 		public static void AddSubview (this Control control, Control subView, bool useRoot = false)
 		{
 			var parentController = control.GetViewController (false);
@@ -48,22 +30,6 @@ namespace Eto.Platform.iOS.Forms
 			}
 
 			throw new EtoException("Coult not add subview to parent");
-		}
-
-		public static Size GetPreferredSize(this Control control, Size availableSize)
-		{
-			if (control == null)
-				return Size.Empty;
-			var mh = control.Handler as IiosView;
-			if (mh != null) {
-				return mh.GetPreferredSize (availableSize);
-			}
-			
-			var c = control.ControlObject as UIView;
-			if (c != null) {
-				return c.SizeThatFits(UIView.UILayoutFittingCompressedSize).ToEtoSize ();
-			}
-			return Size.Empty;
 		}
 
 		public static UIViewController GetViewController (this Control control, bool force = true)

@@ -13,82 +13,95 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class ComboBoxHandler : MacControl<NSPopUpButton, ComboBox>, IComboBox
 	{
 		CollectionHandler collection;
-		
+
 		public class EtoPopUpButton : NSPopUpButton, IMacControl
 		{
-			public object Handler { get; set; }
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
 		}
-		
-		public ComboBoxHandler ()
+
+		public ComboBoxHandler()
 		{
 			Control = new EtoPopUpButton { Handler = this };
-			Control.Activated += delegate {
-				Widget.OnSelectedIndexChanged (EventArgs.Empty);
-			};
+			Control.Activated += HandleActivated;
 		}
-		
+
+		static void HandleActivated(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as ComboBoxHandler;
+			handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+		}
+
 		class CollectionHandler : DataStoreChangedHandler<IListItem, IListStore>
 		{
 			public ComboBoxHandler Handler { get; set; }
 
-			public override int IndexOf (IListItem item)
+			public override int IndexOf(IListItem item)
 			{
 				return Handler.Control.IndexOfItem(item.Text);
 			}
-			
-			public override void AddRange (IEnumerable<IListItem> items)
+
+			public override void AddRange(IEnumerable<IListItem> items)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.AddItems (items.Select (r => r.Text).ToArray ());
+				Handler.Control.AddItems(items.Select(r => r.Text).ToArray());
 				if (oldIndex == -1)
-					Handler.Control.SelectItem (-1);
-				Handler.LayoutIfNeeded ();
+					Handler.Control.SelectItem(-1);
+				Handler.LayoutIfNeeded();
 			}
 
-			public override void AddItem (IListItem item)
+			public override void AddItem(IListItem item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.AddItem (item.Text);
+				Handler.Control.AddItem(item.Text);
 				if (oldIndex == -1)
-					Handler.Control.SelectItem (-1);
-				Handler.LayoutIfNeeded ();
+					Handler.Control.SelectItem(-1);
+				Handler.LayoutIfNeeded();
 			}
 
-			public override void InsertItem (int index, IListItem item)
+			public override void InsertItem(int index, IListItem item)
 			{
 				var oldIndex = Handler.Control.IndexOfSelectedItem;
-				Handler.Control.InsertItem (item.Text, index);
+				Handler.Control.InsertItem(item.Text, index);
 				if (oldIndex == -1)
-					Handler.Control.SelectItem (-1);
-				Handler.LayoutIfNeeded ();
+					Handler.Control.SelectItem(-1);
+				Handler.LayoutIfNeeded();
 			}
 
-			public override void RemoveItem (int index)
+			public override void RemoveItem(int index)
 			{
-				Handler.Control.RemoveItem (index);
-				Handler.LayoutIfNeeded ();
+				Handler.Control.RemoveItem(index);
+				Handler.LayoutIfNeeded();
 			}
 
-			public override void RemoveAllItems ()
+			public override void RemoveAllItems()
 			{
-				Handler.Control.RemoveAllItems ();
-				Handler.LayoutIfNeeded ();
+				Handler.Control.RemoveAllItems();
+				Handler.LayoutIfNeeded();
 			}
 		}
-		
-		public IListStore DataStore {
+
+		public IListStore DataStore
+		{
 			get { return collection != null ? collection.Collection : null; }
-			set {
+			set
+			{
 				if (collection != null)
 					collection.Unregister();
-				collection = new CollectionHandler{ Handler = this };
+				collection = new CollectionHandler { Handler = this };
 				collection.Register(value);
 			}
 		}
 
-		public int SelectedIndex {
+		public int SelectedIndex
+		{
 			get	{ return Control.IndexOfSelectedItem; }
-			set { Control.SelectItem (value); }
+			set { Control.SelectItem(value); }
 		}
 	}
 }

@@ -2,6 +2,8 @@ using System;
 using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Collections;
 
 namespace Eto.Forms
 {
@@ -12,6 +14,10 @@ namespace Eto.Forms
 		T this [int index] { 
 			get;
 		}
+	}
+
+	public interface IDataStore : IDataStore<object>
+	{
 	}
 
 	public static class DataStoreExtensions
@@ -80,9 +86,22 @@ namespace Eto.Forms
 
 		public void AddRange (IEnumerable<T> items)
 		{
-			foreach (var item in items) {
-				Add (item);
-			}
+			// We don't call Add(item) for each item because
+			// that triggers a notification each time.
+			// Instead we add all items to the underlying collection
+			// and then trigger a single notification for the range
+			// http://stackoverflow.com/a/851129/90291
+
+			var itemList = items as IList ?? items.ToArray(); // don't enumerate more than once
+			var oldIndex = Items.Count;
+			foreach (T item in itemList)  
+				Items.Add(item);
+
+			// range is not supported by WPF, so send a reset
+			if (Generator.Current.IsWpf)
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
+			else
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemList, oldIndex));
 		}
 	}
 }

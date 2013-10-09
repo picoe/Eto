@@ -16,7 +16,7 @@ namespace Eto.Forms
 	
 	public abstract class MenuActionItem : MenuItem
 	{
-		IMenuActionItem handler;
+		new IMenuActionItem Handler { get { return (IMenuActionItem)base.Handler; } }
 		
 		public const string ValidateEvent = "MenuActionItem.ValidateEvent";
 
@@ -41,27 +41,26 @@ namespace Eto.Forms
 		protected MenuActionItem (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (IMenuActionItem)Handler;
 		}
 		
 		public string Text {
-			get { return handler.Text; }
-			set { handler.Text = value; }
+			get { return Handler.Text; }
+			set { Handler.Text = value; }
 		}
 		
 		public string ToolTip {
-			get { return handler.ToolTip; }
-			set { handler.ToolTip = value; }
+			get { return Handler.ToolTip; }
+			set { Handler.ToolTip = value; }
 		}
 		
 		public bool Enabled {
-			get { return handler.Enabled; }
-			set { handler.Enabled = value; }
+			get { return Handler.Enabled; }
+			set { Handler.Enabled = value; }
 		}
 
 		public Key Shortcut {
-			get { return handler.Shortcut; }
-			set { handler.Shortcut = value; }
+			get { return Handler.Shortcut; }
+			set { Handler.Shortcut = value; }
 		}
 
 		public virtual void OnClick (EventArgs e)

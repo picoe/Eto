@@ -153,7 +153,7 @@ namespace Eto.Platform.Windows
 
 		public static FontStyle ToEto (this sd.FontStyle style)
 		{
-			var ret = FontStyle.Normal;
+			var ret = FontStyle.None;
 			if (style.HasFlag (sd.FontStyle.Bold))
 				ret |= FontStyle.Bold;
 			if (style.HasFlag (sd.FontStyle.Italic))
@@ -226,7 +226,7 @@ namespace Eto.Platform.Windows
 			return new sd.RectangleF (rect.X, rect.Y, rect.Width, rect.Height);
 		}
 
-		public static sd.Rectangle ToSDRectangle (this RectangleF rect)
+		public static sd.Rectangle ToSDRectangle(this RectangleF rect)
 		{
 			return new sd.Rectangle ((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
 		}
@@ -383,6 +383,14 @@ namespace Eto.Platform.Windows
 		{
 			return (float)Math.PI * angle / 180.0f;
 		}
+
+        public static ITreeItem ToEto(this swf.TreeNode treeNode)
+        {
+            return
+                treeNode != null
+                ? treeNode.Tag as ITreeItem
+                : null;
+        }
 
 		public static sd.Pen ToSD (this Pen pen)
 		{
@@ -579,5 +587,13 @@ namespace Eto.Platform.Windows
                     throw new NotSupportedException();
             }
         }
+
+		public static DrawableCellState ToEto(this swf.DataGridViewElementStates state)
+		{
+			if ( (state & swf.DataGridViewElementStates.Selected) == swf.DataGridViewElementStates.Selected)
+				return DrawableCellState.Selected;
+
+			return DrawableCellState.Normal;
+		}		
 	}
 }

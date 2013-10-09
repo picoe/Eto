@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -195,9 +196,9 @@ namespace Eto.Drawing
 		/// <param name="point">Point to calculate the distance from</param>
 		public float Distance (PointF point)
 		{
-			var x = Math.Abs (this.X - point.X);
-			var y = Math.Abs (this.Y - point.Y);
-			return (float)Math.Sqrt (x * x + y * y);
+			var dx = Math.Abs (X - point.X);
+			var dy = Math.Abs (Y - point.Y);
+			return (float)Math.Sqrt (dx * dx + dy * dy);
 		}
 
 		/// <summary>
@@ -297,10 +298,10 @@ namespace Eto.Drawing
 		public void Rotate (float angle)
 		{
 			angle *= Helper.DegreesToRadians;
-			var x = this.X * Math.Cos (angle) - this.Y * Math.Sin (angle);
-			var y = this.X * Math.Sin (angle) + this.Y * Math.Cos (angle);
-			this.x = (float)x;
-			this.y = (float)y;
+			var rx = X * Math.Cos(angle) - Y * Math.Sin(angle);
+			var ry = X * Math.Sin(angle) + Y * Math.Cos(angle);
+			x = (float)rx;
+			y = (float)ry;
 		}
 
 		/// <summary>
@@ -550,7 +551,7 @@ namespace Eto.Drawing
 		/// <returns>String representation of this point</returns>
 		public override string ToString ()
 		{
-			return String.Format ("X={0} Y={1}", x, y);
+			return String.Format (CultureInfo.InvariantCulture, "({0},{1})", x, y);
 		}
 
 		/// <summary>
@@ -602,7 +603,7 @@ namespace Eto.Drawing
 		[Obsolete("Use Offset() instead")]
 		public void Add (PointF point)
 		{
-			this.Add (point.X, point.Y);
+			Add(point.X, point.Y);
 		}
 		
 		/// <summary>

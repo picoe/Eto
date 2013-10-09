@@ -1,5 +1,6 @@
 using System;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -14,7 +15,9 @@ namespace Eto.Platform.GtkSharp
 		{
 			get { return scroll; }
 		}
-		
+
+		public override Size DefaultSize { get { return TextArea.DefaultSize; } }
+
 		public TextAreaHandler ()
 		{
 			scroll = new Gtk.ScrolledWindow ();

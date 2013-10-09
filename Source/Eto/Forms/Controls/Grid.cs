@@ -51,7 +51,7 @@ namespace Eto.Forms
 
 		public abstract Color ForegroundColor { get; set; }
 
-		public GridCellFormatEventArgs (GridColumn column, object item, int row)
+		protected GridCellFormatEventArgs (GridColumn column, object item, int row)
 		{
 			this.Column = column;
 			this.Item = item;
@@ -61,7 +61,7 @@ namespace Eto.Forms
 
 	public abstract class Grid : Control
 	{
-		IGrid handler;
+		new IGrid Handler { get { return (IGrid)base.Handler; } }
 
 		public GridColumnCollection Columns { get; private set; }
 
@@ -82,7 +82,7 @@ namespace Eto.Forms
 		public virtual void OnBeginCellEdit (GridViewCellArgs e)
 		{
 			if (_BeginCellEdit != null)
-				_BeginCellEdit (this, e);
+				_BeginCellEdit(this, this.ViewToModel(e));
 		}
 
 		public const string EndCellEditEvent = "Grid.EndCellEditEvent";
@@ -100,7 +100,7 @@ namespace Eto.Forms
 		public virtual void OnEndCellEdit (GridViewCellArgs e)
 		{
 			if (_EndCellEdit != null)
-				_EndCellEdit (this, e);
+				_EndCellEdit (this, this.ViewToModel(e));
 		}
 
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
@@ -157,63 +157,81 @@ namespace Eto.Forms
 				_CellFormatting (this, e);
 		}
 
+		protected virtual GridViewCellArgs ViewToModel(GridViewCellArgs e)
+		{
+			return e;
+		}
 
 		#endregion
 
 		protected Grid (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, false)
 		{
-			handler = (IGrid)Handler;
 			Columns = new GridColumnCollection ();
 			if (initialize)
 				Initialize ();
 		}
 
 		public bool ShowHeader {
-			get { return handler.ShowHeader; }
-			set { handler.ShowHeader = value; }
+			get { return Handler.ShowHeader; }
+			set { Handler.ShowHeader = value; }
 		}
 
 		public bool AllowColumnReordering {
-			get { return handler.AllowColumnReordering; }
-			set { handler.AllowColumnReordering = value; }
+			get { return Handler.AllowColumnReordering; }
+			set { Handler.AllowColumnReordering = value; }
 		}
 
 		public bool AllowMultipleSelection {
-			get { return handler.AllowMultipleSelection; }
-			set { handler.AllowMultipleSelection = value; }
+			get { return Handler.AllowMultipleSelection; }
+			set { Handler.AllowMultipleSelection = value; }
 		}
 
-		public abstract IEnumerable<IGridItem> SelectedItems { get; }
+		public abstract IEnumerable<object> SelectedItems { get; }
 
-		public IEnumerable<int> SelectedRows {
-			get { return handler.SelectedRows; }
+		/// <summary>
+		/// If there is exactly one selected item, returns it, otherwise
+		/// returns null.
+		/// </summary>
+		public object SelectedItem
+		{
+			get
+			{
+				var selectedItems = SelectedItems;
+				if (selectedItems != null && selectedItems.Count() == 1)
+					return SelectedItems.FirstOrDefault();
+				return null;
+			}
+		}
+
+		public virtual IEnumerable<int> SelectedRows {
+			get { return Handler.SelectedRows; }
 		}
 
 		public int RowHeight
 		{
-			get { return handler.RowHeight; }
-			set { handler.RowHeight = value; }
+			get { return Handler.RowHeight; }
+			set { Handler.RowHeight = value; }
 		}
 
-		public void SelectRow (int row)
+		public virtual void SelectRow (int row)
 		{
-			handler.SelectRow (row);
+			Handler.SelectRow (row);
 		}
 
-		public void SelectAll ()
+		public virtual void SelectAll ()
 		{
-			handler.SelectAll ();
+			Handler.SelectAll ();
 		}
 
-		public void UnselectRow (int row)
+		public virtual void UnselectRow(int row)
 		{
-			handler.UnselectRow (row);
+			Handler.UnselectRow (row);
 		}
 
-		public void UnselectAll ()
+		public virtual void UnselectAll()
 		{
-			handler.UnselectAll ();
+			Handler.UnselectAll ();
 		}
 	}
 }

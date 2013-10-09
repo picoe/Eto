@@ -7,18 +7,17 @@ namespace Eto.Forms
 	{
 		void Create (bool largeCanvas);
 	}
-	
+
 	public partial class Drawable
 	{
 		public Drawable (bool largeCanvas)
 			: this(Generator.Current, largeCanvas)
 		{
 		}
-		
+
 		public Drawable (Generator g, bool largeCanvas) : base(g, typeof(IDrawable))
 		{
-			handler = (IDrawable)Handler;
-			handler.Create (largeCanvas);
+			Handler.Create (largeCanvas);
 		}
 	}
 }

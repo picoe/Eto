@@ -4,8 +4,8 @@ using System.Runtime.CompilerServices;
 using System.Windows.Markup;
 #endif
 
-[assembly: AssemblyTitle ("Eto.Forms class libraries")]
-[assembly: AssemblyDescription ("Eto.Forms class libraries")]
+[assembly: AssemblyTitle ("Eto.Forms")]
+[assembly: AssemblyDescription ("Eto.Forms UI Framework")]
 
 #if XAML
 [assembly: XmlnsDefinition (Eto.Xaml.EtoXamlSchemaContext.EtoFormsNamespace, "Eto.Forms")]

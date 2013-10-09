@@ -140,14 +140,14 @@ namespace Eto.Drawing
 		void DrawImage (Image image, RectangleF source, RectangleF destination);
 
 		/// <summary>
-		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
+		/// Draws text with the specified <paramref name="font"/>, <paramref name="brush"/> and location
 		/// </summary>
 		/// <param name="font">Font to draw the text with</param>
-		/// <param name="color">Color of the text</param>
+		/// <param name="brush">A brush with the color of the text</param>
 		/// <param name="x">X co-ordinate of where to start drawing the text</param>
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		void DrawText (Font font, Color color, float x, float y, string text);
+		void DrawText (Font font, SolidBrush brush, float x, float y, string text);
 
 		/// <summary>
 		/// Measures the string with the given <paramref name="font"/>
@@ -868,6 +868,19 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
+		/// Draws text with the specified <paramref name="font"/>, <paramref name="brush"/> and location
+		/// </summary>
+		/// <param name="font">Font to draw the text with</param>
+		/// <param name="brush">Brush to stroke the text</param>
+		/// <param name="x">X co-ordinate of where to start drawing the text</param>
+		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
+		/// <param name="text">Text string to draw</param>
+		public void DrawText (Font font, SolidBrush brush, float x, float y, string text)
+		{
+			Handler.DrawText (font, brush, x, y, text);
+		}
+
+		/// <summary>
 		/// Draws text with the specified <paramref name="font"/>, <paramref name="color"/> and location
 		/// </summary>
 		/// <param name="font">Font to draw the text with</param>
@@ -875,9 +888,22 @@ namespace Eto.Drawing
 		/// <param name="x">X co-ordinate of where to start drawing the text</param>
 		/// <param name="y">Y co-ordinate of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		public void DrawText (Font font, Color color, float x, float y, string text)
+		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
-			Handler.DrawText (font, color, x, y, text);
+			using (var brush = new SolidBrush(color))
+				Handler.DrawText(font, brush, x, y, text);			
+		}
+
+		/// <summary>
+		/// Draws text with the specified <paramref name="font"/>, <paramref name="brush"/> and location
+		/// </summary>
+		/// <param name="font">Font to draw the text with</param>
+		/// <param name="brush">Brush to stroke the text</param>
+		/// <param name="location">Location of where to start drawing the text</param>
+		/// <param name="text">Text string to draw</param>
+		public void DrawText (Font font, SolidBrush brush, PointF location, string text)
+		{
+			Handler.DrawText (font, brush, location.X, location.Y, text);
 		}
 
 		/// <summary>
@@ -887,9 +913,10 @@ namespace Eto.Drawing
 		/// <param name="color">Color of the text</param>
 		/// <param name="location">Location of where to start drawing the text</param>
 		/// <param name="text">Text string to draw</param>
-		public void DrawText (Font font, Color color, PointF location, string text)
+		public void DrawText(Font font, Color color, PointF location, string text)
 		{
-			Handler.DrawText (font, color, location.X, location.Y, text);
+			using (var brush = new SolidBrush(color))
+				Handler.DrawText(font, brush, location.X, location.Y, text);
 		}
 
 		/// <summary>

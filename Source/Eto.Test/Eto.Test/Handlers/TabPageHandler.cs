@@ -1,11 +1,20 @@
 using Eto.Drawing;
 using Eto.Forms;
+using System.Linq;
 
 namespace Eto.Test.Handlers
 {
-    class TabPageHandler : ThemedContainerHandler<Panel, TabPage>, ITabPage, IContainer
+    class TabPageHandler : ThemedContainerHandler<Panel, TabPage>, ITabPage
     {
+		public Padding Padding { get; set; }
+
 		public Tab Tab { get; private set; }
+
+		public Control Content { get { return Control != null ? Control.Content : null; } set { Control.Content = value; } }
+
+#if DESKTOP
+		public Size MinimumSize { get { return Control.MinimumSize; } set { Control.MinimumSize = value; } }
+#endif
 
         public TabPageHandler()
         {

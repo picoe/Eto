@@ -64,7 +64,11 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Create(string fileName)
 		{
-			Control = new SD.Bitmap(fileName);
+			// We create a temp image from the file
+			// because SD.Bitmap(filename) locks the file
+			// until the image is disposed.
+			using (var temp = new SD.Bitmap(fileName))
+				Control = new SD.Bitmap(temp);
 		}
 
 		public void Create(Stream stream)

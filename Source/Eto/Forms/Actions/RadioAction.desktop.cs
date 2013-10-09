@@ -7,17 +7,17 @@ namespace Eto.Forms
 	public partial class RadioAction : BaseAction
 	{
 		RadioMenuItem menuItem;
-		
-		public override MenuItem Generate(ActionItem actionItem, ISubMenuWidget menu)
+
+		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			RadioMenuItem mi = new RadioMenuItem(menu.Generator, (Controller != null) ? Controller.menuItem : null);
+			RadioMenuItem mi = new RadioMenuItem(generator, (Controller != null) ? Controller.menuItem : null);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = this.Enabled;
 			mi.Checked = Checked;
-			if (!string.IsNullOrEmpty (MenuItemStyle))
+			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
-			
+
 			new MenuConnector(this, mi);
 			menuItem = mi;
 			return mi;
@@ -55,8 +55,7 @@ namespace Eto.Forms
 			{
 				menuItem.Enabled = action.Enabled;
 			}
-		}
-		
+		}		
 	}
 }
 #endif

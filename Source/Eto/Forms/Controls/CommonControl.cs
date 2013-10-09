@@ -7,20 +7,20 @@ namespace Eto.Forms
 	{
 		Font Font { get; set; }
 	}
-	
+
 	public abstract class CommonControl : Control
 	{
-		ICommonControl inner;
-		
-		protected CommonControl (Generator generator, Type type, bool initialize = true)
+		new ICommonControl Handler { get { return (ICommonControl)base.Handler; } }
+
+		protected CommonControl(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			this.inner = (ICommonControl)base.Handler;
 		}
-		
-		public Font Font {
-			get { return inner.Font; }
-			set { inner.Font = value; }
+
+		public Font Font
+		{
+			get { return Handler.Font; }
+			set { Handler.Font = value; }
 		}
 	}
 }

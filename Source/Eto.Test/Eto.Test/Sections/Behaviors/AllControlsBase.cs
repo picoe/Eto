@@ -6,88 +6,90 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class AllControlsBase : Panel
 	{
-		public AllControlsBase ()
+		public AllControlsBase()
 		{
 		}
 
-		public override void OnPreLoad (EventArgs e)
+		public override void OnPreLoad(EventArgs e)
 		{
 
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 			
-			var options = GenerateOptions ();
+			var options = GenerateOptions();
 			if (options != null)
-				layout.Add (options);
+				layout.Add(options);
 
-			layout.BeginVertical ();
-			layout.AddRow (null, LabelControl (), ButtonControl (), null);
-			layout.AddRow (null, TextBoxControl (), TextAreaControl (), null);
-			layout.AddRow (null, CheckBoxControl (), RadioButtonControl (), null);
-			layout.AddRow (null, DateTimeControl (), NumericUpDownControl (), null);
-			layout.AddRow (null, ComboBoxControl (), PasswordBoxControl (), null);
-			layout.AddRow (null, ListBoxControl (), DrawableControl (), null);
-			layout.AddRow (null, GroupBoxControl (), new Panel(), null);
-			layout.EndVertical ();
-			layout.Add (null);
+			layout.BeginVertical();
+			layout.AddRow(null, LabelControl(), ButtonControl(), null);
+			layout.AddRow(null, TextBoxControl(), TextAreaControl(), null);
+			layout.AddRow(null, CheckBoxControl(), RadioButtonControl(), null);
+			layout.AddRow(null, DateTimeControl(), NumericUpDownControl(), null);
+			layout.AddRow(null, ComboBoxControl(), PasswordBoxControl(), null);
+			layout.AddRow(null, ListBoxControl(), DrawableControl(), null);
+			layout.AddRow(null, GroupBoxControl(), new Panel(), null);
+			layout.EndVertical();
+			layout.Add(null);
 
-			base.OnPreLoad (e);
+			Content = layout;
+
+			base.OnPreLoad(e);
 		}
 
-		protected virtual Control GenerateOptions ()
+		protected virtual Control GenerateOptions()
 		{
 			return null;
 		}
-		
-		Control LabelControl ()
+
+		Control LabelControl()
 		{
-			var control = new Label{ Text = "Label Control" };
-			LogEvents (control);
+			var control = new Label { Text = "Label Control" };
+			LogEvents(control);
 			return control;
 		}
-		
-		Control ButtonControl ()
+
+		Control ButtonControl()
 		{
 			var control = new Button { Text = "Button Control" };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control TextBoxControl ()
+		Control TextBoxControl()
 		{
 			var control = new TextBox { Text = "TextBox Control" };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control PasswordBoxControl ()
+		Control PasswordBoxControl()
 		{
 			var control = new PasswordBox { Text = "PasswordBox Control" };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control TextAreaControl ()
+		Control TextAreaControl()
 		{
 			var control = new TextArea { Text = "TextArea Control" };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control CheckBoxControl ()
+		Control CheckBoxControl()
 		{
 			var control = new CheckBox { Text = "CheckBox Control" };
-			LogEvents (control);
-			return control;
-		}
-		
-		Control RadioButtonControl ()
-		{
-			var control = new RadioButton { Text = "RadioButton Control" };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control DateTimeControl ()
+		Control RadioButtonControl()
+		{
+			var control = new RadioButton { Text = "RadioButton Control" };
+			LogEvents(control);
+			return control;
+		}
+
+		Control DateTimeControl()
 		{
 			var control = new DateTimePicker { };
 			LogEvents (control);
@@ -134,7 +136,7 @@ namespace Eto.Test.Sections.Behaviors
 		Control GroupBoxControl ()
 		{
 			var control = new GroupBox { Text = "Some Group Box" };
-			control.AddDockedControl (new Label{ Text = "Content" });
+			control.Content = new Label{ Text = "Content" };
 			LogEvents (control);
 			return control;
 		}

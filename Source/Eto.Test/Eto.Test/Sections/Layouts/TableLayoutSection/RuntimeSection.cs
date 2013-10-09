@@ -15,79 +15,91 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 		Panel topSection;
 		bool toggle;
 
-		public RuntimeSection ()
+		public RuntimeSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 
-			layout.AddCentered (ToggleButton ());
-			layout.Add (MainTable ());
+			layout.AddCentered(ToggleButton());
+			layout.Add(MainTable());
+
+			Content = layout;
 		}
 
-		Control ToggleButton ()
+		Control ToggleButton()
 		{
-			var control = new Button {
+			var control = new Button
+			{
 				Text = "Add Columns To Table"
 			};
 
-			control.Click += delegate {
+			Control left = null;
+
+			control.Click += delegate
+			{
 				toggle = !toggle;
-				this.SuspendLayout ();
-				if (toggle) {
-					mainTable.Add (VerticalSection (), 0, 0);
-					rightSection.AddDockedControl (VerticalSection ());
-					middleTable.Add (HorizontalSection (), 0, 2);
-					topSection.AddDockedControl (HorizontalSection ());
+				this.SuspendLayout();
+				if (toggle)
+				{
+					mainTable.Add(left = VerticalSection(), 0, 0);
+					rightSection.Content = VerticalSection();
+					middleTable.Add(HorizontalSection(), 0, 2);
+					topSection.Content = HorizontalSection();
 					control.Text = "Remove Columns";
 				}
-				else {
-					mainTable.Add (null, 0, 0);
-					rightSection.AddDockedControl (null);
-					middleTable.Add (null, 0, 2);
-					topSection.AddDockedControl (null);
+				else
+				{
+					if (left != null)
+					{
+						left.Detach();
+						left = null;
+					}
+					rightSection.Content = null;
+					middleTable.Add(null, 0, 2);
+					topSection.Content = null;
 					control.Text = "Add Columns To Table";
 				}
-				this.ResumeLayout ();
+				this.ResumeLayout();
 			};
 
 			return control;
 		}
 
-		Control MainTable ()
+		Control MainTable()
 		{
-			mainTable = new TableLayout (new Panel (), 3, 1);
+			mainTable = new TableLayout(3, 1);
 
-			mainTable.Add (MiddleSection (), 1, 0, true, true);
-			mainTable.Add (rightSection = new Panel(), 2, 0);
+			mainTable.Add(MiddleSection(), 1, 0, true, true);
+			mainTable.Add(rightSection = new Panel(), 2, 0);
 
-			return mainTable.Container;
+			return mainTable;
 		}
 
-		Control MiddleSection ()
+		Control MiddleSection()
 		{
-			middleTable = new TableLayout (new Panel (), 1, 3);
+			middleTable = new TableLayout(1, 3);
 
-			middleTable.Add (new Label { Text = "Content", BackgroundColor = Colors.LightGrey, HorizontalAlign = HorizontalAlign.Center, VerticalAlign = VerticalAlign.Middle }, 0, 1, true, true);
-			middleTable.Add (topSection = new Panel(), 0, 0);
+			middleTable.Add(new Label { Text = "Content", BackgroundColor = Colors.LightGrey, HorizontalAlign = HorizontalAlign.Center, VerticalAlign = VerticalAlign.Middle }, 0, 1, true, true);
+			middleTable.Add(topSection = new Panel(), 0, 0);
 
-			return middleTable.Container;
+			return middleTable;
 		}
 
-		Control VerticalSection ()
+		Control VerticalSection()
 		{
-			var layout = new DynamicLayout (new Panel { BackgroundColor = Colors.Blue });
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
-			return layout.Container;
+			var layout = new DynamicLayout { BackgroundColor = Colors.Blue };
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
+			return layout;
 		}
 
-		Control HorizontalSection ()
+		Control HorizontalSection()
 		{
-			var layout = new DynamicLayout (new Panel { BackgroundColor = Colors.Blue });
-			layout.BeginHorizontal ();
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
-			layout.Add (new Panel { Size = new Size (50, 60), BackgroundColor = Colors.Lime });
-			layout.EndHorizontal ();
-			return layout.Container;
+			var layout = new DynamicLayout { BackgroundColor = Colors.Blue };
+			layout.BeginHorizontal();
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
+			layout.Add(new Panel { Size = new Size(50, 60), BackgroundColor = Colors.Lime });
+			layout.EndHorizontal();
+			return layout;
 		}
 	}
 }

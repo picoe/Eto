@@ -110,7 +110,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			get {
 				if (style == null) {
-					style = FontStyle.Normal;
+					style = FontStyle.None;
 					if (Control.Weight == Pango.Weight.Bold)
 						style |= FontStyle.Bold;
 					if (Control.Style == Pango.Style.Italic)

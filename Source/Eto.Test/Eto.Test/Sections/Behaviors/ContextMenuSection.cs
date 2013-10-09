@@ -8,31 +8,34 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class ContextMenuSection : Panel
 	{
-		public ContextMenuSection ()
+		public ContextMenuSection()
 		{
-			var layout = new DynamicLayout(this);
+			var layout = new DynamicLayout();
 			
-			layout.Add (null, null, true);
+			layout.Add(null, null, true);
 			
-			layout.AddRow (null, ContextMenuPanel(), null);
+			layout.AddRow(null, ContextMenuPanel(), null);
 			
-			layout.Add (null, null, true);
+			layout.Add(null, null, true);
+
+			Content = layout;
 		}
-		
+
 		ContextMenu CreateMenu()
 		{
 			var menu = new ContextMenu();
-			menu.MenuItems.Add (new ImageMenuItem{ Text = "Item 1" });
-			menu.MenuItems.Add (new ImageMenuItem{ Text = "Item 2" });
-			menu.MenuItems.Add (new ImageMenuItem{ Text = "Item 3" });
-			menu.MenuItems.Add (new ImageMenuItem{ Text = "Item 4" });
-			LogEvents (menu);
+			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 1" });
+			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 2" });
+			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 3" });
+			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 4" });
+			LogEvents(menu);
 			return menu;
 		}
-		
-		Control ContextMenuPanel ()
+
+		Control ContextMenuPanel()
 		{
-			var label = new Label{ 
+			var label = new Label
+			{ 
 				Size = new Size(100, 100), 
 				BackgroundColor = Colors.Blue,
 				TextColor = Colors.White,
@@ -40,28 +43,29 @@ namespace Eto.Test.Sections.Behaviors
 				VerticalAlign = VerticalAlign.Middle,
 				Text = "Click on me!"
 			};
-			
-			label.MouseDown += delegate(object sender, MouseEventArgs e) {
-				var menu = CreateMenu ();
-				menu.Show (label);
+			label.MouseDown += (sender, e) =>
+			{
+				var menu = CreateMenu();
+				menu.Show(label);
 			};
 			return label;
 		}
-		
+
 		void LogEvents(ContextMenu menu)
 		{
-			foreach (var item in menu.MenuItems.OfType<ImageMenuItem>()) {
-				LogEvents (item);
+			foreach (var item in menu.MenuItems.OfType<ImageMenuItem>())
+			{
+				LogEvents(item);
 			}
 		}
-		
+
 		void LogEvents(ImageMenuItem item)
 		{
-			item.Click += delegate {
-				Log.Write (item, "Click, Item: {0}", item.Text);
+			item.Click += delegate
+			{
+				Log.Write(item, "Click, Item: {0}", item.Text);
 			};
 		}
 	}
 }
-
 #endif

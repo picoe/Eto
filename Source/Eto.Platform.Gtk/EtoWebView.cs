@@ -29,6 +29,7 @@ namespace Eto.Platform.GtkSharp
 		{
 		}
 
+#if GTK2
 		[Signal("new-window-policy-decision-requested")]
 		public event NewWindowPolicyDecisionRequestedHandler NewWindowPolicyDecisionRequested {
 			add {
@@ -94,6 +95,7 @@ namespace Eto.Platform.GtkSharp
 			val.Dispose ();
 			return result;
 		}
+#endif
 	}
 }
 

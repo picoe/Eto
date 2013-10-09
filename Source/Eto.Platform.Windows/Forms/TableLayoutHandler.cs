@@ -1,135 +1,188 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 using System.Linq;
 
 namespace Eto.Platform.Windows
 {
-	public class TableLayoutHandler : WindowsLayout<System.Windows.Forms.TableLayoutPanel, TableLayout>, ITableLayout
+	public class TableLayoutHandler : WindowsContainer<System.Windows.Forms.TableLayoutPanel, TableLayout>, ITableLayout
 	{
 		Size spacing;
 		Control[,] views;
 		bool[] columnScale;
-		bool lastColumnScale;
+		int lastColumnScale;
 		bool[] rowScale;
-		bool lastRowScale;
-
-		public override object LayoutObject
-		{
-			get	{ return Control; }
-		}
+		int lastRowScale;
 
 		public override Size DesiredSize
 		{
-			get { return Control.PreferredSize.ToEto (); }
-		}
-		
-		public TableLayoutHandler()
-		{
-			Control = new SWF.TableLayoutPanel();
-			this.Control.SuspendLayout ();
-			this.Control.Margin = SWF.Padding.Empty;
-			this.Control.Dock = SWF.DockStyle.Fill;
-			this.Control.Size = SD.Size.Empty;
-			this.Control.MinimumSize = SD.Size.Empty;
-			this.Control.AutoSize = true;
-			this.Control.AutoSizeMode = SWF.AutoSizeMode.GrowAndShrink;
-			this.Spacing = TableLayout.DefaultSpacing;
-			this.Padding = TableLayout.DefaultPadding;
+			get { return Control.PreferredSize.ToEto(); }
 		}
 
-		public override void OnLoad ()
+		protected override void SetMinimumSize(Size size)
 		{
-			base.OnLoad ();
-			this.Control.ResumeLayout ();
+			// ensure that our width doesn't get smaller than the non-scaled child controls
+			// to make it so the child controls are left-justified when the container
+			// is smaller than all the children
+			var widths = Control.GetColumnWidths();
+			var heights = Control.GetRowHeights();
+			var curSize = Size.Empty;
+			for (int i = 0; i < widths.Length; i++)
+			{
+				if (!columnScale[i] && i != lastColumnScale)
+					curSize.Width += widths[i];
+			}
+			for (int i = 0; i < heights.Length; i++)
+			{
+				if (!rowScale[i] && i != lastRowScale)
+					curSize.Height += heights[i];
+			}
+			size = Size.Max(size, curSize);
+			base.SetMinimumSize(size);
 		}
-		
-		public override void Update ()
+
+		public TableLayoutHandler()
 		{
-			this.Control.Update();
+			Control = new swf.TableLayoutPanel
+			{
+				Margin = swf.Padding.Empty,
+				Dock = swf.DockStyle.Fill,
+				Size = sd.Size.Empty,
+				MinimumSize = sd.Size.Empty,
+				AutoSize = true,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
+			};
+			this.Spacing = TableLayout.DefaultSpacing;
+			this.Padding = TableLayout.DefaultPadding;
+			Control.SuspendLayout();
 		}
-		
-		public Size Spacing {
-			get {
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			Control.ResumeLayout();
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Control.SuspendLayout();
+		}
+
+		public void Update()
+		{
+			this.Control.PerformLayout();
+		}
+
+		public Size Spacing
+		{
+			get
+			{
 				return spacing;
 			}
-			set {
+			set
+			{
 				spacing = value;
-				var newpadding = new SWF.Padding(0, 0, spacing.Width, spacing.Height);
-				foreach (SWF.Control control in this.Control.Controls)
+				var newpadding = new swf.Padding(0, 0, spacing.Width, spacing.Height);
+				foreach (swf.Control control in this.Control.Controls)
 				{
 					control.Margin = newpadding;
 				}
 			}
 		}
-		
-		SWF.Padding GetPadding(int x, int y)
+
+		swf.Padding GetPadding(int x, int y)
 		{
-			return new SWF.Padding(
-				x == 0 ? 0 : spacing.Width / 2, 
-				y == 0 ? 0 : spacing.Height / 2, 
-				x == this.views.GetLength(0)-1 ? 0 : (spacing.Width + 1) / 2, 
-				y == this.views.GetLength(1)-1 ? 0 : (spacing.Height + 1) / 2);
-		}
-		
-		public Padding Padding {
-			get { return Control.Padding.ToEto (); }
-			set { Control.Padding = value.ToSWF (); }
+			return new swf.Padding(
+				x == 0 ? 0 : spacing.Width / 2,
+				y == 0 ? 0 : spacing.Height / 2,
+				x == this.views.GetLength(0) - 1 ? 0 : (spacing.Width + 1) / 2,
+				y == this.views.GetLength(1) - 1 ? 0 : (spacing.Height + 1) / 2);
 		}
 
-		void SetScale (Control control, int x, int y)
+		public Padding Padding
 		{
-			var xscale = columnScale[x] || (x == columnScale.Length - 1 && lastColumnScale);
-			var yscale = rowScale[y] || (y == rowScale.Length - 1 && lastRowScale);
-			control.SetScale (this.XScale && xscale, this.YScale && yscale);
+			get { return Control.Padding.ToEto(); }
+			set { Control.Padding = value.ToSWF(); }
 		}
 
-		public override void SetScale (bool xscale, bool yscale)
+		void SetScale(Control control, int x, int y)
 		{
-			base.SetScale (xscale, yscale);
-			for (int y = 0; y < rowScale.Length; y ++)
+			var xscale = this.XScale && (x == lastColumnScale || columnScale[x]);
+			var yscale = this.YScale && (y == lastRowScale || rowScale[y]);
+			control.SetScale(xscale, yscale);
+		}
+
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			for (int y = 0; y < rowScale.Length; y++)
+			{
+				var ys = yscale && (y == lastRowScale || rowScale[y]);
 				for (int x = 0; x < columnScale.Length; x++)
 				{
-					SetScale (views[x, y], x, y);
+					var xs = xscale && (x == lastColumnScale || columnScale[x]);
+					var control = views[x,y];
+					if (control != null)
+						control.SetScale(xs, ys);
 				}
+			}
 		}
-		
+
 		public void Add(Control child, int x, int y)
 		{
-			Control.SuspendLayout ();
+			if (Widget.Loaded)
+				SuspendLayout();
+			
 			var old = views[x, y];
 			if (old != null)
-				Control.Controls.Remove (old.GetContainerControl ());
-			views[x, y] = child;
-			if (child != null) {
-				SWF.Control childControl = child.GetContainerControl ();
-				if (childControl.Parent != null) childControl.Parent.Controls.Remove (childControl);
-				childControl.Dock = child.GetWindowsControl().DockStyle;
-				childControl.Margin = GetPadding (x, y);
-				SetScale (child, x, y);
-
-				Control.Controls.Add (childControl, x, y);
+			{
+				old.GetContainerControl().Parent = null;
 			}
-			Control.ResumeLayout ();
+			views[x, y] = child;
+			if (child != null)
+			{
+				var childControl = child.GetContainerControl();
+				childControl.Parent = null;
+				childControl.Dock = child.GetWindowsHandler().DockStyle;
+				childControl.Margin = GetPadding(x, y);
+				SetScale(child, x, y);
+
+				Control.Controls.Add(childControl, x, y);
+			}
+			if (Widget.Loaded)
+				ResumeLayout();
 		}
-		
+
 		public void Move(Control child, int x, int y)
 		{
-			SWF.Control childControl = child.GetContainerControl ();
-			Control.SetCellPosition(childControl, new SWF.TableLayoutPanelCellPosition(x, y));
-			SetScale (child, x, y);
+			if (Widget.Loaded)
+				SuspendLayout();
+			swf.Control childControl = child.GetContainerControl();
+			Control.SetCellPosition(childControl, new swf.TableLayoutPanelCellPosition(x, y));
+			SetScale(child, x, y);
+			if (Widget.Loaded)
+				ResumeLayout();
 		}
-		
-		public void Remove (Control child)
+
+		public void Remove(Control child)
 		{
-			SWF.Control childControl = child.GetContainerControl ();
-			if (childControl.Parent != null) childControl.Parent.Controls.Remove(childControl);
-			for (int y=0; y<views.GetLength(0); y++)
-			for (int x=0; x<views.GetLength(1); x++)
+			swf.Control childControl = child.GetContainerControl();
+			if (childControl.Parent == Control)
 			{
-				if (views[y,x] == child) views[y,x] = null;
+				childControl.Parent = null;
+				for (int y = 0; y < views.GetLength(0); y++)
+					for (int x = 0; x < views.GetLength(1); x++)
+					{
+						if (object.ReferenceEquals(views[y, x], child)) views[y, x] = null;
+					}
 			}
 		}
 
@@ -137,9 +190,9 @@ namespace Eto.Platform.Windows
 		{
 			views = new Control[cols, rows];
 			columnScale = new bool[cols];
-			lastColumnScale = true;
+			lastColumnScale = cols - 1;
 			rowScale = new bool[rows];
-			lastRowScale = true;
+			lastRowScale = rows - 1;
 			Control.RowCount = rows;
 			Control.ColumnCount = cols;
 			Control.ColumnStyles.Clear();
@@ -150,67 +203,59 @@ namespace Eto.Platform.Windows
 				Control.RowStyles.Add(GetRowStyle(i));
 		}
 
-		SWF.ColumnStyle GetColumnStyle (int column)
+		swf.ColumnStyle GetColumnStyle(int column)
 		{
-			var scale = columnScale[column];
-			if (column == columnScale.Length - 1)
-				scale |= lastColumnScale;
+			var scale = columnScale[column] || column == lastColumnScale;
 			if (scale)
-				return new SWF.ColumnStyle (SWF.SizeType.Percent, 1f);
+				return new swf.ColumnStyle(swf.SizeType.Percent, 1f);
 			else
-				return new SWF.ColumnStyle (SWF.SizeType.AutoSize);
+				return new swf.ColumnStyle(swf.SizeType.AutoSize);
 		}
 
-		SWF.RowStyle GetRowStyle (int row)
+		swf.RowStyle GetRowStyle(int row)
 		{
-			var scale = rowScale[row];
-			if (row == rowScale.Length - 1)
-				scale |= lastRowScale;
+			var scale = rowScale[row] || row == lastRowScale;
 			if (scale)
-				return new SWF.RowStyle (SWF.SizeType.Percent, 1f);
+				return new swf.RowStyle(swf.SizeType.Percent, 1f);
 			else
-				return new SWF.RowStyle (SWF.SizeType.AutoSize);
+				return new swf.RowStyle(swf.SizeType.AutoSize);
 		}
 
-		void ResetColumnScale (int column)
+		void ResetColumnScale(int column)
 		{
-			var xscale = columnScale[column];
-			if (column == columnScale.Length - 1)
-				xscale |= lastColumnScale;
+			var xscale = columnScale[column] || column == lastColumnScale;
 			for (int i = 0; i < rowScale.Length; i++)
 			{
 				var control = views[column, i];
-				control.SetScale (xscale, rowScale[i]);
+				control.SetScale(xscale, rowScale[i]);
 			}
 		}
 
-		void ResetRowScale (int row)
+		void ResetRowScale(int row)
 		{
-			var yscale = rowScale[row];
-			if (row == rowScale.Length - 1)
-				yscale |= lastRowScale;
+			var yscale = rowScale[row] || row == lastRowScale;
 			for (int i = 0; i < columnScale.Length; i++)
 			{
 				var control = views[i, row];
-				control.SetScale (columnScale[i], yscale);
+				control.SetScale(columnScale[i], yscale);
 			}
 		}
 
 		public void SetColumnScale(int column, bool scale)
 		{
 			columnScale[column] = scale;
-			var lastScale = columnScale.Length == 1 || columnScale.Take (columnScale.Length - 1).All (r => !r);
-			Control.ColumnStyles[column] = GetColumnStyle (column);
-			ResetColumnScale (column);
-			if (lastScale != lastColumnScale)
+			var prev = lastColumnScale;
+			lastColumnScale = columnScale.Any(r => r) ? -1 : columnScale.Length - 1;
+			Control.ColumnStyles[column] = GetColumnStyle(column);
+			ResetColumnScale(column);
+			if (prev != lastColumnScale && column != columnScale.Length - 1)
 			{
-				lastColumnScale = lastScale;
-				Control.ColumnStyles[columnScale.Length - 1] = GetColumnStyle (columnScale.Length - 1);
-				ResetColumnScale (columnScale.Length - 1);
+				Control.ColumnStyles[columnScale.Length - 1] = GetColumnStyle(columnScale.Length - 1);
+				ResetColumnScale(columnScale.Length - 1);
 			}
 		}
 
-		public bool GetColumnScale (int column)
+		public bool GetColumnScale(int column)
 		{
 			return columnScale[column];
 		}
@@ -218,19 +263,19 @@ namespace Eto.Platform.Windows
 		public void SetRowScale(int row, bool scale)
 		{
 			rowScale[row] = scale;
-			var lastScale = rowScale[rowScale.Length - 1] || rowScale.Take (rowScale.Length - 1).All (r => !r);
-			Control.RowStyles[row] = GetRowStyle (row);
-			ResetRowScale (row);
-			if (lastScale != lastRowScale)
+			var prev = lastRowScale;
+			lastRowScale = rowScale.Any(r => r) ? -1 : rowScale.Length - 1;
+			Control.RowStyles[row] = GetRowStyle(row);
+			ResetRowScale(row);
+			if (prev != lastRowScale && row != rowScale.Length - 1)
 			{
-				lastRowScale = lastScale;
-				Control.RowStyles[rowScale.Length - 1] = GetRowStyle (rowScale.Length - 1);
-				ResetRowScale (rowScale.Length - 1);
+				Control.RowStyles[rowScale.Length - 1] = GetRowStyle(rowScale.Length - 1);
+				ResetRowScale(rowScale.Length - 1);
 			}
-			ResetRowScale (row);
+			ResetRowScale(row);
 		}
 
-		public bool GetRowScale (int row)
+		public bool GetRowScale(int row)
 		{
 			return rowScale[row];
 		}

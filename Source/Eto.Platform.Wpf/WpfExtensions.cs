@@ -5,7 +5,9 @@ using System.Text;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
+using swc = System.Windows.Controls;
 using Eto.Platform.Wpf.Forms;
+using Eto.Forms;
 
 namespace Eto.Platform.Wpf
 {
@@ -22,7 +24,7 @@ namespace Eto.Platform.Wpf
 			return null;
 		}
 
-		public static T FindChild<T> (this sw.DependencyObject parent, string childName)
+		public static T FindChild<T> (this sw.DependencyObject parent, string childName = null)
 		   where T : sw.DependencyObject
 		{
 			// Confirm parent and childName are valid. 
@@ -61,6 +63,15 @@ namespace Eto.Platform.Wpf
 			return foundChild;
 		}
 
+		public static void RemoveFromParent(this Control control)
+		{
+			if (control.Parent == null)
+				return;
+			var parent = control.Parent.Handler as IWpfContainer;
+			if (parent != null)
+				parent.Remove(control.GetContainerControl());
+		}
+
 		public static bool HasFocus (this sw.DependencyObject control, sw.DependencyObject focusScope, bool checkChildren = true)
 		{
 			var current = swi.FocusManager.GetFocusedElement (focusScope) as sw.DependencyObject;
@@ -78,9 +89,12 @@ namespace Eto.Platform.Wpf
 
 		public static void EnsureLoaded (this sw.FrameworkElement control)
 		{
-			ApplicationHandler.InvokeIfNecessary (() => {
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
 				if (!control.IsLoaded)
-					control.Dispatcher.Invoke (new Action (() => { }), sw.Threading.DispatcherPriority.ContextIdle, null);
+				{
+					control.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ContextIdle, null);
+				}
 			});
 		}
 
@@ -94,9 +108,19 @@ namespace Eto.Platform.Wpf
 			return thickness.Top + thickness.Bottom;
 		}
 
-		public static sw.Size Size (this sw.Thickness thickness)
+		public static sw.Size Size(this sw.Thickness thickness)
 		{
-			return new sw.Size (thickness.Horizontal (), thickness.Vertical ());
+			return new sw.Size(thickness.Horizontal(), thickness.Vertical());
+		}
+
+		public static sw.Size Add(this sw.Size size1, sw.Size size2)
+		{
+			return new sw.Size(size1.Width + size2.Width, size1.Height + size2.Height);
+		}
+
+		public static sw.Size Subtract(this sw.Size size1, sw.Size size2)
+		{
+			return new sw.Size(Math.Max(0, size1.Width - size2.Width), Math.Max(0, size1.Height - size2.Height));
 		}
 	}
 }

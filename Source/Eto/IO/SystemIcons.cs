@@ -25,12 +25,11 @@ namespace Eto.IO
 	
 	public class SystemIcons : Widget
 	{
-		ISystemIcons inner;
+		new ISystemIcons Handler { get { return (ISystemIcons)base.Handler; } }
 		Hashtable htSizes = new Hashtable();
 
 		public SystemIcons(Generator g) : base(g, typeof(ISystemIcons))
 		{
-			inner = (ISystemIcons)Handler;
 		}
 
 		private Hashtable GetLookupTable(IconSize size)
@@ -51,7 +50,7 @@ namespace Eto.IO
 			Icon icon = (Icon)htIcons[ext];
 			if (icon == null) 
 			{
-				icon = inner.GetFileIcon(fileName, size);
+				icon = Handler.GetFileIcon(fileName, size);
 				htIcons.Add(ext, icon);
 			}
 			return icon;
@@ -63,7 +62,7 @@ namespace Eto.IO
 			Icon icon = (Icon)htIcons[type];
 			if (icon == null) 
 			{
-				icon = inner.GetStaticIcon(type, size);
+				icon = Handler.GetStaticIcon(type, size);
 				htIcons.Add(type, icon);
 			}
 			return icon;

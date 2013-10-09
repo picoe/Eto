@@ -94,11 +94,19 @@ namespace Eto.Platform.Windows.Drawing
 
 			if (dashStyle == null || dashStyle.IsSolid)
 				pen.DashStyle = sd2.DashStyle.Solid;
-			else {
+			else if (dashStyle.Equals(DashStyles.Dash))
+				pen.DashStyle = sd2.DashStyle.Dash;
+			else if (dashStyle.Equals(DashStyles.DashDot))
+				pen.DashStyle = sd2.DashStyle.DashDot;
+			else if (dashStyle.Equals(DashStyles.DashDotDot))
+				pen.DashStyle = sd2.DashStyle.DashDotDot;
+			else
+			{
 				pen.DashStyle = sd2.DashStyle.Custom;
 				pen.DashPattern = dashStyle.Dashes;
 				pen.DashOffset = dashStyle.Offset;
-				if (pen.StartCap == sd2.LineCap.Square) {
+				if (pen.StartCap == sd2.LineCap.Square)
+				{
 					pen.DashOffset += 0.5f;
 				}
 			}

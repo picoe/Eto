@@ -40,7 +40,7 @@ namespace Eto.Forms
 	{
 		public event EventHandler<EventArgs> SelectedIndexChanged;
 
-		IListControl handler;
+		new IListControl Handler { get { return (IListControl)base.Handler; } }
 
 		public virtual void OnSelectedIndexChanged(EventArgs e)
 		{
@@ -60,7 +60,6 @@ namespace Eto.Forms
 		protected ListControl(Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (IListControl)base.Handler;
 		}
 		
 		public ListItemCollection Items
@@ -79,14 +78,14 @@ namespace Eto.Forms
 
 		public IListStore DataStore
 		{
-			get { return handler.DataStore; }
-			set { handler.DataStore = value; }
+			get { return Handler.DataStore; }
+			set { Handler.DataStore = value; }
 		}
 
 		public int SelectedIndex
 		{
-			get { return handler.SelectedIndex; }
-			set { handler.SelectedIndex = value; }
+			get { return Handler.SelectedIndex; }
+			set { Handler.SelectedIndex = value; }
 		}
 
 		public IListItem SelectedValue

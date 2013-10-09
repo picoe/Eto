@@ -18,10 +18,10 @@ namespace Eto.Test.iOS
 
 				splitter.Panel1 = nav;
 				splitter.Panel2 = new Panel();
-				this.AddDockedControl (splitter);
+				Content = splitter;
 			} else {
 				// show list directly for smartphones
-				this.AddDockedControl (nav);
+				Content = nav;
 			}
 
 			SetContent();

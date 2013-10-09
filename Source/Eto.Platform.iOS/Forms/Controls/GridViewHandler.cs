@@ -11,41 +11,42 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		Collection store;
 
-		public class GridTableDelegate : EtoTableDelegate
+		class Collection : DataStoreChangedHandler<object, IDataStore>
 		{
-			public new GridViewHandler Handler
+			public GridViewHandler Handler { get; set; }
+
+
+			public override void AddItem(object item)
 			{
-				get { return (GridViewHandler)base.Handler; }
-				set { base.Handler = value; }
+				Handler.ReloadData();
 			}
-
-		}
-
-
-		class Collection : DataStoreChangedHandler<IGridItem, IGridStore>
-		{
-			public override void AddItem (IGridItem item)
+			public override void InsertItem(int index, object item)
 			{
-			}
-			public override void InsertItem (int index, IGridItem item)
-			{
+				Handler.ReloadData();
 			}
 			public override void RemoveItem (int index)
 			{
+				Handler.ReloadData();
 			}
 			public override void RemoveAllItems ()
 			{
+				Handler.ReloadData();
 			}
+		}
+
+		public bool ShowCellBorders
+		{
+			set { } // TODO
 		}
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new GridTableDelegate { Handler  = this };
+			return new GridTableDelegate(this);
 		}
 
 		public GridViewHandler ()
 		{
-			store = new Collection();
+			store = new Collection { Handler = this };
 		}
 
 		public class DataSource : UITableViewDataSource
@@ -56,10 +57,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 			public override int RowsInSection (UITableView tableView, int section)
 			{
-				if (Handler.store.Collection != null)
-					return Handler.store.Collection.Count;
-				else
-					return 0;
+				var result = Handler.store.Collection != null ? Handler.store.Collection.Count : 0;
+				return result;
 			}
 
 			public override UITableViewCell GetCell (UITableView tableView, MonoTouch.Foundation.NSIndexPath indexPath)
@@ -74,11 +73,44 @@ namespace Eto.Platform.iOS.Forms.Controls
 				}
 				return cell;
 			}
+
+			public override void CommitEditingStyle(
+				UITableView tableView, 
+				UITableViewCellEditingStyle editingStyle, 
+				NSIndexPath indexPath)
+			{
+				switch (editingStyle)
+				{
+					case UITableViewCellEditingStyle.Delete:
+						// remove the item from the underlying data source
+						if (Handler.Widget.DeleteItemHandler != null &&
+							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath)))
+						{
+							// That succeeded, so delete the row from the table
+							tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
+						}
+						break;
+					case UITableViewCellEditingStyle.None:
+					case UITableViewCellEditingStyle.Insert: // TODO
+						break;					
+				}
+			}
+
+			public override bool CanEditRow(UITableView tableView, NSIndexPath indexPath)
+			{
+				// If the widget returns true, allow the row to be deleted
+				return Handler.Widget.CanDeleteItem != null &&
+					Handler.Widget.CanDeleteItem(Handler.GetItem(indexPath)); 
+			}
+					
 		}
 
-		public IGridItem GetItem(NSIndexPath indexPath)
+		public object GetItem(NSIndexPath indexPath)
 		{
-			var section = store.Collection[indexPath.Section] as IDataStore<IGridItem>;
+			var result = store.Collection[indexPath.Row];
+			return result;
+			// BUGBUG: the below code seems wrong, it does an extra indirection.
+			var section = store.Collection[indexPath.Section] as IDataStore<object>;
 			if (section != null) {
 				return section[indexPath.Row];
 			}
@@ -91,12 +123,55 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.DataSource = new DataSource { Handler = this };
 		}
 
-		public IGridStore DataStore {
+		public IDataStore DataStore {
 			get { return store.Collection; }
 			set {
 				store.Register(value);
-				Control.ReloadData ();
+				ReloadData();
 			}
+		}
+
+		public void ReloadData()
+		{
+			Control.ReloadData();
+		}
+	}
+
+	public class GridTableDelegate : GridHandlerTableDelegate
+	{
+		private GridViewHandler GridViewHandler { get { return this.Handler as GridViewHandler; } }
+
+		public GridTableDelegate(IGrid handler)
+			: base(handler)
+		{
+		}
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			base.RowSelected(tableView, indexPath);
+
+			// CellClick event
+			GridViewHandler.Widget.OnCellClick(new GridViewCellArgs(
+				null, // TODO
+				indexPath.Row,
+				0, // Is this correct?
+				GridViewHandler.GetItem(indexPath)));
+		}
+
+		public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
+		{
+			var result = GridViewHandler.Widget.DeleteConfirmationTitle;
+			if (string.IsNullOrEmpty(result))
+				result = base.TitleForDeleteConfirmation(tableView, indexPath);
+			return result;
+		}
+
+		public override UITableViewCellEditingStyle EditingStyleForRow(UITableView tableView, NSIndexPath indexPath)
+		{
+			return GridViewHandler.Widget.CanDeleteItem != null &&
+				GridViewHandler.Widget.CanDeleteItem(GridViewHandler.GetItem(indexPath))
+				? UITableViewCellEditingStyle.Delete
+				: UITableViewCellEditingStyle.None;
 		}
 	}
 }

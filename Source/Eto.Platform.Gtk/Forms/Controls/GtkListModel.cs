@@ -20,7 +20,7 @@ namespace Eto.Platform.GtkSharp
 		int GetRowOfItem (T item);
 	}
 
-	public class GtkListModel<T, S> : GLib.Object, Gtk.TreeModelImplementor
+	public class GtkListModel<T, S> : GLib.Object, ITreeModelImplementor
 		where S: IDataStore<T>
 		where T: class
 	{

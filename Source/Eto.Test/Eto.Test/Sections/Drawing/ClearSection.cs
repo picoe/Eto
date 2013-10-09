@@ -12,13 +12,14 @@ namespace Eto.Test.Sections.Drawing
 	{
 		bool useClearColor;
 		bool useGraphicsPathClip;
+
 		public bool UseClearColor
 		{
 			get { return useClearColor; }
 			set
 			{
 				useClearColor = value;
-				OnPropertyChanged (new PropertyChangedEventArgs ("UseClearColor"));
+				OnPropertyChanged(new PropertyChangedEventArgs("UseClearColor"));
 			}
 		}
 
@@ -28,85 +29,92 @@ namespace Eto.Test.Sections.Drawing
 			set
 			{
 				useGraphicsPathClip = value;
-				OnPropertyChanged (new PropertyChangedEventArgs ("UseGraphicsPathClip"));
+				OnPropertyChanged(new PropertyChangedEventArgs("UseGraphicsPathClip"));
 			}
 		}
 
-		public ClearSection ()
+		public ClearSection()
 		{
-			var layout = new DynamicLayout (this);
-			layout.AddSeparateRow (null, UseClearColorControl (), UseGraphicsPathClipControl (), null);
-			layout.BeginVertical ();
-			layout.AddRow (new Label { Text = "Drawable" }, ClearGraphicsTest (), null);
-			layout.AddRow (new Label { Text = "Bitmap (with yellow background)" }, ClearBitmapTest (), null);
-			layout.EndVertical ();
-			layout.Add (null);
+			var layout = new DynamicLayout();
+			layout.AddSeparateRow(null, UseClearColorControl(), UseGraphicsPathClipControl(), null);
+			layout.BeginVertical();
+			layout.AddRow(new Label { Text = "Drawable" }, ClearGraphicsTest(), null);
+			layout.AddRow(new Label { Text = "Bitmap (with yellow background)" }, ClearBitmapTest(), null);
+			layout.EndVertical();
+			layout.Add(null);
+
+			Content = layout;
 		}
 
-		Control UseClearColorControl ()
+		Control UseClearColorControl()
 		{
 			var control = new CheckBox { Text = "Use Red Clear Color at 0.5 alpha" };
-			control.Bind (r => r.Checked, this, r => r.UseClearColor);
-			return control;
-		}
-		Control UseGraphicsPathClipControl ()
-		{
-			var control = new CheckBox { Text = "Use graphics path clip" };
-			control.Bind (r => r.Checked, this, r => r.UseGraphicsPathClip);
+			control.Bind(r => r.Checked, this, r => r.UseClearColor);
 			return control;
 		}
 
-		Control ClearGraphicsTest ()
+		Control UseGraphicsPathClipControl()
 		{
-			var control = new Drawable {
+			var control = new CheckBox { Text = "Use graphics path clip" };
+			control.Bind(r => r.Checked, this, r => r.UseGraphicsPathClip);
+			return control;
+		}
+
+		Control ClearGraphicsTest()
+		{
+			var control = new Drawable
+			{
 				Size = new Size (200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 			control.Paint += (sender, e) => {
-				DrawSample (e.Graphics);
+				DrawSample(e.Graphics);
 			};
 			this.PropertyChanged += (sender, e) => {
-				control.Invalidate ();
+				control.Invalidate();
 			};
 			return control;
 		}
 
-		void DrawSample (Graphics graphics)
+		void DrawSample(Graphics graphics)
 		{
-			graphics.FillRectangle (Brushes.Green (), 0, 0, 200, 200);
-			if (UseGraphicsPathClip) {
-				var path = GraphicsPath.GetRoundRect (new RectangleF (10, 10, 180, 180), 20);
-				graphics.SetClip (path);
+			graphics.FillRectangle(Brushes.Green(), 0, 0, 200, 200);
+			if (UseGraphicsPathClip)
+			{
+				var path = GraphicsPath.GetRoundRect(new RectangleF(10, 10, 180, 180), 20);
+				graphics.SetClip(path);
 			}
 			else
-				graphics.SetClip (new RectangleF (10, 10, 180, 180));
+				graphics.SetClip(new RectangleF(10, 10, 180, 180));
 
 			if (UseClearColor)
-				graphics.Clear (new SolidBrush (new Color (Colors.Red, 0.5f)));
+				graphics.Clear(new SolidBrush(new Color(Colors.Red, 0.5f)));
 			else
-				graphics.Clear ();
-			graphics.FillEllipse (Brushes.Blue (), 25, 25, 150, 150);
+				graphics.Clear();
+			graphics.FillEllipse(Brushes.Blue(), 25, 25, 150, 150);
 		}
 
-		Image GenerateImage ()
+		Image GenerateImage()
 		{
-			var image = new Bitmap (200, 200, PixelFormat.Format32bppRgba);
-			using (var graphics = new Graphics (image)) {
-				DrawSample (graphics);
+			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba);
+			using (var graphics = new Graphics (image))
+			{
+				DrawSample(graphics);
 			}
 			return image;
 		}
 
-		Control ClearBitmapTest ()
+		Control ClearBitmapTest()
 		{
-			var control = new ImageView {
+			var control = new ImageView
+			{
 				Image = GenerateImage (),
 				Size = new Size (200, 200),
 				BackgroundColor = Colors.Yellow
 			};
 
 			this.PropertyChanged += (sender, e) => {
-				control.Image = GenerateImage ();
+				control.Image = GenerateImage();
 			};
 
 			return control;
@@ -114,10 +122,10 @@ namespace Eto.Test.Sections.Drawing
 
 		public event PropertyChangedEventHandler PropertyChanged;
 
-		protected void OnPropertyChanged (PropertyChangedEventArgs e)
+		protected void OnPropertyChanged(PropertyChangedEventArgs e)
 		{
 			if (PropertyChanged != null)
-				PropertyChanged (this, e);
+				PropertyChanged(this, e);
 		}
 	}
 }

@@ -3,16 +3,18 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>10.0.0</ProductVersion>
+    <ProductVersion>12.0.0</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{E7C8EBF3-9CC1-445A-9928-1F58C631B48B}</ProjectGuid>
+    <ProjectGuid>{7A02E771-D30B-41A1-8A35-C78D3940FC33}</ProjectGuid>
     <ProjectTypeGuids>{EFBA0AD7-5A72-4C68-AF49-83D382785DCF};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.Android</RootNamespace>
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AssemblyName>Eto.Platform.Android</AssemblyName>
-    <ReleaseVersion />
+    <AndroidResgenFile>Resources\Resource.designer.cs</AndroidResgenFile>
+    <AndroidResgenClass>Resource</AndroidResgenClass>
+    <AndroidUseLatestPlatformSdk>True</AndroidUseLatestPlatformSdk>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -20,20 +22,17 @@
     <Optimize>false</Optimize>
     <OutputPath>bin\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AndroidLinkMode>None</AndroidLinkMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <DebugType>none</DebugType>
-    <Optimize>false</Optimize>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
     <OutputPath>bin\Release</OutputPath>
-    <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
-    <AndroidLinkMode>SdkOnly</AndroidLinkMode>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -43,17 +42,32 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.Android.csproj">
+    <Compile Include="Resources\Resource.designer.cs" />
+    <Compile Include="Generator.cs" />
+    <Compile Include="Forms\AndroidWindow.cs" />
+    <Compile Include="Conversions.cs" />
+    <Compile Include="Forms\AndroidContainer.cs" />
+    <Compile Include="Forms\AndroidDockContainer.cs" />
+    <Compile Include="Forms\AndroidControl.cs" />
+    <Compile Include="Forms\AndroidExtensions.cs" />
+    <Compile Include="Forms\FormHandler.cs" />
+    <Compile Include="Forms\Controls\LabelHandler.cs" />
+    <Compile Include="Forms\Controls\AndroidCommonControl.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AboutResources.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <AndroidResource Include="Resources\values\Strings.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto - Android.csproj">
       <Project>{73A5AD74-68BC-448C-A38C-CFBAF014A311}</Project>
-      <Name>Eto.Android</Name>
+      <Name>Eto - Android</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Generator.cs" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Forms\" />
-    <Folder Include="Drawing\" />
     <Folder Include="Forms\Controls\" />
   </ItemGroup>
 </Project>

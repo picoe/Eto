@@ -6,50 +6,53 @@ namespace Eto.Test.Sections.Controls
 {
 	public class NumericUpDownSection : Panel
 	{
-		public NumericUpDownSection ()
+		public NumericUpDownSection()
 		{
-			var layout = new DynamicLayout (this);
-			
-			layout.AddRow (new Label{ Text = "Default" }, Default ());
-			
-			layout.AddRow (new Label{ Text = "Disabled" }, Disabled ());
-			
-			layout.AddRow (new Label{ Text = "Set Min/Max" }, SetMinMax ());
-			
-			
+			var layout = new DynamicLayout();
+
+			layout.AddRow(new Label { Text = "Default" }, Default());
+
+			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
+
+			layout.AddRow(new Label { Text = "Set Min/Max" }, SetMinMax());
+
 			// growing space at end is blank!
-			layout.Add (null);
+			layout.Add(null);
+
+			Content = layout;
 		}
-		
-		Control Default ()
+
+		Control Default()
 		{
-			var control = new NumericUpDown ();
-			LogEvents (control);
+			var control = new NumericUpDown();
+			LogEvents(control);
 			return control;
 		}
 
-		Control Disabled ()
+		Control Disabled()
 		{
-			var control = SetMinMax ();
+			var control = SetMinMax();
 			control.Enabled = false;
 			return control;
 		}
 
-		Control SetMinMax ()
+		Control SetMinMax()
 		{
-			var control = new NumericUpDown{
+			var control = new NumericUpDown
+			{
 				Value = 24,
 				MinValue = 20,
 				MaxValue = 2000
 			};
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
-		
-		void LogEvents (NumericUpDown control)
+
+		void LogEvents(NumericUpDown control)
 		{
-			control.ValueChanged += delegate {
-				Log.Write (control, "ValueChanged, Value: {0}", control.Value);
+			control.ValueChanged += delegate
+			{
+				Log.Write(control, "ValueChanged, Value: {0}", control.Value);
 			};
 		}
 	}

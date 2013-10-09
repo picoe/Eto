@@ -9,12 +9,11 @@ namespace Eto.Forms
 	
 	public abstract class CommonDialog : InstanceWidget
 	{
-		ICommonDialog handler;
+		new ICommonDialog Handler { get { return (ICommonDialog)base.Handler; } }
 		
 		protected CommonDialog (Generator g, Type type, bool initialize = true)
 			: base (g, type, initialize)
 		{
-			handler = (ICommonDialog)Handler;
 		}
 
 		public DialogResult ShowDialog (Control parent)
@@ -24,7 +23,7 @@ namespace Eto.Forms
 		
 		public DialogResult ShowDialog (Window parent)
 		{
-			return handler.ShowDialog (parent);
+			return Handler.ShowDialog (parent);
 		}
 		
 	}

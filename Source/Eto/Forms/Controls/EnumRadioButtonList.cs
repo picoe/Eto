@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 
 namespace Eto.Forms
 {
@@ -35,8 +36,8 @@ namespace Eto.Forms
 		/// </summary>
 		public new T SelectedValue
 		{
-			get { return (T)Enum.ToObject (typeof(T), Convert.ToInt32 (base.SelectedKey)); }
-			set { base.SelectedKey = Convert.ToString (Convert.ToInt32 (value)); }
+			get { return (T)Enum.ToObject (typeof(T), Convert.ToInt32 (base.SelectedKey, CultureInfo.InvariantCulture)); }
+			set { base.SelectedKey = Convert.ToString (Convert.ToInt32 (value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
 		}
 
 		public EnumRadioButtonList ()
@@ -57,7 +58,7 @@ namespace Eto.Forms
 				if (e.ShouldAdd) {
 					items.Add (new EnumValue {
 						Text = names[i],
-						Key = Convert.ToString (Convert.ToInt32 (e.Value))
+						Key = Convert.ToString (Convert.ToInt32 (e.Value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture)
 					});
 				}
 			}

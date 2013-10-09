@@ -10,14 +10,12 @@ namespace Eto.Platform.Windows
 	public class TextAreaHandler : WindowsControl<swf.RichTextBox, TextArea>, ITextArea
 	{
 		int? lastCaretIndex;
+		Size defaultSize;
 		swf.TableLayoutPanel container;
-		public class MyTextBox : swf.RichTextBox
-		{
-		}
 
 		public override Size? DefaultSize
 		{
-			get { return TextArea.DefaultSize; }
+			get { return defaultSize; }
 		}
 
 		public override swf.Control ContainerControl
@@ -27,15 +25,19 @@ namespace Eto.Platform.Windows
 
 		public TextAreaHandler ()
 		{
-			Control = new MyTextBox {
+			defaultSize = TextArea.DefaultSize;
+			Control = new swf.RichTextBox {
+				Size = sd.Size.Empty,
 				Multiline = true,
 				AcceptsTab = true,
 				Dock = swf.DockStyle.Fill,
 				BorderStyle = swf.BorderStyle.None,
-				ScrollBars = swf.RichTextBoxScrollBars.Both
+				ScrollBars = swf.RichTextBoxScrollBars.Both,
 			};
 			container = new swf.TableLayoutPanel {
-				BorderStyle = swf.BorderStyle.FixedSingle
+				MinimumSize = sd.Size.Empty,
+				BorderStyle = swf.BorderStyle.FixedSingle,
+				Size = defaultSize.ToSD()
 			};
 			container.ColumnStyles.Add (new swf.ColumnStyle (swf.SizeType.AutoSize, 1));
 			container.RowStyles.Add (new swf.RowStyle (swf.SizeType.AutoSize, 1));

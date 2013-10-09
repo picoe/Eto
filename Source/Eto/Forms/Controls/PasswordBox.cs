@@ -14,7 +14,7 @@ namespace Eto.Forms
 
 	public class PasswordBox : TextControl
 	{
-		IPasswordBox handler;
+		new IPasswordBox Handler { get { return (IPasswordBox)base.Handler; } }
 
 		public PasswordBox () : this (Generator.Current)
 		{
@@ -28,22 +28,21 @@ namespace Eto.Forms
 		protected PasswordBox (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (IPasswordBox)base.Handler;
 		}
 
 		public bool ReadOnly {
-			get { return handler.ReadOnly; }
-			set { handler.ReadOnly = value; }
+			get { return Handler.ReadOnly; }
+			set { Handler.ReadOnly = value; }
 		}
 
 		public virtual int MaxLength {
-			get { return handler.MaxLength; }
-			set { handler.MaxLength = value; }
+			get { return Handler.MaxLength; }
+			set { Handler.MaxLength = value; }
 		}
 
 		public char PasswordChar {
-			get { return handler.PasswordChar; }
-			set { handler.PasswordChar = value; }
+			get { return Handler.PasswordChar; }
+			set { Handler.PasswordChar = value; }
 		}
 	}
 }

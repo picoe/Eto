@@ -23,7 +23,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE;WPF</DefineConstants>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -81,6 +81,7 @@
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
     <Compile Include="Conversions.cs" />
+    <Compile Include="CustomControls\EditableTextBlock.cs" />
     <Compile Include="CustomControls\FontDialog\fontchooser.xaml.cs">
       <DependentUpon>fontchooser.xaml</DependentUpon>
     </Compile>
@@ -122,6 +123,7 @@
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Cells\ComboBoxCellHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SwfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\GridHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
@@ -151,6 +153,7 @@
     <Compile Include="Forms\Controls\WpfWebViewHandler.cs" />
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
+    <Compile Include="Forms\WpfDockContainer.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
@@ -182,7 +185,6 @@
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs" />
     <Compile Include="Forms\WpfFrameworkElement.cs" />
-    <Compile Include="Forms\DockLayoutHandler.cs" />
     <Compile Include="Forms\WpfLayout.cs" />
     <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\FormHandler.cs" />
@@ -206,12 +208,6 @@
     <Compile Include="IO\SystemIcons.cs">
       <SubType>Code</SubType>
     </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
-      <Name>Eto</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="..\..\Libraries\WPFToolkit.Extended\Xceed.Wpf.Toolkit.dll">
@@ -279,7 +275,12 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup />
+  <ItemGroup>
+    <ProjectReference Include="..\Eto\Eto.csproj">
+      <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
+      <Name>Eto</Name>
+    </ProjectReference>
+  </ItemGroup>
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

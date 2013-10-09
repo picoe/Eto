@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 
 namespace Eto
 {
@@ -26,7 +25,7 @@ namespace Eto
 		/// is called on the widget handler, then you would pass false to the constructor's initialize parameter,
 		/// then call this manually (via <see cref="M:Widget.Initialize()"/>
 		/// </remarks>
-		void Initialize ();
+		void Initialize();
 
 		/// <summary>
 		/// Gets or sets the generator associated with the handler
@@ -94,48 +93,14 @@ namespace Eto
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract partial class Widget : IHandlerSource, IDisposable, IGeneratorSource
 	{
-		BindingCollection bindings;
-		PropertyStore properties;
-
-		/// <summary>
-		/// Gets the attached properties for this widget
-		/// </summary>
-		public PropertyStore Properties
-		{
-			get
-			{
-				if (properties == null) properties = new PropertyStore (this);
-				return properties;
-			}
-		}
-
 		/// <summary>
 		/// Gets the generator that was used to create the <see cref="Handler"/> for this widget
 		/// </summary>
 		/// <remarks>
 		/// The generator is typically either passed to the constructor of the control, or the
-		/// <see cref="P:Generator.Current"/> is used.
+		/// <see cref="P:Eto.Generator.Current"/> is used.
 		/// </remarks>
 		public Generator Generator { get { return ((IWidget)Handler).Generator; } }
-		
-		/// <summary>
-		/// Gets the collection of bindings that are attached to this widget
-		/// </summary>
-		public BindingCollection Bindings {
-			get {
-				if (bindings == null) bindings = new BindingCollection (); 
-				return bindings;
-			}
-		}
-
-		/// <summary>
-		/// Gets or sets a user-defined object that contains data about the control
-		/// </summary>
-		/// <remarks>
-		/// A common use of the tag property is to store data that is associated with the control that you can later
-		/// retrieve.
-		/// </remarks>
-		public object Tag { get; set; }
 
 		/// <summary>
 		/// Gets the platform-specific handler for this widget
@@ -143,21 +108,12 @@ namespace Eto
 		public object Handler { get; internal set; }
 
 		/// <summary>
-		/// Finalizes this widget
-		/// </summary>
-		~Widget ()
-		{
-			//Console.WriteLine ("GC: {0}", this.GetType ().FullName);
-			Dispose (false);
-		}
-		
-		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
 		/// <param name="generator">Generator the widget handler was created with, or null to use <see cref="Eto.Generator.Current"/></param>
 		/// <param name="handler">Handler to assign to this widget for its implementation</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
-		protected Widget (Generator generator, IWidget handler, bool initialize = true)
+		protected Widget(Generator generator, IWidget handler, bool initialize = true)
 		{
 			if (generator == null)
 				generator = Generator.Current;
@@ -165,7 +121,7 @@ namespace Eto
 			handler.Generator = generator;
 			handler.Widget = this; // tell the handler who we are
 			if (initialize)
-				Initialize ();
+				Initialize();
 		}
 
 		/// <summary>
@@ -174,21 +130,22 @@ namespace Eto
 		/// <param name="generator">Generator to create the handler with, or null to use <see cref="Eto.Generator.Current"/></param>
 		/// <param name="type">Type of widget handler to create from the generator for this widget</param>
 		/// <param name="initialize">True to initialize the widget, false to defer that to the caller</param>
-		protected Widget (Generator generator, Type type, bool initialize = true)
+		protected Widget(Generator generator, Type type, bool initialize = true)
 		{
 			if (generator == null)
 				generator = Generator.Current;
-			this.Handler = generator.Create (type);
+			this.Handler = generator.Create(type);
 			var widgetHandler = this.Handler as IWidget;
-			if (widgetHandler != null) {
+			if (widgetHandler != null)
+			{
 				widgetHandler.Generator = generator;
 				widgetHandler.Widget = this;
 			}
 
 			if (initialize)
-				Initialize ();
+				Initialize();
 		}
-		
+
 		/// <summary>
 		/// Initializes the widget handler
 		/// </summary>
@@ -199,59 +156,35 @@ namespace Eto
 		/// If you pass false to the constructor's initialize property, you should call this manually in your constructor
 		/// after all of its logic has finished.
 		/// </remarks>
-		protected void Initialize ()
+		protected void Initialize()
 		{
-			((IWidget)Handler).Initialize ();
+			((IWidget)Handler).Initialize();
 		}
-		
-		#region IDisposable Members
 
 		/// <summary>
 		/// Disposes of this widget, supressing the finalizer
 		/// </summary>
-		public void Dispose ()
+		public void Dispose()
 		{
-			Dispose (true);
-			GC.SuppressFinalize (this);
+			Dispose(true);
+			GC.SuppressFinalize(this);
 		}
-		
-		#endregion
-		
-		/// <summary>
-		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
-		/// </summary>
-		public virtual void Unbind ()
-		{
-			if (bindings != null) {
-				bindings.Unbind();
-				bindings = null;
-			}
-		}
-		
-		/// <summary>
-		/// Updates all bindings in this widget
-		/// </summary>
-		public virtual void UpdateBindings ()
-		{
-			if (bindings != null) {
-				bindings.Update ();
-			}
-		}
-		
+
 		/// <summary>
 		/// Handles the disposal of this widget
 		/// </summary>
 		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if this is called from the finalizer</param>
-		protected virtual void Dispose (bool disposing)
+		protected virtual void Dispose(bool disposing)
 		{
-			Unbind ();
-			if (disposing) {
-				var handler = this.Handler as IDisposable;
+			if (disposing)
+			{
+				var handler = Handler as IDisposable;
 				if (handler != null)
-					handler.Dispose ();
-				this.Handler = null;
+					handler.Dispose();
+				Handler = null;
 			}
-		}		
+			//Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", this.GetType ().Name);
+		}
 	}
 }
 

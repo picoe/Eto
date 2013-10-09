@@ -11,7 +11,7 @@ namespace Eto.Test.Sections.Drawing
 		UITimer timer;
 		bool useTexturesAndGradients;
 		Drawable drawable;
-		static Image texture = Bitmap.FromResource ("Eto.Test.Textures.png");
+		static Image texture = TestIcons.Textures;
 
 		class Box
 		{
@@ -165,14 +165,16 @@ namespace Eto.Test.Sections.Drawing
 						}
 					} catch (NotSupportedException) {
 						timer.Stop ();
-						this.AddDockedControl (new Label { Text = "This platform does not support direct drawing", TextColor = Colors.White });
+						this.BackgroundColor = Colors.Red;
+						this.Content = new Label { Text = "This platform does not support direct drawing", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
 					}
 				}
 			};
 
-			var layout = new DynamicLayout (this, new Padding(10));
+			var layout = new DynamicLayout (new Padding(10));
 			layout.AddSeparateRow (null, UseTexturesAndGradients (), null);
 			layout.Add (drawable);
+			this.Content = layout;
 		}
 
 		Control UseTexturesAndGradients ()

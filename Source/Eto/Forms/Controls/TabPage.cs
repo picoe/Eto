@@ -5,21 +5,23 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	public interface ITabPage : IContainer
+	public interface ITabPage : IDockContainer
 	{
 		string Text { get; set; }
 
 		Image Image { get; set; }
 	}
 
-	public class TabPage : Container, IImageListItem
+	public class TabPage : DockContainer, IImageListItem
 	{
-		ITabPage handler;
+		new ITabPage Handler { get { return (ITabPage)base.Handler; } }
 		
 		public TabPage (Control control, Padding? padding = null)
 			: this (control.Generator)
 		{
-			this.AddDockedControl (control, padding);
+			if (padding != null)
+				this.Padding = padding.Value;
+			this.Content = control;
 		}
 
 		public TabPage ()
@@ -35,7 +37,6 @@ namespace Eto.Forms
 		protected TabPage (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (ITabPage)Handler;
 		}
 		
 		public event EventHandler<EventArgs> Click;
@@ -47,13 +48,13 @@ namespace Eto.Forms
 		}
 		
 		public string Text {
-			get { return handler.Text; }
-			set { handler.Text = value; }
+			get { return Handler.Text; }
+			set { Handler.Text = value; }
 		}
 
 		public Image Image {
-			get { return handler.Image; }
-			set { handler.Image = value; }
+			get { return Handler.Image; }
+			set { Handler.Image = value; }
 		}
 		
 		public virtual string Key { get; set; }

@@ -23,7 +23,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			Widget.HandleEvent (TreeGridView.ExpandedEvent, TreeGridView.CollapsedEvent, TreeGridView.CollapsingEvent);
 		}
 
-		protected override Gtk.TreeModelImplementor CreateModelImplementor ()
+		protected override ITreeModelImplementor CreateModelImplementor ()
 		{
 			model = new GtkTreeModel<ITreeGridItem, ITreeGridStore<ITreeGridItem>> { Handler = this };
 			return model;

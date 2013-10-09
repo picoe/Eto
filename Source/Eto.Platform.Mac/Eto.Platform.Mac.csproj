@@ -21,18 +21,18 @@
     <DefineConstants>DEBUG;OSX;DESKTOP;MONOMAC</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
-    <DebugSymbols>True</DebugSymbols>
+    <ConsolePause>false</ConsolePause>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <ConsolePause>False</ConsolePause>
+    <ConsolePause>false</ConsolePause>
     <DefineConstants>OSX;DESKTOP;MONOMAC</DefineConstants>
-    <DebugSymbols>True</DebugSymbols>
+    <DebugSymbols>true</DebugSymbols>
   </PropertyGroup>
   <PropertyGroup>
     <OutputRoot>..\..\..</OutputRoot>
@@ -51,6 +51,8 @@
     <Compile Include="Drawing\BrushHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
+    <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\MacTextControl.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
@@ -85,12 +87,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\DialogHandler.cs" />
-    <Compile Include="Forms\DockLayoutHandler.cs" />
     <Compile Include="Forms\MessageBoxHandler.cs" />
     <Compile Include="Forms\OpenFileDialog.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
-    <Compile Include="Forms\MacLayout.cs" />
     <Compile Include="Forms\MacView.cs" />
     <Compile Include="Forms\MacObject.cs" />
     <Compile Include="Forms\MacWindow.cs">
@@ -108,7 +108,6 @@
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
-    <Compile Include="Forms\Controls\RadioButton.cs" />
     <Compile Include="Forms\Controls\ScrollableHandler.cs" />
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
     <Compile Include="Forms\Controls\TabControlHandler.cs" />
@@ -187,6 +186,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Forms\MouseHandler.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
+    <Compile Include="Forms\MacDockContainer.cs" />
+    <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
+    <Compile Include="Forms\iosCompatibility.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />
@@ -202,9 +204,7 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

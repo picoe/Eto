@@ -1,54 +1,60 @@
 using System;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class PixelLayoutHandler : WindowsLayout<SWF.Control, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : WindowsContainer<swf.Panel, PixelLayout>, IPixelLayout
 	{
-		public override SWF.Control Control {
-			get {
-				return Widget.Container != null ? (SWF.Control)Widget.Container.ControlObject : null;
-			}
-			protected set {
-				base.Control = value;
-			}
+		public PixelLayoutHandler()
+		{
+			Control = new swf.Panel
+			{
+				Size = sd.Size.Empty,
+				MinimumSize = sd.Size.Empty,
+				AutoSize = true,
+				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
+			};
+		}
+
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			// do not call base class - pixel layout never scales the content
 		}
 
 		public override Size DesiredSize
 		{
-			get { return Control.PreferredSize.ToEto (); }
+			get { return Size.Max(base.DesiredSize, Control.PreferredSize.ToEto()); }
 		}
 
 		public void Add(Control child, int x, int y)
 		{
-			var control = Widget.Container.ControlObject as SWF.Control;
-			var scrollableControl = control as SWF.ScrollableControl;
-			SWF.Control ctl = child.GetContainerControl ();
-			SD.Point pt = new SD.Point(x, y);
-			if (scrollableControl != null) pt.Offset(scrollableControl.AutoScrollPosition);
+			var ctl = child.GetContainerControl();
+			var pt = new sd.Point(x, y);
+			ctl.Dock = swf.DockStyle.None;
 			ctl.Location = pt;
-			control.Controls.Add(ctl);
+			Control.Controls.Add(ctl);
 			ctl.BringToFront();
 		}
 
 		public void Move(Control child, int x, int y)
 		{
-			SWF.ScrollableControl parent = Widget.Container.ControlObject as SWF.ScrollableControl;
-			SWF.Control ctl = child.GetContainerControl ();
-			SD.Point pt = new SD.Point(x, y);
-			if (parent != null) pt.Offset(parent.AutoScrollPosition);
-			ctl.Location = pt;
+			var ctl = child.GetContainerControl();
+			ctl.Location = new sd.Point(x, y);
 		}
-		
-		public void Remove (Control child)
+
+		public void Remove(Control child)
 		{
-			var parent = Widget.Container.ControlObject as SWF.ScrollableControl;
-			var ctl = child.GetContainerControl ();
-			if (parent != null) parent.Controls.Remove(ctl);
-			
+			var ctl = child.GetContainerControl();
+			if (ctl.Parent == Control)
+				ctl.Parent = null;
+		}
+
+		public void Update()
+		{
+			Control.PerformLayout();
 		}
 	}
 }

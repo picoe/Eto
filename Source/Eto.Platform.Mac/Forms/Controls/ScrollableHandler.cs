@@ -9,35 +9,42 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class ScrollableHandler : MacContainer<NSScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : MacDockContainer<NSScrollView, Scrollable>, IScrollable
 	{
 		NSScrollView control;
 		NSView view;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 
+		public override NSView ContainerControl { get { return Control; } }
+
 		class EtoScrollView : NSScrollView, IMacControl
 		{
-			object IMacControl.Handler { get { return Handler; } }
-			public ScrollableHandler Handler { get; set; }
-			
-			public override void ResetCursorRects ()
+			public WeakReference WeakHandler { get; set; }
+
+			public ScrollableHandler Handler
+			{ 
+				get { return (ScrollableHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
+			public override void ResetCursorRects()
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					this.AddCursorRect (new SD.RectangleF (SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+					this.AddCursorRect(new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
 			}
-			
 		}
 
 		class FlippedView : NSView
 		{
-			public override bool IsFlipped {
+			public override bool IsFlipped
+			{
 				get { return true; }
 			}
 		}
 
-		public ScrollableHandler ()
+		public ScrollableHandler()
 		{
 			Enabled = true;
 			control = new EtoScrollView { Handler = this };
@@ -47,184 +54,201 @@ namespace Eto.Platform.Mac.Forms.Controls
 			control.HasVerticalScroller = true;
 			control.HasHorizontalScroller = true;
 			control.AutohidesScrollers = true;
-			view = new FlippedView ();
+			view = new FlippedView();
 			control.DocumentView = view;
 			Control = control;
 		}
-		
-		public override void AttachEvent (string handler)
+
+		public override void AttachEvent(string handler)
 		{
-			switch (handler) {
-			case Scrollable.ScrollEvent:
-				Control.ContentView.PostsBoundsChangedNotifications = true;
-				this.AddObserver (NSView.NSViewBoundsDidChangeNotification, e => {
-					var w = (Scrollable)e.Widget;
-					w.OnScroll (new ScrollEventArgs (w.ScrollPosition));
-				}, Control.ContentView);
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
-			}
-		}
-		
-		public BorderType Border {
-			get {
-				switch (control.BorderType) {
-				case NSBorderType.BezelBorder:
-					return BorderType.Bezel;
-				case NSBorderType.LineBorder:
-					return BorderType.Line;
-				case NSBorderType.NoBorder:
-					return BorderType.None;
-				default:
-					throw new NotSupportedException ();
-				}
-			}
-			set {
-				switch (value) {
-				case BorderType.Bezel:
-					control.BorderType = NSBorderType.BezelBorder;
-					break;
-				case BorderType.Line:
-					control.BorderType = NSBorderType.LineBorder;
-					break;
-				case BorderType.None:
-					control.BorderType = NSBorderType.NoBorder;
+			switch (handler)
+			{
+				case Scrollable.ScrollEvent:
+					Control.ContentView.PostsBoundsChangedNotifications = true;
+					this.AddObserver(NSView.BoundsChangedNotification, e =>
+					{
+						var w = (Scrollable)e.Widget;
+						w.OnScroll(new ScrollEventArgs(w.ScrollPosition));
+					}, Control.ContentView);
 					break;
 				default:
-					throw new NotSupportedException ();
+					base.AttachEvent(handler);
+					break;
+			}
+		}
+
+		public BorderType Border
+		{
+			get
+			{
+				switch (control.BorderType)
+				{
+					case NSBorderType.BezelBorder:
+						return BorderType.Bezel;
+					case NSBorderType.LineBorder:
+						return BorderType.Line;
+					case NSBorderType.NoBorder:
+						return BorderType.None;
+					default:
+						throw new NotSupportedException();
+				}
+			}
+			set
+			{
+				switch (value)
+				{
+					case BorderType.Bezel:
+						control.BorderType = NSBorderType.BezelBorder;
+						break;
+					case BorderType.Line:
+						control.BorderType = NSBorderType.LineBorder;
+						break;
+					case BorderType.None:
+						control.BorderType = NSBorderType.NoBorder;
+						break;
+					default:
+						throw new NotSupportedException();
 				}
 			}
 		}
-		
-		public override object ContainerObject {
+
+		public override NSView ContentControl
+		{
 			get { return view; }
 		}
-		
-		public override void LayoutChildren ()
+
+		public override void LayoutChildren()
 		{
-			base.LayoutChildren ();
-			UpdateScrollSizes ();
-		}
-		
-		Size GetBorderSize ()
-		{
-			return Control.Frame.Size.ToEtoSize () - Control.DocumentVisibleRect.Size.ToEtoSize ();
+			base.LayoutChildren();
+			UpdateScrollSizes();
 		}
 
-		public override Size GetPreferredSize (Size availableSize)
+		Size GetBorderSize()
 		{
-			return Size.Min (base.GetPreferredSize (availableSize), availableSize);
+			return Control.Frame.Size.ToEtoSize() - Control.DocumentVisibleRect.Size.ToEtoSize();
 		}
 
-		protected override Size GetNaturalSize (Size availableSize)
+		protected override bool UseContentSize { get { return false; } }
+
+		public override Size GetPreferredSize(Size availableSize)
 		{
-			return base.GetNaturalSize (availableSize) + GetBorderSize ();
+			return Size.Min(availableSize, base.GetPreferredSize(availableSize));
 		}
-		
-		void InternalSetFrameSize (SD.SizeF size)
+
+		protected override Size GetNaturalSize(Size availableSize)
 		{
-			if (size != view.Frame.Size) {
-				view.SetFrameSize (size);
+			var content = Content.GetMacAutoSizing();
+			if (content != null)
+			{
+				return Content.GetPreferredSize(availableSize) + GetBorderSize();
+			}
+			return base.GetNaturalSize(availableSize);
+		}
+
+		void InternalSetFrameSize(SD.SizeF size)
+		{
+			if (size != view.Frame.Size)
+			{
+				view.SetFrameSize(size);
 			}
 		}
-		
-		public void UpdateScrollSizes ()
+
+		public void UpdateScrollSizes()
 		{
-			var contentSize = base.GetNaturalSize (Size.MaxValue);
+			var contentSize = Content.GetPreferredSize(Size.MaxValue);
 
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);
+				contentSize.Width = Math.Max(this.ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max (this.ClientSize.Height, contentSize.Height);
+				contentSize.Height = Math.Max(this.ClientSize.Height, contentSize.Height);
 
-			InternalSetFrameSize (contentSize.ToSDSizeF ());
+			InternalSetFrameSize(contentSize.ToSDSizeF());
 		}
-		
-		public override Color BackgroundColor {
-			get {
-				return Control.BackgroundColor.ToEto ();
+
+		public override Color BackgroundColor
+		{
+			get
+			{
+				return Control.BackgroundColor.ToEto();
 			}
-			set {
-				Control.BackgroundColor = value.ToNS ();
+			set
+			{
+				Control.BackgroundColor = value.ToNS();
 				Control.DrawsBackground = value.A > 0;
 			}
 		}
-		
-		public Point ScrollPosition {
-			get { 
+
+		public Point ScrollPosition
+		{
+			get
+			{ 
 				var loc = Control.ContentView.Bounds.Location;
 				if (view.IsFlipped)
-					return loc.ToEtoPoint ();
+					return loc.ToEtoPoint();
 				else
-					return new Point ((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
+					return new Point((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
 			}
-			set { 
+			set
+			{ 
 				if (view.IsFlipped)
-					Control.ContentView.ScrollToPoint (value.ToSDPointF ());
+					Control.ContentView.ScrollToPoint(value.ToSDPointF());
 				else
-					Control.ContentView.ScrollToPoint (new SD.PointF (value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
-				Control.ReflectScrolledClipView (Control.ContentView);
+					Control.ContentView.ScrollToPoint(new SD.PointF(value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
+				Control.ReflectScrolledClipView(Control.ContentView);
 			}
 		}
 
-		public Size ScrollSize {			
-			get { return view.Frame.Size.ToEtoSize (); }
-			set { 
-				InternalSetFrameSize (value.ToSDSizeF ());
+		public Size ScrollSize
+		{			
+			get { return view.Frame.Size.ToEtoSize(); }
+			set
+			{ 
+				InternalSetFrameSize(value.ToSDSizeF());
 			}
 		}
-		
-		public override Size ClientSize {
-			get {
-				return Control.DocumentVisibleRect.Size.ToEtoSize ();
+
+		public override Size ClientSize
+		{
+			get
+			{
+				return Control.DocumentVisibleRect.Size.ToEtoSize();
 			}
-			set {
+			set
+			{
 				
 			}
 		}
-		
+
 		public override bool Enabled { get; set; }
-		
-		public override void SetContentSize (SD.SizeF contentSize)
+
+		public override void SetContentSize(SD.SizeF contentSize)
 		{
-			if (MinimumSize != null) {
-				contentSize.Width = Math.Max (contentSize.Width, MinimumSize.Value.Width);
-				contentSize.Height = Math.Max (contentSize.Height, MinimumSize.Value.Height);
+			if (MinimumSize != Size.Empty)
+			{
+				contentSize.Width = Math.Max(contentSize.Width, MinimumSize.Width);
+				contentSize.Height = Math.Max(contentSize.Height, MinimumSize.Height);
 			}
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max (this.ClientSize.Width, contentSize.Width);
+				contentSize.Width = Math.Max(this.ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max (this.ClientSize.Height, contentSize.Height);
-			InternalSetFrameSize (contentSize);
+				contentSize.Height = Math.Max(this.ClientSize.Height, contentSize.Height);
+			InternalSetFrameSize(contentSize);
 		}
 
-		public override void OnLoad (EventArgs e)
+		public Rectangle VisibleRect
 		{
-			base.OnLoad (e);
-		}
-
-		public override void OnLoadComplete (EventArgs e)
-		{
-			base.OnLoadComplete (e);
-			UpdateScrollSizes ();
-			this.Widget.SizeChanged += (sender, ee) => {
-				UpdateScrollSizes ();
-			};
-		}
-		
-		public Rectangle VisibleRect {
-			get { return new Rectangle (ScrollPosition, Size.Min (ScrollSize, ClientSize)); }
+			get { return new Rectangle(ScrollPosition, Size.Min(ScrollSize, ClientSize)); }
 		}
 
 		public bool ExpandContentWidth
 		{
 			get { return expandContentWidth; }
-			set {
-				if (expandContentWidth != value) {
+			set
+			{
+				if (expandContentWidth != value)
+				{
 					expandContentWidth = value;
-					UpdateScrollSizes ();
+					UpdateScrollSizes();
 				}
 			}
 		}
@@ -232,10 +256,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public bool ExpandContentHeight
 		{
 			get { return expandContentHeight; }
-			set {
-				if (expandContentHeight != value) {
+			set
+			{
+				if (expandContentHeight != value)
+				{
 					expandContentHeight = value;
-					UpdateScrollSizes ();
+					UpdateScrollSizes();
 				}
 			}
 		}

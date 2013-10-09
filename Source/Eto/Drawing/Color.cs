@@ -15,7 +15,7 @@ namespace Eto.Drawing
 	{
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
-		static object colormaplock = new object ();
+		static readonly object colormaplock = new object ();
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
@@ -186,7 +186,7 @@ namespace Eto.Drawing
 			}
 
 			string listSeparator = culture.TextInfo.ListSeparator;
-			if (value.IndexOf (listSeparator) == -1) {
+			if (value.IndexOf (listSeparator, StringComparison.OrdinalIgnoreCase) == -1) {
 				bool isArgb = value[0] == '#';
 				int num = (!isArgb) ? 0 : 1;
 				bool ixHex = false;
@@ -229,7 +229,7 @@ namespace Eto.Drawing
 					return true;
 			}
 			string[] array = value.Split (listSeparator.ToCharArray ());
-			uint[] array2 = new uint[array.Length];
+			var array2 = new uint[array.Length];
 			for (int i = 0; i < array2.Length; i++) {
 				uint num;
 				if (!uint.TryParse (array[i], out num)) {
@@ -243,10 +243,10 @@ namespace Eto.Drawing
 				color = Color.FromArgb (array2[0]);
 				return true;
 			case 3:
-				color = new Color (array2[0], array2[1], array2[2]);
+				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2]);
 				return true;
 			case 4:
-				color = new Color (array2[0], array2[1], array2[2], array2[3]);
+				color = Color.FromArgb((int)array2[0], (int)array2[1], (int)array2[2], (int)array2[3]);
 				return true;
 			}
 			color = Colors.Transparent;
@@ -345,9 +345,9 @@ namespace Eto.Drawing
 		public string ToHex (bool includeAlpha = true)
 		{
 			if (includeAlpha)
-				return string.Format ("#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+				return string.Format (CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
 			else
-				return string.Format ("#{0:X2}{1:X2}{2:X2}", (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+				return string.Format (CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
 		}
 
 		/// <summary>
@@ -419,12 +419,12 @@ namespace Eto.Drawing
 		/// <returns>The element id value of this color</returns>
 		public int ToElementId ()
 		{
-			int result = (this.Rb & 0x7f) << 17
-				| (this.Gb & 0x7f) << 10
-				| (this.Bb & 0x7f) << 3
-				| ((this.Rb & 0x80) == 0x80 ? 4 : 0)
-				| ((this.Gb & 0x80) == 0x80 ? 2 : 0)
-				| ((this.Bb & 0x80) == 0x80 ? 1 : 0);
+			int result = (Rb & 0x7f) << 17
+				| (Gb & 0x7f) << 10
+				| (Bb & 0x7f) << 3
+				| ((Rb & 0x80) == 0x80 ? 4 : 0)
+				| ((Gb & 0x80) == 0x80 ? 2 : 0)
+				| ((Bb & 0x80) == 0x80 ? 1 : 0);
 			
 			return result;
 		}

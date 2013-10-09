@@ -3,6 +3,7 @@ using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
+using Eto.Forms;
 
 
 #if OSX
@@ -37,8 +38,8 @@ namespace Eto.Platform.iOS.Drawing
 	{
 #if OSX
 		NSGraphicsContext graphicsContext;
-#endif
 		bool disposeContext;
+#endif
 		NSView view;
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
@@ -76,10 +77,9 @@ namespace Eto.Platform.iOS.Drawing
 		{
 		}
 
-		public GraphicsHandler (NSView view)
+		public GraphicsHandler (NSView view, Control ctl)
 		{
 			this.view = view;
-			DisposeControl = false;
 #if OSX
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
 			disposeContext = true;
@@ -95,8 +95,9 @@ namespace Eto.Platform.iOS.Drawing
 			Control.SaveState ();
 
 #if OSX
+
 			view.PostsFrameChangedNotifications = true;
-			AddObserver (NSView.NSViewFrameDidChangeNotification, FrameDidChange, view);
+			AddObserver (NSView.FrameChangedNotification, FrameDidChange, view);
 
 			// if control is in a scrollview, we need to trap when it's scrolled as well
 			var parent = view.Superview;
@@ -104,7 +105,7 @@ namespace Eto.Platform.iOS.Drawing
 				var scroll = parent as NSScrollView;
 				if (scroll != null) {
 					scroll.ContentView.PostsBoundsChangedNotifications = true;
-					AddObserver (NSView.NSViewBoundsDidChangeNotification, FrameDidChange, scroll.ContentView);
+					AddObserver (NSView.BoundsChangedNotification, FrameDidChange, scroll.ContentView);
 				}
 				parent = parent.Superview;
 			}
@@ -115,7 +116,7 @@ namespace Eto.Platform.iOS.Drawing
 
 #if OSX
 
-		void FrameDidChange (ObserverActionArgs e)
+		static void FrameDidChange (ObserverActionArgs e)
 		{
 			//Console.WriteLine ("Woooo!");
 			var h = e.Handler as GraphicsHandler;
@@ -144,7 +145,6 @@ namespace Eto.Platform.iOS.Drawing
 			this.DisplayView = view;
 			this.height = height;
 			this.graphicsContext = graphicsContext;
-			DisposeControl = false;
 			this.Control = graphicsContext.GraphicsPort;
 			this.Flipped = flipped;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
@@ -161,7 +161,6 @@ namespace Eto.Platform.iOS.Drawing
 			if (height > 0) {
 				this.Flipped = flipped;
 			}
-			DisposeControl = false;
 			this.Control = context;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SaveState ();
@@ -171,7 +170,8 @@ namespace Eto.Platform.iOS.Drawing
 		}
 
 #endif
-		
+		protected override bool DisposeControl { get { return false; } }
+
 		public bool IsRetained { get { return false; } }
 
 		bool antialias;
@@ -204,7 +204,6 @@ namespace Eto.Platform.iOS.Drawing
 			Control = new CGBitmapContext (handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
 #endif
 
-			DisposeControl = false;
 			Flipped = false;
 			this.height = image.Size.Height;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
@@ -458,7 +457,7 @@ namespace Eto.Platform.iOS.Drawing
 			EndDrawing ();
 		}
 
-		public void DrawText(Font font, Color color, float x, float y, string text)
+		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
 			if (string.IsNullOrEmpty(text)) return;
 
@@ -467,7 +466,7 @@ namespace Eto.Platform.iOS.Drawing
 			var nsfont = FontHandler.GetControl (font);
 			var str = new NSString (text);
 			var dic = new NSMutableDictionary ();
-			dic.Add (NSAttributedString.ForegroundColorAttributeName, color.ToNS ());
+			dic.Add (NSAttributedString.ForegroundColorAttributeName, brush.Color.ToNS ());
 			dic.Add (NSAttributedString.FontAttributeName, nsfont);
 			//context.SetShouldAntialias(true);
 			if (!Flipped) {
@@ -482,7 +481,7 @@ namespace Eto.Platform.iOS.Drawing
 			var str = new NSString (text);
 			var size = str.StringSize (uifont);
 			//context.SetShouldAntialias(true);
-			Control.SetFillColor(color.ToCGColor ());
+			Control.SetFillColor(brush.Color.ToCGColor());
 			str.DrawString (TranslateView (new SD.PointF(x, y), elementHeight: size.Height), uifont);
 #endif
 

@@ -35,7 +35,7 @@ namespace Eto.Platform.GtkSharp.Forms
 		{
 			get
 			{
-				// todo: available with GTK 3
+				// todo: available with GTK 3.4
 				return Control.GetMonitorGeometry (monitor).ToEto ();
 			}
 		}

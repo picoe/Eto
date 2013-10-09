@@ -12,31 +12,93 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		{
 			this.AppPaintable = true;
 			this.Build ();
+#if GTK3
+			//popupButton.AppPaintable = true;
+			//popupButton.Drawn += popup_Drawn;
+			SetSizeRequest(150, 30);
+			foreach (var cls in PopupButton.StyleContext.ListClasses())
+				PopupButton.StyleContext.RemoveClass(cls);
+			foreach (var cls in Entry.StyleContext.ListClasses())
+			{
+				//Console.WriteLine(cls);
+				//Entry.StyleContext.RemoveClass(cls);
+			}
+
+
+#endif
+			//popupButton.Visible = false;
+			//popupButton.NoShowAll = true;
+
+			//entry.AppPaintable = true;
+			//popupButton.Drawn += (o, args) => {
+			//	args.RetVal = false;
+			//};
 		}
-		
+
+#if GTK2
 		[GLib.ConnectBefore]
 		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
 			var rect = Allocation;
 			
 			if (rect.Width > 0 && rect.Height > 0) {
-				Gtk.Style.PaintFlatBox (Entry.Style, this.GdkWindow, Entry.State, Gtk.ShadowType.In, evnt.Area, Entry, "entry_bg", rect.X, rect.Y, rect.Width, rect.Height);
+				//Gtk.Style.PaintFlatBox (Entry.Style, this.GdkWindow, Entry.State, Gtk.ShadowType.In, evnt.Area, this, "entry_bg", rect.X, rect.Y, rect.Width, rect.Height);
 				Gtk.Style.PaintShadow (Entry.Style, this.GdkWindow, Entry.State, Gtk.ShadowType.In, evnt.Area, Entry, "entry", rect.X, rect.Y, rect.Width, rect.Height);
+				var arrowWidth = popupButton.Allocation.Width;
+				var arrowPos = rect.Right - arrowWidth - 4;
+				Gtk.Style.PaintArrow(Entry.Style, this.GdkWindow, Entry.State, Gtk.ShadowType.None, evnt.Area, this, "arrow", ArrowType.Down, true, arrowPos, rect.Top, arrowWidth, rect.Height);
+				Gtk.Style.PaintVline(Entry.Style, this.GdkWindow, Entry.State, evnt.Area, this, "line", rect.Top + 4, rect.Bottom - 4, arrowPos - 1);
 			}
-			return base.OnExposeEvent (evnt);
+			return true;
+		}
+#else
+		//[GLib.ConnectBefore]
+		protected override bool OnDrawn (Cairo.Context cr)
+		{
+			bool ret = true;
+			var rect = this.Allocation;
+			if (rect.Width > 0 && rect.Height > 0) {
+				var arrowWidth = popupButton.Allocation.Width;
+				var arrowPos = rect.Width - arrowWidth + 4;
+				var arrowSize = 10;
+
+				StyleContext.Save ();
+                StyleContext.AddClass ("entry");
+                StyleContext.RenderBackground (cr, 0, 0, rect.Width, rect.Height);
+
+				ret = base.OnDrawn (cr);
+
+				StyleContext.RenderArrow(cr, Math.PI, arrowPos, (rect.Height - arrowSize) / 2, arrowSize);
+
+				cr.Color = new Cairo.Color(.8, .8, .8);
+				cr.Rectangle(arrowPos - 5, 2, 1, rect.Height - 4);
+				cr.Fill();
+
+				Entry.StyleContext.RenderFrame (cr, 0, 0, rect.Width, rect.Height);
+                StyleContext.Restore ();
+
+			}
+			return ret;
 		}
 
-		public Entry Entry {
-			get {
-				return entry;
+		class InvisibleButton : Gtk.Button
+		{
+			public InvisibleButton()
+			{
+				AppPaintable = true;
+			}
+
+			protected override bool OnDrawn(Cairo.Context cr)
+			{
+				return false; //return base.OnDrawn(cr);
 			}
 		}
 
-		public Button PopupButton {
-			get {
-				return popupButton;
-			}
-		}
+#endif
+
+		public Entry Entry { get { return entry; } }
+
+		public Button PopupButton { get { return popupButton; } }
 		
 		Gtk.Widget CreateEntry ()
 		{
@@ -45,7 +107,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				IsEditable = true,
 				HasFrame = false
 			};
-			
+
 			entry.FocusInEvent += delegate {
 				QueueDraw ();
 			};
@@ -58,25 +120,33 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		
 		Gtk.Widget CreatePopupButton ()
 		{
-			this.popupButton = new Gtk.Button {
-				WidthRequest = 20,
-				CanFocus = true
-			};
+#if GTK3
+			popupButton = new InvisibleButton();
+#else
 
-			popupButton.Add (new Gtk.Arrow (Gtk.ArrowType.Down, Gtk.ShadowType.Out));
-
+			popupButton = new Gtk.Button();
+#endif
+			popupButton.WidthRequest = 25;
+			popupButton.CanFocus = false;
 			return popupButton;
 		}
         
 		protected virtual void Build ()
 		{
-			var hbox3 = new Gtk.HBox ();
+			var vbox = new Gtk.VBox();
+			var hbox = new Gtk.HBox ();
 
-			hbox3.PackStart (CreateEntry (), true, true, 5);
+#if GTK2
+			hbox.PackStart (CreateEntry (), true, true, 2);
+			hbox.PackEnd (CreatePopupButton (), true, false, 2);
+			vbox.PackStart(hbox, true, true, 4);
+#else
+			hbox.PackStart (CreateEntry (), true, true, 1);
+			hbox.PackEnd (CreatePopupButton (), true, false, 0);
+			vbox.PackStart(hbox, true, true, 1);
+#endif
 
-			hbox3.PackEnd (CreatePopupButton (), false, false, 0);
-			
-			this.Add (hbox3);
+			this.Add (vbox);
 		}
 		
 	}

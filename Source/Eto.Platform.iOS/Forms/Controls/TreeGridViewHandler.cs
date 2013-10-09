@@ -11,23 +11,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		Collection store;
 
-		public class TreeGridTableDelegate : EtoTableDelegate
-		{
-			public new TreeGridViewHandler Handler
-			{
-				get { return (TreeGridViewHandler)base.Handler; }
-				set { base.Handler = value; }
-			}
-
-			public override void RowSelected (UITableView tableView, NSIndexPath indexPath)
-			{
-				base.RowSelected (tableView, indexPath);
-
-				Handler.Widget.OnSelectedItemChanged(EventArgs.Empty);
-			}
-		}
-
-
 		class Collection : DataStoreChangedHandler<ITreeGridItem, ITreeGridStore<ITreeGridItem>>
 		{
 			public override void AddItem (ITreeGridItem item)
@@ -46,7 +29,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		protected override UITableViewDelegate CreateDelegate ()
 		{
-			return new TreeGridTableDelegate { Handler  = this };
+			return new TreeGridTableDelegate(this);
 		}
 
 		public TreeGridViewHandler ()
@@ -56,7 +39,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public class DataSource : UITableViewDataSource
 		{
-			public TreeGridViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override int NumberOfSections (UITableView tableView)
 			{
@@ -136,6 +120,22 @@ namespace Eto.Platform.iOS.Forms.Controls
 				//var index = store.IndexOf (value);
 
 			}
+		}
+	}
+
+	public class TreeGridTableDelegate : GridHandlerTableDelegate
+	{
+		private TreeGridViewHandler TreeHandler { get { return Handler as TreeGridViewHandler; } }
+
+		public TreeGridTableDelegate(IGrid handler) : base(handler)
+		{
+		}
+
+		public override void RowSelected(UITableView tableView, NSIndexPath indexPath)
+		{
+			base.RowSelected(tableView, indexPath);
+
+			TreeHandler.Widget.OnSelectedItemChanged(EventArgs.Empty);
 		}
 	}
 }

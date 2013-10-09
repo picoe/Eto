@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+
 #if XAML
 using System.Windows.Markup;
+
 #endif
 using System.Collections.Specialized;
 
@@ -14,51 +16,70 @@ namespace Eto.Forms
 	public class TreeItemCollection : DataStoreCollection<ITreeItem>, ITreeStore
 	{
 	}
-	
+
 	[ContentProperty("Children")]
-	public class TreeItem : ImageListItem, ITreeItem
+	public class TreeItem : ImageListItem, ITreeItem, INotifyCollectionChanged
 	{
 		TreeItemCollection children;
 
+		public event NotifyCollectionChangedEventHandler CollectionChanged
+		{
+			add { Children.CollectionChanged += value; }
+			remove { Children.CollectionChanged -= value; }
+		}
+
 		public TreeItemCollection Children
 		{
-			get { 
+			get
+			{ 
 				if (children != null)
 					return children;
-				children = new TreeItemCollection ();
+				children = new TreeItemCollection();
 				children.CollectionChanged += (sender, e) => {
-					if (e.Action == NotifyCollectionChangedAction.Add) {
-						foreach (ITreeItem item in e.NewItems) {
-							item.Parent = this;
-						}
+					switch (e.Action)
+					{
+						case NotifyCollectionChangedAction.Reset:
+							foreach (var item in children)
+							{
+								item.Parent = this;
+							}
+							break;
+						case NotifyCollectionChangedAction.Add:
+						case NotifyCollectionChangedAction.Replace:
+							foreach (ITreeItem item in e.NewItems)
+							{
+								item.Parent = this;
+							}
+							break;
 					}
 				};
 				return children; 
 			}
 		}
-		
+
 		public ITreeItem Parent { get; set; }
-		
+
 		public virtual bool Expandable { get { return this.Count > 0; } }
-		
+
 		public virtual bool Expanded { get; set; }
-		
-		public virtual ITreeItem this[int index]
+
+		public virtual ITreeItem this [int index]
 		{
-			get { return children [index]; }
+			get { return children[index]; }
 		}
 
-		public virtual int Count {
+		public virtual int Count
+		{
 			get { return (children != null) ? children.Count : 0; }
 		}
-		
-		public TreeItem ()
+
+		public TreeItem()
 		{
 		}
-		
-		public TreeItem (IEnumerable<ITreeItem> children)
+
+		public TreeItem(IEnumerable<ITreeItem> children)
 		{
-			this.Children.AddRange (children);
+			this.Children.AddRange(children);
 		}
 	}
 }

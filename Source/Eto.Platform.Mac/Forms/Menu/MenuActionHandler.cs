@@ -8,31 +8,39 @@ namespace Eto.Platform.Mac
 {
 	public interface IMenuActionHandler
 	{
-		void HandleClick ();
-		
+		void HandleClick();
+
 		bool Enabled { get; }
-		
+
 		MenuActionItem Widget { get; }
 	}
-		
+
 	[Register("EtoMenuActionHandler")]
 	public class MenuActionHandler : NSObject
 	{
-		internal static Selector selActivate = new Selector ("activate:");
-		
-		public IMenuActionHandler Handler { get; set; }
-			
+		internal static Selector selActivate = new Selector("activate:");
+		WeakReference handler;
+
+		public IMenuActionHandler Handler { get { return (IMenuActionHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
 		[Export("activate:")]
-		public void Activate (NSObject sender)
+		public void Activate(NSObject sender)
 		{
-			Handler.HandleClick ();
+			var handler = Handler;
+			if (handler != null)
+				handler.HandleClick();
 		}
-			
+
 		[Export("validateMenuItem:")]
-		public bool ValidateMenuItem (NSMenuItem item)
+		public bool ValidateMenuItem(NSMenuItem item)
 		{
-			Handler.Widget.OnValidate(EventArgs.Empty);
-			return Handler.Enabled;
+			var handler = Handler;
+			if (handler != null)
+			{
+				handler.Widget.OnValidate(EventArgs.Empty);
+				return handler.Enabled;
+			}
+			return false;
 		}
 	}
 }

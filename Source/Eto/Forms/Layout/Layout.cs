@@ -8,25 +8,8 @@ namespace Eto.Forms
 	/// <summary>
 	/// Platform handler interface for the the <see cref="Layout"/> class
 	/// </summary>
-	public interface ILayout : IInstanceWidget
+	public interface ILayout : IContainer
 	{
-		/// <summary>
-		/// Called in the pre-load cycle before the container is shown
-		/// </summary>
-		void OnPreLoad ();
-		
-		/// <summary>
-		/// Called in the load cycle after the <see cref="OnPreLoad"/>, before the container is shown
-		/// </summary>
-		void OnLoad ();
-
-		/// <summary>
-		/// Called after the load cycle, usually before the control is shown, or after if it is added at runtime to an existing control
-		/// </summary>
-		void OnLoadComplete ();
-
-		void OnUnLoad ();
-
 		/// <summary>
 		/// Re-calculates the layout of the controls and re-positions them, if necessary
 		/// </summary>
@@ -36,13 +19,6 @@ namespace Eto.Forms
 		/// </remarks>
 		void Update ();
 
-		/// <summary>
-		/// Method to handle when the layout has been attached to a container
-		/// </summary>
-		/// <remarks>
-		/// Used to handle any platform specific logic that requires the container to perform
-		/// </remarks>
-		void AttachedToContainer();
 	}
 
 	/// <summary>
@@ -84,120 +60,39 @@ namespace Eto.Forms
 		void Remove (Control child);
 	}
 
-	public abstract class Layout : InstanceWidget, ISupportInitialize
+	public abstract class Layout : Container, ISupportInitialize
 	{
 		new ILayout Handler { get { return (ILayout)base.Handler; } }
-		Container container;
 
 		public bool Initializing { get; private set; }
-		
-		public bool Loaded { get; private set; }
 
-		public virtual Layout InnerLayout
+		[Obsolete("Use Parent instead")]
+		public Container Container { get { return Parent; } }
+		
+		protected Layout (Generator g, Type type, bool initialize = true)
+			: base(g, type, initialize)
 		{
-			get { return this; }
 		}
-		
-		public abstract IEnumerable<Control> Controls {
-			get;
-		}
-		
-		public event EventHandler<EventArgs> PreLoad;
 
-		public virtual void OnPreLoad (EventArgs e)
+		protected Layout (Generator g, ILayout handler, bool initialize = true)
+			: base (g, handler, initialize)
 		{
-			if (PreLoad != null)
-				PreLoad (this, e);
-			Handler.OnPreLoad ();
-		}
-		
-		
-		public event EventHandler<EventArgs> Load;
-
-		public virtual void OnLoad (EventArgs e)
-		{
-			Loaded = true;
-			if (Load != null)
-				Load (this, e);
-			Handler.OnLoad ();
-		}
-
-		public event EventHandler<EventArgs> LoadComplete;
-
-		public virtual void OnLoadComplete (EventArgs e)
-		{
-			if (LoadComplete != null)
-				LoadComplete (this, e);
-			Handler.OnLoadComplete ();
-		}
-
-		
-		public event EventHandler<EventArgs> UnLoad;
-		
-		public virtual void OnUnLoad (EventArgs e)
-		{
-			Loaded = false;
-			if (UnLoad != null)
-				UnLoad (this, e);
-			Handler.OnUnLoad ();
-		}
-
-		protected Layout (Generator g, Container container, Type type, bool initialize = true)
-			: base(g, type, false)
-		{
-			this.container = container;
-			if (initialize) {
-				Initialize ();
-				if (this.Container != null)
-					this.Container.Layout = this;
-			}
-		}
-
-		protected Layout (Generator g, Container container, ILayout handler, bool initialize = true)
-			: base (g, handler, false)
-		{
-			this.container = container;
-			if (initialize) {
-				Initialize ();
-				if (this.Container != null)
-					this.Container.Layout = this;
-			}
-		}
-		
-		public virtual Container Container {
-			get { return container; }
-			protected internal set {
-				container = value;
-				Handler.AttachedToContainer ();
-			}
-		}
-		
-		public Layout ParentLayout {
-			get { return (Container != null) ? Container.ParentLayout : null; }
 		}
 		
 		public virtual void Update ()
 		{
-			UpdateContainers (this.Container);
+			UpdateContainers(this);
 			Handler.Update ();
 		}
 		
 		void UpdateContainers (Container container)
 		{
-			foreach (var c in container.Controls.OfType<Container>()) {
-				if (c.Layout != null) {
-					UpdateContainers (c);
-					c.Layout.Update ();
-				}
+			foreach (var c in container.Controls.OfType<Layout>())
+			{
+				c.Update();
 			}
 		}
 		
-		protected void SetInnerLayout (bool load)
-		{
-			if (Container != null)
-				Container.SetInnerLayout (load);
-		}
-
 		public virtual void BeginInit ()
 		{
 			Initializing = true;

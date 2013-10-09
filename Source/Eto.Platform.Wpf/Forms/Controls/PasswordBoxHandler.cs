@@ -5,28 +5,38 @@ using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class PasswordBoxHandler : WpfControl<swc.PasswordBox, PasswordBox>, IPasswordBox
 	{
+		protected override Size DefaultSize { get { return new Size(80, -1); } }
+
 		public PasswordBoxHandler()
 		{
-			Control = new swc.PasswordBox { Width = 80 };
+			Control = new swc.PasswordBox { };
+		}
+
+		public override sw.Size GetPreferredSize(sw.Size constraint)
+		{
+			return base.GetPreferredSize(Conversions.ZeroSize);
 		}
 
 		public override bool UseMousePreview { get { return true; } }
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent(string handler)
 		{
-			switch (handler) {
+			switch (handler)
+			{
 				case TextBox.TextChangedEvent:
-					Control.PasswordChanged += delegate {
-						Widget.OnTextChanged (EventArgs.Empty);
+					Control.PasswordChanged += delegate
+					{
+						Widget.OnTextChanged(EventArgs.Empty);
 					};
 					break;
 				default:
-					base.AttachEvent (handler);
+					base.AttachEvent(handler);
 					break;
 			}
 		}

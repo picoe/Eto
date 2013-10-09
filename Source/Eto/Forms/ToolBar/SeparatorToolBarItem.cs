@@ -34,7 +34,7 @@ namespace Eto.Forms
 
 	public class SeparatorToolBarItem : ToolBarItem
 	{
-		ISeparatorToolBarItem inner;
+		new ISeparatorToolBarItem Handler { get { return (ISeparatorToolBarItem)base.Handler; } }
 		
 		public SeparatorToolBarItem () : this(Generator.Current)
 		{
@@ -42,13 +42,12 @@ namespace Eto.Forms
 
 		public SeparatorToolBarItem (Generator g) : base(g, typeof(ISeparatorToolBarItem))
 		{
-			inner = (ISeparatorToolBarItem)Handler;
 		}
 		
 		public SeparatorToolBarItemType Type
 		{
-			get { return inner.Type; }
-			set { inner.Type = value; }
+			get { return Handler.Type; }
+			set { Handler.Type = value; }
 		}
 	}
 }

@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -8,7 +9,7 @@ namespace Eto.Forms
 		Horizontal,
 		Vertical
 	}
-	
+
 	public enum SplitterFixedPanel
 	{
 		Panel1,
@@ -16,10 +17,10 @@ namespace Eto.Forms
 		None
 	}
 
-	public interface ISplitter : IControl
+	public interface ISplitter : IContainer
 	{
 		SplitterOrientation Orientation { get; set; }
-		
+
 		SplitterFixedPanel FixedPanel { get; set; }
 
 		int Position { get; set; }
@@ -28,114 +29,135 @@ namespace Eto.Forms
 
 		Control Panel2 { get; set; }
 	}
-	
-	public class Splitter : Control
+
+	public class Splitter : Container
 	{
-		ISplitter handler;
-		
-		public static bool Supported { get { return Generator.Current.Supports<ISplitter> (); } }
-		
-		public Splitter () : this (Generator.Current)
+		new ISplitter Handler { get { return (ISplitter)base.Handler; } }
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
+				if (Panel1 != null)
+					yield return Panel1;
+				if (Panel2 != null)
+					yield return Panel2;
+			}
+		}
+
+		public static bool Supported { get { return Generator.Current.Supports<ISplitter>(); } }
+		#region Events
+		public const string PositionChangedEvent = "Control.PositionChanged";
+		EventHandler<EventArgs> positionChanged;
+
+		/// <summary>
+		/// Raised when the user moves the splitter.
+		/// </summary>
+		public event EventHandler<EventArgs> PositionChanged
+		{
+			add
+			{
+				HandleEvent(PositionChangedEvent);
+				positionChanged += value;
+			}
+			remove { positionChanged -= value; }
+		}
+
+		public virtual void OnPositionChanged(EventArgs e)
+		{
+			if (positionChanged != null)
+				positionChanged(this, e);
+		}
+		#endregion
+		public Splitter() : this (Generator.Current)
 		{
 		}
-		
-		public Splitter (Generator g) : this (g, typeof(ISplitter))
+
+		public Splitter(Generator g) : this (g, typeof(ISplitter))
 		{
 		}
-		
-		protected Splitter (Generator generator, Type type, bool initialize = true)
+
+		protected Splitter(Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (ISplitter)base.Handler;
 		}
 
-		public SplitterOrientation Orientation {
-			get { return handler.Orientation; }
-			set { handler.Orientation = value; }
-		}
-		
-		public SplitterFixedPanel FixedPanel {
-			get { return handler.FixedPanel; }
-			set { handler.FixedPanel = value; }
-		}
-		
-		public int Position {
-			get { return handler.Position; }
-			set { handler.Position = value; }
+		public SplitterOrientation Orientation
+		{
+			get { return Handler.Orientation; }
+			set { Handler.Orientation = value; }
 		}
 
-		public Control Panel1 {
-			get { return handler.Panel1; }
-			set { 
-				if (handler.Panel1 != null)
-					handler.Panel1.SetParent (null);
-				if (value != null) {
-					value.SetParent (this);
-					if (Loaded && !value.Loaded) {
-						value.OnPreLoad (EventArgs.Empty);
-						value.OnLoad (EventArgs.Empty);
+		public SplitterFixedPanel FixedPanel
+		{
+			get { return Handler.FixedPanel; }
+			set { Handler.FixedPanel = value; }
+		}
+
+		public int Position
+		{
+			get { return Handler.Position; }
+			set { Handler.Position = value; }
+		}
+
+		public Control Panel1
+		{
+			get { return Handler.Panel1; }
+			set
+			{ 
+				if (Handler.Panel1 != null)
+					RemoveParent(Handler.Panel1, true);
+				if (value != null)
+				{
+					SetParent(value);
+					if (Loaded && !value.Loaded)
+					{
+						value.OnPreLoad(EventArgs.Empty);
+						value.OnLoad(EventArgs.Empty);
 					}
 				}
-				handler.Panel1 = value;
+				Handler.Panel1 = value;
 				if (Loaded && value != null && !value.Loaded)
-					value.OnLoadComplete (EventArgs.Empty);
+					value.OnLoadComplete(EventArgs.Empty);
 			}
 		}
 
-		public Control Panel2 {
-			get { return handler.Panel2; }
-			set {
-				if (handler.Panel2 != null)
-					handler.Panel2.SetParent (null);
+		public Control Panel2
+		{
+			get { return Handler.Panel2; }
+			set
+			{
+				if (Handler.Panel2 != null)
+					RemoveParent(Handler.Panel2, true);
 				bool load = false;
-				if (value != null) {
-					value.SetParent (this);
-					if (Loaded && !value.Loaded) {
+				if (value != null)
+				{
+					SetParent(value);
+					if (Loaded && !value.Loaded)
+					{
 						load = true;
-						value.OnPreLoad (EventArgs.Empty);
-						value.OnLoad (EventArgs.Empty);
+						value.OnPreLoad(EventArgs.Empty);
+						value.OnLoad(EventArgs.Empty);
 					}
 				}
-				handler.Panel2 = value; 
+				Handler.Panel2 = value; 
 				if (load)
-					value.OnLoadComplete (EventArgs.Empty);
+					value.OnLoadComplete(EventArgs.Empty);
 			}
 		}
-		
-		public override void OnPreLoad (EventArgs e)
-		{
-			if (Panel1 != null)
-				Panel1.OnPreLoad (e);
-			if (Panel2 != null)
-				Panel2.OnPreLoad (e);
-			base.OnPreLoad (e);
-		}
 
-		public override void OnLoad (EventArgs e)
+		public override void Remove(Control child)
 		{
-			if (Panel1 != null)
-				Panel1.OnLoad (e);
-			if (Panel2 != null)
-				Panel2.OnLoad (e);
-			base.OnLoad (e);
-		}
-
-		public override void OnLoadComplete (EventArgs e)
-		{
-			if (Panel1 != null)
-				Panel1.OnLoadComplete (e);
-			if (Panel2 != null)
-				Panel2.OnLoadComplete (e);
-			base.OnLoadComplete (e);
-		}
-		
-		public override void OnUnLoad (EventArgs e)
-		{
-			if (Panel1 != null)
-				Panel1.OnUnLoad (e);
-			if (Panel2 != null)
-				Panel2.OnUnLoad (e);
-			base.OnUnLoad (e);
+			if (object.ReferenceEquals(Panel1, child))
+			{
+				Panel1 = null;
+				RemoveParent(Panel1, true);
+			}
+			else if (object.ReferenceEquals(Panel2, child))
+			{
+				Panel2 = null;
+				RemoveParent(Panel2, true);
+			}
 		}
 	}
 }

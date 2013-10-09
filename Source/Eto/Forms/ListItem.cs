@@ -1,5 +1,8 @@
 using System;
 using Eto.Drawing;
+using System.Globalization;
+
+
 #if XAML
 using System.Windows.Markup;
 #endif
@@ -8,7 +11,7 @@ namespace Eto.Forms
 {
 	public interface IListItem
 	{
-		string Text { get; }
+		string Text { get; set; }
 
 		string Key { get; }
 	}
@@ -38,8 +41,10 @@ namespace Eto.Forms
 	{
 		public object Item { get; set; }
 		
-		public virtual string Text {
-			get { return Convert.ToString (Item); }
+		public virtual string Text
+		{
+			get { return Convert.ToString(Item, CultureInfo.CurrentCulture); }
+			set { }
 		}
 		
 		public virtual string Key {

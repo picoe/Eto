@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -9,9 +10,17 @@ namespace Eto.Forms
 		void Pop ();
 	}
 	
-	public class Navigation : Control
+	public class Navigation : Container
 	{
-		INavigation inner;
+		new INavigation Handler { get { return (INavigation)base.Handler; } }
+
+		public override IEnumerable<Control> Controls
+		{
+			get
+			{
+				yield break;
+			}
+		}
 
 		public static bool Supported { get { return Generator.Current.Supports<INavigation> (); } }
 
@@ -31,7 +40,6 @@ namespace Eto.Forms
 		public Navigation (Generator g)
 			: base(g, typeof(INavigation))
 		{
-			inner = (INavigation)Handler;
 		}
 		
 		public Navigation (Control content, string title = null)
@@ -54,20 +62,25 @@ namespace Eto.Forms
 		public virtual void Push (INavigationItem item)
 		{
 			var loaded = item.Content.Loaded;
-			item.Content.SetParent (this);
+			SetParent(item.Content);
 			if (!loaded) {
 				item.Content.OnPreLoad (EventArgs.Empty);
 				item.Content.OnLoad (EventArgs.Empty);
 			}
 
-			inner.Push (item);
+			Handler.Push (item);
 			if (!loaded)
 				item.Content.OnLoadComplete (EventArgs.Empty);
 		}
 		
 		public virtual void Pop ()
 		{
-			inner.Pop ();
+			Handler.Pop ();
+		}
+
+		public override void Remove(Control child)
+		{
+			throw new NotImplementedException();
 		}
 	}
 }

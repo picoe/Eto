@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace Eto.Drawing
 {
@@ -75,7 +76,13 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Normal font style that is neither bold or italic
 		/// </summary>
-		Normal = 0,
+		[Obsolete("Use None instead")]
+		Normal = None,
+
+		/// <summary>
+		/// No extra font style applied
+		/// </summary>
+		None = 0,
 
 		/// <summary>
 		/// Bold font style
@@ -86,6 +93,17 @@ namespace Eto.Drawing
 		/// Italic font style
 		/// </summary>
 		Italic = 1 << 1,
+
+        /// <summary>
+        /// Underline font style
+        /// </summary>
+        Underline = 1 << 2,
+
+        /// <summary>
+        /// Strikeout font style
+        /// </summary>
+        Strikeout = 1 << 3,
+
 	}
 	
 	/// <summary>
@@ -184,7 +202,7 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to create the font for</param>
-		public Font (string family, float size, FontStyle style = FontStyle.Normal, Generator generator = null)
+		public Font (string family, float size, FontStyle style = FontStyle.None, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
 			Handler.Create (new FontFamily(family), size, style);
@@ -197,7 +215,7 @@ namespace Eto.Drawing
 		/// <param name="family">Family of font to use</param>
 		/// <param name="size">Size of the font, in points</param>
 		/// <param name="style">Style of the font</param>
-		public Font(FontFamily family, float size, FontStyle style = FontStyle.Normal, Generator generator = null)
+		public Font(FontFamily family, float size, FontStyle style = FontStyle.None, Generator generator = null)
 			: base(generator, typeof(IFont))
 		{
 			Handler.Create(family, size, style);
@@ -335,13 +353,29 @@ namespace Eto.Drawing
 			get { return FontStyle.HasFlag (FontStyle.Italic); }
 		}
 
+        /// <summary>
+        /// Gets a value indicating that this font has an underline style
+        /// </summary>
+        public bool Underline
+        {
+            get { return FontStyle.HasFlag(FontStyle.Underline); }
+        }
+
+        /// <summary>
+        /// Gets a value indicating that this font has a strikeout style
+        /// </summary>
+        public bool Strikeout
+        {
+            get { return FontStyle.HasFlag(FontStyle.Strikeout); }
+        }
+
 		/// <summary>
 		/// Gets a string representation of the font object
 		/// </summary>
 		/// <returns>String representation of the font object</returns>
 		public override string ToString()
 		{
-			return string.Format("Family={0}, Typeface={1}, Size={2}pt, Style={3}", Family, Typeface, Size, FontStyle);
+			return string.Format(CultureInfo.InvariantCulture, "Family={0}, Typeface={1}, Size={2}pt, Style={3}", Family, Typeface, Size, FontStyle);
 		}
 
 		public override bool Equals(object obj)

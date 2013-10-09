@@ -12,7 +12,7 @@ namespace Eto.Forms
 	
 	public class CheckMenuItem : MenuActionItem
 	{
-		ICheckMenuItem handler;
+		new ICheckMenuItem Handler { get { return (ICheckMenuItem)base.Handler; } }
 
 		public CheckMenuItem () : this (Generator.Current)
 		{
@@ -25,12 +25,11 @@ namespace Eto.Forms
 		protected CheckMenuItem (Generator generator, Type type, bool initialize = true)
 			: base (generator, type, initialize)
 		{
-			handler = (ICheckMenuItem)base.Handler;
 		}
 
 		public bool Checked {
-			get { return handler.Checked; }
-			set { handler.Checked = value; }
+			get { return Handler.Checked; }
+			set { Handler.Checked = value; }
 		}
 	}
 }

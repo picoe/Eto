@@ -23,13 +23,13 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\Debug</OutputPath>
     <DefineConstants>DEBUG;DESKTOP;XAML</DefineConstants>
-    <Optimize>False</Optimize>
+    <Optimize>false</Optimize>
     <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\..\BuildOutput\Release</OutputPath>
     <DefineConstants>DESKTOP;XAML</DefineConstants>
-    <Optimize>True</Optimize>
+    <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
   </PropertyGroup>
   <Import Condition="Exists('../../../../Eto.Common.targets')" Project="../../../../Eto.Common.targets" />
@@ -64,6 +64,8 @@
     <Compile Include="Sections\Drawing\PenSection.cs" />
     <Compile Include="Sections\Drawing\PixelOffsetSection.cs" />
     <Compile Include="Sections\Drawing\UnitTestSection.cs" />
+    <Compile Include="Sections\FormsSection\ImageViewFormSection.cs" />
+    <Compile Include="Sections\Layouts\PixelLayoutSection\AnchorSection.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\PixelLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\ScrollingLayouts\DockLayoutExpansion.cs" />
     <Compile Include="Sections\Layouts\TableLayoutSection\RuntimeSection.cs" />
@@ -115,6 +117,7 @@
     <Compile Include="Sections\Dialogs\FontDialogSection.cs" />
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
+    <Compile Include="TestIcons.cs" />
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="TestSectionList.cs" />
     <Compile Include="Sections\Drawing\ClearSection.cs" />
@@ -122,6 +125,9 @@
     <Compile Include="Sections\Controls\RadioButtonListSection.cs" />
     <Compile Include="Sections\Behaviors\ScreenSection.cs" />
     <Compile Include="Sections\Behaviors\MousePositionSection.cs" />
+    <Compile Include="Sections\Dialogs\MessageBoxSection.cs" />
+    <Compile Include="Sections\Layouts\TableLayoutSection\ChildWidthSection.cs" />
+    <Compile Include="Sections\Controls\SplitterSection.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Json\Eto.Json.csproj">
@@ -152,8 +158,6 @@
     <MonoDevelop>
       <Properties>
         <Policies>
-          <TextStylePolicy inheritsSet="null" scope="text/x-csharp" />
-          <CSharpFormattingPolicy IndentSwitchBody="True" AnonymousMethodBraceStyle="NextLine" PropertyBraceStyle="NextLine" PropertyGetBraceStyle="NextLine" PropertySetBraceStyle="NextLine" EventBraceStyle="NextLine" EventAddBraceStyle="NextLine" EventRemoveBraceStyle="NextLine" StatementBraceStyle="NextLine" ElseNewLinePlacement="NewLine" CatchNewLinePlacement="NewLine" FinallyNewLinePlacement="NewLine" ArrayInitializerBraceStyle="NextLine" BeforeMethodDeclarationParentheses="False" BeforeMethodCallParentheses="False" BeforeConstructorDeclarationParentheses="False" BeforeDelegateDeclarationParentheses="False" NewParentheses="False" SpacesBeforeBrackets="False" inheritsSet="Mono" inheritsScope="text/x-csharp" scope="text/x-csharp" />
           <TextStylePolicy FileWidth="120" TabsToSpaces="False" inheritsSet="VisualStudio" inheritsScope="text/plain" scope="text/plain" />
         </Policies>
       </Properties>

@@ -4,9 +4,8 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class PanelHandler : MacContainer<NSView, Panel>, IPanel
+	public class PanelHandler : MacDockContainer<NSView, Panel>, IPanel
 	{
-		
 		public PanelHandler()
 		{
 			Enabled = true;
@@ -15,12 +14,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override bool Enabled { get; set; }
 
-		public override object ContainerObject {
-			get {
-				return Control;
-			}
-		}
-		
-		
+		public override NSView ContainerControl { get { return Control; } }
 	}
 }

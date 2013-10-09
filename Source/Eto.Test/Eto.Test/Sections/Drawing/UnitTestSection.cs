@@ -8,13 +8,15 @@ namespace Eto.Test.Sections.Drawing
 	{
 		public UnitTestSection()
 		{
-			var layout = new DynamicLayout(this);
+			var layout = new DynamicLayout();
 			var button = new Button { Text = "Start Tests" };
 			var drawable = new Drawable();
 			layout.BeginVertical(xscale: true);
 			layout.Add(drawable, yscale: true);
 			layout.Add(button);
 			layout.EndVertical();
+
+			Content = layout;
 			
 			// Run the tests in a Paint callback
 			var startTests = false;
@@ -32,9 +34,11 @@ namespace Eto.Test.Sections.Drawing
 					// run the tests
 					try
 					{
-						new TestRunner().RunTests<DrawingTests>(() => new DrawingTests { 
+						new TestRunner().RunTests<DrawingTests>(() => new DrawingTests
+						{ 
 							Drawable = drawable,
-							Graphics = e.Graphics });
+							Graphics = e.Graphics
+						});
 					}
 					finally
 					{
@@ -48,6 +52,7 @@ namespace Eto.Test.Sections.Drawing
 	public class DrawingTests : TestFixture
 	{
 		public Drawable Drawable { get; set; }
+
 		public Graphics Graphics { get; set; }
 
 		[UnitTest]

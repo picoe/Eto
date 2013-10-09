@@ -12,8 +12,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		public class EtoCell : NSTextFieldCell, IMacControl
 		{
-			public object Handler { get; set; }
-			
+			public WeakReference WeakHandler { get; set; }
+
+			public object Handler
+			{ 
+				get { return (object)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+
 			public EtoCell ()
 			{
 			}
@@ -88,10 +94,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override float GetPreferredSize (object value, System.Drawing.SizeF cellSize, NSCell cell)
 		{
-			var font = cell.Font ?? NSFont.SystemFontOfSize (NSFont.SystemFontSize);
+			var font = cell.Font ?? NSFont.BoldSystemFontOfSize (NSFont.SystemFontSize);
 			var str = new NSString (Convert.ToString (value));
 			var attrs = NSDictionary.FromObjectAndKey (font, NSAttributedString.FontAttributeName);
-			return str.StringSize (attrs).Width + 4; // for border
+			return str.StringSize (attrs).Width + 8; // for border
 			
 		}
 	}

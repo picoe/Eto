@@ -5,75 +5,81 @@ namespace Eto.Test.Sections.Controls
 {
 	public class RadioButtonSection : Panel
 	{
-		public RadioButtonSection ()
+		public RadioButtonSection()
 		{
-			var layout = new DynamicLayout (this);
+			var layout = new DynamicLayout();
 			
-			layout.AddRow (new Label{ Text = "Default" }, Default (), null);
+			layout.AddRow(new Label { Text = "Default" }, Default(), null);
 
-			layout.AddRow (new Label{ Text = "Set Initial Value" }, SetInitialValue (), null);
+			layout.AddRow(new Label { Text = "Set Initial Value" }, SetInitialValue(), null);
 
-			layout.AddRow (new Label{ Text = "Disabled" }, Disabled (), null);
+			layout.AddRow(new Label { Text = "Disabled" }, Disabled(), null);
 			
-			layout.Add (null, null, true);
+			layout.Add(null, null, true);
+
+			Content = layout;
 		}
-		
-		Control Default ()
+
+		Control Default()
 		{
-			var layout = new DynamicLayout (new Panel ());
+			var layout = new DynamicLayout();
 			
 			var first = new RadioButton { Text = "First" };
-			var second = new RadioButton (first) { Text = "Second"  };
-			var third = new RadioButton (first) { Text = "Third" };
-			layout.AddRow (first, second, third);
-			LogEvents (first);
-			LogEvents (second);
-			LogEvents (third);
+			var second = new RadioButton(first) { Text = "Second" };
+			var third = new RadioButton(first) { Text = "Third" };
+			layout.AddRow(first, second, third);
+			LogEvents(first);
+			LogEvents(second);
+			LogEvents(third);
 			
-			return layout.Container;
+			return layout;
 		}
-		
-		Control SetInitialValue ()
+
+		Control SetInitialValue()
 		{
-			var layout = new DynamicLayout (new Panel ());
+			var layout = new DynamicLayout();
 			
-			layout.BeginHorizontal ();
+			layout.BeginHorizontal();
 			RadioButton controller = null;
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 5; i++)
+			{
 				var item = new RadioButton(controller) { Text = "Item " + i, Checked = i == 2 };
-				if (controller == null) controller = item;
-				LogEvents (item);
-				layout.Add (item);
+				if (controller == null)
+					controller = item;
+				LogEvents(item);
+				layout.Add(item);
 			}
-			layout.EndHorizontal ();
+			layout.EndHorizontal();
 			
-			return layout.Container;
+			return layout;
 		}
-		
-		Control Disabled ()
+
+		Control Disabled()
 		{
-			var layout = new DynamicLayout (new Panel ());
+			var layout = new DynamicLayout();
 			
-			layout.BeginHorizontal ();
+			layout.BeginHorizontal();
 			RadioButton controller = null;
-			for (int i = 0; i < 5; i++) {
+			for (int i = 0; i < 5; i++)
+			{
 				var item = new RadioButton(controller) { Text = "Item " + i, Checked = i == 2, Enabled = false };
-				if (controller == null) controller = item;
-				LogEvents (item);
-				layout.Add (item);
+				if (controller == null)
+					controller = item;
+				LogEvents(item);
+				layout.Add(item);
 			}
-			layout.EndHorizontal ();
+			layout.EndHorizontal();
 			
-			return layout.Container;
+			return layout;
 		}
-		
-		void LogEvents (RadioButton control)
+
+		void LogEvents(RadioButton control)
 		{
-			control.CheckedChanged += delegate {
-				Log.Write (control, "CheckedChanged, Value: {0}, Checked: {1}", control.Text, control.Checked);
+			control.CheckedChanged += delegate
+			{
+				Log.Write(control, "CheckedChanged, Value: {0}, Checked: {1}", control.Text, control.Checked);
 			};
 		}
-		
 	}
 }
 

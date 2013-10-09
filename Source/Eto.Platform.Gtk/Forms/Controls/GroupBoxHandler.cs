@@ -5,7 +5,7 @@ using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class GroupBoxHandler : GtkContainer<Gtk.Frame, GroupBox>, IGroupBox
+	public class GroupBoxHandler : GtkDockContainer<Gtk.Frame, GroupBox>, IGroupBox
 	{
 		public GroupBoxHandler ()
 		{
@@ -17,10 +17,6 @@ namespace Eto.Platform.GtkSharp
 			get { return Control.LabelWidget; }
 		}
 
-		public override object ContainerObject {
-			get { return Control; }
-		}
-		
 		public override string Text {
 			get { return Control.Label; }
 			set { Control.Label = value; }
@@ -47,13 +43,9 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void SetLayout (Layout inner)
+		protected override void SetContainerContent(Gtk.Widget content)
 		{
-			if (Control.Child != null)
-				Control.Remove (Control.Child);
-			IGtkLayout gtklayout = (IGtkLayout)inner.Handler;
-			var widget = (Gtk.Widget)gtklayout.ContainerObject;
-			Control.Add (widget);
+			Control.Add(content);
 
 			/*if (clientSize != null) {
 				var label = Control.LabelWidget;

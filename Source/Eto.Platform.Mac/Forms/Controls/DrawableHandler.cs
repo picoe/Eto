@@ -10,10 +10,12 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class DrawableHandler : MacContainer<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
+	public class DrawableHandler : MacDockContainer<DrawableHandler.EtoDrawableView, Drawable>, IDrawable
 	{
 		Brush backgroundBrush;
 		Color backgroundColor;
+
+		public override NSView ContainerControl { get { return Control; } }
 
 		public class EtoDrawableView : MacEventView
 		{
@@ -21,8 +23,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				get { return Widget as Drawable; }
 			}
-			
-			public override void DrawRect (sd.RectangleF dirtyRect)
+
+			public override void DrawRect(sd.RectangleF dirtyRect)
 			{
 				if (Widget == null)
 					return;
@@ -31,74 +33,72 @@ namespace Eto.Platform.Mac.Forms.Controls
 					dirtyRect.Width += 1;
 				if (dirtyRect.Y % 1.0f > 0f)
 					dirtyRect.Height += 1;
-				Drawable.Update (Rectangle.Ceiling (Eto.Platform.Conversions.ToEto (dirtyRect)));
+				Drawable.Update(Rectangle.Ceiling(Eto.Platform.Conversions.ToEto(dirtyRect)));
 			}
-			
+
 			public bool CanFocus { get; set; }
 
-			public override bool AcceptsFirstResponder ()
+			public override bool AcceptsFirstResponder()
 			{
 				return CanFocus;
 			}
 
-			public override bool AcceptsFirstMouse (NSEvent theEvent)
+			public override bool AcceptsFirstMouse(NSEvent theEvent)
 			{
 				return CanFocus;
 			}
 		}
 
-		public Graphics CreateGraphics ()
+		public Graphics CreateGraphics()
 		{
-			return new Graphics (Widget.Generator, new GraphicsHandler (Control));
+			return new Graphics(Widget.Generator, new GraphicsHandler(Control, Widget));
 		}
 
 		public override bool Enabled { get; set; }
-		
+
 		public override Color BackgroundColor
 		{
 			get { return backgroundColor; }
 			set
 			{
-				if (backgroundColor != value) {
+				if (backgroundColor != value)
+				{
 					backgroundColor = value;
 					if (backgroundColor.A > 0)
-						backgroundBrush = new SolidBrush (backgroundColor, Widget.Generator);
+						backgroundBrush = new SolidBrush(backgroundColor, Widget.Generator);
 					else
 						backgroundBrush = null;
-					this.Invalidate ();
+					this.Invalidate();
 				}
 			}
 		}
-		
-		public void Create ()
+
+		public void Create()
 		{
 			Enabled = true;
-			Control = new EtoDrawableView{ Handler = this };
+			Control = new EtoDrawableView { Handler = this };
 		}
-		
+
 		public bool CanFocus
 		{
 			get { return Control.CanFocus; }
 			set { Control.CanFocus = value; }
 		}
-		
-		public void Update (Rectangle rect)
+
+		public void Update(Rectangle rect)
 		{
 			var context = NSGraphicsContext.CurrentContext;
-			if (context != null) {
-				var handler = new GraphicsHandler (Control, context, Control.Frame.Height, Control.IsFlipped);
-				using (var graphics = new Graphics (Widget.Generator, handler)) {
+			if (context != null)
+			{
+				var handler = new GraphicsHandler(Control, context, Control.Frame.Height, Control.IsFlipped);
+				using (var graphics = new Graphics(Widget.Generator, handler))
+				{
 					if (backgroundBrush != null)
-						graphics.FillRectangle (backgroundBrush, rect);
+						graphics.FillRectangle(backgroundBrush, rect);
 
-					Widget.OnPaint (new PaintEventArgs (graphics, rect));
+					Widget.OnPaint(new PaintEventArgs(graphics, rect));
 				}
 			}
-		}
-
-		public override object ContainerObject
-		{
-			get { return Control; }
 		}
 	}
 }

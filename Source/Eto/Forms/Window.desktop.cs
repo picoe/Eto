@@ -18,7 +18,7 @@ namespace Eto.Forms
 		None
 	}
 
-	public partial interface IWindow : IContainer
+	public partial interface IWindow
 	{
 		MenuBar Menu { get; set; }
 
@@ -32,7 +32,7 @@ namespace Eto.Forms
 
 		bool ShowInTaskbar { get; set; }
 
-		bool TopMost { get; set; }
+		bool Topmost { get; set; }
 
 		WindowState WindowState { get; set; }
 
@@ -45,7 +45,7 @@ namespace Eto.Forms
 		void SendToBack ();
 	}
 
-	public abstract partial class Window : Container
+	public abstract partial class Window
 	{
 
 		public const string WindowStateChangedEvent = "Window.WindowStateChanged";
@@ -77,81 +77,84 @@ namespace Eto.Forms
 
 		public virtual MenuBar Menu
 		{
-			get { return handler.Menu; }
-			set { handler.Menu = value; }
+			get { return Handler.Menu; }
+			set { Handler.Menu = value; }
 		}
 
 		public Icon Icon
 		{
-			get { return handler.Icon; }
-			set { handler.Icon = value; }
+			get { return Handler.Icon; }
+			set { Handler.Icon = value; }
 		}
 
 		public bool Resizable
 		{
-			get { return handler.Resizable; }
-			set { handler.Resizable = value; }
+			get { return Handler.Resizable; }
+			set { Handler.Resizable = value; }
 		}
 
 		public bool Maximizable
 		{
-			get { return handler.Maximizable; }
-			set { handler.Maximizable = value; }
+			get { return Handler.Maximizable; }
+			set { Handler.Maximizable = value; }
 		}
 
 		public bool Minimizable
 		{
-			get { return handler.Minimizable; }
-			set { handler.Minimizable = value; }
+			get { return Handler.Minimizable; }
+			set { Handler.Minimizable = value; }
 		}
 
 		public bool ShowInTaskbar
 		{
-			get { return handler.ShowInTaskbar; }
-			set { handler.ShowInTaskbar = value; }
+			get { return Handler.ShowInTaskbar; }
+			set { Handler.ShowInTaskbar = value; }
 		}
 
-		public bool TopMost
+		[Obsolete("Use Topmost")]
+		public bool TopMost { get { return Topmost; } set { Topmost = value; } }
+
+		public bool Topmost
 		{
-			get { return handler.TopMost; }
-			set { handler.TopMost = value; }
+			get { return Handler.Topmost; }
+			set { Handler.Topmost = value; }
 		}
 
 		public WindowState WindowState
 		{
-			get { return handler.WindowState; }
-			set { handler.WindowState = value; }
+			get { return Handler.WindowState; }
+			set { Handler.WindowState = value; }
 		}
 
 		public Rectangle? RestoreBounds
 		{
-			get { return handler.RestoreBounds; }
+			get { return Handler.RestoreBounds; }
 		}
 
 		public void Minimize ()
 		{
-			handler.WindowState = WindowState.Minimized;
+			Handler.WindowState = WindowState.Minimized;
 		}
 
 		public void Maximize ()
 		{
-			handler.WindowState = WindowState.Maximized;
+			Handler.WindowState = WindowState.Maximized;
 		}
 
 		public WindowStyle WindowStyle
 		{
-			get { return handler.WindowStyle; }
-			set { handler.WindowStyle = value; }
+			get { return Handler.WindowStyle; }
+			set { Handler.WindowStyle = value; }
 		}
 
 		public void BringToFront ()
 		{
-			handler.BringToFront ();
+			Handler.BringToFront ();
 		}
 
 		public void SendToBack ()
 		{
-			handler.SendToBack ();
+			Handler.SendToBack ();
 		}
 
 		#region Obsolete
@@ -205,8 +208,8 @@ namespace Eto.Forms
 		[Obsolete ("Use WindowState instead")]
 		public WindowState State
 		{
-			get { return handler.WindowState; }
-			set { handler.WindowState = value; }
+			get { return Handler.WindowState; }
+			set { Handler.WindowState = value; }
 		}
 		
 
