@@ -65,6 +65,11 @@ namespace Eto.Platform.Wpf.Forms
 			HandleEvent (Window.ClosingEvent);
 		}
 
+		protected override void SetContentScale(bool xscale, bool yscale)
+		{
+			base.SetContentScale(true, true);
+		}
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
