@@ -26,7 +26,7 @@
     <tags>cross platform gui framework desktop gtk eto.forms</tags>
     <dependencies>
       <group>
-        <dependency id="Eto.Forms" version="1.2.0" />
+        <dependency id="Eto.Forms" version="$version$" />
       </group>
     </dependencies>
   </metadata>

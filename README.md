@@ -13,14 +13,9 @@ Links
 Description
 -----------
 
-This framework is built so that you can target multiple platforms with one UI codebase.
+This framework can be used to build applications that run across multiple platforms using their native toolkit, with an easy to use API. This will make your applications look and work as a native application on all platforms, using a single UI codebase.
 
-The overall goal of this framework is to expose a common API that can be used to build functional
-applications that run across platforms using their native toolkit.  This will make your applications look and 
-work as if it were a native application on all platforms.
-
-For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI
-in a larger application, or even create your own high-level controls with a custom implementations per platform.
+For advanced scenarios, you can take advantage of each platform's capabilities by wrapping your common UI in a larger application, or even create your own high-level controls with a custom implementations per platform.
 
 This framework currently supports creating Desktop applications that work across Windows Forms, WPF, MonoMac, and GTK#.
 There is a Mobile/iOS port in the works, but is considered incomplete.
@@ -52,7 +47,7 @@ Applications
 * [Manager](https://www.manager.io) - Accounting Software
 * [PabloDraw](http://picoe.ca/products/pablodraw/alpha) - Character based drawing application
 * [JabbR.Desktop](https://github.com/JabbR/JabbR.Desktop) - JabbR client
-* [Notedown by Mod Monkeys](https://github.com/modmonkeys/Notedown) - Note taking application
+* [Notedown](https://github.com/modmonkeys/Notedown) - Note taking application
 * [Eto.Test](https://github.com/picoe/Eto/tree/master/Source/Eto.Test) - Application to test the functionality of each widget
 
 Namespaces
