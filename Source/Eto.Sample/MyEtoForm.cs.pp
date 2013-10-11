@@ -40,14 +40,10 @@ namespace $rootnamespace$
 
 			// your actions!
 			var clickMe = new ButtonAction { Text = "Click Me!", ID = "clickme", ShowLabel = true, ToolBarText = "Click Me!" };
-			clickMe.Activated += (sender, e) => {
-				MessageBox.Show(this, "I was clicked!");
-			};
+			clickMe.Activated += (sender, e) => MessageBox.Show(this, "I was clicked!");
 
 			var quitAction = new ButtonAction { Text = "Quit", ID = "quit", Accelerator = Application.Instance.CommonModifier | Key.Q };
-			quitAction.Activated += (sender, e) => {
-				Application.Instance.Quit();
-			};
+			quitAction.Activated += (sender, e) => Application.Instance.Quit();
 
 			// add actions to the menu & toolbar definitions
 			var myMenu = args.Menu.FindAddSubMenu("&File");
