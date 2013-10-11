@@ -1,5 +1,7 @@
 ﻿This file lists the breaking changes made to Eto, most recent first.
 
+- Removed Eto.InstanceWidget.StyleChanged event (subclass and override OnStyleChanged instead)
+- Moved Eto.InstanceWidget.DataContext/DataContextChanged to Eto.Forms.Control
 - Eto.Widget.Bindings was moved to Eto.Forms.Control
 - Eto.Widget.Properties was moved to Eto.Forms.Control
 - Empty interface Eto.Forms.IGridItem was removed

@@ -86,9 +86,7 @@ namespace Eto.Test
 					}
 					else
 					{
-						contentContainer.SuspendLayout();
 						contentContainer.Content = content;
-						contentContainer.ResumeLayout();
 					}
 				}
 				catch (Exception ex)

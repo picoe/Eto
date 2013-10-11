@@ -281,16 +281,5 @@ namespace Eto.Platform.Mac.Drawing
 
 			return bmprep.ColorAt(x, y).ToEto();
 		}
-
-		protected override void Dispose(bool disposing)
-		{
-			if (disposing)
-			{
-				var ctl = Control;
-				ctl.Autorelease();
-			}
-			else
-				base.Dispose(disposing);
-		}
 	}
 }

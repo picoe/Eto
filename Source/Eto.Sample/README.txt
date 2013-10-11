@@ -1,11 +1,18 @@
 
 Welcome to your first Eto.Forms cross-platform application!
 
-This framework is built so that you can target multiple platforms with one UI codebase.
+To get started, ensure you use MyEtoApplication.Main() as your program startup, so delete
+the existing Program.cs and/or Main() method.
 
-The overall goal of this framework is to expose a common API that can be used to build
-functional applications that run across platforms using their native toolkit. This will
-make your applications look and work as if it were a native application on all platforms.
+Here's a breakdown of what's included:
+
+MyEtoForm.cs        - Contains your main form
+MyEtoApplication.cs - Your startup code and Main() method 
+MyApp.app           - A template for packaging your app for Mac users
+
+This framework can be used to build applications that run across multiple platforms using
+their native toolkit using a single UI codebase. This will make your applications look and
+work as if it were a native application on all platforms.
 
 For advanced scenarios, you can take advantage of each platform's capabilities by wrapping
 your common UI in a larger application, or even create your own high-level controls with a
@@ -14,8 +21,6 @@ custom implementations per platform.
 This framework currently supports creating Desktop applications that work across
 Windows Forms, WPF, MonoMac/Xamarin.Mac, and GTK#.
 
-This sample application includes a MyEtoApplication.Main(), so delete the existing
-Program.cs to use this as your program startup automatically.
 
 To get more information about how to get started, read the wiki:
 

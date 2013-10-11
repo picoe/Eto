@@ -257,7 +257,8 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				this.Control.SuspendLayout();
+				if (Widget.Loaded)
+					SuspendLayout();
 				toolbarHolder.SuspendLayout();
 				if (toolBar != null)
 					toolbarHolder.Controls.Remove((swf.Control)toolBar.ControlObject);
@@ -266,12 +267,11 @@ namespace Eto.Platform.Windows
 				{
 					var c = ((swf.Control)toolBar.ControlObject);
 					c.Dock = swf.DockStyle.Top;
-					c.ResumeLayout();
 					toolbarHolder.Controls.Add(c);
 				}
 				toolbarHolder.ResumeLayout();
-				this.Control.ResumeLayout();
-				toolbarHolder.Update();
+				if (Widget.Loaded)
+					ResumeLayout();
 			}
 		}
 

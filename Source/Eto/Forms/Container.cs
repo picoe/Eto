@@ -143,5 +143,15 @@ namespace Eto.Forms
 		}
 
 		public abstract void Remove(Control child);
+
+		protected void RemoveParent(Control child, bool changeContext)
+		{
+			child.SetParent(null, changeContext);
+		}
+
+		protected void SetParent(Control child)
+		{
+			child.SetParent(this, true);
+		}
 	}
 }

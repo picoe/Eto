@@ -15,8 +15,28 @@ namespace Eto.Platform.Windows
 			sd.StringFormat stringFormat;
 			WrapMode wrapMode;
 			HorizontalAlign horizontalAlign;
+			sd.SizeF? measuredSize;
+			VerticalAlign verticalAlign;
 
-			public LabelHandler Handler { get; set; }
+			public override sd.Font Font
+			{
+				get { return base.Font; }
+				set
+				{
+					measuredSize = null;
+					base.Font = value;
+				}
+			}
+
+			public override string Text
+			{
+				get { return base.Text; }
+				set
+				{
+					measuredSize = null;
+					base.Text = value;
+				}
+			}
 
 			public WrapMode Wrap
 			{
@@ -25,6 +45,7 @@ namespace Eto.Platform.Windows
 				{
 					wrapMode = value;
 					SetStringFormat();
+					measuredSize = null;
 				}
 			}
 
@@ -35,10 +56,19 @@ namespace Eto.Platform.Windows
 				{
 					horizontalAlign = value;
 					SetStringFormat();
+					measuredSize = null;
 				}
 			}
 
-			public Eto.Forms.VerticalAlign VerticalAlign { get; set; }
+			public VerticalAlign VerticalAlign
+			{
+				get { return verticalAlign; }
+				set
+				{
+					verticalAlign = value;
+					measuredSize = null;
+				}
+			}
 
 			public MyLabel()
 			{
@@ -48,16 +78,19 @@ namespace Eto.Platform.Windows
 
 			static sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
 
+
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var bordersAndPadding = this.Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
-				proposedSize -= bordersAndPadding;
-				proposedSize.Height = Math.Max(0, proposedSize.Height);
-				if (proposedSize.Width <= 1)
-					proposedSize.Width = int.MaxValue;
-
-				var size = graphics.MeasureString(this.Text, this.Font, proposedSize.Width, stringFormat);
-
+				if (measuredSize == null)
+				{
+					proposedSize -= bordersAndPadding;
+					proposedSize.Height = Math.Max(0, proposedSize.Height);
+					if (proposedSize.Width <= 1)
+						proposedSize.Width = int.MaxValue;
+					measuredSize = graphics.MeasureString(this.Text, this.Font, proposedSize.Width, stringFormat);
+				}
+				var size = measuredSize.Value;
 				size += bordersAndPadding;
 				if (size.Width < MinimumSize.Width)
 					size.Width = MinimumSize.Width;
@@ -165,7 +198,6 @@ namespace Eto.Platform.Windows
 		{
 			Control = new MyLabel
 			{
-				Handler = this,
 				AutoSize = true
 			};
 		}

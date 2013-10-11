@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
 
@@ -54,17 +53,21 @@ namespace Eto.Forms
 	{
 		new IControl Handler { get { return (IControl)base.Handler; } }
 
+		object dataContext;
+
 		public bool Loaded { get; private set; }
 
 		/// <summary>
 		/// Gets the attached properties for this widget
 		/// </summary>
 		PropertyStore properties;
+
 		public PropertyStore Properties
 		{
 			get
 			{
-				if (properties == null) properties = new PropertyStore(this);
+				if (properties == null)
+					properties = new PropertyStore(this);
 				return properties;
 			}
 		}
@@ -73,11 +76,13 @@ namespace Eto.Forms
 		/// Gets the collection of bindings that are attached to this widget
 		/// </summary>
 		BindingCollection bindings;
+
 		public BindingCollection Bindings
 		{
 			get
 			{
-				if (bindings == null) bindings = new BindingCollection();
+				if (bindings == null)
+					bindings = new BindingCollection();
 				return bindings;
 			}
 		}
@@ -163,16 +168,16 @@ namespace Eto.Forms
 		{
 			add
 			{
-				HandleEvent (TextChangedEvent);
+				HandleEvent(TextChangedEvent);
 				textChanged += value;
 			}
 			remove { textChanged -= value; }
 		}
 
-		public virtual void OnTextChanged (EventArgs e)
+		public virtual void OnTextChanged(EventArgs e)
 		{
 			if (textChanged != null)
-				textChanged (this, e);
+				textChanged(this, e);
 		}
 
 		public const string TextInputEvent = "Control.TextInput";
@@ -422,6 +427,30 @@ namespace Eto.Forms
 			Handler.OnUnLoad(e);
 		}
 
+		/// <summary>
+		/// Event to handle when the <see cref="Control.DataContext"/> has changed
+		/// </summary>
+		/// <remarks>
+		/// This may be fired in the event of a parent in the hierarchy setting the data context.
+		/// For example, the <see cref="Forms.Container"/> widget fires this event when it's event is fired.
+		/// </remarks>
+		public event EventHandler<EventArgs> DataContextChanged;
+
+		/// <summary>
+		/// Called to fire the <see cref="DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
+		protected internal virtual void OnDataContextChanged(EventArgs e)
+		{
+			if (DataContextChanged != null)
+				DataContextChanged(this, e);
+		}
+
 		#endregion
 
 		protected Control(Generator generator, Type type, bool initialize = true)
@@ -468,10 +497,22 @@ namespace Eto.Forms
 			set { Handler.Visible = value; }
 		}
 
-		public override object DataContext
+		/// <summary>
+		/// Gets or sets the data context for this widget for binding
+		/// </summary>
+		/// <remarks>
+		/// Subclasses may override the standard behaviour so that hierarchy of widgets can be taken into account.
+		/// 
+		/// For example, a Control may return the data context of a parent, if it is not set explicitly.
+		/// </remarks>
+		public virtual object DataContext
 		{
-			get { return base.DataContext ?? (Parent != null ? Parent.DataContext : null); }
-			set { base.DataContext = value; }
+			get { return dataContext ?? (Parent != null ? Parent.DataContext : null); }
+			set
+			{
+				dataContext = value;
+				OnDataContextChanged(EventArgs.Empty);
+			}
 		}
 
 		[Obsolete("Use Parent instead")]
@@ -480,14 +521,15 @@ namespace Eto.Forms
 		public Container Parent { get; private set; }
 
 		public T FindParent<T>(string id)
-			where T : class
+			where T : Container
 		{
-			var control = this.Parent;
+			var control = Parent;
 			while (control != null)
 			{
-				if (control is T && (string.IsNullOrEmpty(id) || control.ID == id))
+				var ctl = control as T;
+				if (ctl != null && (string.IsNullOrEmpty(id) || control.ID == id))
 				{
-					return control as T;
+					return ctl;
 				}
 				control = control.Parent;
 			}
@@ -495,30 +537,31 @@ namespace Eto.Forms
 		}
 
 		public T FindParent<T>()
-			where T : class
+			where T : Container
 		{
-			var control = this.Parent;
+			var control = Parent;
 			while (control != null)
 			{
-				if (control is T)
-					return control as T;
+				var ctl = control as T;
+				if (ctl != null)
+					return ctl;
 				control = control.Parent;
 			}
 			return default(T);
 		}
 
-		public void SetParent(Container parent, bool changeContext = true)
+		internal void SetParent(Container parent, bool changeContext = true)
 		{
-			if (this.Parent != parent)
+			if (Parent != parent)
 			{
-				var loaded = this.Loaded;
+				var loaded = Loaded;
 				Handler.SetParent(parent);
-				this.Parent = parent;
+				Parent = parent;
 				if (changeContext)
 					OnDataContextChanged(EventArgs.Empty);
 				if (parent == null && loaded)
 				{
-					this.OnUnLoad(EventArgs.Empty);
+					OnUnLoad(EventArgs.Empty);
 				}
 			}
 		}
@@ -568,8 +611,9 @@ namespace Eto.Forms
 				Control c = this;
 				while (c != null)
 				{
-					if (c is Window)
-						return (Window)c;
+					var window = c as Window;
+					if (window != null)
+						return window;
 					c = c.Parent;
 				}
 				return null;
@@ -600,7 +644,6 @@ namespace Eto.Forms
 
 		[Obsolete("This event is deprecated")]
 		public const string HiddenEvent = "Control.Hidden";
-
 		EventHandler<EventArgs> hidden;
 
 		[Obsolete("This event is deprecated")]
@@ -655,11 +698,9 @@ namespace Eto.Forms
 
 			base.Dispose(disposing);
 		}
-
 	}
 
 	public class ControlCollection : List<Control>
 	{
-
 	}
 }

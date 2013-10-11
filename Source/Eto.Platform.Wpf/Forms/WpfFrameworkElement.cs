@@ -13,8 +13,10 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public interface IWpfFrameworkElement
 	{
-		sw.Size GetPreferredSize(sw.Size? constraint);
+		sw.Size GetPreferredSize(sw.Size constraint);
 		sw.FrameworkElement ContainerControl { get; }
+		void SetScale(bool xscale, bool yscale);
+		sw.Size ParentMinimumSize { get; set; }
 	}
 
 	public static class ControlExtensions
@@ -29,6 +31,20 @@ namespace Eto.Platform.Wpf.Forms
 			var controlObject = control.ControlObject as Control;
 			if (controlObject != null)
 				return controlObject.GetWpfFrameworkElement();
+
+			return null;
+		}
+
+		public static IWpfContainer GetWpfContainer(this Container control)
+		{
+			if (control == null)
+				return null;
+			var handler = control.Handler as IWpfContainer;
+			if (handler != null)
+				return handler;
+			var controlObject = control.ControlObject as Container;
+			if (controlObject != null)
+				return controlObject.GetWpfContainer();
 
 			return null;
 		}
@@ -48,12 +64,12 @@ namespace Eto.Platform.Wpf.Forms
 			return control.ControlObject as sw.FrameworkElement;
 		}
 
-		public static sw.Size GetPreferredSize(this Control control, sw.Size? available = null)
+		public static sw.Size GetPreferredSize(this Control control, sw.Size available)
 		{
 			var handler = control.GetWpfFrameworkElement();
 			if (handler != null)
 				return handler.GetPreferredSize(available);
-			return sw.Size.Empty;
+			return Conversions.ZeroSize;
 		}
 	}
 
@@ -66,57 +82,76 @@ namespace Eto.Platform.Wpf.Forms
 		where T : System.Windows.FrameworkElement
 		where W : Control
 	{
-		Size? size;
 		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
 		Cursor cursor;
-		bool loaded;
+		sw.Size parentMinimumSize;
 		bool isMouseOver;
 		bool isMouseCaptured;
+		public bool XScale { get; private set; }
+		public bool YScale { get; private set; }
 
-		protected sw.Size PreferredSize { get { return preferredSize; } }
+		protected sw.Size PreferredSize { get { return preferredSize; } set { preferredSize = value; } }
+
+		protected virtual Size DefaultSize { get { return Size.Empty; } }
 
 		public abstract Color BackgroundColor { get; set; }
 
 		public virtual bool UseMousePreview { get { return false; } }
 
-		public virtual sw.FrameworkElement ContainerControl
+		public sw.Size ParentMinimumSize
 		{
-			get { return this.Control; }
+			get { return parentMinimumSize; }
+			set
+			{
+				parentMinimumSize = value;
+				SetSize();
+			}
 		}
+
+		public virtual sw.FrameworkElement ContainerControl { get { return Control; } }
 
 		public virtual Size Size
 		{
 			get
 			{
-				var newSize = this.newSize;
-				if (!Control.IsLoaded && size != null) return size.Value;
-				else if (newSize != null) return newSize.Value;
+				if (newSize != null) return newSize.Value;
+				else if (!Control.IsLoaded) return preferredSize.ToEtoSize();
 				else return Conversions.GetSize(Control);
 			}
 			set
 			{
-				size = value;
-				preferredSize.Width = (value.Width >= 0) ? value.Width : double.NaN;
-				preferredSize.Height = (value.Height >= 0) ? value.Height : double.NaN;
-				Conversions.SetSize(Control, value);
+				preferredSize = value.ToWpf();
+				SetSize();
 			}
 		}
 
-		public virtual sw.Size GetPreferredSize(sw.Size? constraint = null)
+		public virtual void SetScale(bool xscale, bool yscale)
+		{
+			XScale = xscale;
+			YScale = yscale;
+			SetSize();
+		}
+
+		protected virtual void SetSize()
+		{
+			ContainerControl.Width = XScale ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
+			ContainerControl.Height = YScale ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
+			ContainerControl.MinWidth = Math.Max(0, XScale ? 0 : double.IsNaN(preferredSize.Width) ? DefaultSize.Width : preferredSize.Width);
+			ContainerControl.MinHeight = Math.Max(0, YScale ? 0 : double.IsNaN(preferredSize.Height) ? DefaultSize.Height : preferredSize.Height);
+		}
+
+		public virtual sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			var size = preferredSize;
 			if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
 			{
-				//constraint = constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
-				//if (!double.IsNaN(constraint.Value.Width))
-					//size.Width 
-				Control.Measure(constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity));
-				var desired = Control.DesiredSize;
+				ContainerControl.Measure(constraint);
+				var desired = ContainerControl.DesiredSize;
 				if (double.IsNaN(size.Width))
-					size.Width = desired.Width;
+					size.Width = Math.Max(desired.Width, DefaultSize.Width);
 				if (double.IsNaN(size.Height))
-					size.Height = desired.Height;
+					size.Height = Math.Max(desired.Height, DefaultSize.Height);
 			}
 			return size;
 		}
@@ -163,7 +198,6 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void ResumeLayout()
 		{
-			//Control.UpdateLayout ();
 		}
 
 		public virtual void Focus()
@@ -171,19 +205,18 @@ namespace Eto.Platform.Wpf.Forms
 			if (Control.IsLoaded)
 				Control.Focus();
 			else
-				Control.Loaded += (sender, e) =>
-				{
-					Control.Focus();
-				};
+				Control.Loaded += HandleFocus;
+		}
+
+		void HandleFocus(object sender, sw.RoutedEventArgs e)
+		{
+			Control.Focus();
+			Control.Loaded -= HandleFocus;
 		}
 
 		protected virtual void EnsureLoaded()
 		{
-			if (!loaded)
-			{
-				Control.EnsureLoaded();
-				loaded = true;
-			}
+			Control.EnsureLoaded();
 		}
 
 		protected override void Initialize()
@@ -376,6 +409,7 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Tag = this;
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
+			SetSize();
 		}
 
 		public virtual void OnPreLoad(EventArgs e)
@@ -388,6 +422,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+			SetScale(false, false);
 		}
 
 		public virtual void SetParent(Container parent)

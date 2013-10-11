@@ -17,6 +17,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		IListStore store;
 		ContextMenu contextMenu;
 
+		public override sw.Size GetPreferredSize(sw.Size constraint)
+		{
+			return base.GetPreferredSize(sw.Size.Empty);
+		}
+
 		public ListBoxHandler()
 		{
 			Control = new swc.ListBox();

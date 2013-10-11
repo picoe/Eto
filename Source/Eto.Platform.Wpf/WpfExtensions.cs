@@ -89,9 +89,12 @@ namespace Eto.Platform.Wpf
 
 		public static void EnsureLoaded (this sw.FrameworkElement control)
 		{
-			ApplicationHandler.InvokeIfNecessary (() => {
+			ApplicationHandler.InvokeIfNecessary(() =>
+			{
 				if (!control.IsLoaded)
-					control.Dispatcher.Invoke (new Action (() => { }), sw.Threading.DispatcherPriority.ContextIdle, null);
+				{
+					control.Dispatcher.Invoke(new Action(() => { }), sw.Threading.DispatcherPriority.ContextIdle, null);
+				}
 			});
 		}
 
@@ -105,9 +108,19 @@ namespace Eto.Platform.Wpf
 			return thickness.Top + thickness.Bottom;
 		}
 
-		public static sw.Size Size (this sw.Thickness thickness)
+		public static sw.Size Size(this sw.Thickness thickness)
 		{
-			return new sw.Size (thickness.Horizontal (), thickness.Vertical ());
+			return new sw.Size(thickness.Horizontal(), thickness.Vertical());
+		}
+
+		public static sw.Size Add(this sw.Size size1, sw.Size size2)
+		{
+			return new sw.Size(size1.Width + size2.Width, size1.Height + size2.Height);
+		}
+
+		public static sw.Size Subtract(this sw.Size size1, sw.Size size2)
+		{
+			return new sw.Size(Math.Max(0, size1.Width - size2.Width), Math.Max(0, size1.Height - size2.Height));
 		}
 	}
 }

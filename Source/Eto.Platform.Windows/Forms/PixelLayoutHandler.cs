@@ -31,12 +31,11 @@ namespace Eto.Platform.Windows
 
 		public void Add(Control child, int x, int y)
 		{
-			var parent = Control;
 			var ctl = child.GetContainerControl();
 			var pt = new sd.Point(x, y);
 			ctl.Dock = swf.DockStyle.None;
 			ctl.Location = pt;
-			parent.Controls.Add(ctl);
+			Control.Controls.Add(ctl);
 			ctl.BringToFront();
 		}
 
@@ -48,9 +47,9 @@ namespace Eto.Platform.Windows
 
 		public void Remove(Control child)
 		{
-			var parent = Control;
 			var ctl = child.GetContainerControl();
-			if (parent != null) parent.Controls.Remove(ctl);
+			if (ctl.Parent == Control)
+				ctl.Parent = null;
 		}
 
 		public void Update()

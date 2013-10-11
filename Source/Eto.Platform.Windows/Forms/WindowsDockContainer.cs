@@ -20,6 +20,19 @@ namespace Eto.Platform.Windows
 		{
 			base.Initialize();
 			Padding = DockContainer.DefaultPadding;
+			SuspendLayout();
+		}
+
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			ResumeLayout();
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			SuspendLayout();
 		}
 
 		public virtual swf.Control ContainerContentControl
@@ -97,24 +110,25 @@ namespace Eto.Platform.Windows
 			get { return content; }
 			set
 			{
-				ContainerContentControl.SuspendLayout();
+				if (Widget.Loaded)
+					SuspendLayout();
 
 				if (content != null)
 				{
-					content.SetScale(false, false);
-					var childControl = this.content.GetContainerControl();
-					ContainerContentControl.Controls.Remove(childControl);
+					var contentHandler = content.GetWindowsHandler();
+					contentHandler.SetScale(false, false);
+					contentHandler.ContainerControl.Parent = null;
 				}
 
 				content = value;
 				if (content != null)
 				{
 					SetContentScale(XScale, YScale);
-					var contentControl = content.GetContainerControl();
-					SetContent(contentControl);
+					SetContent(content.GetContainerControl());
 				}
 
-				ContainerContentControl.ResumeLayout();
+				if (Widget.Loaded)
+					ResumeLayout();
 			}
 		}
 

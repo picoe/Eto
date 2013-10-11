@@ -277,7 +277,7 @@
   -->
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
-      <Project>{16289d2f-044c-49ef-83e9-9391aff8fd2b}</Project>
+      <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
     </ProjectReference>
   </ItemGroup>

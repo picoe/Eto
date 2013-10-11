@@ -6,16 +6,24 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using mwc = Xceed.Wpf.Toolkit;
 using Eto.Forms;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class TextBoxHandler : WpfControl<mwc.WatermarkTextBox, TextBox>, ITextBox
 	{
 		bool textChanging;
+		protected override Size DefaultSize { get { return new Size(80, -1); } }
 
 		public TextBoxHandler ()
 		{
-			Control = new mwc.WatermarkTextBox { Width = 80 };
+			Control = new mwc.WatermarkTextBox();
+		}
+
+
+		public override sw.Size GetPreferredSize(sw.Size constraint)
+		{
+			return base.GetPreferredSize(Conversions.ZeroSize);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

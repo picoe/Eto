@@ -33,68 +33,43 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public override sw.Size GetPreferredSize(sw.Size? constraint)
+		public override void SetScale(bool xscale, bool yscale)
+		{
+			base.SetScale(xscale, yscale);
+			SetContentScale(xscale, yscale);
+		}
+
+		protected virtual void SetContentScale(bool xscale, bool yscale)
+		{
+			var contentHandler = content.GetWpfFrameworkElement();
+			if (contentHandler != null)
+			{
+				contentHandler.SetScale(xscale, yscale);
+			}
+		}
+
+		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			var size = PreferredSize;
 			if (double.IsNaN(size.Width) || double.IsNaN(size.Height))
 			{
-				var contentSize = constraint ?? new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
-				contentSize = new sw.Size(Math.Max(0, contentSize.Width - Padding.Horizontal), Math.Max(0, contentSize.Height - Padding.Vertical));
-				var baseSize = sw.Size.Empty;
+				sw.Size baseSize;
 				if (UseContentSize)
 				{
+					var padding = border.Padding.Size().Add(ContainerControl.Margin.Size());
+					var contentSize = constraint.Subtract(padding);
 					var preferredSize = content.GetPreferredSize(contentSize);
-					baseSize = new sw.Size(Math.Max(0, Math.Max(baseSize.Width, preferredSize.Width + Padding.Horizontal)), Math.Max(0, Math.Max(baseSize.Height, preferredSize.Height + Padding.Vertical)));
+					baseSize = new sw.Size(Math.Max(0, preferredSize.Width + padding.Width), Math.Max(0, preferredSize.Height + padding.Height));
 				}
 				else
-					baseSize = base.GetPreferredSize(contentSize);
+					baseSize = base.GetPreferredSize(constraint);
+
 				if (double.IsNaN(size.Width))
 					size.Width = baseSize.Width;
 				if (double.IsNaN(size.Height))
 					size.Height = baseSize.Height;
 			}
 			return new sw.Size(Math.Max(0, size.Width), Math.Max(0, size.Height));
-		}
-
-		public class EtoBorder : swc.Border
-		{
-
-			// Override the default Measure method of Panel 
-			protected override sw.Size MeasureOverride(sw.Size availableSize)
-			{
-				sw.Size panelDesiredSize = new sw.Size();
-
-				// In our example, we just have one child.  
-				// Report that our panel requires just the size of its only child. 
-				var child = Child as sw.FrameworkElement;
-				if (child != null)
-				{
-					child.Measure(availableSize);
-					panelDesiredSize = child.DesiredSize;
-					if (!double.IsPositiveInfinity(availableSize.Width))
-					{
-						panelDesiredSize.Width = availableSize.Width;
-						child.Width = availableSize.Width;
-					}
-					if (!double.IsPositiveInfinity(availableSize.Height))
-					{
-						panelDesiredSize.Height = availableSize.Height;
-						child.Height = availableSize.Height;
-					}
-				}
-
-				return panelDesiredSize;
-			}
-
-			protected override sw.Size ArrangeOverride(sw.Size finalSize)
-			{
-				var child = Child;
-				if (child != null)
-				{
-					child.Arrange(new sw.Rect(new sw.Point(), finalSize));
-				}
-				return finalSize; // Returns the final Arranged size
-			}
 		}
 
 
@@ -104,17 +79,6 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				SnapsToDevicePixels = true,
 				Focusable = false,
-			};
-			border.SizeChanged += (sender, e) =>
-			{
-				var element = content.GetContainerControl();
-				if (element != null)
-				{
-					if (!double.IsNaN(element.Width))
-						element.Width = Math.Max(0, e.NewSize.Width - Padding.Horizontal);
-					if (!double.IsNaN(element.Height))
-						element.Height = Math.Max(0, e.NewSize.Height - Padding.Vertical);
-				}
 			};
 		}
 
@@ -138,22 +102,20 @@ namespace Eto.Platform.Wpf.Forms
 				content = value;
 				if (content != null)
 				{
-					var element = content.GetContainerControl();
+					var wpfelement = content.GetWpfFrameworkElement();
+					var element = wpfelement.ContainerControl;
 					element.VerticalAlignment = System.Windows.VerticalAlignment.Stretch;
 					element.HorizontalAlignment = System.Windows.HorizontalAlignment.Stretch;
 					border.Child = element;
+					SetContentScale(XScale, YScale);
 				}
 				else
 					border.Child = null;
-				SetContent();
+				UpdatePreferredSize();
 			}
 		}
 
 		public abstract void SetContainerContent(sw.FrameworkElement content);
-
-		public virtual void SetContent()
-		{
-		}
 
 		public override void Remove(sw.FrameworkElement child)
 		{
@@ -161,6 +123,7 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				content = null;
 				border.Child = null;
+				UpdatePreferredSize();
 			}
 		}
 	}

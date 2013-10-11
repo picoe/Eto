@@ -4,13 +4,6 @@ using System.Globalization;
 
 namespace Eto
 {
-#if DEBUG
-	class Ref
-	{
-		public static int NextID = 0;
-	}
-#endif
-
 	/// <summary>
 	/// Base platform handler for widgets
 	/// </summary>
@@ -35,31 +28,9 @@ namespace Eto
 	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
 		where TWidget: Widget
 	{
-		HashSet<string> eventHooks; 
+		HashSet<string> eventHooks;
 		Generator generator;
 
-		/// <summary>
-		/// Finalizes the WidgetHandler
-		/// </summary>
-		~WidgetHandler()
-		{
-			Dispose(false);
-		}
-
-#if DEBUG
-		protected int WidgetID { get; set; }
-#endif
-		
-		/// <summary>
-		/// Initializes a new instance of the WidgetHandler class
-		/// </summary>
-		protected WidgetHandler ()
-		{
-#if DEBUG
-			WidgetID = Ref.NextID++;
-#endif
-		}
-		
 		/// <summary>
 		/// Gets the widget that this platform handler is attached to
 		/// </summary>
@@ -76,7 +47,7 @@ namespace Eto
 				generator = value;
 				
 				// validate the generator
-				Eto.Generator.Validate (generator);
+				Eto.Generator.Validate(generator);
 			}
 		}
 
@@ -89,18 +60,18 @@ namespace Eto
 		/// Override this to initialize any of the platform objects.  This is called
 		/// in the widget constructor, after all of the widget's constructor code has been called.
 		/// </remarks>
-		protected virtual void Initialize ()
+		protected virtual void Initialize()
 		{
 		}
 
-		protected virtual void PostInitialize ()
+		protected virtual void PostInitialize()
 		{
 		}
 
 		void IWidget.Initialize()
 		{
-			Initialize ();
-			PostInitialize ();
+			Initialize();
+			PostInitialize();
 		}
 
 		/// <summary>
@@ -108,12 +79,13 @@ namespace Eto
 		/// </summary>
 		/// <param name="id">Identifier of the event</param>
 		/// <returns>True if the event is handled, otherwise false</returns>
-		public bool IsEventHandled (string id)
+		public bool IsEventHandled(string id)
 		{
-			if (eventHooks == null) return false;
-			return eventHooks.Contains (id);
+			if (eventHooks == null)
+				return false;
+			return eventHooks.Contains(id);
 		}
-		
+
 		/// <summary>
 		/// Called to handle the specified event
 		/// </summary>
@@ -126,12 +98,14 @@ namespace Eto
 		/// <param name="id">Identifier of the event</param>
 		public void HandleEvent(string id)
 		{
-			if (eventHooks == null) eventHooks = new HashSet<string>();
-			if (eventHooks.Contains(id)) return;
-			eventHooks.Add (id);
-			AttachEvent (id);
+			if (eventHooks == null)
+				eventHooks = new HashSet<string>();
+			if (eventHooks.Contains(id))
+				return;
+			eventHooks.Add(id);
+			AttachEvent(id);
 		}
-		
+
 		/// <summary>
 		/// Attaches the specified event to the platform-specific control
 		/// </summary>
@@ -145,10 +119,10 @@ namespace Eto
 		{
 			// only use for desktop until mobile controls are working
 #if DESKTOP
-			throw new NotSupportedException (string.Format (CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
+			throw new NotSupportedException(string.Format(CultureInfo.CurrentCulture, "Event {0} not supported by this control", id));
 #endif
 		}
-		
+
 		/// <summary>
 		/// Gets or sets the widget instance
 		/// </summary>
@@ -159,7 +133,7 @@ namespace Eto
 		}
 
 		#endregion
-		
+
 		#region IDisposable Members
 
 		/// <summary>
@@ -173,16 +147,16 @@ namespace Eto
 			Dispose(true);
 			GC.SuppressFinalize(this);
 		}
-		
+
 		#endregion
-		
+
 		/// <summary>
 		/// Disposes the object
 		/// </summary>
 		/// <param name="disposing">True when disposed manually, false if disposed via the finalizer</param>
 		protected virtual void Dispose(bool disposing)
 		{
-		}		
+		}
 	}
 
 	/// <summary>
@@ -229,7 +203,7 @@ namespace Eto
 		/// in the handler's overridden initialize method, after the base class' initialize has been called.
 		/// </remarks>
 		/// <returns>A new instance of the platform-specific control this handler encapsulates</returns>
-		public virtual T CreateControl ()
+		public virtual T CreateControl()
 		{
 			return default(T);
 		}
@@ -241,25 +215,25 @@ namespace Eto
 		/// Override this to initialize any of the platform objects.  This is called
 		/// in the widget constructor, after all of the widget's constructor code has been called.
 		/// </remarks>
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
 			if (Control == null)
-				Control = CreateControl ();
+				Control = CreateControl();
 
-			base.Initialize ();
+			base.Initialize();
 		}
 
-		protected override void PostInitialize ()
+		protected override void PostInitialize()
 		{
-			base.PostInitialize ();
-			Style.OnStyleWidgetDefaults (this);
+			base.PostInitialize();
+			Style.OnStyleWidgetDefaults(this);
 		}
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
 		public virtual string ID { get; set; }
-		
+
 		/// <summary>
 		/// Gets or sets a value indicating that control should automatically be disposed when this widget is disposed
 		/// </summary>
@@ -269,30 +243,34 @@ namespace Eto
 		/// Gets or sets the platform-specific control object
 		/// </summary>
 		public virtual T Control { get; protected set; }
-		
+
 		/// <summary>
 		/// Gets the platform-specific control object
 		/// </summary>
-		object IInstanceWidget.ControlObject {
-			get {
+		object IInstanceWidget.ControlObject
+		{
+			get
+			{
 				return Control;
 			}
 		}
-		
+
 		/// <summary>
 		/// Disposes this widget and the associated control if <see cref="DisposeControl"/> is <c>true</c>
 		/// </summary>
 		/// <param name="disposing">True if <see cref="Dispose"/> was called manually, false if called from the finalizer</param>
-		protected override void Dispose (bool disposing)
+		protected override void Dispose(bool disposing)
 		{
-			if (disposing && DisposeControl) {
+			if (disposing && DisposeControl)
+			{
 				//Console.WriteLine ("{0}: 1. Disposing control {1}, {2}", this.WidgetID, this.Control.GetType (), this.GetType ());
 				var control = Control as IDisposable;
-				if (control != null) control.Dispose();
+				if (control != null)
+					control.Dispose();
 			}
 			//Console.WriteLine ("{0}: 2. Disposed handler {1}", this.WidgetID, this.GetType ());
 			Control = default(T);
-			base.Dispose (disposing);
+			base.Dispose(disposing);
 		}
 
 		/// <summary>
@@ -312,7 +290,7 @@ namespace Eto
 		/// </remarks>
 		/// <param name="widget">The widget to get the platform-specific control from</param>
 		/// <returns>The platform-specific control used for the specified widget</returns>
-		public static T GetControl (TWidget widget)
+		public static T GetControl(TWidget widget)
 		{
 			var handler = (IInstanceWidget<T, TWidget>)widget.Handler;
 			return handler.Control;

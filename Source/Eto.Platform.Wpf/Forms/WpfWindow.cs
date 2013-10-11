@@ -65,6 +65,11 @@ namespace Eto.Platform.Wpf.Forms
 			HandleEvent (Window.ClosingEvent);
 		}
 
+		protected override void SetContentScale(bool xscale, bool yscale)
+		{
+			base.SetContentScale(true, true);
+		}
+
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
@@ -115,6 +120,15 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Width = size.Width + xdiff;
 			Control.Height = size.Height + ydiff;
 			Control.SizeToContent = sw.SizeToContent.Manual;
+		}
+
+		protected override void SetSize()
+		{
+			// don't set the minimum size of a window, just the preferred size
+			ContainerControl.Width = PreferredSize.Width;
+			ContainerControl.Height = PreferredSize.Height;
+			ContainerControl.MinWidth = MinimumSize.Width;
+			ContainerControl.MinHeight = MinimumSize.Height;
 		}
 
 		public ToolBar ToolBar
