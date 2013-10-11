@@ -48,13 +48,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.Text = (NSString)value.Text;
 		}
 
-		static IntPtr selRetain = Selector.GetHandle ("retain");
-		
 		[Export("copyWithZone:")]
 		public virtual NSObject CopyWithZone (IntPtr zone)
 		{
 			var clone = this.Clone () as MacImageData;
-			Messaging.void_objc_msgSend(clone.Handle, selRetain);
+			clone.Retain();
 			return clone;
 		}
 		
