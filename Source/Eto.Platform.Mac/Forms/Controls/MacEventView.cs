@@ -11,9 +11,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class MacEventView : NSView, IMacControl
 	{
-		static NSString CIInputTransform = new NSString("inputTransform");
-		static NSString CIOutputImage = new NSString("outputImage");
-		static Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
+		static readonly NSString CIInputTransform = new NSString("inputTransform");
+		static readonly NSString CIOutputImage = new NSString("outputImage");
+		static readonly Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
 
 		public static void Colourize(NSView control, Color color, Action drawAction)
 		{
