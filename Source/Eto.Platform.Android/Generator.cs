@@ -40,16 +40,16 @@ namespace Eto.Platform.Android
 			//g.Add<ITextBoxCell>(() => new TextBoxCellHandler());
 
 			// Forms.Controls
-			//g.Add<IButton>(() => new ButtonHandler());
+			g.Add<IButton>(() => new ButtonHandler());
 			//g.Add<ICheckBox>(() => new CheckBoxHandler());
 			//g.Add<IComboBox>(() => new ComboBoxHandler());
 			//g.Add <IDateTimePicker> (() => new DateTimePickerHandler ());
 			//g.Add<IDrawable>(() => new DrawableHandler());
 			//g.Add<IGridColumn>(() => new GridColumnHandler());
-			//g.Add<IGridView>(() => new GridViewHandler());
+			g.Add<IGridView>(() => new GridViewHandler());
 			//g.Add <IGroupBox> (() => new GroupBoxHandler ());
 			//g.Add<IImageView>(() => new ImageViewHandler());
-			//g.Add<ILabel>(() => new LabelHandler());
+			g.Add<ILabel>(() => new LabelHandler());
 			//g.Add<IListBox>(() => new ListBoxHandler());
 			//g.Add<INumericUpDown>(() => new NumericUpDownHandler());
 			//g.Add<IPanel>(() => new PanelHandler());

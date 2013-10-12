@@ -60,6 +60,7 @@
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Controls\ComboBoxHandler.cs" />
+    <Compile Include="Forms\Controls\GridViewHandler.cs" />
     <Compile Include="Forms\Controls\DateTimePickerHandler.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\GridColumnHandler.cs" />
