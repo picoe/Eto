@@ -63,7 +63,7 @@ namespace Eto.Platform.Android
 			//g.Add <ITabControl> (() => new TabControlHandler ());
 			//g.Add <ITabPage> (() => new TabPageHandler ());
 			//g.Add<ITextArea>(() => new TextAreaHandler());
-			//g.Add<ITextBox>(() => new TextBoxHandler());
+			g.Add<ITextBox>(() => new TextBoxHandler());
 			//g.Add<ITreeGridView>(() => new TreeGridViewHandler());
 			//g.Add <ITreeView> (() => new TreeViewHandler ());
 			//g.Add<IWebView>(() => new WebViewHandler());
