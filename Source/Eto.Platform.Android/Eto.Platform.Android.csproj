@@ -57,6 +57,7 @@
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SolidBrushHandler.cs" />
     <Compile Include="Drawing\TextureBrushHandler.cs" />
+    <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Generator.cs" />

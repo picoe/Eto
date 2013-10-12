@@ -14,6 +14,11 @@ using ag = Android.Graphics;
 
 namespace Eto.Platform.Android.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IGraphics"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsHandler : WidgetHandler<ag.Canvas, Graphics>, IGraphics
 	{
 		public GraphicsHandler()
