@@ -86,6 +86,107 @@ namespace Eto.Platform.Android
 					return PenLineCap.Square;
 				throw new NotSupportedException();
 		}
+
+		public static ag.Matrix ToAndroid(this IMatrix m)
+		{
+			return (ag.Matrix)m.ControlObject;
+		}
+
+		public static Point ToEto(this ag.Point point)
+		{
+			return new Point(point.X, point.Y);
+		}
+
+		public static PointF ToEto(this ag.PointF point)
+		{
+			return new PointF(point.X, point.Y);
+		}
+
+		public static ag.PointF ToAndroid(this PointF point)
+		{
+			return new ag.PointF(point.X, point.Y);
+		}
+
+		public static ag.Point ToAndroidPoint(this PointF point)
+		{
+			return new ag.Point((int)point.X, (int)point.Y);
+		}
+
+		public static Rectangle ToEto(this ag.Rect rect)
+		{
+			return new Rectangle(rect.Left, rect.Top, rect.Width(), rect.Height());
+		}
+
+		public static RectangleF ToEto(this ag.RectF rect)
+		{
+			return new RectangleF(rect.Left, rect.Top, rect.Width(), rect.Height());
+		}
+
+		public static ag.Rect ToAndroid(this Rectangle rect)
+		{
+			return new ag.Rect(rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static ag.RectF ToAndroid(this RectangleF rect)
+		{
+			return new ag.RectF(rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public static ag.Rect ToAndroidRectangle(this RectangleF rect)
+		{
+			return new ag.Rect((int)rect.X, (int)rect.Y, (int)rect.Width, (int)rect.Height);
+		}
+
+		internal static ag.Point[] ToAndroid(this Point[] points)
+		{
+			var result =
+				new ag.Point[points.Length];
+
+			for (var i = 0;
+				i < points.Length;
+				++i)
+			{
+				var p = points[i];
+				result[i] =
+					new ag.Point(p.X, p.Y);
+			}
+
+			return result;
+		}
+
+		internal static ag.PointF[] ToAndroid(this PointF[] points)
+		{
+			var result =
+				new ag.PointF[points.Length];
+
+			for (var i = 0;
+				i < points.Length;
+				++i)
+			{
+				var p = points[i];
+				result[i] =
+					new ag.PointF(p.X, p.Y);
+			}
+
+			return result;
+		}
+
+		internal static PointF[] ToEto(this ag.PointF[] points)
+		{
+			var result =
+				new PointF[points.Length];
+
+			for (var i = 0;
+				i < points.Length;
+				++i)
+			{
+				var p = points[i];
+				result[i] =
+					new PointF(p.X, p.Y);
+			}
+
+			return result;
+		}
 	}
 }
 
