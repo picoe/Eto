@@ -42,7 +42,21 @@
   </ItemGroup>
   <Import Project="$(MSBuildExtensionsPath)\Novell\Novell.MonoDroid.CSharp.targets" />
   <ItemGroup>
+    <Compile Include="Drawing\BitmapHandler.cs" />
+    <Compile Include="Drawing\BrushHandler.cs" />
+    <Compile Include="Drawing\FontFamilyHandler.cs" />
+    <Compile Include="Drawing\FontHandler.cs" />
+    <Compile Include="Drawing\FontsHandler.cs" />
+    <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
+    <Compile Include="Drawing\GraphicsPathHandler.cs" />
+    <Compile Include="Drawing\IconHandler.cs" />
+    <Compile Include="Drawing\IndexedBitmapHandler.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
+    <Compile Include="Drawing\MatrixHandler.cs" />
+    <Compile Include="Drawing\PenHandler.cs" />
+    <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="KeyMap.cs" />
     <Compile Include="Resources\Resource.designer.cs" />
     <Compile Include="Generator.cs" />
