@@ -137,8 +137,9 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			ContainerControl.Width = XScale ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
 			ContainerControl.Height = YScale ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
-			ContainerControl.MinWidth = Math.Max(0, XScale ? 0 : double.IsNaN(preferredSize.Width) ? DefaultSize.Width : preferredSize.Width);
-			ContainerControl.MinHeight = Math.Max(0, YScale ? 0 : double.IsNaN(preferredSize.Height) ? DefaultSize.Height : preferredSize.Height);
+			var defaultSize = DefaultSize;
+			ContainerControl.MinWidth = Math.Max(0, XScale ? 0 : double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
+			ContainerControl.MinHeight = Math.Max(0, YScale ? 0 : double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)

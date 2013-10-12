@@ -39,11 +39,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		static sw.PropertyPath TextPath = PropertyPathHelper.Create("(Eto.Forms.IListItem,Eto.Text)");
 
-		public static sw.FrameworkElementFactory TextBlock()
+		public static sw.FrameworkElementFactory TextBlock(bool setMargin = true)
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(swc.TextBlock));
 			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = TextPath });
-			factory.SetValue(swc.TextBlock.MarginProperty, new sw.Thickness(2));
+			if (setMargin)
+				factory.SetValue(swc.TextBlock.MarginProperty, new sw.Thickness(2));
 			return factory;
 		}
 

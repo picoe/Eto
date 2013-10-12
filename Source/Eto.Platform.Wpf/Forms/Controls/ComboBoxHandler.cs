@@ -9,101 +9,113 @@ using swa = System.Windows.Automation;
 using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
+using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-    public class ComboBoxHandler : WpfControl<swc.ComboBox, ComboBox>, IComboBox
-    {
-        IListStore store;
+	public class ComboBoxHandler : WpfControl<ComboBoxHandler.EtoComboBox, ComboBox>, IComboBox
+	{
+		IListStore store;
 
-        public class EtoComboBox : swc.ComboBox
-        {
-            int? _selected;
+		public class EtoComboBox : swc.ComboBox
+		{
+			int? _selected;
 
-            public EtoComboBox()
-            {
-                Loaded += ComboBoxEx_Loaded;
-            }
+			public EtoComboBox()
+			{
+				Loaded += ComboBoxEx_Loaded;
+			}
 
-            public override void OnApplyTemplate()
-            {
-                base.OnApplyTemplate();
+			public override void OnApplyTemplate()
+			{
+				base.OnApplyTemplate();
 
-                _selected = SelectedIndex;
-                SelectedIndex = -1;
-            }
+				_selected = SelectedIndex;
+				SelectedIndex = -1;
+			}
 
-            protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
-            {
-                if (_selected == null)
-                    base.OnSelectionChanged(e);
-            }
+			protected override void OnSelectionChanged(swc.SelectionChangedEventArgs e)
+			{
+				if (_selected == null)
+					base.OnSelectionChanged(e);
+			}
 
-            protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
-            {
-                base.OnItemsChanged(e);
-                if (this.IsLoaded)
-                {
-                    this.InvalidateMeasure();
-                }
-            }
+			protected override void OnItemsChanged(System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+			{
+				base.OnItemsChanged(e);
+				if (IsLoaded)
+				{
+					InvalidateMeasure();
+				}
+			}
 
-            void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
-            {
-                if (_selected != null)
-                {
-                    SelectedIndex = _selected.Value;
-                    _selected = null;
-                }
-            }
+			void ComboBoxEx_Loaded(object sender, sw.RoutedEventArgs e)
+			{
+				if (_selected != null)
+				{
+					SelectedIndex = _selected.Value;
+					_selected = null;
+				}
+			}
 
-            protected override sw.Size MeasureOverride(sw.Size constraint)
-            {
-                var size = base.MeasureOverride(constraint);
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				var size = base.MeasureOverride(constraint);
+				var popup = (swc.Primitives.Popup)GetTemplateChild("PART_Popup");
+				popup.Child.Measure(Conversions.PositiveInfinitySize); // force generating containers
+				if (ItemContainerGenerator.Status == swc.Primitives.GeneratorStatus.ContainersGenerated)
+				{
+					double maxWidth = 0;
+					foreach (var item in this.Items)
+					{
+						var comboBoxItem = ItemContainerGenerator.ContainerFromItem(item) as swc.ComboBoxItem;
+						comboBoxItem.Measure(Conversions.PositiveInfinitySize);
+						maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
+					}
+					var toggle = GetTemplateChild("toggleButton") as sw.UIElement;
+					if (toggle != null)
+						maxWidth += toggle.DesiredSize.Width; // add room for the toggle button
+					else
+						maxWidth += 20; // windows 7 doesn't name the toggle button, so hack it
+					size.Width = Math.Max(maxWidth, size.Width);
+				}
+				return size;
+			}
+		}
 
-                var popup = GetTemplateChild("PART_Popup") as swc.Primitives.Popup;
-                var content = popup.Child as sw.FrameworkElement;
-                content.Measure(Conversions.PositiveInfinitySize);
-                size.Width = Math.Min(constraint.Width, Math.Max(content.DesiredSize.Width, size.Width));
-                return size;
-            }
+		public ComboBoxHandler()
+		{
+			Control = new EtoComboBox();
+			var template = new sw.DataTemplate(typeof(IListItem));
+			template.VisualTree = WpfListItemHelper.TextBlock(setMargin: false);
+			Control.ItemTemplate = template;
+		}
 
-        }
+		public override bool UseMousePreview { get { return true; } }
 
-        public ComboBoxHandler()
-        {
-            Control = new EtoComboBox();
-            var template = new sw.DataTemplate(typeof(IListItem));
-            template.VisualTree = WpfListItemHelper.TextBlock();
-            Control.ItemTemplate = template;
-        }
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			Control.SelectionChanged += delegate
+			{
+				Widget.OnSelectedIndexChanged(EventArgs.Empty);
+			};
+		}
 
-        public override bool UseMousePreview { get { return true; } }
+		public IListStore DataStore
+		{
+			get { return store; }
+			set
+			{
+				store = value;
+				Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable();
+			}
+		}
 
-        public override void OnLoad(EventArgs e)
-        {
-            base.OnLoad(e);
-            Control.SelectionChanged += delegate
-            {
-                Widget.OnSelectedIndexChanged(EventArgs.Empty);
-            };
-        }
-
-
-        public IListStore DataStore
-        {
-            get { return store; }
-            set
-            {
-                store = value;
-                Control.ItemsSource = store as IEnumerable ?? store.AsEnumerable();
-            }
-        }
-
-        public int SelectedIndex
-        {
-            get { return Control.SelectedIndex; }
-            set { Control.SelectedIndex = value; }
-        }
-    }
+		public int SelectedIndex
+		{
+			get { return Control.SelectedIndex; }
+			set { Control.SelectedIndex = value; }
+		}
+	}
 }
