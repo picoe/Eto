@@ -125,7 +125,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		Size GetBorderSize()
 		{
-			return Control.Frame.Size.ToEtoSize() - Control.DocumentVisibleRect.Size.ToEtoSize();
+			return Border == BorderType.None ? Size.Empty : new Size(2, 2);
 		}
 
 		protected override bool UseContentSize { get { return false; } }
