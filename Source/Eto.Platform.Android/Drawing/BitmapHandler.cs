@@ -21,9 +21,18 @@ namespace Eto.Platform.Android.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	class BitmapHandler : WidgetHandler<ag.Bitmap, Bitmap>, IBitmap
 	{
+		public BitmapHandler()
+		{
+		}
+
+		public BitmapHandler(ag.Bitmap image)
+		{
+			Control = image;
+		}
+
 		public void Create(string fileName)
 		{
-			throw new NotImplementedException();
+			Control = ag.BitmapFactory.DecodeFile(fileName);
 		}
 
 		public void Create(System.IO.Stream stream)
@@ -33,7 +42,28 @@ namespace Eto.Platform.Android.Drawing
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
 		{
-			throw new NotImplementedException();
+			ag.Bitmap.Config config = ag.Bitmap.Config.Argb8888;
+			switch(pixelFormat)
+			{
+				case PixelFormat.Format32bppRgb:
+					throw new NotImplementedException(); // TODO
+					//config = ag.Bitmap.Config.Argb8888;
+					break;
+				case PixelFormat.Format24bppRgb:
+					throw new NotImplementedException(); // TODO
+					//config = ag.Bitmap.Config.Argb8888;
+					break;
+				/*case PixelFormat.Format16bppRgb555:
+					config = ag.Bitmap.Config.Argb8888;
+					break;*/
+				case PixelFormat.Format32bppRgba:
+					config = ag.Bitmap.Config.Argb8888;
+					break;
+				default:
+					throw new ArgumentOutOfRangeException("pixelFormat", pixelFormat, "Not supported");
+			}
+
+			Control = ag.Bitmap.CreateBitmap(width, height, config);
 		}
 
 		public void Create(int width, int height, Graphics graphics)
@@ -58,12 +88,12 @@ namespace Eto.Platform.Android.Drawing
 
 		public Color GetPixel(int x, int y)
 		{
-			throw new NotImplementedException();
+			return new ag.Color(Control.GetPixel(x, y)).ToEto();
 		}
 
 		public Size Size
 		{
-			get { throw new NotImplementedException(); }
+			get { return new Size(Control.Width, Control.Height); }
 		}
 
 		public BitmapData Lock()
