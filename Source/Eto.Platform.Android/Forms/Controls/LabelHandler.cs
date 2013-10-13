@@ -14,29 +14,9 @@ namespace Eto.Platform.Android.Forms.Controls
 			Control = new aw.TextView(a.App.Application.Context);
 		}
 
-		public HorizontalAlign HorizontalAlign
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public HorizontalAlign HorizontalAlign { get; set; }
 
-		public VerticalAlign VerticalAlign
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public VerticalAlign VerticalAlign { get; set; }
 
 		public WrapMode Wrap
 		{

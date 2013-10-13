@@ -12,18 +12,19 @@ namespace Eto.Platform.Windows
 	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
 	{
 		string badgeLabel;
+		bool attached;
 
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
-		
-		public void RunIteration ()
+
+		public void RunIteration()
 		{
-			swf.Application.DoEvents ();
+			swf.Application.DoEvents();
 		}
 
-		public void Restart ()
+		public void Restart()
 		{
-			swf.Application.Restart ();
+			swf.Application.Restart();
 		}
 
 		public string BadgeLabel
@@ -35,134 +36,164 @@ namespace Eto.Platform.Windows
 #if !__MonoCS__
 				if ((bool)TaskbarManager.IsPlatformSupported)
 				{
-					if (!string.IsNullOrEmpty (badgeLabel))
+					if (!string.IsNullOrEmpty(badgeLabel))
 					{
-						var bmp = new sd.Bitmap (16, 16, sd.Imaging.PixelFormat.Format32bppArgb);
-						using (var graphics = sd.Graphics.FromImage (bmp))
+						var bmp = new sd.Bitmap(16, 16, sd.Imaging.PixelFormat.Format32bppArgb);
+						using (var graphics = sd.Graphics.FromImage(bmp))
 						{
-							DrawBadgeLabel (bmp, graphics);
+							DrawBadgeLabel(bmp, graphics);
 						}
-						var icon = sd.Icon.FromHandle (bmp.GetHicon ());
+						var icon = sd.Icon.FromHandle(bmp.GetHicon());
 
-						TaskbarManager.Instance.SetOverlayIcon (icon, badgeLabel);
+						TaskbarManager.Instance.SetOverlayIcon(icon, badgeLabel);
 					}
 					else
-						TaskbarManager.Instance.SetOverlayIcon (null, null);
+						TaskbarManager.Instance.SetOverlayIcon(null, null);
 				}
 #endif
 			}
 		}
 
-		protected virtual void DrawBadgeLabel (sd.Bitmap bmp, sd.Graphics graphics)
+		protected virtual void DrawBadgeLabel(sd.Bitmap bmp, sd.Graphics graphics)
 		{
-			var font = new sd.Font (sd.FontFamily.GenericSansSerif, 9, sd.FontStyle.Bold, sd.GraphicsUnit.Pixel);
+			var font = new sd.Font(sd.FontFamily.GenericSansSerif, 9, sd.FontStyle.Bold, sd.GraphicsUnit.Pixel);
 
-			var size = graphics.MeasureString (badgeLabel, font, bmp.Size, sd.StringFormat.GenericTypographic);
+			var size = graphics.MeasureString(badgeLabel, font, bmp.Size, sd.StringFormat.GenericTypographic);
 			graphics.SmoothingMode = sd.Drawing2D.SmoothingMode.AntiAlias;
-			graphics.FillEllipse (sd.Brushes.Red, new sd.Rectangle (0, 0, 16, 16));
-			graphics.DrawEllipse (new sd.Pen (sd.Brushes.White, 2), new sd.Rectangle (0, 0, 15, 15));
-			var pt = new sd.PointF ((bmp.Width - size.Width - 0.5F) / 2, (bmp.Height - size.Height - 1) / 2);
-			graphics.DrawString (badgeLabel, font, sd.Brushes.White, pt, sd.StringFormat.GenericTypographic);
+			graphics.FillEllipse(sd.Brushes.Red, new sd.Rectangle(0, 0, 16, 16));
+			graphics.DrawEllipse(new sd.Pen(sd.Brushes.White, 2), new sd.Rectangle(0, 0, 15, 15));
+			var pt = new sd.PointF((bmp.Width - size.Width - 0.5F) / 2, (bmp.Height - size.Height - 1) / 2);
+			graphics.DrawString(badgeLabel, font, sd.Brushes.White, pt, sd.StringFormat.GenericTypographic);
 		}
-		
-		public void Run (string[] args)
-		{
-			swf.Application.EnableVisualStyles ();
-			if (!EtoEnvironment.Platform.IsMono)
-				swf.Application.DoEvents ();
-			
-			Application app = ((Application)Widget);
-			app.OnInitialized (EventArgs.Empty);
 
+		public void Run(string[] args)
+		{
+			if (!attached)
+			{
+				swf.Application.EnableVisualStyles();
+				if (!EtoEnvironment.Platform.IsMono)
+					swf.Application.DoEvents();
+
+				SetOptions();
+
+				Widget.OnInitialized(EventArgs.Empty);
+
+				if (Widget.MainForm != null && Widget.MainForm.Loaded)
+					swf.Application.Run((swf.Form)Widget.MainForm.ControlObject);
+				else
+					swf.Application.Run();
+			}
+			else
+			{
+				Widget.OnInitialized(EventArgs.Empty);
+			}
+		}
+
+		void SetOptions()
+		{
 			if (EnableScrollingUnderMouse)
-				swf.Application.AddMessageFilter (new ScrollMessageFilter ());
+				swf.Application.AddMessageFilter(new ScrollMessageFilter());
 
-			if (BubbleMouseEvents) {
-				var bubble = new BubbleEventFilter ();
-				bubble.AddBubbleMouseEvent ((c, e) => c.OnMouseWheel (e), null, (int)Win32.WM.MOUSEWHEEL);
-				bubble.AddBubbleMouseEvent ((c, e) => c.OnMouseMove (e), null, (int)Win32.WM.MOUSEMOVE);
-				bubble.AddBubbleMouseEvents ((c, e) => c.OnMouseDown (e), true, (int)Win32.WM.LBUTTONDOWN, (int)Win32.WM.RBUTTONDOWN, (int)Win32.WM.MBUTTONDOWN);
-				bubble.AddBubbleMouseEvents ((c, e) => c.OnMouseDoubleClick (e), null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
-				bubble.AddBubbleMouseEvent ((c, e) => c.OnMouseUp (e), false, (int)Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
-				bubble.AddBubbleMouseEvent ((c, e) => c.OnMouseUp (e), false, (int)Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
-				bubble.AddBubbleMouseEvent ((c, e) => c.OnMouseUp (e), false, (int)Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
-				swf.Application.AddMessageFilter (bubble);
-			}
-			
-			if (app.MainForm != null && app.MainForm.Loaded) 
-				swf.Application.Run ((swf.Form)app.MainForm.ControlObject);
-			else 
-				swf.Application.Run ();
-		}
-
-		public void Quit ()
-		{
-			swf.Application.Exit ();
-		}
-		
-		public void Open (string url)
-		{
-			var info = new ProcessStartInfo (url);
-			Process.Start (info);
-		}
-		
-		public override void AttachEvent (string handler)
-		{
-			switch (handler) {
-			case Application.TerminatingEvent:
-				// handled by WindowHandler
-				break;
-			default:
-				base.AttachEvent (handler);
-				break;
+			if (BubbleMouseEvents)
+			{
+				var bubble = new BubbleEventFilter();
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseWheel(e), null, (int)Win32.WM.MOUSEWHEEL);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseMove(e), null, (int)Win32.WM.MOUSEMOVE);
+				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDown(e), true, (int)Win32.WM.LBUTTONDOWN, (int)Win32.WM.RBUTTONDOWN, (int)Win32.WM.MBUTTONDOWN);
+				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDoubleClick(e), null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
+				swf.Application.AddMessageFilter(bubble);
 			}
 		}
-		
-		public void GetSystemActions (GenerateActionArgs args, bool addStandardItems)
+
+		public void Attach(object context)
 		{
-			
+			attached = true;
+			SetOptions();
 		}
 
-		public void Invoke (Action action)
+		public void OnMainFormChanged()
 		{
-			if (Widget.MainForm != null) {
+		}
+
+		public void Quit()
+		{
+			swf.Application.Exit();
+		}
+
+		public void Open(string url)
+		{
+			var info = new ProcessStartInfo(url);
+			Process.Start(info);
+		}
+
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
+				case Application.TerminatingEvent:
+					// handled by WindowHandler
+					break;
+				default:
+					base.AttachEvent(handler);
+					break;
+			}
+		}
+
+		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems)
+		{
+
+		}
+
+		public void Invoke(Action action)
+		{
+			if (Widget.MainForm != null)
+			{
 				var window = this.Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
-				if (window != null && window.InvokeRequired) {
-					window.Invoke (action);
+				if (window != null && window.InvokeRequired)
+				{
+					window.Invoke(action);
 				}
-				else action ();
+				else action();
 			}
-			else action ();
+			else action();
 		}
-		
-		public void AsyncInvoke (Action action)
+
+		public void AsyncInvoke(Action action)
 		{
-			if (Widget.MainForm != null) {
+			if (Widget.MainForm != null)
+			{
 				var window = this.Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
-				if (window != null && window.InvokeRequired) {
-					window.BeginInvoke (action);
+				if (window != null && window.InvokeRequired)
+				{
+					window.BeginInvoke(action);
 				}
-				else action ();
+				else action();
 			}
-			else action ();
+			else action();
 		}
-		
 
-		public Key CommonModifier {
-			get {
+
+		public Key CommonModifier
+		{
+			get
+			{
 				return Key.Control;
 			}
 		}
 
-		public Key AlternateModifier {
-			get {
+		public Key AlternateModifier
+		{
+			get
+			{
 				return Key.Alt;
 			}
 		}
-		
 	}
 }

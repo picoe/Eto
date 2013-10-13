@@ -10,6 +10,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public class ApplicationHandler : WidgetHandler<object, Application>, IApplication
 	{
+		bool attached;
 		Gtk.StatusIcon statusIcon;
 
 		public static int MainThreadID { get; set; }
@@ -96,7 +97,16 @@ namespace Eto.Platform.GtkSharp
 				});
 			}
 		}
-		
+
+		public void Attach(object context)
+		{
+			attached = true;
+		}
+
+		public void OnMainFormChanged()
+		{
+		}
+
 		public void Run (string[] args)
 		{
 			//if (!Platform.IsWindows) Gdk.Threads.Init(); // do this in windows, and it stalls!  ugh
@@ -106,8 +116,11 @@ namespace Eto.Platform.GtkSharp
 			if (Widget.MainForm != null) {
 				((Gtk.Widget)Widget.MainForm.ControlObject).DeleteEvent += HandleDeleteEvent;
 			}
-			Gtk.Application.Run ();
-			Gdk.Threads.Leave ();
+			if (!attached)
+			{
+				Gtk.Application.Run();
+				Gdk.Threads.Leave();
+			}
 		}
 
 		void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
@@ -118,14 +131,14 @@ namespace Eto.Platform.GtkSharp
 				args.RetVal = true; // cancel!
 		}
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Application.TerminatingEvent:
 				// called automatically
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

@@ -8,9 +8,26 @@ using aw = Android.Widget;
 
 namespace Eto.Platform.Android.Forms
 {
-	public abstract class AndroidWindow<TWidget> : AndroidDockContainer<aw.FrameLayout, TWidget>, IWindow
+	public interface IAndroidWindow
+	{
+		a.App.Activity Activity { get; set; }
+	}
+
+	public abstract class AndroidWindow<TWidget> : AndroidDockContainer<aw.FrameLayout, TWidget>, IWindow, IAndroidWindow
 		where TWidget: Window
 	{
+		a.App.Activity activity;
+		public a.App.Activity Activity
+		{
+			get { return activity ?? (activity = CreateActivity()); }
+			set { activity = value; }
+		}
+
+		protected virtual a.App.Activity CreateActivity()
+		{
+			return null; // todo
+		}
+
 		protected AndroidWindow()
 		{
 			Control = new aw.FrameLayout(a.App.Application.Context);

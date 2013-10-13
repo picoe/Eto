@@ -12,6 +12,8 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class ApplicationHandler : WidgetHandler<System.Windows.Application, Application>, IApplication
 	{
+		bool attached;
+		bool shutdown;
 		string badgeLabel;
 		static ApplicationHandler instance;
 		List<sw.Window> delayShownWindows;
@@ -21,11 +23,12 @@ namespace Eto.Platform.Wpf.Forms
 			get { return instance; }
 		}
 
-		public static void InvokeIfNecessary (Action action)
+		public static void InvokeIfNecessary(Action action)
 		{
 			if (Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
-				action ();
-			else {
+				action();
+			else
+			{
 				Instance.Invoke(action);
 			}
 		}
@@ -35,40 +38,42 @@ namespace Eto.Platform.Wpf.Forms
 			get
 			{
 				if (delayShownWindows == null)
-					delayShownWindows = new List<sw.Window> ();
+					delayShownWindows = new List<sw.Window>();
 				return delayShownWindows;
 			}
 		}
 
 		public bool IsStarted { get; private set; }
 
-		public override sw.Application CreateControl ()
+		public override sw.Application CreateControl()
 		{
-			return new sw.Application ();
+			return new sw.Application();
 		}
 
-		protected override void Initialize ()
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			instance = this;
 			Control.Startup += HandleStartup;
 		}
 
-		void HandleStartup (object sender, sw.StartupEventArgs e)
+		void HandleStartup(object sender, sw.StartupEventArgs e)
 		{
 			IsActive = true;
 			IsStarted = true;
-			Control.Activated += (sender2, e2) => {
+			Control.Activated += (sender2, e2) =>
+			{
 				IsActive = true;
 			};
-			Control.Deactivated += (sender2, e2) => {
+			Control.Deactivated += (sender2, e2) =>
+			{
 				IsActive = false;
 			};
 			if (delayShownWindows != null)
 			{
 				foreach (var window in delayShownWindows)
 				{
-					window.Show ();
+					window.Show();
 				}
 				delayShownWindows = null;
 			}
@@ -86,19 +91,19 @@ namespace Eto.Platform.Wpf.Forms
 				if (mainWindow != null)
 				{
 					if (mainWindow.TaskbarItemInfo == null)
-						mainWindow.TaskbarItemInfo = new sw.Shell.TaskbarItemInfo ();
-					if (!string.IsNullOrEmpty (badgeLabel))
+						mainWindow.TaskbarItemInfo = new sw.Shell.TaskbarItemInfo();
+					if (!string.IsNullOrEmpty(badgeLabel))
 					{
-						var ctl = new CustomControls.OverlayIcon ();
+						var ctl = new CustomControls.OverlayIcon();
 						ctl.Content = badgeLabel;
-						ctl.Measure (new sw.Size (16, 16));
+						ctl.Measure(new sw.Size(16, 16));
 						var size = ctl.DesiredSize;
 
-						var m = sw.PresentationSource.FromVisual (mainWindow).CompositionTarget.TransformToDevice;
+						var m = sw.PresentationSource.FromVisual(mainWindow).CompositionTarget.TransformToDevice;
 
-						var bmp = new swm.Imaging.RenderTargetBitmap ((int)size.Width, (int)size.Height, m.M22 * 96, m.M22 * 96, swm.PixelFormats.Default);
-						ctl.Arrange (new sw.Rect (size));
-						bmp.Render (ctl);
+						var bmp = new swm.Imaging.RenderTargetBitmap((int)size.Width, (int)size.Height, m.M22 * 96, m.M22 * 96, swm.PixelFormats.Default);
+						ctl.Arrange(new sw.Rect(size));
+						bmp.Render(ctl);
 						mainWindow.TaskbarItemInfo.Overlay = bmp;
 					}
 					else
@@ -111,13 +116,13 @@ namespace Eto.Platform.Wpf.Forms
 		public void RunIteration()
 		{
 		}
-		private bool shutdown;
 
 		public void Quit()
 		{
 			bool cancel = false;
-			foreach (sw.Window window in Control.Windows) {
-				window.Close ();
+			foreach (sw.Window window in Control.Windows)
+			{
+				window.Close();
 				cancel |= window.IsVisible;
 			}
 			if (!cancel)
@@ -127,17 +132,17 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public void Invoke (Action action)
+		public void Invoke(Action action)
 		{
-			Control.Dispatcher.Invoke (action);
+			Control.Dispatcher.Invoke(action);
 		}
 
-		public void AsyncInvoke (Action action)
+		public void AsyncInvoke(Action action)
 		{
-			Control.Dispatcher.BeginInvoke (action);
+			Control.Dispatcher.BeginInvoke(action);
 		}
 
-		public void GetSystemActions (GenerateActionArgs args, bool addStandardItems)
+		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems)
 		{
 		}
 
@@ -153,33 +158,47 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Open(string url)
 		{
-			Process.Start(url);	
+			Process.Start(url);
 		}
 
-		public void Run (string[] args)
+		public void Run(string[] args)
 		{
-			Widget.OnInitialized (EventArgs.Empty);
-			if (shutdown) return;
-			if (Widget.MainForm != null)
-				Control.Run ((System.Windows.Window)Widget.MainForm.ControlObject);
-			else
-				Control.Run ();
+			Widget.OnInitialized(EventArgs.Empty);
+			if (!attached)
+			{
+				if (shutdown) return;
+				if (Widget.MainForm != null)
+					Control.Run((System.Windows.Window)Widget.MainForm.ControlObject);
+				else
+					Control.Run();
+			}
 		}
 
-		public void Restart ()
+		public void Attach(object context)
 		{
-			System.Diagnostics.Process.Start (System.Windows.Application.ResourceAssembly.Location);
-			System.Windows.Application.Current.Shutdown ();
+			attached = true;
+			Control = sw.Application.Current;
 		}
 
-		public override void AttachEvent (string handler)
+		public void OnMainFormChanged()
 		{
-			switch (handler) {
+		}
+
+		public void Restart()
+		{
+			System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+			System.Windows.Application.Current.Shutdown();
+		}
+
+		public override void AttachEvent(string handler)
+		{
+			switch (handler)
+			{
 				case Application.TerminatingEvent:
 					// handled by WpfWindow
 					break;
 				default:
-					base.AttachEvent (handler);
+					base.AttachEvent(handler);
 					break;
 			}
 		}

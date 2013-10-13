@@ -91,7 +91,7 @@ namespace Eto.Test
 				}
 				catch (Exception ex)
 				{
-					Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
 					contentContainer.Content = null;
 				}
 

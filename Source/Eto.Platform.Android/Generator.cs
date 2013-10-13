@@ -3,6 +3,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Android.Drawing;
 using Eto.Platform.Android.Forms.Controls;
+using Eto.Platform.Android.Forms;
 
 namespace Eto.Platform.Android
 {
@@ -89,13 +90,13 @@ namespace Eto.Platform.Android
 			//g.Add <IToolBar> (() => new ToolBarHandler ());
 
 			// Forms
-			//g.Add<IApplication>(() => new ApplicationHandler());
+			g.Add<IApplication>(() => new ApplicationHandler());
 			//g.Add <IClipboard> (() => new ClipboardHandler ());
 			//g.Add <IColorDialog> (() => new ColorDialogHandler ());
 			//g.Add <ICursor> (() => new CursorHandler ());
 			//g.Add<IDialog>(() => new DialogHandler());
 			//g.Add <IFontDialog> (() => new FontDialogHandler ());
-			//g.Add<IForm>(() => new FormHandler());
+			g.Add<IForm>(() => new FormHandler());
 			//g.Add<IMessageBox>(() => new MessageBoxHandler());
 			//g.Add <IOpenFileDialog> (() => new OpenFileDialogHandler ());
 			//g.Add<IPixelLayout>(() => new PixelLayoutHandler());

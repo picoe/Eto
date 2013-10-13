@@ -17,9 +17,11 @@ namespace Eto.Platform.GtkSharp
 	{
 		public static void Init ()
 		{
-			Gtk.Application.Init();
-			
-			Gdk.Threads.Enter ();
+			var args = new string[0];
+			if (Gtk.Application.InitCheck(string.Empty, ref args))
+			{
+				Gdk.Threads.Enter();
+			}
 		}
 	}
 

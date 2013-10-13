@@ -9,13 +9,15 @@ namespace Eto.Platform.Android.Forms
 {
 	public class FormHandler : AndroidWindow<Form>, IForm
 	{
+
 		public FormHandler()
 		{
 		}
 
 		public void Show()
 		{
-
+			// TODO: create activity if it doesn't exist
+			Activity.SetContentView(ContainerControl);
 		}
 	}
 }
