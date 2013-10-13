@@ -1,8 +1,8 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Reflection;
+using System.Collections;
 
 namespace Eto.Platform.Windows
 {
@@ -14,7 +14,7 @@ namespace Eto.Platform.Windows
 	{
 		// we'll use a static List to cache a reference to the internal list of UserPreferenceChangedEvent listeners so that 
 		// we do not need to search for it every time.
-		static System.Collections.IList _UserPreferenceChangedList = null;
+		static IList _UserPreferenceChangedList;
 
 		static public void UnhookObject(object pObjectToUnhook)
 		{
@@ -24,18 +24,18 @@ namespace Eto.Platform.Windows
 			SearchListAndRemoveEventHandlers(pObjectToUnhook);
 		}
 
-		static private void GetUserPreferenceChangedList()
+		static void GetUserPreferenceChangedList()
 		{
 			Type oSystemEventsType = typeof(SystemEvents);
 
 			//Using reflection, get the FieldInfo object for the internal collection of handlers
 			// we will use this collection to find the handler we want to unhook and remove it.
 			// as you can guess by the naming convention it is a private member.
-			System.Reflection.FieldInfo oFieldInfo = oSystemEventsType.GetField("_handlers",
-								System.Reflection.BindingFlags.Static |
-								System.Reflection.BindingFlags.GetField |
-								System.Reflection.BindingFlags.FlattenHierarchy |
-								System.Reflection.BindingFlags.NonPublic);
+			FieldInfo oFieldInfo = oSystemEventsType.GetField("_handlers",
+								BindingFlags.Static |
+								BindingFlags.GetField |
+								BindingFlags.FlattenHierarchy |
+								BindingFlags.NonPublic);
 
 			//now, get a reference to the value of this field so that you can manipulate it.
 			//pass null to GetValue() because we are working with a static member.
@@ -46,15 +46,11 @@ namespace Eto.Platform.Windows
 			//It may be more efficient to figure out how the UserPreferenceChanged event is keyed here but a quick-and-dirty
 			// method is to just scan them all the first time and then cache the List<> object once it's found.
 
-			System.Collections.IDictionary dictFieldInfoValue = oFieldInfoValue as System.Collections.IDictionary;
+			var dictFieldInfoValue = oFieldInfoValue as IDictionary;
 			foreach (object oEvent in dictFieldInfoValue)
 			{
-				System.Collections.DictionaryEntry deEvent = (System.Collections.DictionaryEntry)oEvent;
-				System.Collections.IList listEventListeners = deEvent.Value as System.Collections.IList;
-
-				//unfortunately, SystemEventInvokeInfo is a private class so we can't declare a reference of that type.
-				//we will use object and then use reflection to get what we need...
-				List<Delegate> listDelegatesToRemove = new List<Delegate>();
+				var deEvent = (DictionaryEntry)oEvent;
+				var listEventListeners = deEvent.Value as IList;
 
 				//we need to take the first item in the list, get it's delegate and check the type...
 				if (listEventListeners.Count > 0 && listEventListeners[0] != null)
@@ -68,21 +64,20 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		static private void SearchListAndRemoveEventHandlers(object pObjectToUnhook)
+		static void SearchListAndRemoveEventHandlers(object pObjectToUnhook)
 		{
 			if (_UserPreferenceChangedList == null) return; //Do not run if we somehow haven't found the list.
 
 			//unfortunately, SystemEventInvokeInfo is a private class so we can't declare a reference of that type.
 			//we will use object and then use reflection to get what we need...
-			List<UserPreferenceChangedEventHandler> listDelegatesToRemove = new List<UserPreferenceChangedEventHandler>();
+			var listDelegatesToRemove = new List<UserPreferenceChangedEventHandler>();
 
 			//this is NOT threadsafe. Unfortunately, if the collection is modified an exception will be thrown during iteration.
 			// This will happen any time another thread hooks or unhooks the UserPreferenceChanged event while we iterate.
 			// Modify this to be threadsafe somehow if that is required.
 			foreach (object oSystemEventInvokeInfo in _UserPreferenceChangedList)
 			{
-				UserPreferenceChangedEventHandler oDelegate =
-					 GetDelegateFromSystemEventInvokeInfo(oSystemEventInvokeInfo) as UserPreferenceChangedEventHandler;
+				var oDelegate = GetDelegateFromSystemEventInvokeInfo(oSystemEventInvokeInfo) as UserPreferenceChangedEventHandler;
 
 				if (oDelegate != null && oDelegate.Target == pObjectToUnhook)
 				{
@@ -99,20 +94,18 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		static private Delegate GetDelegateFromSystemEventInvokeInfo(object pSystemEventInvokeInfo)
+		static Delegate GetDelegateFromSystemEventInvokeInfo(object pSystemEventInvokeInfo)
 		{
 			Type typeSystemEventInvokeInfo = pSystemEventInvokeInfo.GetType();
-			System.Reflection.FieldInfo oTmpFieldInfo = typeSystemEventInvokeInfo.GetField("_delegate",
-								System.Reflection.BindingFlags.Instance |
-								System.Reflection.BindingFlags.GetField |
-								System.Reflection.BindingFlags.FlattenHierarchy |
-								System.Reflection.BindingFlags.NonPublic);
+			FieldInfo oTmpFieldInfo = typeSystemEventInvokeInfo.GetField("_delegate",
+								BindingFlags.Instance |
+								BindingFlags.GetField |
+								BindingFlags.FlattenHierarchy |
+								BindingFlags.NonPublic);
 
 			//Here we are NOT working with a static field so we will supply the SystemEventInvokeInfo
 			// object that we found in the List<> object to the GetValue() function.
-			Delegate oReturn = oTmpFieldInfo.GetValue(pSystemEventInvokeInfo) as Delegate;
-
-			return oReturn;
+			return oTmpFieldInfo.GetValue(pSystemEventInvokeInfo) as Delegate;
 		}
 	}
 }
