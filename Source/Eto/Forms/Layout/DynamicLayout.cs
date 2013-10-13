@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Drawing;
 
 #if XAML
@@ -12,7 +11,7 @@ namespace Eto.Forms
 	[ContentProperty("Rows")]
 	public class DynamicLayout : Panel
 	{
-		DynamicTable topTable;
+		readonly DynamicTable topTable;
 		DynamicTable currentItem;
 		bool? yscale;
 
@@ -24,12 +23,12 @@ namespace Eto.Forms
 		[Obsolete("Use DynamicLayout directly as a control")]
 		public Container Container
 		{
-			get { return this.Parent; }
+			get { return Parent; }
 		}
 
 		public bool Generated { get; private set; }
 
-		public Padding? Padding
+		public new Padding? Padding
 		{
 			get { return topTable.Padding; }
 			set { topTable.Padding = value; }
@@ -78,7 +77,7 @@ namespace Eto.Forms
 		public override void OnPreLoad(EventArgs e)
 		{
 			if (!Generated)
-				this.Generate();
+				Generate();
 
 			base.OnPreLoad(e);
 		}
@@ -86,7 +85,7 @@ namespace Eto.Forms
 		public override void OnLoad(EventArgs e)
 		{
 			if (!Generated)
-				this.Generate();
+				Generate();
 
 			base.OnLoad(e);
 		}
@@ -214,9 +213,9 @@ namespace Eto.Forms
 
 		public DynamicRow AddSeparateRow(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
-			this.BeginVertical(padding, spacing, xscale, yscale);
-			var row = this.AddRow();
-			this.EndVertical();
+			BeginVertical(padding, spacing, xscale, yscale);
+			var row = AddRow();
+			EndVertical();
 			return row;
 		}
 
@@ -250,39 +249,39 @@ namespace Eto.Forms
 
 		public void AddCentered(Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool horizontalCenter = true, bool verticalCenter = true)
 		{
-			this.BeginVertical(padding ?? Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
+			BeginVertical(padding ?? Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
 			if (verticalCenter)
-				this.Add(null, null, true);
+				Add(null, null, true);
 			
-			this.BeginHorizontal();
+			BeginHorizontal();
 			if (horizontalCenter)
-				this.Add(null, true, null);
+				Add(null, true, null);
 			
-			this.Add(control);
+			Add(control);
 			
 			if (horizontalCenter)
-				this.Add(null, true, null);
+				Add(null, true, null);
 			
-			this.EndHorizontal();
+			EndHorizontal();
 			
 			if (verticalCenter)
-				this.Add(null, null, true);
-			this.EndVertical();
+				Add(null, null, true);
+			EndVertical();
 			
 		}
 
 		public void AddAutoSized(Control control, Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, bool centered = false)
 		{
-			this.BeginVertical(padding ?? Eto.Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
+			BeginVertical(padding ?? Eto.Drawing.Padding.Empty, spacing ?? Size.Empty, xscale, yscale);
 			if (centered)
 			{
-				this.Add(null);
-				this.AddRow(null, control, null);
+				Add(null);
+				AddRow(null, control, null);
 			}
 			else
-				this.AddRow(control, null);
-			this.Add(null);
-			this.EndVertical();
+				AddRow(control, null);
+			Add(null);
+			EndVertical();
 		}
 
 		public void AddColumn(params Control[] controls)
@@ -304,7 +303,7 @@ namespace Eto.Forms
 		{
 			if (Generated)
 				throw new AlreadyGeneratedException();
-			this.Content = topTable.Generate(this);
+			Content = topTable.Generate(this);
 			Generated = true;
 		}
 	}
