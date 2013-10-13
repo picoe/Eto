@@ -22,7 +22,13 @@ namespace Eto.Forms
 			}
 		}
 
-		public static bool Supported { get { return Generator.Current.Supports<INavigation> (); } }
+		[Obsolete("Use IsSupported() instead")]
+		public static bool Supported { get { return IsSupported(); } }
+
+		public static bool IsSupported(Generator generator = null)
+		{
+			return (generator ?? Generator.Current).Supports<INavigation>();
+		}
 
 		public event EventHandler<EventArgs> ItemShown;
 		

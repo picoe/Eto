@@ -45,8 +45,16 @@ namespace Eto.Forms
 			}
 		}
 
-		public static bool Supported { get { return Generator.Current.Supports<ISplitter>(); } }
+		[Obsolete("Use IsSupported() instead")]
+		public static bool Supported { get { return IsSupported(); } }
+
+		public static bool IsSupported(Generator generator = null)
+		{
+			return (generator ?? Generator.Current).Supports<ISplitter>();
+		}
+
 		#region Events
+
 		public const string PositionChangedEvent = "Control.PositionChanged";
 		EventHandler<EventArgs> positionChanged;
 
@@ -68,7 +76,9 @@ namespace Eto.Forms
 			if (positionChanged != null)
 				positionChanged(this, e);
 		}
+
 		#endregion
+
 		public Splitter() : this (Generator.Current)
 		{
 		}
