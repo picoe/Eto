@@ -89,18 +89,22 @@ namespace Eto.Platform.Android.Drawing
 
 		public void DrawImage(Image image, float x, float y)
 		{
-			throw new NotImplementedException();
+			var handler = image.Handler as IAndroidImage;
+			handler.DrawImage(this, x, y);
 		}
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
-			throw new NotImplementedException();
+			var handler = image.Handler as IAndroidImage;
+			handler.DrawImage(this, x, y, width, height);
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
-			throw new NotImplementedException();
+			var handler = image.Handler as IAndroidImage;
+			handler.DrawImage(this, source, destination);
 		}
+
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
