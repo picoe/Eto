@@ -39,7 +39,7 @@ namespace Eto.Platform.Android.Drawing
 
 		public void CreateFromImage(Bitmap image)
 		{
-			throw new NotImplementedException();
+			Control = new ag.Canvas((ag.Bitmap)image.ControlObject);
 		}
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
@@ -153,7 +153,7 @@ namespace Eto.Platform.Android.Drawing
 
 		public void RotateTransform(float angle)
 		{
-			throw new NotImplementedException();
+			Control.Rotate(angle);
 		}
 
 		public void ScaleTransform(float scaleX, float scaleY)
@@ -163,32 +163,32 @@ namespace Eto.Platform.Android.Drawing
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
-			throw new NotImplementedException();
+			Control.Concat(matrix.ToAndroid());
 		}
 
 		public void SaveTransform()
 		{
-			throw new NotImplementedException();
+			Control.Save(ag.SaveFlags.Matrix);
 		}
 
 		public void RestoreTransform()
 		{
-			throw new NotImplementedException();
+			Control.Restore();
 		}
 
 		public RectangleF ClipBounds
 		{
-			get { throw new NotImplementedException(); }
+			get { return Control.ClipBounds.ToEto(); }
 		}
 
 		public void SetClip(RectangleF rectangle)
 		{
-			throw new NotImplementedException();
+			Control.ClipRect(rectangle.ToAndroid(), ag.Region.Op.Replace);
 		}
 
 		public void SetClip(IGraphicsPath path)
 		{
-			throw new NotImplementedException();
+			Control.ClipPath(path.ToAndroid(), ag.Region.Op.Replace);
 		}
 
 		public void ResetClip()

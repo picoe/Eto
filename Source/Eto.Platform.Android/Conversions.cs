@@ -5,6 +5,7 @@ using a = Android;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using Eto.Platform.Android.Drawing;
 
 namespace Eto.Platform.Android
 {
@@ -197,6 +198,16 @@ namespace Eto.Platform.Android
 			}
 
 			return result;
+		}
+
+		public static GraphicsPathHandler ToHandler(this IGraphicsPath path)
+		{
+			return ((GraphicsPathHandler)path.ControlObject);
+		}
+
+		public static ag.Path ToAndroid(this IGraphicsPath path)
+		{
+			return ((GraphicsPathHandler)path.ControlObject).Control;
 		}
 	}
 }
