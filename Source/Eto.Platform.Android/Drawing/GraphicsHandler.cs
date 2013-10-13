@@ -49,22 +49,22 @@ namespace Eto.Platform.Android.Drawing
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
-			throw new NotImplementedException();
+			Control.DrawRect(new RectangleF(x, y, width, height).ToAndroid(), pen.ToAndroid());
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
-			throw new NotImplementedException();
+			Control.DrawRect(new RectangleF(x, y, width, height).ToAndroid(), brush.ToAndroid());
 		}
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
-			throw new NotImplementedException();
+			Control.DrawOval(new RectangleF(x, y, width, height).ToAndroid(), brush.ToAndroid());
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
-			throw new NotImplementedException();
+			Control.DrawOval(new RectangleF(x, y, width, height).ToAndroid(), pen.ToAndroid());
 		}
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
@@ -79,12 +79,12 @@ namespace Eto.Platform.Android.Drawing
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
-			throw new NotImplementedException();
+			Control.DrawPath(path.ToAndroid(), brush.ToAndroid());
 		}
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
-			throw new NotImplementedException();
+			Control.DrawPath(path.ToAndroid(), pen.ToAndroid());
 		}
 
 		public void DrawImage(Image image, float x, float y)

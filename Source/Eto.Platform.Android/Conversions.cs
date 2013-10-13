@@ -36,6 +36,11 @@ namespace Eto.Platform.Android
 			return (ag.Paint)pen.ControlObject;
 		}
 
+		public static ag.Paint ToAndroid(this Brush brush)
+		{
+			return ((BrushHandler)brush.Handler).GetPaint(brush);
+		}
+
 		public static MouseEventArgs ToEto(av.MotionEvent e)
 		{
 			if (e.Action == av.MotionEventActions.Down)
