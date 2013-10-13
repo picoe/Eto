@@ -211,6 +211,7 @@ namespace Eto.Platform.Mac.Forms
 				observers = null;
 			}
 
+#if OSX
 			// HACK: Remove when Dispose() actually works!
 			if (disposing && DisposeControl)
 			{
@@ -221,6 +222,7 @@ namespace Eto.Platform.Mac.Forms
 					Control = null;
 				}
 			}
+#endif
 
 			base.Dispose(disposing);
 		}
