@@ -6,7 +6,7 @@ namespace Eto.Platform.Mac.Forms
 {
 	public static class MacCommon
 	{
-		public static Selector selCopyWithZone = new Selector("copyWithZone:");
+		public static IntPtr CopyWithZoneHandle = Selector.GetHandle("copyWithZone:");
 
 		public static IntPtr ReleaseHandle = Selector.GetHandle("release");
 

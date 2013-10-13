@@ -17,7 +17,7 @@ namespace Eto.Platform.Mac.Forms
 	{
 		void SetContentSize(SD.SizeF contentSize);
 
-		void LayoutParent(bool updateSize);
+		void LayoutParent(bool updateSize = true);
 
 		void LayoutChildren();
 
@@ -26,15 +26,15 @@ namespace Eto.Platform.Mac.Forms
 		bool InitialLayout { get; }
 	}
 
-	public abstract class MacContainer<T, W> : 
+	public abstract class MacContainer<TControl, TWidget> : 
 #if OSX
-		MacView<T, W>, 
+		MacView<TControl, TWidget>,
 #elif IOS
-		iosView<T, W>,
+		IosView<TControl, TWidget>,
 #endif
 		IContainer, IMacContainer
-		where T: NSResponder
-		where W: Container
+		where TControl: NSResponder
+		where TWidget: Container
 	{
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
@@ -71,7 +71,7 @@ namespace Eto.Platform.Mac.Forms
 			var parent = Widget.Parent.GetMacContainer();
 			if (parent == null || parent.InitialLayout)
 			{
-				this.InitialLayout = true;
+				InitialLayout = true;
 				LayoutAllChildren();
 			}
 		}

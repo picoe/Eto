@@ -254,7 +254,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			this.AddObserver(NSView.BoundsChangedNotification, HandleScrolled, ScrollView.ContentView);
 		}
 
-		static void HandleScrolled(ObserverActionArgs e)
+		static void HandleScrolled(ObserverActionEventArgs e)
 		{
 			var handler = (GridHandler<T,W>)e.Handler;
 			handler.UpdateColumnSizes();

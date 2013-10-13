@@ -40,7 +40,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			[Export("copyWithZone:")]
 			NSObject CopyWithZone (IntPtr zone)
 			{
-				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.selCopyWithZone.Handle, zone);
+				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.CopyWithZoneHandle, zone);
 				return new EtoCell (ptr) { Handler = this.Handler };
 			}
 

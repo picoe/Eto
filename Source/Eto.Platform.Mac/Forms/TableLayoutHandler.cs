@@ -2,14 +2,13 @@ using System;
 using Eto.Forms;
 using System.Linq;
 using Eto.Drawing;
-using System.Diagnostics;
 using sd = System.Drawing;
 
 #if IOS
 using MonoTouch.UIKit;
 using NSView = MonoTouch.UIKit.UIView;
-using IMacView = Eto.Platform.iOS.Forms.IiosView;
-using MacContainer = Eto.Platform.iOS.Forms.iosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
+using IMacView = Eto.Platform.iOS.Forms.IIosView;
+using MacContainer = Eto.Platform.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
 
 
 #elif OSX
@@ -32,7 +31,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public override NSView ContainerControl { get { return Control; } }
 
-		public Eto.Drawing.Size Spacing
+		public Size Spacing
 		{
 			get { return spacing; }
 			set
@@ -67,8 +66,8 @@ namespace Eto.Platform.Mac.Forms
 		{
 			base.Initialize();
 
-			this.Spacing = TableLayout.DefaultSpacing;
-			this.Padding = TableLayout.DefaultPadding;
+			Spacing = TableLayout.DefaultSpacing;
+			Padding = TableLayout.DefaultPadding;
 			Widget.SizeChanged += HandleSizeChanged;
 		}
 
@@ -236,7 +235,7 @@ namespace Eto.Platform.Mac.Forms
 						frame.Height = heights[y];
 						frame.X = Math.Max(0, startx);
 						frame.Y = flipped ? starty : controlFrame.Height - starty - frame.Height;
-						if (frame != nsview.Frame)
+						if (frame != oldframe)
 							nsview.Frame = frame;
 						else if (oldframe.Right > oldFrameSize.Width || oldframe.Bottom > oldFrameSize.Height
 						         || frame.Right > oldFrameSize.Width || frame.Bottom > oldFrameSize.Height)

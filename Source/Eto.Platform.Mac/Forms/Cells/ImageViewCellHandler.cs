@@ -38,7 +38,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (
 					SuperHandle,
-					MacCommon.selCopyWithZone.Handle,
+					MacCommon.CopyWithZoneHandle,
 					zone
 				);
 				return new EtoCell (ptr) { Handler = this.Handler };

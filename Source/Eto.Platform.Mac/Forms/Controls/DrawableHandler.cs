@@ -7,6 +7,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac;
 using MonoMac.ObjCRuntime;
+using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -28,12 +29,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				if (Widget == null)
 					return;
-				dirtyRect.Y = this.Frame.Height - dirtyRect.Y - dirtyRect.Height;
+				dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
 				if (dirtyRect.X % 1.0f > 0f)
 					dirtyRect.Width += 1;
 				if (dirtyRect.Y % 1.0f > 0f)
 					dirtyRect.Height += 1;
-				Drawable.Update(Rectangle.Ceiling(Eto.Platform.Conversions.ToEto(dirtyRect)));
+				Drawable.Update(Rectangle.Ceiling(dirtyRect.ToEto()));
 			}
 
 			public bool CanFocus { get; set; }
@@ -51,7 +52,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Graphics CreateGraphics()
 		{
-			return new Graphics(Widget.Generator, new GraphicsHandler(Control, Widget));
+			return new Graphics(Widget.Generator, new GraphicsHandler(Control));
 		}
 
 		public override bool Enabled { get; set; }

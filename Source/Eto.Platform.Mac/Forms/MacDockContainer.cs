@@ -14,14 +14,14 @@ using NSView = MonoTouch.UIKit.UIView;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public abstract class MacDockContainer<T, W> : MacContainer<T, W>, IDockContainer
-		where T: NSResponder
-		where W: DockContainer
+	public abstract class MacDockContainer<TControl, TWidget> : MacContainer<TControl, TWidget>, IDockContainer
+		where TControl: NSResponder
+		where TWidget: DockContainer
 	{
 		Control content;
 		Padding padding;
 
-		public Eto.Drawing.Padding Padding
+		public Padding Padding
 		{
 			get { return padding; }
 			set
@@ -50,7 +50,7 @@ namespace Eto.Platform.Mac.Forms
 #if OSX
 					control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
 #elif IOS
-					control.AutoresizingMask = UIViewAutoresizing.FlexibleHeight | UIViewAutoresizing.FlexibleWidth;
+					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 #endif
 					control.SetFrameSize(container.Frame.Size);
 					container.AddSubview(control);
@@ -91,10 +91,8 @@ namespace Eto.Platform.Mac.Forms
 			if (content == null)
 				return;
 
-			NSView parent = this.ContentControl;
-
 			NSView childControl = content.GetContainerView();
-			var frame = parent.Frame;
+			var frame = ContentControl.Frame;
 
 			if (frame.Width > padding.Horizontal && frame.Height > padding.Vertical)
 			{

@@ -40,11 +40,11 @@ namespace Eto.Platform.iOS.Drawing
 		NSGraphicsContext graphicsContext;
 		bool disposeContext;
 #endif
-		NSView view;
+		readonly NSView view;
 		float height;
 		PixelOffsetMode pixelOffsetMode = PixelOffsetMode.None;
 		float offset = 0.5f;
-		float inverseoffset = 0f;
+		float inverseoffset;
 		SD.RectangleF? clipBounds;
 		IGraphicsPath clipPath;
 		int transformSaveCount;
@@ -77,14 +77,14 @@ namespace Eto.Platform.iOS.Drawing
 		{
 		}
 
-		public GraphicsHandler (NSView view, Control ctl)
+		public GraphicsHandler (NSView view)
 		{
 			this.view = view;
 #if OSX
 			graphicsContext = NSGraphicsContext.FromWindow (view.Window);
 			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
-			this.Flipped = view.IsFlipped;
+			Flipped = view.IsFlipped;
 
 #elif IOS
 			this.Control = UIGraphics.GetCurrentContext ();
@@ -116,17 +116,20 @@ namespace Eto.Platform.iOS.Drawing
 
 #if OSX
 
-		static void FrameDidChange (ObserverActionArgs e)
+		static void FrameDidChange (ObserverActionEventArgs e)
 		{
 			//Console.WriteLine ("Woooo!");
 			var h = e.Handler as GraphicsHandler;
-			h.RewindAll ();
+			if (h != null && h.Control != null)
+			{
+				h.RewindAll();
 				
-			h.Control.RestoreState ();
-			h.Control.SaveState ();
-			h.SetViewClip ();
+				h.Control.RestoreState();
+				h.Control.SaveState();
+				h.SetViewClip();
 				
-			h.ReplayAll ();
+				h.ReplayAll();
+			}
 		}
 
 		void SetViewClip ()
@@ -205,7 +208,7 @@ namespace Eto.Platform.iOS.Drawing
 #endif
 
 			Flipped = false;
-			this.height = image.Size.Height;
+			height = image.Size.Height;
 			Control.InterpolationQuality = CGInterpolationQuality.High;
 			Control.SetAllowsSubpixelPositioning (false);
 			Control.SaveState ();
@@ -368,8 +371,8 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true);
 			pen.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			var centerY = RectangleFExtensions.GetMidY(rect);
-			var centerX = RectangleFExtensions.GetMidX(rect);
+			var centerY = rect.GetMidY();
+			var centerX = rect.GetMidX();
 			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
 			Control.AddArc (centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
 			Control.StrokePath ();
@@ -383,8 +386,8 @@ namespace Eto.Platform.iOS.Drawing
 			var rect = TranslateView (new System.Drawing.RectangleF (x, y, width, height), true, true);
 			brush.Apply (this);
 			var yscale = rect.Height / rect.Width;
-			var centerY = RectangleFExtensions.GetMidY(rect);
-			var centerX = RectangleFExtensions.GetMidX(rect);
+			var centerY = rect.GetMidY();
+			var centerX = rect.GetMidX();
 			Control.ConcatCTM (new CGAffineTransform (1.0f, 0, 0, yscale, 0, centerY - centerY * yscale));
 			Control.MoveTo (centerX, centerY);
 			Control.AddArc (centerX, centerY, rect.Width / 2, Conversions.DegreesToRadians (startAngle), Conversions.DegreesToRadians (startAngle + sweepAngle), sweepAngle < 0);
@@ -502,7 +505,7 @@ namespace Eto.Platform.iOS.Drawing
 			var size = str.StringSize (font.ToUI ());
 #endif
 			EndDrawing ();
-			return Eto.Platform.Conversions.ToEto (size);
+			return size.ToEto();
 		}
 
 #if OSX
@@ -567,7 +570,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public RectangleF ClipBounds
 		{
-			get { return Platform.Conversions.ToEto (Control.GetClipBoundingBox ()); }
+			get { return Control.GetClipBoundingBox().ToEto(); }
 		}
 
 		public void SetClip (RectangleF rectangle)
@@ -653,9 +656,9 @@ namespace Eto.Platform.iOS.Drawing
 		public void Clear (SolidBrush brush)
 		{
 			var rect = Control.GetClipBoundingBox ();
-			this.Control.ClearRect (rect);
+			Control.ClearRect (rect);
 			if (brush != null)
-				this.FillRectangle (brush, rect.X, rect.Y, rect.Width, rect.Height);
+				FillRectangle (brush, rect.X, rect.Y, rect.Width, rect.Height);
 		}
 	}
 }
