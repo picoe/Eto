@@ -45,7 +45,7 @@ namespace Eto.Platform.Android.Drawing
 		public void Create(FontFamily family, float size, FontStyle style)
 		{
 			this.size = size;
-			throw new NotImplementedException();
+			this.Control = ag.Typeface.Create(family.ControlObject as ag.Typeface, style.ToAndroid());
 		}
 
 		public void Create(SystemFont systemFont, float? size)

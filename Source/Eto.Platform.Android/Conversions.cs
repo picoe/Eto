@@ -224,6 +224,18 @@ namespace Eto.Platform.Android
 				ret = ag.TypefaceStyle.Italic;
 			return ret;
 		}
+
+		public static FontStyle ToEto(this ag.TypefaceStyle style)
+		{
+			var ret = FontStyle.None;
+			if (style == ag.TypefaceStyle.Normal)
+				ret = FontStyle.None;
+			else if (style == ag.TypefaceStyle.Bold)
+				ret = FontStyle.Bold;
+			else if (style == ag.TypefaceStyle.Italic)
+				ret = FontStyle.Italic;
+			return ret;
+		}
 	}
 }
 

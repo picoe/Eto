@@ -20,8 +20,8 @@ namespace Eto.Platform.Android
 		{
 			// Drawing
 			g.Add<IBitmap>(() => new BitmapHandler());
-			//g.Add<IFontFamily>(() => new FontFamilyHandler());
-			//g.Add<IFont>(() => new FontHandler());
+			g.Add<IFontFamily>(() => new FontFamilyHandler());
+			g.Add<IFont>(() => new FontHandler());
 			//g.Add<IFonts>(() => new FontsHandler());
 			g.Add<IGraphics>(() => new GraphicsHandler());
 			//g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
@@ -29,7 +29,7 @@ namespace Eto.Platform.Android
 			//g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());
-			//g.Add<ISolidBrush>(() => new SolidBrushHandler());
+			g.Add<ISolidBrush>(() => new SolidBrushHandler());
 			//g.Add<ITextureBrush>(() => new TextureBrushHandler());
 			//g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 
