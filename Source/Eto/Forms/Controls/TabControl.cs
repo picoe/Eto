@@ -28,14 +28,7 @@ namespace Eto.Forms
 
 		public override IEnumerable<Control> Controls
 		{
-			get
-			{
-				var result = new List<Control>(); // Needed because covariance does not work on iOS
-				if (pages != null)
-					foreach (var x in pages)
-						result.Add(x);
-				return result;
-			}
+			get { return pages; }
 		}
 		
 		public event EventHandler<EventArgs> SelectedIndexChanged;
