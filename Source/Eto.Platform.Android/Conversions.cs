@@ -214,6 +214,16 @@ namespace Eto.Platform.Android
 		{
 			return ((GraphicsPathHandler)path.ControlObject).Control;
 		}
+
+		public static ag.TypefaceStyle ToAndroid(this FontStyle style)
+		{
+			var ret = ag.TypefaceStyle.Normal;
+			if ((style & FontStyle.Bold) != 0)
+				ret = ag.TypefaceStyle.Bold;
+			if ((style & FontStyle.Italic) != 0)
+				ret = ag.TypefaceStyle.Italic;
+			return ret;
+		}
 	}
 }
 

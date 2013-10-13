@@ -21,6 +21,7 @@ namespace Eto.Platform.Android.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class FontHandler : WidgetHandler<ag.Typeface, Font>, IFont
 	{
+		float size;
 		/// <summary>
 		/// Used by GraphicsHandler.MeasureText
 		/// </summary>
@@ -38,8 +39,12 @@ namespace Eto.Platform.Android.Drawing
 			}
 		}
 
+		ag.Paint.FontMetrics fontMetrics;
+		ag.Paint.FontMetrics FontMetrics { get { return fontMetrics = fontMetrics ?? Paint.GetFontMetrics(); } }
+
 		public void Create(FontFamily family, float size, FontStyle style)
 		{
+			this.size = size;
 			throw new NotImplementedException();
 		}
 
@@ -50,7 +55,8 @@ namespace Eto.Platform.Android.Drawing
 
 		public void Create(FontTypeface typeface, float size)
 		{
-			throw new NotImplementedException();
+			this.size = size;
+			this.Control = ag.Typeface.Create(typeface.Family.Name, typeface.FontStyle.ToAndroid());
 		}
 
 		public float XHeight
@@ -60,12 +66,12 @@ namespace Eto.Platform.Android.Drawing
 
 		public float Ascent
 		{
-			get { throw new NotImplementedException(); }
+			get { return Math.Abs(FontMetrics.Ascent); } // TODO: does this need to be scaled?
 		}
 
 		public float Descent
 		{
-			get { throw new NotImplementedException(); }
+			get { return Math.Abs(FontMetrics.Descent); } // TODO: does this need to be scaled?
 		}
 
 		public float LineHeight
@@ -75,7 +81,7 @@ namespace Eto.Platform.Android.Drawing
 
 		public float Leading
 		{
-			get { throw new NotImplementedException(); }
+			get { return Math.Abs(FontMetrics.Leading); } // TODO: does this need to be scaled?
 		}
 
 		public float Baseline
