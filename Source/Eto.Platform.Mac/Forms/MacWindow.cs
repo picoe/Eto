@@ -318,7 +318,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public override NSView ContentControl { get { return Control.ContentView; } }
 
-		public virtual string Title { get { return Control.Title; } set { Control.Title = value; } }
+		public virtual string Title { get { return Control.Title; } set { Control.Title = value ?? ""; } } // Control.Title throws an exception if value is null
 
 		void SetButtonStates()
 		{
