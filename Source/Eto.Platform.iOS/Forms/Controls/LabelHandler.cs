@@ -5,7 +5,7 @@ using Eto.Platform.iOS.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class LabelHandler : iosControl<UILabel, Label>, ILabel
+	public class LabelHandler : IosControl<UILabel, Label>, ILabel
 	{
 		public override UILabel CreateControl ()
 		{

@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class PasswordBoxHandler : iosControl<UITextField, PasswordBox>, IPasswordBox
+	public class PasswordBoxHandler : IosControl<UITextField, PasswordBox>, IPasswordBox
 	{
 		public override UITextField CreateControl()
 		{

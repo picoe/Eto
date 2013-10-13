@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class NumericUpDownHandler : iosControl<UITextField, NumericUpDown>, INumericUpDown
+	public class NumericUpDownHandler : IosControl<UITextField, NumericUpDown>, INumericUpDown
 	{
 		public override UITextField CreateControl()
 		{

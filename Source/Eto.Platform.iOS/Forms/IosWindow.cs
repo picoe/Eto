@@ -7,15 +7,11 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public abstract class iosWindow<T, W> : MacDockContainer<T, W>, IWindow
-		where T: UIView
-		where W: Window
+	public abstract class IosWindow<TControl, TWidget> : MacDockContainer<TControl, TWidget>, IWindow
+		where TControl: UIView
+		where TWidget: Window
 	{
 		public override UIView ContainerControl { get { return Control; } }
-
-		public iosWindow()
-		{
-		}
 
 		public new Point Location
 		{

@@ -7,7 +7,10 @@ namespace Eto.Platform.iOS.Forms
 {
 	internal class RotatableViewController : UIViewController
 	{
-		public object Control { get; set; }
+		public RotatableViewController()
+		{
+			AutomaticallyAdjustsScrollViewInsets = true;
+		}
 
 		public override UIInterfaceOrientationMask GetSupportedInterfaceOrientations ()
 		{
@@ -19,28 +22,14 @@ namespace Eto.Platform.iOS.Forms
 		{
 			return true;
 		}
-
-		protected override void Dispose (bool disposing)
-		{
-			var c = Control as IDisposable;
-			if (c != null) {
-				c.Dispose ();
-				c = null;
-			}
-			base.Dispose (disposing);
-		}
 	}
 
-	public class DialogHandler : iosWindow<UIView, Dialog>, IDialog, IiosViewController
+	public class DialogHandler : IosWindow<UIView, Dialog>, IDialog, IIosViewController
 	{
 		Button button;
-		UIViewController controller;
-
-		public override UIViewController Controller { get { return controller; } }
 
 		public DialogHandler ()
 		{
-			controller = new RotatableViewController ();
 			Control = Controller.View;
 		}
 		
@@ -76,7 +65,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public DialogResult ShowDialog (Control parent)
 		{
-			var controller = parent.Handler as IiosViewController;
+			var controller = parent.Handler as IIosViewController;
 			if (controller != null) {
 				var nav = controller.Controller.NavigationController;
 				if (nav != null) {

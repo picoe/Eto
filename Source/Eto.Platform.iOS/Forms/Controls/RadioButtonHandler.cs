@@ -7,7 +7,7 @@ using System.Linq;
 namespace Eto.Platform.iOS.Forms.Controls
 {
 	// TODO: use UISwitch instead with custom state images, better accessibility
-	public class RadioButtonHandler : iosButton<UIButton, RadioButton>, IRadioButton
+	public class RadioButtonHandler : IosButton<UIButton, RadioButton>, IRadioButton
 	{
 		RadioButtonHandler controller;
 		List<RadioButtonHandler> children;

@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.iOS</RootNamespace>
     <AssemblyName>Eto.Platform.iOS</AssemblyName>
+    <ReleaseVersion>
+    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -66,18 +68,13 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\FormHandler.cs" />
-    <Compile Include="Forms\iosWindow.cs" />
-    <Compile Include="Forms\Controls\iosControl.cs" />
     <Compile Include="InvokeHelper.cs" />
-    <Compile Include="Forms\iosView.cs" />
     <Compile Include="Forms\DialogHandler.cs" />
     <Compile Include="Forms\PixelLayoutHandler.cs" />
-    <Compile Include="Forms\iosLayout.cs" />
     <Compile Include="Extensions.cs" />
     <Compile Include="Forms\Controls\ButtonHandler.cs" />
     <Compile Include="Forms\Controls\CheckBoxHandler.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
-    <Compile Include="Forms\Controls\iosButton.cs" />
     <Compile Include="Forms\Controls\ListBoxHandler.cs" />
     <Compile Include="Forms\Controls\SplitterHandler.cs" />
     <Compile Include="EtoEnvironmentHandler.cs" />
@@ -94,7 +91,6 @@
     <Compile Include="..\Eto.Platform.Mac\ObjCExtensions.cs">
       <Link>ObjCExtensions.cs</Link>
     </Compile>
-    <Compile Include="Forms\iosViewExtensions.cs" />
     <Compile Include="Threading\ThreadHandler.cs" />
     <Compile Include="EtoAppDelegate.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
@@ -178,6 +174,12 @@
       <Link>Forms\Controls\MacControlExtensions.cs</Link>
     </Compile>
     <Compile Include="Forms\MacCompatibility.cs" />
+    <Compile Include="Forms\IosLayout.cs" />
+    <Compile Include="Forms\IosView.cs" />
+    <Compile Include="Forms\IosViewExtensions.cs" />
+    <Compile Include="Forms\Controls\IosControl.cs" />
+    <Compile Include="Forms\Controls\IosButton.cs" />
+    <Compile Include="Forms\IosWindow.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - iOS.csproj">

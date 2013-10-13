@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto</RootNamespace>
     <AssemblyName>Eto</AssemblyName>
+    <ReleaseVersion>
+    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -21,14 +23,14 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\iOS\Debug</OutputPath>
-    <DefineConstants>DEBUG;MOBILE</DefineConstants>
+    <DefineConstants>DEBUG;MOBILE;XML</DefineConstants>
     <Optimize>False</Optimize>
     <DebugType>full</DebugType>
     <ConsolePause>False</ConsolePause>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\iOS\Release</OutputPath>
-    <DefineConstants>MOBILE</DefineConstants>
+    <DefineConstants>MOBILE;XML</DefineConstants>
     <Optimize>True</Optimize>
     <DebugType>pdbonly</DebugType>
     <ConsolePause>False</ConsolePause>

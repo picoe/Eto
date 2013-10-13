@@ -7,8 +7,6 @@ using MonoTouch.UIKit;
 using MonoTouch.CoreAnimation;
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
-using MonoTouch.OpenGLES;
-using MonoTouch.GLKit;
 using System.Collections.Generic;
 using Eto.Platform.Mac.Forms;
 
@@ -65,7 +63,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			// We need to keep all the IndexedPositions we create accessible from managed code,
 			// otherwise the garbage collector will collect them since it won't know that native
 			// code has references to them.
-			static Dictionary<int, IndexedPosition> indexes = new Dictionary<int, IndexedPosition>();
+			static readonly Dictionary<int, IndexedPosition> indexes = new Dictionary<int, IndexedPosition>();
 
 			public static IndexedPosition GetPosition(int index)
 			{
@@ -90,7 +88,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			public NSRange Range { get; private set; }
 
-			private IndexedRange()
+			IndexedRange()
 			{
 			}
 
@@ -102,7 +100,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			// We need to keep all the IndexedRanges we create accessible from managed code,
 			// otherwise the garbage collector will collect them since it won't know that native
 			// code has references to them.
-			private static Dictionary<NSRange, IndexedRange> ranges = new Dictionary<NSRange, IndexedRange>(new NSRangeEqualityComparer());
+			static readonly Dictionary<NSRange, IndexedRange> ranges = new Dictionary<NSRange, IndexedRange>(new NSRangeEqualityComparer());
 
 			public static IndexedRange GetRange(NSRange theRange)
 			{
@@ -205,14 +203,14 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return base.ResignFirstResponder();
 			}
 
-			static IntPtr selFrame = Selector.GetHandle("frame");
+			static readonly IntPtr selFrame = Selector.GetHandle("frame");
 
 			public SD.RectangleF BaseFrame
 			{
 				get
 				{
 					SD.RectangleF result;
-					Messaging.RectangleF_objc_msgSend_stret(out result, base.Handle, selFrame);
+					Messaging.RectangleF_objc_msgSend_stret(out result, Handle, selFrame);
 					return result;
 				}
 			}

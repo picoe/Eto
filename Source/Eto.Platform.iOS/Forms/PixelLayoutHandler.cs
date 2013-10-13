@@ -9,9 +9,9 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public class PixelLayoutHandler : iosLayout<UIView, PixelLayout>, IPixelLayout
+	public class PixelLayoutHandler : IosLayout<UIView, PixelLayout>, IPixelLayout
 	{
-		Dictionary<Control, Point> points = new Dictionary<Control, Point>();
+		readonly Dictionary<Control, Point> points = new Dictionary<Control, Point>();
 
 		public PixelLayoutHandler()
 		{
@@ -39,14 +39,9 @@ namespace Eto.Platform.iOS.Forms
 			return size;
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		static void SetPosition(Control control, Point point, float frameHeight, bool flipped)
 		{
-			base.OnLoadComplete(e);
-		}
-
-		void SetPosition(Control control, Point point, float frameHeight, bool flipped)
-		{
-			var offset = ((IiosView)control.Handler).PositionOffset;
+			var offset = ((IIosView)control.Handler).PositionOffset;
 			var childView = control.GetContainerView();
 			
 			var preferredSize = control.GetPreferredSize(Size.MaxValue);
@@ -64,10 +59,7 @@ namespace Eto.Platform.iOS.Forms
 				);
 			
 			var frame = new sd.RectangleF(origin, preferredSize.ToSDSizeF());
-			if (frame != childView.Frame)
-			{
-				childView.Frame = frame;
-			}
+			childView.Frame = frame;
 		}
 
 		public override void LayoutChildren()

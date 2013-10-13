@@ -9,23 +9,33 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public interface IiosView
+	public interface IIosView
 	{
 		Size PositionOffset { get; }
 	}
 
-	public interface IiosViewController
+	public interface IIosViewController
 	{
 		UIViewController Controller { get; }
 	}
 
-	public abstract class iosView<T, W> : MacObject<T, W>, IControl, IiosView, IMacAutoSizing
-		where T: UIResponder
-		where W: Control
+	public abstract class IosView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IIosView, IMacAutoSizing
+		where TControl: UIResponder
+		where TWidget: Control
 	{
 		Size? naturalSize;
+		UIViewController controller;
 
-		public virtual UIViewController Controller { get { return null; } }
+		public UIViewController Controller
+		{ 
+			get { return controller ?? (controller = CreateController()); } 
+			protected set { controller = value; }
+		}
+
+		protected virtual UIViewController CreateController()
+		{
+			return new RotatableViewController { View = ContainerControl };
+		}
 
 		public virtual UIView ContentControl { get { return ContainerControl; } }
 
@@ -115,7 +125,7 @@ namespace Eto.Platform.iOS.Forms
 			return size;
 		}
 
-		public iosView()
+		protected IosView()
 		{
 			this.AutoSize = true;
 		}
@@ -144,7 +154,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
-		static NSString frameKey = new NSString("frame");
+		static readonly NSString frameKey = new NSString("frame");
 
 		public override void AttachEvent(string handler)
 		{
@@ -166,7 +176,7 @@ namespace Eto.Platform.iOS.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					this.AddControlObserver(frameKey, e =>
 					{
-						var h = e.Handler as iosView<T,W>;
+						var h = e.Handler as IosView<TControl,TWidget>;
 						h.Widget.OnSizeChanged(EventArgs.Empty);
 					});
 				/*UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
@@ -266,7 +276,7 @@ namespace Eto.Platform.iOS.Forms
 			var sdpoint = point.ToSD();
 			sdpoint = ContainerControl.ConvertPointFromView(sdpoint, null);
 			sdpoint.Y = ContainerControl.Frame.Height - sdpoint.Y;
-			return Platform.Conversions.ToEto(sdpoint);
+			return sdpoint.ToEto();
 		}
 
 		public PointF PointToScreen(PointF point)
@@ -274,7 +284,7 @@ namespace Eto.Platform.iOS.Forms
 			var sdpoint = point.ToSD();
 			sdpoint.Y = ContainerControl.Frame.Height - sdpoint.Y;
 			sdpoint = ContainerControl.ConvertPointToView(sdpoint, null);
-			return Platform.Conversions.ToEto(sdpoint);
+			return sdpoint.ToEto();
 		}
 
 		public Point Location

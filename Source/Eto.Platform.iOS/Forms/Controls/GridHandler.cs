@@ -7,21 +7,20 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public abstract class GridHandler<T, W> : iosControl<T, W>, IGrid, IiosViewController
+	public abstract class GridHandler<T, W> : IosControl<T, W>, IGrid, IIosViewController
 		where T: UITableView
 		where W: Grid
 	{
-		RotatableTableViewController tableViewController;
-
-		public override UIViewController Controller
+		public new UITableViewController Controller
 		{
-			get { return tableViewController; }
+			get { return (UITableViewController)base.Controller; }
+			set { base.Controller = value; }
 		}
 
 		public override T CreateControl ()
 		{
-			tableViewController = new RotatableTableViewController { Control = this.Widget };
-			return (T)tableViewController.TableView;
+			Controller = new RotatableTableViewController { Control = this.Widget };
+			return (T)Controller.TableView;
 		}
 
 		protected virtual UITableViewDelegate CreateDelegate()

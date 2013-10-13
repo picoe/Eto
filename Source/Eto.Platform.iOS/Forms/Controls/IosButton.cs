@@ -6,9 +6,9 @@ using Eto.Platform.iOS.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public abstract class iosButton<T, W> : iosControl<T, W>, ITextControl
-		where T: UIButton
-		where W: Control
+	public abstract class IosButton<TControl, TWidget> : IosControl<TControl, TWidget>, ITextControl
+		where TControl: UIButton
+		where TWidget: Control
 	{	
 		Font font;
 

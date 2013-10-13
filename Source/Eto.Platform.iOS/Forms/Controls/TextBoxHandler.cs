@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class TextBoxHandler : iosControl<UITextField, TextBox>, ITextBox
+	public class TextBoxHandler : IosControl<UITextField, TextBox>, ITextBox
 	{
 		public override UITextField CreateControl()
 		{

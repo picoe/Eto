@@ -5,7 +5,7 @@ using System.Linq;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public class FormHandler : iosWindow<UIWindow, Form>, IForm
+	public class FormHandler : IosWindow<UIWindow, Form>, IForm
 	{
 		public FormHandler()
 		{

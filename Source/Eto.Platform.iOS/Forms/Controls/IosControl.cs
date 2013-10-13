@@ -7,7 +7,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class iosControl<T, W> : iosView<T, W>, IControl
+	public class IosControl<T, W> : IosView<T, W>, IControl
 		where T: UIView
 		where W: Control
 	{

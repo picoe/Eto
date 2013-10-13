@@ -1,6 +1,7 @@
 using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
+using MonoTouch.ObjCRuntime;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -18,11 +19,13 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 	}
 
-	public class NavigationHandler : iosControl<UIView, Navigation>, INavigation, IiosViewController
+	public class NavigationHandler : IosControl<UIView, Navigation>, INavigation, IIosViewController
 	{
-		public override UIViewController Controller { get { return Navigation; } }
-
-		public UINavigationController Navigation { get; set; }
+		public UINavigationController Navigation
+		{ 
+			get { return (UINavigationController)base.Controller; }
+			set { base.Controller = value; }
+		}
 
 		class Delegate : UINavigationControllerDelegate
 		{
@@ -52,7 +55,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				WeakDelegate = new Delegate { Handler = this }
 			};
-			Navigation.NavigationBar.Translucent = false;
+			//Navigation.NavigationBar.Translucent = false;
+			//Navigation.EdgesForExtendedLayout = UIRectEdge.None;
+			//Navigation.AutomaticallyAdjustsScrollViewInsets = true;
 		}
 
 		public override UIView Control { get { return Navigation.View; } }
@@ -61,8 +66,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			var view = item.Content.GetViewController();
 			view.NavigationItem.Title = item.Text;
-			view.View.Frame = Control.Frame;
-			view.View.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+			view.View.SetFrameOrigin(new System.Drawing.PointF(0, 100));
+			//view.AutomaticallyAdjustsScrollViewInsets = true;
+			//if (view.RespondsToSelector(new Selector("setEdgesForExtendedLayout:")))
+			//	view.EdgesForExtendedLayout = UIRectEdge.None;
+			view.View.Frame = new System.Drawing.RectangleF(0, 0, 0, 0);
+			view.View.AutoresizingMask = UIViewAutoresizing.All;
 			Navigation.PushViewController(view, true);
 		}
 

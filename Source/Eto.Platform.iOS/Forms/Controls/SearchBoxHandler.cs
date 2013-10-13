@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class SearchBoxHandler : iosControl<UISearchBar, SearchBox>, ISearchBox
+	public class SearchBoxHandler : IosControl<UISearchBar, SearchBox>, ISearchBox
 	{
 		public override UISearchBar CreateControl()
 		{

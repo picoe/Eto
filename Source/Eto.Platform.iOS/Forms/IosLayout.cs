@@ -8,9 +8,9 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public abstract class iosLayout<T, W> : MacContainer<T, W>, ILayout
-		where T: UIView
-		where W: Layout
+	public abstract class IosLayout<TControl, TWidget> : MacContainer<TControl, TWidget>, ILayout
+		where TControl: UIView
+		where TWidget: Layout
 	{
 		public override UIView ContainerControl { get { return Control; } }
 

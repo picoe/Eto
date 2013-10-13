@@ -10,6 +10,8 @@ using Eto.Platform.iOS.Forms.Cells;
 using Eto.Platform.iOS.Forms.Controls;
 using Eto.Platform.iOS.Forms;
 using Eto.Platform.Mac.Forms;
+using Eto.Threading;
+using Eto.Platform.iOS.Threading;
 
 namespace Eto.Platform.iOS
 {
@@ -121,6 +123,7 @@ namespace Eto.Platform.iOS
 			
 			// General
 			g.Add <IEtoEnvironment>(() => new EtoEnvironmentHandler());
+			g.Add <IThread>(() => new ThreadHandler());
 		}
 
 		public override bool Supports<T>()

@@ -107,14 +107,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public object GetItem(NSIndexPath indexPath)
 		{
-			var result = store.Collection[indexPath.Row];
-			return result;
-			// BUGBUG: the below code seems wrong, it does an extra indirection.
-			var section = store.Collection[indexPath.Section] as IDataStore<object>;
-			if (section != null) {
-				return section[indexPath.Row];
-			}
-			return null;
+			return store.Collection[indexPath.Row];
 		}
 
 		protected override void Initialize ()

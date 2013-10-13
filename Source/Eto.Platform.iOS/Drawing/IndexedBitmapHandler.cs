@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using System.Linq;
 using Eto.Drawing;
@@ -7,7 +6,6 @@ using MonoTouch.UIKit;
 
 namespace Eto.Platform.iOS.Drawing
 {
-
 	public class IndexedBitmapDataHandler : BitmapData
 	{
 		public IndexedBitmapDataHandler(Image image, IntPtr data, int scanWidth, int bitsPerPixel, object controlObject)
@@ -26,24 +24,18 @@ namespace Eto.Platform.iOS.Drawing
 		}
 	}
 
-
-
 	public class IndexedBitmapHandler : ImageHandler<byte[], IndexedBitmap>, IIndexedBitmap
 	{
 		Size size;
 		int rowStride;
 		uint[] colors;
 		BitmapHandler bmp;
-
-		public IndexedBitmapHandler()
-		{
-		}
+		bool updated;
 
 		public int RowStride
 		{
 			get { return rowStride; }
 		}
-
 
 		public override Size Size
 		{
@@ -61,43 +53,51 @@ namespace Eto.Platform.iOS.Drawing
 			}
 
 			size = new Size(width, height);
-			Control = new byte[height*rowStride];
+			Control = new byte[height * rowStride];
 			bmp = new BitmapHandler();
 			bmp.Create(size.Width, size.Height, PixelFormat.Format32bppRgb);
 		}
 
-
 		public void Resize(int width, int height)
 		{
-			throw new NotImplementedException("Cannot resize an indexed image");
+			throw new NotSupportedException("Cannot resize an indexed image");
 		}
 
 		public BitmapData Lock()
 		{
+			var pinnedArray = GCHandle.Alloc(Control, GCHandleType.Pinned);
+			IntPtr ptr = pinnedArray.AddrOfPinnedObject();
+			/**
 			IntPtr ptr = Marshal.AllocHGlobal(Control.Length);
 			Marshal.Copy(Control, 0, ptr, Control.Length);
-			return  new IndexedBitmapDataHandler(Widget, ptr, rowStride, Widget.BitsPerPixel, null);
+			/**/
+			return new IndexedBitmapDataHandler(Widget, ptr, rowStride, Widget.BitsPerPixel, pinnedArray);
 		}
 
 		public void Unlock(BitmapData bitmapData)
 		{
+			var pinnedArray = (GCHandle)bitmapData.ControlObject;
+			pinnedArray.Free();
+			/**
 			IntPtr ptr = bitmapData.Data;
 			Marshal.Copy(ptr, Control, 0, Control.Length);
 			Marshal.FreeHGlobal(ptr);
-			UpdateBitmap (new Rectangle(this.Size));
+			/**/
+			updated = false;
 		}
 
 		public Palette Palette
 		{
 			get
 			{
-				Palette pal = new Palette();
-				pal.AddRange(colors.Select(r => Color.FromArgb((uint)r)));
+				var pal = new Palette();
+				pal.AddRange(colors.Select(Color.FromArgb));
 				return pal;
 			}
 			set
 			{
-				if (value.Count != colors.Length) throw new ArgumentException("Input palette must have the same colors as the output");
+				if (value.Count != colors.Length)
+					throw new ArgumentException("Input palette must have the same colors as the output");
 				for (int i=0; i<value.Count; i++)
 				{
 					colors[i] = value[i].ToArgb();
@@ -105,35 +105,34 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
-
-		void UpdateBitmap (Rectangle source, bool flipped = false)
+		void UpdateBitmap(Rectangle source, bool flipped = false)
 		{
 			var bd = bmp.Lock();
-			
 			// we have to draw to a temporary bitmap pixel by pixel
-			unsafe {
+			unsafe
+			{
 				fixed (byte* pSrc = Control)
 				{
 					var dest = (byte*)bd.Data;
 					var src = pSrc;
 					var scany = rowStride;
-					if (flipped)
+					if (flipped != bd.Flipped)
 					{
 						src += Control.Length - scany;
 						scany = -scany;
 					}
 					
 					dest += source.Top * bd.ScanWidth;
-					dest += source.Left * sizeof(uint);
+					dest += source.Left * bd.BytesPerPixel;
 					
 					src += source.Top * scany;
 					src += source.Left;
 					
-					for (int y=source.Top; y <= source.Bottom; y++)
+					for (int y = source.Top; y <= source.Bottom; y++)
 					{
 						var srcrow = src;
 						var destrow = (uint*)dest;
-						for (int x=source.Left; x <= source.Right; x++)
+						for (int x = source.Left; x <= source.Right; x++)
 						{
 							var palindex = *srcrow;
 							var color = colors[palindex];
@@ -151,22 +150,27 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
+			if (!updated)
+			{
+				UpdateBitmap(new Rectangle(Size));
+				updated = true;
+			}
 			bmp.DrawImage(graphics, source, destination);
 		}
-		
-		protected override void Dispose (bool disposing)
+
+		protected override void Dispose(bool disposing)
 		{
-			base.Dispose (disposing);
-			if (bmp != null)
+			base.Dispose(disposing);
+			if (disposing && bmp != null)
 			{
 				bmp.Dispose();
 				bmp = null;
 			}
 		}
 
-		public override UIImage GetUIImage ()
+		public override UIImage GetUIImage()
 		{
-			return bmp.GetUIImage ();
+			return bmp.GetUIImage();
 		}
 	}
 }
