@@ -7,6 +7,8 @@ using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using sd = System.Drawing;
 using MonoMac.ImageIO;
+using MonoMac.ObjCRuntime;
+using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac.Drawing
 {
@@ -266,6 +268,19 @@ namespace Eto.Platform.Mac.Drawing
 				throw new InvalidOperationException(string.Format("Cannot get pixel data for this type of bitmap ({0})", rep.GetType()));
 
 			return bmprep.ColorAt(x, y).ToEto();
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				if (rep != null)
+				{
+					rep.SafeDispose();
+					rep = null;
+				}
+			}
+			base.Dispose(disposing);
 		}
 	}
 }
