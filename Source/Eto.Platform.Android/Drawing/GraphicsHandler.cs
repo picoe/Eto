@@ -25,17 +25,7 @@ namespace Eto.Platform.Android.Drawing
 		{
 		}
 
-		public PixelOffsetMode PixelOffsetMode
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public PixelOffsetMode PixelOffsetMode { get; set; } // TODO
 
 		public void CreateFromImage(Bitmap image)
 		{
@@ -44,7 +34,7 @@ namespace Eto.Platform.Android.Drawing
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
-			throw new NotImplementedException();
+			Control.DrawLine(startx, starty, endx, endy, pen.ToAndroid());
 		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
@@ -113,7 +103,17 @@ namespace Eto.Platform.Android.Drawing
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			throw new NotImplementedException();
+			if(string.IsNullOrEmpty(text)) // needed to avoid exception
+				return SizeF.Empty;
+
+			// See http://stackoverflow.com/questions/7549182/android-paint-measuretext-vs-gettextbounds
+			
+			var paint = (font.Handler as FontHandler).Paint;
+			var bounds = new ag.Rect();
+			paint.GetTextBounds(text, 0, text.Length, bounds);
+			
+			// TODO: see the above article; the width may be truncated to the nearest integer.
+			return new SizeF(bounds.Width(), bounds.Height()); 
 		}
 
 		public void Flush()
