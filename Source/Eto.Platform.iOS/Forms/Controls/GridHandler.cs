@@ -7,7 +7,7 @@ using MonoTouch.Foundation;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public abstract class GridHandler<T, W> : IosControl<T, W>, IGrid, IIosViewController
+	public abstract class GridHandler<T, W> : IosControl<T, W>, IGrid
 		where T: UITableView
 		where W: Grid
 	{

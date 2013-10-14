@@ -24,7 +24,7 @@ namespace Eto.Platform.iOS.Forms
 		}
 	}
 
-	public class DialogHandler : IosWindow<UIView, Dialog>, IDialog, IIosViewController
+	public class DialogHandler : IosWindow<UIView, Dialog>, IDialog
 	{
 		Button button;
 
@@ -65,7 +65,7 @@ namespace Eto.Platform.iOS.Forms
 		
 		public DialogResult ShowDialog (Control parent)
 		{
-			var controller = parent.Handler as IIosViewController;
+			var controller = parent.Handler as IIosView;
 			if (controller != null) {
 				var nav = controller.Controller.NavigationController;
 				if (nav != null) {

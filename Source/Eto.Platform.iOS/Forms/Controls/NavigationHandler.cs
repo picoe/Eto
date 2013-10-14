@@ -19,7 +19,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 	}
 
-	public class NavigationHandler : IosControl<UIView, Navigation>, INavigation, IIosViewController
+	public class NavigationHandler : IosControl<UIView, Navigation>, INavigation
 	{
 		public UINavigationController Navigation
 		{ 
