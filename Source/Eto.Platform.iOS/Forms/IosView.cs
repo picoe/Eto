@@ -12,10 +12,6 @@ namespace Eto.Platform.iOS.Forms
 	public interface IIosView
 	{
 		Size PositionOffset { get; }
-	}
-
-	public interface IIosViewController
-	{
 		UIViewController Controller { get; }
 	}
 

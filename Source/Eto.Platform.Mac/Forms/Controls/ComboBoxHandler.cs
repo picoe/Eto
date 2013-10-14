@@ -101,7 +101,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public int SelectedIndex
 		{
 			get	{ return Control.IndexOfSelectedItem; }
-			set { Control.SelectItem(value); }
+			set
+			{
+				if (value != SelectedIndex)
+				{
+					Control.SelectItem(value);
+					if (Widget.Loaded)
+						Widget.OnSelectedIndexChanged(EventArgs.Empty);
+				}
+			}
 		}
 	}
 }
