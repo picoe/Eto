@@ -15,11 +15,28 @@ using ag = Android.Graphics;
 namespace Eto.Platform.Android.Drawing
 {
 	/// <summary>
+	/// Interface for all Android images
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
+	public interface IAndroidImage
+	{
+		ag.Bitmap GetImageWithSize(int? size);
+
+		void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination);
+
+		void DrawImage(GraphicsHandler graphics, float x, float y);
+
+		void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height);
+	}
+
+
+	/// <summary>
 	/// Bitmap handler.
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	class BitmapHandler : WidgetHandler<ag.Bitmap, Bitmap>, IBitmap
+	class BitmapHandler : WidgetHandler<ag.Bitmap, Bitmap>, IBitmap, IAndroidImage
 	{
 		public BitmapHandler()
 		{
@@ -37,7 +54,7 @@ namespace Eto.Platform.Android.Drawing
 
 		public void Create(System.IO.Stream stream)
 		{
-			throw new NotImplementedException();
+			Control = ag.BitmapFactory.DecodeStream(stream);
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -78,12 +95,26 @@ namespace Eto.Platform.Android.Drawing
 
 		public void Save(System.IO.Stream stream, ImageFormat format)
 		{
-			throw new NotImplementedException();
+			ag.Bitmap.CompressFormat compressFormat;
+			if(format == ImageFormat.Jpeg)
+				compressFormat =ag.Bitmap.CompressFormat.Jpeg;
+			else if(format == ImageFormat.Png)
+				compressFormat = ag.Bitmap.CompressFormat.Png;
+			else 
+				throw new ArgumentException("ImageFormat must be Jpeg or Png");
+			Control.Compress(compressFormat, 100, stream); // 100 means maximum quality. Png ignores this since it is lossless.
 		}
 
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
-			throw new NotImplementedException();
+			if (rectangle != null)
+			{
+				var r = rectangle.Value;
+				return new Bitmap(this.Generator, new BitmapHandler(
+					ag.Bitmap.CreateBitmap(this.Control, r.X, r.Y, r.Width, r.Height)));
+			}
+			else
+				return new Bitmap(this.Generator, new BitmapHandler(ag.Bitmap.CreateBitmap(this.Control)));
 		}
 
 		public Color GetPixel(int x, int y)
@@ -104,6 +135,26 @@ namespace Eto.Platform.Android.Drawing
 		public void Unlock(BitmapData bitmapData)
 		{
 			throw new NotImplementedException();
+		}
+
+		public ag.Bitmap GetImageWithSize(int? size)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		{
+			graphics.Control.DrawBitmap(Control, new Rectangle(source).ToAndroid(), destination.ToAndroid(), paint: null);
+		}
+
+		public void DrawImage(GraphicsHandler graphics, float x, float y)
+		{
+			graphics.Control.DrawBitmap(Control, x, y, paint: null);
+		}
+
+		public void DrawImage(GraphicsHandler graphics, float x, float y, float width, float height)
+		{
+			graphics.Control.DrawBitmap(Control, null, new RectangleF(x, y, width, height).ToAndroid(), paint: null);
 		}
 	}
 }

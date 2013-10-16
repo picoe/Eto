@@ -5,6 +5,7 @@ using a = Android;
 using av = Android.Views;
 using aw = Android.Widget;
 using ag = Android.Graphics;
+using Eto.Platform.Android.Drawing;
 
 namespace Eto.Platform.Android
 {
@@ -33,6 +34,11 @@ namespace Eto.Platform.Android
 		public static ag.Paint ToAndroid(this Pen pen)
 		{
 			return (ag.Paint)pen.ControlObject;
+		}
+
+		public static ag.Paint ToAndroid(this Brush brush)
+		{
+			return ((BrushHandler)brush.Handler).GetPaint(brush);
 		}
 
 		public static MouseEventArgs ToEto(av.MotionEvent e)
@@ -197,6 +203,38 @@ namespace Eto.Platform.Android
 			}
 
 			return result;
+		}
+
+		public static GraphicsPathHandler ToHandler(this IGraphicsPath path)
+		{
+			return ((GraphicsPathHandler)path.ControlObject);
+		}
+
+		public static ag.Path ToAndroid(this IGraphicsPath path)
+		{
+			return ((GraphicsPathHandler)path.ControlObject).Control;
+		}
+
+		public static ag.TypefaceStyle ToAndroid(this FontStyle style)
+		{
+			var ret = ag.TypefaceStyle.Normal;
+			if ((style & FontStyle.Bold) != 0)
+				ret = ag.TypefaceStyle.Bold;
+			if ((style & FontStyle.Italic) != 0)
+				ret = ag.TypefaceStyle.Italic;
+			return ret;
+		}
+
+		public static FontStyle ToEto(this ag.TypefaceStyle style)
+		{
+			var ret = FontStyle.None;
+			if (style == ag.TypefaceStyle.Normal)
+				ret = FontStyle.None;
+			else if (style == ag.TypefaceStyle.Bold)
+				ret = FontStyle.Bold;
+			else if (style == ag.TypefaceStyle.Italic)
+				ret = FontStyle.Italic;
+			return ret;
 		}
 
 		public static HorizontalAlign ToEtoHorizontal(this av.GravityFlags gravity)

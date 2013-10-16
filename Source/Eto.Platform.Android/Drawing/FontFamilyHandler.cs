@@ -14,7 +14,21 @@ using ag = Android.Graphics;
 
 namespace Eto.Platform.Android.Drawing
 {
-	class FontFamilyHandler
+	public class FontFamilyHandler : WidgetHandler<ag.Typeface, FontFamily>, IFontFamily
 	{
+		public string Name
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public IEnumerable<FontTypeface> Typefaces
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public void Create(string familyName)
+		{
+			Control = ag.Typeface.Create(familyName, ag.TypefaceStyle.Normal); // the style doesn't matter
+		}
 	}
 }

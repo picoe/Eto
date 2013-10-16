@@ -14,7 +14,19 @@ using ag = Android.Graphics;
 
 namespace Eto.Platform.Android.Drawing
 {
-	class FontTypefaceHandler
+	class FontTypefaceHandler : WidgetHandler<ag.TypefaceStyle, FontTypeface>, IFontTypeface
 	{
+		public FontTypefaceHandler(ag.TypefaceStyle style)
+		{
+			this.Control = style;
+			Name = this.FontStyle.ToString().Replace(',', ' ');
+		}
+
+		public string Name { get; set; }
+
+		public FontStyle FontStyle
+		{
+			get { return Control.ToEto(); }
+		}
 	}
 }
