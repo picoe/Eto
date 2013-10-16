@@ -21,6 +21,11 @@ namespace Eto.Platform.Android.Forms.Controls
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ButtonHandler : AndroidCommonControl<aw.Button, Button>, IButton
 	{
+		public ButtonHandler()
+		{
+			Control = new aw.Button(aa.Application.Context);
+		}
+
 		public Eto.Drawing.Image Image
 		{
 			get

@@ -12,6 +12,11 @@ namespace Eto.Platform.Android.Forms
 		av.View ContainerControl { get; }
 	}
 
+	/// <summary>
+	/// Base handler for <see cref="IControl"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidControl<T, TWidget> : WidgetHandler<T, TWidget>, IControl, IAndroidControl
 		where TWidget: Control
 	{
@@ -142,4 +147,3 @@ namespace Eto.Platform.Android.Forms
 
 	}
 }
-
