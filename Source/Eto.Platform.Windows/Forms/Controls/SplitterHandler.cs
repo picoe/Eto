@@ -27,9 +27,7 @@ namespace Eto.Platform.Windows
 					// Hook SplitterMoving, not SplitterMoved,
 					// because the latter fires even when the
 					// splitter distance is changed programmatically.
-					Control.SplitterMoving += (s, e) => {
-						Widget.OnPositionChanged(e);
-					};
+					Control.SplitterMoving += (s, e) => Widget.OnPositionChanged(e);
 					break;
 				default:
 					base.AttachEvent(handler);
