@@ -27,14 +27,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void DrawRect(sd.RectangleF dirtyRect)
 			{
-				if (Widget == null)
+				var drawable = Drawable;
+				if (drawable == null)
 					return;
 				dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
 				if (dirtyRect.X % 1.0f > 0f)
 					dirtyRect.Width += 1;
 				if (dirtyRect.Y % 1.0f > 0f)
 					dirtyRect.Height += 1;
-				Drawable.Update(Rectangle.Ceiling(dirtyRect.ToEto()));
+				drawable.Update(Rectangle.Ceiling(dirtyRect.ToEto()));
 			}
 
 			public bool CanFocus { get; set; }
@@ -97,7 +98,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 					if (backgroundBrush != null)
 						graphics.FillRectangle(backgroundBrush, rect);
 
-					Widget.OnPaint(new PaintEventArgs(graphics, rect));
+					var widget = Widget;
+					if (widget != null)
+						widget.OnPaint(new PaintEventArgs(graphics, rect));
 				}
 			}
 		}
