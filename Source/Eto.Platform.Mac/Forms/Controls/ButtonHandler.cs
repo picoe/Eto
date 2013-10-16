@@ -165,10 +165,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSBezelStyle GetBezelStyle()
 		{
 			var size = Control.Frame.Size.ToEtoSize();
+			if (size.Height < 22 || size.Width < 22)
+				return NSBezelStyle.SmallSquare;
 			if (size.Height > originalSize.Height)
 				return NSBezelStyle.RegularSquare;
-			if (size.Height < 22)
-				return NSBezelStyle.SmallSquare;
 			if (Image == null)
 				return NSBezelStyle.Rounded;
 			if (image.Size.Height > 18)

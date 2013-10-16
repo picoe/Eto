@@ -11,7 +11,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacDockContainer<NSScrollView, Scrollable>, IScrollable
 	{
-		NSScrollView control;
 		NSView view;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
@@ -47,16 +46,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public ScrollableHandler()
 		{
 			Enabled = true;
-			control = new EtoScrollView { Handler = this };
-			control.BackgroundColor = MonoMac.AppKit.NSColor.Control;
-			control.BorderType = NSBorderType.BezelBorder;
-			control.DrawsBackground = false;
-			control.HasVerticalScroller = true;
-			control.HasHorizontalScroller = true;
-			control.AutohidesScrollers = true;
 			view = new FlippedView();
-			control.DocumentView = view;
-			Control = control;
+			Control = new EtoScrollView
+			{
+				Handler = this, 
+				BackgroundColor = NSColor.Control,
+				BorderType = NSBorderType.BezelBorder,
+				DrawsBackground = false,
+				HasVerticalScroller = true,
+				HasHorizontalScroller = true,
+				AutohidesScrollers = true,
+				DocumentView = view
+			};
+			// only draw dirty regions, instead of entire scroll area
+			Control.ContentView.CopiesOnScroll = true;
 		}
 
 		public override void AttachEvent(string handler)
@@ -81,7 +84,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				switch (control.BorderType)
+				switch (Control.BorderType)
 				{
 					case NSBorderType.BezelBorder:
 						return BorderType.Bezel;
@@ -98,13 +101,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 				switch (value)
 				{
 					case BorderType.Bezel:
-						control.BorderType = NSBorderType.BezelBorder;
+						Control.BorderType = NSBorderType.BezelBorder;
 						break;
 					case BorderType.Line:
-						control.BorderType = NSBorderType.LineBorder;
+						Control.BorderType = NSBorderType.LineBorder;
 						break;
 					case BorderType.None:
-						control.BorderType = NSBorderType.NoBorder;
+						Control.BorderType = NSBorderType.NoBorder;
 						break;
 					default:
 						throw new NotSupportedException();

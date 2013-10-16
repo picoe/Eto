@@ -7,11 +7,18 @@ using aw = Android.Widget;
 
 namespace Eto.Platform.Android.Forms
 {
+	/// <summary>
+	/// Base handler for <see cref="IDockContainer"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidDockContainer<T, TWidget> : AndroidContainer<T, TWidget>, IDockContainer
 		where TWidget: DockContainer
 	{
 		readonly aw.FrameLayout frame;
 		Control content;
+
+		protected aw.FrameLayout InnerFrame { get { return frame; } }
 
 		protected AndroidDockContainer()
 		{
@@ -38,6 +45,7 @@ namespace Eto.Platform.Android.Forms
 				if (content != null)
 				{
 					var view = content.GetContainerView();
+					view.LayoutParameters = new av.ViewGroup.LayoutParams(av.ViewGroup.LayoutParams.FillParent, av.ViewGroup.LayoutParams.FillParent);
 					frame.AddView(view);
 				}
 			}
@@ -52,4 +60,3 @@ namespace Eto.Platform.Android.Forms
 		}
 	}
 }
-

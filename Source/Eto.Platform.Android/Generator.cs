@@ -53,11 +53,11 @@ namespace Eto.Platform.Android
 			g.Add<ILabel>(() => new LabelHandler());
 			//g.Add<IListBox>(() => new ListBoxHandler());
 			//g.Add<INumericUpDown>(() => new NumericUpDownHandler());
-			//g.Add<IPanel>(() => new PanelHandler());
+			g.Add<IPanel>(() => new PanelHandler());
 			//g.Add<IPasswordBox>(() => new PasswordBoxHandler());
 			//g.Add<IProgressBar>(() => new ProgressBarHandler());
 			//g.Add<IRadioButton>(() => new RadioButtonHandler());
-			//g.Add<IScrollable>(() => new ScrollableHandler());
+			g.Add<IScrollable>(() => new ScrollableHandler());
 			//g.Add<ISearchBox>(() => new SearchBoxHandler());
 			//g.Add<ISlider>(() => new SliderHandler());
 			//g.Add<ISplitter>(() => new SplitterHandler());
@@ -102,7 +102,7 @@ namespace Eto.Platform.Android
 			//g.Add<IPixelLayout>(() => new PixelLayoutHandler());
 			//g.Add <ISaveFileDialog> (() => new SaveFileDialogHandler ());
 			//g.Add <ISelectFolderDialog> (() => new SelectFolderDialogHandler ());
-			//g.Add<ITableLayout>(() => new TableLayoutHandler());
+			g.Add<ITableLayout>(() => new TableLayoutHandler());
 			//g.Add<IUITimer>(() => new UITimerHandler());
 
 			// IO
@@ -113,4 +113,3 @@ namespace Eto.Platform.Android
 		}
 	}
 }
-

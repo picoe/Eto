@@ -13,6 +13,11 @@ namespace Eto.Platform.Android.Forms
 		a.App.Activity Activity { get; set; }
 	}
 
+	/// <summary>
+	/// Base handler for <see cref="IWindow"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class AndroidWindow<TWidget> : AndroidDockContainer<aw.FrameLayout, TWidget>, IWindow, IAndroidWindow
 		where TWidget: Window
 	{
@@ -30,12 +35,11 @@ namespace Eto.Platform.Android.Forms
 
 		protected AndroidWindow()
 		{
-			Control = new aw.FrameLayout(a.App.Application.Context);
 		}
 
 		public override av.View ContainerControl
 		{
-			get { return Control; }
+			get { return InnerFrame; }
 		}
 
 		public void Close()
@@ -45,7 +49,6 @@ namespace Eto.Platform.Android.Forms
 
 		protected override void SetContent(av.View content)
 		{
-			Control.AddView(content);
 		}
 
 		public ToolBar ToolBar
@@ -93,4 +96,3 @@ namespace Eto.Platform.Android.Forms
 		}
 	}
 }
-

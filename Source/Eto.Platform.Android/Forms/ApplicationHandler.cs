@@ -4,6 +4,11 @@ using Eto.Forms;
 
 namespace Eto.Platform.Android.Forms
 {
+	/// <summary>
+	/// Handler for <see cref="IApplication"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class ApplicationHandler : WidgetHandler<a.App.Application, Application>, IApplication
 	{
 		public static ApplicationHandler Instance { get { return Application.Instance.Handler as ApplicationHandler; } }
@@ -87,4 +92,3 @@ namespace Eto.Platform.Android.Forms
 		}
 	}
 }
-

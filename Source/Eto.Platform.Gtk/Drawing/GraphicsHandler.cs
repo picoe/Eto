@@ -314,7 +314,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 			if (surface != null)
 			{
-				surface.Dispose();
+				((IDisposable)surface).Dispose();
 				surface = null;
 			}
 

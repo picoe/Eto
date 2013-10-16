@@ -12,6 +12,8 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 			AllowPageRange =true;
 		}
 
+		public PrintDocument Document { get; set; }
+
 		public class CustomOptions : Gtk.VBox {
 			public Gtk.CheckButton SelectionOnly { get; private set; }
 

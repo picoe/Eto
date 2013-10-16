@@ -83,9 +83,9 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoadComplete(e);
+			base.OnLoad(e);
 			LayoutChildren();
 		}
 

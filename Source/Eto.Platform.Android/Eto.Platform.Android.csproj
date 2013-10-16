@@ -97,6 +97,7 @@
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\AndroidCommonControl.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
+    <Compile Include="Forms\TableLayoutHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
