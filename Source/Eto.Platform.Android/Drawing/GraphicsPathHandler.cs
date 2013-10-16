@@ -21,7 +21,7 @@ namespace Eto.Platform.Android.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsPathHandler : IGraphicsPathHandler
 	{
-		ag.Path Control { get; set; }
+		public ag.Path Control { get; private set; }
 		ag.PointF position;
 
 		public GraphicsPathHandler()
@@ -140,7 +140,7 @@ namespace Eto.Platform.Android.Drawing
 
 		public object ControlObject
 		{
-			get { return Control; }
+			get { return this; }
 		}
 	}
 }

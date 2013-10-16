@@ -14,7 +14,8 @@ using ag = Android.Graphics;
 
 namespace Eto.Platform.Android.Drawing
 {
-	class BrushHandler
+	public abstract class BrushHandler
 	{
+		public abstract ag.Paint GetPaint(Brush brush);
 	}
 }
