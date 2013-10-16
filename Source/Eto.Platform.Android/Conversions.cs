@@ -63,11 +63,11 @@ namespace Eto.Platform.Android
 
 		public static PenLineJoin ToEto(this ag.Paint.Join value)
 		{
-			if(object.ReferenceEquals(value, ag.Paint.Join.Bevel))
+			if (object.ReferenceEquals(value, ag.Paint.Join.Bevel))
 				return PenLineJoin.Bevel;
-			if(object.ReferenceEquals(value, ag.Paint.Join.Miter))
+			if (object.ReferenceEquals(value, ag.Paint.Join.Miter))
 				return PenLineJoin.Miter;
-			if(object.ReferenceEquals(value, ag.Paint.Join.Round))
+			if (object.ReferenceEquals(value, ag.Paint.Join.Round))
 				return PenLineJoin.Round;
 			throw new NotSupportedException();
 		}
@@ -89,13 +89,13 @@ namespace Eto.Platform.Android
 
 		public static PenLineCap ToEto(this ag.Paint.Cap value)
 		{
-				if(object.ReferenceEquals(value, ag.Paint.Cap.Butt))
-					return PenLineCap.Butt;
-				if(object.ReferenceEquals(value, ag.Paint.Cap.Round))
-					return PenLineCap.Round;
-				if(object.ReferenceEquals(value, ag.Paint.Cap.Square))
-					return PenLineCap.Square;
-				throw new NotSupportedException();
+			if (object.ReferenceEquals(value, ag.Paint.Cap.Butt))
+				return PenLineCap.Butt;
+			if (object.ReferenceEquals(value, ag.Paint.Cap.Round))
+				return PenLineCap.Round;
+			if (object.ReferenceEquals(value, ag.Paint.Cap.Square))
+				return PenLineCap.Square;
+			throw new NotSupportedException();
 		}
 
 		public static ag.Matrix ToAndroid(this IMatrix m)
@@ -198,6 +198,65 @@ namespace Eto.Platform.Android
 
 			return result;
 		}
+
+		public static HorizontalAlign ToEtoHorizontal(this av.GravityFlags gravity)
+		{
+			switch (gravity & av.GravityFlags.HorizontalGravityMask)
+			{
+				case av.GravityFlags.CenterHorizontal:
+					return HorizontalAlign.Center;
+				case av.GravityFlags.Left:
+					return HorizontalAlign.Left;
+				case av.GravityFlags.Right:
+					return HorizontalAlign.Right;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static av.GravityFlags ToAndroid(this HorizontalAlign value)
+		{
+			switch (value)
+			{
+				case HorizontalAlign.Center:
+					return av.GravityFlags.CenterHorizontal;
+				case HorizontalAlign.Right:
+					return av.GravityFlags.Right;
+				case HorizontalAlign.Left:
+					return av.GravityFlags.Left;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static VerticalAlign ToEtoVertical(this av.GravityFlags gravity)
+		{
+			switch (gravity & av.GravityFlags.VerticalGravityMask)
+			{
+				case av.GravityFlags.CenterVertical:
+					return VerticalAlign.Middle;
+				case av.GravityFlags.Top:
+					return VerticalAlign.Top;
+				case av.GravityFlags.Bottom:
+					return VerticalAlign.Bottom;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static av.GravityFlags ToAndroid(this VerticalAlign value)
+		{
+			switch (value)
+			{
+				case VerticalAlign.Middle:
+					return av.GravityFlags.CenterVertical;
+				case VerticalAlign.Top:
+					return av.GravityFlags.Top;
+				case VerticalAlign.Bottom:
+					return av.GravityFlags.Bottom;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 	}
 }
-
