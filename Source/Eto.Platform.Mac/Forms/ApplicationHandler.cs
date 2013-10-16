@@ -155,7 +155,6 @@ namespace Eto.Platform.Mac.Forms
 			if (Control.RespondsToSelector(new Selector("setPresentationOptions:")))
 			{
 				AddFullScreenMenuItem = true;
-				Control.PresentationOptions |= NSApplicationPresentationOptions.FullScreen;
 			}
 		}
 
