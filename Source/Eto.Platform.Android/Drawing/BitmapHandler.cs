@@ -54,7 +54,7 @@ namespace Eto.Platform.Android.Drawing
 
 		public void Create(System.IO.Stream stream)
 		{
-			throw new NotImplementedException();
+			Control = ag.BitmapFactory.DecodeStream(stream);
 		}
 
 		public void Create(int width, int height, PixelFormat pixelFormat)
@@ -95,12 +95,26 @@ namespace Eto.Platform.Android.Drawing
 
 		public void Save(System.IO.Stream stream, ImageFormat format)
 		{
-			throw new NotImplementedException();
+			ag.Bitmap.CompressFormat compressFormat;
+			if(format == ImageFormat.Jpeg)
+				compressFormat =ag.Bitmap.CompressFormat.Jpeg;
+			else if(format == ImageFormat.Png)
+				compressFormat = ag.Bitmap.CompressFormat.Png;
+			else 
+				throw new ArgumentException("ImageFormat must be Jpeg or Png");
+			Control.Compress(compressFormat, 100, stream); // 100 means maximum quality. Png ignores this since it is lossless.
 		}
 
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
-			throw new NotImplementedException();
+			if (rectangle != null)
+			{
+				var r = rectangle.Value;
+				return new Bitmap(this.Generator, new BitmapHandler(
+					ag.Bitmap.CreateBitmap(this.Control, r.X, r.Y, r.Width, r.Height)));
+			}
+			else
+				return new Bitmap(this.Generator, new BitmapHandler(ag.Bitmap.CreateBitmap(this.Control)));
 		}
 
 		public Color GetPixel(int x, int y)
