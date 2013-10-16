@@ -59,12 +59,12 @@ namespace Eto.Platform.Android.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			throw new NotImplementedException();
+			Control.DrawArc(new RectangleF(x, y, width, height).ToAndroid(), startAngle, sweepAngle, false, pen.ToAndroid());
 		}
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			throw new NotImplementedException();
+			Control.DrawArc(new RectangleF(x, y, width, height).ToAndroid(), startAngle, sweepAngle, true, brush.ToAndroid());
 		}
 
 		public void FillPath(Brush brush, IGraphicsPath path)
@@ -117,8 +117,7 @@ namespace Eto.Platform.Android.Drawing
 		}
 
 		public void Flush()
-		{
-			throw new NotImplementedException();
+		{			
 		}
 
 		public bool Antialias
