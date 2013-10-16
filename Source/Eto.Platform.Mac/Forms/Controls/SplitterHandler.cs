@@ -47,7 +47,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				panel1Rect.Location = new System.Drawing.PointF(0, 0);
 				if (handler.position == null)
 				{
-					panel1Rect.Width = newFrame.Width / 2;
+					panel1Rect.Width = Math.Max(0, newFrame.Width / 2);
 					panel2Rect.Width = Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
 				}
 				else
@@ -57,16 +57,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 					{
 						case SplitterFixedPanel.Panel1:
 							panel1Rect.Width = Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos));
-							panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
+							panel2Rect.Width = Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
 							break;
 						case SplitterFixedPanel.Panel2:
 							panel2Rect.Width = Math.Max(0, Math.Min(newFrame.Width - dividerThickness, oldSize.Width - pos - dividerThickness));
-							panel1Rect.Width = newFrame.Width - panel2Rect.Width - dividerThickness;
+							panel1Rect.Width = Math.Max(0, newFrame.Width - panel2Rect.Width - dividerThickness);
 							break;
 						case SplitterFixedPanel.None:
 							var oldscale = newFrame.Width / oldSize.Width;
 							panel1Rect.Width = Math.Max(0, Math.Min(newFrame.Width - dividerThickness, pos * oldscale));
-							panel2Rect.Width = newFrame.Width - panel1Rect.Width - dividerThickness;
+							panel2Rect.Width = Math.Max(0, newFrame.Width - panel1Rect.Width - dividerThickness);
 							break;
 					}
 				}
@@ -79,7 +79,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				panel1Rect.Location = new System.Drawing.PointF(0, 0);
 				if (handler.position == null)
 				{
-					panel1Rect.Height = newFrame.Height / 2;
+					panel1Rect.Height = Math.Max(0, newFrame.Height / 2);
 					panel2Rect.Height = Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
 				}
 				else
@@ -89,16 +89,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 					{
 						case SplitterFixedPanel.Panel1:
 							panel1Rect.Height = Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos));
-							panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
+							panel2Rect.Height = Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
 							break;
 						case SplitterFixedPanel.Panel2:
 							panel2Rect.Height = Math.Max(0, Math.Min(newFrame.Height - dividerThickness, oldSize.Height - pos - dividerThickness));
-							panel1Rect.Height = newFrame.Height - panel2Rect.Height - dividerThickness;
+							panel1Rect.Height = Math.Max(0, newFrame.Height - panel2Rect.Height - dividerThickness);
 							break;
 						case SplitterFixedPanel.None:
 							var oldscale = newFrame.Height / oldSize.Height;
 							panel1Rect.Height = Math.Max(0, Math.Min(newFrame.Height - dividerThickness, pos * oldscale));
-							panel2Rect.Height = newFrame.Height - panel1Rect.Height - dividerThickness;
+							panel2Rect.Height = Math.Max(0, newFrame.Height - panel1Rect.Height - dividerThickness);
 							break;
 					}
 				}
@@ -107,7 +107,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				
 			splitView.Subviews[0].Frame = panel1Rect;
 			splitView.Subviews[1].Frame = panel2Rect;
-			
 		}
 
 		class SVDelegate : NSSplitViewDelegate
@@ -123,7 +122,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				if (Handler.Enabled)
 					return proposedPosition;
-				else 
+				else
 					return Handler.Position;
 			}
 
@@ -160,7 +159,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var cursor = NSCursor.CurrentCursor;
 				if (cursor == NSCursor.ResizeLeftCursor || cursor == NSCursor.ResizeRightCursor || cursor == NSCursor.ResizeLeftRightCursor
-					|| cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
+				    || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
 					base.MouseDown(theEvent);
 			}
 
@@ -168,7 +167,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var cursor = NSCursor.CurrentCursor;
 				if (cursor == NSCursor.ResizeLeftCursor || cursor == NSCursor.ResizeRightCursor || cursor == NSCursor.ResizeLeftRightCursor
-					|| cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
+				    || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
 					base.MouseDragged(theEvent);
 			}
 
@@ -176,7 +175,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var cursor = NSCursor.CurrentCursor;
 				if (cursor == NSCursor.ResizeLeftCursor || cursor == NSCursor.ResizeRightCursor || cursor == NSCursor.ResizeLeftRightCursor
-					|| cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
+				    || cursor == NSCursor.ResizeUpCursor || cursor == NSCursor.ResizeDownCursor || cursor == NSCursor.ResizeUpDownCursor)
 					base.MouseUp(theEvent);
 			}
 		}
@@ -191,8 +190,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.IsVertical = true;
 			Control.Delegate = new SVDelegate { Handler = this };
 		}
-
-		#region ISplitter Members
 
 		public int Position
 		{
@@ -271,7 +268,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 			}
 		}
-		#endregion
 
 		public override void OnLoadComplete(EventArgs e)
 		{
