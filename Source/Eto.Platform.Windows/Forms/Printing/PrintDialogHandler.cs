@@ -21,6 +21,8 @@ namespace Eto.Platform.Windows.Forms.Printing
 			};
 		}
 
+		public PrintDocument Document { get; set; }
+
 		public DialogResult ShowDialog (Window parent)
 		{
 			swf.DialogResult result;

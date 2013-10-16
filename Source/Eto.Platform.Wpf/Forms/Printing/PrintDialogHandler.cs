@@ -18,6 +18,8 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			};
 		}
 
+		public PrintDocument Document { get; set; }
+
 		public DialogResult ShowDialog (Window parent)
 		{
 			Control.SetEtoSettings (settings);

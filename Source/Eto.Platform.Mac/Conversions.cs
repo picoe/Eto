@@ -7,6 +7,7 @@ using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.ImageIO;
 using sd = System.Drawing;
+using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac
 {
@@ -295,6 +296,20 @@ namespace Eto.Platform.Mac
 				kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
 			}
 			return kpea;
+		}
+
+		public static PrintSettings ToEto(this NSPrintInfo value, Eto.Generator generator)
+		{
+			if (value == null)
+				return null;
+			return new PrintSettings(generator, new PrintSettingsHandler(value));
+		}
+
+		public static NSPrintInfo ToNS(this PrintSettings settings)
+		{
+			if (settings == null)
+				return null;
+			return ((PrintSettingsHandler)settings.Handler).Control;
 		}
 	}
 }
