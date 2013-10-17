@@ -13,13 +13,13 @@ using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public class MyWindow : NSWindow
+	public class MyWindow : NSWindow, IMacControl
 	{
 		SD.RectangleF oldFrame;
 		bool zoom;
 
-		WeakReference handler;
-		public IMacWindow Handler { get { return (IMacWindow)handler.Target; } set { handler = new WeakReference(value); } }
+		public WeakReference WeakHandler { get; set; }
+		public IMacWindow Handler { get { return (IMacWindow)WeakHandler.Target; } set { WeakHandler = new WeakReference(value); } }
 
 		public MyWindow(SD.Rectangle rect, NSWindowStyle style, NSBackingStore store, bool flag)
 			: base(rect, style, store, flag)
