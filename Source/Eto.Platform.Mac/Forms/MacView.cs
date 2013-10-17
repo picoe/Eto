@@ -457,7 +457,8 @@ namespace Eto.Platform.Mac.Forms
 					{
 						if (!EventControl.WantsLayer)
 							EventControl.WantsLayer = true;
-						EventControl.Layer.BackgroundColor = value.ToCGColor();
+						if (EventControl.Layer != null)
+							EventControl.Layer.BackgroundColor = value.ToCGColor ();
 					}
 					else
 					{
