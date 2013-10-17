@@ -24,14 +24,14 @@ namespace Eto.Platform.Android
 			g.Add<IFont>(() => new FontHandler());
 			//g.Add<IFonts>(() => new FontsHandler());
 			g.Add<IGraphics>(() => new GraphicsHandler());
-			//g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
+			g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
 			//g.Add<IIcon>(() => new IconHandler());
 			//g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());
 			g.Add<ISolidBrush>(() => new SolidBrushHandler());
 			//g.Add<ITextureBrush>(() => new TextureBrushHandler());
-			//g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
+			g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 
 			// Forms.Cells
 			//g.Add <ICheckBoxCell> (() => new CheckBoxCellHandler ());
