@@ -211,10 +211,12 @@ namespace Eto.Forms
 			return row;
 		}
 
-		public DynamicRow AddSeparateRow(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
+		public DynamicRow AddSeparateRow(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null, IEnumerable<Control> controls = null)
 		{
 			BeginVertical(padding, spacing, xscale, yscale);
 			var row = AddRow();
+			if (controls != null)
+				row.Add(controls);
 			EndVertical();
 			return row;
 		}
