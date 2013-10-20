@@ -98,17 +98,18 @@ namespace Eto.Platform.Android.Drawing
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
-			throw new NotImplementedException();
+			var paint = GetTextPaint(font);
+			paint.Color = brush.ToAndroid().Color; // this overwrites the color on the cached paint, but that's ok since it is only used here.
+			Control.DrawText(text, x, y, paint);
 		}
 
 		public SizeF MeasureString(Font font, string text)
 		{
 			if(string.IsNullOrEmpty(text)) // needed to avoid exception
-				return SizeF.Empty;
+				return SizeF.Empty;			
+			var paint = GetTextPaint(font);
 
 			// See http://stackoverflow.com/questions/7549182/android-paint-measuretext-vs-gettextbounds
-			
-			var paint = (font.Handler as FontHandler).Paint;
 			var bounds = new ag.Rect();
 			paint.GetTextBounds(text, 0, text.Length, bounds);
 			
@@ -116,33 +117,29 @@ namespace Eto.Platform.Android.Drawing
 			return new SizeF(bounds.Width(), bounds.Height()); 
 		}
 
+		/// <summary>
+		/// Returns a Paint that is cached on the font.
+		/// This is used by all font operations (across all Canvases) that use the same font.
+		/// </summary>
+		private ag.Paint GetTextPaint(Font font)
+		{
+			var paint = (font.Handler as FontHandler).Paint;
+			paint.AntiAlias = Antialias;
+			return paint;
+		}
+
 		public void Flush()
 		{			
 		}
 
-		public bool Antialias
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		// The ANTI_ALIAS flag on Paint (not Canvas) causes it to render antialiased.
+		// SUBPIXEL_TEXT_FLAG is currently unsupported on Android.
+		// See http://stackoverflow.com/questions/4740565/meaning-of-some-paint-constants-in-android
+		public bool Antialias { get; set; }
 
-		public ImageInterpolation ImageInterpolation
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		// TODO: setting the FILTER_BITMAP_FLAG on Paint (not Canvas)
+		// causes it to do a bilinear interpolation.
+		public ImageInterpolation ImageInterpolation { get; set; }
 
 		public bool IsRetained
 		{
