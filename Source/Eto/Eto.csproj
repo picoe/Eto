@@ -378,6 +378,7 @@
     <Compile Include="Forms\DockContainer.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Drawing\XmlExtensions.cs" />
+    <Compile Include="Drawing\SystemFonts.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

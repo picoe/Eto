@@ -7,30 +7,31 @@ using MonoMac.AppKit;
 using NSView = MonoTouch.UIKit.UIView;
 using NSControl = MonoTouch.UIKit.UIControl;
 #endif
-
 namespace Eto.Platform.Mac.Forms
 {
 	public static class MacControlExtensions
 	{
-		public static Size GetPreferredSize (this Control control, Size availableSize)
+		public static SizeF GetPreferredSize(this Control control, SizeF availableSize)
 		{
 			if (control == null)
 				return Size.Empty;
 			var mh = control.GetMacAutoSizing();
-			if (mh != null) {
-				return mh.GetPreferredSize (availableSize);
+			if (mh != null)
+			{
+				return mh.GetPreferredSize(availableSize);
 			}
 			
 			var c = control.ControlObject as NSControl;
-			if (c != null) {
-				c.SizeToFit ();
-				return c.Frame.Size.ToEtoSize ();
+			if (c != null)
+			{
+				c.SizeToFit();
+				return c.Frame.Size.ToEto();
 			}
 			var child = control.ControlObject as Control;
 			if (child != null)
 				return child.GetPreferredSize(availableSize);
 
-			return Size.Empty;
+			return SizeF.Empty;
 		}
 
 		public static IMacContainer GetMacContainer(this Control control)

@@ -402,7 +402,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return rect;
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var width = Widget.Columns.Sum(r => r.Width);
 			if (width == 0)

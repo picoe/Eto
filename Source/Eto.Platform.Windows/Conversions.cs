@@ -120,10 +120,19 @@ namespace Eto.Platform.Windows
 		public static sd.FontStyle ToSD(this FontStyle style)
 		{
 			sd.FontStyle ret = sd.FontStyle.Regular;
-			if ((style & FontStyle.Bold) != 0)
+			if (style.HasFlag(FontStyle.Bold))
 				ret |= sd.FontStyle.Bold;
-			if ((style & FontStyle.Italic) != 0)
+			if (style.HasFlag(FontStyle.Italic))
 				ret |= sd.FontStyle.Italic;
+			return ret;
+		}
+		public static sd.FontStyle ToSD(this FontDecoration decoration)
+		{
+			sd.FontStyle ret = sd.FontStyle.Regular;
+			if (decoration.HasFlag(FontDecoration.Underline))
+				ret |= sd.FontStyle.Underline;
+			if (decoration.HasFlag(FontDecoration.Strikethrough))
+				ret |= sd.FontStyle.Strikeout;
 			return ret;
 		}
 
@@ -157,13 +166,23 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public static FontStyle ToEto(this sd.FontStyle style)
+		public static FontStyle ToEtoStyle(this sd.FontStyle style)
 		{
 			var ret = FontStyle.None;
 			if (style.HasFlag(sd.FontStyle.Bold))
 				ret |= FontStyle.Bold;
 			if (style.HasFlag(sd.FontStyle.Italic))
 				ret |= FontStyle.Italic;
+			return ret;
+		}
+
+		public static FontDecoration ToEtoDecoration(this sd.FontStyle style)
+		{
+			var ret = FontDecoration.None;
+			if (style.HasFlag(sd.FontStyle.Underline))
+				ret |= FontDecoration.Underline;
+			if (style.HasFlag(sd.FontStyle.Strikeout))
+				ret |= FontDecoration.Strikethrough;
 			return ret;
 		}
 

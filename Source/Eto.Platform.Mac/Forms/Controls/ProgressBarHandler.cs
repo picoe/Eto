@@ -29,7 +29,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxValue = 100;
 		}
 
-		protected override Size GetNaturalSize (Size availableSize)
+		protected override SizeF GetNaturalSize (SizeF availableSize)
 		{
 			return new Size (80, 30);
 		}

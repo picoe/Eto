@@ -65,15 +65,15 @@ namespace Eto.Platform.Mac.Forms
 
 		protected virtual bool UseContentSize { get { return true; } }
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
 			if (UseContentSize)
-				return Size.Max(base.GetPreferredSize(availableSize), Widget.Content.GetPreferredSize(availableSize) + Padding.Size);
+				return SizeF.Max(base.GetPreferredSize(availableSize), Widget.Content.GetPreferredSize(availableSize) + Padding.Size);
 			else
 				return base.GetPreferredSize(availableSize);
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (UseContentSize)
 			{
@@ -129,12 +129,6 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-			Widget.SizeChanged += HandleSizeChanged;
-		}
-
 		bool isResizing;
 		void HandleSizeChanged (object sender, EventArgs e)
 		{
@@ -146,10 +140,11 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoadComplete(e);
+			base.OnLoad(e);
 			LayoutChildren();
+			Widget.SizeChanged += HandleSizeChanged;
 		}
 	}
 }

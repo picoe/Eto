@@ -26,6 +26,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
+		protected override void SetDecorations(sw.TextDecorationCollection decorations)
+		{
+			text.TextDecorations = decorations;
+		}
+
 		public LabelHandler ()
 		{
 			text = new swc.AccessText();
@@ -37,6 +42,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.Target = Control;
 			HorizontalAlign = HorizontalAlign.Left;
 			VerticalAlign = VerticalAlign.Top;
+			Wrap = WrapMode.Word;
 		}
 
 		public override void AttachEvent(string handler)

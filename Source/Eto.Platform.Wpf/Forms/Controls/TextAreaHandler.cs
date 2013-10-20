@@ -27,6 +27,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
+		protected override void SetDecorations(sw.TextDecorationCollection decorations)
+		{
+			Control.TextDecorations = decorations;
+		}
+
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{
 			return base.GetPreferredSize(Conversions.ZeroSize);

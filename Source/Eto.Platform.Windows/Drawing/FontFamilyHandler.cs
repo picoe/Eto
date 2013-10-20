@@ -11,6 +11,8 @@ namespace Eto.Platform.Windows.Drawing
 	{
 		public string Name { get; set; }
 
+		public string SDName { get; set; }
+
 		IEnumerable<sd.FontStyle> Styles
 		{
 			get

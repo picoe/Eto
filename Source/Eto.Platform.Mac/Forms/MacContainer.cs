@@ -5,6 +5,7 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
+using System.Diagnostics;
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
@@ -42,6 +43,12 @@ namespace Eto.Platform.Mac.Forms
 
 		public bool InitialLayout { get; private set; }
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Enabled = true;
+		}
+
 		public virtual void Update()
 		{
 			LayoutChildren();	
@@ -57,6 +64,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public void LayoutAllChildren()
 		{
+			//Console.WriteLine("Layout all children: {0}\n {1}", this.GetType().Name, new StackTrace());
 			LayoutChildren();
 			foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
 			{
@@ -64,10 +72,9 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoadComplete(e);
-
+			base.OnLoad(e);
 			var parent = Widget.Parent.GetMacContainer();
 			if (parent == null || parent.InitialLayout)
 			{
@@ -82,18 +89,6 @@ namespace Eto.Platform.Mac.Forms
 			if (container != null)
 			{
 				// traverse up the tree to update everything we own
-				if (updateSize)
-				{
-					if (!AutoSize)
-					{
-						foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
-						{
-							var size = child.GetPreferredSize(Size.MaxValue);
-							child.SetContentSize(size.ToSDSizeF());
-						}
-						updateSize = false;
-					}
-				}
 				container.LayoutParent(updateSize);
 				return;
 			} 
@@ -102,15 +97,7 @@ namespace Eto.Platform.Mac.Forms
 				if (AutoSize)
 				{
 					var size = GetPreferredSize(Size.MaxValue);
-					SetContentSize(size.ToSDSizeF());
-				}
-				else
-				{
-					foreach (var child in Widget.Controls.Select (r => r.GetMacContainer()).Where(r => r != null))
-					{
-						var size = child.GetPreferredSize(Size.MaxValue);
-						child.SetContentSize(size.ToSDSizeF());
-					}
+					SetContentSize(size.ToSD());
 				}
 			}
 

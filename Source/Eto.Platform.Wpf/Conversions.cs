@@ -331,17 +331,29 @@ namespace Eto.Platform.Wpf
 			element.Height = size.Height;
 		}
 
-		public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight)
+		public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight, sw.TextDecorationCollection decorations)
 		{
 			var style = FontStyle.None;
 			if (fontStyle == sw.FontStyles.Italic)
 				style |= FontStyle.Italic;
 			if (fontStyle == sw.FontStyles.Oblique)
 				style |= FontStyle.Italic;
-
 			if (fontWeight == sw.FontWeights.Bold)
 				style |= FontStyle.Bold;
 			return style;
+		}
+
+		public static FontDecoration Convert(sw.TextDecorationCollection decorations)
+		{
+			var decoration = FontDecoration.None;
+			if (decorations != null)
+			{
+				if (sw.TextDecorations.Underline.All(r => decorations.Contains(r)))
+					decoration |= FontDecoration.Underline;
+				if (sw.TextDecorations.Strikethrough.All(r => decorations.Contains(r)))
+					decoration |= FontDecoration.Strikethrough;
+			}
+			return decoration;
 		}
 
 		public static swmi.BitmapSource ToWpf(this Image image, int? size = null)

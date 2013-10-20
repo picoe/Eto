@@ -82,7 +82,7 @@ namespace Eto.Platform.Mac.Forms
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
 		Cursor cursor;
-		Size? naturalSize;
+		SizeF? naturalSize;
 
 		public abstract NSView ContainerControl { get; }
 
@@ -119,13 +119,19 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		protected virtual bool LayoutIfNeeded(Size? oldPreferredSize = null, bool force = false)
+		protected SizeF? NaturalSize
+		{
+			get { return naturalSize; }
+			set { naturalSize = value; }
+		}
+
+		protected virtual bool LayoutIfNeeded(SizeF? oldPreferredSize = null, bool force = false)
 		{
 			naturalSize = null;
 			if (Widget.Loaded)
 			{
 				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize();
-				var newSize = GetPreferredSize(Size.MaxValue);
+				var newSize = GetPreferredSize(SizeF.MaxValue);
 				if (newSize != oldSize || force)
 				{
 					var container = Widget.Parent.GetMacContainer();
@@ -137,12 +143,12 @@ namespace Eto.Platform.Mac.Forms
 			return false;
 		}
 
-		public MacView()
+		protected MacView()
 		{
 			this.AutoSize = true;
 		}
 
-		protected virtual Size GetNaturalSize(Size availableSize)
+		protected virtual SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (naturalSize != null)
 				return naturalSize.Value;
@@ -151,7 +157,7 @@ namespace Eto.Platform.Mac.Forms
 			{
 				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
 				control.SizeToFit();
-				naturalSize = control.Frame.Size.ToEtoSize();
+				naturalSize = control.Frame.Size.ToEto();
 				if (size != null)
 					control.SetFrameSize(size.Value);
 				return naturalSize.Value;
@@ -159,7 +165,7 @@ namespace Eto.Platform.Mac.Forms
 			return Size.Empty;
 		}
 
-		public virtual Size GetPreferredSize(Size availableSize)
+		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			var size = GetNaturalSize(availableSize);
 			if (!AutoSize && PreferredSize != null)
@@ -171,9 +177,9 @@ namespace Eto.Platform.Mac.Forms
 					size.Height = preferredSize.Height;
 			}
 			if (MinimumSize != Size.Empty)
-				size = Size.Max(size, MinimumSize);
+				size = SizeF.Max(size, MinimumSize);
 			if (MaximumSize != null)
-				size = Size.Min(size, MaximumSize.Value);
+				size = SizeF.Min(size, MaximumSize.Value);
 			return size;
 		}
 
@@ -639,18 +645,18 @@ namespace Eto.Platform.Mac.Forms
 		static IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
 		static Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>()
 		{
- { "cut", selCut },
- { "copy", selCopy },
- { "paste", selPaste },
- { "selectAll", selSelectAll },
- { "delete", selDelete },
- { "undo", selUndo },
- { "redo", selRedo },
- { "pasteAsPlainText", selPasteAsPlainText },
- { "performClose", selPerformClose },
- { "performZoom", selPerformZoom },
- { "arrangeInFront", selArrangeInFront },
- { "performMiniaturize", selPerformMiniaturize }
+			{ "cut", selCut },
+			{ "copy", selCopy },
+			{ "paste", selPaste },
+			{ "selectAll", selSelectAll },
+			{ "delete", selDelete },
+			{ "undo", selUndo },
+			{ "redo", selRedo },
+			{ "pasteAsPlainText", selPasteAsPlainText },
+			{ "performClose", selPerformClose },
+			{ "performZoom", selPerformZoom },
+			{ "arrangeInFront", selArrangeInFront },
+			{ "performMiniaturize", selPerformMiniaturize }
 		};
 
 		public virtual void MapPlatformAction(string systemAction, BaseAction action)

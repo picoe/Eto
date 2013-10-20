@@ -25,7 +25,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			image.LockFocusFlipped(control.IsFlipped);
 			drawAction();
 			image.UnlockFocus();
-			
+
 			var ciImage = CIImage.FromCGImage(image.CGImage);
 
 			SD.SizeF realSize;

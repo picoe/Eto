@@ -54,7 +54,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxLength = -1;
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
 			size.Width = Math.Max(100, size.Height);

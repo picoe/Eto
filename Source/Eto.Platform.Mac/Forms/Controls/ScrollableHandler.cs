@@ -31,7 +31,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					this.AddCursorRect(new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+					AddCursorRect(new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 
@@ -133,12 +133,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		protected override bool UseContentSize { get { return false; } }
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			return Size.Min(availableSize, base.GetPreferredSize(availableSize));
+			return SizeF.Min(availableSize, base.GetPreferredSize(availableSize));
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var content = Content.GetMacAutoSizing();
 			if (content != null)
@@ -165,7 +165,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (ExpandContentHeight)
 				contentSize.Height = Math.Max(this.ClientSize.Height, contentSize.Height);
 
-			InternalSetFrameSize(contentSize.ToSDSizeF());
+			InternalSetFrameSize(contentSize.ToSD());
 		}
 
 		public override Color BackgroundColor

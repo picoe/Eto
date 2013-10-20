@@ -1,11 +1,8 @@
 using System;
 using System.Text.RegularExpressions;
-using System.ComponentModel;
-using System.Collections;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
-using System.Collections.Generic;
 using GLib;
 using System.Text;
 
@@ -62,9 +59,9 @@ namespace Eto.Platform.GtkSharp
 		Cursor cursor;
 		Color? cachedBackgroundColor;
 		Color? backgroundColor;
-		public static float SCROLL_AMOUNT = 2f;
+		public static float ScrollAmount = 2f;
 
-		public GtkControl()
+		protected GtkControl()
 		{
 			size = Size.Empty;
 		}
@@ -403,16 +400,16 @@ namespace Eto.Platform.GtkSharp
 			switch (args.Event.Direction)
 			{
 				case Gdk.ScrollDirection.Down:
-					delta = new SizeF(0f, -SCROLL_AMOUNT);
+					delta = new SizeF(0f, -ScrollAmount);
 					break;
 				case Gdk.ScrollDirection.Left:
-					delta = new SizeF(SCROLL_AMOUNT, 0f);
+					delta = new SizeF(ScrollAmount, 0f);
 					break;
 				case Gdk.ScrollDirection.Right:
-					delta = new SizeF(-SCROLL_AMOUNT, 0f);
+					delta = new SizeF(-ScrollAmount, 0f);
 					break;
 				case Gdk.ScrollDirection.Up:
-					delta = new SizeF(0f, SCROLL_AMOUNT);
+					delta = new SizeF(0f, ScrollAmount);
 					break;
 				default:
 					throw new NotSupportedException();
@@ -439,7 +436,7 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnMouseEnter(new MouseEventArgs(buttons, modifiers, p));
 		}
 
-		private void GtkControlObject_MotionNotifyEvent(System.Object o, Gtk.MotionNotifyEventArgs args)
+		void GtkControlObject_MotionNotifyEvent(System.Object o, Gtk.MotionNotifyEventArgs args)
 		{
 			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 			Key modifiers = args.Event.State.ToEtoKey();
@@ -452,7 +449,7 @@ namespace Eto.Platform.GtkSharp
 			p = new Point(x, y);*/
 		}
 
-		private void GtkControlObject_ButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
+		void GtkControlObject_ButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
 		{
 			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 			Key modifiers = args.Event.State.ToEtoKey();
@@ -461,7 +458,7 @@ namespace Eto.Platform.GtkSharp
 			Widget.OnMouseUp(new MouseEventArgs(buttons, modifiers, p));
 		}
 
-		private void GtkControlObject_ButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
+		void GtkControlObject_ButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
 		{
 			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
 			Key modifiers = args.Event.State.ToEtoKey();
@@ -478,12 +475,12 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		private void GtkControlObject_SizeAllocated(object o, Gtk.SizeAllocatedArgs args)
+		void GtkControlObject_SizeAllocated(object o, Gtk.SizeAllocatedArgs args)
 		{
 			if (asize != args.Allocation.Size.ToEto())
 			{
 				// only call when the size has actually changed, gtk likes to call anyway!!  grr.
-				this.asize = args.Allocation.Size.ToEto();
+				asize = args.Allocation.Size.ToEto();
 				Widget.OnSizeChanged(EventArgs.Empty);
 			}
 		}
@@ -527,10 +524,13 @@ namespace Eto.Platform.GtkSharp
 			set
 			{
 				font = value;
-				if (font != null)
-					FontControl.ModifyFont(font.ControlObject as Pango.FontDescription);
-				else
+				if (font == null)
 					FontControl.ModifyFont(null);
+				else
+				{
+					var handler = font.Handler as FontHandler;
+					FontControl.ModifyFont(handler.Control);
+				}
 			}
 		}
 

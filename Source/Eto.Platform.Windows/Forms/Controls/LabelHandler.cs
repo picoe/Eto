@@ -16,6 +16,7 @@ namespace Eto.Platform.Windows
 			WrapMode wrapMode;
 			HorizontalAlign horizontalAlign;
 			sd.SizeF? measuredSize;
+			sd.Size proposedSizeCache;
 			VerticalAlign verticalAlign;
 
 			public override sd.Font Font
@@ -78,17 +79,17 @@ namespace Eto.Platform.Windows
 
 			static sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
 
-
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var bordersAndPadding = this.Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
-				if (measuredSize == null)
+				if (measuredSize == null || proposedSizeCache != proposedSize)
 				{
 					proposedSize -= bordersAndPadding;
 					proposedSize.Height = Math.Max(0, proposedSize.Height);
 					if (proposedSize.Width <= 1)
 						proposedSize.Width = int.MaxValue;
 					measuredSize = graphics.MeasureString(this.Text, this.Font, proposedSize.Width, stringFormat);
+					proposedSizeCache = proposedSize;
 				}
 				var size = measuredSize.Value;
 				size += bordersAndPadding;

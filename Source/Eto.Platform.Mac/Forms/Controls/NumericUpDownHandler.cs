@@ -113,7 +113,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (naturalSize == null)
 			{

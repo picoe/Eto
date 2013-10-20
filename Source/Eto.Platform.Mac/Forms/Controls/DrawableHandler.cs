@@ -30,7 +30,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var drawable = Drawable;
 				if (drawable == null)
 					return;
-				dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
+				if (!IsFlipped)
+					dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
 				if (dirtyRect.X % 1.0f > 0f)
 					dirtyRect.Width += 1;
 				if (dirtyRect.Y % 1.0f > 0f)

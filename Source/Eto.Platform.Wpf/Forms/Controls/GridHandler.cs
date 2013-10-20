@@ -235,7 +235,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				set
 				{
 					font = value;
-					FontHandler.Apply (Cell, font);
+					FontHandler.Apply (Cell, null, font);
 				}
 			}
 

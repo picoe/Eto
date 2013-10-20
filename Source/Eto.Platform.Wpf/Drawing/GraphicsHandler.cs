@@ -258,8 +258,10 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			var fontHandler = font.Handler as FontHandler;
 			if (fontHandler != null) {
-				var brush = new swm.SolidColorBrush (b.Color.ToWpf ()); // BUGBUG: FIX
+				var brush = b.ToWpf();
 				var formattedText = new swm.FormattedText (text, CultureInfo.CurrentUICulture, sw.FlowDirection.LeftToRight, fontHandler.WpfTypeface, fontHandler.PixelSize, brush);
+				if (fontHandler.WpfTextDecorations != null)
+					formattedText.SetTextDecorations(fontHandler.WpfTextDecorations, 0, text.Length);
 				Control.DrawText (formattedText, new sw.Point (x, y));
 			}
 		}

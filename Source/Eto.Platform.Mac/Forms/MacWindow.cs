@@ -120,7 +120,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public NSObject FieldEditorObject { get; set; }
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
 			var content = Widget.Content.GetMacAutoSizing();
 			if (content != null)
@@ -600,7 +600,7 @@ namespace Eto.Platform.Mac.Forms
 			if (AutoSize)
 			{
 				var size = this.GetPreferredSize(Size.MaxValue);
-				SetContentSize(size.ToSDSizeF());
+				SetContentSize(size.ToSD());
 				setInitialSize = true;
 
 				PositionWindow();

@@ -124,12 +124,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}*/			
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			return Size.Min(availableSize, base.GetPreferredSize(availableSize));
+			return SizeF.Min(availableSize, base.GetPreferredSize(availableSize));
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			return Content != null ? Content.GetPreferredSize(availableSize) : base.GetNaturalSize(availableSize);
 		}
@@ -137,7 +137,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public void UpdateScrollSizes()
 		{
 			if (Widget.Loaded)
-				SetContentSize(Content.GetPreferredSize(Size.MaxValue).ToSDSizeF());
+				SetContentSize(Content.GetPreferredSize(Size.MaxValue).ToSD());
 		}
 
 		public Point ScrollPosition

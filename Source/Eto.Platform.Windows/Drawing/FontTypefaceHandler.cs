@@ -19,7 +19,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public FontStyle FontStyle
 		{
-			get { return Control.ToEto (); }
+			get { return Control.ToEtoStyle (); }
 		}
 	}
 }

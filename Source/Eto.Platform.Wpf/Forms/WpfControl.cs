@@ -6,6 +6,7 @@ using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
 using swc = System.Windows.Controls;
+using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -22,6 +23,10 @@ namespace Eto.Platform.Wpf.Forms
 			set { (ContainerControl as swc.Control ?? Control).Background = value.ToWpfBrush(Control.Background); }
 		}
 
+		protected virtual void SetDecorations(sw.TextDecorationCollection decorations)
+		{
+		}
+
 		public Font Font
 		{
 			get
@@ -33,7 +38,7 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				font = value;
-				FontHandler.Apply (Control, font);
+				FontHandler.Apply (Control, SetDecorations, font);
 			}
 		}
 

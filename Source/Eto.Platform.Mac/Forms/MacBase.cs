@@ -16,7 +16,7 @@ namespace Eto.Platform.Mac.Forms
 	{
 		bool AutoSize { get; }
 
-		Size GetPreferredSize(Size availableSize);
+		SizeF GetPreferredSize(SizeF availableSize);
 	}
 
 	public interface IMacContainerControl

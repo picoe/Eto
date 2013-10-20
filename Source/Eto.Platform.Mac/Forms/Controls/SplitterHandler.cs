@@ -275,9 +275,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.ResizeSubviewsWithOldSize(System.Drawing.SizeF.Empty);
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			Size size = new Size();
+			var size = new SizeF();
 
 			var p1 = panel1.GetMacAutoSizing();
 			var p2 = panel2.GetMacAutoSizing();

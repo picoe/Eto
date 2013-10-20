@@ -12,7 +12,7 @@ namespace Eto.Platform.Mac.Forms
 {
 	public class PixelLayoutHandler : MacContainer<NSView, PixelLayout>, IPixelLayout
 	{
-		Dictionary<Control, Point> points = new Dictionary<Control, Point> ();
+		Dictionary<Control, PointF> points = new Dictionary<Control, PointF> ();
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -23,20 +23,20 @@ namespace Eto.Platform.Mac.Forms
 		
 		public SD.RectangleF GetPosition (Control control)
 		{
-			Point point;
+			PointF point;
 			if (points.TryGetValue (control, out point)) {
 				var frameSize = ((NSView)control.ControlObject).Frame.Size;
-				return new SD.RectangleF (point.ToSDPointF (), frameSize);
+				return new SD.RectangleF (point.ToSD(), frameSize);
 			}
 			return control.GetContainerView().Frame;
 		}
 		
-		public override Size GetPreferredSize (Size availableSize)
+		public override SizeF GetPreferredSize (SizeF availableSize)
 		{
-			Size size = Size.Empty;
+			SizeF size = SizeF.Empty;
 			foreach (var item in points) {
 				var frameSize = item.Key.GetPreferredSize (availableSize);
-				size = Size.Max (size, frameSize + new Size (item.Value));
+				size = SizeF.Max (size, frameSize + new SizeF(item.Value));
 			}
 			return size;
 		}
@@ -48,14 +48,12 @@ namespace Eto.Platform.Mac.Forms
 			base.OnLoadComplete (e);
 			if (!sizeChangedAdded)
 			{
-				Widget.SizeChanged += (sender, ev) => {
-					this.LayoutChildren();
-				};
+				Widget.SizeChanged += (sender, ev) => LayoutChildren();
 				sizeChangedAdded = true;
 			}
 		}
 		
-		void SetPosition (Control control, Point point, float frameHeight, bool flipped)
+		void SetPosition (Control control, PointF point, float frameHeight, bool flipped)
 		{
 			var offset = ((IMacViewHandler)control.Handler).PositionOffset;
 			var childView = control.GetContainerView ();
@@ -74,7 +72,7 @@ namespace Eto.Platform.Mac.Forms
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 				);
 			
-			var frame = new SD.RectangleF (origin, preferredSize.ToSDSizeF ());
+			var frame = new SD.RectangleF (origin, preferredSize.ToSD());
 			if (frame != childView.Frame) {
 				childView.Frame = frame;
 			}

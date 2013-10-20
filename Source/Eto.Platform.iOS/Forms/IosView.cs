@@ -19,7 +19,7 @@ namespace Eto.Platform.iOS.Forms
 		where TControl: UIResponder
 		where TWidget: Control
 	{
-		Size? naturalSize;
+		SizeF? naturalSize;
 		UIViewController controller;
 
 		public UIViewController Controller
@@ -41,7 +41,7 @@ namespace Eto.Platform.iOS.Forms
 
 		public virtual bool AutoSize { get; protected set; }
 
-		public Size? PreferredSize { get; set; }
+		public SizeF? PreferredSize { get; set; }
 
 		public virtual Size MinimumSize { get; set; }
 
@@ -52,7 +52,7 @@ namespace Eto.Platform.iOS.Forms
 			get { return ContainerControl.Frame.Size.ToEtoSize(); }
 			set
 			{ 
-				var oldSize = GetPreferredSize(Size.MaxValue);
+				var oldSize = GetPreferredSize(SizeF.MaxValue);
 				this.PreferredSize = value;
 
 				var newSize = ContainerControl.Frame.Size;
@@ -68,13 +68,13 @@ namespace Eto.Platform.iOS.Forms
 			}
 		}
 
-		protected virtual bool LayoutIfNeeded(Size? oldPreferredSize = null, bool force = false)
+		protected virtual bool LayoutIfNeeded(SizeF? oldPreferredSize = null, bool force = false)
 		{
 			naturalSize = null;
 			if (Widget.Loaded)
 			{
-				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize();
-				var newSize = GetPreferredSize(Size.MaxValue);
+				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEto();
+				var newSize = GetPreferredSize(SizeF.MaxValue);
 				if (newSize != oldSize || force)
 				{
 					var container = Widget.Parent.GetMacContainer();
@@ -86,7 +86,7 @@ namespace Eto.Platform.iOS.Forms
 			return false;
 		}
 
-		protected virtual Size GetNaturalSize(Size availableSize)
+		protected virtual SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (naturalSize != null)
 				return naturalSize.Value;
@@ -95,7 +95,7 @@ namespace Eto.Platform.iOS.Forms
 			{
 				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
 				control.SizeToFit();
-				naturalSize = control.Frame.Size.ToEtoSize();
+				naturalSize = control.Frame.Size.ToEto();
 				if (size != null)
 					control.SetFrameSize(size.Value);
 				return naturalSize.Value;
@@ -103,7 +103,7 @@ namespace Eto.Platform.iOS.Forms
 			return Size.Empty;
 		}
 
-		public virtual Size GetPreferredSize(Size availableSize)
+		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			var size = GetNaturalSize(availableSize);
 			if (!AutoSize && PreferredSize != null)
@@ -115,9 +115,9 @@ namespace Eto.Platform.iOS.Forms
 					size.Height = preferredSize.Height;
 			}
 			if (MinimumSize != Size.Empty)
-				size = Size.Max(size, MinimumSize);
+				size = SizeF.Max(size, MinimumSize);
 			if (MaximumSize != null)
-				size = Size.Min(size, MaximumSize.Value);
+				size = SizeF.Min(size, MaximumSize.Value);
 			return size;
 		}
 

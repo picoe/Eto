@@ -64,7 +64,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 						size.Width = Handler.defaultSize.Width;
 					if (size.Height < Handler.defaultSize.Height)
 						size.Height = Handler.defaultSize.Height;
-					this.SetFrameSize(size);
+					SetFrameSize(size);
 				}
 				setBezel = true;
 			}
@@ -99,6 +99,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.SetButtonType(NSButtonType.MomentaryPushIn);
 			Control.SetFrameSize(defaultSize.ToSDSizeF());
 			Control.Activated += HandleActivated;
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
 			SetBezel();
 		}
 

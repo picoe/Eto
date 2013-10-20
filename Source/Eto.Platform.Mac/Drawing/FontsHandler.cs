@@ -16,7 +16,7 @@ namespace Eto.Platform.iOS.Drawing
 {
 	public class FontsHandler : WidgetHandler<Widget>, IFonts
 	{
-		string [] availableFontFamilies;
+		readonly string [] availableFontFamilies;
 
 		public FontsHandler ()
 		{

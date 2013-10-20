@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using FontCacheKey = System.Tuple<Eto.Drawing.FontFamily, float, Eto.Drawing.FontStyle>;
+using FontCacheKey = System.Tuple<Eto.Drawing.FontFamily, float, Eto.Drawing.FontStyle, Eto.Drawing.FontDecoration>;
 
 namespace Eto.Drawing
 {
@@ -32,16 +32,16 @@ namespace Eto.Drawing
 	/// </summary>
 	public static class Fonts
 	{
-		static object cacheKey = new object();
+		static readonly object cacheKey = new object();
 		
-		static Font GetFont (FontFamily family, float size, FontStyle style, Generator generator)
+		static Font GetFont (FontFamily family, float size, FontStyle style, FontDecoration decoration, Generator generator)
 		{
 			var cache = generator.Cache<FontCacheKey, Font>(cacheKey);
 			Font font;
 			lock (cache) {
-				var key = new FontCacheKey (family, size, style);
+				var key = new FontCacheKey (family, size, style, decoration);
 				if (!cache.TryGetValue (key, out font)) {
-					font = new Font (family, size, style, generator);
+					font = new Font (family, size, style, decoration, generator);
 					cache.Add (key, font);
 				}
 			}
@@ -56,9 +56,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size in points of the font</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to create the font</param>
-		public static Font Cached (string familyName, float size, FontStyle style = FontStyle.None, Generator generator = null)
+		public static Font Cached (string familyName, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
-			return GetFont (new FontFamily(generator, familyName), size, style, generator);
+			return GetFont (new FontFamily(generator, familyName), size, style, decoration, generator);
 		}
 
 		/// <summary>
@@ -68,9 +68,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size in points of the font</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to create the font</param>
-		public static Font Cached (FontFamily family, float size, FontStyle style = FontStyle.None, Generator generator = null)
+		public static Font Cached (FontFamily family, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
-			return GetFont (family, size, style, generator);
+			return GetFont (family, size, style, decoration, generator);
 		}
 
 		/// <summary>
@@ -95,9 +95,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to get the font</param>
-		public static Font Monospace (float size, FontStyle style = FontStyle.None, Generator generator = null)
+		public static Font Monospace (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
-			return GetFont (FontFamilies.Monospace (generator), size, style, generator);
+			return GetFont (FontFamilies.Monospace (generator), size, style, decoration, generator);
 		}
 
 		/// <summary>
@@ -106,9 +106,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to get the font</param>
-		public static Font Sans (float size, FontStyle style = FontStyle.None, Generator generator = null)
+		public static Font Sans (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
-			return GetFont (FontFamilies.Sans (generator), size, style, generator);
+			return GetFont (FontFamilies.Sans (generator), size, style, decoration, generator);
 		}
 
 		/// <summary>
@@ -117,9 +117,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to get the font</param>
-		public static Font Serif (float size, FontStyle style = FontStyle.None, Generator generator = null)
+		public static Font Serif (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
-			return GetFont (FontFamilies.Serif (generator), size, style, generator);
+			return GetFont (FontFamilies.Serif (generator), size, style, decoration, generator);
 		}
 
 		/// <summary>
@@ -128,9 +128,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to get the font</param>
-		public static Font Cursive (float size, FontStyle style = FontStyle.None, Generator generator = null)
+		public static Font Cursive (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
-			return GetFont (FontFamilies.Cursive (generator), size, style, generator);
+			return GetFont (FontFamilies.Cursive (generator), size, style, decoration, generator);
 		}
 
 		/// <summary>
@@ -139,9 +139,9 @@ namespace Eto.Drawing
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
 		/// <param name="generator">Generator to get the font</param>
-		public static Font Fantasy (float size, FontStyle style = FontStyle.None, Generator generator = null)
+		public static Font Fantasy (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
-			return GetFont (FontFamilies.Fantasy (generator), size, style, generator);
+			return GetFont (FontFamilies.Fantasy (generator), size, style, decoration, generator);
 		}
 
 
