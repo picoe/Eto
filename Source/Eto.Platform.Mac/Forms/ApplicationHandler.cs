@@ -19,7 +19,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public static ApplicationHandler Instance
 		{
-			get { return Application.Instance.Handler as ApplicationHandler; }
+			get { return Application.Instance != null ? Application.Instance.Handler as ApplicationHandler : null; }
 		}
 
 		public string BadgeLabel
@@ -38,9 +38,6 @@ namespace Eto.Platform.Mac.Forms
 		public ApplicationHandler()
 		{
 			Control = NSApplication.SharedApplication;
-			// until everything is marked as thread safe correctly in monomac
-			// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
-			NSApplication.CheckForIllegalCrossThreadCalls = false;
 		}
 
 		static void restart_WillTerminate(object sender, EventArgs e)

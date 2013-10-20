@@ -34,6 +34,10 @@ namespace Eto.Platform.Mac
 			if (!initialized)
 			{
 				NSApplication.Init();
+				// until everything is marked as thread safe correctly in monomac
+				// e.g. overriding NSButtonCell.DrawBezelWithFrame will throw an exception
+				NSApplication.CheckForIllegalCrossThreadCalls = false;
+
 				initialized = true;
 			}
 			AddTo(this);
