@@ -15,9 +15,10 @@ namespace Eto.Platform.Mac.Forms
 			if (obj != null)
 			{
 				var handle = obj.Handle;
+
 				obj.Dispose();
 				// HACK: release handle since Dispose() won't do it properly yet
-				if (handle != IntPtr.Zero)
+				if (handle != IntPtr.Zero && ApplicationHandler.Instance != null)
 					Messaging.void_objc_msgSend(handle, ReleaseHandle);
 			}
 		}
