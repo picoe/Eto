@@ -348,12 +348,6 @@ namespace Eto.Platform.iOS.Drawing
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
 			StartDrawing();
-			/*	if (width == 1 || height == 1)
-			{
-				DrawLine(color, x, y, x+width-1, y+height-1);
-				return;
-			}*/
-
 			brush.Apply(this);
 			Control.FillRect(TranslateView(new SD.RectangleF(x, y, width, height), width > 1 || height > 1, true));
 			EndDrawing();
