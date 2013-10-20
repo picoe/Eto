@@ -260,7 +260,6 @@
     <Compile Include="Forms\Menu\SubMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
-    <Compile Include="Forms\Container.desktop.cs" />
     <Compile Include="Forms\Controls\ListBox.desktop.cs" />
     <Compile Include="Forms\Controls\CommonControl.cs" />
     <Compile Include="Forms\Controls\Slider.cs" />

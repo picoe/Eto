@@ -15,6 +15,8 @@ namespace Eto.Forms
 		Control Content { get; set; }
 
 		Padding Padding { get; set; }
+
+		Size MinimumSize { get; set; }
 	}
 
 	[ContentProperty("Content")]
@@ -38,6 +40,12 @@ namespace Eto.Forms
 		{
 			get { return Handler.Padding; }
 			set { Handler.Padding = value; }
+		}
+
+		public Size MinimumSize
+		{
+			get { return Handler.MinimumSize; }
+			set { Handler.MinimumSize = value; }
 		}
 
 		public Control Content
