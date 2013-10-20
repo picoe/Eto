@@ -191,12 +191,15 @@ namespace Eto.Platform.Android.Drawing
 
 		public void SetClip(IGraphicsPath path)
 		{
+			// NOTE: This may not work with hardware acceleration.
+			// See http://developer.android.com/guide/topics/graphics/hardware-accel.html#drawing-support
+			// See http://stackoverflow.com/questions/16889815/canvas-clippath-only-works-on-android-emulator
 			Control.ClipPath(path.ToAndroid(), ag.Region.Op.Replace);
 		}
 
 		public void ResetClip()
 		{
-			throw new NotImplementedException();
+			Control.ClipRect(new ag.Rect(int.MinValue, int.MinValue, int.MaxValue, int.MaxValue));
 		}
 
 		public void Clear(SolidBrush brush)
