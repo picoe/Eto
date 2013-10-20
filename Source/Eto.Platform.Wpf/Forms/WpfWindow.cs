@@ -57,9 +57,10 @@ namespace Eto.Platform.Wpf.Forms
 				if (initialClientSize != null)
 				{
 					initialClientSize = null;
-					Control.SizeToContent = sw.SizeToContent.Manual;
 					SetContentSize();
 				}
+				// stop form from auto-sizing after it is shown
+				Control.SizeToContent = sw.SizeToContent.Manual;
 			};
 			// needed to handle Application.Terminating event
 			HandleEvent (Window.ClosingEvent);

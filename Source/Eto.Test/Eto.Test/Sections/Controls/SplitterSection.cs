@@ -7,9 +7,33 @@ using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
 {
-	public class SplitterSection : WindowSectionMethod
+	public class SplitterSection : Panel
 	{
-		protected override Forms.Window GetWindow()
+		public SplitterSection()
+		{
+			var layout = new DynamicLayout();
+			layout.Add(null);
+			layout.AddCentered(WindowWithSize());
+			layout.AddCentered(WindowAutoSize());
+			layout.Add(null);
+			Content = layout;
+		}
+
+		Control WindowWithSize()
+		{
+			var control = new Button { Text = "Show Splitter window with size" };
+			control.Click += (sender, e) => GetWindow(true).Show();
+			return control;
+		}
+
+		Control WindowAutoSize()
+		{
+			var control = new Button { Text = "Show Splitter window auto sized" };
+			control.Click += (sender, e) => GetWindow(false).Show();
+			return control;
+		}
+
+		Form GetWindow(bool setSize)
 		{
 			// Add splitters like this:
 			// |---------------------------
@@ -22,10 +46,10 @@ namespace Eto.Test.Sections.Controls
 			// |         status0..4,      |  <== These are on StatusPanel
 			// ----------------------------
 
-			Label[] status = new Label[] { new Label(), new Label(), new Label(), new Label(), new Label() };
+			Label[] status = { new Label(), new Label(), new Label(), new Label(), new Label() };
 
 			// Status bar
-			var statusPanel = new Panel { };
+			var statusPanel = new Panel();
 			var statusLayout = new DynamicLayout(Padding.Empty, Size.Empty);
 			statusLayout.BeginHorizontal();
 			for (var i = 0; i < status.Length; ++i)
@@ -34,8 +58,8 @@ namespace Eto.Test.Sections.Controls
 			statusPanel.Content = statusLayout;
 
 			// Splitter windows
-			Panel[] p = new Panel[] { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
-			var colors = new Color[] { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
+			Panel[] p = { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
+			Color[] colors = { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
 			var count = 0;
 			for (var i = 0; i < p.Length; ++i)
 			{
@@ -48,7 +72,7 @@ namespace Eto.Test.Sections.Controls
 
 			var p0_1 = new Splitter { Panel1 = p[0], Panel2 = p[1], Orientation = SplitterOrientation.Vertical, Position = 200 };
 			var p2_3 = new Splitter { Panel1 = p[2], Panel2 = p[3], Orientation = SplitterOrientation.Vertical, Position = 200 };
-			var p01_23 = new Splitter { Panel1 = p0_1, Panel2 = p2_3, Orientation = SplitterOrientation.Horizontal, Position = 200};
+			var p01_23 = new Splitter { Panel1 = p0_1, Panel2 = p2_3, Orientation = SplitterOrientation.Horizontal, Position = 200 };
 			var p0123_4 = new Splitter { Panel1 = p01_23, Panel2 = p[4], Orientation = SplitterOrientation.Horizontal, Position = 400 };
 
 			// Main panel
@@ -60,11 +84,9 @@ namespace Eto.Test.Sections.Controls
 			layout.Add(mainPanel, yscale: true);
 			layout.Add(statusPanel);
 			layout.Generate();
-			var form = new Form 
-			{ 
-				Size = new Size(800, 600),
-				Content = layout
-			};
+			var form = new Form { Content = layout };
+			if (setSize)
+				form.ClientSize = new Size(800, 600);
 			return form;
 		}
 	}
