@@ -40,7 +40,7 @@ namespace Eto.Test.Dialogs
 			
 			layout.Add(new Label
 			{
-				Text = "Copyright 2011 by Curtis Wensley aka Eto",
+				Text = "Copyright 2013 by Curtis Wensley aka Eto",
 				Font = new Font(SystemFont.Default, 10),
 				HorizontalAlign = HorizontalAlign.Center
 			});
