@@ -6,7 +6,7 @@ namespace Eto.Test.Sections.Controls
 {
 	public class TabControlSection : Panel
 	{
-		protected TabControl tabControl;
+		TabControl tabControl;
 
 		public TabControlSection()
 		{
@@ -24,7 +24,8 @@ namespace Eto.Test.Sections.Controls
 		Control AddTab()
 		{
 			var control = new Button { Text = "Add Tab" };
-			control.Click += (s, e) => {
+			control.Click += (s, e) =>
+			{
 				var tab = new TabPage(tabControl.Generator) { Text = "Tab " + (tabControl.TabPages.Count + 1) };
 				tabControl.TabPages.Add(tab);
 			};
@@ -34,7 +35,8 @@ namespace Eto.Test.Sections.Controls
 		Control RemoveTab()
 		{
 			var control = new Button { Text = "Remove Tab" };
-			control.Click += (s, e) => {
+			control.Click += (s, e) =>
+			{
 				if (tabControl.SelectedIndex >= 0 && tabControl.TabPages.Count > 0)
 				{
 					tabControl.TabPages.RemoveAt(tabControl.SelectedIndex);
@@ -47,28 +49,20 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = CreateTabControl();
 			LogEvents(control);
-			
-			var page = new TabPage { Text = "Tab 1" };
-			page.Content = TabOne();
-			control.TabPages.Add(page);
-			
-			LogEvents(page);
-			
-			page = new TabPage
+
+			control.TabPages.Add(new TabPage { Text = "Tab 1", Content = TabOne() });
+
+			control.TabPages.Add(new TabPage
 			{ 
 				Text = "Tab 2",
 				Image = TestIcons.TestIcon,
-			};
-			LogEvents(page);
-			page.Content = TabTwo();
-			control.TabPages.Add(page);
+				Content = TabTwo()
+			});
 
-			page = new TabPage
-			{ 
-				Text = "Tab 3"
-			};
-			LogEvents(page);
-			control.TabPages.Add(page);
+			control.TabPages.Add(new TabPage { Text = "Tab 3" });
+
+			foreach (var page in control.TabPages)
+				LogEvents(page);
 			
 			return control;
 			
