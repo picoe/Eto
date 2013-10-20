@@ -69,16 +69,10 @@ namespace Eto.Platform.Mac.Forms
 
 		public void AsyncInvoke(Action action)
 		{
-			var thread = NSThread.Current;
-			if (thread != null && thread.IsMainThread)
-				action();
-			else
+			Control.BeginInvokeOnMainThread(delegate
 			{
-				Control.BeginInvokeOnMainThread(delegate
-				{
-					action();
-				});
-			}
+				action();
+			});
 		}
 
 		public void Restart()

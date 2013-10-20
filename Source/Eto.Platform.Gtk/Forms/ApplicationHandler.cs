@@ -89,13 +89,9 @@ namespace Eto.Platform.GtkSharp
 
 		public void AsyncInvoke (System.Action action)
 		{
-			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
+			Gtk.Application.Invoke (delegate {
 				action ();
-			else {
-				Gtk.Application.Invoke (delegate {
-					action ();
-				});
-			}
+			});
 		}
 
 		public void Attach(object context)

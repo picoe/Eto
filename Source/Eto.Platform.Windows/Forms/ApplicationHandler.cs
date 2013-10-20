@@ -6,6 +6,7 @@ using Eto.Forms;
 using System.Diagnostics;
 using Microsoft.WindowsAPICodePack.Taskbar;
 using Eto.Drawing;
+using System.Threading;
 
 namespace Eto.Platform.Windows
 {
@@ -13,9 +14,15 @@ namespace Eto.Platform.Windows
 	{
 		string badgeLabel;
 		bool attached;
+		Thread mainThread;
 
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
+
+		public ApplicationHandler()
+		{
+			mainThread = Thread.CurrentThread;
+		}
 
 		public void RunIteration()
 		{
@@ -151,34 +158,36 @@ namespace Eto.Platform.Windows
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = this.Widget.MainForm.GetContainerControl();
+				var window = Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{
 					window.Invoke(action);
+					return;
 				}
-				else action();
 			}
-			else action();
+			if (Thread.CurrentThread == mainThread)
+				action();
+			else
+				SynchronizationContext.Current.Post(state => action(), null);
 		}
 
 		public void AsyncInvoke(Action action)
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = this.Widget.MainForm.GetContainerControl();
+				var window = Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{
 					window.BeginInvoke(action);
+					return;
 				}
-				else action();
 			}
-			else action();
+			SynchronizationContext.Current.Post(state => action(), null);
 		}
-
 
 		public Key CommonModifier
 		{
