@@ -25,11 +25,11 @@ namespace Eto.Platform.Wpf.Forms
 
 		public static void InvokeIfNecessary(Action action)
 		{
-			if (Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
+			if (sw.Application.Current == null || Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
 				action();
 			else
 			{
-				Instance.Invoke(action);
+				sw.Application.Current.Dispatcher.Invoke(action);
 			}
 		}
 
