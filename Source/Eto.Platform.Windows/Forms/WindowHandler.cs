@@ -183,7 +183,6 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				this.Control.SuspendLayout();
 				menuHolder.SuspendLayout();
 				if (menu != null)
 					menuHolder.Controls.Remove((swf.MenuStrip)menu.ControlObject);
@@ -196,13 +195,10 @@ namespace Eto.Platform.Windows
 				{
 					var c = (swf.MenuStrip)value.ControlObject;
 					c.Dock = swf.DockStyle.Top;
-					c.ResumeLayout();
 					menuHolder.Controls.Add(c);
 					Control.MainMenuStrip = c;
 				}
 				menuHolder.ResumeLayout();
-				this.Control.ResumeLayout();
-				menuHolder.Update();
 				menu = value;
 			}
 		}
@@ -257,8 +253,6 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				if (Widget.Loaded)
-					SuspendLayout();
 				toolbarHolder.SuspendLayout();
 				if (toolBar != null)
 					toolbarHolder.Controls.Remove((swf.Control)toolBar.ControlObject);
@@ -270,8 +264,6 @@ namespace Eto.Platform.Windows
 					toolbarHolder.Controls.Add(c);
 				}
 				toolbarHolder.ResumeLayout();
-				if (Widget.Loaded)
-					ResumeLayout();
 			}
 		}
 
