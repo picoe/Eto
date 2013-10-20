@@ -42,18 +42,18 @@ namespace Eto.Platform.Android.Drawing
 		ag.Paint.FontMetrics fontMetrics;
 		ag.Paint.FontMetrics FontMetrics { get { return fontMetrics = fontMetrics ?? Paint.GetFontMetrics(); } }
 
-		public void Create(FontFamily family, float size, FontStyle style)
+		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
 			this.size = size;
 			this.Control = ag.Typeface.Create(family.ControlObject as ag.Typeface, style.ToAndroid());
 		}
 
-		public void Create(SystemFont systemFont, float? size)
+		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void Create(FontTypeface typeface, float size)
+		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
 		{
 			this.size = size;
 			this.Control = ag.Typeface.Create(typeface.Family.Name, typeface.FontStyle.ToAndroid());
@@ -100,6 +100,11 @@ namespace Eto.Platform.Android.Drawing
 		}
 
 		public FontStyle FontStyle
+		{
+			get { throw new NotImplementedException(); }
+		}
+
+		public FontDecoration FontDecoration
 		{
 			get { throw new NotImplementedException(); }
 		}
