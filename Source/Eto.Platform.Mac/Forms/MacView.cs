@@ -94,7 +94,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual Size MinimumSize { get; set; }
 
-		public virtual Size? MaximumSize { get; set; }
+		public virtual SizeF MaximumSize { get; set; }
 
 		public Size? PreferredSize { get; set; }
 
@@ -145,7 +145,8 @@ namespace Eto.Platform.Mac.Forms
 
 		protected MacView()
 		{
-			this.AutoSize = true;
+			AutoSize = true;
+			MaximumSize = SizeF.MaxValue;
 		}
 
 		protected virtual SizeF GetNaturalSize(SizeF availableSize)
@@ -176,11 +177,7 @@ namespace Eto.Platform.Mac.Forms
 				if (preferredSize.Height >= 0)
 					size.Height = preferredSize.Height;
 			}
-			if (MinimumSize != Size.Empty)
-				size = SizeF.Max(size, MinimumSize);
-			if (MaximumSize != null)
-				size = SizeF.Min(size, MaximumSize.Value);
-			return size;
+			return SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
 		}
 
 		public virtual Size PositionOffset { get { return Size.Empty; } }

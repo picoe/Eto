@@ -2,9 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using SD = System.Drawing;
-using System.Linq;
 using MonoTouch.UIKit;
 
 #if IOS
@@ -63,24 +61,11 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		protected virtual bool UseContentSize { get { return true; } }
-
-		public override SizeF GetPreferredSize(SizeF availableSize)
-		{
-			if (UseContentSize)
-				return SizeF.Max(base.GetPreferredSize(availableSize), Widget.Content.GetPreferredSize(availableSize) + Padding.Size);
-			else
-				return base.GetPreferredSize(availableSize);
-		}
-
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (UseContentSize)
-			{
-				var content = Widget.Content.GetMacAutoSizing();
-				if (content != null)
-					return content.GetPreferredSize(availableSize);
-			}
+			var contentControl = content.GetMacAutoSizing();
+			if (contentControl != null)
+				return contentControl.GetPreferredSize(availableSize) + Padding.Size;
 			return base.GetNaturalSize(availableSize);
 		}
 
@@ -145,6 +130,12 @@ namespace Eto.Platform.Mac.Forms
 			base.OnLoad(e);
 			LayoutChildren();
 			Widget.SizeChanged += HandleSizeChanged;
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Widget.SizeChanged -= HandleSizeChanged;
 		}
 	}
 }

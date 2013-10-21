@@ -3,15 +3,12 @@ using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.CoreAnimation;
-using MonoMac.Foundation;
-using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacDockContainer<NSScrollView, Scrollable>, IScrollable
 	{
-		NSView view;
+		readonly NSView view;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 
@@ -31,7 +28,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					AddCursorRect(new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+					AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 
@@ -68,7 +65,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				case Scrollable.ScrollEvent:
 					Control.ContentView.PostsBoundsChangedNotifications = true;
-					this.AddObserver(NSView.BoundsChangedNotification, e =>
+					AddObserver(NSView.BoundsChangedNotification, e =>
 					{
 						var w = (Scrollable)e.Widget;
 						w.OnScroll(new ScrollEventArgs(w.ScrollPosition));
@@ -131,21 +128,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return Border == BorderType.None ? Size.Empty : new Size(2, 2);
 		}
 
-		protected override bool UseContentSize { get { return false; } }
-
-		public override SizeF GetPreferredSize(SizeF availableSize)
-		{
-			return SizeF.Min(availableSize, base.GetPreferredSize(availableSize));
-		}
-
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var content = Content.GetMacAutoSizing();
-			if (content != null)
-			{
-				return Content.GetPreferredSize(availableSize) + GetBorderSize();
-			}
-			return base.GetNaturalSize(availableSize);
+			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize) + GetBorderSize());
 		}
 
 		void InternalSetFrameSize(SD.SizeF size)
@@ -161,9 +146,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var contentSize = Content.GetPreferredSize(Size.MaxValue);
 
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(this.ClientSize.Width, contentSize.Width);
+				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(this.ClientSize.Height, contentSize.Height);
+				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
 
 			InternalSetFrameSize(contentSize.ToSD());
 		}
@@ -232,9 +217,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 				contentSize.Height = Math.Max(contentSize.Height, MinimumSize.Height);
 			}
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(this.ClientSize.Width, contentSize.Width);
+				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(this.ClientSize.Height, contentSize.Height);
+				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
 			InternalSetFrameSize(contentSize);
 		}
 

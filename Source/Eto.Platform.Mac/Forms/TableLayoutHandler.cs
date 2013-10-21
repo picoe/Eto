@@ -88,11 +88,10 @@ namespace Eto.Platform.Mac.Forms
 			LayoutChildren();
 		}
 
-		public override SizeF GetPreferredSize(SizeF availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var baseSize = base.GetPreferredSize(availableSize);
 			if (views == null)
-				return baseSize;
+				return SizeF.Empty;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
@@ -128,7 +127,7 @@ namespace Eto.Platform.Mac.Forms
 						}
 					}
 				}
-			return SizeF.Max(baseSize, new SizeF(requiredx, requiredy));
+			return new SizeF(requiredx, requiredy);
 		}
 
 		public override void LayoutChildren()

@@ -1,11 +1,9 @@
 using System;
 using Eto.Forms;
 using SD = System.Drawing;
-using MonoMac.Foundation;
 using MonoMac.AppKit;
 using System.Linq;
 using Eto.Drawing;
-using System.Diagnostics;
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
