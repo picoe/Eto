@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		NSColor textColor;
 		int underlineIndex;
 		SizeF availableSizeCached;
-		public static SizeF LabelPadding = new SizeF(2f, 0f);
+		const NSStringDrawingOptions DrawingOptions = NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin;
 
 		static LabelHandler()
 		{
@@ -35,13 +35,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return Size.Empty;
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
-				var size = str.
-					BoundingRect((availableSize - LabelPadding).ToSD(), NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin).Size.ToEto();
-				NaturalSize = size + LabelPadding;
+				var insets = Control.AlignmentRectInsets.ToEtoSize();
+				var size = str.BoundingRect((availableSize - insets).ToSD(), DrawingOptions).Size.ToEto();
+				NaturalSize = size + insets;
 				availableSizeCached = availableSize;
 			}
 
-			//return FontExtensions.MeasureString(str, availableSize);
 			return NaturalSize.Value;
 		}
 
@@ -51,32 +50,33 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override sd.RectangleF DrawingRectForBounds(sd.RectangleF theRect)
 			{
-				sd.RectangleF titleFrame = base.DrawingRectForBounds(theRect);
-				var titleSize = CellSizeForBounds(theRect);
+				var rect = base.DrawingRectForBounds(theRect);
+				var insets = ControlView.AlignmentRectInsets;
+				rect.X += insets.Left;
+				rect.Y += insets.Top;
+				rect.Width -= insets.Left + insets.Right;
+				rect.Height -= insets.Top + insets.Bottom;
+				var titleSize = AttributedStringValue.BoundingRect(rect.Size, DrawingOptions);
 
 				switch (VerticalAlign)
 				{
 					case VerticalAlign.Middle:
-						titleFrame.Y = theRect.Y + (theRect.Height - titleSize.Height) / 2.0F;
+						rect.Y = theRect.Y + (theRect.Height - titleSize.Height) / 2.0F;
 						break;
 					case VerticalAlign.Top:
 						// do nothing!
 						break;
 					case VerticalAlign.Bottom:
-						titleFrame.Y = theRect.Y + (theRect.Height - titleSize.Height);
+						rect.Y = theRect.Y + (theRect.Height - titleSize.Height);
 						break;
 				}
-				return titleFrame;
+				return rect;
 			}
 
 			public override void DrawInteriorWithFrame(sd.RectangleF cellFrame, NSView inView)
 			{
 				var rect = DrawingRectForBounds(cellFrame);
-				rect.X += LabelPadding.Width / 2;
-				rect.Y += LabelPadding.Height / 2;
-				rect.Width -= LabelPadding.Width;
-				rect.Height -= LabelPadding.Height;
-				AttributedStringValue.DrawString(rect, NSStringDrawingOptions.UsesFontLeading | NSStringDrawingOptions.UsesLineFragmentOrigin);
+				AttributedStringValue.DrawString(rect, DrawingOptions);
 			}
 		}
 
