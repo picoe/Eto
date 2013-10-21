@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto</RootNamespace>
     <AssemblyName>Eto</AssemblyName>
+    <ReleaseVersion>
+    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

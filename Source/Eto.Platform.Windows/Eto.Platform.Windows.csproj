@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Eto.Platform.Windows</AssemblyName>
     <RootNamespace>Eto.Platform.Windows</RootNamespace>
+    <ReleaseVersion>
+    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
