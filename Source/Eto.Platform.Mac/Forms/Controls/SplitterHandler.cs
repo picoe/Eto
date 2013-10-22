@@ -11,7 +11,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Control panel2;
 		int? position;
 		SplitterFixedPanel fixedPanel;
-		bool raiseSplitterMoved;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -22,7 +21,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			switch (handler)
 			{
 				case Splitter.PositionChangedEvent:
-					this.raiseSplitterMoved = true;
+					// handled by delegate
 					break;
 				default:
 					base.AttachEvent(handler);
@@ -111,7 +110,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class SVDelegate : NSSplitViewDelegate
 		{
-			public SplitterHandler Handler { get; set; }
+			WeakReference handler;
+			public SplitterHandler Handler { get { return (SplitterHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public override void Resize(NSSplitView splitView, System.Drawing.SizeF oldSize)
 			{
@@ -129,7 +129,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void DidResizeSubviews(MonoMac.Foundation.NSNotification notification)
 			{
 				var subview = Handler.Control.Subviews[0];
-				if (subview != null && Handler.Widget.Loaded)
+				if (subview != null && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
 				{
 					if (Handler.Control.IsVertical)
 					{
@@ -139,9 +139,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 					{
 						Handler.position = (int)subview.Frame.Height;
 					}
-				}
-				if (Handler.raiseSplitterMoved)
 					Handler.Widget.OnPositionChanged(EventArgs.Empty);
+				}
 			}
 		}
 		// stupid hack for OSX 10.5 so that mouse down/drag/up events fire in children properly..
@@ -279,10 +278,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var size = new SizeF();
 
-			var p1 = panel1.GetMacAutoSizing();
-			var p2 = panel2.GetMacAutoSizing();
-			var p1size = p1 != null ? p1.GetPreferredSize(availableSize) : Size.Empty;
-			var p2size = p2 != null ? p2.GetPreferredSize(availableSize) : Size.Empty;
+			var p1size = panel1.GetPreferredSize(availableSize);
+			var p2size = panel2.GetPreferredSize(availableSize);
 			if (Control.IsVertical)
 			{
 				if (position != null)
@@ -298,12 +295,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 							break;
 					}
 				}
-				size.Width = p1size.Width + p2size.Width + (int)Control.DividerThickness;
+				if (position != null)
+					p1size.Width = position.Value;
+				size.Width = p1size.Width + p2size.Width + Control.DividerThickness;
 				size.Height = Math.Max(p1size.Height, p2size.Height);
 			}
 			else
 			{
-				size.Height = p1size.Height + p2size.Height + (int)Control.DividerThickness;
+				if (position != null)
+					p1size.Height = position.Value;
+				size.Height = p1size.Height + p2size.Height + Control.DividerThickness;
 				size.Width = Math.Max(p1size.Width, p2size.Width);
 			}
 			return size;
