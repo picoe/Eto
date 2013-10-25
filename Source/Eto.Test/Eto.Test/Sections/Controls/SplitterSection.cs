@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Drawing;
 using Eto.Forms;
 
@@ -13,27 +10,43 @@ namespace Eto.Test.Sections.Controls
 		{
 			var layout = new DynamicLayout();
 			layout.Add(null);
-			layout.AddCentered(WindowWithSize());
-			layout.AddCentered(WindowAutoSize());
+			layout.AddCentered(Test1WithSize());
+			layout.AddCentered(Test1AutoSize());
+			layout.AddCentered(Test2WithSize());
+			layout.AddCentered(Test2AutoSize());
 			layout.Add(null);
 			Content = layout;
 		}
 
-		Control WindowWithSize()
+		static Control Test1WithSize()
 		{
-			var control = new Button { Text = "Show Splitter window with size" };
-			control.Click += (sender, e) => GetWindow(true).Show();
+			var control = new Button { Text = "Show splitter test 1 with ClientSize" };
+			control.Click += (sender, e) => Test1(true).Show();
 			return control;
 		}
 
-		Control WindowAutoSize()
+		static Control Test1AutoSize()
 		{
-			var control = new Button { Text = "Show Splitter window auto sized" };
-			control.Click += (sender, e) => GetWindow(false).Show();
+			var control = new Button { Text = "Show splitter test 1 with auto size" };
+			control.Click += (sender, e) => Test1(false).Show();
 			return control;
 		}
 
-		Form GetWindow(bool setSize)
+		static Control Test2WithSize()
+		{
+			var control = new Button { Text = "Show splitter test 2 with ClientSize" };
+			control.Click += (sender, e) => Test2(true).Show();
+			return control;
+		}
+
+		static Control Test2AutoSize()
+		{
+			var control = new Button { Text = "Show splitter test 2 with auto sized" };
+			control.Click += (sender, e) => Test2(false).Show();
+			return control;
+		}
+
+		static Form Test1(bool setSize)
 		{
 			// Add splitters like this:
 			// |---------------------------
@@ -49,13 +62,11 @@ namespace Eto.Test.Sections.Controls
 			Label[] status = { new Label(), new Label(), new Label(), new Label(), new Label() };
 
 			// Status bar
-			var statusPanel = new Panel();
 			var statusLayout = new DynamicLayout(Padding.Empty, Size.Empty);
 			statusLayout.BeginHorizontal();
 			for (var i = 0; i < status.Length; ++i)
 				statusLayout.Add(status[i], xscale: true);
 			statusLayout.EndHorizontal();
-			statusPanel.Content = statusLayout;
 
 			// Splitter windows
 			Panel[] p = { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
@@ -82,11 +93,57 @@ namespace Eto.Test.Sections.Controls
 			// Form's content
 			var layout = new DynamicLayout();
 			layout.Add(mainPanel, yscale: true);
-			layout.Add(statusPanel);
+			layout.Add(statusLayout);
 			layout.Generate();
 			var form = new Form { Content = layout };
 			if (setSize)
 				form.ClientSize = new Size(800, 600);
+			return form;
+		}
+
+		static ComboBox ComboWithItems()
+		{
+			var combo = new ComboBox();
+			combo.Items.Add("hello");
+			combo.Items.Add("there");
+			return combo;
+		}
+
+		static Form Test2(bool setSize)
+		{
+			var leftPane = new DynamicLayout { Padding = Padding.Empty, DefaultPadding = Padding.Empty };
+			leftPane.AddColumn(new TreeGridView());
+
+			var rightTop = new DynamicLayout();
+			rightTop.AddColumn(ComboWithItems(), new Panel());
+
+			var rightBottom = new DynamicLayout();
+			rightBottom.AddRow(new ComboBox(), ComboWithItems(), new Button(), new CheckBox(), null);
+
+			var rightPane = new Splitter
+			{
+				Orientation = SplitterOrientation.Vertical,
+				FixedPanel = SplitterFixedPanel.Panel2,
+				Panel1 = rightTop,
+				Panel2 = rightBottom,
+				Position = 200,
+			};
+
+			var form = new Form
+			{ 
+				Padding = new Padding(5),
+				Content = new Splitter
+				{
+					Orientation = SplitterOrientation.Horizontal,
+					FixedPanel = SplitterFixedPanel.Panel1,
+					BackgroundColor = Colors.Gray,
+					Position = 200,
+					Panel1 = leftPane,
+					Panel2 = rightPane
+				}
+			};
+			if (setSize)
+				form.Size = new Size(600, 400);
 			return form;
 		}
 	}

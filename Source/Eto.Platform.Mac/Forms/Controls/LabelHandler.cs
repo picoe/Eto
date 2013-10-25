@@ -252,9 +252,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set { ((MyTextFieldCell)Control.Cell).VerticalAlign = value; }
 		}
 
-		void SetAttributes()
+		void SetAttributes(bool force = false)
 		{
-			if (Widget.Loaded)
+			if (Widget.Loaded || force)
 			{
 				if (str.Length > 0)
 				{
@@ -278,7 +278,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void OnLoad(EventArgs e)
 		{
 			base.OnLoad(e);
-			SetAttributes();
+			SetAttributes(true);
 		}
+
 	}
 }

@@ -402,10 +402,10 @@ namespace Eto.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			Loaded = true;
 			if (Load != null)
 				Load(this, e);
 			Handler.OnLoad(e);
+			Loaded = true;
 		}
 
 		public event EventHandler<EventArgs> LoadComplete;

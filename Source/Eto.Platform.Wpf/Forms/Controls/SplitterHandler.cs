@@ -52,7 +52,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			style.Setters.Add(new sw.Setter(sw.FrameworkElement.VerticalAlignmentProperty, sw.VerticalAlignment.Stretch));
 			style.Setters.Add(new sw.Setter(sw.FrameworkElement.HorizontalAlignmentProperty, sw.HorizontalAlignment.Stretch));
 
-
 			UpdateOrientation();
 			Control.Loaded += delegate
 			{
@@ -62,10 +61,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				UpdateColumnSizing();
 				if (FixedPanel == SplitterFixedPanel.Panel2)
 				{
-					if (Orientation == SplitterOrientation.Horizontal && initialWidth != null && initialWidth.Value > 0)
-						Position = this.Size.Width - (initialWidth.Value - position.Value);
-					else if (Orientation == SplitterOrientation.Vertical && initialHeight != null && initialHeight.Value > 0)
-						Position = this.Size.Height - (initialHeight.Value - position.Value);
+					if (Orientation == SplitterOrientation.Horizontal)
+					{
+						var width = (int)Control.ActualWidth;
+						Position = Size.Width - (width - position.Value);
+					}
+					else if (Orientation == SplitterOrientation.Vertical)
+					{
+						var height = (int)Control.ActualHeight;
+						Position = Size.Height - (height - position.Value);
+					}
 					else if (position != null)
 						Position = position.Value;
 				}
@@ -234,29 +239,34 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 			set
 			{
+				var col1 = Control.ColumnDefinitions[0];
+				var col2 = Control.ColumnDefinitions[2];
 				if (!Widget.Loaded)
 				{
 					position = value;
 					initialWidth = this.Size.Width;
 					initialHeight = this.Size.Height;
-					return;
 				}
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
 				{
-					var col1 = Control.ColumnDefinitions[0];
-					var col2 = Control.ColumnDefinitions[2];
 					var controlWidth = Control.IsLoaded ? Control.ActualWidth : Control.Width;
 					switch (fixedPanel)
 					{
 						case SplitterFixedPanel.None:
-							var scale = (col1.Width.Value + col2.Width.Value) / controlWidth;
-							col1.Width = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							if (Widget.Loaded)
+							{
+								var scale = (col1.Width.Value + col2.Width.Value) / controlWidth;
+								col1.Width = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							}
 							break;
 						case SplitterFixedPanel.Panel1:
 							col1.Width = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 						case SplitterFixedPanel.Panel2:
-							col2.Width = new sw.GridLength(controlWidth - value, sw.GridUnitType.Pixel);
+							if (Widget.Loaded)
+								col2.Width = new sw.GridLength(controlWidth - value, sw.GridUnitType.Pixel);
+							else
+								col1.Width = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 					}
 				}
@@ -268,14 +278,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					switch (fixedPanel)
 					{
 						case SplitterFixedPanel.None:
-							var scale = (row1.Height.Value + row2.Height.Value) / controlHeight;
-							row1.Height = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							if (Widget.Loaded)
+							{
+								var scale = (row1.Height.Value + row2.Height.Value) / controlHeight;
+								row1.Height = new sw.GridLength(value * scale, sw.GridUnitType.Star);
+							}
 							break;
 						case SplitterFixedPanel.Panel1:
 							row1.Height = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 						case SplitterFixedPanel.Panel2:
-							row2.Height = new sw.GridLength(Math.Max(0, controlHeight - value), sw.GridUnitType.Pixel);
+							if (Widget.Loaded)
+								row2.Height = new sw.GridLength(Math.Max(0, controlHeight - value), sw.GridUnitType.Pixel);
+							else
+								row1.Height = new sw.GridLength(value, sw.GridUnitType.Pixel);
 							break;
 					}
 				}
