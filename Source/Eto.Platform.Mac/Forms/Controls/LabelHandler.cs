@@ -11,11 +11,11 @@ using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class LabelHandler : MacView<LabelHandler.EtoLabel, Label>, ILabel
+	public class LabelHandler : MacView<NSTextField, Label>, ILabel
 	{
 		static readonly bool supportsSingleLine;
 		Font font;
-		NSMutableAttributedString str;
+		readonly NSMutableAttributedString str;
 		readonly NSMutableParagraphStyle paragraphStyle;
 		NSColor textColor;
 		int underlineIndex;
@@ -36,8 +36,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
 				var insets = Control.AlignmentRectInsets.ToEtoSize();
-				var size = str.BoundingRect((availableSize - insets).ToSD(), DrawingOptions).Size.ToEto();
-				NaturalSize = size + insets;
+				var size = Control.Cell.CellSizeForBounds(new RectangleF(availableSize).ToSD()).ToEto();
+
+				NaturalSize = Size.Round(size + insets);
 				availableSizeCached = availableSize;
 			}
 
@@ -51,12 +52,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override sd.RectangleF DrawingRectForBounds(sd.RectangleF theRect)
 			{
 				var rect = base.DrawingRectForBounds(theRect);
-				var insets = ControlView.AlignmentRectInsets;
-				rect.X += insets.Left;
-				rect.Y += insets.Top;
-				rect.Width -= insets.Left + insets.Right;
-				rect.Height -= insets.Top + insets.Bottom;
-				var titleSize = AttributedStringValue.BoundingRect(rect.Size, DrawingOptions);
+				var titleSize = CellSizeForBounds(theRect);
 
 				switch (VerticalAlign)
 				{
@@ -72,12 +68,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 				return rect;
 			}
-
+			/*
 			public override void DrawInteriorWithFrame(sd.RectangleF cellFrame, NSView inView)
 			{
 				var rect = DrawingRectForBounds(cellFrame);
 				AttributedStringValue.DrawString(rect, DrawingOptions);
-			}
+			}*/
 		}
 
 		public class EtoLabel : NSTextField, IMacControl
@@ -107,7 +103,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Bezeled = false,
 				Editable = false,
 				Selectable = false,
-				Alignment = NSTextAlignment.Left
+				Alignment = NSTextAlignment.Left,
 			};
 			if (supportsSingleLine)
 				Control.Cell.UsesSingleLineMode = false;
@@ -170,7 +166,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var oldSize = GetPreferredSize(Size.MaxValue);
 				if (string.IsNullOrEmpty(value))
 				{
-					str = new NSMutableAttributedString();
+					str.SetString(new NSMutableAttributedString());
 				}
 				else
 				{
@@ -182,12 +178,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 						var matches = Regex.Matches(value, @"[&][&]");
 						var prefixCount = matches.Cast<Match>().Count(r => r.Index < match.Index);
 
-						str = str.ToMutable(val);
+						str.SetString(new NSAttributedString(val));
 						underlineIndex = match.Index - prefixCount;
 					}
 					else
 					{
-						str = font.AttributedString(value.Replace("&&", "&"), str);
+						str.SetString(new NSAttributedString(value.Replace("&&", "&")));
 						underlineIndex = -1;
 					}
 				}
