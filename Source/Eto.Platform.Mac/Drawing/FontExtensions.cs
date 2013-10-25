@@ -1,13 +1,11 @@
 using System;
 using Eto.Drawing;
-using System.Text;
-using System.Linq;
 using MonoMac.Foundation;
 using MonoTouch.UIKit;
 using MonoMac.AppKit;
 using System.Runtime.InteropServices;
 using MonoMac.ObjCRuntime;
-using MonoMac.CoreGraphics;
+using Eto.Platform.Mac.Forms;
 
 #if OSX
 namespace Eto.Platform.Mac.Drawing
@@ -93,26 +91,17 @@ namespace Eto.Platform.iOS.Drawing
 		static readonly NSLayoutManager layout;
 		static readonly NSTextContainer container;
 
-		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend")]
-		static extern void void_objc_msgSend_NSRange_NSPoint(IntPtr receiver, IntPtr selector, NSRange arg1, PointF arg2);
-
-		static readonly IntPtr selDrawGlyphs = Selector.GetHandle("drawGlyphsForGlyphRange:atPoint:");
+		public static NSLayoutManager SharedLayout { get { return layout; } }
 
 		public static SizeF MeasureString(string text, Font font = null, SizeF? availableSize = null)
 		{
-			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
-			storage.SetString(font.AttributedString(text));
-			//layout.EnsureLayoutForBoundingRect(new System.Drawing.RectangleF(System.Drawing.PointF.Empty, container.ContainerSize), container);
-			//return layout.GetUsedRectForTextContainer(container).Size.ToEto();
-			return layout.BoundingRectForGlyphRange(new NSRange(0, text.Length), container).Size.ToEto();
+			return MeasureString(font.AttributedString(text), availableSize);
 		}
 
 		public static SizeF MeasureString(NSAttributedString str, SizeF? availableSize = null)
 		{
 			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
 			storage.SetString(str);
-			//layout.EnsureLayoutForBoundingRect(new System.Drawing.RectangleF(System.Drawing.PointF.Empty, container.ContainerSize), container);
-			//return layout.GetUsedRectForTextContainer(container).Size.ToEto();
 			return layout.BoundingRectForGlyphRange(new NSRange(0, str.Length), container).Size.ToEto();
 		}
 
@@ -120,27 +109,22 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
 			storage.SetString(str);
-			void_objc_msgSend_NSRange_NSPoint(layout.Handle, selDrawGlyphs, new NSRange(0, str.Length), point);
+			layout.DrawGlyphs(new NSRange(0, str.Length), point.ToSD());
 		}
 
 		public static void DrawString(string text, PointF point, Color color, Font font = null, SizeF? availableSize = null)
 		{
-			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
 			var str = font.AttributedString(text);
 			str.AddAttribute(NSAttributedString.ForegroundColorAttributeName, color.ToNS(), new NSRange(0, text.Length));
-			storage.SetString(str);
-			void_objc_msgSend_NSRange_NSPoint(layout.Handle, selDrawGlyphs, new NSRange(0, text.Length), point);
+			DrawString(str, point, availableSize);
 		}
 
 		static FontExtensions()
 		{
 			storage = new NSTextStorage();
-			layout = new NSLayoutManager();
-			container = new NSTextContainer();
-			container.LineFragmentPadding = 0f;
-			//layout.AllowsNonContiguousLayout = true;
+			layout = new NSLayoutManager { BackgroundLayoutEnabled = false, UsesFontLeading = true };
+			container = new NSTextContainer { LineFragmentPadding = 0f };
 			layout.UsesFontLeading = true;
-			//layout.UsesScreenFonts = true;
 			layout.AddTextContainer(container);
 			storage.AddLayoutManager(layout);
 		}
