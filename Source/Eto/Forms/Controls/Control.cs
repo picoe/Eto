@@ -161,25 +161,6 @@ namespace Eto.Forms
 				Parent.OnKeyUp(e);
 		}
 
-		public const string TextChangedEvent = "Control.TextChanged";
-		EventHandler<EventArgs> textChanged;
-
-		public event EventHandler<EventArgs> TextChanged
-		{
-			add
-			{
-				HandleEvent(TextChangedEvent);
-				textChanged += value;
-			}
-			remove { textChanged -= value; }
-		}
-
-		public virtual void OnTextChanged(EventArgs e)
-		{
-			if (textChanged != null)
-				textChanged(this, e);
-		}
-
 		public const string TextInputEvent = "Control.TextInput";
 		EventHandler<TextInputEventArgs> textInput;
 
