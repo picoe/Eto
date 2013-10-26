@@ -256,17 +256,23 @@ namespace Eto.Platform.Mac.Forms
 					break;
 				case Window.LocationChangedEvent:
 					{
-						Point? oldLocation = null;
 						AddControlObserver((NSString)"frame", e =>
 						{
-							var widget = (Window)e.Widget;
-							var newLocation = widget.Location;
-							if (oldLocation != newLocation)
+							var handler = e.Handler as MacWindow<T,W>;
+							if (handler != null)
 							{
-								widget.OnLocationChanged(EventArgs.Empty);
-								oldLocation = newLocation;
+								var old = oldLocation;
+								oldLocation = null;
+								var newLocation = handler.Location;
+								if (old != newLocation)
+								{
+									oldLocation = newLocation;
+									handler.Widget.OnLocationChanged(EventArgs.Empty);
+								}
 							}
 						});
+						// WillMove is only called when the user moves the window via the mouse
+						Control.WillMove += HandleWillMove;
 					}
 					break;
 				default:
@@ -284,6 +290,39 @@ namespace Eto.Platform.Mac.Forms
 			}
 			else
 				this.Control.ContentView.DiscardCursorRects();
+		}
+
+		/// <summary>
+		/// Tracks movement of the window until the mouse up button is found
+		/// </summary>
+		static void HandleWillMove(object sender, EventArgs e)
+		{
+			var handler = GetHandler(sender) as MacWindow<T,W>;
+			if (handler == null)
+				return;
+			handler.oldLocation = null;
+			// find offset of mouse cursor to location of window
+			var moveOffset = Size.Round((SizeF)(Mouse.GetPosition(handler.Generator) - handler.Location));
+
+			ThreadPool.QueueUserWorkItem(a =>
+			{
+				bool tracking = true;
+				while (tracking)
+				{
+					NSApplication.SharedApplication.InvokeOnMainThread(() =>
+					{
+						var newLocation = Point.Round(Mouse.GetPosition(handler.Generator) - moveOffset);
+						if (handler.oldLocation != newLocation)
+						{
+							handler.Widget.OnLocationChanged(EventArgs.Empty);
+							handler.oldLocation = newLocation;
+						}
+						// check for mouse up event
+						tracking = NSApplication.SharedApplication.NextEventEx(NSEventMask.LeftMouseUp, null, NSRunLoop.NSRunLoopEventTracking, false) == null;
+					});
+				}
+				handler.oldLocation = null;
+			});
 		}
 
 		protected void ConfigureWindow()
@@ -523,6 +562,8 @@ namespace Eto.Platform.Mac.Forms
 		{
 			get
 			{
+				if (oldLocation != null)
+					return oldLocation.Value;
 				var height = Control.Screen.Frame.Height;
 				var frame = Control.Frame;
 				return new Point((int)frame.X, (int)(height - frame.Y - frame.Height));
