@@ -1,10 +1,8 @@
-using System;
 using Eto.Drawing;
 using sd = System.Drawing;
 
 #if DESKTOP
 using MonoMac.CoreGraphics;
-using MonoMac.ImageIO;
 
 namespace Eto.Platform.Mac.Drawing
 #else

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -7,7 +6,7 @@ namespace Eto.Forms
 {
 	public partial class ActionItemCollection : List<IActionItem>
 	{
-		ActionCollection actions;
+		readonly ActionCollection actions;
 
 		public Generator Generator
 		{
@@ -23,7 +22,7 @@ namespace Eto.Forms
 		{
 			foreach (IActionItem actionItem in items)
 			{
-				ActionItemSubMenu subMenu = actionItem as ActionItemSubMenu;
+				var subMenu = actionItem as ActionItemSubMenu;
 				if (subMenu != null)
 				{
 					ActionItemSubMenu currentSubMenu = GetSubmenu(subMenu.SubMenuText, subMenu.Order);
@@ -73,13 +72,12 @@ namespace Eto.Forms
 		{
 			if (action != null)
 			{
-				ActionItem item = new ActionItem(action);
+				var item = new ActionItem(action);
 				item.Order = order;
-				this.Add(item);
+				Add(item);
 				return item;
 			}
-			else
-				return null;
+			return null;
 		}
 
 		[Obsolete("Use GetSubmenu instead")]
@@ -102,9 +100,9 @@ namespace Eto.Forms
 			}
 			if (create)
 			{
-				var subMenu = new ActionItemSubMenu(this.actions, subMenuText);
+				var subMenu = new ActionItemSubMenu(actions, subMenuText);
 				subMenu.Order = order;
-				this.Add(subMenu);
+				Add(subMenu);
 				return subMenu;
 			}
 			return null;
@@ -112,7 +110,7 @@ namespace Eto.Forms
 
 		public ActionItemSubMenu AddSubMenu(string subMenuText, int order = 500)
 		{
-			var sub = new ActionItemSubMenu(this.actions, subMenuText);
+			var sub = new ActionItemSubMenu(actions, subMenuText);
 			sub.Order = order;
 			Add(sub);
 			return sub;
@@ -132,8 +130,8 @@ namespace Eto.Forms
 			int sectiony = y.Order;
 			if (sectionx == sectiony)
 			{
-				sectionx = this.IndexOf(x);
-				sectiony = this.IndexOf(y);
+				sectionx = IndexOf(x);
+				sectiony = IndexOf(y);
 			}
 			return sectionx.CompareTo(sectiony);
 		}

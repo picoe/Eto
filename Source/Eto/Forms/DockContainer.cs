@@ -1,8 +1,6 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
-using System.Linq;
 
 #if XAML
 using System.Windows.Markup;

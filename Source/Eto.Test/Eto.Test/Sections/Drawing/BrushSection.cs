@@ -135,7 +135,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control OffsetXControl()
 		{
-			var control = new NumericUpDown { };
+			var control = new NumericUpDown();
 			control.Bind (c => c.Value, this, c => c.OffsetX);
 			control.ValueChanged += Refresh;
 			return control;
@@ -143,7 +143,7 @@ namespace Eto.Test.Sections.Drawing
 		
 		Control OffsetYControl ()
 		{
-			var control = new NumericUpDown { };
+			var control = new NumericUpDown();
 			control.Bind (c => c.Value, this, c => c.OffsetY);
 			control.ValueChanged += Refresh;
 			return control;

@@ -1,7 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Runtime.InteropServices;
-using GLib;
 
 namespace Eto.Platform.GtkSharp
 {

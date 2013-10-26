@@ -23,7 +23,7 @@ namespace Eto.Threading
 	{
 		new IThread Handler { get { return (IThread)base.Handler; } }
 		
-		Action action;
+		readonly Action action;
 		
 		public static Thread CurrentThread(Generator generator = null)
 		{
@@ -39,7 +39,7 @@ namespace Eto.Threading
 			return thread;
 		}
 		
-		private Thread(Generator generator)
+		Thread(Generator generator)
 			: base(generator, typeof(IThread))
 		{
 		}

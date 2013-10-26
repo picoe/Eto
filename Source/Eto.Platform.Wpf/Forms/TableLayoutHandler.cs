@@ -90,7 +90,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		sw.FrameworkElement EmptyCell(int x, int y)
 		{
-			var empty = new sw.FrameworkElement { };
+			var empty = new sw.FrameworkElement();
 			swc.Grid.SetColumn(empty, x);
 			swc.Grid.SetRow(empty, y);
 			SetMargins(empty, x, y);

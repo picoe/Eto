@@ -1,7 +1,7 @@
 using System;
 using MonoMac.ObjCRuntime;
-using MonoTouch.ObjCRuntime;
 using System.Runtime.InteropServices;
+using MonoTouch.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {

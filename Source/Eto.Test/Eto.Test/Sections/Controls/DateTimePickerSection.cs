@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -23,7 +22,7 @@ namespace Eto.Test.Sections.Controls
 
 		DateTimePicker Default()
 		{
-			var control = new DateTimePicker { };
+			var control = new DateTimePicker();
 			LogEvents (control);
 			return control;
 		}

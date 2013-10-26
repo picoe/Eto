@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
@@ -16,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Actions
 		}
 		public override MenuItem GenerateMenuItem(Eto.Generator generator)
 		{
-			var item = base.GenerateMenuItem(generator) as ImageMenuItem;
+			var item = base.GenerateMenuItem(generator);
 			var menuItem = (NSMenuItem)item.ControlObject;
 			menuItem.Target = null;
 			menuItem.Action = Selector;

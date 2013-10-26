@@ -1,9 +1,4 @@
 using System;
-using Eto;
-using Eto.Misc;
-using Eto.Forms;
-using Eto.Drawing;
-using System.Diagnostics;
 
 namespace Eto.Test.Wpf
 {

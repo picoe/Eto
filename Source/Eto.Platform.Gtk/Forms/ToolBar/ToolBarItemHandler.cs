@@ -1,5 +1,3 @@
-using System;
-using System.Reflection;
 using Eto.Forms;
 using Eto.Drawing;
 

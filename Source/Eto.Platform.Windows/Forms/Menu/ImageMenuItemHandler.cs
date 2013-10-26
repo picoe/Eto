@@ -1,11 +1,9 @@
 using System;
-using System.Reflection;
 using System.Linq;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
@@ -18,9 +16,7 @@ namespace Eto.Platform.Windows
 		public ImageMenuItemHandler()
 		{
 			Control = new SWF.ToolStripMenuItem();
-			Control.Click += (sender, e) => {
-				Widget.OnClick (EventArgs.Empty);
-			};
+			Control.Click += (sender, e) => Widget.OnClick(EventArgs.Empty);
 		}
 
 		void HandleDropDownOpened (object sender, EventArgs e)
@@ -54,16 +50,16 @@ namespace Eto.Platform.Windows
 		
 		public string ToolTip {
 			get {
-				return this.Control.ToolTipText;
+				return Control.ToolTipText;
 			}
 			set {
-				this.Control.ToolTipText = ToolTip;
+				Control.ToolTipText = value;
 			}
 		}
 
 		public Key Shortcut
 		{
-			get { return this.Control.ShortcutKeys.ToEto (); }
+			get { return Control.ShortcutKeys.ToEto (); }
 			set 
 			{
 				var key = value.ToSWF ();

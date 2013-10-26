@@ -90,12 +90,9 @@ namespace Eto.Platform.Mac.Forms
 			NSWindow parentWindow;
 			if (parent != null)
 			{
-				if (parent.ControlObject is NSWindow)
-					parentWindow = (NSWindow)parent.ControlObject;
-				else if (parent.ControlObject is NSView)
-					parentWindow = ((NSView)parent.ControlObject).Window;
-				else
-					parentWindow = NSApplication.SharedApplication.KeyWindow;
+				parentWindow = parent.ParentWindow.ControlObject as NSWindow ?? NSApplication.SharedApplication.KeyWindow;
+				if (parentWindow != null)
+					Control.ParentWindow = parentWindow;
 			}
 			else
 				parentWindow = NSApplication.SharedApplication.KeyWindow;
@@ -106,7 +103,7 @@ namespace Eto.Platform.Mac.Forms
 			Manager.Action = null;
 			if (Font != null)
 			{
-				var fontHandler = this.Font.Handler as FontHandler;
+				var fontHandler = (FontHandler)Font.Handler;
 				Manager.SetSelectedFont(fontHandler.Control, false);
 			}
 			else

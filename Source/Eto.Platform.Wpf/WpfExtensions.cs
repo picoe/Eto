@@ -19,7 +19,8 @@ namespace Eto.Platform.Wpf
 			var tmp = System.Windows.Media.VisualTreeHelper.GetParent (control);
 			while (tmp != null) {
 				tmp = System.Windows.Media.VisualTreeHelper.GetParent (tmp);
-				if (tmp is T) return (T)tmp;
+				var ttmp = tmp as T;
+				if (ttmp != null) return ttmp;
 			}
 			return null;
 		}

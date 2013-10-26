@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Linq;
 using Eto.Forms;
 using MonoMac.AppKit;

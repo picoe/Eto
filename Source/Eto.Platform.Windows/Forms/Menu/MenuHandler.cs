@@ -1,4 +1,3 @@
-using System;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 

@@ -11,18 +11,14 @@ namespace Eto.Platform.GtkSharp
 		where T: Gtk.MenuItem
 		where W: MenuActionItem
 	{
-		public MenuActionItemHandler ()
+		public override void AttachEvent (string id)
 		{
-		}
-		
-		public override void AttachEvent (string handler)
-		{
-			switch (handler) {
+			switch (id) {
 			case MenuActionItem.ValidateEvent:
 				// handled by the contextmenu/menubar
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

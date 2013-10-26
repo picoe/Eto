@@ -1,5 +1,4 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
@@ -37,15 +36,15 @@ namespace Eto.Forms
 
 		GridViewSelectionState state;
 		bool areAllObjectsSelected;
-		GridView gridView;
+		readonly GridView gridView;
 
-		private IDataStore DataStore { get { return gridView != null ? gridView.DataStore : null; } }
+		IDataStore DataStore { get { return gridView != null ? gridView.DataStore : null; } }
 
-		private IDataStoreView DataStoreView { get { return gridView != null ? gridView.DataStoreView : null; } }
+		IDataStoreView DataStoreView { get { return gridView != null ? gridView.DataStoreView : null; } }
 
-		private IGridView Handler { get { return gridView != null ? gridView.Handler : null; } }
+		IGridView Handler { get { return gridView != null ? gridView.Handler : null; } }
 
-		private bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
+		bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
 
 		/// <summary>
 		/// Called when the underlying control's selection changes.
@@ -86,20 +85,20 @@ namespace Eto.Forms
 		/// The indexes of the selected objects in the model 
 		/// (not the view).
 		/// </summary>
-		SortedSet<int> selectedRows;
+		readonly SortedSet<int> selectedRows;
 
 		public IEnumerable<int> SelectedRows
 		{
 			get
 			{
 				// If all objects are selected, return the range [0, count-1]
-				if (areAllObjectsSelected && this.DataStore != null)
-					return Enumerable.Range(0, this.DataStore.Count);
-				return selectedRows ?? (IEnumerable<int>)new List<int>();
+				if (areAllObjectsSelected && DataStore != null)
+					return Enumerable.Range(0, DataStore.Count);
+				return selectedRows ?? Enumerable.Empty<int>();
 			}
 		}
 
-		private void ChangeSelection(Action a)
+		void ChangeSelection(Action a)
 		{
 			state = GridViewSelectionState.SelectionChanging;
 			a(); // Causes GridView.OnSelectionChanged to trigger which calls SuppressSelectionChanged which returns true.

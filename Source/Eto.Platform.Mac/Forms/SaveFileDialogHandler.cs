@@ -3,7 +3,6 @@ using SD = System.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms
 {

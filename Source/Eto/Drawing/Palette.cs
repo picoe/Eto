@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.ObjectModel;
 
 namespace Eto.Drawing
@@ -17,12 +16,12 @@ namespace Eto.Drawing
 	/// </remarks>
 	public class Palette : ObservableCollection<Color>, ICloneable
 	{
-		List<uint> argb;
+		readonly List<uint> argb;
 
 		/// <summary>
 		/// Gets the index of standard EGA colors from a 64-color palette
 		/// </summary>
-		public static readonly int[] EGAColors = new int[] { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
+		public static readonly int[] EGAColors = { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
 
 		#region Obsolete
 
@@ -32,7 +31,7 @@ namespace Eto.Drawing
 		[Obsolete ("Use Color.ToArgb() instead")]
 		public static UInt32 GenerateRGBColor (Color c)
 		{
-			return (UInt32)(((uint)(c.A * 255) << 24) + ((uint)(c.R * 255) << 16) + ((uint)(c.G * 255) << 8) + (uint)(c.B * 255));
+			return (((uint)(c.A * 255) << 24) + ((uint)(c.R * 255) << 16) + ((uint)(c.G * 255) << 8) + (uint)(c.B * 255));
 		}
 
 		#endregion
@@ -65,10 +64,10 @@ namespace Eto.Drawing
 		/// <returns></returns>
 		public static Palette GetEgaPalette ()
 		{
-			var mid = 168f / 255f;
-			var low = 84f / 255f;
-			var high = 252f / 255f;
-			Palette pal = new Palette ();
+			const float mid = 168f / 255f;
+			const float low = 84f / 255f;
+			const float high = 252f / 255f;
+			var pal = new Palette ();
 			pal.Add (new Color (0f, 0f, 0f));
 			pal.Add (new Color (0f, 0f, mid));
 			pal.Add (new Color (0f, mid, 0f));
@@ -142,11 +141,11 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Palette with the standard 16 DOS colors</returns>
 		public static Palette GetDosPalette ()
 		{
-			var mid = 171f / 255f;
-			var low = 87f / 255f;
-			var high = 1f;
+			const float mid = 171f / 255f;
+			const float low = 87f / 255f;
+			const float high = 1f;
 
-			Palette pal = new Palette ();
+			var pal = new Palette ();
 			pal.Add (new Color (0f, 0f, 0f));
 			pal.Add (new Color (0f, 0f, mid));
 			pal.Add (new Color (0f, mid, 0f));
@@ -175,7 +174,7 @@ namespace Eto.Drawing
 		{
 			if (palEGA.Count != 64)
 				throw new EtoException ("source palette is not an EGA palette");
-			Palette output = new Palette ();
+			var output = new Palette ();
 			for (int i=0; i<EGAColors.Length; i++) {
 				output.Add (palEGA [EGAColors [i]]);
 			}
@@ -194,7 +193,7 @@ namespace Eto.Drawing
 		/// <param name="includeAlpha">True to include alpha, false to only include RGB components</param>
 		public void Save (BinaryWriter writer, int shift = 0, bool includeAlpha = false)
 		{
-			for (int i=0; i<this.Count; i++) {
+			for (int i=0; i < Count; i++) {
 				var c = this [i];
 				if (includeAlpha)
 					writer.Write ((byte)((int)(c.A * byte.MaxValue) >> shift));
@@ -295,7 +294,7 @@ namespace Eto.Drawing
 			int closestIndex = 0;
 			var colorHsl = new ColorHSL (color);
 			var closestDifference = ColorHSL.Distance (colorHsl, new ColorHSL (this [0]));
-			for (int i = 1; i < this.Count; i++) {
+			for (int i = 1; i < Count; i++) {
 				var curDifference = ColorHSL.Distance (colorHsl, new ColorHSL (this [i]));
 				if (curDifference < closestDifference) {
 					closestIndex = i;
@@ -318,8 +317,8 @@ namespace Eto.Drawing
 			if (index != -1)
 				return index;
 			
-			this.Add (color);
-			return this.Count - 1;
+			Add(color);
+			return Count - 1;
 		}
 		
 		/// <summary>
@@ -343,12 +342,12 @@ namespace Eto.Drawing
 		public override bool Equals (object obj)
 		{
 			var p = obj as Palette;
-			if (obj == null)
+			if (p == null)
 				return false;
-			if (p.Count != this.Count)
+			if (p.Count != Count)
 				return false;
 			for (int i = 0; i < p.Count; i++) {
-				if (p.argb [i] != this.argb [i])
+				if (p.argb [i] != argb[i])
 					return false;
 			}
 			return true;

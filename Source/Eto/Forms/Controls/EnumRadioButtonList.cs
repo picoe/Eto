@@ -36,12 +36,8 @@ namespace Eto.Forms
 		/// </summary>
 		public new T SelectedValue
 		{
-			get { return (T)Enum.ToObject (typeof(T), Convert.ToInt32 (base.SelectedKey, CultureInfo.InvariantCulture)); }
-			set { base.SelectedKey = Convert.ToString (Convert.ToInt32 (value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
-		}
-
-		public EnumRadioButtonList ()
-		{
+			get { return (T)Enum.ToObject (typeof(T), Convert.ToInt32(SelectedKey, CultureInfo.InvariantCulture)); }
+			set { SelectedKey = Convert.ToString(Convert.ToInt32(value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture); }
 		}
 
 		protected override ListItemCollection CreateDefaultItems ()

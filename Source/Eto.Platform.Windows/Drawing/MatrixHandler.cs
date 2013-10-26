@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Eto.Drawing;
 using sd = System.Drawing;
 using sd2 = System.Drawing.Drawing2D;

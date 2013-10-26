@@ -1,11 +1,7 @@
 using System;
 using System.IO;
-using json = Newtonsoft.Json;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
-using System.Reflection;
 using System.Runtime.Serialization;
-using System.Collections.Generic;
 
 namespace Eto.Json
 {
@@ -85,7 +81,7 @@ namespace Eto.Json
 					namespaceManager = new DefaultNamespaceManager ();
 				}
 				var serializer = new JsonSerializer {
-					TypeNameHandling = json.TypeNameHandling.Auto,
+					TypeNameHandling = TypeNameHandling.Auto,
 					MissingMemberHandling = MissingMemberHandling.Error,
 					ContractResolver = new EtoContractResolver(),
 					Context = new StreamingContext (StreamingContextStates.All, instance),

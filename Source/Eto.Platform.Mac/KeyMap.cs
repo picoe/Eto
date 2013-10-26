@@ -1,9 +1,6 @@
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac
 {
@@ -49,7 +46,7 @@ namespace Eto.Platform.Mac
 		public static NSEventModifierMask KeyEquivalentModifierMask (Key key)
 		{
 			key &= Key.ModifierMask;
-			NSEventModifierMask mask = (NSEventModifierMask)0;
+			var mask = (NSEventModifierMask)0;
 			if ((key & Key.Shift) > 0)
 				mask |= NSEventModifierMask.ShiftKeyMask;
 			if ((key & Key.Alt) > 0)

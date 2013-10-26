@@ -64,42 +64,42 @@ namespace Eto.Test.Sections.Dialogs
 		Control Descender()
 		{
 			var control = new Label { TextColor = Colors.Red };
-			control.Bind(r => r.Text, (Font f) => f.Descent);
+			control.TextBinding.Bind<Font>(r => r.Descent.ToString());
 			return control;
 		}
 
 		Control Ascender()
 		{
 			var control = new Label { TextColor = Colors.Blue };
-			control.Bind(r => r.Text, (Font f) => f.Ascent);
+			control.TextBinding.Bind<Font>(r => r.Ascent.ToString());
 			return control;
 		}
 
 		Control XHeight()
 		{
 			var control = new Label { TextColor = Colors.Green };
-			control.Bind(r => r.Text, (Font f) => f.XHeight);
+			control.TextBinding.Bind<Font>(r => r.XHeight.ToString());
 			return control;
 		}
 
 		Control LineHeight()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.Bind(r => r.Text, (Font f) => f.LineHeight);
+			control.TextBinding.Bind<Font>(r => r.LineHeight.ToString());
 			return control;
 		}
 
 		Control Leading()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.Bind(r => r.Text, (Font f) => f.Leading);
+			control.TextBinding.Bind<Font>(r => r.Leading.ToString());
 			return control;
 		}
 
 		Control BaseLine()
 		{
 			var control = new Label { TextColor = Colors.Black };
-			control.Bind(r => r.Text, (Font f) => f.Baseline);
+			control.TextBinding.Bind<Font>(r => r.Baseline.ToString());
 			return control;
 		}
 

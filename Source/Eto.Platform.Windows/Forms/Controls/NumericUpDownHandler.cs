@@ -2,7 +2,6 @@ using System;
 using SD = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
-using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {

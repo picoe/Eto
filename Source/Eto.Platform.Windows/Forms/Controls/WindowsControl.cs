@@ -1,9 +1,6 @@
 using System;
-using System.ComponentModel;
-using System.Collections;
-using System.Reflection;
 using sd = System.Drawing;
-using SWF = System.Windows.Forms;
+using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Windows.Drawing;
@@ -15,9 +12,9 @@ namespace Eto.Platform.Windows
 	{
 		bool InternalVisible { get; }
 
-		SWF.DockStyle DockStyle { get; }
+		swf.DockStyle DockStyle { get; }
 
-		SWF.Control ContainerControl { get; }
+		swf.Control ContainerControl { get; }
 
 		Size ParentMinimumSize { get; set; }
 
@@ -50,7 +47,7 @@ namespace Eto.Platform.Windows
 			return null;
 		}
 
-		public static SWF.Control GetContainerControl(this Control control)
+		public static swf.Control GetContainerControl(this Control control)
 		{
 			if (control == null)
 				return null;
@@ -63,7 +60,7 @@ namespace Eto.Platform.Windows
 			if (controlObject != null)
 				return controlObject.GetContainerControl();
 
-			return control.ControlObject as SWF.Control;
+			return control.ControlObject as swf.Control;
 		}
 
 		public static void SetScale(this Control control, bool xscale, bool yscale)
@@ -76,7 +73,7 @@ namespace Eto.Platform.Windows
 	}
 
 	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
-		where T : System.Windows.Forms.Control
+		where T : swf.Control
 		where W : Control
 	{
 		bool internalVisible = true;
@@ -131,7 +128,7 @@ namespace Eto.Platform.Windows
 			get { return false; }
 		}
 
-		public virtual SWF.Control ContainerControl
+		public virtual swf.Control ContainerControl
 		{
 			get { return this.Control; }
 		}
@@ -142,13 +139,13 @@ namespace Eto.Platform.Windows
 			Control.TabIndex = 100;
 			XScale = true;
 			YScale = true;
-			this.Control.Margin = SWF.Padding.Empty;
+			this.Control.Margin = swf.Padding.Empty;
 			this.Control.Tag = this;
 		}
 
-		public virtual SWF.DockStyle DockStyle
+		public virtual swf.DockStyle DockStyle
 		{
-			get { return SWF.DockStyle.Fill; }
+			get { return swf.DockStyle.Fill; }
 		}
 
 		protected void SetMinimumSize()
@@ -167,6 +164,7 @@ namespace Eto.Platform.Windows
 			if (Control.MinimumSize != sdsize)
 			{
 				Control.MinimumSize = sdsize;
+				Debug.Print(string.Format("Min Size: {0}, Type:{1}", sdsize, Widget));
 			}
 		}
 
@@ -242,7 +240,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		void HandleMouseWheel(object sender, SWF.MouseEventArgs e)
+		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
 				Widget.OnMouseWheel(e.ToEto());
@@ -250,21 +248,21 @@ namespace Eto.Platform.Windows
 
 		void HandleControlMouseLeave(object sender, EventArgs e)
 		{
-			Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, SWF.Control.ModifierKeys.ToEto(), SWF.Control.MousePosition.ToEto()));
+			Widget.OnMouseLeave(new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
 		}
 
 		void HandleControlMouseEnter(object sender, EventArgs e)
 		{
-			Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, SWF.Control.ModifierKeys.ToEto(), SWF.Control.MousePosition.ToEto()));
+			Widget.OnMouseEnter(new MouseEventArgs(MouseButtons.None, swf.Control.ModifierKeys.ToEto(), swf.Control.MousePosition.ToEto()));
 		}
 
-		void HandleDoubleClick(object sender, SWF.MouseEventArgs e)
+		void HandleDoubleClick(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
 				Widget.OnMouseDoubleClick(e.ToEto());
 		}
 
-		void HandleMouseUp(Object sender, SWF.MouseEventArgs e)
+		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
 			{
@@ -274,13 +272,13 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		void HandleMouseMove(Object sender, SWF.MouseEventArgs e)
+		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
 				Widget.OnMouseMove(e.ToEto());
 		}
 
-		void HandleMouseDown(object sender, SWF.MouseEventArgs e)
+		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
 			{
@@ -331,7 +329,7 @@ namespace Eto.Platform.Windows
 			{
 				cursor = value;
 				if (cursor != null)
-					this.Control.Cursor = cursor.ControlObject as SWF.Cursor;
+					this.Control.Cursor = cursor.ControlObject as swf.Cursor;
 				else
 					this.Control.Cursor = null;
 			}
@@ -497,7 +495,9 @@ namespace Eto.Platform.Windows
 
 		void Control_TextChanged(object sender, EventArgs e)
 		{
-			Widget.OnTextChanged(e);
+			var widget = Widget as TextControl;
+			if (widget != null)
+				widget.OnTextChanged(e);
 		}
 
 		public Font Font

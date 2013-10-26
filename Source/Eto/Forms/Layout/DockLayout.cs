@@ -1,8 +1,5 @@
 using System;
 using Eto.Drawing;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.Serialization;
 
 
 #if XAML
@@ -103,7 +100,6 @@ namespace Eto.Forms
 		/// </summary>
 		/// <param name="container">Container for the dock layout to manage</param>
 		public DockLayout (DockContainer container)
-			: base ()
 		{
 			if (container != null)
 				container.Content = this;

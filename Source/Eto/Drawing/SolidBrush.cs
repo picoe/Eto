@@ -58,10 +58,10 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the solid brushes</param>
 		public Func<Color, SolidBrush> Instantiator (Generator generator = null)
 		{
-			var handler = generator.CreateShared<ISolidBrush> ();
+			var sharedHandler = generator.CreateShared<ISolidBrush> ();
 			return (color) => {
-				var control = handler.Create (color);
-				return new SolidBrush (handler, control);
+				var control = sharedHandler.Create (color);
+				return new SolidBrush (sharedHandler, control);
 			};
 		}
 

@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 
@@ -9,15 +8,10 @@ namespace Eto.Platform.Mac
 		void EnsureSubMenu();
 	}
 
-	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget, IMenu, IMenuHandler
+	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IMenu, IMenuHandler
 		where T: NSMenuItem
 		where W: Menu
 	{
-		
-		public MenuHandler()
-		{
-		}
-
 		public void EnsureSubMenu()
 		{
 			if (!Control.HasSubmenu)

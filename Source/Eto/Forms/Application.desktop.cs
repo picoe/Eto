@@ -1,5 +1,4 @@
 #if DESKTOP
-using System;
 
 namespace Eto.Forms
 {

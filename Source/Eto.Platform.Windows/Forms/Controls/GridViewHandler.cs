@@ -1,7 +1,6 @@
 using System;
 using swf = System.Windows.Forms;
 using Eto.Forms;
-using System.Linq;
 using System.Collections.Generic;
 
 namespace Eto.Platform.Windows.Forms.Controls

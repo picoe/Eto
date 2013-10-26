@@ -6,10 +6,6 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class AllControlsBase : Panel
 	{
-		public AllControlsBase()
-		{
-		}
-
 		public override void OnPreLoad(EventArgs e)
 		{
 
@@ -91,84 +87,88 @@ namespace Eto.Test.Sections.Behaviors
 
 		Control DateTimeControl()
 		{
-			var control = new DateTimePicker { };
-			LogEvents (control);
-			return control;
-		}
-		
-		Control NumericUpDownControl ()
-		{
-			var control = new NumericUpDown { };
-			LogEvents (control);
+			var control = new DateTimePicker();
+			LogEvents(control);
 			return control;
 		}
 
-		Control ComboBoxControl ()
+		Control NumericUpDownControl()
 		{
-			var control = new ComboBox { };
-			control.Items.Add (new ListItem{ Text = "Item 1" });
-			control.Items.Add (new ListItem{ Text = "Item 2" });
-			control.Items.Add (new ListItem{ Text = "Item 3" });
-			LogEvents (control);
+			var control = new NumericUpDown();
+			LogEvents(control);
 			return control;
 		}
 
-		Control ListBoxControl ()
+		Control ComboBoxControl()
 		{
-			var control = new ListBox { };
-			control.Items.Add (new ListItem { Text = "Item 1" });
-			control.Items.Add (new ListItem { Text = "Item 2" });
-			control.Items.Add (new ListItem { Text = "Item 3" });
-			LogEvents (control);
+			var control = new ComboBox();
+			control.Items.Add(new ListItem{ Text = "Item 1" });
+			control.Items.Add(new ListItem{ Text = "Item 2" });
+			control.Items.Add(new ListItem{ Text = "Item 3" });
+			LogEvents(control);
 			return control;
 		}
 
-		Control DrawableControl ()
+		Control ListBoxControl()
 		{
-			var control = new Drawable { Size = new Size (100, 30), CanFocus = true };
-			control.Paint += delegate(object sender, PaintEventArgs pe) {
-				pe.Graphics.FillRectangle (Brushes.Blue (), pe.ClipRectangle);
+			var control = new ListBox();
+			control.Items.Add(new ListItem { Text = "Item 1" });
+			control.Items.Add(new ListItem { Text = "Item 2" });
+			control.Items.Add(new ListItem { Text = "Item 3" });
+			LogEvents(control);
+			return control;
+		}
+
+		Control DrawableControl()
+		{
+			var control = new Drawable { Size = new Size(100, 30), CanFocus = true };
+			control.Paint += delegate(object sender, PaintEventArgs pe)
+			{
+				pe.Graphics.FillRectangle(Brushes.Blue(), pe.ClipRectangle);
 			};
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		Control GroupBoxControl ()
+		Control GroupBoxControl()
 		{
 			var control = new GroupBox { Text = "Some Group Box" };
 			control.Content = new Label{ Text = "Content" };
-			LogEvents (control);
+			LogEvents(control);
 			return control;
 		}
 
-		protected virtual void LogEvents (Button control)
+		protected virtual void LogEvents(Button control)
 		{
-			control.Click += delegate {
-				Log.Write (control, "Click");
+			control.Click += delegate
+			{
+				Log.Write(control, "Click");
 			};
 			
-			LogEvents ((Control)control);	
+			LogEvents((Control)control);	
 		}
-		
-		protected virtual void LogEvents (RadioButton control)
+
+		protected virtual void LogEvents(RadioButton control)
 		{
-			control.CheckedChanged += delegate {
-				Log.Write (control, "CheckedChanged");
+			control.CheckedChanged += delegate
+			{
+				Log.Write(control, "CheckedChanged");
 			};
 			
-			LogEvents ((Control)control);	
+			LogEvents((Control)control);	
 		}
-		
-		protected virtual void LogEvents (CheckBox control)
+
+		protected virtual void LogEvents(CheckBox control)
 		{
-			control.CheckedChanged += delegate {
-				Log.Write (control, "CheckedChanged");
+			control.CheckedChanged += delegate
+			{
+				Log.Write(control, "CheckedChanged");
 			};
 			
-			LogEvents ((Control)control);	
+			LogEvents((Control)control);	
 		}
-		
-		protected virtual void LogEvents (Control control)
+
+		protected virtual void LogEvents(Control control)
 		{
 		}
 	}

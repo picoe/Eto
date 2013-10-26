@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 
 namespace Eto.Forms
 {
@@ -33,7 +32,7 @@ namespace Eto.Forms
 
 		public override ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
 		{
-			var tbb = new SeparatorToolBarItem(generator) { Type = this.ToolBarType };
+			var tbb = new SeparatorToolBarItem(generator) { Type = ToolBarType };
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))
 				tbb.Style = ToolBarItemStyle;
 			return tbb;

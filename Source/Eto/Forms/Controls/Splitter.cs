@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Eto.Forms
@@ -129,7 +128,7 @@ namespace Eto.Forms
 					}
 				}
 				Handler.Panel1 = value;
-				if (load)
+				if (load && value != null)
 					value.OnLoadComplete(EventArgs.Empty);
 			}
 		}
@@ -153,7 +152,7 @@ namespace Eto.Forms
 					}
 				}
 				Handler.Panel2 = value; 
-				if (load)
+				if (load && value != null)
 					value.OnLoadComplete(EventArgs.Empty);
 			}
 		}

@@ -124,7 +124,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			switch (handler)
 			{
-				case Eto.Forms.Control.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					break;
 				default:
 					base.AttachEvent(handler);

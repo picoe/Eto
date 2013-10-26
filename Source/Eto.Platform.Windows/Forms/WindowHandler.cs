@@ -4,10 +4,7 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using System.Linq;
 using Eto.Platform.Windows.Forms;
-using System.CodeDom.Compiler;
-using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
@@ -28,7 +25,7 @@ namespace Eto.Platform.Windows
 		swf.Panel menuHolder;
 		swf.Panel content;
 		swf.Panel toolbarHolder;
-		swf.ToolTip tooltips = new swf.ToolTip();
+		readonly swf.ToolTip tooltips = new swf.ToolTip();
 		bool resizable;
 
 		public override swf.Control ContainerContentControl
@@ -164,10 +161,7 @@ namespace Eto.Platform.Windows
 					};
 					break;
 				case Window.LocationChangedEvent:
-					Control.LocationChanged += (sender, e) =>
-					{
-						Widget.OnLocationChanged(EventArgs.Empty);
-					};
+					Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(handler);
@@ -249,7 +243,7 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				return this.toolBar;
+				return toolBar;
 			}
 			set
 			{
@@ -359,7 +353,7 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				if (this.WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
+				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
 				else return Control.RestoreBounds.ToEto();
 			}
 		}

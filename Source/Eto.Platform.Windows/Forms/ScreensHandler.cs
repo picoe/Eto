@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using sd = System.Drawing;

@@ -108,7 +108,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			string fileName = Guid.NewGuid().ToString();
 			Control.Save(fileName, format.ToGdk());
 			Stream fileStream = File.OpenRead(fileName);
-			byte[] buffer = new byte[4096];
+			var buffer = new byte[4096];
 
 			int size = fileStream.Read(buffer, 0, buffer.Length);
 			while (size > 0)
@@ -149,7 +149,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 				context.Scale(scalex, scaley);
 			}
 			Gdk.CairoHelper.SetSourcePixbuf(context, Control, (destination.Left / scalex) - source.Left, (destination.Top / scaley) - source.Top);
-			var pattern = context.Source as Cairo.SurfacePattern;
+			var pattern = (Cairo.SurfacePattern)context.Source;
 			pattern.Filter = graphics.ImageInterpolation.ToCairo();
 			context.Fill();
 			context.Restore();
@@ -235,7 +235,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			{
 				unsafe
 				{
-					byte* srcrow = (byte*)data.Data;
+					var srcrow = (byte*)data.Data;
 					srcrow += y * data.ScanWidth;
 					srcrow += x * data.BytesPerPixel;
 					if (data.BytesPerPixel == 4)

@@ -23,9 +23,9 @@ namespace Eto.Test.Sections.Controls
 
 	public class GridViewSection : Panel
 	{
-		static Image image1 = TestIcons.TestImage;
-		static Image image2 = TestIcons.TestIcon;
-		SearchBox filterText = null;
+		static readonly Image image1 = TestIcons.TestImage;
+		static readonly Image image2 = TestIcons.TestIcon;
+		readonly SearchBox filterText;
 
 		public GridViewSection()
 		{
@@ -227,7 +227,7 @@ namespace Eto.Test.Sections.Controls
 			var item = new ImageMenuItem { Text = "Click Me!" };
 			item.Click += delegate
 			{
-				if (control.SelectedRows.Count() > 0)
+				if (control.SelectedRows.Any())
 					Log.Write(item, "Click, Rows: {0}", SelectedRowsString(control));
 				else
 					Log.Write(item, "Click, no item selected");
@@ -278,7 +278,7 @@ namespace Eto.Test.Sections.Controls
 			};
 		}
 
-		string SelectedRowsString(GridView control)
+		static string SelectedRowsString(GridView control)
 		{
 			return string.Join(",", control.SelectedRows.Select(r => r.ToString()).OrderBy(r => r));
 		}

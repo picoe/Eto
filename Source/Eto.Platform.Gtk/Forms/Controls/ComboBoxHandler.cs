@@ -1,7 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
 using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
 

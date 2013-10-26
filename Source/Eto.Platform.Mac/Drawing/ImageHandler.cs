@@ -1,5 +1,3 @@
-using System;
-using System.IO;
 using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;

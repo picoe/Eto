@@ -1,6 +1,4 @@
 using System;
-using System.Reflection;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
@@ -16,7 +14,7 @@ namespace Eto.Platform.GtkSharp
 		
 		public bool Checked
 		{
-			get { return (Control != null) ? Control.Active : this.ischecked; }
+			get { return (Control != null) ? Control.Active : ischecked; }
 			set
 			{
 				if (value != ischecked)
@@ -24,7 +22,7 @@ namespace Eto.Platform.GtkSharp
 					isBeingChecked = true;
 					if (Control != null) Control.Active = value;
 					isBeingChecked = false;
-					this.ischecked = value;
+					ischecked = value;
 				}
 			}
 		}
@@ -37,18 +35,18 @@ namespace Eto.Platform.GtkSharp
 			
 			Control = new Gtk.ToggleToolButton();
 			Control.Active = ischecked;
-			Control.Label = this.Text;
+			Control.Label = Text;
 			//Control.TooltipText = this.ToolTip;
 			Control.IconWidget = GtkImage;
 			Control.Toggled += button_Toggled;
-			Control.Sensitive = this.Enabled;
+			Control.Sensitive = Enabled;
 			Control.CanFocus = false;
 			Control.IsImportant = true;
 			tb.Insert(Control, -1);
 			if (tb.Visible) Control.ShowAll();
 		}
 		
-		private void button_Toggled(Object sender, EventArgs e)
+		void button_Toggled(Object sender, EventArgs e)
 		{
 			if (!isBeingChecked)
 			{

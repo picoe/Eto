@@ -1,5 +1,3 @@
-using System;
-using System.Collections;
 using System.Collections.ObjectModel;
 
 namespace Eto.Forms

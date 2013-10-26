@@ -1,7 +1,6 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
-using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -11,7 +10,7 @@ namespace Eto.Platform.GtkSharp
 		string text;
 		Key shortcut;
 		Image image;
-		Gtk.AccelLabel label;
+		readonly Gtk.AccelLabel label;
 		
 		public ImageMenuItemHandler()
 		{
@@ -82,7 +81,7 @@ namespace Eto.Platform.GtkSharp
 		public override void RemoveMenu(MenuItem item)
 		{
 			if (Control.Submenu == null) return;
-			Gtk.Menu menu = (Gtk.Menu)Control.Submenu;
+			var menu = (Gtk.Menu)Control.Submenu;
 			menu.Remove((Gtk.Widget)item.ControlObject);
 			if (menu.Children.Length == 0)
 			{
@@ -97,7 +96,7 @@ namespace Eto.Platform.GtkSharp
 				Control.Remove(w);
 			}
 		}
-		private void control_Activated(object sender, EventArgs e)
+		void control_Activated(object sender, EventArgs e)
 		{
 			if (Control.Submenu != null)
 				ValidateItems ();

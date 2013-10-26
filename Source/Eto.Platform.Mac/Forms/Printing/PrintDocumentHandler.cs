@@ -101,7 +101,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 			op.ShowsPrintPanel = showPanel;
 			if (parent != null)
 			{
-				var parentHandler = parent.Handler as IMacWindow;
+				var parentHandler = (IMacWindow)parent.Handler;
 				var closeSheet = new SheetHelper();
 				op.RunOperationModal(parentHandler.Control, closeSheet, new Selector("printOperationDidRun:success:contextInfo:"), IntPtr.Zero);
 				NSApplication.SharedApplication.RunModalForWindow(parentHandler.Control);

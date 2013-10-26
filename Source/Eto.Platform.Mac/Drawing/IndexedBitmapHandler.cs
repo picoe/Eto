@@ -1,10 +1,7 @@
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
-using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using System.Linq;
 
 namespace Eto.Platform.Mac.Drawing

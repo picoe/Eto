@@ -83,7 +83,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public NSFont CreateFont(float size)
 		{
-			var family = Widget.Family.Handler as FontFamilyHandler;
+			var family = (FontFamilyHandler)Widget.Family.Handler;
 			return NSFontManager.SharedFontManager.FontWithFamily(family.MacName, Traits, Weight, size);
 		}
 	}

@@ -60,7 +60,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleKeyDown(object sender, KeyEventArgs e)
 		{
-			var handler = ((Control)sender).Handler as DateTimePickerHandler;
+			var handler = (DateTimePickerHandler)((Control)sender).Handler;
 			if (!e.Handled)
 			{
 				if (e.KeyData == (Key.Application | Key.Backspace))
@@ -74,7 +74,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleMouseDown(object sender, MouseEventArgs e)
 		{
-			var handler = ((Control)sender).Handler as DateTimePickerHandler;
+			var handler = (DateTimePickerHandler)((Control)sender).Handler;
 			if (e.Buttons == MouseButtons.Primary)
 			{
 				if (handler.curValue == null)

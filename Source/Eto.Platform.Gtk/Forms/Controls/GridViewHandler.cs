@@ -1,8 +1,4 @@
-using System;
 using Eto.Forms;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
-using System.Linq;
 using System.Collections.Generic;
 using Eto.Platform.GtkSharp.Forms.Cells;
 

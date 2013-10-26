@@ -3,7 +3,6 @@ using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Controls;
-using MonoMac.ObjCRuntime;
 using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
@@ -23,7 +22,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			if (value == null)
 				return string.Empty;
-			var str = value as NSString;
+			var str = (NSString)value;
 			//if (str != null && value.Handle != IntPtr.Zero)
 			return str.ToString();
 		}

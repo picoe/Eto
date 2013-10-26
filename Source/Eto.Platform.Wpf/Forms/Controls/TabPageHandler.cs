@@ -28,7 +28,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			header.Children.Add(headerText);
 			Control.Header = header;
 
-			Control.Content = content = new swc.DockPanel { };
+			Control.Content = content = new swc.DockPanel { LastChildFill = true };
 		}
 
 		public string Text

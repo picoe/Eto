@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 #if OSX
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Drawing
 #elif IOS

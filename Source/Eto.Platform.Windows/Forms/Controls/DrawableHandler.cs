@@ -30,7 +30,7 @@ namespace Eto.Platform.Windows
 			public bool CanFocusMe
 			{
 				get { return canFocus; }
-				set { canFocus = value; this.SetStyle (swf.ControlStyles.Selectable, value); }
+				set { canFocus = value; SetStyle(swf.ControlStyles.Selectable, value); }
 			}
 
 			protected override void OnGotFocus (EventArgs e)
@@ -48,7 +48,7 @@ namespace Eto.Platform.Windows
 			protected override bool ProcessDialogKey (swf.Keys keyData)
 			{
 				var e = new swf.KeyEventArgs (keyData);
-				base.OnKeyDown (e);
+				OnKeyDown(e);
 				if (!e.Handled) {
 					// Prevent firing the keydown event twice for the same key
 					Handler.LastKeyDown = e.KeyData.ToEto ();

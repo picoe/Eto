@@ -1,5 +1,4 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
@@ -9,7 +8,7 @@ namespace Eto.Platform.GtkSharp
 		string text;
 		string tooltip;
 		Key shortcut;
-		Gtk.AccelLabel label;
+		readonly Gtk.AccelLabel label;
 
 		public CheckMenuItemHandler()
 		{
@@ -50,7 +49,7 @@ namespace Eto.Platform.GtkSharp
 			set { shortcut = value; }
 		}
 
-		private bool isBeingChecked = false;
+		bool isBeingChecked;
 
 		public bool Checked
 		{
@@ -80,7 +79,7 @@ namespace Eto.Platform.GtkSharp
 		public override void Clear()
 		{
 		}
-		private void control_Activated(object sender, EventArgs e)
+		void control_Activated(object sender, EventArgs e)
 		{
 			if (!isBeingChecked)
 			{

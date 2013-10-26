@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 using System.Net;
 using System.Diagnostics;
@@ -22,7 +20,7 @@ namespace Eto.Platform.CustomControls
 
 		public Uri Url { get { return new Uri ("http://" + "localhost" + ":" + port + "/"); } }
 
-		HttpListener listener;
+		readonly HttpListener listener;
 		int port = -1;
 
 		public HttpServer ()
@@ -30,14 +28,14 @@ namespace Eto.Platform.CustomControls
 			var rnd = new Random ();
 
 			for (int i = 0; i < 100; i++) {
-				int port = rnd.Next (49152, 65536);
+				int currentPort = rnd.Next (49152, 65536);
 
 				try {
 					listener = new HttpListener ();
-					listener.Prefixes.Add ("http://localhost:" + port + "/");
+					listener.Prefixes.Add ("http://localhost:" + currentPort + "/");
 					listener.Start ();
 
-					this.port = port;
+					this.port = currentPort;
 					listener.BeginGetContext (ListenerCallback, null);
 					return;
 				}

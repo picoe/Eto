@@ -20,7 +20,7 @@ namespace Eto.Drawing
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("Use nullable values instead")]
-		public readonly static ColorHSL Empty = new ColorHSL ();
+		public readonly static ColorHSL Empty;
 
 		#endregion
 
@@ -148,7 +148,7 @@ namespace Eto.Drawing
 				float p = (2f * this.L) - q;
 
 				float Hk = this.H / 360f;
-				float[] T = new float[3];
+				var T = new float[3];
 				T[0] = Hk + (1f / 3f);    // Tr
 				T[1] = Hk;                // Tb
 				T[2] = Hk - (1f / 3f);    // Tg

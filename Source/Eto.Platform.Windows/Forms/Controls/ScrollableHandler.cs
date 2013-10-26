@@ -3,13 +3,12 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsDockContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
-		swf.Panel content;
+		readonly swf.Panel content;
 		bool expandWidth = true;
 		bool expandHeight = true;
 
@@ -19,8 +18,8 @@ namespace Eto.Platform.Windows
 
 			protected override bool ProcessDialogKey(swf.Keys keyData)
 			{
-				swf.KeyEventArgs e = new swf.KeyEventArgs(keyData);
-				base.OnKeyDown(e);
+				var e = new swf.KeyEventArgs(keyData);
+				OnKeyDown(e);
 				if (!e.Handled)
 				{
 					// Prevent firing the keydown event twice for the same key
@@ -39,7 +38,7 @@ namespace Eto.Platform.Windows
 			{
 				/*if (autoScrollToControl) return base.ScrollToControl(activeControl);
 				else return this.AutoScrollPosition;*/
-				return this.AutoScrollPosition;
+				return AutoScrollPosition;
 			}
 
 			protected override void OnClientSizeChanged(EventArgs e)
@@ -70,7 +69,7 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				var baseSize = base.UserDesiredSize;
+				var baseSize = UserDesiredSize;
 				var size = base.DesiredSize;
 				// if we have set to a specific size, then try to use that
 				if (baseSize.Width >= 0)
@@ -149,10 +148,8 @@ namespace Eto.Platform.Windows
 			{
 
 				var minSize = Control.ClientSize;
-				if (!ExpandContentWidth) minSize.Width = 0;
-				else minSize.Width = Math.Max(0, minSize.Width);
-				if (!ExpandContentHeight) minSize.Height = 0;
-				else minSize.Height = Math.Max(0, minSize.Height);
+				minSize.Width = !ExpandContentWidth ? 0 : Math.Max(0, minSize.Width);
+				minSize.Height = !ExpandContentHeight ? 0 : Math.Max(0, minSize.Height);
 
 				// set the scale of the content based on whether we want it to or not
 				contentControl.SetScale(!ExpandContentWidth, !ExpandContentHeight);
@@ -172,9 +169,8 @@ namespace Eto.Platform.Windows
 			switch (handler)
 			{
 				case Scrollable.ScrollEvent:
-					Control.Scroll += delegate(object sender, System.Windows.Forms.ScrollEventArgs e)
-					{
-						this.Widget.OnScroll(new ScrollEventArgs(this.ScrollPosition));
+					Control.Scroll += delegate {
+						Widget.OnScroll(new ScrollEventArgs(ScrollPosition));
 					};
 					break;
 				default:
@@ -199,7 +195,7 @@ namespace Eto.Platform.Windows
 
 		public Size ScrollSize
 		{
-			get { return this.Control.DisplayRectangle.Size.ToEto(); }
+			get { return Control.DisplayRectangle.Size.ToEto(); }
 			set { Control.AutoScrollMinSize = value.ToSD(); }
 		}
 

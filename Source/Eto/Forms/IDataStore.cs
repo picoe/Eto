@@ -27,7 +27,7 @@ namespace Eto.Forms
 			if (store == null)
 				yield break;
 			for (int i = 0; i < store.Count; i++)
-				yield return (T)store[i];
+				yield return store[i];
 		}
 	}
 
@@ -44,20 +44,20 @@ namespace Eto.Forms
 
 		public void Sort (IComparer<T> comparer)
 		{
-			var list = base.Items as List<T>;
+			var list = Items as List<T>;
 			if (list != null) {
 				list.Sort (comparer);
 				OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 				return;
 			}
-			for (int i = this.Count - 1; i >= 0; i--) {
+			for (int i = Count - 1; i >= 0; i--) {
 				for (int j = 1; j <= i; j++) {
 					var o1 = this [j - 1];
 					var o2 = this [j];
 
 					if (comparer.Compare (o1, o2) > 0) {
-						this.Remove (o1);
-						this.Insert (j, o1);
+						Remove(o1);
+						Insert(j, o1);
 					}
 				}
 			}
@@ -65,20 +65,20 @@ namespace Eto.Forms
 
 		public void Sort (Comparison<T> comparison)
 		{
-			var list = base.Items as List<T>;
+			var list = Items as List<T>;
 			if (list != null) {
 				list.Sort (comparison);
 				OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
 				return;
 			}
-			for (int i = this.Count - 1; i >= 0; i--) {
+			for (int i = Count - 1; i >= 0; i--) {
 				for (int j = 1; j <= i; j++) {
 					var o1 = this [j - 1];
 					var o2 = this [j];
 
 					if (comparison (o1, o2) > 0) {
-						this.Remove (o1);
-						this.Insert (j, o1);
+						Remove(o1);
+						Insert(j, o1);
 					}
 				}
 			}

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swf = System.Windows.Forms;
 using sdp = System.Drawing.Printing;
 using Eto.Forms;
@@ -37,9 +33,7 @@ namespace Eto.Platform.Windows.Forms.Printing
 				};
 				break;
 			case PrintDocument.EndPrintEvent:
-				Control.EndPrint += (sender, e) => {
-					Widget.OnEndPrint (e);
-				};
+				Control.EndPrint += (sender, e) => Widget.OnEndPrint(e);
 				break;
 			case PrintDocument.PrintPageEvent:
 				Control.PrintPage += (sender, e) => {

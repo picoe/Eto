@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -82,7 +81,7 @@ namespace Eto.Forms
 		public virtual void OnBeginCellEdit (GridViewCellArgs e)
 		{
 			if (_BeginCellEdit != null)
-				_BeginCellEdit(this, this.ViewToModel(e));
+				_BeginCellEdit(this, ViewToModel(e));
 		}
 
 		public const string EndCellEditEvent = "Grid.EndCellEditEvent";
@@ -100,7 +99,7 @@ namespace Eto.Forms
 		public virtual void OnEndCellEdit (GridViewCellArgs e)
 		{
 			if (_EndCellEdit != null)
-				_EndCellEdit (this, this.ViewToModel(e));
+				_EndCellEdit (this, ViewToModel(e));
 		}
 
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";

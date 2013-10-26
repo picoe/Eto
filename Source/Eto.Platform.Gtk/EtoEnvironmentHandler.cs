@@ -7,7 +7,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
-		Environment.SpecialFolder Convert (EtoSpecialFolder folder)
+		static Environment.SpecialFolder Convert (EtoSpecialFolder folder)
 		{
 			switch (folder) {
 			case EtoSpecialFolder.ApplicationSettings:

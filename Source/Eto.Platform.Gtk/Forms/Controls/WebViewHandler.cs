@@ -1,9 +1,7 @@
 using System;
 using Eto.Forms;
-using System.Net;
 using System.Web;
 using System.Threading;
-using Eto.Platform.GtkSharp.CustomControls;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
@@ -64,7 +62,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			case WebView.DocumentLoadingEvent:
 #if GTK2
 				Control.NavigationRequested += (sender, args) => {
-					if (args.Request.Uri.StartsWith (EtoReturnPrefix)) {
+					if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal)) {
 						// pass back the response to ExecuteScript()
 						this.scriptReturnValue = HttpUtility.UrlDecode (args.Request.Uri.Substring (EtoReturnPrefix.Length));
 						returnResetEvent.Set ();
@@ -112,9 +110,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			case WebView.DocumentTitleChangedEvent:
-				Control.TitleChanged += (sender, args) => {
-					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (args.Title));
-				};
+				Control.TitleChanged += (sender, args) => Widget.OnDocumentTitleChanged(new WebViewTitleEventArgs(args.Title));
 				break;
 			default:
 				base.AttachEvent (handler);

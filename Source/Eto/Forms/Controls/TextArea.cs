@@ -1,6 +1,5 @@
 using Eto.Drawing;
 using System;
-using System.Collections;
 
 namespace Eto.Forms
 {

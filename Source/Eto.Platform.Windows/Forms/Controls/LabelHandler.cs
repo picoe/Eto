@@ -1,10 +1,8 @@
 using System;
-using System.Reflection;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Drawing;
-using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {

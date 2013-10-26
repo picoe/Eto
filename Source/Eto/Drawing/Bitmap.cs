@@ -341,7 +341,7 @@ namespace Eto.Drawing
 		public byte[] ToByteArray (ImageFormat imageFormat)
 		{
 			using (var memoryStream = new MemoryStream ()) {
-				this.Save (memoryStream, imageFormat);
+				Save(memoryStream, imageFormat);
 				return memoryStream.ToArray ();
 			}
 		}

@@ -16,7 +16,7 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 
 		public void Print ()
 		{
-			var settingsHandler = (PrintSettingsHandler)this.PrintSettings.Handler;
+			var settingsHandler = (PrintSettingsHandler)PrintSettings.Handler;
 			Control.PrintSettings = settingsHandler.Control;
 				if (settingsHandler.ShowPreview)
 				Control.Run (Gtk.PrintOperationAction.Preview, null);
@@ -28,14 +28,10 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 		{
 			switch (id) {
 			case PrintDocument.BeginPrintEvent:
-				Control.BeginPrint += (o, args) => {
-					Widget.OnBeginPrint (EventArgs.Empty);
-				};
+				Control.BeginPrint += (o, args) => Widget.OnBeginPrint(EventArgs.Empty);
 				break;
 			case PrintDocument.EndPrintEvent:
-				Control.EndPrint += (o, args) => {
-					Widget.OnEndPrint (EventArgs.Empty);
-				};
+				Control.EndPrint += (o, args) => Widget.OnEndPrint(EventArgs.Empty);
 				break;
 
 			case PrintDocument.PrintPageEvent:

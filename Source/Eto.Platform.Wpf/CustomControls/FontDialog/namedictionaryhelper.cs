@@ -6,7 +6,7 @@ using System.Windows.Markup;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
-    internal static class NameDictionaryHelper
+    static class NameDictionaryHelper
     {
         public static string GetDisplayName(LanguageSpecificStringDictionary nameDictionary)
         {
@@ -66,7 +66,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             return bestName;
         }
 
-        private static int GetRelatedness(XmlLanguage keyLang, XmlLanguage userLang)
+        static int GetRelatedness(XmlLanguage keyLang, XmlLanguage userLang)
         {
             try
             {
@@ -99,7 +99,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             return 0;
         }
 
-        private static string TrimSuffix(string tag)
+        static string TrimSuffix(string tag)
         {
             int i = tag.LastIndexOf('-');
             if (i > 0)
@@ -112,7 +112,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private static bool IsPrefixOf(string prefix, string tag)
+        static bool IsPrefixOf(string prefix, string tag)
         {
             return prefix.Length < tag.Length &&
                 tag[prefix.Length] == '-' &&

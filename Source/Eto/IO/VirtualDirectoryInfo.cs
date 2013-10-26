@@ -1,6 +1,5 @@
 using System;
 using System.Text.RegularExpressions;
-using System.Collections;
 using System.IO;
 using SI = System.IO;
 using System.Collections.Generic;
@@ -58,7 +57,7 @@ namespace Eto.IO
 			ReadStream(stream);
 		}
 		
-		private VirtualDirectoryInfo()
+		VirtualDirectoryInfo()
 		{
 			this.FlattenInitialDirectory = FlattenInitialDirectories;
 		}
@@ -76,7 +75,7 @@ namespace Eto.IO
 				ReadStream(stream);
 			}
 		}
-		private void ReadStream(Stream stream)
+		void ReadStream(Stream stream)
 		{
 			Files = new List<VirtualFileEntry>();
 			bool hasFiles = false;
@@ -96,9 +95,9 @@ namespace Eto.IO
 				}
 			}
 			
-			if (FlattenInitialDirectory && VirtualPath.Length == 0 && !hasFiles && topDirectories == 1)
+			if (FlattenInitialDirectory && VirtualPath.Length == 0 && !hasFiles && topDirectories == 1 && topDirectory != null)
 			{
-				this.VirtualPath = topDirectory.FullPath;
+				VirtualPath = topDirectory.FullPath;
 			}
 		}
 
@@ -178,7 +177,7 @@ namespace Eto.IO
 			filter = filter.Replace(".", "\\.");
 			filter = filter.Replace("*", ".+");
 
-			Regex reg = new Regex(filter, RegexOptions.IgnoreCase 
+			var reg = new Regex(filter, RegexOptions.IgnoreCase 
 #if !MOBILE
 				| RegexOptions.Compiled
 #endif

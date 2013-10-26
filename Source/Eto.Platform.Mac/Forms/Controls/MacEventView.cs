@@ -42,14 +42,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var filter1 = new CIAffineTransform();
 				filter1.Image = ciImage;
 				filter1.SetValueForKey(affineTransform, CIInputTransform);
-				ciImage = filter1.ValueForKey(CIOutputImage) as CIImage;
+				ciImage = (CIImage)filter1.ValueForKey(CIOutputImage);
 			}
 
 			var filter2 = new CIColorControls();
 			filter2.SetDefaults();
 			filter2.Image = ciImage;
 			filter2.Saturation = 0.0f;
-			ciImage = filter2.ValueForKey(CIOutputImage) as CIImage;
+			ciImage = (CIImage)filter2.ValueForKey(CIOutputImage);
 			
 			var filter3 = new CIColorMatrix();
 			filter3.SetDefaults();
@@ -57,7 +57,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			filter3.RVector = new CIVector(0, color.R, 0);
 			filter3.GVector = new CIVector(color.G, 0, 0);
 			filter3.BVector = new CIVector(0, 0, color.B);
-			ciImage = filter3.ValueForKey(CIOutputImage) as CIImage;
+			ciImage = (CIImage)filter3.ValueForKey(CIOutputImage);
 
 			ciImage.Draw(new SD.RectangleF(SD.PointF.Empty, size), new SD.RectangleF(SD.PointF.Empty, realSize), NSCompositingOperation.SourceOver, 1);
 		}

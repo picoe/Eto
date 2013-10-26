@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -135,19 +133,17 @@ namespace Eto.Test.Sections.Drawing
 		{
 			var control = new Drawable { Size = new Size (550, 200) };
 
-			control.Paint += (sender, e) => {
-				e.Graphics.FillPath(Brushes.Black(), path);
-			};
+			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.Black(), path);
 
 			return control;
 		}
 
 		GraphicsPath CreateMainPath()
 		{
-			var path = CreatePath();
+			var mainPath = CreatePath();
 
-			path.StartFigure();
-			path.AddLine(220, 120, 220, 170);
+			mainPath.StartFigure();
+			mainPath.AddLine(220, 120, 220, 170);
 
 			// test adding child paths and transforms
 			var childPath = CreatePath();
@@ -155,87 +151,87 @@ namespace Eto.Test.Sections.Drawing
 			matrix.Translate(240, 120);
 			matrix.Scale(0.25f);
 			childPath.Transform(matrix);
-			path.AddPath(childPath, ConnectPath);
+			mainPath.AddPath(childPath, ConnectPath);
 
-			path.AddLine(370, 120, 370, 170);
+			mainPath.AddLine(370, 120, 370, 170);
 
-			return path;
+			return mainPath;
 		}
 
 		GraphicsPath CreatePath()
 		{
-			var path = new GraphicsPath();
+			var newPath = new GraphicsPath();
 			var start = StartFigures;
 			var close = CloseFigures;
 
 			// connected segments
 
-			path.MoveTo(10, 10);
-			path.LineTo(20, 90);
-			path.LineTo(10, 60);
-			path.LineTo(90, 80);
-			path.LineTo(60, 30);
+			newPath.MoveTo(10, 10);
+			newPath.LineTo(20, 90);
+			newPath.LineTo(10, 60);
+			newPath.LineTo(90, 80);
+			newPath.LineTo(60, 30);
 			if (close && start)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
 			if (start)
-				path.StartFigure();
-			path.AddArc(100, 0, 100, 50, 200, -160);
+				newPath.StartFigure();
+			newPath.AddArc(100, 0, 100, 50, 200, -160);
 			if (close && start)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
 			if (start)
-				path.StartFigure();
-			path.AddBezier(new PointF(200, 10), new PointF(285, 20), new PointF(210, 85), new PointF(300, 90));
+				newPath.StartFigure();
+			newPath.AddBezier(new PointF(200, 10), new PointF(285, 20), new PointF(210, 85), new PointF(300, 90));
 			if (close && start)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
 			if (start)
-				path.StartFigure();
-			path.AddCurve(new PointF(310, 90), new PointF(390, 90), new PointF(390, 10), new PointF(310, 10));
+				newPath.StartFigure();
+			newPath.AddCurve(new PointF(310, 90), new PointF(390, 90), new PointF(390, 10), new PointF(310, 10));
 			if (close && start)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
 			if (start)
-				path.StartFigure();
-			path.AddLine(410, 10, 410, 90);
+				newPath.StartFigure();
+			newPath.AddLine(410, 10, 410, 90);
 			if (close && start)
-				path.CloseFigure();
+				newPath.CloseFigure();
 			
 			if (start)
-				path.StartFigure();
-			path.AddLines(new PointF(420, 10), new PointF(420, 90));
+				newPath.StartFigure();
+			newPath.AddLines(new PointF(420, 10), new PointF(420, 90));
 			if (close && start)
-				path.CloseFigure();
+				newPath.CloseFigure();
 			
 			if (start)
-				path.StartFigure();
-			path.AddLines(new PointF(430, 10), new PointF(430, 90));
+				newPath.StartFigure();
+			newPath.AddLines(new PointF(430, 10), new PointF(430, 90));
 			if (close)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
 			// separate segments
 
 			if (start)
-				path.StartFigure();
-			path.AddEllipse(100, 100, 100, 45);
+				newPath.StartFigure();
+			newPath.AddEllipse(100, 100, 100, 45);
 			if (close)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
 			if (start)
-				path.StartFigure();
-			path.AddRectangle(10, 110, 80, 80);
+				newPath.StartFigure();
+			newPath.AddRectangle(10, 110, 80, 80);
 			if (close)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
 			// at the end, draw a line so we can potentially connect to parent path
 			if (start)
-				path.StartFigure();
-			path.AddLines(new PointF(440, 10), new PointF(440, 90));
+				newPath.StartFigure();
+			newPath.AddLines(new PointF(440, 10), new PointF(440, 90));
 			if (close)
-				path.CloseFigure();
+				newPath.CloseFigure();
 
-			return path;
+			return newPath;
 		}
 	}
 }

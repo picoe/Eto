@@ -528,7 +528,7 @@ namespace Eto.Platform.GtkSharp
 					FontControl.ModifyFont(null);
 				else
 				{
-					var handler = font.Handler as FontHandler;
+					var handler = (FontHandler)font.Handler;
 					FontControl.ModifyFont(handler.Control);
 				}
 			}

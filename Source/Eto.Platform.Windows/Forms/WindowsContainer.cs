@@ -13,7 +13,7 @@ namespace Eto.Platform.Windows
 	{
 		Size minimumSize;
 
-		public WindowsContainer()
+		protected WindowsContainer()
 		{
 			EnableRedrawDuringSuspend = false;
 		}

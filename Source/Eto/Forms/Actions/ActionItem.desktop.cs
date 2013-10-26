@@ -1,5 +1,4 @@
 #if DESKTOP
-using System;
 
 namespace Eto.Forms
 {
@@ -13,7 +12,7 @@ namespace Eto.Forms
 		public abstract MenuItem Generate(Generator generator);
 	}
 	
-	public partial class ActionItemSeparator : ActionItemBase
+	public partial class ActionItemSeparator
 	{
 		public override MenuItem Generate(Generator generator)
 		{
@@ -33,7 +32,7 @@ namespace Eto.Forms
 			{
 				item = new ImageMenuItem(generator);
 				item.Text = SubMenuText;
-				item.ID = this.ID;
+				item.ID = ID;
 				if (!string.IsNullOrEmpty(MenuItemStyle))
 					item.Style = MenuItemStyle;
 				Actions.Generate(item);
@@ -46,7 +45,7 @@ namespace Eto.Forms
 	{
 		public override MenuItem Generate(Generator generator)
 		{
-			var item = this.Action.GenerateMenuItem(generator);
+			var item = Action.GenerateMenuItem(generator);
 			if (item != null)
 			{
 				if (!string.IsNullOrEmpty(MenuItemStyle))

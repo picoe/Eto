@@ -12,7 +12,7 @@ namespace Eto.Forms
 	public class ContextMenu : Menu, ISubMenuWidget
 	{
 		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
-		MenuItemCollection menuItems;
+		readonly MenuItemCollection menuItems;
 		
 		public ContextMenu () : this (Generator.Current)
 		{
@@ -36,9 +36,9 @@ namespace Eto.Forms
 		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (var ai in actionItems) {
-				var mi = ai.Generate (this.Generator);
+				var mi = ai.Generate (Generator);
 				if (mi != null)
-					this.menuItems.Add(mi);
+					menuItems.Add(mi);
 			}
 		}
 

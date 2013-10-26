@@ -1,4 +1,3 @@
-using System;
 using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Forms

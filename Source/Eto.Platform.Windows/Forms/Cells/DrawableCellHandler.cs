@@ -38,8 +38,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			// Cache the Eto graphics between cell redraws, since rows
 			// are drawn using the same sd.Graphics.
-			private sd.Graphics cachedGraphicsKey = null;
-			private Graphics cachedGraphics = null;
+			sd.Graphics cachedGraphicsKey;
+			Graphics cachedGraphics = null;
 
 			protected override void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{
@@ -73,8 +73,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			public override object Clone ()
 			{
-				var val = base.Clone () as EtoCell;
-				val.Handler = this.Handler;
+				var val = (EtoCell)base.Clone();
+				val.Handler = Handler;
 				return val;
 			}
 		}

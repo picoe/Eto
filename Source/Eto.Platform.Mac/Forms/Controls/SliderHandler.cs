@@ -15,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -87,13 +87,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get
 			{ 
 				if (Control.TickMarksCount > 1)
-					return (int)((MaxValue - MinValue) / (Control.TickMarksCount - 1));
+					return ((MaxValue - MinValue) / (Control.TickMarksCount - 1));
 				else
 					return MaxValue - MinValue;
 			}
 			set
 			{ 
-				Control.TickMarksCount = (int)((MaxValue - MinValue) / value) + 1;
+				Control.TickMarksCount = ((MaxValue - MinValue) / value) + 1;
 			}
 		}
 
@@ -107,14 +107,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				orientation = value;
 				// wha?!?! no way to do this other than change size or sumthun?
-				var size = this.Control.Frame.Size;
+				var size = Control.Frame.Size;
 				if (value == SliderOrientation.Vertical)
 				{
 					size.Height = size.Width + 1;
 				}
 				else
 					size.Width = size.Height + 1;
-				this.Control.SetFrameSize(size);
+				Control.SetFrameSize(size);
 				LayoutIfNeeded();
 			}
 		}

@@ -1,7 +1,3 @@
-using System;
-using System.Collections;
-using System.Reflection;
-using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
 

@@ -73,7 +73,7 @@ namespace Eto.Platform.Wpf.Forms
 		}
 
 
-		public WpfDockContainer()
+		protected WpfDockContainer()
 		{
 			border = new swc.Border
 			{

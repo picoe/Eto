@@ -1,10 +1,7 @@
-using System;
 using Eto.Forms;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Test.Sections.Controls;
 using Eto.Test.Sections.Drawing;
-using Eto.Test.Sections.Layouts;
 
 namespace Eto.Test
 {

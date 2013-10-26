@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
@@ -41,7 +40,7 @@ namespace Eto.Platform.GtkSharp
 				}
 				image = value;
 				if (image != null) {
-					var imagehandler = image.Handler as IGtkPixbuf;
+					var imagehandler = (IGtkPixbuf)image.Handler;
 					gtkimage.Pixbuf = imagehandler.GetPixbuf (MaxImageSize);
 					gtkimage.ShowAll ();
 				}

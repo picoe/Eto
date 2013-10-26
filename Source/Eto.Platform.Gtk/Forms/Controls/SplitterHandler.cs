@@ -14,6 +14,7 @@ namespace Eto.Platform.GtkSharp
 
 		class EtoHPaned : Gtk.HPaned
 		{
+			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				base.OnSizeRequested(ref requisition);
@@ -24,10 +25,12 @@ namespace Eto.Platform.GtkSharp
 						requisition.Width += Position - childreq.Width;
 				}
 			}
+			#endif
 		}
 
 		class EtoVPaned : Gtk.VPaned
 		{
+			#if GTK2
 			protected override void OnSizeRequested(ref Gtk.Requisition requisition)
 			{
 				base.OnSizeRequested(ref requisition);
@@ -38,6 +41,7 @@ namespace Eto.Platform.GtkSharp
 						requisition.Height += Position - childreq.Height;
 				}
 			}
+			#endif
 		}
 
 		public override Gtk.Widget ContainerControl

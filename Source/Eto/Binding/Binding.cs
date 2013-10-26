@@ -1,7 +1,4 @@
 using System;
-using System.ComponentModel;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace Eto

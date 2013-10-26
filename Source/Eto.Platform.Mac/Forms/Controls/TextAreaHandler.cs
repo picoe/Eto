@@ -4,6 +4,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -18,7 +19,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -70,8 +71,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Editable = true,
 				Selectable = true,
 				AllowsUndo = true,
-				MinSize = new System.Drawing.SizeF(0, 0),
-				MaxSize = new System.Drawing.SizeF(float.MaxValue, float.MaxValue)
+				MinSize = sd.SizeF.Empty,
+				MaxSize = new sd.SizeF(float.MaxValue, float.MaxValue)
 			};
 			Control.TextContainer.WidthTracksTextView = true;
 
@@ -164,6 +165,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 
 		Font font;
+
 		public Font Font
 		{
 			get
@@ -195,7 +197,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				else
 				{
 					Control.TextContainer.WidthTracksTextView = false;
-					Control.TextContainer.ContainerSize = new System.Drawing.SizeF(float.MaxValue, float.MaxValue);
+					Control.TextContainer.ContainerSize = new sd.SizeF(float.MaxValue, float.MaxValue);
 				}
 			}
 		}
@@ -207,8 +209,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var range = Control.SelectedRange;
 				if (range.Location >= 0 && range.Length > 0)
 					return Control.Value.Substring(range.Location, range.Length);
-				else
-					return null;
+				return null;
 			}
 			set
 			{
@@ -242,12 +243,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public void Append(string text, bool scrollToCursor)
 		{
-			var range = new NSRange(this.Control.Value.Length, 0);
-			this.Control.Replace(range, text);
-			range = new NSRange(this.Control.Value.Length, 0);
-			this.Control.SelectedRange = range;
+			var range = new NSRange(Control.Value.Length, 0);
+			Control.Replace(range, text);
+			range = new NSRange(Control.Value.Length, 0);
+			Control.SelectedRange = range;
 			if (scrollToCursor)
-				this.Control.ScrollRangeToVisible(range);
+				Control.ScrollRangeToVisible(range);
 		}
 	}
 }

@@ -1,6 +1,5 @@
 using Eto.Drawing;
 using Eto.Forms;
-using System.Linq;
 
 namespace Eto.Test.Handlers
 {
@@ -17,7 +16,7 @@ namespace Eto.Test.Handlers
         public TabPageHandler()
         {
 			this.Tab = new Tab { Tag = this };
-            this.Control = new Panel { };
+			this.Control = new Panel();
         }
 
 		public string Text 

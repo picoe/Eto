@@ -3,14 +3,14 @@ using Gdk;
 
 namespace Eto.Platform.GtkSharp.CustomControls
 {
-	internal class AnalogClock : Gtk.DrawingArea
+	class AnalogClock : Gtk.DrawingArea
 	{
 		double radius;
 		double hourLength, minuteLength, secondLength;
-		Cairo.Color hourColor = new Cairo.Color(0.23, 0.23, 0.23, 0.9);
-		Cairo.Color minuteColor = new Cairo.Color(0.23, 0.23, 0.23);
-		Cairo.Color secondColor = new Cairo.Color(0.56, 0.54, 0.4, 0.5);
-		Cairo.Color ticksColor = new Cairo.Color(0.56, 0.54, 0.4);
+		readonly Cairo.Color hourColor = new Cairo.Color(0.23, 0.23, 0.23, 0.9);
+		readonly Cairo.Color minuteColor = new Cairo.Color(0.23, 0.23, 0.23);
+		readonly Cairo.Color secondColor = new Cairo.Color(0.56, 0.54, 0.4, 0.5);
+		readonly Cairo.Color ticksColor = new Cairo.Color(0.56, 0.54, 0.4);
 		Cairo.PointD center;
 		DateTime time;
 		
@@ -32,7 +32,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			}
 		}
 		
-		void DrawFace (Cairo.PointD center, double radius, Cairo.Context e)
+		static void DrawFace (Cairo.PointD center, double radius, Cairo.Context e)
 		{
 			e.Arc (center.X, center.Y, radius, 0, 360);
 			Cairo.Gradient pat = new Cairo.LinearGradient (100, 200, 200, 100);

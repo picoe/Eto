@@ -1,13 +1,8 @@
 #if XAML
-using Eto.Drawing;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Markup;
 
 namespace Eto.Xaml.Extensions

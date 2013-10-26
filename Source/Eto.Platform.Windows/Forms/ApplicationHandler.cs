@@ -1,12 +1,10 @@
 using System;
-using System.Runtime.InteropServices;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
 using System.Diagnostics;
-using Microsoft.WindowsAPICodePack.Taskbar;
-using Eto.Drawing;
 using System.Threading;
+using Microsoft.WindowsAPICodePack.Taskbar;
 
 namespace Eto.Platform.Windows
 {
@@ -96,7 +94,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		void SetOptions()
+		static void SetOptions()
 		{
 			if (EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter(new ScrollMessageFilter());

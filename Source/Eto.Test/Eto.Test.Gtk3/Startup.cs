@@ -1,9 +1,5 @@
-using System;
 using Eto;
-using Eto.Misc;
 using Eto.Test;
-using Eto.Forms;
-using Eto.Drawing;
 using System.Diagnostics;
 
 namespace Eto.Test.Gtk3

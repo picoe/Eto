@@ -62,8 +62,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				store = value;
-				if (store is ObservableCollection<IListItem>)
-					Control.ItemsSource = store as ObservableCollection<IListItem>;
+				var source = store as ObservableCollection<IListItem>; 
+				if (source != null)
+					Control.ItemsSource = source;
 				else
 					Control.ItemsSource = new ObservableCollection<IListItem>(store.AsEnumerable());
 			}

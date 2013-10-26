@@ -8,10 +8,10 @@ using System.Globalization;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
-    internal class TypefaceListItem : TextBlock, IComparable
+    class TypefaceListItem : TextBlock, IComparable
     {
-        private string _displayName;
-        private bool _simulated;
+        string _displayName;
+        bool _simulated;
 
         public TypefaceListItem(Typeface typeface)
         {

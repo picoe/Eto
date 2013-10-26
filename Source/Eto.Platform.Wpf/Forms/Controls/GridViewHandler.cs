@@ -37,8 +37,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				store = value;
 				// must use observable collection for editing
-				if (store is ObservableCollection<object>)
-					Control.ItemsSource = store as ObservableCollection<object>;
+				var source = store as ObservableCollection<IListItem>; 
+				if (source != null)
+					Control.ItemsSource = source;
 				else
 					Control.ItemsSource = new ObservableCollection<object> (store.AsEnumerable());
 			}

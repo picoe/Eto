@@ -1,9 +1,5 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
-using Eto.Drawing;
-using System.Collections.ObjectModel;
 
 #if XAML
 using System.Windows.Markup;
@@ -70,7 +66,7 @@ namespace Eto.Forms
 				if (items == null)
 				{
 					items = CreateDefaultItems();
-					this.DataStore = items;
+					DataStore = items;
 				}
 				return items;
 			}
@@ -109,7 +105,7 @@ namespace Eto.Forms
 		{
 			base.OnLoadComplete(e);
 			if (DataStore == null)
-				this.DataStore = CreateDefaultItems();
+				DataStore = CreateDefaultItems();
 		}
 
 		protected virtual ListItemCollection CreateDefaultItems()

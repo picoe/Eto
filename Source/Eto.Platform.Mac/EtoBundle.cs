@@ -1,6 +1,5 @@
 using System;
 using MonoMac.Foundation;
-using MonoMac.AppKit;
 using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac

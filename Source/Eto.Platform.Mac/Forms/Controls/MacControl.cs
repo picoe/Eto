@@ -1,9 +1,6 @@
-using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 using Eto.Drawing;
-using MonoMac.Foundation;
-using System.Collections.Generic;
 using Eto.Platform.Mac.Drawing;
 using sd = System.Drawing;
 

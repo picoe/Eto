@@ -77,8 +77,8 @@ namespace Eto.Platform
 
 			for (int i = 0; i < points.Length; i++) {
 				float t = (float)i / (points.Length - 1);
-				points[i].X = (float)(AX * t * t * t + BX * t * t + CX * t + DX);
-				points[i].Y = (float)(AY * t * t * t + BY * t * t + CY * t + DY);
+				points[i].X = AX * t * t * t + BX * t * t + CX * t + DX;
+				points[i].Y = AY * t * t * t + BY * t * t + CY * t + DY;
 			}
 
 			return points;

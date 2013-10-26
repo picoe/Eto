@@ -1,5 +1,4 @@
 using System;
-using System.IO;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;

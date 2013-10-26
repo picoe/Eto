@@ -1,9 +1,5 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -21,7 +17,7 @@ namespace Eto.Platform.GtkSharp
 	}
 
 	public class GtkListModel<T, S> : GLib.Object, ITreeModelImplementor
-		where S: IDataStore<T>
+		where S: class, IDataStore<T>
 		where T: class
 	{
 

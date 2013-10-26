@@ -383,7 +383,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         {
             get
             {
-                return (_familyCollection == null) ? Fonts.SystemFontFamilies : _familyCollection;
+				return _familyCollection ?? Fonts.SystemFontFamilies;
             }
 
             set

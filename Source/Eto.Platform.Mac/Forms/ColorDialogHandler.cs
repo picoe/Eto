@@ -4,7 +4,6 @@ using Eto.Forms;
 using MonoMac.ObjCRuntime;
 using MonoMac.Foundation;
 using Eto.Drawing;
-using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -22,7 +21,7 @@ namespace Eto.Platform.Mac.Forms
 		public IColorDialogHandler Handler { get { return (IColorDialogHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 		[Export("changeColor:")]
-		public void changeColor(NSColorPanel panel)
+		public void ChangeColor(NSColorPanel panel)
 		{
 			Handler.Color = panel.Color.UsingColorSpace (NSColorSpace.DeviceRGB).ToEto ();
 			Handler.Widget.OnColorChanged(EventArgs.Empty);
@@ -36,7 +35,7 @@ namespace Eto.Platform.Mac.Forms
 		}
 		
 		[Export("modalClosed:")]
-		public void modalClosed(NSNotification notification)
+		public void ModalClosed(NSNotification notification)
 		{
 			NSColorPanel.SharedColorPanel.PerformClose (this);
 			NSNotificationCenter.DefaultCenter.RemoveObserver (this);
@@ -62,9 +61,9 @@ namespace Eto.Platform.Mac.Forms
 			NSWindow parentWindow;
 			//Console.WriteLine ("Parent: {0}. {1}, {2}", parent, parent.ControlObject, NSApplication.SharedApplication.ModalWindow);
 			if (parent != null) {
-				if (parent.ControlObject is NSWindow) parentWindow = (NSWindow)parent.ControlObject;
-				else if (parent.ControlObject is NSView) parentWindow = ((NSView)parent.ControlObject).Window;
-				else parentWindow = NSApplication.SharedApplication.KeyWindow;
+				parentWindow = parent.ParentWindow.ControlObject as NSWindow ?? NSApplication.SharedApplication.KeyWindow;
+				if (parentWindow != null)
+					Control.ParentWindow = parentWindow;
 			}
 			else parentWindow = NSApplication.SharedApplication.KeyWindow;
 			
@@ -72,7 +71,7 @@ namespace Eto.Platform.Mac.Forms
 			Control.Delegate = ColorHandler.Instance;
 			Control.SetTarget (null);
 			Control.SetAction (null);
-			Control.Color = this.Color.ToNS ();
+			Control.Color = Color.ToNS ();
 			
 			Control.SetTarget (ColorHandler.Instance);
 			Control.SetAction (new Selector("changeColor:"));

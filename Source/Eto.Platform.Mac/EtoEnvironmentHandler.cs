@@ -1,15 +1,12 @@
 using System;
-using System.Runtime.InteropServices;
-using MonoMac.AppKit;
 using MonoMac.Foundation;
 using System.Linq;
-using Eto.Forms;
 
 namespace Eto.Platform.Mac
 {
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
-		void Convert (EtoSpecialFolder folder, out NSSearchPathDirectory dir, out NSSearchPathDomain domain)
+		static void Convert (EtoSpecialFolder folder, out NSSearchPathDirectory dir, out NSSearchPathDomain domain)
 		{
 			switch (folder) {
 			case EtoSpecialFolder.ApplicationSettings:

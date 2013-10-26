@@ -1,9 +1,7 @@
 using System;
-using System.Linq;
 using MonoMac.AppKit;
 using MonoMac.CoreImage;
 using sd = System.Drawing;
-using MonoMac.CoreGraphics;
 using MonoMac.Foundation;
 using Eto.Drawing;
 
@@ -51,7 +49,7 @@ namespace Eto.Platform.Mac
 			compositingFilter.SetValueForKey(colorFilter.ValueForKey(CIFilterOutputKey.Image), CIFilterInputKey.Image);
 			compositingFilter.SetValueForKey(monochromeFilter.ValueForKey(CIFilterOutputKey.Image), CIFilterInputKey.BackgroundImage);
 
-			CIImage outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
+			var outputImage = (CIImage)compositingFilter.ValueForKey(CIFilterOutputKey.Image);
 			var extent = outputImage.Extent;
 
 			var newsize = sd.Size.Truncate(extent.Size);

@@ -12,10 +12,6 @@ namespace Eto.Platform.Windows
 	{
 		Control content;
 
-		public WindowsDockContainer()
-		{
-		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();

@@ -6,8 +6,6 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
 using sd = System.Drawing;
-using MonoMac.ImageIO;
-using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.Mac.Drawing

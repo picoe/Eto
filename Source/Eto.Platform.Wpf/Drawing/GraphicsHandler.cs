@@ -56,9 +56,6 @@ namespace Eto.Platform.Wpf.Drawing
 
 			this.Control = context;
 
-			//if (DPI != new sw.Size(1.0, 1.0))
-			//	this.Control.PushTransform (new swm.ScaleTransform (DPI.Width, DPI.Height));
-			var dpi = DPI;
 			this.bounds = bounds;
 
 			this.Control.PushClip (new swm.RectangleGeometry (bounds));
@@ -291,7 +288,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			if (image != null) {
 				Control.Close ();
-				var handler = image.Handler as BitmapHandler;
+				var handler = (BitmapHandler)image.Handler;
 				var bmp = handler.Control;
 				var newbmp = new swmi.RenderTargetBitmap (bmp.PixelWidth, bmp.PixelHeight, bmp.DpiX, bmp.DpiY, swm.PixelFormats.Pbgra32);
 				newbmp.Render (visual);

@@ -1,13 +1,8 @@
-using System;
 using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac;
-using MonoMac.ObjCRuntime;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {

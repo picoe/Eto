@@ -4,7 +4,6 @@ using SD = System.Drawing;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
-using MonoMac.ObjCRuntime;
 using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Forms.Controls
@@ -91,9 +90,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			var naturalSize = GetNaturalSize(Size.MaxValue);
-			Control.Frame = new System.Drawing.RectangleF(0, 0, naturalSize.Width, naturalSize.Height);
-			HandleEvent(NumericUpDown.KeyDownEvent);
+			var size = GetNaturalSize(Size.MaxValue);
+			Control.Frame = new System.Drawing.RectangleF(0, 0, size.Width, size.Height);
+			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}
 
 		public override void PostKeyDown(KeyEventArgs e)

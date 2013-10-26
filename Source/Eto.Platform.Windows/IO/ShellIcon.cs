@@ -1,6 +1,5 @@
 using System;
 using System.Runtime.InteropServices;
-using Microsoft.Win32;
 
 #if WINFORMS
 namespace Eto.Platform.Windows.IO
@@ -50,10 +49,10 @@ namespace Eto.Platform.Wpf.IO
 	
 		public static System.Drawing.Icon GetFileIcon(string name, IconSize size, bool linkOverlay)
 		{
-			Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
+			var shfi = new Shell32.SHFILEINFO();
 			uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
     
-			if (true == linkOverlay) flags += Shell32.SHGFI_LINKOVERLAY;
+			if (linkOverlay) flags += Shell32.SHGFI_LINKOVERLAY;
 
 			
 			/* Check the size specified for return. */
@@ -81,8 +80,7 @@ namespace Eto.Platform.Wpf.IO
 			}
 			else
 			{
-				System.Drawing.Icon icon = (System.Drawing.Icon)
-					System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
+				var icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
 				User32.DestroyIcon( shfi.hIcon ); // Cleanup
 				return icon;
 			}
@@ -117,13 +115,13 @@ namespace Eto.Platform.Wpf.IO
 			Shell32.SHGetFileInfo(	null, 
 				Shell32.FILE_ATTRIBUTE_DIRECTORY, 
 				ref shfi, 
-				(uint) System.Runtime.InteropServices.Marshal.SizeOf(shfi), 
+				(uint) Marshal.SizeOf(shfi), 
 				flags );
 
 			System.Drawing.Icon.FromHandle(shfi.hIcon);	// Load the icon from an HICON handle
 
 			// Now clone the icon, so that it can be successfully stored in an ImageList
-			System.Drawing.Icon icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
+			var icon = (System.Drawing.Icon)System.Drawing.Icon.FromHandle(shfi.hIcon).Clone();
 
 			User32.DestroyIcon( shfi.hIcon );		// Cleanup
 			return icon;

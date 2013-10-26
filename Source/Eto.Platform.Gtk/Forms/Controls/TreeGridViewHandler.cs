@@ -1,8 +1,5 @@
 using System;
-using System.Linq;
 using Eto.Forms;
-using Eto.Drawing;
-using Eto.Platform.GtkSharp.Drawing;
 using System.Collections.Generic;
 using Eto.Platform.GtkSharp.Forms.Cells;
 
@@ -49,7 +46,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			void ExpandItems()
 			{
 				var store = Handler.collection.Collection;
-				Gtk.TreePath path = new Gtk.TreePath();
+				var path = new Gtk.TreePath();
 				ExpandItems (store, path);
 			}
 
@@ -157,7 +154,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					args.RetVal = e.Cancel;
 					if (!e.Cancel)
 					{
-						selectCollapsingItem = AllowMultipleSelection ? false : ChildIsSelected (e.Item);
+						selectCollapsingItem = !AllowMultipleSelection && ChildIsSelected(e.Item);
 						SkipSelectedChange = true;
 					}
 				};
@@ -246,7 +243,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				foreach (var row in rows)
 				{
 					int count = 0;
-					Gtk.TreePath path = new Gtk.TreePath();
+					var path = new Gtk.TreePath();
 					count += GetCount (Gtk.TreeIter.Zero, row.Indices[0]);
 					// slow but works for now
 					for (int i = 0; i < row.Indices.Length-1; i++)

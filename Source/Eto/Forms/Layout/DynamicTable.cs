@@ -34,7 +34,7 @@ namespace Eto.Forms
 
 		public void Add(params Control[] controls)
 		{
-			Add((IEnumerable<Control>)controls);
+			Add(controls.AsEnumerable());
 		}
 
 		public void Add(IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)

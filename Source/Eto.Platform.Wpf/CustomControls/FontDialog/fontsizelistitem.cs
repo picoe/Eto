@@ -9,9 +9,9 @@ using System.Globalization;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
-    internal class FontSizeListItem : TextBlock, IComparable
+    class FontSizeListItem : TextBlock, IComparable
     {
-        private double _sizeInPoints;
+        double _sizeInPoints;
 
         public FontSizeListItem(double sizeInPoints)
         {

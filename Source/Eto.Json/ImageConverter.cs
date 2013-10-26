@@ -1,9 +1,7 @@
 using System;
 using Newtonsoft.Json;
-using Eto.Drawing;
 using Newtonsoft.Json.Linq;
-using Eto.Forms;
-using System.IO;
+using Eto.Drawing;
 
 namespace Eto.Json
 {
@@ -17,7 +15,7 @@ namespace Eto.Json
 		public override object ReadJson (Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
 			if (reader.TokenType == JsonToken.String) {
-				var val = (string)((JValue)JValue.ReadFrom (reader)).Value;
+				var val = (string)((JValue)JToken.ReadFrom (reader)).Value;
 				var converter = new Eto.Drawing.ImageConverter ();
 				return converter.ConvertFrom (val);
 			}

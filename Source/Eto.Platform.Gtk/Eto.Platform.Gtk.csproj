@@ -10,8 +10,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.GtkSharp</RootNamespace>
     <AssemblyName>Eto.Platform.Gtk</AssemblyName>
-    <ReleaseVersion>
-    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

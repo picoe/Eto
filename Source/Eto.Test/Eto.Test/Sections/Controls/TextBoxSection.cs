@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -29,9 +28,7 @@ namespace Eto.Test.Sections.Controls
 			LogEvents(control);
 
 			var selectAll = new Button { Text = "Select All" };
-			selectAll.Click += (object sender, EventArgs e) => {
-				control.SelectAll();
-			};
+			selectAll.Click += (sender, e) => control.SelectAll();
 
 			var layout = new DynamicLayout(Padding.Empty);
 			layout.Add(control);

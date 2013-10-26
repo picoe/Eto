@@ -1,5 +1,4 @@
 using System;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
@@ -98,13 +97,13 @@ namespace Eto.Forms
 				OnLoadComplete(EventArgs.Empty);
 			}
 			
-			this.DialogResult = Handler.ShowDialog(parent);
+			DialogResult = Handler.ShowDialog(parent);
 			return DialogResult;
 		}
 
 		public void Close(DialogResult result)
 		{
-			this.DialogResult = result;
+			DialogResult = result;
 			Close();
 		}
 	}

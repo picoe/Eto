@@ -85,7 +85,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void AttachEvent (string handler)
 		{
 			switch (handler) {
-			case GridView.EndCellEditEvent:
+			case Grid.EndCellEditEvent:
 				// no editing here
 				break;
 			default:

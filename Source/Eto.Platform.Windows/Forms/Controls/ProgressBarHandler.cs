@@ -1,4 +1,3 @@
-using System;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
 
@@ -14,7 +13,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			};
 		}
 
-		SWF.ProgressBarStyle IndeterminateStyle
+		static SWF.ProgressBarStyle IndeterminateStyle
 		{
 			get { return (SWF.Application.RenderWithVisualStyles) ? SWF.ProgressBarStyle.Marquee : SWF.ProgressBarStyle.Continuous; }
 		}

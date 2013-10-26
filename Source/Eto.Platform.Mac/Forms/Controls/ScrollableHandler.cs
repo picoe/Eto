@@ -8,7 +8,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacDockContainer<NSScrollView, Scrollable>, IScrollable
 	{
-		readonly NSView view;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
 
@@ -43,7 +42,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public ScrollableHandler()
 		{
 			Enabled = true;
-			view = new FlippedView();
 			Control = new EtoScrollView
 			{
 				Handler = this, 
@@ -53,15 +51,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
-				DocumentView = view
+				DocumentView = new FlippedView()
 			};
 			// only draw dirty regions, instead of entire scroll area
 			Control.ContentView.CopiesOnScroll = true;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Scrollable.ScrollEvent:
 					Control.ContentView.PostsBoundsChangedNotifications = true;
@@ -72,7 +70,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					}, Control.ContentView);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -114,7 +112,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override NSView ContentControl
 		{
-			get { return view; }
+			get { return (NSView)Control.DocumentView; }
 		}
 
 		public override void LayoutChildren()
@@ -135,6 +133,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		void InternalSetFrameSize(SD.SizeF size)
 		{
+			var view = (NSView)Control.DocumentView;
 			if (size != view.Frame.Size)
 			{
 				view.SetFrameSize(size);
@@ -170,6 +169,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{ 
+				var view = (NSView)Control.DocumentView;
 				var loc = Control.ContentView.Bounds.Location;
 				if (view.IsFlipped)
 					return loc.ToEtoPoint();
@@ -178,6 +178,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set
 			{ 
+				var view = (NSView)Control.DocumentView;
 				if (view.IsFlipped)
 					Control.ContentView.ScrollToPoint(value.ToSDPointF());
 				else
@@ -188,7 +189,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Size ScrollSize
 		{			
-			get { return view.Frame.Size.ToEtoSize(); }
+			get { return ((NSView)Control.DocumentView).Frame.Size.ToEtoSize(); }
 			set
 			{ 
 				InternalSetFrameSize(value.ToSDSizeF());

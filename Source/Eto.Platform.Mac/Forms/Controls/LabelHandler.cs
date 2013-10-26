@@ -68,12 +68,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				}
 				return rect;
 			}
-			/*
-			public override void DrawInteriorWithFrame(sd.RectangleF cellFrame, NSView inView)
-			{
-				var rect = DrawingRectForBounds(cellFrame);
-				AttributedStringValue.DrawString(rect, DrawingOptions);
-			}*/
 		}
 
 		public class EtoLabel : NSTextField, IMacControl
@@ -277,5 +271,16 @@ namespace Eto.Platform.Mac.Forms.Controls
 			SetAttributes(true);
 		}
 
+		public override void AttachEvent(string id)
+		{
+			switch (id)
+			{
+				case TextControl.TextChangedEvent:
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
+			}
+		}
 	}
 }

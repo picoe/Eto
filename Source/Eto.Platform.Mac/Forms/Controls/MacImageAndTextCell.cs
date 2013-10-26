@@ -5,7 +5,6 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Platform.Mac.Drawing;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -44,14 +43,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var imgitem = value as IImageListItem;
 			if (imgitem != null && imgitem.Image != null)
-				this.Image = ((IImageSource)imgitem.Image.Handler).GetImage ();
-			this.Text = (NSString)value.Text;
+				Image = ((IImageSource)imgitem.Image.Handler).GetImage();
+			Text = (NSString)value.Text;
 		}
 
 		[Export("copyWithZone:")]
 		public virtual NSObject CopyWithZone (IntPtr zone)
 		{
-			var clone = this.Clone () as MacImageData;
+			var clone = (MacImageData)Clone();
 			clone.Retain();
 			return clone;
 		}
@@ -199,8 +198,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			if (UseTextShadow) {
 				var str = new NSMutableAttributedString(this.StringValue);
-				str.AddAttribute (NSAttributedString.ShadowAttributeName, this.Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
-				this.AttributedStringValue = str;
+				str.AddAttribute (NSAttributedString.ShadowAttributeName, Highlighted ? TextHighlightShadow : TextShadow, new NSRange(0, str.Length));
+				AttributedStringValue = str;
 			}
 			
 			base.DrawInteriorWithFrame (cellFrame, inView);

@@ -14,8 +14,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		UIView Child { get; set; }
 
-		protected override bool UseContentSize { get { return false; } }
-
 		public override UIView ContainerControl { get { return Control; } }
 
 		BorderType border;
@@ -127,11 +125,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
 			return SizeF.Min(availableSize, base.GetPreferredSize(availableSize));
-		}
-
-		protected override SizeF GetNaturalSize(SizeF availableSize)
-		{
-			return Content != null ? Content.GetPreferredSize(availableSize) : base.GetNaturalSize(availableSize);
 		}
 
 		public void UpdateScrollSizes()

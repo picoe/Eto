@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
@@ -42,7 +41,7 @@ namespace Eto.Platform.Windows
 				using (var foreBrush = new sd.SolidBrush(this.ForeColor))
 				{
 					var bounds = e.Bounds;
-					var item = Items[e.Index] as IListItem;
+					var item = (IListItem)Items[e.Index];
 					var imageitem = item as IImageListItem;
 					if (imageitem != null && imageitem.Image != null)
 					{

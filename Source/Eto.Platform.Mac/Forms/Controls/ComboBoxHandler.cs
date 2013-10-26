@@ -1,12 +1,9 @@
 using System;
-using System.Reflection;
 using SD = System.Drawing;
 using Eto.Forms;
 using System.Linq;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -20,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}

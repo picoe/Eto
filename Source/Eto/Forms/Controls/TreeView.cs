@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using Eto.Drawing;
 
@@ -268,8 +267,8 @@ namespace Eto.Forms
 		[Obsolete("Use DataStore property instead")]
 		public ITreeStore TopNode
 		{
-			get { return this.DataStore; }
-			set { this.DataStore = value; }
+			get { return DataStore; }
+			set { DataStore = value; }
 		}
 
 		public ITreeStore DataStore

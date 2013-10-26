@@ -1,12 +1,9 @@
 using System;
-using System.IO;
 using Eto.Drawing;
 using SD = System.Drawing;
 
 #if OSX
-using MonoMac.AppKit;
 using MonoMac.CoreGraphics;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Drawing
 #elif IOS

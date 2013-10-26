@@ -88,7 +88,7 @@ namespace Eto.Drawing
 			Handler.Create (familyName);
 		}
 
-		string SplitFamilyName (string familyName, Generator generator)
+		static string SplitFamilyName (string familyName, Generator generator)
 		{
 			var handler = generator.CreateShared<IFonts>();
 			var families = familyName.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);

@@ -7,13 +7,13 @@ namespace Eto.Platform.GtkSharp
 {
 	public class NewWindowPolicyDecisionRequestedArgs : SignalArgs
 	{
-		public WebFrame Frame { get { return base.Args [0] as WebFrame; } }
+		public WebFrame Frame { get { return Args[0] as WebFrame; } }
 
-		public NetworkRequest Request { get { return base.Args [1] as NetworkRequest; } }
+		public NetworkRequest Request { get { return Args[1] as NetworkRequest; } }
 
-		public WebNavigationAction Action { get { return base.Args [0] as WebNavigationAction; } }
+		public WebNavigationAction Action { get { return Args[0] as WebNavigationAction; } }
 
-		public WebPolicyDecision Decision { get { return base.Args [0] as WebPolicyDecision; } }
+		public WebPolicyDecision Decision { get { return Args[0] as WebPolicyDecision; } }
 	}
 
 	public delegate void NewWindowPolicyDecisionRequestedHandler (object sender,NewWindowPolicyDecisionRequestedArgs e);
@@ -42,15 +42,15 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		private static bool newwindowpolicydecisionrequested_cb (IntPtr webview, IntPtr frame, IntPtr request, IntPtr action, IntPtr decision)
+		static bool newwindowpolicydecisionrequested_cb (IntPtr webview, IntPtr frame, IntPtr request, IntPtr action, IntPtr decision)
 		{
 			bool result;
 			try {
-				var webView = GLib.Object.GetObject (webview, false) as EtoWebView;
+				var webView = (EtoWebView)GLib.Object.GetObject (webview, false);
 				result = webView.OnNewWindowPolicyDecisionRequested (GLib.Object.GetObject (frame) as WebFrame, GLib.Object.GetObject (request) as NetworkRequest, GLib.Object.GetObject (action) as WebNavigationAction, GLib.Object.GetObject (decision) as WebPolicyDecision);
 			} catch (Exception ex) {
 				ExceptionManager.RaiseUnhandledException (ex, true);
-				throw ex;
+				throw;
 			}
 			return result;
 		}
@@ -58,9 +58,9 @@ namespace Eto.Platform.GtkSharp
 		[UnmanagedFunctionPointer(CallingConvention.Cdecl)]
 		private delegate bool NewWindowPolicyDecisionRequestedVMDelegate (IntPtr webview,IntPtr frame,IntPtr request,IntPtr action,IntPtr decision);
 
-		private static NewWindowPolicyDecisionRequestedVMDelegate NewWindowPolicyDecisionRequestedVMCallback;
+		static NewWindowPolicyDecisionRequestedVMDelegate NewWindowPolicyDecisionRequestedVMCallback;
 
-		private static void OverrideNewWindowPolicyDecisionRequested (GType gtype)
+		static void OverrideNewWindowPolicyDecisionRequested (GType gtype)
 		{
 			if (EtoWebView.NewWindowPolicyDecisionRequestedVMCallback == null) {
 				EtoWebView.NewWindowPolicyDecisionRequestedVMCallback = new EtoWebView.NewWindowPolicyDecisionRequestedVMDelegate (EtoWebView.newwindowpolicydecisionrequested_cb);

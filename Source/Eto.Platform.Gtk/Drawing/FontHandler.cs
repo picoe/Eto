@@ -27,7 +27,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		{
 			if (font != null)
 			{
-				var handler = font.Handler as FontHandler;
+				var handler = (FontHandler)font.Handler;
 				layout.FontDescription = handler.Control;
 				layout.Attributes = handler.Attributes;
 			}

@@ -3,14 +3,12 @@ using System.Linq;
 using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
-using Eto.Forms;
 
 
 #if OSX
 using Eto.Platform.Mac.Forms;
 using MonoMac.CoreGraphics;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using GraphicsBase = Eto.Platform.Mac.Forms.MacBase<MonoMac.CoreGraphics.CGContext, Eto.Drawing.Graphics>;
 
 namespace Eto.Platform.Mac.Drawing
@@ -449,7 +447,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing();
 
-			var handler = image.Handler as IImageHandler;
+			var handler = (IImageHandler)image.Handler;
 			handler.DrawImage(this, x, y);
 			EndDrawing();
 		}
@@ -458,7 +456,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing();
 
-			var handler = image.Handler as IImageHandler;
+			var handler = (IImageHandler)image.Handler;
 			handler.DrawImage(this, x, y, width, height);
 			EndDrawing();
 		}
@@ -467,7 +465,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing();
 
-			var handler = image.Handler as IImageHandler;
+			var handler = (IImageHandler)image.Handler;
 			handler.DrawImage(this, source, destination);
 			EndDrawing();
 		}

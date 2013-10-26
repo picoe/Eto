@@ -69,12 +69,12 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (defaultButton != null) {
-					var handler = defaultButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = false;
 				}
 				defaultButton = value;
 				if (defaultButton != null) {
-					var handler = defaultButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = true;
 				}
 			}
@@ -86,12 +86,12 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (abortButton != null) {
-					var handler = abortButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = false;
 				}
 				abortButton = value;
 				if (abortButton != null) {
-					var handler = abortButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = true;
 				}
 			}

@@ -2,14 +2,11 @@ using System;
 using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
-using System.Collections;
 using System.ComponentModel;
-using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 
 #if XAML
 using System.Windows.Markup;
-using System.Xaml;
 
 #endif
 namespace Eto.Forms
@@ -329,7 +326,7 @@ namespace Eto.Forms
 		}
 
 		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		void OnDeserialized(StreamingContext context)
 		{
 			OnDeserialized();
 		}
@@ -359,14 +356,14 @@ namespace Eto.Forms
 			}
 			else
 			{
-				this.PreLoad += HandleDeserialized;
+				PreLoad += HandleDeserialized;
 			}
 		}
 
 		void HandleDeserialized(object sender, EventArgs e)
 		{
 			OnDeserialized(true);
-			this.PreLoad -= HandleDeserialized;
+			PreLoad -= HandleDeserialized;
 		}
 	}
 }

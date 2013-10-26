@@ -3,7 +3,6 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using System.Collections.Generic;
-using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 
 namespace Eto.Platform.Mac.Forms.Controls
@@ -151,11 +150,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			WeakReference handler;
 			public TreeGridViewHandler Handler { get { return (TreeGridViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn forTableColumn, NSObject byItem)
+			public override NSObject GetObjectValue (NSOutlineView outlineView, NSTableColumn tableColumn, NSObject item)
 			{
-				var myitem = byItem as EtoTreeItem;
-				var colHandler = Handler.GetColumn (forTableColumn);
+				var colHandler = Handler.GetColumn (tableColumn);
 				if (colHandler != null) {
+					var myitem = (EtoTreeItem)item;
 					return colHandler.GetObjectValue (myitem.Item);
 				}
 				return null;
@@ -163,9 +162,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			public override void SetObjectValue (NSOutlineView outlineView, NSObject theObject, NSTableColumn tableColumn, NSObject item)
 			{
-				var myitem = item as EtoTreeItem;
 				var colHandler = Handler.GetColumn (tableColumn);
 				if (colHandler != null) {
+					var myitem = (EtoTreeItem)item;
 					colHandler.SetObjectValue (myitem.Item, theObject);
 				}
 			}
@@ -182,7 +181,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				Dictionary<int, EtoTreeItem> items;
 				var myitem = ofItem as EtoTreeItem;
-				if (ofItem == null)
+				if (myitem == null)
 					items = Handler.topitems;
 				else
 					items = myitem.Items;
@@ -273,7 +272,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		IEnumerable<ITreeGridItem> GetParents (ITreeGridItem item)
+		static IEnumerable<ITreeGridItem> GetParents (ITreeGridItem item)
 		{
 			var parent = item.Parent;
 			while (parent != null) {
@@ -356,7 +355,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var row = Control.SelectedRow;
 				if (row == -1)
 					return null;
-				var myitem = Control.ItemAtRow (row) as EtoTreeItem;
+				var myitem = (EtoTreeItem)Control.ItemAtRow(row);
 				return myitem.Item;
 			}
 			set {

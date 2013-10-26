@@ -27,7 +27,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			switch (handler)
 			{
-				case Eto.Forms.Control.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.TextChanged += (s, e) => Widget.OnTextChanged(e);
 					break;
 				default:

@@ -1,7 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Collections;
-using System.Collections.ObjectModel;
 using System.Globalization;
 
 namespace Eto
@@ -50,7 +48,7 @@ namespace Eto
 		
 		void EnsureProperty (object dataItem)
 		{
-			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsAssignableFrom(dataItem.GetType()))) {
+			if (dataItem != null && (descriptor == null || !descriptor.ComponentType.IsInstanceOfType(dataItem))) {
 				descriptor = TypeDescriptor.GetProperties (dataItem).Find (Property, IgnoreCase);
 			}
 		}
@@ -78,7 +76,7 @@ namespace Eto
 		{
 			EnsureProperty (dataItem);
 			if (descriptor != null && dataItem != null) {
-				if (value != null && !descriptor.PropertyType.IsAssignableFrom (value.GetType ()))
+				if (value != null && !descriptor.PropertyType.IsInstanceOfType(value))
 				{
 					value = Convert.ChangeType (value, descriptor.PropertyType, CultureInfo.InvariantCulture);
 				}
@@ -142,7 +140,7 @@ namespace Eto
 		{
 			var helper = bindingReference as ValueChangedHandler;
 			if (helper != null) {
-				var notify = helper.DataItem as INotifyPropertyChanged;
+				var notify = (INotifyPropertyChanged)helper.DataItem;
 				notify.PropertyChanged -= helper.HandlePropertyChanged;
 			} else {
 				var dataItem = bindingReference;

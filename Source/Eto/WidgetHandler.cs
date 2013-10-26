@@ -217,7 +217,7 @@ namespace Eto
 		/// </remarks>
 		protected override void Initialize()
 		{
-			if (Control == null)
+			if (EqualityComparer<T>.Default.Equals(Control, default(T)))
 				Control = CreateControl();
 
 			base.Initialize();

@@ -1,7 +1,6 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using System.Text;
 using System.Collections.Generic;
 
 namespace Eto.Test
@@ -101,7 +100,7 @@ namespace Eto.Test
 				#endif
 			};
 
-			if (Splitter.Supported)
+			if (Splitter.IsSupported())
 			{
 				var splitter = new Splitter
 				{
@@ -117,7 +116,7 @@ namespace Eto.Test
 				};
 				return splitter;
 			}
-			else if (Navigation.Supported)
+			else if (Navigation.IsSupported())
 			{
 				navigation = new Navigation(SectionList, "Eto.Test");
 				return navigation;

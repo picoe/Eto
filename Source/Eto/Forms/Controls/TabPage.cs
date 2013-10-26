@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using Eto.Drawing;
 using System.Collections.ObjectModel;
 

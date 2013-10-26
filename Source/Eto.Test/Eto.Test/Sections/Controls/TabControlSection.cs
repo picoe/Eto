@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using Eto.Drawing;
 
 namespace Eto.Test.Sections.Controls
 {
@@ -8,8 +7,9 @@ namespace Eto.Test.Sections.Controls
 	{
 		TabControl tabControl;
 
-		public TabControlSection()
+		public override void OnPreLoad(EventArgs e)
 		{
+			base.OnPreLoad(e);
 			Content = Create();			
 		}
 
@@ -118,7 +118,7 @@ namespace Eto.Test.Sections.Controls
 			var currentGenerator = Generator.Current;
 			try
 			{
-				var generator = Activator.CreateInstance(currentGenerator.GetType()) as Generator;
+				var generator = (Generator)Activator.CreateInstance(currentGenerator.GetType());
 				Generator.Initialize(generator);
 
 				generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());

@@ -3,7 +3,6 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
-using System.Diagnostics;
 
 namespace Eto.Platform.Mac.Forms.Printing
 {
@@ -42,7 +41,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 				var printInfo = settings.ToNS();
 				if (parent != null)
 				{
-					var parentHandler = parent.Handler as IMacWindow;
+					var parentHandler = (IMacWindow)parent.Handler;
 					var closeSheet = new SheetHelper();
 					Control.BeginSheet(printInfo, parentHandler.Control, closeSheet, new Selector("printPanelDidEnd:returnCode:contextInfo:"), IntPtr.Zero);
 					ret = NSApplication.SharedApplication.RunModalForWindow(parentHandler.Control);

@@ -13,7 +13,7 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			if (font == null)
 				return null;
-			var handler = font.Handler as FontHandler;
+			var handler = (FontHandler)font.Handler;
 			return handler.Control;
 		}
 
