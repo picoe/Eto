@@ -24,7 +24,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected abstract object GetItemAtRow (int row);
 
-		public GridHandler ()
+		protected GridHandler()
 		{
 			Control = new swf.DataGridView {
 				VirtualMode = true,
@@ -33,6 +33,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				RowHeadersVisible = false,
 				AllowUserToAddRows = false,
 				AllowUserToResizeRows = false,
+				AutoSize = true,
 				AutoSizeColumnsMode = swf.DataGridViewAutoSizeColumnsMode.DisplayedCells,
 				ColumnHeadersHeightSizeMode = swf.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
 			};
