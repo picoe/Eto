@@ -1,5 +1,6 @@
 ﻿This file lists the breaking changes made to Eto, most recent first.
 
+- Control.Loaded flag is set after the Load event, Handler's OnLoad, and all children's OnLoad (was set beforehand)
 - Removed Eto.InstanceWidget.StyleChanged event (subclass and override OnStyleChanged instead)
 - Moved Eto.InstanceWidget.DataContext/DataContextChanged to Eto.Forms.Control
 - Eto.Widget.Bindings was moved to Eto.Forms.Control

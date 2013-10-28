@@ -41,7 +41,7 @@ namespace Eto.Test.Sections.Controls
 
 		static Control Test2AutoSize()
 		{
-			var control = new Button { Text = "Show splitter test 2 with auto sized" };
+			var control = new Button { Text = "Show splitter test 2 with auto size" };
 			control.Click += (sender, e) => Test2(false).Show();
 			return control;
 		}

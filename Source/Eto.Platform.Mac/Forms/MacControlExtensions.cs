@@ -71,19 +71,6 @@ namespace Eto.Platform.Mac.Forms
 				return childControl.GetContainerView();
 			return control.ControlObject as NSView;
 		}
-
-		public static NSView GetContentView(this Control control)
-		{
-			if (control == null)
-				return null;
-			var containerHandler = control.Handler as IMacContainerControl;
-			if (containerHandler != null)
-				return containerHandler.ContentControl;
-			var childControl = control.ControlObject as Control;
-			if (childControl != null)
-				return childControl.GetContentView();
-			return control.ControlObject as NSView;
-		}
 	}
 }
 

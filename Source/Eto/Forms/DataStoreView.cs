@@ -189,8 +189,7 @@ namespace Eto.Forms
 		/// </summary>
 		void UpdateView()
 		{
-			if (view != null &&
-				model != null)
+			if (view != null && model != null)
 			{
 				var temp = new DataStoreVirtualCollection<object>(model);
 

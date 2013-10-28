@@ -62,11 +62,6 @@ namespace Eto.Drawing
 	public enum FontStyle
 	{
 		/// <summary>
-		/// Normal font style that is neither bold or italic
-		/// </summary>
-		[Obsolete("Use None instead")]
-		Normal = None,
-		/// <summary>
 		/// No extra font style applied
 		/// </summary>
 		None = 0,
@@ -78,6 +73,11 @@ namespace Eto.Drawing
 		/// Italic font style
 		/// </summary>
 		Italic = 1 << 1,
+		/// <summary>
+		/// Normal font style that is neither bold or italic
+		/// </summary>
+		[Obsolete("Use None instead")]
+		Normal = None,
 	}
 
 	/// <summary>
@@ -89,6 +89,9 @@ namespace Eto.Drawing
 	[Flags]
 	public enum FontDecoration
 	{
+		/// <summary>
+		/// No decorations
+		/// </summary>
 		None = 0,
 		/// <summary>
 		/// Underline font decoration
