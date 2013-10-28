@@ -29,6 +29,13 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
+		#if OSX
+		protected virtual NSViewResizingMask ContentResizingMask()
+		{
+			return NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+		}
+		#endif
+
 		public Control Content
 		{
 			get { return content; }
@@ -46,11 +53,10 @@ namespace Eto.Platform.Mac.Forms
 				{
 					var container = ContentControl;
 #if OSX
-					control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+					control.AutoresizingMask = ContentResizingMask();
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 #endif
-					control.SetFrameSize(container.Frame.Size);
 					container.AddSubview(control);
 				}
 
@@ -69,6 +75,11 @@ namespace Eto.Platform.Mac.Forms
 			return base.GetNaturalSize(availableSize);
 		}
 
+		protected virtual SD.RectangleF GetContentFrame()
+		{
+			return ContentControl.Frame;
+		}
+
 		public override void LayoutChildren()
 		{
 			base.LayoutChildren();
@@ -77,7 +88,7 @@ namespace Eto.Platform.Mac.Forms
 				return;
 
 			NSView childControl = content.GetContainerView();
-			var frame = ContentControl.Frame;
+			var frame = GetContentFrame();
 
 			if (frame.Width > padding.Horizontal && frame.Height > padding.Vertical)
 			{
