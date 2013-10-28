@@ -61,14 +61,21 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				UpdateColumnSizing();
 				if (FixedPanel == SplitterFixedPanel.Panel2)
 				{
-					if (Orientation == SplitterOrientation.Horizontal)
+					var size = panel2.GetPreferredSize(Conversions.PositiveInfinitySize);
+					var orientation = Orientation;
+					if (orientation == SplitterOrientation.Horizontal)
 					{
 						var width = (int)Control.ActualWidth;
+						if (position == null)
+							position = (int)(width - size.Width);
 						Position = Size.Width - (width - position.Value);
 					}
-					else if (Orientation == SplitterOrientation.Vertical)
+					else if (orientation == SplitterOrientation.Vertical)
 					{
 						var height = (int)Control.ActualHeight;
+						if (position == null)
+							position = (int)(height - size.Height);
+
 						Position = Size.Height - (height - position.Value);
 					}
 					else if (position != null)
@@ -191,7 +198,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				default:
 					throw new NotSupportedException();
 			}
-			Position = pos;
+			if (Widget.Loaded)
+				Position = pos;
 		}
 
 		public SplitterOrientation Orientation
