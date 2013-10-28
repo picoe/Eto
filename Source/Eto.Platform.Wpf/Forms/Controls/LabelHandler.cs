@@ -78,12 +78,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				switch (value) {
 					case HorizontalAlign.Center:
 						Control.HorizontalContentAlignment = sw.HorizontalAlignment.Center;
+						text.TextAlignment = sw.TextAlignment.Center;
 						break;
 					case HorizontalAlign.Left:
 						Control.HorizontalContentAlignment = sw.HorizontalAlignment.Left;
+						text.TextAlignment = sw.TextAlignment.Left;
 						break;
 					case HorizontalAlign.Right:
 						Control.HorizontalContentAlignment = sw.HorizontalAlignment.Right;
+						text.TextAlignment = sw.TextAlignment.Right;
 						break;
 					default:
 						throw new NotSupportedException();
