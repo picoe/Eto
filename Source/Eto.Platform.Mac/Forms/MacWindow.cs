@@ -642,6 +642,10 @@ namespace Eto.Platform.Mac.Forms
 			{
 				PositionWindow();
 			}
+		}
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
 			if (initialState != null)
 			{
 				WindowState = initialState.Value;
