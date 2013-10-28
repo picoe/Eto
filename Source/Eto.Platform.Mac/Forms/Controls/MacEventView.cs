@@ -22,7 +22,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				return;
 			var image = new NSImage(size);
 			
-			image.LockFocusFlipped(control.IsFlipped);
+			image.LockFocusFlipped(!control.IsFlipped);
 			drawAction();
 			image.UnlockFocus();
 
@@ -34,23 +34,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			else
 				realSize = control.ConvertSizeToBase(size);
 
-			if (control.IsFlipped)
-			{
-				var affineTransform = new NSAffineTransform();
-				affineTransform.Translate(0, realSize.Height);
-				affineTransform.Scale(1, -1);
-				var filter1 = new CIAffineTransform();
-				filter1.Image = ciImage;
-				filter1.SetValueForKey(affineTransform, CIInputTransform);
-				ciImage = (CIImage)filter1.ValueForKey(CIOutputImage);
-			}
-
 			var filter2 = new CIColorControls();
 			filter2.SetDefaults();
 			filter2.Image = ciImage;
 			filter2.Saturation = 0.0f;
 			ciImage = (CIImage)filter2.ValueForKey(CIOutputImage);
-			
+
 			var filter3 = new CIColorMatrix();
 			filter3.SetDefaults();
 			filter3.Image = ciImage;
@@ -59,7 +48,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			filter3.BVector = new CIVector(0, 0, color.B);
 			ciImage = (CIImage)filter3.ValueForKey(CIOutputImage);
 
-			ciImage.Draw(new SD.RectangleF(SD.PointF.Empty, size), new SD.RectangleF(SD.PointF.Empty, realSize), NSCompositingOperation.SourceOver, 1);
+			// create separate context so we can force using the software renderer, which is more than fast enough for this
+			var ciContext = CIContext.FromContext(NSGraphicsContext.CurrentContext.GraphicsPort, new CIContextOptions { UseSoftwareRenderer = true });
+			ciContext.DrawImage(ciImage, new SD.RectangleF(SD.PointF.Empty, size), new SD.RectangleF(SD.PointF.Empty, realSize));
 		}
 
 		public WeakReference WeakHandler { get; set; }
@@ -109,7 +100,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var cursor = Handler.Cursor;
 			if (cursor != null)
 			{
-				this.AddCursorRect(new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+				AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
 		}
 	}
