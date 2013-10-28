@@ -24,9 +24,27 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected abstract object GetItemAtRow (int row);
 
+		class EtoDataGridView : swf.DataGridView
+		{
+			public GridHandler<W> Handler { get; set; }
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+			{
+				var size = base.GetPreferredSize(proposedSize);
+				var def = Handler.UserDesiredSize;
+				if (def.Width >= 0)
+					size.Width = def.Width;
+				if (def.Height >= 0)
+					size.Height = def.Height;
+				else
+					size.Height = Math.Min(size.Height, 100);
+				return size;
+			}
+		}
+
 		protected GridHandler()
 		{
-			Control = new swf.DataGridView {
+			Control = new EtoDataGridView {
+				Handler = this,
 				VirtualMode = true,
 				MultiSelect = false,
 				SelectionMode = swf.DataGridViewSelectionMode.FullRowSelect,

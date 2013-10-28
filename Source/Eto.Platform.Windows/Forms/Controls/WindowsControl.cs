@@ -18,7 +18,7 @@ namespace Eto.Platform.Windows
 
 		Size ParentMinimumSize { get; set; }
 
-		Size DesiredSize { get; }
+		Size GetPreferredSize(Size availableSize);
 
 		void SetScale(bool xscale, bool yscale);
 
@@ -45,6 +45,12 @@ namespace Eto.Platform.Windows
 				return controlObject.GetWindowsHandler();
 
 			return null;
+		}
+
+		public static Size GetPreferredSize(this Control control)
+		{
+			var handler = control.GetWindowsHandler();
+			return handler != null ? handler.GetPreferredSize(Size.Empty) : Size.Empty;
 		}
 
 		public static swf.Control GetContainerControl(this Control control)
@@ -89,20 +95,17 @@ namespace Eto.Platform.Windows
 
 		public virtual Size? DefaultSize { get { return null; } }
 
-		public virtual Size DesiredSize
+		public virtual Size GetPreferredSize(Size availableSize)
 		{
-			get
+			var size = UserDesiredSize;
+			var defSize = DefaultSize;
+			if (defSize != null)
 			{
-				var size = UserDesiredSize;
-				var defSize = DefaultSize;
-				if (defSize != null)
-				{
-					if (size.Width == -1) size.Width = defSize.Value.Width;
-					if (size.Height == -1) size.Height = defSize.Value.Height;
-				}
-
-				return Size.Max(parentMinimumSize, size);
+				if (size.Width == -1) size.Width = defSize.Value.Width;
+				if (size.Height == -1) size.Height = defSize.Value.Height;
 			}
+
+			return Size.Max(parentMinimumSize, size);
 		}
 
 		public Size UserDesiredSize
@@ -148,11 +151,11 @@ namespace Eto.Platform.Windows
 			get { return swf.DockStyle.Fill; }
 		}
 
-		protected void SetMinimumSize()
+		protected void SetMinimumSize(bool force = false)
 		{
-			if (!Widget.Loaded)
+			if (!force && !Widget.Loaded)
 				return;
-			var size = this.DesiredSize;
+			var size = this.GetPreferredSize(Size.Empty);
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
 			SetMinimumSize(size);
@@ -161,10 +164,10 @@ namespace Eto.Platform.Windows
 		protected virtual void SetMinimumSize(Size size)
 		{
 			var sdsize = size.ToSD();
-			if (Control.MinimumSize != sdsize)
+			if (ContainerControl.MinimumSize != sdsize)
 			{
-				Control.MinimumSize = sdsize;
-				Debug.Print(string.Format("Min Size: {0}, Type:{1}", sdsize, Widget));
+				ContainerControl.MinimumSize = sdsize;
+				//Debug.Print(string.Format("Min Size: {0}, Type:{1}", sdsize, Widget));
 			}
 		}
 
@@ -291,16 +294,16 @@ namespace Eto.Platform.Windows
 		public virtual string Text
 		{
 			get { return Control.Text; }
-			set { Control.Text = value; }
+			set { Control.Text = value; SetMinimumSize(); }
 		}
 
 		public virtual Size Size
 		{
-			get { return ContainerControl.Size.ToEto(); }
+			get { return Control.Size.ToEto(); }
 			set
 			{
-				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.Size = value.ToSD();
+				Control.AutoSize = value.Width == -1 || value.Height == -1;
+				Control.Size = value.ToSD();
 				desiredSize = value;
 				SetMinimumSize();
 			}
@@ -308,11 +311,11 @@ namespace Eto.Platform.Windows
 
 		public virtual Size ClientSize
 		{
-			get { return ContainerControl.ClientSize.ToEto(); }
+			get { return Control.ClientSize.ToEto(); }
 			set
 			{
-				this.ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
-				ContainerControl.ClientSize = value.ToSD();
+				Control.AutoSize = value.Width == -1 || value.Height == -1;
+				Control.ClientSize = value.ToSD();
 			}
 		}
 
@@ -413,7 +416,7 @@ namespace Eto.Platform.Windows
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			SetMinimumSize();
+			SetMinimumSize(true);
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)

@@ -52,14 +52,11 @@ namespace Eto.Platform.Windows
 			};
 		}
 
-		public override Size DesiredSize
+		public override Size GetPreferredSize(Size availableSize)
 		{
-			get
-			{
-				if (Control.AutoSize)
-					return Control.GetPreferredSize(sd.Size.Empty).ToEto();
-				return base.DesiredSize;
-			}
+			if (Control.AutoSize)
+				return Control.GetPreferredSize(sd.Size.Empty).ToEto();
+			return base.GetPreferredSize(availableSize);
 		}
 
 		public int SelectedIndex

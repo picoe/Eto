@@ -26,14 +26,15 @@ namespace Eto.Platform.Windows
 			Control.Controls.Add(content);
 		}
 
+
+		protected override Size ContentPadding
+		{
+			get { return Size.Max(Size.Empty, Control.Size.ToEto() - Control.DisplayRectangle.Size.ToEto()); }
+		}
+
 		public override swf.Control ContainerContentControl
 		{
 			get { return content; }
-		}
-
-		public override Size DesiredSize
-		{
-			get { return Size.Max(Size.Empty, base.DesiredSize + Control.Size.ToEto() - Control.DisplayRectangle.Size.ToEto()); }
 		}
 
 		public override string Text

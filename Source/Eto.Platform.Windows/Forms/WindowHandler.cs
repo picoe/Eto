@@ -94,8 +94,10 @@ namespace Eto.Platform.Windows
 
 			Control.Load += (sender, e) =>
 			{
-				content.MinimumSize = sd.Size.Empty;
-				content.MaximumSize = sd.Size.Empty;
+				Control.MinimumSize = Control.Size;
+				Control.AutoSize = false;
+				Control.MinimumSize = sd.Size.Empty;
+				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
 			};
 			Control.Size = sd.Size.Empty;
 
