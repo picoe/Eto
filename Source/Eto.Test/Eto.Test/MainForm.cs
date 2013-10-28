@@ -128,22 +128,18 @@ namespace Eto.Test
 
 		Control RightPane()
 		{
-			var splitter = new Splitter
+			return new Splitter
 			{
 				Orientation = SplitterOrientation.Vertical,
-				Position = 500,
-				FixedPanel = SplitterFixedPanel.Panel2
+				FixedPanel = SplitterFixedPanel.Panel2,
+				Panel1 = contentContainer,
+				Panel2 = EventLogSection()
 			};
-
-			splitter.Panel1 = contentContainer;
-			splitter.Panel2 = this.EventLogSection();
-
-			return splitter;
 		}
 
 		Control EventLogSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { Size = new Size(100, 120) };
 			
 			layout.BeginHorizontal();
 			layout.Add(EventLog, true);
