@@ -21,6 +21,7 @@ namespace Eto.Platform.Wpf.Forms
 		bool[] rowScale;
 		int lastColumnScale;
 		int lastRowScale;
+		bool inGroupBox;
 
 		public Size Adjust { get; set; }
 
@@ -100,6 +101,8 @@ namespace Eto.Platform.Wpf.Forms
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
+			inGroupBox = Widget.FindParent<GroupBox>() != null;
+
 			if (Control.IsLoaded)
 				SetScale();
 		}
@@ -131,11 +134,17 @@ namespace Eto.Platform.Wpf.Forms
 
 		void SetChildrenSizes()
 		{
+			var inGroupBoxCurrent = inGroupBox;
 			var widths = new double[Control.ColumnDefinitions.Count];
 			for (int y = 0; y < Control.RowDefinitions.Count; y++)
 			{
 				var rowdef = Control.RowDefinitions[y];
 				var maxy = rowdef.ActualHeight;
+				if (inGroupBoxCurrent && rowdef.Height.IsStar)
+ 				{
+					maxy -= 1;
+					inGroupBoxCurrent = false;
+				}
 				for (int x = 0; x < Control.ColumnDefinitions.Count; x++)
 				{
 					var coldef = Control.ColumnDefinitions[x];
