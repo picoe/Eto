@@ -6,6 +6,7 @@ using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
+using swi = System.Windows.Input;
 using Eto.Platform.Wpf.Drawing;
 using System.Collections;
 using System.Collections.ObjectModel;
@@ -51,7 +52,28 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					}
 				}
 			};
+		}
 
+		public override void Focus()
+		{
+			if (Control.IsLoaded)
+			{
+				var item = Control.ItemContainerGenerator.ContainerFromIndex(Math.Max(0, SelectedIndex)) as sw.FrameworkElement;
+				if (item != null)
+					item.Focus();
+				else
+					Control.Focus();
+			}
+			else
+			{
+				Control.Loaded += Control_Loaded;
+			}
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
+			Focus();
+			Control.Loaded -= Control_Loaded;
 		}
 
 		public override bool UseMousePreview { get { return true; } }
