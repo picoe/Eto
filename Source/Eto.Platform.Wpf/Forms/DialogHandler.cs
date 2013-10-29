@@ -58,8 +58,8 @@ namespace Eto.Platform.Wpf.Forms
 		void HandleSourceInitialized (object sender, EventArgs e)
 		{
 			var owner = this.Control.Owner;
-			Control.Left = owner.Left + (owner.ActualWidth - Control.Width) / 2;
-			Control.Top = owner.Top + (owner.ActualHeight - Control.Height) / 2;
+			Control.Left = owner.Left + (owner.ActualWidth - Control.ActualWidth) / 2;
+			Control.Top = owner.Top + (owner.ActualHeight - Control.ActualHeight) / 2;
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 
