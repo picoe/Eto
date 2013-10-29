@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Eto.Platform.Windows</AssemblyName>
     <RootNamespace>Eto.Platform.Windows</RootNamespace>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -335,4 +337,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+	<Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
 </Project>
