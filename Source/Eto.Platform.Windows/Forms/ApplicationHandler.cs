@@ -13,6 +13,7 @@ namespace Eto.Platform.Windows
 		string badgeLabel;
 		bool attached;
 		Thread mainThread;
+		SynchronizationContext context;
 
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
@@ -80,6 +81,8 @@ namespace Eto.Platform.Windows
 					swf.Application.DoEvents();
 
 				SetOptions();
+				var ctl = new swf.Control(); // creates sync context
+				context = SynchronizationContext.Current;
 
 				Widget.OnInitialized(EventArgs.Empty);
 
@@ -167,8 +170,8 @@ namespace Eto.Platform.Windows
 			}
 			if (Thread.CurrentThread == mainThread)
 				action();
-			else
-				SynchronizationContext.Current.Post(state => action(), null);
+			else if (context != null)
+				context.Post(state => action(), null);
 		}
 
 		public void AsyncInvoke(Action action)
@@ -184,7 +187,8 @@ namespace Eto.Platform.Windows
 					return;
 				}
 			}
-			SynchronizationContext.Current.Post(state => action(), null);
+			if (context != null)
+				context.Post(state => action(), null);
 		}
 
 		public Key CommonModifier
