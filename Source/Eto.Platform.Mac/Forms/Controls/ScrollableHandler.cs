@@ -7,7 +7,6 @@ using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -35,18 +34,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (cursor != null)
 					AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
-
 			#if !USE_FLIPPED
 			public override void SetFrameSize(SD.SizeF newSize)
 			{
-				// keep the same position!
-				var pos = Handler.ScrollPosition;
 				base.SetFrameSize(newSize);
-				var scrollSize = Handler.ScrollSize;
-				var clientSize = Handler.ClientSize;
-				pos.Y = Math.Max(0, Math.Min(pos.Y, scrollSize.Height - clientSize.Height));
-				pos.X = Math.Max(0, Math.Min(pos.X, scrollSize.Width - clientSize.Width));
-				Handler.ScrollPosition = pos;
+				Handler.ScrollPosition = Handler.scrollPosition;
 				// since we override the base
 				Handler.OnSizeChanged(EventArgs.Empty);
 				Handler.Widget.OnSizeChanged(EventArgs.Empty);
@@ -83,6 +75,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			// only draw dirty regions, instead of entire scroll area
 			Control.ContentView.CopiesOnScroll = true;
+			#if !USE_FLIPPED
+			HandleEvent(Scrollable.ScrollEvent);
+			#endif
 		}
 
 		public override void AttachEvent(string id)
@@ -98,8 +93,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Control.ContentView.PostsBoundsChangedNotifications = true;
 					AddObserver(NSView.BoundsChangedNotification, e =>
 					{
-						var w = (Scrollable)e.Widget;
-						w.OnScroll(new ScrollEventArgs(w.ScrollPosition));
+						var handler = e.Handler as ScrollableHandler;
+						if (handler != null)
+						{
+							#if !USE_FLIPPED
+							var view = (NSView)handler.Control.DocumentView;
+							var contentBounds = handler.Control.ContentView.Bounds;
+							if (view.IsFlipped)
+								handler.scrollPosition = contentBounds .Location.ToEtoPoint();
+							else
+								handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds .Y));
+							#endif
+							handler.Widget.OnScroll(new ScrollEventArgs(handler.ScrollPosition));
+						}
 					}, Control.ContentView);
 					break;
 				default:
@@ -152,11 +158,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			base.LayoutChildren();
 			UpdateScrollSizes();
-		}
-
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
 			ScrollPosition = scrollPosition;
 		}
 
@@ -180,14 +181,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
 			return new RectangleF(contentSize).ToSD();
 		}
-
 		#if !USE_FLIPPED
 		protected override NSViewResizingMask ContentResizingMask()
 		{
 			return (NSViewResizingMask)0;
 		}
 		#endif
-
 		void InternalSetFrameSize(SD.SizeF size)
 		{
 			var view = (NSView)Control.DocumentView;
@@ -229,17 +228,17 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{ 
+				#if USE_FLIPPED
 				if (Widget.Loaded)
 				{
 					var view = (NSView)Control.DocumentView;
 					var loc = Control.ContentView.Bounds.Location;
 					if (view.IsFlipped)
 						return loc.ToEtoPoint();
-					else
-						return new Point((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
+					return new Point((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
 				}
-				else
-					return scrollPosition;
+				#endif
+				return scrollPosition;
 			}
 			set
 			{ 
@@ -252,8 +251,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 						Control.ContentView.ScrollToPoint(new SD.PointF(value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
 					Control.ReflectScrolledClipView(Control.ContentView);
 				}
-				else
-					scrollPosition = value;
+				scrollPosition = value;
 			}
 		}
 
