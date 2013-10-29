@@ -41,25 +41,25 @@ namespace Eto.Drawing
 		/// Gets or sets the alpha/opacity component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The alpha component</value>
-		public int Ab { get { return (int)((A * 255) + 0.5); } set { A = value / 255f; } }
+		public int Ab { get { return (int)((A * 255) + 0.5f); } set { A = value / 255f; } }
 
 		/// <summary>
 		/// Gets or sets the red component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The red component</value>
-		public int Rb { get { return (int)((R * 255) + 0.5); } set { R = value / 255f; } }
+		public int Rb { get { return (int)((R * 255) + 0.5f); } set { R = value / 255f; } }
 
 		/// <summary>
 		/// Gets or sets the green component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The green component</value>
-		public int Gb { get { return (int)((G * 255) + 0.5); } set { G = value / 255f; } }
+		public int Gb { get { return (int)((G * 255) + 0.5f); } set { G = value / 255f; } }
 
 		/// <summary>
 		/// Gets or sets the blue component as a byte of a 32-bit color (0-255)
 		/// </summary>
 		/// <value>The blue component</value>
-		public int Bb { get { return (int)((B * 255) + 0.5); } set { B = value / 255f; } }
+		public int Bb { get { return (int)((B * 255) + 0.5f); } set { B = value / 255f; } }
 
 		/// <summary>
 		/// Creates a color from 8-bit ARGB components
@@ -119,7 +119,7 @@ namespace Eto.Drawing
 		/// <param name="blendColor">Color to blend onto the base color</param>
 		public static Color Blend (Color baseColor, Color blendColor)
 		{
-			if (blendColor.A == 1.0)
+			if (Math.Abs(blendColor.A - 1.0f) < 0.01f)
 				return blendColor;
 			var inv = 1.0f - blendColor.A;
 			baseColor.R = baseColor.R * inv + blendColor.R * blendColor.A;
@@ -296,7 +296,7 @@ namespace Eto.Drawing
 		/// <returns>True if both the Color structs have the same values for all ARGB components</returns>
 		public static bool operator == (Color color1, Color color2)
 		{
-			return color1.B == color2.B && color1.R == color2.R && color1.G == color2.G && color1.A == color2.A;
+			return color1.ToArgb() == color2.ToArgb();
 		}
 
 		/// <summary>
