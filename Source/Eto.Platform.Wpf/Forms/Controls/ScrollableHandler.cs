@@ -75,10 +75,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var viewportSize = new sw.Size(info.ViewportWidth, info.ViewportHeight);
 				var prefSize = Content.GetPreferredSize(Conversions.PositiveInfinitySize);
 
-				// hack: fix label wrapping when ExpandContentWidth/Height is off (DockLayoutExpansion test)
-				prefSize.Width += 1;
-				prefSize.Height += 1;
-
 				// hack for when a scrollable is in a group box it expands vertically
 				if (Widget.FindParent<GroupBox>() != null)
 					viewportSize.Height = Math.Max(0, viewportSize.Height - 1);

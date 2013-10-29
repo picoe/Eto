@@ -135,11 +135,11 @@ namespace Eto.Platform.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
-			ContainerControl.Width = XScale ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
-			ContainerControl.Height = YScale ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
+			ContainerControl.Width = XScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
+			ContainerControl.Height = YScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
 			var defaultSize = DefaultSize;
-			ContainerControl.MinWidth = Math.Max(0, XScale ? 0 : double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
-			ContainerControl.MinHeight = Math.Max(0, YScale ? 0 : double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
+			ContainerControl.MinWidth = XScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
+			ContainerControl.MinHeight = YScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
@@ -410,6 +410,11 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Tag = this;
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
+			Control.Loaded += Control_Loaded;
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
 			SetSize();
 		}
 

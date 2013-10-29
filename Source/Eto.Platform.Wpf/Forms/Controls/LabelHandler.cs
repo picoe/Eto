@@ -24,6 +24,13 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				var tRequest = new swi.TraversalRequest(swi.FocusNavigationDirection.Next);
 				this.MoveFocus(tRequest);
 			}
+
+			protected override sw.Size MeasureOverride(sw.Size constraint)
+			{
+				var size = base.MeasureOverride(constraint);
+				size.Width += 1;
+				return size;
+			}
 		}
 
 		protected override void SetDecorations(sw.TextDecorationCollection decorations)
