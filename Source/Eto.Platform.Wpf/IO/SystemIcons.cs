@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.IO
 {
 	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons
 	{
-		public Icon GetFileIcon (string fileName, Eto.IO.IconSize size)
+		public Icon GetFileIcon (string fileName, IconSize size)
 		{
 			ShellIcon.IconSize iconSize;
 			switch (size) {
@@ -31,7 +31,7 @@ namespace Eto.Platform.Wpf.IO
 			}
 		}
 
-		public Icon GetStaticIcon (Eto.IO.StaticIconType type, Eto.IO.IconSize size)
+		public Icon GetStaticIcon (StaticIconType type, IconSize size)
 		{
 			ShellIcon.IconSize iconSize;
 			switch (size) {

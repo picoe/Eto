@@ -52,11 +52,11 @@ namespace Eto.Test.Sections.Behaviors
 			mousePositionLabel.Text = position.ToString ();
 
 			// convert to control co-ordinates
-			position = this.PointFromScreen (position);
+			position = PointFromScreen(position);
 			pointFromScreenLabel.Text = position.ToString ();
 
 			// convert back to world co-ordinates
-			position = this.PointToScreen (position);
+			position = PointToScreen(position);
 			pointToScreenLabel.Text = position.ToString ();
 			
 			buttonsLabel.Text = Mouse.GetButtons ().ToString ();

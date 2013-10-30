@@ -17,7 +17,7 @@ namespace Eto
 		#region Events
 
 		/// <summary>
-		/// Identifier for the <see cref="DataValueChanged"/> event
+		/// Identifier for the <see cref="DirectBinding.DataValueChanged"/> event
 		/// </summary>
 		public const string DataValueChangedEvent = "ObjectBinding.DataValueChangedEvent";
 

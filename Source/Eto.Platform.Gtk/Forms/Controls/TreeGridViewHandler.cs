@@ -98,10 +98,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public ITreeGridItem SelectedItem {
 			get {
 				Gtk.TreeIter iter;
-				if (Tree.Selection.GetSelected (out iter)) {
-					return model.GetItemAtIter (iter);
-				}
-				return null;
+				return Tree.Selection.GetSelected(out iter) ? model.GetItemAtIter(iter) : null;
 			}
 			set {
 				if (value != null) {
@@ -119,7 +116,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		bool ChildIsSelected (ITreeGridItem item)
 		{
-			var node = this.SelectedItem;
+			var node = SelectedItem;
 			
 			while (node != null) {
 				if (node == item)
@@ -130,25 +127,25 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		}
 
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case TreeGridView.ExpandingEvent:
-				this.Tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args) {
+				Tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args) {
 					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
 					Widget.OnExpanding (e);
 					args.RetVal = e.Cancel;
 				};
 				break;
 			case TreeGridView.ExpandedEvent:
-				this.Tree.RowExpanded += delegate(object o, Gtk.RowExpandedArgs args) {
+				Tree.RowExpanded += delegate(object o, Gtk.RowExpandedArgs args) {
 					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
 					e.Item.Expanded = true;
 					Widget.OnExpanded (e);
 				};
 				break;
 			case TreeGridView.CollapsingEvent:
-				this.Tree.TestCollapseRow += delegate(object o, Gtk.TestCollapseRowArgs args) {
+				Tree.TestCollapseRow += delegate(object o, Gtk.TestCollapseRowArgs args) {
 					var e = new TreeGridViewItemCancelEventArgs(GetItem(args.Path) as ITreeGridItem);
 					Widget.OnCollapsing (e);
 					args.RetVal = e.Cancel;
@@ -160,7 +157,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			case TreeGridView.CollapsedEvent:
-				this.Tree.RowCollapsed += delegate(object o, Gtk.RowCollapsedArgs args) {
+				Tree.RowCollapsed += delegate(object o, Gtk.RowCollapsedArgs args) {
 					var e = new TreeGridViewItemEventArgs(GetItem(args.Path) as ITreeGridItem);
 					e.Item.Expanded = false;
 					Widget.OnCollapsed (e);
@@ -174,8 +171,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			case TreeGridView.SelectedItemChangedEvent:
-				this.Tree.Selection.Changed += (o, args) => {
-					var item = this.SelectedItem;
+				Tree.Selection.Changed += (o, args) => {
+					var item = SelectedItem;
 					if (!SkipSelectedChange && !object.ReferenceEquals (item, lastSelected))
 					{
 						Widget.OnSelectedItemChanged (EventArgs.Empty);
@@ -184,7 +181,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -211,8 +208,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		public int GetRowOfItem (ITreeGridItem item)
 		{
-			if (collection == null) return -1;
-			return collection.IndexOf (item);
+			return collection == null ? -1 : collection.IndexOf(item);
 		}
 
 		int GetCount (Gtk.TreeIter parent, int upToIndex)

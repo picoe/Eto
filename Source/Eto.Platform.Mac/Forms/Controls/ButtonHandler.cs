@@ -15,7 +15,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		Image image;
 		ButtonImagePosition imagePosition;
-		Size defaultSize;
+		readonly Size defaultSize;
 		static readonly Size originalSize;
 
 		class EtoButtonCell : NSButtonCell
@@ -54,7 +54,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 				if (Handler.AutoSize)
 				{
-					var size = this.Frame.Size;
+					var size = Frame.Size;
 					if (size.Width < Handler.defaultSize.Width)
 						size.Width = Handler.defaultSize.Width;
 					if (size.Height < Handler.defaultSize.Height)
@@ -111,12 +111,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -177,7 +177,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				case NSCellImagePosition.ImageAbove:
 				case NSCellImagePosition.ImageBelow:
-					if (!string.IsNullOrEmpty(this.Text))
+					if (!string.IsNullOrEmpty(Text))
 						return NSBezelStyle.RegularSquare;
 					break;
 			}
@@ -202,7 +202,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		void SetImagePosition()
 		{
 			var position = imagePosition.ToNS();
-			if ((position == NSCellImagePosition.ImageAbove || position == NSCellImagePosition.ImageBelow) && string.IsNullOrEmpty(this.Text))
+			if ((position == NSCellImagePosition.ImageAbove || position == NSCellImagePosition.ImageBelow) && string.IsNullOrEmpty(Text))
 				position = NSCellImagePosition.ImageOnly;
 			Control.ImagePosition = position;
 			SetBezel();

@@ -13,7 +13,7 @@ namespace Eto.Platform.Windows
 {
 	public static partial class Conversions
 	{
-		public const float WHEEL_DELTA = 120f;
+		public const float WheelDelta = 120f;
 
 		public static Padding ToEto(this swf.Padding padding)
 		{
@@ -37,24 +37,27 @@ namespace Eto.Platform.Windows
 
 		public static DialogResult ToEto(this swf.DialogResult result)
 		{
-			DialogResult ret = DialogResult.None;
-			if (result == swf.DialogResult.OK)
-				ret = DialogResult.Ok;
-			else if (result == swf.DialogResult.Cancel)
-				ret = DialogResult.Cancel;
-			else if (result == swf.DialogResult.Yes)
-				ret = DialogResult.Yes;
-			else if (result == swf.DialogResult.No)
-				ret = DialogResult.No;
-			else if (result == swf.DialogResult.Abort)
-				ret = DialogResult.Cancel;
-			else if (result == swf.DialogResult.Ignore)
-				ret = DialogResult.Ignore;
-			else if (result == swf.DialogResult.Retry)
-				ret = DialogResult.Retry;
-			else if (result == swf.DialogResult.None)
-				ret = DialogResult.None;
-			return ret;
+			switch (result)
+			{
+				case swf.DialogResult.OK:
+					return DialogResult.Ok;
+				case swf.DialogResult.Cancel:
+					return DialogResult.Cancel;
+				case swf.DialogResult.Yes:
+					return DialogResult.Yes;
+				case swf.DialogResult.No:
+					return DialogResult.No;
+				case swf.DialogResult.Abort:
+					return DialogResult.Cancel;
+				case swf.DialogResult.Ignore:
+					return DialogResult.Ignore;
+				case swf.DialogResult.Retry:
+					return DialogResult.Retry;
+				case swf.DialogResult.None:
+					return DialogResult.None;
+				default:
+					return DialogResult.None;
+			}
 		}
 
 		public static sd.Imaging.ImageFormat ToSD(this ImageFormat format)
@@ -90,9 +93,6 @@ namespace Eto.Platform.Windows
 					return ImageInterpolation.High;
 				case sd2.InterpolationMode.Default:
 					return ImageInterpolation.Default;
-				case sd2.InterpolationMode.HighQualityBicubic:
-				case sd2.InterpolationMode.Bicubic:
-				case sd2.InterpolationMode.Bilinear:
 				default:
 					throw new NotSupportedException();
 			}
@@ -334,7 +334,7 @@ namespace Eto.Platform.Windows
 			var modifiers = swf.Control.ModifierKeys.ToEto();
 
 			var result = new MouseEventArgs(buttons, modifiers, point);
-			result.Delta = new SizeF(0, (float)e.Delta / WHEEL_DELTA);
+			result.Delta = new SizeF(0, (float)e.Delta / WheelDelta);
 
 			return result;
 		}
@@ -362,15 +362,12 @@ namespace Eto.Platform.Windows
 
 		public static PaintEventArgs ToEto(this swf.PaintEventArgs e, Eto.Generator generator)
 		{
-			return new Eto.Forms.PaintEventArgs(ToEto(e.Graphics, generator), e.ClipRectangle.ToEto());
+			return new PaintEventArgs(ToEto(e.Graphics, generator), e.ClipRectangle.ToEto());
 		}
 
 		public static sd.Image ToSD(this IImage image)
 		{
-			if (image == null)
-				return null;
-			else
-				return image.ControlObject as sd.Image;
+			return image == null ? null : image.ControlObject as sd.Image;
 		}
 
 		public static sd2.PixelOffsetMode ToSD(this PixelOffsetMode mode)
@@ -639,24 +636,19 @@ namespace Eto.Platform.Windows
 
 		public static PrintSettings ToEto(this sdp.PrinterSettings settings, Eto.Generator generator)
 		{
-			if (settings == null)
-				return null;
-			return new PrintSettings(generator, new PrintSettingsHandler(settings));
+			return settings == null ? null : new PrintSettings(generator, new PrintSettingsHandler(settings));
 		}
 
 		public static sdp.PrinterSettings ToSD(this PrintSettings settings)
 		{
 			if (settings == null)
 				return PrintSettingsHandler.DefaultSettings();
-			else
-				return ((PrintSettingsHandler)settings.Handler).Control;
+			return ((PrintSettingsHandler)settings.Handler).Control;
 		}
 
 		public static sdp.PrintDocument ToSD(this PrintDocument document)
 		{
-			if (document == null)
-				return null;
-			return ((PrintDocumentHandler)document.Handler).Control;
+			return document == null ? null : ((PrintDocumentHandler)document.Handler).Control;
 		}
 	}
 }

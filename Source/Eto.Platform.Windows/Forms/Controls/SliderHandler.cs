@@ -33,12 +33,12 @@ namespace Eto.Platform.Windows.Forms.Controls
         public override void OnLoad(EventArgs e)
         {
             base.OnLoad(e);
-            this.Control.ValueChanged += HandleScaleValueChanged;
+            Control.ValueChanged += HandleScaleValueChanged;
         }
 
         void HandleScaleValueChanged(object sender, EventArgs e)
         {
-            var value = (int)Control.Value;
+            var value = Control.Value;
             var tick = Control.TickFrequency;
             var offset = value % tick;
             if (SnapToTick && offset != 0)
@@ -56,32 +56,32 @@ namespace Eto.Platform.Windows.Forms.Controls
         }
 
 		public int MaxValue {
-			get { return this.Control.Maximum; }
-			set { this.Control.Maximum = value; }
+			get { return Control.Maximum; }
+			set { Control.Maximum = value; }
 		}
 
 		public int MinValue {
-			get { return this.Control.Minimum; }
-			set { this.Control.Minimum = value; }
+			get { return Control.Minimum; }
+			set { Control.Minimum = value; }
 		}
 
 		public int Value {
-			get { return this.Control.Value; }
-			set { this.Control.Value = value; }
+			get { return Control.Value; }
+			set { Control.Value = value; }
 		}
 
         public bool SnapToTick { get; set; }
 
 		public int TickFrequency {
-			get { return this.Control.TickFrequency; }
+			get { return Control.TickFrequency; }
 			set {
-				this.Control.TickFrequency = value; 
+				Control.TickFrequency = value; 
 			}
 		}
 
 		public SliderOrientation Orientation {
-			get { return this.Control.Orientation == swf.Orientation.Horizontal ? SliderOrientation.Horizontal : SliderOrientation.Vertical; }
-			set { this.Control.Orientation = value == SliderOrientation.Horizontal ? swf.Orientation.Horizontal : swf.Orientation.Vertical; }
+			get { return Control.Orientation == swf.Orientation.Horizontal ? SliderOrientation.Horizontal : SliderOrientation.Vertical; }
+			set { Control.Orientation = value == SliderOrientation.Horizontal ? swf.Orientation.Horizontal : swf.Orientation.Vertical; }
 		}
 	}
 }

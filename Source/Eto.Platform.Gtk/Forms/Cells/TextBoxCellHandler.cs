@@ -84,14 +84,14 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			return new GLib.Value ((string)null);
 		}
 		
-		public override void AttachEvent (string eventHandler)
+		public override void AttachEvent (string id)
 		{
-			switch (eventHandler) {
+			switch (id) {
 			case Grid.EndCellEditEvent:
 				Control.Edited += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
-				base.AttachEvent (eventHandler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

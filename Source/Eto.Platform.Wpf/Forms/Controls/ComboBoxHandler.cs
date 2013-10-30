@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
@@ -9,7 +6,6 @@ using swa = System.Windows.Automation;
 using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
-using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {

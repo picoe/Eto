@@ -1,13 +1,10 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Forms;
-using System.Threading;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -20,7 +17,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Create (int width, int height, int bitsPerPixel)
 		{
-			this.Size = new Size (width, height);
+			Size = new Size(width, height);
 			var format = swm.PixelFormats.Indexed8;
 			numColors = (int)Math.Pow(2, bitsPerPixel);
 			var colors = new List<swm.Color> (numColors);
@@ -70,7 +67,7 @@ namespace Eto.Platform.Wpf.Drawing
 			get
 			{
 				if (palette == null) {
-					palette = new Eto.Drawing.Palette ();
+					palette = new Palette ();
 					foreach (var col in Control.Palette.Colors) {
 						palette.Add (col.ToEto ());
 					}
@@ -85,9 +82,7 @@ namespace Eto.Platform.Wpf.Drawing
 				if (isLocked)
 					paletteSetInLocked = true;
 				else {
-					ApplicationHandler.InvokeIfNecessary (() => {
-						SetPalette ();
-					});
+					ApplicationHandler.InvokeIfNecessary(SetPalette);
 				}
 			}
 		}

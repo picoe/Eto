@@ -1,4 +1,3 @@
-using System;
 using Eto.Drawing;
 
 #if OSX
@@ -33,14 +32,9 @@ namespace Eto.Platform.iOS.Drawing
 			widget.ControlObject = color.ToCGColor ();
 		}
 
-		object ISolidBrush.Create (Eto.Drawing.Color color)
+		object ISolidBrush.Create (Color color)
 		{
 			return color.ToCGColor ();
-		}
-
-		public Color GetColor ()
-		{
-			throw new NotImplementedException ();
 		}
 	}
 }

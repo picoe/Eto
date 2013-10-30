@@ -21,8 +21,8 @@ namespace Eto.Platform.Windows
 
 		public Uri Directory
 		{
-			get { return new Uri(this.Control.InitialDirectory); }
-			set { this.Control.InitialDirectory = value.AbsoluteUri; }
+			get { return new Uri(Control.InitialDirectory); }
+			set { Control.InitialDirectory = value.AbsoluteUri; }
 		}
 
 		public IEnumerable<IFileDialogFilter> Filters
@@ -74,7 +74,7 @@ namespace Eto.Platform.Windows
 			set { Control.Title = value; }
 		}
 
-		public Eto.Forms.DialogResult ShowDialog(Window parent)
+		public DialogResult ShowDialog(Window parent)
 		{
 			swf.DialogResult dr;
 			if (parent != null)

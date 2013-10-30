@@ -23,12 +23,11 @@ namespace Eto.Drawing
 		/// <returns>A size struct if both the width and height attributes are specified, or null otherwise</returns>
 		public static Size? GetSizeAttributes(this XmlElement element, string baseName)
 		{
-			var width = element.GetIntAttribute (baseName + "-width");
-			var height = element.GetIntAttribute (baseName + "-height");
+			var width = element.GetIntAttribute(baseName + "-width");
+			var height = element.GetIntAttribute(baseName + "-height");
 			if (width != null && height != null)
 				return new Size(width.Value, height.Value);
-			else
-				return null;
+			return null;
 		}
 
 		/// <summary>
@@ -43,11 +42,12 @@ namespace Eto.Drawing
 		/// <param name="element">Element to write the width and height attributes on</param>
 		/// <param name="baseName">Base attribute name prefix</param>
 		/// <param name="value">Value to set the width and height attributes, if not null</param>
-		public static void SetSizeAttributes (this XmlElement element, string baseName, Size? value)
+		public static void SetSizeAttributes(this XmlElement element, string baseName, Size? value)
 		{
-			if (value != null) {
-				element.SetAttribute (baseName + "-width", value.Value.Width);
-				element.SetAttribute (baseName + "-height", value.Value.Height);
+			if (value != null)
+			{
+				element.SetAttribute(baseName + "-width", value.Value.Width);
+				element.SetAttribute(baseName + "-height", value.Value.Height);
 			}
 		}
 
@@ -61,10 +61,10 @@ namespace Eto.Drawing
 		/// <param name="element">Element to append the child element to if <paramref name="value"/> is not null</param>
 		/// <param name="elementName">Name of the element to append</param>
 		/// <param name="value">Size value to write</param>
-		public static void WriteChildSizeXml (this XmlElement element, string elementName, Size? value)
+		public static void WriteChildSizeXml(this XmlElement element, string elementName, Size? value)
 		{
 			if (value != null)
-				element.WriteChildXml (elementName, new SizeSaver { Size = value.Value });
+				element.WriteChildXml(elementName, new SizeSaver { Size = value.Value });
 		}
 
 		/// <summary>
@@ -76,61 +76,55 @@ namespace Eto.Drawing
 		/// <param name="element">Element to read from</param>
 		/// <param name="elementName">Name of the element to read into the Size struct</param>
 		/// <returns>A new Size struct if the element exists, or null if not</returns>
-		public static Size? ReadChildSizeXml (this XmlElement element, string elementName)
+		public static Size? ReadChildSizeXml(this XmlElement element, string elementName)
 		{
-			var size = element.ReadChildXml<SizeSaver> (elementName);
-			if (size != null)
-				return size.Size;
-			else
-				return null;
+			var size = element.ReadChildXml<SizeSaver>(elementName);
+			return size != null ? (Size?)size.Size : null;
 		}
 
 		class SizeSaver : IXmlReadable
 		{
 			public Size Size { get; set; }
 
-			public void ReadXml (XmlElement element)
+			public void ReadXml(XmlElement element)
 			{
-				var width = element.GetIntAttribute ("width") ?? 0;
-				var height = element.GetIntAttribute ("height") ?? 0;
-				Size = new Size (width, height);
+				var width = element.GetIntAttribute("width") ?? 0;
+				var height = element.GetIntAttribute("height") ?? 0;
+				Size = new Size(width, height);
 			}
 
-			public void WriteXml (XmlElement element)
+			public void WriteXml(XmlElement element)
 			{
-				element.SetAttribute ("width", Size.Width);
-				element.SetAttribute ("height", Size.Height);
+				element.SetAttribute("width", Size.Width);
+				element.SetAttribute("height", Size.Height);
 			}
 		}
 
-		public static void WriteChildRectangleXml (this XmlElement element, string elementName, Rectangle? rect)
+		public static void WriteChildRectangleXml(this XmlElement element, string elementName, Rectangle? rect)
 		{
 			if (rect != null)
-				element.WriteChildXml (elementName, new RectSaver { Rectangle = rect.Value });
+				element.WriteChildXml(elementName, new RectSaver { Rectangle = rect.Value });
 		}
-		
-		public static Rectangle? ReadChildRectangleXml (this XmlElement element, string elementName)
+
+		public static Rectangle? ReadChildRectangleXml(this XmlElement element, string elementName)
 		{
-			var rect = element.ReadChildXml<RectSaver> (elementName);
-			if (rect != null)
-				return rect.Rectangle;
-			else
-				return null;
+			var rect = element.ReadChildXml<RectSaver>(elementName);
+			return rect != null ? (Rectangle?)rect.Rectangle : null;
 		}
-		
+
 		class RectSaver : IXmlReadable
 		{
 			public Rectangle Rectangle { get; set; }
-			
+
 			public void ReadXml(XmlElement element)
 			{
-				var ps = new PointSaver ();
+				var ps = new PointSaver();
 				ps.ReadXml(element);
-				var ss = new SizeSaver ();
+				var ss = new SizeSaver();
 				ss.ReadXml(element);
 				Rectangle = new Rectangle(ps.Point, ss.Size);
 			}
-			
+
 			public void WriteXml(XmlElement element)
 			{
 				var ps = new PointSaver { Point = Rectangle.Location };
@@ -139,37 +133,34 @@ namespace Eto.Drawing
 				ss.WriteXml(element);
 			}
 		}
-		
-		public static void WriteChildPointXml (this XmlElement element, string elementName, Point? point)
+
+		public static void WriteChildPointXml(this XmlElement element, string elementName, Point? point)
 		{
 			if (point != null)
-				element.WriteChildXml (elementName, new PointSaver { Point = point.Value });
+				element.WriteChildXml(elementName, new PointSaver { Point = point.Value });
 		}
-		
-		public static Point? ReadChildPointXml (this XmlElement element, string elementName)
+
+		public static Point? ReadChildPointXml(this XmlElement element, string elementName)
 		{
-			var point = element.ReadChildXml<PointSaver> (elementName);
-			if (point != null)
-				return point.Point;
-			else
-				return null;
+			var point = element.ReadChildXml<PointSaver>(elementName);
+			return point != null ? (Point?)point.Point : null;
 		}
-		
+
 		class PointSaver : IXmlReadable
 		{
 			public Point Point { get; set; }
-			
-			public void ReadXml (XmlElement element)
+
+			public void ReadXml(XmlElement element)
 			{
-				var x = element.GetIntAttribute ("x") ?? 0;
-				var y = element.GetIntAttribute ("y") ?? 0;
+				var x = element.GetIntAttribute("x") ?? 0;
+				var y = element.GetIntAttribute("y") ?? 0;
 				Point = new Point(x, y);
 			}
-			
-			public void WriteXml (XmlElement element)
+
+			public void WriteXml(XmlElement element)
 			{
-				element.SetAttribute ("x", Point.X);
-				element.SetAttribute ("y", Point.Y);
+				element.SetAttribute("x", Point.X);
+				element.SetAttribute("y", Point.Y);
 			}
 		}
 	}

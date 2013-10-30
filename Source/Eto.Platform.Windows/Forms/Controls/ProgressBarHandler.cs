@@ -26,18 +26,18 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 
 		public int MaxValue {
-			get { return this.Control.Maximum; }
-			set { this.Control.Maximum = value; }
+			get { return Control.Maximum; }
+			set { Control.Maximum = value; }
 		}
 
 		public int MinValue {
-			get { return this.Control.Minimum; }
-			set { this.Control.Minimum = value; }
+			get { return Control.Minimum; }
+			set { Control.Minimum = value; }
 		}
 
 		public int Value {
-			get { return this.Control.Value; }
-			set { this.Control.Value = value; }
+			get { return Control.Value; }
+			set { Control.Value = value; }
 		}
 	}
 }

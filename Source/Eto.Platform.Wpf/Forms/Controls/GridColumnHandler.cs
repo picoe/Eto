@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
@@ -112,26 +108,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public void Setup (IGridHandler gridHandler)
 		{
-			this.GridHandler = gridHandler;
+			GridHandler = gridHandler;
 		}
 
 		public sw.FrameworkElement SetupCell (ICellHandler cell, sw.FrameworkElement defaultContent)
 		{
-			if (this.GridHandler != null)
-				return this.GridHandler.SetupCell (this, defaultContent);
-			else
-				return defaultContent;
+			return GridHandler != null ? GridHandler.SetupCell(this, defaultContent) : defaultContent;
 		}
 
 		public void FormatCell (ICellHandler cell, sw.FrameworkElement element, swc.DataGridCell gridcell, object dataItem)
 		{
-			if (this.GridHandler != null)
-				this.GridHandler.FormatCell (this, cell, element, gridcell, dataItem);
+			if (GridHandler != null)
+				GridHandler.FormatCell (this, cell, element, gridcell, dataItem);
 		}
 
 		swc.DataGridColumn IGridColumnHandler.Control
 		{
-			get { return (swc.DataGridColumn)this.Control; }
+			get { return (swc.DataGridColumn)Control; }
 		}
 
 	}

@@ -31,14 +31,14 @@ namespace Eto.Platform.Mac
 				return NSBundle.MainBundle.ResourcePath;
 			case EtoSpecialFolder.ApplicationSettings:
 				Convert (folder, out dir, out domain);
-				var path = NSSearchPath.GetDirectories (dir, domain, true).FirstOrDefault ();
+				var path = NSSearchPath.GetDirectories (dir, domain).FirstOrDefault ();
 				path = System.IO.Path.Combine (path, NSBundle.MainBundle.BundleIdentifier);
 				if (!System.IO.Directory.Exists (path))
 					System.IO.Directory.CreateDirectory (path);
 				return path;
 			default:
 				Convert (folder, out dir, out domain);
-				return NSSearchPath.GetDirectories (dir, domain, true).FirstOrDefault ();
+				return NSSearchPath.GetDirectories (dir, domain).FirstOrDefault ();
 			}
 		}
 	}

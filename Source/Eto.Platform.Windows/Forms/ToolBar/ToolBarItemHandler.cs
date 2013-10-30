@@ -51,7 +51,7 @@ namespace Eto.Platform.Windows
 			get { return image; }
 			set
 			{
-				this.image = value;
+				image = value;
 				Control.Image = image.ToSD (imageSize);
 			}
 		}

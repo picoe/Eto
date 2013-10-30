@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Windows.Controls;
 using System.Windows;
 using System.Windows.Media;
@@ -59,35 +58,32 @@ namespace Eto.Platform.Wpf.CustomControls
 			SourceProperty.OverrideMetadata (typeof (MultiSizeImage), new FrameworkPropertyMetadata (HandleSourceChanged));
 		}
 
-		private static void HandleSourceChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
+		static void HandleSourceChanged (DependencyObject sender, DependencyPropertyChangedEventArgs e)
 		{
-			MultiSizeImage img = (MultiSizeImage)sender;
+			var img = (MultiSizeImage)sender;
 			img.UpdateAvailableFrames ();
 		}
 		/// <summary>
 		/// List containing one frame of every size available in the original file. The frame 
 		/// stored in this list is the one with the highest pixel depth for that size.
 		/// </summary>
-		private List<BitmapSource> _availableFrames = new List<BitmapSource> ();
+		readonly List<BitmapSource> _availableFrames = new List<BitmapSource> ();
 
 		/// <summary>
 		/// Gets the pixel depth (in bits per pixel, bpp) of the specified frame
 		/// </summary>
 		/// <param name="frame">The frame to get BPP for</param>
 		/// <returns>The number of bits per pixel in the frame</returns>
-		private int GetFramePixelDepth (BitmapFrame frame)
+		int GetFramePixelDepth (BitmapFrame frame)
 		{
-			if (frame.Decoder.CodecInfo.ContainerFormat == new Guid ("{a3a860c4-338f-4c17-919a-fba4b5628f21}")
-				&& frame.Thumbnail != null)
+			if (frame.Decoder.CodecInfo.ContainerFormat == new Guid("{a3a860c4-338f-4c17-919a-fba4b5628f21}")
+			    && frame.Thumbnail != null)
 			{
 				// Windows Icon format, original pixel depth is in the thumbnail
 				return frame.Thumbnail.Format.BitsPerPixel;
 			}
-			else
-			{
-				// Other formats, just assume the frame has the correct BPP info
-				return frame.Format.BitsPerPixel;
-			}
+			// Other formats, just assume the frame has the correct BPP info
+			return frame.Format.BitsPerPixel;
 		}
 
 		protected override Size ArrangeOverride (Size arrangeSize)
@@ -161,10 +157,10 @@ namespace Eto.Platform.Wpf.CustomControls
 
 		Size MeasureArrangeHelper (Size inputSize)
 		{
-			if (this.Source == null)
+			if (Source == null)
 				return new Size (0, 0);
 			var first = _availableFrames.LastOrDefault ();
-			var size = new Size (this.Source.Width, this.Source.Width);
+			var size = new Size (Source.Width, Source.Width);
 			if (first == null)
 				return size;
 
@@ -192,10 +188,10 @@ namespace Eto.Platform.Wpf.CustomControls
 		/// them as individual bitmap sources. This is done once, 
 		/// when the <see cref="Image.Source"/> property is set (or changed)
 		/// </summary>
-		private void UpdateAvailableFrames ()
+		void UpdateAvailableFrames ()
 		{
 			_availableFrames.Clear ();
-			BitmapFrame bmFrame = Source as BitmapFrame;
+			var bmFrame = Source as BitmapFrame;
 			if (bmFrame == null)
 				return;
 

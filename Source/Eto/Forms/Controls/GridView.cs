@@ -4,15 +4,15 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-#if OBSOLETE
+	#if OBSOLETE
 	public interface IGridStore : IDataStore
 	{
 	}
 #endif
-
 	public partial interface IGridView : IGrid
 	{
 		IDataStore DataStore { get; set; }
+
 		bool ShowCellBorders { set; }
 	}
 
@@ -26,7 +26,7 @@ namespace Eto.Forms
 
 		public object Item { get; private set; }
 
-		public GridViewCellArgs (GridColumn gridColumn, int row, int column, object item)
+		public GridViewCellArgs(GridColumn gridColumn, int row, int column, object item)
 		{
 			this.GridColumn = gridColumn;
 			this.Row = row;
@@ -38,10 +38,12 @@ namespace Eto.Forms
 	public partial class GridView : Grid
 	{
 		public new IGridView Handler { get { return base.Handler as IGridView; } }
-		internal IDataStoreView DataStoreView { get; private set; } // provides sorting and filtering on the model.
-		GridViewSelection selection; // manages the selection
 
-#if MOBILE
+		internal IDataStoreView DataStoreView { get; private set; }
+		// provides sorting and filtering on the model.
+		GridViewSelection selection;
+		// manages the selection
+		#if MOBILE
 		/// <summary>
 		/// A delegate method to delete an item in response to a user's
 		/// request. The method should return true after deleting the
@@ -59,19 +61,18 @@ namespace Eto.Forms
 		/// </summary>
 		public string DeleteConfirmationTitle { get; set; }
 #endif
-
-		public GridView ()
-			: this (Generator.Current)
+		public GridView()
+			: this(Generator.Current)
 		{
 		}
 
-		public GridView (Generator g)
-			: this (g, typeof (IGridView))
+		public GridView(Generator g)
+			: this(g, typeof(IGridView))
 		{
 		}
-		
-		protected GridView (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+
+		protected GridView(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 			this.ShowCellBorders = true;
 			// Always attach the SelectionChangedEvent
@@ -84,19 +85,20 @@ namespace Eto.Forms
 		/// Setting this creates a DataStoreView, and the handler's
 		/// DataStore is set to the view collection of the DataStoreView.
 		/// </summary>
-		public IDataStore DataStore {
+		public IDataStore DataStore
+		{
 			get { return DataStoreView != null ? DataStoreView.Model : null; }
 			set
 			{
 				// initialize the selection
-				this.selection = new GridViewSelection(this, value);
+				selection = new GridViewSelection(this, value);
 
 				// Create a data store view wrapping the model
 				DataStoreView = value != null ? new DataStoreView { Model = value } : null;
 
 				// Initialize the sort comparer and filter since a new view has been created.
-				this.SortComparer = this.sortComparer;
-				this.Filter = this.filter;				
+				SortComparer = sortComparer;
+				Filter = filter;				
 
 				// Set the handler's data store to the sorted and filtered view.
 				Handler.DataStore = DataStoreView != null ? DataStoreView.View : null;
@@ -104,6 +106,7 @@ namespace Eto.Forms
 		}
 
 		bool showCellBorders;
+
 		/// <summary>
 		/// If true, there is a 1-pixel space between cells.
 		/// If false, there is no space between cells.
@@ -117,8 +120,8 @@ namespace Eto.Forms
 		#region Events
 
 		#region CellClick
-		public const string CellClickEvent = "GridView.CellClick";
 
+		public const string CellClickEvent = "GridView.CellClick";
 		EventHandler<GridViewCellArgs> cellClick;
 
 		public event EventHandler<GridViewCellArgs> CellClick
@@ -134,8 +137,9 @@ namespace Eto.Forms
 		public virtual void OnCellClick(GridViewCellArgs e)
 		{
 			if (cellClick != null)
-				cellClick(this, this.ViewToModel(e));
+				cellClick(this, ViewToModel(e));
 		}
+
 		#endregion
 
 		#endregion
@@ -144,18 +148,19 @@ namespace Eto.Forms
 		{
 			return new GridViewCellArgs(
 				e.GridColumn,
-				this.DataStoreView.ViewToModel(e.Row),
+				DataStoreView.ViewToModel(e.Row),
 				e.Column,
 				e.Item);
 		}
 
 		public override void OnSelectionChanged(EventArgs e)
 		{
-			if (this.selection != null && !this.selection.SuppressSelectionChanged)
+			if (selection != null && !selection.SuppressSelectionChanged)
 				base.OnSelectionChanged(e);
 		}
 
 		Comparison<object> sortComparer;
+
 		public Comparison<object> SortComparer
 		{
 			get { return sortComparer; }
@@ -168,13 +173,15 @@ namespace Eto.Forms
 		}
 
 		Func<object, bool> filter;
+
 		public Func<object, bool> Filter
 		{
 			get { return filter; }
 			set
 			{
 				filter = value;
-				if (DataStoreView != null) DataStoreView.Filter = value;
+				if (DataStoreView != null)
+					DataStoreView.Filter = value;
 			}
 		}
 
@@ -195,7 +202,7 @@ namespace Eto.Forms
 		/// </summary>
 		public override IEnumerable<int> SelectedRows
 		{
-			get { return this.selection != null ? this.selection.SelectedRows : new List<int>(); }
+			get { return selection != null ? selection.SelectedRows : new List<int>(); }
 		}
 
 		/// <summary>
@@ -213,8 +220,8 @@ namespace Eto.Forms
 		/// </summary>
 		public override void SelectRow(int row)
 		{
-			if (this.selection != null)
-				this.selection.SelectRow(row);
+			if (selection != null)
+				selection.SelectRow(row);
 		}
 
 		/// <summary>
@@ -222,20 +229,20 @@ namespace Eto.Forms
 		/// </summary>
 		public override void UnselectRow(int row)
 		{
-			if (this.selection != null)
-				this.selection.UnselectRow(row);
+			if (selection != null)
+				selection.UnselectRow(row);
 		}
 
 		public override void SelectAll()
 		{
-			if (this.selection != null)
-				this.selection.SelectAll();
+			if (selection != null)
+				selection.SelectAll();
 		}
 
 		public override void UnselectAll()
 		{
-			if (this.selection != null)
-				this.selection.UnselectAll();
+			if (selection != null)
+				selection.UnselectAll();
 		}
 
 		/// <summary>
@@ -257,17 +264,17 @@ namespace Eto.Forms
 			var increment = next ? 1 : -1;
 			int? modelRowToSelect = null; // If there are no selected rows, this is the default
 
-			var r = SelectedRows;
-			if (this.DataStoreView != null && r.Any())
+			var rows = SelectedRows.ToArray();
+			if (DataStoreView != null && rows.Length > 0)
 			{
 				// Get the last (or first, if moving back) selected view row.
 				// This handles multiselection.
 				int? currentRowViewIndex = null;
-				foreach (var x in r)
+				foreach (var x in rows)
 				{
-					var temp = this.DataStoreView.ModelToView(x);
+					var temp = DataStoreView.ModelToView(x);
 					if (temp != null &&
-						(currentRowViewIndex == null || Math.Sign(temp.Value - currentRowViewIndex.Value) == Math.Sign(increment)))
+					    (currentRowViewIndex == null || Math.Sign(temp.Value - currentRowViewIndex.Value) == Math.Sign(increment)))
 						currentRowViewIndex = temp;
 				}
 
@@ -275,15 +282,15 @@ namespace Eto.Forms
 				{
 					var newRow = currentRowViewIndex.Value + increment; // view index
 					if (newRow >= 0 &&
-						this.DataStore.Count > newRow)
-						modelRowToSelect = this.DataStoreView.ViewToModel(newRow);
+					    DataStore.Count > newRow)
+						modelRowToSelect = DataStoreView.ViewToModel(newRow);
 				}
 			}
 
 			if (modelRowToSelect == null)
 			{
-				var viewRows = ViewRows;
-				if (viewRows.Any())
+				var viewRows = ViewRows.ToArray();
+				if (viewRows.Length > 0)
 					modelRowToSelect = next ? viewRows.First() : viewRows.Last();
 			}
 

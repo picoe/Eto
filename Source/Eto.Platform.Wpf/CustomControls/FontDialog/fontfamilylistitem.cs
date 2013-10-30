@@ -9,7 +9,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
     class FontFamilyListItem : TextBlock, IComparable
     {
-        string _displayName;
+        readonly string _displayName;
 
         public FontFamilyListItem(FontFamily fontFamily)
         {
@@ -22,7 +22,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             // In the case of symbol font, apply the default message font to the text so it can be read.
             if (IsSymbolFont(fontFamily))
             {
-                TextRange range = new TextRange(this.ContentStart, this.ContentEnd);
+                var range = new TextRange(ContentStart, ContentEnd);
                 range.ApplyPropertyValue(TextBlock.FontFamilyProperty, SystemFonts.MessageFontFamily);
             }
         }

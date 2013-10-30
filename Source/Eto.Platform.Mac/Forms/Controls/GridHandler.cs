@@ -259,12 +259,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			handler.UpdateColumnSizes();
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -350,8 +350,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{ 
 				if (Control.SelectedRows != null && Control.SelectedRows.Count > 0)
 					return Control.SelectedRows.Select(r => (int)r);
-				else
-					return Enumerable.Empty<int>();
+				return Enumerable.Empty<int>();
 			}
 		}
 

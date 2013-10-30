@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
@@ -12,7 +11,6 @@ using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Eto.Platform.Wpf.Drawing;
-using Eto.Platform.Wpf.Forms;
 
 namespace Eto.Platform.Wpf
 {
@@ -315,8 +313,7 @@ namespace Eto.Platform.Wpf
 		{
 			if (element.IsVisible && (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight)))
 				return new Size((int)element.ActualWidth, (int)element.ActualHeight);
-			else
-				return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
+			return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
 		}
 
 		public static void SetSize(this sw.FrameworkElement element, Size size)
@@ -363,8 +360,7 @@ namespace Eto.Platform.Wpf
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
 				return imageHandler.GetImageClosestToSize(size);
-			else
-				return image.ControlObject as swmi.BitmapSource;
+			return image.ControlObject as swmi.BitmapSource;
 		}
 
 		public static swc.Image ToWpfImage(this Image image, int? size = null)

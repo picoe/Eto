@@ -9,7 +9,7 @@ namespace Eto.Platform.Windows
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class RadioMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, RadioMenuItem>, IRadioMenuItem, IMenu
+	public class RadioMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, RadioMenuItem>, IRadioMenuItem
 	{
 		ArrayList group;
 

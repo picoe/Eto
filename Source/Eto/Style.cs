@@ -81,7 +81,7 @@ namespace Eto
 	/// </example>
 	public static class Style
 	{
-		static Dictionary<object, IList<Action<InstanceWidget>>> styleMap;
+		static readonly Dictionary<object, IList<Action<InstanceWidget>>> styleMap;
 
 		static Style ()
 		{

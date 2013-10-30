@@ -86,12 +86,9 @@ namespace Eto.Test.Sections.Layouts.PixelLayoutSection
 			SetButtonsPosition(); // set position when we're shown and know our size
 		}
 
-		Anchor Flip(Anchor flag, Anchor value)
+		static Anchor Flip(Anchor flag, Anchor value)
 		{
-			if (flag.HasFlag(value))
-				return flag &= ~value;
-			else
-				return flag |= value;
+			return flag.HasFlag(value) ? flag &= ~value : flag |= value;
 		}
 
 		Control CreateButtons()

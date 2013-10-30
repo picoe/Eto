@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
-using Eto.Platform.Wpf.Drawing;
 using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Menu
@@ -17,7 +14,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		where W : MenuActionItem
 	{
         Image image;
-		swi.RoutedCommand command = new swi.RoutedCommand ();
+		readonly swi.RoutedCommand command = new swi.RoutedCommand ();
 		bool openingHandled;
 
 		protected void Setup ()
@@ -82,14 +79,14 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			}
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case MenuActionItem.ValidateEvent:
 				// handled by parent
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -115,7 +112,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		bool swi.ICommand.CanExecute (object parameter)
 		{
-			return this.Enabled;
+			return Enabled;
 		}
 
 		void HandleContextMenuOpening (object sender, sw.RoutedEventArgs e)

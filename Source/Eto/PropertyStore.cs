@@ -38,10 +38,7 @@ namespace Eto
 		public T Get<T> (AttachableMemberIdentifier member, T defaultValue)
 		{
 			object value;
-			if (TryGetValue(member, out value))
-				return (T)value;
-			else
-				return defaultValue;
+			return TryGetValue(member, out value) ? (T)value : defaultValue;
 		}
 
 		/// <summary>
@@ -53,10 +50,7 @@ namespace Eto
 		public T Get<T> (AttachableMemberIdentifier member)
 		{
 			object value;
-			if (TryGetValue(member, out value))
-				return (T)value;
-			else
-				return default (T);
+			return TryGetValue(member, out value) ? (T)value : default(T);
 		}
 	}
 }

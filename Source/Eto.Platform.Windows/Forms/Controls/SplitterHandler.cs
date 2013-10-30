@@ -64,18 +64,18 @@ namespace Eto.Platform.Windows
 			};
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case Eto.Forms.Splitter.PositionChangedEvent:
+				case Splitter.PositionChangedEvent:
 					// Hook SplitterMoving, not SplitterMoved,
 					// because the latter fires even when the
 					// splitter distance is changed programmatically.
 					Control.SplitterMoving += (s, e) => Widget.OnPositionChanged(e);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -178,24 +178,26 @@ namespace Eto.Platform.Windows
 			{
 				switch (Control.Orientation)
 				{
-					default:
 					case swf.Orientation.Horizontal:
 						return SplitterOrientation.Vertical;
 					case swf.Orientation.Vertical:
 						return SplitterOrientation.Horizontal;
+					default:
+						throw new NotSupportedException();
 				}
 			}
 			set
 			{
 				switch (value)
 				{
-					default:
 					case SplitterOrientation.Horizontal:
 						Control.Orientation = swf.Orientation.Vertical;
 						break;
 					case SplitterOrientation.Vertical:
 						Control.Orientation = swf.Orientation.Horizontal;
 						break;
+					default:
+						throw new NotSupportedException();
 				}
 			}
 		}

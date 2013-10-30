@@ -345,9 +345,8 @@ namespace Eto.Drawing
 		public string ToHex (bool includeAlpha = true)
 		{
 			if (includeAlpha)
-				return string.Format (CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
-			else
-				return string.Format (CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+			return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
 		}
 
 		/// <summary>

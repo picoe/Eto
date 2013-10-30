@@ -1,22 +1,12 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using Eto.Forms;
-using System.Collections;
 using System.Collections.ObjectModel;
-using Eto.Platform.Wpf.Forms.Menu;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class GridViewHandler : GridHandler<swc.DataGrid, GridView>, IGridView
 	{
 		IDataStore store;
-
-		public GridViewHandler ()
-		{
-		}
 
 		protected override void Initialize ()
 		{

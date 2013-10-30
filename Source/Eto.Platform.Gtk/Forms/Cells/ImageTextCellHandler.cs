@@ -123,20 +123,24 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		
 		protected override GLib.Value GetValueInternal (object dataItem, int dataColumn, int row)
 		{
-			if (dataColumn == imageDataIndex) {
-				if (Widget.ImageBinding != null) {
-					var ret = Widget.ImageBinding.GetValue (dataItem);
+			if (dataColumn == imageDataIndex)
+			{
+				if (Widget.ImageBinding != null)
+				{
+					var ret = Widget.ImageBinding.GetValue(dataItem);
 					var image = ret as Image;
 					if (image != null)
-						return new GLib.Value (((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16)));
+						return new GLib.Value(((IGtkPixbuf)image.Handler).GetPixbuf(new Size(16, 16)));
 				}
-				return new GLib.Value ((Gdk.Pixbuf)null);
-			} else if (dataColumn == textDataIndex) {
-				var ret = Widget.TextBinding.GetValue (dataItem);
-				if (ret != null)
-					return new GLib.Value (Convert.ToString (ret));
+				return new GLib.Value((Gdk.Pixbuf)null);
 			}
-			return new GLib.Value ((string)null);
+			if (dataColumn == textDataIndex)
+			{
+				var ret = Widget.TextBinding.GetValue(dataItem);
+				if (ret != null)
+					return new GLib.Value(Convert.ToString(ret));
+			}
+			return new GLib.Value((string)null);
 		}
 		
 		public override void AttachEvent (string id)

@@ -256,10 +256,7 @@ namespace Eto.Platform.Mac
 
 		public static WindowStyle ToEtoWindowStyle(this NSWindowStyle style)
 		{
-			if (style.HasFlag(NSWindowStyle.Borderless))
-				return WindowStyle.None;
-			else
-				return WindowStyle.Default;
+			return style.HasFlag(NSWindowStyle.Borderless) ? WindowStyle.None : WindowStyle.Default;
 		}
 
 		public static NSWindowStyle ToNS(this WindowStyle style, NSWindowStyle existing)

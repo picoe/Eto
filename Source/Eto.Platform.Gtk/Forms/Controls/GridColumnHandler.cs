@@ -34,7 +34,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			this.DataCell = new TextBoxCell (Widget.Generator);
+			DataCell = new TextBoxCell(Widget.Generator);
 		}
 
 		public string HeaderText {
@@ -58,10 +58,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 			set {
 				autoSize = value;
-				if (value)
-					Control.Sizing = Gtk.TreeViewColumnSizing.GrowOnly;
-				else
-					Control.Sizing = Gtk.TreeViewColumnSizing.Fixed;
+				Control.Sizing = value ? Gtk.TreeViewColumnSizing.GrowOnly : Gtk.TreeViewColumnSizing.Fixed;
 			}
 		}
 		
@@ -120,19 +117,19 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public void SetupEvents ()
 		{
 			if (grid == null) return;
-			if (grid.IsEventHandled (GridView.BeginCellEditEvent))
-				HandleEvent (GridView.BeginCellEditEvent);
-			if (grid.IsEventHandled (GridView.EndCellEditEvent))
-				HandleEvent (GridView.EndCellEditEvent);
+			if (grid.IsEventHandled (Grid.BeginCellEditEvent))
+				HandleEvent (Grid.BeginCellEditEvent);
+			if (grid.IsEventHandled (Grid.EndCellEditEvent))
+				HandleEvent (Grid.EndCellEditEvent);
 			if (grid.IsEventHandled (Grid.ColumnHeaderClickEvent))
 				HandleEvent (Grid.ColumnHeaderClickEvent);
 			if (grid.IsEventHandled (Grid.CellFormattingEvent))
 				HandleEvent (Grid.CellFormattingEvent);
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.ColumnHeaderClickEvent:
 				Control.Clicked += (sender, e) => {
 					if (grid != null)
@@ -140,17 +137,16 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			default:
-				((ICellHandler)dataCell.Handler).HandleEvent(handler);
+				((ICellHandler)dataCell.Handler).HandleEvent(id);
 				break;
 			}
 		}
 		
 		public GLib.Value GetValue (object dataItem, int dataColumn, int row)
 		{
-			if (dataCell != null) {
+			if (dataCell != null)
 				return ((ICellHandler)dataCell.Handler).GetValue(dataItem, dataColumn, row);
-			}
-			else return new GLib.Value((string)null);
+			return new GLib.Value((string)null);
 		}
 		
 	}

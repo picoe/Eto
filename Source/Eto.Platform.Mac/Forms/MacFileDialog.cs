@@ -22,16 +22,15 @@ namespace Eto.Platform.Mac.Forms
 		public IMacFileDialog Handler { get { return (IMacFileDialog)handler.Target; } set { handler = new WeakReference(value); } }
      
         public override bool ShouldEnableUrl (NSSavePanel panel, NSUrl url)
-        {
-            if (Directory.Exists (url.Path))
-                return true;
+		{
+			if (Directory.Exists(url.Path))
+				return true;
 
-			var extension = Path.GetExtension (url.Path).ToLowerInvariant ().TrimStart ('.');
-            if (Handler.MacFilters == null || Handler.MacFilters.Contains (extension, StringComparer.InvariantCultureIgnoreCase))
-                return true;
-            else
-                return false;
-        }
+			var extension = Path.GetExtension(url.Path).ToLowerInvariant().TrimStart('.');
+			if (Handler.MacFilters == null || Handler.MacFilters.Contains(extension, StringComparer.InvariantCultureIgnoreCase))
+				return true;
+			return false;
+		}
 		
     }
 	

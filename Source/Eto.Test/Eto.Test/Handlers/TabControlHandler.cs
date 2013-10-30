@@ -10,7 +10,7 @@ namespace Eto.Test.Handlers
 		/// <summary>
 		/// Contains the tabs
 		/// </summary>
-		private Tabs Tabs { get; set; }
+		Tabs Tabs { get; set; }
 
 		/// <summary>
 		/// The content for the currently selected tab
@@ -25,10 +25,9 @@ namespace Eto.Test.Handlers
 		{
 			this.Tabs = new Tabs
 			{
-				SelectionChanged = e => {
-					var tab = e as Tab; 
-					Panel tabContentPanel = null;
-					TabPageHandler h = null;
+				SelectionChanged = tab => {
+					Panel tabContentPanel;
+					TabPageHandler h;
 					if (tab != null &&
 					    (h = tab.Tag as TabPageHandler) != null &&
 					    this.ContentPanel != null)
@@ -69,20 +68,20 @@ namespace Eto.Test.Handlers
 		{
 			var p = page != null ? page.Handler as TabPageHandler : null;
 
-			if (this.Tabs != null && p != null)
-				this.Tabs.Insert(p.Tab, index); 
+			if (Tabs != null && p != null)
+				Tabs.Insert(p.Tab, index); 
 		}
 
 		public void ClearTabs()
 		{
-			if (this.Tabs != null)
-				this.Tabs.RemoveAllTabs();
+			if (Tabs != null)
+				Tabs.RemoveAllTabs();
 		}
 
 		public void RemoveTab(int index, TabPage page)
 		{
-			if (this.Tabs != null)
-				this.Tabs.Remove(index);
+			if (Tabs != null)
+				Tabs.Remove(index);
 		}
 	}
 
@@ -104,7 +103,7 @@ namespace Eto.Test.Handlers
 	{
 		public Action<Tab> SelectionChanged { get; set; }
 
-		private Tab selectedTab;
+		Tab selectedTab;
 		public Tab SelectedTab {
 			get { return selectedTab; }
 			private set {
@@ -131,7 +130,7 @@ namespace Eto.Test.Handlers
 		{
 			Items[index].Click -= HandleClick;
 			Items.RemoveAt(index);
-			this.LayoutItems();
+			LayoutItems();
 		}
 
 		internal void RemoveAllTabs()
@@ -144,13 +143,13 @@ namespace Eto.Test.Handlers
 		internal void Insert(Tab tab, int index)
 		{
 			Items.Insert(index, tab);
-			tab.Click += HandleClick;;
+			tab.Click += HandleClick;
 			LayoutItems();
 			if (SelectedTab == null)
 				SelectedTab = tab;
 		}
 
-		private void LayoutItems()
+		void LayoutItems()
 		{
 			var layout = new DynamicLayout(padding: Padding.Empty, spacing: Size.Empty);
 			layout.BeginVertical();
@@ -158,7 +157,7 @@ namespace Eto.Test.Handlers
 				layout.Add(tab);
 			layout.Add(null);
 			layout.EndVertical();
-			this.Content = layout;
+			Content = layout;
 		}
 
 		void HandleClick (object sender, EventArgs e)

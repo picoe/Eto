@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -86,17 +83,17 @@ namespace Eto.Platform.Wpf.CustomControls
 		bool refreshing;
 		public void RefreshData ()
 		{
-			var selectedItem = this.CurrentItem;
+			var selectedItem = CurrentItem;
 			refreshing = true;
 			Items.Refresh ();
 			refreshing = false;
-			if (this.IsLoaded)
+			if (IsLoaded)
 			{
 				SetSelected(selectedItem);
 			}
 			else
 			{
-				this.Loaded += (sender, e) => SetSelected(selectedItem);
+				Loaded += (sender, e) => SetSelected(selectedItem);
 			}
             //this.CurrentItem = selectedItem;
 		}
@@ -149,8 +146,8 @@ namespace Eto.Platform.Wpf.CustomControls
 
 		class Helper
 		{
-			Dictionary<ItemContainerGenerator, ItemsControl> items = new Dictionary<ItemContainerGenerator, ItemsControl> ();
-			TaskCompletionSource<TreeViewItem> completion = new TaskCompletionSource<TreeViewItem> ();
+			readonly Dictionary<ItemContainerGenerator, ItemsControl> items = new Dictionary<ItemContainerGenerator, ItemsControl> ();
+			readonly TaskCompletionSource<TreeViewItem> completion = new TaskCompletionSource<TreeViewItem> ();
 			bool completed;
 
 			public object SelectedItem { get; set; }

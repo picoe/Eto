@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
 using sw = System.Windows;
@@ -70,7 +67,6 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			switch (type)
 			{
-				default:
 				case MessageBoxType.Information:
 					return sw.MessageBoxImage.Information;
 				case MessageBoxType.Error:
@@ -79,6 +75,8 @@ namespace Eto.Platform.Wpf.Forms
 					return sw.MessageBoxImage.Question;
 				case MessageBoxType.Warning:
 					return sw.MessageBoxImage.Warning;
+				default:
+					throw new NotSupportedException();
 			}
 		}
 

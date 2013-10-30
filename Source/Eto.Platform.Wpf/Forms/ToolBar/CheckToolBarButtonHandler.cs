@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using Eto.Forms;
@@ -12,8 +9,8 @@ namespace Eto.Platform.Wpf.Forms
 	public class CheckToolBarButtonHandler : ToolBarItemHandler<swc.Primitives.ToggleButton, CheckToolBarButton>, ICheckToolBarButton
 	{
         Image image;
-		swc.Image swcImage;
-		swc.TextBlock label;
+		readonly swc.Image swcImage;
+		readonly swc.TextBlock label;
 		public CheckToolBarButtonHandler ()
 		{
 			Control = new swc.Primitives.ToggleButton {

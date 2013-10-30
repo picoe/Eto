@@ -81,7 +81,7 @@ namespace Eto.Platform.Windows
 			{
 				spacing = value;
 				var newpadding = new swf.Padding(0, 0, spacing.Width, spacing.Height);
-				foreach (swf.Control control in this.Control.Controls)
+				foreach (swf.Control control in Control.Controls)
 				{
 					control.Margin = newpadding;
 				}
@@ -93,8 +93,8 @@ namespace Eto.Platform.Windows
 			return new swf.Padding(
 				x == 0 ? 0 : spacing.Width / 2,
 				y == 0 ? 0 : spacing.Height / 2,
-				x == this.views.GetLength(0) - 1 ? 0 : (spacing.Width + 1) / 2,
-				y == this.views.GetLength(1) - 1 ? 0 : (spacing.Height + 1) / 2);
+				x == views.GetLength(0) - 1 ? 0 : (spacing.Width + 1) / 2,
+				y == views.GetLength(1) - 1 ? 0 : (spacing.Height + 1) / 2);
 		}
 
 		public Padding Padding
@@ -105,8 +105,8 @@ namespace Eto.Platform.Windows
 
 		void SetScale(Control control, int x, int y)
 		{
-			var xscale = this.XScale && (x == lastColumnScale || columnScale[x]);
-			var yscale = this.YScale && (y == lastRowScale || rowScale[y]);
+			var xscale = XScale && (x == lastColumnScale || columnScale[x]);
+			var yscale = YScale && (y == lastRowScale || rowScale[y]);
 			control.SetScale(xscale, yscale);
 		}
 
@@ -198,8 +198,7 @@ namespace Eto.Platform.Windows
 			var scale = columnScale[column] || column == lastColumnScale;
 			if (scale)
 				return new swf.ColumnStyle(swf.SizeType.Percent, 1f);
-			else
-				return new swf.ColumnStyle(swf.SizeType.AutoSize);
+			return new swf.ColumnStyle(swf.SizeType.AutoSize);
 		}
 
 		swf.RowStyle GetRowStyle(int row)
@@ -207,8 +206,7 @@ namespace Eto.Platform.Windows
 			var scale = rowScale[row] || row == lastRowScale;
 			if (scale)
 				return new swf.RowStyle(swf.SizeType.Percent, 1f);
-			else
-				return new swf.RowStyle(swf.SizeType.AutoSize);
+			return new swf.RowStyle(swf.SizeType.AutoSize);
 		}
 
 		void ResetColumnScale(int column)

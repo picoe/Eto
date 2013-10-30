@@ -75,10 +75,10 @@ namespace Eto.Test.Sections.Printing
 			control.Click += delegate
 			{
 				var print = CreatePrintDialog();
-				var ret = print.ShowDialog(this.ParentWindow);
+				var ret = print.ShowDialog(ParentWindow);
 				if (ret == DialogResult.Ok)
 				{
-					this.DataContext = settings = print.PrintSettings;
+					DataContext = settings = print.PrintSettings;
 				}
 			};
 
@@ -152,7 +152,7 @@ namespace Eto.Test.Sections.Printing
 				var document = GetPrintDocument();
 				var dialog = CreatePrintDialog();
 				dialog.ShowDialog(this, document);
-				this.DataContext = settings = document.PrintSettings;
+				DataContext = settings = document.PrintSettings;
 			};
 
 			return control;
@@ -195,31 +195,31 @@ namespace Eto.Test.Sections.Printing
 			return new GroupBox { Text = "Page Range", Content = layout };
 		}
 
-		Control PageOrientation()
+		static Control PageOrientation()
 		{
 			var control = new EnumComboBox<PageOrientation>();
-			control.Bind(r => r.SelectedValue, (PrintSettings s) => s.Orientation);
+			control.SelectedValueBinding.Bind<PrintSettings>(r => r.Orientation);
 			return control;
 		}
 
-		Control Copies()
+		static Control Copies()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
-			control.Bind(r => r.Value, (PrintSettings s) => s.Copies, defaultControlValue: 1);
+			control.ValueBinding.Bind<PrintSettings>(r => r.Copies);
 			return control;
 		}
 
-		Control Collate()
+		static Control Collate()
 		{
 			var control = new CheckBox { Text = "Collate" };
-			control.Bind(r => r.Checked, (PrintSettings s) => s.Collate);
+			control.CheckedBinding.Bind<PrintSettings>(r => r.Collate);
 			return control;
 		}
 
-		Control Reverse()
+		static Control Reverse()
 		{
 			var control = new CheckBox { Text = "Reverse" };
-			control.Bind(r => r.Checked, (PrintSettings s) => s.Reverse);
+			control.CheckedBinding.Bind<PrintSettings>(r => r.Reverse);
 			return control;
 		}
 
@@ -295,10 +295,10 @@ namespace Eto.Test.Sections.Printing
 			return control;
 		}
 
-		Control PrintSelection()
+		static Control PrintSelection()
 		{
 			var control = new EnumComboBox<PrintSelection>();
-			control.Bind(r => r.SelectedValue, (PrintSettings s) => s.PrintSelection);
+			control.SelectedValueBinding.Bind<PrintSettings>(r => r.PrintSelection);
 			return control;
 		}
 	}

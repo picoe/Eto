@@ -12,7 +12,7 @@ namespace Eto.Platform.Windows
 	{
 		string badgeLabel;
 		bool attached;
-		Thread mainThread;
+		readonly Thread mainThread;
 		SynchronizationContext context;
 
 		public static bool EnableScrollingUnderMouse = true;
@@ -141,15 +141,15 @@ namespace Eto.Platform.Windows
 			Process.Start(info);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Application.TerminatingEvent:
 					// handled by WindowHandler
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -163,8 +163,7 @@ namespace Eto.Platform.Windows
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = Widget.MainForm.GetContainerControl();
-				if (window == null) window = swf.Form.ActiveForm;
+				var window = Widget.MainForm.GetContainerControl() ?? swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{
@@ -182,8 +181,7 @@ namespace Eto.Platform.Windows
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = Widget.MainForm.GetContainerControl();
-				if (window == null) window = swf.Form.ActiveForm;
+				var window = Widget.MainForm.GetContainerControl() ?? swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{

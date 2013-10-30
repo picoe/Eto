@@ -29,8 +29,6 @@ namespace Eto.Platform.GtkSharp
 		public override string ID { get { return Generators.Gtk; } }
 #else
 		public override string ID { get { return Generators.Gtk3; } }
-
-		static EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register ("Eto.Platform.GtkSharp.CustomControls.Assemblies");
 #endif
 		
 		public Generator ()

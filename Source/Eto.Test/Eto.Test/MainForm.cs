@@ -68,11 +68,12 @@ namespace Eto.Test
 			contentContainer = new Panel();
 
 			// set focus when the form is shown
-			this.Shown += delegate
+			Shown += delegate
 			{
 				SectionList.Focus();
 			};
-			SectionList.SelectedItemChanged += (sender, e) => {
+			SectionList.SelectedItemChanged += (sender, e) =>
+			{
 				try
 				{
 					var item = SectionList.SelectedItem;
@@ -111,18 +112,17 @@ namespace Eto.Test
 					// for now, don't show log in mobile
 					Panel2 = contentContainer
 #else
-					Panel2 = RightPane ()
+					Panel2 = RightPane()
 #endif
 				};
 				return splitter;
 			}
-			else if (Navigation.IsSupported())
+			if (Navigation.IsSupported())
 			{
 				navigation = new Navigation(SectionList, "Eto.Test");
 				return navigation;
 			}
-			else
-				throw new EtoException("Platform must support splitter or navigation");
+			throw new EtoException("Platform must support splitter or navigation");
 
 		}
 
@@ -158,9 +158,7 @@ namespace Eto.Test
 			{
 				Text = "Clear"
 			};
-			control.Click += (sender, e) => {
-				EventLog.Text = string.Empty;
-			};
+			control.Click += (sender, e) => EventLog.Text = string.Empty;
 			return control;
 		}
 
@@ -208,7 +206,7 @@ namespace Eto.Test
 			}
 
 #if DESKTOP
-			this.Menu = args.Menu.GenerateMenuBar();
+			Menu = args.Menu.GenerateMenuBar();
 #endif
 		}
 
@@ -218,7 +216,7 @@ namespace Eto.Test
 			args.ToolBar.Add(Actions.About.ActionID);
 #if DESKTOP
 			// TODO for mobile
-			this.ToolBar = args.ToolBar.GenerateToolBar();
+			ToolBar = args.ToolBar.GenerateToolBar();
 #endif
 		}
 		#region Generate Menu & Toolbar Manually
@@ -258,7 +256,7 @@ namespace Eto.Test
 		public override void OnWindowStateChanged(EventArgs e)
 		{
 			base.OnWindowStateChanged(e);
-			Log.Write(this, "StateChanged: {0}", this.WindowState);
+			Log.Write(this, "StateChanged: {0}", WindowState);
 		}
 
 		public override void OnClosing(System.ComponentModel.CancelEventArgs e)

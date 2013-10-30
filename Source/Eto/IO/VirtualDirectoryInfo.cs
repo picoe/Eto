@@ -9,27 +9,30 @@ namespace Eto.IO
 {
 	public abstract class VirtualDirectoryInfo : EtoDirectoryInfo
 	{
-		VirtualDirectoryInfo parent;
-		
+		readonly VirtualDirectoryInfo parent;
+
 		public EtoFileInfo FileInfo { get; private set; }
-		
+
 		protected string VirtualPath { get; private set; }
-		protected string FileName 
+
+		protected string FileName
 		{
 			get { return FileInfo.FullName; }
 		}
+
 		protected List<VirtualFileEntry> Files { get; private set; }
-		
+
 		public static bool FlattenInitialDirectories { get; set; }
-		
+
 		static VirtualDirectoryInfo()
 		{
 			FlattenInitialDirectories = true;
 		}
-		
+
 		public bool FlattenInitialDirectory
 		{
-			get; set;
+			get;
+			set;
 		}
 
 		protected VirtualDirectoryInfo(EtoFileInfo fileInfo)
@@ -44,7 +47,8 @@ namespace Eto.IO
 		{
 			this.FileInfo = parent.FileInfo;
 			this.VirtualPath = path;
-			if (parent != null) {
+			if (parent != null)
+			{
 				this.parent = parent;
 				this.Files = parent.Files;
 			}
@@ -56,13 +60,14 @@ namespace Eto.IO
 			this.VirtualPath = string.Empty;
 			ReadStream(stream);
 		}
-		
+
 		VirtualDirectoryInfo()
 		{
 			this.FlattenInitialDirectory = FlattenInitialDirectories;
 		}
-		
+
 		protected abstract VirtualDirectoryInfo CreateDirectory(VirtualDirectoryInfo parent, string path);
+
 		protected virtual VirtualFileInfo CreateFile(VirtualDirectoryInfo parent, string path)
 		{
 			return new VirtualFileInfo(parent, path);
@@ -70,11 +75,14 @@ namespace Eto.IO
 
 		protected void ReadEntries()
 		{
-			if (Files != null)  return;
-			using (Stream stream = FileInfo.OpenRead()) {
+			if (Files != null)
+				return;
+			using (Stream stream = FileInfo.OpenRead())
+			{
 				ReadStream(stream);
 			}
 		}
+
 		void ReadStream(Stream stream)
 		{
 			Files = new List<VirtualFileEntry>();
@@ -84,8 +92,9 @@ namespace Eto.IO
 			foreach (var entry in ReadEntries(stream))
 			{
 				Files.Add(entry);
-				if (VirtualPath.Length == 0 && string.IsNullOrEmpty(entry.Path)) {
-					if (entry.IsDirectory) 
+				if (VirtualPath.Length == 0 && string.IsNullOrEmpty(entry.Path))
+				{
+					if (entry.IsDirectory)
 					{
 						topDirectory = entry;
 						topDirectories++;	
@@ -107,16 +116,19 @@ namespace Eto.IO
 
 		public override string FullName
 		{
-			get { 
-				if (!string.IsNullOrEmpty(VirtualPath)) return Path.Combine(FileName, VirtualPath); 
-				else return FileName;
+			get
+			{ 
+				return !string.IsNullOrEmpty(VirtualPath) ? Path.Combine(FileName, VirtualPath) : FileName;
 			}
 		}
-		
-		public override string Name {
-			get {
-				if (!string.IsNullOrEmpty(VirtualPath)) return Path.GetFileName(VirtualPath.TrimEnd(Path.DirectorySeparatorChar));
-				else return Path.GetFileName(FullName);
+
+		public override string Name
+		{
+			get
+			{
+				return !string.IsNullOrEmpty(VirtualPath)
+					? Path.GetFileName(VirtualPath.TrimEnd(Path.DirectorySeparatorChar))
+					: Path.GetFileName(FullName);
 			}
 		}
 
@@ -124,12 +136,9 @@ namespace Eto.IO
 		{
 			get
 			{
-				if (parent != null) return parent;
-				else if (FileInfo != null) return FileInfo.Directory;
-				else return null; //return new DiskDirectoryInfo(Path.Combine(Path.GetPathRoot(FileName), Path.GetDirectoryName(FileName)));
-			}
+				return parent ?? (FileInfo != null ? FileInfo.Directory : null);
+ 			}
 		}
-
 
 		public override EtoDirectoryInfo GetSubDirectory(string subDirectory)
 		{
@@ -177,11 +186,11 @@ namespace Eto.IO
 			filter = filter.Replace(".", "\\.");
 			filter = filter.Replace("*", ".+");
 
-			var reg = new Regex(filter, RegexOptions.IgnoreCase 
+			var reg = new Regex(filter, RegexOptions.IgnoreCase
 #if !MOBILE
-				| RegexOptions.Compiled
+			          | RegexOptions.Compiled
 #endif
-				);
+			          );
 
 			foreach (var file in Files)
 			{
@@ -191,6 +200,5 @@ namespace Eto.IO
 				}
 			}
 		}
-
 	}
 }

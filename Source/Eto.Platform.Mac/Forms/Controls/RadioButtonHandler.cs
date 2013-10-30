@@ -17,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -56,12 +56,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 					controllerInner.group.Add(controller);
 					controllerInner.Activated += controllerInner.control_RadioSwitch;
 				}
-				controllerInner.group.Add((RadioButton)this.Widget);
-				this.Activated += controllerInner.control_RadioSwitch;
+				controllerInner.group.Add(Widget);
+				Activated += controllerInner.control_RadioSwitch;
 			}
 		}
 
-		private void control_RadioSwitch(object sender, EventArgs e)
+		void control_RadioSwitch(object sender, EventArgs e)
 		{
 			if (group != null)
 			{

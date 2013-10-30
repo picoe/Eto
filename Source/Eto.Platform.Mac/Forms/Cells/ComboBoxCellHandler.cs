@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
@@ -40,7 +40,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			NSObject CopyWithZone (IntPtr zone)
 			{
 				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.CopyWithZoneHandle, zone);
-				return new EtoCell (ptr) { Handler = this.Handler };
+				return new EtoCell (ptr) { Handler = Handler };
 			}
 
 			public override void DrawBorderAndBackground (System.Drawing.RectangleF cellFrame, NSView controlView)
@@ -115,18 +115,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return dataStore; }
 			set {
 				dataStore = value;
-				this.Control.RemoveAllItems ();
-				this.Control.AddItems (GetItems ().Select (r => r.Text).ToArray ());
+				Control.RemoveAllItems ();
+				Control.AddItems (GetItems ().Select (r => r.Text).ToArray ());
 			}
 		}
 		
-		public override void SetObjectValue (object dataItem, NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject value)
 		{
 			if (Widget.Binding != null) {
-				var row = ((NSNumber)val).Int32Value;
+				var row = ((NSNumber)value).Int32Value;
 				var item = dataStore [row];
-				var value = item != null ? item.Key : null;
-				Widget.Binding.SetValue (dataItem, value);
+				var itemValue = item != null ? item.Key : null;
+				Widget.Binding.SetValue (dataItem, itemValue);
 			}
 		}
 		

@@ -68,7 +68,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			angle = Conversions.DegreesToRadians (angle);
 			var sina = Math.Sin (angle);
 			var cosa = Math.Cos (angle);
-			var matrix = new Cairo.Matrix (cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);;
+			var matrix = new Cairo.Matrix (cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);
 			control = Cairo.Matrix.Multiply (matrix, control);
 		}
 		

@@ -117,9 +117,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set { Control.IntercellSpacing = value ? new sd.SizeF(1, 1) : new sd.SizeF(0, 0); } 
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.BeginCellEditEvent:
 				// handled by delegate
 				/* following should work, but internal delegate to trigger event does not work
@@ -151,7 +151,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			case Grid.CellFormattingEvent:
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

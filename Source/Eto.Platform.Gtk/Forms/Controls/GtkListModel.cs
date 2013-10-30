@@ -23,10 +23,6 @@ namespace Eto.Platform.GtkSharp
 
 		public IGtkListModelHandler<T, S> Handler { get; set; }
 
-		public GtkListModel ()
-		{
-		}
-		
 		public Gtk.TreeIter GetIterAtRow (int row)
 		{
 			return new Gtk.TreeIter { UserData = (IntPtr)(row+1) };
@@ -63,9 +59,8 @@ namespace Eto.Platform.GtkSharp
 		int GetRow (Gtk.TreePath path)
 		{
 			if (path.Indices.Length > 0 && Handler.DataStore != null && Handler.DataStore.Count > 0)
-				return path.Indices [0];
-			else
-				return -1;
+				return path.Indices[0];
+			return -1;
 		}
 
 		public Gtk.TreeModelFlags Flags {
@@ -163,8 +158,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			if (iter.UserData == IntPtr.Zero && Handler.DataStore != null)
 				return Handler.DataStore.Count;
-			else
-				return 0;
+			return 0;
 		}
 
 		public bool IterNthChild (out Gtk.TreeIter child, Gtk.TreeIter parent, int n)

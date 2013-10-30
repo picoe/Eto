@@ -42,7 +42,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public override bool Enabled { get; set; }
 		
-		public override Eto.Drawing.Size ClientSize {
+		public override Size ClientSize {
 			get {
 				var view = Control.ContentView as NSView;
 				return view.Frame.Size.ToEtoSize ();

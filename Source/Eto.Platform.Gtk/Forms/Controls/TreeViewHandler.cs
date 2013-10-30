@@ -24,11 +24,6 @@ namespace Eto.Platform.GtkSharp.Forms
 		class CellRendererTextImage : Gtk.CellRendererText
 		{
 #if GTK2
-			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
-			{
-				base.Render(window, widget, background_area, cell_area, expose_area, flags);
-			}
-
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
@@ -154,9 +149,9 @@ namespace Eto.Platform.GtkSharp.Forms
 			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TreeView.ExpandingEvent:
 					tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args)
@@ -240,7 +235,7 @@ namespace Eto.Platform.GtkSharp.Forms
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

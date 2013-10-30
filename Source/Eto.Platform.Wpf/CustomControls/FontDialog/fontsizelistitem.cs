@@ -11,12 +11,12 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
     class FontSizeListItem : TextBlock, IComparable
     {
-        double _sizeInPoints;
+        readonly double _sizeInPoints;
 
         public FontSizeListItem(double sizeInPoints)
         {
             _sizeInPoints = sizeInPoints;
-            this.Text = sizeInPoints.ToString();
+            Text = sizeInPoints.ToString();
         }
 
         public override string ToString()

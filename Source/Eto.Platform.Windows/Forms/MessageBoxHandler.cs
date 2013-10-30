@@ -56,11 +56,12 @@ namespace Eto.Platform.Windows
 		{
 			switch (buttons)
 			{
-				default:
 				case MessageBoxButtons.OK: return swf.MessageBoxButtons.OK;
 				case MessageBoxButtons.OKCancel: return swf.MessageBoxButtons.OKCancel;
 				case MessageBoxButtons.YesNo: return swf.MessageBoxButtons.YesNo;
 				case MessageBoxButtons.YesNoCancel: return swf.MessageBoxButtons.YesNoCancel;
+				default:
+					throw new NotSupportedException();
 			}
 		}
 

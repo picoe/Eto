@@ -56,18 +56,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected bool MouseClick (swf.MouseEventArgs e, int rowIndex)
 		{
-			if (CellConfig != null)
-				return CellConfig.MouseClick (e, rowIndex);
-			else
-				return false;
+			return CellConfig != null && CellConfig.MouseClick(e, rowIndex);
 		}
 
 		protected int GetRowOffset (int row)
 		{
-			if (CellConfig != null)
-				return CellConfig.GetRowOffset (row);
-			else
-				return 0;
+			return CellConfig != null ? CellConfig.GetRowOffset(row) : 0;
 		}
 
 		public abstract void SetCellValue (object dataItem, object value);

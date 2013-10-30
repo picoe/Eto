@@ -29,7 +29,7 @@ namespace Eto.Platform.GtkSharp
 			get { return image; }
 			set
 			{
-				this.image = value;
+				image = value;
 				GtkImage = image.ToGtk (Gtk.IconSize.Button);
 			}
 		}

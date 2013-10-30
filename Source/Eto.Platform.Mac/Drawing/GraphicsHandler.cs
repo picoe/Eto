@@ -135,9 +135,8 @@ namespace Eto.Platform.iOS.Drawing
 			Control.ClipToRect(view.ConvertRectToView(view.VisibleRect(), null));
 			var pos = view.ConvertPointToView(SD.PointF.Empty, null);
 			if (!Flipped)
-				currentTransform = new CGAffineTransform(1, 0, 0, -1, pos.X, pos.Y + view.Frame.Height);
-			else
-				currentTransform = new CGAffineTransform(1, 0, 0, -1, pos.X, pos.Y);
+				pos.Y += view.Frame.Height;
+			currentTransform = new CGAffineTransform(1, 0, 0, -1, pos.X, pos.Y);
 			Control.ConcatCTM(currentTransform);
 		}
 
@@ -242,10 +241,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			get
 			{
-				if (view != null)
-					return view.Bounds.Height;
-				else
-					return this.height;
+				return view != null ? view.Bounds.Height : height;
 			}
 		}
 
@@ -303,7 +299,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 #if OSX
 			NSGraphicsContext.GlobalSaveGraphicsState();
-			NSGraphicsContext.CurrentContext = this.graphicsContext;
+			NSGraphicsContext.CurrentContext = graphicsContext;
 			Control.SaveState();
 #elif IOS
 			UIGraphics.PushContext (this.Control);
@@ -477,9 +473,6 @@ namespace Eto.Platform.iOS.Drawing
 
 			StartDrawing();
 #if OSX
-			var fontHandler = font.Handler as FontHandler;
-
-
 			FontExtensions.DrawString(text, new PointF(x, y), brush.Color, font);
 #elif IOS
 			var uifont = font.ToUI ();

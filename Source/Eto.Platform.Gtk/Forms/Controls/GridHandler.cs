@@ -59,9 +59,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			}
 		}
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.ColumnHeaderClickEvent:
 			case Grid.BeginCellEditEvent:
 			case Grid.EndCellEditEvent:
@@ -75,7 +75,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

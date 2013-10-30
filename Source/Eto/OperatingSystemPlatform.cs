@@ -39,23 +39,26 @@ namespace Eto
 		/// </summary>
 		public bool IsLinux { get; private set; }
 
-		[DllImport ("libc")]
-		static extern int uname (IntPtr buf);
+		[DllImport("libc")]
+		static extern int uname(IntPtr buf);
 
-		static string GetUnixType ()
+		static string GetUnixType()
 		{
 			IntPtr buf = IntPtr.Zero;
 			string osName = "";
-			try {
-				buf = Marshal.AllocHGlobal (8192);
-				if (uname (buf) == 0)
-					osName = Marshal.PtrToStringAnsi (buf);
+			try
+			{
+				buf = Marshal.AllocHGlobal(8192);
+				if (uname(buf) == 0)
+					osName = Marshal.PtrToStringAnsi(buf);
 			}
-			catch {
+			catch
+			{
 			}
-			finally {
+			finally
+			{
 				if (buf != IntPtr.Zero)
-					Marshal.FreeHGlobal (buf);
+					Marshal.FreeHGlobal(buf);
 			}
 			return osName;
 
@@ -64,30 +67,39 @@ namespace Eto
 		/// <summary>
 		/// Initializes a new instance of the OperatingSystemPlatform class
 		/// </summary>
-		public OperatingSystemPlatform ()
+		public OperatingSystemPlatform()
 		{
-			if (Type.GetType ("Mono.Runtime", false) != null || Type.GetType ("Mono.Interop.IDispatch", false) != null)
+			if (Type.GetType("Mono.Runtime", false) != null || Type.GetType("Mono.Interop.IDispatch", false) != null)
 				IsMono = true;
 
-			switch (System.Environment.OSVersion.Platform) {
-			case PlatformID.MacOSX:
-				IsMac = true;
-				IsUnix = true;
-				break;
-			case PlatformID.Unix:
-				IsUnix = true;
-				switch (GetUnixType ().ToLowerInvariant ()) {
-				case "darwin": IsMac = true; break;
-				case "linux": IsLinux = true; break;
-				}
-				break;
-			default:
-			case PlatformID.Win32NT:
-			case PlatformID.Win32S:
-			case PlatformID.Win32Windows:
-			case PlatformID.WinCE:
-				IsWindows = true;
-				break;
+			switch (Environment.OSVersion.Platform)
+			{
+				case PlatformID.MacOSX:
+					IsMac = true;
+					IsUnix = true;
+					break;
+				case PlatformID.Unix:
+					IsUnix = true;
+					switch (GetUnixType().ToLowerInvariant())
+					{
+						case "darwin":
+							IsMac = true;
+							break;
+						case "linux":
+							IsLinux = true;
+							break;
+					}
+					break;
+				case PlatformID.Win32NT:
+				case PlatformID.Win32S:
+				case PlatformID.Win32Windows:
+				case PlatformID.WinCE:
+					IsWindows = true;
+					break;
+				default:
+					// treat everything else as windows
+					IsWindows = true;
+					break;
 			}
 		}
 	}

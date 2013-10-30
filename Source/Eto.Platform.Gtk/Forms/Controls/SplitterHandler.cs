@@ -90,16 +90,10 @@ namespace Eto.Platform.GtkSharp
 		void Create()
 		{
 			Gtk.Paned old = Control;
-			switch (orientation)
-			{
-				default:
-				case SplitterOrientation.Horizontal:
-					Control = new EtoHPaned();
-					break;
-				case SplitterOrientation.Vertical:
-					Control = new EtoVPaned();
-					break;
-			}
+			if (orientation == SplitterOrientation.Horizontal)
+				Control = new EtoHPaned();
+			else
+				Control = new EtoVPaned();
 			if (container.Child != null)
 				container.Remove(container.Child);
 			container.Child = Control;

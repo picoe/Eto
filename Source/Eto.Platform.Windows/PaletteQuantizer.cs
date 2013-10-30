@@ -105,24 +105,24 @@ namespace ImageManipulation
 		/// <summary>
 		/// Retrieve the palette for the quantized image
 		/// </summary>
-		/// <param name="palette">Any old palette, this is overrwritten</param>
+		/// <param name="original">Any old palette, this is overrwritten</param>
 		/// <returns>The new color palette</returns>
-		protected override ColorPalette GetPalette ( ColorPalette palette )
+		protected override ColorPalette GetPalette ( ColorPalette original )
 		{
 			for ( int index = 0 ; index < _colors.Length ; index++ )
-				palette.Entries[index] = _colors[index] ;
+				original.Entries[index] = _colors[index] ;
 
-			return palette ;
+			return original ;
 		}
 
 		/// <summary>
 		/// Lookup table for colors
 		/// </summary>
-		private Hashtable	_colorMap ;
+		readonly Hashtable _colorMap ;
 
 		/// <summary>
 		/// List of all colors in the palette
 		/// </summary>
-		private Color[]		_colors ;
+		readonly Color[] _colors ;
 	}
 }

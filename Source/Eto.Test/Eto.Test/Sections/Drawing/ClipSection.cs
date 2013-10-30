@@ -51,7 +51,8 @@ namespace Eto.Test.Sections.Drawing
 					e.Graphics.ResetClip();
 				e.Graphics.FillRectangle(Brushes.Green(), new RectangleF(225, 0, 100, 100));
 			};
-			this.PropertyChanged += (sender, e) => {
+			PropertyChanged += (sender, e) =>
+			{
 				if (e.PropertyName == "ResetClip")
 					control.Invalidate();
 			};
@@ -86,7 +87,8 @@ namespace Eto.Test.Sections.Drawing
 				e.Graphics.FillRectangle(Brushes.Green(), path.Bounds);
 
 			};
-			this.PropertyChanged += (sender, e) => {
+			PropertyChanged += (sender, e) =>
+			{
 				if (e.PropertyName == "ResetClip")
 					control.Invalidate();
 			};

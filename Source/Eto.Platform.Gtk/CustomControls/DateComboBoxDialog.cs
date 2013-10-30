@@ -3,9 +3,9 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp.CustomControls
 {
-	public partial class DateComboBoxDialog : Gtk.Window
+	public class DateComboBoxDialog : Gtk.Window
 	{
-		DateTimePickerMode mode;
+		readonly DateTimePickerMode mode;
 		Gtk.Calendar calendar;
 		AnalogClock clock;
 		Gtk.SpinButton hourSpin;
@@ -29,15 +29,19 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		}
 
 		public DateTime SelectedDate {
-			get {
-				if (HasTime) {
+			get
+			{
+				if (HasTime)
+				{
 					DateTime d = HasDate ? calendar.Date : DateTime.Today;
-					return new DateTime (d.Year, d.Month, d.Day, (int)hourSpin.Value, (int)minutesSpin.Value, (int)secondsSpin.Value);
-				} else if (HasDate) {
+					return new DateTime(d.Year, d.Month, d.Day, (int)hourSpin.Value, (int)minutesSpin.Value, (int)secondsSpin.Value);
+				}
+				if (HasDate)
+				{
 					DateTime d = calendar.Date;
-					return new DateTime (d.Year, d.Month, d.Day);
-				} else
-					throw new EtoException();
+					return new DateTime(d.Year, d.Month, d.Day);
+				}
+				throw new EtoException();
 			}
 		}
 		
@@ -70,20 +74,20 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		{
 			int x, y;
 			parent.ParentWindow.GetOrigin (out x, out y);
-			this.Move (x + parent.Allocation.Left, y + parent.Allocation.Top + parent.Allocation.Height);
+			Move(x + parent.Allocation.Left, y + parent.Allocation.Top + parent.Allocation.Height);
 
-			this.ShowAll ();
+			ShowAll();
 			this.Grab ();
 		}
 
 #if GTK2
-		protected override bool OnExposeEvent (Gdk.EventExpose args)
+		protected override bool OnExposeEvent (Gdk.EventExpose evnt)
 		{
-			base.OnExposeEvent (args);
+			base.OnExposeEvent (evnt);
 			
 			int winWidth, winHeight;
-			this.GetSize (out winWidth, out winHeight);
-			this.GdkWindow.DrawRectangle (Style.ForegroundGC (Gtk.StateType.Insensitive), false, 0, 0, winWidth - 1, winHeight - 1);
+			GetSize (out winWidth, out winHeight);
+			GdkWindow.DrawRectangle (Style.ForegroundGC (Gtk.StateType.Insensitive), false, 0, 0, winWidth - 1, winHeight - 1);
 			
 			return false;
 		}
@@ -99,7 +103,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		void Close ()
 		{
 			this.RemoveGrab ();
-			this.Destroy ();
+			Destroy();
 		}
 
 		void UpdateClock ()
@@ -114,7 +118,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				Spacing = 5
 			};
 
-			this.calendar = new Gtk.Calendar {
+			calendar = new Gtk.Calendar
+			{
 				CanFocus = true,
 				DisplayOptions = Gtk.CalendarDisplayOptions.ShowHeading | Gtk.CalendarDisplayOptions.ShowDayNames
 			};
@@ -128,7 +133,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 				Close ();
 			};
 
-			vbox.PackStart (this.calendar, false, false, 0);
+			vbox.PackStart(calendar, false, false, 0);
 			
 			var hbox = new Gtk.HBox (true, 6);
 
@@ -195,9 +200,9 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			vbox.Spacing = 6;
 			spinners.Spacing = 6;
 
-			this.clock = new AnalogClock ();
-			this.clock.SetSizeRequest (130, 130);
-			vbox.PackStart (this.clock, true, true, 0);
+			clock = new AnalogClock();
+			clock.SetSizeRequest (130, 130);
+			vbox.PackStart(clock, true, true, 0);
 
 
 			spinners.PackStart (new Gtk.Label ("Hour"), false, false, 0);
@@ -247,7 +252,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			if (HasTime)
 				hbox.PackStart (ClockControls (), true, true, 0);
 
-			this.Add (hbox);
+			Add(hbox);
 		}
 	}
 }

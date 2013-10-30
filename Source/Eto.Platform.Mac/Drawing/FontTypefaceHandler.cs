@@ -49,7 +49,7 @@ namespace Eto.Platform.Mac.Drawing
 		{
 			PostScriptName = (string)new NSString(descriptor.ValueAt(0));
 			name = (string)new NSString(descriptor.ValueAt(1));
-			Weight = (int)new NSNumber(descriptor.ValueAt(2)).Int32Value;
+			Weight = new NSNumber(descriptor.ValueAt(2)).Int32Value;
 			Traits = (NSFontTraitMask)new NSNumber(descriptor.ValueAt(3)).Int32Value;
 		}
 

@@ -62,11 +62,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (backgroundColor != value)
 				{
 					backgroundColor = value;
-					if (backgroundColor.A > 0)
-						backgroundBrush = new SolidBrush(backgroundColor, Widget.Generator);
-					else
-						backgroundBrush = null;
-					this.Invalidate();
+					backgroundBrush = backgroundColor.A > 0 ? new SolidBrush(backgroundColor, Widget.Generator) : null;
+					Invalidate();
 				}
 			}
 		}

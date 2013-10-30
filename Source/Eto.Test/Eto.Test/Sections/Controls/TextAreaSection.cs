@@ -41,9 +41,7 @@ namespace Eto.Test.Sections.Controls
 		Control ShowSelectedText(TextArea text)
 		{
 			var control = new Button { Text = "Show selected text" };
-			control.Click += (sender, e) => {
-				MessageBox.Show(this, string.Format("Selected Text: {0}", text.SelectedText));
-			};
+			control.Click += (sender, e) => MessageBox.Show(this, string.Format("Selected Text: {0}", text.SelectedText));
 			return control;
 		}
 
@@ -113,7 +111,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new TextArea
 			{
-				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + System.Environment.NewLine + "Second Line",
+				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + Environment.NewLine + "Second Line",
 				Wrap = true
 			};
 			LogEvents(control);
@@ -124,7 +122,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new TextArea
 			{
-				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + System.Environment.NewLine + "Second Line",
+				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + Environment.NewLine + "Second Line",
 				Wrap = false
 			};
 			LogEvents(control);

@@ -76,7 +76,7 @@ namespace Eto.Test.Sections.Drawing
 			control.Items.Add(new DashStyleItem { Text = "Dash Dot Dot", Style = DashStyles.DashDotDot });
 			control.SelectedIndex = 0;
 			control.SelectedIndexChanged += (sender, e) => {
-				this.DashStyle = ((DashStyleItem)control.SelectedValue).Style;
+				DashStyle = ((DashStyleItem)control.SelectedValue).Style;
 				Refresh(sender, e);
 			};
 			return control;
@@ -93,9 +93,7 @@ namespace Eto.Test.Sections.Drawing
 			{
 				Size = new Size (560, 300)
 			};
-			drawable.Paint += (sender, pe) => {
-				Draw(pe.Graphics, null);
-			};
+			drawable.Paint += (sender, pe) => Draw(pe.Graphics, null);
 			return drawable;
 		}
 
@@ -108,9 +106,9 @@ namespace Eto.Test.Sections.Drawing
 			{
 				float thickness = 1f + i * PenThickness;
 				var pen = new Pen(Colors.Black, thickness);
-				pen.LineCap = this.LineCap;
-				pen.LineJoin = this.LineJoin;
-				pen.DashStyle = this.DashStyle;
+				pen.LineCap = LineCap;
+				pen.LineJoin = LineJoin;
+				pen.DashStyle = DashStyle;
 				if (action != null)
 					action(pen);
 				var y = i * 20;

@@ -6,7 +6,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 	public class ComboBoxCellHandler : SingleCellHandler<Gtk.CellRendererCombo, ComboBoxCell>, IComboBoxCell
 	{
 		CollectionHandler collection;
-		Gtk.ListStore listStore;
+		readonly Gtk.ListStore listStore;
 
 		class Renderer : Gtk.CellRendererCombo
 		{
@@ -30,7 +30,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 				if (Handler.FormattingEnabled)
 					Handler.Format(new GtkTextCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 				// calling base crashes on windows
-				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererCombo.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererCombo.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 #else
@@ -72,7 +72,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
 		{
-			this.Control.Editable = editable;
+			Control.Editable = editable;
 		}
 		
 		public override void SetValue (object dataItem, object value)
@@ -82,11 +82,11 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			}
 		}
 		
-		protected override GLib.Value GetValueInternal (object item, int column, int row)
+		protected override GLib.Value GetValueInternal (object dataItem, int dataColumn, int row)
 		{
 
 			if (Widget.Binding != null) {
-				var ret = Widget.Binding.GetValue (item);
+				var ret = Widget.Binding.GetValue (dataItem);
 				if (ret != null)
 					return new GLib.Value (ret);
 			}
@@ -94,14 +94,14 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			return new GLib.Value ((string)null);
 		}
 		
-		public override void AttachEvent (string eventHandler)
+		public override void AttachEvent (string id)
 		{
-			switch (eventHandler) {
+			switch (id) {
 			case Grid.EndCellEditEvent:
 				Control.Edited += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
-				base.AttachEvent (eventHandler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

@@ -37,10 +37,10 @@ namespace Eto.Platform.Windows
 				abortButton = value;
 				if (abortButton != null) {
 					var b = abortButton.ControlObject as swf.IButtonControl;
-					this.Control.CancelButton = b;
+					Control.CancelButton = b;
 				}
 				else
-					this.Control.CancelButton = null;
+					Control.CancelButton = null;
 			}
 		}
 		
@@ -53,10 +53,10 @@ namespace Eto.Platform.Windows
 				button = value;
 				if (button != null) {
 					var b = button.ControlObject as swf.IButtonControl;
-					this.Control.AcceptButton = b;
+					Control.AcceptButton = b;
 				}
 				else
-					this.Control.AcceptButton = null;
+					Control.AcceptButton = null;
 			}
 		}
 

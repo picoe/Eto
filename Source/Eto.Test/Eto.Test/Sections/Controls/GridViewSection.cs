@@ -116,7 +116,7 @@ namespace Eto.Test.Sections.Controls
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
 				val = rand.Next(3);
-				Image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
+				Image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
 
 				text = string.Format("Col 1 Row {0}", row);
 

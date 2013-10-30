@@ -7,23 +7,23 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class DirectDrawingSection : Scrollable
 	{
-		List<Box> boxes = new List<Box> ();
-		UITimer timer;
+		readonly List<Box> boxes = new List<Box> ();
+		readonly UITimer timer;
 		bool useTexturesAndGradients;
-		Drawable drawable;
-		static Image texture = TestIcons.Textures;
+		readonly Drawable drawable;
+		static readonly Image texture = TestIcons.Textures;
 
 		class Box
 		{
-			static Random random = new Random ();
+			static readonly Random random = new Random ();
 			SizeF increment;
-			Color color;
-			float rotation;
+			readonly Color color;
+			readonly float rotation;
 			float angle;
-			Action<Graphics> draw;
-			Action<Graphics> erase;
-			Brush fillBrush;
-			RectangleF position;
+			readonly Action<Graphics> draw;
+			readonly Action<Graphics> erase;
+			readonly Brush fillBrush;
+			readonly RectangleF position;
 			IMatrix transform;
 
 			public SizeF Increment { get { return increment; } set { increment = value; } }
@@ -51,12 +51,12 @@ namespace Eto.Test.Sections.Drawing
 				color = GetRandomColor (random);
 				switch (random.Next (useTexturesAndGradients ? 4 : 2)) {
 				case 0:
-					draw = (g) => g.DrawRectangle (color, rect);
-					erase = (g) => g.DrawRectangle (Colors.Black, rect);
+					draw = g => g.DrawRectangle (color, rect);
+					erase = g => g.DrawRectangle (Colors.Black, rect);
 					break;
 				case 1:
-					draw = (g) => g.DrawEllipse (color, rect);
-					erase = (g) => g.DrawEllipse (Colors.Black, rect);
+					draw = g => g.DrawEllipse (color, rect);
+					erase = g => g.DrawEllipse (Colors.Black, rect);
 					break;
 				case 2:
 					switch (random.Next (2)) {
@@ -69,8 +69,8 @@ namespace Eto.Test.Sections.Drawing
 						};
 						break;
 					}
-					draw = (g) => g.FillEllipse (fillBrush, rect);
-					erase = (g) => g.FillEllipse (Colors.Black, rect);
+					draw = g => g.FillEllipse(fillBrush, rect);
+					erase = g => g.FillEllipse(Colors.Black, rect);
 					break;
 				case 3:
 					switch (random.Next (2)) {
@@ -83,8 +83,8 @@ namespace Eto.Test.Sections.Drawing
 						};
 						break;
 					}
-					draw = (g) => g.FillRectangle (fillBrush, rect);
-					erase = (g) => g.FillRectangle (Colors.Black, rect);
+					draw = g => g.FillRectangle(fillBrush, rect);
+					erase = g => g.FillRectangle(Colors.Black, rect);
 					break;
 				}
 			}
@@ -130,7 +130,7 @@ namespace Eto.Test.Sections.Drawing
 
 		void InitializeBoxes ()
 		{
-			var size = this.Size;
+			var size = Size;
 			for (int i = 0; i < 20; i++) {
 				boxes.Add (new Box (size, useTexturesAndGradients));
 			}

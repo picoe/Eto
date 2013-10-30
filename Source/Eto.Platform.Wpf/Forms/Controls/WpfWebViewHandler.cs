@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using swn = System.Windows.Navigation;
 using Eto.Forms;
@@ -30,7 +28,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			get
 			{
-				IServiceProvider serviceProvider = (IServiceProvider)Control.Document;
+				var serviceProvider = (IServiceProvider)Control.Document;
 				if (serviceProvider == null) return null;
 				return serviceProvider.QueryService (ref serviceGuid, ref iid);
 			}
@@ -48,7 +46,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return (SHDocVw.DWebBrowserEvents_Event)QueryDocumentService; }
 		}
 
-		HashSet<string> delayedEvents = new HashSet<string> ();
+		readonly HashSet<string> delayedEvents = new HashSet<string> ();
 
 		public WpfWebViewHandler ()
 		{
@@ -84,23 +82,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		void WebEvents_TitleChange (string Text)
+		void WebEvents_TitleChange (string text)
 		{
-			var args = new WebViewTitleEventArgs (Text);
+			var args = new WebViewTitleEventArgs (text);
 			Widget.OnDocumentTitleChanged (args);
 		}
 
-		void WebEvents_NewWindow (string URL, int Flags, string TargetFrameName, ref object PostData, string Headers, ref bool Processed)
+		void WebEvents_NewWindow (string url, int flags, string targetFrameName, ref object postData, string headers, ref bool processed)
 		{
-			var args = new WebViewNewWindowEventArgs (new Uri(URL), TargetFrameName);
+			var args = new WebViewNewWindowEventArgs (new Uri(url), targetFrameName);
 			Widget.OnOpenNewWindow (args);
-			Processed = args.Cancel;
+			processed = args.Cancel;
 		}
 
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 			case WebView.NavigatedEvent:
 				Control.Navigated += (sender, e) => {
@@ -112,7 +110,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				Control.LoadCompleted += (sender, e) => {
 					var args = new WebViewLoadedEventArgs (e.Uri);
 					Widget.OnDocumentLoaded (args);
-					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs (this.DocumentTitle));
+					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs(DocumentTitle));
 					HookDocumentEvents ();
 				};
 				break;
@@ -125,11 +123,11 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				break;
 			case WebView.OpenNewWindowEvent:
 			case WebView.DocumentTitleChangedEvent:
-				HookDocumentEvents (handler);
+				HookDocumentEvents (id);
 				HandleEvent (WebView.NavigatedEvent);
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -219,11 +217,12 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public string DocumentTitle
 		{
-			get {
+			get
+			{
 				var browser = WebBrowser2;
 				if (browser != null && browser.Document != null)
 					return Convert.ToString(((dynamic)browser.Document).Title);
-				else return null;
+				return null;
 			}
 		}
 

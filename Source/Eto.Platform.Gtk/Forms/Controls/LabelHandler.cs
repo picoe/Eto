@@ -120,14 +120,14 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TextControl.TextChangedEvent:
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -162,7 +162,6 @@ namespace Eto.Platform.GtkSharp
 			switch (horizontalAlign)
 			{
 				default:
-				case HorizontalAlign.Left:
 					xalignment = 0F;
 					justify = Gtk.Justification.Left;
 					break;
@@ -181,7 +180,6 @@ namespace Eto.Platform.GtkSharp
 					yalignment = 0.5F;
 					break;
 				default:
-				case VerticalAlign.Top:
 					yalignment = 0F;
 					break;
 				case VerticalAlign.Bottom:

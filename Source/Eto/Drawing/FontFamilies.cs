@@ -16,7 +16,7 @@ namespace Eto.Drawing
 		/// Gets the name of the monospace system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Monospace"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Monospace"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
 		public const string MonospaceFamilyName = "monospace";
@@ -35,7 +35,7 @@ namespace Eto.Drawing
 		/// Gets the name of a sans-serif system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Sans"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Sans"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
 		public const string SansFamilyName = "sans-serif";
@@ -54,7 +54,7 @@ namespace Eto.Drawing
 		/// Gets the name of a serif system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Serif"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Serif"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
 		public const string SerifFamilyName = "serif";
@@ -83,7 +83,7 @@ namespace Eto.Drawing
 		/// Name of the cursive system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Cursive"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Cursive"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
 		public const string CursiveFamilyName = "cursive";
@@ -102,7 +102,7 @@ namespace Eto.Drawing
 		/// Name of the fantasy system family name
 		/// </summary>
 		/// <remarks>
-		/// Not intended to be used directly, use <see cref="Fantasy"/>. Used by platform handlers
+		/// Not intended to be used directly, use <see cref="FontFamilies.Fantasy"/>. Used by platform handlers
 		/// to determine which system font family to get
 		/// </remarks>
 		public const string FantasyFamilyName = "fantasy";

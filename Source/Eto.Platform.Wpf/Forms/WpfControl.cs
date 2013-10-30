@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.Platform.Wpf.Drawing;
@@ -15,7 +11,6 @@ namespace Eto.Platform.Wpf.Forms
 		where W: Control
 	{
 		Font font;
-
 
 		public override Color BackgroundColor
 		{

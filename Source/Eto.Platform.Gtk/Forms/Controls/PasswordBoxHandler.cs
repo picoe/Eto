@@ -13,16 +13,16 @@ namespace Eto.Platform.GtkSharp
 			Control.ActivatesDefault = true;
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
-				case TextBox.TextChangedEvent:
+			switch (id) {
+				case TextControl.TextChangedEvent:
 					Control.Changed += delegate {
 						Widget.OnTextChanged (EventArgs.Empty);
 					};
 					break;
 				default:
-					base.AttachEvent (handler);
+					base.AttachEvent (id);
 					break;
 			}
 		}

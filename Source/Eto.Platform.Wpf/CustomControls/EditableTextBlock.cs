@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -9,7 +5,7 @@ using System.Windows.Input;
 
 namespace Eto.Platform.Wpf.CustomControls
 {
-	public partial class EditableTextBlock : UserControl
+	public class EditableTextBlock : UserControl
 	{
 		string oldText;
 
@@ -37,7 +33,7 @@ namespace Eto.Platform.Wpf.CustomControls
 			trigger = new Trigger { Property = IsInEditModeProperty, Value = false };
 			trigger.Setters.Add(new Setter { Property = ContentTemplateProperty, Value = viewTemplate });
 			style.Triggers.Add(trigger);
-			this.Style = style;
+			Style = style;
 		}
 
 		public string Text
@@ -70,10 +66,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		{
 			get
 			{
-				if (IsEditable)
-					return (bool)GetValue(IsInEditModeProperty);
-				else
-					return false;
+				return IsEditable && (bool)GetValue(IsInEditModeProperty);
 			}
 			set
 			{
@@ -100,7 +93,7 @@ namespace Eto.Platform.Wpf.CustomControls
 
 		void TextBox_LostFocus(object sender, RoutedEventArgs e)
 		{
-			this.IsInEditMode = false;
+			IsInEditMode = false;
 		}
 
 		void SetParentFocus()
@@ -114,13 +107,13 @@ namespace Eto.Platform.Wpf.CustomControls
 		{
 			if (e.Key == Key.Enter)
 			{
-				this.IsInEditMode = false;
+				IsInEditMode = false;
 				SetParentFocus();
 				e.Handled = true;
 			}
 			else if (e.Key == Key.Escape)
 			{
-				this.IsInEditMode = false;
+				IsInEditMode = false;
 				SetParentFocus();
 				Text = oldText;
 				e.Handled = true;
@@ -131,7 +124,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		{
 			if (e.ButtonState == MouseButtonState.Pressed && e.ClickCount >= 2 && e.ChangedButton == MouseButton.Left)
 			{
-				this.IsInEditMode = true;
+				IsInEditMode = true;
 				e.Handled = true;
 			}
 		}

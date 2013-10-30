@@ -45,7 +45,7 @@ namespace Eto.Json
 
 		public override object ReadJson (Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
-			var obj = JValue.ReadFrom (reader);
+			var obj = JToken.ReadFrom (reader);
 			var id = (string)obj;
 			var instance = serializer.Context.Context;
 			if (instance != null) {

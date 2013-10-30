@@ -5,13 +5,13 @@ namespace Eto.Platform.GtkSharp.CustomControls
 {
 	public class BaseComboBox : SizableBin
 	{
-		Gtk.Entry entry;
-		Gtk.Button popupButton;
+		Entry entry;
+		Button popupButton;
 		
 		public BaseComboBox ()
 		{
-			this.AppPaintable = true;
-			this.Build ();
+			AppPaintable = true;
+			Build ();
 #if GTK3
 			//popupButton.AppPaintable = true;
 			//popupButton.Drawn += popup_Drawn;
@@ -43,11 +43,11 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			
 			if (rect.Width > 0 && rect.Height > 0) {
 				//Gtk.Style.PaintFlatBox (Entry.Style, this.GdkWindow, Entry.State, Gtk.ShadowType.In, evnt.Area, this, "entry_bg", rect.X, rect.Y, rect.Width, rect.Height);
-				Gtk.Style.PaintShadow (Entry.Style, this.GdkWindow, Entry.State, Gtk.ShadowType.In, evnt.Area, Entry, "entry", rect.X, rect.Y, rect.Width, rect.Height);
+				Gtk.Style.PaintShadow (Entry.Style, GdkWindow, Entry.State, ShadowType.In, evnt.Area, Entry, "entry", rect.X, rect.Y, rect.Width, rect.Height);
 				var arrowWidth = popupButton.Allocation.Width;
 				var arrowPos = rect.Right - arrowWidth - 4;
-				Gtk.Style.PaintArrow(Entry.Style, this.GdkWindow, Entry.State, Gtk.ShadowType.None, evnt.Area, this, "arrow", ArrowType.Down, true, arrowPos, rect.Top, arrowWidth, rect.Height);
-				Gtk.Style.PaintVline(Entry.Style, this.GdkWindow, Entry.State, evnt.Area, this, "line", rect.Top + 4, rect.Bottom - 4, arrowPos - 1);
+				Gtk.Style.PaintArrow(Entry.Style, GdkWindow, Entry.State, ShadowType.None, evnt.Area, this, "arrow", ArrowType.Down, true, arrowPos, rect.Top, arrowWidth, rect.Height);
+				Gtk.Style.PaintVline(Entry.Style, GdkWindow, Entry.State, evnt.Area, this, "line", rect.Top + 4, rect.Bottom - 4, arrowPos - 1);
 			}
 			return true;
 		}
@@ -102,7 +102,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 		
 		Gtk.Widget CreateEntry ()
 		{
-			this.entry = new Gtk.Entry {
+			entry = new Entry
+			{
 				CanFocus = true,
 				IsEditable = true,
 				HasFrame = false
@@ -124,7 +125,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			popupButton = new InvisibleButton();
 #else
 
-			popupButton = new Gtk.Button();
+			popupButton = new Button();
 #endif
 			popupButton.WidthRequest = 25;
 			popupButton.CanFocus = false;
@@ -133,8 +134,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
         
 		protected virtual void Build ()
 		{
-			var vbox = new Gtk.VBox();
-			var hbox = new Gtk.HBox ();
+			var vbox = new VBox();
+			var hbox = new HBox ();
 
 #if GTK2
 			hbox.PackStart (CreateEntry (), true, true, 2);
@@ -146,7 +147,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			vbox.PackStart(hbox, true, true, 1);
 #endif
 
-			this.Add (vbox);
+			Add(vbox);
 		}
 		
 	}

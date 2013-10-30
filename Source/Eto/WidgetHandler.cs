@@ -24,7 +24,7 @@ namespace Eto
 	/// ]]></code>
 	/// </example>
 	/// <seealso cref="WidgetHandler{T,W}"/>
-	/// <typeparam name="W">Type of widget the handler is for</typeparam>
+	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
 	public abstract class WidgetHandler<TWidget> : IWidget, IDisposable
 		where TWidget: Widget
 	{

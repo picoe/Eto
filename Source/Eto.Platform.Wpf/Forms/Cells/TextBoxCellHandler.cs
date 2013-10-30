@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swd = System.Windows.Data;
 using sw = System.Windows;
 using swm = System.Windows.Media;
-using Eto.Platform.Wpf.Drawing;
-using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {

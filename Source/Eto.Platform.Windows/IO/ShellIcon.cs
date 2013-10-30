@@ -11,7 +11,7 @@ namespace Eto.Platform.Wpf.IO
 	/// <summary>
 	/// Summary description for Shell.
 	/// </summary>
-	public class ShellIcon
+	public static class ShellIcon
 	{
 		/// <summary>
 		/// Options to specify the size of icons to return.
@@ -43,10 +43,6 @@ namespace Eto.Platform.Wpf.IO
 			Closed = 1
 		}
 
-		private ShellIcon()
-		{
-		}
-	
 		public static System.Drawing.Icon GetFileIcon(string name, IconSize size, bool linkOverlay)
 		{
 			var shfi = new Shell32.SHFILEINFO();
@@ -68,7 +64,7 @@ namespace Eto.Platform.Wpf.IO
 			Shell32.SHGetFileInfo( name, 
 				Shell32.FILE_ATTRIBUTE_NORMAL, 
 				ref shfi, 
-				(uint) System.Runtime.InteropServices.Marshal.SizeOf(shfi), 
+				(uint) Marshal.SizeOf(shfi), 
 				flags );
 
 
@@ -111,7 +107,7 @@ namespace Eto.Platform.Wpf.IO
 			}
 
 			// Get the folder icon
-			Shell32.SHFILEINFO shfi = new Shell32.SHFILEINFO();
+			var shfi = new Shell32.SHFILEINFO();
 			Shell32.SHGetFileInfo(	null, 
 				Shell32.FILE_ATTRIBUTE_DIRECTORY, 
 				ref shfi, 
@@ -137,12 +133,12 @@ namespace Eto.Platform.Wpf.IO
 
 	// This code has been left largely untouched from that in the CRC example. The main changes have been moving
 	// the icon reading code over to the IconReader type.
-	public class Shell32  
+	public static class Shell32  
 	{
-		
+		// Analysis disable InconsistentNaming
 		public const int 	MAX_PATH = 256;
 		[StructLayout(LayoutKind.Sequential)]
-			public struct SHITEMID
+		public struct SHITEMID
 		{
 			public ushort cb;
 			[MarshalAs(UnmanagedType.LPArray)]
@@ -150,13 +146,13 @@ namespace Eto.Platform.Wpf.IO
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-			public struct ITEMIDLIST
+		public struct ITEMIDLIST
 		{
 			public SHITEMID mkid;
 		}
 
 		[StructLayout(LayoutKind.Sequential)]
-			public struct BROWSEINFO 
+		public struct BROWSEINFO 
 		{ 
 			public IntPtr		hwndOwner; 
 			public IntPtr		pidlRoot; 
@@ -232,7 +228,7 @@ namespace Eto.Platform.Wpf.IO
 	/// <summary>
 	/// Wraps necessary functions imported from User32.dll. Code courtesy of MSDN Cold Rooster Consulting example.
 	/// </summary>
-	public class User32
+	public static class User32
 	{
 		/// <summary>
 		/// Provides access to function required to delete handle. This method is used internally

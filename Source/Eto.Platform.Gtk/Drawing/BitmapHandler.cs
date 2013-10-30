@@ -242,15 +242,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 					{
 						return Color.FromArgb(data.TranslateDataToArgb(*(uint*)srcrow));
 					}
-					else if (data.BytesPerPixel == 3)
+					if (data.BytesPerPixel == 3)
 					{
 						var b = *(srcrow++);
 						var g = *(srcrow++);
 						var r = *(srcrow++);
 						return Color.FromArgb(r, g, b);
 					}
-					else
-						throw new NotSupportedException();
+					throw new NotSupportedException();
 				}
 			}
 		}

@@ -1,8 +1,6 @@
 using Eto.Drawing;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -11,9 +9,9 @@ namespace Eto.Platform.Wpf.Drawing
 	/// </summary>
 	public class TransformStack
 	{
-		Eto.Generator generator;
-		Action<IMatrix> push;
-		Action pop;
+		readonly Eto.Generator generator;
+		readonly Action<IMatrix> push;
+		readonly Action pop;
 		Stack<StackEntry> stack;
 		StackEntry current;
 
@@ -52,7 +50,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		class StackEntry
 		{
-			List<IMatrix> matrices = new List<IMatrix>();
+			readonly List<IMatrix> matrices = new List<IMatrix>();
 			public int popCount;
 			public List<IMatrix> Matrices { get { return matrices; } }
 		}

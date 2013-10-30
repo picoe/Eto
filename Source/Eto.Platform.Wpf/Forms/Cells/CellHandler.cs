@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
@@ -38,10 +34,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public sw.FrameworkElement SetupCell (sw.FrameworkElement defaultContent)
 		{
-			if (ContainerHandler != null)
-				return ContainerHandler.SetupCell (this, defaultContent);
-			else
-				return defaultContent;
+			return ContainerHandler != null ? ContainerHandler.SetupCell(this, defaultContent) : defaultContent;
 		}
 	}
 }

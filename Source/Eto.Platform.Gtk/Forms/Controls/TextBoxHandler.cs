@@ -5,7 +5,6 @@ namespace Eto.Platform.GtkSharp
 {
 	public class TextBoxHandler : GtkControl<Gtk.Entry, TextBox>, ITextBox
 	{
-		Pango.Layout placeholderLayout;
 		string placeholderText;
 
 		public TextBoxHandler ()
@@ -15,21 +14,22 @@ namespace Eto.Platform.GtkSharp
 			Control.ActivatesDefault = true;
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
-				case TextBox.TextChangedEvent:
+			switch (id) {
+				case TextControl.TextChangedEvent:
 					Control.Changed += delegate {
 						Widget.OnTextChanged (EventArgs.Empty);
 					};
 					break;
 				default:
-					base.AttachEvent (handler);
+					base.AttachEvent (id);
 					break;
 			}
 		}
 
 #if GTK2
+		Pango.Layout placeholderLayout;
 		void HandleExposeEvent (object o, Gtk.ExposeEventArgs args)
 		{
 			if (!string.IsNullOrEmpty(Control.Text) || args.Event.Window == Control.GdkWindow)
@@ -59,20 +59,21 @@ namespace Eto.Platform.GtkSharp
 				args.Event.Window.DrawLayout (gc, 2, (currentHeight - height) / 2 + 1, placeholderLayout);
 			}
 		}
+
+		public override Eto.Drawing.Font Font
+		{
+			get { return base.Font; }
+			set
+			{
+				base.Font = value;
+				placeholderLayout = null;
+			}
+		}
 #else
 		protected override void SetBackgroundColor(Eto.Drawing.Color? color)
 		{
 		}
 #endif
-
-		public override Eto.Drawing.Font Font
-		{
-			get { return base.Font; }
-			set {
-				base.Font = value;
-				placeholderLayout = null;
-			}
-		}
 
 		public override string Text {
 			get { return Control.Text; }

@@ -218,7 +218,7 @@ namespace Eto.Platform.GtkSharp
 		S GetStore (Gtk.TreeIter item)
 		{
 			if (item.UserData == IntPtr.Zero) {
-				return (S)Handler.DataStore;
+				return Handler.DataStore;
 			} else {
 				var node = GetNodeAtIter (item);
 				return (S)(object)node.Item;

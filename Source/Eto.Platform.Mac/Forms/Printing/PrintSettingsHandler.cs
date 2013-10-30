@@ -109,10 +109,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 			{
 				if (Control.SelectionOnly)
 					return PrintSelection.Selection;
-				else if (IsAllPages)
-					return PrintSelection.AllPages;
-				else
-					return PrintSelection.SelectedPages;
+				return IsAllPages ? PrintSelection.AllPages : PrintSelection.SelectedPages;
 			}
 			set
 			{

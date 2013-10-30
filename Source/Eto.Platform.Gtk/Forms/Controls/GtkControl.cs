@@ -121,10 +121,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			get
 			{
-				if (ContainerControl.Visible)
-					return ContainerControl.Allocation.Size.ToEto();
-				else
-					return size; 
+				return ContainerControl.Visible ? ContainerControl.Allocation.Size.ToEto() : size; 
 			}
 			set
 			{
@@ -183,25 +180,19 @@ namespace Eto.Platform.GtkSharp
 		{
 			get
 			{
-				Color? col = null;
+				Color? col;
 				if (cachedBackgroundColor != null)
 					return cachedBackgroundColor.Value;
 				if (IsTransparentControl)
 				{
 					var parent = Widget.Parent.GetGtkControlHandler();
-					if (parent != null)
-						col = parent.SelectedBackgroundColor;
-					else
-						col = DefaultBackgroundColor;
+					col = parent != null ? parent.SelectedBackgroundColor : DefaultBackgroundColor;
 				}
 				else
 					col = DefaultBackgroundColor;
 				if (backgroundColor != null)
 				{
-					if (col != null)
-						col = Color.Blend(col.Value, backgroundColor.Value);
-					else
-						col = backgroundColor;
+					col = col != null ? Color.Blend(col.Value, backgroundColor.Value) : backgroundColor;
 				}
 				cachedBackgroundColor = col;
 				return col;
@@ -273,7 +264,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public virtual void SetParent(Eto.Forms.Container parent)
+		public virtual void SetParent(Container parent)
 		{
 			if (parent == null)
 			{
@@ -315,9 +306,9 @@ namespace Eto.Platform.GtkSharp
 			Control.Realized -= HandleControlRealized;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
@@ -385,7 +376,7 @@ namespace Eto.Platform.GtkSharp
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					return;
 			}
 		}

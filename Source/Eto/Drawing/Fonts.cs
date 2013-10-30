@@ -55,6 +55,7 @@ namespace Eto.Drawing
 		/// <param name="familyName">Family name of the font</param>
 		/// <param name="size">Size in points of the font</param>
 		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to create the font</param>
 		public static Font Cached (string familyName, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
@@ -67,6 +68,7 @@ namespace Eto.Drawing
 		/// <param name="family">Family of the font</param>
 		/// <param name="size">Size in points of the font</param>
 		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to create the font</param>
 		public static Font Cached (FontFamily family, float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
@@ -77,7 +79,7 @@ namespace Eto.Drawing
 		/// Clears the font cache
 		/// </summary>
 		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached(FontFamily,float,FontStyle,Generator)"/> method to cache fonts and want to clear it
+		/// This is useful if you are using the <see cref="Cached(FontFamily,float,FontStyle,FontDecoration,Generator)"/> method to cache fonts and want to clear it
 		/// to conserve memory or resources.
 		/// </remarks>
 		/// <param name="generator">Generator to clear the font cache for</param>
@@ -94,6 +96,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to get the font</param>
 		public static Font Monospace (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
@@ -105,6 +108,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to get the font</param>
 		public static Font Sans (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
@@ -116,6 +120,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to get the font</param>
 		public static Font Serif (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
@@ -127,6 +132,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to get the font</param>
 		public static Font Cursive (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
@@ -138,6 +144,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="size">Size of the font</param>
 		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to get the font</param>
 		public static Font Fantasy (float size, FontStyle style = FontStyle.None, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{

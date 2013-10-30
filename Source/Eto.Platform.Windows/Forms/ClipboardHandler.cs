@@ -133,11 +133,11 @@ namespace Eto.Platform.Windows.Forms
 					sd.Image bmp = null;
 					try
 					{
-						bmp = sd.Bitmap.FromFile(path);
+						bmp = sd.Image.FromFile(path);
 						var result = new sd.Bitmap(bmp);
 						return result;
 					}
-					catch (Exception)
+					catch
 					{
 					}
 					finally
@@ -153,27 +153,23 @@ namespace Eto.Platform.Windows.Forms
 
 		public byte[] GetData (string type)
 		{
-			if (swf.Clipboard.ContainsData (type))
-				return swf.Clipboard.GetData (type) as byte[];
-			else
-				return null;
+			if (swf.Clipboard.ContainsData(type))
+				return swf.Clipboard.GetData(type) as byte[];
+			return null;
 		}
 		
 		public string GetString (string type)
 		{
-			if (swf.Clipboard.ContainsData (type))
-				return swf.Clipboard.GetData (type) as string;
-			else
-				return null;
+			if (swf.Clipboard.ContainsData(type))
+				return swf.Clipboard.GetData(type) as string;
+			return null;
 		}
 
 		public string[] Types {
-			get {
-				var data = swf.Clipboard.GetDataObject ();
-				if (data != null)
-					return data.GetFormats ();
-				else
-					return null;
+			get
+			{
+				var data = swf.Clipboard.GetDataObject();
+				return data != null ? data.GetFormats() : null;
 			}
 		}
 		

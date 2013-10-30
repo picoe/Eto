@@ -59,16 +59,17 @@ namespace Eto.Test
 	/// </summary>
 	public class WindowSectionMethod : Section, ISection
 	{
-		private Func<Window> Func { get; set; }
+		Func<Window> Func { get; set; }
+
+		public WindowSectionMethod(string text = null)
+		{
+			Text = text;
+		}
 
 		public WindowSectionMethod(string text, Func<Window> f)
 		{
 			Func = f;
 			Text = text;
-		}
-
-		protected WindowSectionMethod(string text = null)
-		{
 		}
 
 		protected virtual Window GetWindow()
@@ -78,16 +79,14 @@ namespace Eto.Test
 
 		public Control CreateContent()
 		{
-			var button = new Button { Text = string.Format("Show the {0} test", this.Text) };
+			var button = new Button { Text = string.Format("Show the {0} test", Text) };
 			var layout = new DynamicLayout();
 			layout.AddCentered(button);
 			button.Click += (sender, e) => {
 
 				try
 				{
-					var window = Func != null ? Func() : null; // First try the delegate method
-					if (window == null)
-						window = GetWindow(); // then the virtual method
+					var window = Func != null ? Func() : null ?? GetWindow();
 
 					if (window != null)
 					{
@@ -137,10 +136,8 @@ namespace Eto.Test
 		{
 			get
 			{
-				var section = this.SelectedItem as Section;
-				if (section != null)
-					return section.Text;
-				return null;
+				var section = SelectedItem as Section;
+				return section != null ? section.Text : null;
 			}
 		}
 	}

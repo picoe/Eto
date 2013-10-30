@@ -30,8 +30,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			if (image != null)
 				return image.Size;
-			else
-				return Size.Empty;
+			return Size.Empty;
 		}
 		
 		public Image Image {

@@ -5,7 +5,7 @@ namespace Eto.Test.Sections.FormsSection
 {
 	class ImageViewFormSection : WindowSectionMethod
 	{
-		protected override Eto.Forms.Window GetWindow()
+		protected override Window GetWindow()
 		{
 			return new Form
 			{

@@ -17,10 +17,6 @@ namespace Eto.Platform.Mac.Forms
 	{
 		double interval = UITimer.DefaultInterval;
 		
-		public UITimerHandler ()
-		{
-		}
-
 		class Helper
 		{
 			WeakReference handler;

@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using System.Diagnostics;
 using sw = System.Windows;
@@ -61,14 +59,8 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			IsActive = true;
 			IsStarted = true;
-			Control.Activated += (sender2, e2) =>
-			{
-				IsActive = true;
-			};
-			Control.Deactivated += (sender2, e2) =>
-			{
-				IsActive = false;
-			};
+			Control.Activated += (sender2, e2) => IsActive = true;
+			Control.Deactivated += (sender2, e2) => IsActive = false;
 			if (delayShownWindows != null)
 			{
 				foreach (var window in delayShownWindows)
@@ -186,19 +178,19 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Restart()
 		{
-			System.Diagnostics.Process.Start(System.Windows.Application.ResourceAssembly.Location);
+			Process.Start(System.Windows.Application.ResourceAssembly.Location);
 			System.Windows.Application.Current.Shutdown();
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Application.TerminatingEvent:
 					// handled by WpfWindow
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

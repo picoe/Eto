@@ -5,7 +5,6 @@ using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
 using Eto.Platform.Windows.Drawing;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Windows
 {
@@ -114,17 +113,17 @@ namespace Eto.Platform.Windows
 			set { Control.SelectedIndex = value; }
 		}
 
-		private void control_SelectedIndexChanged(object sender, EventArgs e)
+		void control_SelectedIndexChanged(object sender, EventArgs e)
 		{
 			Widget.OnSelectedIndexChanged(e);
 		}
 
-		private void control_DoubleClick(object sender, EventArgs e)
+		void control_DoubleClick(object sender, EventArgs e)
 		{
 			Widget.OnActivated(EventArgs.Empty);
 		}
 
-		private void control_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
+		void control_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
 			if (e.KeyData == swf.Keys.Return)
 			{

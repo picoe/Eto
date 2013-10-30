@@ -15,17 +15,17 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			this.Renderer = renderer;
 		}
 
-		public override Eto.Drawing.Font Font {
+		public override Font Font {
 			get;
 			set;
 		}
 
-		public override Eto.Drawing.Color BackgroundColor {
+		public override Color BackgroundColor {
 			get { return Renderer.CellBackgroundGdk.ToEto (); }
 			set { Renderer.CellBackgroundGdk = value.ToGdk (); }
 		}
 
-		public override Eto.Drawing.Color ForegroundColor {
+		public override Color ForegroundColor {
 			get;
 			set;
 		}
@@ -41,12 +41,12 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		{
 		}
 
-		public override Eto.Drawing.Color ForegroundColor {
+		public override Color ForegroundColor {
 			get { return Renderer.ForegroundGdk.ToEto (); }
 			set { Renderer.ForegroundGdk = value.ToGdk (); }
 		}
 
-		public override Eto.Drawing.Font Font {
+		public override Font Font {
 			get {
 				if (font == null)
 					return new Font (Column.Generator, new FontHandler (Renderer.FontDesc));

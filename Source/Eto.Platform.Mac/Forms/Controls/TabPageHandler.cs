@@ -8,11 +8,11 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TabPageHandler : MacDockContainer<NSView, TabPage>, ITabPage, IMacContainer
+	public class TabPageHandler : MacDockContainer<NSView, TabPage>, ITabPage
 	{
 		const int ICON_PADDING = 2;
 		Image image;
-		static IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
+		static readonly IntPtr selDrawInRectFromRectOperationFractionRespectFlippedHints = Selector.GetHandle ("drawInRect:fromRect:operation:fraction:respectFlipped:hints:");
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -32,7 +32,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);
 					else {
 						#pragma warning disable 618
-						nsimage.Flipped = this.View.IsFlipped;
+						nsimage.Flipped = View.IsFlipped;
 						#pragma warning restore 618
 						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1);
 					}

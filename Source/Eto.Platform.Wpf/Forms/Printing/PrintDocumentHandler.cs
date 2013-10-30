@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
 using swc = System.Windows.Controls;
@@ -46,7 +42,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			public override swd.DocumentPage GetPage (int pageNumber)
 			{
 				var page = new Canvas { 
-					Handler = this.Handler,
+					Handler = Handler,
 					PageNumber = pageNumber,
 					Width = ImageableArea.Width,
 					Height = ImageableArea.Height
@@ -94,7 +90,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			var ia = printCapabilities.PageImageableArea;
 			Control.ImageableArea = new sw.Rect(ia.OriginWidth, ia.OriginHeight, ia.ExtentWidth, ia.ExtentHeight);
 			//printCapabilities.PageImageableArea.OriginWidth, printCapabilities.PageImageableArea.OriginHeight
-			print.PrintDocument (Control, this.Name);
+			print.PrintDocument(Control, Name);
 		}
 
 

@@ -7,8 +7,8 @@ namespace Eto.Test.Sections.Behaviors
 {
 	public class ScreenSection : Scrollable
 	{
-		RectangleF displayBounds = Screen.DisplayBounds();
-		Screen[] screens;
+		readonly RectangleF displayBounds = Screen.DisplayBounds();
+		readonly Screen[] screens;
 		Window parentWindow;
 
 		public ScreenSection()
@@ -34,7 +34,7 @@ namespace Eto.Test.Sections.Behaviors
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			parentWindow = this.ParentWindow;
+			parentWindow = ParentWindow;
 			parentWindow.LocationChanged += HandleLocationChanged;
 		}
 

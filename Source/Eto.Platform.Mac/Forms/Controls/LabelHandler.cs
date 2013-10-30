@@ -197,7 +197,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 					case NSTextAlignment.Right:
 						return HorizontalAlign.Right;
 					default:
-					case NSTextAlignment.Left:
 						return HorizontalAlign.Left;
 				}
 			}

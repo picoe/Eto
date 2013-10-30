@@ -5,6 +5,7 @@ using MonoMac.Foundation;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.ObjCRuntime;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Printing
 {
@@ -36,19 +37,19 @@ namespace Eto.Platform.Mac.Forms.Printing
 				get { return Handler.Name ?? string.Empty; }
 			}
 
-			public override System.Drawing.RectangleF RectForPage(int pageNumber)
+			public override sd.RectangleF RectForPage(int pageNumber)
 			{
 				var operation = NSPrintOperation.CurrentOperation;
-				if (this.Frame.Size != operation.PrintInfo.PaperSize)
-					this.SetFrameSize(operation.PrintInfo.PaperSize);
-				return new System.Drawing.RectangleF(new System.Drawing.PointF(0, 0), operation.PrintInfo.PaperSize);
+				if (Frame.Size != operation.PrintInfo.PaperSize)
+					SetFrameSize(operation.PrintInfo.PaperSize);
+				return new sd.RectangleF(new sd.PointF(0, 0), operation.PrintInfo.PaperSize);
 				//return this.Frame;
 			}
 
 			static readonly IntPtr selCurrentContext = Selector.GetHandle("currentContext");
 			static readonly IntPtr classNSGraphicsContext = Class.GetHandle("NSGraphicsContext");
 
-			public override void DrawRect(System.Drawing.RectangleF dirtyRect)
+			public override void DrawRect(sd.RectangleF dirtyRect)
 			{
 				var operation = NSPrintOperation.CurrentOperation;
 
@@ -56,9 +57,9 @@ namespace Eto.Platform.Mac.Forms.Printing
 				// this causes monomac to hang for some reason:
 				//var context = NSGraphicsContext.CurrentContext;
 
-				using (var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, context, this.Frame.Height, this.IsFlipped)))
+				using (var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, context, Frame.Height, IsFlipped)))
 				{
-					Handler.Widget.OnPrintPage(new PrintPageEventArgs(graphics, Platform.Conversions.ToEto(operation.PrintInfo.PaperSize), operation.CurrentPage - 1));
+					Handler.Widget.OnPrintPage(new PrintPageEventArgs(graphics, operation.PrintInfo.PaperSize.ToEto(), operation.CurrentPage - 1));
 				}
 			}
 
@@ -107,8 +108,7 @@ namespace Eto.Platform.Mac.Forms.Printing
 				NSApplication.SharedApplication.RunModalForWindow(parentHandler.Control);
 				return closeSheet.Success;
 			}
-			else
-				return op.RunOperation();
+			return op.RunOperation();
 		}
 
 		public string Name { get; set; }

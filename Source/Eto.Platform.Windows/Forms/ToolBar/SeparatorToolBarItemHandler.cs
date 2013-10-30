@@ -12,18 +12,18 @@ namespace Eto.Platform.Windows
 		}
 	
 		public SeparatorToolBarItemType Type {
-			get {
-				if (this.Control.AutoSize) return SeparatorToolBarItemType.Divider;
-				else return SeparatorToolBarItemType.FlexibleSpace;
+			get
+			{
+				return Control.AutoSize ? SeparatorToolBarItemType.Divider : SeparatorToolBarItemType.FlexibleSpace;
 			}
 			set {
 				switch (value)
 				{
 					case SeparatorToolBarItemType.Divider:
-						this.Control.AutoSize = true;
+						Control.AutoSize = true;
 						break;
 				default:
-					this.Control.AutoSize = false;
+					Control.AutoSize = false;
 					break;
 				}
 			}

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
@@ -115,9 +112,11 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get
 			{
-				if (newSize != null) return newSize.Value;
-				else if (!Control.IsLoaded) return preferredSize.ToEtoSize();
-				else return Conversions.GetSize(Control);
+				if (newSize != null)
+					return newSize.Value;
+				if (!Control.IsLoaded)
+					return preferredSize.ToEtoSize();
+				return Control.GetSize();
 			}
 			set
 			{
@@ -220,11 +219,6 @@ namespace Eto.Platform.Wpf.Forms
 			Control.EnsureLoaded();
 		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-		}
-
 		public virtual bool HasFocus
 		{
 			get { return Control.IsFocused; }
@@ -239,10 +233,10 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
 			var wpfcontrol = Control as swc.Control;
-			switch (handler)
+			switch (id)
 			{
 				case Eto.Forms.Control.MouseMoveEvent:
 					if (UseMousePreview)
@@ -308,9 +302,9 @@ namespace Eto.Platform.Wpf.Forms
 				case Eto.Forms.Control.SizeChangedEvent:
 					ContainerControl.SizeChanged += (sender, e) =>
 					{
-						this.newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
+						newSize = e.NewSize.ToEtoSize(); // so we can report this back in Control.Size
 						Widget.OnSizeChanged(EventArgs.Empty);
-						this.newSize = null;
+						newSize = null;
 					};
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
@@ -349,19 +343,13 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
-					Control.GotFocus += (sender, e) =>
-					{
-						Widget.OnGotFocus(EventArgs.Empty);
-					};
+					Control.GotFocus += (sender, e) => Widget.OnGotFocus(EventArgs.Empty);
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
-					Control.LostFocus += (sender, e) =>
-					{
-						Widget.OnLostFocus(EventArgs.Empty);
-					};
+					Control.LostFocus += (sender, e) => Widget.OnLostFocus(EventArgs.Empty);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -444,7 +432,7 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				var currentParent = Widget.Parent.Handler as IWpfContainer;
 				if (currentParent != null)
-					currentParent.Remove(this.ContainerControl);
+					currentParent.Remove(ContainerControl);
 			}
 		}
 
@@ -454,18 +442,12 @@ namespace Eto.Platform.Wpf.Forms
 
 		public PointF PointFromScreen(PointF point)
 		{
-			if (Control.IsLoaded)
-				return Control.PointFromScreen(point.ToWpf()).ToEto();
-			else
-				return point;
+			return Control.IsLoaded ? Control.PointFromScreen(point.ToWpf()).ToEto() : point;
 		}
 
 		public PointF PointToScreen(PointF point)
 		{
-			if (Control.IsLoaded)
-				return Control.PointToScreen(point.ToWpf()).ToEto();
-			else
-				return point;
+			return Control.IsLoaded ? Control.PointToScreen(point.ToWpf()).ToEto() : point;
 		}
 
 		public Point Location
@@ -474,8 +456,7 @@ namespace Eto.Platform.Wpf.Forms
 			{
 				if (Widget.Parent == null)
 					return Point.Empty;
-				else
-					return Control.TranslatePoint(new sw.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
+				return Control.TranslatePoint(new sw.Point(0, 0), Widget.Parent.GetContainerControl()).ToEtoPoint();
 			}
 		}
 	}

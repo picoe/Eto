@@ -18,7 +18,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public virtual string Text
 		{
 			get { return Control.AttributedStringValue.Value; }
-			set { Control.AttributedStringValue = this.Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue); }
+			set { Control.AttributedStringValue = Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue); }
 		}
 	}
 }

@@ -6,8 +6,8 @@ namespace Eto.Platform.Windows
 {
 	public static class KeyMap
 	{
-		static Dictionary<swf.Keys, Key> keymap = new Dictionary<swf.Keys, Key>();
-		static Dictionary<Key, swf.Keys> inverse = new Dictionary<Key, swf.Keys>();
+		static readonly Dictionary<swf.Keys, Key> keymap = new Dictionary<swf.Keys, Key>();
+		static readonly Dictionary<Key, swf.Keys> inverse = new Dictionary<Key, swf.Keys>();
 
         public static Key ToEto (this swf.Keys keyData)
         {
@@ -32,18 +32,16 @@ namespace Eto.Platform.Windows
             return keyCode | modifiers;
         }
 
-		private static Key Find(swf.Keys key)
+		static Key Find(swf.Keys key)
 		{
 			Key mapped;
-			if (keymap.TryGetValue(key, out mapped)) return mapped;
-			else return Key.None;
+			return keymap.TryGetValue(key, out mapped) ? mapped : Key.None;
 		}
 		
 		public static swf.Keys Find(Key key)
 		{
 			swf.Keys mapped;
-			if (inverse.TryGetValue(key, out mapped)) return mapped;
-			else return swf.Keys.None;
+			return inverse.TryGetValue(key, out mapped) ? mapped : swf.Keys.None;
 		}
 		
 		public static swf.Keys ToSWF (this Key key)

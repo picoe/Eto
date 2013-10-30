@@ -57,19 +57,19 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected override void Initialize ()
 		{
 			base.Initialize ();
-			this.DataCell = new TextBoxCell (Widget.Generator);
+			DataCell = new TextBoxCell(Widget.Generator);
 		}
 		
 		public void Loaded (IDataViewHandler handler, int column)
 		{
-			this.Column = column;
-			this.DataViewHandler = handler;
+			Column = column;
+			DataViewHandler = handler;
 		}
 		
 		public void Resize ()
 		{
-			var handler = this.DataViewHandler;
-			if (this.AutoSize && handler != null) {
+			var handler = DataViewHandler;
+			if (AutoSize && handler != null) {
 				float width = Control.DataCell.CellSize.Width;
 				var outlineView = handler.Table as NSOutlineView;
 				if (handler.ShowHeader)
@@ -154,7 +154,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set {
 				dataCell = value;
 				if (dataCell != null) {
-					var editable = this.Editable;
+					var editable = Editable;
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					Control.DataCell = cellHandler.Control;
 					cellHandler.ColumnHandler = this;
@@ -166,7 +166,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		public void Setup (int column)
 		{
-			this.Column = column;
+			Column = column;
 			Control.Identifier = new NSString(column.ToString ());
 		}
 		
@@ -181,7 +181,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 
 		GridColumn IDataColumnHandler.Widget {
-			get { return (GridColumn)Widget; }
+			get { return Widget; }
 		}
 
 		public Font Font

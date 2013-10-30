@@ -27,12 +27,6 @@ namespace Eto.Platform.Windows.Drawing
 
 	public class IndexedBitmapHandler : WidgetHandler<SD.Bitmap, IndexedBitmap>, IIndexedBitmap, IWindowsImage
 	{
-
-		public IndexedBitmapHandler()
-		{
-		}
-
-
 		public void Create(int width, int height, int bitsPerPixel)
 		{
 			SD.Imaging.PixelFormat sdPixelFormat;

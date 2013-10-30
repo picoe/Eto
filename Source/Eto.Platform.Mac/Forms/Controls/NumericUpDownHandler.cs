@@ -27,7 +27,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void SetFrameSize(System.Drawing.SizeF newSize)
 			{
 				base.SetFrameSize(newSize);
-				var views = this.Subviews;
+				var views = Subviews;
 				var text = views[0];
 				var splitter = views[1];
 				var offset = (newSize.Height - text.Frame.Height) / 2;

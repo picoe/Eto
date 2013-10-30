@@ -93,11 +93,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return TextArea.DefaultSize;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case TextArea.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 				/*Control.TextDidChange += (sender, e) => {
 					Widget.OnTextChanged (EventArgs.Empty);
 				};*/
@@ -121,7 +121,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				};*/
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

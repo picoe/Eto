@@ -39,8 +39,8 @@ namespace Eto.Platform.Mac
 		public Key Shortcut {
 			get { return KeyMap.Convert (Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
 			set { 
-				this.Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
-				this.Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
+				Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
+				Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
 			}
 		}
 

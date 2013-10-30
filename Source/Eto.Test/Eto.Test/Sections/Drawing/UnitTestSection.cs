@@ -58,7 +58,7 @@ namespace Eto.Test.Sections.Drawing
 		[UnitTest]
 		public void ClipTest()
 		{
-			Assert.AreEqual("Verifying clipbounds size", (Size)Graphics.ClipBounds.Size, Drawable.ClientSize);
+			Assert.AreEqual("Verifying clipbounds size", Graphics.ClipBounds.Size, Drawable.ClientSize);
 			
 			// Clip to the upper-left quadrant
 			var clipTo = Drawable.ClientSize / 2;

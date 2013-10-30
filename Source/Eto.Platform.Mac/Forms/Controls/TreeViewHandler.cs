@@ -286,9 +286,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TreeView.ExpandedEvent:
 				case TreeView.ExpandingEvent:
@@ -320,7 +320,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					break;
 
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

@@ -32,7 +32,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="systemFont">System font to get</param>
 		/// <param name="size">Size in points of the font</param>
-		/// <param name="style">Style of the font</param>
+		/// <param name="decoration">Decorations to apply to the font</param>
 		/// <param name="generator">Generator to create the font</param>
 		public static Font Cached(SystemFont systemFont, float? size = null, FontDecoration decoration = FontDecoration.None, Generator generator = null)
 		{
@@ -43,7 +43,7 @@ namespace Eto.Drawing
 		/// Clears the font cache
 		/// </summary>
 		/// <remarks>
-		/// This is useful if you are using the <see cref="Cached(FontFamily,float,FontStyle,Generator)"/> method to cache fonts and want to clear it
+		/// This is useful if you are using the <see cref="Cached(SystemFont,float,FontDecoration,Generator)"/> method to cache fonts and want to clear it
 		/// to conserve memory or resources.
 		/// </remarks>
 		/// <param name="generator">Generator to clear the font cache for</param>

@@ -20,10 +20,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				else
 				{
 					// paint with no elements visible
-					var old = this.DatePickerElements;
-					this.DatePickerElements = 0;
+					var old = DatePickerElements;
+					DatePickerElements = 0;
 					base.DrawRect(dirtyRect);
-					this.DatePickerElements = old;
+					DatePickerElements = old;
 				}
 			}
 
@@ -147,10 +147,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				curValue = value;
-				if (value != null)
-					Control.DateValue = value.ToNS();
-				else
-					Control.DateValue = DateTime.Now.ToNS();
+				Control.DateValue = (value ?? DateTime.Now).ToNS();
 			}
 		}
 	}

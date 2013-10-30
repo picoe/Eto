@@ -77,7 +77,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			public void Apply (GraphicsHandler graphics)
 			{
 				graphics.Control.Color = Color;
-				graphics.Control.LineWidth = this.Thickness;
+				graphics.Control.LineWidth = Thickness;
 				graphics.Control.LineCap = LineCap;
 				graphics.Control.LineJoin = LineJoin;
 				if (cairodashes != null)

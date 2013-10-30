@@ -16,10 +16,10 @@ namespace Eto.Platform.GtkSharp
 		{
 			Gtk.Toolbar tb = handler.Control;
 
-			Control = new Gtk.ToolButton(GtkImage, this.Text);
+			Control = new Gtk.ToolButton(GtkImage, Text);
 			Control.Clicked += button_Clicked;
 			Control.IsImportant = true;
-			Control.Sensitive = this.Enabled;
+			Control.Sensitive = Enabled;
 			//Control.TooltipText = this.ToolTip;
 			//control.CanFocus = false;
 			tb.Insert(Control, -1);

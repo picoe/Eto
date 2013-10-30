@@ -76,8 +76,8 @@ namespace Eto.Test.Sections.Controls
 			{
 				var temp = i;
 				//p[i].BackgroundColor = colors[i];
-				var button = new Button { Text = "Click to update status " + i.ToString(), BackgroundColor = colors[i] };
-				button.Click += (s, e) => status[temp].Text = "New count: " + (count++).ToString();
+				var button = new Button { Text = "Click to update status " + i, BackgroundColor = colors[i] };
+				button.Click += (s, e) => status[temp].Text = "New count: " + (count++);
 				p[i].Content = button;
 			}
 

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
@@ -22,14 +18,14 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 		public DialogResult ShowDialog (Window parent)
 		{
-			Control.SetEtoSettings (settings);
-			var result = Control.ShowDialog ();
-			if (result == true) {
+			Control.SetEtoSettings(settings);
+			var result = Control.ShowDialog();
+			if (result == true)
+			{
 				settings = null;
 				return DialogResult.Ok;
 			}
-			else
-				return DialogResult.Cancel;
+			return DialogResult.Cancel;
 		}
 
 		public PrintSettings PrintSettings

@@ -33,7 +33,7 @@ namespace Eto.Forms
 		public Size Size
 		{
 			get { return Control.Size; }
-			set { throw new NotImplementedException(); }
+			set { Control.Size = value; }
 		}
 
 		public bool Enabled { 
@@ -114,7 +114,7 @@ namespace Eto.Forms
 
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
-			throw new NotImplementedException();
+			Control.MapPlatformAction(systemAction, action);
 		}
 
 		public Point Location

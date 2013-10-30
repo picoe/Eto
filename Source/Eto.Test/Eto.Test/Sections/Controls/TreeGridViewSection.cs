@@ -127,8 +127,7 @@ namespace Eto.Test.Sections.Controls
 			var treeItem = item as TreeGridItem;
 			if (treeItem != null)
 				return Convert.ToString(string.Join(", ", treeItem.Values.Select(r => Convert.ToString(r))));
-			else
-				return Convert.ToString(item);
+			return Convert.ToString(item);
 		}
 
 		void LogEvents(TreeGridView control)

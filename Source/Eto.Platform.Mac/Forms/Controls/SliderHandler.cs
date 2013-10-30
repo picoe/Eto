@@ -42,10 +42,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (Orientation == SliderOrientation.Horizontal)
-				return new Size(80, 30);
-			else
-				return new Size(30, 80);
+			return Orientation == SliderOrientation.Horizontal ? new Size(80, 30) : new Size(30, 80);
 		}
 
 		public int MaxValue
@@ -88,8 +85,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{ 
 				if (Control.TickMarksCount > 1)
 					return ((MaxValue - MinValue) / (Control.TickMarksCount - 1));
-				else
-					return MaxValue - MinValue;
+				return MaxValue - MinValue;
 			}
 			set
 			{ 

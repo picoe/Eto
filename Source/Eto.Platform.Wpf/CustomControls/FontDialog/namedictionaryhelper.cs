@@ -12,7 +12,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         {
             // Look up the display name based on the UI culture, which is the same culture
             // used for resource loading.
-            XmlLanguage userLanguage = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
+            var userLanguage = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
 
             // Look for an exact match.
             string name;
@@ -51,7 +51,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             int bestRelatedness = -1;
             string bestName = string.Empty;
 
-            XmlLanguage userLanguage = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
+            var userLanguage = XmlLanguage.GetLanguage(CultureInfo.CurrentUICulture.IetfLanguageTag);
 
             foreach (KeyValuePair<CultureInfo, string> pair in nameDictionary)
             {
@@ -100,17 +100,10 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         static string TrimSuffix(string tag)
-        {
-            int i = tag.LastIndexOf('-');
-            if (i > 0)
-            {
-                return tag.Substring(0, i);
-            }
-            else
-            {
-                return tag;
-            }
-        }
+		{
+			int i = tag.LastIndexOf('-');
+			return i > 0 ? tag.Substring(0, i) : tag;
+		}
 
         static bool IsPrefixOf(string prefix, string tag)
         {

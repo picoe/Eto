@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Drawing;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
@@ -21,7 +18,7 @@ namespace Eto.Platform.Wpf.Drawing
 			control.FontFamily = WpfFamily;
 			control.FontStyle = WpfFontStyle;
 			control.FontWeight = WpfFontWeight;
-			control.FontSize = this.PixelSize;
+			control.FontSize = PixelSize;
 			if (setDecorations != null && WpfTextDecorations != null)
 			{
 				setDecorations(WpfTextDecorations);
@@ -118,16 +115,16 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public FontHandler(Eto.Generator generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
 		{
-			this.Family = new FontFamily(generator, new FontFamilyHandler(family));
-			this.Size = size;
-			this.WpfFontStyle = style;
-			this.WpfFontWeight = weight;
+			Family = new FontFamily(generator, new FontFamilyHandler(family));
+			Size = size;
+			WpfFontStyle = style;
+			WpfFontWeight = weight;
 		}
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
-			this.Family = family;
-			this.Size = size;
+			Family = family;
+			Size = size;
 			SetStyle(style);
 			SetDecorations(decoration);
 		}
@@ -135,20 +132,18 @@ namespace Eto.Platform.Wpf.Drawing
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
 		{
 			this.typeface = typeface;
-			this.Family = typeface.Family;
-			this.Size = size;
-			this.WpfFontWeight = WpfTypeface.Weight;
-			this.WpfFontStyle = WpfTypeface.Style;
+			Family = typeface.Family;
+			Size = size;
+			WpfFontWeight = WpfTypeface.Weight;
+			WpfFontStyle = WpfTypeface.Style;
 			SetDecorations(decoration);
 		}
 
 		void SetStyle(FontStyle style)
 		{
-			if (style.HasFlag(FontStyle.Bold)) WpfFontWeight = sw.FontWeights.Bold;
-			else WpfFontWeight = sw.FontWeights.Normal;
+			WpfFontWeight = style.HasFlag(FontStyle.Bold) ? sw.FontWeights.Bold : sw.FontWeights.Normal;
 
-			if (style.HasFlag(FontStyle.Italic)) WpfFontStyle = sw.FontStyles.Italic;
-			else WpfFontStyle = sw.FontStyles.Normal;
+			WpfFontStyle = style.HasFlag(FontStyle.Italic) ? sw.FontStyles.Italic : sw.FontStyles.Normal;
 		}
 
 		void SetDecorations(FontDecoration decoration)

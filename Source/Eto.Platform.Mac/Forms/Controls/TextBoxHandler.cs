@@ -108,15 +108,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return size;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case TextArea.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.Changed += HandleTextChanged;
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

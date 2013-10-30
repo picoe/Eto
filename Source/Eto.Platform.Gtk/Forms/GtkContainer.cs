@@ -11,11 +11,8 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual Size ClientSize
 		{
-			get { return this.Size; }
-			set
-			{
-				this.Size = value;
-			}
+			get { return Size; }
+			set { Size = value; }
 		}
 
 		public override void SetBackgroundColor()

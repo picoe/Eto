@@ -11,7 +11,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class MacEventView : NSView, IMacControl
 	{
-		static readonly NSString CIInputTransform = new NSString("inputTransform");
 		static readonly NSString CIOutputImage = new NSString("outputImage");
 		static readonly Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
 

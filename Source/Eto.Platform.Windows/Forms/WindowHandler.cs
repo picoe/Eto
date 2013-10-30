@@ -133,19 +133,19 @@ namespace Eto.Platform.Windows
 						e.Cancel = args.Cancel;
 					};
 					break;
-				case Window.ShownEvent:
+				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += delegate
 					{
 						Widget.OnShown(EventArgs.Empty);
 					};
 					break;
-				case Window.GotFocusEvent:
+				case Eto.Forms.Control.GotFocusEvent:
 					Control.Activated += delegate
 					{
 						Widget.OnGotFocus(EventArgs.Empty);
 					};
 					break;
-				case Window.LostFocusEvent:
+				case Eto.Forms.Control.LostFocusEvent:
 					Control.Deactivate += delegate
 					{
 						Widget.OnLostFocus(EventArgs.Empty);
@@ -355,8 +355,9 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
-				else return Control.RestoreBounds.ToEto();
+				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty)
+					return null;
+				return Control.RestoreBounds.ToEto();
 			}
 		}
 

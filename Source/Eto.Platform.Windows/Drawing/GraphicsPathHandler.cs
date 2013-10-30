@@ -21,7 +21,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control = new sd2.GraphicsPath ();
 		}
 
-		private GraphicsPathHandler (sd2.GraphicsPath control)
+		GraphicsPathHandler (sd2.GraphicsPath control)
 		{
 			Control = control;
 		}
@@ -40,7 +40,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void AddLine (float startX, float startY, float endX, float endY)
 		{
-			this.Control.AddLine (new sd.PointF (startX, startY), new sd.PointF (endX, endY));
+			Control.AddLine (new sd.PointF (startX, startY), new sd.PointF (endX, endY));
 			position = new sd.PointF (endX, endY);
 		}
 
@@ -129,7 +129,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public IGraphicsPath Clone ()
 		{
-			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)this.Control.Clone ());
+			return new GraphicsPathHandler ((sd.Drawing2D.GraphicsPath)Control.Clone ());
 		}
 
 		public FillMode FillMode

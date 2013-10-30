@@ -13,7 +13,7 @@ namespace Eto.Drawing
 	public sealed class DashStyle : IEquatable<DashStyle>
 	{
 		readonly float[] dashes;
-		float offset;
+		readonly float offset;
 
 		/// <summary>
 		/// Gets the dashes and gaps for this style
@@ -193,16 +193,15 @@ namespace Eto.Drawing
 		{
 			if (object.ReferenceEquals(this, DashStyles.Dash))
 				return "dash";
-			else if (object.ReferenceEquals(this, DashStyles.Dot))
+			if (object.ReferenceEquals(this, DashStyles.Dot))
 				return "dot";
-			else if (object.ReferenceEquals(this, DashStyles.DashDot))
+			if (object.ReferenceEquals(this, DashStyles.DashDot))
 				return "dashdot";
-			else if (object.ReferenceEquals(this, DashStyles.DashDotDot))
+			if (object.ReferenceEquals(this, DashStyles.DashDotDot))
 				return "dashdotdot";
-			else if (object.ReferenceEquals(this, DashStyles.Solid))
+			if (object.ReferenceEquals(this, DashStyles.Solid))
 				return "solid";
-			else
-				return string.Format (CultureInfo.InvariantCulture, "{0},{1}", Offset, string.Join (",", Dashes.Select (r => r.ToString ())));
+			return string.Format(CultureInfo.InvariantCulture, "{0},{1}", Offset, string.Join(",", Dashes.Select(r => r.ToString())));
 		}
 
 		/// <summary>

@@ -14,7 +14,6 @@ namespace Eto.Drawing
 	/// </remarks>
 	public struct ColorHSB : IEquatable<ColorHSB>
 	{
-
 		#region Obsolete
 
 		/// <summary>

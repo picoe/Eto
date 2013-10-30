@@ -42,7 +42,7 @@ namespace Eto.Xaml.Extensions
 					{
 						if (converter.CanConvertFrom (typeof (NamespaceInfo)))
 							return converter.ConvertFrom (Resource);
-						else if (converter.CanConvertFrom (typeof (Stream)))
+						if (converter.CanConvertFrom (typeof (Stream)))
 							return converter.ConvertFrom (Resource.FindResource ());
 					}
 				}

@@ -1,6 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 using Eto.Drawing;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
@@ -19,9 +17,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public static Font ToEto(this SD.Font font, Eto.Generator generator)
 		{
-			if (font == null)
-				return null;
-			return new Font(generator, new FontHandler(font));
+			return font == null ? null : new Font(generator, new FontHandler(font));
 		}
 	}
 
@@ -89,7 +85,7 @@ namespace Eto.Platform.Windows.Drawing
 					Control = SD.SystemFonts.StatusFont;
 					break;
 				default:
-					throw new NotImplementedException();
+					throw new NotSupportedException();
 			}
 			if (size != null || decoration != FontDecoration.None)
 			{
@@ -100,7 +96,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public string FamilyName
 		{
-			get { return this.Control.FontFamily.Name; }
+			get { return Control.FontFamily.Name; }
 		}
 
 

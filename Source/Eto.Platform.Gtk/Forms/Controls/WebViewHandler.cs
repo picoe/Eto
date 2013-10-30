@@ -7,8 +7,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public class WebViewHandler : GtkControl<EtoWebView, WebView>, IWebView
 	{
-		Gtk.ScrolledWindow scroll;
-		ManualResetEventSlim returnResetEvent = new ManualResetEventSlim ();
+		readonly Gtk.ScrolledWindow scroll;
+		readonly ManualResetEventSlim returnResetEvent = new ManualResetEventSlim ();
 		string scriptReturnValue;
 		const string EtoReturnPrefix = "etoscriptreturn://";
 
@@ -44,9 +44,9 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			HandleEvent (WebView.DocumentLoadingEvent);
 		}
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case WebView.NavigatedEvent:
 				HandleEvent (WebView.DocumentLoadedEvent);
 				break;
@@ -64,16 +64,13 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				Control.NavigationRequested += (sender, args) => {
 					if (args.Request.Uri.StartsWith(EtoReturnPrefix, StringComparison.Ordinal)) {
 						// pass back the response to ExecuteScript()
-						this.scriptReturnValue = HttpUtility.UrlDecode (args.Request.Uri.Substring (EtoReturnPrefix.Length));
+						scriptReturnValue = HttpUtility.UrlDecode (args.Request.Uri.Substring (EtoReturnPrefix.Length));
 						returnResetEvent.Set ();
 						args.RetVal = WebKit.NavigationResponse.Ignore;
 					} else {
 						var e = new WebViewLoadingEventArgs (new Uri(args.Request.Uri), false);
 						Widget.OnDocumentLoading (e);
-						if (e.Cancel)
-							args.RetVal = WebKit.NavigationResponse.Ignore;
-						else
-							args.RetVal = WebKit.NavigationResponse.Accept;
+						args.RetVal = e.Cancel ? WebKit.NavigationResponse.Ignore : WebKit.NavigationResponse.Accept;
 					}
 				};
 #else
@@ -113,7 +110,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				Control.TitleChanged += (sender, args) => Widget.OnDocumentTitleChanged(new WebViewTitleEventArgs(args.Title));
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

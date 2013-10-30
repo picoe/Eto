@@ -77,6 +77,10 @@
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.0.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>False</Private>
     </Reference>
+    <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
+      <Private>False</Private>
+      <Package>/Users/curtis/Projects/Resources/WPFDependencies/PresentationFramework.dll</Package>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\Eto.Platform.Mac\Conversions.sd.cs">

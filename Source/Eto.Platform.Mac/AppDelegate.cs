@@ -47,8 +47,7 @@ namespace Eto.Platform.Mac
 			Application.Instance.OnTerminating(args);
 			if (args.Cancel)
 				return NSApplicationTerminateReply.Cancel;
-			else
-				return NSApplicationTerminateReply.Now;
+			return NSApplicationTerminateReply.Now;
 		}
 	}
 }

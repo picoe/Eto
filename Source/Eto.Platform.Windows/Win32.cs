@@ -6,6 +6,8 @@ namespace Eto.Platform
 {
 	static class Win32
 	{
+		// Analysis disable InconsistentNaming
+
 		[Flags]
 		public enum SWP : uint
 		{
@@ -31,15 +33,16 @@ namespace Eto.Platform
 		public static readonly IntPtr HWND_TOP = new IntPtr (0);
 		public static readonly IntPtr HWND_BOTTOM = new IntPtr (1);
 
-		public enum GWL : int
+		public enum GWL
 		{
 			EXSTYLE = -20,
 			HINSTANCE = -6,
 			ID = -12,
 			STYLE = -16,
 			USERDATA = -21,
-			WNDPROC = -4
-		};
+			WNDPROC = -4}
+
+		;
 
 		[Flags]
 		public enum WS : uint
@@ -79,7 +82,7 @@ namespace Eto.Platform
 			TOOLWINDOW = 0x80
 		}
 
-		public enum WM : int
+		public enum WM
 		{
 			SETREDRAW = 0xB,
 			MOUSEMOVE = 0x0200,
@@ -107,14 +110,14 @@ namespace Eto.Platform
 
 		public static int SignedLOWORD (IntPtr n) { return SignedLOWORD ((int)((long)n)); }
 
-		public static int SignedHIWORD (int n) { return (int)((short)(n >> 16 & 65535)); }
+		public static int SignedHIWORD (int n) { return (n >> 16 & 65535); }
 
-		public static int SignedLOWORD (int n) { return (int)((short)(n & 65535)); }
+		public static int SignedLOWORD (int n) { return (n & 65535); }
 
 		public static int GetWheelDeltaWParam (IntPtr wParam) { return SignedHIWORD (wParam); }
 
 		[Flags]
-		public enum MK : int
+		public enum MK
 		{
 			NONE = 0x0000,
 			LBUTTON = 0x0001,
@@ -145,11 +148,11 @@ namespace Eto.Platform
 		}
 
 		[DllImport ("user32.dll")]
-		private static extern int ShowWindow (IntPtr hWnd, uint Msg);
+		static extern int ShowWindow (IntPtr hWnd, uint msg);
 
 		[DllImport ("user32.dll")]
 		[return: MarshalAs (UnmanagedType.Bool)]
-		public static extern bool SetWindowPos (IntPtr hWnd, IntPtr hWndInsertAfter, int X, int Y, int cx, int cy, SWP uFlags);
+		public static extern bool SetWindowPos (IntPtr hWnd, IntPtr hWndInsertAfter, int x, int y, int cx, int cy, SWP uFlags);
 
 		[DllImport ("user32.dll", SetLastError = true)]
 		public static extern uint GetWindowLong (IntPtr hWnd, GWL nIndex);

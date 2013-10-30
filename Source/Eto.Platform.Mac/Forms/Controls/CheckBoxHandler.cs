@@ -42,7 +42,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 					case NSCellStateValue.Off:
 						return false;
 					default:
-					case NSCellStateValue.Mixed:
 						return null;
 				}
 			}

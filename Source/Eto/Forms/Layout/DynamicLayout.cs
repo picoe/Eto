@@ -74,6 +74,7 @@ namespace Eto.Forms
 			}
 		}
 		#endregion
+
 		public override void OnPreLoad(EventArgs e)
 		{
 			if (!Generated)

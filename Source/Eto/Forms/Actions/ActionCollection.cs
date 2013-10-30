@@ -50,10 +50,7 @@ namespace Eto.Forms
 		
 		public BaseAction Find (string key)
 		{
-			if (Contains(key))
-				return this [key];
-			else
-				return null;
+			return Contains(key) ? this[key] : null;
 		}
 		
 		public bool RemoveHandler (string actionID, EventHandler<EventArgs> activatedHandler)

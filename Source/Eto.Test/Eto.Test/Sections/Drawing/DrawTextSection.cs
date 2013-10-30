@@ -68,7 +68,7 @@ namespace Eto.Test.Sections.Drawing
 				foreach (var info in GetDrawInfo ())
 				{
 					var size = g.MeasureString(info.Font, info.Text);
-					g.DrawText(info.Font, Colors.White, 10, (int)y, info.Text);
+					g.DrawText(info.Font, Colors.White, 10, y, info.Text);
 					y += size.Height;
 				}
 			};

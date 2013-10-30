@@ -8,11 +8,10 @@ namespace Eto.Json
 	{
 		public Type BindToType (string typeName)
 		{
-			var asmIndex = typeName.IndexOf (',');
+			var asmIndex = typeName.IndexOf(',');
 			if (asmIndex > 0)
-				return BindToType (typeName.Substring (0, asmIndex), typeName.Substring (asmIndex + 1));
-			else
-				return BindToType (null, typeName);
+				return BindToType(typeName.Substring(0, asmIndex), typeName.Substring(asmIndex + 1));
+			return BindToType(null, typeName);
 		}
 		
 		public NamespaceManager NamespaceManager

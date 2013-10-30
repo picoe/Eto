@@ -31,7 +31,7 @@ namespace Eto.Platform.GtkSharp
 			Control.PackStart(content, true, true, 0);
 		}
 		
-		public Eto.Drawing.Image Image {
+		public Image Image {
 			get { return image; }
 			set {
 				if (gtkimage == null) {

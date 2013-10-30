@@ -16,7 +16,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         {
             _displayName = displayName;
             _chooserProperty = chooserProperty;
-            this.Text = displayName;
+            Text = displayName;
         }
 
         public DependencyProperty ChooserProperty

@@ -9,10 +9,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 	{
 		CollectionHandler collection;
 		
-		public GridViewHandler ()
-		{
-		}
-
 		public bool ShowCellBorders
 		{
 			set { Control.CellBorderStyle = value ? swf.DataGridViewCellBorderStyle.Single : swf.DataGridViewCellBorderStyle.None; }
@@ -86,13 +82,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		private void SetRowCount()
+		void SetRowCount()
 		{
 			Control.RowCount = collection.Collection != null ? collection.Collection.Count : 0;
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.
 		}
 
-		private void IncrementRowCountBy(int increment)
+		void IncrementRowCountBy(int increment)
 		{
 			Control.RowCount += increment;
 			Control.Refresh(); // Need to refresh rather than invalidate owing to WinForms DataGridView bugs.

@@ -1,12 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swm = System.Windows.Media;
 using sw = System.Windows;
 using swmi = System.Windows.Media.Imaging;
 using Eto.Drawing;
-using System.Runtime.InteropServices;
 using Eto.Platform.Wpf.Forms;
 using System.IO;
 
@@ -60,7 +56,7 @@ namespace Eto.Platform.Wpf.Drawing
 			});
 		}
 
-		public void Create (System.IO.Stream stream)
+		public void Create (Stream stream)
 		{
 			ApplicationHandler.InvokeIfNecessary (() => {
 				Control = swmi.BitmapFrame.Create (stream, swmi.BitmapCreateOptions.None, swmi.BitmapCacheOption.OnLoad);
@@ -88,7 +84,6 @@ namespace Eto.Platform.Wpf.Drawing
 			}
 			stride = (width * format.BitsPerPixel + 7) / 8;
 
-			var bufferSize = stride * height;
 			ApplicationHandler.InvokeIfNecessary (() => {
 				var bf = new swm.Imaging.WriteableBitmap (width, height, 96, 96, format, null);
 				Control = bf;
@@ -122,27 +117,26 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void SetBitmap (swm.Imaging.BitmapSource bitmap)
 		{
-			this.Control = bitmap;
+			Control = bitmap;
 		}
 
 		public Color GetPixel (int x, int y)
 		{
-			var rect = new sw.Int32Rect (x, y, 1, 1);
+			var rect = new sw.Int32Rect(x, y, 1, 1);
 			
-			var stride = (rect.Width * Control.Format.BitsPerPixel + 7) / 8;
+			var pixelStride = (rect.Width * Control.Format.BitsPerPixel + 7) / 8;
 			
-			var pixels = new byte[stride * rect.Height];
+			var pixels = new byte[pixelStride * rect.Height];
 			
-			Control.CopyPixels (rect, pixels, stride: stride, offset: 0);
+			Control.CopyPixels(rect, pixels, stride: pixelStride, offset: 0);
 			
 			if (Control.Format == swm.PixelFormats.Rgb24)
-				return Color.FromArgb (red: pixels [0], green: pixels [1], blue: pixels [2]);
-			else if (Control.Format == swm.PixelFormats.Bgr32)
-				return Color.FromArgb (blue: pixels [0], green: pixels [1], red: pixels [2]);
-			else if (Control.Format == swm.PixelFormats.Pbgra32)
-				return Color.FromArgb (blue: pixels [0], green: pixels [1], red: pixels [2], alpha: pixels [3]);
-			else
-				throw new NotSupportedException ();
+				return Color.FromArgb(red: pixels[0], green: pixels[1], blue: pixels[2]);
+			if (Control.Format == swm.PixelFormats.Bgr32)
+				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2]);
+			if (Control.Format == swm.PixelFormats.Pbgra32)
+				return Color.FromArgb(blue: pixels[0], green: pixels[1], red: pixels[2], alpha: pixels[3]);
+			throw new NotSupportedException();
 		}
 
 		public BitmapData Lock ()
@@ -152,12 +146,12 @@ namespace Eto.Platform.Wpf.Drawing
 				var wb = Control as swm.Imaging.WriteableBitmap;
 				if (wb != null) {
 					wb.Lock ();
-					handler = new BitmapDataHandler (Widget, wb.BackBuffer, (int)stride, Control.Format.BitsPerPixel, Control);
+					handler = new BitmapDataHandler(Widget, wb.BackBuffer, stride, Control.Format.BitsPerPixel, Control);
 				} else {
 					wb = new swm.Imaging.WriteableBitmap (Control);
 					wb.Lock ();
 					Control = wb;
-					handler = new BitmapDataHandler (Widget, wb.BackBuffer, (int)stride, Control.Format.BitsPerPixel, wb);
+					handler = new BitmapDataHandler(Widget, wb.BackBuffer, stride, Control.Format.BitsPerPixel, wb);
 				}
 			});
 			return handler;
@@ -175,7 +169,7 @@ namespace Eto.Platform.Wpf.Drawing
 			});
 		}
 
-		public void Save (System.IO.Stream stream, ImageFormat format)
+		public void Save (Stream stream, ImageFormat format)
 		{
 			ApplicationHandler.InvokeIfNecessary (() => {
 				swm.Imaging.BitmapEncoder encoder;
@@ -220,8 +214,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 				if (rectangle != null) {
 					var rect = rectangle.Value;
-					int stride = Control.PixelWidth * (Control.Format.BitsPerPixel / 8);
-					byte[] data = new byte[stride * Control.PixelHeight];
+					var data = new byte[stride * Control.PixelHeight];
 					Control.CopyPixels (data, stride, 0);
 					var target = new swmi.WriteableBitmap (rect.Width, rect.Height, Control.DpiX, Control.DpiY, Control.Format, null);
 					target.WritePixels (rect.ToWpfInt32 (), data, stride, destinationX: 0, destinationY: 0);

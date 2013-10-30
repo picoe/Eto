@@ -46,7 +46,7 @@ namespace Eto.Drawing
 		/// <param name="culture">Culture to use for the conversion</param>
 		/// <param name="value">Value to convert</param>
 		/// <returns>A <see cref="Color"/> instance with the converted value</returns>
-		public override object ConvertFrom (ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+		public override object ConvertFrom (ITypeDescriptorContext context, CultureInfo culture, object value)
 		{
 			var str = value as string;
 			if (str != null) {

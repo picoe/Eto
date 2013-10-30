@@ -4,15 +4,11 @@ using Eto.Platform.GtkSharp.Forms.Cells;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public class GridViewHandler : GridHandler<GridView>, IGridView, ICellDataSource, IGtkListModelHandler<object, IDataStore>, IGridHandler
+	public class GridViewHandler : GridHandler<GridView>, IGridView, ICellDataSource, IGtkListModelHandler<object, IDataStore>
 	{
 		GtkListModel<object, IDataStore> model;
 		CollectionHandler collection;
 		
-		public GridViewHandler ()
-		{
-		}
-
 		protected override ITreeModelImplementor CreateModelImplementor ()
 		{
 			model = new GtkListModel<object, IDataStore> { Handler = this };
