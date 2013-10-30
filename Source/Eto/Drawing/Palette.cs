@@ -304,7 +304,7 @@ namespace Eto.Drawing
 					closestIndex = i;
 					closestDifference = curDifference;
 				}
-				if (Math.Abs(curDifference) < 0.01f)
+				if (Math.Abs(curDifference) < 0.001f)
 					break;
 			}
 			return closestIndex;

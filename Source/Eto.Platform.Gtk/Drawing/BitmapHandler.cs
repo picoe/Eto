@@ -142,7 +142,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			context.Rectangle(destination.ToCairo());
 			double scalex = 1;
 			double scaley = 1;
-			if (source.Width != destination.Width || source.Height != destination.Height)
+			if (Math.Abs(source.Width - destination.Width) > 0.5f || Math.Abs(source.Height - destination.Height) > 0.5f)
 			{
 				scalex = (double)destination.Width / (double)source.Width;
 				scaley = (double)destination.Height / (double)source.Height;

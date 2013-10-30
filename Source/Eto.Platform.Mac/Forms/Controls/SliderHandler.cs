@@ -33,8 +33,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var handler = GetHandler(sender) as SliderHandler;
 			if (handler != null)
 			{
-				if (handler.Control.DoubleValue != (double)handler.Control.IntValue)
-					handler.Control.IntValue = (int)Math.Round(handler.Control.DoubleValue);
+				var newval = (int)Math.Round(handler.Control.DoubleValue);
+				if (newval != handler.Control.IntValue)
+					handler.Control.IntValue = newval;
 
 				handler.Widget.OnValueChanged(EventArgs.Empty);
 			}

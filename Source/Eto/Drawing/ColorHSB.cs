@@ -20,7 +20,7 @@ namespace Eto.Drawing
 		/// Obsolete. Do not use
 		/// </summary>
 		[Obsolete("Use nullable values instead")]
-		public readonly static ColorHSB Empty;
+		public readonly static ColorHSB Empty = new ColorHSB();
 
 		#endregion
 
@@ -87,24 +87,24 @@ namespace Eto.Drawing
 			float min = Math.Min(color.R, Math.Min(color.G, color.B));
 
 			float h = 0f;
-			if (max == color.R && color.G >= color.B)
+			if (Math.Abs(max - color.R) < Color.Epsilon && color.G >= color.B)
 			{
 				h = 60 * (color.G - color.B) / (max - min);
 			}
-			else if (max == color.R && color.G < color.B)
+			else if (Math.Abs(max - color.R) < Color.Epsilon && color.G < color.B)
 			{
 				h = 60 * (color.G - color.B) / (max - min) + 360;
 			}
-			else if (max == color.G)
+			else if (Math.Abs(max - color.G) < Color.Epsilon)
 			{
 				h = 60 * (color.B - color.R) / (max - min) + 120;
 			}
-			else if (max == color.B)
+			else if (Math.Abs(max - color.B) < Color.Epsilon)
 			{
 				h = 60 * (color.R - color.G) / (max - min) + 240;
 			}
 
-			float s = (max == 0) ? 0f : (1.0f - (min / max));
+			float s = (Math.Abs(max) < Color.Epsilon) ? 0f : (1.0f - (min / max));
 			
 			this.H = h;
 			this.S = s;

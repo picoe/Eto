@@ -15,7 +15,8 @@ namespace Eto.Drawing
 	{
 		// static members for mapping color names from the Colors class
 		static Dictionary<string, Color> colormap;
-		static readonly object colormaplock = new object ();
+		static readonly object colormaplock = new object();
+		internal const float Epsilon = 1f / byte.MaxValue;
 
 		/// <summary>
 		/// Gets or sets the alpha/opacity (0-1)
@@ -119,7 +120,7 @@ namespace Eto.Drawing
 		/// <param name="blendColor">Color to blend onto the base color</param>
 		public static Color Blend (Color baseColor, Color blendColor)
 		{
-			if (Math.Abs(blendColor.A - 1.0f) < 0.01f)
+			if (Math.Abs(blendColor.A - 1.0f) < Epsilon)
 				return blendColor;
 			var inv = 1.0f - blendColor.A;
 			baseColor.R = baseColor.R * inv + blendColor.R * blendColor.A;
@@ -296,7 +297,10 @@ namespace Eto.Drawing
 		/// <returns>True if both the Color structs have the same values for all ARGB components</returns>
 		public static bool operator == (Color color1, Color color2)
 		{
-			return color1.ToArgb() == color2.ToArgb();
+			return Math.Abs(color1.B - color2.B) < Epsilon
+				&& Math.Abs(color1.R - color2.R) < Epsilon
+				&& Math.Abs(color1.G - color2.G) < Epsilon
+				&& Math.Abs(color1.A - color2.A) < Epsilon;
 		}
 
 		/// <summary>
@@ -345,8 +349,8 @@ namespace Eto.Drawing
 		public string ToHex (bool includeAlpha = true)
 		{
 			if (includeAlpha)
-				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", (byte)(A * byte.MaxValue), (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
-			return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", (byte)(R * byte.MaxValue), (byte)(G * byte.MaxValue), (byte)(B * byte.MaxValue));
+				return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}{3:X2}", Ab, Rb, Gb, Bb);
+			return string.Format(CultureInfo.InvariantCulture, "#{0:X2}{1:X2}{2:X2}", Rb, Gb, Bb);
 		}
 
 		/// <summary>

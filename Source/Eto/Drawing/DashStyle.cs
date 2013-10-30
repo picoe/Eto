@@ -144,9 +144,9 @@ namespace Eto.Drawing
 		/// <param name="style2">Second style to compare</param>
 		public static bool operator == (DashStyle style1, DashStyle style2)
 		{
-			if ((object)style1 == null || (object)style2 == null)
-				return object.ReferenceEquals (style1, style2);
-			if (style1.Offset != style2.Offset)
+			if (object.ReferenceEquals(style1, null) || object.ReferenceEquals(style2, null))
+				return false;
+			if (Math.Abs(style1.Offset - style2.Offset) > 0.01f)
 				return false;
 			if (style1.Dashes == null)
 				return style2.Dashes == null;

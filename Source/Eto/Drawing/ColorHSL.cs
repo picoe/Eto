@@ -20,7 +20,7 @@ namespace Eto.Drawing
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("Use nullable values instead")]
-		public readonly static ColorHSL Empty;
+		public readonly static ColorHSL Empty = new ColorHSL();
 
 		#endregion
 
@@ -85,7 +85,9 @@ namespace Eto.Drawing
 		public ColorHSL (Color color)
 			: this()
 		{
-			float h = 0, s = 0, l = 0;
+			float h = 0;
+			float s = 0;
+			float l;
 
 			// normalize red, green, blue values
 
