@@ -108,7 +108,11 @@ namespace Eto.Platform.Windows
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseWheel(e), null, (int)Win32.WM.MOUSEWHEEL);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseMove(e), null, (int)Win32.WM.MOUSEMOVE);
 				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDown(e), true, (int)Win32.WM.LBUTTONDOWN, (int)Win32.WM.RBUTTONDOWN, (int)Win32.WM.MBUTTONDOWN);
-				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDoubleClick(e), null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
+				bubble.AddBubbleMouseEvents((c, e) => {
+					c.OnMouseDoubleClick(e);
+					if (!e.Handled)
+						c.OnMouseDown(e);
+				}, null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
