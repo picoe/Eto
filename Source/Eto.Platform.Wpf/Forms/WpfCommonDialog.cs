@@ -10,7 +10,7 @@ namespace Eto.Platform.Wpf.Forms
 	{
 		public DialogResult ShowDialog (Window parent)
 		{
-			bool? result = null;
+			bool? result;
 			if (parent != null) {
 				var owner = parent.ControlObject as sw.Window;
 				result = Control.ShowDialog (owner);

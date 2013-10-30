@@ -107,9 +107,9 @@ namespace Eto.Platform.Windows
 			HandleEvent(Window.ClosingEvent);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Window.ClosedEvent:
 					Control.FormClosed += delegate
@@ -166,7 +166,7 @@ namespace Eto.Platform.Windows
 					Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

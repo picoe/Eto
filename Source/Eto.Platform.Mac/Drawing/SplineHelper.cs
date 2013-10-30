@@ -15,7 +15,7 @@ namespace Eto.Platform
 		public static IEnumerable<PointF> SplineCurve (IEnumerable<PointF> points, float tension)
 		{
 			var pointList = points as IList<PointF> ?? points.ToArray ();
-			PointF[] pts = null;
+			PointF[] pts;
 			if (pointList.Count == 2) {
 				pts = CalculateSplineCurve (pointList[0], pointList[0], pointList[1], pointList[1], tension);
 				if (pts != null) {
@@ -55,7 +55,6 @@ namespace Eto.Platform
 				var end = enumerator.Current;
 			
 				drawBezier(control1, control2, end);
-				start = end;
 			}
 		}
 

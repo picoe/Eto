@@ -52,12 +52,6 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				return Handler.SetupCell(element);
 			}
 
-			protected override object PrepareCellForEdit (sw.FrameworkElement editingElement, sw.RoutedEventArgs editingEventArgs)
-			{
-				var control = editingElement as swc.CheckBox ?? editingElement.FindChild<swc.CheckBox> ("control");
-				return base.PrepareCellForEdit (editingElement, editingEventArgs);
-			}
-
 			protected override bool CommitCellEdit (sw.FrameworkElement editingElement)
 			{
 				var control = editingElement as swc.CheckBox ?? editingElement.FindChild<swc.CheckBox> ("control");

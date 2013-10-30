@@ -123,7 +123,7 @@ namespace Eto.Forms
 			if (!HasSortOrFilter)
 				return index;
 
-			var temp = 0;
+			int temp;
 			if (modelToView != null && modelToView.TryGetValue(index, out temp))
 				return temp;
 

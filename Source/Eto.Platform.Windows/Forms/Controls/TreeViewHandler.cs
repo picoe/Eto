@@ -54,9 +54,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TreeView.ExpandingEvent:
 					Control.BeforeExpand += (sender, e) =>
@@ -167,7 +167,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					Control.AfterSelect += (sender, e) => Widget.OnSelectionChanged(EventArgs.Empty);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

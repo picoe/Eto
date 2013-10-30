@@ -67,7 +67,7 @@ namespace Eto
 				if (assemblyName.Name.EndsWith (".resources", StringComparison.OrdinalIgnoreCase)) return null;
 
 				string resourceName = ResourceNamespace + "." + assemblyName.Name + ".dll";
-				Assembly loadedAssembly = null;
+				Assembly loadedAssembly;
 				lock (loadedAssemblies) {
 					if (!loadedAssemblies.TryGetValue (resourceName, out loadedAssembly)) {
 						using (var stream = Assembly.GetManifestResourceStream (resourceName)) {

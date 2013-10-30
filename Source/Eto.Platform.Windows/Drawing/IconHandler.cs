@@ -74,7 +74,7 @@ namespace Eto.Platform.Windows.Drawing
 			}
 			
 			// Get multiple .ico file image.
-			byte[] srcBuf = null;
+			byte[] srcBuf;
 			using (var stream = new MemoryStream()) {
 				icon.Save (stream);
 				stream.Flush ();

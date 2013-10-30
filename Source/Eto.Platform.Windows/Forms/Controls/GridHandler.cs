@@ -160,9 +160,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.ColumnHeaderClickEvent:
 				Control.ColumnHeaderMouseClick += (sender, e) => Widget.OnColumnHeaderClick(new GridColumnEventArgs(Widget.Columns[e.ColumnIndex]));
 				break;
@@ -193,7 +193,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

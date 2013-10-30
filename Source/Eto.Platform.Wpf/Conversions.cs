@@ -16,7 +16,7 @@ namespace Eto.Platform.Wpf
 {
 	public static class Conversions
 	{
-		public const float WHEEL_DELTA = 120f;
+		public const float WheelDelta = 120f;
 
 		public static readonly sw.Size PositiveInfinitySize = new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
 		public static readonly sw.Size ZeroSize = new sw.Size(0, 0);
@@ -204,7 +204,7 @@ namespace Eto.Platform.Wpf
 				buttons |= MouseButtons.Middle;
 			var modifiers = Key.None;
 			var location = e.GetPosition(control).ToEto();
-			var delta = new SizeF(0, (float)e.Delta / WHEEL_DELTA);
+			var delta = new SizeF(0, (float)e.Delta / WheelDelta);
 
 			return new MouseEventArgs(buttons, modifiers, location, delta);
 		}
@@ -328,7 +328,7 @@ namespace Eto.Platform.Wpf
 			element.Height = size.Height;
 		}
 
-		public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight, sw.TextDecorationCollection decorations)
+		public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight)
 		{
 			var style = FontStyle.None;
 			if (fontStyle == sw.FontStyles.Italic)

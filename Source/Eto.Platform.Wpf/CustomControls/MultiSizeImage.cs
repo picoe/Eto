@@ -230,11 +230,6 @@ namespace Eto.Platform.Wpf.CustomControls
 				if (frame.PixelWidth * frame.PixelHeight >= ourSize)
 					break;
 			}
-			if (src is BitmapSource)
-			{
-				var bs = (BitmapSource)src;
-				//Console.WriteLine("Rendering frame of size {0}x{1}", bs.PixelWidth, bs.PixelHeight);
-			}
 			dc.DrawImage (src, new Rect (new Point (0, 0), RenderSize));
 		}
 	}

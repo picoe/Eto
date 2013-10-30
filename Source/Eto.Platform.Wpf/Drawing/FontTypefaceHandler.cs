@@ -33,7 +33,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				return Conversions.Convert (Control.Style, Control.Weight, null);
+				return Conversions.Convert (Control.Style, Control.Weight);
 			}
 		}
 	}

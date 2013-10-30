@@ -930,8 +930,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         #region Dependency property tables
 
         // Array of all font chooser dependency properties
-        static readonly DependencyProperty[] _chooserProperties = new DependencyProperty[]
-        {
+        static readonly DependencyProperty[] _chooserProperties = {
             // typography properties
             StandardLigaturesProperty,
             ContextualLigaturesProperty,

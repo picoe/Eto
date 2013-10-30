@@ -24,10 +24,10 @@ namespace Eto.Platform.Mac.Forms
 
 			public void Elapsed()
 			{
-				var handler = Handler;
-				if (handler != null)
+				var h = Handler;
+				if (h != null)
 				{
-					handler.Widget.OnElapsed(EventArgs.Empty);
+					h.Widget.OnElapsed(EventArgs.Empty);
 				}
 			}
 		}

@@ -139,7 +139,7 @@ namespace Eto.Drawing
 		{
 			if (object.ReferenceEquals(value1, value2))
 				return true;
-			if (((object)value1) == null || ((object)value2) == null)
+			if (object.ReferenceEquals(value1, null) || object.ReferenceEquals(value2, null))
 				return false;
 			return value1.Name == value2.Name;
 		}

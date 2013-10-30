@@ -221,7 +221,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				return Conversions.Convert(WpfFontStyle, WpfFontWeight, WpfTextDecorations);
+				return Conversions.Convert(WpfFontStyle, WpfFontWeight);
 			}
 		}
 

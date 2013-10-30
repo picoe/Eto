@@ -77,7 +77,7 @@ namespace Eto.Platform.Wpf.Drawing
 			set
 			{
 				if (value.Count != numColors)
-					throw new ArgumentOutOfRangeException("value", "Palette must have the same number of colors as the image");
+					throw new ArgumentException("Palette must have the same number of colors as the image");
 				palette = value;
 				if (isLocked)
 					paletteSetInLocked = true;
