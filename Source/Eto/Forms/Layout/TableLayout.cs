@@ -43,9 +43,7 @@ namespace Eto.Forms
 		{
 			get
 			{
-				if (controls == null)
-					return Enumerable.Empty<Control>();
-				return controls.OfType<Control>();
+				return controls == null ? Enumerable.Empty<Control>() : controls.OfType<Control>();
 			}
 		}
 
@@ -87,7 +85,7 @@ namespace Eto.Forms
 				}
 				foreach (var col in value)
 				{
-					SetColumnScale(col, true);
+					SetColumnScale(col);
 				}
 			}
 			get
@@ -113,7 +111,7 @@ namespace Eto.Forms
 				}
 				foreach (var row in value)
 				{
-					SetRowScale(row, true);
+					SetRowScale(row);
 				}
 			}
 			get

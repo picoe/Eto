@@ -137,9 +137,9 @@ namespace Eto.Drawing
 		/// <returns>True if the font families are equal, false otherwise</returns>
 		public static bool operator == (FontFamily value1, FontFamily value2)
 		{
-			if (object.ReferenceEquals(value1, value2))
+			if (ReferenceEquals(value1, value2))
 				return true;
-			if (object.ReferenceEquals(value1, null) || object.ReferenceEquals(value2, null))
+			if (ReferenceEquals(value1, null) || ReferenceEquals(value2, null))
 				return false;
 			return value1.Name == value2.Name;
 		}

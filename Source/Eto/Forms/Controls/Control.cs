@@ -46,6 +46,13 @@ namespace Eto.Forms
 		Point Location { get; }
 	}
 
+	/// <summary>
+	/// Base for all visual UI elements
+	/// </summary>
+	/// <remarks>
+	/// All visual user interface elements should inherit from this class to provide common functionality like binding,
+	/// load/unload, and common events.
+	/// </remarks>
 	[ToolboxItem(true)]
 	[DesignTimeVisible(true)]
 	[DesignerCategory("Eto.Forms")]
@@ -55,13 +62,21 @@ namespace Eto.Forms
 
 		object dataContext;
 
+		/// <summary>
+		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
+		/// </summary>
+		/// <remarks>
+		/// The <see cref="OnLoad"/> method sets this value to <c>true</c> after cascading to all children (for a <see cref="Container"/>)
+		/// and calling the platform handler's implementation.  It is called after adding to a loaded form, or when showing a new form.
+		/// 
+		/// The <see cref="OnUnLoad"/> method will set this value to <c>false</c> when the control is removed from its parent
+		/// </remarks>
 		public bool Loaded { get; private set; }
 
+		PropertyStore properties;
 		/// <summary>
 		/// Gets the attached properties for this widget
 		/// </summary>
-		PropertyStore properties;
-
 		public PropertyStore Properties
 		{
 			get
@@ -72,11 +87,10 @@ namespace Eto.Forms
 			}
 		}
 
+		BindingCollection bindings;
 		/// <summary>
 		/// Gets the collection of bindings that are attached to this widget
 		/// </summary>
-		BindingCollection bindings;
-
 		public BindingCollection Bindings
 		{
 			get
@@ -670,6 +684,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Handles the disposal of this control
+		/// </summary>
+		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if being called from a finalizer</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -679,9 +697,5 @@ namespace Eto.Forms
 
 			base.Dispose(disposing);
 		}
-	}
-
-	public class ControlCollection : List<Control>
-	{
 	}
 }
