@@ -1,7 +1,5 @@
-using System;
 using Eto.Forms;
 using Eto.Drawing;
-using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -28,7 +26,7 @@ namespace Eto.Platform.GtkSharp
 					return Control.Child.Allocation.Size.ToEto ();
 				else {
 					var label = Control.LabelWidget;
-					var size = base.Size;
+					var size = Size;
 					size.Height -= label.Allocation.Height + 10;
 					size.Width -= 10;
 					return size;
@@ -39,7 +37,7 @@ namespace Eto.Platform.GtkSharp
 				var size = value;
 				size.Height += label.Allocation.Height + 10;
 				size.Width += 10;
-				base.Size = size;
+				Size = size;
 			}
 		}
 

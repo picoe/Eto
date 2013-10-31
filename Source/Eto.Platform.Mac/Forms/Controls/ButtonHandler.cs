@@ -1,13 +1,8 @@
 using System;
-using System.Reflection;
 using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.CoreImage;
-using MonoMac.CoreGraphics;
-using MonoMac.ObjCRuntime;
-using MonoMac.Foundation;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -64,7 +59,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 						size.Width = Handler.defaultSize.Width;
 					if (size.Height < Handler.defaultSize.Height)
 						size.Height = Handler.defaultSize.Height;
-					this.SetFrameSize(size);
+					SetFrameSize(size);
 				}
 				setBezel = true;
 			}
@@ -99,6 +94,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			Control.SetButtonType(NSButtonType.MomentaryPushIn);
 			Control.SetFrameSize(defaultSize.ToSDSizeF());
 			Control.Activated += HandleActivated;
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
 			SetBezel();
 		}
 
@@ -125,12 +125,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				var cell = Control.Cell as EtoButtonCell;
+				var cell = (EtoButtonCell)Control.Cell;
 				return cell.Color ?? Colors.Transparent;
 			}
 			set
 			{
-				var cell = Control.Cell as EtoButtonCell;
+				var cell = (EtoButtonCell)Control.Cell;
 				cell.Color = value.A > 0 ? (Color?)value : null;
 				Control.SetNeedsDisplay();
 			}

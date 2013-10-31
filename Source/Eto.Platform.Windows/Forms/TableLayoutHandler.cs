@@ -7,7 +7,7 @@ using System.Linq;
 
 namespace Eto.Platform.Windows
 {
-	public class TableLayoutHandler : WindowsContainer<System.Windows.Forms.TableLayoutPanel, TableLayout>, ITableLayout
+	public class TableLayoutHandler : WindowsContainer<swf.TableLayoutPanel, TableLayout>, ITableLayout
 	{
 		Size spacing;
 		Control[,] views;
@@ -15,11 +15,6 @@ namespace Eto.Platform.Windows
 		int lastColumnScale;
 		bool[] rowScale;
 		int lastRowScale;
-
-		public override Size DesiredSize
-		{
-			get { return Control.PreferredSize.ToEto(); }
-		}
 
 		protected override void SetMinimumSize(Size size)
 		{
@@ -65,11 +60,6 @@ namespace Eto.Platform.Windows
 			Control.ResumeLayout();
 		}
 
-		public override void OnLoadComplete(EventArgs e)
-		{
-			base.OnLoadComplete(e);
-		}
-
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
@@ -78,7 +68,7 @@ namespace Eto.Platform.Windows
 
 		public void Update()
 		{
-			this.Control.PerformLayout();
+			Control.PerformLayout();
 		}
 
 		public Size Spacing

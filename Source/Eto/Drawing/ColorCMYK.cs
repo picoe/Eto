@@ -18,7 +18,7 @@ namespace Eto.Drawing
 		/// An empty color with zero for all components
 		/// </summary>
 		[Obsolete("Use nullable values instead")]
-		public readonly static ColorCMYK Empty = new ColorCMYK ();
+		public readonly static ColorCMYK Empty;
 
 		#endregion
 
@@ -92,7 +92,7 @@ namespace Eto.Drawing
 			float m = 1f - color.G;
 			float y = 1f - color.B;
 
-			float k = (float)Math.Min (c, Math.Min (m, y));
+			float k = Math.Min (c, Math.Min (m, y));
 
 			if (k == 1.0) {
 				C = 0;
@@ -113,12 +113,12 @@ namespace Eto.Drawing
 		/// </summary>
 		public Color ToColor ()
 		{
-			return new Color (
-				(1 - this.C) * (1 - this.K),
-				(1 - this.M) * (1 - this.K),
-				(1 - this.Y) * (1 - this.K),
-				this.A
-				);
+			return new Color(
+				(1 - C) * (1 - K),
+				(1 - M) * (1 - K),
+				(1 - Y) * (1 - K),
+				A
+			);
 		}
 
 		/// <summary>

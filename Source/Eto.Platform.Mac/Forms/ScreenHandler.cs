@@ -3,7 +3,6 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using MonoMac.ObjCRuntime;
 using Eto.Drawing;
-using System.Linq;
 
 namespace Eto.Platform.Mac.Forms
 {

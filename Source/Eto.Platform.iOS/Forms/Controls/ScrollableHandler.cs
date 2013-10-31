@@ -14,8 +14,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		UIView Child { get; set; }
 
-		protected override bool UseContentSize { get { return false; } }
-
 		public override UIView ContainerControl { get { return Control; } }
 
 		BorderType border;
@@ -124,20 +122,15 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}*/			
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			return Size.Min(availableSize, base.GetPreferredSize(availableSize));
-		}
-
-		protected override Size GetNaturalSize(Size availableSize)
-		{
-			return Content != null ? Content.GetPreferredSize(availableSize) : base.GetNaturalSize(availableSize);
+			return SizeF.Min(availableSize, base.GetPreferredSize(availableSize));
 		}
 
 		public void UpdateScrollSizes()
 		{
 			if (Widget.Loaded)
-				SetContentSize(Content.GetPreferredSize(Size.MaxValue).ToSDSizeF());
+				SetContentSize(Content.GetPreferredSize(Size.MaxValue).ToSD());
 		}
 
 		public Point ScrollPosition

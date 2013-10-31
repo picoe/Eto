@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -24,7 +20,7 @@ namespace Eto.Test.Sections.Drawing
 			Content = layout;
 		}
 
-		IndexedBitmap CreateImage()
+		static IndexedBitmap CreateImage()
 		{
 			var image = new IndexedBitmap(100, 100, 8);
 			var ega = Palette.GetEgaPalette();
@@ -38,12 +34,11 @@ namespace Eto.Test.Sections.Drawing
 			{
 				unsafe
 				{
-					int col = 0;
-					byte* brow = (byte*)bd.Data;
+					var brow = (byte*)bd.Data;
 					for (int y = 0; y < image.Size.Height; y++)
 					{
 						byte* b = brow;
-						col = -y;
+						var col = -y;
 						for (int x = 0; x < image.Size.Width; x++)
 						{
 							while (col < 0)
@@ -61,12 +56,12 @@ namespace Eto.Test.Sections.Drawing
 			
 		}
 
-		Control CreateIndexedImageView()
+		static Control CreateIndexedImageView()
 		{
 			return new ImageView { Image = CreateImage () };
 		}
 
-		Control CreateIndexedDrawable()
+		static Control CreateIndexedDrawable()
 		{
 			var control = new Drawable { Size = new Size(100, 100) };
 			var image = CreateImage();

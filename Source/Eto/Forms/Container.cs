@@ -1,12 +1,7 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using Eto.Drawing;
 using System.Linq;
-
-#if XAML
-using System.Windows.Markup;
-#endif
 
 namespace Eto.Forms
 {
@@ -139,7 +134,7 @@ namespace Eto.Forms
 
 		public virtual void RemoveAll()
 		{
-			Remove(this.Controls.ToArray());
+			Remove(Controls.ToArray());
 		}
 
 		public abstract void Remove(Control child);

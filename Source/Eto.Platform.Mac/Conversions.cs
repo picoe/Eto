@@ -311,6 +311,11 @@ namespace Eto.Platform.Mac
 				return null;
 			return ((PrintSettingsHandler)settings.Handler).Control;
 		}
+
+		public static SizeF ToEtoSize(this NSEdgeInsets insets)
+		{
+			return new SizeF(insets.Left + insets.Right, insets.Top + insets.Bottom);
+		}
 	}
 }
 

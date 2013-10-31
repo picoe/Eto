@@ -1,7 +1,6 @@
 
 #define GTK_2_6
 using System;
-using System.IO;
 using System.Runtime.InteropServices;
 using Eto.Drawing;
 using System.Linq;
@@ -76,7 +75,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public Palette Palette {
 			get {
-				return new Palette (colors.Select (r => Color.FromArgb ((uint)r)).ToList ());
+				return new Palette (colors.Select (r => Color.FromArgb(r)).ToList ());
 			}
 			set {
 				if (value.Count != colors.Length)
@@ -88,7 +87,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 		}
 
 #if GTK2
-		private Gdk.RgbCmap GetPmap ()
+		Gdk.RgbCmap GetPmap ()
 		{
 			return new Gdk.RgbCmap (colors);
 		}
@@ -100,7 +99,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 				drawable.Colormap = new Gdk.Colormap (Gdk.Visual.System, true);
 	
 				
-				drawable.DrawIndexedImage (gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, this.rowStride, GetPmap ());
+				drawable.DrawIndexedImage (gc, 0, 0, Size.Width, Size.Height, Gdk.RgbDither.None, Control, rowStride, GetPmap ());
 
 				if (iconSize != null) {
 					var iconSet = new Gtk.IconSet(Gdk.Pixbuf.FromDrawable (drawable, Gdk.Colormap.System, 0, 0, 0, 0, size.Width, size.Height));
@@ -124,14 +123,14 @@ namespace Eto.Platform.GtkSharp.Drawing
 			{
 				unsafe
 				{
-					byte* destrow = (byte*)surface.DataPtr;
-					fixed (byte* srcdata = this.Control)
+					var destrow = (byte*)surface.DataPtr;
+					fixed (byte* srcdata = Control)
 					{
 						byte* srcrow = srcdata + ((int)source.Top * rowStride) + (int)source.Left;
 						for (int y = (int)source.Top; y < (int)source.Bottom; y++)
 						{
-							byte* src = (byte*)srcrow;
-							uint* dest = (uint*)destrow;
+							var src = srcrow;
+							var dest = (uint*)destrow;
 							for (int x = (int)source.Left; x < (int)source.Right; x++)
 							{
 								*

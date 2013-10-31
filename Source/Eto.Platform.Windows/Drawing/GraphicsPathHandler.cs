@@ -1,4 +1,3 @@
-using System;
 using System.Linq;
 using Eto.Drawing;
 using sd = System.Drawing;

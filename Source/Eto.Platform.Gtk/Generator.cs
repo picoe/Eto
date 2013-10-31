@@ -1,10 +1,8 @@
 using System;
-using System.Runtime.InteropServices;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.IO;
 using Eto.Platform.GtkSharp.Drawing;
-using System.Threading;
 using Eto.Platform.GtkSharp.Forms.Cells;
 using Eto.Platform.GtkSharp.Forms.Controls;
 using Eto.Platform.GtkSharp.Forms.Printing;

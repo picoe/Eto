@@ -7,9 +7,9 @@ using System.Globalization;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
-    internal class FontFamilyListItem : TextBlock, IComparable
+    class FontFamilyListItem : TextBlock, IComparable
     {
-        private string _displayName;
+        string _displayName;
 
         public FontFamilyListItem(FontFamily fontFamily)
         {

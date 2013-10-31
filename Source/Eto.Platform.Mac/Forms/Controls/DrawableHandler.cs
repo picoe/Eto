@@ -1,13 +1,8 @@
-using System;
 using sd = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Mac.Drawing;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac;
-using MonoMac.ObjCRuntime;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -30,7 +25,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var drawable = Drawable;
 				if (drawable == null)
 					return;
-				dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
+				if (!IsFlipped)
+					dirtyRect.Y = Frame.Height - dirtyRect.Y - dirtyRect.Height;
 				if (dirtyRect.X % 1.0f > 0f)
 					dirtyRect.Width += 1;
 				if (dirtyRect.Y % 1.0f > 0f)

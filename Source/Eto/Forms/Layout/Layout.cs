@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.ComponentModel;
 
@@ -85,7 +84,7 @@ namespace Eto.Forms
 			Handler.Update ();
 		}
 		
-		void UpdateContainers (Container container)
+		static void UpdateContainers (Container container)
 		{
 			foreach (var c in container.Controls.OfType<Layout>())
 			{

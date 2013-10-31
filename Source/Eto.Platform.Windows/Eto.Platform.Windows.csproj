@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <AssemblyName>Eto.Platform.Windows</AssemblyName>
     <RootNamespace>Eto.Platform.Windows</RootNamespace>
+    <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
+    <RestorePackages>true</RestorePackages>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -39,14 +41,6 @@
       <EmbedInteropTypes>False</EmbedInteropTypes>
       <Private>False</Private>
     </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack">
-      <HintPath>..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
-    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
-      <HintPath>..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
-      <Private>False</Private>
-    </Reference>
     <Reference Include="System">
       <Name>System</Name>
     </Reference>
@@ -63,6 +57,14 @@
       <Name>System.Xml</Name>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="Microsoft.WindowsAPICodePack">
+      <HintPath>..\packages\Windows7APICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="Microsoft.WindowsAPICodePack.Shell">
+      <HintPath>..\packages\Windows7APICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto.csproj">
@@ -309,16 +311,19 @@
     </PostBuildEvent>
   </PropertyGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.dll">
-      <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.dll</Link>
-    </EmbeddedResource>
-    <EmbeddedResource Include="..\..\Libraries\WindowsApiCodePack\binaries\Microsoft.WindowsAPICodePack.Shell.dll">
-      <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.Shell.dll</Link>
+    <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
+      <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="..\..\Libraries\SHDocVw\Interop.SHDocVw.dll">
-      <Link>CustomControls\Assemblies\Interop.SHDocVw.dll</Link>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\packages\Windows7APICodePack-Core.1.1.0.0\lib\Microsoft.WindowsAPICodePack.dll">
+      <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.dll</Link>
+    </EmbeddedResource>
+    <EmbeddedResource Include="..\packages\Windows7APICodePack-Shell.1.1.0.0\lib\Microsoft.WindowsAPICodePack.Shell.dll">
+      <Link>CustomControls\Assemblies\Microsoft.WindowsAPICodePack.Shell.dll</Link>
     </EmbeddedResource>
   </ItemGroup>
   <ProjectExtensions>
@@ -332,4 +337,5 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <Import Project="$(ProjectDir)\..\.nuget\NuGet.targets" Condition="Exists('$(ProjectDir)\..\.nuget\NuGet.targets')" />
 </Project>

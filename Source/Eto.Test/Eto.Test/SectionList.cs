@@ -2,9 +2,6 @@ using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
-using Eto.Test.Sections.Controls;
-using Eto.Test.Sections.Drawing;
-using Eto.Test.Sections.Layouts;
 
 namespace Eto.Test
 {
@@ -110,7 +107,7 @@ namespace Eto.Test
 				}
 				catch (Exception ex)
 				{
-					Log.Write(this, "Error loading section: {0}", ex.InnerException != null ? ex.InnerException : ex);
+					Log.Write(this, "Error loading section: {0}", ex.GetBaseException());
 				}
 			};
 			return layout;

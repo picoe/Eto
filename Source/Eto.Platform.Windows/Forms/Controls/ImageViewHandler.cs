@@ -1,11 +1,7 @@
-using System;
 using SWF = System.Windows.Forms;
 using SD = System.Drawing;
 using Eto.Forms;
 using Eto.Drawing;
-using System.IO;
-using System.Collections.Generic;
-using System.Linq;
 using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows.Forms

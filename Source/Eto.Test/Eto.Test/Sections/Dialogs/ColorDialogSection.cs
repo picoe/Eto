@@ -1,7 +1,5 @@
-using System;
 using Eto.Drawing;
 using Eto.Forms;
-using System.Collections.Generic;
 
 namespace Eto.Test.Sections.Dialogs
 {

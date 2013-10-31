@@ -12,8 +12,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 	{
 		ITreeStore top;
 		ContextMenu contextMenu;
-		Dictionary<Image, string> images = new Dictionary<Image, string>();
-		static string EmptyName = Guid.NewGuid().ToString();
+		readonly Dictionary<Image, string> images = new Dictionary<Image, string>();
+		static readonly string EmptyName = Guid.NewGuid().ToString();
 		bool ignoreExpandCollapseEvents = true;
 
 		public TreeViewHandler()
@@ -46,10 +46,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set
 			{
 				top = value;
-				this.Control.ImageList = null;
+				Control.ImageList = null;
 				images.Clear();
 				Control.BeginUpdate();
-				PopulateNodes(this.Control.Nodes, top);
+				PopulateNodes(Control.Nodes, top);
 				Control.EndUpdate();
 			}
 		}
@@ -59,7 +59,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			switch (handler)
 			{
 				case TreeView.ExpandingEvent:
-					this.Control.BeforeExpand += (sender, e) =>
+					Control.BeforeExpand += (sender, e) =>
 					{
 						if (ignoreExpandCollapseEvents)
 							return;
@@ -73,7 +73,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					};
 					break;
 				case TreeView.ExpandedEvent:
-					this.Control.AfterExpand += (sender, e) =>
+					Control.AfterExpand += (sender, e) =>
 					{
 						if (ignoreExpandCollapseEvents)
 							return;
@@ -86,7 +86,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					};
 					break;
 				case TreeView.CollapsingEvent:
-					this.Control.BeforeCollapse += (sender, e) =>
+					Control.BeforeCollapse += (sender, e) =>
 					{
 						if (ignoreExpandCollapseEvents)
 							return;
@@ -100,7 +100,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					};
 					break;
 				case TreeView.CollapsedEvent:
-					this.Control.AfterCollapse += (sender, e) =>
+					Control.AfterCollapse += (sender, e) =>
 					{
 						if (ignoreExpandCollapseEvents)
 							return;
@@ -113,13 +113,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 					};
 					break;
 				case TreeView.ActivatedEvent:
-					this.Control.KeyDown += (sender, e) =>
+					Control.KeyDown += (sender, e) =>
 					{
-						if (this.SelectedItem != null)
+						if (SelectedItem != null)
 						{
 							if (e.KeyData == swf.Keys.Return)
 							{
-								Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
+								Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
 								e.Handled = true;
 								if (LabelEdit)
 									Control.SelectedNode.BeginEdit();
@@ -131,14 +131,14 @@ namespace Eto.Platform.Windows.Forms.Controls
 						}
 					};
 
-					this.Control.NodeMouseDoubleClick += (sender, e) =>
+					Control.NodeMouseDoubleClick += (sender, e) =>
 					{
-						if (e.Button == swf.MouseButtons.Left && this.SelectedItem != null)
+						if (e.Button == swf.MouseButtons.Left && SelectedItem != null)
 						{
 							if (LabelEdit)
 								Control.SelectedNode.BeginEdit();
 							else
-								Widget.OnActivated(new TreeViewItemEventArgs(this.SelectedItem));
+								Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
 						}
 					};
 					break;
@@ -146,7 +146,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					Control.AfterLabelEdit += (s, e) =>
 					{
 						var args = new TreeViewItemEditEventArgs(e.Node.Tag as ITreeItem, e.Label);
-						this.Widget.OnAfterLabelEdit(args);
+						Widget.OnAfterLabelEdit(args);
 						if (!args.Cancel)
 							args.Item.Text = e.Label;
 						e.CancelEdit = args.Cancel;
@@ -156,21 +156,15 @@ namespace Eto.Platform.Windows.Forms.Controls
 					Control.BeforeLabelEdit += (s, e) =>
 					{
 						var args = new TreeViewItemCancelEventArgs(e.Node.Tag as ITreeItem);
-						this.Widget.OnBeforeLabelEdit(args);
+						Widget.OnBeforeLabelEdit(args);
 						e.CancelEdit = args.Cancel;
 					};
 					break;
 				case TreeView.NodeMouseClickEvent:
-					Control.NodeMouseClick += (s, e) =>
-					{
-						this.Widget.OnNodeMouseClick(new TreeViewItemEventArgs(e.Node.Tag as ITreeItem));
-					};
+					Control.NodeMouseClick += (s, e) => Widget.OnNodeMouseClick(new TreeViewItemEventArgs(e.Node.Tag as ITreeItem));
 					break;
 				case TreeView.SelectionChangedEvent:
-					this.Control.AfterSelect += (sender, e) =>
-					{
-						Widget.OnSelectionChanged(EventArgs.Empty);
-					};
+					Control.AfterSelect += (sender, e) => Widget.OnSelectionChanged(EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(handler);
@@ -185,9 +179,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			{
 				contextMenu = value;
 				if (contextMenu != null)
-					this.Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
+					Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
 				else
-					this.Control.ContextMenuStrip = null;
+					Control.ContextMenuStrip = null;
 			}
 		}
 
@@ -198,11 +192,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 			PerformPopulateNodes(nodes, item);
 			if (Widget.Loaded)
 				ignoreExpandCollapseEvents = false;
-		}
-
-		public override void OnLoad(EventArgs e)
-		{
-			base.OnLoad(e);
 		}
 
 		public override void OnLoadComplete(EventArgs e)
@@ -248,13 +237,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 			if (image == null)
 				return null;
 
-			if (this.Control.ImageList == null)
-				this.Control.ImageList = new System.Windows.Forms.ImageList { ColorDepth = swf.ColorDepth.Depth32Bit };
+			if (Control.ImageList == null)
+				Control.ImageList = new System.Windows.Forms.ImageList { ColorDepth = swf.ColorDepth.Depth32Bit };
 			string key;
 			if (!images.TryGetValue(image, out key))
 			{
 				key = Guid.NewGuid().ToString();
-				this.Control.ImageList.AddImage(image, key);
+				Control.ImageList.AddImage(image, key);
 			}
 			return key;
 		}
@@ -263,7 +252,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			get
 			{
-				var node = this.Control.SelectedNode;
+				var node = Control.SelectedNode;
 				if (node == null)
 					return null;
 				return node.Tag as ITreeItem;
@@ -276,33 +265,33 @@ namespace Eto.Platform.Windows.Forms.Controls
 					var node = GetTreeNode(value);
 
 					if (node != null)
-						this.Control.SelectedNode = node;
+						Control.SelectedNode = node;
 				}
 			}
 		}
 
 		public ITreeItem GetNodeAt(PointF targetPoint)
 		{
-			var item = this.Control.GetNodeAt(targetPoint.ToSDPoint());
+			var item = Control.GetNodeAt(targetPoint.ToSDPoint());
 			return item != null ? item.Tag as ITreeItem : null;
 		}
 
 		public Color TextColor
 		{
-			get { return this.Control.ForeColor.ToEto(); }
-			set { this.Control.ForeColor = value.ToSD(); }
+			get { return Control.ForeColor.ToEto(); }
+			set { Control.ForeColor = value.ToSD(); }
 		}
 
 		public bool LabelEdit
 		{
-			get { return this.Control.LabelEdit; }
-			set { this.Control.LabelEdit = value; }
+			get { return Control.LabelEdit; }
+			set { Control.LabelEdit = value; }
 		}
 
 		public bool AllowDrop
 		{
-			get { return this.Control.AllowDrop; }
-			set { this.Control.AllowDrop = value; }
+			get { return Control.AllowDrop; }
+			set { Control.AllowDrop = value; }
 		}
 
 		public void AddTo(ITreeItem dest, ITreeItem item)
@@ -387,7 +376,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			if (node != null)
 			{
 				Control.BeginUpdate();
-				var selected = this.SelectedItem;
+				var selected = SelectedItem;
 				node.Text = item.Text;
 				SetImage(item, node);
 				PopulateNodes(node.Nodes, item);
@@ -398,7 +387,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					else
 						node.Collapse();
 				}
-				this.SelectedItem = selected;
+				SelectedItem = selected;
 				Control.EndUpdate();
 			}
 			else

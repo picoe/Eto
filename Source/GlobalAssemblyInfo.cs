@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 
 [assembly: AssemblyCompany("Picoe Software Solutions Inc.")]
 [assembly: AssemblyProduct("")]

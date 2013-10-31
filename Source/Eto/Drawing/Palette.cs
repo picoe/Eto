@@ -1,7 +1,6 @@
 using System;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 using System.Collections.ObjectModel;
 
 namespace Eto.Drawing
@@ -17,22 +16,21 @@ namespace Eto.Drawing
 	/// </remarks>
 	public class Palette : ObservableCollection<Color>, ICloneable
 	{
-		List<uint> argb;
-
+		readonly List<uint> argb;
 		/// <summary>
 		/// Gets the index of standard EGA colors from a 64-color palette
 		/// </summary>
-		public static readonly int[] EGAColors = new int[] { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
+		public static readonly int[] EGAColors = { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
 
 		#region Obsolete
 
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
-		[Obsolete ("Use Color.ToArgb() instead")]
-		public static UInt32 GenerateRGBColor (Color c)
+		[Obsolete("Use Color.ToArgb() instead")]
+		public static UInt32 GenerateRGBColor(Color c)
 		{
-			return (UInt32)(((uint)(c.A * 255) << 24) + ((uint)(c.R * 255) << 16) + ((uint)(c.G * 255) << 8) + (uint)(c.B * 255));
+			return (((uint)(c.A * 255) << 24) + ((uint)(c.R * 255) << 16) + ((uint)(c.G * 255) << 8) + (uint)(c.B * 255));
 		}
 
 		#endregion
@@ -40,22 +38,22 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Initializes a new instance of the Pallette class
 		/// </summary>
-		public Palette ()
+		public Palette()
 		{
-			argb = new List<uint> ();
+			argb = new List<uint>();
 		}
-		
+
 		/// <summary>
 		/// Initializes a new instance of the Palette class with the specified colors
 		/// </summary>
 		/// <param name="colors">Initial colors to add to the palette</param>
-		public Palette (IEnumerable<Color> colors)
+		public Palette(IEnumerable<Color> colors)
 			: this()
 		{
 			foreach (var item in colors)
-				Add (item);
+				Add(item);
 		}
-		
+
 		/// <summary>
 		/// Gets the standard 64-color EGA palette
 		/// </summary>
@@ -63,76 +61,76 @@ namespace Eto.Drawing
 		/// To get the standard 16-colors of an EGA palette, use <see cref="FromEGA"/>
 		/// </remarks>
 		/// <returns></returns>
-		public static Palette GetEgaPalette ()
+		public static Palette GetEgaPalette()
 		{
-			var mid = 168f / 255f;
-			var low = 84f / 255f;
-			var high = 252f / 255f;
-			Palette pal = new Palette ();
-			pal.Add (new Color (0f, 0f, 0f));
-			pal.Add (new Color (0f, 0f, mid));
-			pal.Add (new Color (0f, mid, 0f));
-			pal.Add (new Color (0f, mid, mid));
-			pal.Add (new Color (mid, 0f, 0f));
-			pal.Add (new Color (mid, 0f, mid));
-			pal.Add (new Color (mid, mid, 0f));
-			pal.Add (new Color (mid, mid, mid));
-			pal.Add (new Color (0f, 0f, low));
-			pal.Add (new Color (0f, 0f, high));
-			pal.Add (new Color (0f, mid, low));
-			pal.Add (new Color (0f, mid, high));
-			pal.Add (new Color (mid, 0f, low));
-			pal.Add (new Color (mid, 0f, high));
-			pal.Add (new Color (mid, mid, low));
-			pal.Add (new Color (mid, mid, high));
-			pal.Add (new Color (0f, low, 0f));
-			pal.Add (new Color (0f, low, mid));
-			pal.Add (new Color (0f, high, 0f));
-			pal.Add (new Color (0f, high, mid));
-			pal.Add (new Color (mid, low, 0f));
-			pal.Add (new Color (mid, low, mid));
-			pal.Add (new Color (mid, high, 0f));
-			pal.Add (new Color (mid, high, mid));
-			pal.Add (new Color (0f, low, low));
-			pal.Add (new Color (0f, low, high));
-			pal.Add (new Color (0f, high, low));
-			pal.Add (new Color (0f, high, high));
-			pal.Add (new Color (mid, low, low));
-			pal.Add (new Color (mid, low, high));
-			pal.Add (new Color (mid, high, low));
-			pal.Add (new Color (mid, high, high));
-			pal.Add (new Color (low, 0f, 0f));
-			pal.Add (new Color (low, 0f, mid));
-			pal.Add (new Color (low, mid, 0f));
-			pal.Add (new Color (low, mid, mid));
-			pal.Add (new Color (high, 0f, 0f));
-			pal.Add (new Color (high, 0f, mid));
-			pal.Add (new Color (high, mid, 0f));
-			pal.Add (new Color (high, mid, mid));
-			pal.Add (new Color (low, 0f, low));
-			pal.Add (new Color (low, 0f, high));
-			pal.Add (new Color (low, mid, low));
-			pal.Add (new Color (low, mid, high));
-			pal.Add (new Color (high, 0f, low));
-			pal.Add (new Color (high, 0f, high));
-			pal.Add (new Color (high, mid, low));
-			pal.Add (new Color (high, mid, high));
-			pal.Add (new Color (low, low, 0f));
-			pal.Add (new Color (low, low, mid));
-			pal.Add (new Color (low, high, 0f));
-			pal.Add (new Color (low, high, mid));
-			pal.Add (new Color (high, low, 0f));
-			pal.Add (new Color (high, low, mid));
-			pal.Add (new Color (high, high, 0f));
-			pal.Add (new Color (high, high, mid));
-			pal.Add (new Color (low, low, low));
-			pal.Add (new Color (low, low, high));
-			pal.Add (new Color (low, high, low));
-			pal.Add (new Color (low, high, high));
-			pal.Add (new Color (high, low, low));
-			pal.Add (new Color (high, low, high));
-			pal.Add (new Color (high, high, low));
-			pal.Add (new Color (high, high, high));
+			const float mid = 168f / 255f;
+			const float low = 84f / 255f;
+			const float high = 252f / 255f;
+			var pal = new Palette();
+			pal.Add(new Color(0f, 0f, 0f));
+			pal.Add(new Color(0f, 0f, mid));
+			pal.Add(new Color(0f, mid, 0f));
+			pal.Add(new Color(0f, mid, mid));
+			pal.Add(new Color(mid, 0f, 0f));
+			pal.Add(new Color(mid, 0f, mid));
+			pal.Add(new Color(mid, mid, 0f));
+			pal.Add(new Color(mid, mid, mid));
+			pal.Add(new Color(0f, 0f, low));
+			pal.Add(new Color(0f, 0f, high));
+			pal.Add(new Color(0f, mid, low));
+			pal.Add(new Color(0f, mid, high));
+			pal.Add(new Color(mid, 0f, low));
+			pal.Add(new Color(mid, 0f, high));
+			pal.Add(new Color(mid, mid, low));
+			pal.Add(new Color(mid, mid, high));
+			pal.Add(new Color(0f, low, 0f));
+			pal.Add(new Color(0f, low, mid));
+			pal.Add(new Color(0f, high, 0f));
+			pal.Add(new Color(0f, high, mid));
+			pal.Add(new Color(mid, low, 0f));
+			pal.Add(new Color(mid, low, mid));
+			pal.Add(new Color(mid, high, 0f));
+			pal.Add(new Color(mid, high, mid));
+			pal.Add(new Color(0f, low, low));
+			pal.Add(new Color(0f, low, high));
+			pal.Add(new Color(0f, high, low));
+			pal.Add(new Color(0f, high, high));
+			pal.Add(new Color(mid, low, low));
+			pal.Add(new Color(mid, low, high));
+			pal.Add(new Color(mid, high, low));
+			pal.Add(new Color(mid, high, high));
+			pal.Add(new Color(low, 0f, 0f));
+			pal.Add(new Color(low, 0f, mid));
+			pal.Add(new Color(low, mid, 0f));
+			pal.Add(new Color(low, mid, mid));
+			pal.Add(new Color(high, 0f, 0f));
+			pal.Add(new Color(high, 0f, mid));
+			pal.Add(new Color(high, mid, 0f));
+			pal.Add(new Color(high, mid, mid));
+			pal.Add(new Color(low, 0f, low));
+			pal.Add(new Color(low, 0f, high));
+			pal.Add(new Color(low, mid, low));
+			pal.Add(new Color(low, mid, high));
+			pal.Add(new Color(high, 0f, low));
+			pal.Add(new Color(high, 0f, high));
+			pal.Add(new Color(high, mid, low));
+			pal.Add(new Color(high, mid, high));
+			pal.Add(new Color(low, low, 0f));
+			pal.Add(new Color(low, low, mid));
+			pal.Add(new Color(low, high, 0f));
+			pal.Add(new Color(low, high, mid));
+			pal.Add(new Color(high, low, 0f));
+			pal.Add(new Color(high, low, mid));
+			pal.Add(new Color(high, high, 0f));
+			pal.Add(new Color(high, high, mid));
+			pal.Add(new Color(low, low, low));
+			pal.Add(new Color(low, low, high));
+			pal.Add(new Color(low, high, low));
+			pal.Add(new Color(low, high, high));
+			pal.Add(new Color(high, low, low));
+			pal.Add(new Color(high, low, high));
+			pal.Add(new Color(high, high, low));
+			pal.Add(new Color(high, high, high));
 			return pal;
 		}
 
@@ -140,29 +138,29 @@ namespace Eto.Drawing
 		/// Gets the standard 16-color palette used in DOS
 		/// </summary>
 		/// <returns>A new instance of a Palette with the standard 16 DOS colors</returns>
-		public static Palette GetDosPalette ()
+		public static Palette GetDosPalette()
 		{
-			var mid = 171f / 255f;
-			var low = 87f / 255f;
-			var high = 1f;
+			const float mid = 171f / 255f;
+			const float low = 87f / 255f;
+			const float high = 1f;
 
-			Palette pal = new Palette ();
-			pal.Add (new Color (0f, 0f, 0f));
-			pal.Add (new Color (0f, 0f, mid));
-			pal.Add (new Color (0f, mid, 0f));
-			pal.Add (new Color (0f, mid, mid));
-			pal.Add (new Color (mid, 0f, 0f));
-			pal.Add (new Color (mid, 0f, mid));
-			pal.Add (new Color (mid, low, 0f));
-			pal.Add (new Color (mid, mid, mid));
-			pal.Add (new Color (low, low, low));
-			pal.Add (new Color (low, low, high));
-			pal.Add (new Color (low, high, low));
-			pal.Add (new Color (low, high, high));
-			pal.Add (new Color (high, low, low));
-			pal.Add (new Color (high, low, high));
-			pal.Add (new Color (high, high, low));
-			pal.Add (new Color (high, high, high));
+			var pal = new Palette();
+			pal.Add(new Color(0f, 0f, 0f));
+			pal.Add(new Color(0f, 0f, mid));
+			pal.Add(new Color(0f, mid, 0f));
+			pal.Add(new Color(0f, mid, mid));
+			pal.Add(new Color(mid, 0f, 0f));
+			pal.Add(new Color(mid, 0f, mid));
+			pal.Add(new Color(mid, low, 0f));
+			pal.Add(new Color(mid, mid, mid));
+			pal.Add(new Color(low, low, low));
+			pal.Add(new Color(low, low, high));
+			pal.Add(new Color(low, high, low));
+			pal.Add(new Color(low, high, high));
+			pal.Add(new Color(high, low, low));
+			pal.Add(new Color(high, low, high));
+			pal.Add(new Color(high, high, low));
+			pal.Add(new Color(high, high, high));
 			return pal;
 		}
 
@@ -171,13 +169,14 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="palEGA">EGA palette to get the standard 16 colors from</param>
 		/// <returns>A new instance of a palette with the 16 colors at the indexes specified with <see cref="EGAColors"/></returns>
-		public static Palette FromEGA (Palette palEGA)
+		public static Palette FromEGA(Palette palEGA)
 		{
 			if (palEGA.Count != 64)
-				throw new EtoException ("source palette is not an EGA palette");
-			Palette output = new Palette ();
-			for (int i=0; i<EGAColors.Length; i++) {
-				output.Add (palEGA [EGAColors [i]]);
+				throw new EtoException("source palette is not an EGA palette");
+			var output = new Palette();
+			for (int i = 0; i < EGAColors.Length; i++)
+			{
+				output.Add(palEGA[EGAColors[i]]);
 			}
 			return output;
 		}
@@ -192,15 +191,16 @@ namespace Eto.Drawing
 		/// <param name="writer">Writer to write the data to</param>
 		/// <param name="shift">Shift amount for each component. 0 = 0-255, 1 = 0-128, 2 = 0-64, etc</param>
 		/// <param name="includeAlpha">True to include alpha, false to only include RGB components</param>
-		public void Save (BinaryWriter writer, int shift = 0, bool includeAlpha = false)
+		public void Save(BinaryWriter writer, int shift = 0, bool includeAlpha = false)
 		{
-			for (int i=0; i<this.Count; i++) {
-				var c = this [i];
+			for (int i = 0; i < Count; i++)
+			{
+				var c = this[i];
 				if (includeAlpha)
-					writer.Write ((byte)((int)(c.A * byte.MaxValue) >> shift));
-				writer.Write ((byte)((int)(c.R * byte.MaxValue) >> shift));
-				writer.Write ((byte)((int)(c.G * byte.MaxValue) >> shift));
-				writer.Write ((byte)((int)(c.B * byte.MaxValue) >> shift));
+					writer.Write((byte)((int)(c.A * byte.MaxValue) >> shift));
+				writer.Write((byte)((int)(c.R * byte.MaxValue) >> shift));
+				writer.Write((byte)((int)(c.G * byte.MaxValue) >> shift));
+				writer.Write((byte)((int)(c.B * byte.MaxValue) >> shift));
 			}
 		}
 
@@ -215,17 +215,18 @@ namespace Eto.Drawing
 		/// <param name="size">Number of palette entried to load</param>
 		/// <param name="shift">Shift amount for each component. 0 = 0-255, 1 = 0-128, 2 = 0-64, etc</param>
 		/// <param name="includeAlpha">True to include the alpha component, false to only read RGB components</param>
-		public void Load (BinaryReader reader, int size, int shift = 0, bool includeAlpha = false)
+		public void Load(BinaryReader reader, int size, int shift = 0, bool includeAlpha = false)
 		{
-			Clear ();
-			for (int i=0; i<size; i++) {
+			Clear();
+			for (int i = 0; i < size; i++)
+			{
 				int alpha = byte.MaxValue;
 				if (includeAlpha)
-					alpha = (reader.ReadByte () << shift) & 0xff;
-				int red = (reader.ReadByte () << shift) & 0xff;
-				int green = (reader.ReadByte () << shift) & 0xff;
-				int blue = (reader.ReadByte () << shift) & 0xff;
-				Add (Color.FromArgb (red, green, blue, alpha));
+					alpha = (reader.ReadByte() << shift) & 0xff;
+				int red = (reader.ReadByte() << shift) & 0xff;
+				int green = (reader.ReadByte() << shift) & 0xff;
+				int blue = (reader.ReadByte() << shift) & 0xff;
+				Add(Color.FromArgb(red, green, blue, alpha));
 			}
 		}
 
@@ -234,121 +235,125 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="index">Index to get the ARGB color for</param>
 		/// <returns>A 32-bit ARGB color value of the color at the specified index</returns>
-		public uint GetRGBColor (int index)
+		public uint GetRGBColor(int index)
 		{
-			return argb [index];
+			return argb[index];
 		}
-		
+
 		/// <summary>
 		/// Adds the specified <paramref name="colors"/> to this palette collection
 		/// </summary>
 		/// <param name="colors">Colors to add to this palette collection</param>
-		public void AddRange (IEnumerable<Color> colors)
+		public void AddRange(IEnumerable<Color> colors)
 		{
 			foreach (var item in colors)
-				Add (item);
+				Add(item);
 		}
-		
+
 		/// <summary>
 		/// Called when inserting a color, to insert the cached argb value of the color
 		/// </summary>
-		protected override void InsertItem (int index, Color item)
+		protected override void InsertItem(int index, Color item)
 		{
-			argb.Insert (index, item.ToArgb ());
-			base.InsertItem (index, item);
+			argb.Insert(index, item.ToArgb());
+			base.InsertItem(index, item);
 		}
-		
+
 		/// <summary>
 		/// Called when setting a color in the palette, to set the cached argb value of the color
 		/// </summary>
-		protected override void SetItem (int index, Color item)
+		protected override void SetItem(int index, Color item)
 		{
-			argb [index] = item.ToArgb ();
-			base.SetItem (index, item);
+			argb[index] = item.ToArgb();
+			base.SetItem(index, item);
 		}
-		
+
 		/// <summary>
 		/// Called when clearing the items, to clear the cached argb values
 		/// </summary>
-		protected override void ClearItems ()
+		protected override void ClearItems()
 		{
-			base.ClearItems ();
-			argb.Clear ();
+			base.ClearItems();
+			argb.Clear();
 		}
 
 		/// <summary>
 		/// Called when removing an item, to remove the cached argb value of the color
 		/// </summary>
-		protected override void RemoveItem (int index)
+		protected override void RemoveItem(int index)
 		{
-			base.RemoveItem (index);
-			argb.RemoveAt (index);
+			base.RemoveItem(index);
+			argb.RemoveAt(index);
 		}
-		
+
 		/// <summary>
 		/// Finds the closest color in this palette to the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color to use to find the closest color</param>
 		/// <returns>Index of the closest entry of the specified <paramref name="color"/></returns>
-		public int FindClosest (Color color)
+		public int FindClosest(Color color)
 		{
 			int closestIndex = 0;
-			var colorHsl = new ColorHSL (color);
-			var closestDifference = ColorHSL.Distance (colorHsl, new ColorHSL (this [0]));
-			for (int i = 1; i < this.Count; i++) {
-				var curDifference = ColorHSL.Distance (colorHsl, new ColorHSL (this [i]));
-				if (curDifference < closestDifference) {
+			var colorHsl = new ColorHSL(color);
+			var closestDifference = ColorHSL.Distance(colorHsl, new ColorHSL(this[0]));
+			for (int i = 1; i < Count; i++)
+			{
+				var curDifference = ColorHSL.Distance(colorHsl, new ColorHSL(this[i]));
+				if (curDifference < closestDifference)
+				{
 					closestIndex = i;
 					closestDifference = curDifference;
 				}
-				if (curDifference == 0) 
+				if (Math.Abs(curDifference) < 0.01f)
 					break;
 			}
 			return closestIndex;
 		}
-		
+
 		/// <summary>
 		/// Finds the index of the specified color, or adds it if it does not exist
 		/// </summary>
 		/// <param name="color">Color to find/add</param>
 		/// <returns>Index of the existing entry in this palette that matches the specified color, or the index of the newly added entry if not found</returns>
-		public int FindAddColour (Color color)
+		public int FindAddColour(Color color)
 		{
-			var index = argb.IndexOf (color.ToArgb ());
+			var index = argb.IndexOf(color.ToArgb());
 			if (index != -1)
 				return index;
 			
-			this.Add (color);
-			return this.Count - 1;
+			Add(color);
+			return Count - 1;
 		}
-		
+
 		/// <summary>
 		/// Gets the hash code for this palette
 		/// </summary>
 		/// <returns>Hash code of this palette</returns>
-		public override int GetHashCode ()
+		public override int GetHashCode()
 		{
 			int code = 0;
-			for (int i = 0; i < argb.Count; i++) {
-				code ^= argb [i].GetHashCode ();
+			for (int i = 0; i < argb.Count; i++)
+			{
+				code ^= argb[i].GetHashCode();
 			}
 			return code;
 		}
-		
+
 		/// <summary>
 		/// Gets a value indicating that this object is equal to the specified <paramref name="obj"/>
 		/// </summary>
 		/// <param name="obj">Object to compare for equality</param>
 		/// <returns>True if the specified obj is a Palette and contains the same colors as this instance, false otherwise</returns>
-		public override bool Equals (object obj)
+		public override bool Equals(object obj)
 		{
 			var p = obj as Palette;
-			if (obj == null)
+			if (p == null)
 				return false;
-			if (p.Count != this.Count)
+			if (p.Count != Count)
 				return false;
-			for (int i = 0; i < p.Count; i++) {
-				if (p.argb [i] != this.argb [i])
+			for (int i = 0; i < p.Count; i++)
+			{
+				if (p.argb[i] != argb[i])
 					return false;
 			}
 			return true;
@@ -358,22 +363,22 @@ namespace Eto.Drawing
 		/// Creates a clone of this palette
 		/// </summary>
 		/// <returns>A new instance of a palette with the same color entries as this instance</returns>
-		public Palette Clone ()
+		public Palette Clone()
 		{
-			return new Palette (this);
+			return new Palette(this);
 		}
-		
+
 		#region ICloneable implementation
 
 		/// <summary>
 		/// Creates a clone of this palette
 		/// </summary>
 		/// <returns>A new instance of a palette with the same color entries as this instance</returns>
-		object ICloneable.Clone ()
+		object ICloneable.Clone()
 		{
-			return Clone ();
+			return Clone();
 		}
-		
+
 		#endregion
 
 	}

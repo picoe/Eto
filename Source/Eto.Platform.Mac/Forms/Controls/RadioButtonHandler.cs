@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Reflection;
 using Eto.Forms;
 using MonoMac.AppKit;
 using System.Collections.Generic;
@@ -26,7 +24,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public RadioButtonHandler()
 		{
-			Control = new EtoRadioButton { Handler = this };
+			Control = new EtoRadioButton { Handler = this, Title = string.Empty };
 			Control.SetButtonType(NSButtonType.Radio);
 			Control.Activated += HandleActivated;
 		}
@@ -51,7 +49,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			
 			if (controller != null)
 			{
-				RadioButtonHandler controllerInner = (RadioButtonHandler)controller.Handler;
+				var controllerInner = (RadioButtonHandler)controller.Handler;
 				if (controllerInner.group == null)
 				{
 					controllerInner.group = new List<RadioButton>();
@@ -69,7 +67,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				foreach (RadioButton item in group)
 				{
-					var c = item.ControlObject as NSButton;
+					var c = (NSButton)item.ControlObject;
 					var ischecked = (item.Handler == sender);
 					c.State = ischecked ? NSCellStateValue.On : NSCellStateValue.Off;
 				}

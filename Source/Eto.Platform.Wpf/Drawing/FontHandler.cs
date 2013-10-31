@@ -13,26 +13,33 @@ namespace Eto.Platform.Wpf.Drawing
 	public class FontHandler : WidgetHandler<object, Font>, IFont
 	{
 		FontTypeface typeface;
+		FontDecoration decoration;
 		sd.Font sdfont;
 
-		public void Apply (swc.Control control)
+		public void Apply(swc.Control control, Action<sw.TextDecorationCollection> setDecorations)
 		{
 			control.FontFamily = WpfFamily;
 			control.FontStyle = WpfFontStyle;
 			control.FontWeight = WpfFontWeight;
-
 			control.FontSize = this.PixelSize;
+			if (setDecorations != null && WpfTextDecorations != null)
+			{
+				setDecorations(WpfTextDecorations);
+			}
 		}
 
 		sd.Font SDFont
 		{
 			get
 			{
-				if (sdfont == null) {
+				if (sdfont == null)
+				{
 					var style = sd.FontStyle.Regular;
 					if (Widget.Bold) style |= sd.FontStyle.Bold;
 					if (Widget.Italic) style |= sd.FontStyle.Italic;
-					sdfont = new sd.Font (WpfFamily.Source, (float)Size, style);
+					if (Widget.Underline) style |= sd.FontStyle.Underline;
+					if (Widget.Strikethrough) style |= sd.FontStyle.Strikeout;
+					sdfont = new sd.Font(WpfFamily.Source, (float)Size, style);
 				}
 				return sdfont;
 			}
@@ -48,141 +55,152 @@ namespace Eto.Platform.Wpf.Drawing
 					return PointsToPixels (Size * m.M22);
 				}
 				else*/
-					return PointsToPixels (Size);
+				return PointsToPixels(Size);
+			}
+			set
+			{
+				Size = PixelsToPoints(value);
 			}
 		}
 
-		public static double PointsToPixels (double points)
+		public static double PointsToPixels(double points)
 		{
 			return points * (96.0 / 72.0);
 		}
 
-		public static double PixelsToPoints (double points, swc.Control control = null)
+		public static double PixelsToPoints(double points, swc.Control control = null)
 		{
-			if (control != null) {
-				var m = sw.PresentationSource.FromVisual (sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
+			if (control != null)
+			{
+				var m = sw.PresentationSource.FromVisual(sw.Application.Current.MainWindow).CompositionTarget.TransformToDevice;
 				points /= m.M22;
 			}
 			return points * (72.0 / 96.0);
 		}
 
-		public static Font Apply (swc.Control control, Font font)
+		public static Font Apply(swc.Control control, Action<sw.TextDecorationCollection> setDecorations, Font font)
 		{
 			if (control == null) return font;
-			if (font != null) {
-				((FontHandler)font.Handler).Apply (control);
+			if (font != null)
+			{
+				((FontHandler)font.Handler).Apply(control, setDecorations);
 			}
-			else {
-				control.SetValue (swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
-				control.SetValue (swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
-				control.SetValue (swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
-				control.SetValue (swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
+			else
+			{
+				control.SetValue(swc.Control.FontFamilyProperty, swc.Control.FontFamilyProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontStyleProperty, swc.Control.FontStyleProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontWeightProperty, swc.Control.FontWeightProperty.DefaultMetadata.DefaultValue);
+				control.SetValue(swc.Control.FontSizeProperty, swc.Control.FontSizeProperty.DefaultMetadata.DefaultValue);
 			}
 			return font;
 
 		}
 
-		public sw.FontStyle WpfFontStyle
-		{
-			get;
-			set;
-		}
+		public sw.FontStyle WpfFontStyle { get; set; }
 
-		public sw.FontWeight WpfFontWeight
-		{
-			get;
-			set;
-		}
+		public sw.TextDecorationCollection WpfTextDecorations { get; set; }
 
-		public double Size
-		{
-			get;
-			set;
-		}
+		public sw.FontWeight WpfFontWeight { get; set; }
 
-		public FontHandler ()
+		public double Size { get; set; }
+
+		public FontHandler()
 		{
 		}
 
-		public FontHandler (Eto.Generator generator, swc.Control control)
+		public FontHandler(Eto.Generator generator, swc.Control control)
 		{
-			this.Family = new FontFamily (generator, new FontFamilyHandler (control.FontFamily));
-			this.Size = PixelsToPoints (control.FontSize, control);
+			this.Family = new FontFamily(generator, new FontFamilyHandler(control.FontFamily));
+			this.Size = PixelsToPoints(control.FontSize, control);
 			this.WpfFontStyle = control.FontStyle;
 			this.WpfFontWeight = control.FontWeight;
 		}
 
-		public FontHandler (Eto.Generator generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
+		public FontHandler(Eto.Generator generator, swm.FontFamily family, double size, sw.FontStyle style, sw.FontWeight weight)
 		{
-			this.Family = new FontFamily(generator, new FontFamilyHandler (family));
+			this.Family = new FontFamily(generator, new FontFamilyHandler(family));
 			this.Size = size;
 			this.WpfFontStyle = style;
 			this.WpfFontWeight = weight;
 		}
 
-		public void Create (FontFamily family, float size, FontStyle style)
+		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
 			this.Family = family;
 			this.Size = size;
-			SetStyle (style);
+			SetStyle(style);
+			SetDecorations(decoration);
 		}
 
-		public void Create (FontTypeface typeface, float size)
+		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
 		{
 			this.typeface = typeface;
 			this.Family = typeface.Family;
 			this.Size = size;
 			this.WpfFontWeight = WpfTypeface.Weight;
 			this.WpfFontStyle = WpfTypeface.Style;
+			SetDecorations(decoration);
 		}
 
-		void SetStyle (FontStyle style)
+		void SetStyle(FontStyle style)
 		{
-			if ((style & Eto.Drawing.FontStyle.Bold) != 0) this.WpfFontWeight = System.Windows.FontWeights.Bold;
-			else this.WpfFontWeight = System.Windows.FontWeights.Normal;
+			if (style.HasFlag(FontStyle.Bold)) WpfFontWeight = sw.FontWeights.Bold;
+			else WpfFontWeight = sw.FontWeights.Normal;
 
-			if ((style & Eto.Drawing.FontStyle.Italic) != 0) this.WpfFontStyle = System.Windows.FontStyles.Italic;
-			else this.WpfFontStyle = System.Windows.FontStyles.Normal;
+			if (style.HasFlag(FontStyle.Italic)) WpfFontStyle = sw.FontStyles.Italic;
+			else WpfFontStyle = sw.FontStyles.Normal;
 		}
 
-		public void Create (SystemFont systemFont, float? size)
+		void SetDecorations(FontDecoration decoration)
 		{
+			WpfTextDecorations = new sw.TextDecorationCollection();
+			if (decoration.HasFlag(FontDecoration.Underline))
+				WpfTextDecorations.Add(sw.TextDecorations.Underline);
+			if (decoration.HasFlag(FontDecoration.Strikethrough))
+				WpfTextDecorations.Add(sw.TextDecorations.Strikethrough);
+			this.decoration = decoration;
+		}
 
-			switch (systemFont) {
-			case SystemFont.Label:
-			case SystemFont.Default:
-			case SystemFont.Message:
-			case SystemFont.Palette:
-			case SystemFont.TitleBar:
-			case SystemFont.ToolTip:
-				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.MessageFontFamily));
-				WpfFontStyle = System.Windows.SystemFonts.MessageFontStyle;
-				WpfFontWeight = System.Windows.SystemFonts.MessageFontWeight;
-				Size = System.Windows.SystemFonts.MessageFontSize;
-				break;
-			case SystemFont.Bold:
-				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.MessageFontFamily));
-				WpfFontStyle = System.Windows.SystemFonts.MessageFontStyle;
-				WpfFontWeight = System.Windows.FontWeights.Bold;
-				Size = System.Windows.SystemFonts.MessageFontSize;
-				break;
-			case SystemFont.MenuBar:
-			case SystemFont.Menu:
-				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.MenuFontFamily));
-				WpfFontStyle = System.Windows.SystemFonts.MenuFontStyle;
-				WpfFontWeight = System.Windows.SystemFonts.MenuFontWeight;
-				Size = System.Windows.SystemFonts.MenuFontSize;
-				break;
-			case SystemFont.StatusBar:
-				Family = new FontFamily(Widget.Generator, new FontFamilyHandler (sw.SystemFonts.StatusFontFamily));
-				WpfFontStyle = System.Windows.SystemFonts.StatusFontStyle;
-				WpfFontWeight = System.Windows.SystemFonts.StatusFontWeight;
-				Size = System.Windows.SystemFonts.StatusFontSize;
-				break;
-			default:
-				throw new NotSupportedException ();
+		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
+		{
+			switch (systemFont)
+			{
+				case SystemFont.Label:
+				case SystemFont.Default:
+				case SystemFont.Message:
+				case SystemFont.Palette:
+				case SystemFont.TitleBar:
+				case SystemFont.ToolTip:
+					Family = new FontFamily(Widget.Generator, new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
+					WpfFontStyle = sw.SystemFonts.MessageFontStyle;
+					WpfFontWeight = sw.SystemFonts.MessageFontWeight;
+					PixelSize = sw.SystemFonts.MessageFontSize;
+					break;
+				case SystemFont.Bold:
+					Family = new FontFamily(Widget.Generator, new FontFamilyHandler(sw.SystemFonts.MessageFontFamily));
+					WpfFontStyle = sw.SystemFonts.MessageFontStyle;
+					WpfFontWeight = sw.FontWeights.Bold;
+					PixelSize = sw.SystemFonts.MessageFontSize;
+					break;
+				case SystemFont.MenuBar:
+				case SystemFont.Menu:
+					Family = new FontFamily(Widget.Generator, new FontFamilyHandler(sw.SystemFonts.MenuFontFamily));
+					WpfFontStyle = sw.SystemFonts.MenuFontStyle;
+					WpfFontWeight = sw.SystemFonts.MenuFontWeight;
+					PixelSize = sw.SystemFonts.MenuFontSize;
+					break;
+				case SystemFont.StatusBar:
+					Family = new FontFamily(Widget.Generator, new FontFamilyHandler(sw.SystemFonts.StatusFontFamily));
+					WpfFontStyle = sw.SystemFonts.StatusFontStyle;
+					WpfFontWeight = sw.SystemFonts.StatusFontWeight;
+					PixelSize = sw.SystemFonts.StatusFontSize;
+					break;
+				default:
+					throw new NotSupportedException();
 			}
-			if (size != null) Size = size.Value;
+			if (size != null)
+				Size = size.Value;
+			SetDecorations(decoration);
 		}
 
 
@@ -196,8 +214,9 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				if (typeface == null) {
-					typeface = new FontTypeface(Family, new FontTypefaceHandler(new swm.Typeface (WpfFamily, WpfFontStyle, WpfFontWeight, sw.FontStretches.Normal)));
+				if (typeface == null)
+				{
+					typeface = new FontTypeface(Family, new FontTypefaceHandler(new swm.Typeface(WpfFamily, WpfFontStyle, WpfFontWeight, sw.FontStretches.Normal)));
 				}
 				return typeface;
 			}
@@ -207,8 +226,13 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				return Conversions.Convert (WpfFontStyle, WpfFontWeight);
+				return Conversions.Convert(WpfFontStyle, WpfFontWeight, WpfTextDecorations);
 			}
+		}
+
+		public FontDecoration FontDecoration
+		{
+			get { return decoration; }
 		}
 
 		public swm.FontFamily WpfFamily
@@ -219,42 +243,43 @@ namespace Eto.Platform.Wpf.Drawing
 		public swm.Typeface WpfTypeface
 		{
 			get { return ((FontTypefaceHandler)Typeface.Handler).Control; }
-        }
+		}
 
 		float IFont.Size
 		{
 			get { return (float)Size; }
 		}
 
-        public float Ascent
-        {
-            get
-            {
+		public float Ascent
+		{
+			get
+			{
 				return (float)(Size * WpfFamily.Baseline);
-            }
-        }
+			}
+		}
 
 		float? descent;
-        public float Descent
-        {
-            get
-            {
-				if (descent == null) {
-					descent = (float)Size * SDFont.FontFamily.GetCellDescent (SDFont.Style) / SDFont.FontFamily.GetEmHeight (SDFont.Style);
+		public float Descent
+		{
+			get
+			{
+				if (descent == null)
+				{
+					descent = (float)Size * SDFont.FontFamily.GetCellDescent(SDFont.Style) / SDFont.FontFamily.GetEmHeight(SDFont.Style);
 				}
 				return descent ?? 0f;
-            }
-        }
+			}
+		}
 
-        public float LineHeight
-        {
+		public float LineHeight
+		{
 			get { return (float)(Size * WpfFamily.LineSpacing); }
-        }
+		}
 
-        public float XHeight
-        {
+		public float XHeight
+		{
 			get { return (float)(Size * WpfTypeface.XHeight); }
-        }
+		}
 
 		public float Baseline
 		{
@@ -271,12 +296,13 @@ namespace Eto.Platform.Wpf.Drawing
 			get { return Family.Name; }
 		}
 
-		protected override void Dispose (bool disposing)
+		protected override void Dispose(bool disposing)
 		{
-			base.Dispose (disposing);
-			if (disposing) {
-				sdfont.Dispose ();
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				sdfont.Dispose();
 			}
 		}
-    }
+	}
 }

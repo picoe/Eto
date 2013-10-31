@@ -5,8 +5,6 @@ using SD = System.Drawing;
 using MonoMac.Foundation;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
-using Eto.Platform.Mac.Drawing;
-using Eto.Platform.Mac.Forms.Printing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -28,7 +26,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			public override void DrawLabel (bool shouldTruncateLabel, SD.RectangleF labelRect)
 			{
 				if (Handler.image != null) {
-					var nsimage = Handler.image.ControlObject as NSImage;
+					var nsimage = (NSImage)Handler.image.ControlObject;
 
 					if (nsimage.RespondsToSelector(new Selector(selDrawInRectFromRectOperationFractionRespectFlippedHints)))
 						nsimage.Draw (new SD.RectangleF (labelRect.X, labelRect.Y, labelRect.Height, labelRect.Height), new SD.RectangleF (SD.PointF.Empty, nsimage.Size), NSCompositingOperation.SourceOver, 1, true, null);

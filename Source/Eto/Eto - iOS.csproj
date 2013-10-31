@@ -254,6 +254,7 @@
     <Compile Include="Forms\DockContainer.cs" />
     <Compile Include="Forms\IKeyboardInputSource.cs" />
     <Compile Include="Forms\IMouseInputSource.cs" />
+    <Compile Include="Drawing\SystemFonts.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Forms\" />

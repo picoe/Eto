@@ -58,8 +58,8 @@ namespace Eto.Platform.Wpf.Forms
 		void HandleSourceInitialized (object sender, EventArgs e)
 		{
 			var owner = this.Control.Owner;
-			Control.Left = owner.Left + (owner.ActualWidth - Control.Width) / 2;
-			Control.Top = owner.Top + (owner.ActualHeight - Control.Height) / 2;
+			Control.Left = owner.Left + (owner.ActualWidth - Control.ActualWidth) / 2;
+			Control.Top = owner.Top + (owner.ActualHeight - Control.ActualHeight) / 2;
 			Control.SourceInitialized -= HandleSourceInitialized;
 		}
 
@@ -69,12 +69,12 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (defaultButton != null) {
-					var handler = defaultButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = false;
 				}
 				defaultButton = value;
 				if (defaultButton != null) {
-					var handler = defaultButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)defaultButton.Handler;
 					handler.Control.IsDefault = true;
 				}
 			}
@@ -86,12 +86,12 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				if (abortButton != null) {
-					var handler = abortButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = false;
 				}
 				abortButton = value;
 				if (abortButton != null) {
-					var handler = abortButton.Handler as ButtonHandler;
+					var handler = (ButtonHandler)abortButton.Handler;
 					handler.Control.IsCancel = true;
 				}
 			}

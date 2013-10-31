@@ -1,6 +1,5 @@
 using Eto.Drawing;
 using Eto.Forms;
-using System.Linq;
 
 namespace Eto.Test.Handlers
 {
@@ -12,14 +11,12 @@ namespace Eto.Test.Handlers
 
 		public Control Content { get { return Control != null ? Control.Content : null; } set { Control.Content = value; } }
 
-#if DESKTOP
 		public Size MinimumSize { get { return Control.MinimumSize; } set { Control.MinimumSize = value; } }
-#endif
 
         public TabPageHandler()
         {
 			this.Tab = new Tab { Tag = this };
-            this.Control = new Panel { };
+			this.Control = new Panel();
         }
 
 		public string Text 

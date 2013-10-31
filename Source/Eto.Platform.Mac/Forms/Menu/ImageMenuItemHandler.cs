@@ -1,10 +1,7 @@
 using System;
-using System.Reflection;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
-using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
 
 namespace Eto.Platform.Mac
@@ -15,7 +12,7 @@ namespace Eto.Platform.Mac
 		Image image;
 		bool showImage = ShowImageDefault;
 
-		public static bool ShowImageDefault = false;
+		public static bool ShowImageDefault;
 
 		public bool ShowImage
 		{
@@ -39,14 +36,14 @@ namespace Eto.Platform.Mac
 			Widget.OnClick (EventArgs.Empty);
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
-			case ImageMenuItem.ValidateEvent:
+			switch (id) {
+			case MenuActionItem.ValidateEvent:
 				// handled in MenuActionHandler
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

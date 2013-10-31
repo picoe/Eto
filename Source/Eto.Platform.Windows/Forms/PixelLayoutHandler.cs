@@ -1,4 +1,3 @@
-using System;
 using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Forms;
@@ -24,9 +23,9 @@ namespace Eto.Platform.Windows
 			// do not call base class - pixel layout never scales the content
 		}
 
-		public override Size DesiredSize
+		public override Size GetPreferredSize(Size availableSize)
 		{
-			get { return Size.Max(base.DesiredSize, Control.PreferredSize.ToEto()); }
+			return Size.Max(base.GetPreferredSize(availableSize), Control.PreferredSize.ToEto());
 		}
 
 		public void Add(Control child, int x, int y)

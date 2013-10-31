@@ -1,8 +1,5 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
-using System.Collections.Generic;
-using System.Linq;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -34,7 +31,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			Control.Toggled += control_Activated;
 
-			Gtk.HBox hbox = new Gtk.HBox (false, 4);
+			var hbox = new Gtk.HBox (false, 4);
 			label = new Gtk.AccelLabel (string.Empty);
 			label.Xalign = 0;
 			label.UseUnderline = true;
@@ -97,7 +94,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			if (Control.Submenu == null)
 				return;
-			Gtk.Menu menu = (Gtk.Menu)Control.Submenu;
+			var menu = (Gtk.Menu)Control.Submenu;
 			menu.Remove ((Gtk.Widget)item.ControlObject);
 			if (menu.Children.Length == 0) {
 				Control.Submenu = null;

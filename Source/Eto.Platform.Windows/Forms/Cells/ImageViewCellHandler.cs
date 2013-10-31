@@ -42,8 +42,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 			public override object Clone ()
 			{
-				var val = base.Clone () as EtoCell;
-				val.Handler = this.Handler;
+				var val = (EtoCell)base.Clone();
+				val.Handler = Handler;
 				return val;
 			}
 		}

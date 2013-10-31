@@ -17,6 +17,7 @@ namespace Eto.Platform.Android.Forms
 	{
 		readonly aw.FrameLayout frame;
 		Control content;
+		Size minimumSize;
 
 		protected aw.FrameLayout InnerFrame { get { return frame; } }
 
@@ -57,6 +58,17 @@ namespace Eto.Platform.Android.Forms
 		{
 			get { return frame.GetPadding(); }
 			set { frame.SetPadding(value); }
+		}
+
+		public Size MinimumSize
+		{
+			get { return minimumSize; }
+			set
+			{
+				minimumSize = value;
+				ContainerControl.SetMinimumWidth(value.Width);
+				ContainerControl.SetMinimumHeight(value.Height);
+			}
 		}
 	}
 }

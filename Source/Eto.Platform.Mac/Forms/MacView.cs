@@ -2,14 +2,14 @@ using System;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using Eto.Forms;
-using MonoMac.CoreGraphics;
 using MonoMac.Foundation;
-using Eto.Platform.Mac.Drawing;
 using MonoMac.ObjCRuntime;
 using SD = System.Drawing;
 using Eto.Platform.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Platform.Mac.Forms.Printing;
+using MonoMac.CoreAnimation;
+using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -55,6 +55,8 @@ namespace Eto.Platform.Mac.Forms
 
 	public interface IMacViewHandler : IMacAutoSizing
 	{
+		NSView ContainerControl { get; }
+
 		Size PositionOffset { get; }
 
 		Size? PreferredSize { get; }
@@ -82,7 +84,7 @@ namespace Eto.Platform.Mac.Forms
 		NSTrackingAreaOptions mouseOptions;
 		MouseDelegate mouseDelegate;
 		Cursor cursor;
-		Size? naturalSize;
+		SizeF? naturalSize;
 
 		public abstract NSView ContainerControl { get; }
 
@@ -94,7 +96,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public virtual Size MinimumSize { get; set; }
 
-		public virtual Size? MaximumSize { get; set; }
+		public virtual SizeF MaximumSize { get; set; }
 
 		public Size? PreferredSize { get; set; }
 
@@ -104,7 +106,7 @@ namespace Eto.Platform.Mac.Forms
 			set
 			{ 
 				var oldSize = GetPreferredSize(Size.MaxValue);
-				this.PreferredSize = value;
+				PreferredSize = value;
 
 				var newSize = ContainerControl.Frame.Size;
 				if (value.Width >= 0)
@@ -119,30 +121,37 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		protected virtual bool LayoutIfNeeded(Size? oldPreferredSize = null, bool force = false)
+		protected SizeF? NaturalSize
+		{
+			get { return naturalSize; }
+			set { naturalSize = value; }
+		}
+
+		protected virtual bool LayoutIfNeeded(SizeF? oldPreferredSize = null, bool force = false)
 		{
 			naturalSize = null;
 			if (Widget.Loaded)
 			{
 				var oldSize = oldPreferredSize ?? ContainerControl.Frame.Size.ToEtoSize();
-				var newSize = GetPreferredSize(Size.MaxValue);
+				var newSize = GetPreferredSize(SizeF.MaxValue);
 				if (newSize != oldSize || force)
 				{
 					var container = Widget.Parent.GetMacContainer();
 					if (container != null)
-						container.LayoutParent(true);
+						container.LayoutParent();
 					return true;
 				}
 			}
 			return false;
 		}
 
-		public MacView()
+		protected MacView()
 		{
-			this.AutoSize = true;
+			AutoSize = true;
+			MaximumSize = SizeF.MaxValue;
 		}
 
-		protected virtual Size GetNaturalSize(Size availableSize)
+		protected virtual SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (naturalSize != null)
 				return naturalSize.Value;
@@ -151,7 +160,7 @@ namespace Eto.Platform.Mac.Forms
 			{
 				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
 				control.SizeToFit();
-				naturalSize = control.Frame.Size.ToEtoSize();
+				naturalSize = control.Frame.Size.ToEto();
 				if (size != null)
 					control.SetFrameSize(size.Value);
 				return naturalSize.Value;
@@ -159,7 +168,7 @@ namespace Eto.Platform.Mac.Forms
 			return Size.Empty;
 		}
 
-		public virtual Size GetPreferredSize(Size availableSize)
+		public virtual SizeF GetPreferredSize(SizeF availableSize)
 		{
 			var size = GetNaturalSize(availableSize);
 			if (!AutoSize && PreferredSize != null)
@@ -170,11 +179,7 @@ namespace Eto.Platform.Mac.Forms
 				if (preferredSize.Height >= 0)
 					size.Height = preferredSize.Height;
 			}
-			if (MinimumSize != Size.Empty)
-				size = Size.Max(size, MinimumSize);
-			if (MaximumSize != null)
-				size = Size.Min(size, MaximumSize.Value);
-			return size;
+			return SizeF.Min(SizeF.Max(size, MinimumSize), MaximumSize);
 		}
 
 		public virtual Size PositionOffset { get { return Size.Empty; } }
@@ -187,11 +192,9 @@ namespace Eto.Platform.Mac.Forms
 				EventControl.RemoveTrackingArea(tracking);
 			//Console.WriteLine ("Adding mouse tracking {0} for area {1}", this.Widget.GetType ().FullName, Control.Frame.Size);
 			if (mouseDelegate == null)
-				mouseDelegate = new MouseDelegate { Widget = this.Widget, View = EventControl };
-			tracking = new NSTrackingArea(new SD.RectangleF(new SD.PointF(0, 0), EventControl.Frame.Size), 
-			                              NSTrackingAreaOptions.ActiveAlways | mouseOptions | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect, 
-			                              mouseDelegate, 
-			                              new NSDictionary());
+				mouseDelegate = new MouseDelegate { Widget = Widget, View = EventControl };
+			var options = mouseOptions | NSTrackingAreaOptions.ActiveAlways | NSTrackingAreaOptions.EnabledDuringMouseDrag | NSTrackingAreaOptions.InVisibleRect;
+			tracking = new NSTrackingArea(new SD.RectangleF(SD.PointF.Empty, EventControl.Frame.Size), options, mouseDelegate, new NSDictionary());
 			EventControl.AddTrackingArea(tracking);
 		}
 
@@ -199,22 +202,22 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
-		static IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
-		static IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
-		static IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
-		static IntPtr selRightMouseDown = Selector.GetHandle("rightMouseDown:");
-		static IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
-		static IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
-		static IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
-		static IntPtr selKeyDown = Selector.GetHandle("keyDown:");
-		static IntPtr selKeyUp = Selector.GetHandle("keyUp:");
-		static IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
-		static IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
-		static IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
+		static readonly IntPtr selMouseDown = Selector.GetHandle("mouseDown:");
+		static readonly IntPtr selMouseUp = Selector.GetHandle("mouseUp:");
+		static readonly IntPtr selMouseDragged = Selector.GetHandle("mouseDragged:");
+		static readonly IntPtr selRightMouseDown = Selector.GetHandle("rightMouseDown:");
+		static readonly IntPtr selRightMouseUp = Selector.GetHandle("rightMouseUp:");
+		static readonly IntPtr selRightMouseDragged = Selector.GetHandle("rightMouseDragged:");
+		static readonly IntPtr selScrollWheel = Selector.GetHandle("scrollWheel:");
+		static readonly IntPtr selKeyDown = Selector.GetHandle("keyDown:");
+		static readonly IntPtr selKeyUp = Selector.GetHandle("keyUp:");
+		static readonly IntPtr selBecomeFirstResponder = Selector.GetHandle("becomeFirstResponder");
+		static readonly IntPtr selResignFirstResponder = Selector.GetHandle("resignFirstResponder");
+		static readonly IntPtr selSetFrameSize = Selector.GetHandle("setFrameSize:");
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Eto.Forms.Control.MouseEnterEvent:
 					HandleEvent(Eto.Forms.Control.MouseLeaveEvent);
@@ -234,7 +237,7 @@ namespace Eto.Platform.Mac.Forms
 					AddMethod(selRightMouseDragged, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDragged), "v@:@");
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, SD.SizeF>(SetFrameSize), "v@:{CGSize=ff}", ContainerControl);
+					AddMethod(selSetFrameSize, new Action<IntPtr, IntPtr, SD.SizeF>(SetFrameSizeAction), "v@:{CGSize=ff}", ContainerControl);
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					AddMethod(selMouseDown, new Action<IntPtr, IntPtr, IntPtr>(TriggerMouseDown), "v@:@");
@@ -266,13 +269,13 @@ namespace Eto.Platform.Mac.Forms
 				// TODO
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 
 			}
 		}
 
-		static void SetFrameSize(IntPtr sender, IntPtr sel, SD.SizeF size)
+		static void SetFrameSizeAction(IntPtr sender, IntPtr sel, SD.SizeF size)
 		{
 			var obj = Runtime.GetNSObject(sender);
 			Messaging.void_objc_msgSendSuper_SizeF(obj.SuperHandle, sel, size);
@@ -344,7 +347,7 @@ namespace Eto.Platform.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent((NSView)obj, theEvent, false);
+				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				if (theEvent.ClickCount >= 2)
 					handler.Widget.OnMouseDoubleClick(args);
 			
@@ -367,7 +370,7 @@ namespace Eto.Platform.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent((NSView)obj, theEvent, false);
+				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Widget.OnMouseUp(args);
 				if (!args.Handled)
 				{
@@ -383,7 +386,7 @@ namespace Eto.Platform.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent((NSView)obj, theEvent, false);
+				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, false);
 				handler.Widget.OnMouseMove(args);
 				if (!args.Handled)
 				{
@@ -399,7 +402,7 @@ namespace Eto.Platform.Mac.Forms
 			if (handler != null)
 			{
 				var theEvent = new NSEvent(e);
-				var args = Conversions.GetMouseEvent((NSView)obj, theEvent, true);
+				var args = Conversions.GetMouseEvent(handler.ContainerControl, theEvent, true);
 				if (!args.Delta.IsZero)
 				{
 					handler.Widget.OnMouseWheel(args);
@@ -445,7 +448,6 @@ namespace Eto.Platform.Mac.Forms
 		}
 
 		Color? backgroundColor;
-
 		public virtual Color BackgroundColor
 		{
 			get { return backgroundColor ?? Colors.Transparent; }
@@ -455,15 +457,17 @@ namespace Eto.Platform.Mac.Forms
 				{
 					if (value.A > 0)
 					{
-						if (!EventControl.WantsLayer)
-							EventControl.WantsLayer = true;
-						EventControl.Layer.BackgroundColor = value.ToCGColor();
+						ContainerControl.WantsLayer = true;
+						var layer = ContainerControl.Layer;
+						if (layer != null)
+							layer.BackgroundColor = value.ToCGColor();
 					}
 					else
 					{
-						EventControl.WantsLayer = false;
-						if (EventControl.Layer != null)
-							EventControl.Layer.BackgroundColor = null;
+						ContainerControl.WantsLayer = false;
+						var layer = ContainerControl.Layer;
+						if (layer != null)
+							layer.BackgroundColor = null;
 					}
 				}
 				backgroundColor = value;
@@ -487,7 +491,7 @@ namespace Eto.Platform.Mac.Forms
 			{ 
 				if (ContentControl.Hidden == value)
 				{
-					var oldSize = this.GetPreferredSize(Size.MaxValue);
+					var oldSize = GetPreferredSize(Size.MaxValue);
 					ContentControl.Hidden = !value;
 					LayoutIfNeeded(oldSize, true);
 				}
@@ -539,7 +543,7 @@ namespace Eto.Platform.Mac.Forms
 		{
 		}
 
-		Control IMacViewHandler.Widget { get { return this.Widget; } }
+		Control IMacViewHandler.Widget { get { return Widget; } }
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
@@ -551,7 +555,7 @@ namespace Eto.Platform.Mac.Forms
 			}
 			sdpoint = ContentControl.ConvertPointFromView(sdpoint, null);
 			sdpoint.Y = ContentControl.Frame.Height - sdpoint.Y;
-			return Platform.Conversions.ToEto(sdpoint);
+			return sdpoint.ToEto();
 		}
 
 		public virtual PointF PointToScreen(PointF point)
@@ -564,12 +568,12 @@ namespace Eto.Platform.Mac.Forms
 				sdpoint = ContentControl.Window.ConvertBaseToScreen(sdpoint);
 				sdpoint.Y = ContentControl.Window.Screen.Frame.Height - sdpoint.Y;
 			}
-			return Platform.Conversions.ToEto(sdpoint);
+			return sdpoint.ToEto();
 		}
 
 		Point IControl.Location
 		{
-			get { return Platform.Conversions.ToEtoPoint(ContentControl.Frame.Location); }
+			get { return ContentControl.Frame.Location.ToEtoPoint(); }
 		}
 
 		static void TriggerSystemAction(IntPtr sender, IntPtr sel, IntPtr e)
@@ -623,34 +627,34 @@ namespace Eto.Platform.Mac.Forms
 		}
 
 		Dictionary<IntPtr, BaseAction> systemActions;
-		static IntPtr selValidateMenuItem = Selector.GetHandle("validateMenuItem:");
-		static IntPtr selValidateToolbarItem = Selector.GetHandle("validateToolbarItem:");
-		static IntPtr selCut = Selector.GetHandle("cut:");
-		static IntPtr selCopy = Selector.GetHandle("copy:");
-		static IntPtr selPaste = Selector.GetHandle("paste:");
-		static IntPtr selSelectAll = Selector.GetHandle("selectAll:");
-		static IntPtr selDelete = Selector.GetHandle("delete:");
-		static IntPtr selUndo = Selector.GetHandle("undo:");
-		static IntPtr selRedo = Selector.GetHandle("redo:");
-		static IntPtr selPasteAsPlainText = Selector.GetHandle("pasteAsPlainText:");
-		static IntPtr selPerformClose = Selector.GetHandle("performClose:");
-		static IntPtr selPerformZoom = Selector.GetHandle("performZoom:");
-		static IntPtr selArrangeInFront = Selector.GetHandle("arrangeInFront:");
-		static IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
-		static Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>()
+		static readonly IntPtr selValidateMenuItem = Selector.GetHandle("validateMenuItem:");
+		static readonly IntPtr selValidateToolbarItem = Selector.GetHandle("validateToolbarItem:");
+		static readonly IntPtr selCut = Selector.GetHandle("cut:");
+		static readonly IntPtr selCopy = Selector.GetHandle("copy:");
+		static readonly IntPtr selPaste = Selector.GetHandle("paste:");
+		static readonly IntPtr selSelectAll = Selector.GetHandle("selectAll:");
+		static readonly IntPtr selDelete = Selector.GetHandle("delete:");
+		static readonly IntPtr selUndo = Selector.GetHandle("undo:");
+		static readonly IntPtr selRedo = Selector.GetHandle("redo:");
+		static readonly IntPtr selPasteAsPlainText = Selector.GetHandle("pasteAsPlainText:");
+		static readonly IntPtr selPerformClose = Selector.GetHandle("performClose:");
+		static readonly IntPtr selPerformZoom = Selector.GetHandle("performZoom:");
+		static readonly IntPtr selArrangeInFront = Selector.GetHandle("arrangeInFront:");
+		static readonly IntPtr selPerformMiniaturize = Selector.GetHandle("performMiniaturize:");
+		static readonly Dictionary<string, IntPtr> systemActionSelectors = new Dictionary<string, IntPtr>
 		{
- { "cut", selCut },
- { "copy", selCopy },
- { "paste", selPaste },
- { "selectAll", selSelectAll },
- { "delete", selDelete },
- { "undo", selUndo },
- { "redo", selRedo },
- { "pasteAsPlainText", selPasteAsPlainText },
- { "performClose", selPerformClose },
- { "performZoom", selPerformZoom },
- { "arrangeInFront", selArrangeInFront },
- { "performMiniaturize", selPerformMiniaturize }
+			{ "cut", selCut },
+			{ "copy", selCopy },
+			{ "paste", selPaste },
+			{ "selectAll", selSelectAll },
+			{ "delete", selDelete },
+			{ "undo", selUndo },
+			{ "redo", selRedo },
+			{ "pasteAsPlainText", selPasteAsPlainText },
+			{ "performClose", selPerformClose },
+			{ "performZoom", selPerformZoom },
+			{ "arrangeInFront", selArrangeInFront },
+			{ "performMiniaturize", selPerformMiniaturize }
 		};
 
 		public virtual void MapPlatformAction(string systemAction, BaseAction action)

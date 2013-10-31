@@ -7,7 +7,7 @@ namespace Eto.Forms
 	public class DataStoreVirtualCollection<T> : IList<T>, IList
 	{
 		const string ReadOnlyErrorMsg = "DataStoreVirtualCollection is a read-only collection.";
-		IDataStore<T> store;
+		readonly IDataStore<T> store;
 
 		public DataStoreVirtualCollection (IDataStore<T> store)
 		{
@@ -18,7 +18,7 @@ namespace Eto.Forms
 
 		public int IndexOf (T item)
 		{
-			return this.IndexOf (item);
+			return IndexOf(item);
 		}
 
 		public void Insert (int index, T item)
@@ -33,7 +33,7 @@ namespace Eto.Forms
 
 		public T this [int index] {
 			get {
-				return this.store [index];
+				return store[index];
 			}
 			set {
 				throw new NotSupportedException (ReadOnlyErrorMsg);
@@ -56,7 +56,7 @@ namespace Eto.Forms
 
 		public bool Contains (T item)
 		{
-			return (this.IndexOf (item) != -1);
+			return (IndexOf(item) != -1);
 		}
 
 		public void CopyTo (T[] array, int arrayIndex)
@@ -67,7 +67,7 @@ namespace Eto.Forms
 		}
 
 		public int Count {
-			get { return this.store != null ? this.store.Count : 0; }
+			get { return store != null ? store.Count : 0; }
 		}
 
 		public bool IsReadOnly {
@@ -104,9 +104,9 @@ namespace Eto.Forms
 
 		public int IndexOf (object value)
 		{
-			int count = this.store.Count;
+			int count = store.Count;
 			for (int index = 0; index < count; ++index) {
-				if (this.store [index].Equals (value))
+				if (store[index].Equals (value))
 					return index;
 			}
 			return -1;
@@ -165,9 +165,9 @@ namespace Eto.Forms
 
 		#region Internal IEnumerator implementation
 
-		private class DataStoreEnumerator : IEnumerator<T>
+		class DataStoreEnumerator : IEnumerator<T>
 		{
-			DataStoreVirtualCollection<T> collection;
+			readonly DataStoreVirtualCollection<T> collection;
 			int cursor;
 
 			public DataStoreEnumerator (DataStoreVirtualCollection<T> collection)
@@ -179,7 +179,7 @@ namespace Eto.Forms
 			#region IEnumerator<T> Members
 
 			public T Current {
-				get { return this.collection [this.cursor]; }
+				get { return collection[cursor]; }
 			}
 
 			#endregion
@@ -187,20 +187,18 @@ namespace Eto.Forms
 			#region IEnumerator Members
 
 			object IEnumerator.Current {
-				get { return this.Current; }
+				get { return Current; }
 			}
 
 			public bool MoveNext ()
 			{
-				this.cursor++;
-				if (this.cursor == this.collection.Count)
-					return false;
-				return true;
+				cursor++;
+				return cursor != collection.Count;
 			}
 
 			public void Reset ()
 			{
-				this.cursor = -1;
+				cursor = -1;
 			}
 
 			#endregion

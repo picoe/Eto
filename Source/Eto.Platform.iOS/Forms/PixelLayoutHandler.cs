@@ -28,13 +28,13 @@ namespace Eto.Platform.iOS.Forms
 			return base.GetPosition (control);
 		}*/
 
-		public override Size GetPreferredSize(Size availableSize)
+		public override SizeF GetPreferredSize(SizeF availableSize)
 		{
-			Size size = Size.Empty;
+			SizeF size = SizeF.Empty;
 			foreach (var item in points)
 			{
 				var frameSize = item.Key.GetPreferredSize(availableSize);
-				size = Size.Max(size, frameSize + new Size(item.Value));
+				size = SizeF.Max(size, frameSize + new SizeF(item.Value));
 			}
 			return size;
 		}
@@ -58,7 +58,7 @@ namespace Eto.Platform.iOS.Forms
 					frameHeight - (preferredSize.Height + point.Y + offset.Height)
 				);
 			
-			var frame = new sd.RectangleF(origin, preferredSize.ToSDSizeF());
+			var frame = new sd.RectangleF(origin, preferredSize.ToSD());
 			childView.Frame = frame;
 		}
 

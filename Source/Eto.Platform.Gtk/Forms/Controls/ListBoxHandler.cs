@@ -1,7 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Linq;
-using System.Collections.Generic;
 using Eto.Platform.GtkSharp.Drawing;
 using Eto.Drawing;
 
@@ -46,7 +44,7 @@ namespace Eto.Platform.GtkSharp
 		void HandleTreeButtonPressEvent (object o, Gtk.ButtonPressEventArgs args)
 		{
 			if (contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress) {
-				var menu = contextMenu.ControlObject as Gtk.Menu;
+				var menu = (Gtk.Menu)contextMenu.ControlObject;
 				menu.Popup ();
 				menu.ShowAll ();
 			}
@@ -75,7 +73,7 @@ namespace Eto.Platform.GtkSharp
 						Control.Selection.UnselectAll ();
 					return;
 				}
-				Gtk.TreePath path = new Gtk.TreePath ();
+				var path = new Gtk.TreePath ();
 				path.AppendIndex (value);
 				Gtk.TreeViewColumn focus_column = Control.Columns[0];
 

@@ -135,11 +135,11 @@ namespace Eto.Platform.Wpf.Forms
 
 		protected virtual void SetSize()
 		{
-			ContainerControl.Width = XScale ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
-			ContainerControl.Height = YScale ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
+			ContainerControl.Width = XScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Width, parentMinimumSize.Width);
+			ContainerControl.Height = YScale && Control.IsLoaded ? double.NaN : Math.Max(preferredSize.Height, parentMinimumSize.Height);
 			var defaultSize = DefaultSize;
-			ContainerControl.MinWidth = Math.Max(0, XScale ? 0 : double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
-			ContainerControl.MinHeight = Math.Max(0, YScale ? 0 : double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
+			ContainerControl.MinWidth = XScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Width) ? defaultSize.Width : preferredSize.Width);
+			ContainerControl.MinHeight = YScale && Control.IsLoaded ? 0 : Math.Max(0, double.IsNaN(preferredSize.Height) ? defaultSize.Height : preferredSize.Height);
 		}
 
 		public virtual sw.Size GetPreferredSize(sw.Size constraint)
@@ -245,12 +245,10 @@ namespace Eto.Platform.Wpf.Forms
 			switch (handler)
 			{
 				case Eto.Forms.Control.MouseMoveEvent:
-					ContainerControl.MouseMove += (sender, e) =>
-					{
-						var args = e.ToEto(Control);
-						Widget.OnMouseMove(args);
-						e.Handled = args.Handled || isMouseCaptured;
-					};
+					if (UseMousePreview)
+						ContainerControl.PreviewMouseMove += HandleMouseMove;
+					else
+						ContainerControl.MouseMove += HandleMouseMove;
 					break;
 				case Eto.Forms.Control.MouseDownEvent:
 					if (UseMousePreview)
@@ -368,6 +366,13 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
+		void HandleMouseMove(object sender, swi.MouseEventArgs e)
+		{
+			var args = e.ToEto(Control);
+			Widget.OnMouseMove(args);
+			e.Handled = args.Handled || isMouseCaptured;
+		}
+
 		void HandleMouseUp(object sender, swi.MouseButtonEventArgs e)
 		{
 			var args = e.ToEto(Control, swi.MouseButtonState.Released);
@@ -389,13 +394,15 @@ namespace Eto.Platform.Wpf.Forms
 
 		void HandleMouseDown(object sender, swi.MouseButtonEventArgs e)
 		{
-			WpfFrameworkElementHelper.ShouldCaptureMouse = true;
 			isMouseCaptured = false;
 			var args = e.ToEto(Control);
 			if (!(Control is swc.Control) && e.ClickCount == 2)
 				Widget.OnMouseDoubleClick(args);
 			if (!args.Handled)
+			{
+				WpfFrameworkElementHelper.ShouldCaptureMouse = true;
 				Widget.OnMouseDown(args);
+			}
 			e.Handled = args.Handled || !WpfFrameworkElementHelper.ShouldCaptureMouse;
 			if (WpfFrameworkElementHelper.ShouldCaptureMouse && (!UseMousePreview || e.Handled))
 			{
@@ -410,6 +417,11 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Tag = this;
 			HandleEvent(Eto.Forms.Control.MouseDownEvent);
 			HandleEvent(Eto.Forms.Control.MouseUpEvent);
+			Control.Loaded += Control_Loaded;
+		}
+
+		void Control_Loaded(object sender, sw.RoutedEventArgs e)
+		{
 			SetSize();
 		}
 

@@ -1,8 +1,4 @@
 using Eto.Drawing;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sd = System.Drawing;
 using sd2 = System.Drawing.Drawing2D;
 using sdi = System.Drawing.Imaging;

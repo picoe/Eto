@@ -1,20 +1,17 @@
 #if DESKTOP
 using System;
-using System.Reflection;
-using System.Collections;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
 	
-	public partial class ButtonAction : BaseAction
+	public partial class ButtonAction
 	{
 		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			ImageMenuItem mi = new ImageMenuItem(generator);
+			var mi = new ImageMenuItem(generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
-			mi.Enabled = this.Enabled;
+			mi.Enabled = Enabled;
 			if (Image != null) mi.Image = Image;
 			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
@@ -24,8 +21,8 @@ namespace Eto.Forms
 		
 		protected class MenuConnector
 		{
-			ImageMenuItem menuItem;
-			ButtonAction action;
+			readonly ImageMenuItem menuItem;
+			readonly ButtonAction action;
 			
 			public MenuConnector(ButtonAction action, ImageMenuItem menuItem)
 			{

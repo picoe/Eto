@@ -2,9 +2,6 @@ using Eto.Drawing;
 using Eto.Forms;
 using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using swf = System.Windows.Forms;
 
 namespace Eto.Platform.Windows
@@ -50,7 +47,7 @@ namespace Eto.Platform.Windows
 			this.WinControl = winControl;
 		}
 
-		Control ToEto (swf.Control child)
+		static Control ToEto (swf.Control child)
 		{
 			var handler = child.Tag as IControl;
 			if (handler != null) {

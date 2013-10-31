@@ -3,9 +3,6 @@ using MonoMac.AppKit;
 using Eto.Forms;
 using System.Collections.Generic;
 using MonoMac.Foundation;
-using Eto.Platform.Mac.Forms.Menu;
-using System.Linq;
-using Eto.Platform.Mac.Drawing;
 using Eto.Drawing;
 using sd = System.Drawing;
 
@@ -67,7 +64,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (colHandler != null) {
 					colHandler.SetObjectValue (item, theObject);
 					
-					Handler.Widget.OnEndCellEdit (new GridViewCellArgs ((GridColumn)colHandler.Widget, row, colHandler.Column, item));
+					Handler.Widget.OnEndCellEdit (new GridViewCellArgs(colHandler.Widget, row, colHandler.Column, item));
 				}
 			}
 		}
@@ -113,10 +110,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler.OnCellFormatting(colHandler.Widget, item, row, cell as NSCell);
 
 			}
-		}
-
-		public GridViewHandler ()
-		{
 		}
 
 		public bool ShowCellBorders

@@ -9,19 +9,19 @@ namespace Eto.Platform.Windows.Drawing
 {
 	public static class FontExtensions
 	{
-		public static SD.Font ToSD (this Font font)
+		public static SD.Font ToSD(this Font font)
 		{
 			if (font == null)
 				return null;
-			var handler = font.Handler as FontHandler;
+			var handler = (FontHandler)font.Handler;
 			return handler.Control;
 		}
 
-		public static Font ToEto (this SD.Font font, Eto.Generator generator)
+		public static Font ToEto(this SD.Font font, Eto.Generator generator)
 		{
 			if (font == null)
 				return null;
-			return new Font (generator, new FontHandler (font));
+			return new Font(generator, new FontHandler(font));
 		}
 	}
 
@@ -30,70 +30,74 @@ namespace Eto.Platform.Windows.Drawing
 		FontTypeface typeface;
 		FontFamily family;
 
-		public FontHandler ()
+		public FontHandler()
 		{
 		}
 
-		public FontHandler (SD.Font font)
+		public FontHandler(SD.Font font)
 		{
 			Control = font;
 		}
 
-		public void Create (FontFamily family, float size, FontStyle style)
+		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
 			this.family = family;
 			var familyHandler = (FontFamilyHandler)family.Handler;
-			Control = new SD.Font (familyHandler.Control, size, style.ToSD ());
+			Control = new SD.Font(familyHandler.Control, size, style.ToSD() | decoration.ToSD());
 		}
 
-		public void Create (FontTypeface typeface, float size)
+		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
 		{
 			this.typeface = typeface;
 
-			Control = new SD.Font (typeface.Family.Name, size, typeface.FontStyle.ToSD ());
+			var familyHandler = (FontFamilyHandler)typeface.Family.Handler;
+			Control = new SD.Font(familyHandler.Control, size, typeface.FontStyle.ToSD() | decoration.ToSD());
 		}
-		
-		public void Create (SystemFont systemFont, float? size)
+
+		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			switch (systemFont) {
-			case SystemFont.Default:
-				Control = SD.SystemFonts.DefaultFont;
-				break;
-			case SystemFont.Bold:
-				Control = new SD.Font(SD.SystemFonts.DefaultFont, SD.FontStyle.Bold);
-				break;
-			case SystemFont.TitleBar:
-				Control = SD.SystemFonts.CaptionFont;
-				break;
-			case SystemFont.ToolTip:
-				Control = SD.SystemFonts.DefaultFont;
-				break;
-			case SystemFont.Label:
-				Control = SD.SystemFonts.DialogFont;
-				break;
-			case SystemFont.MenuBar:
-				Control = SD.SystemFonts.MenuFont;
-				break;
-			case SystemFont.Menu:
-				Control = SD.SystemFonts.MenuFont;
-				break;
-			case SystemFont.Message:
-				Control = SD.SystemFonts.MessageBoxFont;
-				break;
-			case SystemFont.Palette:
-				Control = SD.SystemFonts.DialogFont;
-				break;
-			case SystemFont.StatusBar:
-				Control = SD.SystemFonts.StatusFont;
-				break;
-			default:
-				throw new NotImplementedException();
+			switch (systemFont)
+			{
+				case SystemFont.Default:
+					Control = SD.SystemFonts.DefaultFont;
+					break;
+				case SystemFont.Bold:
+					Control = new SD.Font(SD.SystemFonts.DefaultFont, SD.FontStyle.Bold);
+					break;
+				case SystemFont.TitleBar:
+					Control = SD.SystemFonts.CaptionFont;
+					break;
+				case SystemFont.ToolTip:
+					Control = SD.SystemFonts.DefaultFont;
+					break;
+				case SystemFont.Label:
+					Control = SD.SystemFonts.DialogFont;
+					break;
+				case SystemFont.MenuBar:
+					Control = SD.SystemFonts.MenuFont;
+					break;
+				case SystemFont.Menu:
+					Control = SD.SystemFonts.MenuFont;
+					break;
+				case SystemFont.Message:
+					Control = SD.SystemFonts.MessageBoxFont;
+					break;
+				case SystemFont.Palette:
+					Control = SD.SystemFonts.DialogFont;
+					break;
+				case SystemFont.StatusBar:
+					Control = SD.SystemFonts.StatusFont;
+					break;
+				default:
+					throw new NotImplementedException();
 			}
-			if (size != null) {
-				Control = new SD.Font(Control.FontFamily, size.Value, Control.Style, SD.GraphicsUnit.Point);
+			if (size != null || decoration != FontDecoration.None)
+			{
+				var newsize = size ?? Control.SizeInPoints;
+				Control = new SD.Font(Control.FontFamily, newsize, Control.Style | decoration.ToSD(), SD.GraphicsUnit.Point);
 			}
 		}
-		
+
 		public string FamilyName
 		{
 			get { return this.Control.FontFamily.Name; }
@@ -102,15 +106,21 @@ namespace Eto.Platform.Windows.Drawing
 
 		public FontStyle FontStyle
 		{
-			get { return Control.Style.ToEto (); }
+			get { return Control.Style.ToEtoStyle(); }
+		}
+
+		public FontDecoration FontDecoration
+		{
+			get { return Control.Style.ToEtoDecoration(); }
 		}
 
 		public FontFamily Family
 		{
 			get
 			{
-				if (family == null) {
-					family = new FontFamily (Widget.Generator, new FontFamilyHandler (Control.FontFamily));
+				if (family == null)
+				{
+					family = new FontFamily(Widget.Generator, new FontFamilyHandler(Control.FontFamily));
 				}
 				return family;
 			}
@@ -120,8 +130,9 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get
 			{
-				if (typeface == null) {
-					typeface = new FontTypeface (Family, new FontTypefaceHandler (Control.Style));
+				if (typeface == null)
+				{
+					typeface = new FontTypeface(Family, new FontTypefaceHandler(Control.Style));
 				}
 				return typeface;
 			}
@@ -157,7 +168,7 @@ namespace Eto.Platform.Windows.Drawing
 			get
 			{
 				if (ascentInPixels == null)
-					ascentInPixels = Size * Control.FontFamily.GetCellAscent (Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
+					ascentInPixels = Size * Control.FontFamily.GetCellAscent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
 				return ascentInPixels ?? 0f;
 			}
 		}
@@ -180,7 +191,7 @@ namespace Eto.Platform.Windows.Drawing
 			}
 		}
 
-		public float LineHeight { get { return Size * Control.FontFamily.GetLineSpacing (Control.Style) / Control.FontFamily.GetEmHeight(Control.Style); } }
+		public float LineHeight { get { return Size * Control.FontFamily.GetLineSpacing(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style); } }
 
 		public float Size { get { return Control.SizeInPoints; } }
 	}

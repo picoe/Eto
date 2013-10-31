@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using Eto.Drawing;
 
@@ -8,16 +7,17 @@ namespace Eto.Test.Sections.Controls
 	{
 		public LabelSection()
 		{
-			var layout = new DynamicLayout(Padding.Empty, Size.Empty);
-			
-			layout.Add(NormalLabel(), true, true);
-			layout.Add(FontLabel(), true, true);
-			layout.Add(CenterLabel(), true, true);
-			layout.Add(RightLabel(), true, true);
-			layout.Add(MiddleLabel(), true, true);
-			layout.Add(BottomLabel(), true, true);
-			layout.Add(ColorLabel(), true, true);
-			layout.Add(NoWrapLabel(), true, true);
+			var layout = new DynamicLayout();
+
+			layout.Add(NormalLabel());
+			layout.Add(FontLabel());
+			layout.Add(NoWrapLabel());
+			layout.AddSeparateRow(null, UnderlineLabel(), HotkeyLabel(), HotkeyUnderlineLabel(), null);
+			layout.AddSeparateRow(null, ColorLabel(), BackgroundColorLabel(), null);
+			layout.Add(CenterLabel());
+			layout.Add(RightLabel());
+			layout.Add(MiddleLabel(), yscale: true);
+			layout.Add(BottomLabel(), yscale: true);
 
 			Content = layout;
 		}
@@ -35,7 +35,7 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Font Label",
-				Font = Fonts.Sans (12, FontStyle.Bold),
+				Font = Fonts.Sans(14, FontStyle.Bold),
 			};
 		}
 
@@ -44,7 +44,6 @@ namespace Eto.Test.Sections.Controls
 			return new Label
 			{
 				Text = "Center Align",
-				//BackgroundColor = Color.FromArgb (0xa0a0a0),
 				HorizontalAlign = HorizontalAlign.Center
 			};
 		}
@@ -64,7 +63,8 @@ namespace Eto.Test.Sections.Controls
 			{
 				Text = "Middle Center Align",
 				HorizontalAlign = HorizontalAlign.Center,
-				VerticalAlign = VerticalAlign.Middle
+				VerticalAlign = VerticalAlign.Middle,
+				BackgroundColor = Colors.AliceBlue
 			};
 		}
 
@@ -74,7 +74,8 @@ namespace Eto.Test.Sections.Controls
 			{
 				Text = "Bottom Center Align",
 				HorizontalAlign = HorizontalAlign.Center,
-				VerticalAlign = VerticalAlign.Bottom
+				VerticalAlign = VerticalAlign.Bottom,
+				BackgroundColor = Colors.AliceBlue
 			};
 		}
 
@@ -87,11 +88,46 @@ namespace Eto.Test.Sections.Controls
 			};
 		}
 
+		Control BackgroundColorLabel()
+		{
+			return new Label
+			{
+				Text = "Custom Background Color",
+				BackgroundColor = Colors.Green,
+			};
+		}
+
+		Control UnderlineLabel()
+		{
+			return new Label
+			{
+				Text = "Underlined Text",
+				Font = SystemFonts.Label(decoration: FontDecoration.Underline)
+			};
+		}
+
+		Control HotkeyLabel()
+		{
+			return new Label
+			{
+				Text = "Some &Hotkey"
+			};
+		}
+
+		Control HotkeyUnderlineLabel()
+		{
+			return new Label
+			{
+				Text = "Some Underlined &Hotkey",
+				Font = SystemFonts.Label(decoration: FontDecoration.Underline)
+			};
+		}
+
 		Control NoWrapLabel()
 		{
 			return new Label
 			{
-				Text = "No wrapping on this label",
+				Text = "No wrapping on this long label that should not wrap. No wrapping on this long label that should not wrap",
 				Wrap = WrapMode.None
 			};
 		}

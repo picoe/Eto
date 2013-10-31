@@ -7,7 +7,6 @@
     This is sample code and is freely distributable. 
 */ 
 
-using System;
 using System.Collections;
 using System.Drawing;
 using System.Drawing.Imaging;

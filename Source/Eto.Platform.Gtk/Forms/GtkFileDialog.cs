@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.IO;
 using Eto.Forms;
 using System.Collections.Generic;
@@ -49,7 +48,7 @@ namespace Eto.Platform.GtkSharp
 				filters = value.ToArray ();
 				foreach (var val in filters)
 				{
-					Gtk.FileFilter filter = new Gtk.FileFilter();
+					var filter = new Gtk.FileFilter();
 					filter.Name = val.Name;
 					foreach (string pattern in val.Extensions) filter.AddPattern("*" + pattern);
 					this.Control.AddFilter(filter);

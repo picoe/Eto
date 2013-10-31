@@ -1,13 +1,10 @@
 using System;
 using Eto.Drawing;
 using System.Collections.Generic;
-using System.Collections;
 using System.Runtime.Serialization;
-using System.Linq;
 
 #if XAML
 using System.Windows.Markup;
-using System.Xaml;
 
 #endif
 namespace Eto.Forms
@@ -22,7 +19,7 @@ namespace Eto.Forms
 		new IPixelLayout Handler { get { return (IPixelLayout)base.Handler; } }
 
 		List<Control> children;
-		List<Control> controls = new List<Control>();
+		readonly List<Control> controls = new List<Control>();
 
 		public override IEnumerable<Control> Controls
 		{
@@ -55,7 +52,7 @@ namespace Eto.Forms
 				container.Content = this;
 		}
 
-		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
+		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(PixelLayout), "Location");
 
 		public static Point GetLocation(Control control)
 		{
@@ -113,7 +110,7 @@ namespace Eto.Forms
 		}
 
 		[OnDeserialized]
-		private void OnDeserialized(StreamingContext context)
+		void OnDeserialized(StreamingContext context)
 		{
 			OnDeserialized();
 		}
@@ -138,14 +135,14 @@ namespace Eto.Forms
 			}
 			else
 			{
-				this.PreLoad += HandleDeserialized;
+				PreLoad += HandleDeserialized;
 			}
 		}
 
 		void HandleDeserialized(object sender, EventArgs e)
 		{
 			OnDeserialized(true);
-			this.PreLoad -= HandleDeserialized;
+			PreLoad -= HandleDeserialized;
 		}
 	}
 }

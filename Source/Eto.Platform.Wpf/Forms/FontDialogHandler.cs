@@ -41,7 +41,7 @@ namespace Eto.Platform.Wpf.Forms
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
 			if (Font != null) {
-				var fontHandler = Font.Handler as FontHandler;
+				var fontHandler = (FontHandler)Font.Handler;
 				Control.SelectedFontFamily = fontHandler.WpfFamily;
 				Control.SelectedFontPointSize = fontHandler.Size;
 				Control.SelectedFontStyle = fontHandler.WpfFontStyle;

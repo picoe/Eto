@@ -40,7 +40,7 @@
     <Reference Include="System.Core" />
     <Reference Include="monotouch" />
     <Reference Include="Newtonsoft.Json">
-      <HintPath>..\..\Libraries\Json.NET\Bin\Portable\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\Components\json.net-4.5.11\lib\ios\Newtonsoft.Json.dll</HintPath>
     </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
@@ -78,4 +78,10 @@
       </Properties>
     </MonoDevelop>
   </ProjectExtensions>
+  <ItemGroup>
+    <XamarinComponentReference Include="json.net">
+      <Version>4.5.11</Version>
+      <Visible>False</Visible>
+    </XamarinComponentReference>
+  </ItemGroup>
 </Project>

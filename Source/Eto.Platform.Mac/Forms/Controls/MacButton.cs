@@ -1,7 +1,5 @@
-using System;
 using Eto.Forms;
 using MonoMac.AppKit;
-using Eto.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {

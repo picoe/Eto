@@ -28,7 +28,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 					Handler.Format(new GtkGridCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 
 				// calling base crashes on windows
-				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererToggle.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererToggle.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 #else
@@ -64,7 +64,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
 		{
-			this.Control.Activatable = editable;
+			Control.Activatable = editable;
 		}
 
 		public override void SetValue (object dataItem, object value)
@@ -74,23 +74,21 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			}
 		}
 		
-		protected override GLib.Value GetValueInternal (object item, int column, int row)
+		protected override GLib.Value GetValueInternal (object dataItem, int dataColumn, int row)
 		{
 			if (Widget.Binding != null) {
-				var ret = Widget.Binding.GetValue (item);
+				var ret = Widget.Binding.GetValue (dataItem);
 				if (ret != null)
 					return new GLib.Value (ret);
 			}
-			return new GLib.Value ((bool)false);
+			return new GLib.Value(false);
 		}
 
 		public override void AttachEvent (string eventHandler)
 		{
 			switch (eventHandler) {
-			case GridView.EndCellEditEvent:
-				Control.Toggled += (sender, e) => {
-					Source.EndCellEditing (new Gtk.TreePath(e.Path), this.ColumnIndex);
-				};
+			case Grid.EndCellEditEvent:
+				Control.Toggled += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
 				base.AttachEvent (eventHandler);

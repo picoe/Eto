@@ -1,7 +1,7 @@
 using System;
 using MonoMac.ObjCRuntime;
-using MonoTouch.ObjCRuntime;
 using System.Runtime.InteropServices;
+using MonoTouch.ObjCRuntime;
 
 namespace Eto.Platform.Mac
 {
@@ -52,6 +52,13 @@ namespace Eto.Platform.Mac
 		public static Class GetMetaClass (string metaClassName)
 		{
 			return new Class (objc_getMetaClass (metaClassName));
+		}
+
+		static readonly IntPtr selInstancesRespondToSelector = Selector.GetHandle("instancesRespondToSelector:");
+
+		public static bool ClassInstancesRespondToSelector(IntPtr cls, IntPtr selector)
+		{
+			return Messaging.bool_objc_msgSend_IntPtr(cls, selInstancesRespondToSelector, selector);
 		}
 	}
 }

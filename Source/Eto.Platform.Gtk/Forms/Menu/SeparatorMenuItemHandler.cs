@@ -1,5 +1,4 @@
 using System;
-using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp

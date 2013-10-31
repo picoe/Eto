@@ -1,19 +1,18 @@
 #if DESKTOP
 using System;
-using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public partial class RadioAction : BaseAction
+	public partial class RadioAction
 	{
 		RadioMenuItem menuItem;
 
 		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			RadioMenuItem mi = new RadioMenuItem(generator, (Controller != null) ? Controller.menuItem : null);
+			var mi = new RadioMenuItem(generator, (Controller != null) ? Controller.menuItem : null);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
-			mi.Enabled = this.Enabled;
+			mi.Enabled = Enabled;
 			mi.Checked = Checked;
 			if (!string.IsNullOrEmpty(MenuItemStyle))
 				mi.Style = MenuItemStyle;
@@ -25,8 +24,8 @@ namespace Eto.Forms
 
 		class MenuConnector
 		{
-			RadioMenuItem menuItem;
-			RadioAction action;
+			readonly RadioMenuItem menuItem;
+			readonly RadioAction action;
 			
 			public MenuConnector(RadioAction action, RadioMenuItem menuItem)
 			{
@@ -36,22 +35,22 @@ namespace Eto.Forms
 				this.action.EnabledChanged += new EventHandler<EventArgs>(action_EnabledChanged).MakeWeak(e => this.action.EnabledChanged -= e);
 				this.action.CheckedChanged += new EventHandler<EventArgs>(action_CheckedChanged).MakeWeak(e => this.action.CheckedChanged -= e);
 			}
-			private bool blah = false;
+			bool changing;
 			
-			private void menuItem_Click(Object sender, EventArgs e)
+			void menuItem_Click(Object sender, EventArgs e)
 			{
-				if (!blah)
-				action.OnActivated(e);
+				if (!changing)
+					action.OnActivated(e);
 			}
 			
-			private void action_CheckedChanged(Object sender, EventArgs e)
+			void action_CheckedChanged(Object sender, EventArgs e)
 			{
-				blah = true;
+				changing = true;
 				menuItem.Checked = action.Checked;
-				blah = false;
+				changing = false;
 			}
 			
-			private void action_EnabledChanged(Object sender, EventArgs e)
+			void action_EnabledChanged(Object sender, EventArgs e)
 			{
 				menuItem.Enabled = action.Enabled;
 			}

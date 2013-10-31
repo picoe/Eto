@@ -1,19 +1,20 @@
+// can't use flipped right now - bug in monomac/xam.mac that causes crashing since FlippedView gets disposed incorrectly
+// has something to do with using layers (background colors) at the same time
+//#define USE_FLIPPED
+
 using System;
 using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.CoreAnimation;
-using MonoMac.Foundation;
-using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class ScrollableHandler : MacDockContainer<NSScrollView, Scrollable>, IScrollable
 	{
-		NSView view;
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;
+		Point scrollPosition;
 
 		public override NSView ContainerControl { get { return Control; } }
 
@@ -31,10 +32,20 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var cursor = Handler.Cursor;
 				if (cursor != null)
-					this.AddCursorRect(new SD.RectangleF(SD.PointF.Empty, this.Frame.Size), cursor.ControlObject as NSCursor);
+					AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
+			#if !USE_FLIPPED
+			public override void SetFrameSize(SD.SizeF newSize)
+			{
+				base.SetFrameSize(newSize);
+				Handler.ScrollPosition = Handler.scrollPosition;
+				// since we override the base
+				Handler.OnSizeChanged(EventArgs.Empty);
+				Handler.Widget.OnSizeChanged(EventArgs.Empty);
+			}
+			#endif
 		}
-
+		#if USE_FLIPPED
 		class FlippedView : NSView
 		{
 			public override bool IsFlipped
@@ -42,11 +53,10 @@ namespace Eto.Platform.Mac.Forms.Controls
 				get { return true; }
 			}
 		}
-
+		#endif
 		public ScrollableHandler()
 		{
 			Enabled = true;
-			view = new FlippedView();
 			Control = new EtoScrollView
 			{
 				Handler = this, 
@@ -56,26 +66,50 @@ namespace Eto.Platform.Mac.Forms.Controls
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
-				DocumentView = view
+				#if USE_FLIPPED
+				DocumentView = new FlippedView()
+				#else
+				DocumentView = new NSView()
+				#endif
 			};
+
 			// only draw dirty regions, instead of entire scroll area
 			Control.ContentView.CopiesOnScroll = true;
+			#if !USE_FLIPPED
+			HandleEvent(Scrollable.ScrollEvent);
+			#endif
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
+				#if !USE_FLIPPED
+				case Eto.Forms.Control.SizeChangedEvent:
+					// handled by delegate
+					break;
+				#endif
 				case Scrollable.ScrollEvent:
 					Control.ContentView.PostsBoundsChangedNotifications = true;
-					this.AddObserver(NSView.BoundsChangedNotification, e =>
+					AddObserver(NSView.BoundsChangedNotification, e =>
 					{
-						var w = (Scrollable)e.Widget;
-						w.OnScroll(new ScrollEventArgs(w.ScrollPosition));
+						var handler = e.Handler as ScrollableHandler;
+						if (handler != null)
+						{
+							#if !USE_FLIPPED
+							var view = (NSView)handler.Control.DocumentView;
+							var contentBounds = handler.Control.ContentView.Bounds;
+							if (view.IsFlipped)
+								handler.scrollPosition = contentBounds .Location.ToEtoPoint();
+							else
+								handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds .Y));
+							#endif
+							handler.Widget.OnScroll(new ScrollEventArgs(handler.ScrollPosition));
+						}
 					}, Control.ContentView);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -117,13 +151,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override NSView ContentControl
 		{
-			get { return view; }
+			get { return (NSView)Control.DocumentView; }
 		}
 
 		public override void LayoutChildren()
 		{
 			base.LayoutChildren();
 			UpdateScrollSizes();
+			ScrollPosition = scrollPosition;
 		}
 
 		Size GetBorderSize()
@@ -131,25 +166,40 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return Border == BorderType.None ? Size.Empty : new Size(2, 2);
 		}
 
-		protected override bool UseContentSize { get { return false; } }
-
-		public override Size GetPreferredSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			return Size.Min(availableSize, base.GetPreferredSize(availableSize));
+			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize) + GetBorderSize());
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SD.RectangleF GetContentFrame()
 		{
-			var content = Content.GetMacAutoSizing();
-			if (content != null)
-			{
-				return Content.GetPreferredSize(availableSize) + GetBorderSize();
-			}
-			return base.GetNaturalSize(availableSize);
-		}
+			var contentSize = Content.GetPreferredSize(SizeF.MaxValue);
 
+			if (ExpandContentWidth)
+				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
+			if (ExpandContentHeight)
+				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
+			return new RectangleF(contentSize).ToSD();
+		}
+		#if !USE_FLIPPED
+		protected override NSViewResizingMask ContentResizingMask()
+		{
+			return (NSViewResizingMask)0;
+		}
+		#endif
 		void InternalSetFrameSize(SD.SizeF size)
 		{
+			var view = (NSView)Control.DocumentView;
+			if (!view.IsFlipped)
+			{
+				var ctl = Content.GetContainerView();
+				if (ctl != null)
+				{
+					var clientHeight = Control.DocumentVisibleRect.Size.Height;
+					ctl.Frame = new SD.RectangleF(new SD.PointF(0, Math.Max(0, clientHeight - size.Height)), size);
+					size.Height = Math.Max(clientHeight, size.Height);
+				}
+			}
 			if (size != view.Frame.Size)
 			{
 				view.SetFrameSize(size);
@@ -158,14 +208,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public void UpdateScrollSizes()
 		{
-			var contentSize = Content.GetPreferredSize(Size.MaxValue);
-
-			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(this.ClientSize.Width, contentSize.Width);
-			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(this.ClientSize.Height, contentSize.Height);
-
-			InternalSetFrameSize(contentSize.ToSDSizeF());
+			InternalSetFrameSize(GetContentFrame().Size);
 		}
 
 		public override Color BackgroundColor
@@ -185,25 +228,36 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{ 
-				var loc = Control.ContentView.Bounds.Location;
-				if (view.IsFlipped)
-					return loc.ToEtoPoint();
-				else
+				#if USE_FLIPPED
+				if (Widget.Loaded)
+				{
+					var view = (NSView)Control.DocumentView;
+					var loc = Control.ContentView.Bounds.Location;
+					if (view.IsFlipped)
+						return loc.ToEtoPoint();
 					return new Point((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
+				}
+				#endif
+				return scrollPosition;
 			}
 			set
 			{ 
-				if (view.IsFlipped)
-					Control.ContentView.ScrollToPoint(value.ToSDPointF());
-				else
-					Control.ContentView.ScrollToPoint(new SD.PointF(value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
-				Control.ReflectScrolledClipView(Control.ContentView);
+				if (Widget.Loaded)
+				{
+					var view = (NSView)Control.DocumentView;
+					if (view.IsFlipped)
+						Control.ContentView.ScrollToPoint(value.ToSDPointF());
+					else
+						Control.ContentView.ScrollToPoint(new SD.PointF(value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
+					Control.ReflectScrolledClipView(Control.ContentView);
+				}
+				scrollPosition = value;
 			}
 		}
 
 		public Size ScrollSize
 		{			
-			get { return view.Frame.Size.ToEtoSize(); }
+			get { return ((NSView)Control.DocumentView).Frame.Size.ToEtoSize(); }
 			set
 			{ 
 				InternalSetFrameSize(value.ToSDSizeF());
@@ -232,9 +286,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 				contentSize.Height = Math.Max(contentSize.Height, MinimumSize.Height);
 			}
 			if (ExpandContentWidth)
-				contentSize.Width = Math.Max(this.ClientSize.Width, contentSize.Width);
+				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
-				contentSize.Height = Math.Max(this.ClientSize.Height, contentSize.Height);
+				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
 			InternalSetFrameSize(contentSize);
 		}
 

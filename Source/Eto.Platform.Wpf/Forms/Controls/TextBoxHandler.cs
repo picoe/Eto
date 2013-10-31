@@ -20,6 +20,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control = new mwc.WatermarkTextBox();
 		}
 
+		public override void OnLoad(EventArgs e)
+		{
+			base.OnLoad(e);
+			Control.GotKeyboardFocus += Control_GotKeyboardFocus;
+		}
+
+		void Control_GotKeyboardFocus(object sender, sw.Input.KeyboardFocusChangedEventArgs e)
+		{
+			Control.SelectAll();
+			Control.GotKeyboardFocus -= Control_GotKeyboardFocus;
+		}
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)
 		{

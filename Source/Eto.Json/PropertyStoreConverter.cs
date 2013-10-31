@@ -1,7 +1,6 @@
 using System;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Linq;
 using System.Collections.Generic;
 using System.Reflection;
 
@@ -16,10 +15,10 @@ namespace Eto.Json
 
 		public override object ReadJson (Newtonsoft.Json.JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
 		{
-			var store = existingValue as PropertyStore;
-			var items = JArray.ReadFrom (reader);
+			var store = (PropertyStore)existingValue;
+			var items = JToken.ReadFrom (reader);
 
-			foreach (var item in (IEnumerable<JToken>)items)
+			foreach (var item in items)
 			{
 				var typeName = (string)item["$type"];
 				if (typeName != null) {

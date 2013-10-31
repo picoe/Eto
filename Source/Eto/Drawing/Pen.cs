@@ -126,10 +126,10 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the pens</param>
 		public Func<Color, float, Pen> Instantiator (Generator generator = null)
 		{
-			var handler = generator.CreateShared<IPen> ();
+			var sharedHandler = generator.CreateShared<IPen> ();
 			return (color, thickness) => {
-				var control = handler.Create (color, thickness);
-				return new Pen (handler, control);
+				var control = sharedHandler.Create (color, thickness);
+				return new Pen (sharedHandler, control);
 			};
 		}
 

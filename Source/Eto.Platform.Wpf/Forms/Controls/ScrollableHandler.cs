@@ -165,7 +165,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get
 			{
 				if (!Widget.Loaded)
-					return base.Size;
+					return Size;
 				EnsureLoaded();
 				var info = scroller.GetScrollInfo();
 				if (info != null)

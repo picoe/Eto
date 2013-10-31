@@ -1,4 +1,3 @@
-using System;
 using Gtk;
 using Gdk;
 

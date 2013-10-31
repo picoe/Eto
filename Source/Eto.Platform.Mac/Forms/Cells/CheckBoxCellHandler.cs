@@ -4,7 +4,6 @@ using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.ObjCRuntime;
 using Eto.Drawing;
-using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -45,13 +44,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override void SetBackgroundColor (NSCell cell, Color color)
 		{
-			var c = cell as EtoCell;
+			var c = (EtoCell)cell;
 			c.BackgroundColor = color.ToNS ();
 		}
 
 		public override Color GetBackgroundColor (NSCell cell)
 		{
-			var c = cell as EtoCell;
+			var c = (EtoCell)cell;
 			return c.BackgroundColor.ToEto ();
 		}
 

@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using System.Linq;
 using Eto.Forms;
 using MonoMac.AppKit;
@@ -97,11 +96,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		protected override Size GetNaturalSize (Size availableSize)
+		protected override SizeF GetNaturalSize (SizeF availableSize)
 		{
-			Size size = base.GetNaturalSize(availableSize);
+			var size = base.GetNaturalSize(availableSize);
 			foreach (var tab in Widget.TabPages) {
-				size = Size.Max (size, tab.GetPreferredSize(availableSize));
+				size = SizeF.Max (size, tab.GetPreferredSize(availableSize));
 			}
 			return size;
 		}

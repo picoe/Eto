@@ -1,9 +1,9 @@
-using System;
 using Eto.IO;
 using Eto.Drawing;
 using MonoMac.AppKit;
 using System.IO;
 using Eto.Platform.Mac.Drawing;
+
 namespace Eto.Platform.Mac.IO
 {
 	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons

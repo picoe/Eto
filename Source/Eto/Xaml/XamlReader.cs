@@ -4,8 +4,6 @@ using System;
 using System.IO;
 using System.Reflection;
 using System.Xaml;
-using System.Collections.Generic;
-using System.Windows.Markup;
 
 namespace Eto.Xaml
 {

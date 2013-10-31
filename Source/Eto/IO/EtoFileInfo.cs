@@ -10,11 +10,6 @@ namespace Eto.IO
 		{
 		}
 
-		public static EtoFileInfo GetFile(string fileName)
-		{
-			return null;
-		}
-		
 		public abstract bool ReadOnly
 		{
 			get;
@@ -67,12 +62,12 @@ namespace Eto.IO
 		{
 			var dir = obj as EtoFileInfo;
 			if (dir == null) return false;
-			return this.FullName.Equals (dir.FullName, StringComparison.OrdinalIgnoreCase);
+			return FullName.Equals (dir.FullName, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public override int GetHashCode ()
 		{
-			return this.FullName.GetHashCode ();
+			return FullName.GetHashCode ();
 		}
 		
 		public static bool operator == (EtoFileInfo file1, EtoFileInfo file2)
@@ -88,7 +83,7 @@ namespace Eto.IO
 		
 		public virtual int CompareTo (EtoFileInfo other)
 		{
-			return string.Compare(this.FullName, other.FullName, StringComparison.CurrentCulture);
+			return string.Compare(FullName, other.FullName, StringComparison.CurrentCulture);
 		}
 	}
 }

@@ -24,7 +24,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		protected bool SkipSelectionChanged { get; set; }
 		protected swc.DataGridColumn CurrentColumn { get; set; }
 
-		public GridHandler ()
+		protected GridHandler()
 		{
 			Control = (C)new swc.DataGrid {
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
@@ -235,7 +235,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				set
 				{
 					font = value;
-					FontHandler.Apply (Cell, font);
+					FontHandler.Apply (Cell, null, font);
 				}
 			}
 

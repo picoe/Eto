@@ -9,18 +9,19 @@ namespace Eto.Platform.Windows
 {
 	public class ScrollableHandler : WindowsDockContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
-		swf.Panel content;
+		readonly swf.Panel content;
 		bool expandWidth = true;
 		bool expandHeight = true;
+		bool finalLayoutPass;
 
-		public class CustomScrollable : System.Windows.Forms.Panel
+		public class CustomScrollable : swf.Panel
 		{
 			public ScrollableHandler Handler { get; set; }
 
 			protected override bool ProcessDialogKey(swf.Keys keyData)
 			{
-				swf.KeyEventArgs e = new swf.KeyEventArgs(keyData);
-				base.OnKeyDown(e);
+				var e = new swf.KeyEventArgs(keyData);
+				OnKeyDown(e);
 				if (!e.Handled)
 				{
 					// Prevent firing the keydown event twice for the same key
@@ -37,16 +38,43 @@ namespace Eto.Platform.Windows
 
 			protected override sd.Point ScrollToControl(swf.Control activeControl)
 			{
-				/*if (autoScrollToControl) return base.ScrollToControl(activeControl);
-				else return this.AutoScrollPosition;*/
-				return this.AutoScrollPosition;
+				return AutoScrollPosition;
 			}
 
-			protected override void OnClientSizeChanged(EventArgs e)
+			protected override void OnLayout(swf.LayoutEventArgs levent)
 			{
-				base.OnClientSizeChanged(e);
-				Handler.UpdateExpanded();
+				var contentControl = Handler.Content.GetWindowsHandler();
+				if (contentControl != null)
+				{
+					var minSize = new Size();
+					if (Handler.ExpandContentWidth)
+						minSize.Width = Math.Max(0, ClientSize.Width - (Handler.finalLayoutPass ? 0 : swf.SystemInformation.VerticalScrollBarWidth));
+					if (Handler.ExpandContentHeight)
+						minSize.Height = Math.Max(0, ClientSize.Height - (Handler.finalLayoutPass ? 0 : swf.SystemInformation.HorizontalScrollBarHeight));
+
+					// set minimum size for the content if we want to extend to the size of the scrollable width/height
+					contentControl.ParentMinimumSize = minSize;
+				}
+				base.OnLayout(levent);
 			}
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			// ensure we don't show scrollbars unnecessarily:
+			// perform layout excluding both scrollbars so we don't show them unless necessary 
+			Control.ResumeLayout();
+			// final layout pass will extend to full size excluding only visible scrollbars
+			finalLayoutPass = true;
+			Control.PerformLayout();
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Control.SuspendLayout();
+			finalLayoutPass = false;
 		}
 
 		public override swf.Control ContainerContentControl
@@ -66,19 +94,16 @@ namespace Eto.Platform.Windows
 			base.SetContentScale(!ExpandContentWidth, !ExpandContentHeight);
 		}
 
-		public override Size DesiredSize
+		public override Size GetPreferredSize(Size availableSize)
 		{
-			get
-			{
-				var baseSize = base.UserDesiredSize;
-				var size = base.DesiredSize;
-				// if we have set to a specific size, then try to use that
-				if (baseSize.Width >= 0)
-					size.Width = baseSize.Width;
-				if (baseSize.Height >= 0)
-					size.Height = baseSize.Height;
-				return size;
-			}
+			var baseSize = UserDesiredSize;
+			var size = base.GetPreferredSize(availableSize);
+			// if we have set to a specific size, then try to use that
+			if (baseSize.Width >= 0)
+				size.Width = baseSize.Width;
+			if (baseSize.Height >= 0)
+				size.Height = baseSize.Height;
+			return size;
 		}
 
 		public BorderType Border
@@ -102,13 +127,13 @@ namespace Eto.Platform.Windows
 				switch (value)
 				{
 					case BorderType.Bezel:
-						Control.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+						Control.BorderStyle = swf.BorderStyle.Fixed3D;
 						break;
 					case BorderType.Line:
-						Control.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+						Control.BorderStyle = swf.BorderStyle.FixedSingle;
 						break;
 					case BorderType.None:
-						Control.BorderStyle = System.Windows.Forms.BorderStyle.None;
+						Control.BorderStyle = swf.BorderStyle.None;
 						break;
 					default:
 						throw new NotSupportedException();
@@ -128,6 +153,7 @@ namespace Eto.Platform.Windows
 				AutoSize = true,
 				AutoSizeMode = swf.AutoSizeMode.GrowAndShrink
 			};
+			Control.SuspendLayout();
 			Control.VerticalScroll.SmallChange = 5;
 			Control.VerticalScroll.LargeChange = 10;
 			Control.HorizontalScroll.SmallChange = 5;
@@ -142,25 +168,6 @@ namespace Eto.Platform.Windows
 			Control.Controls.Add(content);
 		}
 
-		void UpdateExpanded()
-		{
-			var contentControl = Content.GetWindowsHandler();
-			if (contentControl != null)
-			{
-
-				var minSize = Control.ClientSize;
-				if (!ExpandContentWidth) minSize.Width = 0;
-				else minSize.Width = Math.Max(0, minSize.Width);
-				if (!ExpandContentHeight) minSize.Height = 0;
-				else minSize.Height = Math.Max(0, minSize.Height);
-
-				// set the scale of the content based on whether we want it to or not
-				contentControl.SetScale(!ExpandContentWidth, !ExpandContentHeight);
-				// set minimum size for the content if we want to extend to the size of the scrollable width/height
-				contentControl.ParentMinimumSize = minSize.ToEto();
-			}
-		}
-
 		protected override void SetContent(swf.Control contentControl)
 		{
 			content.Controls.Clear();
@@ -172,9 +179,8 @@ namespace Eto.Platform.Windows
 			switch (handler)
 			{
 				case Scrollable.ScrollEvent:
-					Control.Scroll += delegate(object sender, System.Windows.Forms.ScrollEventArgs e)
-					{
-						this.Widget.OnScroll(new ScrollEventArgs(this.ScrollPosition));
+					Control.Scroll += delegate {
+						Widget.OnScroll(new ScrollEventArgs(ScrollPosition));
 					};
 					break;
 				default:
@@ -199,7 +205,7 @@ namespace Eto.Platform.Windows
 
 		public Size ScrollSize
 		{
-			get { return this.Control.DisplayRectangle.Size.ToEto(); }
+			get { return Control.DisplayRectangle.Size.ToEto(); }
 			set { Control.AutoScrollMinSize = value.ToSD(); }
 		}
 
@@ -227,7 +233,8 @@ namespace Eto.Platform.Windows
 				{
 					expandWidth = value;
 					SetScale();
-					UpdateExpanded();
+					if (Widget.Loaded)
+						Control.PerformLayout();
 				}
 			}
 		}
@@ -241,7 +248,8 @@ namespace Eto.Platform.Windows
 				{
 					expandHeight = value;
 					SetScale();
-					UpdateExpanded();
+					if (Widget.Loaded)
+						Control.PerformLayout();
 				}
 			}
 		}

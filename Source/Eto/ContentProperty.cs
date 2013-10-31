@@ -1,3 +1,4 @@
+#if !XAML
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -5,7 +6,6 @@ using System.Text;
 
 namespace Eto
 {
-#if !XAML
 	/// <summary>
 	/// Attribute to indicate which property of a type is the content property
 	/// </summary>
@@ -36,5 +36,5 @@ namespace Eto
 		/// </summary>
 		public string Name { get; private set; }
 	}
-#endif
 }
+#endif

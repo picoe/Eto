@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac.Forms
 				var mouseLocation = NSEvent.CurrentMouseLocation;
 				var origin = NSScreen.Screens[0].Frame.Bottom;
 				mouseLocation.Y = origin - mouseLocation.Y;
-				return Platform.Conversions.ToEto (mouseLocation);
+				return mouseLocation.ToEto();
 			}
 		}
 

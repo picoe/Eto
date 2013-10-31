@@ -19,11 +19,11 @@ namespace Eto.Platform.GtkSharp
 		where W: Window
 	{
 		Gtk.VBox vbox;
-		Gtk.VBox actionvbox;
-		Gtk.Box topToolbarBox;
+		readonly Gtk.VBox actionvbox;
+		readonly Gtk.Box topToolbarBox;
 		Gtk.Box menuBox;
 		Gtk.Box containerBox;
-		Gtk.Box bottomToolbarBox;
+		readonly Gtk.Box bottomToolbarBox;
 		MenuBar menuBar;
 		Icon icon;
 		ToolBar toolBar;
@@ -33,7 +33,7 @@ namespace Eto.Platform.GtkSharp
 		WindowStyle style;
 		bool topmost;
 
-		public GtkWindow ()
+		protected GtkWindow ()
 		{
 			vbox = new Gtk.VBox ();
 			actionvbox = new Gtk.VBox ();
@@ -175,7 +175,7 @@ namespace Eto.Platform.GtkSharp
 			vbox.PackStart (bottomToolbarBox, false, false, 0);
 			
 			Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
-				if (this.WindowState == WindowState.Normal) {
+				if (WindowState == WindowState.Normal) {
 					if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Maximized) != 0) {
 						restoreBounds = Widget.Bounds;
 					} else if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0) {
@@ -199,16 +199,16 @@ namespace Eto.Platform.GtkSharp
 					args.RetVal = !CloseWindow ();
 				};
 				break;
-			case Window.ShownEvent:
+			case Eto.Forms.Control.ShownEvent:
 				Control.Shown += delegate {
 					Widget.OnShown (EventArgs.Empty);
 				};
 				break;
 			case Window.WindowStateChangedEvent:
 				{
-				var oldState = this.WindowState;
-				Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args) {
-					var newState = this.WindowState;
+				var oldState = WindowState;
+				Control.WindowStateEvent += delegate {
+					var newState = WindowState;
 					if (newState != oldState) {
 						oldState = newState;
 						Widget.OnWindowStateChanged (EventArgs.Empty);
@@ -216,11 +216,11 @@ namespace Eto.Platform.GtkSharp
 				};
 				}
 				break;
-			case Window.SizeChangedEvent:
+			case Eto.Forms.Control.SizeChangedEvent:
 				{
 				Size? oldSize = null;
 				Control.SizeAllocated += (o, args) => {
-					var newSize = this.Size;
+					var newSize = Size;
 					if (Control.IsRealized && oldSize != newSize) {
 						Widget.OnSizeChanged (EventArgs.Empty);
 						oldSize = newSize;
@@ -276,7 +276,7 @@ namespace Eto.Platform.GtkSharp
 				foreach (var child in item.MenuItems) {
 					var actionItem = child as MenuActionItem;
 					if (actionItem != null && actionItem.Shortcut != Key.None) {
-						var widget = actionItem.ControlObject as Gtk.Widget;
+						var widget = (Gtk.Widget)actionItem.ControlObject;
 						var key = new Gtk.AccelKey (actionItem.Shortcut.ToGdkKey (), actionItem.Shortcut.ToGdkModifier (), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator ("activate", accelGroup, key);
 					}
@@ -424,7 +424,7 @@ namespace Eto.Platform.GtkSharp
 			set { Control.Opacity = value; }
 		}
 
-		Gtk.Window IGtkWindow.Control { get { return (Gtk.Window)Control; } }
+		Gtk.Window IGtkWindow.Control { get { return Control; } }
 
 		public Screen Screen
 		{
@@ -432,12 +432,12 @@ namespace Eto.Platform.GtkSharp
 			{
 				var screen = Control.Screen;
 				var gdkWindow = Control.GdkWindow;
-				if (screen != null && gdkWindow != null) {
-					var monitor = screen.GetMonitorAtWindow (gdkWindow);
-					return new Screen (Generator, new ScreenHandler (screen, monitor));
+				if (screen != null && gdkWindow != null)
+				{
+					var monitor = screen.GetMonitorAtWindow(gdkWindow);
+					return new Screen(Generator, new ScreenHandler(screen, monitor));
 				}
-				else
-					return null;
+				return null;
 			}
 		}
 

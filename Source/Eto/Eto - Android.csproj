@@ -12,8 +12,6 @@
     <MonoAndroidAssetsPrefix>Assets</MonoAndroidAssetsPrefix>
     <MonoAndroidResourcePrefix>Resources</MonoAndroidResourcePrefix>
     <AssemblyName>Eto.Android</AssemblyName>
-    <ReleaseVersion>
-    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -251,5 +249,6 @@
     <Compile Include="Forms\Mouse.cs" />
     <Compile Include="Forms\Range.cs" />
     <Compile Include="Forms\Screen.cs" />
+    <Compile Include="Drawing\SystemFonts.cs" />
   </ItemGroup>
 </Project>

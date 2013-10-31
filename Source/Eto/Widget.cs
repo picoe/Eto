@@ -183,7 +183,7 @@ namespace Eto
 					handler.Dispose();
 				Handler = null;
 			}
-			//Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", this.GetType ().Name);
+			//Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
 		}
 	}
 }

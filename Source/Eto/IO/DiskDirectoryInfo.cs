@@ -1,14 +1,11 @@
-using System;
-using System.Collections;
 using System.IO;
 using System.Collections.Generic;
-using System.Linq;
 
 namespace Eto.IO
 {
 	public class DiskDirectoryInfo : EtoDirectoryInfo
 	{
-		DirectoryInfo info;
+		readonly DirectoryInfo info;
 		EtoDirectoryInfo parent;
 		
 		public DiskDirectoryInfo(DirectoryInfo directoryInfo)
@@ -70,7 +67,7 @@ namespace Eto.IO
 				if (
 					((diskDir.Attributes & FileAttributes.Hidden) == 0)
 					&& ((diskDir.Attributes & FileAttributes.System) == 0)
-					&& (!diskDir.Name.StartsWith("."))
+					&& (!diskDir.Name.StartsWith(".", System.StringComparison.Ordinal))
 					)
 				{
 					yield return new DiskDirectoryInfo(diskDir);

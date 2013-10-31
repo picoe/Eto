@@ -45,19 +45,17 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 	{
 		public override void AddCells (Gtk.TreeViewColumn column)
 		{
-			column.PackStart (this.Control, true);
+			column.PackStart(Control, true);
 		}
 		
-		public override void AttachEvent (string eventHandler)
+		public override void AttachEvent (string id)
 		{
-			switch (eventHandler) {
-			case GridView.BeginCellEditEvent:
-				Control.EditingStarted += (sender, e) => {
-					Source.BeginCellEditing (new Gtk.TreePath (e.Path), ColumnIndex);
-				};
+			switch (id) {
+			case Grid.BeginCellEditEvent:
+				Control.EditingStarted += (sender, e) => Source.BeginCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
-				base.AttachEvent (eventHandler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -94,10 +92,10 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 
 		protected void ReBind ()
 		{
-			if (this.dataIndex != null) {
-				var dataIndex = this.dataIndex.Value;
-				BindCell (ref dataIndex);
-				BindBase (Control, ref dataIndex);
+			if (dataIndex != null) {
+				var dataIndexValue = dataIndex.Value;
+				BindCell (ref dataIndexValue);
+				BindBase (Control, ref dataIndexValue);
 			}
 		}
 
@@ -152,15 +150,15 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		
 		protected abstract GLib.Value GetValueInternal (object dataItem, int dataColumn, int row);
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.CellFormattingEvent:
 				FormattingEnabled = true;
 				ReBind ();
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

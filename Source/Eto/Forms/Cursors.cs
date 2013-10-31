@@ -1,5 +1,4 @@
 #if DESKTOP
-using System;
 using System.Collections.Generic;
 
 namespace Eto.Forms
@@ -13,7 +12,7 @@ namespace Eto.Forms
 	/// </remarks>
 	public static class Cursors
 	{
-		static object cursorCache = new object();
+		static readonly object cursorCache = new object();
 
 		static Cursor GetCursor (CursorType type, Generator generator = null)
 		{

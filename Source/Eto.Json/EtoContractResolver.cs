@@ -1,10 +1,7 @@
 using System;
-using System.IO;
-using json = Newtonsoft.Json;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using System.Reflection;
-using System.Runtime.Serialization;
 
 namespace Eto.Json
 {

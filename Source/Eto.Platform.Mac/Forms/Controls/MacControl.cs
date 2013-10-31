@@ -1,10 +1,8 @@
-using System;
 using Eto.Forms;
 using MonoMac.AppKit;
 using Eto.Drawing;
-using MonoMac.Foundation;
-using System.Collections.Generic;
 using Eto.Platform.Mac.Drawing;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
@@ -33,11 +31,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				font = value;
-				if (font != null)
-					Control.Font = font.ControlObject as NSFont;
-				else
-					Control.Font = null;
-				Control.SizeToFit();
+				Control.Font = font.ToNSFont();
+				Control.AttributedStringValue = font.AttributedString(Control.AttributedStringValue);
 				LayoutIfNeeded();
 			}
 		}

@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Collections.Specialized;
 using Eto.Forms;
 using System.Collections;
-using System.ComponentModel;
 
 namespace Eto.Platform.CustomControls
 {
@@ -454,7 +452,7 @@ namespace Eto.Platform.CustomControls
 				CollectionChanged (this, args);
 		}
 
-		IEnumerable<ITreeGridItem> GetParents (ITreeGridItem value)
+		static IEnumerable<ITreeGridItem> GetParents (ITreeGridItem value)
 		{
 			ITreeGridItem parent = value.Parent;
 			while (parent != null) {
@@ -467,8 +465,8 @@ namespace Eto.Platform.CustomControls
 		{
 			var parents = GetParents (value).Reverse ();
 
-			foreach (var parent in parents) {
-				var row = IndexOf (parent);
+			foreach (var item in parents) {
+				var row = IndexOf (item);
 				if (row >= 0 && !IsExpanded(row))
 					ExpandRow (row);
 			}

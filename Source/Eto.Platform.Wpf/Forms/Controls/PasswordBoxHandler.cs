@@ -15,7 +15,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public PasswordBoxHandler()
 		{
-			Control = new swc.PasswordBox { };
+			Control = new swc.PasswordBox();
 		}
 
 		public override sw.Size GetPreferredSize(sw.Size constraint)

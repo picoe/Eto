@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using Eto.Platform.GtkSharp.Forms.Cells;
 

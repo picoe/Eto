@@ -1,13 +1,9 @@
-using System;
-using System.Reflection;
 using Eto.Forms;
 using Eto.Drawing;
 using Eto.IO;
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Platform.Windows.Drawing;
-using System.Collections.Generic;
-using System.IO;
 using Eto.Platform.Windows.Forms;
 using Eto.Platform.Windows.Forms.Printing;
 using Eto.Platform.Windows.Forms.Controls;

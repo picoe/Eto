@@ -1,9 +1,8 @@
 #if DESKTOP
-using System;
 
 namespace Eto.Forms
 {
-	public partial interface IListBox : IListControl
+	public partial interface IListBox
 	{
 		ContextMenu ContextMenu { get; set; }
 	}

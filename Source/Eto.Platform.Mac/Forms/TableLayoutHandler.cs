@@ -10,7 +10,6 @@ using NSView = MonoTouch.UIKit.UIView;
 using IMacView = Eto.Platform.iOS.Forms.IIosView;
 using MacContainer = Eto.Platform.iOS.Forms.IosLayout<MonoTouch.UIKit.UIView, Eto.Forms.TableLayout>;
 
-
 #elif OSX
 using MonoMac.AppKit;
 using Eto.Platform.Mac.Forms.Controls;
@@ -89,11 +88,10 @@ namespace Eto.Platform.Mac.Forms
 			LayoutChildren();
 		}
 
-		public override Size GetPreferredSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var baseSize = base.GetPreferredSize(availableSize);
 			if (views == null)
-				return baseSize;
+				return SizeF.Empty;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
 			float totalxpadding = Padding.Horizontal + Spacing.Width * (widths.Length - 1);
@@ -116,7 +114,7 @@ namespace Eto.Platform.Mac.Forms
 					var view = views[y, x];
 					if (view != null && view.Visible)
 					{
-						var size = view.GetPreferredSize(availableSize);
+						var size = view.GetPreferredSize(Size.MaxValue);
 						if (size.Width > widths[x])
 						{
 							requiredx += size.Width - widths[x];
@@ -129,7 +127,7 @@ namespace Eto.Platform.Mac.Forms
 						}
 					}
 				}
-			return Size.Max(baseSize, new Size((int)requiredx, (int)requiredy));
+			return new SizeF(requiredx, requiredy);
 		}
 
 		public override void LayoutChildren()

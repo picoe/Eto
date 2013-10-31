@@ -6,7 +6,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms
 {
-	internal class MacModal : NSObject
+	class MacModal : NSObject
 	{
 		[Export("alertDidEnd:returnCode:contextInfo:")]
 		public void AlertDidEnd (NSAlert alert, int returnCode, IntPtr contextInfo)

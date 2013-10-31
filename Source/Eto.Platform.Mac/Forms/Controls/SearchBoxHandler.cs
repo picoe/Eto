@@ -54,22 +54,22 @@ namespace Eto.Platform.Mac.Forms.Controls
 			MaxLength = -1;
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var size = base.GetNaturalSize(availableSize);
 			size.Width = Math.Max(100, size.Height);
 			return size;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case TextArea.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.Changed += HandleTextChanged;
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -97,8 +97,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public string PlaceholderText
 		{
-			get { return ((NSTextFieldCell)Control.Cell).PlaceholderString; }
-			set { ((NSTextFieldCell)Control.Cell).PlaceholderString = value ?? string.Empty; }
+			get { return Control.Cell.PlaceholderString; }
+			set { Control.Cell.PlaceholderString = value ?? string.Empty; }
 		}
 
 		public void SelectAll()

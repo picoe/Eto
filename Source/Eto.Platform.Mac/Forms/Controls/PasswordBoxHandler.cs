@@ -1,9 +1,7 @@
 using System;
 using Eto.Forms;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Controls;
-using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {

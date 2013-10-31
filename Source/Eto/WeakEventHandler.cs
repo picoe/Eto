@@ -69,7 +69,7 @@ namespace Eto
 		/// <param name="e">Event arguments</param>
 		public void Invoke (object sender, E e)
 		{
-			T target = (T)reference.Target;
+			var target = (T)reference.Target;
 
 			if (target != null)
 				openHandler.Invoke (target, sender, e);

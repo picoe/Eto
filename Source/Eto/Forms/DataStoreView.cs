@@ -1,7 +1,5 @@
 using System;
-using System.Collections.ObjectModel;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.Linq;
 
 namespace Eto.Forms
@@ -78,8 +76,8 @@ namespace Eto.Forms
 		/// </summary>
 		readonly GridItemCollection view = new GridItemCollection();
 		readonly MyComparer comparer = new MyComparer();
-		List<int> viewToModel = null;
-		Dictionary<int, int> modelToView = null;
+		List<int> viewToModel;
+		Dictionary<int, int> modelToView;
 
 		IDataStore model;
 		public IDataStore Model
@@ -191,8 +189,7 @@ namespace Eto.Forms
 		/// </summary>
 		void UpdateView()
 		{
-			if (view != null &&
-				model != null)
+			if (view != null && model != null)
 			{
 				var temp = new DataStoreVirtualCollection<object>(model);
 
@@ -200,8 +197,8 @@ namespace Eto.Forms
 				var viewItems = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
 
 				// sort if needed
-				if (this.comparer != null)
-					viewItems.Sort(this.comparer);
+				if (comparer != null)
+					viewItems.Sort(comparer);
 
 				// Clear and re-add the list
 				view.Clear();
@@ -231,9 +228,8 @@ namespace Eto.Forms
 					var viewIndex = 0;
 					foreach (var o in viewItems)
 					{
-						var modelIndex = -1;
-						if (o != null &&
-							modelIndexes.TryGetValue(o, out modelIndex))
+						int modelIndex = -1;
+						if (o != null && modelIndexes.TryGetValue(o, out modelIndex))
 						{
 							modelToView[modelIndex] = viewIndex;
 						}

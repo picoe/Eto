@@ -15,7 +15,7 @@ namespace Eto.Forms
 		{
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource(Assembly.GetCallingAssembly(), iconResource);
-			RadioAction action = new RadioAction(controller, id, text, icon, activated);
+			var action = new RadioAction(controller, id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;

@@ -7,6 +7,7 @@ using Eto.Drawing;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swc = System.Windows.Controls;
+using swi = System.Windows.Input;
 using System.Runtime.InteropServices;
 using Eto.Platform.Wpf.CustomControls;
 using Eto.Platform.Wpf.Forms.Menu;
@@ -57,9 +58,11 @@ namespace Eto.Platform.Wpf.Forms
 				if (initialClientSize != null)
 				{
 					initialClientSize = null;
-					Control.SizeToContent = sw.SizeToContent.Manual;
 					SetContentSize();
 				}
+				// stop form from auto-sizing after it is shown
+				Control.SizeToContent = sw.SizeToContent.Manual;
+				Control.MoveFocus(new swi.TraversalRequest(swi.FocusNavigationDirection.Next));
 			};
 			// needed to handle Application.Terminating event
 			HandleEvent (Window.ClosingEvent);

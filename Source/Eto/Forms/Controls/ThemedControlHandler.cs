@@ -18,11 +18,11 @@ namespace Eto.Forms
 	/// look and feel that is consistent across
 	/// platforms.
 	/// <typeparam name="T">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
-	/// <typeparam name="W">The control being implemented, eg TabControl</typeparam>
+	/// <typeparam name="TWidget">The control being implemented, eg TabControl</typeparam>
 	/// </summary>
-	public class ThemedControlHandler<T, W> : WidgetHandler<T, W>, IControl
+	public class ThemedControlHandler<T, TWidget> : WidgetHandler<T, TWidget>, IControl
 		where T : Control
-		where W : Control
+		where TWidget : Control
 	{
 		public Color BackgroundColor
 		{
@@ -99,7 +99,7 @@ namespace Eto.Forms
 		
 		public void SetParent(Container parent)
 		{
-			this.Control.SetParent(parent);
+			Control.SetParent(parent);
 		}
 
 		public PointF PointFromScreen (PointF point)
@@ -153,14 +153,8 @@ namespace Eto.Forms
 					Control.KeyDown += (s, e) => Widget.OnKeyDown(e);
 					handled = true;
 					break;
-
 				case Eto.Forms.Control.KeyUpEvent:
 					Control.KeyUp += (s, e) => Widget.OnKeyUp(e);
-					handled = true;
-					break;
-
-				case Eto.Forms.Control.TextChangedEvent:
-					Control.TextChanged += (s, e) => Widget.OnTextChanged(e);
 					handled = true;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:

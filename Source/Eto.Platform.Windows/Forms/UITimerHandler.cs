@@ -10,10 +10,7 @@ namespace Eto.Platform.Windows.Forms
 		public UITimerHandler ()
 		{
 			Control = new System.Windows.Forms.Timer ();
-			Control.Tick += (sender, e) => {
-				//Control.Enabled = enabled;
-				Widget.OnElapsed (EventArgs.Empty);
-			};
+			Control.Tick += (sender, e) => Widget.OnElapsed(EventArgs.Empty);
 		}
 
 		public void Start ()

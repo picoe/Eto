@@ -217,7 +217,7 @@ namespace Eto.Forms
 			sb.Append (value);
 		}
 
-		static Dictionary<Key, string> keymap = new Dictionary<Key, string> () {
+		static readonly Dictionary<Key, string> keymap = new Dictionary<Key, string> {
 			{ Key.D0, "0" },
 			{ Key.D1, "1" },
 			{ Key.D2, "2" },

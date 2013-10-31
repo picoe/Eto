@@ -5,7 +5,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public class ProgressBarHandler : GtkControl<Gtk.ProgressBar, ProgressBar>, IProgressBar
 	{
-		int minValue = 0;
+		int minValue;
 		int maxValue = 100;
 		bool indeterminate;
 		UITimer timer;
@@ -25,7 +25,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				indeterminate = value;
 				if (indeterminate) {
 					if (timer == null) {
-						timer = new UITimer (this.Widget.Generator);
+						timer = new UITimer (Widget.Generator);
 						timer.Elapsed += delegate {
 							Control.Pulse ();
 						};
@@ -41,18 +41,18 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public int MaxValue {
 			get { return maxValue; }
 			set {
-				var val = this.Value;
+				var val = Value;
 				maxValue = value;
-				this.Value = val;
+				Value = val;
 			}
 		}
 
 		public int MinValue {
 			get { return minValue; }
 			set {
-				var val = this.Value;
+				var val = Value;
 				minValue = value;
-				this.Value = val;
+				Value = val;
 			}
 		}
 

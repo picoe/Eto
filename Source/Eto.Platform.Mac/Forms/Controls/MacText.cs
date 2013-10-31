@@ -1,4 +1,3 @@
-using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using Eto.Drawing;
@@ -18,8 +17,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public virtual string Text
 		{
-			get { return Control.StringValue; }
-			set { Control.StringValue = value ?? string.Empty; }
+			get { return Control.AttributedStringValue.Value; }
+			set { Control.AttributedStringValue = this.Font.AttributedString(value ?? string.Empty, Control.AttributedStringValue); }
 		}
 	}
 }

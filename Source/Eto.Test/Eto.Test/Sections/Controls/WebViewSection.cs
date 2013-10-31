@@ -87,7 +87,7 @@ namespace Eto.Test.Sections.Controls
 
 		Control TitleLabel()
 		{
-			titleLabel = new Label { };
+			titleLabel = new Label();
 			return titleLabel;
 		}
 

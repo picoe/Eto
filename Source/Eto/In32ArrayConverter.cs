@@ -2,14 +2,13 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 
 namespace Eto
 {
 	class Int32ArrayConverter : TypeConverter
 	{
-		Int32Converter int32Converter = new Int32Converter ();
+		readonly Int32Converter int32Converter = new Int32Converter ();
 
 		public override bool CanConvertTo (ITypeDescriptorContext ctx, Type destinationType)
 		{

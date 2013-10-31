@@ -1,5 +1,4 @@
 using System;
-using System.Reflection;
 using Eto.Forms;
 using MonoMac.AppKit;
 using System.Linq;
@@ -79,7 +78,7 @@ namespace Eto.Platform.Mac
 
 		public void AddButton(ToolBarItem item)
 		{
-			var handler = item.Handler as IToolBarBaseItemHandler;
+			var handler = (IToolBarBaseItemHandler)item.Handler;
 			items.Add(handler);
 			Control.InsertItem(handler.Identifier, Control.Items.Length);
 			if (handler != null)

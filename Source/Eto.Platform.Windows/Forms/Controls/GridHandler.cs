@@ -24,15 +24,34 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		protected abstract object GetItemAtRow (int row);
 
-		public GridHandler ()
+		class EtoDataGridView : swf.DataGridView
 		{
-			Control = new swf.DataGridView {
+			public GridHandler<W> Handler { get; set; }
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+			{
+				var size = base.GetPreferredSize(proposedSize);
+				var def = Handler.UserDesiredSize;
+				if (def.Width >= 0)
+					size.Width = def.Width;
+				if (def.Height >= 0)
+					size.Height = def.Height;
+				else
+					size.Height = Math.Min(size.Height, 100);
+				return size;
+			}
+		}
+
+		protected GridHandler()
+		{
+			Control = new EtoDataGridView {
+				Handler = this,
 				VirtualMode = true,
 				MultiSelect = false,
 				SelectionMode = swf.DataGridViewSelectionMode.FullRowSelect,
 				RowHeadersVisible = false,
 				AllowUserToAddRows = false,
 				AllowUserToResizeRows = false,
+				AutoSize = true,
 				AutoSizeColumnsMode = swf.DataGridViewAutoSizeColumnsMode.DisplayedCells,
 				ColumnHeadersHeightSizeMode = swf.DataGridViewColumnHeadersHeightSizeMode.DisableResizing
 			};
@@ -84,7 +103,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			LeakHelper.UnhookObject(Control);
 		}
 
-		bool handledAutoSize = false;
+		bool handledAutoSize;
 		void HandleRowPostPaint (object sender, swf.DataGridViewRowPostPaintEventArgs e)
 		{
 			if (handledAutoSize) return;
@@ -114,7 +133,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 
 			Font font;
-			public override Eto.Drawing.Font Font
+			public override Font Font
 			{
 				get {
 					if (font == null)
@@ -130,12 +149,12 @@ namespace Eto.Platform.Windows.Forms.Controls
 				}
 			}
 
-			public override Eto.Drawing.Color BackgroundColor {
+			public override Color BackgroundColor {
 				get { return Args.CellStyle.BackColor.ToEto (); }
 				set { Args.CellStyle.BackColor = value.ToSD (); }
 			}
 
-			public override Eto.Drawing.Color ForegroundColor {
+			public override Color ForegroundColor {
 				get { return Args.CellStyle.ForeColor.ToEto (); }
 				set { Args.CellStyle.ForeColor = value.ToSD (); }
 			}
@@ -145,9 +164,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			switch (handler) {
 			case Grid.ColumnHeaderClickEvent:
-				Control.ColumnHeaderMouseClick += (sender, e) => {
-					Widget.OnColumnHeaderClick (new GridColumnEventArgs (Widget.Columns[e.ColumnIndex]));
-				};
+				Control.ColumnHeaderMouseClick += (sender, e) => Widget.OnColumnHeaderClick(new GridColumnEventArgs(Widget.Columns[e.ColumnIndex]));
 				break;
 			case Grid.BeginCellEditEvent:
 				Control.CellBeginEdit += (sender, e) => {
@@ -218,13 +235,13 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 
 		public bool ShowHeader {
-			get { return this.Control.ColumnHeadersVisible; }
-			set { this.Control.ColumnHeadersVisible = value; }
+			get { return Control.ColumnHeadersVisible; }
+			set { Control.ColumnHeadersVisible = value; }
 		}
 
 		public bool AllowColumnReordering {
-			get { return this.Control.AllowUserToOrderColumns; }
-			set { this.Control.AllowUserToOrderColumns = value; }
+			get { return Control.AllowUserToOrderColumns; }
+			set { Control.AllowUserToOrderColumns = value; }
 		}
 		
 		public ContextMenu ContextMenu {
@@ -232,9 +249,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set {
 				contextMenu = value;
 				if (contextMenu != null)
-					this.Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
+					Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
 				else
-					this.Control.ContextMenuStrip = null;
+					Control.ContextMenuStrip = null;
 			}
 		}
 

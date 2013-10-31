@@ -1,13 +1,11 @@
 using System;
-using Eto.Drawing;
-using System.Reflection;
 using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
 	public class ActionCollection : KeyedCollection<string, BaseAction>
 	{
-		Generator generator;
+		readonly Generator generator;
 
 		public ActionCollection ()
 			: this(Generator.Current)
@@ -52,7 +50,7 @@ namespace Eto.Forms
 		
 		public BaseAction Find (string key)
 		{
-			if (this.Contains (key))
+			if (Contains(key))
 				return this [key];
 			else
 				return null;
@@ -68,7 +66,7 @@ namespace Eto.Forms
 			return false;
 		}
 		
-		private void control_KeyDown (object sender, KeyEventArgs e)
+		void control_KeyDown (object sender, KeyEventArgs e)
 		{
 			//Console.WriteLine("key: {0}, sender: {1}", e.KeyData.ToString(), sender.GetType().ToString());
 			foreach (var action in this) {

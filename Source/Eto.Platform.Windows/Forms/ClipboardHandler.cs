@@ -87,7 +87,7 @@ namespace Eto.Platform.Windows.Forms
 		/// <summary>
 		/// see http://stackoverflow.com/questions/11273669/how-to-paste-a-transparent-image-from-the-clipboard-in-a-c-sharp-winforms-app
 		/// </summary>
-		sd.Image GetImageFromClipboard ()
+		static sd.Image GetImageFromClipboard ()
 		{
 			if (swf.Clipboard.GetDataObject () == null)
 				return null;

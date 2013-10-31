@@ -12,10 +12,6 @@ namespace Eto.Platform.Windows
 	{
 		Control content;
 
-		public WindowsDockContainer()
-		{
-		}
-
 		protected override void Initialize()
 		{
 			base.Initialize();
@@ -23,9 +19,9 @@ namespace Eto.Platform.Windows
 			SuspendLayout();
 		}
 
-		public override void OnLoad(EventArgs e)
+		public override void OnLoadComplete(EventArgs e)
 		{
-			base.OnLoad(e);
+			base.OnLoadComplete(e);
 			ResumeLayout();
 		}
 
@@ -40,6 +36,8 @@ namespace Eto.Platform.Windows
 			get { return Control; }
 		}
 
+		protected virtual Size ContentPadding { get { return Size.Empty; } }
+
 		public override Size ParentMinimumSize
 		{
 			get
@@ -51,40 +49,37 @@ namespace Eto.Platform.Windows
 				var control = content.GetWindowsHandler();
 				if (control != null)
 				{
-					control.ParentMinimumSize = value;
+					control.ParentMinimumSize = value - ContentPadding;
 				}
 				base.ParentMinimumSize = value;
 			}
 		}
 
-		public override Size DesiredSize
+		public override Size GetPreferredSize(Size availableSize)
 		{
-			get
+			var desiredSize = base.GetPreferredSize(availableSize);
+
+			var handler = content.GetWindowsHandler();
+			if (handler != null)
 			{
-				var desiredSize = base.DesiredSize;
-
-				var handler = content.GetWindowsHandler();
-				if (handler != null)
+				var desiredContentSize = handler.GetPreferredSize(availableSize);
+				if (!handler.XScale)
 				{
-					var desiredContentSize = handler.DesiredSize;
-					if (!handler.XScale)
-					{
-						if (desiredSize.Width > 0)
-							desiredSize.Width = Math.Max(desiredSize.Width, desiredContentSize.Width);
-						else
-							desiredSize.Width = desiredContentSize.Width;
-					}
-
-					if (!handler.YScale)
-					{
-						if (desiredSize.Height > 0)
-							desiredSize.Height = Math.Max(desiredSize.Height, desiredContentSize.Height);
-						else
-							desiredSize.Height = desiredContentSize.Height;
-					}
+					if (desiredSize.Width > 0)
+						desiredSize.Width = Math.Max(desiredSize.Width, desiredContentSize.Width);
+					else
+						desiredSize.Width = desiredContentSize.Width;
 				}
-				return desiredSize + Padding.Size;
+
+				if (!handler.YScale)
+				{
+					if (desiredSize.Height > 0)
+						desiredSize.Height = Math.Max(desiredSize.Height, desiredContentSize.Height);
+					else
+						desiredSize.Height = desiredContentSize.Height;
+				}
 			}
+			return desiredSize + Padding.Size;
 		}
 
 		public override void SetScale(bool xscale, bool yscale)

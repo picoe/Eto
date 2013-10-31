@@ -1,12 +1,9 @@
-using System;
 using Eto.Drawing;
 
 #if OSX
-using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Drawing
 #elif IOS
-using MonoTouch.CoreGraphics;
 
 namespace Eto.Platform.iOS.Drawing
 #endif

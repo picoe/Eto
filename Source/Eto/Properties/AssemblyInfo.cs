@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 #if XAML
 using System.Windows.Markup;
 #endif

@@ -4,10 +4,7 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using System.Linq;
 using Eto.Platform.Windows.Forms;
-using System.CodeDom.Compiler;
-using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
@@ -28,7 +25,7 @@ namespace Eto.Platform.Windows
 		swf.Panel menuHolder;
 		swf.Panel content;
 		swf.Panel toolbarHolder;
-		swf.ToolTip tooltips = new swf.ToolTip();
+		readonly swf.ToolTip tooltips = new swf.ToolTip();
 		bool resizable;
 
 		public override swf.Control ContainerContentControl
@@ -97,8 +94,10 @@ namespace Eto.Platform.Windows
 
 			Control.Load += (sender, e) =>
 			{
-				content.MinimumSize = sd.Size.Empty;
-				content.MaximumSize = sd.Size.Empty;
+				Control.MinimumSize = Control.Size;
+				Control.AutoSize = false;
+				Control.MinimumSize = sd.Size.Empty;
+				content.MinimumSize = content.MaximumSize = sd.Size.Empty;
 			};
 			Control.Size = sd.Size.Empty;
 
@@ -164,10 +163,7 @@ namespace Eto.Platform.Windows
 					};
 					break;
 				case Window.LocationChangedEvent:
-					Control.LocationChanged += (sender, e) =>
-					{
-						Widget.OnLocationChanged(EventArgs.Empty);
-					};
+					Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
 					break;
 				default:
 					base.AttachEvent(handler);
@@ -183,7 +179,6 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				this.Control.SuspendLayout();
 				menuHolder.SuspendLayout();
 				if (menu != null)
 					menuHolder.Controls.Remove((swf.MenuStrip)menu.ControlObject);
@@ -196,13 +191,10 @@ namespace Eto.Platform.Windows
 				{
 					var c = (swf.MenuStrip)value.ControlObject;
 					c.Dock = swf.DockStyle.Top;
-					c.ResumeLayout();
 					menuHolder.Controls.Add(c);
 					Control.MainMenuStrip = c;
 				}
 				menuHolder.ResumeLayout();
-				this.Control.ResumeLayout();
-				menuHolder.Update();
 				menu = value;
 			}
 		}
@@ -253,12 +245,10 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				return this.toolBar;
+				return toolBar;
 			}
 			set
 			{
-				if (Widget.Loaded)
-					SuspendLayout();
 				toolbarHolder.SuspendLayout();
 				if (toolBar != null)
 					toolbarHolder.Controls.Remove((swf.Control)toolBar.ControlObject);
@@ -270,8 +260,6 @@ namespace Eto.Platform.Windows
 					toolbarHolder.Controls.Add(c);
 				}
 				toolbarHolder.ResumeLayout();
-				if (Widget.Loaded)
-					ResumeLayout();
 			}
 		}
 
@@ -367,7 +355,7 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				if (this.WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
+				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
 				else return Control.RestoreBounds.ToEto();
 			}
 		}

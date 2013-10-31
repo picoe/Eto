@@ -353,10 +353,7 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator used to create the graphics path objects</param>
 		public static Func<IGraphicsPath> Instantiator (Generator generator = null)
 		{
-			var instantiator = generator.Find<IGraphicsPathHandler> ();
-			return () => {
-				return instantiator ();
-			};
+			return generator.Find<IGraphicsPathHandler>();
 		}
 		
 		/// <summary>

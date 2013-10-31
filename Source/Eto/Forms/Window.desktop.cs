@@ -1,6 +1,5 @@
 #if DESKTOP
 using System;
-using System.ComponentModel;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -68,9 +67,9 @@ namespace Eto.Forms
 			if (windowStateChanged != null)
 				windowStateChanged (this, e);
 #pragma warning disable 612, 618
-			if (this.WindowState == WindowState.Maximized)
+			if (WindowState == WindowState.Maximized)
 				OnMaximized (e);
-			if (this.WindowState == WindowState.Minimized)
+			if (WindowState == WindowState.Minimized)
 				OnMinimized (e);
 #pragma warning restore 612, 618
 		}

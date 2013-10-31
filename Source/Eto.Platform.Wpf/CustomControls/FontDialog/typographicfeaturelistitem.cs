@@ -7,10 +7,10 @@ using System.Globalization;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
-    internal class TypographicFeatureListItem : TextBlock, IComparable
+    class TypographicFeatureListItem : TextBlock, IComparable
     {
-        private readonly string _displayName;
-        private readonly DependencyProperty _chooserProperty;
+        readonly string _displayName;
+        readonly DependencyProperty _chooserProperty;
 
         public TypographicFeatureListItem(string displayName, DependencyProperty chooserProperty)
         {

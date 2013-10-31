@@ -8,7 +8,7 @@ namespace Eto.Platform.Windows
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
 		
-		System.Environment.SpecialFolder Convert (EtoSpecialFolder folder)
+		static System.Environment.SpecialFolder Convert (EtoSpecialFolder folder)
 		{
 			switch (folder) {
 			case EtoSpecialFolder.ApplicationSettings:

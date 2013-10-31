@@ -1,7 +1,6 @@
 using System;
-using System.Reflection;
-using SWF = System.Windows.Forms;
-using SD = System.Drawing;
+using swf = System.Windows.Forms;
+using sd = System.Drawing;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,47 +8,55 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class ComboBoxHandler : WindowsControl<SWF.ComboBox, ComboBox>, IComboBox
+	public class ComboBoxHandler : WindowsControl<swf.ComboBox, ComboBox>, IComboBox
 	{
 		CollectionHandler collection;
 
+		public class EtoComboBox : swf.ComboBox
+		{
+			public override sd.Size GetPreferredSize(sd.Size proposedSize)
+			{
+				var size = new sd.Size(16, 20);
+				var font = Font;
+
+				using (var graphics = CreateGraphics())
+				{
+					foreach (object item in Items)
+					{
+						var text = GetItemText(item);
+						var itemSize = graphics.MeasureString(text, font).ToEtoSize();
+						// for drop down glyph and border
+						size.Width = Math.Max(size.Width, itemSize.Width);
+						size.Height = Math.Max(size.Height, itemSize.Height);
+					}
+				}
+				size.Width += 18;
+				size.Height += 4;
+				return size;
+			}
+		}
+
 		public ComboBoxHandler()
 		{
-			Control = new SWF.ComboBox
+			Control = new EtoComboBox
 			{
-				DropDownStyle = SWF.ComboBoxStyle.DropDownList,
+				DropDownStyle = swf.ComboBoxStyle.DropDownList,
 				ValueMember = "Key",
 				DisplayMember = "Text",
 				AutoSize = true,
-				Size = SD.Size.Empty
+				Size = new sd.Size(20, 0)
 			};
 			Control.SelectedIndexChanged += delegate
 			{
 				Widget.OnSelectedIndexChanged(EventArgs.Empty);
 			};
-
 		}
 
-		public override Size DesiredSize
+		public override Size GetPreferredSize(Size availableSize)
 		{
-			get
-			{
-				var size = new Size(16, 20);
-				var font = Control.Font;
-
-				using (var graphics = Control.CreateGraphics())
-				{
-					foreach (object item in Control.Items)
-					{
-						var text = Control.GetItemText(item);
-						var itemSize = graphics.MeasureString(text, font).ToEtoSize();
-						// for drop down glyph and border
-						size = Size.Max(size, itemSize);
-					}
-				}
-				size += new Size(18, 8);
-				return size;
-			}
+			if (Control.AutoSize)
+				return Control.GetPreferredSize(sd.Size.Empty).ToEto();
+			return base.GetPreferredSize(availableSize);
 		}
 
 		public int SelectedIndex

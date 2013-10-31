@@ -1,6 +1,5 @@
 using System;
 using Eto.Forms;
-using Gtk;
 using System.Globalization;
 
 namespace Eto.Platform.GtkSharp.CustomControls

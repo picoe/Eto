@@ -1,10 +1,8 @@
 using System;
-using System.Reflection;
 using Eto.Forms;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Platform.Mac.Forms.Controls;
 using Eto.Drawing;
 using Eto.Platform.Mac.Drawing;

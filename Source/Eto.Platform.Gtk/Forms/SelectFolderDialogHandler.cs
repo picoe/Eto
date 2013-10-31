@@ -1,6 +1,4 @@
-using System;
 using Eto.Forms;
-using System.IO;
 
 namespace Eto.Platform.GtkSharp
 {

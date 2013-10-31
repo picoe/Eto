@@ -1,7 +1,6 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using System.Text;
 using System.Collections.Generic;
 
 namespace Eto.Test
@@ -101,7 +100,7 @@ namespace Eto.Test
 				#endif
 			};
 
-			if (Splitter.Supported)
+			if (Splitter.IsSupported())
 			{
 				var splitter = new Splitter
 				{
@@ -117,7 +116,7 @@ namespace Eto.Test
 				};
 				return splitter;
 			}
-			else if (Navigation.Supported)
+			else if (Navigation.IsSupported())
 			{
 				navigation = new Navigation(SectionList, "Eto.Test");
 				return navigation;
@@ -129,22 +128,18 @@ namespace Eto.Test
 
 		Control RightPane()
 		{
-			var splitter = new Splitter
+			return new Splitter
 			{
 				Orientation = SplitterOrientation.Vertical,
-				Position = 500,
-				FixedPanel = SplitterFixedPanel.Panel2
+				FixedPanel = SplitterFixedPanel.Panel2,
+				Panel1 = contentContainer,
+				Panel2 = EventLogSection()
 			};
-
-			splitter.Panel1 = contentContainer;
-			splitter.Panel2 = this.EventLogSection();
-
-			return splitter;
 		}
 
 		Control EventLogSection()
 		{
-			var layout = new DynamicLayout();
+			var layout = new DynamicLayout { Size = new Size(100, 120) };
 			
 			layout.BeginHorizontal();
 			layout.Add(EventLog, true);

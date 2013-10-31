@@ -1,11 +1,9 @@
 using System;
-using System.Reflection;
 using Eto.Forms;
 using MonoMac.Foundation;
 using MonoMac.AppKit;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
-using Eto.Platform.Mac.Drawing;
 using sd = System.Drawing;
 
 namespace Eto.Platform.Mac
@@ -41,7 +39,7 @@ namespace Eto.Platform.Mac
 		}
 
 		[Export("action")]
-		public bool action()
+		public bool Action()
 		{
 			Handler.OnClick();
 			return true;
@@ -103,7 +101,7 @@ namespace Eto.Platform.Mac
 
 		public virtual string Identifier { get; set; }
 
-		public ToolBarItemHandler()
+		protected ToolBarItemHandler()
 		{
 			this.Identifier = Guid.NewGuid().ToString();
 		}
@@ -117,7 +115,7 @@ namespace Eto.Platform.Mac
 
 		public override T CreateControl()
 		{
-			return (T)new NSToolbarItem(this.Identifier);
+			return (T)new NSToolbarItem(Identifier);
 		}
 
 		static readonly Selector selAction = new Selector("action");
@@ -161,14 +159,14 @@ namespace Eto.Platform.Mac
 			get { return image; }
 			set
 			{
-				this.image = value;
+				image = value;
 				SetImage();
 			}
 		}
 
 		void SetImage()
 		{
-			var nsimage = this.image.ToNS(UseButton ? (int?)20 : null);
+			var nsimage = image.ToNS(UseButton ? (int?)20 : null);
 			if (tint != null && nsimage != null)
 				nsimage = nsimage.Tint(tint.Value.ToNS());
 			Control.Image = nsimage;
@@ -184,12 +182,12 @@ namespace Eto.Platform.Mac
 
 		public void OnClick()
 		{
-			this.InvokeButton();
+			InvokeButton();
 		}
 
 		NSToolbarItem IToolBarBaseItemHandler.Control
 		{
-			get { return (NSToolbarItem)this.Control; }
+			get { return Control; }
 		}
 	}
 }

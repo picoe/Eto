@@ -2,9 +2,7 @@ using System;
 using Eto.Forms;
 using Eto.Drawing;
 using MonoMac.AppKit;
-using MonoMac.Foundation;
 using SD = System.Drawing;
-using System.Linq;
 using MonoTouch.UIKit;
 
 #if IOS
@@ -31,6 +29,13 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
+		#if OSX
+		protected virtual NSViewResizingMask ContentResizingMask()
+		{
+			return NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+		}
+		#endif
+
 		public Control Content
 		{
 			get { return content; }
@@ -48,11 +53,10 @@ namespace Eto.Platform.Mac.Forms
 				{
 					var container = ContentControl;
 #if OSX
-					control.AutoresizingMask = NSViewResizingMask.HeightSizable | NSViewResizingMask.WidthSizable;
+					control.AutoresizingMask = ContentResizingMask();
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
 #endif
-					control.SetFrameSize(container.Frame.Size);
 					container.AddSubview(control);
 				}
 
@@ -63,25 +67,17 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		protected virtual bool UseContentSize { get { return true; } }
-
-		public override Size GetPreferredSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			if (UseContentSize)
-				return Size.Max(base.GetPreferredSize(availableSize), Widget.Content.GetPreferredSize(availableSize) + Padding.Size);
-			else
-				return base.GetPreferredSize(availableSize);
+			var contentControl = content.GetMacAutoSizing();
+			if (contentControl != null)
+				return contentControl.GetPreferredSize(availableSize) + Padding.Size;
+			return base.GetNaturalSize(availableSize);
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected virtual SD.RectangleF GetContentFrame()
 		{
-			if (UseContentSize)
-			{
-				var content = Widget.Content.GetMacAutoSizing();
-				if (content != null)
-					return content.GetPreferredSize(availableSize);
-			}
-			return base.GetNaturalSize(availableSize);
+			return ContentControl.Frame;
 		}
 
 		public override void LayoutChildren()
@@ -92,7 +88,7 @@ namespace Eto.Platform.Mac.Forms
 				return;
 
 			NSView childControl = content.GetContainerView();
-			var frame = ContentControl.Frame;
+			var frame = GetContentFrame();
 
 			if (frame.Width > padding.Horizontal && frame.Height > padding.Vertical)
 			{
@@ -129,12 +125,6 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		protected override void Initialize()
-		{
-			base.Initialize();
-			Widget.SizeChanged += HandleSizeChanged;
-		}
-
 		bool isResizing;
 		void HandleSizeChanged (object sender, EventArgs e)
 		{
@@ -146,10 +136,17 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public override void OnLoadComplete(EventArgs e)
+		public override void OnLoad(EventArgs e)
 		{
-			base.OnLoadComplete(e);
+			base.OnLoad(e);
 			LayoutChildren();
+			Widget.SizeChanged += HandleSizeChanged;
+		}
+
+		public override void OnUnLoad(EventArgs e)
+		{
+			base.OnUnLoad(e);
+			Widget.SizeChanged -= HandleSizeChanged;
 		}
 	}
 }

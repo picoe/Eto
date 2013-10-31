@@ -13,14 +13,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 	public class GraphicsPathHandler : IGraphicsPathHandler
 	{
 		IMatrix transform;
-		List<Command> commands = new List<Command> ();
+		readonly List<Command> commands = new List<Command> ();
 
 		bool firstFigureClosed;
 		bool isFirstFigure = true;
-
-		public GraphicsPathHandler ()
-		{
-		}
 
 		public IEnumerable<PointF> Points
 		{
@@ -110,7 +106,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		class ActionCommand : Command
 		{
-			GraphicsPathCommandDelegate apply;
+			readonly GraphicsPathCommandDelegate apply;
 
 			public ActionCommand (GraphicsPathCommandDelegate apply)
 			{
@@ -257,9 +253,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public void CloseFigure ()
 		{
-			Add (exec => {
-				exec.CloseFigure ();
-			});
+			Add (exec => exec.CloseFigure());
 			if (isFirstFigure)
 				firstFigureClosed = true;
 		}
@@ -296,9 +290,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			var pointArray = SplineHelper.SplineCurve (points, tension).ToArray ();
 			Add (exec => {
 				exec.SetStart (points.First ());
-				SplineHelper.Draw (pointArray, start => exec.ConnectTo (start), (c1, c2, end) => {
-					exec.Context.CurveTo (c1.ToCairo (), c2.ToCairo (), end.ToCairo ());
-				});
+				SplineHelper.Draw(pointArray, exec.ConnectTo, (c1, c2, end) => exec.Context.CurveTo(c1.ToCairo(), c2.ToCairo(), end.ToCairo()));
 			}, pointArray);
 		}
 
@@ -358,10 +350,10 @@ namespace Eto.Platform.GtkSharp.Drawing
 		public IGraphicsPath Clone()
 		{
 			var handler = new GraphicsPathHandler ();
-			handler.commands.AddRange (this.commands);
-			handler.transform = this.transform != null ? this.transform.Clone () : null;
-			handler.firstFigureClosed = this.firstFigureClosed;
-			handler.isFirstFigure = this.isFirstFigure;
+			handler.commands.AddRange(commands);
+			handler.transform = transform != null ? transform.Clone () : null;
+			handler.firstFigureClosed = firstFigureClosed;
+			handler.isFirstFigure = isFirstFigure;
 			return handler;
 		}
 

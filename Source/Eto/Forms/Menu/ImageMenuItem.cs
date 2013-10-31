@@ -1,6 +1,5 @@
 #if DESKTOP
 using System;
-using System.Collections;
 using Eto.Drawing;
 using System.Collections.Generic;
 
@@ -26,7 +25,7 @@ namespace Eto.Forms
 	{
 		new IImageMenuItem Handler { get { return (IImageMenuItem)base.Handler; } }
 
-		MenuItemCollection menuItems;
+		readonly MenuItemCollection menuItems;
 		
 		public ImageMenuItem () : this (Generator.Current)
 		{
@@ -62,9 +61,9 @@ namespace Eto.Forms
 		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (IActionItem ai in actionItems) {
-				var mi = ai.Generate (this.Generator);
+				var mi = ai.Generate (Generator);
 				if (mi != null)
-					this.MenuItems.Add(mi);
+					MenuItems.Add(mi);
 			}
 		}
 	}

@@ -40,9 +40,9 @@ namespace Eto.Platform.Windows.Drawing
 
 		public SD.Icon GetLargestIcon ()
 		{
-			var icons = SplitIcon (Control);
-			var curicon = icons [0];
-			foreach (var icon in icons) {
+			var splitIcons = SplitIcon (Control);
+			var curicon = splitIcons [0];
+			foreach (var icon in splitIcons) {
 				if (icon.Width > curicon.Width)
 					curicon = icon;
 			}
@@ -51,11 +51,11 @@ namespace Eto.Platform.Windows.Drawing
 
 		public SD.Icon GetIconClosestToSize (int width)
 		{
-			var icons = SplitIcon (Control);
-			var curicon = icons [0];
+			var splitIcons = SplitIcon (Control);
+			var curicon = splitIcons [0];
 			if (curicon.Width == width)
 				return curicon;
-			foreach (var icon in icons) {
+			foreach (var icon in splitIcons) {
 				if (icon.Width > width && icon.Width - width < curicon.Width - width)
 					curicon = icon;
 			}
@@ -75,18 +75,18 @@ namespace Eto.Platform.Windows.Drawing
 			
 			// Get multiple .ico file image.
 			byte[] srcBuf = null;
-			using (MemoryStream stream = new MemoryStream()) {
+			using (var stream = new MemoryStream()) {
 				icon.Save (stream);
 				stream.Flush ();
 				srcBuf = stream.ToArray ();
 			}
 			
-			List<SD.Icon> splitIcons = new List<SD.Icon> ();
+			var splitIcons = new List<SD.Icon> ();
 			int count = BitConverter.ToInt16 (srcBuf, 4); // ICONDIR.idCount
 			
 			for (int i = 0; i < count; i++) {
-				using (MemoryStream destStream = new MemoryStream())
-				using (BinaryWriter writer = new BinaryWriter(destStream)) {
+				using (var destStream = new MemoryStream())
+				using (var writer = new BinaryWriter(destStream)) {
 					// Copy ICONDIR and ICONDIRENTRY.
 					int pos = 0;
 					writer.Write (srcBuf, pos, sICONDIR - 2);
@@ -137,7 +137,7 @@ namespace Eto.Platform.Windows.Drawing
 				var icon = GetIconClosestToSize (size.Value);
 				return icon.ToBitmap ();
 			}
-			else return this.GetLargestIcon().ToBitmap ();
+			else return GetLargestIcon().ToBitmap ();
 		}
 
 

@@ -7,7 +7,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 {
 	public class ImageTextCellHandler : CellHandler<Gtk.CellRendererText, ImageTextCell>, IImageTextCell
 	{
-		Gtk.CellRendererPixbuf imageCell;
+		readonly Gtk.CellRendererPixbuf imageCell;
 		int imageDataIndex;
 		int textDataIndex;
 
@@ -34,7 +34,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 					Handler.Format(new GtkTextCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 			
 				// calling base crashes on windows /w gtk 2.12.9
-				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererText.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererText.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 #else
@@ -70,7 +70,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 					Handler.Format(new GtkGridCellFormatEventArgs<ImageRenderer> (this, Handler.Column.Widget, Item, Row));
 
 				// calling base crashes on windows /w gtk 2.12.9
-				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererPixbuf.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererPixbuf.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 #else
@@ -111,7 +111,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
 		{
-			this.Control.Editable = editable;
+			Control.Editable = editable;
 		}
 		
 		public override void SetValue (object dataItem, object value)
@@ -121,34 +121,32 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			}
 		}
 		
-		protected override GLib.Value GetValueInternal (object item, int column, int row)
+		protected override GLib.Value GetValueInternal (object dataItem, int dataColumn, int row)
 		{
-			if (column == imageDataIndex) {
+			if (dataColumn == imageDataIndex) {
 				if (Widget.ImageBinding != null) {
-					var ret = Widget.ImageBinding.GetValue (item);
+					var ret = Widget.ImageBinding.GetValue (dataItem);
 					var image = ret as Image;
 					if (image != null)
 						return new GLib.Value (((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16)));
 				}
 				return new GLib.Value ((Gdk.Pixbuf)null);
-			} else if (column == textDataIndex) {
-				var ret = Widget.TextBinding.GetValue (item);
+			} else if (dataColumn == textDataIndex) {
+				var ret = Widget.TextBinding.GetValue (dataItem);
 				if (ret != null)
 					return new GLib.Value (Convert.ToString (ret));
 			}
 			return new GLib.Value ((string)null);
 		}
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
-			case GridView.EndCellEditEvent:
-				Control.Edited += (sender, e) => {
-					Source.EndCellEditing (new Gtk.TreePath (e.Path), this.ColumnIndex);
-				};
+			switch (id) {
+			case Grid.EndCellEditEvent:
+				Control.Edited += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

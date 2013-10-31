@@ -1,11 +1,10 @@
-using System;
 using System.IO;
 
 namespace Eto.IO
 {
 	public class DiskFileInfo : EtoFileInfo
 	{
-		FileInfo info;
+		readonly FileInfo info;
 
 		public DiskFileInfo(FileInfo fileInfo)
 		{

@@ -2,7 +2,6 @@ using System;
 using MonoMac.AppKit;
 using Eto.Forms;
 using System.Collections.Generic;
-using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Menu;
 using System.Linq;
 using Eto.Drawing;
@@ -27,7 +26,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		bool autoSized;
 
-		public override void SetFrameSize(System.Drawing.SizeF newSize)
+		public override void SetFrameSize(sd.SizeF newSize)
 		{
 			base.SetFrameSize(newSize);
 			if (!autoSized && Handler.Widget.Loaded)
@@ -51,7 +50,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public IGridHandler Handler { get { return (IGridHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
-		static Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
+		static readonly Selector selConvertPointFromBacking = new Selector("convertPointFromBacking:");
 
 		public override void MouseDown(NSEvent theEvent)
 		{
@@ -60,7 +59,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				point = ConvertPointFromBacking(point);
 			else
 				point = ConvertPointFromBase(point);
-			var col = this.GetColumn(point);
+			var col = GetColumn(point);
 			if (col >= 0)
 			{
 				var column = Handler.Widget.Columns[col];
@@ -240,7 +239,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public GridHandler()
+		protected GridHandler()
 		{
 			ScrollView = new EtoGridScrollView
 			{
@@ -285,7 +284,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.OnLoadComplete(e);
 			
 			int i = 0;
-			foreach (var col in this.Widget.Columns)
+			foreach (var col in Widget.Columns)
 			{
 				var colHandler = (GridColumnHandler)col.Handler;
 				colHandler.Loaded(this, i++);
@@ -394,7 +393,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return Widget; }
 		}
 
-		public System.Drawing.RectangleF GetVisibleRect()
+		public sd.RectangleF GetVisibleRect()
 		{
 			var rect = ScrollView.VisibleRect();
 			var loc = ScrollView.ContentView.Bounds.Location;
@@ -402,12 +401,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return rect;
 		}
 
-		protected override Size GetNaturalSize(Size availableSize)
+		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var width = Widget.Columns.Sum(r => r.Width);
 			if (width == 0)
 				width = 100;
-			var height = this.RowHeight * 10;
+			var height = RowHeight * 4;
 			return new Size(width, height);
 		}
 

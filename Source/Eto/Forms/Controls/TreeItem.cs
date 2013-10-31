@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 #if XAML
@@ -59,7 +58,7 @@ namespace Eto.Forms
 
 		public ITreeItem Parent { get; set; }
 
-		public virtual bool Expandable { get { return this.Count > 0; } }
+		public virtual bool Expandable { get { return Count > 0; } }
 
 		public virtual bool Expanded { get; set; }
 

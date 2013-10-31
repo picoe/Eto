@@ -1,11 +1,10 @@
 using System;
-using System.Runtime.InteropServices;
 using swf = System.Windows.Forms;
 using sd = System.Drawing;
 using Eto.Forms;
 using System.Diagnostics;
+using System.Threading;
 using Microsoft.WindowsAPICodePack.Taskbar;
-using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
@@ -13,9 +12,16 @@ namespace Eto.Platform.Windows
 	{
 		string badgeLabel;
 		bool attached;
+		Thread mainThread;
+		SynchronizationContext context;
 
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
+
+		public ApplicationHandler()
+		{
+			mainThread = Thread.CurrentThread;
+		}
 
 		public void RunIteration()
 		{
@@ -75,6 +81,8 @@ namespace Eto.Platform.Windows
 					swf.Application.DoEvents();
 
 				SetOptions();
+				var ctl = new swf.Control(); // creates sync context
+				context = SynchronizationContext.Current;
 
 				Widget.OnInitialized(EventArgs.Empty);
 
@@ -89,7 +97,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		void SetOptions()
+		static void SetOptions()
 		{
 			if (EnableScrollingUnderMouse)
 				swf.Application.AddMessageFilter(new ScrollMessageFilter());
@@ -151,34 +159,37 @@ namespace Eto.Platform.Windows
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = this.Widget.MainForm.GetContainerControl();
+				var window = Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{
 					window.Invoke(action);
+					return;
 				}
-				else action();
 			}
-			else action();
+			if (Thread.CurrentThread == mainThread)
+				action();
+			else if (context != null)
+				context.Post(state => action(), null);
 		}
 
 		public void AsyncInvoke(Action action)
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = this.Widget.MainForm.GetContainerControl();
+				var window = Widget.MainForm.GetContainerControl();
 				if (window == null) window = swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{
 					window.BeginInvoke(action);
+					return;
 				}
-				else action();
 			}
-			else action();
+			if (context != null)
+				context.Post(state => action(), null);
 		}
-
 
 		public Key CommonModifier
 		{

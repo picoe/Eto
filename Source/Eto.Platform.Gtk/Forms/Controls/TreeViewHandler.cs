@@ -70,7 +70,7 @@ namespace Eto.Platform.GtkSharp.Forms
 						if (item.Expanded)
 						{
 							Handler.tree.ExpandToPath(newpath);
-							PerformExpandItems((ITreeStore)item, newpath);
+							PerformExpandItems(item, newpath);
 						}
 						else
 						{
@@ -208,13 +208,13 @@ namespace Eto.Platform.GtkSharp.Forms
 				case TreeView.ActivatedEvent:
 					tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args)
 					{
-						this.Widget.OnActivated(new TreeViewItemEventArgs(model.GetItemAtPath(args.Path)));
+						Widget.OnActivated(new TreeViewItemEventArgs(model.GetItemAtPath(args.Path)));
 					};
 					break;
 				case TreeView.SelectionChangedEvent:
 					tree.Selection.Changed += delegate
 					{
-						this.Widget.OnSelectionChanged(EventArgs.Empty);
+						Widget.OnSelectionChanged(EventArgs.Empty);
 					};
 
 					break;
@@ -225,7 +225,7 @@ namespace Eto.Platform.GtkSharp.Forms
 						{
 							var itemArgs = new TreeViewItemCancelEventArgs(item);
 							Widget.OnBeforeLabelEdit(itemArgs);
-							args.RetVal = itemArgs.Cancel ? true : false;
+							args.RetVal = itemArgs.Cancel;
 						}
 					};
 					break;
@@ -345,8 +345,8 @@ namespace Eto.Platform.GtkSharp.Forms
 
 		public void RefreshItem(ITreeItem item)
 		{
-			var path = this.model.GetPathFromItem(item);
-			if (path != null && path.Depth > 0 && !object.ReferenceEquals(item, this.collection.Collection))
+			var path = model.GetPathFromItem(item);
+			if (path != null && path.Depth > 0 && !object.ReferenceEquals(item, collection.Collection))
 			{
 				Gtk.TreeIter iter;
 				tree.Model.GetIter(out iter, path);
@@ -357,7 +357,7 @@ namespace Eto.Platform.GtkSharp.Forms
 				{
 					tree.CollapseRow(path);
 					tree.ExpandRow(path, false);
-					collection.ExpandItems(item as ITreeStore, path);
+					collection.ExpandItems(item, path);
 				}
 				else
 					tree.CollapseRow(path);

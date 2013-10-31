@@ -1,7 +1,5 @@
 using System;
 using Eto.Forms;
-using Eto.Drawing;
-using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp.Forms.Cells
 {
@@ -30,7 +28,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 					Handler.Format(new GtkTextCellFormatEventArgs<Renderer> (this, Handler.Column.Widget, Item, Row));
 
 				// calling base crashes on windows
-				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererText.GType.Val, this.Handle, window.Handle, widget.Handle, ref background_area, ref  cell_area, ref expose_area, flags);
+				GtkCell.gtksharp_cellrenderer_invoke_render (Gtk.CellRendererText.GType.Val, Handle, window.Handle, widget.Handle, ref background_area, ref  cell_area, ref expose_area, flags);
 				//base.Render (window, widget, background_area, cell_area, expose_area, flags);
 			}
 #else
@@ -66,7 +64,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
 		{
-			this.Control.Editable = editable;
+			Control.Editable = editable;
 		}
 		
 		public override void SetValue (object dataItem, object value)
@@ -76,10 +74,10 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			}
 		}
 		
-		protected override GLib.Value GetValueInternal (object item, int column, int row)
+		protected override GLib.Value GetValueInternal (object dataItem, int dataColumn, int row)
 		{
 			if (Widget.Binding != null) {
-				var ret = Widget.Binding.GetValue (item);
+				var ret = Widget.Binding.GetValue (dataItem);
 				if (ret != null)
 					return new GLib.Value (Convert.ToString (ret));
 			}
@@ -89,10 +87,8 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void AttachEvent (string eventHandler)
 		{
 			switch (eventHandler) {
-			case GridView.EndCellEditEvent:
-				Control.Edited += (sender, e) => {
-					Source.EndCellEditing (new Gtk.TreePath(e.Path), this.ColumnIndex);
-				};
+			case Grid.EndCellEditEvent:
+				Control.Edited += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
 				base.AttachEvent (eventHandler);

@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp.Forms.Printing
@@ -36,7 +35,7 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 				Control.Modal = true;
 			}
 
-			var caps = Gtk.PrintCapabilities.Preview
+			const Gtk.PrintCapabilities caps = Gtk.PrintCapabilities.Preview
 					| Gtk.PrintCapabilities.Collate
 					| Gtk.PrintCapabilities.GeneratePdf
 					| Gtk.PrintCapabilities.Copies

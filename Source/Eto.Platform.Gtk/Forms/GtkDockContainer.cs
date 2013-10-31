@@ -4,11 +4,11 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public abstract class GtkDockContainer<T, W> : GtkContainer<T, W>, IContainer
+	public abstract class GtkDockContainer<T, W> : GtkContainer<T, W>
 		where T: Gtk.Widget
 		where W: Container
 	{
-		Gtk.Alignment alignment;
+		readonly Gtk.Alignment alignment;
 		Control content;
 
 		public override Gtk.Widget ContainerContentControl
@@ -16,7 +16,7 @@ namespace Eto.Platform.GtkSharp
 			get { return Control; }
 		}
 
-		public GtkDockContainer()
+		protected GtkDockContainer()
 		{
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
 			this.Padding = DockContainer.DefaultPadding;
@@ -55,13 +55,13 @@ namespace Eto.Platform.GtkSharp
 
 		public Size MinimumSize { get; set; }
 
-		public Eto.Drawing.Padding Padding
+		public Padding Padding
 		{
 			get
 			{
 				uint top, left, right, bottom;
 				alignment.GetPadding(out top, out bottom, out left, out right);
-				return new Eto.Drawing.Padding((int)left, (int)top, (int)right, (int)bottom);
+				return new Padding((int)left, (int)top, (int)right, (int)bottom);
 			}
 			set
 			{

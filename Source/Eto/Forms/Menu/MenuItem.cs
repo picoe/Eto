@@ -1,8 +1,5 @@
 #if DESKTOP
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using Eto.Drawing;
 using System.Collections.ObjectModel;
 
 namespace Eto.Forms

@@ -1,4 +1,3 @@
-using System;
 using System.Collections.Generic;
 
 #if XAML
@@ -39,7 +38,7 @@ namespace Eto
 		public T Get<T> (AttachableMemberIdentifier member, T defaultValue)
 		{
 			object value;
-			if (this.TryGetValue (member, out value))
+			if (TryGetValue(member, out value))
 				return (T)value;
 			else
 				return defaultValue;
@@ -54,7 +53,7 @@ namespace Eto
 		public T Get<T> (AttachableMemberIdentifier member)
 		{
 			object value;
-			if (this.TryGetValue (member, out value))
+			if (TryGetValue(member, out value))
 				return (T)value;
 			else
 				return default (T);

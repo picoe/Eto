@@ -53,7 +53,6 @@
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Forms\Cells\DrawableCellHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
-    <Compile Include="Forms\Controls\MacTextControl.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
     <Compile Include="Forms\Controls\ProgressBarHandler.cs" />
     <Compile Include="Forms\Controls\TreeViewHandler.cs" />
@@ -189,6 +188,8 @@
     <Compile Include="Forms\MacDockContainer.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
     <Compile Include="Forms\iosCompatibility.cs" />
+    <Compile Include="Drawing\FontExtensions.cs" />
+    <Compile Include="MacExtensions.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

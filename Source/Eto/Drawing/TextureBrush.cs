@@ -61,7 +61,7 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class TextureBrush : Brush, ITransformBrush
 	{
-		ITextureBrush handler;
+		readonly ITextureBrush handler;
 		float opacity;
 
 		/// <summary>
@@ -91,10 +91,8 @@ namespace Eto.Drawing
 		/// <param name="generator">Generator to create the brush</param>
 		public Func<Image, float, TextureBrush> Instantiator (Generator generator = null)
 		{
-			var handler = generator.CreateShared<ITextureBrush> ();
-			return (image, opacity) => {
-				return new TextureBrush (handler, image, opacity);
-			};
+			var sharedHandler = generator.CreateShared<ITextureBrush> ();
+			return (image, opacity) => new TextureBrush(sharedHandler, image, opacity);
 		}
 
 		TextureBrush (ITextureBrush handler, Image image, float opacity)

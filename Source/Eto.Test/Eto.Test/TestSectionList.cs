@@ -1,10 +1,7 @@
-using System;
 using Eto.Forms;
 using System.Collections.Generic;
-using System.Linq;
 using Eto.Test.Sections.Controls;
 using Eto.Test.Sections.Drawing;
-using Eto.Test.Sections.Layouts;
 
 namespace Eto.Test
 {
@@ -50,7 +47,7 @@ namespace Eto.Test
 			yield return new Section<KitchenSinkSection> { Text = "Kitchen Sink" };
 			yield return new Section<ImageViewSection> { Text = "Image View" };
 			yield return new Section<RadioButtonListSection> { Text = "Radio Button List" };
-			yield return new Sections.Controls.SplitterSection { Text = "Splitter" };
+			yield return new Section<SplitterSection> { Text = "Splitter" };
 		}
 		
 		static IEnumerable<Section> DrawingSection()

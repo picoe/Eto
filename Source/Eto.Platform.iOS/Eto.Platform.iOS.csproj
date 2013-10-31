@@ -10,8 +10,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.iOS</RootNamespace>
     <AssemblyName>Eto.Platform.iOS</AssemblyName>
-    <ReleaseVersion>
-    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -180,6 +178,9 @@
     <Compile Include="Forms\Controls\IosControl.cs" />
     <Compile Include="Forms\Controls\IosButton.cs" />
     <Compile Include="Forms\IosWindow.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Drawing\FontExtensions.cs">
+      <Link>Drawing\FontExtensions.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - iOS.csproj">

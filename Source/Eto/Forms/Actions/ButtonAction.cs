@@ -1,6 +1,5 @@
 using System;
 using System.Reflection;
-using System.Collections;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -11,7 +10,7 @@ namespace Eto.Forms
 		
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text)
 		{
-			ButtonAction action = new ButtonAction(id, text);
+			var action = new ButtonAction(id, text);
 			actions.Add(action);
 			return action;
 		}
@@ -20,7 +19,7 @@ namespace Eto.Forms
 		{
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
-			ButtonAction action = new ButtonAction(id, text, icon, activated);
+			var action = new ButtonAction(id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
@@ -30,14 +29,14 @@ namespace Eto.Forms
 		{
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
-			ButtonAction action = new ButtonAction(id, text, icon, activated);
+			var action = new ButtonAction(id, text, icon, activated);
 			actions.Add(action);
 			return action;
 		}
 
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, Icon icon, EventHandler<EventArgs> activated)
 		{
-			ButtonAction action = new ButtonAction(id, text, icon, activated);
+			var action = new ButtonAction(id, text, icon, activated);
 			actions.Add(action);
 			return action;
 		}
@@ -45,7 +44,7 @@ namespace Eto.Forms
 		
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, EventHandler<EventArgs> activated, params Key[] accelerators)
 		{
-			ButtonAction action = new ButtonAction(id, text, activated);
+			var action = new ButtonAction(id, text, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
@@ -53,7 +52,7 @@ namespace Eto.Forms
 
 		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, EventHandler<EventArgs> activated)
 		{
-			ButtonAction action = new ButtonAction(id, text, activated);
+			var action = new ButtonAction(id, text, activated);
 			actions.Add(action);
 			return action;
 		}
@@ -85,9 +84,9 @@ namespace Eto.Forms
 
 		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			ToolBarButton tbb = new ToolBarButton(generator);
-			tbb.ID = this.ID;
-			tbb.Enabled = this.Enabled;
+			var tbb = new ToolBarButton(generator);
+			tbb.ID = ID;
+			tbb.Enabled = Enabled;
 			if (ShowLabel || actionItem.ShowLabel || textAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
 			//Console.WriteLine("Adding toolbar {0}", ToolBarText);
 			if (Image != null) tbb.Image = Image;
@@ -99,8 +98,8 @@ namespace Eto.Forms
 		
 		protected class ToolBarConnector
 		{
-			ToolBarButton toolBarButton;
-			ButtonAction action;
+			readonly ToolBarButton toolBarButton;
+			readonly ButtonAction action;
 			public ToolBarConnector(ButtonAction action, ToolBarButton toolBarButton)
 			{
 				this.toolBarButton = toolBarButton;

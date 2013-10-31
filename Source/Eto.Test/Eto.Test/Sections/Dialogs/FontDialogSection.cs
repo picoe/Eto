@@ -24,7 +24,7 @@ namespace Eto.Test.Sections.Dialogs
 			layout.AddSeparateRow(null, new Label { Text = "Set Font Family", VerticalAlign = VerticalAlign.Middle }, PickFontFamily(), null);
 
 			layout.AddSeparateRow(null, FontList(), FontStyles(), FontSizes(), null);
-			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), null);
+			layout.AddSeparateRow(null, new Label { Text = "Style:" }, BoldFont(), ItalicFont(), UnderlineFont(), StrikeoutFont(), null);
 
 			var tabs = new TabControl();
 			tabs.TabPages.Add(new TabPage(Preview()) { Text = "Preview" });
@@ -38,10 +38,11 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control PickFontFamily()
 		{
-			var fontFamilyName = new TextBox { Text = "Times, serif", Size = new Size (200, -1) };
+			var fontFamilyName = new TextBox { Text = "Times, serif", Size = new Size(200, -1) };
 
 			var button = new Button { Text = "Set" };
-			button.Click += (sender, e) => {
+			button.Click += (sender, e) =>
+			{
 
 				try
 				{
@@ -63,42 +64,42 @@ namespace Eto.Test.Sections.Dialogs
 		Control Descender()
 		{
 			var control = new Label { TextColor = Colors.Red };
-			control.Bind(r => r.Text, (Font f) => f.Descent);
+			control.TextBinding.Bind<Font>(r => r.Descent.ToString());
 			return control;
 		}
 
 		Control Ascender()
 		{
 			var control = new Label { TextColor = Colors.Blue };
-			control.Bind(r => r.Text, (Font f) => f.Ascent);
+			control.TextBinding.Bind<Font>(r => r.Ascent.ToString());
 			return control;
 		}
 
 		Control XHeight()
 		{
 			var control = new Label { TextColor = Colors.Green };
-			control.Bind(r => r.Text, (Font f) => f.XHeight);
+			control.TextBinding.Bind<Font>(r => r.XHeight.ToString());
 			return control;
 		}
 
 		Control LineHeight()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.Bind(r => r.Text, (Font f) => f.LineHeight);
+			control.TextBinding.Bind<Font>(r => r.LineHeight.ToString());
 			return control;
 		}
 
 		Control Leading()
 		{
 			var control = new Label { TextColor = Colors.Orange };
-			control.Bind(r => r.Text, (Font f) => f.Leading);
+			control.TextBinding.Bind<Font>(r => r.Leading.ToString());
 			return control;
 		}
 
 		Control BaseLine()
 		{
-			var control = new Label { TextColor = Colors.Orange };
-			control.Bind(r => r.Text, (Font f) => f.Baseline);
+			var control = new Label { TextColor = Colors.Black };
+			control.TextBinding.Bind<Font>(r => r.Baseline.ToString());
 			return control;
 		}
 
@@ -156,14 +157,15 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control FontList()
 		{
-			fontList = new ListBox { Size = new Size (300, 180) };
+			fontList = new ListBox { Size = new Size(300, 180) };
 			var lookup = Fonts.AvailableFontFamilies().ToDictionary(r => r.Name);
 			fontList.Items.AddRange(lookup.Values.OrderBy(r => r.Name).Select(r => new ListItem { Text = r.Name, Key = r.Name }).OfType<IListItem>());
-			fontList.SelectedIndexChanged += (sender, e) => {
+			fontList.SelectedIndexChanged += (sender, e) =>
+			{
 				if (updating || fontList.SelectedKey == null)
 					return;
 				var family = lookup[fontList.SelectedKey];
-				UpdatePreview(new Font(family.Typefaces.First(), selectedFont.Size));
+				UpdatePreview(new Font(family.Typefaces.First(), selectedFont.Size, selectedFont.FontDecoration));
 			};
 
 			return fontList;
@@ -171,14 +173,15 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control FontStyles()
 		{
-			fontStyles = new ListBox { Size = new Size (150, 100) };
-			fontStyles.SelectedIndexChanged += (sender, e) => {
+			fontStyles = new ListBox { Size = new Size(150, 100) };
+			fontStyles.SelectedIndexChanged += (sender, e) =>
+			{
 				if (updating)
 					return;
 				var face = selectedFont.Family.Typefaces.FirstOrDefault(r => r.Name == fontStyles.SelectedKey);
 				if (face != null)
 				{
-					UpdatePreview(new Font(face, selectedFont.Size));
+					UpdatePreview(new Font(face, selectedFont.Size, selectedFont.FontDecoration));
 				}
 			};
 			return fontStyles;
@@ -186,18 +189,19 @@ namespace Eto.Test.Sections.Dialogs
 
 		Control FontSizes()
 		{
-			fontSizes = new ListBox { Size = new Size (60, 100) };
+			fontSizes = new ListBox { Size = new Size(60, 100) };
 			for (int i = 6; i < 72; i++)
 			{
 				fontSizes.Items.Add(i.ToString(), i.ToString());
 			}
-			fontSizes.SelectedIndexChanged += (sender, e) => {
+			fontSizes.SelectedIndexChanged += (sender, e) =>
+			{
 				if (updating)
 					return;
 				float size;
 				if (float.TryParse(fontSizes.SelectedKey, out size))
 				{
-					UpdatePreview(new Font(selectedFont.Typeface, size));
+					UpdatePreview(new Font(selectedFont.Typeface, size, selectedFont.FontDecoration));
 				}
 			};
 			return fontSizes;
@@ -214,6 +218,30 @@ namespace Eto.Test.Sections.Dialogs
 		{
 			var control = new CheckBox { Text = "Italic", Enabled = false };
 			control.Bind(r => r.Checked, (Font f) => f.Italic);
+			return control;
+		}
+
+		Control UnderlineFont()
+		{
+			var control = new CheckBox { Text = "Underline" };
+			control.CheckedBinding.Bind<Font>(f => f.Underline, (f,val) => {
+				var decoration = selectedFont.FontDecoration;
+				if (val ?? false) decoration |= FontDecoration.Underline;
+				else decoration &= ~FontDecoration.Underline;
+				UpdatePreview(new Font(selectedFont.Typeface, selectedFont.Size, decoration));
+			});
+			return control;
+		}
+
+		Control StrikeoutFont()
+		{
+			var control = new CheckBox { Text = "Strikethrough" };
+			control.CheckedBinding.Bind<Font>(f => f.Strikethrough, (f,val) => {
+				var decoration = selectedFont.FontDecoration;
+				if (val ?? false) decoration |= FontDecoration.Strikethrough;
+				else decoration &= ~FontDecoration.Strikethrough;
+				UpdatePreview(new Font(selectedFont.Typeface, selectedFont.Size, decoration));
+			});
 			return control;
 		}
 
@@ -245,59 +273,66 @@ namespace Eto.Test.Sections.Dialogs
 		Control Metrics()
 		{
 			var layout = new DynamicLayout(Padding.Empty);
-			layout.BeginHorizontal ();
-			layout.BeginVertical ();
-			layout.Add (null);
-			layout.AddRow (new Label { Text = "Descent" }, Descender ());
-			layout.AddRow (new Label { Text = "Ascent" }, Ascender ());
-			layout.AddRow (new Label { Text = "Leading" }, Leading ());
-			layout.Add (null);
+			layout.BeginHorizontal();
+			layout.BeginVertical();
+			layout.Add(null);
+			layout.AddRow(new Label { Text = "Descent" }, Descender());
+			layout.AddRow(new Label { Text = "Ascent" }, Ascender());
+			layout.AddRow(new Label { Text = "Leading" }, Leading());
+			layout.Add(null);
 			layout.EndBeginVertical();
-			layout.Add (null);
-			layout.AddRow (new Label { Text = "BaseLine" }, BaseLine ());
-			layout.AddRow (new Label { Text = "XHeight" }, XHeight ());
-			layout.AddRow (new Label { Text = "LineHeight" }, LineHeight ());
-			layout.Add (null);
+			layout.Add(null);
+			layout.AddRow(new Label { Text = "BaseLine" }, BaseLine());
+			layout.AddRow(new Label { Text = "XHeight" }, XHeight());
+			layout.AddRow(new Label { Text = "LineHeight" }, LineHeight());
+			layout.Add(null);
 			layout.EndBeginVertical();
-			layout.Add (null);
-			layout.Add (MetricsPreview ());
-			layout.Add (null);
-			layout.EndVertical ();
-			layout.EndHorizontal ();
+			layout.Add(null);
+			layout.Add(MetricsPreview());
+			layout.Add(null);
+			layout.EndVertical();
+			layout.EndHorizontal();
 			return layout;
 		}
 
-		Control MetricsPreview ()
+		Control MetricsPreview()
 		{
-			metricsPreview = new Drawable { Size = new Size (200, 100) };
-			metricsPreview.Paint += (sender, pe) => {
-				var size = pe.Graphics.MeasureString (selectedFont, preview.Text);
+			metricsPreview = new Drawable { Size = new Size(200, 100) };
+			metricsPreview.Paint += (sender, pe) =>
+			{
+				var width = metricsPreview.Size.Width;
+				pe.Graphics.PixelOffsetMode = PixelOffsetMode.Half;
+
+				pe.Graphics.DrawRectangle(Colors.Black, new RectangleF(metricsPreview.Size));
+
+				var size = pe.Graphics.MeasureString(selectedFont, preview.Text);
 				var scale = this.ParentWindow.Screen.Scale;
 
-				var ypos = Math.Max (0, (selectedFont.Ascent * scale) - size.Height);
-				ypos += Math.Max (0, (metricsPreview.Size.Height - (selectedFont.LineHeight * scale)) / 2);
+				var ypos = Math.Max(0, (metricsPreview.Size.Height - size.Height) / 2);
 
-				var baseline = ypos + (selectedFont.Baseline * scale);
-				pe.Graphics.DrawLine (Pens.Black (), 0, baseline, 200, baseline);
+				pe.Graphics.FillRectangle(Brushes.GhostWhite(), new RectangleF(new PointF(0, ypos), size));
 
-				pe.Graphics.DrawText (selectedFont, Colors.Black, 0, ypos, preview.Text);
+				pe.Graphics.DrawText(selectedFont, Colors.Black, 0, ypos, preview.Text);
+
+				var baseline = ypos + selectedFont.Baseline * scale;
+				pe.Graphics.DrawLine(Pens.Black(), 0, baseline, width, baseline);
 
 				var ascender = baseline - selectedFont.Ascent * scale;
-				pe.Graphics.DrawLine (Pens.Blue (), 0, ascender, 200, ascender);
+				pe.Graphics.DrawLine(Pens.Blue(), 0, ascender, width, ascender);
 
 				var descender = baseline + selectedFont.Descent * scale;
-				pe.Graphics.DrawLine (Pens.Red (), 0, descender, 200, descender);
+				pe.Graphics.DrawLine(Pens.Red(), 0, descender, width, descender);
 
 				var xheight = baseline - selectedFont.XHeight * scale;
-				pe.Graphics.DrawLine (Pens.Green (), 0, xheight, 200, xheight);
+				pe.Graphics.DrawLine(Pens.Green(), 0, xheight, width, xheight);
 
 				var lineheight = ypos + selectedFont.LineHeight * scale;
-				pe.Graphics.DrawLine (Pens.Orange (), 0, lineheight, 200, lineheight);
+				pe.Graphics.DrawLine(Pens.Orange(), 0, lineheight, width, lineheight);
 			};
 			return metricsPreview;
 		}
 
-		Control Preview ()
+		Control Preview()
 		{
 			preview = new TextArea { Wrap = true, Size = new Size(-1, 100) };
 			preview.Text = "The quick brown fox jumps over the lazy dog";

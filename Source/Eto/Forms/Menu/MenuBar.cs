@@ -1,6 +1,5 @@
 #if DESKTOP
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace Eto.Forms
@@ -14,7 +13,7 @@ namespace Eto.Forms
 	{
 		new IMenuBar Handler { get { return (IMenuBar)base.Handler; } }
 
-		MenuItemCollection menuItems;
+		readonly MenuItemCollection menuItems;
 		
 		public MenuBar () : this (Generator.Current)
 		{
@@ -38,9 +37,9 @@ namespace Eto.Forms
 		public void GenerateActions (IEnumerable<IActionItem> actionItems)
 		{
 			foreach (IActionItem ai in actionItems) {
-				var mi = ai.Generate (this.Generator);
+				var mi = ai.Generate (Generator);
 				if (mi != null)
-					this.MenuItems.Add(mi);
+					MenuItems.Add(mi);
 			}
 		}
 

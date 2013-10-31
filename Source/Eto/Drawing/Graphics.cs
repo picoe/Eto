@@ -328,7 +328,7 @@ namespace Eto.Drawing
 		/// <param name="end">Ending location</param>
 		public void DrawLine (Color color, PointF start, PointF end)
 		{
-			using (var pen = new Pen(color, 1f, this.Generator))
+			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawLine (pen, start.X, start.Y, end.X, end.Y);
 		}
 
@@ -353,7 +353,7 @@ namespace Eto.Drawing
 		/// <param name="endy">Y co-ordinate of the ending point</param>
 		public void DrawLine (Color color, float startx, float starty, float endx, float endy)
 		{
-			using (var pen = new Pen (color, 1f, this.Generator))
+			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawLine (pen, startx, starty, endx, endy);
 		}
 
@@ -390,7 +390,7 @@ namespace Eto.Drawing
 		/// <param name="rectangle">Where to draw the rectangle</param>
 		public void DrawRectangle (Color color, RectangleF rectangle)
 		{
-			using (var pen = new Pen (color, 1f, this.Generator))
+			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawRectangle (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
 		}
 
@@ -413,8 +413,8 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the rectangle, in pixels</param>
 		public void DrawInsetRectangle (Color topLeftColor, Color bottomRightColor, RectangleF rectangle, int width = 1)
 		{
-			using (var topLeftPen = new Pen (topLeftColor, 1f, this.Generator))
-			using (var bottomRightPen = new Pen (bottomRightColor, 1f, this.Generator))
+			using (var topLeftPen = new Pen(topLeftColor, 1f, Generator))
+			using (var bottomRightPen = new Pen(bottomRightColor, 1f, Generator))
 			for (int i = 0; i < width; i++) {
 				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerTopRight);
 				DrawLine (topLeftPen, rectangle.TopLeft, rectangle.InnerBottomLeft);
@@ -1123,7 +1123,7 @@ namespace Eto.Drawing
 		/// </summary>
 		public virtual bool IsVisible(RectangleF rectangle)
 		{
-			return this.IsRetained || this.ClipBounds.Intersects(rectangle);
+			return IsRetained || ClipBounds.Intersects(rectangle);
 		}
 		
 		/// <summary>

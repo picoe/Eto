@@ -1,7 +1,5 @@
 using System;
 using Eto.Forms;
-using System.Runtime.InteropServices;
-using Eto.Drawing;
 using System.Linq;
 using System.Collections.Generic;
 using Eto.Platform.GtkSharp.Forms.Cells;
@@ -13,7 +11,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
-		Dictionary<int, int> columnMap = new Dictionary<int, int> ();
+		readonly Dictionary<int, int> columnMap = new Dictionary<int, int> ();
 
 		protected bool SkipSelectedChange { get; set; }
 
@@ -21,7 +19,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		protected Dictionary<int, int> ColumnMap { get { return columnMap; } }
 		
-		public GridHandler ()
+		protected GridHandler()
 		{
 			Control = new Gtk.ScrolledWindow {
 				ShadowType = Gtk.ShadowType.In
@@ -176,14 +174,14 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public void EndCellEditing (Gtk.TreePath path, int column)
 		{
 			var row = path.Indices.Length > 0 ? path.Indices [0] : -1;
-			var item = GetItem (path) as object;
+			var item = GetItem(path);
 			Widget.OnEndCellEdit (new GridViewCellArgs (Widget.Columns [column], row, column, item));
 		}
 
 		public void BeginCellEditing (Gtk.TreePath path, int column)
 		{
 			var row = path.Indices.Length > 0 ? path.Indices [0] : -1;
-			var item = GetItem (path) as object;
+			var item = GetItem(path);
 			Widget.OnBeginCellEdit (new GridViewCellArgs (Widget.Columns [column], row, column, item));
 		}
 		

@@ -46,7 +46,7 @@ namespace Eto.Forms
 		
 		public void SetDataStream (Stream stream, string type)
 		{
-			byte[] buffer = new byte[stream.Length];
+			var buffer = new byte[stream.Length];
 			if (stream.CanSeek && stream.Position != 0)
 				stream.Seek (0, SeekOrigin.Begin);
 			stream.Read (buffer, 0, buffer.Length);
