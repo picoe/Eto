@@ -169,7 +169,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Gets or sets a value indicating that drawing operations will use antialiasing
 		/// </summary>
-		bool Antialias { get; set; }
+		bool AntiAlias { get; set; }
 
 		/// <summary>
 		/// Gets or sets the interpolation mode for drawing images
@@ -932,12 +932,22 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Gets or sets a value indicating that drawing operations will use antialiasing
+		/// Gets or sets a value indicating that drawing operations will use anti-aliasing
 		/// </summary>
+		public bool AntiAlias
+		{
+			get { return Handler.AntiAlias; }
+			set { Handler.AntiAlias = value; }
+		}
+
+		/// <summary>
+		/// Obsolete, use <see cref="AntiAlias"/> instead
+		/// </summary>
+		[Obsolete("Use AntiAlias instead")]
 		public bool Antialias
 		{
-			get { return Handler.Antialias; }
-			set { Handler.Antialias = value; }
+			get { return Handler.AntiAlias; }
+			set { Handler.AntiAlias = value; }
 		}
 
 		/// <summary>

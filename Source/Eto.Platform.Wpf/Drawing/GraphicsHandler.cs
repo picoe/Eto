@@ -295,7 +295,7 @@ namespace Eto.Platform.Wpf.Drawing
 			return false;
 		}
 
-		public bool Antialias
+		public bool AntiAlias
 		{
 			get
 			{
@@ -340,7 +340,7 @@ namespace Eto.Platform.Wpf.Drawing
 				if (transformStack == null)
 					transformStack = new TransformStack(Generator, 
 						m => Control.PushTransform(m.ToWpfTransform()),
-						() => Control.Pop());
+						Control.Pop);
 
 				return transformStack;
 			}

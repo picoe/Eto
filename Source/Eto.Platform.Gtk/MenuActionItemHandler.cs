@@ -7,9 +7,9 @@ namespace Eto.Platform.GtkSharp
 	{
 		void TriggerValidate();
 	}
-	public abstract class MenuActionItemHandler<T, W> : MenuHandler<T, W>, IMenuActionItemHandler
-		where T: Gtk.MenuItem
-		where W: MenuActionItem
+	public abstract class MenuActionItemHandler<TControl, TWidget> : MenuHandler<TControl, TWidget>, IMenuActionItemHandler
+		where TControl: Gtk.MenuItem
+		where TWidget: MenuActionItem
 	{
 		public override void AttachEvent (string id)
 		{

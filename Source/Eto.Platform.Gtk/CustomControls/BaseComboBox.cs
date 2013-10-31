@@ -132,7 +132,7 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			return popupButton;
 		}
         
-		protected virtual void Build ()
+		void Build ()
 		{
 			var vbox = new VBox();
 			var hbox = new HBox ();

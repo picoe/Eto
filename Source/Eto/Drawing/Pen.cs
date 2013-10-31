@@ -105,7 +105,7 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class Pen : IHandlerSource, IDisposable, IControlObjectSource
 	{
-		IPen handler;
+		readonly IPen handler;
 		DashStyle dashStyle;
 
 		/// <summary>
@@ -124,7 +124,7 @@ namespace Eto.Drawing
 		/// Gets a delegate that can be used to create instances of the Pen with low overhead
 		/// </summary>
 		/// <param name="generator">Generator to create the pens</param>
-		public Func<Color, float, Pen> Instantiator (Generator generator = null)
+		public static Func<Color, float, Pen> Instantiator (Generator generator = null)
 		{
 			var sharedHandler = generator.CreateShared<IPen> ();
 			return (color, thickness) => {

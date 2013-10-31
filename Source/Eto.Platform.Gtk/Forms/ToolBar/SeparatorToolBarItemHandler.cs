@@ -23,8 +23,7 @@ namespace Eto.Platform.GtkSharp
 			}
 			set {
 				type = value;
-				if (type == SeparatorToolBarItemType.FlexibleSpace) expand = true;
-				else expand = false;
+				expand = type == SeparatorToolBarItemType.FlexibleSpace;
 				if (Control != null) Control.Expand = expand;
 			}
 		}

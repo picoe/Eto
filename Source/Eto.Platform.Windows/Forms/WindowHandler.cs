@@ -15,9 +15,9 @@ namespace Eto.Platform.Windows
 		swf.IWin32Window Win32Window { get; }
 	}
 
-	public abstract class WindowHandler<T, W> : WindowsDockContainer<T, W>, IWindow, IWindowHandler
-		where T : swf.Form
-		where W : Window
+	public abstract class WindowHandler<TControl, TWidget> : WindowsDockContainer<TControl, TWidget>, IWindow, IWindowHandler
+		where TControl : swf.Form
+		where TWidget : Window
 	{
 		MenuBar menu;
 		Icon icon;
@@ -369,7 +369,7 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				Control.AllowTransparency = value != 1.0;
+				Control.AllowTransparency = Math.Abs(value - 1.0) > 0.01f;
 				Control.Opacity = value;
 			}
 		}

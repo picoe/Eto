@@ -4,9 +4,9 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public abstract class GtkDockContainer<T, W> : GtkContainer<T, W>
-		where T: Gtk.Widget
-		where W: Container
+	public abstract class GtkDockContainer<TControl, TWidget> : GtkContainer<TControl, TWidget>
+		where TControl: Gtk.Widget
+		where TWidget: Container
 	{
 		readonly Gtk.Alignment alignment;
 		Control content;

@@ -155,9 +155,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public BitmapData Lock()
 		{
-			if (bmprep != null)
-				return new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
-			return null;
+			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
 		}
 
 		public void Unlock(BitmapData bitmapData)

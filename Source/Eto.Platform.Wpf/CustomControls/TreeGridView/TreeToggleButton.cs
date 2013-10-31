@@ -34,10 +34,10 @@ namespace Eto.Platform.Wpf.CustomControls.TreeGridView
 		{
 			base.OnPreviewMouseLeftButtonDown (e);
 			
-			var index = Controller.IndexOf ((ITreeGridItem)this.DataContext);
+			var index = Controller.IndexOf ((ITreeGridItem)DataContext);
 			if (index >= 0) {
 				Dispatcher.BeginInvoke (new Action (delegate {
-					if (this.IsChecked ?? false) {
+					if (IsChecked ?? false) {
 						if (Controller.CollapseRow (index)) {
 							IsChecked = false;
 						}

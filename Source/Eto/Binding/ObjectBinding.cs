@@ -1,4 +1,5 @@
 using System;
+using Eto.Forms;
 
 namespace Eto
 {
@@ -38,7 +39,7 @@ namespace Eto
 
 		public DualBinding Bind<TObject>(DelegateBinding<TObject, TValue> binding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
-			return BindingExtensions.Bind(controlBinding: this, dataContextBinding: binding, mode: mode);
+			return Bind(dataContextBinding: binding, mode: mode);
 		}
 
 		public DualBinding Bind<TObject>(TObject objectValue, Func<TObject, TValue> getValue, Action<TObject, TValue> setValue = null, Action<TObject, EventHandler<EventArgs>> addChangeEvent = null, Action<TObject, EventHandler<EventArgs>> removeChangeEvent = null, DualBindingMode mode = DualBindingMode.TwoWay)
@@ -49,7 +50,7 @@ namespace Eto
 		public DualBinding Bind<TObject>(TObject objectValue, DelegateBinding<TObject, TValue> objectBinding, DualBindingMode mode = DualBindingMode.TwoWay)
 		{
 			var valueBinding = new ObjectBinding(objectValue, objectBinding);
-			return BindingExtensions.Bind(controlBinding: this, valueBinding: valueBinding, mode: mode);
+			return Bind(valueBinding: valueBinding, mode: mode);
 		}
 	}
 
@@ -126,10 +127,10 @@ namespace Eto
 		/// <param name="innerBinding">binding to use to get/set the values from the dataItem</param>
 		public ObjectBinding (object dataItem, IndirectBinding innerBinding)
 		{
-			this.DataItem = dataItem;
-			this.InnerBinding = innerBinding;
-			this.InnerBinding.Changed += HandleInnerBindingChanged;
-			this.InnerBinding.Changing += HandleInnerBindingChanging;
+			this.dataItem = dataItem;
+			InnerBinding = innerBinding;
+			InnerBinding.Changed += HandleInnerBindingChanged;
+			InnerBinding.Changing += HandleInnerBindingChanging;
 		}
 		
 		void HandleInnerBindingChanging (object sender, BindingChangingEventArgs e)
@@ -211,6 +212,38 @@ namespace Eto
 		void HandleChangedEvent (object sender, EventArgs e)
 		{
 			OnDataValueChanged (e);
+		}
+
+		public DualBinding Bind(IndirectBinding dataContextBinding, DualBindingMode mode = DualBindingMode.TwoWay, object defaultControlValue = null, object defaultContextValue = null)
+		{
+			var control = DataItem as Control;
+			if (control == null)
+				throw new InvalidOperationException("Binding must be attached to a control");
+			var contextBinding = new ObjectBinding(control, new DelegateBinding<Control, object>(w => w.DataContext, null, (w, h) => w.DataContextChanged += h, (w, h) => w.DataContextChanged -= h));
+			var valueBinding = new ObjectBinding(control.DataContext, dataContextBinding) {
+				GettingNullValue = defaultControlValue,
+				SettingNullValue = defaultContextValue
+			};
+			DualBinding binding = Bind(valueBinding: valueBinding, mode: mode);
+			contextBinding.DataValueChanged += delegate
+			{
+				((ObjectBinding)binding.Source).DataItem = contextBinding.DataValue;
+			};
+			control.Bindings.Add(contextBinding);
+			return binding;
+		}
+
+		public DualBinding Bind(DirectBinding valueBinding, DualBindingMode mode = DualBindingMode.TwoWay)
+		{
+			var binding = new DualBinding(
+				valueBinding,
+				this,
+				mode
+			);
+			var control = DataItem as Control;
+			if (control != null)
+				control.Bindings.Add(binding);
+			return binding;
 		}
 	}
 }

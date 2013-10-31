@@ -16,9 +16,9 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<T, W> : WpfDockContainer<T, W>, IWindow, IWpfWindow
-		where T : sw.Window
-		where W : Window
+	public abstract class WpfWindow<TControl, TWidget> : WpfDockContainer<TControl, TWidget>, IWindow, IWpfWindow
+		where TControl : sw.Window
+		where TWidget : Window
 	{
 		Icon icon;
 		MenuBar menu;
@@ -129,11 +129,7 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				toolBar = value;
-				if (toolBar != null) {
-					toolBarHolder.Content = toolBar.ControlObject;
-				}
-				else
-					toolBarHolder.Content = null;
+				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
 		}
 
@@ -381,21 +377,26 @@ namespace Eto.Platform.Wpf.Forms
 			get { return Control.Opacity; }
 			set
 			{
-				if (value != 1.0) {
-					if (Control.IsLoaded) {
-						GlassHelper.BlurBehindWindow (Control);
+				if (Math.Abs(value - 1.0) > 0.01f)
+				{
+					if (Control.IsLoaded)
+					{
+						GlassHelper.BlurBehindWindow(Control);
 						//GlassHelper.ExtendGlassFrame (Control);
 						Control.Opacity = value;
 					}
-					else {
-						Control.Loaded += delegate {
-							GlassHelper.BlurBehindWindow (Control);
+					else
+					{
+						Control.Loaded += delegate
+						{
+							GlassHelper.BlurBehindWindow(Control);
 							//GlassHelper.ExtendGlassFrame (Control);
 							Control.Opacity = value;
 						};
 					}
 				}
-				else {
+				else
+				{
 					Control.Opacity = value;
 				}
 			}

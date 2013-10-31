@@ -51,7 +51,7 @@ namespace Eto.Drawing
 			var str = value as string;
 			if (str != null) {
 				Color color;
-				if (!Color.TryParse (str, out color, culture))
+				if (!Color.TryParse (str, out color))
 					throw new ArgumentException (str + " is not a valid color value.");
 				return color;
 			}

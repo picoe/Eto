@@ -6,9 +6,9 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public abstract class WindowsDockContainer<T, W> : WindowsContainer<T, W>, IDockContainer
-		where T : swf.Control
-		where W : DockContainer
+	public abstract class WindowsDockContainer<TControl, TWidget> : WindowsContainer<TControl, TWidget>, IDockContainer
+		where TControl : swf.Control
+		where TWidget : DockContainer
 	{
 		Control content;
 

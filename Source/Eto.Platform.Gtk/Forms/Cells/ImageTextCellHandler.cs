@@ -106,7 +106,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			Column.Control.AddAttribute (imageCell, "pixbuf", dataIndex++);
 			textDataIndex = SetColumnMap (dataIndex);
 			Column.Control.AddAttribute (Control, "text", dataIndex++);
-			BindBase (imageCell, ref dataIndex);
+			BindBase (ref dataIndex);
 		}
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
@@ -117,7 +117,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void SetValue (object dataItem, object value)
 		{
 			if (Widget.TextBinding != null) {
-				Widget.TextBinding.SetValue (dataItem, value as string);
+				Widget.TextBinding.SetValue (dataItem, value);
 			}
 		}
 		

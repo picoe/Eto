@@ -32,9 +32,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		bool Editable { get; set; }
 	}
 	
-	public abstract class CellHandler<T, W> : MacObject<T, W>, ICell, ICellHandler
-		where T: NSCell
-		where W: Cell
+	public abstract class CellHandler<TControl, TWidget> : MacObject<TControl, TWidget>, ICell, ICellHandler
+		where TControl: NSCell
+		where TWidget: Cell
 	{
 		public IDataColumnHandler ColumnHandler { get; set; }
 		NSCell copy;

@@ -297,16 +297,12 @@ namespace Eto.Platform.Mac
 
 		public static PrintSettings ToEto(this NSPrintInfo value, Eto.Generator generator)
 		{
-			if (value == null)
-				return null;
-			return new PrintSettings(generator, new PrintSettingsHandler(value));
+			return value == null ? null : new PrintSettings(generator, new PrintSettingsHandler(value));
 		}
 
 		public static NSPrintInfo ToNS(this PrintSettings settings)
 		{
-			if (settings == null)
-				return null;
-			return ((PrintSettingsHandler)settings.Handler).Control;
+			return settings == null ? null : ((PrintSettingsHandler)settings.Handler).Control;
 		}
 
 		public static SizeF ToEtoSize(this NSEdgeInsets insets)

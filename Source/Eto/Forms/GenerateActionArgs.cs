@@ -12,10 +12,10 @@ namespace Eto.Forms
 	{
 		#region Members
 		
-		ActionCollection actions;
-		ActionItemCollection menu;
-		ActionItemCollection toolBar;
-		Hashtable arguments = new Hashtable();
+		readonly ActionCollection actions;
+		readonly ActionItemCollection menu;
+		readonly ActionItemCollection toolBar;
+		readonly Hashtable arguments = new Hashtable();
 		
 		#endregion
 		
@@ -93,8 +93,7 @@ namespace Eto.Forms
 		
 		public object GetArgument(object key, object defaultValue)
 		{
-			if (!arguments.ContainsKey(key)) return defaultValue;
-			return arguments[key];
+			return !arguments.ContainsKey(key) ? defaultValue : arguments[key];
 		}
 
 		public void Clear()

@@ -3,25 +3,25 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public interface IGtkListModelHandler<T, S>
-		where S: IDataStore<T>
-		where T: class
+	public interface IGtkListModelHandler<TItem, TStore>
+		where TStore: IDataStore<TItem>
+		where TItem: class
 	{
-		S DataStore { get; }
+		TStore DataStore { get; }
 		
 		int NumberOfColumns { get; }
 		
-		GLib.Value GetColumnValue (T item, int column, int row);
+		GLib.Value GetColumnValue (TItem item, int column, int row);
 
-		int GetRowOfItem (T item);
+		int GetRowOfItem (TItem item);
 	}
 
-	public class GtkListModel<T, S> : GLib.Object, ITreeModelImplementor
-		where S: class, IDataStore<T>
-		where T: class
+	public class GtkListModel<TItem, TStore> : GLib.Object, ITreeModelImplementor
+		where TStore: class, IDataStore<TItem>
+		where TItem: class
 	{
 
-		public IGtkListModelHandler<T, S> Handler { get; set; }
+		public IGtkListModelHandler<TItem, TStore> Handler { get; set; }
 
 		public Gtk.TreeIter GetIterAtRow (int row)
 		{
@@ -35,25 +35,21 @@ namespace Eto.Platform.GtkSharp
 			return path;
 		}
 		
-		public T GetItemAtPath (Gtk.TreePath path)
+		public TItem GetItemAtPath (Gtk.TreePath path)
 		{
 			var row = GetRow (path);
-			if (row >= 0)
-				return Handler.DataStore [row];
-			return default(T);
+			return row >= 0 ? Handler.DataStore[row] : default(TItem);
 		}
 
-		public T GetItemAtPath (string path)
+		public TItem GetItemAtPath (string path)
 		{
 			return GetItemAtPath (new Gtk.TreePath (path));
 		}
 		
-		public T GetItemAtIter (Gtk.TreeIter iter)
+		public TItem GetItemAtIter (Gtk.TreeIter iter)
 		{
 			var node = NodeFromIter (iter);
-			if (node >= 0)
-				return Handler.DataStore [node];
-			return default(T);
+			return node >= 0 ? Handler.DataStore[node] : default(TItem);
 		}
 
 		int GetRow (Gtk.TreePath path)

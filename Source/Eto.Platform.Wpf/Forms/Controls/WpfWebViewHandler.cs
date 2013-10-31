@@ -10,27 +10,24 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class WpfWebViewHandler : WpfFrameworkElement<swc.WebBrowser, WebView>, IWebView
 	{
-		[ComImport, InterfaceType (ComInterfaceType.InterfaceIsIUnknown)]
-		[Guid ("6d5140c1-7436-11ce-8034-00aa006009fa")]
+		[ComImport, InterfaceType(ComInterfaceType.InterfaceIsIUnknown)]
+		[Guid("6d5140c1-7436-11ce-8034-00aa006009fa")]
 		internal interface IServiceProvider
 		{
-			[return: MarshalAs (UnmanagedType.IUnknown)]
-			object QueryService (ref Guid guidService, ref Guid riid);
+			[return: MarshalAs(UnmanagedType.IUnknown)]
+			object QueryService(ref Guid guidService, ref Guid riid);
 		}
 
 		static readonly Guid SID_SWebBrowserApp = new Guid("0002DF05-0000-0000-C000-000000000046");
-
 		Guid serviceGuid = SID_SWebBrowserApp;
-		Guid iid = typeof (SHDocVw.IWebBrowser2).GUID;
-
+		Guid iid = typeof(SHDocVw.IWebBrowser2).GUID;
 
 		object QueryDocumentService
 		{
 			get
 			{
-				var serviceProvider = (IServiceProvider)Control.Document;
-				if (serviceProvider == null) return null;
-				return serviceProvider.QueryService (ref serviceGuid, ref iid);
+				var provider = (IServiceProvider)Control.Document;
+				return provider != null ? provider.QueryService(ref serviceGuid, ref iid) : null;
 			}
 		}
 
@@ -46,110 +43,112 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return (SHDocVw.DWebBrowserEvents_Event)QueryDocumentService; }
 		}
 
-		readonly HashSet<string> delayedEvents = new HashSet<string> ();
+		readonly HashSet<string> delayedEvents = new HashSet<string>();
 
-		public WpfWebViewHandler ()
+		public WpfWebViewHandler()
 		{
-			Control = new swc.WebBrowser ();
-			Control.Navigated += delegate {
+			Control = new swc.WebBrowser();
+			Control.Navigated += delegate
+			{
 				WebBrowser2.Silent = true;
 			};
 		}
 
-		void RemoveEvent (SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
+		static void RemoveEvent(SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
 		{
 			switch (handler)
 			{
-			case WebView.DocumentTitleChangedEvent:
-				WebEvents.TitleChange -= WebEvents_TitleChange;
-				break;
-			case WebView.OpenNewWindowEvent:
-				WebEvents.NewWindow -= WebEvents_NewWindow;
-				break;
+				case WebView.DocumentTitleChangedEvent:
+					webEvents.TitleChange -= WebEvents_TitleChange;
+					break;
+				case WebView.OpenNewWindowEvent:
+					webEvents.NewWindow -= WebEvents_NewWindow;
+					break;
 			}
 		}
 
-		void AttachEvent (SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
+		static void AttachEvent(SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
 		{
 			switch (handler)
 			{
-			case WebView.DocumentTitleChangedEvent:
-				WebEvents.TitleChange += WebEvents_TitleChange;
-				break;
-			case WebView.OpenNewWindowEvent:
-				WebEvents.NewWindow += WebEvents_NewWindow;
-				break;
+				case WebView.DocumentTitleChangedEvent:
+					webEvents.TitleChange += WebEvents_TitleChange;
+					break;
+				case WebView.OpenNewWindowEvent:
+					webEvents.NewWindow += WebEvents_NewWindow;
+					break;
 			}
 		}
 
-		void WebEvents_TitleChange (string text)
+		void WebEvents_TitleChange(string text)
 		{
-			var args = new WebViewTitleEventArgs (text);
-			Widget.OnDocumentTitleChanged (args);
+			var args = new WebViewTitleEventArgs(text);
+			Widget.OnDocumentTitleChanged(args);
 		}
 
-		void WebEvents_NewWindow (string url, int flags, string targetFrameName, ref object postData, string headers, ref bool processed)
+		void WebEvents_NewWindow(string url, int flags, string targetFrameName, ref object postData, string headers, ref bool processed)
 		{
-			var args = new WebViewNewWindowEventArgs (new Uri(url), targetFrameName);
-			Widget.OnOpenNewWindow (args);
+			var args = new WebViewNewWindowEventArgs(new Uri(url), targetFrameName);
+			Widget.OnOpenNewWindow(args);
 			processed = args.Cancel;
 		}
 
-
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
-			case WebView.NavigatedEvent:
-				Control.Navigated += (sender, e) => {
-					var args = new WebViewLoadedEventArgs (e.Uri);
-					Widget.OnNavigated (args);
-				};
-				break;
-			case WebView.DocumentLoadedEvent:
-				Control.LoadCompleted += (sender, e) => {
-					var args = new WebViewLoadedEventArgs (e.Uri);
-					Widget.OnDocumentLoaded (args);
-					Widget.OnDocumentTitleChanged (new WebViewTitleEventArgs(DocumentTitle));
-					HookDocumentEvents ();
-				};
-				break;
-			case WebView.DocumentLoadingEvent:
-				Control.Navigating += (sender, e) => {
-					var args = new WebViewLoadingEventArgs (e.Uri, true);
-					Widget.OnDocumentLoading (args);
-					e.Cancel = args.Cancel;
-				};
-				break;
-			case WebView.OpenNewWindowEvent:
-			case WebView.DocumentTitleChangedEvent:
-				HookDocumentEvents (id);
-				HandleEvent (WebView.NavigatedEvent);
-				break;
-			default:
-				base.AttachEvent (id);
-				break;
+				case WebView.NavigatedEvent:
+					Control.Navigated += (sender, e) =>
+					{
+						var args = new WebViewLoadedEventArgs(e.Uri);
+						Widget.OnNavigated(args);
+					};
+					break;
+				case WebView.DocumentLoadedEvent:
+					Control.LoadCompleted += (sender, e) =>
+					{
+						var args = new WebViewLoadedEventArgs(e.Uri);
+						Widget.OnDocumentLoaded(args);
+						Widget.OnDocumentTitleChanged(new WebViewTitleEventArgs(DocumentTitle));
+						HookDocumentEvents();
+					};
+					break;
+				case WebView.DocumentLoadingEvent:
+					Control.Navigating += (sender, e) =>
+					{
+						var args = new WebViewLoadingEventArgs(e.Uri, true);
+						Widget.OnDocumentLoading(args);
+						e.Cancel = args.Cancel;
+					};
+					break;
+				case WebView.OpenNewWindowEvent:
+				case WebView.DocumentTitleChangedEvent:
+					HookDocumentEvents(id);
+					HandleEvent(WebView.NavigatedEvent);
+					break;
+				default:
+					base.AttachEvent(id);
+					break;
 			}
 		}
 
-		void HookDocumentEvents (string newEvent = null)
+		void HookDocumentEvents(string newEvent = null)
 		{
 			var webEvents = WebEvents;
 			if (oldEventObject != null)
 			{
 				foreach (var handler in delayedEvents)
-					RemoveEvent (webEvents, handler);
+					RemoveEvent(webEvents, handler);
 			}
 			if (newEvent != null)
-				delayedEvents.Add (newEvent);
+				delayedEvents.Add(newEvent);
 			if (webEvents != null)
 			{
 				foreach (var handler in delayedEvents)
-					AttachEvent (webEvents, handler);
+					AttachEvent(webEvents, handler);
 			}
 			oldEventObject = webEvents;
 		}
-
 
 		public override Eto.Drawing.Color BackgroundColor
 		{
@@ -170,22 +169,23 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		HttpServer server;
 
-		public void LoadHtml (string html, Uri baseUri)
+		public void LoadHtml(string html, Uri baseUri)
 		{
-			if (baseUri != null) {
+			if (baseUri != null)
+			{
 				if (server == null)
-					server = new HttpServer ();
-				server.SetHtml (html, baseUri != null ? baseUri.LocalPath : null);
-				Control.Navigate (server.Url);
+					server = new HttpServer();
+				server.SetHtml(html, baseUri != null ? baseUri.LocalPath : null);
+				Control.Navigate(server.Url);
 			}
 			else
-				Control.NavigateToString (html);
+				Control.NavigateToString(html);
 
 		}
 
-		public void GoBack ()
+		public void GoBack()
 		{
-			Control.GoBack ();
+			Control.GoBack();
 		}
 
 		public bool CanGoBack
@@ -193,9 +193,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return Control.CanGoBack; }
 		}
 
-		public void GoForward ()
+		public void GoForward()
 		{
-			Control.GoForward ();
+			Control.GoForward();
 		}
 
 		public bool CanGoForward
@@ -203,16 +203,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			get { return Control.CanGoForward; }
 		}
 
-		public void Stop ()
+		public void Stop()
 		{
 			var browser = WebBrowser2;
 			if (browser != null)
-				browser.Stop ();
+				browser.Stop();
 		}
 
-		public void Reload ()
+		public void Reload()
 		{
-			Control.Refresh ();
+			Control.Refresh();
 		}
 
 		public string DocumentTitle
@@ -226,27 +226,27 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		public string ExecuteScript (string script)
+		public string ExecuteScript(string script)
 		{
-			var fullScript = string.Format ("var fn = function() {{ {0} }}; fn();", script);
-			return Convert.ToString(Control.InvokeScript ("eval", fullScript));
+			var fullScript = string.Format("var fn = function() {{ {0} }}; fn();", script);
+			return Convert.ToString(Control.InvokeScript("eval", fullScript));
 		}
 
-		protected override void Dispose (bool disposing)
+		protected override void Dispose(bool disposing)
 		{
-			base.Dispose (disposing);
+			base.Dispose(disposing);
 
-			if (server != null) {
-				server.Dispose ();
+			if (server != null)
+			{
+				server.Dispose();
 				server = null;
 			}
 		}
 
-        public void ShowPrintDialog ()
-        {
-            ((dynamic)WebBrowser2.Document).execCommand("Print", true, null);
-        }
-
+		public void ShowPrintDialog()
+		{
+			((dynamic)WebBrowser2.Document).execCommand("Print", true, null);
+		}
 		// Note that this does not work for WPF
 		public bool BrowserContextMenuEnabled
 		{

@@ -16,8 +16,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		protected override object GetItemAtRow (int row)
 		{
-			if (store == null) return null;
-			return store[row];
+			return store == null ? null : store[row];
 		}
 
 		public IDataStore DataStore
@@ -28,10 +27,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				store = value;
 				// must use observable collection for editing
 				var source = store as ObservableCollection<IListItem>; 
-				if (source != null)
-					Control.ItemsSource = source;
-				else
-					Control.ItemsSource = new ObservableCollection<object> (store.AsEnumerable());
+ 				Control.ItemsSource = source ?? new ObservableCollection<object>(store.AsEnumerable());
 			}
 		}
 

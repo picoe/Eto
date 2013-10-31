@@ -32,14 +32,14 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		static sw.PropertyPath TextPath = PropertyPathHelper.Create("(Eto.Forms.IListItem,Eto.Text)");
+		static readonly sw.PropertyPath TextPath = PropertyPathHelper.Create("(Eto.Forms.IListItem,Eto.Text)");
 
 		public static sw.FrameworkElementFactory TextBlock(bool setMargin = true)
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(swc.TextBlock));
 			factory.SetBinding(swc.TextBlock.TextProperty, new sw.Data.Binding { Path = TextPath });
 			if (setMargin)
-				factory.SetValue(swc.TextBlock.MarginProperty, new sw.Thickness(2));
+				factory.SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(2));
 			return factory;
 		}
 
@@ -69,10 +69,10 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public static sw.FrameworkElementFactory ImageBlock()
 		{
 			var factory = new sw.FrameworkElementFactory(typeof(swc.Image));
-			factory.SetValue(swc.Image.MaxHeightProperty, 16.0);
-			factory.SetValue(swc.Image.MaxWidthProperty, 16.0);
+			factory.SetValue(sw.FrameworkElement.MaxHeightProperty, 16.0);
+			factory.SetValue(sw.FrameworkElement.MaxWidthProperty, 16.0);
 			factory.SetValue(swc.Image.StretchDirectionProperty, swc.StretchDirection.DownOnly);
-			factory.SetValue(swc.Image.MarginProperty, new sw.Thickness(0, 2, 2, 2));
+			factory.SetValue(sw.FrameworkElement.MarginProperty, new sw.Thickness(0, 2, 2, 2));
 			factory.SetBinding(swc.Image.SourceProperty, new sw.Data.Binding { Converter = new ImageConverter() });
 			return factory;
 		}

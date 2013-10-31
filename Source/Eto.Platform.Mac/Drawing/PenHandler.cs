@@ -71,7 +71,7 @@ namespace Eto.Platform.iOS.Drawing
 					if (LineCap == CGLineCap.Butt)
 						cgdashes = Array.ConvertAll (dashes, x => x * Thickness);
 					else {
-						if (Thickness == 1)
+						if (Math.Abs(Thickness - 1) < 0.01f)
 							cgoffset += Thickness / 2;
 						cgdashes = new float[dashes.Length];
 						for (int i = 0; i < cgdashes.Length; i++) {

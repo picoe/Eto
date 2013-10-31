@@ -48,17 +48,17 @@ namespace Eto.Platform.Wpf.IO
 			var shfi = new Shell32.SHFILEINFO();
 			uint flags = Shell32.SHGFI_ICON | Shell32.SHGFI_USEFILEATTRIBUTES;
     
-			if (linkOverlay) flags += Shell32.SHGFI_LINKOVERLAY;
+			if (linkOverlay) flags |= Shell32.SHGFI_LINKOVERLAY;
 
 			
 			/* Check the size specified for return. */
 			if (IconSize.Small == size)
 			{
-				flags += Shell32.SHGFI_SMALLICON ; // include the small icon flag
+				flags |= Shell32.SHGFI_SMALLICON ; // include the small icon flag
 			} 
 			else 
 			{
-				flags += Shell32.SHGFI_LARGEICON ;  // include the large icon flag
+				flags |= Shell32.SHGFI_LARGEICON ;  // include the large icon flag
 			}
     
 			Shell32.SHGetFileInfo( name, 
@@ -94,16 +94,16 @@ namespace Eto.Platform.Wpf.IO
 
 			if (FolderType.Open == folderType)
 			{
-				flags += Shell32.SHGFI_OPENICON;
+				flags |= Shell32.SHGFI_OPENICON;
 			}
 			
 			if (IconSize.Small == size)
 			{
-				flags += Shell32.SHGFI_SMALLICON;
+				flags |= Shell32.SHGFI_SMALLICON;
 			} 
 			else 
 			{
-				flags += Shell32.SHGFI_LARGEICON;
+				flags |= Shell32.SHGFI_LARGEICON;
 			}
 
 			// Get the folder icon

@@ -12,9 +12,9 @@ namespace Eto.Platform.Wpf.Forms
 		void UpdatePreferredSize();
 	}
 
-	public abstract class WpfContainer<T, W> : WpfFrameworkElement<T, W>, IContainer, IWpfContainer
-		where T : sw.FrameworkElement
-		where W : Container
+	public abstract class WpfContainer<TControl, TWidget> : WpfFrameworkElement<TControl, TWidget>, IContainer, IWpfContainer
+		where TControl : sw.FrameworkElement
+		where TWidget : Container
 	{
 		Size minimumSize;
 		protected override Size DefaultSize { get { return minimumSize; } }

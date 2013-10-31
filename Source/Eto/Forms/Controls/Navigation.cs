@@ -60,12 +60,12 @@ namespace Eto.Forms
 			Push (item);
 		}
 		
-		public virtual void Push (Control content, string title = null)
+		public void Push (Control content, string title = null)
 		{
 			Push (new NavigationItem { Content = content, Text = title });
 		}
 		
-		public virtual void Push (INavigationItem item)
+		public void Push (INavigationItem item)
 		{
 			var loaded = item.Content.Loaded;
 			SetParent(item.Content);

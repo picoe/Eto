@@ -15,7 +15,7 @@ namespace Eto.Platform.Windows
 	{
 		public override string ID { get { return Generators.Windows; } }
 
-		static EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register ("Eto.Platform.Windows.CustomControls.Assemblies");
+		static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register ("Eto.Platform.Windows.CustomControls.Assemblies");
 
 		public Generator()
 		{

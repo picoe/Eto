@@ -175,18 +175,15 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="value">String value to parse</param>
 		/// <param name="color">Color struct with the parsed value, or Transparent if value is invalid</param>
-		/// <param name="culture">Culture to use to parse the values</param>
 		/// <returns>True if the value was successfully parsed into a color, false otherwise</returns>
-		public static bool TryParse (string value, out Color color, CultureInfo culture = null)
+		public static bool TryParse (string value, out Color color)
 		{
-			culture = culture ?? CultureInfo.CurrentCulture;
 			value = value.Trim ();
 			if (value.Length == 0) {
 				color = Colors.Transparent;
 				return true;
 			}
-
-			string listSeparator = culture.TextInfo.ListSeparator;
+			string listSeparator = ",";
 			if (value.IndexOf (listSeparator, StringComparison.OrdinalIgnoreCase) == -1) {
 				bool isArgb = value[0] == '#';
 				int num = (!isArgb) ? 0 : 1;

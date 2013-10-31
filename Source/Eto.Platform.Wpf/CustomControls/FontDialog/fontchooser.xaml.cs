@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
@@ -16,7 +13,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
     /// <summary>
     /// Interaction logic for FontChooser.xaml
     /// </summary>
-    public partial class FontChooser : System.Windows.Window
+    public partial class FontChooser : Window
     {
         #region Private fields and types
 
@@ -157,13 +154,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         public FontChooser()
         {
-            InitializeComponent();
-			this.Loaded += FontChooser_Loaded;
+			InitializeComponent();
+			Loaded += FontChooser_Loaded;
         }
 
 		void FontChooser_Loaded (object sender, RoutedEventArgs e)
 		{
-			this.SizeToContent = System.Windows.SizeToContent.Manual;
+			SizeToContent = System.Windows.SizeToContent.Manual;
 			selectionControls.Height = double.NaN;
 			tabControl.Height = tabControl.Width = double.NaN;
 			preview.Height = double.NaN;
@@ -228,13 +225,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         void OnOKButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
-            this.Close();
+            DialogResult = true;
+            Close();
         }
 
         void OnCancelButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
         int _fontFamilyTextBoxSelectionStart;
@@ -405,7 +402,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                 var metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
                 if (metadata != null)
                 {
-                    this.SetValue(property, obj.GetValue(metadata.TargetProperty));
+                    SetValue(property, obj.GetValue(metadata.TargetProperty));
                 }
             }
         }
@@ -420,7 +417,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                 var metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
                 if (metadata != null)
                 {
-                    obj.SetValue(metadata.TargetProperty, this.GetValue(property));
+                    obj.SetValue(metadata.TargetProperty, GetValue(property));
                 }
             }
         }
@@ -434,7 +431,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                     var metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
                     if (metadata != null)
                     {
-                        obj.SetValue(metadata.TargetProperty, this.GetValue(property));
+                        obj.SetValue(metadata.TargetProperty, GetValue(property));
                     }
                 }
             }
@@ -1423,7 +1420,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             else
             {
                 // Get the property value and metadata.
-                object value = this.GetValue(chooserProperty);
+                object value = GetValue(chooserProperty);
                 var metadata = (TypographicPropertyMetadata)chooserProperty.GetMetadata(typeof(FontChooser));
 
                 // Look up the sample text.
@@ -1485,7 +1482,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                         }
 
                         // Hook up the event.
-                        radioButton.Checked += new RoutedEventHandler(featureRadioButton_Checked);
+						radioButton.Checked += featureRadioButton_Checked;
 
                         // Add the block with sample text.
                         var sample = new TextBlock(new Run(sampleText));
@@ -1525,13 +1522,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                 {
                     if (item.Tag == tag)
                     {
-                        this.SetValue(_currentFeature, item.Value);
+                        SetValue(_currentFeature, item.Value);
                     }
                 }
             }
         }
 
-        void AddTableRow(TableRowGroup rowGroup, string leftText, string rightText)
+        static void AddTableRow(TableRowGroup rowGroup, string leftText, string rightText)
         {
             var row = new TableRow();
 
@@ -1673,7 +1670,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         // Update list based on selection.
         // Return true if there's an exact match, or false if not.
-        bool SelectListItem(ListBox list, object value)
+        static bool SelectListItem(ListBox list, object value)
         {
             ItemCollection itemList = list.Items;
 

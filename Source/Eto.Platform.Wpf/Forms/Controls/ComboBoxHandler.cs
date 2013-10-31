@@ -62,9 +62,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (ItemContainerGenerator.Status == swc.Primitives.GeneratorStatus.ContainersGenerated)
 				{
 					double maxWidth = 0;
-					foreach (var item in this.Items)
+					foreach (var item in Items)
 					{
-						var comboBoxItem = ItemContainerGenerator.ContainerFromItem(item) as swc.ComboBoxItem;
+						var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
 						comboBoxItem.Measure(Conversions.PositiveInfinitySize);
 						maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
 					}

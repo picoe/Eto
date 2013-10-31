@@ -78,7 +78,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void SetValue (object dataItem, object value)
 		{
 			if (Widget.Binding != null) {
-				Widget.Binding.SetValue (dataItem, value as string);
+				Widget.Binding.SetValue (dataItem, value);
 			}
 		}
 		

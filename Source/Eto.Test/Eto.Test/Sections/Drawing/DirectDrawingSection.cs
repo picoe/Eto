@@ -156,7 +156,7 @@ namespace Eto.Test.Sections.Drawing
 					var bounds = drawable.Size;
 					try {
 						using (var graphics = drawable.CreateGraphics ()) {
-							graphics.Antialias = false;
+							graphics.AntiAlias = false;
 							foreach (var box in boxes) {
 								box.Erase (graphics);
 								box.Move (bounds);

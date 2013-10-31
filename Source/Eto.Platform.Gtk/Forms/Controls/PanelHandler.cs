@@ -4,7 +4,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public class PanelHandler : GtkDockContainer<Gtk.EventBox, Panel>, IPanel
 	{
-		Gtk.VBox box;
+		readonly Gtk.VBox box;
 
 		public PanelHandler()
 		{

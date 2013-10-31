@@ -12,12 +12,12 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		public void AddMenu (int index, MenuItem item)
 		{
-			Control.Items.Add ((swc.MenuItem)item.ControlObject);
+			Control.Items.Add(item.ControlObject);
 		}
 
 		public void RemoveMenu (MenuItem item)
 		{
-			Control.Items.Remove ((swc.MenuItem)item.ControlObject);
+			Control.Items.Remove(item.ControlObject);
 		}
 
 		public void Clear ()

@@ -87,21 +87,21 @@ namespace Eto.Forms
 		/// </summary>
 		public IDataStore DataStore
 		{
-			get { return DataStoreView != null ? DataStoreView.Model : null; }
+			get { return DataStoreView == null ? null : DataStoreView.Model; }
 			set
 			{
 				// initialize the selection
 				selection = new GridViewSelection(this, value);
 
 				// Create a data store view wrapping the model
-				DataStoreView = value != null ? new DataStoreView { Model = value } : null;
+				DataStoreView = value == null ? null : new DataStoreView { Model = value };
 
 				// Initialize the sort comparer and filter since a new view has been created.
 				SortComparer = sortComparer;
 				Filter = filter;				
 
 				// Set the handler's data store to the sorted and filtered view.
-				Handler.DataStore = DataStoreView != null ? DataStoreView.View : null;
+				Handler.DataStore = DataStoreView == null ? null : DataStoreView.View;
 			}
 		}
 

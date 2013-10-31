@@ -11,7 +11,7 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public static class Brushes
 	{
-		static object cacheKey = new object();
+		static readonly object cacheKey = new object();
 
 		static Brush GetBrush (Color color, Generator generator)
 		{
@@ -67,7 +67,7 @@ namespace Eto.Drawing
 		/// <summary>Gets a solid brush with a color ARGB value of #FFDC143C</summary>
 		public static Brush Crimson(Generator generator = null) { return GetBrush (Colors.Crimson, generator); }
 		/// <summary>Gets a solid brush with a color ARGB value of #FFB22222</summary>
-		public static Brush FireBrick(Generator generator = null) { return GetBrush (Colors.FireBrick, generator); }
+		public static Brush Firebrick(Generator generator = null) { return GetBrush (Colors.Firebrick, generator); }
 		/// <summary>Gets a solid brush with a color ARGB value of #FF8B0000</summary>
 		public static Brush DarkRed(Generator generator = null) { return GetBrush (Colors.DarkRed, generator); }
 		

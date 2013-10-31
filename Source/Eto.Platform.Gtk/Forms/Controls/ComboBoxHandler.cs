@@ -9,8 +9,8 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 	{
 		Font font;
 		CollectionHandler collection;
-		Gtk.ListStore listStore;
-		Gtk.CellRendererText text;
+		readonly Gtk.ListStore listStore;
+		readonly Gtk.CellRendererText text;
 
 		public ComboBoxHandler ()
 		{
@@ -44,10 +44,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			set
 			{
 				font = value;
-				if (font != null)
-					text.FontDesc = ((FontHandler)font.Handler).Control;
-				else
-					text.FontDesc = null;
+				text.FontDesc = font != null ? ((FontHandler)font.Handler).Control : null;
 			}
 		}
 

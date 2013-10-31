@@ -173,13 +173,17 @@ namespace Eto.Platform.GtkSharp.CustomControls
 			};
 			spin.Adjustment.PageIncrement = increment;
 			spin.ValueChanged += delegate {
-				if (spin.Value == max) {
+				if (Math.Abs(spin.Value - max) < 0.1f)
+				{
 					spin.Value = 0;
-					if (parent != null) parent.Value = parent.Value + 1;
+					if (parent != null)
+						parent.Value = parent.Value + 1;
 				}
-				if (spin.Value == -1) {
+				if (Math.Abs(spin.Value - -1) < 0.1f)
+				{
 					spin.Value = max - 1;
-					if (parent != null) parent.Value = parent.Value - 1;
+					if (parent != null)
+						parent.Value = parent.Value - 1;
 				}
 				UpdateClock ();
 				OnDateChanged (EventArgs.Empty);

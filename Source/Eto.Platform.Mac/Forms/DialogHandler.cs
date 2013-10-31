@@ -46,7 +46,7 @@ namespace Eto.Platform.Mac.Forms
 				
 				if (button != null) {
 					var b = button.ControlObject as NSButton;
-					Control.DefaultButtonCell = b != null ? b.Cell : null;
+					Control.DefaultButtonCell = b == null ? null : b.Cell;
 				}
 				else
 					Control.DefaultButtonCell = null;

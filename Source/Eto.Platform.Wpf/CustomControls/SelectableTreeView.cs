@@ -46,13 +46,13 @@ namespace Eto.Platform.Wpf.CustomControls
 
 		public event RoutedPropertyChangedEventHandler<object> CurrentItemChanged
 		{
-			add { base.AddHandler (SelectableTreeView.CurrentItemChangedEvent, value); }
-			remove { base.RemoveHandler (SelectableTreeView.CurrentItemChangedEvent, value); }
+			add { AddHandler (SelectableTreeView.CurrentItemChangedEvent, value); }
+			remove { RemoveHandler(SelectableTreeView.CurrentItemChangedEvent, value); }
 		}
 
 		protected virtual void OnCurrentItemChanged (RoutedPropertyChangedEventArgs<object> e)
 		{
-			base.RaiseEvent (e);
+			RaiseEvent(e);
 		}
 
 		public static DependencyProperty CurrentItemProperty = DependencyProperty.RegisterAttached(
@@ -165,7 +165,7 @@ namespace Eto.Platform.Wpf.CustomControls
 			void HandleStatusChanged (object sender, EventArgs e)
 			{
 				var generator = sender as ItemContainerGenerator;
-				if (generator.Status == GeneratorStatus.ContainersGenerated)
+				if (generator != null && generator.Status == GeneratorStatus.ContainersGenerated)
 				{
 					generator.StatusChanged -= HandleStatusChanged;
 					ItemsControl ic;
@@ -217,7 +217,7 @@ namespace Eto.Platform.Wpf.CustomControls
 						var container = generator.ContainerFromItem (item) as TreeViewItem;
 						if (item == SelectedItem && container != null)
 						{
-							Complete (container as TreeViewItem);
+							Complete (container);
 							return true;
 						}
 						if (Seek (container))

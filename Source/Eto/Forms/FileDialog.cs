@@ -47,8 +47,7 @@ namespace Eto.Forms
 		public override int GetHashCode ()
 		{
 			int hash;
-			if (Name != null) hash = Name.GetHashCode ();
-			else hash = string.Empty.GetHashCode();
+			hash = Name != null ? Name.GetHashCode() : string.Empty.GetHashCode();
 			if (Extensions != null) hash ^= Extensions.GetHashCode ();
 			return hash;
 		}

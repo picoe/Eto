@@ -240,7 +240,7 @@ namespace Eto.Test.Sections.Controls
 
 		void LogEvents(TreeView control)
 		{
-			control.BeforeLabelEdit += (sender, e) =>
+			control.LabelEditing += (sender, e) =>
 			{
 				if (cancelLabelEdit)
 				{
@@ -250,7 +250,7 @@ namespace Eto.Test.Sections.Controls
 				else
 					Log.Write(control, "BeforeLabelEdit, Item: {0}", e.Item.Text);
 			};
-			control.AfterLabelEdit += (sender, e) =>
+			control.LabelEdited += (sender, e) =>
 			{
 				Log.Write(control, "AfterLabelEdit, Item: {0}, New Label: {1}", e.Item.Text, e.Label);
 			};

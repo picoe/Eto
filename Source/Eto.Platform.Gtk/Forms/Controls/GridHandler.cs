@@ -6,8 +6,8 @@ using Eto.Platform.GtkSharp.Forms.Cells;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
-	public abstract class GridHandler<W> : GtkControl<Gtk.ScrolledWindow, W>, IGrid, ICellDataSource, IGridHandler
-		where W: Grid
+	public abstract class GridHandler<TWidget> : GtkControl<Gtk.ScrolledWindow, TWidget>, IGrid, ICellDataSource, IGridHandler
+		where TWidget: Grid
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
@@ -95,7 +95,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<W> Handler { get; set; }
+			public GridHandler<TWidget> Handler { get; set; }
 
 			void RebindColumns ()
 			{

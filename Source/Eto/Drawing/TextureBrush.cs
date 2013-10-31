@@ -77,19 +77,13 @@ namespace Eto.Drawing
 		public override object Handler { get { return handler; } }
 
 		/// <summary>
-		/// Gets the control object for this widget
-		/// </summary>
-		/// <value>The control object for the widget</value>
-		public override object ControlObject { get; set; }
-
-		/// <summary>
 		/// Gets an instantiator for the texture brush to create instances
 		/// </summary>
 		/// <remarks>
 		/// This can be used to instantiate texture brushes when creating many brushes to minimize overhead
 		/// </remarks>
 		/// <param name="generator">Generator to create the brush</param>
-		public Func<Image, float, TextureBrush> Instantiator (Generator generator = null)
+		public static Func<Image, float, TextureBrush> Instantiator (Generator generator = null)
 		{
 			var sharedHandler = generator.CreateShared<ITextureBrush> ();
 			return (image, opacity) => new TextureBrush(sharedHandler, image, opacity);

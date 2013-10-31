@@ -12,16 +12,16 @@ namespace Eto.Platform.Wpf.CustomControls
 		public EditableTextBlock()
 		{
 			var textBox = new FrameworkElementFactory(typeof(TextBox));
-			textBox.SetValue(TextBox.PaddingProperty, new Thickness(1)); // 1px for border
-			textBox.AddHandler(TextBox.LoadedEvent, new RoutedEventHandler(TextBox_Loaded));
-			textBox.AddHandler(TextBox.KeyDownEvent, new KeyEventHandler(TextBox_KeyDown));
-			textBox.AddHandler(TextBox.LostFocusEvent, new RoutedEventHandler(TextBox_LostFocus));
+			textBox.SetValue(Control.PaddingProperty, new Thickness(1)); // 1px for border
+			textBox.AddHandler(FrameworkElement.LoadedEvent, new RoutedEventHandler(TextBox_Loaded));
+			textBox.AddHandler(UIElement.KeyDownEvent, new KeyEventHandler(TextBox_KeyDown));
+			textBox.AddHandler(UIElement.LostFocusEvent, new RoutedEventHandler(TextBox_LostFocus));
 			textBox.SetBinding(TextBox.TextProperty, new System.Windows.Data.Binding("Text") { Source = this, Mode = BindingMode.TwoWay, UpdateSourceTrigger = UpdateSourceTrigger.PropertyChanged });
 			var editTemplate = new DataTemplate { VisualTree = textBox };
 
 			var textBlock = new FrameworkElementFactory(typeof(TextBlock));
-			textBlock.SetValue(TextBlock.MarginProperty, new Thickness(2));
-			textBlock.AddHandler(TextBlock.MouseDownEvent, new MouseButtonEventHandler(TextBlock_MouseDown));
+			textBlock.SetValue(FrameworkElement.MarginProperty, new Thickness(2));
+			textBlock.AddHandler(UIElement.MouseDownEvent, new MouseButtonEventHandler(TextBlock_MouseDown));
 			textBlock.SetBinding(TextBlock.TextProperty, new System.Windows.Data.Binding("Text") { Source = this });
 			var viewTemplate = new DataTemplate { VisualTree = textBlock };
 
@@ -84,9 +84,9 @@ namespace Eto.Platform.Wpf.CustomControls
 			typeof(EditableTextBlock),
 			new PropertyMetadata(false));
 
-		void TextBox_Loaded(object sender, RoutedEventArgs e)
+		static void TextBox_Loaded(object sender, RoutedEventArgs e)
 		{
-			var textBox = sender as TextBox;
+			var textBox = (TextBox)sender;
 			textBox.Focus();
 			textBox.SelectAll();
 		}

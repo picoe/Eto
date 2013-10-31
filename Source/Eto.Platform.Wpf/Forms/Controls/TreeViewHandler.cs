@@ -57,9 +57,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				get
 				{
 					var item = DataContext as ITreeItem;
-					if (item != null)
-						return item.Text;
-					return null;
+					return item != null ? item.Text : null;
 				}
 				set
 				{
@@ -102,7 +100,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				else
 				{
 					cancelEvents = true;
-					this.IsExpanded = false;
+					IsExpanded = false;
 					cancelEvents = false;
 				}
 			}
@@ -117,7 +115,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				else
 				{
 					cancelEvents = true;
-					this.IsExpanded = true;
+					IsExpanded = true;
 					cancelEvents = false;
 				}
 			}
@@ -169,7 +167,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		static sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1,Eto<Eto.Forms.ITreeItem,Eto>.Expanded)");
+		static readonly sw.PropertyPath expandedProperty = PropertyPathHelper.Create("(Eto.Forms.ITreeItem`1,Eto<Eto.Forms.ITreeItem,Eto>.Expanded)");
 
 		public TreeViewHandler()
 		{
@@ -296,9 +294,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						}
 					}));
 					break;
-				case TreeView.BeforeLabelEditEvent:
+				case TreeView.LabelEditingEvent:
 					break;
-				case TreeView.AfterLabelEditEvent:
+				case TreeView.LabelEditedEvent:
 					break;
 				default:
 					base.AttachEvent(id);

@@ -36,12 +36,12 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 	static class GtkCell
 	{
 		[DllImport ("gtksharpglue-2", CallingConvention = CallingConvention.Cdecl)]
-		public static extern void gtksharp_cellrenderer_invoke_render (IntPtr gtype, IntPtr handle, IntPtr window, IntPtr widget, ref Gdk.Rectangle background_area, ref Gdk.Rectangle cell_area, ref Gdk.Rectangle expose_area, Gtk.CellRendererState flags);
+		internal static extern void gtksharp_cellrenderer_invoke_render (IntPtr gtype, IntPtr handle, IntPtr window, IntPtr widget, ref Gdk.Rectangle backgroundArea, ref Gdk.Rectangle cellArea, ref Gdk.Rectangle exposeArea, Gtk.CellRendererState flags);
 	}
 	
-	public abstract class SingleCellHandler<T, W> : CellHandler<T, W>
-		where T: Gtk.CellRenderer
-		where W: Cell
+	public abstract class SingleCellHandler<TControl, TWidget> : CellHandler<TControl, TWidget>
+		where TControl: Gtk.CellRenderer
+		where TWidget: Cell
 	{
 		public override void AddCells (Gtk.TreeViewColumn column)
 		{
@@ -62,9 +62,9 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 
 	}
 
-	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, ICell, ICellHandler
-		where W: Cell
-		where T: Gtk.CellRenderer
+	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICell, ICellHandler
+		where TWidget: Cell
+		where TControl: Gtk.CellRenderer
 	{
 		int? dataIndex;
 		int itemCol;
@@ -87,7 +87,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			ColumnIndex = columnIndex;
 			this.dataIndex = dataIndex;
 			BindCell (ref dataIndex);
-			BindBase (Control, ref dataIndex);
+			BindBase (ref dataIndex);
 		}
 
 		protected void ReBind ()
@@ -95,11 +95,11 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			if (dataIndex != null) {
 				var dataIndexValue = dataIndex.Value;
 				BindCell (ref dataIndexValue);
-				BindBase (Control, ref dataIndexValue);
+				BindBase (ref dataIndexValue);
 			}
 		}
 
-		protected void BindBase (Gtk.CellRenderer renderer, ref int dataIndex)
+		protected void BindBase (ref int dataIndex)
 		{
 			if (FormattingEnabled) {
 				itemCol = SetColumnMap (dataIndex);

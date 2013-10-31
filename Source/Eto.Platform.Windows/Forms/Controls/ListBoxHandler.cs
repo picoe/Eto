@@ -93,17 +93,11 @@ namespace Eto.Platform.Windows
 
 		public ContextMenu ContextMenu
 		{
-			get
-			{
-				return contextMenu;
-			}
+			get { return contextMenu; }
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenuStrip = contextMenu.ControlObject as swf.ContextMenuStrip;
-				else
-					Control.ContextMenuStrip = null;
+				Control.ContextMenuStrip = contextMenu != null ? contextMenu.ControlObject as swf.ContextMenuStrip : null;
 			}
 		}
 

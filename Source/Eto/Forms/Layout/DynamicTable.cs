@@ -12,23 +12,24 @@ namespace Eto.Forms
 	[ContentProperty("Items")]
 	public class DynamicRow
 	{
+		readonly List<DynamicItem> items;
 		public DynamicTable Table { get; internal set; }
 
-		public List<DynamicItem> Items { get; private set; }
+		public IList<DynamicItem> Items { get { return items; } }
 
 		public DynamicRow()
 		{
-			Items = new List<DynamicItem>();
+			items = new List<DynamicItem>();
 		}
 
 		public DynamicRow(IEnumerable<DynamicItem> items)
 		{
-			Items = new List<DynamicItem>(items);
+			items = new List<DynamicItem>(items);
 		}
 
 		public DynamicRow(IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
 		{
-			Items = new List<DynamicItem>();
+			items = new List<DynamicItem>();
 			Add(controls, xscale, yscale);
 		}
 
@@ -41,17 +42,18 @@ namespace Eto.Forms
 		{
 			if (controls == null)
 				return;
-			var items = controls.Select(r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
-			Items.AddRange(items.OfType<DynamicItem>());
+			var controlItems = controls.Select(r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
+			items.AddRange(controlItems.OfType<DynamicItem>());
 		}
 	}
 
 	[ContentProperty("Rows")]
 	public class DynamicTable : DynamicItem, ISupportInitialize
 	{
+		readonly List<DynamicRow> rows;
 		bool visible = true;
 
-		public List<DynamicRow> Rows { get; private set; }
+		public IList<DynamicRow> Rows { get { return rows; } }
 
 		public TableLayout Table { get; private set; }
 
@@ -77,7 +79,7 @@ namespace Eto.Forms
 
 		public DynamicTable()
 		{
-			Rows = new List<DynamicRow>();
+			rows = new List<DynamicRow>();
 		}
 
 		public void Add(DynamicItem item)

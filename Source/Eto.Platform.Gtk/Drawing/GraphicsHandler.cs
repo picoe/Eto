@@ -61,7 +61,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 		public bool IsRetained { get { return false; } }
 
-		public bool Antialias
+		public bool AntiAlias
 		{
 			get { return Control.Antialias != Cairo.Antialias.None; }
 			set { Control.Antialias = value ? Cairo.Antialias.Default : Cairo.Antialias.None; }
@@ -136,6 +136,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 #if GTK2
 			if (Control != null)
 			{
+				// Analysis disable once RedundantCast - backward compatibility
 				((IDisposable)Control).Dispose();
 				if (surface != null)
 				{
@@ -314,6 +315,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 			if (surface != null)
 			{
+				// Analysis disable once RedundantCast - backward compatibility
 				((IDisposable)surface).Dispose();
 				surface = null;
 			}

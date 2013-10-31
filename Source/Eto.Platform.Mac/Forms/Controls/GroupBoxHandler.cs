@@ -55,16 +55,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public Font Font
 		{
 			get {
-				if (font == null)
-					font = new Font (Widget.Generator, new FontHandler (Control.TitleFont));
-				return font;
+				return font ?? (font = new Font (Widget.Generator, new FontHandler (Control.TitleFont)));
 			}
 			set {
 				font = value;
-				if (font != null)
-					Control.TitleFont = ((FontHandler)font.Handler).Control;
-				else
-					Control.TitleFont = null;
+				Control.TitleFont = font == null ? null : ((FontHandler)font.Handler).Control;
 				LayoutIfNeeded ();
 			}
 		}

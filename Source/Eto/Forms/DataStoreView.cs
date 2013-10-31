@@ -175,7 +175,7 @@ namespace Eto.Forms
 			public Comparison<object> SortComparer { get; set; }
 			public int Compare(object x, object y)
 			{
-				return SortComparer != null ? SortComparer(x, y) : 0;
+				return SortComparer == null ? 0 : SortComparer(x, y);
 			}
 		}
 
@@ -228,11 +228,11 @@ namespace Eto.Forms
 					var viewIndex = 0;
 					foreach (var o in viewItems)
 					{
-						int modelIndex = -1;
+						int modelIndex;
 						if (o != null && modelIndexes.TryGetValue(o, out modelIndex))
-						{
 							modelToView[modelIndex] = viewIndex;
-						}
+						else
+							modelIndex = -1;
 						viewToModel.Add(modelIndex); // always add to viewToModel because the number of items must match those in viewItems
 						viewIndex++;
 					}

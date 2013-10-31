@@ -40,10 +40,8 @@ namespace Eto.Platform.Windows
 				return handler;
 
 			var controlObject = control.ControlObject as Control;
-			if (controlObject != null)
-				return controlObject.GetWindowsHandler();
+			return controlObject != null ? controlObject.GetWindowsHandler() : null;
 
-			return null;
 		}
 
 		public static Size GetPreferredSize(this Control control)
@@ -77,9 +75,9 @@ namespace Eto.Platform.Windows
 		}
 	}
 
-	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
-		where T : swf.Control
-		where W : Control
+	public abstract class WindowsControl<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWindowsControl
+		where TControl : swf.Control
+		where TWidget : Control
 	{
 		bool internalVisible = true;
 		Font font;

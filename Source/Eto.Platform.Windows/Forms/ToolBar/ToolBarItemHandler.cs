@@ -11,9 +11,9 @@ namespace Eto.Platform.Windows
 		
 	}
 	
-	public abstract class ToolBarItemHandler<T, W> : WidgetHandler<T, W>, IToolBarItem, IToolBarItemHandler
-		where T: SWF.ToolStripItem
-		where W: ToolBarItem
+	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler
+		where TControl: SWF.ToolStripItem
+		where TWidget: ToolBarItem
 	{
         Image image;
 		int imageSize = 16;

@@ -9,9 +9,9 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
-	public class WpfMenuItem<C, W> : WidgetHandler<C, W>, IMenuActionItem, swi.ICommand
-		where C : swc.MenuItem
-		where W : MenuActionItem
+	public class WpfMenuItem<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IMenuActionItem, swi.ICommand
+		where TControl : swc.MenuItem
+		where TWidget : MenuActionItem
 	{
         Image image;
 		readonly swi.RoutedCommand command = new swi.RoutedCommand ();
@@ -51,9 +51,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			get
 			{
 				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding> ().FirstOrDefault ();
-				if (keyBinding != null)
-					return KeyMap.Convert (keyBinding.Key, keyBinding.Modifiers);
-				return Key.None;
+				return keyBinding == null ? Key.None : KeyMap.Convert(keyBinding.Key, keyBinding.Modifiers);
 			}
 			set
 			{

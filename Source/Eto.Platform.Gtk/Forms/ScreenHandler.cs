@@ -5,7 +5,7 @@ namespace Eto.Platform.GtkSharp.Forms
 {
 	public class ScreenHandler : WidgetHandler<Gdk.Screen, Screen>, IScreen
 	{
-		int monitor;
+		readonly int monitor;
 
 		public ScreenHandler (Gdk.Screen screen, int monitor)
 		{

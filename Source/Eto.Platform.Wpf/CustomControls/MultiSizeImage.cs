@@ -74,7 +74,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		/// </summary>
 		/// <param name="frame">The frame to get BPP for</param>
 		/// <returns>The number of bits per pixel in the frame</returns>
-		int GetFramePixelDepth (BitmapFrame frame)
+		static int GetFramePixelDepth (BitmapFrame frame)
 		{
 			if (frame.Decoder.CodecInfo.ContainerFormat == new Guid("{a3a860c4-338f-4c17-919a-fba4b5628f21}")
 			    && frame.Thumbnail != null)
@@ -158,7 +158,7 @@ namespace Eto.Platform.Wpf.CustomControls
 		Size MeasureArrangeHelper (Size inputSize)
 		{
 			if (Source == null)
-				return new Size (0, 0);
+				return Size.Empty;
 			var first = _availableFrames.LastOrDefault ();
 			var size = new Size (Source.Width, Source.Width);
 			if (first == null)
@@ -166,7 +166,7 @@ namespace Eto.Platform.Wpf.CustomControls
 
 			size = new Size (first.Width, first.Height);
 
-			Size scale = ComputeScaleFactor (inputSize, size, this.Stretch, this.StretchDirection);
+			Size scale = ComputeScaleFactor(inputSize, size, Stretch, StretchDirection);
 			if (UseSmallestSpace)
 			{
 				if (double.IsPositiveInfinity(inputSize.Width) && scale.Width > 1)

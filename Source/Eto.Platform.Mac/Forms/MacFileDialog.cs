@@ -34,9 +34,9 @@ namespace Eto.Platform.Mac.Forms
 		
     }
 	
-    public abstract class MacFileDialog<T, W> : WidgetHandler<T, W>, IFileDialog, IMacFileDialog
-     where T: NSSavePanel
-     where W: FileDialog
+    public abstract class MacFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IFileDialog, IMacFileDialog
+     where TControl: NSSavePanel
+     where TWidget: FileDialog
     {
         IFileDialogFilter[] filters;
 		List<string> macfilters;

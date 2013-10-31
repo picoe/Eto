@@ -9,9 +9,9 @@ namespace Eto.Platform.GtkSharp
 		
 	}
 
-	public abstract class ToolBarItemHandler<T, W> : WidgetHandler<T, W>, IToolBarItem, IToolBarItemHandler
-		where T: Gtk.Widget
-		where W: ToolBarItem
+	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler
+		where TControl: Gtk.Widget
+		where TWidget: ToolBarItem
 	{
 		bool enabled = true;
 		Image image;

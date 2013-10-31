@@ -23,6 +23,7 @@ namespace Eto.Platform.Wpf
 
 		public static swm.Color ToWpf(this Color value)
 		{
+
 			return swm.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
 		}
 
@@ -345,9 +346,9 @@ namespace Eto.Platform.Wpf
 			var decoration = FontDecoration.None;
 			if (decorations != null)
 			{
-				if (sw.TextDecorations.Underline.All(r => decorations.Contains(r)))
+				if (sw.TextDecorations.Underline.All(decorations.Contains))
 					decoration |= FontDecoration.Underline;
-				if (sw.TextDecorations.Strikethrough.All(r => decorations.Contains(r)))
+				if (sw.TextDecorations.Strikethrough.All(decorations.Contains))
 					decoration |= FontDecoration.Strikethrough;
 			}
 			return decoration;

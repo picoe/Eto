@@ -124,7 +124,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		swc.DataGridColumn IGridColumnHandler.Control
 		{
-			get { return (swc.DataGridColumn)Control; }
+			get { return Control; }
 		}
 
 	}

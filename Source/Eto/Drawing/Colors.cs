@@ -25,7 +25,7 @@ namespace Eto.Drawing
 		/// <summary>Gets a color with an ARGB value of #FFDC143C</summary>
 		public static Color Crimson { get { return Color.FromArgb (0xFFDC143C); } } // 220  20  60
 		/// <summary>Gets a color with an ARGB value of #FFB22222</summary>
-		public static Color FireBrick { get { return Color.FromArgb (0xFFB22222); } } // 178  34  34
+		public static Color Firebrick { get { return Color.FromArgb (0xFFB22222); } } // 178  34  34
 		/// <summary>Gets a color with an ARGB value of #FF8B0000</summary>
 		public static Color DarkRed { get { return Color.FromArgb (0xFF8B0000); } } // 139   0   0
 		

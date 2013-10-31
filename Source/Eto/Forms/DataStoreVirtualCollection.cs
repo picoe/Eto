@@ -67,7 +67,7 @@ namespace Eto.Forms
 		}
 
 		public int Count {
-			get { return store != null ? store.Count : 0; }
+			get { return store == null ? 0 : store.Count; }
 		}
 
 		public bool IsReadOnly {

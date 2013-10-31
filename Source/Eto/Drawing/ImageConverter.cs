@@ -37,7 +37,7 @@ namespace Eto.Drawing
 
 		static Image LoadImage (Stream stream)
 		{
-			return stream != null ? new Bitmap(stream) : null;
+			return stream == null ? null : new Bitmap(stream);
 		}
 
 		static Image LoadImage (NamespaceInfo ns)
@@ -81,7 +81,7 @@ namespace Eto.Drawing
 				return LoadImage (ns);
 
 			var val = value as string;
-			return val != null ? LoadImage(val) : null;
+			return val == null ? null : LoadImage(val);
 		}
 	}
 }

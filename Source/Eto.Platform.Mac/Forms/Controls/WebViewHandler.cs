@@ -262,10 +262,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return new Uri(Control.MainFrameUrl); }
 			set
 			{ 
-				if (value != null)
-					Control.MainFrameUrl = value.AbsoluteUri;
-				else
-					Control.MainFrameUrl = null;
+				Control.MainFrameUrl = value == null ? null : value.AbsoluteUri;
 			}
 		}
 

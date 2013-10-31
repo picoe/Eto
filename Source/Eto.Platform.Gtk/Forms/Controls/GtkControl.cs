@@ -42,15 +42,13 @@ namespace Eto.Platform.GtkSharp
 			if (containerHandler != null)
 				return containerHandler;
 			var controlObject = control.ControlObject as Control;
-			if (controlObject != null)
-				return controlObject.GetGtkControlHandler();
-			return null;
+			return controlObject != null ? controlObject.GetGtkControlHandler() : null;
 		}
 	}
 
-	public abstract class GtkControl<T, W> : WidgetHandler<T, W>, IControl, IGtkControl
-		where T: Gtk.Widget
-		where W: Control
+	public abstract class GtkControl<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IGtkControl
+		where TControl: Gtk.Widget
+		where TWidget: Control
 	{
 		Font font;
 		Size size;
@@ -254,11 +252,9 @@ namespace Eto.Platform.GtkSharp
 			set
 			{ 
 				Control.Visible = value;
-				if (!value)
-					Control.NoShowAll = true;
+				Control.NoShowAll = !value;
 				if (value && Widget.Loaded)
 				{
-					Control.NoShowAll = false;
 					Control.ShowAll();
 				}
 			}
@@ -483,8 +479,7 @@ namespace Eto.Platform.GtkSharp
 			if (e != null)
 			{
 				Widget.OnKeyDown(e);
-				if (e.Handled)
-					args.RetVal = true;
+				args.RetVal = e.Handled;
 			}
 		}
 
@@ -494,8 +489,7 @@ namespace Eto.Platform.GtkSharp
 			if (e != null)
 			{
 				Widget.OnKeyUp(e);
-				if (e.Handled)
-					args.RetVal = true;
+				args.RetVal = e.Handled;
 			}
 		}
 
@@ -533,10 +527,7 @@ namespace Eto.Platform.GtkSharp
 				cursor = value;
 				if (Control.GdkWindow != null)
 				{
-					if (cursor != null)
-						Control.GdkWindow.Cursor = cursor.ControlObject as Gdk.Cursor;
-					else
-						Control.GdkWindow.Cursor = null;
+					Control.GdkWindow.Cursor = cursor != null ? cursor.ControlObject as Gdk.Cursor : null;
 				}
 			}
 		}

@@ -15,7 +15,7 @@ namespace Eto.Forms
 		DynamicTable currentItem;
 		bool? yscale;
 
-		public List<DynamicRow> Rows
+		public IList<DynamicRow> Rows
 		{
 			get { return topTable.Rows; }
 		}
@@ -53,28 +53,6 @@ namespace Eto.Forms
 			}
 		}
 
-		#region Exceptions
-		[Serializable]
-		public class AlreadyGeneratedException : Exception
-		{
-			public AlreadyGeneratedException()
-			{
-			}
-
-			public AlreadyGeneratedException(string message) : base (message)
-			{
-			}
-
-			public AlreadyGeneratedException(string message, Exception inner) : base (message, inner)
-			{
-			}
-
-			protected AlreadyGeneratedException(System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base (info, context)
-			{
-			}
-		}
-		#endregion
-
 		public override void OnPreLoad(EventArgs e)
 		{
 			if (!Generated)
@@ -97,7 +75,7 @@ namespace Eto.Forms
 		}
 
 		public DynamicLayout(Size? spacing)
-			: this ((Padding?)null, spacing, (Generator)null)
+			: this((Padding?)null, spacing, (Generator)null)
 		{
 		}
 
@@ -114,13 +92,13 @@ namespace Eto.Forms
 
 		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
 		public DynamicLayout(DockContainer container, Size? spacing)
-			: this (container, null, spacing)
+			: this(container, null, spacing)
 		{
 		}
 
 		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
 		public DynamicLayout(DockContainer container, Padding? padding = null, Size? spacing = null)
-			: this (padding, spacing, container != null ? container.Generator : null)
+			: this(padding, spacing, container == null ? null : container.Generator)
 		{
 			if (container != null)
 				container.Content = this;
@@ -138,8 +116,6 @@ namespace Eto.Forms
 
 		public DynamicTable BeginVertical(Padding? padding = null, Size? spacing = null, bool? xscale = null, bool? yscale = null)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			var newItem = new DynamicTable
 			{ 
 				Parent = currentItem ?? topTable, 
@@ -155,8 +131,6 @@ namespace Eto.Forms
 
 		public void EndVertical()
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			currentItem = currentItem.Parent ?? topTable;
 		}
 
@@ -174,8 +148,6 @@ namespace Eto.Forms
 
 		public DynamicRow BeginHorizontal(bool? yscale = null)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			currentItem.AddRow(currentItem.CurrentRow = new DynamicRow());
 			this.yscale = yscale;
 			return currentItem.CurrentRow;
@@ -183,18 +155,14 @@ namespace Eto.Forms
 
 		public void EndHorizontal()
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			if (currentItem.CurrentRow == null)
 				EndVertical();
-			else 
+			else
 				currentItem.CurrentRow = null;
 		}
 
 		public DynamicControl Add(Control control, bool? xscale = null, bool? yscale = null)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			if (xscale == null && currentItem.CurrentRow != null && control == null)
 				xscale = true;
 			yscale = yscale ?? this.yscale;
@@ -224,8 +192,6 @@ namespace Eto.Forms
 
 		public DynamicRow AddRow(params Control[] controls)
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			if (controls == null)
 				controls = new Control[] { null };
 			
@@ -301,13 +267,22 @@ namespace Eto.Forms
 		/// <remarks>
 		/// This is called automatically on the Container's LoadCompleted event, but can be called manually if needed.
 		/// </remarks>
-		/// <exception cref="AlreadyGeneratedException">specifies that the control was already generated</exception>
 		public void Generate()
 		{
-			if (Generated)
-				throw new AlreadyGeneratedException();
 			Content = topTable.Generate(this);
 			Generated = true;
+		}
+
+		/// <summary>
+		/// Clears the layout so it can be recreated
+		/// </summary>
+		/// <remarks>
+		/// You must call <see cref="Generate"/> when done updating the layout
+		/// </remarks>
+		public void Clear()
+		{
+			topTable.Rows.Clear();
+			Generated = false;
 		}
 	}
 }

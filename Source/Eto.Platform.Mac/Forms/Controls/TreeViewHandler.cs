@@ -82,7 +82,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null)
 				{
 					var args = new TreeViewItemCancelEventArgs(myitem.Item);
-					Handler.Widget.OnBeforeLabelEdit(args);
+					Handler.Widget.OnLabelEditing(args);
 					return !args.Cancel;
 				}
 				return true;
@@ -212,7 +212,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (myitem != null)
 				{
 					var args = new TreeViewItemEditEventArgs(myitem.Item, (string)(NSString)theObject);
-					Handler.Widget.OnAfterLabelEdit(args);
+					Handler.Widget.OnLabelEdited(args);
 					if (!args.Cancel)
 						myitem.Item.Text = args.Label;
 				}
@@ -306,8 +306,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 					};
 					Control.DoubleClick += HandleDoubleClick;
 					break;
-				case TreeView.AfterLabelEditEvent:
-				case TreeView.BeforeLabelEditEvent:
+				case TreeView.LabelEditedEvent:
+				case TreeView.LabelEditingEvent:
 					// handled in delegate
 					break;
 				case TreeView.NodeMouseClickEvent:
@@ -358,7 +358,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (row == -1)
 					return null;
 				var myitem = Control.ItemAtRow(row) as EtoTreeItem;
-				return myitem != null ? myitem.Item : null;
+				return myitem == null ? null : myitem.Item;
 			}
 			set
 			{
@@ -402,7 +402,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+				Control.Menu = contextMenu == null ? null : ((ContextMenuHandler)contextMenu.Handler).Control;
 			}
 		}
 

@@ -58,10 +58,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public override object GetCellValue (object dataItem)
 		{
-			if (Widget.Binding != null) {
-				return Widget.Binding.GetValue (dataItem);
-			}
-			return null;
+			return Widget.Binding == null ? null : Widget.Binding.GetValue(dataItem);
 		}
 
 	}

@@ -58,7 +58,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				base.OnRender(dc);
 				if (!Handler.tiled)
 				{
-					var rect = new sw.Rect(0, 0, this.ActualWidth, this.ActualHeight);
+					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
 					var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, dc, rect, false));
 					Handler.Widget.OnPaint(new PaintEventArgs(graphics, rect.ToEto()));
 				}
@@ -84,7 +84,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						Width = Handler.tileSize.Width;
 						Height = Handler.tileSize.Height;
 						RenderTransform = new swm.TranslateTransform(-bounds.X, -bounds.Y);
-						if (this.IsVisible)
+						if (IsVisible)
 							InvalidateVisual();
 					}
 				}
@@ -94,9 +94,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			public int Key { get { return Position.Y * Handler.maxTiles.Width + Position.X; } }
 
-			protected override void OnRender(swm.DrawingContext dc)
+			protected override void OnRender(swm.DrawingContext drawingContext)
 			{
-				var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, dc, bounds.ToWpf(), false));
+				var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, drawingContext, bounds.ToWpf(), false));
 				Handler.Widget.OnPaint(new PaintEventArgs(graphics, Bounds));
 			}
 		}

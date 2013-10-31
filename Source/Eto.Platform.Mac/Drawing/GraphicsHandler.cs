@@ -177,7 +177,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		bool antialias;
 
-		public bool Antialias
+		public bool AntiAlias
 		{
 			get
 			{

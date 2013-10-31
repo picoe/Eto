@@ -97,7 +97,7 @@ namespace Eto.Drawing
 			foreach (var name in families)
 			{
 				var trimmedName = name.Trim (trimChars);
-				switch (trimmedName.ToLowerInvariant ()) {
+				switch (trimmedName.ToUpperInvariant ()) {
 				case FontFamilies.MonospaceFamilyName:
 				case FontFamilies.SansFamilyName:
 				case FontFamilies.SerifFamilyName:
@@ -171,7 +171,7 @@ namespace Eto.Drawing
 		/// <returns>True if the specified object is a FontFamily and is equal to this instance</returns>
 		public override bool Equals (object obj)
 		{
-			return obj is FontFamily && this == (FontFamily)obj;
+			return this == obj as FontFamily;
 		}
 
 		/// <summary>

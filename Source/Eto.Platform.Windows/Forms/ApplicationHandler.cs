@@ -14,7 +14,6 @@ namespace Eto.Platform.Windows
 		bool attached;
 		readonly Thread mainThread;
 		SynchronizationContext context;
-
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
 
@@ -39,8 +38,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				badgeLabel = value;
-#if !__MonoCS__
-				if ((bool)TaskbarManager.IsPlatformSupported)
+				if (TaskbarManager.IsPlatformSupported)
 				{
 					if (!string.IsNullOrEmpty(badgeLabel))
 					{
@@ -56,7 +54,6 @@ namespace Eto.Platform.Windows
 					else
 						TaskbarManager.Instance.SetOverlayIcon(null, null);
 				}
-#endif
 			}
 		}
 
@@ -81,7 +78,10 @@ namespace Eto.Platform.Windows
 					swf.Application.DoEvents();
 
 				SetOptions();
-				var ctl = new swf.Control(); // creates sync context
+				// creates sync context
+				using (var ctl = new swf.Control())
+				{
+				}
 				context = SynchronizationContext.Current;
 
 				Widget.OnInitialized(EventArgs.Empty);

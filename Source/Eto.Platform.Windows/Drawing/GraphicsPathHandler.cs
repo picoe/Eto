@@ -57,7 +57,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.AddBezier (start.ToSD (), control1.ToSD (), control2.ToSD (), end.ToSD ());
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			if (path != null && !path.IsEmpty) // avoid throwing an exception if the path is empty - consistent across platforms.
 				Control.AddPath(path.ToSD(), connect);
@@ -78,7 +78,7 @@ namespace Eto.Platform.Windows.Drawing
 			Control.StartFigure ();
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension)
+		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			var sdpoints = from p in points select p.ToSD ();
 			var pointArray = sdpoints.ToArray ();

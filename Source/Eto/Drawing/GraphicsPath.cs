@@ -563,8 +563,18 @@ namespace Eto.Drawing
 		/// </summary>
 		public void Dispose ()
 		{
-			Handler.Dispose ();
+			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Disposes the graphics path
+		/// </summary>
+		/// <param name="disposing">If set to <c>true</c> dispose was called explicitly, otherwise specify false if calling from a finalizer</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+				Handler.Dispose();
 		}
 
 		/// <summary>

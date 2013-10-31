@@ -19,7 +19,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			public object Convert (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)
 			{
 				var item = value as ITreeItem;
-				return GetChildren ((ITreeStore)item);
+				return GetChildren(item);
 			}
 
 			public object ConvertBack (object value, Type targetType, object parameter, System.Globalization.CultureInfo culture)

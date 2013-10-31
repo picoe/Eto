@@ -48,16 +48,11 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 
 		public override Font Font {
 			get {
-				if (font == null)
-					return new Font (Column.Generator, new FontHandler (Renderer.FontDesc));
-				return font;
+				return font ?? (font = new Font (Column.Generator, new FontHandler (Renderer.FontDesc)));
 			}
 			set {
 				font = value;
-				if (Font != null)
-					Renderer.FontDesc = font.ControlObject as Pango.FontDescription;
-				else
-					Renderer.FontDesc = null;
+				Renderer.FontDesc = Font != null ? font.ControlObject as Pango.FontDescription : null;
 			}
 		}
 

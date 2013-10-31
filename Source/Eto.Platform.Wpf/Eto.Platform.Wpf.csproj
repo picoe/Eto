@@ -39,21 +39,13 @@
       <HintPath>..\..\Libraries\WPFColorPicker\ColorPicker.dll</HintPath>
       <Private>False</Private>
     </Reference>
-    <Reference Include="PresentationCore">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies/PresentationCore.dll</Package>
-    </Reference>
-    <Reference Include="PresentationFramework">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies/PresentationFramework.dll</Package>
-    </Reference>
-    <Reference Include="ReachFramework">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies/ReachFramework.dll</Package>
-    </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="ReachFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Printing">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies/System.Printing.dll</Package>
-    </Reference>
+    <Reference Include="System.Printing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xaml" />
     <Reference Include="System.Xml.Linq" />
@@ -61,13 +53,9 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="UIAutomationProvider">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies/UIAutomationProvider.dll</Package>
-    </Reference>
+    <Reference Include="UIAutomationProvider" />
     <Reference Include="WindowsBase" />
-    <Reference Include="WindowsFormsIntegration">
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies/WindowsFormsIntegration.dll</Package>
-    </Reference>
+    <Reference Include="WindowsFormsIntegration" />
     <Reference Include="Interop.SHDocVw">
       <HintPath>..\..\Libraries\SHDocVw\Interop.SHDocVw.dll</HintPath>
       <Private>False</Private>
@@ -76,10 +64,6 @@
     <Reference Include="Xceed.Wpf.Toolkit">
       <HintPath>..\packages\Extended.Wpf.Toolkit.2.0.0\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="PresentationFramework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35">
-      <Private>False</Private>
-      <Package>/Users/curtis/Projects/Resources/WPFDependencies/PresentationFramework.dll</Package>
     </Reference>
   </ItemGroup>
   <ItemGroup>

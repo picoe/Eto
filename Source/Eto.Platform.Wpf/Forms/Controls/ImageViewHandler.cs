@@ -31,10 +31,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				image = value;
-				if (image != null)
-					Control.Source = image.ControlObject as swm.ImageSource;
-				else
-					Control.Source = null;
+				Control.Source = image != null ? image.ControlObject as swm.ImageSource : null;
 			}
 		}
 	}

@@ -30,7 +30,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				var image = new swc.Image { MaxWidth = 16, MaxHeight = 16, StretchDirection = swc.StretchDirection.DownOnly, Margin = new sw.Thickness (0, 2, 2, 2) };
 				image.DataContextChanged += (sender, e) => {
-					var img = sender as swc.Image;
+					var img = sendera as swc.Image;
 					img.Source = Handler.GetValue (img.DataContext) as swm.ImageSource;
 					Handler.FormatCell (img, cell, img.DataContext);
 				};

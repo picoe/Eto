@@ -21,7 +21,7 @@ namespace Eto.Forms
 	[ContentProperty("TabPages")]
 	public class TabControl : Container
 	{
-		TabPageCollection pages;
+		readonly TabPageCollection pages;
 		new ITabControl Handler { get { return (ITabControl)base.Handler; } }
 
 		public override IEnumerable<Control> Controls

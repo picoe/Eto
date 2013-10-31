@@ -53,51 +53,56 @@ namespace Eto.Drawing
 		/// <param name="value">String value to parse</param>
 		/// <param name="style">DashStyle representation of the specified value if successful</param>
 		/// <returns>True if successful, or false if the value could not be parsed</returns>
-		public static bool TryParse (string value, out DashStyle style)
+		public static bool TryParse(string value, out DashStyle style)
 		{
-			if (string.IsNullOrEmpty (value)) {
+			if (string.IsNullOrEmpty(value))
+			{
 				style = DashStyles.Solid;
 				return true;
 			}
 
-			switch (value.ToLowerInvariant ()) {
-			case "solid":
-				style = DashStyles.Solid;
-				return true;
-			case "dash":
-				style = DashStyles.Dash;
-				return true;
-			case "dot":
-				style = DashStyles.Dot;
-				return true;
-			case "dashdot":
-				style = DashStyles.DashDot;
-				return true;
-			case "dashdotdot":
-				style = DashStyles.DashDotDot;
-				return true;
+			switch (value.ToUpperInvariant())
+			{
+				case "SOLID":
+					style = DashStyles.Solid;
+					return true;
+				case "DASH":
+					style = DashStyles.Dash;
+					return true;
+				case "DOT":
+					style = DashStyles.Dot;
+					return true;
+				case "DASHDOT":
+					style = DashStyles.DashDot;
+					return true;
+				case "DASHDOTDOT":
+					style = DashStyles.DashDotDot;
+					return true;
 			}
 
-			var values = value.Split (',');
-			if (values.Length == 0) {
+			var values = value.Split(',');
+			if (values.Length == 0)
+			{
 				style = DashStyles.Solid;
 				return true;
 			}
 			float offset;
-			if (!float.TryParse (values [0], out offset))
-				throw new ArgumentOutOfRangeException ("value", value);
-			float [] dashes = null;
-			if (values.Length > 1) {
+			if (!float.TryParse(values[0], out offset))
+				throw new ArgumentOutOfRangeException("value", value);
+			float[] dashes = null;
+			if (values.Length > 1)
+			{
 				dashes = new float [values.Length - 1];
-				for (int i = 0; i < dashes.Length; i++) {
+				for (int i = 0; i < dashes.Length; i++)
+				{
 					float dashValue;
-					if (!float.TryParse (values [i + 1], out dashValue))
-						throw new ArgumentOutOfRangeException ("value", value);
-					dashes [i] = dashValue;
+					if (!float.TryParse(values[i + 1], out dashValue))
+						throw new ArgumentOutOfRangeException("value", value);
+					dashes[i] = dashValue;
 				}
 			}
 
-			style = new DashStyle (offset, dashes);
+			style = new DashStyle(offset, dashes);
 			return true;
 		}
 
@@ -112,15 +117,15 @@ namespace Eto.Drawing
 		public static DashStyle Parse(string value)
 		{
 			DashStyle style;
-			if (TryParse (value, out style))
+			if (TryParse(value, out style))
 				return style;
-			throw new ArgumentOutOfRangeException ("value", value, "Cannot convert value to a color");
+			throw new ArgumentOutOfRangeException("value", value, "Cannot convert value to a color");
 		}
 
 		/// <summary>
 		/// Initializes a new instance of the <see cref="Eto.Drawing.DashStyle"/> class.
 		/// </summary>
-		public DashStyle ()
+		public DashStyle()
 		{
 		}
 
@@ -129,10 +134,10 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="offset">Offset of the first dash in the style</param>
 		/// <param name="dashes">Dashes to use for the style.  See <see cref="Dashes"/></param>
-		public DashStyle (float offset, params float[] dashes)
+		public DashStyle(float offset, params float[] dashes)
 		{
-			if (dashes != null && dashes.Any (r => r <= 0))
-				throw new ArgumentOutOfRangeException ("dashes", dashes, "Each dash or gap must have a size greater than zero");
+			if (dashes != null && dashes.Any(r => r <= 0))
+				throw new ArgumentOutOfRangeException("dashes", dashes, "Each dash or gap must have a size greater than zero");
 			this.offset = offset;
 			this.dashes = dashes;
 		}
@@ -142,7 +147,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="style1">First style to compare</param>
 		/// <param name="style2">Second style to compare</param>
-		public static bool operator == (DashStyle style1, DashStyle style2)
+		public static bool operator ==(DashStyle style1, DashStyle style2)
 		{
 			if (ReferenceEquals(style1, style2))
 				return true;
@@ -152,7 +157,7 @@ namespace Eto.Drawing
 				return false;
 			if (style1.Dashes == null)
 				return style2.Dashes == null;
-			return style2.Dashes != null && style1.Dashes.SequenceEqual (style2.Dashes);
+			return style2.Dashes != null && style1.Dashes.SequenceEqual(style2.Dashes);
 		}
 
 		/// <summary>
@@ -160,7 +165,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="style1">First style to compare</param>
 		/// <param name="style2">Second style to compare</param>
-		public static bool operator != (DashStyle style1, DashStyle style2)
+		public static bool operator !=(DashStyle style1, DashStyle style2)
 		{
 			return !(style1 == style2);
 		}
@@ -171,7 +176,7 @@ namespace Eto.Drawing
 		/// <param name="other">The <see cref="Eto.Drawing.DashStyle"/> to compare with the current <see cref="Eto.Drawing.DashStyle"/>.</param>
 		/// <returns><c>true</c> if the specified <see cref="Eto.Drawing.DashStyle"/> is equal to the current
 		/// <see cref="Eto.Drawing.DashStyle"/>; otherwise, <c>false</c>.</returns>
-		public bool Equals (DashStyle other)
+		public bool Equals(DashStyle other)
 		{
 			return this == other;
 		}
@@ -182,9 +187,9 @@ namespace Eto.Drawing
 		/// <param name="obj">The <see cref="System.Object"/> to compare with the current <see cref="Eto.Drawing.DashStyle"/>.</param>
 		/// <returns><c>true</c> if the specified <see cref="System.Object"/> is equal to the current
 		/// <see cref="Eto.Drawing.DashStyle"/>; otherwise, <c>false</c>.</returns>
-		public override bool Equals (object obj)
+		public override bool Equals(object obj)
 		{
-			return obj is DashStyle && this == (DashStyle)obj;
+			return this == obj as DashStyle;
 		}
 
 		/// <summary>
@@ -203,19 +208,20 @@ namespace Eto.Drawing
 				return "dashdotdot";
 			if (object.ReferenceEquals(this, DashStyles.Solid))
 				return "solid";
-			return string.Format(CultureInfo.InvariantCulture, "{0},{1}", Offset, string.Join(",", Dashes.Select(r => r.ToString())));
+			return string.Format(CultureInfo.InvariantCulture, "{0},{1}", Offset, string.Join(",", Dashes.Select(r => r.ToString(CultureInfo.InvariantCulture))));
 		}
 
 		/// <summary>
 		/// Serves as a hash function for a <see cref="Eto.Drawing.DashStyle"/> object.
 		/// </summary>
 		/// <returns>A hash code for this instance that is suitable for use in hashing algorithms and data structures such as a hash table.</returns>
-		public override int GetHashCode ()
+		public override int GetHashCode()
 		{
-			int hash = offset.GetHashCode ();
-			if (dashes != null) {
+			int hash = offset.GetHashCode();
+			if (dashes != null)
+			{
 				for (int i = 0; i < dashes.Length; i++)
-					hash ^= dashes[i].GetHashCode ();
+					hash ^= dashes[i].GetHashCode();
 			}
 			return hash;
 		}

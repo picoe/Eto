@@ -38,32 +38,24 @@ namespace Eto.IO
 		protected VirtualDirectoryInfo(EtoFileInfo fileInfo)
 			: this()
 		{
-			this.FileInfo = fileInfo;
-			this.VirtualPath = string.Empty;
+			FileInfo = fileInfo;
 		}
 
 		protected VirtualDirectoryInfo(VirtualDirectoryInfo parent, string path)
 			: this()
 		{
-			this.FileInfo = parent.FileInfo;
-			this.VirtualPath = path;
+			FileInfo = parent.FileInfo;
+			VirtualPath = path;
 			if (parent != null)
 			{
 				this.parent = parent;
-				this.Files = parent.Files;
+				Files = parent.Files;
 			}
-		}
-
-		protected VirtualDirectoryInfo(Stream stream)
-			: this()
-		{
-			this.VirtualPath = string.Empty;
-			ReadStream(stream);
 		}
 
 		VirtualDirectoryInfo()
 		{
-			this.FlattenInitialDirectory = FlattenInitialDirectories;
+			FlattenInitialDirectory = FlattenInitialDirectories;
 		}
 
 		protected abstract VirtualDirectoryInfo CreateDirectory(VirtualDirectoryInfo parent, string path);
@@ -83,7 +75,7 @@ namespace Eto.IO
 			}
 		}
 
-		void ReadStream(Stream stream)
+		protected void ReadStream(Stream stream)
 		{
 			Files = new List<VirtualFileEntry>();
 			bool hasFiles = false;
@@ -136,7 +128,7 @@ namespace Eto.IO
 		{
 			get
 			{
-				return parent ?? (FileInfo != null ? FileInfo.Directory : null);
+				return parent ?? (FileInfo == null ? null : FileInfo.Directory);
  			}
 		}
 

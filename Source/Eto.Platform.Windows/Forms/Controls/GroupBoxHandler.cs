@@ -7,7 +7,7 @@ namespace Eto.Platform.Windows
 {
 	public class GroupBoxHandler : WindowsDockContainer<swf.GroupBox, GroupBox>, IGroupBox
 	{
-		swf.Panel content;
+		readonly swf.Panel content;
 
 		public GroupBoxHandler()
 		{

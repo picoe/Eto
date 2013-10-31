@@ -22,7 +22,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			public swc.Primitives.IScrollInfo GetScrollInfo()
 			{
-				return base.ScrollInfo;
+				return ScrollInfo;
 			}
 		}
 

@@ -16,9 +16,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		swc.DataGridColumn Control { get; }
 	}
 
-	public abstract class CellHandler<T,W> : WidgetHandler<T, W>, ICellHandler
-		where T: swc.DataGridColumn
-		where W: Cell
+	public abstract class CellHandler<TControl,TWidget> : WidgetHandler<TControl, TWidget>, ICellHandler
+		where TControl: swc.DataGridColumn
+		where TWidget: Cell
 	{
 		public ICellContainerHandler ContainerHandler { get; set; }
 

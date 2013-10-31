@@ -10,7 +10,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		{
 			Control = new swc.RadioButton ();
 			if (controller != null) {
-				var parent = controller.ControlObject as swc.RadioButton;
+				var parent = (swc.RadioButton)controller.ControlObject;
 				Control.GroupName = parent.GroupName;
 			}
 			else

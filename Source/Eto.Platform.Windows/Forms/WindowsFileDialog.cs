@@ -7,9 +7,9 @@ using System.Collections.Generic;
 
 namespace Eto.Platform.Windows
 {
-	public abstract class WindowsFileDialog<T, W> : WidgetHandler<T, W>, IFileDialog
-		where T : swf.FileDialog
-		where W : FileDialog
+	public abstract class WindowsFileDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IFileDialog
+		where TControl : swf.FileDialog
+		where TWidget : FileDialog
 	{
 		IFileDialogFilter[] filters;
 

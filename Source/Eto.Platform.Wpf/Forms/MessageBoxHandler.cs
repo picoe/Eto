@@ -63,7 +63,7 @@ namespace Eto.Platform.Wpf.Forms
 		}
 
 
-		sw.MessageBoxImage Convert(MessageBoxType type)
+		static sw.MessageBoxImage Convert(MessageBoxType type)
 		{
 			switch (type)
 			{
@@ -80,7 +80,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		DialogResult Convert(sw.MessageBoxResult result)
+		static DialogResult Convert(sw.MessageBoxResult result)
 		{
 			switch (result)
 			{
@@ -93,7 +93,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		sw.MessageBoxButton Convert(MessageBoxButtons value)
+		static sw.MessageBoxButton Convert(MessageBoxButtons value)
 		{
 			switch (value)
 			{

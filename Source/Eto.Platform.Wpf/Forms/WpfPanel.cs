@@ -5,9 +5,9 @@ using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class WpfPanel<T,W> : WpfFrameworkElement<T,W>, IControl
-		where T : sw.Controls.Panel
-		where W: Control
+	public class WpfPanel<TControl,TWidget> : WpfFrameworkElement<TControl,TWidget>, IControl
+		where TControl : sw.Controls.Panel
+		where TWidget: Control
 	{
 		public override Color BackgroundColor
 		{

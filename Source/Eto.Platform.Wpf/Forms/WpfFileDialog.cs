@@ -7,9 +7,9 @@ using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfFileDialog<T, W> : WpfCommonDialog<T, W>, IFileDialog
-		where T: mw.FileDialog
-		where W: FileDialog
+	public abstract class WpfFileDialog<TControl, TWidget> : WpfCommonDialog<TControl, TWidget>, IFileDialog
+		where TControl: mw.FileDialog
+		where TWidget: FileDialog
 	{
 		IFileDialogFilter[] filters;
 

@@ -13,9 +13,9 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public abstract class GridHandler<C, W> : WpfControl<C, W>, IGrid, IGridHandler
-		where C: swc.DataGrid
-		where W: Grid
+	public abstract class GridHandler<TControl, TWidget> : WpfControl<TControl, TWidget>, IGrid, IGridHandler
+		where TControl: swc.DataGrid
+		where TWidget: Grid
 	{
 		ContextMenu contextMenu;
 		bool hasFocus;
@@ -24,7 +24,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		protected GridHandler()
 		{
-			Control = (C)new swc.DataGrid {
+			Control = (TControl)new swc.DataGrid {
 				HeadersVisibility = swc.DataGridHeadersVisibility.Column,
 				AutoGenerateColumns = false,
 				CanUserAddRows = false,
@@ -102,7 +102,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		protected class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<C,W> Handler { get; set; }
+			public GridHandler<TControl,TWidget> Handler { get; set; }
 
 			public override void AddItem (GridColumn item)
 			{
@@ -135,10 +135,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.ContextMenu = null;
+				Control.ContextMenu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 

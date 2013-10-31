@@ -87,8 +87,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		public int GetRowOfItem (object item)
 		{
-			if (collection == null) return -1;
-			return collection.IndexOf (item);
+			return collection != null ? collection.IndexOf(item) : -1;
 		}
 	}
 }

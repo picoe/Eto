@@ -52,6 +52,7 @@ namespace Eto
 				if (uname(buf) == 0)
 					osName = Marshal.PtrToStringAnsi(buf);
 			}
+			// Analysis disable once EmptyGeneralCatchClause
 			catch
 			{
 			}
@@ -80,12 +81,12 @@ namespace Eto
 					break;
 				case PlatformID.Unix:
 					IsUnix = true;
-					switch (GetUnixType().ToLowerInvariant())
+					switch (GetUnixType().ToUpperInvariant())
 					{
-						case "darwin":
+						case "DARWIN":
 							IsMac = true;
 							break;
-						case "linux":
+						case "LINUX":
 							IsLinux = true;
 							break;
 					}

@@ -38,13 +38,7 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public sealed class SolidBrush : Brush
 	{
-		ISolidBrush handler;
-
-		/// <summary>
-		/// Gets or sets the control object for this widget
-		/// </summary>
-		/// <value>The control object for the widget</value>
-		public override object ControlObject { get; set; }
+		readonly ISolidBrush handler;
 
 		/// <summary>
 		/// Gets the platform handler object for the widget
@@ -56,7 +50,7 @@ namespace Eto.Drawing
 		/// Gets a delegate to instantiate objects of this type with minimal overhead
 		/// </summary>
 		/// <param name="generator">Generator to create the solid brushes</param>
-		public Func<Color, SolidBrush> Instantiator (Generator generator = null)
+		public static Func<Color, SolidBrush> Instantiator (Generator generator = null)
 		{
 			var sharedHandler = generator.CreateShared<ISolidBrush> ();
 			return color => {

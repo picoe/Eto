@@ -66,7 +66,7 @@ namespace Eto.Forms
 		public Stream GetDataStream (string type)
 		{
 			var buffer = GetData (type);
-			return buffer != null ? new MemoryStream(buffer, false) : null;
+			return buffer == null ? null : new MemoryStream(buffer, false);
 		}
 		
 		public void SetString (string value, string type)

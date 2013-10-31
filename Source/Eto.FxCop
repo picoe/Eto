@@ -117,56 +117,10 @@
  </Rules>
  <FxCopReport Version="10.0">
   <Namespaces>
-   <Namespace Name="Eto">
-    <Messages>
-     <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-      <Issue Name="Namespace">
-       <Item>Eto</Item>
-       <Item>Eto</Item>
-      </Issue>
-     </Message>
-    </Messages>
-   </Namespace>
-   <Namespace Name="Eto.Drawing">
-    <Messages>
-     <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-      <Issue Name="Namespace">
-       <Item>Eto</Item>
-       <Item>Eto.Drawing</Item>
-      </Issue>
-     </Message>
-    </Messages>
-   </Namespace>
-   <Namespace Name="Eto.Forms">
-    <Messages>
-     <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-      <Issue Name="Namespace">
-       <Item>Eto</Item>
-       <Item>Eto.Forms</Item>
-      </Issue>
-     </Message>
-    </Messages>
-   </Namespace>
-   <Namespace Name="Eto.IO">
-    <Messages>
-     <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-      <Issue Name="Namespace">
-       <Item>Eto</Item>
-       <Item>Eto.IO</Item>
-      </Issue>
-     </Message>
-    </Messages>
-   </Namespace>
    <Namespace Name="Eto.Threading">
     <Messages>
      <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Created="2013-09-27 17:39:30Z">
       <Issue>
-       <Item>Eto.Threading</Item>
-      </Issue>
-     </Message>
-     <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-      <Issue Name="Namespace">
-       <Item>Eto</Item>
        <Item>Eto.Threading</Item>
       </Issue>
      </Message>
@@ -179,24 +133,12 @@
        <Item>Eto.Xaml</Item>
       </Issue>
      </Message>
-     <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-      <Issue Name="Namespace">
-       <Item>Eto</Item>
-       <Item>Eto.Xaml</Item>
-      </Issue>
-     </Message>
     </Messages>
    </Namespace>
    <Namespace Name="Eto.Xaml.Extensions">
     <Messages>
      <Message TypeName="AvoidNamespacesWithFewTypes" Category="Microsoft.Design" CheckId="CA1020" Created="2013-09-27 17:39:30Z">
       <Issue>
-       <Item>Eto.Xaml.Extensions</Item>
-      </Issue>
-     </Message>
-     <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-      <Issue Name="Namespace">
-       <Item>Eto</Item>
        <Item>Eto.Xaml.Extensions</Item>
       </Issue>
      </Message>
@@ -210,22 +152,6 @@
       <Messages>
        <Message TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210" Created="2013-09-27 17:39:30Z">
         <Issue Name="NoStrongName">
-         <Item>'Eto.dll'</Item>
-        </Issue>
-       </Message>
-       <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-        <Issue Name="Assembly">
-         <Item>Eto</Item>
-         <Item>'Eto.dll'</Item>
-        </Issue>
-       </Message>
-       <Message TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014" Created="2013-09-27 17:39:30Z">
-        <Issue>
-         <Item>'Eto.dll'</Item>
-        </Issue>
-       </Message>
-       <Message TypeName="MarkAssembliesWithComVisible" Category="Microsoft.Design" CheckId="CA1017" Created="2013-09-27 17:39:30Z">
-        <Issue Name="NoAttribute" Level="CriticalError">
          <Item>'Eto.dll'</Item>
         </Issue>
        </Message>
@@ -435,70 +361,8 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="EtoEnvironment">
-          <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoEnvironment'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
-         <Type Name="EtoException">
-          <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoException'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
-         <Type Name="EtoMemberIdentifier">
-          <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoMemberIdentifier'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
-         <Type Name="EtoSpecialFolder">
-          <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoSpecialFolder'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
          <Type Name="Generator">
           <Members>
-           <Member Name="#Add(System.Type,System.Func`1&lt;System.Object&gt;)">
-            <Messages>
-             <Message Id="instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'Generator.Add(Type, Func&lt;object&gt;)'</Item>
-               <Item>instantiator</Item>
-               <Item>'instantiator'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Add`1(System.Func`1&lt;!!0&gt;)">
-            <Messages>
-             <Message Id="instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'Generator.Add&lt;T&gt;(Func&lt;T&gt;)'</Item>
-               <Item>instantiator</Item>
-               <Item>'instantiator'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Current">
             <Accessors>
              <Accessor Name="#get_Current()">
@@ -547,129 +411,12 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#IsGtk">
-            <Messages>
-             <Message Id="Gtk" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Gtk</Item>
-               <Item>'Generator.IsGtk'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#IsIos">
-            <Messages>
-             <Message Id="Ios" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Ios</Item>
-               <Item>'Generator.IsIos'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Supports`1()">
             <Messages>
              <Message TypeName="GenericMethodsShouldProvideTypeParameter" Category="Microsoft.Design" CheckId="CA1004" Created="2013-09-27 17:39:30Z">
               <Issue>
                <Item>'Generator.Supports&lt;T&gt;()'</Item>
                <Item>'T'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Validate(Eto.Generator)">
-            <Messages>
-             <Message Id="System.String.Format(System.String,System.Object)" TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305" Created="2013-09-27 17:39:30Z">
-              <Issue Name="IFormatProviderAlternateString">
-               <Item>'string.Format(string, object)'</Item>
-               <Item>'Generator.Validate(Generator)'</Item>
-               <Item>'string.Format(IFormatProvider, string, params object[])'</Item>
-               <Item>'CultureInfo.CurrentCulture'</Item>
-               <Item>'CultureInfo.InvariantCulture'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="Generators">
-          <Members>
-           <Member Name="#Gtk">
-            <Messages>
-             <Message Id="Gtk" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Gtk</Item>
-               <Item>'Generators.Gtk'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Gtk3">
-            <Messages>
-             <Message Id="Gtk" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-10-24 18:42:12Z">
-              <Issue Name="Member">
-               <Item>Gtk</Item>
-               <Item>'Generators.Gtk3'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Gtk3Assembly">
-            <Messages>
-             <Message Id="Gtk" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-10-24 18:42:12Z">
-              <Issue Name="Member">
-               <Item>Gtk</Item>
-               <Item>'Generators.Gtk3Assembly'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#GtkAssembly">
-            <Messages>
-             <Message Id="Gtk" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Gtk</Item>
-               <Item>'Generators.GtkAssembly'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Ios">
-            <Messages>
-             <Message Id="Ios" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Ios</Item>
-               <Item>'Generators.Ios'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#IosAssembly">
-            <Messages>
-             <Message Id="Ios" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Ios</Item>
-               <Item>'Generators.IosAssembly'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#XamMac">
-            <Messages>
-             <Message Id="Xam" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Xam</Item>
-               <Item>'Generators.XamMac'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#XamMacAssembly">
-            <Messages>
-             <Message Id="Xam" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Xam</Item>
-               <Item>'Generators.XamMacAssembly'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -688,16 +435,6 @@
             </Messages>
            </Member>
           </Members>
-         </Type>
-         <Type Name="IEtoEnvironment">
-          <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'IEtoEnvironment'</Item>
-            </Issue>
-           </Message>
-          </Messages>
          </Type>
          <Type Name="IInstanceWidget">
           <Members>
@@ -805,20 +542,6 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="ObjectBinding">
-          <Members>
-           <Member Name="#.ctor(System.Object,Eto.IndirectBinding)">
-            <Messages>
-             <Message TypeName="DoNotCallOverridableMethodsInConstructors" Category="Microsoft.Usage" CheckId="CA2214" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'ObjectBinding.ObjectBinding(object, IndirectBinding)'</Item>
-               <Item>&#xD;&#xA;&#xD;&#xA;ObjectBinding..ctor(Object, IndirectBinding)&#xD;&#xA;ObjectBinding.set_DataItem(Object):Void&#xD;&#xA;DirectBinding.OnDataValueChanged(EventArgs):Void</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
          <Type Name="ObjectBinding`2">
           <Members>
            <Member Name="#.ctor(!0,System.Func`2&lt;!0,!1&gt;,System.Action`2&lt;!0,!1&gt;,System.Action`2&lt;!0,System.EventHandler`1&lt;System.EventArgs&gt;&gt;,System.Action`2&lt;!0,System.EventHandler`1&lt;System.EventArgs&gt;&gt;)">
@@ -891,16 +614,6 @@
          </Type>
          <Type Name="OperatingSystemPlatform">
           <Members>
-           <Member Name="#.ctor()">
-            <Messages>
-             <Message TypeName="NormalizeStringsToUppercase" Category="Microsoft.Globalization" CheckId="CA1308" Created="2013-09-27 17:39:30Z">
-              <Issue Name="ToUpperInvariant">
-               <Item>'OperatingSystemPlatform.OperatingSystemPlatform()'</Item>
-               <Item>'string.ToLowerInvariant()'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#GetUnixType()">
             <Messages>
              <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Created="2013-09-27 17:39:30Z">
@@ -922,38 +635,8 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="PropertyBinding">
-          <Members>
-           <Member Name="#AddValueChangedHandler(System.Object,System.EventHandler`1&lt;System.EventArgs&gt;)">
-            <Messages>
-             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'PropertyBinding.AddValueChangedHandler(object, EventHandler&lt;EventArgs&gt;)'</Item>
-               <Item>'object'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#RemoveValueChangedHandler(System.Object,System.EventHandler`1&lt;System.EventArgs&gt;)">
-            <Messages>
-             <Message TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'PropertyBinding.RemoveValueChangedHandler(object, EventHandler&lt;EventArgs&gt;)'</Item>
-               <Item>'object'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
          <Type Name="PropertyStore">
           <Messages>
-           <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Created="2013-10-24 18:42:12Z">
-            <Issue>
-             <Item>'PropertyStore'</Item>
-             <Item>Dictionary</Item>
-            </Issue>
-           </Message>
            <Message TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237" Created="2013-09-27 17:39:30Z">
             <Issue>
              <Item>'PropertyStore'</Item>
@@ -963,31 +646,6 @@
          </Type>
          <Type Name="Style">
           <Members>
-           <Member Name="#.cctor()">
-            <Messages>
-             <Message TypeName="InitializeReferenceTypeStaticFieldsInline" Category="Microsoft.Performance" CheckId="CA1810" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'Style'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Add`1(System.String,Eto.StyleHandler`1&lt;!!0&gt;)">
-            <Messages>
-             <Message Id="H" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z" FixCategory="NonBreaking">
-              <Issue Name="MethodTypeParameterMoreMeaningfulName">
-               <Item>'Style.Add&lt;H&gt;(string, StyleHandler&lt;H&gt;)'</Item>
-               <Item>'H'</Item>
-              </Issue>
-             </Message>
-             <Message Id="T" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2013-09-27 17:39:30Z" FixCategory="NonBreaking">
-              <Issue Name="MethodTypeParameter">
-               <Item>'Style.Add&lt;H&gt;(string, StyleHandler&lt;H&gt;)'</Item>
-               <Item>'H'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#StyleWidget" Kind="Event">
             <Messages>
              <Message TypeName="DeclareEventHandlersCorrectly" Category="Microsoft.Design" CheckId="CA1009" Created="2013-09-27 17:39:30Z">
@@ -1007,38 +665,6 @@
             </Messages>
            </Member>
           </Members>
-         </Type>
-         <Type Name="StyleHandler`1">
-          <Messages>
-           <Message Id="H" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z" FixCategory="NonBreaking">
-            <Issue Name="TypeTypeParameterMoreMeaningfulName">
-             <Item>'StyleHandler&lt;H&gt;'</Item>
-             <Item>'H'</Item>
-            </Issue>
-           </Message>
-           <Message Id="T" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2013-09-27 17:39:30Z" FixCategory="NonBreaking">
-            <Issue Name="TypeTypeParameter">
-             <Item>'StyleHandler&lt;H&gt;'</Item>
-             <Item>'H'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
-         <Type Name="StyleWidgetHandler`1">
-          <Messages>
-           <Message Id="W" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z" FixCategory="NonBreaking">
-            <Issue Name="TypeTypeParameterMoreMeaningfulName">
-             <Item>'StyleWidgetHandler&lt;W&gt;'</Item>
-             <Item>'W'</Item>
-            </Issue>
-           </Message>
-           <Message Id="T" TypeName="IdentifiersShouldHaveCorrectPrefix" Category="Microsoft.Naming" CheckId="CA1715" Created="2013-09-27 17:39:30Z" FixCategory="NonBreaking">
-            <Issue Name="TypeTypeParameter">
-             <Item>'StyleWidgetHandler&lt;W&gt;'</Item>
-             <Item>'W'</Item>
-            </Issue>
-           </Message>
-          </Messages>
          </Type>
          <Type Name="UnregisterCallback`1">
           <Messages>
@@ -1117,16 +743,6 @@
             </Messages>
            </Member>
           </Members>
-         </Type>
-         <Type Name="WidgetCreatedArgs">
-          <Messages>
-           <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Created="2013-10-24 18:42:12Z">
-            <Issue>
-             <Item>'WidgetCreatedArgs'</Item>
-             <Item>EventArgs</Item>
-            </Issue>
-           </Message>
-          </Messages>
          </Type>
          <Type Name="WidgetHandler`1">
           <Members>
@@ -1379,55 +995,6 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#Dispose()">
-            <Messages>
-             <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Created="2013-09-27 17:39:30Z">
-              <Issue Name="DisposeImplementation">
-               <Item>'BitmapData.Dispose()'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#TranslateArgbToData(System.UInt32)">
-            <Messages>
-             <Message Id="Argb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Argb</Item>
-               <Item>'BitmapData.TranslateArgbToData(uint)'</Item>
-              </Issue>
-             </Message>
-             <Message Id="argb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'BitmapData.TranslateArgbToData(uint)'</Item>
-               <Item>argb</Item>
-               <Item>'argb'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#TranslateDataToArgb(System.UInt32)">
-            <Messages>
-             <Message Id="Argb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Argb</Item>
-               <Item>'BitmapData.TranslateDataToArgb(uint)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="Brush">
-          <Members>
-           <Member Name="#Dispose()">
-            <Messages>
-             <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Created="2013-09-27 17:39:30Z">
-              <Issue Name="DisposeImplementation">
-               <Item>'Brush.Dispose()'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
           </Members>
          </Type>
          <Type Name="Brushes">
@@ -1442,32 +1009,6 @@
               <Notes>
                <User Name="curtis">
                 <Note Id="2" />
-               </User>
-              </Notes>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#FireBrick(Eto.Generator)">
-            <Messages>
-             <Message Id="FireBrick" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberShouldBeDiscreteTerm">
-               <Item>FireBrick</Item>
-               <Item>'Brushes.FireBrick(Generator)'</Item>
-               <Item>Firebrick</Item>
-              </Issue>
-              <Notes>
-               <User Name="curtis">
-                <Note Id="5" />
-               </User>
-              </Notes>
-             </Message>
-             <Message TypeName="UseEventsWhereAppropriate" Category="Microsoft.Design" CheckId="CA1030" Status="Excluded" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'Brushes.FireBrick(Generator)'</Item>
-              </Issue>
-              <Notes>
-               <User Name="curtis">
-                <Note Id="0" />
                </User>
               </Notes>
              </Message>
@@ -1528,33 +1069,6 @@
                <Item>Bb</Item>
                <Item>'Color.Bb'</Item>
                <Item>BB</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#FromArgb(System.Int32,System.Int32,System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="Argb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Argb</Item>
-               <Item>'Color.FromArgb(int, int, int, int)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#FromArgb(System.UInt32)">
-            <Messages>
-             <Message Id="Argb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Argb</Item>
-               <Item>'Color.FromArgb(uint)'</Item>
-              </Issue>
-             </Message>
-             <Message Id="argb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'Color.FromArgb(uint)'</Item>
-               <Item>argb</Item>
-               <Item>'argb'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -1626,15 +1140,6 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#TryParse(System.String,Eto.Drawing.Color&amp;,System.Globalization.CultureInfo)">
-            <Messages>
-             <Message Id="1#" TypeName="AvoidOutParameters" Category="Microsoft.Design" CheckId="CA1021" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'color'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
           </Members>
          </Type>
          <Type Name="ColorCMYK">
@@ -1650,7 +1155,7 @@
           <Members>
            <Member Name="#A">
             <Messages>
-             <Message Id="A" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="A" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorCMYK.A'</Item>
               </Issue>
@@ -1659,7 +1164,7 @@
            </Member>
            <Member Name="#C">
             <Messages>
-             <Message Id="C" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="C" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorCMYK.C'</Item>
               </Issue>
@@ -1668,7 +1173,7 @@
            </Member>
            <Member Name="#K">
             <Messages>
-             <Message Id="K" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="K" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorCMYK.K'</Item>
               </Issue>
@@ -1677,7 +1182,7 @@
            </Member>
            <Member Name="#M">
             <Messages>
-             <Message Id="M" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="M" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorCMYK.M'</Item>
               </Issue>
@@ -1691,15 +1196,6 @@
                <Item>'ColorCMYK.implicit operator Color(ColorCMYK)'</Item>
                <Item>cmyk</Item>
                <Item>'cmyk'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Y">
-            <Messages>
-             <Message Id="Y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberMoreMeaningfulName">
-               <Item>'ColorCMYK.Y'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -1719,7 +1215,7 @@
           <Members>
            <Member Name="#A">
             <Messages>
-             <Message Id="A" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="A" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSB.A'</Item>
               </Issue>
@@ -1728,7 +1224,7 @@
            </Member>
            <Member Name="#B">
             <Messages>
-             <Message Id="B" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="B" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSB.B'</Item>
               </Issue>
@@ -1737,7 +1233,7 @@
            </Member>
            <Member Name="#H">
             <Messages>
-             <Message Id="H" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="H" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSB.H'</Item>
               </Issue>
@@ -1757,7 +1253,7 @@
            </Member>
            <Member Name="#S">
             <Messages>
-             <Message Id="S" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="S" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSB.S'</Item>
               </Issue>
@@ -1779,7 +1275,7 @@
           <Members>
            <Member Name="#A">
             <Messages>
-             <Message Id="A" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="A" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSL.A'</Item>
               </Issue>
@@ -1788,7 +1284,7 @@
            </Member>
            <Member Name="#H">
             <Messages>
-             <Message Id="H" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="H" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSL.H'</Item>
               </Issue>
@@ -1797,7 +1293,7 @@
            </Member>
            <Member Name="#L">
             <Messages>
-             <Message Id="L" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="L" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSL.L'</Item>
               </Issue>
@@ -1817,7 +1313,7 @@
            </Member>
            <Member Name="#S">
             <Messages>
-             <Message Id="S" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="S" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberMoreMeaningfulName">
                <Item>'ColorHSL.S'</Item>
               </Issue>
@@ -1835,22 +1331,6 @@
                <Item>Cornsilk</Item>
                <Item>'Colors.Cornsilk'</Item>
               </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#FireBrick">
-            <Messages>
-             <Message Id="FireBrick" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberShouldBeDiscreteTerm">
-               <Item>FireBrick</Item>
-               <Item>'Colors.FireBrick'</Item>
-               <Item>Firebrick</Item>
-              </Issue>
-              <Notes>
-               <User Name="curtis">
-                <Note Id="5" />
-               </User>
-              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -1877,28 +1357,6 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#Equals(System.Object)">
-            <Messages>
-             <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Parameter">
-               <Item>'obj'</Item>
-               <Item>'DashStyle'</Item>
-               <Item>'DashStyle.Equals(object)'</Item>
-               <Item>castclass</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#TryParse(System.String,Eto.Drawing.DashStyle&amp;)">
-            <Messages>
-             <Message TypeName="NormalizeStringsToUppercase" Category="Microsoft.Globalization" CheckId="CA1308" Created="2013-09-27 17:39:30Z">
-              <Issue Name="ToUpperInvariant">
-               <Item>'DashStyle.TryParse(string, out DashStyle)'</Item>
-               <Item>'string.ToLowerInvariant()'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
           </Members>
          </Type>
          <Type Name="FontDecoration">
@@ -1910,81 +1368,50 @@
            </Message>
           </Messages>
          </Type>
-         <Type Name="FontFamilies">
-          <Members>
-           <Member Name="#Monospace(Eto.Generator)">
-            <Messages>
-             <Message Id="Monospace" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Monospace</Item>
-               <Item>'FontFamilies.Monospace(Generator)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#MonospaceFamilyName">
-            <Messages>
-             <Message Id="Monospace" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Monospace</Item>
-               <Item>'FontFamilies.MonospaceFamilyName'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
          <Type Name="FontFamily">
           <Members>
-           <Member Name="#Equals(System.Object)">
-            <Messages>
-             <Message TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Parameter">
-               <Item>'obj'</Item>
-               <Item>'FontFamily'</Item>
-               <Item>'FontFamily.Equals(object)'</Item>
-               <Item>castclass</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Monospace">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2013-09-27 17:39:30Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue>
                <Item>'FontFamily.Monospace'</Item>
                <Item>'FontFamily'</Item>
               </Issue>
+              <Notes>
+               <User Name="curtis">
+                <Note Id="8" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Sans">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2013-09-27 17:39:30Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue>
                <Item>'FontFamily.Sans'</Item>
                <Item>'FontFamily'</Item>
               </Issue>
+              <Notes>
+               <User Name="curtis">
+                <Note Id="8" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
            <Member Name="#Serif">
             <Messages>
-             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Created="2013-09-27 17:39:30Z">
+             <Message TypeName="DoNotDeclareReadOnlyMutableReferenceTypes" Category="Microsoft.Security" CheckId="CA2104" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue>
                <Item>'FontFamily.Serif'</Item>
                <Item>'FontFamily'</Item>
               </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#SplitFamilyName(System.String,Eto.Generator)">
-            <Messages>
-             <Message TypeName="NormalizeStringsToUppercase" Category="Microsoft.Globalization" CheckId="CA1308" Created="2013-09-27 17:39:30Z">
-              <Issue Name="ToUpperInvariant">
-               <Item>'FontFamily.SplitFamilyName(string, Generator)'</Item>
-               <Item>'string.ToLowerInvariant()'</Item>
-              </Issue>
+              <Notes>
+               <User Name="curtis">
+                <Note Id="8" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -2029,17 +1456,15 @@
           </Messages>
          </Type>
          <Type Name="Graphics">
+          <Messages>
+           <Message TypeName="IdentifiersShouldDifferByMoreThanCase" Category="Microsoft.Naming" CheckId="CA1708" Created="2013-10-31 16:12:45Z">
+            <Issue Name="Member">
+             <Item>'Antialias'</Item>
+             <Item>AntiAlias</Item>
+            </Issue>
+           </Message>
+          </Messages>
           <Members>
-           <Member Name="#Antialias">
-            <Messages>
-             <Message Id="Antialias" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Antialias</Item>
-               <Item>'Graphics.Antialias'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#DrawArc(Eto.Drawing.Color,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <Messages>
              <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
@@ -2395,23 +1820,7 @@
           </Members>
          </Type>
          <Type Name="GraphicsPath">
-          <Messages>
-           <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Created="2013-09-27 17:39:30Z">
-            <Issue Name="ProvideDisposeBool">
-             <Item>'GraphicsPath'</Item>
-            </Issue>
-           </Message>
-          </Messages>
           <Members>
-           <Member Name="#Dispose()">
-            <Messages>
-             <Message TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063" Created="2013-09-27 17:39:30Z">
-              <Issue Name="DisposeImplementation">
-               <Item>'GraphicsPath.Dispose()'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Eto.IControlObjectSource.ControlObject">
             <Accessors>
              <Accessor Name="#Eto.IControlObjectSource.get_ControlObject()">
@@ -2440,36 +1849,6 @@
              </Accessor>
             </Accessors>
            </Member>
-           <Member Name="#Instantiator(Eto.Generator)">
-            <Messages>
-             <Message Id="Instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Instantiator</Item>
-               <Item>'GraphicsPath.Instantiator(Generator)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="IBitmap">
-          <Members>
-           <Member Name="#GetPixel(System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IBitmap.GetPixel(int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IBitmap.GetPixel(int, int)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
           </Members>
          </Type>
          <Type Name="IBrush">
@@ -2483,80 +1862,6 @@
          </Type>
          <Type Name="IGraphics">
           <Members>
-           <Member Name="#Antialias">
-            <Messages>
-             <Message Id="Antialias" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Antialias</Item>
-               <Item>'IGraphics.Antialias'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#DrawArc(Eto.Drawing.Pen,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawArc(Pen, float, float, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawArc(Pen, float, float, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#DrawEllipse(Eto.Drawing.Pen,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawEllipse(Pen, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawEllipse(Pen, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#DrawImage(Eto.Drawing.Image,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawImage(Image, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawImage(Image, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#DrawImage(Eto.Drawing.Image,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawImage(Image, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawImage(Image, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#DrawLine(Eto.Drawing.Pen,System.Single,System.Single,System.Single,System.Single)">
             <Messages>
              <Message Id="endx" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
@@ -2589,106 +1894,10 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#DrawRectangle(Eto.Drawing.Pen,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawRectangle(Pen, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawRectangle(Pen, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#DrawText(Eto.Drawing.Font,Eto.Drawing.SolidBrush,System.Single,System.Single,System.String)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawText(Font, SolidBrush, float, float, string)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.DrawText(Font, SolidBrush, float, float, string)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#FillEllipse(Eto.Drawing.Brush,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.FillEllipse(Brush, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.FillEllipse(Brush, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#FillPie(Eto.Drawing.Brush,System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.FillPie(Brush, float, float, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.FillPie(Brush, float, float, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#FillRectangle(Eto.Drawing.Brush,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.FillRectangle(Brush, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphics.FillRectangle(Brush, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
           </Members>
          </Type>
          <Type Name="IGraphicsPath">
           <Members>
-           <Member Name="#AddArc(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.AddArc(float, float, float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.AddArc(float, float, float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#AddBezier(Eto.Drawing.PointF,Eto.Drawing.PointF,Eto.Drawing.PointF,Eto.Drawing.PointF)">
             <Messages>
              <Message Id="End" TypeName="IdentifiersShouldNotMatchKeywords" Category="Microsoft.Naming" CheckId="CA1716" Created="2013-09-27 17:39:30Z">
@@ -2696,70 +1905,6 @@
                <Item>'IGraphicsPath.AddBezier(PointF, PointF, PointF, PointF)'</Item>
                <Item>'end'</Item>
                <Item>End</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddEllipse(System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.AddEllipse(float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.AddEllipse(float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddRectangle(System.Single,System.Single,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.AddRectangle(float, float, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.AddRectangle(float, float, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#LineTo(System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.LineTo(float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.LineTo(float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#MoveTo(System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.MoveTo(float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IGraphicsPath.MoveTo(float, float)'</Item>
-               <Item>'y'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -2872,25 +2017,11 @@
           <Members>
            <Member Name="#Create(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single)">
             <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'IMatrixHandler.Create(float, float, float, float, float, float)'</Item>
-               <Item>x</Item>
-               <Item>'x0'</Item>
-              </Issue>
-             </Message>
              <Message Id="xy" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberParameter">
                <Item>'IMatrixHandler.Create(float, float, float, float, float, float)'</Item>
                <Item>xy</Item>
                <Item>'xy'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'IMatrixHandler.Create(float, float, float, float, float, float)'</Item>
-               <Item>y</Item>
-               <Item>'y0'</Item>
               </Issue>
              </Message>
              <Message Id="yx" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
@@ -2938,73 +2069,15 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="LinearGradientBrush">
-          <Members>
-           <Member Name="#.ctor(Eto.Drawing.Color,Eto.Drawing.Color,Eto.Drawing.PointF,Eto.Drawing.PointF,Eto.Generator)">
-            <Messages>
-             <Message TypeName="DoNotCallOverridableMethodsInConstructors" Category="Microsoft.Usage" CheckId="CA2214" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'LinearGradientBrush.LinearGradientBrush(Color, Color, PointF, PointF, Generator)'</Item>
-               <Item>&#xD;&#xA;&#xD;&#xA;LinearGradientBrush..ctor(Color, Color, PointF, PointF, Generator)&#xD;&#xA;Brush.set_ControlObject(Object):Void</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#.ctor(Eto.Drawing.ILinearGradientBrush,System.Object)">
-            <Messages>
-             <Message TypeName="DoNotCallOverridableMethodsInConstructors" Category="Microsoft.Usage" CheckId="CA2214" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'LinearGradientBrush.LinearGradientBrush(ILinearGradientBrush, object)'</Item>
-               <Item>&#xD;&#xA;&#xD;&#xA;LinearGradientBrush..ctor(ILinearGradientBrush, Object)&#xD;&#xA;Brush.set_ControlObject(Object):Void</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#.ctor(Eto.Drawing.RectangleF,Eto.Drawing.Color,Eto.Drawing.Color,System.Single,Eto.Generator)">
-            <Messages>
-             <Message TypeName="DoNotCallOverridableMethodsInConstructors" Category="Microsoft.Usage" CheckId="CA2214" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'LinearGradientBrush.LinearGradientBrush(RectangleF, Color, Color, float, Generator)'</Item>
-               <Item>&#xD;&#xA;&#xD;&#xA;LinearGradientBrush..ctor(RectangleF, Color, Color, Single, Generator)&#xD;&#xA;Brush.set_ControlObject(Object):Void</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Instantiator(Eto.Generator)">
-            <Messages>
-             <Message Id="Instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Instantiator</Item>
-               <Item>'LinearGradientBrush.Instantiator(Generator)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
          <Type Name="Matrix">
           <Members>
            <Member Name="#Create(System.Single,System.Single,System.Single,System.Single,System.Single,System.Single,Eto.Generator)">
             <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'Matrix.Create(float, float, float, float, float, float, Generator)'</Item>
-               <Item>x</Item>
-               <Item>'x0'</Item>
-              </Issue>
-             </Message>
              <Message Id="xy" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
               <Issue Name="MemberParameter">
                <Item>'Matrix.Create(float, float, float, float, float, float, Generator)'</Item>
                <Item>xy</Item>
                <Item>'xy'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'Matrix.Create(float, float, float, float, float, float, Generator)'</Item>
-               <Item>y</Item>
-               <Item>'y0'</Item>
               </Issue>
              </Message>
              <Message Id="yx" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
@@ -3019,26 +2092,6 @@
                <Item>'Matrix.Create(float, float, float, float, float, float, Generator)'</Item>
                <Item>yy</Item>
                <Item>'yy'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Instantiator(Eto.Generator)">
-            <Messages>
-             <Message Id="Instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Instantiator</Item>
-               <Item>'Matrix.Instantiator(Generator)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#InstantiatorWithElements(Eto.Generator)">
-            <Messages>
-             <Message Id="Instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Instantiator</Item>
-               <Item>'Matrix.InstantiatorWithElements(Generator)'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -3099,16 +2152,16 @@
           <Members>
            <Member Name="#EGAColors">
             <Messages>
-             <Message TypeName="ArrayFieldsShouldNotBeReadOnly" Category="Microsoft.Security" CheckId="CA2105" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'Palette.EGAColors'</Item>
-              </Issue>
-             </Message>
              <Message Id="EGA" TypeName="IdentifiersShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1709" Created="2013-09-27 17:39:30Z">
               <Issue Name="Member">
                <Item>EGA</Item>
                <Item>'Palette.EGAColors'</Item>
                <Item>Ega</Item>
+              </Issue>
+             </Message>
+             <Message TypeName="PropertiesShouldNotReturnArrays" Category="Microsoft.Performance" CheckId="CA1819" Created="2013-10-31 16:12:45Z">
+              <Issue>
+               <Item>'Palette.EGAColors'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -3151,12 +2204,6 @@
            </Member>
            <Member Name="#GetEgaPalette()">
             <Messages>
-             <Message Id="Ega" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Ega</Item>
-               <Item>'Palette.GetEgaPalette()'</Item>
-              </Issue>
-             </Message>
              <Message TypeName="UsePropertiesWhereAppropriate" Category="Microsoft.Design" CheckId="CA1024" Created="2013-09-27 17:39:30Z">
               <Issue Certainty="50">
                <Item>'Palette.GetEgaPalette()'</Item>
@@ -3171,25 +2218,6 @@
                <Item>RGB</Item>
                <Item>'Palette.GetRGBColor(int)'</Item>
                <Item>Rgb</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="Pen">
-          <Members>
-           <Member Name="#Instantiator(Eto.Generator)">
-            <Messages>
-             <Message Id="Instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Instantiator</Item>
-               <Item>'Pen.Instantiator(Generator)'</Item>
-              </Issue>
-             </Message>
-             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Created="2013-09-27 17:39:30Z" FixCategory="DependsOnFix">
-              <Issue>
-               <Item>'Pen.Instantiator(Generator)'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -3213,39 +2241,18 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#FireBrick(Eto.Generator)">
-            <Messages>
-             <Message Id="FireBrick" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Status="Excluded" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberShouldBeDiscreteTerm">
-               <Item>FireBrick</Item>
-               <Item>'Pens.FireBrick(Generator)'</Item>
-               <Item>Firebrick</Item>
-              </Issue>
-              <Notes>
-               <User Name="curtis">
-                <Note Id="5" />
-               </User>
-              </Notes>
-             </Message>
-             <Message TypeName="UseEventsWhereAppropriate" Category="Microsoft.Design" CheckId="CA1030" Status="Excluded" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'Pens.FireBrick(Generator)'</Item>
-              </Issue>
-              <Notes>
-               <User Name="curtis">
-                <Note Id="0" />
-               </User>
-              </Notes>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Gainsboro(Eto.Generator)">
             <Messages>
-             <Message Id="Gainsboro" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
+             <Message Id="Gainsboro" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Status="Excluded" Created="2013-09-27 17:39:30Z">
               <Issue Name="Member">
                <Item>Gainsboro</Item>
                <Item>'Pens.Gainsboro(Generator)'</Item>
               </Issue>
+              <Notes>
+               <User Name="curtis">
+                <Note Id="9" />
+               </User>
+              </Notes>
              </Message>
             </Messages>
            </Member>
@@ -3260,12 +2267,6 @@
                <Item>bpp</Item>
                <Item>'PixelFormat.Format24bppRgb'</Item>
                <Item>Bpp</Item>
-              </Issue>
-             </Message>
-             <Message Id="Rgb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Rgb</Item>
-               <Item>'PixelFormat.Format24bppRgb'</Item>
               </Issue>
              </Message>
              <Message Id="bpp" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
@@ -3283,12 +2284,6 @@
                <Item>bpp</Item>
                <Item>'PixelFormat.Format32bppRgb'</Item>
                <Item>Bpp</Item>
-              </Issue>
-             </Message>
-             <Message Id="Rgb" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Rgb</Item>
-               <Item>'PixelFormat.Format32bppRgb'</Item>
               </Issue>
              </Message>
              <Message Id="bpp" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
@@ -3515,22 +2510,6 @@
          </Type>
          <Type Name="PointF">
           <Members>
-           <Member Name="#.ctor(System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PointF.PointF(float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PointF.PointF(float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Offset(Eto.Drawing.PointF)">
             <Messages>
              <Message Id="0#" TypeName="ParameterNamesShouldNotMatchMemberNames" Category="Microsoft.Naming" CheckId="CA1719" Created="2013-09-27 17:39:30Z">
@@ -3545,38 +2524,6 @@
              <Message Id="1#" TypeName="ParameterNamesShouldNotMatchMemberNames" Category="Microsoft.Naming" CheckId="CA1719" Created="2013-09-27 17:39:30Z">
               <Issue>
                <Item>'offset'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Offset(Eto.Drawing.PointF,System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PointF.Offset(PointF, float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PointF.Offset(PointF, float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Offset(System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PointF.Offset(float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PointF.Offset(float, float)'</Item>
-               <Item>'y'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -3677,24 +2624,6 @@
               <Issue>
                <Item>Negate</Item>
                <Item>'PointF.operator -(PointF)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#X">
-            <Messages>
-             <Message Id="X" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberMoreMeaningfulName">
-               <Item>'PointF.X'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Y">
-            <Messages>
-             <Message Id="Y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberMoreMeaningfulName">
-               <Item>'PointF.Y'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -4105,22 +3034,6 @@
          </Type>
          <Type Name="Size">
           <Members>
-           <Member Name="#Contains(System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'Size.Contains(int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'Size.Contains(int, int)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#op_Addition(Eto.Drawing.Size,Eto.Drawing.Point)">
             <Messages>
              <Message TypeName="OperatorOverloadsHaveNamedAlternates" Category="Microsoft.Usage" CheckId="CA2225" Created="2013-09-27 17:39:30Z">
@@ -4255,22 +3168,6 @@
          </Type>
          <Type Name="SizeF">
           <Members>
-           <Member Name="#Contains(System.Single,System.Single)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'SizeF.Contains(float, float)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'SizeF.Contains(float, float)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#op_Addition(Eto.Drawing.SizeF,Eto.Drawing.SizeF)">
             <Messages>
              <Message TypeName="OperatorOverloadsHaveNamedAlternates" Category="Microsoft.Usage" CheckId="CA2225" Created="2013-09-27 17:39:30Z">
@@ -4367,44 +3264,6 @@
               <Issue>
                <Item>Negate</Item>
                <Item>'SizeF.operator -(SizeF)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="SolidBrush">
-          <Members>
-           <Member Name="#Instantiator(Eto.Generator)">
-            <Messages>
-             <Message Id="Instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Instantiator</Item>
-               <Item>'SolidBrush.Instantiator(Generator)'</Item>
-              </Issue>
-             </Message>
-             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Created="2013-09-27 17:39:30Z" FixCategory="DependsOnFix">
-              <Issue>
-               <Item>'SolidBrush.Instantiator(Generator)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="TextureBrush">
-          <Members>
-           <Member Name="#Instantiator(Eto.Generator)">
-            <Messages>
-             <Message Id="Instantiator" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Member">
-               <Item>Instantiator</Item>
-               <Item>'TextureBrush.Instantiator(Generator)'</Item>
-              </Issue>
-             </Message>
-             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Created="2013-09-27 17:39:30Z" FixCategory="DependsOnFix">
-              <Issue>
-               <Item>'TextureBrush.Instantiator(Generator)'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -4933,15 +3792,6 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#RemoveParent(Eto.Forms.Control,System.Boolean)">
-            <Messages>
-             <Message TypeName="MarkMembersAsStatic" Category="Microsoft.Performance" CheckId="CA1822" Created="2013-10-24 18:42:12Z" FixCategory="DependsOnFix">
-              <Issue>
-               <Item>'Container.RemoveParent(Control, bool)'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
           </Members>
          </Type>
          <Type Name="ContextMenu">
@@ -5030,20 +3880,6 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="DataStoreCollection`1">
-          <Members>
-           <Member Name="#.ctor(System.Collections.Generic.IEnumerable`1&lt;!0&gt;)">
-            <Messages>
-             <Message TypeName="DoNotCallOverridableMethodsInConstructors" Category="Microsoft.Usage" CheckId="CA2214" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'DataStoreCollection&lt;T&gt;.DataStoreCollection(IEnumerable&lt;T&gt;)'</Item>
-               <Item>&#xD;&#xA;&#xD;&#xA;DataStoreCollection&lt;T&gt;..ctor(IEnumerable&lt;T&gt;)&#xD;&#xA;DataStoreCollection&lt;T&gt;.AddRange(IEnumerable&lt;T&gt;):Void&#xD;&#xA;Collection&lt;T&gt;.get_Items():IList&lt;T&gt;&#xD;&#xA;ObservableCollection&lt;T&gt;.OnCollectionChanged(NotifyCollectionChangedEventArgs):Void</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
          <Type Name="DateTimePicker">
           <Members>
            <Member Name="#DefaultMode">
@@ -5103,25 +3939,7 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="Drawable">
-          <Messages>
-           <Message Id="Drawable" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Drawable</Item>
-             <Item>'Drawable'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
          <Type Name="DrawableCell">
-          <Messages>
-           <Message Id="Drawable" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Drawable</Item>
-             <Item>'DrawableCell'</Item>
-            </Issue>
-           </Message>
-          </Messages>
           <Members>
            <Member Name="#.ctor(Eto.Generator)">
             <Messages>
@@ -5135,333 +3953,26 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="DrawableCellPaintArgs">
-          <Messages>
-           <Message Id="Drawable" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Drawable</Item>
-             <Item>'DrawableCellPaintArgs'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
-         <Type Name="DrawableCellState">
-          <Messages>
-           <Message Id="Drawable" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Drawable</Item>
-             <Item>'DrawableCellState'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
          <Type Name="DynamicItem">
           <Members>
-           <Member Name="#Generate(Eto.Forms.DynamicLayout,Eto.Forms.TableLayout,System.Int32,System.Int32)">
+           <Member Name="#XScale">
             <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'DynamicItem.Generate(DynamicLayout, TableLayout, int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'DynamicItem.Generate(DynamicLayout, TableLayout, int, int)'</Item>
-               <Item>'y'</Item>
+             <Message Id="XScale" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Created="2013-10-31 16:12:45Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>XScale</Item>
+               <Item>'DynamicItem.XScale'</Item>
+               <Item>Xscale</Item>
               </Issue>
              </Message>
             </Messages>
            </Member>
-          </Members>
-         </Type>
-         <Type Name="DynamicLayout">
-          <Members>
-           <Member Name="#Add(Eto.Forms.Control,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
+           <Member Name="#YScale">
             <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.Add(Control, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.Add(Control, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddAutoSized(Eto.Forms.Control,System.Nullable`1&lt;Eto.Drawing.Padding&gt;,System.Nullable`1&lt;Eto.Drawing.Size&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Boolean)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddAutoSized(Control, Padding?, Size?, bool?, bool?, bool)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddAutoSized(Control, Padding?, Size?, bool?, bool?, bool)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddCentered(Eto.Forms.Control,Eto.Drawing.Padding,System.Nullable`1&lt;Eto.Drawing.Size&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, Padding, Size?, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, Padding, Size?, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddCentered(Eto.Forms.Control,Eto.Drawing.Size,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, Size, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, Size, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddCentered(Eto.Forms.Control,System.Nullable`1&lt;Eto.Drawing.Padding&gt;,System.Nullable`1&lt;Eto.Drawing.Size&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Boolean,System.Boolean)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, Padding?, Size?, bool?, bool?, bool, bool)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, Padding?, Size?, bool?, bool?, bool, bool)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddCentered(Eto.Forms.Control,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddCentered(Control, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#AddSeparateRow(System.Nullable`1&lt;Eto.Drawing.Padding&gt;,System.Nullable`1&lt;Eto.Drawing.Size&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Collections.Generic.IEnumerable`1&lt;Eto.Forms.Control&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-10-24 18:42:12Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddSeparateRow(Padding?, Size?, bool?, bool?, IEnumerable&lt;Control&gt;)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-10-24 18:42:12Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.AddSeparateRow(Padding?, Size?, bool?, bool?, IEnumerable&lt;Control&gt;)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#BeginHorizontal(System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.BeginHorizontal(bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#BeginVertical(Eto.Drawing.Size,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.BeginVertical(Size, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.BeginVertical(Size, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#BeginVertical(System.Boolean,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.BeginVertical(bool, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.BeginVertical(bool, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#BeginVertical(System.Nullable`1&lt;Eto.Drawing.Padding&gt;,System.Nullable`1&lt;Eto.Drawing.Size&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.BeginVertical(Padding?, Size?, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.BeginVertical(Padding?, Size?, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#EndBeginHorizontal(System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.EndBeginHorizontal(bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#EndBeginVertical(System.Nullable`1&lt;Eto.Drawing.Padding&gt;,System.Nullable`1&lt;Eto.Drawing.Size&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.EndBeginVertical(Padding?, Size?, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicLayout.EndBeginVertical(Padding?, Size?, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Rows">
-            <Messages>
-             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'List&lt;DynamicRow&gt;'</Item>
-               <Item>'DynamicLayout.Rows'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="DynamicLayout+AlreadyGeneratedException">
-          <Messages>
-           <Message TypeName="NestedTypesShouldNotBeVisible" Category="Microsoft.Design" CheckId="CA1034" Created="2013-09-27 17:39:30Z">
-            <Issue>
-             <Item>'DynamicLayout.AlreadyGeneratedException'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
-         <Type Name="DynamicRow">
-          <Members>
-           <Member Name="#.ctor(System.Collections.Generic.IEnumerable`1&lt;Eto.Forms.Control&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicRow.DynamicRow(IEnumerable&lt;Control&gt;, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicRow.DynamicRow(IEnumerable&lt;Control&gt;, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Add(System.Collections.Generic.IEnumerable`1&lt;Eto.Forms.Control&gt;,System.Nullable`1&lt;System.Boolean&gt;,System.Nullable`1&lt;System.Boolean&gt;)">
-            <Messages>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicRow.Add(IEnumerable&lt;Control&gt;, bool?, bool?)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'DynamicRow.Add(IEnumerable&lt;Control&gt;, bool?, bool?)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Items">
-            <Messages>
-             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'List&lt;DynamicItem&gt;'</Item>
-               <Item>'DynamicRow.Items'</Item>
+             <Message Id="YScale" TypeName="CompoundWordsShouldBeCasedCorrectly" Category="Microsoft.Naming" CheckId="CA1702" Created="2013-10-31 16:12:45Z">
+              <Issue Name="MemberShouldBeDiscreteTerm">
+               <Item>YScale</Item>
+               <Item>'DynamicItem.YScale'</Item>
+               <Item>Yscale</Item>
               </Issue>
              </Message>
             </Messages>
@@ -5470,16 +3981,6 @@
          </Type>
          <Type Name="DynamicTable">
           <Members>
-           <Member Name="#Rows">
-            <Messages>
-             <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'List&lt;DynamicRow&gt;'</Item>
-               <Item>'DynamicTable.Rows'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#System.ComponentModel.ISupportInitialize.BeginInit()">
             <Messages>
              <Message TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033" Created="2013-09-27 17:39:30Z">
@@ -5569,14 +4070,6 @@
           </Members>
          </Type>
          <Type Name="GenerateActionArgs">
-          <Messages>
-           <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Created="2013-10-24 18:42:12Z">
-            <Issue>
-             <Item>'GenerateActionArgs'</Item>
-             <Item>EventArgs</Item>
-            </Issue>
-           </Message>
-          </Messages>
           <Members>
            <Member Name="#.ctor(Eto.Forms.ActionCollection,Eto.Forms.ActionItemCollection,Eto.Forms.ActionItemCollection)">
             <Messages>
@@ -5674,16 +4167,6 @@
             </Messages>
            </Member>
           </Members>
-         </Type>
-         <Type Name="GridViewCellArgs">
-          <Messages>
-           <Message TypeName="IdentifiersShouldHaveCorrectSuffix" Category="Microsoft.Naming" CheckId="CA1710" Created="2013-10-24 18:42:12Z">
-            <Issue>
-             <Item>'GridViewCellArgs'</Item>
-             <Item>EventArgs</Item>
-            </Issue>
-           </Message>
-          </Messages>
          </Type>
          <Type Name="GroupBox">
           <Members>
@@ -5786,26 +4269,10 @@
            </Message>
           </Messages>
          </Type>
-         <Type Name="IDrawable">
-          <Messages>
-           <Message Id="Drawable" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Drawable</Item>
-             <Item>'IDrawable'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
          <Type Name="IDrawableCell">
           <Messages>
            <Message TypeName="AvoidEmptyInterfaces" Category="Microsoft.Design" CheckId="CA1040" Created="2013-09-27 17:39:30Z">
             <Issue>
-             <Item>'IDrawableCell'</Item>
-            </Issue>
-           </Message>
-           <Message Id="Drawable" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Drawable</Item>
              <Item>'IDrawableCell'</Item>
             </Issue>
            </Message>
@@ -5967,42 +4434,6 @@
               <Issue Name="Member">
                <Item>'IPasswordBox.ReadOnly'</Item>
                <Item>ReadOnly</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-          </Members>
-         </Type>
-         <Type Name="IPositionalLayout">
-          <Members>
-           <Member Name="#Add(Eto.Forms.Control,System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IPositionalLayout.Add(Control, int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IPositionalLayout.Add(Control, int, int)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Move(Eto.Forms.Control,System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IPositionalLayout.Move(Control, int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'IPositionalLayout.Move(Control, int, int)'</Item>
-               <Item>'y'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -6739,22 +5170,6 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#Add(Eto.Forms.Control,System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PixelLayout.Add(Control, int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PixelLayout.Add(Control, int, int)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Contents">
             <Messages>
              <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Created="2013-09-27 17:39:30Z">
@@ -6771,22 +5186,6 @@
               <Issue Name="MemberParameterMoreMeaningfulName">
                <Item>'PixelLayout.Move(Control, Point)'</Item>
                <Item>'p'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Move(Eto.Forms.Control,System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PixelLayout.Move(Control, int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'PixelLayout.Move(Control, int, int)'</Item>
-               <Item>'y'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -7039,52 +5438,6 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#Add(Eto.Forms.Control,System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'TableLayout.Add(Control, int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'TableLayout.Add(Control, int, int)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Add(Eto.Forms.Control,System.Int32,System.Int32,System.Boolean,System.Boolean)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'TableLayout.Add(Control, int, int, bool, bool)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="xscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'TableLayout.Add(Control, int, int, bool, bool)'</Item>
-               <Item>xscale</Item>
-               <Item>'xscale'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'TableLayout.Add(Control, int, int, bool, bool)'</Item>
-               <Item>'y'</Item>
-              </Issue>
-             </Message>
-             <Message Id="yscale" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameter">
-               <Item>'TableLayout.Add(Control, int, int, bool, bool)'</Item>
-               <Item>yscale</Item>
-               <Item>'yscale'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#CellSize">
             <Accessors>
              <Accessor Name="#set_CellSize(Eto.Drawing.Size)">
@@ -7157,22 +5510,6 @@
               <Issue Name="MemberParameterMoreMeaningfulName">
                <Item>'TableLayout.Move(Control, Point)'</Item>
                <Item>'p'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#Move(Eto.Forms.Control,System.Int32,System.Int32)">
-            <Messages>
-             <Message Id="x" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'TableLayout.Move(Control, int, int)'</Item>
-               <Item>'x'</Item>
-              </Issue>
-             </Message>
-             <Message Id="y" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-              <Issue Name="MemberParameterMoreMeaningfulName">
-               <Item>'TableLayout.Move(Control, int, int)'</Item>
-               <Item>'y'</Item>
               </Issue>
              </Message>
             </Messages>
@@ -7383,24 +5720,6 @@
              </Message>
             </Messages>
            </Member>
-           <Member Name="#AfterLabelEdit" Kind="Event">
-            <Messages>
-             <Message TypeName="EventsShouldNotHaveBeforeOrAfterPrefix" Category="Microsoft.Naming" CheckId="CA1713" Created="2013-09-27 17:39:30Z">
-              <Issue Name="After">
-               <Item>'TreeView.AfterLabelEdit'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
-           <Member Name="#BeforeLabelEdit" Kind="Event">
-            <Messages>
-             <Message TypeName="EventsShouldNotHaveBeforeOrAfterPrefix" Category="Microsoft.Naming" CheckId="CA1713" Created="2013-09-27 17:39:30Z">
-              <Issue Name="Before">
-               <Item>'TreeView.BeforeLabelEdit'</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
           </Members>
          </Type>
          <Type Name="UITimer">
@@ -7496,12 +5815,6 @@
         <Types>
          <Type Name="EtoDirectoryInfo">
           <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoDirectoryInfo'</Item>
-            </Issue>
-           </Message>
            <Message TypeName="OverrideMethodsOnComparableTypes" Category="Microsoft.Design" CheckId="CA1036" Created="2013-09-27 17:39:30Z">
             <Issue Name="Operator">
              <Item>'EtoDirectoryInfo'</Item>
@@ -7572,24 +5885,8 @@
            </Member>
           </Members>
          </Type>
-         <Type Name="EtoDriveInfo">
-          <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoDriveInfo'</Item>
-            </Issue>
-           </Message>
-          </Messages>
-         </Type>
          <Type Name="EtoFileInfo">
           <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoFileInfo'</Item>
-            </Issue>
-           </Message>
            <Message TypeName="OverrideMethodsOnComparableTypes" Category="Microsoft.Design" CheckId="CA1036" Created="2013-09-27 17:39:30Z">
             <Issue Name="Operator">
              <Item>'EtoFileInfo'</Item>
@@ -7613,16 +5910,6 @@
             </Messages>
            </Member>
           </Members>
-         </Type>
-         <Type Name="EtoSystemObjectInfo">
-          <Messages>
-           <Message Id="Eto" TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704" Created="2013-09-27 17:39:30Z">
-            <Issue Name="Type">
-             <Item>Eto</Item>
-             <Item>'EtoSystemObjectInfo'</Item>
-            </Issue>
-           </Message>
-          </Messages>
          </Type>
          <Type Name="SystemIcons">
           <Members>
@@ -7654,16 +5941,6 @@
          </Type>
          <Type Name="VirtualDirectoryInfo">
           <Members>
-           <Member Name="#.ctor(System.IO.Stream)">
-            <Messages>
-             <Message TypeName="DoNotCallOverridableMethodsInConstructors" Category="Microsoft.Usage" CheckId="CA2214" Created="2013-09-27 17:39:30Z">
-              <Issue>
-               <Item>'VirtualDirectoryInfo.VirtualDirectoryInfo(Stream)'</Item>
-               <Item>&#xD;&#xA;&#xD;&#xA;VirtualDirectoryInfo..ctor(Stream)&#xD;&#xA;VirtualDirectoryInfo.ReadStream(Stream):Void&#xD;&#xA;VirtualDirectoryInfo.ReadEntries(Stream):IEnumerable&lt;VirtualFileEntry&gt;</Item>
-              </Issue>
-             </Message>
-            </Messages>
-           </Member>
            <Member Name="#Files">
             <Messages>
              <Message TypeName="DoNotExposeGenericLists" Category="Microsoft.Design" CheckId="CA1002" Created="2013-09-27 17:39:30Z">
@@ -7709,20 +5986,17 @@
   </Targets>
   <Notes>
    <User Name="curtis">
-    <Note Id="0" Modified="2013-09-28 03:31:07Z">Name of colours</Note>
     <Note Id="1" Modified="2013-09-28 03:49:51Z">Now obsolete</Note>
     <Note Id="2" Modified="2013-09-28 03:52:00Z">Names of a color</Note>
     <Note Id="3" Modified="2013-09-28 04:05:21Z">Obsoleted</Note>
     <Note Id="4" Modified="2013-09-28 04:19:23Z">Obsoleted</Note>
-    <Note Id="5" Modified="2013-09-28 04:26:04Z">Name of the color</Note>
     <Note Id="6" Modified="2013-10-24 18:44:01Z">Color name</Note>
     <Note Id="7" Modified="2013-10-24 18:44:08Z">Name of font</Note>
+    <Note Id="8" Modified="2013-10-31 16:13:56Z">FontFamily is mutable</Note>
+    <Note Id="9" Modified="2013-10-31 17:05:57Z">Name of color</Note>
    </User>
   </Notes>
   <Rules>
-   <Rule TypeName="ArrayFieldsShouldNotBeReadOnly" Category="Microsoft.Security" CheckId="CA2105">
-    <Resolution Name="Default">Either replace {0} with a strongly typed collection that cannot be changed, or replace the public field with a method that returns a clone of a private array.</Resolution>
-   </Rule>
    <Rule TypeName="AssembliesShouldHaveValidStrongNames" Category="Microsoft.Design" CheckId="CA2210">
     <Resolution Name="NoStrongName">Sign {0} with a strong name key.</Resolution>
    </Rule>
@@ -7755,9 +6029,6 @@
    <Rule TypeName="DoNotCallOverridableMethodsInConstructors" Category="Microsoft.Usage" CheckId="CA2214">
     <Resolution Name="Default">{0} contains a call chain that results in a call to a virtual method defined by the class. Review the following call stack for unintended consequences: {1}</Resolution>
    </Rule>
-   <Rule TypeName="DoNotCastUnnecessarily" Category="Microsoft.Performance" CheckId="CA1800">
-    <Resolution Name="Parameter">{0}, a parameter, is cast to type {1} multiple times in method {2}. Cache the result of the 'as' operator or direct cast in order to eliminate the redundant {3} instruction.</Resolution>
-   </Rule>
    <Rule TypeName="DoNotCatchGeneralExceptionTypes" Category="Microsoft.Design" CheckId="CA1031">
     <Resolution Name="Default">Modify {0} to catch a more specific exception than {1} or rethrow the exception.</Resolution>
    </Rule>
@@ -7788,10 +6059,6 @@
    <Rule TypeName="EnumsShouldHaveZeroValue" Category="Microsoft.Design" CheckId="CA1008">
     <Resolution Name="FlagsMultipleZeros">Remove all members that have the value zero from {0} except for one member that is named 'None'.</Resolution>
    </Rule>
-   <Rule TypeName="EventsShouldNotHaveBeforeOrAfterPrefix" Category="Microsoft.Naming" CheckId="CA1713">
-    <Resolution Name="After">Replace {0} with a past tense version of the event name.</Resolution>
-    <Resolution Name="Before">Replace {0} with a present tense version of the event name.</Resolution>
-   </Rule>
    <Rule TypeName="FlagsEnumsShouldHavePluralNames" Category="Microsoft.Naming" CheckId="CA1714">
     <Resolution Name="Default">If enumeration name {0} is singular, change it to a plural form.</Resolution>
    </Rule>
@@ -7806,14 +6073,11 @@
     <Resolution Name="Type">Correct the casing of '{0}' in type name {1} by changing it to '{2}'.</Resolution>
    </Rule>
    <Rule TypeName="IdentifiersShouldBeSpelledCorrectly" Category="Microsoft.Naming" CheckId="CA1704">
-    <Resolution Name="Assembly">Correct the spelling of '{0}' in assembly name {1}.</Resolution>
     <Resolution Name="Member">Correct the spelling of '{0}' in member name {1} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
     <Resolution Name="MemberMoreMeaningfulName">Consider providing a more meaningful name than member name {0}.</Resolution>
     <Resolution Name="MemberParameter">In method {0}, correct the spelling of '{1}' in parameter name {2} or remove it entirely if it represents any sort of Hungarian notation.</Resolution>
     <Resolution Name="MemberParameterMoreMeaningfulName">In method {0}, consider providing a more meaningful name than parameter name {1}.</Resolution>
     <Resolution Name="MethodTypeParameterMoreMeaningfulName">On method {0}, consider providing a more meaningful name than generic type parameter name {1}.</Resolution>
-    <Resolution Name="Namespace">Correct the spelling of '{0}' in namespace name '{1}'.</Resolution>
-    <Resolution Name="Type">Correct the spelling of '{0}' in type name {1}.</Resolution>
     <Resolution Name="TypeTypeParameterMoreMeaningfulName">On type {0}, consider providing a more meaningful name than generic type parameter name {1}.</Resolution>
    </Rule>
    <Rule TypeName="IdentifiersShouldDifferByMoreThanCase" Category="Microsoft.Naming" CheckId="CA1708">
@@ -7836,21 +6100,8 @@
     <Resolution Name="Member">Rename virtual/interface member {0} so that it no longer conflicts with the reserved language keyword '{1}'. Using a reserved keyword as the name of a virtual/interface member makes it harder for consumers in other languages to override/implement the member.</Resolution>
     <Resolution Name="MemberParameter">In virtual/interface member {0}, rename parameter {1} so that it no longer conflicts with the reserved language keyword '{2}'. Using a reserved keyword as the name of a parameter on a virtual/interface member makes it harder for consumers in other languages to override/implement the member.</Resolution>
    </Rule>
-   <Rule TypeName="ImplementIDisposableCorrectly" Category="Microsoft.Design" CheckId="CA1063">
-    <Resolution Name="DisposeImplementation">Modify {0} so that it calls Dispose(true), then calls GC.SuppressFinalize on the current object instance ('this' or 'Me' in Visual Basic), and then returns.</Resolution>
-    <Resolution Name="ProvideDisposeBool">Provide an overridable implementation of Dispose(bool) on {0} or mark the type as sealed. A call to Dispose(false) should only clean up native resources. A call to Dispose(true) should clean up both managed and native resources.</Resolution>
-   </Rule>
-   <Rule TypeName="InitializeReferenceTypeStaticFieldsInline" Category="Microsoft.Performance" CheckId="CA1810">
-    <Resolution Name="Default">Initialize all static fields in {0} when those fields are declared and remove the explicit static constructor.</Resolution>
-   </Rule>
    <Rule TypeName="InterfaceMethodsShouldBeCallableByChildTypes" Category="Microsoft.Design" CheckId="CA1033">
     <Resolution Name="Default">Make {0} sealed (a breaking change if this class has previously shipped), implement the method non-explicitly, or implement a new method that exposes the functionality of {1} and is visible to derived classes.</Resolution>
-   </Rule>
-   <Rule TypeName="MarkAssembliesWithClsCompliant" Category="Microsoft.Design" CheckId="CA1014">
-    <Resolution Name="Default">Mark {0} with CLSCompliant(true) because it exposes externally visible types.</Resolution>
-   </Rule>
-   <Rule TypeName="MarkAssembliesWithComVisible" Category="Microsoft.Design" CheckId="CA1017">
-    <Resolution Name="NoAttribute">Because {0} exposes externally visible types, mark it with ComVisible(false) at the assembly level and then mark all types within the assembly that should be exposed to COM clients with ComVisible(true).</Resolution>
    </Rule>
    <Rule TypeName="MarkISerializableTypesWithSerializable" Category="Microsoft.Usage" CheckId="CA2237">
     <Resolution Name="Default">Add [Serializable] to {0} as this type implements ISerializable.</Resolution>
@@ -7869,9 +6120,6 @@
    </Rule>
    <Rule TypeName="NonConstantFieldsShouldNotBeVisible" Category="Microsoft.Usage" CheckId="CA2211">
     <Resolution Name="Default">Consider making {0} non-public or a constant.</Resolution>
-   </Rule>
-   <Rule TypeName="NormalizeStringsToUppercase" Category="Microsoft.Globalization" CheckId="CA1308">
-    <Resolution Name="ToUpperInvariant">In method {0}, replace the call to {1} with String.ToUpperInvariant().</Resolution>
    </Rule>
    <Rule TypeName="OnlyFlagsEnumsShouldHavePluralNames" Category="Microsoft.Naming" CheckId="CA1717">
     <Resolution Name="Default">If the name {0} is plural, change it to its singular form.</Resolution>
@@ -7903,17 +6151,11 @@
     <Resolution Name="BaseType">The property name {0} is confusing given the existence of inherited method {1}. Rename or remove this property.</Resolution>
     <Resolution Name="SameType">The property name {0} is confusing given the existence of method {1}. Rename or remove one of these members.</Resolution>
    </Rule>
-   <Rule TypeName="SpecifyIFormatProvider" Category="Microsoft.Globalization" CheckId="CA1305">
-    <Resolution Name="IFormatProviderAlternateString">Because the behavior of {0} could vary based on the current user's locale settings, replace this call in {1} with a call to {2}. If the result of {2} will be displayed to the user, specify {3} as the 'IFormatProvider' parameter. Otherwise, if the result will be stored and accessed by software, such as when it is persisted to disk or to a database, specify {4}.</Resolution>
-   </Rule>
    <Rule TypeName="TypeNamesShouldNotMatchNamespaces" Category="Microsoft.Naming" CheckId="CA1724">
     <Resolution Name="System">The type name {0} conflicts in whole or in part with the namespace name '{1}' defined in the .NET Framework. Rename the type to eliminate the conflict.</Resolution>
    </Rule>
    <Rule TypeName="UriParametersShouldNotBeStrings" Category="Microsoft.Design" CheckId="CA1054">
     <Resolution Name="Default">Change the type of parameter {0} of method {1} from string to System.Uri, or provide an overload of {1}, that allows {0} to be passed as a System.Uri object.</Resolution>
-   </Rule>
-   <Rule TypeName="UseEventsWhereAppropriate" Category="Microsoft.Design" CheckId="CA1030">
-    <Resolution Name="Default">Consider making {0} an event.</Resolution>
    </Rule>
    <Rule TypeName="UseGenericEventHandlerInstances" Category="Microsoft.Design" CheckId="CA1003">
     <Resolution Name="Default">Remove {0} and replace its usage with EventHandler&lt;T&gt;</Resolution>

@@ -34,7 +34,7 @@ namespace Eto.Platform.Mac
 			public override NSToolbarItem WillInsertItem(NSToolbar toolbar, string itemIdentifier, bool willBeInserted)
 			{
 				var item = Handler.items.FirstOrDefault(r => r.Identifier == itemIdentifier);
-				return item != null ? item.Control : null;
+				return item == null ? null : item.Control;
 			}
 
 			public override string[] DefaultItemIdentifiers(NSToolbar toolbar)

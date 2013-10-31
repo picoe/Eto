@@ -82,7 +82,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		void SetStretch(Control panel)
+		static void SetStretch(Control panel)
 		{
 			if (panel != null)
 			{

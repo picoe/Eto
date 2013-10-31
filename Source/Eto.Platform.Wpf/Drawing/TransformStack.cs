@@ -51,7 +51,7 @@ namespace Eto.Platform.Wpf.Drawing
 		class StackEntry
 		{
 			readonly List<IMatrix> matrices = new List<IMatrix>();
-			public int popCount;
+			public int PopCount { get; set; }
 			public List<IMatrix> Matrices { get { return matrices; } }
 		}
 
@@ -82,7 +82,7 @@ namespace Eto.Platform.Wpf.Drawing
 			current = current ?? NewEntry ();
 			current.Matrices.Add (matrix);
 
-			current.popCount++;
+			current.PopCount++;
 			
 			// push the transform
 			push (matrix);
@@ -102,7 +102,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 			// Pop the drawing context
 			// popCount times
-			while (current.popCount-- > 0) {
+			while (current.PopCount-- > 0) {
 				// return a cloned matrix
 				// since the caller may dispose it.
 				pop ();

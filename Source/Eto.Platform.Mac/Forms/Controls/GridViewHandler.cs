@@ -51,10 +51,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var item = Handler.collection.Collection [row];
 				var colHandler = Handler.GetColumn (tableColumn);
-				if (colHandler != null) {
-					return colHandler.GetObjectValue (item);
-				}
-				return null;
+				return colHandler == null ? null : colHandler.GetObjectValue(item);
 			}
 
 			public override void SetObjectValue (NSTableView tableView, NSObject theObject, NSTableColumn tableColumn, int row)

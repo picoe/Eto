@@ -60,7 +60,7 @@ namespace Eto.IO
 
 		public override bool Equals (object obj)
 		{
-			return obj is EtoFileInfo && this == (EtoFileInfo)obj;
+			return this == obj as EtoFileInfo;
 		}
 		
 		public override int GetHashCode ()

@@ -79,7 +79,7 @@ namespace Eto.Drawing
 		public static Size? ReadChildSizeXml(this XmlElement element, string elementName)
 		{
 			var size = element.ReadChildXml<SizeSaver>(elementName);
-			return size != null ? (Size?)size.Size : null;
+			return size == null ? null : (Size?)size.Size;
 		}
 
 		class SizeSaver : IXmlReadable
@@ -109,7 +109,7 @@ namespace Eto.Drawing
 		public static Rectangle? ReadChildRectangleXml(this XmlElement element, string elementName)
 		{
 			var rect = element.ReadChildXml<RectSaver>(elementName);
-			return rect != null ? (Rectangle?)rect.Rectangle : null;
+			return rect == null ? null : (Rectangle?)rect.Rectangle;
 		}
 
 		class RectSaver : IXmlReadable
@@ -143,7 +143,7 @@ namespace Eto.Drawing
 		public static Point? ReadChildPointXml(this XmlElement element, string elementName)
 		{
 			var point = element.ReadChildXml<PointSaver>(elementName);
-			return point != null ? (Point?)point.Point : null;
+			return point == null ? null : (Point?)point.Point;
 		}
 
 		class PointSaver : IXmlReadable

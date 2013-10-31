@@ -10,8 +10,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class NumericUpDownHandler : MacView<NSView, NumericUpDown>, INumericUpDown
 	{
-		NSTextField text;
-		NSStepper stepper;
+		readonly NSTextField text;
+		readonly NSStepper stepper;
 		Font font;
 		Size? naturalSize;
 
@@ -185,17 +185,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(Widget.Generator, new FontHandler(text.Font));
-				return font;
+				return font ?? (font = new Font(Widget.Generator, new FontHandler(text.Font)));
 			}
 			set
 			{
 				font = value;
-				if (font != null)
-					text.Font = font.ControlObject as NSFont;
-				else
-					text.Font = null;
+				text.Font = font == null ? null : font.ControlObject as NSFont;
 				text.SizeToFit();
 				LayoutIfNeeded();
 			}

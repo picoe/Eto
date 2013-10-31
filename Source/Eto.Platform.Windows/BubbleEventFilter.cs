@@ -50,16 +50,13 @@ namespace Eto.Platform.Windows
 		static Control ToEto (swf.Control child)
 		{
 			var handler = child.Tag as IControl;
-			if (handler != null) {
-				return handler.Widget as Control;
-			}
-			return null;
+			return handler != null ? handler.Widget as Control : null;
 		}
 	}
 
 	public class BubbleEventFilter : swf.IMessageFilter
 	{
-		Dictionary<int, BubbleEvent> messages = new Dictionary<int, BubbleEvent> ();
+		readonly Dictionary<int, BubbleEvent> messages = new Dictionary<int, BubbleEvent> ();
 
 		public void AddBubbleEvents (Func<BubbleEventArgs, bool> handleEvent, params int[] messages)
 		{

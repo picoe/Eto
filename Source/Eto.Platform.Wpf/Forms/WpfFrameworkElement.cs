@@ -26,10 +26,8 @@ namespace Eto.Platform.Wpf.Forms
 			if (handler != null)
 				return handler;
 			var controlObject = control.ControlObject as Control;
-			if (controlObject != null)
-				return controlObject.GetWpfFrameworkElement();
+			return controlObject != null ? controlObject.GetWpfFrameworkElement() : null;
 
-			return null;
 		}
 
 		public static IWpfContainer GetWpfContainer(this Container control)
@@ -40,10 +38,8 @@ namespace Eto.Platform.Wpf.Forms
 			if (handler != null)
 				return handler;
 			var controlObject = control.ControlObject as Container;
-			if (controlObject != null)
-				return controlObject.GetWpfContainer();
+			return controlObject != null ? controlObject.GetWpfContainer() : null;
 
-			return null;
 		}
 
 		public static sw.FrameworkElement GetContainerControl(this Control control)
@@ -75,9 +71,9 @@ namespace Eto.Platform.Wpf.Forms
 		public static bool ShouldCaptureMouse;
 	}
 
-	public abstract class WpfFrameworkElement<T, W> : WidgetHandler<T, W>, IControl, IWpfFrameworkElement
-		where T : System.Windows.FrameworkElement
-		where W : Control
+	public abstract class WpfFrameworkElement<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWpfFrameworkElement
+		where TControl : System.Windows.FrameworkElement
+		where TWidget : Control
 	{
 		sw.Size preferredSize = new sw.Size(double.NaN, double.NaN);
 		Size? newSize;
@@ -168,10 +164,7 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				cursor = value;
-				if (cursor != null)
-					Control.Cursor = ((CursorHandler)cursor.Handler).Control;
-				else
-					Control.Cursor = null;
+				Control.Cursor = cursor != null ? ((CursorHandler)cursor.Handler).Control : null;
 			}
 		}
 

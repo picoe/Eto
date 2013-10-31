@@ -121,7 +121,7 @@ namespace Eto.Platform.iOS.Drawing
 			Control.AddCurveToPoint (control1.X, control1.Y, control2.X, control2.Y, end.X, end.Y);
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			if (path.IsEmpty)
 				return;
@@ -180,8 +180,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			Control.CloseSubpath ();
 			startFigure = true;
-			if (isFirstFigure)
-				firstFigureClosed = true;
+			firstFigureClosed |= isFirstFigure;
 			isFirstFigure = false;
 		}
 
@@ -198,7 +197,7 @@ namespace Eto.Platform.iOS.Drawing
 			isFirstFigure = false;
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension)
+		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			points = SplineHelper.SplineCurve (points, tension);
 			SplineHelper.Draw (points, ConnectTo, (c1, c2, end) => Control.AddCurveToPoint(c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y));

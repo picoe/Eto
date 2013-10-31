@@ -17,10 +17,15 @@ namespace Eto.Drawing
 	public class Palette : ObservableCollection<Color>, ICloneable
 	{
 		readonly List<uint> argb;
+		static readonly int[] egaColors = { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
+
 		/// <summary>
 		/// Gets the index of standard EGA colors from a 64-color palette
 		/// </summary>
-		public static readonly int[] EGAColors = { 0, 1, 2, 3, 4, 5, 20, 7, 56, 57, 58, 59, 60, 61, 62, 63 };
+		public static int[] EGAColors
+		{
+			get { return (int[])egaColors.Clone(); }
+		}
 
 		#region Obsolete
 

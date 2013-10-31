@@ -56,7 +56,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 						cairodashes = Array.ConvertAll (dashes, x => (double)x * Thickness);
 					}
 					else {
-						if (Thickness == 1)
+						if (Math.Abs(Thickness - 1) < 0.01f)
 							cairooffset += Thickness / 2;
 						cairodashes = new double[dashes.Length];
 						for (int i = 0; i < cairodashes.Length; i++) {

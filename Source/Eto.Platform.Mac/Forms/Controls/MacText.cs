@@ -5,9 +5,9 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public abstract class MacText<T, W> : MacControl<T, W>, ITextControl
-		where T: NSTextField
-		where W: TextControl
+	public abstract class MacText<TControl, TWidget> : MacControl<TControl, TWidget>, ITextControl
+		where TControl: NSTextField
+		where TWidget: TextControl
 	{
 		public override Color BackgroundColor
 		{

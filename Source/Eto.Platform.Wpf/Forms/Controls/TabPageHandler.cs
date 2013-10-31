@@ -45,10 +45,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				image = value;
-				if (image != null)
-					headerImage.Source = ((IWpfImage)image.Handler).GetImageClosestToSize(16);
-				else
-					headerImage.Source = null;
+				headerImage.Source = image != null ? ((IWpfImage)image.Handler).GetImageClosestToSize(16) : null;
 			}
 		}
 

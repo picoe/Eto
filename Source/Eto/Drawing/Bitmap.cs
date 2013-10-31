@@ -292,7 +292,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <remarks>
 		/// This locks the data to read and write to directly using unsafe pointers. After reading or updating
-		/// the data, you must call <see cref="BitmapData.Dispose"/> to unlock the data before using the bitmap.
+		/// the data, you must call <see cref="BitmapData.Dispose()"/> to unlock the data before using the bitmap.
 		/// e.g.:
 		/// 
 		/// <code>

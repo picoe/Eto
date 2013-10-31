@@ -138,7 +138,7 @@ namespace Eto.Platform.Wpf.Drawing
 			CurrentPoint = end;
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			if (path.IsEmpty)
 				return;
@@ -195,7 +195,7 @@ namespace Eto.Platform.Wpf.Drawing
 			figure = null;
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension)
+		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			points = SplineHelper.SplineCurve (points, tension);
 			var swpoints = (from p in points select p.ToWpf ()).ToArray();

@@ -8,16 +8,16 @@ namespace Eto.Test.Sections.Serialization.Xaml
 {
 	public class Test : Panel
 	{
-		protected CheckBox myCheckBox { get; set; }
-		protected TextArea myTextArea { get; set; }
+		protected CheckBox MyCheckBox { get; set; }
+		protected TextArea MyTextArea { get; set; }
 
 		public Test ()
 		{
 			// NOTE: Only works in MS.NET or Mono 2.11 at the moment
 			XamlReader.Load (this);
 			
-			myCheckBox.Checked = true;
-			myTextArea.Text = "This form was created via xaml!";
+			MyCheckBox.Checked = true;
+			MyTextArea.Text = "This form was created via xaml!";
 		}
 
 		protected void HandleButtonClick (object sender, EventArgs e)

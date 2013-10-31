@@ -61,9 +61,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 			public bool SetStart (PointF point)
 			{
-				if (First) {
-					First = false;
-				}
+				First = false;
 				if (ForceConnect) {
 					ConnectTo (point);
 					return false;
@@ -231,7 +229,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			isFirstFigure = false;
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			var handler = path.ToHandler ();
 			Add (exec => {
@@ -285,7 +283,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			isFirstFigure = false;
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension)
+		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			var pointArray = SplineHelper.SplineCurve (points, tension).ToArray ();
 			Add (exec => {

@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac.Drawing
 			get
 			{ 
 				var descriptors = NSFontManager.SharedFontManager.AvailableMembersOfFontFamily (MacName);
-				return descriptors.Select (r => new FontTypeface (Widget, new FontTypefaceHandler (this, r)));
+				return descriptors.Select (r => new FontTypeface (Widget, new FontTypefaceHandler (r)));
 			}
 		}
 
@@ -39,7 +39,7 @@ namespace Eto.Platform.Mac.Drawing
 			Name = MacName = familyName;
 			TraitMask = (NSFontTraitMask)int.MaxValue;
 
-			switch (familyName.ToLowerInvariant ()) {
+			switch (familyName.ToUpperInvariant()) {
 			case FontFamilies.MonospaceFamilyName:
 				MacName = "Courier New";
 				break;
@@ -68,7 +68,7 @@ namespace Eto.Platform.Mac.Drawing
 			var postScriptName = font.FontDescriptor.PostscriptName;
 			var faceHandler = Typefaces.Select (r => r.Handler).OfType<FontTypefaceHandler> ().FirstOrDefault (r => r.PostScriptName == postScriptName);
 			if (faceHandler == null)
-				faceHandler = new FontTypefaceHandler (this, font);
+				faceHandler = new FontTypefaceHandler (font);
 			return new FontTypeface (Widget, faceHandler);
 		}
 	}

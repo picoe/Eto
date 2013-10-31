@@ -1,5 +1,4 @@
 using System;
-using System.Linq;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;

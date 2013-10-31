@@ -4,9 +4,9 @@ using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfCommonDialog<T, W> : WidgetHandler<T, W>, ICommonDialog
-		where T : mw.CommonDialog
-		where W : CommonDialog
+	public abstract class WpfCommonDialog<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICommonDialog
+		where TControl : mw.CommonDialog
+		where TWidget : CommonDialog
 	{
 		public DialogResult ShowDialog (Window parent)
 		{

@@ -32,14 +32,14 @@ namespace Eto.IO
 		{
 			string extension = Path.GetExtension(fileName);
 			var type = FindVirtualDirectoryType(extension);
-			return type != null ? type.Create(new DiskFileInfo(fileName)) : null;
+			return type == null ? null : type.Create(new DiskFileInfo(fileName));
 		}
 
 		public static EtoDirectoryInfo CreateVirtualDirectory(string fileName, Stream stream)
 		{
 			string extension = Path.GetExtension(fileName);
 			var type = FindVirtualDirectoryType(extension);
-			return type != null ? type.Create(stream) : null;
+			return type == null ? null : type.Create(stream);
 		}
 		
 		public static IEnumerable<VirtualDirectoryType> VirtualDirectoryTypes
@@ -133,7 +133,7 @@ namespace Eto.IO
 		
 		public override bool Equals (object obj)
 		{
-			return obj is EtoDirectoryInfo && this == (EtoDirectoryInfo)obj;
+			return this == obj as EtoDirectoryInfo;
 		}
 
 		public static bool operator == (EtoDirectoryInfo dir1, EtoDirectoryInfo dir2)

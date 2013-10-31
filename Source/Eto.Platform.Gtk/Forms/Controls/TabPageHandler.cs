@@ -7,7 +7,7 @@ namespace Eto.Platform.GtkSharp
 	public class TabPageHandler : GtkDockContainer<Gtk.VBox, TabPage>, ITabPage
 	{
 		Gtk.Label label;
-		Gtk.HBox tab;
+		readonly Gtk.HBox tab;
 		Gtk.Image gtkimage;
 		Image image;
 		

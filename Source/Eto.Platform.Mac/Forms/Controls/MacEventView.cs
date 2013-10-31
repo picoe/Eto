@@ -62,7 +62,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Control Widget
 		{
-			get { return Handler != null ? Handler.Widget : null; }
+			get { return Handler == null ? null : Handler.Widget; }
 		}
 
 		public static bool KeyDown(Control control, NSEvent theEvent)

@@ -21,9 +21,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			return null;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case GridView.CellClickEvent:
 				Control.CellClick += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
@@ -32,7 +32,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent(handler);
+				base.AttachEvent(id);
 				break;
 			}
 		}

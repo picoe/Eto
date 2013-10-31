@@ -28,8 +28,7 @@ namespace Eto.Platform.Wpf.Forms
 			get { return Control.ResizeMode == sw.ResizeMode.CanResize || Control.ResizeMode == sw.ResizeMode.CanResizeWithGrip; }
 			set
 			{
-				if (value) Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
-				else Control.ResizeMode = sw.ResizeMode.NoResize;
+				Control.ResizeMode = value ? sw.ResizeMode.CanResizeWithGrip : sw.ResizeMode.NoResize;
 			}
 		}
 

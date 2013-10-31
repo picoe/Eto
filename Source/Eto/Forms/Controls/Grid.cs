@@ -5,32 +5,69 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Handler interface for <see cref="Grid"/>
+	/// </summary>
 	public interface IGrid : IControl
 	{
+		/// <summary>
+		/// Gets or sets a value indicating that the header should be shown
+		/// </summary>
+		/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>
 		bool ShowHeader { get; set; }
 
+		/// <summary>
+		/// Gets or sets the height for each row in the grid
+		/// </summary>
+		/// <value>The height of the row.</value>
 		int RowHeight { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the user can re-order columns
+		/// </summary>
+		/// <value><c>true</c> to allow column reordering; otherwise, <c>false</c>.</value>
 		bool AllowColumnReordering { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the user can select multiple rows
+		/// </summary>
+		/// <value><c>true</c> to allow multiple row selection; otherwise, <c>false</c>.</value>
 		bool AllowMultipleSelection { get; set; }
 
+		/// <summary>
+		/// Gets the selected rows indexes
+		/// </summary>
+		/// <value>The selected rows.</value>
 		IEnumerable<int> SelectedRows { get; }
 
-		void SelectRow (int row);
+		/// <summary>
+		/// Selects the row to the specified <paramref name="row"/>, clearing other selections
+		/// </summary>
+		/// <param name="row">Row to select</param>
+		void SelectRow(int row);
 
-		void UnselectRow (int row);
+		/// <summary>
+		/// Unselects the specified <paramref name="row"/>
+		/// </summary>
+		/// <param name="row">Row to unselect</param>
+		void UnselectRow(int row);
 
-		void SelectAll ();
+		/// <summary>
+		/// Selects all rows
+		/// </summary>
+		void SelectAll();
 
-		void UnselectAll ();
+		/// <summary>
+		/// Clears the selection
+		/// </summary>
+		void UnselectAll();
 	}
-	
+
 	public class GridColumnEventArgs : EventArgs
 	{
 		public GridColumn Column { get; private set; }
-		
-		public GridColumnEventArgs (GridColumn column)
+
+		public GridColumnEventArgs(GridColumn column)
 		{
 			this.Column = column;
 		}
@@ -50,7 +87,7 @@ namespace Eto.Forms
 
 		public abstract Color ForegroundColor { get; set; }
 
-		protected GridCellFormatEventArgs (GridColumn column, object item, int row)
+		protected GridCellFormatEventArgs(GridColumn column, object item, int row)
 		{
 			this.Column = column;
 			this.Item = item;
@@ -70,15 +107,17 @@ namespace Eto.Forms
 
 		event EventHandler<GridViewCellArgs> _BeginCellEdit;
 
-		public event EventHandler<GridViewCellArgs> BeginCellEdit {
-			add {
+		public event EventHandler<GridViewCellArgs> BeginCellEdit
+		{
+			add
+			{
 				_BeginCellEdit += value;
-				HandleEvent (BeginCellEditEvent);
+				HandleEvent(BeginCellEditEvent);
 			}
 			remove { _BeginCellEdit -= value; }
 		}
 
-		public virtual void OnBeginCellEdit (GridViewCellArgs e)
+		public virtual void OnBeginCellEdit(GridViewCellArgs e)
 		{
 			if (_BeginCellEdit != null)
 				_BeginCellEdit(this, ViewToModel(e));
@@ -88,72 +127,80 @@ namespace Eto.Forms
 
 		event EventHandler<GridViewCellArgs> _EndCellEdit;
 
-		public event EventHandler<GridViewCellArgs> EndCellEdit {
-			add {
+		public event EventHandler<GridViewCellArgs> EndCellEdit
+		{
+			add
+			{
 				_EndCellEdit += value;
-				HandleEvent (EndCellEditEvent);
+				HandleEvent(EndCellEditEvent);
 			}
 			remove { _EndCellEdit -= value; }
 		}
 
-		public virtual void OnEndCellEdit (GridViewCellArgs e)
+		public virtual void OnEndCellEdit(GridViewCellArgs e)
 		{
 			if (_EndCellEdit != null)
-				_EndCellEdit (this, ViewToModel(e));
+				_EndCellEdit(this, ViewToModel(e));
 		}
 
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
 
 		event EventHandler<EventArgs> _SelectionChanged;
 
-		public event EventHandler<EventArgs> SelectionChanged {
-			add {
+		public event EventHandler<EventArgs> SelectionChanged
+		{
+			add
+			{
 				_SelectionChanged += value;
-				HandleEvent (SelectionChangedEvent);
+				HandleEvent(SelectionChangedEvent);
 			}
 			remove { _SelectionChanged -= value; }
 		}
 
-		public virtual void OnSelectionChanged (EventArgs e)
+		public virtual void OnSelectionChanged(EventArgs e)
 		{
 			if (_SelectionChanged != null)
-				_SelectionChanged (this, e);
+				_SelectionChanged(this, e);
 		}
-		
+
 		public const string ColumnHeaderClickEvent = "Grid.ColumnHeaderClickEvent";
 
 		event EventHandler<GridColumnEventArgs> _ColumnHeaderClick;
 
-		public event EventHandler<GridColumnEventArgs> ColumnHeaderClick {
-			add {
+		public event EventHandler<GridColumnEventArgs> ColumnHeaderClick
+		{
+			add
+			{
 				_ColumnHeaderClick += value;
-				HandleEvent (ColumnHeaderClickEvent);
+				HandleEvent(ColumnHeaderClickEvent);
 			}
 			remove { _ColumnHeaderClick -= value; }
 		}
 
-		public virtual void OnColumnHeaderClick (GridColumnEventArgs e)
+		public virtual void OnColumnHeaderClick(GridColumnEventArgs e)
 		{
 			if (_ColumnHeaderClick != null)
-				_ColumnHeaderClick (this, e);
+				_ColumnHeaderClick(this, e);
 		}
 
 		public const string CellFormattingEvent = "Grid.CellFormattingEvent";
 
 		event EventHandler<GridCellFormatEventArgs> _CellFormatting;
 
-		public event EventHandler<GridCellFormatEventArgs> CellFormatting {
-			add {
+		public event EventHandler<GridCellFormatEventArgs> CellFormatting
+		{
+			add
+			{
 				_CellFormatting += value;
-				HandleEvent (CellFormattingEvent);
+				HandleEvent(CellFormattingEvent);
 			}
 			remove { _CellFormatting -= value; }
 		}
 
-		public virtual void OnCellFormatting (GridCellFormatEventArgs e)
+		public virtual void OnCellFormatting(GridCellFormatEventArgs e)
 		{
 			if (_CellFormatting != null)
-				_CellFormatting (this, e);
+				_CellFormatting(this, e);
 		}
 
 		protected virtual GridViewCellArgs ViewToModel(GridViewCellArgs e)
@@ -163,25 +210,40 @@ namespace Eto.Forms
 
 		#endregion
 
-		protected Grid (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, false)
+		protected Grid(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, false)
 		{
-			Columns = new GridColumnCollection ();
+			Columns = new GridColumnCollection();
 			if (initialize)
-				Initialize ();
+				Initialize();
 		}
 
-		public bool ShowHeader {
+		/// <summary>
+		/// Gets or sets a value indicating that the header should be shown
+		/// </summary>
+		/// <value><c>true</c> to show header; otherwise, <c>false</c>.</value>
+		public bool ShowHeader
+		{
 			get { return Handler.ShowHeader; }
 			set { Handler.ShowHeader = value; }
 		}
 
-		public bool AllowColumnReordering {
+		/// <summary>
+		/// Gets or sets a value indicating whether the user can re-order columns
+		/// </summary>
+		/// <value><c>true</c> to allow column reordering; otherwise, <c>false</c>.</value>
+		public bool AllowColumnReordering
+		{
 			get { return Handler.AllowColumnReordering; }
 			set { Handler.AllowColumnReordering = value; }
 		}
 
-		public bool AllowMultipleSelection {
+		/// <summary>
+		/// Gets or sets a value indicating whether the user can select multiple rows
+		/// </summary>
+		/// <value><c>true</c> to allow multiple row selection; otherwise, <c>false</c>.</value>
+		public bool AllowMultipleSelection
+		{
 			get { return Handler.AllowMultipleSelection; }
 			set { Handler.AllowMultipleSelection = value; }
 		}
@@ -203,34 +265,57 @@ namespace Eto.Forms
 			}
 		}
 
-		public virtual IEnumerable<int> SelectedRows {
+		/// <summary>
+		/// Gets the selected rows indexes
+		/// </summary>
+		/// <value>The selected rows.</value>
+		public virtual IEnumerable<int> SelectedRows
+		{
 			get { return Handler.SelectedRows; }
 		}
 
+		/// <summary>
+		/// Gets or sets the height for each row in the grid
+		/// </summary>
+		/// <value>The height of the row.</value>
 		public int RowHeight
 		{
 			get { return Handler.RowHeight; }
 			set { Handler.RowHeight = value; }
 		}
 
-		public virtual void SelectRow (int row)
+		/// <summary>
+		/// Selects the row to the specified <paramref name="row"/>, clearing other selections
+		/// </summary>
+		/// <param name="row">Row to select</param>
+		public virtual void SelectRow(int row)
 		{
-			Handler.SelectRow (row);
+			Handler.SelectRow(row);
 		}
 
-		public virtual void SelectAll ()
+		/// <summary>
+		/// Selects all rows
+		/// </summary>
+		public virtual void SelectAll()
 		{
-			Handler.SelectAll ();
+			Handler.SelectAll();
 		}
 
+		/// <summary>
+		/// Unselects the specified <paramref name="row"/>
+		/// </summary>
+		/// <param name="row">Row to unselect</param>
 		public virtual void UnselectRow(int row)
 		{
-			Handler.UnselectRow (row);
+			Handler.UnselectRow(row);
 		}
 
+		/// <summary>
+		/// Clears the selection
+		/// </summary>
 		public virtual void UnselectAll()
 		{
-			Handler.UnselectAll ();
+			Handler.UnselectAll();
 		}
 	}
 }

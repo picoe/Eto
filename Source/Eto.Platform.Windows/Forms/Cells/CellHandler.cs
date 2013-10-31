@@ -22,9 +22,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 		object GetCellValue (object dataItem);
 	}
 	
-	public abstract class CellHandler<T, W> : WidgetHandler<T, W>, ICell, ICellHandler
-		where T: swf.DataGridViewCell
-		where W: Cell
+	public abstract class CellHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, ICell, ICellHandler
+		where TControl: swf.DataGridViewCell
+		where TWidget: Cell
 	{
 		swf.DataGridViewCell ICellHandler.Control {
 			get { return Control; }

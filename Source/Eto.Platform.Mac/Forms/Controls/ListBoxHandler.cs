@@ -45,7 +45,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override int GetRowCount(NSTableView tableView)
 			{
-				return Handler.collection.Collection != null ? Handler.collection.Collection.Count : 0;
+				return Handler.collection.Collection == null ? 0 : Handler.collection.Collection.Count;
 			}
 		}
 

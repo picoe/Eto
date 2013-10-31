@@ -81,9 +81,7 @@ namespace Eto
 		/// <returns>True if the event is handled, otherwise false</returns>
 		public bool IsEventHandled(string id)
 		{
-			if (eventHooks == null)
-				return false;
-			return eventHooks.Contains(id);
+			return eventHooks != null && eventHooks.Contains(id);
 		}
 
 		/// <summary>
@@ -179,7 +177,7 @@ namespace Eto
 	/// <seealso cref="WidgetHandler{T,W}"/>
 	/// <typeparam name="T">Type of the platform-specific object</typeparam>
 	/// <typeparam name="TWidget">Type of widget the handler is for</typeparam>
-	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget<T, TWidget>
+	public abstract class WidgetHandler<T, TWidget> : WidgetHandler<TWidget>, IInstanceWidget
 		where TWidget: InstanceWidget
 	{
 		/// <summary>
@@ -292,7 +290,7 @@ namespace Eto
 		/// <returns>The platform-specific control used for the specified widget</returns>
 		public static T GetControl(TWidget widget)
 		{
-			var handler = (IInstanceWidget<T, TWidget>)widget.Handler;
+			var handler = (WidgetHandler<T, TWidget>)widget.Handler;
 			return handler.Control;
 		}
 	}

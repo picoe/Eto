@@ -6,9 +6,9 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfDockContainer<T, W> : WpfContainer<T, W>, IDockContainer
-		where T : sw.FrameworkElement
-		where W : DockContainer
+	public abstract class WpfDockContainer<TControl, TWidget> : WpfContainer<TControl, TWidget>, IDockContainer
+		where TControl : sw.FrameworkElement
+		where TWidget : DockContainer
 	{
 		Control content;
 		readonly swc.Border border;

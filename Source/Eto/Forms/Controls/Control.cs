@@ -1,6 +1,5 @@
 using System;
 using System.ComponentModel;
-using System.Collections.Generic;
 using Eto.Drawing;
 
 namespace Eto.Forms
@@ -502,7 +501,7 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual object DataContext
 		{
-			get { return dataContext ?? (Parent != null ? Parent.DataContext : null); }
+			get { return dataContext ?? (Parent == null ? null : Parent.DataContext); }
 			set
 			{
 				dataContext = value;
@@ -687,7 +686,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Handles the disposal of this control
 		/// </summary>
-		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if being called from a finalizer</param>
+		/// <param name="disposing">True if the caller called <see cref="Widget.Dispose()"/> manually, false if being called from a finalizer</param>
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)

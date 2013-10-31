@@ -88,17 +88,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				if (font == null)
-					font = new Font(CellHandler.Generator, new FontHandler(Cell.Font));
-				return font;
+				return font ?? (font = new Font(CellHandler.Generator, new FontHandler(Cell.Font)));
 			}
 			set
 			{
 				font = value;
-				if (font != null)
-					Cell.Font = ((FontHandler)font.Handler).Control;
-				else
-					Cell.Font = null;
+				Cell.Font = font != null ? ((FontHandler)font.Handler).Control : null;
 			}
 		}
 
@@ -115,9 +110,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 		}
 	}
 
-	public abstract class GridHandler<T, W> : MacControl<T, W>, IGrid, IDataViewHandler, IGridHandler
-		where T: NSTableView
-		where W: Grid
+	public abstract class GridHandler<TControl, TWidget> : MacControl<TControl, TWidget>, IGrid, IDataViewHandler, IGridHandler
+		where TControl: NSTableView
+		where TWidget: Grid
 	{
 		ColumnCollection columns;
 		ContextMenu contextMenu;
@@ -176,7 +171,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<T,W> Handler { get; set; }
+			public GridHandler<TControl,TWidget> Handler { get; set; }
 
 			public override void AddItem(GridColumn item)
 			{
@@ -255,7 +250,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		static void HandleScrolled(ObserverActionEventArgs e)
 		{
-			var handler = (GridHandler<T,W>)e.Handler;
+			var handler = (GridHandler<TControl,TWidget>)e.Handler;
 			handler.UpdateColumnSizes();
 		}
 
@@ -331,10 +326,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.Menu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.Menu = null;
+				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 

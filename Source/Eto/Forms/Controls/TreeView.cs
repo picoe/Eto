@@ -184,44 +184,44 @@ namespace Eto.Forms
 				_Collapsed(this, e);
 		}
 
-		public const string AfterLabelEditEvent = "TreeView.AfterLabelEdit";
+		public const string LabelEditedEvent = "TreeView.LabelEdited";
 
-		event EventHandler<TreeViewItemEditEventArgs> _AfterLabelEdit;
+		event EventHandler<TreeViewItemEditEventArgs> labelEdited;
 
-		public event EventHandler<TreeViewItemEditEventArgs> AfterLabelEdit
+		public event EventHandler<TreeViewItemEditEventArgs> LabelEdited
 		{
 			add
 			{
-				_AfterLabelEdit += value;
-				HandleEvent(AfterLabelEditEvent);
+				labelEdited += value;
+				HandleEvent(LabelEditedEvent);
 			}
-			remove { _AfterLabelEdit -= value; }
+			remove { labelEdited -= value; }
 		}
 
-		public virtual void OnAfterLabelEdit(TreeViewItemEditEventArgs e)
+		public virtual void OnLabelEdited(TreeViewItemEditEventArgs e)
 		{
-			if (_AfterLabelEdit != null)
-				_AfterLabelEdit(this, e);
+			if (labelEdited != null)
+				labelEdited(this, e);
 		}
 
-		public const string BeforeLabelEditEvent = "TreeView.BeforeLabelEdit";
+		public const string LabelEditingEvent = "TreeView.LabelEditing";
 
-		event EventHandler<TreeViewItemCancelEventArgs> _BeforeLabelEdit;
+		event EventHandler<TreeViewItemCancelEventArgs> labelEditing;
 
-		public event EventHandler<TreeViewItemCancelEventArgs> BeforeLabelEdit
+		public event EventHandler<TreeViewItemCancelEventArgs> LabelEditing
 		{
 			add
 			{
-				_BeforeLabelEdit += value;
-				HandleEvent(BeforeLabelEditEvent);
+				labelEditing += value;
+				HandleEvent(LabelEditingEvent);
 			}
-			remove { _BeforeLabelEdit -= value; }
+			remove { labelEditing -= value; }
 		}
 
-		public virtual void OnBeforeLabelEdit(TreeViewItemCancelEventArgs e)
+		public virtual void OnLabelEditing(TreeViewItemCancelEventArgs e)
 		{
-			if (_BeforeLabelEdit != null)
-				_BeforeLabelEdit(this, e);
+			if (labelEditing != null)
+				labelEditing(this, e);
 		}
 
 		public const string NodeMouseClickEvent = "TreeView.NodeMouseClick";

@@ -28,9 +28,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		protected override SizeF GetNaturalSize (SizeF availableSize)
 		{
-			if (image != null)
-				return image.Size;
-			return Size.Empty;
+			return image == null ? Size.Empty : image.Size;
 		}
 		
 		public Image Image {
@@ -39,10 +37,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 			set {
 				image = value;
-				if (image != null)
-					Control.Image = ((IImageSource)value.Handler).GetImage ();
-				else
-					Control.Image = null;
+				Control.Image = image == null ? null : ((IImageSource)value.Handler).GetImage();
 			}
 		}
 	}
