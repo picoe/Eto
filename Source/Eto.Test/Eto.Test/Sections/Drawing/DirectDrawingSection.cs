@@ -23,7 +23,7 @@ namespace Eto.Test.Sections.Drawing
 			readonly Action<Graphics> draw;
 			readonly Action<Graphics> erase;
 			readonly Brush fillBrush;
-			readonly RectangleF position;
+			RectangleF position;
 			IMatrix transform;
 
 			public SizeF Increment { get { return increment; } set { increment = value; } }
