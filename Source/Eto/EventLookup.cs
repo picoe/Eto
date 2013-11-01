@@ -28,7 +28,7 @@ namespace Eto
 		public static void Register(Type type, string methodName, string identifier)
 		{
 			var declarations = GetDeclarations(type);
-			declarations.Add(new EventDeclaration(type, identifier, methodName));
+			declarations.Add(new EventDeclaration(type, methodName, identifier));
 		}
 
 		public static void HookupEvents(InstanceWidget widget)
