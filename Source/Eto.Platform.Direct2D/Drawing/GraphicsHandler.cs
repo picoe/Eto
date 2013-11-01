@@ -35,7 +35,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			return new sd.Ellipse(center: new s.DrawingPointF(x + rx, y + ry), radiusX: rx, radiusY: ry);
 		}
 
-		public bool Antialias { get; set; } // not used
+		public bool AntiAlias { get; set; } // not used
 
 		public ImageInterpolation ImageInterpolation { get; set; } // TODO
 

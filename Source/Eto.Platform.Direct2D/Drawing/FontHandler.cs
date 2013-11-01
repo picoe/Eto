@@ -236,5 +236,25 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			get { throw new NotImplementedException(); }
 		}
+
+		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
+		{
+			throw new NotImplementedException();
+		}
+
+		public FontDecoration FontDecoration
+		{
+			get { throw new NotImplementedException(); }
+		}
 	}
 }
