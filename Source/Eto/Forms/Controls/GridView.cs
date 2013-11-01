@@ -4,16 +4,11 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	#if OBSOLETE
-	public interface IGridStore : IDataStore
-	{
-	}
-#endif
 	public partial interface IGridView : IGrid
 	{
 		IDataStore DataStore { get; set; }
 
-		bool ShowCellBorders { set; }
+		bool ShowCellBorders { get; set; }
 	}
 
 	public class GridViewCellArgs : EventArgs
@@ -74,7 +69,6 @@ namespace Eto.Forms
 		protected GridView(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
-			this.ShowCellBorders = true;
 			// Always attach the SelectionChangedEvent
 			// since it is always handled in the GridView.
 			this.HandleEvent(Grid.SelectionChangedEvent);
@@ -105,16 +99,14 @@ namespace Eto.Forms
 			}
 		}
 
-		bool showCellBorders;
-
 		/// <summary>
 		/// If true, there is a 1-pixel space between cells.
 		/// If false, there is no space between cells.
 		/// </summary>
 		public bool ShowCellBorders
 		{
-			get { return showCellBorders; }
-			set { showCellBorders = Handler.ShowCellBorders = value; }
+			get { return Handler.ShowCellBorders; }
+			set { Handler.ShowCellBorders = value; }
 		}
 
 		#region Events
