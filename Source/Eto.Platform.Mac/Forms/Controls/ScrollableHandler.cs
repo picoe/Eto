@@ -163,7 +163,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			base.LayoutChildren();
 			UpdateScrollSizes();
-			ScrollPosition = scrollPosition;
 		}
 
 		Size GetBorderSize()
