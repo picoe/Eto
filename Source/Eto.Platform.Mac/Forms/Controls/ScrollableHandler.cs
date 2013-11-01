@@ -34,26 +34,32 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (cursor != null)
 					AddCursorRect(new SD.RectangleF(SD.PointF.Empty, Frame.Size), cursor.ControlObject as NSCursor);
 			}
-			#if !USE_FLIPPED
-			public override void SetFrameSize(SD.SizeF newSize)
-			{
-				base.SetFrameSize(newSize);
-				Handler.ScrollPosition = Handler.scrollPosition;
-				// since we override the base
-				Handler.OnSizeChanged(EventArgs.Empty);
-				Handler.Widget.OnSizeChanged(EventArgs.Empty);
-			}
-			#endif
 		}
-		#if USE_FLIPPED
+
 		class FlippedView : NSView
 		{
+			public WeakReference WeakHandler { get; set; }
+
+			public ScrollableHandler Handler
+			{ 
+				get { return (ScrollableHandler)WeakHandler.Target; }
+				set { WeakHandler = new WeakReference(value); } 
+			}
+			#if USE_FLIPPED
 			public override bool IsFlipped
 			{
 				get { return true; }
 			}
+			#endif
+			#if !USE_FLIPPED
+			public override void SetFrameSize(SD.SizeF newSize)
+			{
+				base.SetFrameSize(newSize);
+				Handler.SetPosition(Handler.scrollPosition, true);
+			}
+			#endif
 		}
-		#endif
+
 		public ScrollableHandler()
 		{
 			Enabled = true;
@@ -66,11 +72,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				HasVerticalScroller = true,
 				HasHorizontalScroller = true,
 				AutohidesScrollers = true,
-				#if USE_FLIPPED
-				DocumentView = new FlippedView()
-				#else
-				DocumentView = new NSView()
-				#endif
+				DocumentView = new FlippedView { Handler = this }
 			};
 
 			// only draw dirty regions, instead of entire scroll area
@@ -80,20 +82,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			#if !USE_FLIPPED
-			HandleEvent(Scrollable.ScrollEvent);
-			#endif
+			if (!ContentControl.IsFlipped)
+				// need to keep the scroll position as it scrolls instead of calculating
+				HandleEvent(Scrollable.ScrollEvent);
 		}
 
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
-				#if !USE_FLIPPED
-				case Eto.Forms.Control.SizeChangedEvent:
-					// handled by delegate
-					break;
-				#endif
 				case Scrollable.ScrollEvent:
 					Control.ContentView.PostsBoundsChangedNotifications = true;
 					AddObserver(NSView.BoundsChangedNotification, e =>
@@ -101,14 +98,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 						var handler = e.Handler as ScrollableHandler;
 						if (handler != null)
 						{
-							#if !USE_FLIPPED
-							var view = (NSView)handler.Control.DocumentView;
-							var contentBounds = handler.Control.ContentView.Bounds;
-							if (view.IsFlipped)
-								handler.scrollPosition = contentBounds.Location.ToEtoPoint();
-							else
-								handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds.Y));
-							#endif
+							var view = handler.ContentControl;
+							if (!view.IsFlipped)
+							{
+								var contentBounds = handler.Control.ContentView.Bounds;
+								if (contentBounds.Height > 0)
+									handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds.Y));
+							}
 							handler.Widget.OnScroll(new ScrollEventArgs(handler.ScrollPosition));
 						}
 					}, Control.ContentView);
@@ -165,6 +161,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			UpdateScrollSizes();
 		}
 
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			UpdateScrollSizes();
+		}
+
 		Size GetBorderSize()
 		{
 			return Border == BorderType.None ? Size.Empty : new Size(2, 2);
@@ -185,15 +187,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
 			return new RectangleF(contentSize).ToSD();
 		}
-		#if !USE_FLIPPED
+
 		protected override NSViewResizingMask ContentResizingMask()
 		{
-			return (NSViewResizingMask)0;
+			return ContentControl.IsFlipped ? base.ContentResizingMask() : (NSViewResizingMask)0;
 		}
-		#endif
+
 		void InternalSetFrameSize(SD.SizeF size)
 		{
-			var view = (NSView)Control.DocumentView;
+			var view = ContentControl;
 			if (!view.IsFlipped)
 			{
 				var ctl = Content.GetContainerView();
@@ -232,36 +234,36 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{ 
-				#if USE_FLIPPED
-				if (Widget.Loaded)
+				var view = ContentControl;
+				if (Widget.Loaded && view.IsFlipped)
 				{
-					var view = (NSView)Control.DocumentView;
-					var loc = Control.ContentView.Bounds.Location;
-					if (view.IsFlipped)
-						return loc.ToEtoPoint();
-					return new Point((int)loc.X, (int)(view.Frame.Height - Control.ContentView.Frame.Height - loc.Y));
+					return Control.ContentView.Bounds.Location.ToEtoPoint();
 				}
-				#endif
 				return scrollPosition;
 			}
 			set
 			{ 
-				if (Widget.Loaded)
-				{
-					var view = (NSView)Control.DocumentView;
-					if (view.IsFlipped)
-						Control.ContentView.ScrollToPoint(value.ToSDPointF());
-					else
-						Control.ContentView.ScrollToPoint(new SD.PointF(value.X, view.Frame.Height - Control.ContentView.Frame.Height - value.Y));
-					Control.ReflectScrolledClipView(Control.ContentView);
-				}
-				scrollPosition = value;
+				SetPosition(value, false);
 			}
+		}
+
+		void SetPosition(Point value, bool force)
+		{
+			if (Widget.Loaded || force)
+			{
+				var view = ContentControl;
+				if (view.IsFlipped)
+					Control.ContentView.ScrollToPoint(value.ToSDPointF());
+				else if (Control.ContentView.Frame.Height > 0)
+					Control.ContentView.ScrollToPoint(new SD.PointF(value.X, Math.Max(0, view.Frame.Height - Control.ContentView.Frame.Height - value.Y)));
+				Control.ReflectScrolledClipView(Control.ContentView);
+			}
+			scrollPosition = value;
 		}
 
 		public Size ScrollSize
 		{			
-			get { return ((NSView)Control.DocumentView).Frame.Size.ToEtoSize(); }
+			get { return ContentControl.Frame.Size.ToEtoSize(); }
 			set
 			{ 
 				InternalSetFrameSize(value.ToSDSizeF());
