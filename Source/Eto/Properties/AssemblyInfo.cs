@@ -13,4 +13,6 @@ using System.Runtime.InteropServices;
 [assembly: AssemblyTitle ("Eto.Forms")]
 [assembly: AssemblyDescription ("Eto.Forms UI Framework")]
 [assembly: CLSCompliant(true)]
+#if DESKTOP
 [assembly: ComVisible(false)]
+#endif

@@ -92,7 +92,9 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(Window), "OnClosed", Window.ClosedEvent);
 			EventLookup.Register(typeof(Window), "OnClosing", Window.ClosingEvent);
 			EventLookup.Register(typeof(Window), "OnLocationChanged", Window.LocationChangedEvent);
+			#if DESKTOP
 			EventLookup.Register(typeof(Window), "OnWindowStateChanged", Window.WindowStateChangedEvent);
+			#endif
 		}
 
 		protected Window (Generator generator, Type type, bool initialize = true)

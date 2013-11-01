@@ -36,6 +36,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public bool ShowCellBorders
 		{
+			get { return false; }
 			set { } // TODO
 		}
 

@@ -120,7 +120,7 @@ namespace Eto.Platform.Android.Drawing
 		{			
 		}
 
-		public bool Antialias
+		public bool AntiAlias
 		{
 			get
 			{
