@@ -198,28 +198,28 @@ namespace Eto.Test.Sections.Printing
 		static Control PageOrientation()
 		{
 			var control = new EnumComboBox<PageOrientation>();
-			control.SelectedValueBinding.Bind<PrintSettings>(r => r.Orientation);
+			control.SelectedValueBinding.Bind<PrintSettings>(r => r.Orientation, (r, v) => r.Orientation = v);
 			return control;
 		}
 
 		static Control Copies()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
-			control.ValueBinding.Bind<PrintSettings>(r => r.Copies);
+			control.ValueBinding.Bind<PrintSettings>(r => r.Copies, (r, v) => r.Copies = (int)v);
 			return control;
 		}
 
 		static Control Collate()
 		{
 			var control = new CheckBox { Text = "Collate" };
-			control.CheckedBinding.Bind<PrintSettings>(r => r.Collate);
+			control.CheckedBinding.Bind<PrintSettings>(r => r.Collate, (r, v) => r.Collate = v ?? false);
 			return control;
 		}
 
 		static Control Reverse()
 		{
 			var control = new CheckBox { Text = "Reverse" };
-			control.CheckedBinding.Bind<PrintSettings>(r => r.Reverse);
+			control.CheckedBinding.Bind<PrintSettings>(r => r.Reverse, (r, v) => r.Reverse = v ?? false);
 			return control;
 		}
 
@@ -298,7 +298,7 @@ namespace Eto.Test.Sections.Printing
 		static Control PrintSelection()
 		{
 			var control = new EnumComboBox<PrintSelection>();
-			control.SelectedValueBinding.Bind<PrintSettings>(r => r.PrintSelection);
+			control.SelectedValueBinding.Bind<PrintSettings>(r => r.PrintSelection, (r, v) => r.PrintSelection = v);
 			return control;
 		}
 	}
