@@ -47,20 +47,20 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					e.Handled = true;
 				};
 				break;
-			case Grid.BeginCellEditEvent:
+			case Grid.CellEditingEvent:
 				Control.PreparingCellForEdit += (sender, e) => {
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow (row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnBeginCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					Widget.OnCellEditing (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				Control.CellEditEnding += (sender, e) => {
 					var row = e.Row.GetIndex ();
 					var item = GetItemAtRow(row);
 					var gridColumn = Widget.Columns[e.Column.DisplayIndex];
-					Widget.OnEndCellEdit (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
+					Widget.OnCellEdited (new GridViewCellArgs (gridColumn, row, e.Column.DisplayIndex, item));
 				};
 				break;
 			case Grid.SelectionChangedEvent:

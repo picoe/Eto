@@ -260,11 +260,11 @@ namespace Eto.Test.Sections.Controls
 #endif
 		protected virtual void LogEvents(GridView control)
 		{
-			control.BeginCellEdit += (sender, e) =>
+			control.CellEditing += (sender, e) =>
 			{
 				Log.Write(control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
-			control.EndCellEdit += (sender, e) =>
+			control.CellEdited += (sender, e) =>
 			{
 				Log.Write(control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};

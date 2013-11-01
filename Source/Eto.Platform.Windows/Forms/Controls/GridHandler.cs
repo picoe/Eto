@@ -161,18 +161,18 @@ namespace Eto.Platform.Windows.Forms.Controls
 			case Grid.ColumnHeaderClickEvent:
 				Control.ColumnHeaderMouseClick += (sender, e) => Widget.OnColumnHeaderClick(new GridColumnEventArgs(Widget.Columns[e.ColumnIndex]));
 				break;
-			case Grid.BeginCellEditEvent:
+			case Grid.CellEditingEvent:
 				Control.CellBeginEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Widget.OnBeginCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					Widget.OnCellEditing (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				Control.CellEndEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Widget.OnEndCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					Widget.OnCellEdited (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
 			case Grid.SelectionChangedEvent:

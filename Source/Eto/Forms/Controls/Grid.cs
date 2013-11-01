@@ -103,104 +103,104 @@ namespace Eto.Forms
 
 		#region Events
 
-		public const string BeginCellEditEvent = "Grid.BeginCellEditEvent";
+		public const string CellEditingEvent = "Grid.CellEditingEvent";
 
-		event EventHandler<GridViewCellArgs> _BeginCellEdit;
+		event EventHandler<GridViewCellArgs> cellEditing;
 
-		public event EventHandler<GridViewCellArgs> BeginCellEdit
+		public event EventHandler<GridViewCellArgs> CellEditing
 		{
 			add
 			{
-				_BeginCellEdit += value;
-				HandleEvent(BeginCellEditEvent);
+				cellEditing += value;
+				HandleEvent(CellEditingEvent);
 			}
-			remove { _BeginCellEdit -= value; }
+			remove { cellEditing -= value; }
 		}
 
-		public virtual void OnBeginCellEdit(GridViewCellArgs e)
+		public virtual void OnCellEditing(GridViewCellArgs e)
 		{
-			if (_BeginCellEdit != null)
-				_BeginCellEdit(this, ViewToModel(e));
+			if (cellEditing != null)
+				cellEditing(this, ViewToModel(e));
 		}
 
-		public const string EndCellEditEvent = "Grid.EndCellEditEvent";
+		public const string CellEditedEvent = "Grid.CellEditedEvent";
 
-		event EventHandler<GridViewCellArgs> _EndCellEdit;
+		event EventHandler<GridViewCellArgs> cellEdited;
 
-		public event EventHandler<GridViewCellArgs> EndCellEdit
+		public event EventHandler<GridViewCellArgs> CellEdited
 		{
 			add
 			{
-				_EndCellEdit += value;
-				HandleEvent(EndCellEditEvent);
+				cellEdited += value;
+				HandleEvent(CellEditedEvent);
 			}
-			remove { _EndCellEdit -= value; }
+			remove { cellEdited -= value; }
 		}
 
-		public virtual void OnEndCellEdit(GridViewCellArgs e)
+		public virtual void OnCellEdited(GridViewCellArgs e)
 		{
-			if (_EndCellEdit != null)
-				_EndCellEdit(this, ViewToModel(e));
+			if (cellEdited != null)
+				cellEdited(this, ViewToModel(e));
 		}
 
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
 
-		event EventHandler<EventArgs> _SelectionChanged;
+		event EventHandler<EventArgs> selectionChanged;
 
 		public event EventHandler<EventArgs> SelectionChanged
 		{
 			add
 			{
-				_SelectionChanged += value;
+				selectionChanged += value;
 				HandleEvent(SelectionChangedEvent);
 			}
-			remove { _SelectionChanged -= value; }
+			remove { selectionChanged -= value; }
 		}
 
 		public virtual void OnSelectionChanged(EventArgs e)
 		{
-			if (_SelectionChanged != null)
-				_SelectionChanged(this, e);
+			if (selectionChanged != null)
+				selectionChanged(this, e);
 		}
 
 		public const string ColumnHeaderClickEvent = "Grid.ColumnHeaderClickEvent";
 
-		event EventHandler<GridColumnEventArgs> _ColumnHeaderClick;
+		event EventHandler<GridColumnEventArgs> columnHeaderClick;
 
 		public event EventHandler<GridColumnEventArgs> ColumnHeaderClick
 		{
 			add
 			{
-				_ColumnHeaderClick += value;
+				columnHeaderClick += value;
 				HandleEvent(ColumnHeaderClickEvent);
 			}
-			remove { _ColumnHeaderClick -= value; }
+			remove { columnHeaderClick -= value; }
 		}
 
 		public virtual void OnColumnHeaderClick(GridColumnEventArgs e)
 		{
-			if (_ColumnHeaderClick != null)
-				_ColumnHeaderClick(this, e);
+			if (columnHeaderClick != null)
+				columnHeaderClick(this, e);
 		}
 
 		public const string CellFormattingEvent = "Grid.CellFormattingEvent";
 
-		event EventHandler<GridCellFormatEventArgs> _CellFormatting;
+		event EventHandler<GridCellFormatEventArgs> cellFormatting;
 
 		public event EventHandler<GridCellFormatEventArgs> CellFormatting
 		{
 			add
 			{
-				_CellFormatting += value;
+				cellFormatting += value;
 				HandleEvent(CellFormattingEvent);
 			}
-			remove { _CellFormatting -= value; }
+			remove { cellFormatting -= value; }
 		}
 
 		public virtual void OnCellFormatting(GridCellFormatEventArgs e)
 		{
-			if (_CellFormatting != null)
-				_CellFormatting(this, e);
+			if (cellFormatting != null)
+				cellFormatting(this, e);
 		}
 
 		protected virtual GridViewCellArgs ViewToModel(GridViewCellArgs e)

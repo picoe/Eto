@@ -97,7 +97,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				Control.Edited += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:

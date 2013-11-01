@@ -26,14 +26,18 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				store = value;
 				// must use observable collection for editing
-				var source = store as ObservableCollection<IListItem>; 
- 				Control.ItemsSource = source ?? new ObservableCollection<object>(store.AsEnumerable());
+				var source = store as ObservableCollection<IListItem>;
+				if (source != null)
+					Control.ItemsSource = source;
+				else
+					Control.ItemsSource = new ObservableCollection<object>(store.AsEnumerable());
 			}
 		}
 
 		public bool ShowCellBorders
 		{
-			set { } // TODO
+			get { return Control.GridLinesVisibility != swc.DataGridGridLinesVisibility.None; }
+			set { Control.GridLinesVisibility = value ? swc.DataGridGridLinesVisibility.All : swc.DataGridGridLinesVisibility.None; }
 		}
 	}
 }

@@ -11,6 +11,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		
 		public bool ShowCellBorders
 		{
+			get { return Control.CellBorderStyle != swf.DataGridViewCellBorderStyle.None; }
 			set { Control.CellBorderStyle = value ? swf.DataGridViewCellBorderStyle.Single : swf.DataGridViewCellBorderStyle.None; }
 		}
 

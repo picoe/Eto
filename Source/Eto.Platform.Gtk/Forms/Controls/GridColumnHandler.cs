@@ -117,10 +117,10 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public void SetupEvents ()
 		{
 			if (grid == null) return;
-			if (grid.IsEventHandled (Grid.BeginCellEditEvent))
-				HandleEvent (Grid.BeginCellEditEvent);
-			if (grid.IsEventHandled (Grid.EndCellEditEvent))
-				HandleEvent (Grid.EndCellEditEvent);
+			if (grid.IsEventHandled (Grid.CellEditingEvent))
+				HandleEvent (Grid.CellEditingEvent);
+			if (grid.IsEventHandled (Grid.CellEditedEvent))
+				HandleEvent (Grid.CellEditedEvent);
 			if (grid.IsEventHandled (Grid.ColumnHeaderClickEvent))
 				HandleEvent (Grid.ColumnHeaderClickEvent);
 			if (grid.IsEventHandled (Grid.CellFormattingEvent))

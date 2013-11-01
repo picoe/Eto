@@ -51,7 +51,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case Grid.BeginCellEditEvent:
+			case Grid.CellEditingEvent:
 				Control.EditingStarted += (sender, e) => Source.BeginCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
