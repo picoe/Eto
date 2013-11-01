@@ -124,18 +124,18 @@ namespace Eto.Platform.Android.Drawing
 		private ag.Paint GetTextPaint(Font font)
 		{
 			var paint = (font.Handler as FontHandler).Paint;
-			paint.AntiAlias = Antialias;
+			paint.AntiAlias = AntiAlias;
 			return paint;
 		}
 
-		public bool AntiAlias
+		public void Flush()
 		{			
 		}
 
 		// The ANTI_ALIAS flag on Paint (not Canvas) causes it to render antialiased.
 		// SUBPIXEL_TEXT_FLAG is currently unsupported on Android.
 		// See http://stackoverflow.com/questions/4740565/meaning-of-some-paint-constants-in-android
-		public bool Antialias { get; set; }
+		public bool AntiAlias { get; set; }
 
 		// TODO: setting the FILTER_BITMAP_FLAG on Paint (not Canvas)
 		// causes it to do a bilinear interpolation.
