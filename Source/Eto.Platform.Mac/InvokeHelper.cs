@@ -9,7 +9,7 @@ namespace Eto.Platform.Mac
 			
 			public void Action()
 			{
-				this.Return = Delegate.DynamicInvoke(Args);
+				Return = Delegate.DynamicInvoke(Args);
 			}
 		}
 }

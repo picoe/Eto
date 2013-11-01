@@ -6,23 +6,17 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 	{
 		public static PrintSettings ToEto (this Gtk.PrintSettings settings, Gtk.PageSetup setup, bool selectionOnly, Eto.Generator generator)
 		{
-			if (settings == null)
-				return null;
-			return new PrintSettings(generator, new PrintSettingsHandler (settings, setup, selectionOnly));
+			return settings == null ? null : new PrintSettings(generator, new PrintSettingsHandler(settings, setup, selectionOnly));
 		}
 
 		public static Gtk.PrintSettings ToGtkPrintSettings (this PrintSettings settings)
 		{
-			if (settings == null)
-				return null;
-			return ((PrintSettingsHandler)settings.Handler).Control;
+			return settings == null ? null : ((PrintSettingsHandler)settings.Handler).Control;
 		}
 
 		public static Gtk.PageSetup ToGtkPageSetup (this PrintSettings settings)
 		{
-			if (settings == null)
-				return null;
-			return ((PrintSettingsHandler)settings.Handler).PageSetup;
+			return settings == null ? null : ((PrintSettingsHandler)settings.Handler).PageSetup;
 		}
 	}
 

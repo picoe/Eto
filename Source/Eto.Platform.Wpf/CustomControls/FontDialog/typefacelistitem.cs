@@ -1,5 +1,4 @@
 using System;
-using System.Text;
 using System.Windows;
 using System.Windows.Documents;
 using System.Windows.Controls;
@@ -10,8 +9,8 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 {
     class TypefaceListItem : TextBlock, IComparable
     {
-        string _displayName;
-        bool _simulated;
+        readonly string _displayName;
+        readonly bool _simulated;
 
         public TypefaceListItem(Typeface typeface)
         {
@@ -34,13 +33,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                 itemLabel = string.Format(formatString, itemLabel);
             }
 
-            this.Text = itemLabel;
-            this.ToolTip = itemLabel;
+            Text = itemLabel;
+            ToolTip = itemLabel;
 
             // In the case of symbol font, apply the default message font to the text so it can be read.
             if (FontFamilyListItem.IsSymbolFont(typeface.FontFamily))
             {
-                TextRange range = new TextRange(this.ContentStart, this.ContentEnd);
+                var range = new TextRange(ContentStart, ContentEnd);
                 range.ApplyPropertyValue(TextBlock.FontFamilyProperty, SystemFonts.MessageFontFamily);
             }
         }
@@ -57,7 +56,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         int IComparable.CompareTo(object obj)
         {
-            TypefaceListItem item = obj as TypefaceListItem;
+            var item = obj as TypefaceListItem;
             if (item == null)
             {
                 return -1;
@@ -81,46 +80,40 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             FontStyle otherStyle = item.FontStyle;
 
             if (thisStyle != otherStyle)
-            {
-                if (thisStyle == FontStyles.Normal)
-                {
-                    // This item is normal style and should come first.
-                    return -1;
-                }
-                else if (otherStyle == FontStyles.Normal)
-                {
-                    // The other item is normal style and should come first.
-                    return 1;
-                }
-                else
-                {
-                    // Neither is normal so sort italic before oblique.
-                    return (thisStyle == FontStyles.Italic) ? -1 : 1;
-                }
-            }
+			{
+				if (thisStyle == FontStyles.Normal)
+				{
+					// This item is normal style and should come first.
+					return -1;
+				}
+				if (otherStyle == FontStyles.Normal)
+				{
+					// The other item is normal style and should come first.
+					return 1;
+				}
+				// Neither is normal so sort italic before oblique.
+				return (thisStyle == FontStyles.Italic) ? -1 : 1;
+			}
 
             // If stretch differs then sort based on stretch (Normal first, then numerically).
             FontStretch thisStretch = FontStretch;
             FontStretch otherStretch = item.FontStretch;
 
             if (thisStretch != otherStretch)
-            {
-                if (thisStretch == FontStretches.Normal)
-                {
-                    // This item is normal stretch and should come first.
-                    return -1;
-                }
-                else if (otherStretch == FontStretches.Normal)
-                {
-                    // The other item is normal stretch and should come first.
-                    return 1;
-                }
-                else
-                {
-                    // Neither is normal so sort numerically.
-                    return thisStretch.ToOpenTypeStretch() < otherStretch.ToOpenTypeStretch() ? -1 : 0;
-                }
-            }
+			{
+				if (thisStretch == FontStretches.Normal)
+				{
+					// This item is normal stretch and should come first.
+					return -1;
+				}
+				if (otherStretch == FontStretches.Normal)
+				{
+					// The other item is normal stretch and should come first.
+					return 1;
+				}
+				// Neither is normal so sort numerically.
+				return thisStretch.ToOpenTypeStretch() < otherStretch.ToOpenTypeStretch() ? -1 : 0;
+			}
 
             // They're the same.
             return 0;

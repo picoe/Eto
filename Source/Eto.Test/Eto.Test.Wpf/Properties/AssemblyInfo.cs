@@ -1,5 +1,4 @@
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using System.Windows;
 
 [assembly: AssemblyTitle ("Eto Test for WPF")]

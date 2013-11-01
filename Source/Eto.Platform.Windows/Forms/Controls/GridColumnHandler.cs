@@ -27,31 +27,31 @@ namespace Eto.Platform.Windows.Forms.Controls
 		}
 
 		public string HeaderText {
-			get { return this.Control.HeaderText; }
-			set { this.Control.HeaderText = value; }
+			get { return Control.HeaderText; }
+			set { Control.HeaderText = value; }
 		}
 
 		public bool Resizable {
-			get { return this.Control.Resizable == swf.DataGridViewTriState.True; }
-			set { this.Control.Resizable = value ? swf.DataGridViewTriState.True : swf.DataGridViewTriState.False; }
+			get { return Control.Resizable == swf.DataGridViewTriState.True; }
+			set { Control.Resizable = value ? swf.DataGridViewTriState.True : swf.DataGridViewTriState.False; }
 		}
 
 		public bool Sortable {
-			get { return this.Control.SortMode == swf.DataGridViewColumnSortMode.Programmatic; }
-			set { this.Control.SortMode = (value) ? swf.DataGridViewColumnSortMode.Programmatic : swf.DataGridViewColumnSortMode.NotSortable; }
+			get { return Control.SortMode == swf.DataGridViewColumnSortMode.Programmatic; }
+			set { Control.SortMode = (value) ? swf.DataGridViewColumnSortMode.Programmatic : swf.DataGridViewColumnSortMode.NotSortable; }
 		}
 
 		public bool AutoSize {
 			get { return autosize; }
 			set {
 				autosize = value;
-				this.Control.AutoSizeMode = (value) ? swf.DataGridViewAutoSizeColumnMode.NotSet : swf.DataGridViewAutoSizeColumnMode.None; 
+				Control.AutoSizeMode = (value) ? swf.DataGridViewAutoSizeColumnMode.NotSet : swf.DataGridViewAutoSizeColumnMode.None; 
 			}
 		}
 
 		public int Width {
-			get { return this.Control.Width; }
-			set { this.Control.Width = value; }
+			get { return Control.Width; }
+			set { Control.Width = value; }
 		}
 
 		public Cell DataCell {
@@ -61,21 +61,21 @@ namespace Eto.Platform.Windows.Forms.Controls
 				if (dataCell != null) {
 					var cellHandler = (ICellHandler)dataCell.Handler;
 					cellHandler.CellConfig = this;
-					this.Control.CellTemplate = cellHandler.Control;
+					Control.CellTemplate = cellHandler.Control;
 				}
 				else
-					this.Control.CellTemplate = null;
+					Control.CellTemplate = null;
 			}
 		}
 
 		public bool Editable {
-			get { return !this.Control.ReadOnly; }
-			set { this.Control.ReadOnly = !value; }
+			get { return !Control.ReadOnly; }
+			set { Control.ReadOnly = !value; }
 		}
 
 		public bool Visible {
-			get { return this.Control.Visible; }
-			set { this.Control.Visible = value; }
+			get { return Control.Visible; }
+			set { Control.Visible = value; }
 		}
 
 		public void SetCellValue (object dataItem, object value)
@@ -97,29 +97,23 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public virtual void Setup (IGridHandler gridHandler)
 		{
-			this.GridHandler = gridHandler;
+			GridHandler = gridHandler;
 		}
 
 		public void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, ref swf.DataGridViewPaintParts paintParts)
 		{
-			if (this.GridHandler != null)
-				this.GridHandler.Paint (this, graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
+			if (GridHandler != null)
+				GridHandler.Paint (this, graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
 		}
 
 		public int GetRowOffset (int rowIndex)
 		{
-			if (this.GridHandler != null)
-				return this.GridHandler.GetRowOffset (this, rowIndex);
-			else
-				return 0;
+			return GridHandler != null ? GridHandler.GetRowOffset(this, rowIndex) : 0;
 		}
 
 		public bool MouseClick (swf.MouseEventArgs e, int rowIndex)
 		{
-			if (this.GridHandler != null)
-				return this.GridHandler.CellMouseClick (this, e, rowIndex);
-			else
-				return false;
+			return GridHandler != null && GridHandler.CellMouseClick(this, e, rowIndex);
 		}
 	}
 }

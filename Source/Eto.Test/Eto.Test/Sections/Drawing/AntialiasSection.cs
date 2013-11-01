@@ -26,7 +26,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var path = CreatePath();
 			control.Paint += (sender, e) => {
-				e.Graphics.Antialias = true;
+				e.Graphics.AntiAlias = true;
 				e.Graphics.DrawPath(Pens.White(), path);
 			};
 
@@ -39,7 +39,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var path = CreatePath();
 			control.Paint += (sender, e) => {
-				e.Graphics.Antialias = false;
+				e.Graphics.AntiAlias = false;
 				e.Graphics.DrawPath(Pens.White(), path);
 			};
 

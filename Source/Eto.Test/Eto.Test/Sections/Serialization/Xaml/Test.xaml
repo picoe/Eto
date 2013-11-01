@@ -22,14 +22,14 @@
 							<Label Text="Text Area" />
 						</DynamicControl>
 						<DynamicControl>
-							<TextArea ID="myTextArea" />
+							<TextArea ID="MyTextArea" />
 						</DynamicControl>
 					</DynamicRow>
 					<DynamicRow>
 						<DynamicControl>
 						</DynamicControl>
 						<DynamicControl>
-							<CheckBox ID="myCheckBox" Text="Check Box" />
+							<CheckBox ID="MyCheckBox" Text="Check Box" />
 						</DynamicControl>
 					</DynamicRow>
 					<DynamicRow>

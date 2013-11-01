@@ -101,9 +101,9 @@ namespace Eto
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Generator
 	{
-		Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
-		Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
-		Dictionary<object, object> properties = new Dictionary<object, object>();
+		readonly Dictionary<Type, Func<object>> instantiatorMap = new Dictionary<Type, Func<object>>();
+		readonly Dictionary<Type, object> sharedInstances = new Dictionary<Type, object>();
+		readonly Dictionary<object, object> properties = new Dictionary<object, object>();
 		static Generator current;
 
 		internal T GetSharedProperty<T>(object key, Func<T> instantiator)
@@ -284,7 +284,7 @@ namespace Eto
 		{
 			if (ValidateGenerator != null && !object.ReferenceEquals(generator, ValidateGenerator))
 			{
-				throw new EtoException(string.Format("Expected to use generator {0}", ValidateGenerator));
+				throw new EtoException(string.Format(CultureInfo.InvariantCulture, "Expected to use generator {0}", ValidateGenerator));
 			}
 		}
 

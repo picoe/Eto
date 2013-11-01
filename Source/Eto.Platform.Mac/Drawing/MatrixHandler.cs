@@ -119,17 +119,17 @@ namespace Eto.Platform.iOS.Drawing
 		
 		public void Invert ()
 		{
-			control = this.control.Invert ();
+			control = control.Invert ();
 		}
 		
 		public PointF TransformPoint (Point p)
 		{
-			return Platform.Conversions.ToEto (control.TransformPoint (p.ToSDPointF ()));
+			return control.TransformPoint(p.ToSDPointF()).ToEto();
 		}
 		
 		public PointF TransformPoint (PointF p)
 		{
-			return Platform.Conversions.ToEto (control.TransformPoint (p.ToSD ()));
+			return control.TransformPoint(p.ToSD()).ToEto();
 		}
 		
 		public object ControlObject

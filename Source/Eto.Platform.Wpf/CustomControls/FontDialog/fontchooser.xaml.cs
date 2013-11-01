@@ -3,12 +3,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Windows.Threading;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
@@ -16,27 +13,26 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
     /// <summary>
     /// Interaction logic for FontChooser.xaml
     /// </summary>
-    public partial class FontChooser : System.Windows.Window
+    public partial class FontChooser : Window
     {
         #region Private fields and types
 
-        private ICollection<FontFamily> _familyCollection;          // see FamilyCollection property
-        private string _defaultSampleText;
-        private string _previewSampleText;
-        private string _pointsText;
+        ICollection<FontFamily> _familyCollection;          // see FamilyCollection property
+        string _defaultSampleText;
+        string _previewSampleText;
+        string _pointsText;
 
-		private bool _populated;
-        private bool _updatePending;                                // indicates a call to OnUpdate is scheduled
-        private bool _familyListValid;                              // indicates the list of font families is valid
-        private bool _typefaceListValid;                            // indicates the list of typefaces is valid
-        private bool _typefaceListSelectionValid;                   // indicates the current selection in the typeface list is valid
-        private bool _previewValid;                                 // indicates the preview control is valid
-        private Dictionary<TabItem, TabState> _tabDictionary;       // state and logic for each tab
-        private DependencyProperty _currentFeature;
-        private TypographyFeaturePage _currentFeaturePage;
+		bool _populated;
+        bool _updatePending;                                // indicates a call to OnUpdate is scheduled
+        bool _familyListValid;                              // indicates the list of font families is valid
+        bool _typefaceListValid;                            // indicates the list of typefaces is valid
+        bool _typefaceListSelectionValid;                   // indicates the current selection in the typeface list is valid
+        bool _previewValid;                                 // indicates the preview control is valid
+        Dictionary<TabItem, TabState> _tabDictionary;       // state and logic for each tab
+        DependencyProperty _currentFeature;
+        TypographyFeaturePage _currentFeaturePage;
 
-        private static readonly double[] CommonlyUsedFontSizes = new double[]
-        {
+        static readonly double[] CommonlyUsedFontSizes = {
             3.0,    4.0,   5.0,   6.0,   6.5,
             7.0,    7.5,   8.0,   8.5,   9.0,
             9.5,   10.0,  10.5,  11.0,  11.5,
@@ -48,7 +44,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         };
 
         // Specialized metadata object for font chooser dependency properties
-        private class FontPropertyMetadata : FrameworkPropertyMetadata
+        class FontPropertyMetadata : FrameworkPropertyMetadata
         {
             public readonly DependencyProperty TargetProperty;
 
@@ -64,7 +60,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Specialized metadata object for typographic font chooser properties
-        private class TypographicPropertyMetadata : FontPropertyMetadata
+        class TypographicPropertyMetadata : FontPropertyMetadata
         {
             public TypographicPropertyMetadata(object defaultValue, DependencyProperty targetProperty, TypographyFeaturePage featurePage, string sampleTextTag)
                 : base(defaultValue, _callback, targetProperty)
@@ -76,13 +72,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             public readonly TypographyFeaturePage FeaturePage;
             public readonly string SampleTextTag;
 
-            private static PropertyChangedCallback _callback = new PropertyChangedCallback(
+            static readonly PropertyChangedCallback _callback = new PropertyChangedCallback(
                 FontChooser.TypographicPropertyChangedCallback
                 );
         }
 
         // Object used to initialize the right-hand side of the typographic properties tab
-        private class TypographyFeaturePage
+        class TypographyFeaturePage
         {
             public TypographyFeaturePage(Item[] items)
             {
@@ -138,17 +134,17 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             public readonly Item[] Items;
         }
 
-        private delegate void UpdateCallback();
+        delegate void UpdateCallback();
 
         // Encapsulates the state and initialization logic of a tab control item.
-        private class TabState
+        class TabState
         {
             public TabState(UpdateCallback initMethod)
             {
                 InitializeTab = initMethod;
             }
 
-            public bool IsValid = false;
+            public bool IsValid;
             public readonly UpdateCallback InitializeTab;
         }
 
@@ -158,13 +154,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         public FontChooser()
         {
-            InitializeComponent();
-			this.Loaded += FontChooser_Loaded;
+			InitializeComponent();
+			Loaded += FontChooser_Loaded;
         }
 
 		void FontChooser_Loaded (object sender, RoutedEventArgs e)
 		{
-			this.SizeToContent = System.Windows.SizeToContent.Manual;
+			SizeToContent = System.Windows.SizeToContent.Manual;
 			selectionControls.Height = double.NaN;
 			tabControl.Height = tabControl.Width = double.NaN;
 			preview.Height = double.NaN;
@@ -186,7 +182,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 			sizeList.SelectionChanged += new SelectionChangedEventHandler (sizeList_SelectionChanged);
 
 			// Hook up events for text decoration check boxes.
-			RoutedEventHandler textDecorationEventHandler = new RoutedEventHandler (textDecorationCheckStateChanged);
+			var textDecorationEventHandler = new RoutedEventHandler (textDecorationCheckStateChanged);
 			underlineCheckBox.Checked += textDecorationEventHandler;
 			underlineCheckBox.Unchecked += textDecorationEventHandler;
 			baselineCheckBox.Checked += textDecorationEventHandler;
@@ -227,25 +223,25 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         #region Event handlers
 
-        private void OnOKButtonClicked(object sender, RoutedEventArgs e)
+        void OnOKButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
-            this.Close();
+            DialogResult = true;
+            Close();
         }
 
-        private void OnCancelButtonClicked(object sender, RoutedEventArgs e)
+        void OnCancelButtonClicked(object sender, RoutedEventArgs e)
         {
-            this.Close();
+            Close();
         }
 
-        private int _fontFamilyTextBoxSelectionStart;
+        int _fontFamilyTextBoxSelectionStart;
 
-        private void fontFamilyTextBox_SelectionChanged(object sender, RoutedEventArgs e)
+        void fontFamilyTextBox_SelectionChanged(object sender, RoutedEventArgs e)
         {
             _fontFamilyTextBoxSelectionStart = fontFamilyTextBox.SelectionStart;
         }
 
-        private void fontFamilyTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        void fontFamilyTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             string text = fontFamilyTextBox.Text;
 
@@ -261,7 +257,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                     && fontFamilyTextBox.SelectionStart == text.Length)
                 {
                     // Get the current list item, which should be the nearest match for the text.
-                    FontFamilyListItem item = fontFamilyList.Items.CurrentItem as FontFamilyListItem;
+                    var item = fontFamilyList.Items.CurrentItem as FontFamilyListItem;
                     if (item != null)
                     {
                         // Does the text box text match the beginning of the family name?
@@ -278,7 +274,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void sizeTextBox_TextChanged(object sender, TextChangedEventArgs e)
+        void sizeTextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
             double sizeInPoints;
             if (double.TryParse(sizeTextBox.Text, out sizeInPoints))
@@ -291,37 +287,37 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void fontFamilyTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        void fontFamilyTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             OnComboBoxPreviewKeyDown(fontFamilyTextBox, fontFamilyList, e);
         }
 
-        private void sizeTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
+        void sizeTextBox_PreviewKeyDown(object sender, KeyEventArgs e)
         {
             OnComboBoxPreviewKeyDown(sizeTextBox, sizeList, e);
         }
 
-        private void fontFamilyList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void fontFamilyList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FontFamilyListItem item = fontFamilyList.SelectedItem as FontFamilyListItem;
+            var item = fontFamilyList.SelectedItem as FontFamilyListItem;
             if (item != null)
             {
                 SelectedFontFamily = item.FontFamily;
             }
         }
 
-        private void sizeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void sizeList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            FontSizeListItem item = sizeList.SelectedItem as FontSizeListItem;
+            var item = sizeList.SelectedItem as FontSizeListItem;
             if (item != null)
             {
                 SelectedFontSize = item.SizeInPixels;
             }
         }
 
-        private void typefaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void typefaceList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            TypefaceListItem item = typefaceList.SelectedItem as TypefaceListItem;
+            var item = typefaceList.SelectedItem as TypefaceListItem;
             if (item != null)
             {
                 SelectedFontWeight = item.FontWeight;
@@ -330,9 +326,9 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void textDecorationCheckStateChanged(object sender, RoutedEventArgs e)
+        void textDecorationCheckStateChanged(object sender, RoutedEventArgs e)
         {
-            TextDecorationCollection textDecorations = new TextDecorationCollection();
+            var textDecorations = new TextDecorationCollection();
 
             if (underlineCheckBox.IsChecked.Value)
             {
@@ -355,7 +351,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             SelectedTextDecorations = textDecorations;
         }
 
-        private void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void tabControl_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             TabState tab = CurrentTabState;
             if (tab != null && !tab.IsValid)
@@ -365,7 +361,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void featureList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        void featureList_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             InitializeTypographyTab();
         }
@@ -403,10 +399,10 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         {
             foreach (DependencyProperty property in _chooserProperties)
             {
-                FontPropertyMetadata metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
+                var metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
                 if (metadata != null)
                 {
-                    this.SetValue(property, obj.GetValue(metadata.TargetProperty));
+                    SetValue(property, obj.GetValue(metadata.TargetProperty));
                 }
             }
         }
@@ -418,24 +414,24 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         {
             foreach (DependencyProperty property in _chooserProperties)
             {
-                FontPropertyMetadata metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
+                var metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
                 if (metadata != null)
                 {
-                    obj.SetValue(metadata.TargetProperty, this.GetValue(property));
+                    obj.SetValue(metadata.TargetProperty, GetValue(property));
                 }
             }
         }
 
-        private void ApplyPropertiesToObjectExcept(DependencyObject obj, DependencyProperty except)
+        void ApplyPropertiesToObjectExcept(DependencyObject obj, DependencyProperty except)
         {
             foreach (DependencyProperty property in _chooserProperties)
             {
                 if (property != except)
                 {
-                    FontPropertyMetadata metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
+                    var metadata = property.GetMetadata(typeof(FontChooser)) as FontPropertyMetadata;
                     if (metadata != null)
                     {
-                        obj.SetValue(metadata.TargetProperty, this.GetValue(property));
+                        obj.SetValue(metadata.TargetProperty, GetValue(property));
                     }
                 }
             }
@@ -772,9 +768,9 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             set { SetValue(StylisticAlternatesProperty, value); }
         }
 
-        private static void TypographicPropertyChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        static void TypographicPropertyChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
-            FontChooser chooser = obj as FontChooser;
+            var chooser = obj as FontChooser;
             if (chooser != null)
             {
                 chooser.InvalidatePreview();
@@ -848,7 +844,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             get { return (double)GetValue(SelectedFontSizeProperty); }
             set { SetValue(SelectedFontSizeProperty, value); }
         }
-        private static void SelectedFontSizeChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        static void SelectedFontSizeChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
             ((FontChooser)obj).OnSelectedFontSizeChanged((double)(e.NewValue));
         }
@@ -869,9 +865,9 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             get { return GetValue(SelectedTextDecorationsProperty) as TextDecorationCollection; }
             set { SetValue(SelectedTextDecorationsProperty, value); }
         }
-        private static void SelectedTextDecorationsChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
+        static void SelectedTextDecorationsChangedCallback(DependencyObject obj, DependencyPropertyChangedEventArgs e)
         {
-            FontChooser chooser = (FontChooser)obj;
+            var chooser = (FontChooser)obj;
             chooser.OnTextDecorationsChanged();
         }
 
@@ -880,7 +876,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         #region Dependency property helper functions
 
         // Helper function for registering typographic dependency properties with property-specific sample text.
-        private static DependencyProperty RegisterTypographicProperty(DependencyProperty targetProperty, string sampleTextTag)
+        static DependencyProperty RegisterTypographicProperty(DependencyProperty targetProperty, string sampleTextTag)
         {
             Type t = targetProperty.PropertyType;
 
@@ -902,13 +898,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Helper function for registering typographic dependency properties with default sample text for the type.
-        private static DependencyProperty RegisterTypographicProperty(DependencyProperty targetProperty)
+        static DependencyProperty RegisterTypographicProperty(DependencyProperty targetProperty)
         {
             return RegisterTypographicProperty(targetProperty, null);
         }
 
         // Helper function for registering font chooser dependency properties other than typographic properties.
-        private static DependencyProperty RegisterFontProperty(
+        static DependencyProperty RegisterFontProperty(
             string propertyName,
             DependencyProperty targetProperty,
             PropertyChangedCallback changeCallback
@@ -931,8 +927,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         #region Dependency property tables
 
         // Array of all font chooser dependency properties
-        private static readonly DependencyProperty[] _chooserProperties = new DependencyProperty[]
-        {
+        static readonly DependencyProperty[] _chooserProperties = {
             // typography properties
             StandardLigaturesProperty,
             ContextualLigaturesProperty,
@@ -992,7 +987,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         #region Property change handlers
 
         // Handle changes to the SelectedFontFamily property
-        private void OnSelectedFontFamilyChanged(FontFamily family)
+        void OnSelectedFontFamilyChanged(FontFamily family)
         {
             // If the family list is not valid do nothing for now. 
             // We'll be called again after the list is initialized.
@@ -1014,7 +1009,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Handle changes to the SelectedFontSize property
-        private void OnSelectedFontSizeChanged(double sizeInPixels)
+        void OnSelectedFontSizeChanged(double sizeInPixels)
         {
             // Select the list item, if the size is in the list.
             double sizeInPoints = FontSizeListItem.PixelsToPoints(sizeInPixels);
@@ -1036,7 +1031,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Handle changes to any of the text decoration properties.
-        private void OnTextDecorationsChanged()
+        void OnTextDecorationsChanged()
         {
             bool underline = false;
             bool baseline = false;
@@ -1081,7 +1076,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         #region Background update logic
 
         // Schedule background initialization of the font famiy list.
-        private void InvalidateFontFamilyList()
+        void InvalidateFontFamilyList()
         {
             if (_familyListValid)
             {
@@ -1096,7 +1091,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Schedule background initialization of the typeface list.
-        private void InvalidateTypefaceList()
+        void InvalidateTypefaceList()
         {
             if (_typefaceListValid)
             {
@@ -1108,7 +1103,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Schedule background selection of the current typeface list item.
-        private void InvalidateTypefaceListSelection()
+        void InvalidateTypefaceListSelection()
         {
             if (_typefaceListSelectionValid)
             {
@@ -1118,7 +1113,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Mark a specific tab as invalid and schedule background initialization if necessary.
-        private void InvalidateTab(TabItem tab)
+        void InvalidateTab(TabItem tab)
         {
             TabState tabState;
 			if (_tabDictionary != null && _tabDictionary.TryGetValue (tab, out tabState))
@@ -1136,7 +1131,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Mark all the tabs as invalid and schedule background initialization of the current tab.
-        private void InvalidateTabs()
+        void InvalidateTabs()
         {
             foreach (KeyValuePair<TabItem, TabState> item in _tabDictionary)
             {
@@ -1147,7 +1142,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Schedule background initialization of the preview control.
-        private void InvalidatePreview()
+        void InvalidatePreview()
         {
             if (_previewValid)
             {
@@ -1157,7 +1152,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Schedule background initialization.
-        private void ScheduleUpdate()
+        void ScheduleUpdate()
         {
             if (_populated && !_updatePending)
             {
@@ -1167,7 +1162,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         }
 
         // Dispatcher callback that performs background initialization.
-        private void OnUpdate()
+        void OnUpdate()
         {
 			if (!_populated)
 				return;
@@ -1229,12 +1224,12 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         #region Content initialization
 
-        private void InitializeFontFamilyList()
+        void InitializeFontFamilyList()
         {
             ICollection<FontFamily> familyCollection = FontFamilyCollection;
             if (familyCollection != null)
             {
-                FontFamilyListItem[] items = new FontFamilyListItem[familyCollection.Count];
+                var items = new FontFamilyListItem[familyCollection.Count];
 
                 int i = 0;
 
@@ -1252,14 +1247,14 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void InitializeTypefaceList()
+        void InitializeTypefaceList()
         {
             FontFamily family = SelectedFontFamily;
             if (family != null)
             {
                 ICollection<Typeface> faceCollection = family.GetTypefaces();
 
-                TypefaceListItem[] items = new TypefaceListItem[faceCollection.Count];
+                var items = new TypefaceListItem[faceCollection.Count];
 
                 int i = 0;
 
@@ -1277,13 +1272,13 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void InitializeTypefaceListSelection()
+        void InitializeTypefaceListSelection()
         {
             // If the typeface list is not valid, do nothing for now.
             // We'll be called again after the list is initialized.
             if (_typefaceListValid)
             {
-                Typeface typeface = new Typeface(SelectedFontFamily, SelectedFontStyle, SelectedFontWeight, SelectedFontStretch);
+                var typeface = new Typeface(SelectedFontFamily, SelectedFontStyle, SelectedFontWeight, SelectedFontStretch);
 
                 // Select the typeface in the list.
                 SelectTypefaceListItem(typeface);
@@ -1294,9 +1289,9 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void InitializeFeatureList()
+        void InitializeFeatureList()
         {
-            TypographicFeatureListItem[] items = new TypographicFeatureListItem[_chooserProperties.Length];
+            var items = new TypographicFeatureListItem[_chooserProperties.Length];
 
             int count = 0;
 
@@ -1317,12 +1312,12 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private static string LookupString(string tag)
+        static string LookupString(string tag)
         {
 			return Properties.FontDialogResources.ResourceManager.GetString (tag, CultureInfo.CurrentUICulture);
         }
 
-        private TabState CurrentTabState
+        TabState CurrentTabState
         {
             get
             {
@@ -1332,11 +1327,11 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void InitializeSamplesTab()
+        void InitializeSamplesTab()
         {
             FontFamily selectedFamily = SelectedFontFamily;
 
-            Typeface selectedFace = new Typeface(
+            var selectedFace = new Typeface(
                 selectedFamily,
                 SelectedFontStyle,
                 SelectedFontWeight,
@@ -1347,14 +1342,14 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             typefaceNameRun.Text = TypefaceListItem.GetDisplayName(selectedFace);
 
             // Create FontFamily samples document.
-            FlowDocument doc = new FlowDocument();
+            var doc = new FlowDocument();
             foreach (Typeface face in selectedFamily.GetTypefaces())
             {
-                Paragraph labelPara = new Paragraph(new Run(TypefaceListItem.GetDisplayName(face)));
+                var labelPara = new Paragraph(new Run(TypefaceListItem.GetDisplayName(face)));
                 labelPara.Margin = new Thickness(0);
                 doc.Blocks.Add(labelPara);
 
-                Paragraph samplePara = new Paragraph(new Run(_previewSampleText));
+                var samplePara = new Paragraph(new Run(_previewSampleText));
                 samplePara.FontFamily = selectedFamily;
                 samplePara.FontWeight = face.Weight;
                 samplePara.FontStyle = face.Style;
@@ -1371,11 +1366,11 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             foreach (double sizeInPoints in new double[] { 9.0, 10.0, 11.0, 12.0, 13.0, 14.0, 15.0, 16.0, 17.0 })
             {
                 string labelText = string.Format("{0} {1}", sizeInPoints, _pointsText);
-                Paragraph labelPara = new Paragraph(new Run(labelText));
+                var labelPara = new Paragraph(new Run(labelText));
                 labelPara.Margin = new Thickness(0);
                 doc.Blocks.Add(labelPara);
 
-                Paragraph samplePara = new Paragraph(new Run(_previewSampleText));
+                var samplePara = new Paragraph(new Run(_previewSampleText));
                 samplePara.FontFamily = selectedFamily;
                 samplePara.FontWeight = selectedFace.Weight;
                 samplePara.FontStyle = selectedFace.Style;
@@ -1388,7 +1383,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             typefaceSamples.Document = doc;
         }
 
-        private void InitializeTypographyTab()
+        void InitializeTypographyTab()
         {
             if (featureList.Items.IsEmpty)
             {
@@ -1401,10 +1396,10 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             DependencyProperty chooserProperty = null;
             TypographyFeaturePage featurePage = null;
 
-            TypographicFeatureListItem listItem = featureList.SelectedItem as TypographicFeatureListItem;
+            var listItem = featureList.SelectedItem as TypographicFeatureListItem;
             if (listItem != null)
             {
-                TypographicPropertyMetadata metadata = listItem.ChooserProperty.GetMetadata(typeof(FontChooser)) as TypographicPropertyMetadata;
+                var metadata = listItem.ChooserProperty.GetMetadata(typeof(FontChooser)) as TypographicPropertyMetadata;
                 if (metadata != null)
                 {
                     chooserProperty = listItem.ChooserProperty;
@@ -1415,7 +1410,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             InitializeFeaturePage(typographyFeaturePage, chooserProperty, featurePage);
         }
 
-        private void InitializeFeaturePage(Grid grid, DependencyProperty chooserProperty, TypographyFeaturePage page)
+        void InitializeFeaturePage(Grid grid, DependencyProperty chooserProperty, TypographyFeaturePage page)
         {
             if (page == null)
             {
@@ -1425,8 +1420,8 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             else
             {
                 // Get the property value and metadata.
-                object value = this.GetValue(chooserProperty);
-                TypographicPropertyMetadata metadata = (TypographicPropertyMetadata)chooserProperty.GetMetadata(typeof(FontChooser));
+                object value = GetValue(chooserProperty);
+                var metadata = (TypographicPropertyMetadata)chooserProperty.GetMetadata(typeof(FontChooser));
 
                 // Look up the sample text.
                 string sampleText = (metadata.SampleTextTag != null) ? LookupString(metadata.SampleTextTag) :
@@ -1440,12 +1435,12 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                         // Check the radio button if it matches the current property value.
                         if (page.Items[i].Value.Equals(value))
                         {
-                            RadioButton radioButton = (RadioButton)grid.Children[i * 2];
+                            var radioButton = (RadioButton)grid.Children[i * 2];
                             radioButton.IsChecked = true;
                         }
 
                         // Apply properties to the sample text block.
-                        TextBlock sample = (TextBlock)grid.Children[i * 2 + 1];
+                        var sample = (TextBlock)grid.Children[i * 2 + 1];
                         sample.Text = sampleText;
                         ApplyPropertiesToObjectExcept(sample, chooserProperty);
                         sample.SetValue(metadata.TargetProperty, page.Items[i].Value);
@@ -1459,7 +1454,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                     // Add row definitions.
                     for (int i = 0; i < page.Items.Length; ++i)
                     {
-                        RowDefinition row = new RowDefinition();
+                        var row = new RowDefinition();
                         row.Height = GridLength.Auto;
                         grid.RowDefinitions.Add(row);
                     }
@@ -1468,11 +1463,11 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                     for (int i = 0; i < page.Items.Length; ++i)
                     {
                         string tag = page.Items[i].Tag;
-                        TextBlock radioContent = new TextBlock(new Run(LookupString(tag)));
+                        var radioContent = new TextBlock(new Run(LookupString(tag)));
                         radioContent.TextWrapping = TextWrapping.Wrap;
 
                         // Add the radio button.
-                        RadioButton radioButton = new RadioButton();
+                        var radioButton = new RadioButton();
                         radioButton.Name = tag;
                         radioButton.Content = radioContent;
                         radioButton.Margin = new Thickness(5.0, 0.0, 0.0, 0.0);
@@ -1487,10 +1482,10 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                         }
 
                         // Hook up the event.
-                        radioButton.Checked += new RoutedEventHandler(featureRadioButton_Checked);
+						radioButton.Checked += featureRadioButton_Checked;
 
                         // Add the block with sample text.
-                        TextBlock sample = new TextBlock(new Run(sampleText));
+                        var sample = new TextBlock(new Run(sampleText));
                         sample.Margin = new Thickness(5.0, 5.0, 5.0, 0.0);
                         sample.TextWrapping = TextWrapping.WrapWithOverflow;
                         ApplyPropertiesToObjectExcept(sample, chooserProperty);
@@ -1503,7 +1498,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                     // Add borders between rows.
                     for (int i = 0; i < page.Items.Length; ++i)
                     {
-                        Border border = new Border();
+                        var border = new Border();
                         border.BorderThickness = new Thickness(0.0, 0.0, 0.0, 1.0);
                         border.BorderBrush = SystemColors.ControlLightBrush;
                         Grid.SetRow(border, i);
@@ -1517,7 +1512,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             _currentFeaturePage = page;
         }
 
-        private void featureRadioButton_Checked(object sender, RoutedEventArgs e)
+        void featureRadioButton_Checked(object sender, RoutedEventArgs e)
         {
             if (_currentFeature != null && _currentFeaturePage != null)
             {
@@ -1527,15 +1522,15 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
                 {
                     if (item.Tag == tag)
                     {
-                        this.SetValue(_currentFeature, item.Value);
+                        SetValue(_currentFeature, item.Value);
                     }
                 }
             }
         }
 
-        private void AddTableRow(TableRowGroup rowGroup, string leftText, string rightText)
+        static void AddTableRow(TableRowGroup rowGroup, string leftText, string rightText)
         {
-            TableRow row = new TableRow();
+            var row = new TableRow();
 
             row.Cells.Add(new TableCell(new Paragraph(new Run(leftText))));
             row.Cells.Add(new TableCell(new Paragraph(new Run(rightText))));
@@ -1543,15 +1538,15 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             rowGroup.Rows.Add(row);
         }
 
-        private void AddTableRow(TableRowGroup rowGroup, string leftText, IDictionary<CultureInfo, string> rightStrings)
+        void AddTableRow(TableRowGroup rowGroup, string leftText, IDictionary<CultureInfo, string> rightStrings)
         {
             string rightText = NameDictionaryHelper.GetDisplayName(rightStrings);
             AddTableRow(rowGroup, leftText, rightText);
         }
 
-        private void InitializeDescriptiveTextTab()
+        void InitializeDescriptiveTextTab()
         {
-            Typeface selectedTypeface = new Typeface(
+            var selectedTypeface = new Typeface(
                 SelectedFontFamily,
                 SelectedFontStyle,
                 SelectedFontWeight,
@@ -1562,16 +1557,16 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             if (selectedTypeface.TryGetGlyphTypeface(out glyphTypeface))
             {
                 // Create a table with two columns.
-                Table table = new Table();
+                var table = new Table();
                 table.CellSpacing = 5;
-                TableColumn leftColumn = new TableColumn();
+                var leftColumn = new TableColumn();
                 leftColumn.Width = new GridLength(2.0, GridUnitType.Star);
                 table.Columns.Add(leftColumn);
-                TableColumn rightColumn = new TableColumn();
+                var rightColumn = new TableColumn();
                 rightColumn.Width = new GridLength(3.0, GridUnitType.Star);
                 table.Columns.Add(rightColumn);
 
-                TableRowGroup rowGroup = new TableRowGroup();
+                var rowGroup = new TableRowGroup();
                 AddTableRow(rowGroup, "Family:", glyphTypeface.FamilyNames);
                 AddTableRow(rowGroup, "Face:", glyphTypeface.FaceNames);
                 AddTableRow(rowGroup, "Description:", glyphTypeface.Descriptions);
@@ -1607,7 +1602,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void InitializePreview()
+        void InitializePreview()
         {
             ApplyPropertiesToObject(previewTextBox);
         }
@@ -1618,73 +1613,64 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         // Update font family list based on selection.
         // Return list item if there's an exact match, or null if not.
-        private FontFamilyListItem SelectFontFamilyListItem(string displayName)
-        {
-            FontFamilyListItem listItem = fontFamilyList.SelectedItem as FontFamilyListItem;
-            if (listItem != null && string.Compare(listItem.ToString(), displayName, true, CultureInfo.CurrentCulture) == 0)
-            {
-                // Already selected
-                return listItem;
-            }
-            else if (SelectListItem(fontFamilyList, displayName))
-            {
-                // Exact match found
-                return fontFamilyList.SelectedItem as FontFamilyListItem;
-            }
-            else
-            {
-                // Not in the list
-                return null;
-            }
-        }
+        FontFamilyListItem SelectFontFamilyListItem(string displayName)
+		{
+			var listItem = fontFamilyList.SelectedItem as FontFamilyListItem;
+			if (listItem != null && string.Compare(listItem.ToString(), displayName, true, CultureInfo.CurrentCulture) == 0)
+			{
+				// Already selected
+				return listItem;
+			}
+			if (SelectListItem(fontFamilyList, displayName))
+			{
+				// Exact match found
+				return fontFamilyList.SelectedItem as FontFamilyListItem;
+			}
+			// Not in the list
+			return null;
+		}
 
         // Update font family list based on selection.
         // Return list item if there's an exact match, or null if not.
-        private FontFamilyListItem SelectFontFamilyListItem(FontFamily family)
-        {
-            FontFamilyListItem listItem = fontFamilyList.SelectedItem as FontFamilyListItem;
-            if (listItem != null && listItem.FontFamily.Equals(family))
-            {
-                // Already selected
-                return listItem;
-            }
-            else if (SelectListItem(fontFamilyList, FontFamilyListItem.GetDisplayName(family)))
-            {
-                // Exact match found
-                return fontFamilyList.SelectedItem as FontFamilyListItem;
-            }
-            else
-            {
-                // Not in the list
-                return null;
-            }
-        }
+        FontFamilyListItem SelectFontFamilyListItem(FontFamily family)
+		{
+			var listItem = fontFamilyList.SelectedItem as FontFamilyListItem;
+			if (listItem != null && listItem.FontFamily.Equals(family))
+			{
+				// Already selected
+				return listItem;
+			}
+			if (SelectListItem(fontFamilyList, FontFamilyListItem.GetDisplayName(family)))
+			{
+				// Exact match found
+				return fontFamilyList.SelectedItem as FontFamilyListItem;
+			}
+			// Not in the list
+			return null;
+		}
 
         // Update typeface list based on selection.
         // Return list item if there's an exact match, or null if not.
-        private TypefaceListItem SelectTypefaceListItem(Typeface typeface)
-        {
-            TypefaceListItem listItem = typefaceList.SelectedItem as TypefaceListItem;
-            if (listItem != null && listItem.Typeface.Equals(typeface))
-            {
-                // Already selected
-                return listItem;
-            }
-            else if (SelectListItem(typefaceList, new TypefaceListItem(typeface)))
-            {
-                // Exact match found
-                return typefaceList.SelectedItem as TypefaceListItem;
-            }
-            else
-            {
-                // Not in list
-                return null;
-            }
-        }
+        TypefaceListItem SelectTypefaceListItem(Typeface typeface)
+		{
+			var listItem = typefaceList.SelectedItem as TypefaceListItem;
+			if (listItem != null && listItem.Typeface.Equals(typeface))
+			{
+				// Already selected
+				return listItem;
+			}
+			if (SelectListItem(typefaceList, new TypefaceListItem(typeface)))
+			{
+				// Exact match found
+				return typefaceList.SelectedItem as TypefaceListItem;
+			}
+			// Not in list
+			return null;
+		}
 
         // Update list based on selection.
         // Return true if there's an exact match, or false if not.
-        private bool SelectListItem(ListBox list, object value)
+        static bool SelectListItem(ListBox list, object value)
         {
             ItemCollection itemList = list.Items;
 
@@ -1695,7 +1681,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             while (first < limit)
             {
                 int i = first + (limit - first) / 2;
-                IComparable item = (IComparable)(itemList[i]);
+                var item = (IComparable)(itemList[i]);
                 int comparison = item.CompareTo(value);
                 if (comparison < 0)
                 {
@@ -1730,7 +1716,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
 
         // Logic to handle UP and DOWN arrow keys in the text box associated with a list.
         // Behavior is similar to a Win32 combo box.
-        private void OnComboBoxPreviewKeyDown(TextBox textBox, ListBox listBox, KeyEventArgs e)
+        void OnComboBoxPreviewKeyDown(TextBox textBox, ListBox listBox, KeyEventArgs e)
         {
             switch (e.Key)
             {
@@ -1756,7 +1742,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
             }
         }
 
-        private void MoveListPosition(ListBox listBox, int distance)
+        void MoveListPosition(ListBox listBox, int distance)
         {
             int i = listBox.Items.CurrentPosition + distance;
             if (i >= 0 && i < listBox.Items.Count)

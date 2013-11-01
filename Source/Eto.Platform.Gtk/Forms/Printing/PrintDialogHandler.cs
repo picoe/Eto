@@ -44,10 +44,10 @@ namespace Eto.Platform.GtkSharp.Forms.Printing
 					| Gtk.PrintCapabilities.Scale
 					| Gtk.PrintCapabilities.NumberUp
 					| Gtk.PrintCapabilities.Reverse;
-			var printSettingsHandler = (PrintSettingsHandler)this.PrintSettings.Handler;
+			var printSettingsHandler = (PrintSettingsHandler)PrintSettings.Handler;
 
-			Control.PageSetup = this.PrintSettings.ToGtkPageSetup ();
-			Control.PrintSettings = this.PrintSettings.ToGtkPrintSettings ();
+			Control.PageSetup = PrintSettings.ToGtkPageSetup ();
+			Control.PrintSettings = PrintSettings.ToGtkPrintSettings ();
 			var customOptions = new CustomOptions();
 			customOptions.SelectionOnly.Active = printSettingsHandler.SelectionOnly;
 

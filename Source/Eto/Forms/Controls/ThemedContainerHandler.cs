@@ -6,11 +6,11 @@ namespace Eto.Forms
 	/// Base class for implementing Eto Container
 	/// controls using Eto controls.
 	/// </summary>
-	/// <typeparam name="T">The Eto control used to create the custom implementation</typeparam>
-	/// <typeparam name="W">The container being implemented.</typeparam>
-	public abstract class ThemedContainerHandler<T, W> : ThemedControlHandler<T, W>, IContainer
-		where T: Container
-		where W : Control
+	/// <typeparam name="TControl">The Eto control used to create the custom implementation</typeparam>
+	/// <typeparam name="TWidget">The container being implemented.</typeparam>
+	public abstract class ThemedContainerHandler<TControl, TWidget> : ThemedControlHandler<TControl, TWidget>, IContainer
+		where TControl: Container
+		where TWidget : Control
 	{
 		public Size ClientSize
 		{

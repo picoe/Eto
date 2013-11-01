@@ -41,8 +41,8 @@ namespace Eto.Platform.Mac
 					controllerInner.radioGroup = new List<RadioMenuItem>();
 					controllerInner.radioGroup.Add(controller);
 				}
-				controllerInner.radioGroup.Add(this.Widget);
-				this.radioGroup = controllerInner.radioGroup;
+				controllerInner.radioGroup.Add(Widget);
+				radioGroup = controllerInner.radioGroup;
 			}
 		}
 
@@ -69,8 +69,8 @@ namespace Eto.Platform.Mac
 			get { return KeyMap.Convert(Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
 			set
 			{ 
-				this.Control.KeyEquivalent = KeyMap.KeyEquivalent(value);
-				this.Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask(value);
+				Control.KeyEquivalent = KeyMap.KeyEquivalent(value);
+				Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask(value);
 			}
 		}
 

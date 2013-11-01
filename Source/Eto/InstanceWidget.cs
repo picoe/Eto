@@ -35,23 +35,6 @@ namespace Eto
 	}
 
 	/// <summary>
-	/// Generic implementation of <see cref="IInstanceWidget"/> to provide a statically typed control parameter
-	/// </summary>
-	/// <remarks>
-	/// This interface can be used on platform handlers so that we can get the platform-specific control
-	/// of a widget without having to know its implementation details.
-	/// </remarks>
-	/// <typeparam name="T">Platform-specific control used for the widget</typeparam>
-	/// <typeparam name="W">Widget type</typeparam>
-	public interface IInstanceWidget<out T, W> : IInstanceWidget
-	{
-		/// <summary>
-		/// Gets the platform-specific control used for the widget
-		/// </summary>
-		T Control { get; }
-	}
-
-	/// <summary>
 	/// Widget that represents an instance of an object
 	/// </summary>
 	/// <remarks>
@@ -200,6 +183,7 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
+		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(string id)
 		{
 			Handler.HandleEvent(id);
@@ -243,11 +227,20 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="ids">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
+		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(params string[] ids)
 		{
 			foreach (var id in ids)
 			{
 				HandleEvent(id);
+			}
+		}
+
+		internal void HandleEvents(string[] ids)
+		{
+			for (int i = 0; i < ids.Length; i++)
+			{
+				Handler.HandleEvent(ids[i]);
 			}
 		}
 
@@ -265,6 +258,7 @@ namespace Eto
 		{
 			base.Initialize();
 			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
 		}
 	}
 }

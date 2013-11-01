@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Drawing;
-using System.Text.RegularExpressions;
 using Eto.Forms;
 using swi = System.Windows.Input;
 using swm = System.Windows.Media;
 using sw = System.Windows;
-using System.Reflection;
-using System.IO;
 using Eto.Platform.Wpf.Drawing;
 using Eto.Platform.Wpf.Forms.Menu;
 using Eto.Platform.Wpf.Forms.Controls;
@@ -24,7 +17,7 @@ namespace Eto.Platform.Wpf
 	{
 		public override string ID { get { return Generators.Wpf; } }
 
-		static EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.Platform.Wpf.CustomControls.Assemblies");
+		static readonly EmbeddedAssemblyLoader embeddedAssemblies = EmbeddedAssemblyLoader.Register("Eto.Platform.Wpf.CustomControls.Assemblies");
 
 		public Generator()
 		{

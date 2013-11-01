@@ -43,8 +43,7 @@ namespace Eto.Test.Sections.Controls
 			for (int i = 0; i < 5; i++)
 			{
 				var item = new RadioButton(controller) { Text = "Item " + i, Checked = i == 2 };
-				if (controller == null)
-					controller = item;
+				controller = controller ?? item;
 				LogEvents(item);
 				layout.Add(item);
 			}
@@ -62,8 +61,7 @@ namespace Eto.Test.Sections.Controls
 			for (int i = 0; i < 5; i++)
 			{
 				var item = new RadioButton(controller) { Text = "Item " + i, Checked = i == 2, Enabled = false };
-				if (controller == null)
-					controller = item;
+				controller = controller ?? item;
 				LogEvents(item);
 				layout.Add(item);
 			}

@@ -66,6 +66,12 @@ namespace Eto.Forms
 
 		#endregion
 
+		static TextArea()
+		{
+			EventLookup.Register(typeof(TextArea), "OnSelectionChanged", TextArea.SelectionChangedEvent);
+			EventLookup.Register(typeof(TextArea), "OnCaretIndexChanged", TextArea.CaretIndexChangedEvent);
+		}
+
 		public TextArea ()
 			: this (Generator.Current)
 		{

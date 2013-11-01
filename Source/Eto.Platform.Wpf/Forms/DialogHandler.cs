@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
@@ -31,8 +28,7 @@ namespace Eto.Platform.Wpf.Forms
 			get { return Control.ResizeMode == sw.ResizeMode.CanResize || Control.ResizeMode == sw.ResizeMode.CanResizeWithGrip; }
 			set
 			{
-				if (value) Control.ResizeMode = sw.ResizeMode.CanResizeWithGrip;
-				else Control.ResizeMode = sw.ResizeMode.NoResize;
+				Control.ResizeMode = value ? sw.ResizeMode.CanResizeWithGrip : sw.ResizeMode.NoResize;
 			}
 		}
 
@@ -57,7 +53,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		void HandleSourceInitialized (object sender, EventArgs e)
 		{
-			var owner = this.Control.Owner;
+			var owner = Control.Owner;
 			Control.Left = owner.Left + (owner.ActualWidth - Control.ActualWidth) / 2;
 			Control.Top = owner.Top + (owner.ActualHeight - Control.ActualHeight) / 2;
 			Control.SourceInitialized -= HandleSourceInitialized;

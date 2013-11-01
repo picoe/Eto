@@ -1,8 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
@@ -49,13 +46,13 @@ namespace Eto.Platform.Wpf.CustomControls
 
 		public event RoutedPropertyChangedEventHandler<object> CurrentItemChanged
 		{
-			add { base.AddHandler (SelectableTreeView.CurrentItemChangedEvent, value); }
-			remove { base.RemoveHandler (SelectableTreeView.CurrentItemChangedEvent, value); }
+			add { AddHandler (SelectableTreeView.CurrentItemChangedEvent, value); }
+			remove { RemoveHandler(SelectableTreeView.CurrentItemChangedEvent, value); }
 		}
 
 		protected virtual void OnCurrentItemChanged (RoutedPropertyChangedEventArgs<object> e)
 		{
-			base.RaiseEvent (e);
+			RaiseEvent(e);
 		}
 
 		public static DependencyProperty CurrentItemProperty = DependencyProperty.RegisterAttached(
@@ -86,17 +83,17 @@ namespace Eto.Platform.Wpf.CustomControls
 		bool refreshing;
 		public void RefreshData ()
 		{
-			var selectedItem = this.CurrentItem;
+			var selectedItem = CurrentItem;
 			refreshing = true;
 			Items.Refresh ();
 			refreshing = false;
-			if (this.IsLoaded)
+			if (IsLoaded)
 			{
 				SetSelected(selectedItem);
 			}
 			else
 			{
-				this.Loaded += (sender, e) => SetSelected(selectedItem);
+				Loaded += (sender, e) => SetSelected(selectedItem);
 			}
             //this.CurrentItem = selectedItem;
 		}
@@ -149,8 +146,8 @@ namespace Eto.Platform.Wpf.CustomControls
 
 		class Helper
 		{
-			Dictionary<ItemContainerGenerator, ItemsControl> items = new Dictionary<ItemContainerGenerator, ItemsControl> ();
-			TaskCompletionSource<TreeViewItem> completion = new TaskCompletionSource<TreeViewItem> ();
+			readonly Dictionary<ItemContainerGenerator, ItemsControl> items = new Dictionary<ItemContainerGenerator, ItemsControl> ();
+			readonly TaskCompletionSource<TreeViewItem> completion = new TaskCompletionSource<TreeViewItem> ();
 			bool completed;
 
 			public object SelectedItem { get; set; }
@@ -168,7 +165,7 @@ namespace Eto.Platform.Wpf.CustomControls
 			void HandleStatusChanged (object sender, EventArgs e)
 			{
 				var generator = sender as ItemContainerGenerator;
-				if (generator.Status == GeneratorStatus.ContainersGenerated)
+				if (generator != null && generator.Status == GeneratorStatus.ContainersGenerated)
 				{
 					generator.StatusChanged -= HandleStatusChanged;
 					ItemsControl ic;
@@ -220,7 +217,7 @@ namespace Eto.Platform.Wpf.CustomControls
 						var container = generator.ContainerFromItem (item) as TreeViewItem;
 						if (item == SelectedItem && container != null)
 						{
-							Complete (container as TreeViewItem);
+							Complete (container);
 							return true;
 						}
 						if (Seek (container))

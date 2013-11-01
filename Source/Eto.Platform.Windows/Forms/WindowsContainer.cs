@@ -7,9 +7,9 @@ using Eto.Drawing;
 namespace Eto.Platform.Windows
 {
 
-	public abstract class WindowsContainer<T, W> : WindowsControl<T, W>, IContainer
-		where T : swf.Control
-		where W : Container
+	public abstract class WindowsContainer<TControl, TWidget> : WindowsControl<TControl, TWidget>, IContainer
+		where TControl : swf.Control
+		where TWidget : Container
 	{
 		Size minimumSize;
 

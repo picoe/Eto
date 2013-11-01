@@ -9,7 +9,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		Font font;
 		bool toggling;
-		Gtk.EventBox box;
+		readonly Gtk.EventBox box;
 
 		public override Gtk.Widget ContainerControl
 		{

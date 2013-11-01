@@ -123,7 +123,7 @@ namespace Eto.Forms
 			if (!HasSortOrFilter)
 				return index;
 
-			var temp = 0;
+			int temp;
 			if (modelToView != null && modelToView.TryGetValue(index, out temp))
 				return temp;
 
@@ -175,7 +175,7 @@ namespace Eto.Forms
 			public Comparison<object> SortComparer { get; set; }
 			public int Compare(object x, object y)
 			{
-				return SortComparer != null ? SortComparer(x, y) : 0;
+				return SortComparer == null ? 0 : SortComparer(x, y);
 			}
 		}
 
@@ -200,10 +200,6 @@ namespace Eto.Forms
 				if (comparer != null)
 					viewItems.Sort(comparer);
 
-				// Clear and re-add the list
-				view.Clear();
-
-				view.AddRange(viewItems);
 
 				// If a sort or filter is specified, create a dictionary
 				// of the item indices. This materializes a list of all the
@@ -228,15 +224,20 @@ namespace Eto.Forms
 					var viewIndex = 0;
 					foreach (var o in viewItems)
 					{
-						int modelIndex = -1;
+						int modelIndex;
 						if (o != null && modelIndexes.TryGetValue(o, out modelIndex))
-						{
 							modelToView[modelIndex] = viewIndex;
-						}
+						else
+							modelIndex = -1;
 						viewToModel.Add(modelIndex); // always add to viewToModel because the number of items must match those in viewItems
 						viewIndex++;
 					}
 				}
+
+				// Clear and re-add the list
+				view.Clear();
+
+				view.AddRange(viewItems);
 			}
 		}
 

@@ -35,7 +35,7 @@ namespace Eto.Forms
 	/// </summary>
 	/// <typeparam name="T">Enumeration type to fill the values with</typeparam>
 	public class EnumComboBox<T> : ComboBox
-		where T : struct, IConvertible
+		where T : struct
 	{
 		class EnumValue : IListItem
 		{

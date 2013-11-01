@@ -21,8 +21,8 @@ namespace Eto.Test.Handlers
 
 		public string Text 
 		{
-			get { return this.Tab.Text; }
-			set { this.Tab.Text = value; }
+			get { return Tab.Text; }
+			set { Tab.Text = value; }
 		}
 
 		public Image Image

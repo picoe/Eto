@@ -10,9 +10,9 @@ namespace Eto
 	{
 		readonly Int32Converter int32Converter = new Int32Converter ();
 
-		public override bool CanConvertTo (ITypeDescriptorContext ctx, Type destinationType)
+		public override bool CanConvertTo (ITypeDescriptorContext context, Type destinationType)
 		{
-			return destinationType == typeof (string) || base.CanConvertTo (ctx, destinationType);
+			return destinationType == typeof (string) || base.CanConvertTo (context, destinationType);
 		}
 
 		public override bool CanConvertFrom (ITypeDescriptorContext context, Type sourceType)

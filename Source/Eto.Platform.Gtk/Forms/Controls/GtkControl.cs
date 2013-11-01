@@ -42,15 +42,13 @@ namespace Eto.Platform.GtkSharp
 			if (containerHandler != null)
 				return containerHandler;
 			var controlObject = control.ControlObject as Control;
-			if (controlObject != null)
-				return controlObject.GetGtkControlHandler();
-			return null;
+			return controlObject != null ? controlObject.GetGtkControlHandler() : null;
 		}
 	}
 
-	public abstract class GtkControl<T, W> : WidgetHandler<T, W>, IControl, IGtkControl
-		where T: Gtk.Widget
-		where W: Control
+	public abstract class GtkControl<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IGtkControl
+		where TControl: Gtk.Widget
+		where TWidget: Control
 	{
 		Font font;
 		Size size;
@@ -121,10 +119,7 @@ namespace Eto.Platform.GtkSharp
 		{
 			get
 			{
-				if (ContainerControl.Visible)
-					return ContainerControl.Allocation.Size.ToEto();
-				else
-					return size; 
+				return ContainerControl.Visible ? ContainerControl.Allocation.Size.ToEto() : size; 
 			}
 			set
 			{
@@ -183,25 +178,19 @@ namespace Eto.Platform.GtkSharp
 		{
 			get
 			{
-				Color? col = null;
+				Color? col;
 				if (cachedBackgroundColor != null)
 					return cachedBackgroundColor.Value;
 				if (IsTransparentControl)
 				{
 					var parent = Widget.Parent.GetGtkControlHandler();
-					if (parent != null)
-						col = parent.SelectedBackgroundColor;
-					else
-						col = DefaultBackgroundColor;
+					col = parent != null ? parent.SelectedBackgroundColor : DefaultBackgroundColor;
 				}
 				else
 					col = DefaultBackgroundColor;
 				if (backgroundColor != null)
 				{
-					if (col != null)
-						col = Color.Blend(col.Value, backgroundColor.Value);
-					else
-						col = backgroundColor;
+					col = col != null ? Color.Blend(col.Value, backgroundColor.Value) : backgroundColor;
 				}
 				cachedBackgroundColor = col;
 				return col;
@@ -263,17 +252,15 @@ namespace Eto.Platform.GtkSharp
 			set
 			{ 
 				Control.Visible = value;
-				if (!value)
-					Control.NoShowAll = true;
+				Control.NoShowAll = !value;
 				if (value && Widget.Loaded)
 				{
-					Control.NoShowAll = false;
 					Control.ShowAll();
 				}
 			}
 		}
 
-		public virtual void SetParent(Eto.Forms.Container parent)
+		public virtual void SetParent(Container parent)
 		{
 			if (parent == null)
 			{
@@ -315,9 +302,9 @@ namespace Eto.Platform.GtkSharp
 			Control.Realized -= HandleControlRealized;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
@@ -385,7 +372,7 @@ namespace Eto.Platform.GtkSharp
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					return;
 			}
 		}
@@ -492,8 +479,7 @@ namespace Eto.Platform.GtkSharp
 			if (e != null)
 			{
 				Widget.OnKeyDown(e);
-				if (e.Handled)
-					args.RetVal = true;
+				args.RetVal = e.Handled;
 			}
 		}
 
@@ -503,8 +489,7 @@ namespace Eto.Platform.GtkSharp
 			if (e != null)
 			{
 				Widget.OnKeyUp(e);
-				if (e.Handled)
-					args.RetVal = true;
+				args.RetVal = e.Handled;
 			}
 		}
 
@@ -542,10 +527,7 @@ namespace Eto.Platform.GtkSharp
 				cursor = value;
 				if (Control.GdkWindow != null)
 				{
-					if (cursor != null)
-						Control.GdkWindow.Cursor = cursor.ControlObject as Gdk.Cursor;
-					else
-						Control.GdkWindow.Cursor = null;
+					Control.GdkWindow.Cursor = cursor != null ? cursor.ControlObject as Gdk.Cursor : null;
 				}
 			}
 		}

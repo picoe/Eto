@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
 using sw = System.Windows;
@@ -66,11 +63,10 @@ namespace Eto.Platform.Wpf.Forms
 		}
 
 
-		sw.MessageBoxImage Convert(MessageBoxType type)
+		static sw.MessageBoxImage Convert(MessageBoxType type)
 		{
 			switch (type)
 			{
-				default:
 				case MessageBoxType.Information:
 					return sw.MessageBoxImage.Information;
 				case MessageBoxType.Error:
@@ -79,10 +75,12 @@ namespace Eto.Platform.Wpf.Forms
 					return sw.MessageBoxImage.Question;
 				case MessageBoxType.Warning:
 					return sw.MessageBoxImage.Warning;
+				default:
+					throw new NotSupportedException();
 			}
 		}
 
-		DialogResult Convert(sw.MessageBoxResult result)
+		static DialogResult Convert(sw.MessageBoxResult result)
 		{
 			switch (result)
 			{
@@ -95,7 +93,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		sw.MessageBoxButton Convert(MessageBoxButtons value)
+		static sw.MessageBoxButton Convert(MessageBoxButtons value)
 		{
 			switch (value)
 			{

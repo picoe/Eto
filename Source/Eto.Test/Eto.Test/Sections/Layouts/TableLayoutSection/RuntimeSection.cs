@@ -33,7 +33,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 			control.Click += delegate
 			{
 				toggle = !toggle;
-				this.SuspendLayout();
+				SuspendLayout();
 				if (toggle)
 				{
 					mainTable.Add(left = VerticalSection(), 0, 0);
@@ -54,7 +54,7 @@ namespace Eto.Test.Sections.Layouts.TableLayoutSection
 					topSection.Content = null;
 					control.Text = "Add Columns To Table";
 				}
-				this.ResumeLayout();
+				ResumeLayout();
 			};
 
 			return control;

@@ -166,7 +166,7 @@ namespace Eto.Forms
 		Equal = 0x0055,
 
 		/// <summary>The Semicolon ';' Key</summary>
-		[Obsolete("Use Semicolon instead")]
+		[Obsolete("Use Semicolon instead"), CLSCompliant(false)]
 		SemiColon = 0x0056,
 
 		/// <summary>The Semicolon ';' Key</summary>

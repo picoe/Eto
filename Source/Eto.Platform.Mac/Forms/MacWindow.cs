@@ -99,9 +99,9 @@ namespace Eto.Platform.Mac.Forms
 		}
 	}
 
-	public abstract class MacWindow<T, W> : MacDockContainer<T, W>, IWindow, IMacContainer, IMacWindow
-		where T: MyWindow
-		where W: Window
+	public abstract class MacWindow<TControl, TWidget> : MacDockContainer<TControl, TWidget>, IWindow, IMacContainer, IMacWindow
+		where TControl: MyWindow
+		where TWidget: Window
 	{
 		CustomFieldEditor fieldEditor;
 		MenuBar menuBar;
@@ -157,7 +157,7 @@ namespace Eto.Platform.Mac.Forms
 
 		public NSMenu MenuBar
 		{
-			get { return menuBar != null ? menuBar.ControlObject as NSMenu : null; }
+			get { return menuBar == null ? null : menuBar.ControlObject as NSMenu; }
 		}
 
 		protected MacWindow()
@@ -259,7 +259,7 @@ namespace Eto.Platform.Mac.Forms
 					{
 						AddControlObserver((NSString)"frame", e =>
 						{
-							var handler = e.Handler as MacWindow<T,W>;
+							var handler = e.Handler as MacWindow<TControl,TWidget>;
 							if (handler != null)
 							{
 								var old = oldLocation;
@@ -298,7 +298,7 @@ namespace Eto.Platform.Mac.Forms
 		/// </summary>
 		static void HandleWillMove(object sender, EventArgs e)
 		{
-			var handler = GetHandler(sender) as MacWindow<T,W>;
+			var handler = GetHandler(sender) as MacWindow<TControl,TWidget>;
 			if (handler == null)
 				return;
 			handler.oldLocation = null;
@@ -622,7 +622,7 @@ namespace Eto.Platform.Mac.Forms
 			get { return Control.IsOpaque ? 1.0 : Control.AlphaValue; }
 			set
 			{
-				Control.IsOpaque = value == 1.0;
+				Control.IsOpaque = Math.Abs(value - 1.0) < 0.01f;
 				Control.AlphaValue = (float)value; 
 			}
 		}

@@ -1,3 +1,4 @@
+using System;
 using System.IO;
 using Eto.Drawing;
 using System.Collections.Generic;
@@ -7,7 +8,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 
 	public class IconHandler : ImageHandler<Gtk.IconSet, Icon>, IIcon, IGtkPixbuf
 	{
-		Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
+		readonly Dictionary<Size, Gdk.Pixbuf> sizes = new Dictionary<Size, Gdk.Pixbuf>();
 		
 		public Gdk.Pixbuf Pixbuf { get; set; }
 
@@ -50,7 +51,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			context.Rectangle (destination.ToCairo ());
 			double scalex = 1;
 			double scaley = 1;
-			if (source.Width != destination.Width || source.Height != destination.Height) {
+			if (Math.Abs(source.Width - destination.Width) > 0.5f || Math.Abs(source.Height - destination.Height) > 0.5f) {
 				scalex = (double)destination.Width / (double)source.Width;
 				scaley = (double)destination.Height / (double)source.Height;
 				context.Scale (scalex, scaley);

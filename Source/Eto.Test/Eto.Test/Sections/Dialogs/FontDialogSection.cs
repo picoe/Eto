@@ -61,42 +61,42 @@ namespace Eto.Test.Sections.Dialogs
 			return layout;
 		}
 
-		Control Descender()
+		static Control Descender()
 		{
 			var control = new Label { TextColor = Colors.Red };
 			control.TextBinding.Bind<Font>(r => r.Descent.ToString());
 			return control;
 		}
 
-		Control Ascender()
+		static Control Ascender()
 		{
 			var control = new Label { TextColor = Colors.Blue };
 			control.TextBinding.Bind<Font>(r => r.Ascent.ToString());
 			return control;
 		}
 
-		Control XHeight()
+		static Control XHeight()
 		{
 			var control = new Label { TextColor = Colors.Green };
 			control.TextBinding.Bind<Font>(r => r.XHeight.ToString());
 			return control;
 		}
 
-		Control LineHeight()
+		static Control LineHeight()
 		{
 			var control = new Label { TextColor = Colors.Orange };
 			control.TextBinding.Bind<Font>(r => r.LineHeight.ToString());
 			return control;
 		}
 
-		Control Leading()
+		static Control Leading()
 		{
 			var control = new Label { TextColor = Colors.Orange };
 			control.TextBinding.Bind<Font>(r => r.Leading.ToString());
 			return control;
 		}
 
-		Control BaseLine()
+		static Control BaseLine()
 		{
 			var control = new Label { TextColor = Colors.Black };
 			control.TextBinding.Bind<Font>(r => r.Baseline.ToString());
@@ -115,7 +115,7 @@ namespace Eto.Test.Sections.Dialogs
 					UpdatePreview(dialog.Font);
 					Log.Write(dialog, "FontChanged, Font: {0}", dialog.Font);
 				};
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				Log.Write(dialog, "Result: {0}", result);
 			};
 			return button;
@@ -136,7 +136,7 @@ namespace Eto.Test.Sections.Dialogs
 					UpdatePreview(dialog.Font);
 					Log.Write(dialog, "FontChanged, Font: {0}", dialog.Font);
 				};
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				// do not get the font here, it may return immediately with a result of DialogResult.None on certain platforms
 				Log.Write(dialog, "Result: {0}", result);
 			};
@@ -207,17 +207,17 @@ namespace Eto.Test.Sections.Dialogs
 			return fontSizes;
 		}
 
-		Control BoldFont()
+		static Control BoldFont()
 		{
 			var control = new CheckBox { Text = "Bold", Enabled = false };
-			control.Bind(r => r.Checked, (Font f) => f.Bold);
+			control.CheckedBinding.Bind<Font>(r => r.Bold);
 			return control;
 		}
 
-		Control ItalicFont()
+		static Control ItalicFont()
 		{
 			var control = new CheckBox { Text = "Italic", Enabled = false };
-			control.Bind(r => r.Checked, (Font f) => f.Italic);
+			control.CheckedBinding.Bind<Font>(r => r.Italic);
 			return control;
 		}
 
@@ -306,7 +306,7 @@ namespace Eto.Test.Sections.Dialogs
 				pe.Graphics.DrawRectangle(Colors.Black, new RectangleF(metricsPreview.Size));
 
 				var size = pe.Graphics.MeasureString(selectedFont, preview.Text);
-				var scale = this.ParentWindow.Screen.Scale;
+				var scale = ParentWindow.Screen.Scale;
 
 				var ypos = Math.Max(0, (metricsPreview.Size.Height - size.Height) / 2);
 

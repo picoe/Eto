@@ -10,8 +10,9 @@ namespace Eto.Forms
 	public interface IDataStore<out T>
 	{
 		int Count { get; }
-		
-		T this [int index] { 
+
+		T this [int index]
+		{ 
 			get;
 		}
 	}
@@ -22,7 +23,7 @@ namespace Eto.Forms
 
 	public static class DataStoreExtensions
 	{
-		public static IEnumerable<T> AsEnumerable<T> (this IDataStore<T> store)
+		public static IEnumerable<T> AsEnumerable<T>(this IDataStore<T> store)
 		{
 			if (store == null)
 				yield break;
@@ -33,29 +34,33 @@ namespace Eto.Forms
 
 	public class DataStoreCollection<T> : ObservableCollection<T>, IDataStore<T>
 	{
-		public DataStoreCollection ()
+		public DataStoreCollection()
 		{
-		}
-		
-		public DataStoreCollection (IEnumerable<T> items)
-		{
-			AddRange (items);
 		}
 
-		public void Sort (IComparer<T> comparer)
+		public DataStoreCollection(IEnumerable<T> items)
+			: base(items)
+		{
+		}
+
+		public void Sort(IComparer<T> comparer)
 		{
 			var list = Items as List<T>;
-			if (list != null) {
-				list.Sort (comparer);
-				OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			if (list != null)
+			{
+				list.Sort(comparer);
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 				return;
 			}
-			for (int i = Count - 1; i >= 0; i--) {
-				for (int j = 1; j <= i; j++) {
-					var o1 = this [j - 1];
-					var o2 = this [j];
+			for (int i = Count - 1; i >= 0; i--)
+			{
+				for (int j = 1; j <= i; j++)
+				{
+					var o1 = this[j - 1];
+					var o2 = this[j];
 
-					if (comparer.Compare (o1, o2) > 0) {
+					if (comparer.Compare(o1, o2) > 0)
+					{
 						Remove(o1);
 						Insert(j, o1);
 					}
@@ -63,20 +68,24 @@ namespace Eto.Forms
 			}
 		}
 
-		public void Sort (Comparison<T> comparison)
+		public void Sort(Comparison<T> comparison)
 		{
 			var list = Items as List<T>;
-			if (list != null) {
-				list.Sort (comparison);
-				OnCollectionChanged (new NotifyCollectionChangedEventArgs (NotifyCollectionChangedAction.Reset));
+			if (list != null)
+			{
+				list.Sort(comparison);
+				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 				return;
 			}
-			for (int i = Count - 1; i >= 0; i--) {
-				for (int j = 1; j <= i; j++) {
-					var o1 = this [j - 1];
-					var o2 = this [j];
+			for (int i = Count - 1; i >= 0; i--)
+			{
+				for (int j = 1; j <= i; j++)
+				{
+					var o1 = this[j - 1];
+					var o2 = this[j];
 
-					if (comparison (o1, o2) > 0) {
+					if (comparison(o1, o2) > 0)
+					{
 						Remove(o1);
 						Insert(j, o1);
 					}
@@ -84,7 +93,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public void AddRange (IEnumerable<T> items)
+		public void AddRange(IEnumerable<T> items)
 		{
 			// We don't call Add(item) for each item because
 			// that triggers a notification each time.
@@ -94,7 +103,7 @@ namespace Eto.Forms
 
 			var itemList = items as IList ?? items.ToArray(); // don't enumerate more than once
 			var oldIndex = Items.Count;
-			foreach (T item in itemList)  
+			foreach (T item in itemList)
 				Items.Add(item);
 
 			// range is not supported by WPF, so send a reset

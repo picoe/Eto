@@ -20,7 +20,7 @@ namespace Eto.Drawing
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete ("Use nullable values instead")]
-		public readonly static ColorHSL Empty;
+		public readonly static ColorHSL Empty = new ColorHSL();
 
 		#endregion
 
@@ -85,7 +85,9 @@ namespace Eto.Drawing
 		public ColorHSL (Color color)
 			: this()
 		{
-			float h = 0, s = 0, l = 0;
+			float h = 0;
+			float s = 0;
+			float l;
 
 			// normalize red, green, blue values
 
@@ -126,10 +128,10 @@ namespace Eto.Drawing
 
 			}
 			
-			this.H = h;
-			this.S = s;
-			this.L = l;
-			this.A = color.A;
+			H = h;
+			S = s;
+			L = l;
+			A = color.A;
 		}
 
 		/// <summary>
@@ -139,15 +141,15 @@ namespace Eto.Drawing
 		public Color ToColor ()
 		{
 
-			if (this.S == 0) {
+			if (S == 0) {
 				// achromatic color (gray scale)
 				return new Color(L, L, L, A);
 			}
 			else {
-				float q = (this.L < 0.5f) ? (this.L * (1f + this.S)) : (this.L + this.S - (this.L * this.S));
-				float p = (2f * this.L) - q;
+				float q = (L < 0.5f) ? (L * (1f + S)) : (L + S - (L * S));
+				float p = (2f * L) - q;
 
-				float Hk = this.H / 360f;
+				float Hk = H / 360f;
 				var T = new float[3];
 				T[0] = Hk + (1f / 3f);    // Tr
 				T[1] = Hk;                // Tb

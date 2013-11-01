@@ -10,7 +10,7 @@ namespace Eto.Platform.Windows
 	{
 		public class MyLabel : swf.Label
 		{
-			sd.StringFormat stringFormat;
+			readonly sd.StringFormat stringFormat;
 			WrapMode wrapMode;
 			HorizontalAlign horizontalAlign;
 			sd.SizeF? measuredSize;
@@ -75,18 +75,18 @@ namespace Eto.Platform.Windows
 				Wrap = WrapMode.Word;
 			}
 
-			static sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
+			static readonly sd.Graphics graphics = sd.Graphics.FromHwnd(IntPtr.Zero);
 
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
-				var bordersAndPadding = this.Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
+				var bordersAndPadding = Margin.Size; // this.SizeFromClientSize (SD.Size.Empty);
 				if (measuredSize == null || proposedSizeCache != proposedSize)
 				{
 					proposedSize -= bordersAndPadding;
 					proposedSize.Height = Math.Max(0, proposedSize.Height);
 					if (proposedSize.Width <= 1)
 						proposedSize.Width = int.MaxValue;
-					measuredSize = graphics.MeasureString(this.Text, this.Font, proposedSize.Width, stringFormat);
+					measuredSize = graphics.MeasureString(Text, Font, proposedSize.Width, stringFormat);
 					proposedSizeCache = proposedSize;
 				}
 				var size = measuredSize.Value;
@@ -101,7 +101,7 @@ namespace Eto.Platform.Windows
 			void SetStringFormat()
 			{
 				stringFormat.HotkeyPrefix = System.Drawing.Text.HotkeyPrefix.Show;
-				switch (this.Wrap)
+				switch (Wrap)
 				{
 					case WrapMode.None:
 						stringFormat.Trimming = System.Drawing.StringTrimming.None;
@@ -116,7 +116,7 @@ namespace Eto.Platform.Windows
 						stringFormat.FormatFlags = System.Drawing.StringFormatFlags.NoWrap;
 						break;
 				}
-				switch (this.HorizontalAlign)
+				switch (HorizontalAlign)
 				{
 					case HorizontalAlign.Right:
 						stringFormat.Alignment = System.Drawing.StringAlignment.Far;
@@ -130,19 +130,19 @@ namespace Eto.Platform.Windows
 
 			protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
 			{
-				using (var b = new sd.SolidBrush(this.ForeColor))
+				using (var b = new sd.SolidBrush(ForeColor))
 				{
-					if (this.Wrap == WrapMode.Character)
+					if (Wrap == WrapMode.Character)
 					{
 						// draw string one line at a time to trim to character..
 						int charactersFitted, linesFilled;
-						string text = this.Text;
+						string text = Text;
 						sd.PointF drawPoint = sd.PointF.Empty;
-						var font = this.Font;
+						var font = Font;
 						var height = font.GetHeight(e.Graphics);
 						while (!string.IsNullOrEmpty(text))
 						{
-							e.Graphics.MeasureString(text, font, this.Bounds.Size, stringFormat, out charactersFitted, out linesFilled);
+							e.Graphics.MeasureString(text, font, Bounds.Size, stringFormat, out charactersFitted, out linesFilled);
 
 							e.Graphics.DrawString(text.Substring(0, charactersFitted), font, b, drawPoint, stringFormat);
 
@@ -154,12 +154,12 @@ namespace Eto.Platform.Windows
 					}
 					else
 					{
-						var rect = new sd.RectangleF(Margin.Left, Margin.Top, this.Bounds.Width - Margin.Horizontal, this.Bounds.Height - Margin.Vertical);
-						var size = e.Graphics.MeasureString(this.Text, this.Font, (int)rect.Width, stringFormat);
+						var rect = new sd.RectangleF(Margin.Left, Margin.Top, Bounds.Width - Margin.Horizontal, Bounds.Height - Margin.Vertical);
+						var size = e.Graphics.MeasureString(Text, Font, (int)rect.Width, stringFormat);
 
 						if (size.Height < rect.Height)
 						{
-							switch (this.VerticalAlign)
+							switch (VerticalAlign)
 							{
 								case Eto.Forms.VerticalAlign.Bottom:
 									rect.Y += rect.Height - size.Height;
@@ -174,7 +174,7 @@ namespace Eto.Platform.Windows
 
 						if (size.Width < rect.Width)
 						{
-							switch (this.HorizontalAlign)
+							switch (HorizontalAlign)
 							{
 								case HorizontalAlign.Right:
 									rect.X = rect.Width - size.Width - Margin.Top;
@@ -187,7 +187,7 @@ namespace Eto.Platform.Windows
 							}
 						}
 
-						e.Graphics.DrawString(this.Text, this.Font, b, rect, stringFormat);
+						e.Graphics.DrawString(Text, Font, b, rect, stringFormat);
 					}
 				}
 			}
@@ -236,7 +236,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public Eto.Forms.VerticalAlign VerticalAlign
+		public VerticalAlign VerticalAlign
 		{
 			get { return Control.VerticalAlign; }
 			set

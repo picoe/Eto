@@ -1,13 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
-using System.Diagnostics;
 using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
@@ -15,7 +12,7 @@ namespace Eto.Platform.Wpf.Forms
 	public class TableLayoutHandler : WpfLayout<swc.Grid, TableLayout>, ITableLayout
 	{
 		swc.Border border;
-		Eto.Drawing.Size spacing;
+		Size spacing;
 		Control[,] controls;
 		bool[] columnScale;
 		bool[] rowScale;
@@ -223,7 +220,7 @@ namespace Eto.Platform.Wpf.Forms
 			return rowScale[row];
 		}
 
-		public Eto.Drawing.Size Spacing
+		public Size Spacing
 		{
 			get { return spacing; }
 			set
@@ -303,11 +300,11 @@ namespace Eto.Platform.Wpf.Forms
 			Remove(child.GetContainerControl());
 		}
 
-		public override void Remove(sw.FrameworkElement control)
+		public override void Remove(sw.FrameworkElement child)
 		{
-			var x = swc.Grid.GetColumn(control);
-			var y = swc.Grid.GetRow(control);
-			Control.Children.Remove(control);
+			var x = swc.Grid.GetColumn(child);
+			var y = swc.Grid.GetRow(child);
+			Control.Children.Remove(child);
 			controls[x, y] = null;
 			Control.Children.Add(EmptyCell(x, y));
 			UpdatePreferredSize();

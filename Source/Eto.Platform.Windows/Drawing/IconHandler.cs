@@ -62,8 +62,8 @@ namespace Eto.Platform.Windows.Drawing
 			return GetLargestIcon ();
 		}
 		
-		private const int sICONDIR = 6;            // sizeof(ICONDIR) 
-		private const int sICONDIRENTRY = 16;      // sizeof(ICONDIRENTRY)
+		const int sICONDIR = 6;            // sizeof(ICONDIR) 
+		const int sICONDIRENTRY = 16;      // sizeof(ICONDIRENTRY)
 		
 		public SD.Icon[] SplitIcon (SD.Icon icon)
 		{
@@ -74,7 +74,7 @@ namespace Eto.Platform.Windows.Drawing
 			}
 			
 			// Get multiple .ico file image.
-			byte[] srcBuf = null;
+			byte[] srcBuf;
 			using (var stream = new MemoryStream()) {
 				icon.Save (stream);
 				stream.Flush ();
@@ -133,11 +133,12 @@ namespace Eto.Platform.Windows.Drawing
 
 		public SD.Image GetImageWithSize (int? size)
 		{
-			if (size != null) {
-				var icon = GetIconClosestToSize (size.Value);
-				return icon.ToBitmap ();
+			if (size != null)
+			{
+				var icon = GetIconClosestToSize(size.Value);
+				return icon.ToBitmap();
 			}
-			else return GetLargestIcon().ToBitmap ();
+			return GetLargestIcon().ToBitmap();
 		}
 
 

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 
@@ -28,9 +25,11 @@ namespace Eto.Platform.Wpf.Forms
 			get
 			{
 				var control = Control.Content;
-				if (control is swc.Separator) return SeparatorToolBarItemType.Divider;
-				else if (control is EtoSpaceSeparator) return SeparatorToolBarItemType.Space;
-				else return SeparatorToolBarItemType.FlexibleSpace;
+				if (control is swc.Separator)
+					return SeparatorToolBarItemType.Divider;
+				if (control is EtoSpaceSeparator)
+					return SeparatorToolBarItemType.Space;
+				return SeparatorToolBarItemType.FlexibleSpace;
 			}
 			set
 			{

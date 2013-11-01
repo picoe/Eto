@@ -9,7 +9,6 @@ using Eto.Platform.Mac.Forms.Controls;
 using System.Collections.Generic;
 using Eto.Platform.Mac.Forms.Printing;
 using MonoMac.CoreAnimation;
-using MonoMac.CoreGraphics;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -74,9 +73,9 @@ namespace Eto.Platform.Mac.Forms
 		void OnSizeChanged(EventArgs e);
 	}
 
-	public abstract class MacView<T, W> : MacObject<T, W>, IControl, IMacViewHandler, IMacContainerControl
-		where T: NSResponder
-		where W: Control
+	public abstract class MacView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IMacViewHandler, IMacContainerControl
+		where TControl: NSResponder
+		where TWidget: Control
 	{
 		bool focus;
 		bool mouseMove;
@@ -579,7 +578,7 @@ namespace Eto.Platform.Mac.Forms
 		static void TriggerSystemAction(IntPtr sender, IntPtr sel, IntPtr e)
 		{
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<T,W>;
+			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
 				BaseAction action;
@@ -595,7 +594,7 @@ namespace Eto.Platform.Mac.Forms
 			var menuItem = new NSMenuItem(item);
 			
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<T,W>;
+			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
 				BaseAction action;
@@ -613,7 +612,7 @@ namespace Eto.Platform.Mac.Forms
 			var toolbarItem = new NSToolbarItem(item);
 			
 			var control = Runtime.GetNSObject(sender);
-			var handler = GetHandler(control) as MacView<T,W>;
+			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
 				BaseAction action;

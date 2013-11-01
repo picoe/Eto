@@ -15,7 +15,7 @@ namespace Eto.Platform.Mac
 	/// </remarks>
 	public static class MacExtensions
 	{
-		static readonly IntPtr selBoundingRectWithSize = MonoMac.ObjCRuntime.Selector.GetHandle("boundingRectWithSize:options:");
+		static readonly IntPtr selBoundingRectWithSize = Selector.GetHandle("boundingRectWithSize:options:");
 
 		[DllImport("/usr/lib/libobjc.dylib", EntryPoint = "objc_msgSend_stret")]
 		static extern void RectangleF_objc_msgSend_stret_SizeF_int(out RectangleF retval, IntPtr receiver, IntPtr selector, SizeF arg1, int arg2);

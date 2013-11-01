@@ -46,9 +46,9 @@ namespace Eto.Platform.Mac
 		}
 	}
 
-	public abstract class ToolBarItemHandler<T, W> : WidgetHandler<T, W>, IToolBarItem, IToolBarItemHandler
-		where T: NSToolbarItem
-		where W: ToolBarItem
+	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler
+		where TControl: NSToolbarItem
+		where TWidget: ToolBarItem
 	{
 		Image image;
 		NSButton button;
@@ -113,9 +113,9 @@ namespace Eto.Platform.Mac
 				Tint = Colors.Gray;
 		}
 
-		public override T CreateControl()
+		public override TControl CreateControl()
 		{
-			return (T)new NSToolbarItem(Identifier);
+			return (TControl)new NSToolbarItem(Identifier);
 		}
 
 		static readonly Selector selAction = new Selector("action");

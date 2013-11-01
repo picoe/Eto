@@ -173,7 +173,7 @@ namespace Eto
 		/// <summary>
 		/// Handles the disposal of this widget
 		/// </summary>
-		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if this is called from the finalizer</param>
+		/// <param name="disposing">True if the caller called <see cref="Dispose()"/> manually, false if being called from a finalizer</param>
 		protected virtual void Dispose(bool disposing)
 		{
 			if (disposing)

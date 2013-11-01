@@ -16,7 +16,7 @@ namespace Eto.Platform.Windows.Forms
 
 		public PointF Position
 		{
-			get { return swf.Control.MousePosition.ToEto (); ; }
+			get { return swf.Control.MousePosition.ToEto (); }
 		}
 
 		public MouseButtons Buttons

@@ -27,10 +27,8 @@ namespace Eto.Platform.Mac.Forms
 				return c.Frame.Size.ToEto();
 			}
 			var child = control.ControlObject as Control;
-			if (child != null)
-				return child.GetPreferredSize(availableSize);
+			return child == null ? SizeF.Empty : child.GetPreferredSize(availableSize);
 
-			return SizeF.Empty;
 		}
 
 		public static IMacContainer GetMacContainer(this Control control)
@@ -41,9 +39,7 @@ namespace Eto.Platform.Mac.Forms
 			if (container != null)
 				return container;
 			var child = control.ControlObject as Control;
-			if (child != null)
-				return child.GetMacContainer();
-			return null;
+			return child == null ? null : child.GetMacContainer();
 		}
 
 		public static IMacAutoSizing GetMacAutoSizing(this Control control)
@@ -54,9 +50,7 @@ namespace Eto.Platform.Mac.Forms
 			if (container != null)
 				return container;
 			var child = control.ControlObject as Control;
-			if (child != null)
-				return child.GetMacAutoSizing();
-			return null;
+			return child == null ? null : child.GetMacAutoSizing();
 		}
 
 		public static NSView GetContainerView(this Control control)

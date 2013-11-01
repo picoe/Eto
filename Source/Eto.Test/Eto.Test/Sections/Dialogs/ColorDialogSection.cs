@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Dialogs
 					// you need to handle this event for OS X, where the dialog is a floating window
 					Log.Write(dialog, "ColorChanged, Color: {0}", dialog.Color);
 				};
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);
@@ -53,7 +53,7 @@ namespace Eto.Test.Sections.Dialogs
 					// need to handle this event for OS X, where the dialog is a floating window
 					Log.Write(dialog, "ColorChanged, Color: {0}", dialog.Color);
 				};
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, Color: {1}", result, dialog.Color);

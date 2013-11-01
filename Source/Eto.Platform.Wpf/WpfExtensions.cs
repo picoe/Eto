@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
@@ -37,7 +34,7 @@ namespace Eto.Platform.Wpf
 			for (int i = 0; i < childrenCount; i++) {
 				var child = swm.VisualTreeHelper.GetChild (parent, i);
 				// If the child is not of the request child type child
-				T childType = child as T;
+				var childType = child as T;
 				if (childType == null) {
 					// recursively drill down the tree
 					foundChild = FindChild<T> (child, childName);

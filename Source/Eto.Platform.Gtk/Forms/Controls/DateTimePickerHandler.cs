@@ -14,7 +14,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		public override void OnLoad (EventArgs e)
 		{
 			base.OnLoad (e);
-			this.Control.DateChanged += delegate {
+			Control.DateChanged += delegate {
 				Widget.OnValueChanged (EventArgs.Empty);
 			};
 		}
@@ -26,37 +26,37 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 
 		public DateTime? Value {
 			get {
-				return this.Control.SelectedDate;
+				return Control.SelectedDate;
 			}
 			set {
-				this.Control.SelectedDate = value;
+				Control.SelectedDate = value;
 			}
 		}
 
 		public DateTime MinDate {
 			get {
-				return this.Control.MinDate;
+				return Control.MinDate;
 			}
 			set {
-				this.Control.MinDate = value;
+				Control.MinDate = value;
 			}
 		}
 
 		public DateTime MaxDate {
 			get {
-				return this.Control.MaxDate;
+				return Control.MaxDate;
 			}
 			set {
-				this.Control.MaxDate = value;
+				Control.MaxDate = value;
 			}
 		}
 
 		public DateTimePickerMode Mode {
 			get {
-				return this.Control.Mode;
+				return Control.Mode;
 			}
 			set {
-				this.Control.Mode = value;
+				Control.Mode = value;
 			}
 		}
 	}

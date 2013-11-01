@@ -40,7 +40,7 @@ namespace Eto.Forms
 
 		public string SelectedKey
 		{
-			get { return SelectedValue != null ? SelectedValue.Key : null; }
+			get { return SelectedValue == null ? null : SelectedValue.Key; }
 			set
 			{
 				if (SelectedValue == null || SelectedValue.Key != value) {
@@ -63,7 +63,7 @@ namespace Eto.Forms
 
 		public IListItem SelectedValue
 		{
-			get { return selectedButton != null ? selectedButton.Tag as IListItem : null; }
+			get { return selectedButton == null ? null : selectedButton.Tag as IListItem; }
 			set
 			{
 				if (SelectedValue != value) {
@@ -77,7 +77,7 @@ namespace Eto.Forms
 
 		public int SelectedIndex
 		{
-			get { return selectedButton != null ? buttons.IndexOf (selectedButton) : -1; }
+			get { return selectedButton == null ? -1 : buttons.IndexOf(selectedButton); }
 			set
 			{
 				EnsureButtons ();
@@ -170,7 +170,7 @@ namespace Eto.Forms
 		
 		public IListStore DataStore
 		{
-			get { return dataStore != null ? dataStore.Collection : null; }
+			get { return dataStore == null ? null : dataStore.Collection; }
 			set
 			{
 				dataStore = new ItemDataStore { Handler = this };

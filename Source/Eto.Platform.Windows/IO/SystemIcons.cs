@@ -2,43 +2,60 @@ using SD = System.Drawing;
 using Eto.Drawing;
 using Eto.IO;
 using Eto.Platform.Windows.Drawing;
+using System;
 
 namespace Eto.Platform.Windows.IO
 {
 	public class SystemIconsHandler : WidgetHandler<SystemIcons>, ISystemIcons
 	{
+
 		#region ISystemIcons Members
 
-		public Icon GetFileIcon(string fileName, Eto.IO.IconSize size)
+		public Icon GetFileIcon(string fileName, IconSize size)
 		{
 			ShellIcon.IconSize iconSize;
 			switch (size)
 			{
+				case IconSize.Large:
+					iconSize = ShellIcon.IconSize.Large;
+					break;
+				case IconSize.Small:
+					iconSize = ShellIcon.IconSize.Small;
+					break;
 				default:
-				case IconSize.Large: iconSize = ShellIcon.IconSize.Large; break;
-				case IconSize.Small: iconSize = ShellIcon.IconSize.Small; break;
+					throw new NotSupportedException();
 			}
 
-			SD.Icon icon = ShellIcon.GetFileIcon( fileName, iconSize, false );
+			SD.Icon icon = ShellIcon.GetFileIcon(fileName, iconSize, false);
 			return new Icon(Widget.Generator, new IconHandler(icon));
 		}
 
-		public Icon GetStaticIcon(Eto.IO.StaticIconType type, Eto.IO.IconSize size)
+		public Icon GetStaticIcon(StaticIconType type, IconSize size)
 		{
 			ShellIcon.IconSize iconSize;
 			switch (size)
 			{
+				case IconSize.Large:
+					iconSize = ShellIcon.IconSize.Large;
+					break;
+				case IconSize.Small:
+					iconSize = ShellIcon.IconSize.Small;
+					break;
 				default:
-				case IconSize.Large: iconSize = ShellIcon.IconSize.Large; break;
-				case IconSize.Small: iconSize = ShellIcon.IconSize.Small; break;
+					throw new NotSupportedException();
 			}
 
 			ShellIcon.FolderType folderType;
 			switch (type)
 			{
+				case StaticIconType.OpenDirectory:
+					folderType = ShellIcon.FolderType.Open;
+					break;
+				case StaticIconType.CloseDirectory:
+					folderType = ShellIcon.FolderType.Closed;
+					break;
 				default:
-				case StaticIconType.OpenDirectory: folderType = ShellIcon.FolderType.Open;  break;
-				case StaticIconType.CloseDirectory: folderType = ShellIcon.FolderType.Closed;  break;
+					throw new NotSupportedException();
 			}
 			
 			SD.Icon icon = ShellIcon.GetFolderIcon(iconSize, folderType);

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
@@ -9,7 +6,6 @@ using swa = System.Windows.Automation;
 using swm = System.Windows.Media;
 using Eto.Forms;
 using System.Collections;
-using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -66,9 +62,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (ItemContainerGenerator.Status == swc.Primitives.GeneratorStatus.ContainersGenerated)
 				{
 					double maxWidth = 0;
-					foreach (var item in this.Items)
+					foreach (var item in Items)
 					{
-						var comboBoxItem = ItemContainerGenerator.ContainerFromItem(item) as swc.ComboBoxItem;
+						var comboBoxItem = (swc.ComboBoxItem)ItemContainerGenerator.ContainerFromItem(item);
 						comboBoxItem.Measure(Conversions.PositiveInfinitySize);
 						maxWidth = Math.Max(maxWidth, comboBoxItem.DesiredSize.Width);
 					}

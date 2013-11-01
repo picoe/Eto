@@ -1,14 +1,9 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
-using swi = System.Windows.Input;
-using Eto.Platform.Wpf.Drawing;
-using System.Collections;
 using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
@@ -85,10 +80,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				store = value;
 				var source = store as ObservableCollection<IListItem>; 
-				if (source != null)
-					Control.ItemsSource = source;
-				else
-					Control.ItemsSource = new ObservableCollection<IListItem>(store.AsEnumerable());
+				Control.ItemsSource = source ?? new ObservableCollection<IListItem>(store.AsEnumerable());
 			}
 		}
 
@@ -112,10 +104,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenu = contextMenu.ControlObject as System.Windows.Controls.ContextMenu;
-				else
-					Control.ContextMenu = null;
+				Control.ContextMenu = contextMenu != null ? contextMenu.ControlObject as sw.Controls.ContextMenu : null;
 			}
 		}
 	}

@@ -39,7 +39,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			// Cache the Eto graphics between cell redraws, since rows
 			// are drawn using the same sd.Graphics.
 			sd.Graphics cachedGraphicsKey;
-			Graphics cachedGraphics = null;
+			Graphics cachedGraphics;
 
 			protected override void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{

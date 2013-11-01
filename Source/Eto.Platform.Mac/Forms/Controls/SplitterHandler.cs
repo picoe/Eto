@@ -122,10 +122,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override float ConstrainSplitPosition(NSSplitView splitView, float proposedPosition, int subviewDividerIndex)
 			{
-				if (Handler.Enabled)
-					return proposedPosition;
-				else
-					return Handler.Position;
+				return Handler.Enabled ? proposedPosition : Handler.Position;
 			}
 
 			public override void DidResizeSubviews(MonoMac.Foundation.NSNotification notification)
@@ -133,14 +130,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var subview = Handler.Control.Subviews[0];
 				if (subview != null && Handler.Widget.Loaded && Handler.Widget.ParentWindow != null && Handler.Widget.ParentWindow.Loaded)
 				{
-					if (Handler.Control.IsVertical)
-					{
-						Handler.position = (int)subview.Frame.Width;
-					}
-					else
-					{
-						Handler.position = (int)subview.Frame.Height;
-					}
+					Handler.position = Handler.Control.IsVertical ? (int)subview.Frame.Width : (int)subview.Frame.Height;
 					Handler.Widget.OnPositionChanged(EventArgs.Empty);
 				}
 			}
@@ -207,23 +197,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get
 			{
-				if (Control.IsVertical)
-					return SplitterOrientation.Horizontal;
-				else
-					return SplitterOrientation.Vertical;
+				return Control.IsVertical ? SplitterOrientation.Horizontal : SplitterOrientation.Vertical;
 			}
 			set
 			{
-				switch (value)
-				{
-					default:
-					case SplitterOrientation.Horizontal:
-						Control.IsVertical = true;
-						break;
-					case SplitterOrientation.Vertical:
-						Control.IsVertical = false;
-						break;
-				}
+				Control.IsVertical = value == SplitterOrientation.Horizontal;
 				if (Widget.Loaded)
 					Control.ResizeSubviewsWithOldSize(sd.SizeF.Empty);
 			}
@@ -310,7 +288,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 							p1size.Width = Math.Max(p1size.Width, position.Value);
 							break;
 						case SplitterFixedPanel.Panel2:
-							p2size.Width = Math.Max(p2size.Width, this.Size.Width - position.Value);
+							p2size.Width = Math.Max(p2size.Width, Size.Width - position.Value);
 							break;
 					}
 				}

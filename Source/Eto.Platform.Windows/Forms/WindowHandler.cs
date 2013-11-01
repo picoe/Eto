@@ -15,9 +15,9 @@ namespace Eto.Platform.Windows
 		swf.IWin32Window Win32Window { get; }
 	}
 
-	public abstract class WindowHandler<T, W> : WindowsDockContainer<T, W>, IWindow, IWindowHandler
-		where T : swf.Form
-		where W : Window
+	public abstract class WindowHandler<TControl, TWidget> : WindowsDockContainer<TControl, TWidget>, IWindow, IWindowHandler
+		where TControl : swf.Form
+		where TWidget : Window
 	{
 		MenuBar menu;
 		Icon icon;
@@ -107,9 +107,9 @@ namespace Eto.Platform.Windows
 			HandleEvent(Window.ClosingEvent);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Window.ClosedEvent:
 					Control.FormClosed += delegate
@@ -133,19 +133,19 @@ namespace Eto.Platform.Windows
 						e.Cancel = args.Cancel;
 					};
 					break;
-				case Window.ShownEvent:
+				case Eto.Forms.Control.ShownEvent:
 					Control.Shown += delegate
 					{
 						Widget.OnShown(EventArgs.Empty);
 					};
 					break;
-				case Window.GotFocusEvent:
+				case Eto.Forms.Control.GotFocusEvent:
 					Control.Activated += delegate
 					{
 						Widget.OnGotFocus(EventArgs.Empty);
 					};
 					break;
-				case Window.LostFocusEvent:
+				case Eto.Forms.Control.LostFocusEvent:
 					Control.Deactivate += delegate
 					{
 						Widget.OnLostFocus(EventArgs.Empty);
@@ -166,7 +166,7 @@ namespace Eto.Platform.Windows
 					Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -355,8 +355,9 @@ namespace Eto.Platform.Windows
 		{
 			get
 			{
-				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty) return null;
-				else return Control.RestoreBounds.ToEto();
+				if (WindowState == WindowState.Normal || Control.RestoreBounds.IsEmpty)
+					return null;
+				return Control.RestoreBounds.ToEto();
 			}
 		}
 
@@ -368,7 +369,7 @@ namespace Eto.Platform.Windows
 			}
 			set
 			{
-				Control.AllowTransparency = value != 1.0;
+				Control.AllowTransparency = Math.Abs(value - 1.0) > 0.01f;
 				Control.Opacity = value;
 			}
 		}

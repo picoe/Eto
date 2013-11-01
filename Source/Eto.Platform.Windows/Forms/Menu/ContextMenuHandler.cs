@@ -44,10 +44,10 @@ namespace Eto.Platform.Windows
 			{
 				var control = relativeTo.GetContainerControl();
 				position = control.PointToClient(position);
-				this.Control.Show(control, position.X, position.Y);
+				Control.Show(control, position.X, position.Y);
 			}
 			else
-				this.Control.Show(position);
+				Control.Show(position);
 		}
 	}
 }

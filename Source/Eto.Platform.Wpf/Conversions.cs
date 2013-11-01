@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
@@ -12,19 +11,19 @@ using swc = System.Windows.Controls;
 using swmi = System.Windows.Media.Imaging;
 using System.Text.RegularExpressions;
 using Eto.Platform.Wpf.Drawing;
-using Eto.Platform.Wpf.Forms;
 
 namespace Eto.Platform.Wpf
 {
 	public static class Conversions
 	{
-		public const float WHEEL_DELTA = 120f;
+		public const float WheelDelta = 120f;
 
 		public static readonly sw.Size PositiveInfinitySize = new sw.Size(double.PositiveInfinity, double.PositiveInfinity);
 		public static readonly sw.Size ZeroSize = new sw.Size(0, 0);
 
 		public static swm.Color ToWpf(this Color value)
 		{
+
 			return swm.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
 		}
 
@@ -206,7 +205,7 @@ namespace Eto.Platform.Wpf
 				buttons |= MouseButtons.Middle;
 			var modifiers = Key.None;
 			var location = e.GetPosition(control).ToEto();
-			var delta = new SizeF(0, (float)e.Delta / WHEEL_DELTA);
+			var delta = new SizeF(0, (float)e.Delta / WheelDelta);
 
 			return new MouseEventArgs(buttons, modifiers, location, delta);
 		}
@@ -315,8 +314,7 @@ namespace Eto.Platform.Wpf
 		{
 			if (element.IsVisible && (!double.IsNaN(element.ActualWidth) && !double.IsNaN(element.ActualHeight)))
 				return new Size((int)element.ActualWidth, (int)element.ActualHeight);
-			else
-				return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
+			return new Size((int)(double.IsNaN(element.Width) ? -1 : element.Width), (int)(double.IsNaN(element.Height) ? -1 : element.Height));
 		}
 
 		public static void SetSize(this sw.FrameworkElement element, Size size)
@@ -331,7 +329,7 @@ namespace Eto.Platform.Wpf
 			element.Height = size.Height;
 		}
 
-		public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight, sw.TextDecorationCollection decorations)
+		public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight)
 		{
 			var style = FontStyle.None;
 			if (fontStyle == sw.FontStyles.Italic)
@@ -348,9 +346,9 @@ namespace Eto.Platform.Wpf
 			var decoration = FontDecoration.None;
 			if (decorations != null)
 			{
-				if (sw.TextDecorations.Underline.All(r => decorations.Contains(r)))
+				if (sw.TextDecorations.Underline.All(decorations.Contains))
 					decoration |= FontDecoration.Underline;
-				if (sw.TextDecorations.Strikethrough.All(r => decorations.Contains(r)))
+				if (sw.TextDecorations.Strikethrough.All(decorations.Contains))
 					decoration |= FontDecoration.Strikethrough;
 			}
 			return decoration;
@@ -363,8 +361,7 @@ namespace Eto.Platform.Wpf
 			var imageHandler = image.Handler as IWpfImage;
 			if (imageHandler != null)
 				return imageHandler.GetImageClosestToSize(size);
-			else
-				return image.ControlObject as swmi.BitmapSource;
+			return image.ControlObject as swmi.BitmapSource;
 		}
 
 		public static swc.Image ToWpfImage(this Image image, int? size = null)

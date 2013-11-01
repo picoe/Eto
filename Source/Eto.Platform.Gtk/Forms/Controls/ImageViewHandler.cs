@@ -49,7 +49,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override Eto.Drawing.Size Size {
+		public override Size Size {
 			get {
 				return base.Size;
 			}

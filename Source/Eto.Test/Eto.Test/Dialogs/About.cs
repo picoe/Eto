@@ -55,8 +55,8 @@ namespace Eto.Test.Dialogs
 			{
 				Text = "Close"
 			};
-			this.DefaultButton = button;
-			this.AbortButton = button;
+			DefaultButton = button;
+			AbortButton = button;
 			button.Click += delegate
 			{
 				Close();

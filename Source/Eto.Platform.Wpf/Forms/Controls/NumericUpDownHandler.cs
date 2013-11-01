@@ -1,13 +1,8 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using mwc = Xceed.Wpf.Toolkit;
-using Eto.Drawing;
-using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -16,9 +11,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public NumericUpDownHandler ()
 		{
 			Control = new mwc.DoubleUpDown ();
-			Control.ValueChanged += (sender, e) => {
-				Widget.OnValueChanged (EventArgs.Empty);
-			};
+			Control.ValueChanged += (sender, e) => Widget.OnValueChanged(EventArgs.Empty);
 		}
 
 		public override bool UseMousePreview { get { return true; } }

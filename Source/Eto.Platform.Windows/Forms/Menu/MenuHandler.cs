@@ -3,19 +3,19 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public abstract class MenuHandler<T, W> : WidgetHandler<T, W>, IWidget
-		where T: SWF.ToolStripItem
-		where W: InstanceWidget
+	public abstract class MenuHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IMenu
+		where TControl: SWF.ToolStripItem
+		where TWidget: InstanceWidget
 	{
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case MenuActionItem.ValidateEvent:
 				// handled by parents
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

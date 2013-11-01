@@ -6,15 +6,13 @@ namespace Eto.Platform.Mac
 {
 	public static class KeyMap
 	{
-		static Dictionary<ushort, Key> keymap = new Dictionary<ushort, Key> ();
-		static Dictionary<Key, string> inverse = new Dictionary<Key, string> ();
+		static readonly Dictionary<ushort, Key> keymap = new Dictionary<ushort, Key> ();
+		static readonly Dictionary<Key, string> inverse = new Dictionary<Key, string> ();
 
 		public static Key MapKey (ushort key)
 		{
 			Key value;
-			if (keymap.TryGetValue (key, out value))
-				return value;
-			return Key.None;
+			return keymap.TryGetValue(key, out value) ? value : Key.None;
 		}
 		
 		enum KeyCharacters {
@@ -38,9 +36,7 @@ namespace Eto.Platform.Mac
 		public static string KeyEquivalent (Key key)
 		{
 			string value;
-			if (inverse.TryGetValue (key & Key.KeyMask, out value))
-				return value;
-			return string.Empty;
+			return inverse.TryGetValue(key & Key.KeyMask, out value) ? value : string.Empty;
 		}
 
 		public static NSEventModifierMask KeyEquivalentModifierMask (Key key)

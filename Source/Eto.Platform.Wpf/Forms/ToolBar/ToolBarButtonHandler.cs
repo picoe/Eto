@@ -1,20 +1,17 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using Eto.Drawing;
-using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
 	public class ToolBarButtonHandler : ToolBarItemHandler<swc.Button, ToolBarButton>, IToolBarButton
 	{
 		Image image;
-		swc.Image swcImage;
-		swc.TextBlock label;
+		readonly swc.Image swcImage;
+		readonly swc.TextBlock label;
+
 		public ToolBarButtonHandler ()
 		{
 			Control = new swc.Button ();

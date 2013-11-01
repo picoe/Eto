@@ -12,9 +12,8 @@ namespace Eto.Platform.Windows
 	{
 		string badgeLabel;
 		bool attached;
-		Thread mainThread;
+		readonly Thread mainThread;
 		SynchronizationContext context;
-
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
 
@@ -39,8 +38,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				badgeLabel = value;
-#if !__MonoCS__
-				if ((bool)TaskbarManager.IsPlatformSupported)
+				if (TaskbarManager.IsPlatformSupported)
 				{
 					if (!string.IsNullOrEmpty(badgeLabel))
 					{
@@ -56,7 +54,6 @@ namespace Eto.Platform.Windows
 					else
 						TaskbarManager.Instance.SetOverlayIcon(null, null);
 				}
-#endif
 			}
 		}
 
@@ -81,7 +78,10 @@ namespace Eto.Platform.Windows
 					swf.Application.DoEvents();
 
 				SetOptions();
-				var ctl = new swf.Control(); // creates sync context
+				// creates sync context
+				using (var ctl = new swf.Control())
+				{
+				}
 				context = SynchronizationContext.Current;
 
 				Widget.OnInitialized(EventArgs.Empty);
@@ -108,7 +108,11 @@ namespace Eto.Platform.Windows
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseWheel(e), null, (int)Win32.WM.MOUSEWHEEL);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseMove(e), null, (int)Win32.WM.MOUSEMOVE);
 				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDown(e), true, (int)Win32.WM.LBUTTONDOWN, (int)Win32.WM.RBUTTONDOWN, (int)Win32.WM.MBUTTONDOWN);
-				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDoubleClick(e), null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
+				bubble.AddBubbleMouseEvents((c, e) => {
+					c.OnMouseDoubleClick(e);
+					if (!e.Handled)
+						c.OnMouseDown(e);
+				}, null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
 				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
@@ -137,15 +141,15 @@ namespace Eto.Platform.Windows
 			Process.Start(info);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Application.TerminatingEvent:
 					// handled by WindowHandler
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -159,8 +163,7 @@ namespace Eto.Platform.Windows
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = Widget.MainForm.GetContainerControl();
-				if (window == null) window = swf.Form.ActiveForm;
+				var window = Widget.MainForm.GetContainerControl() ?? swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{
@@ -178,8 +181,7 @@ namespace Eto.Platform.Windows
 		{
 			if (Widget.MainForm != null)
 			{
-				var window = Widget.MainForm.GetContainerControl();
-				if (window == null) window = swf.Form.ActiveForm;
+				var window = Widget.MainForm.GetContainerControl() ?? swf.Form.ActiveForm;
 
 				if (window != null && window.InvokeRequired)
 				{

@@ -74,8 +74,7 @@ namespace Eto
 		public static string GetStringAttribute(this XmlElement element, string name)
 		{
 			string attr = element.GetAttribute(name);
-			if (string.IsNullOrEmpty(attr)) return null;
-			else return attr;
+			return string.IsNullOrEmpty(attr) ? null : attr;
 		}
 		
 		/// <summary>

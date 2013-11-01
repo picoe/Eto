@@ -65,10 +65,7 @@ namespace Eto
 				return colitem.GetValue (Column);
 			}
 			var listitem = dataItem as IList;
-			if (listitem != null) {
-				return listitem [Column];
-			}
-			return null;
+			return listitem == null ? null : listitem[Column];
 		}
 		
 		/// <summary>

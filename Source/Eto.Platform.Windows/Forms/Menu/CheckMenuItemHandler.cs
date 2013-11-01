@@ -8,7 +8,7 @@ namespace Eto.Platform.Windows
 	/// <summary>
 	/// Summary description for MenuBarHandler.
 	/// </summary>
-	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem>, ICheckMenuItem, IMenu
+	public class CheckMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, CheckMenuItem>, ICheckMenuItem
 	{
 		public CheckMenuItemHandler()
 		{
@@ -16,10 +16,11 @@ namespace Eto.Platform.Windows
 			Control.Click += control_Click;
 		}
 
-		private void control_Click(object sender, EventArgs e)
+		void control_Click(object sender, EventArgs e)
 		{
 			Widget.OnClick(e);
 		}
+
 		#region IMenuItem Members
 
 		public bool Enabled
@@ -44,7 +45,7 @@ namespace Eto.Platform.Windows
 
 		public Key Shortcut
 		{
-			get { return this.Control.ShortcutKeys.ToEto (); }
+			get { return Control.ShortcutKeys.ToEto (); }
 			set 
 			{
 				var key = value.ToSWF ();

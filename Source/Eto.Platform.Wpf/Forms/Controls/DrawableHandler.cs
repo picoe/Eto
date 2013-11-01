@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swm = System.Windows.Media;
@@ -9,7 +8,6 @@ using Eto.Forms;
 using Eto.Drawing;
 using swi = System.Windows.Input;
 using Eto.Platform.Wpf.Drawing;
-using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -17,8 +15,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 	{
 		bool tiled;
 		Scrollable scrollable;
-		Dictionary<int, EtoTile> visibleTiles = new Dictionary<int, EtoTile>();
-		List<EtoTile> unusedTiles = new List<EtoTile>();
+		readonly Dictionary<int, EtoTile> visibleTiles = new Dictionary<int, EtoTile>();
+		readonly List<EtoTile> unusedTiles = new List<EtoTile>();
 		Size maxTiles;
 		Size tileSize = new Size(100, 100);
 
@@ -60,7 +58,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				base.OnRender(dc);
 				if (!Handler.tiled)
 				{
-					var rect = new sw.Rect(0, 0, this.ActualWidth, this.ActualHeight);
+					var rect = new sw.Rect(0, 0, ActualWidth, ActualHeight);
 					var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, dc, rect, false));
 					Handler.Widget.OnPaint(new PaintEventArgs(graphics, rect.ToEto()));
 				}
@@ -86,7 +84,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 						Width = Handler.tileSize.Width;
 						Height = Handler.tileSize.Height;
 						RenderTransform = new swm.TranslateTransform(-bounds.X, -bounds.Y);
-						if (this.IsVisible)
+						if (IsVisible)
 							InvalidateVisual();
 					}
 				}
@@ -96,9 +94,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 			public int Key { get { return Position.Y * Handler.maxTiles.Width + Position.X; } }
 
-			protected override void OnRender(swm.DrawingContext dc)
+			protected override void OnRender(swm.DrawingContext drawingContext)
 			{
-				var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, dc, bounds.ToWpf(), false));
+				var graphics = new Graphics(Handler.Widget.Generator, new GraphicsHandler(this, drawingContext, bounds.ToWpf(), false));
 				Handler.Widget.OnPaint(new PaintEventArgs(graphics, Bounds));
 			}
 		}
@@ -336,7 +334,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				base.Invalidate(rect);
 		}
 
-		public void Update(Eto.Drawing.Rectangle rect)
+		public void Update(Rectangle rect)
 		{
 			Invalidate(rect);
 		}

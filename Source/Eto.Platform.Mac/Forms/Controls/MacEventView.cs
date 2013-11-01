@@ -11,7 +11,6 @@ namespace Eto.Platform.Mac.Forms.Controls
 {
 	public class MacEventView : NSView, IMacControl
 	{
-		static readonly NSString CIInputTransform = new NSString("inputTransform");
 		static readonly NSString CIOutputImage = new NSString("outputImage");
 		static readonly Selector selConvertSizeToBacking = new Selector("convertSizeToBacking:");
 
@@ -63,7 +62,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public Control Widget
 		{
-			get { return Handler != null ? Handler.Widget : null; }
+			get { return Handler == null ? null : Handler.Widget; }
 		}
 
 		public static bool KeyDown(Control control, NSEvent theEvent)

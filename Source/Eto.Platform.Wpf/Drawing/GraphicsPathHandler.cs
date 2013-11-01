@@ -1,11 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using Eto.Drawing;
-using Eto;
 
 namespace Eto.Platform.Wpf.Drawing
 {
@@ -125,8 +123,6 @@ namespace Eto.Platform.Wpf.Drawing
 			double xe = x + dx + (Math.Cos (startRadians + sweepRadians) * dx);
 			double ye = y + dy + (Math.Sin (startRadians + sweepRadians) * dy);
 
-			var centerPoint = new sw.Point (x + width / 2, y + height / 2);
-
 			bool isLargeArc = Math.Abs (sweepAngle) > 180;
 			var sweepDirection = sweepAngle < 0 ? swm.SweepDirection.Counterclockwise : swm.SweepDirection.Clockwise;
 
@@ -142,7 +138,7 @@ namespace Eto.Platform.Wpf.Drawing
 			CurrentPoint = end;
 		}
 
-		public void AddPath (IGraphicsPath path, bool connect)
+		public void AddPath (IGraphicsPath path, bool connect = false)
 		{
 			if (path.IsEmpty)
 				return;
@@ -199,7 +195,7 @@ namespace Eto.Platform.Wpf.Drawing
 			figure = null;
 		}
 
-		public void AddCurve (IEnumerable<PointF> points, float tension)
+		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			points = SplineHelper.SplineCurve (points, tension);
 			var swpoints = (from p in points select p.ToWpf ()).ToArray();

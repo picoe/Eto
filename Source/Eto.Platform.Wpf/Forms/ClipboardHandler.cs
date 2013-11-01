@@ -2,9 +2,6 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Wpf.Drawing;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 
 namespace Eto.Platform.Wpf.Forms
@@ -31,10 +28,9 @@ namespace Eto.Platform.Wpf.Forms
 
 		public string GetString (string type)
 		{
-			if (string.IsNullOrEmpty (type))
-				return sw.Clipboard.GetText ();
-			else
-				return Convert.ToString (sw.Clipboard.GetData (type));
+			if (string.IsNullOrEmpty(type))
+				return sw.Clipboard.GetText();
+			return Convert.ToString(sw.Clipboard.GetData(type));
 		}
 
 		public byte[] GetData (string type)
@@ -54,7 +50,7 @@ namespace Eto.Platform.Wpf.Forms
 			set { sw.Clipboard.SetText (value, sw.TextDataFormat.Html); }
 		}
 
-		public Eto.Drawing.Image Image
+		public Image Image
 		{
 			get { return new Bitmap (Widget.Generator, new BitmapHandler (sw.Clipboard.GetImage ())); }
 			set { sw.Clipboard.SetImage (value.ToWpf ()); }

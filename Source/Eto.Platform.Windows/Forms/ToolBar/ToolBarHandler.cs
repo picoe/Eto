@@ -1,6 +1,7 @@
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using System;
 
 namespace Eto.Platform.Windows
 {
@@ -55,10 +56,11 @@ namespace Eto.Platform.Windows
 					case ToolBarTextAlign.Right:
 						//control.TextAlign = SWF.ToolBarTextAlign.Right;
 						break;
-					default:
 					case ToolBarTextAlign.Underneath:
 						//control.TextAlign = SWF.ToolBarTextAlign.Underneath;
 						break;
+					default:
+						throw new NotSupportedException();
 				}
 			}
 		}

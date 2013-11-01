@@ -9,7 +9,7 @@ namespace Eto.Platform.Mac
 	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
 	{
 		ToolBarDock dock = ToolBarDock.Top;
-		List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
+		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
 
 		class TBDelegate : NSToolbarDelegate
 		{
@@ -34,10 +34,7 @@ namespace Eto.Platform.Mac
 			public override NSToolbarItem WillInsertItem(NSToolbar toolbar, string itemIdentifier, bool willBeInserted)
 			{
 				var item = Handler.items.FirstOrDefault(r => r.Identifier == itemIdentifier);
-				if (item != null)
-					return item.Control;
-				else
-					return null;
+				return item == null ? null : item.Control;
 			}
 
 			public override string[] DefaultItemIdentifiers(NSToolbar toolbar)
@@ -117,10 +114,6 @@ namespace Eto.Platform.Mac
 				{
 					case ToolBarTextAlign.Right:
 						//control.TextAlign = SWF.ToolBarTextAlign.Right;
-						break;
-					default:
-					case ToolBarTextAlign.Underneath:
-						//control.TextAlign = SWF.ToolBarTextAlign.Underneath;
 						break;
 				}
 			}

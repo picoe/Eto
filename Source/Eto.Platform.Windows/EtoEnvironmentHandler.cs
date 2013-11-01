@@ -8,13 +8,13 @@ namespace Eto.Platform.Windows
 	public class EtoEnvironmentHandler : WidgetHandler<Widget>, IEtoEnvironment
 	{
 		
-		static System.Environment.SpecialFolder Convert (EtoSpecialFolder folder)
+		static Environment.SpecialFolder Convert (EtoSpecialFolder folder)
 		{
 			switch (folder) {
 			case EtoSpecialFolder.ApplicationSettings:
-				return System.Environment.SpecialFolder.ApplicationData;
+				return Environment.SpecialFolder.ApplicationData;
 			case EtoSpecialFolder.Documents:
-				return System.Environment.SpecialFolder.MyDocuments;
+				return Environment.SpecialFolder.MyDocuments;
 			default:
 				throw new NotSupportedException ();
 			}
@@ -27,7 +27,7 @@ namespace Eto.Platform.Windows
 			case EtoSpecialFolder.ApplicationResources:
 				return Path.GetDirectoryName (Assembly.GetEntryAssembly ().Location);
 			default:
-				return System.Environment.GetFolderPath(Convert(folder));
+				return Environment.GetFolderPath(Convert(folder));
 			}
 		}
 	}

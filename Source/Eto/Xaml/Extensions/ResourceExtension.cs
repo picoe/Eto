@@ -18,15 +18,15 @@ namespace Eto.Xaml.Extensions
 
 		public ResourceExtension (string resourceName)
 		{
-			this.Resource = new NamespaceInfo (resourceName);
+			Resource = new NamespaceInfo (resourceName);
 		}
 
 		public ResourceExtension (string resourceName, string assemblyName)
 		{
 			if (!string.IsNullOrEmpty (assemblyName))
-				this.Resource = new NamespaceInfo (resourceName, Assembly.Load (assemblyName));
+				Resource = new NamespaceInfo (resourceName, Assembly.Load (assemblyName));
 			else
-				this.Resource = new NamespaceInfo (resourceName);
+				Resource = new NamespaceInfo (resourceName);
 		}
 
 		public override object ProvideValue (IServiceProvider serviceProvider)
@@ -42,7 +42,7 @@ namespace Eto.Xaml.Extensions
 					{
 						if (converter.CanConvertFrom (typeof (NamespaceInfo)))
 							return converter.ConvertFrom (Resource);
-						else if (converter.CanConvertFrom (typeof (Stream)))
+						if (converter.CanConvertFrom (typeof (Stream)))
 							return converter.ConvertFrom (Resource.FindResource ());
 					}
 				}

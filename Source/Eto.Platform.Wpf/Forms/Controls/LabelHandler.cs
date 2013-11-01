@@ -1,10 +1,6 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
-using Eto.Platform.Wpf.Drawing;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
 using swi = System.Windows.Input;
@@ -14,7 +10,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class LabelHandler : WpfControl<swc.Label, Label>, ILabel
 	{
-		swc.AccessText text;
+		readonly swc.AccessText text;
 
 		public class EtoLabel : swc.Label
 		{
@@ -22,7 +18,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			{
 				// move focus to the next control after the label
 				var tRequest = new swi.TraversalRequest(swi.FocusNavigationDirection.Next);
-				this.MoveFocus(tRequest);
+				MoveFocus(tRequest);
 			}
 
 			protected override sw.Size MeasureOverride(sw.Size constraint)
@@ -52,16 +48,16 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Wrap = WrapMode.Word;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TextControl.TextChangedEvent:
 					// do nothing, label doesn't get updated by the user
 					break;
 
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -176,7 +172,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		public string Text
 		{
 			get { return text.Text.ToEtoMneumonic(); }
-			set { text.Text = value.ToWpfMneumonic(); ; }
+			set { text.Text = value.ToWpfMneumonic(); }
 		}
 	}
 }

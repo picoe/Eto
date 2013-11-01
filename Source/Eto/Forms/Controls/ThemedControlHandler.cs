@@ -17,11 +17,11 @@ namespace Eto.Forms
 	/// b) Implementing a control with a non-native
 	/// look and feel that is consistent across
 	/// platforms.
-	/// <typeparam name="T">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
+	/// <typeparam name="TControl">The Eto control used to create the custom implementation, e.g. Panel</typeparam>
 	/// <typeparam name="TWidget">The control being implemented, eg TabControl</typeparam>
 	/// </summary>
-	public class ThemedControlHandler<T, TWidget> : WidgetHandler<T, TWidget>, IControl
-		where T : Control
+	public class ThemedControlHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl
+		where TControl : Control
 		where TWidget : Control
 	{
 		public Color BackgroundColor
@@ -33,7 +33,7 @@ namespace Eto.Forms
 		public Size Size
 		{
 			get { return Control.Size; }
-			set { throw new NotImplementedException(); }
+			set { Control.Size = value; }
 		}
 
 		public bool Enabled { 
@@ -114,7 +114,7 @@ namespace Eto.Forms
 
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
-			throw new NotImplementedException();
+			Control.MapPlatformAction(systemAction, action);
 		}
 
 		public Point Location

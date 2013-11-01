@@ -1,9 +1,6 @@
 using Eto.Drawing;
-using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Text;
 using swm = System.Windows.Media;
 using sw = System.Windows;
 
@@ -36,7 +33,7 @@ namespace Eto.Platform.Wpf.Drawing
 		{
 			get
 			{
-				return Conversions.Convert (Control.Style, Control.Weight, null);
+				return Conversions.Convert (Control.Style, Control.Weight);
 			}
 		}
 	}

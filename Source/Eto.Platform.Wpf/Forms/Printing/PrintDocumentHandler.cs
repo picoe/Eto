@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swd = System.Windows.Documents;
 using swc = System.Windows.Controls;
@@ -25,11 +21,11 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 			public int PageNumber { get; set; }
 
-			protected override void OnRender (swm.DrawingContext dc)
+			protected override void OnRender (swm.DrawingContext drawingContext)
 			{
-				base.OnRender (dc);
+				base.OnRender (drawingContext);
 				var rect = new Rectangle (new Size((int)Width, (int)Height));
-				var graphicsHandler = new GraphicsHandler (this, dc, new sw.Rect (0, 0, Width, Height));
+				var graphicsHandler = new GraphicsHandler (this, drawingContext, new sw.Rect (0, 0, Width, Height));
 				var graphics = new Graphics (Handler.Widget.Generator, graphicsHandler);
 				// needed to set size properly for some reason.. ??
 				graphics.DrawRectangle (new Pen(Colors.Transparent), rect);
@@ -46,7 +42,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			public override swd.DocumentPage GetPage (int pageNumber)
 			{
 				var page = new Canvas { 
-					Handler = this.Handler,
+					Handler = Handler,
 					PageNumber = pageNumber,
 					Width = ImageableArea.Width,
 					Height = ImageableArea.Height
@@ -94,15 +90,15 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			var ia = printCapabilities.PageImageableArea;
 			Control.ImageableArea = new sw.Rect(ia.OriginWidth, ia.OriginHeight, ia.ExtentWidth, ia.ExtentHeight);
 			//printCapabilities.PageImageableArea.OriginWidth, printCapabilities.PageImageableArea.OriginHeight
-			print.PrintDocument (Control, this.Name);
+			print.PrintDocument(Control, Name);
 		}
 
 
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case PrintDocument.BeginPrintEvent:
-			case PrintDocument.EndPrintEvent:
+			case PrintDocument.PrintingEvent:
+			case PrintDocument.PrintedEvent:
 			case PrintDocument.PrintPageEvent:
 				// handled by paginator
 				break;

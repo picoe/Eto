@@ -54,9 +54,9 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TreeView.ExpandingEvent:
 					Control.BeforeExpand += (sender, e) =>
@@ -142,21 +142,21 @@ namespace Eto.Platform.Windows.Forms.Controls
 						}
 					};
 					break;
-				case TreeView.AfterLabelEditEvent:
+				case TreeView.LabelEditedEvent:
 					Control.AfterLabelEdit += (s, e) =>
 					{
 						var args = new TreeViewItemEditEventArgs(e.Node.Tag as ITreeItem, e.Label);
-						Widget.OnAfterLabelEdit(args);
+						Widget.OnLabelEdited(args);
 						if (!args.Cancel)
 							args.Item.Text = e.Label;
 						e.CancelEdit = args.Cancel;
 					};
 					break;
-				case TreeView.BeforeLabelEditEvent:
+				case TreeView.LabelEditingEvent:
 					Control.BeforeLabelEdit += (s, e) =>
 					{
 						var args = new TreeViewItemCancelEventArgs(e.Node.Tag as ITreeItem);
-						Widget.OnBeforeLabelEdit(args);
+						Widget.OnLabelEditing(args);
 						e.CancelEdit = args.Cancel;
 					};
 					break;
@@ -167,7 +167,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 					Control.AfterSelect += (sender, e) => Widget.OnSelectionChanged(EventArgs.Empty);
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -178,10 +178,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			set
 			{
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.ContextMenuStrip = null;
+				Control.ContextMenuStrip = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 
@@ -253,9 +250,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			get
 			{
 				var node = Control.SelectedNode;
-				if (node == null)
-					return null;
-				return node.Tag as ITreeItem;
+				return node == null ? null : node.Tag as ITreeItem;
 			}
 			set
 			{

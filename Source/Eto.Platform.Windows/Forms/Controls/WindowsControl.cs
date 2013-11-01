@@ -4,7 +4,6 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Windows.Drawing;
-using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
@@ -41,10 +40,8 @@ namespace Eto.Platform.Windows
 				return handler;
 
 			var controlObject = control.ControlObject as Control;
-			if (controlObject != null)
-				return controlObject.GetWindowsHandler();
+			return controlObject != null ? controlObject.GetWindowsHandler() : null;
 
-			return null;
 		}
 
 		public static Size GetPreferredSize(this Control control)
@@ -78,9 +75,9 @@ namespace Eto.Platform.Windows
 		}
 	}
 
-	public abstract class WindowsControl<T, W> : WidgetHandler<T, W>, IControl, IWindowsControl
-		where T : swf.Control
-		where W : Control
+	public abstract class WindowsControl<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IControl, IWindowsControl
+		where TControl : swf.Control
+		where TWidget : Control
 	{
 		bool internalVisible = true;
 		Font font;
@@ -133,7 +130,7 @@ namespace Eto.Platform.Windows
 
 		public virtual swf.Control ContainerControl
 		{
-			get { return this.Control; }
+			get { return Control; }
 		}
 
 		protected override void Initialize()
@@ -142,8 +139,8 @@ namespace Eto.Platform.Windows
 			Control.TabIndex = 100;
 			XScale = true;
 			YScale = true;
-			this.Control.Margin = swf.Padding.Empty;
-			this.Control.Tag = this;
+			Control.Margin = swf.Padding.Empty;
+			Control.Tag = this;
 		}
 
 		public virtual swf.DockStyle DockStyle
@@ -155,7 +152,7 @@ namespace Eto.Platform.Windows
 		{
 			if (!force && !Widget.Loaded)
 				return;
-			var size = this.GetPreferredSize(Size.Empty);
+			var size = GetPreferredSize(Size.Empty);
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
 			SetMinimumSize(size);
@@ -173,8 +170,8 @@ namespace Eto.Platform.Windows
 
 		public virtual void SetScale(bool xscale, bool yscale)
 		{
-			this.XScale = xscale;
-			this.YScale = yscale;
+			XScale = xscale;
+			YScale = yscale;
 			SetMinimumSize();
 		}
 
@@ -183,9 +180,9 @@ namespace Eto.Platform.Windows
 			SetScale(XScale, YScale);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
 					Control.KeyDown += Control_KeyDown;
@@ -194,7 +191,7 @@ namespace Eto.Platform.Windows
 				case Eto.Forms.Control.KeyUpEvent:
 					Control.KeyUp += Control_KeyUp;
 					break;
-				case Eto.Forms.TextControl.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.TextChanged += Control_TextChanged;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
@@ -238,7 +235,7 @@ namespace Eto.Platform.Windows
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -331,10 +328,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				cursor = value;
-				if (cursor != null)
-					this.Control.Cursor = cursor.ControlObject as swf.Cursor;
-				else
-					this.Control.Cursor = null;
+				Control.Cursor = cursor != null ? cursor.ControlObject as swf.Cursor : null;
 			}
 		}
 
@@ -401,7 +395,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public virtual void SetParent(Eto.Forms.Container parent)
+		public virtual void SetParent(Container parent)
 		{
 		}
 
@@ -430,9 +424,9 @@ namespace Eto.Platform.Windows
 
 		void SetToolTip()
 		{
-			if (this.Widget.ParentWindow != null)
+			if (Widget.ParentWindow != null)
 			{
-				var parent = this.Widget.ParentWindow.Handler as IWindowHandler;
+				var parent = Widget.ParentWindow.Handler as IWindowHandler;
 				if (parent != null)
 					parent.ToolTips.SetToolTip(Control, tooltip);
 			}
@@ -514,10 +508,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				font = value;
-				if (font != null)
-					this.Control.Font = font.ControlObject as System.Drawing.Font;
-				else
-					this.Control.Font = null;
+				Control.Font = font != null ? font.ControlObject as sd.Font : null;
 			}
 		}
 
@@ -527,17 +518,17 @@ namespace Eto.Platform.Windows
 
 		public virtual PointF PointFromScreen(PointF point)
 		{
-			return this.Control.PointToClient(point.ToSDPoint()).ToEto();
+			return Control.PointToClient(point.ToSDPoint()).ToEto();
 		}
 
 		public virtual PointF PointToScreen(PointF point)
 		{
-			return this.Control.PointToScreen(point.ToSDPoint()).ToEto();
+			return Control.PointToScreen(point.ToSDPoint()).ToEto();
 		}
 
 		public Point Location
 		{
-			get { return this.Control.Location.ToEto(); }
+			get { return Control.Location.ToEto(); }
 		}
 	}
 }

@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swd = System.Windows.Documents;
 using swc = System.Windows.Controls;
 using sp = System.Printing;
@@ -36,8 +32,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 
 		public static PrintSettings GetEtoSettings (this swc.PrintDialog dialog, Eto.Generator generator)
 		{
-			if (dialog == null) return null;
-			return new PrintSettings (generator, new PrintSettingsHandler (dialog));
+			return dialog == null ? null : new PrintSettings(generator, new PrintSettingsHandler(dialog));
 		}
 	}
 

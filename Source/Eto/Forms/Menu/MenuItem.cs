@@ -18,7 +18,7 @@ namespace Eto.Forms
 
 	public class MenuItemCollection : Collection<MenuItem>
 	{
-		ISubMenu subMenu;
+		readonly ISubMenu subMenu;
 		
 		public ISubMenuWidget Parent {
 			get;

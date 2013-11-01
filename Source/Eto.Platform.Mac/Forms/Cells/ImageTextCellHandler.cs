@@ -16,7 +16,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
@@ -32,7 +32,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			NSObject CopyWithZone (IntPtr zone)
 			{
 				var ptr = Messaging.IntPtr_objc_msgSendSuper_IntPtr (SuperHandle, MacCommon.CopyWithZoneHandle, zone);
-				return new EtoCell (ptr) { Handler = this.Handler };
+				return new EtoCell (ptr) { Handler = Handler };
 			}
 		}
 		
@@ -83,12 +83,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return result;
 		}
 		
-		public override void SetObjectValue (object dataItem, NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject value)
 		{
 			if (Widget.TextBinding != null) {
-				var str = val as NSString;
+				var str = value as NSString;
 				if (str != null)
-					Widget.TextBinding.SetValue (dataItem, (string)str);
+					Widget.TextBinding.SetValue (dataItem, str.ToString());
 				else
 					Widget.TextBinding.SetValue (dataItem, null);
 			}

@@ -50,16 +50,13 @@ namespace Eto.Platform.Windows
 		static Control ToEto (swf.Control child)
 		{
 			var handler = child.Tag as IControl;
-			if (handler != null) {
-				return handler.Widget as Control;
-			}
-			return null;
+			return handler != null ? handler.Widget as Control : null;
 		}
 	}
 
 	public class BubbleEventFilter : swf.IMessageFilter
 	{
-		Dictionary<int, BubbleEvent> messages = new Dictionary<int, BubbleEvent> ();
+		readonly Dictionary<int, BubbleEvent> messages = new Dictionary<int, BubbleEvent> ();
 
 		public void AddBubbleEvents (Func<BubbleEventArgs, bool> handleEvent, params int[] messages)
 		{
@@ -106,7 +103,7 @@ namespace Eto.Platform.Windows
 		static bool MouseEvent (BubbleEventArgs be, Action<Control, MouseEventArgs> action, bool? capture, Func<MouseButtons, MouseButtons> modifyButtons = null)
 		{
 			var modifiers = swf.Control.ModifierKeys.ToEto ();
-			var delta = new SizeF (0, Win32.GetWheelDeltaWParam (be.Message.WParam) / Conversions.WHEEL_DELTA);
+			var delta = new SizeF (0, Win32.GetWheelDeltaWParam (be.Message.WParam) / Conversions.WheelDelta);
 			var buttons = Win32.GetMouseButtonWParam (be.Message.WParam).ToEto ();
 			if (modifyButtons != null)
 				buttons = modifyButtons (buttons);

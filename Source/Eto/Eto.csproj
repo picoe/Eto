@@ -378,6 +378,8 @@
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Drawing\XmlExtensions.cs" />
     <Compile Include="Drawing\SystemFonts.cs" />
+    <Compile Include="Forms\Controls\Control.binding.cs" />
+    <Compile Include="EventLookup.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

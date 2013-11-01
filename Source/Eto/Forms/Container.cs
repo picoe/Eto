@@ -5,12 +5,12 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public partial interface IContainer : IControl
+	public interface IContainer : IControl
 	{
 		Size ClientSize { get; set; }
 	}
 
-	public abstract partial class Container : Control
+	public abstract class Container : Control
 	{
 		new IContainer Handler { get { return (IContainer)base.Handler; } }
 
@@ -139,14 +139,14 @@ namespace Eto.Forms
 
 		public abstract void Remove(Control child);
 
-		protected void RemoveParent(Control child, bool changeContext)
+		protected static void RemoveParent(Control child, bool changeContext)
 		{
 			child.SetParent(null, changeContext);
 		}
 
 		protected void SetParent(Control child)
 		{
-			child.SetParent(this, true);
+			child.SetParent(this);
 		}
 	}
 }

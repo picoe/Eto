@@ -3,12 +3,12 @@ using Gdk;
 
 namespace Eto.Platform.GtkSharp.CustomControls
 {
-	public class SizableBin : Gtk.Bin
+	public class SizableBin : Bin
 	{
 		protected override void OnSizeAllocated (Rectangle allocation)
 		{
-			if (this.Child != null) {
-				this.Child.SizeAllocate (allocation);
+			if (Child != null) {
+				Child.SizeAllocate (allocation);
 			}
 			base.OnSizeAllocated (allocation);
 		}
@@ -16,8 +16,8 @@ namespace Eto.Platform.GtkSharp.CustomControls
 #if GTK2
 		protected override void OnSizeRequested (ref Requisition requisition)
 		{
-			if (this.Child != null) {
-				requisition = this.Child.SizeRequest ();
+			if (Child != null) {
+				requisition = Child.SizeRequest ();
 			}
 		}
 #else

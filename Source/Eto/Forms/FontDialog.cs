@@ -30,6 +30,11 @@ namespace Eto.Forms
 				_FontChanged (this, e);
 		}
 
+		static FontDialog()
+		{
+			EventLookup.Register(typeof(FontDialog), "OnFontChanged", FontDialog.FontChangedEvent);
+		}
+
 		public FontDialog (Generator generator = null)
 			: base(generator, typeof(IFontDialog), true)
 		{

@@ -5,14 +5,13 @@ namespace Eto.Platform.GtkSharp
 {
 	public static class KeyMap
 	{
-		static Dictionary<Gdk.Key, Key> keymap = new Dictionary<Gdk.Key, Key>();
-		static Dictionary<Key, Gdk.Key> inversekeymap = new Dictionary<Key, Gdk.Key>();
+		static readonly Dictionary<Gdk.Key, Key> keymap = new Dictionary<Gdk.Key, Key>();
+		static readonly Dictionary<Key, Gdk.Key> inversekeymap = new Dictionary<Key, Gdk.Key>();
 
 		public static Key ToEto (this Gdk.Key gkey)
 		{
 			Key key;
-			if (keymap.TryGetValue(gkey, out key)) return key;
-			return Key.None;
+			return keymap.TryGetValue(gkey, out key) ? key : Key.None;
 		}
 		
 		public static Key ToEtoKey (this Gdk.ModifierType modifier)

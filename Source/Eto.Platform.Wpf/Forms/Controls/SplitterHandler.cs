@@ -1,7 +1,5 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using swm = System.Windows.Media;
 using sw = System.Windows;
@@ -12,15 +10,15 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class SplitterHandler : WpfContainer<swc.Grid, Splitter>, ISplitter
 	{
-		swc.GridSplitter splitter;
-		swc.DockPanel pane1;
-		swc.DockPanel pane2;
+		readonly swc.GridSplitter splitter;
+		readonly swc.DockPanel pane1;
+		readonly swc.DockPanel pane2;
 		SplitterOrientation orientation;
 		SplitterFixedPanel fixedPanel;
 		int? position;
 		int? initialWidth;
 		int? initialHeight;
-		sw.Style style;
+		readonly sw.Style style;
 
 		Control panel1;
 		Control panel2;
@@ -62,19 +60,17 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (FixedPanel == SplitterFixedPanel.Panel2)
 				{
 					var size = panel2.GetPreferredSize(Conversions.PositiveInfinitySize);
-					var orientation = Orientation;
-					if (orientation == SplitterOrientation.Horizontal)
+					var currentOrientation = Orientation;
+					if (currentOrientation == SplitterOrientation.Horizontal)
 					{
 						var width = (int)Control.ActualWidth;
-						if (position == null)
-							position = (int)(width - size.Width);
+						position = position ?? (int)(width - size.Width);
 						Position = Size.Width - (width - position.Value);
 					}
-					else if (orientation == SplitterOrientation.Vertical)
+					else if (currentOrientation == SplitterOrientation.Vertical)
 					{
 						var height = (int)Control.ActualHeight;
-						if (position == null)
-							position = (int)(height - size.Height);
+						position = position ?? (int)(height - size.Height);
 
 						Position = Size.Height - (height - position.Value);
 					}
@@ -86,7 +82,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		void SetStretch(Control panel)
+		static void SetStretch(Control panel)
 		{
 			if (panel != null)
 			{
@@ -158,7 +154,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		void UpdateColumnSizing()
 		{
-			var pos = this.Position;
+			var pos = Position;
 			switch (Orientation)
 			{
 				case SplitterOrientation.Horizontal:
@@ -242,8 +238,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 					return position ?? 0;
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
 					return (int)Control.ColumnDefinitions[0].ActualWidth;
-				else
-					return (int)Control.RowDefinitions[0].ActualHeight;
+				return (int)Control.RowDefinitions[0].ActualHeight;
 			}
 			set
 			{
@@ -252,8 +247,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				if (!Widget.Loaded)
 				{
 					position = value;
-					initialWidth = this.Size.Width;
-					initialHeight = this.Size.Height;
+					initialWidth = Size.Width;
+					initialHeight = Size.Height;
 				}
 				if (splitter.ResizeDirection == swc.GridResizeDirection.Columns)
 				{

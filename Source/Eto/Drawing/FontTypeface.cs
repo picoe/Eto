@@ -31,7 +31,7 @@ namespace Eto.Drawing
 	/// Each FontFamily can have different variations, such as Bold, Italic, Bold and Italic, etc.
 	/// 
 	/// This class represents each supported typeface of a particular font family, and can be used
-	/// to create a <see cref="Font"/> instance that uses this typeface, using the <see cref="Font(FontTypeface, float, Generator)"/> constructor.
+	/// to create a <see cref="Font"/> instance that uses this typeface, using the <see cref="M:Font(FontTypeface,float,FontDecoration,Generator)"/> constructor.
 	/// </remarks>
 	public class FontTypeface : InstanceWidget
 	{

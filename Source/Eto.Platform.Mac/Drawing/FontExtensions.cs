@@ -1,11 +1,7 @@
-using System;
 using Eto.Drawing;
 using MonoMac.Foundation;
 using MonoTouch.UIKit;
 using MonoMac.AppKit;
-using System.Runtime.InteropServices;
-using MonoMac.ObjCRuntime;
-using Eto.Platform.Mac.Forms;
 
 #if OSX
 namespace Eto.Platform.Mac.Drawing

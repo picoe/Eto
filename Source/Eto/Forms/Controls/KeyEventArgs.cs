@@ -44,7 +44,7 @@ namespace Eto.Forms
 	[Obsolete("Use KeyEventArgs instead")]
 	public class KeyPressEventArgs : EventArgs
 	{
-		char? keyChar;
+		readonly char? keyChar;
 		
 		/// <summary>
 		/// Initializes a new instance of the KeyPressEventArgs class for a character key press

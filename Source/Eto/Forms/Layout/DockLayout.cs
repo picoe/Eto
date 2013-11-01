@@ -48,16 +48,6 @@ namespace Eto.Forms
 	[Obsolete("Use the DockContainer.Content property instead, or use a Panel")]
 	public class DockLayout : Panel
 	{
-		/// <summary>
-		/// Gets or sets the default amount of padding for all new DockLayout objects
-		/// </summary>
-		[Obsolete("Use DockContainer.DefaultPadding instead")]
-		public new static Padding DefaultPadding
-		{
-			get { return DockContainer.DefaultPadding; }
-			set { DockContainer.DefaultPadding = value; }
-		}
-
 		[Obsolete("Use Panel directly instead")]
 		public Container Container { get { return Parent; } }
 

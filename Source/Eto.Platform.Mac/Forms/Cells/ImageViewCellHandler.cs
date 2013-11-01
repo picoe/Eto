@@ -17,7 +17,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 
@@ -41,7 +41,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					MacCommon.CopyWithZoneHandle,
 					zone
 				);
-				return new EtoCell (ptr) { Handler = this.Handler };
+				return new EtoCell (ptr) { Handler = Handler };
 			}
 
 			public override void DrawInteriorWithFrame (System.Drawing.RectangleF cellFrame, NSView inView)
@@ -102,7 +102,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return new NSImage ();
 		}
 
-		public override void SetObjectValue (object dataItem, NSObject val)
+		public override void SetObjectValue (object dataItem, NSObject value)
 		{
 		}
 		

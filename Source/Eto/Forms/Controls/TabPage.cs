@@ -61,7 +61,7 @@ namespace Eto.Forms
 
 	public class TabPageCollection : Collection<TabPage>
 	{
-		TabControl control;
+		readonly TabControl control;
 
 		internal TabPageCollection (TabControl control)
 		{

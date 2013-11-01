@@ -45,15 +45,15 @@ namespace Eto.Platform.Mac.Drawing
 			}
 		}
 
-		public FontTypefaceHandler(FontFamilyHandler family, NSArray descriptor)
+		public FontTypefaceHandler(NSArray descriptor)
 		{
 			PostScriptName = (string)new NSString(descriptor.ValueAt(0));
 			name = (string)new NSString(descriptor.ValueAt(1));
-			Weight = (int)new NSNumber(descriptor.ValueAt(2)).Int32Value;
+			Weight = new NSNumber(descriptor.ValueAt(2)).Int32Value;
 			Traits = (NSFontTraitMask)new NSNumber(descriptor.ValueAt(3)).Int32Value;
 		}
 
-		public FontTypefaceHandler(FontFamilyHandler family, NSFont font)
+		public FontTypefaceHandler(NSFont font)
 		{
 			var descriptor = font.FontDescriptor;
 			PostScriptName = descriptor.PostscriptName;
@@ -63,7 +63,7 @@ namespace Eto.Platform.Mac.Drawing
 			name = (NSString)descriptor.FontAttributes[NSFontFaceAttribute];
 		}
 
-		public FontTypefaceHandler(FontFamilyHandler family, string postScriptName, string name, NSFontTraitMask traits, int weight)
+		public FontTypefaceHandler(string postScriptName, string name, NSFontTraitMask traits, int weight)
 		{
 			PostScriptName = postScriptName;
 			this.name = name;

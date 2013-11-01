@@ -95,8 +95,8 @@ namespace Eto.Drawing
 		/// <param name="constraint">Constraint to fit the new size into</param>
 		public SizeF FitTo (SizeF constraint)
 		{
-			float ratioX = constraint.Width / this.Width;
-			float ratioY = constraint.Height / this.Height;
+			float ratioX = constraint.Width / Width;
+			float ratioY = constraint.Height / Height;
 			// use whichever multiplier is smaller
 			float ratio = ratioX < ratioY ? ratioX : ratioY;
 			return new SizeF(Width * ratio, Height * ratio);

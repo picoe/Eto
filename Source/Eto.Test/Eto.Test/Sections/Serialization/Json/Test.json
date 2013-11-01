@@ -9,8 +9,8 @@
 					$type: "DynamicLayout",
 					Rows: [
 						[ { $type: "Label", Text: "Text Box" }, { $type: "TextBox" } ],
-						[ { $type: "Label", Text: "Text Area" }, { $type: "TextArea", $name: "myTextArea" } ],
-						[ { $type: "DynamicControl" }, { $type: "CheckBox", $name: "myCheckBox", Text: "Check Box" } ],
+						[ { $type: "Label", Text: "Text Area" }, { $type: "TextArea", $name: "MyTextArea" } ],
+						[ { $type: "DynamicControl" }, { $type: "CheckBox", $name: "MyCheckBox", Text: "Check Box" } ],
 						[ { $type: "Label", Text: "Combo Box" }, { $type: "ComboBox", Items: [
 								{ $type: "ListItem", Text: "Item 1" },
 								{ $type: "ListItem", Text: "Item 2" },

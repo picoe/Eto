@@ -6,10 +6,6 @@ namespace Eto.Platform.Mac.Forms
 {
 	public class ScreensHandler : IScreens, IWidget
 	{
-		public ScreensHandler ()
-		{
-		}
-
 		public void Initialize ()
 		{
 		}

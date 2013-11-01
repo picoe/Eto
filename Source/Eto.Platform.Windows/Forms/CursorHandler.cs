@@ -10,28 +10,28 @@ namespace Eto.Platform.Windows.Forms
 		{
 			switch (cursor) {
 			case CursorType.Arrow:
-				this.Control = SWF.Cursors.Arrow;
+				Control = SWF.Cursors.Arrow;
 				break;
 			case CursorType.Crosshair:
-				this.Control = SWF.Cursors.Cross;
+				Control = SWF.Cursors.Cross;
 				break;
 			case CursorType.Default:
-				this.Control = SWF.Cursors.Default;
+				Control = SWF.Cursors.Default;
 				break;
 			case CursorType.HorizontalSplit:
-				this.Control = SWF.Cursors.HSplit;
+				Control = SWF.Cursors.HSplit;
 				break;
 			case CursorType.IBeam:
-				this.Control = SWF.Cursors.IBeam;
+				Control = SWF.Cursors.IBeam;
 				break;
 			case CursorType.Move:
-				this.Control = SWF.Cursors.SizeAll;
+				Control = SWF.Cursors.SizeAll;
 				break;
 			case CursorType.Pointer:
-				this.Control = SWF.Cursors.Hand;
+				Control = SWF.Cursors.Hand;
 				break;
 			case CursorType.VerticalSplit:
-				this.Control = SWF.Cursors.VSplit;
+				Control = SWF.Cursors.VSplit;
 				break;
 			default:
 				throw new NotSupportedException();

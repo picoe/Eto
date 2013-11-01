@@ -46,10 +46,7 @@ namespace Eto.Platform.Mac.Forms
 				
 				if (button != null) {
 					var b = button.ControlObject as NSButton;
-					if (b != null)
-						Control.DefaultButtonCell = b.Cell;
-					else
-						Control.DefaultButtonCell = null;
+					Control.DefaultButtonCell = b == null ? null : b.Cell;
 				}
 				else
 					Control.DefaultButtonCell = null;
@@ -80,8 +77,6 @@ namespace Eto.Platform.Mac.Forms
 				MacModal.RunSheet (Control, out session);
 				break;
 			default:
-			case DialogDisplayMode.Default:
-			case DialogDisplayMode.Separate:
 				MacModal.Run (Control, out session);
 				break;
 			}

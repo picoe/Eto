@@ -116,7 +116,7 @@ namespace Eto.Test.Sections.Controls
 				check = val == 0 ? (bool?)false : val == 1 ? (bool?)true : null;
 
 				val = rand.Next(3);
-				Image = val == 0 ? (Image)image1 : val == 1 ? (Image)image2 : null;
+				Image = val == 0 ? image1 : val == 1 ? (Image)image2 : null;
 
 				text = string.Format("Col 1 Row {0}", row);
 
@@ -260,11 +260,11 @@ namespace Eto.Test.Sections.Controls
 #endif
 		protected virtual void LogEvents(GridView control)
 		{
-			control.BeginCellEdit += (sender, e) =>
+			control.CellEditing += (sender, e) =>
 			{
 				Log.Write(control, "BeginCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};
-			control.EndCellEdit += (sender, e) =>
+			control.CellEdited += (sender, e) =>
 			{
 				Log.Write(control, "EndCellEdit, Row: {0}, Column: {1}, Item: {2}, ColInfo: {3}", e.Row, e.Column, e.Item, e.GridColumn);
 			};

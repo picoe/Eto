@@ -28,11 +28,13 @@
     <DefineConstants>CAIRO;DEBUG;TRACE;GTK2</DefineConstants>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
+    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|AnyCPU'">
     <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
+    <NoWarn>0618,0612</NoWarn>
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
@@ -144,7 +146,9 @@
     <Compile Include="Forms\Controls\GroupBoxHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\LabelHandler.cs" />
-    <Compile Include="Forms\Controls\ListBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ListBoxHandler.cs">
+      <DependentUpon>TabPageHandler.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\Controls\NumericUpDownHandler.cs" />
     <Compile Include="Forms\Controls\PanelHandler.cs" />
     <Compile Include="Forms\Controls\RadioButtonHandler.cs" />
@@ -260,9 +264,7 @@
     <PostBuildEvent>
     </PostBuildEvent>
   </PropertyGroup>
-  <ItemGroup>
-    <Folder Include="Properties\" />
-  </ItemGroup>
+  <ItemGroup />
   <ProjectExtensions>
     <MonoDevelop>
       <Properties>

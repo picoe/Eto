@@ -4,7 +4,6 @@ using Eto.Drawing;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using msc = Microsoft.Samples.CustomControls;
-using System.Diagnostics;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -18,24 +17,25 @@ namespace Eto.Platform.Wpf.Forms
 		}
 
 		public Color Color {
-			get { return this.Control.SelectedColor.ToEto (); }
-			set { this.Control.StartingColor = value.ToWpf (); }
+			get { return Control.SelectedColor.ToEto (); }
+			set { Control.StartingColor = value.ToWpf (); }
 		}
 
 		public DialogResult ShowDialog (Window parent)
 		{
-			if (parent != null) {
+			if (parent != null)
+			{
 				var owner = parent.ControlObject as sw.Window;
 				Control.Owner = owner;
 				Control.WindowStartupLocation = sw.WindowStartupLocation.CenterOwner;
 			}
-			var result = Control.ShowDialog ();
-			if (result == true) {
-				Widget.OnColorChanged (EventArgs.Empty);
+			var result = Control.ShowDialog();
+			if (result == true)
+			{
+				Widget.OnColorChanged(EventArgs.Empty);
 				return DialogResult.Ok;
 			}
-			else
-				return DialogResult.Cancel;
+			return DialogResult.Cancel;
 		}
 	}
 }

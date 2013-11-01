@@ -38,11 +38,11 @@ namespace Eto.Forms
 		bool areAllObjectsSelected;
 		readonly GridView gridView;
 
-		IDataStore DataStore { get { return gridView != null ? gridView.DataStore : null; } }
+		IDataStore DataStore { get { return gridView == null ? null : gridView.DataStore; } }
 
-		IDataStoreView DataStoreView { get { return gridView != null ? gridView.DataStoreView : null; } }
+		IDataStoreView DataStoreView { get { return gridView == null ? null : gridView.DataStoreView; } }
 
-		IGridView Handler { get { return gridView != null ? gridView.Handler : null; } }
+		IGridView Handler { get { return gridView == null ? null : gridView.Handler; } }
 
 		bool AllowMultipleSelection { get { return gridView != null && gridView.AllowMultipleSelection; } }
 

@@ -37,7 +37,7 @@ namespace Eto.Platform.Mac
 		public override NSApplicationTerminateReply ApplicationShouldTerminate(NSApplication sender)
 		{
 			var args = new CancelEventArgs();
-			var form = Application.Instance.MainForm != null ? Application.Instance.MainForm.Handler as IMacWindow : null;
+			var form = Application.Instance.MainForm == null ? null : Application.Instance.MainForm.Handler as IMacWindow;
 			if (form != null)
 			{
 				if (!form.CloseWindow())
@@ -47,8 +47,7 @@ namespace Eto.Platform.Mac
 			Application.Instance.OnTerminating(args);
 			if (args.Cancel)
 				return NSApplicationTerminateReply.Cancel;
-			else
-				return NSApplicationTerminateReply.Now;
+			return NSApplicationTerminateReply.Now;
 		}
 	}
 }

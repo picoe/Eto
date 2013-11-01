@@ -3,7 +3,6 @@ using sd = System.Drawing;
 using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
-using System.Diagnostics;
 
 namespace Eto.Platform.Windows
 {
@@ -174,9 +173,9 @@ namespace Eto.Platform.Windows
 			content.Controls.Add(contentControl);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Scrollable.ScrollEvent:
 					Control.Scroll += delegate {
@@ -184,7 +183,7 @@ namespace Eto.Platform.Windows
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}

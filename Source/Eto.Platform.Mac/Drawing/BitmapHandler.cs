@@ -155,10 +155,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public BitmapData Lock()
 		{
-			if (bmprep != null)
-				return new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
-			else
-				return null;
+			return bmprep == null ? null : new BitmapDataHandler(Widget, bmprep.BitmapData, bmprep.BytesPerRow, bmprep.BitsPerPixel, Control);
 		}
 
 		public void Unlock(BitmapData bitmapData)
@@ -195,10 +192,7 @@ namespace Eto.Platform.Mac.Drawing
 			if (newrep == null)
 			{
 				CGImage img;
-				if (this.bmprep != null)
-					img = this.bmprep.CGImage;
-				else
-					img = Control.CGImage;
+				img = bmprep != null ? bmprep.CGImage : Control.CGImage;
 				newrep = new NSBitmapImageRep(img);
 			}
 			var data = newrep.RepresentationUsingTypeProperties(type, new NSDictionary());

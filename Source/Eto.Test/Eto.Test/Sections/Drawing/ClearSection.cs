@@ -63,12 +63,8 @@ namespace Eto.Test.Sections.Drawing
 				Size = new Size (200, 200),
 				BackgroundColor = Colors.Yellow
 			};
-			control.Paint += (sender, e) => {
-				DrawSample(e.Graphics);
-			};
-			this.PropertyChanged += (sender, e) => {
-				control.Invalidate();
-			};
+			control.Paint += (sender, e) => DrawSample(e.Graphics);
+			PropertyChanged += (sender, e) => control.Invalidate();
 			return control;
 		}
 
@@ -109,9 +105,7 @@ namespace Eto.Test.Sections.Drawing
 				BackgroundColor = Colors.Yellow
 			};
 
-			this.PropertyChanged += (sender, e) => {
-				control.Image = GenerateImage();
-			};
+			PropertyChanged += (sender, e) => control.Image = GenerateImage();
 
 			return control;
 		}

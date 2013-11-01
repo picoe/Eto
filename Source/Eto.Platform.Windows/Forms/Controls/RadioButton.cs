@@ -41,12 +41,12 @@ namespace Eto.Platform.Windows
 					controllerInner.group.Add(controller);
 					controllerInner.Control.Click += controllerInner.control_RadioSwitch;
 				}
-				controllerInner.group.Add((RadioButton)this.Widget);
+				controllerInner.group.Add(Widget);
 				Control.Click += controllerInner.control_RadioSwitch;
 			}
 		}
 
-		private void control_RadioSwitch(object sender, EventArgs e)
+		void control_RadioSwitch(object sender, EventArgs e)
 		{
 			if (group != null)
 			{

@@ -1,32 +1,23 @@
-using System;
 using Eto.Forms;
 using System.Collections.Generic;
-using System.Linq;
 using swi = System.Windows.Input;
 
 namespace Eto.Platform.Wpf
 {
 	public static class KeyMap
 	{
-		static Dictionary<swi.Key, Key> keymap = new Dictionary<swi.Key, Key> ();
-		static Dictionary<Key, swi.Key> inverse = new Dictionary<Key, swi.Key> ();
+		static readonly Dictionary<swi.Key, Key> keymap = new Dictionary<swi.Key, Key> ();
+		static readonly Dictionary<Key, swi.Key> inverse = new Dictionary<Key, swi.Key> ();
 
 		public static Key Find (swi.Key key)
 		{
 			Key mapped;
-			if (keymap.TryGetValue (key, out mapped)) return mapped;
-			else return Key.None;
+			return keymap.TryGetValue(key, out mapped) ? mapped : Key.None;
 		}
 
 		public static Key Convert (swi.Key key, swi.ModifierKeys modifier)
 		{
-			var keys = key.ToString ()
-				  .Split (new[] { ", " }, StringSplitOptions.None)
-				  .Select (v => (swi.Key)Enum.Parse (typeof (swi.Key), v));
-			Key ret = Key.None;
-			foreach (var val in keys) {
-				ret |= Find (val);
-			}
+			Key ret = Find(key);
 
 			if (modifier.HasFlag (swi.ModifierKeys.Alt)) ret |= Key.Alt;
 			if (modifier.HasFlag (swi.ModifierKeys.Control)) ret |= Key.Control;
@@ -40,21 +31,12 @@ namespace Eto.Platform.Wpf
 		public static swi.Key Find (Key key)
 		{
 			swi.Key mapped;
-			if (inverse.TryGetValue (key, out mapped)) return mapped;
-			else return swi.Key.None;
+			return inverse.TryGetValue(key, out mapped) ? mapped : swi.Key.None;
 		}
 
 		public static swi.Key ConvertKey (Key key)
 		{
-			key &= Key.KeyMask;
-			var keys = key.ToString ()
-				  .Split (new[] { ", " }, StringSplitOptions.None)
-				  .Select (v => (Key)Enum.Parse (typeof (Key), v));
-			var ret = swi.Key.None;
-			foreach (var val in keys) {
-				ret |= Find (val);
-			}
-			return ret;
+			return Find(key & Key.KeyMask);
 		}
 
 		public static swi.ModifierKeys ConvertModifier (Key key)

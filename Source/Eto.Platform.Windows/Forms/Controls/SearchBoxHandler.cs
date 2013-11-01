@@ -6,8 +6,5 @@ namespace Eto.Platform.Windows
 {
 	public class SearchBoxHandler : TextBoxHandler, ISearchBox
 	{
-		public SearchBoxHandler()
-		{
-		}
 	}
 }

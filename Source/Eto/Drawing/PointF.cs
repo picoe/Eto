@@ -263,7 +263,7 @@ namespace Eto.Drawing
 		/// <param name="offset">Point with X and Y values to add to this point</param>
 		public void Offset (PointF offset)
 		{
-			this.Offset (offset.X, offset.Y);
+			Offset(offset.X, offset.Y);
 		}
 
 		/// <summary>

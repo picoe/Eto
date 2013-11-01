@@ -16,8 +16,8 @@ namespace Eto.Forms
 
 	public class PaintEventArgs : EventArgs
 	{
-		Graphics graphics;
-		Rectangle clipRectangle;
+		readonly Graphics graphics;
+		readonly Rectangle clipRectangle;
 
 		public PaintEventArgs(Graphics graphics, Rectangle clipRectangle)
 		{

@@ -27,10 +27,10 @@ namespace Eto.Platform.Windows.Forms.Controls
 				return size;
 			}
 
-			protected override void Paint (System.Drawing.Graphics graphics, System.Drawing.Rectangle clipBounds, System.Drawing.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates cellState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
+			protected override void Paint (sd.Graphics graphics, sd.Rectangle clipBounds, sd.Rectangle cellBounds, int rowIndex, swf.DataGridViewElementStates elementState, object value, object formattedValue, string errorText, swf.DataGridViewCellStyle cellStyle, swf.DataGridViewAdvancedBorderStyle advancedBorderStyle, swf.DataGridViewPaintParts paintParts)
 			{
-				Handler.Paint (graphics, clipBounds, ref cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
-				base.Paint (graphics, clipBounds, cellBounds, rowIndex, cellState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
+				Handler.Paint (graphics, clipBounds, ref cellBounds, rowIndex, elementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, ref paintParts);
+				base.Paint (graphics, clipBounds, cellBounds, rowIndex, elementState, value, formattedValue, errorText, cellStyle, advancedBorderStyle, paintParts);
 			}
 
 			protected override void OnMouseClick (swf.DataGridViewCellMouseEventArgs e)
@@ -105,10 +105,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		public override object GetCellValue (object dataItem)
 		{
-			if (Widget.Binding != null) {
-				return Widget.Binding.GetValue (dataItem);
-			}
-			return null;
+			return Widget.Binding == null ? null : Widget.Binding.GetValue(dataItem);
 		}
 
 		public override void SetCellValue (object dataItem, object value)

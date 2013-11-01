@@ -8,7 +8,7 @@ namespace Eto.Platform.Windows
 
 	public class CheckToolBarButtonHandler : ToolBarItemHandler<SWF.ToolStripButton, CheckToolBarButton>, ICheckToolBarButton
 	{
-		SWF.ToolStripButton control;
+		readonly SWF.ToolStripButton control;
 
 		public CheckToolBarButtonHandler()
 		{
@@ -20,7 +20,7 @@ namespace Eto.Platform.Windows
 
 		void control_Click(object sender, EventArgs e)
 		{
-			((CheckToolBarButton)Widget).OnClick(EventArgs.Empty);
+			Widget.OnClick(EventArgs.Empty);
 		}
 
 		#region ICheckToolBarButton Members
@@ -41,7 +41,7 @@ namespace Eto.Platform.Windows
 
 		public override void InvokeButton()
 		{
-			((CheckToolBarButton)Widget).OnClick(EventArgs.Empty);
+			Widget.OnClick(EventArgs.Empty);
 		}
 		
 		public override bool Enabled

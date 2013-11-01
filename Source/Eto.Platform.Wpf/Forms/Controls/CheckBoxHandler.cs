@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using sw = System.Windows;
 using swc = System.Windows.Controls;
 using Eto.Forms;
@@ -10,7 +7,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 {
 	public class CheckBoxHandler : WpfControl<swc.CheckBox, CheckBox>, ICheckBox
 	{
-		swc.Border border;
+		readonly swc.Border border;
 
 		public override sw.FrameworkElement ContainerControl
 		{

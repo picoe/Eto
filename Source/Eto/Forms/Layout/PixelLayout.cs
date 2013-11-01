@@ -46,7 +46,7 @@ namespace Eto.Forms
 
 		[Obsolete("Add a PixelLayout to a DockContainer using the DockContainer.Content property")]
 		public PixelLayout(DockContainer container)
-			: this(container != null ? container.Generator : null)
+			: this(container == null ? null : container.Generator)
 		{
 			if (container != null)
 				container.Content = this;

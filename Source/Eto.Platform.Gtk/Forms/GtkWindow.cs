@@ -14,9 +14,9 @@ namespace Eto.Platform.GtkSharp
 		Gtk.Window Control { get; }
 	}
 
-	public abstract class GtkWindow<T, W> : GtkDockContainer<T, W>, IWindow, IGtkWindow
-		where T: Gtk.Window
-		where W: Window
+	public abstract class GtkWindow<TControl, TWidget> : GtkDockContainer<TControl, TWidget>, IWindow, IGtkWindow
+		where TControl: Gtk.Window
+		where TWidget: Window
 	{
 		Gtk.VBox vbox;
 		readonly Gtk.VBox actionvbox;
@@ -125,11 +125,9 @@ namespace Eto.Platform.GtkSharp
 		}
 
 		public override Size Size {
-			get {
-				if (Control.Visible)
-					return Control.Allocation.Size.ToEto ();
-				else
-					return Control.DefaultSize.ToEto ();
+			get
+			{
+				return (Control.Visible ? Control.Allocation.Size : Control.DefaultSize).ToEto();
 			}
 			set {
 				if (Control.Visible)
@@ -188,9 +186,9 @@ namespace Eto.Platform.GtkSharp
 			
 		}
 		
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Window.ClosedEvent:
 				HandleEvent (Window.ClosingEvent);
 				break;
@@ -232,7 +230,7 @@ namespace Eto.Platform.GtkSharp
 				Control.ConfigureEvent += HandleConfigureEvent;
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

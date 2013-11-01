@@ -8,7 +8,7 @@ namespace Eto.Platform.Windows
 
 	public class ToolBarButtonHandler : ToolBarItemHandler<SWF.ToolStripButton, ToolBarButton>, IToolBarButton
 	{
-		private SWF.ToolStripButton control;
+		readonly SWF.ToolStripButton control;
 
 		public ToolBarButtonHandler()
 		{
@@ -42,7 +42,7 @@ namespace Eto.Platform.Windows
 
 		public override void InvokeButton()
 		{
-			((ToolBarButton)Widget).OnClick(EventArgs.Empty);
+			Widget.OnClick(EventArgs.Empty);
 		}
 
 	}

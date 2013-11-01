@@ -10,10 +10,10 @@ namespace Eto.Platform.GtkSharp.Forms
 	{
 		GtkTreeModel<ITreeItem, ITreeStore> model;
 		CollectionHandler collection;
-		Gtk.TreeView tree;
+		readonly Gtk.TreeView tree;
 		ContextMenu contextMenu;
 		bool cancelExpandCollapseEvents;
-		Gtk.CellRendererText textCell;
+		readonly Gtk.CellRendererText textCell;
 		public static Size MaxImageSize = new Size(16, 16);
 
 		public override Gtk.Widget EventControl
@@ -24,11 +24,6 @@ namespace Eto.Platform.GtkSharp.Forms
 		class CellRendererTextImage : Gtk.CellRendererText
 		{
 #if GTK2
-			protected override void Render(Gdk.Drawable window, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gdk.Rectangle expose_area, Gtk.CellRendererState flags)
-			{
-				base.Render(window, widget, background_area, cell_area, expose_area, flags);
-			}
-
 			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
 			{
 				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
@@ -154,9 +149,9 @@ namespace Eto.Platform.GtkSharp.Forms
 			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case TreeView.ExpandingEvent:
 					tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args)
@@ -218,29 +213,29 @@ namespace Eto.Platform.GtkSharp.Forms
 					};
 
 					break;
-				case TreeView.BeforeLabelEditEvent:
+				case TreeView.LabelEditingEvent:
 					textCell.EditingStarted += (o, args) => {
 						var item = model.GetItemAtPath(args.Path);
 						if (item != null)
 						{
 							var itemArgs = new TreeViewItemCancelEventArgs(item);
-							Widget.OnBeforeLabelEdit(itemArgs);
+							Widget.OnLabelEditing(itemArgs);
 							args.RetVal = itemArgs.Cancel;
 						}
 					};
 					break;
-				case TreeView.AfterLabelEditEvent:
+				case TreeView.LabelEditedEvent:
 					textCell.Edited += (o, args) => {
 						var item = model.GetItemAtPath(args.Path);
 						if (item != null)
 						{
-							Widget.OnAfterLabelEdit(new TreeViewItemEditEventArgs(item, args.NewText));
+							Widget.OnLabelEdited(new TreeViewItemEditEventArgs(item, args.NewText));
 							item.Text = args.NewText;
 						}
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -332,9 +327,7 @@ namespace Eto.Platform.GtkSharp.Forms
 
 		public int GetRowOfItem(ITreeItem item)
 		{
-			if (collection == null)
-				return -1;
-			return collection.IndexOf(item);
+			return collection != null ? collection.IndexOf(item) : -1;
 		}
 
 		public void RefreshData()

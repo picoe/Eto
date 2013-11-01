@@ -8,7 +8,7 @@ using System.Windows.Markup;
 #endif
 namespace Eto.Forms
 {
-	public partial interface IDockContainer : IContainer
+	public interface IDockContainer : IContainer
 	{
 		Control Content { get; set; }
 
@@ -18,7 +18,7 @@ namespace Eto.Forms
 	}
 
 	[ContentProperty("Content")]
-	public abstract partial class DockContainer : Container
+	public abstract class DockContainer : Container
 	{
 		new IDockContainer Handler { get { return (IDockContainer)base.Handler; } }
 
@@ -28,7 +28,7 @@ namespace Eto.Forms
 		{
 			get
 			{ 
-				var content = Handler != null ? Handler.Content : null;
+				var content = Handler == null ? null : Handler.Content;
 				if (content != null)
 					yield return content; 
 			}

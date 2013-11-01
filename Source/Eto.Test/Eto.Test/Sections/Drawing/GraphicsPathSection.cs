@@ -109,7 +109,7 @@ namespace Eto.Test.Sections.Drawing
 		void Refresh(object sender, EventArgs e)
 		{
 			path = CreateMainPath();
-			foreach (var d in this.Children.OfType<Drawable> ())
+			foreach (var d in Children.OfType<Drawable> ())
 			{
 				d.Invalidate();
 			}

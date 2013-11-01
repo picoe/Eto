@@ -1,14 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using Eto.Forms;
 using Eto.Drawing;
 using sw = System.Windows;
 using swm = System.Windows.Media;
 using swc = System.Windows.Controls;
 using swi = System.Windows.Input;
-using System.Runtime.InteropServices;
 using Eto.Platform.Wpf.CustomControls;
 using Eto.Platform.Wpf.Forms.Menu;
 
@@ -19,9 +16,9 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<T, W> : WpfDockContainer<T, W>, IWindow, IWpfWindow
-		where T : sw.Window
-		where W : Window
+	public abstract class WpfWindow<TControl, TWidget> : WpfDockContainer<TControl, TWidget>, IWindow, IWpfWindow
+		where TControl : sw.Window
+		where TWidget : Window
 	{
 		Icon icon;
 		MenuBar menu;
@@ -73,9 +70,9 @@ namespace Eto.Platform.Wpf.Forms
 			base.SetContentScale(true, true);
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Window.ClosedEvent:
 				Control.Closed += delegate {
 					Widget.OnClosed (EventArgs.Empty);
@@ -91,27 +88,19 @@ namespace Eto.Platform.Wpf.Forms
 				};
 				break;
 			case Window.WindowStateChangedEvent:
-				Control.StateChanged += (sender, e) => {
-					Widget.OnWindowStateChanged (EventArgs.Empty);
-				};
+				Control.StateChanged += (sender, e) => Widget.OnWindowStateChanged(EventArgs.Empty);
 				break;
-			case Window.GotFocusEvent:
-				Control.Activated += (sender, e) => {
-					Widget.OnGotFocus (EventArgs.Empty);
-				};
+			case Eto.Forms.Control.GotFocusEvent:
+				Control.Activated += (sender, e) => Widget.OnGotFocus(EventArgs.Empty);
 				break;
-			case Window.LostFocusEvent:
-				Control.Deactivated += (sender, e) => {
-					Widget.OnLostFocus (EventArgs.Empty);
-				};
+			case Eto.Forms.Control.LostFocusEvent:
+				Control.Deactivated += (sender, e) => Widget.OnLostFocus(EventArgs.Empty);
 				break;
 			case Window.LocationChangedEvent:
-				Control.LocationChanged += (sender, e) => {
-					Widget.OnLocationChanged (EventArgs.Empty);
-				};
+				Control.LocationChanged += (sender, e) => Widget.OnLocationChanged(EventArgs.Empty);
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -140,11 +129,7 @@ namespace Eto.Platform.Wpf.Forms
 			set
 			{
 				toolBar = value;
-				if (toolBar != null) {
-					toolBarHolder.Content = toolBar.ControlObject;
-				}
-				else
-					toolBarHolder.Content = null;
+				toolBarHolder.Content = toolBar != null ? toolBar.ControlObject : null;
 			}
 		}
 
@@ -156,7 +141,7 @@ namespace Eto.Platform.Wpf.Forms
 		void CopyKeyBindings (swc.ItemCollection items)
 		{
 			foreach (var item in items.OfType<swc.MenuItem>()) {
-				this.Control.InputBindings.AddRange (item.InputBindings);
+				Control.InputBindings.AddRange (item.InputBindings);
 				if (item.HasItems)
 					CopyKeyBindings (item.Items);
 			}
@@ -171,7 +156,7 @@ namespace Eto.Platform.Wpf.Forms
 				if (menu != null) {
 					var handler = (MenuBarHandler)menu.Handler;
 					menuHolder.Content = handler.Control;
-					this.Control.InputBindings.Clear ();
+					Control.InputBindings.Clear ();
 					CopyKeyBindings (handler.Control.Items);
 				}
 				else {
@@ -271,9 +256,8 @@ namespace Eto.Platform.Wpf.Forms
 			get
 			{
 				if (Control.IsLoaded)
-					return new Size ((int)content.ActualWidth, (int)content.ActualHeight);
-				else
-					return initialClientSize ?? Size.Empty;
+					return new Size((int)content.ActualWidth, (int)content.ActualHeight);
+				return initialClientSize ?? Size.Empty;
 			}
 			set
 			{
@@ -385,7 +369,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		sw.Window IWpfWindow.Control
 		{
-			get { return this.Control; }
+			get { return Control; }
 		}
 
 		public double Opacity
@@ -393,21 +377,26 @@ namespace Eto.Platform.Wpf.Forms
 			get { return Control.Opacity; }
 			set
 			{
-				if (value != 1.0) {
-					if (Control.IsLoaded) {
-						GlassHelper.BlurBehindWindow (Control);
+				if (Math.Abs(value - 1.0) > 0.01f)
+				{
+					if (Control.IsLoaded)
+					{
+						GlassHelper.BlurBehindWindow(Control);
 						//GlassHelper.ExtendGlassFrame (Control);
 						Control.Opacity = value;
 					}
-					else {
-						Control.Loaded += delegate {
-							GlassHelper.BlurBehindWindow (Control);
+					else
+					{
+						Control.Loaded += delegate
+						{
+							GlassHelper.BlurBehindWindow(Control);
 							//GlassHelper.ExtendGlassFrame (Control);
 							Control.Opacity = value;
 						};
 					}
 				}
-				else {
+				else
+				{
 					Control.Opacity = value;
 				}
 			}

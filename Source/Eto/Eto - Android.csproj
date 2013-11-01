@@ -250,5 +250,8 @@
     <Compile Include="Forms\Range.cs" />
     <Compile Include="Forms\Screen.cs" />
     <Compile Include="Drawing\SystemFonts.cs" />
+    <Compile Include="EventLookup.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Forms\Controls\Control.binding.cs" />
   </ItemGroup>
 </Project>

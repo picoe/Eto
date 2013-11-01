@@ -30,6 +30,7 @@ namespace Eto.Platform.Android.Forms.Controls
 
 		public bool ShowCellBorders
 		{
+			get { throw new NotImplementedException(); }
 			set { throw new NotImplementedException(); }
 		}
 

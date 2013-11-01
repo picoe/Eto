@@ -48,7 +48,6 @@ namespace Eto.Platform.GtkSharp
 					case Gtk.ToolbarStyle.BothHoriz:
 						return ToolBarTextAlign.Right;
 					default:
-					case Gtk.ToolbarStyle.Both:
 						return ToolBarTextAlign.Underneath;
 				}
 			}
@@ -60,7 +59,6 @@ namespace Eto.Platform.GtkSharp
 						Control.ToolbarStyle = Gtk.ToolbarStyle.BothHoriz;
 						break;
 					default:
-					case ToolBarTextAlign.Underneath:
 						Control.ToolbarStyle = Gtk.ToolbarStyle.Both;
 						break;
 				}

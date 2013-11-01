@@ -60,9 +60,7 @@ namespace Eto.IO
 
 		public override bool Equals (object obj)
 		{
-			var dir = obj as EtoFileInfo;
-			if (dir == null) return false;
-			return FullName.Equals (dir.FullName, StringComparison.OrdinalIgnoreCase);
+			return this == obj as EtoFileInfo;
 		}
 		
 		public override int GetHashCode ()
@@ -72,8 +70,11 @@ namespace Eto.IO
 		
 		public static bool operator == (EtoFileInfo file1, EtoFileInfo file2)
 		{
-			if (ReferenceEquals (file1, null)) return ReferenceEquals (file2, null);
-			return file1.Equals (file2);
+			if (ReferenceEquals(file1, file2))
+				return true;
+			if (ReferenceEquals(file1, null) || ReferenceEquals(file2, null))
+				return false;
+			return file1.FullName.Equals (file2.FullName, StringComparison.OrdinalIgnoreCase);
 		}
 
 		public static bool operator != (EtoFileInfo file1, EtoFileInfo file2)

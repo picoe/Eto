@@ -10,7 +10,7 @@ namespace Eto.Platform.GtkSharp
 		bool sendSelectionChanged = true;
 		Range? lastSelection;
 		int? lastCaretIndex;
-		Gtk.ScrolledWindow scroll;
+		readonly Gtk.ScrolledWindow scroll;
 		Gtk.TextTag tag;
 
 		public override Gtk.Widget ContainerControl
@@ -29,11 +29,11 @@ namespace Eto.Platform.GtkSharp
 			scroll.Add(Control);
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
-				case TextArea.TextChangedEvent:
+				case TextControl.TextChangedEvent:
 					Control.Buffer.Changed += delegate
 					{
 						Widget.OnTextChanged(EventArgs.Empty);
@@ -42,7 +42,7 @@ namespace Eto.Platform.GtkSharp
 				case TextArea.SelectionChangedEvent:
 					Control.Buffer.MarkSet += (o, args) =>
 					{
-						var selection = this.Selection;
+						var selection = Selection;
 						if (sendSelectionChanged && selection != lastSelection)
 						{
 							Widget.OnSelectionChanged(EventArgs.Empty);
@@ -53,7 +53,7 @@ namespace Eto.Platform.GtkSharp
 				case TextArea.CaretIndexChangedEvent:
 					Control.Buffer.MarkSet += (o, args) =>
 					{
-						var caretIndex = this.CaretIndex;
+						var caretIndex = CaretIndex;
 						if (sendSelectionChanged && caretIndex != lastCaretIndex)
 						{
 							Widget.OnCaretIndexChanged(EventArgs.Empty);
@@ -62,7 +62,7 @@ namespace Eto.Platform.GtkSharp
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -110,8 +110,7 @@ namespace Eto.Platform.GtkSharp
 				{
 					return Control.Buffer.GetText(start, end, false);
 				}
-				else
-					return null;
+				return null;
 			}
 			set
 			{
@@ -145,8 +144,7 @@ namespace Eto.Platform.GtkSharp
 				Gtk.TextIter start, end;
 				if (Control.Buffer.GetSelectionBounds(out start, out end))
 					return new Range(start.Offset, end.Offset - start.Offset);
-				else
-					return new Range(Control.Buffer.CursorPosition, 0);
+				return new Range(Control.Buffer.CursorPosition, 0);
 			}
 			set
 			{

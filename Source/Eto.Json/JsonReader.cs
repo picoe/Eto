@@ -36,6 +36,7 @@ namespace Eto.Json
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="stream">json content to load (e.g. from resources)</param>
+		/// <param name="namespaceManager">Namespace manager to use when loading</param>
 		/// <returns>A new instance of the specified type with the contents loaded from the json stream</returns>
 		public static T Load<T> (Stream stream, NamespaceManager namespaceManager = null)
 			where T: InstanceWidget, new()
@@ -54,6 +55,7 @@ namespace Eto.Json
 		/// </remarks>
 		/// <typeparam name="T">Type of object to load from the specified json</typeparam>
 		/// <param name="instance">Instance to use as the starting object</param>
+		/// <param name="namespaceManager">Namespace manager to use when loading</param>
 		/// <returns>A new or existing instance of the specified type with the contents loaded from the json stream</returns>
 		public static T Load<T> (T instance, NamespaceManager namespaceManager = null)
 			where T: InstanceWidget
@@ -76,28 +78,30 @@ namespace Eto.Json
 		{
 			var type = typeof(T);
 
-			using (var reader = new StreamReader(stream)) {
-				if (namespaceManager == null) {
-					namespaceManager = new DefaultNamespaceManager ();
+			using (var reader = new StreamReader(stream))
+			{
+				if (namespaceManager == null)
+				{
+					namespaceManager = new DefaultNamespaceManager();
 				}
-				var serializer = new JsonSerializer {
+				var serializer = new JsonSerializer
+				{
 					TypeNameHandling = TypeNameHandling.Auto,
 					MissingMemberHandling = MissingMemberHandling.Error,
 					ContractResolver = new EtoContractResolver(),
-					Context = new StreamingContext (StreamingContextStates.All, instance),
+					Context = new StreamingContext(StreamingContextStates.All, instance),
 					Binder = new EtoBinder { NamespaceManager = namespaceManager }
 				};
-				serializer.Converters.Add (new DynamicLayoutConverter ());
-				serializer.Converters.Add (new DelegateConverter ());
-				serializer.Converters.Add (new PropertyStoreConverter ());
-				serializer.Converters.Add (new ImageConverter ());
+				serializer.Converters.Add(new DynamicLayoutConverter());
+				serializer.Converters.Add(new DelegateConverter());
+				serializer.Converters.Add(new PropertyStoreConverter());
+				serializer.Converters.Add(new ImageConverter());
 
 				if (instance == null)
-					return serializer.Deserialize (reader, type) as T;
-				else {
-					serializer.Populate (reader, instance);
-					return instance;
-				}
+					return serializer.Deserialize(reader, type) as T;
+
+				serializer.Populate(reader, instance);
+				return instance;
 			}
 		}
 	}

@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
@@ -9,12 +6,12 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public abstract class WpfDockContainer<T, W> : WpfContainer<T, W>, IDockContainer
-		where T : sw.FrameworkElement
-		where W : DockContainer
+	public abstract class WpfDockContainer<TControl, TWidget> : WpfContainer<TControl, TWidget>, IDockContainer
+		where TControl : sw.FrameworkElement
+		where TWidget : DockContainer
 	{
 		Control content;
-		swc.Border border;
+		readonly swc.Border border;
 		Size? clientSize;
 
 		protected virtual bool UseContentSize { get { return true; } }
@@ -23,13 +20,14 @@ namespace Eto.Platform.Wpf.Forms
 		{
 			get
 			{
-				if (!Control.IsLoaded && clientSize != null) return clientSize.Value;
-				else return Conversions.GetSize(border);
+				if (!Control.IsLoaded && clientSize != null)
+					return clientSize.Value;
+				return border.GetSize();
 			}
 			set
 			{
 				clientSize = value;
-				Conversions.SetSize(border, value);
+				border.SetSize(value);
 			}
 		}
 

@@ -74,8 +74,8 @@ namespace Eto.Platform.Mac
 		public Key Shortcut {
 			get { return KeyMap.Convert (Control.KeyEquivalent, Control.KeyEquivalentModifierMask); }
 			set { 
-				this.Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
-				this.Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
+				Control.KeyEquivalent = KeyMap.KeyEquivalent (value);
+				Control.KeyEquivalentModifierMask = KeyMap.KeyEquivalentModifierMask (value);
 			}
 		}
 
@@ -89,13 +89,7 @@ namespace Eto.Platform.Mac
 
 		void SetImage ()
 		{
-			Control.Image = ShowImage ? this.image.ToNS(16) : null;
-		}
-
-		public override void AddMenu (int index, MenuItem item)
-		{
-			base.AddMenu (index, item);
-			//if (Control.HasSubmenu) Control.Submenu.Title = Control.Title;
+			Control.Image = ShowImage ? image.ToNS(16) : null;
 		}
 
 		MenuActionItem IMenuActionHandler.Widget {

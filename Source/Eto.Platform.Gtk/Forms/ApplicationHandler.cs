@@ -71,7 +71,7 @@ namespace Eto.Platform.GtkSharp
 			graphics.Flush ();
 		}
 
-		public void Invoke (System.Action action)
+		public void Invoke (Action action)
 		{
 			if (Thread.CurrentThread.ManagedThreadId == ApplicationHandler.MainThreadID)
 				action ();
@@ -87,7 +87,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public void AsyncInvoke (System.Action action)
+		public void AsyncInvoke (Action action)
 		{
 			Gtk.Application.Invoke (delegate {
 				action ();

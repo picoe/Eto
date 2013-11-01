@@ -18,7 +18,7 @@ namespace Eto.Drawing
 		/// An empty color with zero for all components
 		/// </summary>
 		[Obsolete("Use nullable values instead")]
-		public readonly static ColorCMYK Empty;
+		public readonly static ColorCMYK Empty = new ColorCMYK();
 
 		#endregion
 

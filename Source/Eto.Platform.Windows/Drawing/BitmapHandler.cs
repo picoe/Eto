@@ -101,7 +101,7 @@ namespace Eto.Platform.Windows.Drawing
 
 		public void Create(int width, int height, Graphics graphics)
 		{
-			this.Control = new SD.Bitmap(width, height, GraphicsHandler.GetControl (graphics));
+			Control = new SD.Bitmap(width, height, GraphicsHandler.GetControl(graphics));
 		}
 
 		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
@@ -145,29 +145,29 @@ namespace Eto.Platform.Windows.Drawing
 
 		public SD.Image GetImageWithSize (int? size)
 		{
-			if (size != null) {
+			if (size != null)
+			{
 				var max = Math.Max(Control.Width, Control.Height);
-				var newsize = new SD.Size (size.Value * Control.Width / max, size.Value * Control.Height / max);
-				return new SD.Bitmap (Control, newsize);
+				var newsize = new SD.Size(size.Value * Control.Width / max, size.Value * Control.Height / max);
+				return new SD.Bitmap(Control, newsize);
 			}
-			else
-				return Control;
+			return Control;
 		}
 
 		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			SD.Bitmap copy;
 			if (rectangle == null)
-				copy = (SD.Bitmap)this.Control.Clone ();
+				copy = (SD.Bitmap)Control.Clone ();
 			else
-				copy = this.Control.Clone (rectangle.Value.ToSD(), this.Control.PixelFormat);
+				copy = Control.Clone (rectangle.Value.ToSD(), Control.PixelFormat);
 
 			return new Bitmap (Generator, new BitmapHandler (copy));
 		}
 
 		public Color GetPixel(int x, int y)
 		{
-			return this.Control.GetPixel(x, y).ToEto();
+			return Control.GetPixel(x, y).ToEto();
 		}
 
 		public void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)

@@ -12,9 +12,9 @@ namespace Eto.Platform.GtkSharp
 	public class ButtonHandler : GtkControl<Gtk.Button, Button>, IButton
 	{
 		Image image;
-		Gtk.AccelLabel label;
-		Gtk.Image gtkimage;
-		Gtk.Table table;
+		readonly Gtk.AccelLabel label;
+		readonly Gtk.Image gtkimage;
+		readonly Gtk.Table table;
 		ButtonImagePosition imagePosition;
 
 		protected override Gtk.Widget FontControl

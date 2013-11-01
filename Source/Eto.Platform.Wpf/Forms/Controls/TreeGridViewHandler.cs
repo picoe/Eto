@@ -1,18 +1,11 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swc = System.Windows.Controls;
 using sw = System.Windows;
 using swd = System.Windows.Data;
 using swm = System.Windows.Media;
 using Eto.Forms;
-using System.Collections;
-using Eto.Platform.Wpf.Drawing;
-using Eto.Platform.Wpf.Forms.Menu;
 using Eto.Platform.CustomControls;
 using Eto.Platform.Wpf.CustomControls.TreeGridView;
-using System.Collections.ObjectModel;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
@@ -35,42 +28,34 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			Control.KeyDown += (sender, e) => {
 				if (e.Key == sw.Input.Key.Enter) {
 					if (SelectedItem != null)
-						Widget.OnActivated (new TreeGridViewItemEventArgs (this.SelectedItem));
+						Widget.OnActivated (new TreeGridViewItemEventArgs(SelectedItem));
 				}
 			};
 			Control.MouseDoubleClick += delegate {
 				if (SelectedItem != null) {
-					Widget.OnActivated (new TreeGridViewItemEventArgs (this.SelectedItem));
+					Widget.OnActivated (new TreeGridViewItemEventArgs(SelectedItem));
 				}
 			};
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case TreeGridView.ExpandingEvent:
-				controller.Expanding += (sender, e) => {
-					Widget.OnExpanding (e);
-				};
+				controller.Expanding += (sender, e) => Widget.OnExpanding(e);
 				break;
 			case TreeGridView.ExpandedEvent:
-				controller.Expanded += (sender, e) => {
-					Widget.OnExpanded (e);
-				};
+				controller.Expanded += (sender, e) => Widget.OnExpanded(e);
 				break;
 			case TreeGridView.CollapsingEvent:
-				controller.Collapsing += (sender, e) => {
-					Widget.OnCollapsing (e);
-				};
+				controller.Collapsing += (sender, e) => Widget.OnCollapsing(e);
 				break;
 			case TreeGridView.CollapsedEvent:
-				controller.Collapsed += (sender, e) => {
-					Widget.OnCollapsed (e);
-				};
+				controller.Collapsed += (sender, e) => Widget.OnCollapsed(e);
 				break;
 			case TreeGridView.SelectedItemChangedEvent:
 				Control.SelectedCellsChanged += (sender, e) => {
-					var item = this.SelectedItem;
+					var item = SelectedItem;
 					if (!SkipSelectionChanged && !object.ReferenceEquals(lastSelected, item))
 					{
 						Widget.OnSelectedItemChanged (EventArgs.Empty);
@@ -79,7 +64,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -110,10 +95,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override sw.FrameworkElement SetupCell (IGridColumnHandler column, sw.FrameworkElement defaultContent)
 		{
-			if (object.ReferenceEquals (column, Columns.Collection[0].Handler))
-				return TreeToggleButton.Create (defaultContent, controller);
-			else
-				return defaultContent;
+			if (object.ReferenceEquals(column, Columns.Collection[0].Handler))
+				return TreeToggleButton.Create(defaultContent, controller);
+			return defaultContent;
 		}
 
 		void ITreeHandler.PreResetTree ()

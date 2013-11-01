@@ -6,14 +6,16 @@ namespace Eto.Platform.GtkSharp
 {
 	public class ScrollableHandler : GtkDockContainer<Gtk.ScrolledWindow, Scrollable>, IScrollable
 	{
-		Gtk.Viewport vp;
-		Gtk.HBox hbox;
-		Gtk.VBox vbox;
+		readonly Gtk.Viewport vp;
+		readonly Gtk.HBox hbox;
+		readonly Gtk.VBox vbox;
 		BorderType border;
-		bool autoSize = true;
 		bool expandWidth = true;
 		bool expandHeight = true;
 		Gtk.Widget layoutWidget;
+		#if GTK2
+		bool autoSize = true;
+		#endif
 
 		public BorderType Border
 		{
@@ -77,36 +79,35 @@ namespace Eto.Platform.GtkSharp
 			this.Border = BorderType.Bezel;
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case Scrollable.ScrollEvent:
 					Control.Events |= Gdk.EventMask.ScrollMask;
 					Control.ScrollEvent += delegate(object o, Gtk.ScrollEventArgs args)
 					{
 						var pos = new Point((int)args.Event.X, (int)args.Event.Y);
-						this.Widget.OnScroll(new ScrollEventArgs(pos));
+						Widget.OnScroll(new ScrollEventArgs(pos));
 					};
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
 
+		#if GTK2
 		public override Size Size
 		{
-			get
-			{
-				return base.Size;
-			}
+			get { return base.Size; }
 			set
 			{
 				base.Size = value;
 				autoSize = false;
 			}
 		}
+		#endif
 
 		void scrollBar_VisibilityChanged(object sender, EventArgs e)
 		{

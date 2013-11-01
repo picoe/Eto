@@ -52,7 +52,7 @@ namespace Eto.Platform.Windows.Drawing
 			base.Dispose(disposing);
 		}
 		
-		public bool Antialias
+		public bool AntiAlias
 		{
 			get
 			{

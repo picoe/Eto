@@ -1,4 +1,3 @@
-using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using sd = System.Drawing;
@@ -9,10 +8,6 @@ namespace Eto.Platform.Wpf.Forms
 {
 	public class ScreensHandler : IScreens
 	{
-		public ScreensHandler ()
-		{
-		}
-
 		public void Initialize ()
 		{
 		}

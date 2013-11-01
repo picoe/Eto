@@ -2,7 +2,6 @@ using Eto.Drawing;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Drawing
@@ -13,7 +12,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public IEnumerable<FontFamily> AvailableFontFamilies
 		{
-			get { return swm.Fonts.SystemFontFamilies.Select (r => new FontFamily (Generator, new FontFamilyHandler (r))); ; }
+			get { return swm.Fonts.SystemFontFamilies.Select (r => new FontFamily (Generator, new FontFamilyHandler (r))); }
 		}
 
 		public bool FontFamilyAvailable (string fontFamily)

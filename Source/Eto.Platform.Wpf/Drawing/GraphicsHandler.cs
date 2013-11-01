@@ -1,7 +1,4 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using swm = System.Windows.Media;
 using sw = System.Windows;
 using swmi = System.Windows.Media.Imaging;
@@ -22,11 +19,11 @@ namespace Eto.Platform.Wpf.Drawing
 		ImageInterpolation imageInterpolation;
 		PixelOffsetMode pixelOffsetMode;
 		double offset = 0.5;
-		double inverseoffset = 0;
+		double inverseoffset;
 		RectangleF? clipBounds;
 		IGraphicsPath clipPath;
 		sw.Rect bounds;
-		bool disposeControl;
+		readonly bool disposeControl;
 
 		Bitmap image;
 		sw.Size? dpi;
@@ -70,7 +67,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void CreateFromImage (Bitmap image)
 		{
 			this.image = image;
-			this.bounds = new sw.Rect (0, 0, image.Size.Width, image.Size.Height);
+			bounds = new sw.Rect(0, 0, image.Size.Width, image.Size.Height);
 			drawingVisual = new swm.DrawingVisual ();
 			visual = drawingVisual;
 			Control = drawingVisual.RenderOpen ();
@@ -78,7 +75,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 			PushGuideLines (bounds);
 
-			this.ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
+			ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
 		public sw.Size DPI
@@ -298,7 +295,7 @@ namespace Eto.Platform.Wpf.Drawing
 			return false;
 		}
 
-		public bool Antialias
+		public bool AntiAlias
 		{
 			get
 			{
@@ -341,9 +338,9 @@ namespace Eto.Platform.Wpf.Drawing
 			get
 			{
 				if (transformStack == null)
-					transformStack = new TransformStack (this.Generator, 
-						m => Control.PushTransform (m.ToWpfTransform ()),
-						() => Control.Pop ());
+					transformStack = new TransformStack(Generator, 
+						m => Control.PushTransform(m.ToWpfTransform()),
+						Control.Pop);
 
 				return transformStack;
 			}
@@ -434,7 +431,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void Clear (SolidBrush brush)
 		{
-			var rect = this.ClipBounds;
+			var rect = ClipBounds;
 			if (drawingVisual != null) {
 				// bitmap
 				Control.Close ();
@@ -447,7 +444,7 @@ namespace Eto.Platform.Wpf.Drawing
 				} else {
 					maskgeometry = new swm.RectangleGeometry (rect.ToWpf ());
 				}
-				var boundsgeometry = new swm.RectangleGeometry (this.bounds);
+				var boundsgeometry = new swm.RectangleGeometry(bounds);
 				maskgeometry = swm.Geometry.Combine (boundsgeometry, maskgeometry, swm.GeometryCombineMode.Exclude, null);
 				var dr = new swm.GeometryDrawing (swm.Brushes.Black, null, maskgeometry);
 				var db = new swm.DrawingBrush (dr);
@@ -456,7 +453,7 @@ namespace Eto.Platform.Wpf.Drawing
 				Control = drawingVisual.RenderOpen ();
 				PushGuideLines (bounds.X, bounds.Y, bounds.Width, bounds.Height);
 				Control.PushOpacityMask (db);
-				Control.DrawImage (newbmp, this.bounds);
+				Control.DrawImage(newbmp, bounds);
 				Control.Pop ();
 
 				TransformStack.PushAll ();

@@ -106,7 +106,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			Column.Control.AddAttribute (imageCell, "pixbuf", dataIndex++);
 			textDataIndex = SetColumnMap (dataIndex);
 			Column.Control.AddAttribute (Control, "text", dataIndex++);
-			BindBase (imageCell, ref dataIndex);
+			BindBase (ref dataIndex);
 		}
 		
 		public override void SetEditable (Gtk.TreeViewColumn column, bool editable)
@@ -117,32 +117,36 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void SetValue (object dataItem, object value)
 		{
 			if (Widget.TextBinding != null) {
-				Widget.TextBinding.SetValue (dataItem, value as string);
+				Widget.TextBinding.SetValue (dataItem, value);
 			}
 		}
 		
 		protected override GLib.Value GetValueInternal (object dataItem, int dataColumn, int row)
 		{
-			if (dataColumn == imageDataIndex) {
-				if (Widget.ImageBinding != null) {
-					var ret = Widget.ImageBinding.GetValue (dataItem);
+			if (dataColumn == imageDataIndex)
+			{
+				if (Widget.ImageBinding != null)
+				{
+					var ret = Widget.ImageBinding.GetValue(dataItem);
 					var image = ret as Image;
 					if (image != null)
-						return new GLib.Value (((IGtkPixbuf)image.Handler).GetPixbuf (new Size (16, 16)));
+						return new GLib.Value(((IGtkPixbuf)image.Handler).GetPixbuf(new Size(16, 16)));
 				}
-				return new GLib.Value ((Gdk.Pixbuf)null);
-			} else if (dataColumn == textDataIndex) {
-				var ret = Widget.TextBinding.GetValue (dataItem);
-				if (ret != null)
-					return new GLib.Value (Convert.ToString (ret));
+				return new GLib.Value((Gdk.Pixbuf)null);
 			}
-			return new GLib.Value ((string)null);
+			if (dataColumn == textDataIndex)
+			{
+				var ret = Widget.TextBinding.GetValue(dataItem);
+				if (ret != null)
+					return new GLib.Value(Convert.ToString(ret));
+			}
+			return new GLib.Value((string)null);
 		}
 		
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				Control.Edited += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:

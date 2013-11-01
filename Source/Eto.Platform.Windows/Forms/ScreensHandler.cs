@@ -7,10 +7,6 @@ namespace Eto.Platform.Windows.Forms
 {
 	public class ScreensHandler : IScreens
 	{
-		public ScreensHandler ()
-		{
-		}
-
 		public void Initialize ()
 		{
 		}

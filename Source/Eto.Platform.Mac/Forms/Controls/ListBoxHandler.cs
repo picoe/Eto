@@ -19,9 +19,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 	public class ListBoxHandler : MacControl<NSTableView, ListBox>, IListBox
 	{
 		Font font;
-		NSScrollView scroll;
-		CollectionHandler collection;
-		MacImageListItemCell cell;
+		readonly NSScrollView scroll;
+		readonly CollectionHandler collection;
+		readonly MacImageListItemCell cell;
 
 		public override NSView ContainerControl
 		{
@@ -45,7 +45,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override int GetRowCount(NSTableView tableView)
 			{
-				return Handler.collection.Collection != null ? Handler.collection.Collection.Count : 0;
+				return Handler.collection.Collection == null ? 0 : Handler.collection.Collection.Count;
 			}
 		}
 
@@ -79,8 +79,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				if (Handler.ContextMenu != null)
 					return Handler.ContextMenu.ControlObject as NSMenu;
-				else
-					return base.MenuForEvent(theEvent);
+				return base.MenuForEvent(theEvent);
 			}
 
 			public override void KeyDown(NSEvent theEvent)
@@ -140,7 +139,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				handler.Widget.OnActivated(EventArgs.Empty);
 		}
 
-		public override Eto.Drawing.Font Font
+		public override Font Font
 		{
 			get
 			{
@@ -225,8 +224,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override void Focus()
 		{
-			if (this.Control.Window != null)
-				this.Control.Window.MakeFirstResponder(this.Control);
+			if (Control.Window != null)
+				Control.Window.MakeFirstResponder(Control);
 			else 
 				base.Focus();
 		}

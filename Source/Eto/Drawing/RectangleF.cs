@@ -102,8 +102,8 @@ namespace Eto.Drawing
 		/// <param name="rectangle"></param>
 		public RectangleF(Rectangle rectangle)
 		{
-			this.location = new PointF(rectangle.X, rectangle.Y);
-			this.size = new SizeF(rectangle.Width, rectangle.Height);
+			location = new PointF(rectangle.X, rectangle.Y);
+			size = new SizeF(rectangle.Width, rectangle.Height);
 		}
 
 		/// <summary>
@@ -112,7 +112,7 @@ namespace Eto.Drawing
 		/// <param name="size">Size to give the rectangle</param>
 		public RectangleF (SizeF size)
 		{
-			this.location = new PointF (0, 0);
+			location = new PointF (0, 0);
 			this.size = size;
 		}
 
@@ -125,8 +125,8 @@ namespace Eto.Drawing
 		/// <param name="height">Height of the rectangle</param>
 		public RectangleF (float x, float y, float width, float height)
 		{
-			this.location = new PointF (x, y);
-			this.size = new SizeF (width, height);
+			location = new PointF (x, y);
+			size = new SizeF (width, height);
 		}
 
 		/// <summary>

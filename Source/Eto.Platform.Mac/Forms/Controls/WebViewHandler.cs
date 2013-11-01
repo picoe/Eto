@@ -142,10 +142,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override NSMenuItem[] UIGetContextMenuItems(wk.WebView sender, NSDictionary forElement, NSMenuItem[] defaultMenuItems)
 			{
-				if (Handler.BrowserContextMenuEnabled)
-					return defaultMenuItems;
-				else
-					return null;
+				return Handler.BrowserContextMenuEnabled ? defaultMenuItems : null;
 			}
 
 			public override void UIRunOpenPanelForFileButton(wk.WebView sender, wk.WebOpenPanelResultListener resultListener)
@@ -187,9 +184,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
-		public override void AttachEvent(string handler)
+		public override void AttachEvent(string id)
 		{
-			switch (handler)
+			switch (id)
 			{
 				case WebView.NavigatedEvent:
 					HandleEvent(WebView.DocumentLoadedEvent);
@@ -207,7 +204,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					Control.ReceivedTitle += HandleReceivedTitle;
 					break;
 				default:
-					base.AttachEvent(handler);
+					base.AttachEvent(id);
 					break;
 			}
 		}
@@ -265,10 +262,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return new Uri(Control.MainFrameUrl); }
 			set
 			{ 
-				if (value != null)
-					Control.MainFrameUrl = value.AbsoluteUri;
-				else
-					Control.MainFrameUrl = null;
+				Control.MainFrameUrl = value == null ? null : value.AbsoluteUri;
 			}
 		}
 

@@ -1,5 +1,6 @@
 using System;
 using System.Text;
+using Eto.Forms;
 
 namespace Eto.Test
 {
@@ -15,7 +16,7 @@ namespace Eto.Test
 			sb.Append ("\n");
 
 #if DESKTOP
-			var form = TestApplication.Instance.MainForm as MainForm;
+			var form = Application.Instance.MainForm as MainForm;
 			if (form == null) 
 				return;
 			

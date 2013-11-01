@@ -70,7 +70,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 		public override void SetValue (object dataItem, object value)
 		{
 			if (Widget.Binding != null) {
-				Widget.Binding.SetValue (dataItem, value as string);
+				Widget.Binding.SetValue (dataItem, value);
 			}
 		}
 		
@@ -84,14 +84,14 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 			return new GLib.Value ((string)null);
 		}
 		
-		public override void AttachEvent (string eventHandler)
+		public override void AttachEvent (string id)
 		{
-			switch (eventHandler) {
-			case Grid.EndCellEditEvent:
+			switch (id) {
+			case Grid.CellEditedEvent:
 				Control.Edited += (sender, e) => Source.EndCellEditing(new Gtk.TreePath(e.Path), ColumnIndex);
 				break;
 			default:
-				base.AttachEvent (eventHandler);
+				base.AttachEvent (id);
 				break;
 			}
 		}

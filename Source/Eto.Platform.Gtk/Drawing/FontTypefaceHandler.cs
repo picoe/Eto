@@ -4,7 +4,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 {
 	public class FontTypefaceHandler : WidgetHandler<Pango.FontFace, FontTypeface>, IFontTypeface
 	{
-		public FontTypefaceHandler (FontFamilyHandler family, Pango.FontFace pangoFace)
+		public FontTypefaceHandler (Pango.FontFace pangoFace)
 		{
 			this.Control = pangoFace;
 		}

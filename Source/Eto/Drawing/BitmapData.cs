@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 
 namespace Eto.Drawing
 {
@@ -16,11 +17,11 @@ namespace Eto.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BitmapData : IDisposable
 	{
-		IntPtr data;
-		int scanWidth;
-		object controlObject;
-		Image image;
-		int bitsPerPixel;
+		readonly IntPtr data;
+		readonly int scanWidth;
+		readonly object controlObject;
+		readonly Image image;
+		readonly int bitsPerPixel;
 
 		/// <summary>
 		/// Initializes a new instance of the BitmapData class
@@ -152,15 +153,31 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Releases all resource used by the <see cref="Eto.Drawing.BitmapData"/> object.
 		/// </summary>
-		/// <remarks>Call <see cref="Dispose"/> when you are finished using the <see cref="Eto.Drawing.BitmapData"/>. The
-		/// <see cref="Dispose"/> method leaves the <see cref="Eto.Drawing.BitmapData"/> in an unusable state. After calling
-		/// <see cref="Dispose"/>, you must release all references to the <see cref="Eto.Drawing.BitmapData"/> so the garbage
+		/// <remarks>Call <see cref="Dispose()"/> when you are finished using the <see cref="Eto.Drawing.BitmapData"/>. The
+		/// <see cref="Dispose()"/> method leaves the <see cref="Eto.Drawing.BitmapData"/> in an unusable state. After calling
+		/// <see cref="Dispose()"/>, you must release all references to the <see cref="Eto.Drawing.BitmapData"/> so the garbage
 		/// collector can reclaim the memory that the <see cref="Eto.Drawing.BitmapData"/> was occupying.</remarks>
 		public void Dispose ()
 		{
-			var handler = (ILockableImage)image.Handler;
-			handler.Unlock (this);
+			Dispose(true);
 			GC.SuppressFinalize(this);
+		}
+
+		/// <summary>
+		/// Disposes the brush
+		/// </summary>
+		/// <param name="disposing">If set to <c>true</c> dispose was called explicitly, otherwise specify false if calling from a finalizer</param>
+		protected virtual void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				var handler = (ILockableImage)image.Handler;
+				handler.Unlock(this);
+			}
+			else
+			{
+				Debug.Print("Caller is missing a call to BitmapData.Dispose()");
+			}
 		}
 	}
 }

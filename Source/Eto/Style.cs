@@ -9,11 +9,10 @@ namespace Eto
 	/// <remarks>
 	/// This allows you to add additional logic or set properties on the widget based on the styles set on the widget.
 	/// </remarks>
-	/// <typeparam name="W">Type of widget to style</typeparam>
+	/// <typeparam name="TWidget">Type of widget to style</typeparam>
 	/// <param name="widget">Widget instance that is being styled</param>
-	public delegate void StyleWidgetHandler<W> (W widget)
-		where W: InstanceWidget;
-
+	public delegate void StyleWidgetHandler<TWidget>(TWidget widget)
+		where TWidget: InstanceWidget;
 	/// <summary>
 	/// Delegate to handle styling a widget handler
 	/// </summary>
@@ -21,24 +20,21 @@ namespace Eto
 	/// This allows you to add additional logic or set properties on the widget and platform-specific control(s)
 	/// based on the styles set on the widget.
 	/// </remarks>
-	/// <typeparam name="H">Type of the handler to style</typeparam>
 	/// <param name="handler">Handler instance that is being styled</param>
-	public delegate void StyleHandler<H> (H handler)
-		where H: IWidget;
-
+	/// <typeparam name="THandler">Type of the handler to style</typeparam>
+	public delegate void StyleHandler<THandler>(THandler handler)
+		where THandler: IWidget;
 	/// <summary>
 	/// Obsolete. Do not use.
 	/// </summary>
-	[Obsolete ("Use StyleWidgetHandler<W> instead")]
-	public delegate void StyleWidgetHandler (InstanceWidget widget);
-
+	[Obsolete("Use StyleWidgetHandler<TWidget> instead")]
+	public delegate void StyleWidgetHandler(InstanceWidget widget);
 	/// <summary>
 	/// Obsolete. Do not use.
 	/// </summary>
-	[Obsolete ("Use StyleHandler<H> instead")]
-	public delegate void StyleWidgetControlHandler<W, C> (W widget, C control)
-		where W : InstanceWidget;
-
+	[Obsolete("Use StyleHandler<THandler> instead")]
+	public delegate void StyleWidgetControlHandler<TWidget,TControl>(TWidget widget,TControl control)
+		where TWidget : InstanceWidget;
 	/// <summary>
 	/// Style manager for widgets
 	/// </summary>
@@ -81,12 +77,7 @@ namespace Eto
 	/// </example>
 	public static class Style
 	{
-		static Dictionary<object, IList<Action<InstanceWidget>>> styleMap;
-
-		static Style ()
-		{
-			styleMap = new Dictionary<object, IList<Action<InstanceWidget>>> ();
-		}
+		static readonly Dictionary<object, IList<Action<InstanceWidget>>> styleMap = new Dictionary<object, IList<Action<InstanceWidget>>>();
 
 		#region Events
 
@@ -94,51 +85,53 @@ namespace Eto
 		/// Event to handle when a widget has being styled
 		/// </summary>
 		public static event Action<InstanceWidget> StyleWidget;
-		
-		internal static void OnStyleWidget (InstanceWidget widget)
+
+		internal static void OnStyleWidget(InstanceWidget widget)
 		{
-			if (widget != null && !string.IsNullOrEmpty (widget.Style)) {
-				var styles = widget.Style.Split (' ');
-				foreach (var style in styles) {
-					var styleHandlers = GetStyleList (style, false);
-					if (styleHandlers != null) {
+			if (widget != null && !string.IsNullOrEmpty(widget.Style))
+			{
+				var styles = widget.Style.Split(' ');
+				foreach (var style in styles)
+				{
+					var styleHandlers = GetStyleList(style, false);
+					if (styleHandlers != null)
+					{
 						foreach (var styleHandler in styleHandlers)
-							styleHandler (widget);
+							styleHandler(widget);
 					}
 				}
 			}
 			if (StyleWidget != null)
-				StyleWidget (widget);
+				StyleWidget(widget);
 		}
 
-		internal static void OnStyleWidgetDefaults (InstanceWidget widget)
+		internal static void OnStyleWidgetDefaults(InstanceWidget widget)
 		{
 			if (widget != null)
 			{
-				var styleHandlers = GetStyleList (widget.GetType (), false);
+				var styleHandlers = GetStyleList(widget.GetType(), false);
 				if (styleHandlers != null)
 				{
 					foreach (var styleHandler in styleHandlers)
-						styleHandler (widget);
+						styleHandler(widget);
 				}
 			}
 		}
 
-		internal static void OnStyleWidgetDefaults (IInstanceWidget handler)
+		internal static void OnStyleWidgetDefaults(IInstanceWidget handler)
 		{
 			if (handler != null)
 			{
-				var styleHandlers = GetStyleList (handler.GetType (), false);
+				var styleHandlers = GetStyleList(handler.GetType(), false);
 				if (styleHandlers != null)
 				{
 					var widget = handler.Widget as InstanceWidget;
 					if (widget != null)
 						foreach (var styleHandler in styleHandlers)
-							styleHandler (widget);
+							styleHandler(widget);
 				}
 			}
 		}
-
 
 		#endregion
 
@@ -146,11 +139,12 @@ namespace Eto
 		/// Obsolete. Do not use
 		/// </summary>
 		[Obsolete("Use Add<InstanceWidget> instead")]
-		public static void Add (string style, StyleWidgetHandler handler)
+		public static void Add(string style, StyleWidgetHandler handler)
 		{
-			var list = GetStyleList (style);
-			list.Add (delegate (InstanceWidget widget) {
-				handler (widget);
+			var list = GetStyleList(style);
+			list.Add(delegate (InstanceWidget widget)
+			{
+				handler(widget);
 			});
 		}
 
@@ -166,14 +160,15 @@ namespace Eto
 		/// <typeparam name="T">Type of the widget to style</typeparam>
 		/// <param name="style">Identifier of the style</param>
 		/// <param name="handler">Delegate with your logic to style the widget</param>
-		public static void Add<T> (string style, StyleWidgetHandler<T> handler)
-			where T: InstanceWidget
+		public static void Add<TWidget>(string style, StyleWidgetHandler<TWidget> handler)
+			where TWidget: InstanceWidget
 		{
-			var list = GetStyleList ((object)style ?? typeof (T));
-			list.Add (delegate (InstanceWidget widget) {
-				var control = widget as T;
+			var list = GetStyleList((object)style ?? typeof(TWidget));
+			list.Add(delegate (InstanceWidget widget)
+			{
+				var control = widget as TWidget;
 				if (control != null)
-					handler (control);
+					handler(control);
 			});
 		}
 
@@ -181,17 +176,19 @@ namespace Eto
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete("Use Add<WidgetHandler> instead")]
-		public static void Add<W, C> (string style, StyleWidgetControlHandler<W, C> handler)
-			where W: InstanceWidget
-			where C: class
+		public static void Add<TWidget, TControl>(string style, StyleWidgetControlHandler<TWidget, TControl> handler)
+			where TWidget: InstanceWidget
+			where TControl: class
 		{
-			var list = GetStyleList (style);
-			list.Add (delegate (InstanceWidget widget) {
-				var control = widget as W;
-				if (control != null) {
-					var controlObject = control.ControlObject as C;
+			var list = GetStyleList(style);
+			list.Add(delegate (InstanceWidget widget)
+			{
+				var control = widget as TWidget;
+				if (control != null)
+				{
+					var controlObject = control.ControlObject as TControl;
 					if (controlObject != null)
-						handler (control, controlObject);
+						handler(control, controlObject);
 				}
 			});
 		}
@@ -199,11 +196,11 @@ namespace Eto
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
-		[Obsolete ("Use Style.Add<T> instead")]
-		public static void AddHandler<H> (string style, StyleHandler<H> styleHandler)
-			where H: class, IWidget
+		[Obsolete("Use Style.Add<T> instead")]
+		public static void AddHandler<THandler>(string style, StyleHandler<THandler> styleHandler)
+			where THandler: class, IWidget
 		{
-			Style.Add<H> (style, styleHandler);
+			Style.Add<THandler>(style, styleHandler);
 		}
 
 		/// <summary>
@@ -215,25 +212,27 @@ namespace Eto
 		/// To use this, you would have to add a reference to one of the Eto.Platform.*.dll's so that you can utilize
 		/// the platform handler directly.  Typically this would be called before your application is run.
 		/// </remarks>
-		/// <typeparam name="H">Type of the handler that should be styled</typeparam>
+		/// <typeparam name="THandler">Type of the handler that should be styled</typeparam>
 		/// <param name="style">Identifier for the style</param>
 		/// <param name="styleHandler">Delegate with your logic to style the widget and/or platform control</param>
-		public static void Add<H> (string style, StyleHandler<H> styleHandler)
-			where H: class, IWidget
+		public static void Add<THandler>(string style, StyleHandler<THandler> styleHandler)
+			where THandler: class, IWidget
 		{
-			var list = GetStyleList ((object)style ?? typeof(H));
-			list.Add (delegate (InstanceWidget widget) {
-				var handler = widget.Handler as H;
+			var list = GetStyleList((object)style ?? typeof(THandler));
+			list.Add(delegate (InstanceWidget widget)
+			{
+				var handler = widget.Handler as THandler;
 				if (handler != null)
-					styleHandler (handler);
+					styleHandler(handler);
 			});
 		}
 
-		static IList<Action<InstanceWidget>> GetStyleList (object style, bool create = true)
+		static IList<Action<InstanceWidget>> GetStyleList(object style, bool create = true)
 		{
 			IList<Action<InstanceWidget>> styleHandlers;
-			if (!styleMap.TryGetValue (style, out styleHandlers) && create) {
-				styleHandlers = new List<Action<InstanceWidget>> ();
+			if (!styleMap.TryGetValue(style, out styleHandlers) && create)
+			{
+				styleHandlers = new List<Action<InstanceWidget>>();
 				styleMap[style] = styleHandlers;
 			}
 			return styleHandlers;

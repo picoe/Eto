@@ -94,7 +94,7 @@ namespace Eto.Test.Sections.Controls
 		Control EnableContextMenu()
 		{
 			var control = new CheckBox { Text = "Enable Context Menu" };
-			control.Bind(r => r.Checked, this.webView, w => w.BrowserContextMenuEnabled);
+			control.Bind(r => r.Checked, webView, w => w.BrowserContextMenuEnabled);
 			return control;
 		}
 
@@ -288,9 +288,7 @@ namespace Eto.Test.Sections.Controls
 				};
 				var cancelButton = new Button { Text = "Cancel" };
 				dialog.AbortButton = cancelButton;
-				cancelButton.Click += (sender, e) => {
-					dialog.Close();
-				};
+				cancelButton.Click += (sender, e) => dialog.Close();
 				layout.BeginVertical();
 				layout.AddRow(new Label { Text = "Url" }, textBox);
 				layout.EndBeginVertical();

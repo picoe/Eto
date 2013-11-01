@@ -1,8 +1,6 @@
 using System;
 using System.Windows;
-using System.Windows.Documents;
 using System.Windows.Controls;
-using System.Windows.Media;
 using System.Globalization;
 
 namespace Eto.Platform.Wpf.CustomControls.FontDialog
@@ -16,7 +14,7 @@ namespace Eto.Platform.Wpf.CustomControls.FontDialog
         {
             _displayName = displayName;
             _chooserProperty = chooserProperty;
-            this.Text = displayName;
+            Text = displayName;
         }
 
         public DependencyProperty ChooserProperty

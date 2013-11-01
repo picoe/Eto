@@ -9,29 +9,33 @@ namespace Eto.Platform.Mac
 		{
 			Type = SeparatorToolBarItemType.Divider;
 		}
-		
+
 		public virtual string Identifier
 		{
-			get { 
-				switch (Type) {
-				default:
-				case SeparatorToolBarItemType.Divider: return NSToolbar.NSToolbarSeparatorItemIdentifier;
-				case SeparatorToolBarItemType.Space: return NSToolbar.NSToolbarSpaceItemIdentifier;
-				case SeparatorToolBarItemType.FlexibleSpace: return NSToolbar.NSToolbarFlexibleSpaceItemIdentifier;
+			get
+			{ 
+				switch (Type)
+				{
+					default:
+						return NSToolbar.NSToolbarSeparatorItemIdentifier;
+					case SeparatorToolBarItemType.Space:
+						return NSToolbar.NSToolbarSpaceItemIdentifier;
+					case SeparatorToolBarItemType.FlexibleSpace:
+						return NSToolbar.NSToolbarFlexibleSpaceItemIdentifier;
 				}
 				
 			}
 		}
 
-		public bool Selectable {
+		public bool Selectable
+		{
 			get { return false; }
 		}
-		
+
 		public SeparatorToolBarItemType Type { get; set; }
 
-		public void ControlAdded (ToolBarHandler toolbar)
+		public void ControlAdded(ToolBarHandler toolbar)
 		{
 		}
-
 	}
 }

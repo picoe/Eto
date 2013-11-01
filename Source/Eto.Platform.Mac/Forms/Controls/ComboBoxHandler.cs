@@ -85,7 +85,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public IListStore DataStore
 		{
-			get { return collection != null ? collection.Collection : null; }
+			get { return collection == null ? null : collection.Collection; }
 			set
 			{
 				if (collection != null)

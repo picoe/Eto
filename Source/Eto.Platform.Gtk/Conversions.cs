@@ -130,25 +130,25 @@ namespace Eto.Platform.GtkSharp
 
 		public static DialogResult ToEto(this Gtk.ResponseType result)
 		{
-			DialogResult ret = DialogResult.None;
-			if (result == Gtk.ResponseType.Ok)
-				ret = DialogResult.Ok;
-			else if (result == Gtk.ResponseType.Cancel)
-				ret = DialogResult.Cancel;
-			else if (result == Gtk.ResponseType.Yes)
-				ret = DialogResult.Yes;
-			else if (result == Gtk.ResponseType.No)
-				ret = DialogResult.No;
-			else if (result == Gtk.ResponseType.None)
-				ret = DialogResult.None;
-			else if (result == Gtk.ResponseType.Accept)
-				ret = DialogResult.Ignore;
-			else if (result == Gtk.ResponseType.Reject)
-				ret = DialogResult.Abort;
-			else
-				ret = DialogResult.None;
-
-			return ret;
+			switch (result)
+			{
+				case Gtk.ResponseType.None:
+					return DialogResult.None;
+				case Gtk.ResponseType.Reject:
+					return DialogResult.Abort;
+				case Gtk.ResponseType.Accept:
+					return DialogResult.Ignore;
+				case Gtk.ResponseType.Ok:
+					return DialogResult.Ok;
+				case Gtk.ResponseType.Cancel:
+					return DialogResult.Cancel;
+				case Gtk.ResponseType.Yes:
+					return DialogResult.Yes;
+				case Gtk.ResponseType.No:
+					return DialogResult.No;
+				default:
+					return DialogResult.None;
+			}
 		}
 
 		public static string ToGdk(this ImageFormat format)
@@ -200,7 +200,6 @@ namespace Eto.Platform.GtkSharp
 			switch (buttons)
 			{
 				default:
-				case MessageBoxButtons.OK:
 					return Gtk.ButtonsType.Ok;
 				case MessageBoxButtons.OKCancel:
 					return Gtk.ButtonsType.OkCancel;
@@ -246,7 +245,6 @@ namespace Eto.Platform.GtkSharp
 			switch (type)
 			{
 				default:
-				case MessageBoxType.Information:
 					return Gtk.MessageType.Info;
 				case MessageBoxType.Error:
 					return Gtk.MessageType.Error;
@@ -427,10 +425,7 @@ namespace Eto.Platform.GtkSharp
 		public static Gdk.Pixbuf ToGdk(this Image image)
 		{
 			var handler = image.Handler as IGtkPixbuf;
-			if (handler != null)
-				return handler.Pixbuf;
-			else
-				return null;
+			return handler != null ? handler.Pixbuf : null;
 		}
 
 		public static void SetCairoSurface(this Image image, Cairo.Context context, float x, float y)
@@ -504,13 +499,9 @@ namespace Eto.Platform.GtkSharp
 				Key modifiers = (key & Key.ModifierMask);
 				if (args.KeyValue <= 128 && ((modifiers & ~Key.Shift) == 0))
 					return new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue);
-				else
-					return new KeyEventArgs(key, KeyEventType.KeyDown);
+				return new KeyEventArgs(key, KeyEventType.KeyDown);
 			}
-			else if (args.KeyValue <= 128)
-				return new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue);
-			else
-				return null;
+			return args.KeyValue <= 128 ? new KeyEventArgs(key, KeyEventType.KeyDown, (char)args.KeyValue) : null;
 		}
 
 		public static MouseButtons ToEtoMouseButtons(this Gdk.ModifierType modifiers)

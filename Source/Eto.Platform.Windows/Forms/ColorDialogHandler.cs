@@ -17,25 +17,25 @@ namespace Eto.Platform.Windows.Forms
 		}
 		
 		public Color Color {
-			get { return this.Control.Color.ToEto (); }
-			set { this.Control.Color = value.ToSD (); }
+			get { return Control.Color.ToEto (); }
+			set { Control.Color = value.ToSD (); }
 		}
 		
 		public DialogResult ShowDialog (Window parent)
 		{
 			SWF.DialogResult result;
-			if (customColors != null) this.Control.CustomColors = customColors;
+			if (customColors != null) Control.CustomColors = customColors;
 			
 			if (parent != null)
-                result = this.Control.ShowDialog(parent.GetContainerControl());
+                result = Control.ShowDialog(parent.GetContainerControl());
 			else
-				result = this.Control.ShowDialog ();
+				result = Control.ShowDialog ();
 			
 			if (result == System.Windows.Forms.DialogResult.OK) {
 				Widget.OnColorChanged (EventArgs.Empty);
 			}
 			
-			customColors = this.Control.CustomColors;
+			customColors = Control.CustomColors;
 			
 			return result.ToEto ();
 		}

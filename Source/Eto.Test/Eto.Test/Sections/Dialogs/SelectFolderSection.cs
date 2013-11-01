@@ -24,7 +24,7 @@ namespace Eto.Test.Sections.Dialogs
 			button.Click += delegate
 			{
 				var dialog = new SelectFolderDialog();
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, Folder: {1}", result, dialog.Directory);
@@ -43,7 +43,7 @@ namespace Eto.Test.Sections.Dialogs
 				var dialog = new SelectFolderDialog();
 				dialog.Directory = Directory.GetCurrentDirectory();
 
-				var result = dialog.ShowDialog(this.ParentWindow);
+				var result = dialog.ShowDialog(ParentWindow);
 				if (result == DialogResult.Ok)
 				{
 					Log.Write(dialog, "Result: {0}, Folder: {1}", result, dialog.Directory);

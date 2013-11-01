@@ -22,14 +22,13 @@ namespace Eto.Platform.Mac.Forms
 
 			AddButtons(alert);
 
-			alert.AlertStyle = Convert(this.Type);
+			alert.AlertStyle = Convert(Type);
 			alert.MessageText = Caption ?? string.Empty;
 			alert.InformativeText = Text ?? string.Empty;
 			var ret = MacModal.Run(alert, parent);
 			switch (Buttons)
 			{
 				default:
-				case MessageBoxButtons.OK:
 					return DialogResult.Ok;
 				case MessageBoxButtons.OKCancel:
 					return (ret == 1000) ? DialogResult.Ok : DialogResult.Cancel;

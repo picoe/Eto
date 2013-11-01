@@ -10,7 +10,7 @@ namespace Eto
 		/// <summary>
 		/// Constant to convert degrees to radians for angle parameters
 		/// </summary>
-		public const float DegreesToRadians = (float)(System.Math.PI / 180);
+		public const float DegreesToRadians = (float)(Math.PI / 180);
 
 		public static Tuple<int,int> IndexOf(this object[,] target, object value)
 		{

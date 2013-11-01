@@ -18,7 +18,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public object Handler
 			{ 
-				get { return (object)WeakHandler.Target; }
+				get { return WeakHandler.Target; }
 				set { WeakHandler = new WeakReference(value); } 
 			}
 		}
@@ -43,10 +43,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			var handler = ((EtoTabView)tabView).WeakHandler.Target as TabControlHandler;
 			var tab = handler.Widget.TabPages.FirstOrDefault (r => ((TabPageHandler)r.Handler).TabViewItem == item);
-			if (tab != null)
-				return tab.Enabled;
-			else
-				return true;
+			return tab == null || tab.Enabled;
 		}
 
 		static void HandleDidSelect (object sender, NSTabViewItemEventArgs e)
@@ -61,7 +58,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public int SelectedIndex
 		{
-			get { return Control.Selected != null ? Control.IndexOf(Control.Selected) : -1; }
+			get { return Control.Selected == null ? -1 : Control.IndexOf(Control.Selected); }
 			set { Control.SelectAt (value); }
 		}
 

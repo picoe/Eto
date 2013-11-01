@@ -128,7 +128,7 @@ namespace Eto.Platform.Android.Drawing
 			return paint;
 		}
 
-		public void Flush()
+		public bool AntiAlias
 		{			
 		}
 

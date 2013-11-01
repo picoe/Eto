@@ -34,9 +34,9 @@ namespace Eto.Forms
 	[ContentProperty("Items")]
 	public abstract class ListControl : CommonControl
 	{
-		public event EventHandler<EventArgs> SelectedIndexChanged;
-
 		new IListControl Handler { get { return (IListControl)base.Handler; } }
+
+		public event EventHandler<EventArgs> SelectedIndexChanged;
 
 		public virtual void OnSelectedIndexChanged(EventArgs e)
 		{

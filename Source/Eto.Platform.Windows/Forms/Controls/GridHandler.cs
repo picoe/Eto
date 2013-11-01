@@ -16,8 +16,8 @@ namespace Eto.Platform.Windows.Forms.Controls
 		bool CellMouseClick (GridColumnHandler column, swf.MouseEventArgs e, int rowIndex);
 	}
 
-	public abstract class GridHandler<W> : WindowsControl<swf.DataGridView, W>, IGrid, IGridHandler
-		where W: Grid
+	public abstract class GridHandler<TWidget> : WindowsControl<swf.DataGridView, TWidget>, IGrid, IGridHandler
+		where TWidget: Grid
 	{
 		ContextMenu contextMenu;
 		ColumnCollection columns;
@@ -26,7 +26,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		class EtoDataGridView : swf.DataGridView
 		{
-			public GridHandler<W> Handler { get; set; }
+			public GridHandler<TWidget> Handler { get; set; }
 			public override sd.Size GetPreferredSize(sd.Size proposedSize)
 			{
 				var size = base.GetPreferredSize(proposedSize);
@@ -136,16 +136,11 @@ namespace Eto.Platform.Windows.Forms.Controls
 			public override Font Font
 			{
 				get {
-					if (font == null)
-						font = new Font (Column.Generator, new FontHandler (Args.CellStyle.Font));
-					return font;
+					return font ?? (font = new Font (Column.Generator, new FontHandler (Args.CellStyle.Font)));
 				}
 				set {
 					font = value;
-					if (font != null)
-						Args.CellStyle.Font = ((FontHandler)font.Handler).Control;
-					else
-						Args.CellStyle.Font = null;
+					Args.CellStyle.Font = font != null ? ((FontHandler)font.Handler).Control : null;
 				}
 			}
 
@@ -160,24 +155,24 @@ namespace Eto.Platform.Windows.Forms.Controls
 			}
 		}
 
-		public override void AttachEvent (string handler)
+		public override void AttachEvent (string id)
 		{
-			switch (handler) {
+			switch (id) {
 			case Grid.ColumnHeaderClickEvent:
 				Control.ColumnHeaderMouseClick += (sender, e) => Widget.OnColumnHeaderClick(new GridColumnEventArgs(Widget.Columns[e.ColumnIndex]));
 				break;
-			case Grid.BeginCellEditEvent:
+			case Grid.CellEditingEvent:
 				Control.CellBeginEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Widget.OnBeginCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					Widget.OnCellEditing (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
-			case Grid.EndCellEditEvent:
+			case Grid.CellEditedEvent:
 				Control.CellEndEdit += (sender, e) => {
 					var item = GetItemAtRow (e.RowIndex);
 					var column = Widget.Columns [e.ColumnIndex];
-					Widget.OnEndCellEdit (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
+					Widget.OnCellEdited (new GridViewCellArgs (column, e.RowIndex, e.ColumnIndex, item));
 				};
 				break;
 			case Grid.SelectionChangedEvent:
@@ -193,7 +188,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				};
 				break;
 			default:
-				base.AttachEvent (handler);
+				base.AttachEvent (id);
 				break;
 			}
 		}
@@ -207,7 +202,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 
 		class ColumnCollection : EnumerableChangedHandler<GridColumn, GridColumnCollection>
 		{
-			public GridHandler<W> Handler { get; set; }
+			public GridHandler<TWidget> Handler { get; set; }
 
 			public override void AddItem (GridColumn item)
 			{
@@ -248,10 +243,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			get { return contextMenu; }
 			set {
 				contextMenu = value;
-				if (contextMenu != null)
-					Control.ContextMenuStrip = ((ContextMenuHandler)contextMenu.Handler).Control;
-				else
-					Control.ContextMenuStrip = null;
+				Control.ContextMenuStrip = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 
