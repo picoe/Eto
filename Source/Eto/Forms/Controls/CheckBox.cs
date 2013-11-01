@@ -5,30 +5,35 @@ namespace Eto.Forms
 	public interface ICheckBox : ITextControl
 	{
 		bool? Checked { get; set; }
-		
+
 		bool ThreeState { get; set; }
 	}
-	
+
 	public class CheckBox : TextControl
 	{
-		public event EventHandler<EventArgs> CheckedChanged;
-
 		new ICheckBox Handler { get { return (ICheckBox)base.Handler; } }
+
+		public event EventHandler<EventArgs> CheckedChanged
+		{
+			add { Properties.AddEvent(CheckedChangedKey, value); }
+			remove { Properties.RemoveEvent(CheckedChangedKey, value); }
+		}
+
+		static readonly object CheckedChangedKey = new object();
 
 		public virtual void OnCheckedChanged(EventArgs e)
 		{
-			if (CheckedChanged != null)
-				CheckedChanged(this, e);
+			Properties.TriggerEvent(CheckedChangedKey, this, e);
 		}
 
-		public CheckBox() : this (Generator.Current)
+		public CheckBox() : this(Generator.Current)
 		{
 		}
-		
-		public CheckBox(Generator g) : this (g, typeof(ICheckBox))
+
+		public CheckBox(Generator g) : this(g, typeof(ICheckBox))
 		{
 		}
-		
+
 		protected CheckBox(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{
@@ -39,7 +44,7 @@ namespace Eto.Forms
 			get { return Handler.Checked; }
 			set { Handler.Checked = value; }
 		}
-		
+
 		public bool ThreeState
 		{
 			get { return Handler.ThreeState; }
@@ -59,6 +64,5 @@ namespace Eto.Forms
 				);
 			}
 		}
-
 	}
 }

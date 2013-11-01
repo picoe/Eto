@@ -28,7 +28,7 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 
 		GLib.Value GetValue (object dataItem, int column, int row);
 
-		void HandleEvent (string eventHandler);
+		void HandleEvent (string eventHandler, bool defaultEvent = true);
 
 		void AddCells (Gtk.TreeViewColumn column);
 	}

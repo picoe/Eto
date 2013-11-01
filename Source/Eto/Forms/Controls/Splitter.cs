@@ -55,25 +55,19 @@ namespace Eto.Forms
 		#region Events
 
 		public const string PositionChangedEvent = "Splitter.PositionChanged";
-		EventHandler<EventArgs> positionChanged;
 
 		/// <summary>
 		/// Raised when the user moves the splitter.
 		/// </summary>
 		public event EventHandler<EventArgs> PositionChanged
 		{
-			add
-			{
-				HandleEvent(PositionChangedEvent);
-				positionChanged += value;
-			}
-			remove { positionChanged -= value; }
+			add { Properties.AddHandlerEvent(PositionChangedEvent, value); }
+			remove { Properties.RemoveEvent(PositionChangedEvent, value); }
 		}
 
 		public virtual void OnPositionChanged(EventArgs e)
 		{
-			if (positionChanged != null)
-				positionChanged(this, e);
+			Properties.TriggerEvent(PositionChangedEvent, this, e);
 		}
 
 		#endregion

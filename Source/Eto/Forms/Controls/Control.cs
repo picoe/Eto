@@ -59,8 +59,6 @@ namespace Eto.Forms
 	{
 		new IControl Handler { get { return (IControl)base.Handler; } }
 
-		object dataContext;
-
 		/// <summary>
 		/// Gets a value indicating that the control is loaded onto a form, that is it has been created, added to a parent, and shown
 		/// </summary>
@@ -72,33 +70,15 @@ namespace Eto.Forms
 		/// </remarks>
 		public bool Loaded { get; private set; }
 
-		PropertyStore properties;
-		/// <summary>
-		/// Gets the attached properties for this widget
-		/// </summary>
-		public PropertyStore Properties
-		{
-			get
-			{
-				if (properties == null)
-					properties = new PropertyStore(this);
-				return properties;
-			}
-		}
-
-		BindingCollection bindings;
 		/// <summary>
 		/// Gets the collection of bindings that are attached to this widget
 		/// </summary>
 		public BindingCollection Bindings
 		{
-			get
-			{
-				if (bindings == null)
-					bindings = new BindingCollection();
-				return bindings;
-			}
+			get { return Properties.Create<BindingCollection>(BindingsKey); }
 		}
+
+		static readonly object BindingsKey = new object();
 
 		/// <summary>
 		/// Gets or sets a user-defined object that contains data about the control
@@ -107,317 +87,257 @@ namespace Eto.Forms
 		/// A common use of the tag property is to store data that is associated with the control that you can later
 		/// retrieve.
 		/// </remarks>
-		public object Tag { get; set; }
+		public object Tag
+		{
+			get { return Properties.Get<object>(TagKey); }
+			set { Properties[TagKey] = value; }
+		}
+
+		static readonly object TagKey = new object();
 
 		#region Events
 
 		public const string SizeChangedEvent = "Control.SizeChanged";
-		EventHandler<EventArgs> sizeChanged;
 
 		public event EventHandler<EventArgs> SizeChanged
 		{
-			add
-			{
-				HandleEvent(SizeChangedEvent);
-				sizeChanged += value;
-			}
-			remove { sizeChanged -= value; }
+			add { Properties.AddHandlerEvent(SizeChangedEvent, value); }
+			remove { Properties.RemoveEvent(SizeChangedEvent, value); }
 		}
 
 		public virtual void OnSizeChanged(EventArgs e)
 		{
-			if (sizeChanged != null)
-				sizeChanged(this, e);
+			Properties.TriggerEvent(SizeChangedEvent, this, e);
 		}
 
 		public const string KeyDownEvent = "Control.KeyDown";
-		EventHandler<KeyEventArgs> keyDown;
 
 		public event EventHandler<KeyEventArgs> KeyDown
 		{
-			add
-			{
-				HandleEvent(KeyDownEvent);
-				keyDown += value;
-			}
-			remove { keyDown -= value; }
+			add { Properties.AddHandlerEvent(KeyDownEvent, value); }
+			remove { Properties.RemoveEvent(KeyDownEvent, value); }
 		}
 
 		public virtual void OnKeyDown(KeyEventArgs e)
 		{
-			//Console.WriteLine("{0} ({1})", e.KeyData, this);
-			if (keyDown != null)
-				keyDown(this, e);
+			Properties.TriggerEvent(KeyDownEvent, this, e);
 			if (!e.Handled && Parent != null)
 				Parent.OnKeyDown(e);
 		}
 
 		public const string KeyUpEvent = "Control.KeyUp";
-		EventHandler<KeyEventArgs> keyUp;
 
 		public event EventHandler<KeyEventArgs> KeyUp
 		{
-			add
-			{
-				HandleEvent(KeyUpEvent);
-				keyUp += value;
-			}
-			remove { keyUp -= value; }
+			add { Properties.AddHandlerEvent(KeyUpEvent, value); }
+			remove { Properties.RemoveEvent(KeyUpEvent, value); }
 		}
 
 		public virtual void OnKeyUp(KeyEventArgs e)
 		{
-			//Console.WriteLine("{0} ({1})", e.KeyData, this);
-			if (keyUp != null)
-				keyUp(this, e);
+			Properties.TriggerEvent(KeyUpEvent, this, e);
 			if (!e.Handled && Parent != null)
 				Parent.OnKeyUp(e);
 		}
 
 		public const string TextInputEvent = "Control.TextInput";
-		EventHandler<TextInputEventArgs> textInput;
 
 		public event EventHandler<TextInputEventArgs> TextInput
 		{
-			add
-			{
-				HandleEvent(TextInputEvent);
-				textInput += value;
-			}
-			remove { textInput -= value; }
+			add { Properties.AddHandlerEvent(TextInputEvent, value); }
+			remove { Properties.RemoveEvent(TextInputEvent, value); }
 		}
 
 		public virtual void OnTextInput(TextInputEventArgs e)
 		{
-			if (textInput != null)
-				textInput(this, e);
+			Properties.TriggerEvent(TextInputEvent, this, e);
 		}
 
 		public const string MouseDownEvent = "Control.MouseDown";
-		EventHandler<MouseEventArgs> mouseDown;
 
 		public event EventHandler<MouseEventArgs> MouseDown
 		{
-			add
-			{
-				HandleEvent(MouseDownEvent);
-				mouseDown += value;
-			}
-			remove { mouseDown -= value; }
+			add { Properties.AddHandlerEvent(MouseDownEvent, value); }
+			remove { Properties.RemoveEvent(MouseDownEvent, value); }
 		}
 
 		public virtual void OnMouseDown(MouseEventArgs e)
 		{
-			if (mouseDown != null)
-				mouseDown(this, e);
+			Properties.TriggerEvent(MouseDownEvent, this, e);
 		}
 
 		public const string MouseUpEvent = "Control.MouseUp";
-		EventHandler<MouseEventArgs> mouseUp;
 
 		public event EventHandler<MouseEventArgs> MouseUp
 		{
-			add
-			{
-				HandleEvent(MouseUpEvent);
-				mouseUp += value;
-			}
-			remove { mouseUp -= value; }
+			add { Properties.AddHandlerEvent(MouseUpEvent, value); }
+			remove { Properties.RemoveEvent(MouseUpEvent, value); }
 		}
 
 		public virtual void OnMouseUp(MouseEventArgs e)
 		{
-			if (mouseUp != null)
-				mouseUp(this, e);
+			Properties.TriggerEvent(MouseUpEvent, this, e);
 		}
 
 		public const string MouseMoveEvent = "Control.MouseMove";
-		EventHandler<MouseEventArgs> mouseMove;
 
 		public event EventHandler<MouseEventArgs> MouseMove
 		{
-			add
-			{
-				HandleEvent(MouseMoveEvent);
-				mouseMove += value;
-			}
-			remove { mouseMove -= value; }
+			add { Properties.AddHandlerEvent(MouseMoveEvent, value); }
+			remove { Properties.RemoveEvent(MouseMoveEvent, value); }
 		}
 
 		public virtual void OnMouseMove(MouseEventArgs e)
 		{
-			if (mouseMove != null)
-				mouseMove(this, e);
+			Properties.TriggerEvent(MouseMoveEvent, this, e);
 		}
 
 		public const string MouseLeaveEvent = "Control.MouseLeave";
-		EventHandler<MouseEventArgs> mouseLeave;
 
 		public event EventHandler<MouseEventArgs> MouseLeave
 		{
-			add
-			{
-				HandleEvent(MouseLeaveEvent);
-				mouseLeave += value;
-			}
-			remove { mouseLeave -= value; }
+			add { Properties.AddHandlerEvent(MouseLeaveEvent, value); }
+			remove { Properties.RemoveEvent(MouseLeaveEvent, value); }
 		}
 
 		public virtual void OnMouseLeave(MouseEventArgs e)
 		{
-			if (mouseLeave != null)
-				mouseLeave(this, e);
+			Properties.TriggerEvent(MouseLeaveEvent, this, e);
 		}
 
 		public const string MouseEnterEvent = "Control.MouseEnter";
-		EventHandler<MouseEventArgs> mouseEnter;
 
 		public event EventHandler<MouseEventArgs> MouseEnter
 		{
-			add
-			{
-				HandleEvent(MouseEnterEvent);
-				mouseEnter += value;
-			}
-			remove { mouseEnter -= value; }
+			add { Properties.AddHandlerEvent(MouseEnterEvent, value); }
+			remove { Properties.RemoveEvent(MouseEnterEvent, value); }
 		}
 
 		public virtual void OnMouseEnter(MouseEventArgs e)
 		{
-			if (mouseEnter != null)
-				mouseEnter(this, e);
+			Properties.TriggerEvent(MouseEnterEvent, this, e);
 		}
 
 		public const string MouseDoubleClickEvent = "Control.MouseDoubleClick";
-		EventHandler<MouseEventArgs> mouseDoubleClick;
 
 		public event EventHandler<MouseEventArgs> MouseDoubleClick
 		{
-			add
-			{
-				HandleEvent(MouseDoubleClickEvent);
-				mouseDoubleClick += value;
-			}
-			remove { mouseDoubleClick -= value; }
+			add { Properties.AddHandlerEvent(MouseDoubleClickEvent, value); }
+			remove { Properties.RemoveEvent(MouseDoubleClickEvent, value); }
 		}
 
 		public virtual void OnMouseDoubleClick(MouseEventArgs e)
 		{
-			if (mouseDoubleClick != null)
-				mouseDoubleClick(this, e);
+			Properties.TriggerEvent(MouseDoubleClickEvent, this, e);
 		}
 
 		public const string MouseWheelEvent = "Control.MouseWheel";
-		EventHandler<MouseEventArgs> mouseWheel;
 
 		public event EventHandler<MouseEventArgs> MouseWheel
 		{
-			add
-			{
-				HandleEvent(MouseWheelEvent);
-				mouseWheel += value;
-			}
-			remove { mouseWheel -= value; }
+			add { Properties.AddHandlerEvent(MouseWheelEvent, value); }
+			remove { Properties.RemoveEvent(MouseWheelEvent, value); }
 		}
 
 		public virtual void OnMouseWheel(MouseEventArgs e)
 		{
-			if (mouseWheel != null)
-				mouseWheel(this, e);
+			Properties.TriggerEvent(MouseWheelEvent, this, e);
 		}
 
 		public const string GotFocusEvent = "Control.GotFocus";
-		EventHandler<EventArgs> gotFocus;
 
 		public event EventHandler<EventArgs> GotFocus
 		{
-			add
-			{
-				HandleEvent(GotFocusEvent);
-				gotFocus += value;
-			}
-			remove { gotFocus -= value; }
+			add { Properties.AddHandlerEvent(GotFocusEvent, value); }
+			remove { Properties.RemoveEvent(GotFocusEvent, value); }
 		}
 
 		public virtual void OnGotFocus(EventArgs e)
 		{
-			if (gotFocus != null)
-				gotFocus(this, e);
+			Properties.TriggerEvent(GotFocusEvent, this, e);
 		}
 
 		public const string LostFocusEvent = "Control.LostFocus";
-		EventHandler<EventArgs> lostFocus;
 
 		public event EventHandler<EventArgs> LostFocus
 		{
-			add
-			{
-				HandleEvent(LostFocusEvent);
-				lostFocus += value;
-			}
-			remove { lostFocus -= value; }
+			add { Properties.AddHandlerEvent(LostFocusEvent, value); }
+			remove { Properties.RemoveEvent(LostFocusEvent, value); }
 		}
 
 		public virtual void OnLostFocus(EventArgs e)
 		{
-			if (lostFocus != null)
-				lostFocus(this, e);
+			Properties.TriggerEvent(LostFocusEvent, this, e);
 		}
 
 		public const string ShownEvent = "Control.Shown";
-		EventHandler<EventArgs> shown;
 
 		public event EventHandler<EventArgs> Shown
 		{
-			add
-			{
-				HandleEvent(ShownEvent);
-				shown += value;
-			}
-			remove { shown -= value; }
+			add { Properties.AddHandlerEvent(ShownEvent, value); }
+			remove { Properties.RemoveEvent(ShownEvent, value); }
 		}
 
 		public virtual void OnShown(EventArgs e)
 		{
-			if (shown != null)
-				shown(this, e);
+			Properties.TriggerEvent(ShownEvent, this, e);
 		}
 
-		public event EventHandler<EventArgs> PreLoad;
+		static readonly object PreLoadKey = new object();
+
+		public event EventHandler<EventArgs> PreLoad
+		{
+			add { Properties.AddEvent(PreLoadKey, value); }
+			remove { Properties.RemoveEvent(PreLoadKey, value); }
+		}
 
 		public virtual void OnPreLoad(EventArgs e)
 		{
-			if (PreLoad != null)
-				PreLoad(this, e);
+			Properties.TriggerEvent(PreLoadKey, this, e);
 			Handler.OnPreLoad(e);
 		}
 
-		public event EventHandler<EventArgs> Load;
+		static readonly object LoadKey = new object();
+
+		public event EventHandler<EventArgs> Load
+		{
+			add { Properties.AddEvent(LoadKey, value); }
+			remove { Properties.RemoveEvent(LoadKey, value); }
+		}
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			if (Load != null)
-				Load(this, e);
+			Properties.TriggerEvent(LoadKey, this, e);
 			Handler.OnLoad(e);
 			Loaded = true;
 		}
 
-		public event EventHandler<EventArgs> LoadComplete;
+		static readonly object LoadCompleteKey = new object();
+
+		public event EventHandler<EventArgs> LoadComplete
+		{
+			add { Properties.AddEvent(LoadCompleteKey, value); }
+			remove { Properties.RemoveEvent(LoadCompleteKey, value); }
+		}
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
-			if (LoadComplete != null)
-				LoadComplete(this, e);
+			Properties.TriggerEvent(LoadCompleteKey, this, e);
 			Handler.OnLoadComplete(e);
 		}
 
-		public event EventHandler<EventArgs> UnLoad;
+		static readonly object UnLoadKey = new object();
+
+		public event EventHandler<EventArgs> UnLoad
+		{
+			add { Properties.AddEvent(UnLoadKey, value); }
+			remove { Properties.RemoveEvent(UnLoadKey, value); }
+		}
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
 			Loaded = false;
-			if (UnLoad != null)
-				UnLoad(this, e);
+			Properties.TriggerEvent(UnLoadKey, this, e);
 			Handler.OnUnLoad(e);
 		}
 
@@ -428,7 +348,13 @@ namespace Eto.Forms
 		/// This may be fired in the event of a parent in the hierarchy setting the data context.
 		/// For example, the <see cref="Forms.Container"/> widget fires this event when it's event is fired.
 		/// </remarks>
-		public event EventHandler<EventArgs> DataContextChanged;
+		public event EventHandler<EventArgs> DataContextChanged
+		{
+			add { Properties.AddEvent(DataContextChangedKey, value); }
+			remove { Properties.RemoveEvent(DataContextChangedKey, value); }
+		}
+
+		static readonly object DataContextChangedKey = new object();
 
 		/// <summary>
 		/// Called to fire the <see cref="DataContextChanged"/> event
@@ -441,8 +367,7 @@ namespace Eto.Forms
 		/// <param name="e">Event arguments</param>
 		protected internal virtual void OnDataContextChanged(EventArgs e)
 		{
-			if (DataContextChanged != null)
-				DataContextChanged(this, e);
+			Properties.TriggerEvent(DataContextChangedKey, this, e);
 		}
 
 		#endregion
@@ -519,13 +444,15 @@ namespace Eto.Forms
 		/// </remarks>
 		public virtual object DataContext
 		{
-			get { return dataContext ?? (Parent == null ? null : Parent.DataContext); }
+			get { return Properties.Get<object>(DataContextKey) ?? (Parent == null ? null : Parent.DataContext); }
 			set
 			{
-				dataContext = value;
+				Properties[DataContextKey] = value;
 				OnDataContextChanged(EventArgs.Empty);
 			}
 		}
+
+		static readonly object DataContextKey = new object();
 
 		[Obsolete("Use Parent instead")]
 		public Container ParentLayout { get { return Parent; } }
@@ -652,41 +579,16 @@ namespace Eto.Forms
 			get { return Handler.Location; }
 		}
 
-		#region Obsolete
-
-		[Obsolete("This event is deprecated")]
-		public const string HiddenEvent = "Control.Hidden";
-		EventHandler<EventArgs> hidden;
-
-		[Obsolete("This event is deprecated")]
-		public event EventHandler<EventArgs> Hidden
-		{
-			add
-			{
-				HandleEvent(HiddenEvent);
-				hidden += value;
-			}
-			remove { hidden -= value; }
-		}
-
-		[Obsolete("This event is deprecated")]
-		public virtual void OnHidden(EventArgs e)
-		{
-			if (hidden != null)
-				hidden(this, e);
-		}
-
-		#endregion
-
 		/// <summary>
 		/// Unbinds any bindings in the <see cref="Bindings"/> collection and removes the bindings
 		/// </summary>
 		public virtual void Unbind()
 		{
+			var bindings = Properties.Get<BindingCollection>(BindingsKey);
 			if (bindings != null)
 			{
 				bindings.Unbind();
-				bindings = null;
+				Properties[BindingsKey] = null;
 			}
 		}
 
@@ -695,6 +597,7 @@ namespace Eto.Forms
 		/// </summary>
 		public virtual void UpdateBindings()
 		{
+			var bindings = Properties.Get<BindingCollection>(BindingsKey);
 			if (bindings != null)
 			{
 				bindings.Update();

@@ -5,7 +5,7 @@ namespace Eto.Forms
 {
 	public partial interface IScrollable : IDockContainer
 	{
-		void UpdateScrollSizes ();
+		void UpdateScrollSizes();
 
 		Point ScrollPosition { get; set; }
 
@@ -19,44 +19,39 @@ namespace Eto.Forms
 
 		bool ExpandContentHeight { get; set; }
 	}
-	
+
 	public class ScrollEventArgs : EventArgs
 	{
 		public Point ScrollPosition { get; private set; }
-		
-		public ScrollEventArgs (Point scrollPosition)
+
+		public ScrollEventArgs(Point scrollPosition)
 		{
 			this.ScrollPosition = scrollPosition;
 		}
 	}
-	
+
 	public enum BorderType
 	{
 		Bezel,
 		Line,
 		None
 	}
-	
+
 	public partial class Scrollable : DockContainer
 	{
 		new IScrollable Handler { get { return (IScrollable)base.Handler; } }
 
 		public const string ScrollEvent = "Scrollable.ScrollEvent";
-		
-		event EventHandler<ScrollEventArgs> scroll;
 
-		public event EventHandler<ScrollEventArgs> Scroll {
-			add { 
-				HandleEvent (ScrollEvent);
-				scroll += value; 
-			}
-			remove { scroll -= value; }
-		}
-		
-		public virtual void OnScroll (ScrollEventArgs e)
+		public event EventHandler<ScrollEventArgs> Scroll
 		{
-			if (scroll != null)
-				scroll (this, e);
+			add { Properties.AddHandlerEvent(ScrollEvent, value); }
+			remove { Properties.RemoveEvent(ScrollEvent, value); }
+		}
+
+		public virtual void OnScroll(ScrollEventArgs e)
+		{
+			Properties.TriggerEvent(ScrollEvent, this, e);
 		}
 
 		static Scrollable()
@@ -64,49 +59,55 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(Scrollable), "OnScroll", Scrollable.ScrollEvent);
 		}
 
-		public Scrollable () : this (Generator.Current)
+		public Scrollable() : this(Generator.Current)
 		{
 		}
 
-		public Scrollable (Generator g) : this (g, typeof(IScrollable))
-		{
-		}
-		
-		protected Scrollable (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+		public Scrollable(Generator g) : this(g, typeof(IScrollable))
 		{
 		}
 
-		public void UpdateScrollSizes ()
+		protected Scrollable(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
-			Handler.UpdateScrollSizes ();
 		}
 
-		public Point ScrollPosition {
+		public void UpdateScrollSizes()
+		{
+			Handler.UpdateScrollSizes();
+		}
+
+		public Point ScrollPosition
+		{
 			get { return Handler.ScrollPosition; }
 			set { Handler.ScrollPosition = value; }
 		}
 
-		public Size ScrollSize {
+		public Size ScrollSize
+		{
 			get { return Handler.ScrollSize; }
 			set { Handler.ScrollSize = value; }
 		}
-		
-		public BorderType Border {
+
+		public BorderType Border
+		{
 			get { return Handler.Border; }
 			set { Handler.Border = value; }
 		}
-		
-		public Rectangle VisibleRect {
+
+		public Rectangle VisibleRect
+		{
 			get { return Handler.VisibleRect; }
 		}
 
-		public bool ExpandContentWidth {
+		public bool ExpandContentWidth
+		{
 			get { return Handler.ExpandContentWidth; }
 			set { Handler.ExpandContentWidth = value; }
 		}
 
-		public bool ExpandContentHeight {
+		public bool ExpandContentHeight
+		{
 			get { return Handler.ExpandContentHeight; }
 			set { Handler.ExpandContentHeight = value; }
 		}

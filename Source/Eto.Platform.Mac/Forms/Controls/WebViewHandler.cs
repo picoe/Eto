@@ -26,6 +26,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 				Handler = this,
 				UIDelegate = new UIDelegate { Handler = this }
 			};
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			HandleEvent(WebView.OpenNewWindowEvent); // needed to provide default implementation
 			HandleEvent(WebView.DocumentLoadingEvent);
 		}

@@ -75,6 +75,11 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			// only draw dirty regions, instead of entire scroll area
 			Control.ContentView.CopiesOnScroll = true;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			#if !USE_FLIPPED
 			HandleEvent(Scrollable.ScrollEvent);
 			#endif
@@ -100,9 +105,9 @@ namespace Eto.Platform.Mac.Forms.Controls
 							var view = (NSView)handler.Control.DocumentView;
 							var contentBounds = handler.Control.ContentView.Bounds;
 							if (view.IsFlipped)
-								handler.scrollPosition = contentBounds .Location.ToEtoPoint();
+								handler.scrollPosition = contentBounds.Location.ToEtoPoint();
 							else
-								handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds .Y));
+								handler.scrollPosition = new Point((int)contentBounds.X, (int)(view.Frame.Height - contentBounds.Height - contentBounds.Y));
 							#endif
 							handler.Widget.OnScroll(new ScrollEventArgs(handler.ScrollPosition));
 						}

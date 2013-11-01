@@ -175,9 +175,20 @@ namespace Eto.Platform.Mac.Forms
 					NSApplication.SharedApplication.MainMenu = MenuBar;
 				}
 			};
-
-			// needed for RestoreBounds to be set correctly
-			HandleEvent(Window.WindowStateChangedEvent);
+			Control.ShouldZoom = (window, newFrame) =>
+			{
+				if (!Maximizable)
+					return false;
+				if (!window.IsZoomed)
+				{
+					RestoreBounds = Widget.Bounds;
+				}
+				return true;
+			};
+			Control.WillMiniaturize += delegate
+			{
+				RestoreBounds = Widget.Bounds;
+			};
 		}
 
 		public override void AttachEvent(string id)
@@ -199,20 +210,6 @@ namespace Eto.Platform.Mac.Forms
 					};
 					break;
 				case Window.WindowStateChangedEvent:
-					Control.ShouldZoom = (window, newFrame) =>
-					{
-						if (!Maximizable)
-							return false;
-						if (!window.IsZoomed)
-						{
-							RestoreBounds = Widget.Bounds;
-						}
-						return true;
-					};
-					Control.WillMiniaturize += delegate
-					{
-						RestoreBounds = Widget.Bounds;
-					};
 					Control.DidMiniaturize += delegate
 					{
 						Widget.OnWindowStateChanged(EventArgs.Empty);

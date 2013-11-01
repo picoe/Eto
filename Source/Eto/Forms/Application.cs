@@ -32,32 +32,30 @@ namespace Eto.Forms
 	{
 		public static Application Instance { get; private set; }
 
-		public event EventHandler<EventArgs> Initialized;
+		public event EventHandler<EventArgs> Initialized
+		{
+			add { Properties.AddEvent(InitializedKey, value); }
+			remove { Properties.RemoveEvent(InitializedKey, value); }
+		}
+
+		static readonly object InitializedKey = new object();
 
 		public virtual void OnInitialized(EventArgs e)
 		{
-			if (Initialized != null)
-				Initialized(this, e);
+			Properties.TriggerEvent(InitializedKey, this, e);
 		}
 
 		public const string TerminatingEvent = "Application.Terminating";
 
-		event EventHandler<CancelEventArgs> terminating;
-
 		public event EventHandler<CancelEventArgs> Terminating
 		{
-			add
-			{
-				HandleEvent(TerminatingEvent);
-				terminating += value;
-			}
-			remove { terminating -= value; }
+			add { Properties.AddHandlerEvent(TerminatingEvent, value); }
+			remove { Properties.RemoveEvent(TerminatingEvent, value); }
 		}
 
 		public virtual void OnTerminating(CancelEventArgs e)
 		{
-			if (terminating != null)
-				terminating(this, e);
+			Properties.TriggerEvent(TerminatingEvent, this, e);
 		}
 
 		new IApplication Handler { get { return (IApplication)base.Handler; } }
