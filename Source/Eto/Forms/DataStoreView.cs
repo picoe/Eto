@@ -200,10 +200,6 @@ namespace Eto.Forms
 				if (comparer != null)
 					viewItems.Sort(comparer);
 
-				// Clear and re-add the list
-				view.Clear();
-
-				view.AddRange(viewItems);
 
 				// If a sort or filter is specified, create a dictionary
 				// of the item indices. This materializes a list of all the
@@ -237,6 +233,11 @@ namespace Eto.Forms
 						viewIndex++;
 					}
 				}
+
+				// Clear and re-add the list
+				view.Clear();
+
+				view.AddRange(viewItems);
 			}
 		}
 
