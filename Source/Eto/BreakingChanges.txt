@@ -2,6 +2,8 @@
 
 1.2.2
 -----
+- PrintDocument.BeforePrint/EndPrint now named Printing/Printed
+- Grid.BeforeCellEdit/AfterCellEdit now named CellEditing/CellEdited
 - TreeView.BeforeLabelEdit/AfterLabelEdit now named LabelEditing/LabelEdited
 - Control.Loaded flag is set after the Load event, Handler's OnLoad, and all children's OnLoad (was set beforehand)
 - Removed Eto.InstanceWidget.StyleChanged event (subclass and override OnStyleChanged instead)

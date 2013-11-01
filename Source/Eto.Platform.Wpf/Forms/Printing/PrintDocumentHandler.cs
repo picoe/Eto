@@ -97,8 +97,8 @@ namespace Eto.Platform.Wpf.Forms.Printing
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case PrintDocument.BeginPrintEvent:
-			case PrintDocument.EndPrintEvent:
+			case PrintDocument.PrintingEvent:
+			case PrintDocument.PrintedEvent:
 			case PrintDocument.PrintPageEvent:
 				// handled by paginator
 				break;

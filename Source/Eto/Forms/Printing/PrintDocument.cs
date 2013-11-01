@@ -19,38 +19,38 @@ namespace Eto.Forms
 
 		#region Events
 
-		public const string BeginPrintEvent = "PrintDocument.BeginPrint";
-		EventHandler<EventArgs> _BeginPrint;
+		public const string PrintingEvent = "PrintDocument.Printing";
+		EventHandler<EventArgs> printing;
 
-		public event EventHandler<EventArgs> BeginPrint {
+		public event EventHandler<EventArgs> Printing {
 			add {
-				HandleEvent (BeginPrintEvent);
-				_BeginPrint += value;
+				HandleEvent (PrintingEvent);
+				printing += value;
 			}
-			remove { _BeginPrint -= value; }
+			remove { printing -= value; }
 		}
 
-		public virtual void OnBeginPrint (EventArgs e)
+		public virtual void OnPrinting (EventArgs e)
 		{
-			if (_BeginPrint != null)
-				_BeginPrint (this, e);
+			if (printing != null)
+				printing (this, e);
 		}
 
-		public const string EndPrintEvent = "PrintDocument.EndPrint";
-		EventHandler<EventArgs> _EndPrint;
+		public const string PrintedEvent = "PrintDocument.Printed";
+		EventHandler<EventArgs> printed;
 
-		public event EventHandler<EventArgs> EndPrint {
+		public event EventHandler<EventArgs> Printed {
 			add {
-				HandleEvent (EndPrintEvent);
-				_EndPrint += value;
+				HandleEvent (PrintedEvent);
+				printed += value;
 			}
-			remove { _EndPrint -= value; }
+			remove { printed -= value; }
 		}
 
-		public virtual void OnEndPrint (EventArgs e)
+		public virtual void OnPrinted (EventArgs e)
 		{
-			if (_EndPrint != null)
-				_EndPrint (this, e);
+			if (printed != null)
+				printed (this, e);
 		}
 
 		public const string PrintPageEvent = "PrintDocument.PrintPage";
