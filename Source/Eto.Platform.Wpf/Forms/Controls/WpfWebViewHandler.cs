@@ -54,7 +54,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			};
 		}
 
-		static void RemoveEvent(SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
+		void RemoveEvent(SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
 		{
 			switch (handler)
 			{
@@ -67,7 +67,7 @@ namespace Eto.Platform.Wpf.Forms.Controls
 			}
 		}
 
-		static void AttachEvent(SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
+		void AttachEvent(SHDocVw.DWebBrowserEvents_Event webEvents, string handler)
 		{
 			switch (handler)
 			{

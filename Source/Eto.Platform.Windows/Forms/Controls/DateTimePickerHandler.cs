@@ -80,7 +80,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 		{
 			get
 			{
-				return !Control.Checked ? null : Control.Value;
+				return !Control.Checked ? null : (DateTime?)Control.Value;
 			}
 			set
 			{
