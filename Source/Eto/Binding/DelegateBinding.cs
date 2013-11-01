@@ -4,6 +4,8 @@ namespace Eto
 {
 	public class DelegateBinding<T, TValue> : IndirectBinding
 	{
+		static readonly Type underlyingType = Nullable.GetUnderlyingType(typeof(TValue)) ?? typeof(TValue);
+
 		public new Func<T, TValue> GetValue { get; set; }
 
 		public new Action<T, TValue> SetValue { get; set; }
@@ -32,10 +34,17 @@ namespace Eto
 			return null;
 		}
 
+		protected virtual TValue ChangeType(object value)
+		{
+			return (value == null || DBNull.Value.Equals(value)) 
+				? default(TValue)
+				: (TValue)Convert.ChangeType(value, underlyingType);
+		}
+
 		protected override void InternalSetValue(object dataItem, object value)
 		{
 			if (SetValue != null && dataItem != null)
-				SetValue((T)dataItem, (TValue)value);
+				SetValue((T)dataItem, ChangeType(value));
 		}
 
 		/// <summary>

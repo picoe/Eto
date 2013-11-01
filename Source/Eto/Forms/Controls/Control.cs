@@ -447,6 +447,24 @@ namespace Eto.Forms
 
 		#endregion
 
+		static Control()
+		{
+			EventLookup.Register(typeof(Control), "OnGotFocus", Control.GotFocusEvent);
+			EventLookup.Register(typeof(Control), "OnKeyDown", Control.KeyDownEvent);
+			EventLookup.Register(typeof(Control), "OnKeyUp", Control.KeyUpEvent);
+			EventLookup.Register(typeof(Control), "OnLostFocus", Control.LostFocusEvent);
+			EventLookup.Register(typeof(Control), "OnMouseDoubleClick", Control.MouseDoubleClickEvent);
+			EventLookup.Register(typeof(Control), "OnMouseDown", Control.MouseDownEvent);
+			EventLookup.Register(typeof(Control), "OnMouseEnter", Control.MouseEnterEvent);
+			EventLookup.Register(typeof(Control), "OnMouseLeave", Control.MouseLeaveEvent);
+			EventLookup.Register(typeof(Control), "OnMouseMove", Control.MouseMoveEvent);
+			EventLookup.Register(typeof(Control), "OnMouseUp", Control.MouseUpEvent);
+			EventLookup.Register(typeof(Control), "OnMouseWheel", Control.MouseWheelEvent);
+			EventLookup.Register(typeof(Control), "OnShown", Control.ShownEvent);
+			EventLookup.Register(typeof(Control), "OnSizeChanged", Control.SizeChangedEvent);
+			EventLookup.Register(typeof(Control), "OnTextInput", Control.TextInputEvent);
+		}
+
 		protected Control(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{

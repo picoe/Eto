@@ -71,7 +71,6 @@ namespace Eto.Test.Sections.Layouts.PixelLayoutSection
 			Content = PixelLayout = new PixelLayout();
 
 			Buttons = CreateButtons();
-			HandleEvent(SizeChangedEvent);
 		}
 
 		public override void OnSizeChanged(EventArgs e)

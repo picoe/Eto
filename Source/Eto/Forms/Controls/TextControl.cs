@@ -15,11 +15,16 @@ namespace Eto.Forms
 	{
 		new ITextControl Handler { get { return (ITextControl)base.Handler; } }
 
+		static TextControl()
+		{
+			EventLookup.Register(typeof(TextControl), "OnTextChanged", TextControl.TextChangedEvent);
+		}
+
 		protected TextControl(Generator g, Type type, bool initialize = true) : base(g, type, initialize)
 		{
 		}
 
-		public const string TextChangedEvent = "Control.TextChanged";
+		public const string TextChangedEvent = "TextControl.TextChanged";
 		EventHandler<EventArgs> textChanged;
 
 		public event EventHandler<EventArgs> TextChanged

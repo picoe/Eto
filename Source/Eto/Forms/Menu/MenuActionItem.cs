@@ -42,7 +42,12 @@ namespace Eto.Forms
 			: base (g, type, initialize)
 		{
 		}
-		
+
+		static MenuActionItem()
+		{
+			EventLookup.Register(typeof(MenuActionItem), "OnValidate", MenuActionItem.ValidateEvent);
+		}
+
 		public string Text {
 			get { return Handler.Text; }
 			set { Handler.Text = value; }

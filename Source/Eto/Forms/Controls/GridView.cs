@@ -55,7 +55,13 @@ namespace Eto.Forms
 		/// The text to display in a Delete item button.
 		/// </summary>
 		public string DeleteConfirmationTitle { get; set; }
-#endif
+		#endif
+
+		static GridView()
+		{
+			EventLookup.Register(typeof(GridView), "OnCellClick", GridView.CellClickEvent);
+		}
+
 		public GridView()
 			: this(Generator.Current)
 		{
@@ -111,8 +117,6 @@ namespace Eto.Forms
 
 		#region Events
 
-		#region CellClick
-
 		public const string CellClickEvent = "GridView.CellClick";
 		EventHandler<GridViewCellArgs> cellClick;
 
@@ -131,8 +135,6 @@ namespace Eto.Forms
 			if (cellClick != null)
 				cellClick(this, ViewToModel(e));
 		}
-
-		#endregion
 
 		#endregion
 

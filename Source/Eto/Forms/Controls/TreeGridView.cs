@@ -155,6 +155,15 @@ namespace Eto.Forms
 
 		#endregion
 
+		static TreeGridView()
+		{
+			EventLookup.Register(typeof(TreeGridView), "OnExpanding", TreeGridView.ExpandingEvent);
+			EventLookup.Register(typeof(TreeGridView), "OnExpanded", TreeGridView.ExpandedEvent);
+			EventLookup.Register(typeof(TreeGridView), "OnCollapsing", TreeGridView.CollapsingEvent);
+			EventLookup.Register(typeof(TreeGridView), "OnCollapsed", TreeGridView.CollapsedEvent);
+			EventLookup.Register(typeof(TreeGridView), "OnSelectedItemChanged", TreeGridView.SelectedItemChangedEvent);
+		}
+
 		public TreeGridView ()
 			: this (Generator.Current)
 		{

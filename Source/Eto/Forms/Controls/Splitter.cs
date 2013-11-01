@@ -54,7 +54,7 @@ namespace Eto.Forms
 
 		#region Events
 
-		public const string PositionChangedEvent = "Control.PositionChanged";
+		public const string PositionChangedEvent = "Splitter.PositionChanged";
 		EventHandler<EventArgs> positionChanged;
 
 		/// <summary>
@@ -77,6 +77,11 @@ namespace Eto.Forms
 		}
 
 		#endregion
+
+		static Splitter()
+		{
+			EventLookup.Register(typeof(Splitter), "OnPositionChanged", Splitter.PositionChangedEvent);
+		}
 
 		public Splitter() : this (Generator.Current)
 		{

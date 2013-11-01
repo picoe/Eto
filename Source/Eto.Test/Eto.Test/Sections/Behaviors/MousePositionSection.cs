@@ -19,8 +19,6 @@ namespace Eto.Test.Sections.Behaviors
 			layout.AddSeparateRow (null, new Label { Text = "Buttons" }, Buttons (), null);
 			layout.Add (null);
 
-			HandleEvent (Control.MouseMoveEvent, Control.MouseDownEvent, Control.MouseUpEvent);
-
 			SetLabels ();
 
 			Content = layout;

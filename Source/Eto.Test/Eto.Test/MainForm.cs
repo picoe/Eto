@@ -40,11 +40,6 @@ namespace Eto.Test
 #endif
 			//this.Opacity = 0.5;
 
-#if DESKTOP
-			HandleEvent(Window.WindowStateChangedEvent);
-#endif
-			HandleEvent(Window.ClosedEvent, Window.ClosingEvent);
-
 			/* Option 1: use actions to generate menu and toolbar (recommended)
 			 */
 			GenerateMenuToolBarActions();

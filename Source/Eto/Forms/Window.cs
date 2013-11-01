@@ -87,6 +87,14 @@ namespace Eto.Forms
 
 		#endregion
 
+		static Window()
+		{
+			EventLookup.Register(typeof(Window), "OnClosed", Window.ClosedEvent);
+			EventLookup.Register(typeof(Window), "OnClosing", Window.ClosingEvent);
+			EventLookup.Register(typeof(Window), "OnLocationChanged", Window.LocationChangedEvent);
+			EventLookup.Register(typeof(Window), "OnWindowStateChanged", Window.WindowStateChangedEvent);
+		}
+
 		protected Window (Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{

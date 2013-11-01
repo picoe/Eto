@@ -245,6 +245,19 @@ namespace Eto.Forms
 		}
 		#endregion
 
+		static TreeView()
+		{
+			EventLookup.Register(typeof(TreeView), "OnActivated", TreeView.ActivatedEvent);
+			EventLookup.Register(typeof(TreeView), "OnSelectionChanged", TreeView.SelectionChangedEvent);
+			EventLookup.Register(typeof(TreeView), "OnExpanding", TreeView.ExpandingEvent);
+			EventLookup.Register(typeof(TreeView), "OnExpanded", TreeView.ExpandedEvent);
+			EventLookup.Register(typeof(TreeView), "OnCollapsing", TreeView.CollapsingEvent);
+			EventLookup.Register(typeof(TreeView), "OnCollapsed", TreeView.CollapsedEvent);
+			EventLookup.Register(typeof(TreeView), "OnLabelEdited", TreeView.LabelEditedEvent);
+			EventLookup.Register(typeof(TreeView), "OnLabelEditing", TreeView.LabelEditingEvent);
+			EventLookup.Register(typeof(TreeView), "OnNodeMouseClick", TreeView.NodeMouseClickEvent);
+		}
+
 		public TreeView() : this (Generator.Current)
 		{
 		}

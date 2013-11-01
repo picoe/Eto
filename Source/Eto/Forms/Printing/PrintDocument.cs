@@ -72,6 +72,13 @@ namespace Eto.Forms
 
 		#endregion
 
+		static PrintDocument()
+		{
+			EventLookup.Register(typeof(PrintDocument), "OnPrinting", PrintDocument.PrintingEvent);
+			EventLookup.Register(typeof(PrintDocument), "OnPrinted", PrintDocument.PrintedEvent);
+			EventLookup.Register(typeof(PrintDocument), "OnPrintPage", PrintDocument.PrintPageEvent);
+		}
+
 		public PrintDocument ()
 			: this (Generator.Current)
 		{

@@ -183,6 +183,7 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="id">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
+		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(string id)
 		{
 			Handler.HandleEvent(id);
@@ -226,11 +227,20 @@ namespace Eto
 		/// ]]></code>
 		/// </example>
 		/// <param name="ids">ID of the event to handle.  Usually a constant in the form of [Control].[EventName]Event (e.g. TextBox.TextChangedEvent)</param>
+		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(params string[] ids)
 		{
 			foreach (var id in ids)
 			{
 				HandleEvent(id);
+			}
+		}
+
+		internal void HandleEvents(string[] ids)
+		{
+			for (int i = 0; i < ids.Length; i++)
+			{
+				Handler.HandleEvent(ids[i]);
 			}
 		}
 
@@ -248,6 +258,7 @@ namespace Eto
 		{
 			base.Initialize();
 			Eto.Style.OnStyleWidgetDefaults(this);
+			EventLookup.HookupEvents(this);
 		}
 	}
 }

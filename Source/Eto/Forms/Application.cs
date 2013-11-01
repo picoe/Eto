@@ -75,6 +75,11 @@ namespace Eto.Forms
 
 		public string Name { get; set; }
 
+		static Application()
+		{
+			EventLookup.Register(typeof(Application), "OnTerminating", Application.TerminatingEvent);
+		}
+
 		public Application() : this(Generator.Detect)
 		{
 		}

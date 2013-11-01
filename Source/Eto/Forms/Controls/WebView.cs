@@ -173,7 +173,16 @@ namespace Eto.Forms
 		}
 		
 		#endregion
-		
+
+		static WebView()
+		{
+			EventLookup.Register(typeof(WebView), "OnNavigated", WebView.NavigatedEvent);
+			EventLookup.Register(typeof(WebView), "OnDocumentLoaded", WebView.DocumentLoadedEvent);
+			EventLookup.Register(typeof(WebView), "OnDocumentLoading", WebView.DocumentLoadingEvent);
+			EventLookup.Register(typeof(WebView), "OnDocumentTitleChanged", WebView.DocumentTitleChangedEvent);
+			EventLookup.Register(typeof(WebView), "OnOpenNewWindow", WebView.OpenNewWindowEvent);
+		}
+
 		public WebView ()
 			: this (Generator.Current)
 		{

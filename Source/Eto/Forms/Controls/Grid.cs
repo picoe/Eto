@@ -210,6 +210,15 @@ namespace Eto.Forms
 
 		#endregion
 
+		static Grid()
+		{
+			EventLookup.Register(typeof(Grid), "OnCellEdited", Grid.CellEditedEvent);
+			EventLookup.Register(typeof(Grid), "OnCellEditing", Grid.CellEditingEvent);
+			EventLookup.Register(typeof(Grid), "OnCellFormatting", Grid.CellFormattingEvent);
+			EventLookup.Register(typeof(Grid), "OnSelectionChanged", Grid.SelectionChangedEvent);
+			EventLookup.Register(typeof(Grid), "OnColumnHeaderClick", Grid.ColumnHeaderClickEvent);
+		}
+
 		protected Grid(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{

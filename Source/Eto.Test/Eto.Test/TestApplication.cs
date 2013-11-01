@@ -15,8 +15,7 @@ namespace Eto.Test
 		public override void OnInitialized(EventArgs e)
 		{
 			MainForm = new MainForm();
-			HandleEvent(Application.TerminatingEvent);
-			
+
 			base.OnInitialized(e);
 			
 			// show the main form

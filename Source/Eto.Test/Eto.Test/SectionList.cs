@@ -129,7 +129,6 @@ namespace Eto.Test
 			Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
 			this.DataStore = new Section("Top", topNodes);
-			HandleEvent(SelectionChangedEvent);
 		}
 
 		public string SectionTitle
