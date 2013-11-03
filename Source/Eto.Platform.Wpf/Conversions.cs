@@ -27,7 +27,7 @@ namespace Eto.Platform.Wpf
 			return swm.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
 		}
 
-		public static swm.Brush ToWpfBrush(this Color value, swm.Brush brush)
+		public static swm.Brush ToWpfBrush(this Color value, swm.Brush brush = null)
 		{
 			var solidBrush = brush as swm.SolidColorBrush;
 			if (solidBrush == null || solidBrush.IsSealed)

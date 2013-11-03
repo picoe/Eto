@@ -20,6 +20,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 		ContextMenu contextMenu;
 		ITreeStore topNode;
 		ITreeItem selectedItem;
+		sw.Setter foreground;
+
 		bool labelEdit;
 		// use two templates to refresh individual items by changing its template (hack? yes, fast? yes)
 		sw.HierarchicalDataTemplate template1;
@@ -400,8 +402,22 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public Color TextColor
 		{
-			get { return Control.Foreground.ToEtoColor(); }
-			set { Control.Foreground = value.ToWpfBrush(Control.Foreground); }
+			get
+			{
+				if (foreground != null)
+					return ((swm.Brush)foreground.Value).ToEtoColor();
+				return sw.SystemColors.ControlTextColor.ToEto();
+			}
+			set
+			{
+				if (foreground == null)
+				{
+					foreground = new sw.Setter(swc.TreeViewItem.ForegroundProperty, value.ToWpfBrush());
+					Control.ItemContainerStyle.Setters.Add(foreground);
+				}
+				else
+					foreground.Value = value.ToWpfBrush(foreground.Value as swm.Brush);
+			}
 		}
 
 		public bool LabelEdit

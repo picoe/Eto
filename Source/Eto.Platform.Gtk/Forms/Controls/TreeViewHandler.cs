@@ -376,11 +376,10 @@ namespace Eto.Platform.GtkSharp.Forms
 			set { textCell.Editable = value; }
 		}
 
-
 		public Color TextColor
 		{
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
+			get { return textCell.ForegroundGdk.ToEto(); }
+			set { textCell.ForegroundGdk = value.ToGdk(); }
 		}
 	}
 }
