@@ -14,20 +14,15 @@ namespace Eto.Forms
 
 		public const string FontChangedEvent = "FontDialog.FontChanged";
 
-		EventHandler<EventArgs> _FontChanged;
-
-		public event EventHandler<EventArgs> FontChanged {
-			add {
-				HandleEvent (FontChangedEvent);
-				_FontChanged += value;
-			}
-			remove { _FontChanged -= value; }
+		public event EventHandler<EventArgs> FontChanged
+		{
+			add { Properties.AddHandlerEvent(FontChangedEvent, value); }
+			remove { Properties.RemoveEvent(FontChangedEvent, value); }
 		}
 
-		public virtual void OnFontChanged (EventArgs e)
+		public virtual void OnFontChanged(EventArgs e)
 		{
-			if (_FontChanged != null)
-				_FontChanged (this, e);
+			Properties.TriggerEvent(FontChangedEvent, this, e);
 		}
 
 		static FontDialog()
@@ -35,7 +30,7 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(FontDialog), "OnFontChanged", FontDialog.FontChangedEvent);
 		}
 
-		public FontDialog (Generator generator = null)
+		public FontDialog(Generator generator = null)
 			: base(generator, typeof(IFontDialog), true)
 		{
 		}

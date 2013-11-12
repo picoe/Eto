@@ -126,11 +126,11 @@ namespace Eto.Forms
 			}
 		}
 		#region Attached Properties
-		static EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
+		static readonly EtoMemberIdentifier LocationProperty = new EtoMemberIdentifier(typeof(TableLayout), "Location");
 
 		public static Point GetLocation(Control control)
 		{
-			return control.Properties.Get<Point>(LocationProperty, Point.Empty);
+			return control.Properties.Get<Point>(LocationProperty);
 		}
 
 		public static void SetLocation(Control control, Point value)
@@ -141,11 +141,11 @@ namespace Eto.Forms
 				layout.Move(control, value);
 		}
 
-		static EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "ColumnScale");
+		static readonly EtoMemberIdentifier ColumnScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "ColumnScale");
 
 		public static bool GetColumnScale(Control control)
 		{
-			return control.Properties.Get<bool>(ColumnScaleProperty, false);
+			return control.Properties.Get<bool>(ColumnScaleProperty);
 		}
 
 		public static void SetColumnScale(Control control, bool value)
@@ -153,11 +153,11 @@ namespace Eto.Forms
 			control.Properties[ColumnScaleProperty] = value;
 		}
 
-		static EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "RowScale");
+		static readonly EtoMemberIdentifier RowScaleProperty = new EtoMemberIdentifier(typeof(TableLayout), "RowScale");
 
 		public static bool GetRowScale(Control control)
 		{
-			return control.Properties.Get<bool>(RowScaleProperty, false);
+			return control.Properties.Get<bool>(RowScaleProperty);
 		}
 
 		public static void SetRowScale(Control control, bool value)

@@ -25,22 +25,16 @@ namespace Eto.Forms
 		}
 
 		public const string TextChangedEvent = "TextControl.TextChanged";
-		EventHandler<EventArgs> textChanged;
 
 		public event EventHandler<EventArgs> TextChanged
 		{
-			add
-			{
-				HandleEvent(TextChangedEvent);
-				textChanged += value;
-			}
-			remove { textChanged -= value; }
+			add { Properties.AddHandlerEvent(TextChangedEvent, value); }
+			remove { Properties.RemoveEvent(TextChangedEvent, value); }
 		}
 
 		public virtual void OnTextChanged(EventArgs e)
 		{
-			if (textChanged != null)
-				textChanged(this, e);
+			Properties.TriggerEvent(TextChangedEvent, this, e);
 		}
 
 		public virtual string Text

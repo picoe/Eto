@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 
 namespace Eto
 {
@@ -31,7 +32,8 @@ namespace Eto
 		/// when users of the control only override the event's On... method.
 		/// </remarks>
 		/// <param name="id">ID of the event to handle</param>
-		void HandleEvent(string id);
+		/// <param name = "defaultEvent">True if the event is default (e.g. overridden or via an event handler subscription)</param>
+		void HandleEvent(string id, bool defaultEvent = false);
 	}
 
 	/// <summary>
@@ -53,7 +55,15 @@ namespace Eto
 	{
 		new IInstanceWidget Handler { get { return (IInstanceWidget)base.Handler; } }
 
-		string style;
+		PropertyStore properties;
+
+		/// <summary>
+		/// Gets the dictionary of properties for this widget
+		/// </summary>
+		public PropertyStore Properties
+		{ 
+			get { return properties ?? (properties = new PropertyStore(this)); } 
+		}
 
 		/// <summary>
 		/// Gets or sets the ID of this widget
@@ -88,18 +98,29 @@ namespace Eto
 		/// </example>
 		public string Style
 		{
-			get { return style; }
+			get { return Properties.Get<string>(StyleKey); }
 			set
 			{
+				var style = Style;
 				if (style != value)
 				{
-					style = value;
+					Properties[StyleKey] = value;
 					OnStyleChanged(EventArgs.Empty);
 				}
 			}
 		}
 
+		static readonly object StyleKey = new object();
+
 		#region Events
+
+		static readonly object StyleChangedKey = new object();
+
+		public event EventHandler<EventArgs> StyleChanged
+		{
+			add { Properties.AddEvent(StyleChangedKey, value); }
+			remove { Properties.RemoveEvent(StyleChangedKey, value); }
+		}
 
 		/// <summary>
 		/// Handles when the <see cref="Style"/> is changed.
@@ -107,6 +128,7 @@ namespace Eto
 		protected virtual void OnStyleChanged(EventArgs e)
 		{
 			Eto.Style.OnStyleWidget(this);
+			Properties.TriggerEvent(StyleChangedKey, this, e);
 		}
 
 		#endregion
@@ -118,7 +140,7 @@ namespace Eto
 		/// <param name="handler">Pre-created handler to attach to this instance</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget(Generator generator, IWidget handler, bool initialize = true)
-			: base (generator, handler, false)
+			: base(generator, handler, false)
 		{
 			if (initialize)
 				Initialize();
@@ -131,7 +153,7 @@ namespace Eto
 		/// <param name="handlerType">Type of the handler to create as the backend for this widget</param>
 		/// <param name="initialize">True to call handler's Initialze method, false otherwise</param>
 		protected InstanceWidget(Generator generator, Type handlerType, bool initialize = true)
-			: base (generator, handlerType, false)
+			: base(generator, handlerType, false)
 		{
 			if (initialize)
 				Initialize();
@@ -186,7 +208,7 @@ namespace Eto
 		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(string id)
 		{
-			Handler.HandleEvent(id);
+			Handler.HandleEvent(id, false);
 		}
 
 		/// <summary>
@@ -230,17 +252,17 @@ namespace Eto
 		[Obsolete("You no longer have to call this method, events are wired up automatically")]
 		public void HandleEvent(params string[] ids)
 		{
-			foreach (var id in ids)
+			for (int i = 0; i < ids.Length; i++)
 			{
-				HandleEvent(id);
+				Handler.HandleEvent(ids[i], false);
 			}
 		}
 
-		internal void HandleEvents(string[] ids)
+		internal void HandleDefaultEvents(params string[] ids)
 		{
 			for (int i = 0; i < ids.Length; i++)
 			{
-				Handler.HandleEvent(ids[i]);
+				Handler.HandleEvent(ids[i], true);
 			}
 		}
 

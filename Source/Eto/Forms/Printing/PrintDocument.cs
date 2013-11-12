@@ -4,7 +4,7 @@ namespace Eto.Forms
 {
 	public interface IPrintDocument : IInstanceWidget
 	{
-		void Print ();
+		void Print();
 
 		string Name { get; set; }
 
@@ -20,54 +20,42 @@ namespace Eto.Forms
 		#region Events
 
 		public const string PrintingEvent = "PrintDocument.Printing";
-		EventHandler<EventArgs> printing;
 
-		public event EventHandler<EventArgs> Printing {
-			add {
-				HandleEvent (PrintingEvent);
-				printing += value;
-			}
-			remove { printing -= value; }
+		public event EventHandler<EventArgs> Printing
+		{
+			add { Properties.AddHandlerEvent(PrintingEvent, value); }
+			remove { Properties.RemoveEvent(PrintingEvent, value); }
 		}
 
-		public virtual void OnPrinting (EventArgs e)
+		public virtual void OnPrinting(EventArgs e)
 		{
-			if (printing != null)
-				printing (this, e);
+			Properties.TriggerEvent(PrintingEvent, this, e);
 		}
 
 		public const string PrintedEvent = "PrintDocument.Printed";
-		EventHandler<EventArgs> printed;
 
-		public event EventHandler<EventArgs> Printed {
-			add {
-				HandleEvent (PrintedEvent);
-				printed += value;
-			}
-			remove { printed -= value; }
+		public event EventHandler<EventArgs> Printed
+		{
+			add { Properties.AddHandlerEvent(PrintedEvent, value); }
+			remove { Properties.RemoveEvent(PrintedEvent, value); }
 		}
 
-		public virtual void OnPrinted (EventArgs e)
+		public virtual void OnPrinted(EventArgs e)
 		{
-			if (printed != null)
-				printed (this, e);
+			Properties.TriggerEvent(PrintedEvent, this, e);
 		}
 
 		public const string PrintPageEvent = "PrintDocument.PrintPage";
-		EventHandler<PrintPageEventArgs> _PrintPage;
 
-		public event EventHandler<PrintPageEventArgs> PrintPage {
-			add {
-				HandleEvent (PrintPageEvent);
-				_PrintPage += value;
-			}
-			remove { _PrintPage -= value; }
+		public event EventHandler<PrintPageEventArgs> PrintPage
+		{
+			add { Properties.AddHandlerEvent(PrintPageEvent, value); }
+			remove { Properties.RemoveEvent(PrintPageEvent, value); }
 		}
 
-		public virtual void OnPrintPage (PrintPageEventArgs e)
+		public virtual void OnPrintPage(PrintPageEventArgs e)
 		{
-			if (_PrintPage != null)
-				_PrintPage (this, e);
+			Properties.TriggerEvent(PrintPageEvent, this, e);
 		}
 
 		#endregion
@@ -79,13 +67,8 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(PrintDocument), "OnPrintPage", PrintDocument.PrintPageEvent);
 		}
 
-		public PrintDocument ()
-			: this (Generator.Current)
-		{
-		}
-
-		public PrintDocument (Generator generator)
-			: base (generator, typeof (IPrintDocument))
+		public PrintDocument(Generator generator = null)
+			: base(generator, typeof(IPrintDocument))
 		{
 		}
 
@@ -95,9 +78,9 @@ namespace Eto.Forms
 			set { Handler.Name = value; }
 		}
 
-		public void Print ()
+		public void Print()
 		{
-			Handler.Print ();
+			Handler.Print();
 		}
 
 		public PrintSettings PrintSettings

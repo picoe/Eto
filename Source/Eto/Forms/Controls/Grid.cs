@@ -105,102 +105,67 @@ namespace Eto.Forms
 
 		public const string CellEditingEvent = "Grid.CellEditingEvent";
 
-		event EventHandler<GridViewCellArgs> cellEditing;
-
 		public event EventHandler<GridViewCellArgs> CellEditing
 		{
-			add
-			{
-				cellEditing += value;
-				HandleEvent(CellEditingEvent);
-			}
-			remove { cellEditing -= value; }
+			add { Properties.AddHandlerEvent(CellEditingEvent, value); }
+			remove { Properties.RemoveEvent(CellEditingEvent, value); }
 		}
 
 		public virtual void OnCellEditing(GridViewCellArgs e)
 		{
-			if (cellEditing != null)
-				cellEditing(this, ViewToModel(e));
+			Properties.TriggerEvent(CellEditingEvent, this, e);
 		}
 
 		public const string CellEditedEvent = "Grid.CellEditedEvent";
 
-		event EventHandler<GridViewCellArgs> cellEdited;
-
 		public event EventHandler<GridViewCellArgs> CellEdited
 		{
-			add
-			{
-				cellEdited += value;
-				HandleEvent(CellEditedEvent);
-			}
-			remove { cellEdited -= value; }
+			add { Properties.AddHandlerEvent(CellEditedEvent, value); }
+			remove { Properties.RemoveEvent(CellEditedEvent, value); }
 		}
 
 		public virtual void OnCellEdited(GridViewCellArgs e)
 		{
-			if (cellEdited != null)
-				cellEdited(this, ViewToModel(e));
+			Properties.TriggerEvent(CellEditedEvent, this, e);
 		}
 
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
 
-		event EventHandler<EventArgs> selectionChanged;
-
 		public event EventHandler<EventArgs> SelectionChanged
 		{
-			add
-			{
-				selectionChanged += value;
-				HandleEvent(SelectionChangedEvent);
-			}
-			remove { selectionChanged -= value; }
+			add { Properties.AddHandlerEvent(SelectionChangedEvent, value); }
+			remove { Properties.RemoveEvent(SelectionChangedEvent, value); }
 		}
 
 		public virtual void OnSelectionChanged(EventArgs e)
 		{
-			if (selectionChanged != null)
-				selectionChanged(this, e);
+			Properties.TriggerEvent(SelectionChangedEvent, this, e);
 		}
 
 		public const string ColumnHeaderClickEvent = "Grid.ColumnHeaderClickEvent";
 
-		event EventHandler<GridColumnEventArgs> columnHeaderClick;
-
 		public event EventHandler<GridColumnEventArgs> ColumnHeaderClick
 		{
-			add
-			{
-				columnHeaderClick += value;
-				HandleEvent(ColumnHeaderClickEvent);
-			}
-			remove { columnHeaderClick -= value; }
+			add { Properties.AddHandlerEvent(ColumnHeaderClickEvent, value); }
+			remove { Properties.RemoveEvent(ColumnHeaderClickEvent, value); }
 		}
 
 		public virtual void OnColumnHeaderClick(GridColumnEventArgs e)
 		{
-			if (columnHeaderClick != null)
-				columnHeaderClick(this, e);
+			Properties.TriggerEvent(ColumnHeaderClickEvent, this, e);
 		}
 
 		public const string CellFormattingEvent = "Grid.CellFormattingEvent";
 
-		event EventHandler<GridCellFormatEventArgs> cellFormatting;
-
 		public event EventHandler<GridCellFormatEventArgs> CellFormatting
 		{
-			add
-			{
-				cellFormatting += value;
-				HandleEvent(CellFormattingEvent);
-			}
-			remove { cellFormatting -= value; }
+			add { Properties.AddHandlerEvent(CellFormattingEvent, value); }
+			remove { Properties.RemoveEvent(CellFormattingEvent, value); }
 		}
 
 		public virtual void OnCellFormatting(GridCellFormatEventArgs e)
 		{
-			if (cellFormatting != null)
-				cellFormatting(this, e);
+			Properties.TriggerEvent(CellFormattingEvent, this, e);
 		}
 
 		protected virtual GridViewCellArgs ViewToModel(GridViewCellArgs e)

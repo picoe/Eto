@@ -36,7 +36,16 @@ namespace Eto
 			var type = widget.GetType();
 			if (type.Assembly == etoAssembly)
 				return;
-			widget.HandleEvents(GetEvents(type));
+			widget.HandleDefaultEvents(GetEvents(type));
+		}
+
+		public static bool IsDefault(InstanceWidget widget, string identifier)
+		{
+			var type = widget.GetType();
+			if (type.Assembly == etoAssembly)
+				return false;
+			var events = GetEvents(type);
+			return Array.IndexOf(events, identifier) >= 0;
 		}
 
 		static string[] GetEvents(Type type)

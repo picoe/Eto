@@ -95,7 +95,7 @@ namespace Eto.Platform.Wpf.Drawing
 			if (width == null)
 				return GetLargestIcon ();
 			var curicon = icons[0];
-			if (curicon.Width == width.Value)
+			if ((int)curicon.Width == width.Value)
 				return curicon;
 			foreach (var icon in icons) {
 				if (icon.Width > width && icon.Width - width.Value < curicon.Width - width.Value)

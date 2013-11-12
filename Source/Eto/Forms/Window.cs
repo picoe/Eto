@@ -7,9 +7,9 @@ namespace Eto.Forms
 	public partial interface IWindow : IDockContainer
 	{
 		ToolBar ToolBar { get; set; }
-		
-		void Close ();
-		
+
+		void Close();
+
 		new Point Location { get; set; }
 
 		double Opacity { get; set; }
@@ -17,72 +17,55 @@ namespace Eto.Forms
 		string Title { get; set; }
 
 		Screen Screen { get; }
-
 		//void AddToolbar(ToolBar toolBar);
 		//void RemoveToolbar(ToolBar toolBar);
 		//void ClearToolbars();
 	}
-	
+
 	public abstract partial class Window : DockContainer
 	{
 		new IWindow Handler { get { return (IWindow)base.Handler; } }
 		//ToolBarCollection toolBars;
-		
+
 		#region Events
-		
+
 		public const string ClosedEvent = "Window.Closed";
 
-		EventHandler<EventArgs> closed;
-
-		public event EventHandler<EventArgs> Closed {
-			add {
-				HandleEvent (ClosedEvent);
-				closed += value;
-			}
-			remove { closed -= value; }
-		}
-
-		public virtual void OnClosed (EventArgs e)
+		public event EventHandler<EventArgs> Closed
 		{
-			if (closed != null)
-				closed (this, e);
+			add { Properties.AddHandlerEvent(ClosedEvent, value); }
+			remove { Properties.RemoveEvent(ClosedEvent, value); }
 		}
-		
+
+		public virtual void OnClosed(EventArgs e)
+		{
+			Properties.TriggerEvent(ClosedEvent, this, e);
+		}
 
 		public const string ClosingEvent = "Window.Closing";
 
-		EventHandler<CancelEventArgs> closing;
-
-		public event EventHandler<CancelEventArgs> Closing {
-			add {
-				HandleEvent (ClosingEvent);
-				closing += value;
-			}
-			remove { closing -= value; }
+		public event EventHandler<CancelEventArgs> Closing
+		{
+			add { Properties.AddHandlerEvent(ClosingEvent, value); }
+			remove { Properties.RemoveEvent(ClosingEvent, value); }
 		}
 
-		public virtual void OnClosing (CancelEventArgs e)
+		public virtual void OnClosing(CancelEventArgs e)
 		{
-			if (closing != null)
-				closing (this, e);
+			Properties.TriggerEvent(ClosingEvent, this, e);
 		}
 
 		public const string LocationChangedEvent = "Window.LocationChanged";
-		
-		EventHandler<EventArgs> locationChanged;
-		
-		public event EventHandler<EventArgs> LocationChanged {
-			add {
-				HandleEvent (LocationChangedEvent);
-				locationChanged += value;
-			}
-			remove { locationChanged -= value; }
-		}
-		
-		public virtual void OnLocationChanged (EventArgs e)
+
+		public event EventHandler<EventArgs> LocationChanged
 		{
-			if (locationChanged != null)
-				locationChanged (this, e);
+			add { Properties.AddHandlerEvent(LocationChangedEvent, value); }
+			remove { Properties.RemoveEvent(LocationChangedEvent, value); }
+		}
+
+		public virtual void OnLocationChanged(EventArgs e)
+		{
+			Properties.TriggerEvent(LocationChangedEvent, this, e);
 		}
 
 		#endregion
@@ -97,54 +80,63 @@ namespace Eto.Forms
 			#endif
 		}
 
-		protected Window (Generator generator, Type type, bool initialize = true)
+		protected Window(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
 			//toolBars = new ToolBarCollection(this);
-			if (initialize) Initialize (); 
+			if (initialize)
+				Initialize(); 
 		}
 
-		public string Title {
+		public string Title
+		{
 			get { return Handler.Title; }
 			set { Handler.Title = value; }
 		}
 
 		[Obsolete("Use Title instead")]
-		public string Text {
+		public string Text
+		{
 			get { return Title; }
 			set { Title = value; }
 		}
-		
-		public new Point Location {
+
+		public new Point Location
+		{
 			get { return Handler.Location; }
 			set { Handler.Location = value; }
 		}
-		
-		public Rectangle Bounds {
-			get { return new Rectangle (Handler.Location, Handler.Size); }
-			set { Handler.Location = value.Location;
-				Handler.Size = value.Size; }
+
+		public Rectangle Bounds
+		{
+			get { return new Rectangle(Handler.Location, Handler.Size); }
+			set
+			{
+				Handler.Location = value.Location;
+				Handler.Size = value.Size;
+			}
 		}
-		
-		public ToolBar ToolBar {
+
+		public ToolBar ToolBar
+		{
 			get { return Handler.ToolBar; }
 			set { Handler.ToolBar = value; }
 		}
 
-		public double Opacity {
+		public double Opacity
+		{
 			get { return Handler.Opacity; }
 			set { Handler.Opacity = value; }
 		}
-		
-		public virtual void Close ()
+
+		public virtual void Close()
 		{
-			Handler.Close ();
+			Handler.Close();
 		}
-		
+
 		public Screen Screen
 		{
 			get { return Handler.Screen; }
 		}
-		
 	}
 }

@@ -56,7 +56,7 @@ namespace Eto.Forms
 
 		public static Point GetLocation(Control control)
 		{
-			return control.Properties.Get<Point>(LocationProperty, Point.Empty);
+			return control.Properties.Get<Point>(LocationProperty);
 		}
 
 		public static void SetLocation(Control control, Point value)

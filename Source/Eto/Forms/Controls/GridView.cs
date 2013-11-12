@@ -77,7 +77,7 @@ namespace Eto.Forms
 		{
 			// Always attach the SelectionChangedEvent
 			// since it is always handled in the GridView.
-			this.HandleEvent(Grid.SelectionChangedEvent);
+			HandleEvent(Grid.SelectionChangedEvent);
 		}
 
 		/// <summary>
@@ -118,22 +118,16 @@ namespace Eto.Forms
 		#region Events
 
 		public const string CellClickEvent = "GridView.CellClick";
-		EventHandler<GridViewCellArgs> cellClick;
 
 		public event EventHandler<GridViewCellArgs> CellClick
 		{
-			add
-			{
-				HandleEvent(CellClickEvent);
-				cellClick += value;
-			}
-			remove { cellClick -= value; }
+			add { Properties.AddHandlerEvent(CellClickEvent, value); }
+			remove { Properties.RemoveEvent(CellClickEvent, value); }
 		}
 
 		public virtual void OnCellClick(GridViewCellArgs e)
 		{
-			if (cellClick != null)
-				cellClick(this, ViewToModel(e));
+			Properties.TriggerEvent(CellClickEvent, this, e);
 		}
 
 		#endregion

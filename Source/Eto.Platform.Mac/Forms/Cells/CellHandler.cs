@@ -19,7 +19,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		
 		float GetPreferredSize (object value, System.Drawing.SizeF cellSize, int row, object dataItem);
 		
-		void HandleEvent (string handler);
+		void HandleEvent (string handler, bool defaultEvent = false);
 
 		void SetBackgroundColor (NSCell cell, Color color);
 

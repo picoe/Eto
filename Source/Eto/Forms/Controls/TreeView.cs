@@ -6,7 +6,6 @@ namespace Eto.Forms
 {
 	public interface ITreeStore : IDataStore<ITreeItem>
 	{
-
 	}
 
 	public partial interface ITreeView : IControl
@@ -62,187 +61,124 @@ namespace Eto.Forms
 		new ITreeView Handler { get { return (ITreeView)base.Handler; } }
 
 		#region Events
+
 		public const string ActivatedEvent = "TreeView.Activated";
-		EventHandler<TreeViewItemEventArgs> _Activated;
 
 		public event EventHandler<TreeViewItemEventArgs> Activated
 		{
-			add
-			{
-				HandleEvent(ActivatedEvent);
-				_Activated += value;
-			}
-			remove { _Activated -= value; }
+			add { Properties.AddHandlerEvent(ActivatedEvent, value); }
+			remove { Properties.RemoveEvent(ActivatedEvent, value); }
 		}
 
 		public virtual void OnActivated(TreeViewItemEventArgs e)
 		{
-			if (_Activated != null)
-				_Activated(this, e);
+			Properties.TriggerEvent(ActivatedEvent, this, e);
 		}
 
 		public const string SelectionChangedEvent = "TreeView.SelectionChangedEvent";
 
-		event EventHandler<EventArgs> _SelectionChanged;
-
 		public event EventHandler<EventArgs> SelectionChanged
 		{
-			add
-			{
-				_SelectionChanged += value;
-				HandleEvent(SelectionChangedEvent);
-			}
-			remove
-			{
-				_SelectionChanged -= value;
-			}
+			add { Properties.AddHandlerEvent(SelectionChangedEvent, value); }
+			remove { Properties.RemoveEvent(SelectionChangedEvent, value); }
 		}
 
 		public virtual void OnSelectionChanged(EventArgs e)
 		{
-			if (_SelectionChanged != null)
-				_SelectionChanged(this, e);
+			Properties.TriggerEvent(SelectionChangedEvent, this, e);
 		}
 
 		public const string ExpandingEvent = "TreeView.ExpandingEvent";
 
-		event EventHandler<TreeViewItemCancelEventArgs> _Expanding;
-
 		public event EventHandler<TreeViewItemCancelEventArgs> Expanding
 		{
-			add
-			{
-				_Expanding += value;
-				HandleEvent(ExpandingEvent);
-			}
-			remove { _Expanding -= value; }
+			add { Properties.AddHandlerEvent(ExpandingEvent, value); }
+			remove { Properties.RemoveEvent(ExpandingEvent, value); }
 		}
 
 		public virtual void OnExpanding(TreeViewItemCancelEventArgs e)
 		{
-			if (_Expanding != null)
-				_Expanding(this, e);
+			Properties.TriggerEvent(ExpandingEvent, this, e);
 		}
 
 		public const string ExpandedEvent = "TreeView.ExpandedEvent";
 
-		event EventHandler<TreeViewItemEventArgs> _Expanded;
-
 		public event EventHandler<TreeViewItemEventArgs> Expanded
 		{
-			add
-			{
-				_Expanded += value;
-				HandleEvent(ExpandedEvent);
-			}
-			remove { _Expanded -= value; }
+			add { Properties.AddHandlerEvent(ExpandedEvent, value); }
+			remove { Properties.RemoveEvent(ExpandedEvent, value); }
 		}
 
 		public virtual void OnExpanded(TreeViewItemEventArgs e)
 		{
-			if (_Expanded != null)
-				_Expanded(this, e);
+			Properties.TriggerEvent(ExpandedEvent, this, e);
 		}
 
 		public const string CollapsingEvent = "TreeView.CollapsingEvent";
 
-		event EventHandler<TreeViewItemCancelEventArgs> _Collapsing;
-
 		public event EventHandler<TreeViewItemCancelEventArgs> Collapsing
 		{
-			add
-			{
-				_Collapsing += value;
-				HandleEvent(CollapsingEvent);
-			}
-			remove { _Collapsing -= value; }
+			add { Properties.AddHandlerEvent(CollapsingEvent, value); }
+			remove { Properties.RemoveEvent(CollapsingEvent, value); }
 		}
 
 		public virtual void OnCollapsing(TreeViewItemCancelEventArgs e)
 		{
-			if (_Collapsing != null)
-				_Collapsing(this, e);
+			Properties.TriggerEvent(CollapsingEvent, this, e);
 		}
 
 		public const string CollapsedEvent = "TreeView.CollapsedEvent";
 
-		event EventHandler<TreeViewItemEventArgs> _Collapsed;
-
 		public event EventHandler<TreeViewItemEventArgs> Collapsed
 		{
-			add
-			{
-				_Collapsed += value;
-				HandleEvent(CollapsedEvent);
-			}
-			remove { _Collapsed -= value; }
+			add { Properties.AddHandlerEvent(CollapsedEvent, value); }
+			remove { Properties.RemoveEvent(CollapsedEvent, value); }
 		}
 
 		public virtual void OnCollapsed(TreeViewItemEventArgs e)
 		{
-			if (_Collapsed != null)
-				_Collapsed(this, e);
+			Properties.TriggerEvent(CollapsedEvent, this, e);
 		}
 
 		public const string LabelEditedEvent = "TreeView.LabelEdited";
 
-		event EventHandler<TreeViewItemEditEventArgs> labelEdited;
-
 		public event EventHandler<TreeViewItemEditEventArgs> LabelEdited
 		{
-			add
-			{
-				labelEdited += value;
-				HandleEvent(LabelEditedEvent);
-			}
-			remove { labelEdited -= value; }
+			add { Properties.AddHandlerEvent(LabelEditedEvent, value); }
+			remove { Properties.RemoveEvent(LabelEditedEvent, value); }
 		}
 
 		public virtual void OnLabelEdited(TreeViewItemEditEventArgs e)
 		{
-			if (labelEdited != null)
-				labelEdited(this, e);
+			Properties.TriggerEvent(LabelEditedEvent, this, e);
 		}
 
 		public const string LabelEditingEvent = "TreeView.LabelEditing";
 
-		event EventHandler<TreeViewItemCancelEventArgs> labelEditing;
-
 		public event EventHandler<TreeViewItemCancelEventArgs> LabelEditing
 		{
-			add
-			{
-				labelEditing += value;
-				HandleEvent(LabelEditingEvent);
-			}
-			remove { labelEditing -= value; }
+			add { Properties.AddHandlerEvent(LabelEditingEvent, value); }
+			remove { Properties.RemoveEvent(LabelEditingEvent, value); }
 		}
 
 		public virtual void OnLabelEditing(TreeViewItemCancelEventArgs e)
 		{
-			if (labelEditing != null)
-				labelEditing(this, e);
+			Properties.TriggerEvent(LabelEditingEvent, this, e);
 		}
 
 		public const string NodeMouseClickEvent = "TreeView.NodeMouseClick";
 
-		event EventHandler<TreeViewItemEventArgs> _NodeMouseClick;
-
 		public event EventHandler<TreeViewItemEventArgs> NodeMouseClick
 		{
-			add
-			{
-				_NodeMouseClick += value;
-				HandleEvent(NodeMouseClickEvent);
-			}
-			remove { _NodeMouseClick -= value; }
+			add { Properties.AddHandlerEvent(NodeMouseClickEvent, value); }
+			remove { Properties.RemoveEvent(NodeMouseClickEvent, value); }
 		}
 
 		public virtual void OnNodeMouseClick(TreeViewItemEventArgs e)
 		{
-			if (_NodeMouseClick != null)
-				_NodeMouseClick(this, e);
+			Properties.TriggerEvent(NodeMouseClickEvent, this, e);
 		}
+
 		#endregion
 
 		static TreeView()
@@ -258,16 +194,16 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(TreeView), "OnNodeMouseClick", TreeView.NodeMouseClickEvent);
 		}
 
-		public TreeView() : this (Generator.Current)
+		public TreeView() : this(Generator.Current)
 		{
 		}
 
-		public TreeView(Generator g) : this (g, typeof(ITreeView))
+		public TreeView(Generator g) : this(g, typeof(ITreeView))
 		{
 		}
 
 		protected TreeView(Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+			: base(generator, type, initialize)
 		{
 		}
 
