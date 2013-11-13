@@ -243,7 +243,7 @@ namespace Eto.Platform.Windows
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseWheel(e.ToEto());
+				Widget.OnMouseWheel(e.ToEto(Control));
 		}
 
 		void HandleControlMouseLeave(object sender, EventArgs e)
@@ -259,7 +259,12 @@ namespace Eto.Platform.Windows
 		void HandleDoubleClick(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseDoubleClick(e.ToEto());
+			{
+				var ee = e.ToEto(Control);
+				Widget.OnMouseDoubleClick(ee);
+				if (!ee.Handled)
+					Widget.OnMouseDown(ee);
+			}
 		}
 
 		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
@@ -268,21 +273,21 @@ namespace Eto.Platform.Windows
 			{
 				if (ShouldCaptureMouse)
 					Control.Capture = false;
-				Widget.OnMouseUp(e.ToEto());
+				Widget.OnMouseUp(e.ToEto(Control));
 			}
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseMove(e.ToEto());
+				Widget.OnMouseMove(e.ToEto(Control));
 		}
 
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
 			{
-				Widget.OnMouseDown(e.ToEto());
+				Widget.OnMouseDown(e.ToEto(Control));
 				if (ShouldCaptureMouse)
 					Control.Capture = true;
 			}
