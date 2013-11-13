@@ -385,8 +385,19 @@ namespace Eto.Platform.Windows
 
 		public void Focus()
 		{
-			if (!Control.Visible)
-				Control.TabIndex = 0;
+			if (Control.IsHandleCreated)
+			{
+				if (!Control.Visible)
+					Control.TabIndex = 0;
+				Control.Focus();
+			}
+			else
+				Control.HandleCreated += Control_HandleCreated;
+		}
+
+		void Control_HandleCreated(object sender, EventArgs e)
+		{
+			Control.HandleCreated -= Control_HandleCreated;
 			Control.Focus();
 		}
 
