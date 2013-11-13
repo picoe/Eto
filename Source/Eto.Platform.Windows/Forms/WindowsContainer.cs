@@ -24,7 +24,7 @@ namespace Eto.Platform.Windows
 			{
 				var min = ContainerControl.MinimumSize;
 				ContainerControl.MinimumSize = sd.Size.Empty;
-				var size = ContainerControl.GetPreferredSize(sd.Size.Empty).ToEto();
+				var size = ContainerControl.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
 				ContainerControl.MinimumSize = min;
 				return size;
 			}
