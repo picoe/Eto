@@ -111,7 +111,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new TextArea
 			{
-				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + Environment.NewLine + "Second Line",
+				Text = "Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap. Some very long text that should wrap." + System.Environment.NewLine + "Second Line",
 				Wrap = true
 			};
 			LogEvents(control);
@@ -122,7 +122,7 @@ namespace Eto.Test.Sections.Controls
 		{
 			var control = new TextArea
 			{
-				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + Environment.NewLine + "Second Line",
+				Text = "Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap. Some very long text that should not wrap." + System.Environment.NewLine + "Second Line",
 				Wrap = false
 			};
 			LogEvents(control);
