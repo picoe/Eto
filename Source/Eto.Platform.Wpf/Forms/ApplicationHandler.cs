@@ -21,6 +21,8 @@ namespace Eto.Platform.Wpf.Forms
 			get { return instance; }
 		}
 
+		public static bool EnableVisualStyles = true;
+
 		public static void InvokeIfNecessary(Action action)
 		{
 			if (sw.Application.Current == null || Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
