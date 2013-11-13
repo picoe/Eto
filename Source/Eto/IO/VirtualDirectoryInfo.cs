@@ -56,6 +56,7 @@ namespace Eto.IO
 		VirtualDirectoryInfo()
 		{
 			FlattenInitialDirectory = FlattenInitialDirectories;
+			VirtualPath = string.Empty;
 		}
 
 		protected abstract VirtualDirectoryInfo CreateDirectory(VirtualDirectoryInfo parent, string path);
@@ -84,7 +85,7 @@ namespace Eto.IO
 			foreach (var entry in ReadEntries(stream))
 			{
 				Files.Add(entry);
-				if (VirtualPath.Length == 0 && string.IsNullOrEmpty(entry.Path))
+				if (string.IsNullOrEmpty(VirtualPath) && string.IsNullOrEmpty(entry.Path))
 				{
 					if (entry.IsDirectory)
 					{
@@ -96,7 +97,7 @@ namespace Eto.IO
 				}
 			}
 			
-			if (FlattenInitialDirectory && VirtualPath.Length == 0 && !hasFiles && topDirectories == 1 && topDirectory != null)
+			if (FlattenInitialDirectory && string.IsNullOrEmpty(VirtualPath) && !hasFiles && topDirectories == 1 && topDirectory != null)
 			{
 				VirtualPath = topDirectory.FullPath;
 			}
@@ -135,7 +136,7 @@ namespace Eto.IO
 		public override EtoDirectoryInfo GetSubDirectory(string subDirectory)
 		{
 			ReadEntries();
-			string dir = Path.Combine(VirtualPath, subDirectory);
+			string dir = Path.Combine(VirtualPath ?? string.Empty, subDirectory);
 			foreach (var file in Files)
 			{
 				if (file.IsDirectory && string.Compare(file.Path, dir, StringComparison.OrdinalIgnoreCase) == 0)

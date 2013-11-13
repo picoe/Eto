@@ -327,9 +327,9 @@ namespace Eto.Platform.Windows
 			return h.Control;
 		}
 
-		public static MouseEventArgs ToEto(this swf.MouseEventArgs e)
+		public static MouseEventArgs ToEto(this swf.MouseEventArgs e, swf.Control control)
 		{
-			var point = new Point(e.X, e.Y);
+			var point = control.PointToClient(swf.Control.MousePosition).ToEto();
 			var buttons = ToEto(e.Button);
 			var modifiers = swf.Control.ModifierKeys.ToEto();
 

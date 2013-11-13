@@ -19,6 +19,8 @@ namespace Eto.Platform.Windows
 
 		Size GetPreferredSize(Size availableSize);
 
+		bool SetMinimumSize(bool force = false);
+
 		void SetScale(bool xscale, bool yscale);
 
 		bool ShouldCaptureMouse { get; }
@@ -148,24 +150,26 @@ namespace Eto.Platform.Windows
 			get { return swf.DockStyle.Fill; }
 		}
 
-		protected void SetMinimumSize(bool force = false)
+		public bool SetMinimumSize(bool force = false)
 		{
 			if (!force && !Widget.Loaded)
-				return;
+				return false;
 			var size = GetPreferredSize(Size.Empty);
 			if (XScale) size.Width = 0;
 			if (YScale) size.Height = 0;
-			SetMinimumSize(size);
+			return SetMinimumSize(size);
 		}
 
-		protected virtual void SetMinimumSize(Size size)
+		protected virtual bool SetMinimumSize(Size size)
 		{
 			var sdsize = size.ToSD();
 			if (ContainerControl.MinimumSize != sdsize)
 			{
 				ContainerControl.MinimumSize = sdsize;
 				//Debug.Print(string.Format("Min Size: {0}, Type:{1}", sdsize, Widget));
+				return true;
 			}
+			return false;
 		}
 
 		public virtual void SetScale(bool xscale, bool yscale)
@@ -243,7 +247,7 @@ namespace Eto.Platform.Windows
 		void HandleMouseWheel(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseWheel(e.ToEto());
+				Widget.OnMouseWheel(e.ToEto(Control));
 		}
 
 		void HandleControlMouseLeave(object sender, EventArgs e)
@@ -259,7 +263,12 @@ namespace Eto.Platform.Windows
 		void HandleDoubleClick(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseDoubleClick(e.ToEto());
+			{
+				var ee = e.ToEto(Control);
+				Widget.OnMouseDoubleClick(ee);
+				if (!ee.Handled)
+					Widget.OnMouseDown(ee);
+			}
 		}
 
 		void HandleMouseUp(Object sender, swf.MouseEventArgs e)
@@ -268,21 +277,21 @@ namespace Eto.Platform.Windows
 			{
 				if (ShouldCaptureMouse)
 					Control.Capture = false;
-				Widget.OnMouseUp(e.ToEto());
+				Widget.OnMouseUp(e.ToEto(Control));
 			}
 		}
 
 		void HandleMouseMove(Object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
-				Widget.OnMouseMove(e.ToEto());
+				Widget.OnMouseMove(e.ToEto(Control));
 		}
 
 		void HandleMouseDown(object sender, swf.MouseEventArgs e)
 		{
 			if (!ApplicationHandler.BubbleMouseEvents)
 			{
-				Widget.OnMouseDown(e.ToEto());
+				Widget.OnMouseDown(e.ToEto(Control));
 				if (ShouldCaptureMouse)
 					Control.Capture = true;
 			}
@@ -296,13 +305,19 @@ namespace Eto.Platform.Windows
 
 		public virtual Size Size
 		{
-			get { return Control.Size.ToEto(); }
+			get { return ContainerControl.Size.ToEto(); }
 			set
 			{
-				Control.AutoSize = value.Width == -1 || value.Height == -1;
-				Control.Size = value.ToSD();
 				desiredSize = value;
-				SetMinimumSize();
+				ContainerControl.AutoSize = value.Width == -1 || value.Height == -1;
+				var minset = SetMinimumSize();
+				ContainerControl.Size = value.ToSD();
+				if (minset && ContainerControl.IsHandleCreated)
+				{
+					var parent = Widget.Parent.GetWindowsHandler();
+					if (parent != null)
+						parent.SetMinimumSize();
+				}
 			}
 		}
 
@@ -370,8 +385,19 @@ namespace Eto.Platform.Windows
 
 		public void Focus()
 		{
-			if (!Control.Visible)
-				Control.TabIndex = 0;
+			if (Control.IsHandleCreated)
+			{
+				if (!Control.Visible)
+					Control.TabIndex = 0;
+				Control.Focus();
+			}
+			else
+				Control.HandleCreated += Control_HandleCreated;
+		}
+
+		void Control_HandleCreated(object sender, EventArgs e)
+		{
+			Control.HandleCreated -= Control_HandleCreated;
 			Control.Focus();
 		}
 

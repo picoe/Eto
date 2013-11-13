@@ -20,12 +20,9 @@ namespace Eto.Platform.Wpf.Forms.Controls
 				IsThreeState = false,
 				VerticalAlignment = sw.VerticalAlignment.Center
 			};
-			Control.Checked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
-			Control.Unchecked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
+			Control.Checked += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
+			Control.Unchecked += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
+			Control.Indeterminate += (sender, e) => Widget.OnCheckedChanged(EventArgs.Empty);
 			border = new swc.Border { Child = Control };
 		}
 

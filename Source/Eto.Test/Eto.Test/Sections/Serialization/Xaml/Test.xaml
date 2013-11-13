@@ -5,90 +5,86 @@
 	xmlns:e="clr-namespace:Eto.Test.Sections.Controls;assembly=Eto.Test"
 	xmlns:sys="clr-namespace:System;assembly=mscorlib"
 	>
-	<DockLayout>
-		<TabControl>
-			<TabPage Text="Dynamic Layout &amp; Controls">
-				<DynamicLayout>
-					<DynamicRow>
-						<DynamicControl>
-							<Label Text="Text Box" />
-						</DynamicControl>
-						<DynamicControl>
-							<TextBox />
-						</DynamicControl>
-					</DynamicRow>
-					<DynamicRow>
-						<DynamicControl>
-							<Label Text="Text Area" />
-						</DynamicControl>
-						<DynamicControl>
-							<TextArea ID="MyTextArea" />
-						</DynamicControl>
-					</DynamicRow>
-					<DynamicRow>
-						<DynamicControl>
-						</DynamicControl>
-						<DynamicControl>
-							<CheckBox ID="MyCheckBox" Text="Check Box" />
-						</DynamicControl>
-					</DynamicRow>
-					<DynamicRow>
-						<DynamicControl>
-							<Label Text="Combo Box" />
-						</DynamicControl>
-						<DynamicControl>
-							<ComboBox>
-								<ListItem Text="Item 1" />
-								<ListItem Text="Item 2" />
-								<ListItem Text="Item 3" />
-								<ListItem Text="Item 4" />
-							</ComboBox>
-						</DynamicControl>
-					</DynamicRow>
-					<DynamicRow>
-						<DynamicControl>
-							<Label Text="Image" VerticalAlign="Middle" />
-						</DynamicControl>
-						<DynamicTable>
-							<DynamicRow>
-								<DynamicControl XScale="True">
-									<!-- mono has bugs using extension {Resource Eto.Test.TestImage.png, Eto.Test} as a source, but it is implemented -->
-									<ImageView Image="resource:Eto.Test.TestImage.png, Eto.Test" />
-								</DynamicControl>
-								<DynamicControl XScale="True">
-									<ImageView Image="resource:Eto.Test.TestIcon.ico, Eto.Test" />
-								</DynamicControl>
-							</DynamicRow>
-						</DynamicTable>
-					</DynamicRow>
-					<DynamicRow>
-						<DynamicControl>
-							<Label Text="Button" />
-						</DynamicControl>
-						<DynamicTable>
-							<DynamicRow>
-								<DynamicControl>
-									<Button Text="Bind to Click event in code behind" Click="HandleButtonClick" />
-								</DynamicControl>
-								<DynamicControl XScale="true">
-								</DynamicControl>
-							</DynamicRow>
-						</DynamicTable>
-					</DynamicRow>
-					<DynamicRow>
-					</DynamicRow>
-				</DynamicLayout>
-			</TabPage>
-			<TabPage Text="Table Layout">
-				<TableLayout CellSize="3,3" ColumnScale="0,2" RowScale="0,2">
-					<Label Text="Centered in tab" TableLayout.Location="1,1" />
-				</TableLayout>
-			</TabPage>
-			<TabPage Text="External Control">
-				<DockLayout>
-					<e:LabelSection />
-				</DockLayout>
-			</TabPage>
-		</TabControl>
-	</DockLayout>
+	<TabControl>
+		<TabPage Text="Dynamic Layout &amp; Controls">
+			<DynamicLayout>
+				<DynamicRow>
+					<DynamicControl>
+						<Label Text="Text Box" />
+					</DynamicControl>
+					<DynamicControl>
+						<TextBox />
+					</DynamicControl>
+				</DynamicRow>
+				<DynamicRow>
+					<DynamicControl>
+						<Label Text="Text Area" />
+					</DynamicControl>
+					<DynamicControl>
+						<TextArea ID="MyTextArea" />
+					</DynamicControl>
+				</DynamicRow>
+				<DynamicRow>
+					<DynamicControl>
+					</DynamicControl>
+					<DynamicControl>
+						<CheckBox ID="MyCheckBox" Text="Check Box" />
+					</DynamicControl>
+				</DynamicRow>
+				<DynamicRow>
+					<DynamicControl>
+						<Label Text="Combo Box" />
+					</DynamicControl>
+					<DynamicControl>
+						<ComboBox>
+							<ListItem Text="Item 1" />
+							<ListItem Text="Item 2" />
+							<ListItem Text="Item 3" />
+							<ListItem Text="Item 4" />
+						</ComboBox>
+					</DynamicControl>
+				</DynamicRow>
+				<DynamicRow>
+					<DynamicControl>
+						<Label Text="Image" VerticalAlign="Middle" />
+					</DynamicControl>
+					<DynamicTable>
+						<DynamicRow>
+							<DynamicControl XScale="True">
+								<!-- mono has bugs using extension {Resource Eto.Test.TestImage.png, Eto.Test} as a source, but it is implemented -->
+								<ImageView Image="resource:Eto.Test.TestImage.png, Eto.Test" />
+							</DynamicControl>
+							<DynamicControl XScale="True">
+								<ImageView Image="resource:Eto.Test.TestIcon.ico, Eto.Test" />
+							</DynamicControl>
+						</DynamicRow>
+					</DynamicTable>
+				</DynamicRow>
+				<DynamicRow>
+					<DynamicControl>
+						<Label Text="Button" />
+					</DynamicControl>
+					<DynamicTable>
+						<DynamicRow>
+							<DynamicControl>
+								<Button Text="Bind to Click event in code behind" Click="HandleButtonClick" />
+							</DynamicControl>
+							<DynamicControl XScale="true">
+							</DynamicControl>
+						</DynamicRow>
+					</DynamicTable>
+				</DynamicRow>
+				<DynamicRow>
+				</DynamicRow>
+			</DynamicLayout>
+		</TabPage>
+		<TabPage Text="Table Layout">
+			<TableLayout CellSize="3,3" ColumnScale="0,2" RowScale="0,2">
+				<Label Text="Centered in tab" TableLayout.Location="1,1" />
+			</TableLayout>
+		</TabPage>
+		<TabPage Text="External Control">
+			<e:LabelSection />
+		</TabPage>
+	</TabControl>
 </Panel>
