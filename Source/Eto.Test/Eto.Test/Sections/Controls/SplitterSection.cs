@@ -12,6 +12,8 @@ namespace Eto.Test.Sections.Controls
 			layout.Add(null);
 			layout.AddCentered(Test1WithSize());
 			layout.AddCentered(Test1AutoSize());
+			layout.AddCentered(Test1WithFullScreenAndSize());
+			layout.AddCentered(Test1FullScreenAndAutoSize());
 			layout.AddCentered(Test2WithSize());
 			layout.AddCentered(Test2AutoSize());
 			layout.Add(null);
@@ -31,6 +33,21 @@ namespace Eto.Test.Sections.Controls
 			control.Click += (sender, e) => Test1(false, LayoutContent).Show();
 			return control;
 		}
+
+		static Control Test1WithFullScreenAndSize()
+		{
+			var control = new Button { Text = "Show splitter test 1 with Fullscreen and ClientSize" };
+			control.Click += (sender, e) => Test1(true, LayoutContent2).Show();
+			return control;
+		}
+
+		static Control Test1FullScreenAndAutoSize()
+		{
+			var control = new Button { Text = "Show splitter test 1 with FullScreen and auto size" };
+			control.Click += (sender, e) => Test1(false, LayoutContent2).Show();
+			return control;
+		}
+
 
 		static Control Test2WithSize()
 		{
@@ -73,12 +90,35 @@ namespace Eto.Test.Sections.Controls
 
 		private static void LayoutContent(Label[] status, Panel mainPanel)
 		{
-			var splitLayout = new SplitLayout();
 			var count = 0;
+			var splitLayout = new SplitLayout();
 			mainPanel.Content = splitLayout.Layout(
 				i => {
 					var button = new Button { Text = "Click to update status " + i, BackgroundColor = splitLayout.PanelColors[i] };
 					button.Click += (s, e) => status[i].Text = "New count: " + (count++);
+					return button;
+				});
+		}
+
+		private static void LayoutContent2(Label[] status, Panel mainPanel)
+		{
+			LayoutContent2(status, mainPanel, null);
+		}
+
+		private static void LayoutContent2(Label[] status, Panel mainPanel, Panel[] panels)
+		{
+			var splitLayout = new SplitLayout(panels);
+			var isFullScreen = false;
+			mainPanel.Content = splitLayout.Layout(
+				i => {
+					var button = new Button { Text = "Click to make full screen" + i, BackgroundColor = splitLayout.PanelColors[i] };
+					button.Click += (s, e) => {
+						if (isFullScreen)
+							LayoutContent2(status, mainPanel, splitLayout.Panels); // recursive
+						else
+							mainPanel.Content = splitLayout.Panels[i];
+						isFullScreen = !isFullScreen;
+					};
 					return button;
 				});
 		}
@@ -88,6 +128,11 @@ namespace Eto.Test.Sections.Controls
 			public Control Root { get; private set; }
 			public Panel[] Panels { get; private set; }
 			public Color[] PanelColors = { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
+
+			public SplitLayout(Panel[] panels = null)
+			{
+				this.Panels = panels ?? new Panel[] { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
+			}
 			
 			public Control Layout(Func<int, Control>getContent)
 			{
@@ -102,9 +147,6 @@ namespace Eto.Test.Sections.Controls
 				// |         status0..4,      |  <== These are on StatusPanel
 				// ----------------------------
 
-				// Splitter windows
-				this.Panels = new Panel[] { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
-				
 				for (var i = 0; i < Panels.Length; ++i)
 					Panels[i].Content = getContent(i);
 
