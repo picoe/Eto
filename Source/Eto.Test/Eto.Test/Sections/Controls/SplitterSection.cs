@@ -48,6 +48,32 @@ namespace Eto.Test.Sections.Controls
 
 		static Form Test1(bool setSize)
 		{
+			// Status bar
+			Label[] status = { new Label(), new Label(), new Label(), new Label(), new Label() };
+			var statusLayout = new DynamicLayout(Padding.Empty, Size.Empty);
+			statusLayout.BeginHorizontal();
+			for (var i = 0; i < status.Length; ++i)
+				statusLayout.Add(status[i], xscale: true);
+			statusLayout.EndHorizontal();
+
+			// Main panel
+			var count = 0;
+			var mainPanel = new Panel();
+			mainPanel.Content = SplitLayout(i => status[i].Text = "New count: " + (count++)); ;
+
+			// Form's content
+			var layout = new DynamicLayout();
+			layout.Add(mainPanel, yscale: true);
+			layout.Add(statusLayout);
+			layout.Generate();
+			var form = new Form { Content = layout };
+			if (setSize)
+				form.ClientSize = new Size(800, 600);
+			return form;
+		}
+
+		private static Splitter SplitLayout(Action<int> buttonClicked)
+		{
 			// Add splitters like this:
 			// |---------------------------
 			// |        |      |          |
@@ -59,25 +85,17 @@ namespace Eto.Test.Sections.Controls
 			// |         status0..4,      |  <== These are on StatusPanel
 			// ----------------------------
 
-			Label[] status = { new Label(), new Label(), new Label(), new Label(), new Label() };
-
-			// Status bar
-			var statusLayout = new DynamicLayout(Padding.Empty, Size.Empty);
-			statusLayout.BeginHorizontal();
-			for (var i = 0; i < status.Length; ++i)
-				statusLayout.Add(status[i], xscale: true);
-			statusLayout.EndHorizontal();
 
 			// Splitter windows
 			Panel[] p = { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
 			Color[] colors = { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
-			var count = 0;
+			
 			for (var i = 0; i < p.Length; ++i)
 			{
 				var temp = i;
 				//p[i].BackgroundColor = colors[i];
 				var button = new Button { Text = "Click to update status " + i, BackgroundColor = colors[i] };
-				button.Click += (s, e) => status[temp].Text = "New count: " + (count++);
+				button.Click += (s, e) => buttonClicked(temp);
 				p[i].Content = button;
 			}
 
@@ -85,20 +103,7 @@ namespace Eto.Test.Sections.Controls
 			var p2_3 = new Splitter { Panel1 = p[2], Panel2 = p[3], Orientation = SplitterOrientation.Vertical, Position = 200 };
 			var p01_23 = new Splitter { Panel1 = p0_1, Panel2 = p2_3, Orientation = SplitterOrientation.Horizontal, Position = 200 };
 			var p0123_4 = new Splitter { Panel1 = p01_23, Panel2 = p[4], Orientation = SplitterOrientation.Horizontal, Position = 400 };
-
-			// Main panel
-			var mainPanel = new Panel();
-			mainPanel.Content = p0123_4;
-
-			// Form's content
-			var layout = new DynamicLayout();
-			layout.Add(mainPanel, yscale: true);
-			layout.Add(statusLayout);
-			layout.Generate();
-			var form = new Form { Content = layout };
-			if (setSize)
-				form.ClientSize = new Size(800, 600);
-			return form;
+			return p0123_4;
 		}
 
 		static ComboBox ComboWithItems()
