@@ -21,14 +21,14 @@ namespace Eto.Test.Sections.Controls
 		static Control Test1WithSize()
 		{
 			var control = new Button { Text = "Show splitter test 1 with ClientSize" };
-			control.Click += (sender, e) => Test1(true).Show();
+			control.Click += (sender, e) => Test1(true, LayoutContent).Show();
 			return control;
 		}
 
 		static Control Test1AutoSize()
 		{
 			var control = new Button { Text = "Show splitter test 1 with auto size" };
-			control.Click += (sender, e) => Test1(false).Show();
+			control.Click += (sender, e) => Test1(false, LayoutContent).Show();
 			return control;
 		}
 
@@ -46,7 +46,7 @@ namespace Eto.Test.Sections.Controls
 			return control;
 		}
 
-		static Form Test1(bool setSize)
+		static Form Test1(bool setSize, Action<Label[], Panel> layoutContent)
 		{
 			// Status bar
 			Label[] status = { new Label(), new Label(), new Label(), new Label(), new Label() };
@@ -57,16 +57,8 @@ namespace Eto.Test.Sections.Controls
 			statusLayout.EndHorizontal();
 
 			// Main panel
-			var count = 0;
 			var mainPanel = new Panel();
-			var splitLayout = new SplitLayout();
-			mainPanel.Content = splitLayout.Layout(
-				i =>
-				{
-					var button = new Button { Text = "Click to update status " + i, BackgroundColor = splitLayout.PanelColors[i] };
-					button.Click += (s, e) => status[i].Text = "New count: " + (count++);
-					return button;
-				});
+			layoutContent(status, mainPanel);
 
 			// Form's content
 			var layout = new DynamicLayout();
@@ -77,6 +69,18 @@ namespace Eto.Test.Sections.Controls
 			if (setSize)
 				form.ClientSize = new Size(800, 600);
 			return form;
+		}
+
+		private static void LayoutContent(Label[] status, Panel mainPanel)
+		{
+			var splitLayout = new SplitLayout();
+			var count = 0;
+			mainPanel.Content = splitLayout.Layout(
+				i => {
+					var button = new Button { Text = "Click to update status " + i, BackgroundColor = splitLayout.PanelColors[i] };
+					button.Click += (s, e) => status[i].Text = "New count: " + (count++);
+					return button;
+				});
 		}
 
 		private class SplitLayout
