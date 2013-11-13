@@ -59,7 +59,14 @@ namespace Eto.Test.Sections.Controls
 			// Main panel
 			var count = 0;
 			var mainPanel = new Panel();
-			mainPanel.Content = SplitLayout(i => status[i].Text = "New count: " + (count++)); ;
+			var splitLayout = new SplitLayout();
+			mainPanel.Content = splitLayout.Layout(
+				i =>
+				{
+					var button = new Button { Text = "Click to update status " + i, BackgroundColor = splitLayout.PanelColors[i] };
+					button.Click += (s, e) => status[i].Text = "New count: " + (count++);
+					return button;
+				});
 
 			// Form's content
 			var layout = new DynamicLayout();
@@ -72,38 +79,37 @@ namespace Eto.Test.Sections.Controls
 			return form;
 		}
 
-		private static Splitter SplitLayout(Action<int> buttonClicked)
+		private class SplitLayout
 		{
-			// Add splitters like this:
-			// |---------------------------
-			// |        |      |          |
-			// |  P0    |  P2  |   P4     |
-			// | -------|      |          |  <== These are on MainPanel
-			// |  P1    |------|          |
-			// |        |  P3  |          |
-			// |---------------------------
-			// |         status0..4,      |  <== These are on StatusPanel
-			// ----------------------------
-
-
-			// Splitter windows
-			Panel[] p = { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
-			Color[] colors = { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
+			public Control Root { get; private set; }
+			public Panel[] Panels { get; private set; }
+			public Color[] PanelColors = { Colors.PaleTurquoise, Colors.Olive, Colors.NavajoWhite, Colors.Purple, Colors.Orange };
 			
-			for (var i = 0; i < p.Length; ++i)
+			public Control Layout(Func<int, Control>getContent)
 			{
-				var temp = i;
-				//p[i].BackgroundColor = colors[i];
-				var button = new Button { Text = "Click to update status " + i, BackgroundColor = colors[i] };
-				button.Click += (s, e) => buttonClicked(temp);
-				p[i].Content = button;
-			}
+				// Add splitters like this:
+				// |---------------------------
+				// |        |      |          |
+				// |  P0    |  P2  |   P4     |
+				// | -------|      |          |  <== These are on MainPanel
+				// |  P1    |------|          |
+				// |        |  P3  |          |
+				// |---------------------------
+				// |         status0..4,      |  <== These are on StatusPanel
+				// ----------------------------
 
-			var p0_1 = new Splitter { Panel1 = p[0], Panel2 = p[1], Orientation = SplitterOrientation.Vertical, Position = 200 };
-			var p2_3 = new Splitter { Panel1 = p[2], Panel2 = p[3], Orientation = SplitterOrientation.Vertical, Position = 200 };
-			var p01_23 = new Splitter { Panel1 = p0_1, Panel2 = p2_3, Orientation = SplitterOrientation.Horizontal, Position = 200 };
-			var p0123_4 = new Splitter { Panel1 = p01_23, Panel2 = p[4], Orientation = SplitterOrientation.Horizontal, Position = 400 };
-			return p0123_4;
+				// Splitter windows
+				this.Panels = new Panel[] { new Panel(), new Panel(), new Panel(), new Panel(), new Panel() };
+				
+				for (var i = 0; i < Panels.Length; ++i)
+					Panels[i].Content = getContent(i);
+
+				var p0_1 = new Splitter { Panel1 = Panels[0], Panel2 = Panels[1], Orientation = SplitterOrientation.Vertical, Position = 200 };
+				var p2_3 = new Splitter { Panel1 = Panels[2], Panel2 = Panels[3], Orientation = SplitterOrientation.Vertical, Position = 200 };
+				var p01_23 = new Splitter { Panel1 = p0_1, Panel2 = p2_3, Orientation = SplitterOrientation.Horizontal, Position = 200 };
+				var p0123_4 = new Splitter { Panel1 = p01_23, Panel2 = Panels[4], Orientation = SplitterOrientation.Horizontal, Position = 400 };
+				return this.Root = p0123_4;
+			}
 		}
 
 		static ComboBox ComboWithItems()
