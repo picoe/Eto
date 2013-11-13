@@ -11,7 +11,12 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddRow(
-				new Label { Text = "Default" }, Default(),
+				new Label { Text = "Default" }, Default(Colors.White, Colors.Black),
+				null
+			);
+
+			layout.AddRow(
+				new Label { Text = "Without background" }, Default(Colors.Black),
 				null
 			);
 
@@ -57,9 +62,11 @@ namespace Eto.Test.Sections.Drawing
 			yield return new DrawInfo { Font = Fonts.Fantasy (12, FontStyle.Bold | FontStyle.Italic), Text = "Fantasy Bold & Italic, 12pt" };
 		}
 
-		Control Default()
+		Control Default(Color color, Color? backgroundColor = null)
 		{
-			var control = new Drawable { Size = new Size (400, 500), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size (400, 500)};
+			if (backgroundColor != null)
+				control.BackgroundColor = backgroundColor.Value;
 
 			control.Paint += (sender, e) => {
 				var g = e.Graphics;
@@ -68,7 +75,7 @@ namespace Eto.Test.Sections.Drawing
 				foreach (var info in GetDrawInfo ())
 				{
 					var size = g.MeasureString(info.Font, info.Text);
-					g.DrawText(info.Font, Colors.White, 10, y, info.Text);
+					g.DrawText(info.Font, color, 10, y, info.Text);
 					y += size.Height;
 				}
 			};
