@@ -39,7 +39,12 @@ namespace Eto.Forms
 			}
 		}
 
-		public PixelLayout(Generator generator = null)
+		public PixelLayout()
+			: this((Generator)null)
+		{
+		}
+
+		public PixelLayout(Generator generator)
 			: base(generator, typeof(IPixelLayout))
 		{
 		}

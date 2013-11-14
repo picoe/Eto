@@ -9,7 +9,7 @@ namespace Eto.Forms
 
 		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			var mi = new RadioMenuItem(generator, (Controller != null) ? Controller.menuItem : null);
+			var mi = new RadioMenuItem((Controller != null) ? Controller.menuItem : null, generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = Enabled;

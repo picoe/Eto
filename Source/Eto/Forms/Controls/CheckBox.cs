@@ -26,16 +26,17 @@ namespace Eto.Forms
 			Properties.TriggerEvent(CheckedChangedKey, this, e);
 		}
 
-		public CheckBox() : this(Generator.Current)
+		public CheckBox()
+			: this((Generator)null)
 		{
 		}
 
-		public CheckBox(Generator g) : this(g, typeof(ICheckBox))
+		public CheckBox(Generator generator) : this(generator, typeof(ICheckBox))
 		{
 		}
 
-		protected CheckBox(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
+		protected CheckBox(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
 

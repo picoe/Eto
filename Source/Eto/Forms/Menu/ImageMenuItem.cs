@@ -27,11 +27,12 @@ namespace Eto.Forms
 
 		readonly MenuItemCollection menuItems;
 		
-		public ImageMenuItem () : this (Generator.Current)
+		public ImageMenuItem()
+			: this((Generator)null)
 		{
 		}
-		
-		public ImageMenuItem (Generator g) : this (g, typeof(IImageMenuItem))
+
+		public ImageMenuItem (Generator generator) : this (generator, typeof(IImageMenuItem))
 		{
 		}
 		

@@ -205,7 +205,7 @@ namespace Eto.Forms
 
 		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
 		public TableLayout(DockContainer container, Size size)
-			: this(size, container != null ? container.Generator : Generator.Current)
+			: this(size, container != null ? container.Generator : null)
 		{
 			if (container != null)
 				container.Content = this;

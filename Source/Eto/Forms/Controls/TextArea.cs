@@ -63,11 +63,11 @@ namespace Eto.Forms
 		}
 
 		public TextArea()
-			: this(Generator.Current)
+			: this((Generator)null)
 		{
 		}
 
-		public TextArea(Generator g) : this(g, typeof(ITextArea))
+		public TextArea(Generator generator) : this(generator, typeof(ITextArea))
 		{
 		}
 

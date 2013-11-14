@@ -77,11 +77,12 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(Splitter), "OnPositionChanged", Splitter.PositionChangedEvent);
 		}
 
-		public Splitter() : this (Generator.Current)
+		public Splitter()
+			: this((Generator)null)
 		{
 		}
 
-		public Splitter(Generator g) : this (g, typeof(ISplitter))
+		public Splitter(Generator generator) : this (generator, typeof(ISplitter))
 		{
 		}
 

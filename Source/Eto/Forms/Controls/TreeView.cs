@@ -194,11 +194,12 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(TreeView), "OnNodeMouseClick", TreeView.NodeMouseClickEvent);
 		}
 
-		public TreeView() : this(Generator.Current)
+		public TreeView()
+			: this((Generator)null)
 		{
 		}
 
-		public TreeView(Generator g) : this(g, typeof(ITreeView))
+		public TreeView(Generator generator) : this(generator, typeof(ITreeView))
 		{
 		}
 

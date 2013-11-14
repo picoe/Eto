@@ -67,7 +67,12 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(PrintDocument), "OnPrintPage", PrintDocument.PrintPageEvent);
 		}
 
-		public PrintDocument(Generator generator = null)
+		public PrintDocument()
+			: this((Generator)null)
+		{
+		}
+
+		public PrintDocument(Generator generator)
 			: base(generator, typeof(IPrintDocument))
 		{
 		}

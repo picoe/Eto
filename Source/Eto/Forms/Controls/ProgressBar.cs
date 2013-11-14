@@ -17,8 +17,8 @@ namespace Eto.Forms
 	{
 		new IProgressBar Handler { get { return (IProgressBar)base.Handler; } }
 
-		public ProgressBar ()
-			: this (Generator.Current)
+		public ProgressBar()
+			: this((Generator)null)
 		{
 		}
 

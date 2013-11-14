@@ -50,7 +50,7 @@ namespace Eto.Drawing
 		/// Initializes a new instance of the Icon class with the contents of the specified <paramref name="stream"/>
 		/// </summary>
 		/// <param name="stream">Stream to load the content from</param>
-		public Icon (Stream stream) : base(Generator.Current, typeof(IIcon))
+		public Icon (Stream stream, Generator generator = null) : base(generator, typeof(IIcon))
 		{
 			Handler.Create (stream);
 		}
@@ -59,7 +59,7 @@ namespace Eto.Drawing
 		/// Intitializes a new instanc of the Icon class with the contents of the specified <paramref name="fileName"/>
 		/// </summary>
 		/// <param name="fileName">Name of the file to loat the content from</param>
-		public Icon (string fileName) : base(Generator.Current, typeof(IIcon))
+		public Icon (string fileName, Generator generator = null) : base(generator, typeof(IIcon))
 		{
 			Handler.Create (fileName);
 		}
@@ -70,14 +70,14 @@ namespace Eto.Drawing
 		/// <param name="assembly">Assembly to load the resource from</param>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
-		public static Icon FromResource (Assembly assembly, string resourceName)
+		public static Icon FromResource (Assembly assembly, string resourceName, Generator generator = null)
 		{
 			if (assembly == null)
 				assembly = Assembly.GetCallingAssembly ();
 			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (assembly, resourceName);
-				return new Icon (stream);
+				return new Icon (stream, generator);
 			}
 		}
 
@@ -90,17 +90,17 @@ namespace Eto.Drawing
 		/// </remarks>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
-		public static Icon FromResource (string resourceName)
+		public static Icon FromResource (string resourceName, Generator generator = null)
 		{
 			var asm = Assembly.GetCallingAssembly ();
-			return FromResource (asm, resourceName);
+			return FromResource (asm, resourceName, generator);
 		}
 		
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
 		[Obsolete("Use Icon.FromResource instead")]
-		public Icon (Assembly asm, string resourceName) : base(Generator.Current, typeof(IIcon))
+		public Icon (Assembly asm, string resourceName) : base(null, typeof(IIcon))
 		{
 			if (asm == null)
 				asm = Assembly.GetCallingAssembly ();

@@ -63,12 +63,12 @@ namespace Eto.Forms
 		}
 
 		public GridView()
-			: this(Generator.Current)
+			: this((Generator)null)
 		{
 		}
 
-		public GridView(Generator g)
-			: this(g, typeof(IGridView))
+		public GridView(Generator generator)
+			: this(generator, typeof(IGridView))
 		{
 		}
 

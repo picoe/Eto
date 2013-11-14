@@ -25,16 +25,17 @@ namespace Eto.Forms
 				Elapsed (this, e);
 		}
 
-		public UITimer () : this (Generator.Current)
+		public UITimer()
+			: this((Generator)null)
 		{
 		}
-		
+
 		public UITimer (Generator generator) : this (generator, typeof(IUITimer))
 		{
 		}
 		
-		protected UITimer (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected UITimer (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 		}
 		

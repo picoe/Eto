@@ -30,11 +30,11 @@ namespace Eto.Forms
 	{
 		new IClipboard Handler { get { return (IClipboard)base.Handler; } }
 		
-		public Clipboard ()
-			: this(Generator.Current)
+		public Clipboard()
+			: this((Generator)null)
 		{
 		}
-		
+
 		public Clipboard (Generator generator)
 			: base(generator, typeof(IClipboard))
 		{

@@ -45,11 +45,11 @@ namespace Eto.Forms
 				ValueChanged (this, EventArgs.Empty);
 		}
 		
-		public Slider ()
-			: this (Generator.Current)
+		public Slider()
+			: this((Generator)null)
 		{
 		}
-		
+
 		public Slider (Generator generator)
 			: this (generator, typeof(ISlider))
 		{

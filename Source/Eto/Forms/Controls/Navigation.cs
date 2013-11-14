@@ -38,13 +38,13 @@ namespace Eto.Forms
 				ItemShown (this, e);
 		}
 
-		public Navigation ()
-			: this(Generator.Current)
+		public Navigation()
+			: this((Generator)null)
 		{
 		}
-		
-		public Navigation (Generator g)
-			: base(g, typeof(INavigation))
+
+		public Navigation (Generator generator)
+			: base(generator, typeof(INavigation))
 		{
 		}
 		
