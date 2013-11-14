@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Eto.Drawing;
+using System.Collections.ObjectModel;
 
 #if XAML
 using System.Windows.Markup;
@@ -15,7 +16,7 @@ namespace Eto.Forms
 		DynamicTable currentItem;
 		bool? yscale;
 
-		public IList<DynamicRow> Rows
+		public Collection<DynamicRow> Rows
 		{
 			get { return topTable.Rows; }
 		}
