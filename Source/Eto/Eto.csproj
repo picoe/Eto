@@ -380,6 +380,8 @@
     <Compile Include="Drawing\SystemFonts.cs" />
     <Compile Include="Forms\Controls\Control.binding.cs" />
     <Compile Include="EventLookup.cs" />
+    <Compile Include="Forms\Layout\DynamicItemConverter.cs" />
+    <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

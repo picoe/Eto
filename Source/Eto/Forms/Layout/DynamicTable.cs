@@ -9,7 +9,7 @@ using System.Windows.Markup;
 #endif
 namespace Eto.Forms
 {
-	[ContentProperty("Items")]
+	[ContentProperty("Items"), TypeConverter(typeof(DynamicRowConverter))]
 	public class DynamicRow
 	{
 		readonly List<DynamicItem> items;
@@ -44,6 +44,13 @@ namespace Eto.Forms
 				return;
 			var controlItems = controls.Select(r => new DynamicControl { Control = r, YScale = yscale, XScale = xscale ?? (r != null ? null : (bool?)true) });
 			items.AddRange(controlItems.OfType<DynamicItem>());
+		}
+
+		public static implicit operator DynamicRow(Control control)
+		{
+			var dynamicRow = new DynamicRow();
+			dynamicRow.Items.Add(new DynamicControl { Control = control });
+			return dynamicRow;
 		}
 	}
 
