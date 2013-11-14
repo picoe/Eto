@@ -76,20 +76,16 @@ namespace Eto.Forms
 
 		internal void InsertTab(int index, TabPage page)
 		{
-			if (Loaded)
-			{
-				page.OnPreLoad(EventArgs.Empty);
-				page.OnLoad(EventArgs.Empty);
-				page.OnLoadComplete(EventArgs.Empty);
-			}
-			SetParent(page);
+			var load = SetParent(page);
 			Handler.InsertTab(index, page);
+			if (load)
+				page.OnLoadComplete(EventArgs.Empty);
 		}
 
 		internal void RemoveTab(int index, TabPage page)
 		{
 			Handler.RemoveTab(index, page);
-			RemoveParent(page, true);
+			RemoveParent(page);
 		}
 		
 		internal void ClearTabs()
@@ -106,7 +102,7 @@ namespace Eto.Forms
 				if (index >= 0)
 				{
 					RemoveTab(index, childPage);
-					RemoveParent(childPage, true);
+					RemoveParent(childPage);
 				}
 			}
 		}

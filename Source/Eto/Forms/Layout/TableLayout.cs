@@ -242,19 +242,11 @@ namespace Eto.Forms
 		{
 			var old = controls[x, y];
 			if (old != null)
-				RemoveParent(old, true);
+				RemoveParent(old);
 			controls[x, y] = control;
-			bool load = Loaded;
 			if (control != null)
 			{
-				RemoveParent(control, false);
-				load &= !control.Loaded;
-				if (load)
-				{
-					control.OnPreLoad(EventArgs.Empty);
-					control.OnLoad(EventArgs.Empty);
-				}
-				SetParent(control);
+				var load = SetParent(control);
 				Handler.Add(control, x, y);
 				if (load)
 					control.OnLoadComplete(EventArgs.Empty);
@@ -286,7 +278,7 @@ namespace Eto.Forms
 
 			var old = controls[x, y];
 			if (old != null)
-				RemoveParent(old, true);
+				RemoveParent(old);
 			controls[x, y] = child;
 			child.Properties[LocationProperty] = new Point(x, y);
 			Handler.Move(child, x, y);
@@ -304,7 +296,7 @@ namespace Eto.Forms
 			{
 				controls[index.Item1, index.Item2] = null;
 				Handler.Remove(child);
-				RemoveParent(child, true);
+				RemoveParent(child);
 			}
 		}
 

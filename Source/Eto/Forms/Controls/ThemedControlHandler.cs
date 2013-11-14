@@ -99,7 +99,7 @@ namespace Eto.Forms
 		
 		public void SetParent(Container parent)
 		{
-			Control.SetParent(parent);
+			Control.Parent = parent;
 		}
 
 		public PointF PointFromScreen (PointF point)

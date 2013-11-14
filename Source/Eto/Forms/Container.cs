@@ -139,14 +139,48 @@ namespace Eto.Forms
 
 		public abstract void Remove(Control child);
 
-		protected static void RemoveParent(Control child, bool changeContext)
+		/// <summary>
+		/// Removes the specified control from the container.
+		/// This should only be called on controls that the container owns. Otherwise, call <see cref="Control.Detach"/>
+		/// </summary>
+		/// <param name="child">Child to remove from this container</param>
+		protected void RemoveParent(Control child)
 		{
-			child.SetParent(null, changeContext);
+			if (!ReferenceEquals(child.Parent, null))
+			{
+#if DEBUG
+				if (!ReferenceEquals(child.Parent, this))
+					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+#endif
+				var parent = child.Parent;
+				child.Parent = null;
+				if (child.Loaded)
+				{
+					child.OnUnLoad(EventArgs.Empty);
+				}
+				child.OnDataContextChanged(EventArgs.Empty);
+			}
 		}
 
-		protected void SetParent(Control child)
+		protected bool SetParent(Control child)
 		{
-			child.SetParent(this);
+			if (!ReferenceEquals(child.Parent, this))
+			{
+				// Detach so parent can remove from controls collection if necessary.
+				// prevents UnLoad from being called more than once when containers think a control is still a child
+				// no-op if there is no parent (handled in detach)
+				child.Detach();
+
+				child.Parent = this;
+				if (Loaded && !child.Loaded)
+				{
+					child.OnPreLoad(EventArgs.Empty);
+					child.OnLoad(EventArgs.Empty);
+					child.OnDataContextChanged(EventArgs.Empty);
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
