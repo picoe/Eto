@@ -18,6 +18,8 @@ namespace Eto.Platform.Windows
 			EnableRedrawDuringSuspend = false;
 		}
 
+		public bool RecurseToChildren { get { return true; } }
+
 		public override Size? DefaultSize
 		{
 			get

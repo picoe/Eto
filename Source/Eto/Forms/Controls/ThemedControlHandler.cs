@@ -77,27 +77,27 @@ namespace Eto.Forms
 			set { Control.Visible = value; }
 		}
 
-		public void OnPreLoad(EventArgs e)
+		public virtual void OnPreLoad(EventArgs e)
 		{
 			Control.OnPreLoad(e);
 		}
 
-		public void OnLoad(EventArgs e)
+		public virtual void OnLoad(EventArgs e)
 		{
 			Control.OnLoad(e);
 		}
 
-		public void OnLoadComplete(EventArgs e)
+		public virtual void OnLoadComplete(EventArgs e)
 		{
 			Control.OnLoadComplete(e);
 		}
 
-		public void OnUnLoad(EventArgs e)
+		public virtual void OnUnLoad(EventArgs e)
 		{
 			Control.OnUnLoad(e);
 		}
-		
-		public void SetParent(Container parent)
+
+		public virtual void SetParent(Container parent)
 		{
 			Control.Parent = parent;
 		}

@@ -10,6 +10,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 	{
 		bool disableSelectedIndexChanged;
 
+		public bool RecurseToChildren { get { return true; } }
+
 		public override NSView ContainerControl { get { return Control; } }
 
 		public class EtoTabView : NSTabView, IMacControl

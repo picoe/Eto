@@ -8,6 +8,8 @@ namespace Eto.Forms
 	public interface IContainer : IControl
 	{
 		Size ClientSize { get; set; }
+
+		bool RecurseToChildren { get; }
 	}
 
 	public abstract class Container : Control
@@ -45,28 +47,37 @@ namespace Eto.Forms
 		protected internal override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			
-			foreach (var control in Controls)
+
+			if (Handler.RecurseToChildren)
 			{
-				control.OnDataContextChanged(e);
+				foreach (var control in Controls)
+				{
+					control.OnDataContextChanged(e);
+				}
 			}
 		}
 
 		public override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
-			
-			foreach (Control control in Controls)
+
+			if (Handler.RecurseToChildren)
 			{
-				control.OnPreLoad(e);
+				foreach (Control control in Controls)
+				{
+					control.OnPreLoad(e);
+				}
 			}
 		}
 
 		public override void OnLoad(EventArgs e)
 		{
-			foreach (Control control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.OnLoad(e);
+				foreach (Control control in Controls)
+				{
+					control.OnLoad(e);
+				}
 			}
 			
 			base.OnLoad(e);
@@ -74,9 +85,12 @@ namespace Eto.Forms
 
 		public override void OnLoadComplete(EventArgs e)
 		{
-			foreach (Control control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.OnLoadComplete(e);
+				foreach (Control control in Controls)
+				{
+					control.OnLoadComplete(e);
+				}
 			}
 			
 			base.OnLoadComplete(e);
@@ -84,9 +98,12 @@ namespace Eto.Forms
 
 		public override void OnUnLoad(EventArgs e)
 		{
-			foreach (Control control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.OnUnLoad(e);
+				foreach (Control control in Controls)
+				{
+					control.OnUnLoad(e);
+				}
 			}
 			
 			base.OnUnLoad(e);
@@ -111,18 +128,24 @@ namespace Eto.Forms
 		public override void Unbind()
 		{
 			base.Unbind();
-			foreach (var control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.Unbind();
+				foreach (var control in Controls)
+				{
+					control.Unbind();
+				}
 			}
 		}
 
 		public override void UpdateBindings()
 		{
 			base.UpdateBindings();
-			foreach (var control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.UpdateBindings();
+				foreach (var control in Controls)
+				{
+					control.UpdateBindings();
+				}
 			}
 		}
 

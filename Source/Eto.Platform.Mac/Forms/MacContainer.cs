@@ -35,6 +35,8 @@ namespace Eto.Platform.Mac.Forms
 		where TControl: NSResponder
 		where TWidget: Container
 	{
+		public bool RecurseToChildren { get { return true; } }
+
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 
 		public override bool Enabled { get; set; }
