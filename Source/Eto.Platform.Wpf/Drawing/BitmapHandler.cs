@@ -38,8 +38,6 @@ namespace Eto.Platform.Wpf.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BitmapHandler : WidgetHandler<swm.Imaging.BitmapSource, Bitmap>, IBitmap, IWpfImage
 	{
-		int? stride;
-
 		public BitmapHandler()
 		{
 		}
@@ -85,8 +83,6 @@ namespace Eto.Platform.Wpf.Drawing
 				default:
 					throw new NotSupportedException();
 			}
-			stride = (width * format.BitsPerPixel + 7) / 8;
-
 			ApplicationHandler.InvokeIfNecessary(() =>
 			{
 				var bf = new swm.Imaging.WriteableBitmap(width, height, 96, 96, format, null);
@@ -243,14 +239,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		int Stride
 		{
-			get
-			{
-				if (stride == null)
-				{
-					stride = (Control.PixelWidth * Control.Format.BitsPerPixel + 7) / 8;
-				}
-				return stride.Value;
-			}
+			get { return (Control.PixelWidth * Control.Format.BitsPerPixel + 7) / 8; }
 		}
 	}
 }
