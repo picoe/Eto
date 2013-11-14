@@ -8,6 +8,7 @@ namespace Eto.Platform.GtkSharp
 		where TControl: Gtk.Widget
 		where TWidget: Container
 	{
+		public bool RecurseToChildren { get { return true; } }
 
 		public virtual Size ClientSize
 		{

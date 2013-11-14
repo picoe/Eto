@@ -7,11 +7,11 @@ namespace Eto.Forms
 	{
 		readonly Generator generator;
 
-		public ActionCollection ()
-			: this(Generator.Current)
+		public ActionCollection()
+			: this((Generator)null)
 		{
 		}
-		
+
 		public ActionCollection (Generator generator)
 			: this(generator, null)
 		{

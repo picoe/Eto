@@ -157,7 +157,7 @@ namespace Eto.Forms
 		}
 
 		public WebView()
-			: this(Generator.Current)
+			: this((Generator)null)
 		{
 		}
 

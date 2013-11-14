@@ -132,11 +132,11 @@ namespace Eto.Forms
 		}
 
 		public TreeGridView()
-			: this(Generator.Current)
+			: this((Generator)null)
 		{
 		}
 
-		public TreeGridView(Generator g) : this(g, typeof(ITreeGridView))
+		public TreeGridView(Generator generator) : this(generator, typeof(ITreeGridView))
 		{
 		}
 

@@ -29,7 +29,12 @@ namespace Eto.Forms
 	{
 		new IScreen Handler { get { return (IScreen)base.Handler; } }
 
-		public Screen (Generator generator = null)
+		public Screen()
+			: this((Generator)null)
+		{
+		}
+
+		public Screen (Generator generator)
 			: base (generator, typeof(IScreen))
 		{
 		}

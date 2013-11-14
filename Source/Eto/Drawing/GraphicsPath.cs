@@ -365,11 +365,16 @@ namespace Eto.Drawing
 			return generator.Create<IGraphicsPathHandler> ();
 		}
 
+		public GraphicsPath()
+			: this((Generator)null)
+		{
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the GraphicsPath class
 		/// </summary>
 		/// <param name="generator">Platform generator for the object, or null to use the current generator</param>
-		public GraphicsPath (Generator generator = null)
+		public GraphicsPath (Generator generator)
 		{
 			Handler = Create (generator);
 		}

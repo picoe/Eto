@@ -35,11 +35,12 @@ namespace Eto.Forms
 	{
 		new ISeparatorToolBarItem Handler { get { return (ISeparatorToolBarItem)base.Handler; } }
 		
-		public SeparatorToolBarItem () : this(Generator.Current)
+		public SeparatorToolBarItem()
+			: this((Generator)null)
 		{
 		}
 
-		public SeparatorToolBarItem (Generator g) : base(g, typeof(ISeparatorToolBarItem))
+		public SeparatorToolBarItem (Generator generator) : base(generator, typeof(ISeparatorToolBarItem))
 		{
 		}
 		

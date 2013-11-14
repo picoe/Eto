@@ -11,16 +11,17 @@ namespace Eto.Forms
 	{
 		new IForm Handler { get { return (IForm)base.Handler; } }
 
-		public Form() : this(Generator.Current)
+		public Form()
+			: this((Generator)null)
 		{
 		}
 
-		public Form(Generator g) : this(g, typeof(IForm))
+		public Form(Generator generator) : this(generator, typeof(IForm))
 		{
 		}
 
-		protected Form(Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected Form(Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 		}
 

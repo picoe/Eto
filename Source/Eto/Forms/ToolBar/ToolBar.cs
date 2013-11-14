@@ -60,12 +60,12 @@ namespace Eto.Forms
 			}
 		}
 		
-		public ToolBar() : this(Generator.Current)
+		public ToolBar()
+			: this((Generator)null)
 		{
-			
 		}
-		
-		public ToolBar(Generator g) : base(g, typeof(IToolBar))
+
+		public ToolBar(Generator generator) : base(generator, typeof(IToolBar))
 		{
 			items = new ToolbarItemCollection(this);
 		}

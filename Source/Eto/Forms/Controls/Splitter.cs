@@ -77,11 +77,12 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(Splitter), "OnPositionChanged", Splitter.PositionChangedEvent);
 		}
 
-		public Splitter() : this (Generator.Current)
+		public Splitter()
+			: this((Generator)null)
 		{
 		}
 
-		public Splitter(Generator g) : this (g, typeof(ISplitter))
+		public Splitter(Generator generator) : this (generator, typeof(ISplitter))
 		{
 		}
 
@@ -114,21 +115,16 @@ namespace Eto.Forms
 			set
 			{ 
 				if (Handler.Panel1 != null)
-					RemoveParent(Handler.Panel1, true);
-				bool load = false;
+					RemoveParent(Handler.Panel1);
 				if (value != null)
 				{
-					SetParent(value);
-					if (Loaded && !value.Loaded)
-					{
-						load = true;
-						value.OnPreLoad(EventArgs.Empty);
-						value.OnLoad(EventArgs.Empty);
-					}
+					var load = SetParent(value);
+					Handler.Panel1 = value;
+					if (load)
+						value.OnLoadComplete(EventArgs.Empty);
 				}
-				Handler.Panel1 = value;
-				if (load && value != null)
-					value.OnLoadComplete(EventArgs.Empty);
+				else
+					Handler.Panel1 = value;
 			}
 		}
 
@@ -138,21 +134,16 @@ namespace Eto.Forms
 			set
 			{
 				if (Handler.Panel2 != null)
-					RemoveParent(Handler.Panel2, true);
-				bool load = false;
+					RemoveParent(Handler.Panel2);
 				if (value != null)
 				{
-					SetParent(value);
-					if (Loaded && !value.Loaded)
-					{
-						load = true;
-						value.OnPreLoad(EventArgs.Empty);
-						value.OnLoad(EventArgs.Empty);
-					}
+					var load = SetParent(value);
+					Handler.Panel2 = value;
+					if (load)
+						value.OnLoadComplete(EventArgs.Empty);
 				}
-				Handler.Panel2 = value; 
-				if (load && value != null)
-					value.OnLoadComplete(EventArgs.Empty);
+				else
+					Handler.Panel2 = value;
 			}
 		}
 

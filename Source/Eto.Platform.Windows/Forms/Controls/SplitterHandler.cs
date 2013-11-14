@@ -12,6 +12,8 @@ namespace Eto.Platform.Windows
 		Control panel2;
 		int? position;
 
+		public bool RecurseToChildren { get { return true; } }
+
 		public override Size? DefaultSize
 		{
 			get

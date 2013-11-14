@@ -50,8 +50,8 @@ namespace Eto.Drawing
 		/// <param name="width">Width of the bitmap in pixels</param>
 		/// <param name="height">Height of the bitmap in pixels</param>
 		/// <param name="bitsPerPixel">Number of bits per pixel, usually 4 (16 colours), 8 (64 colours), or 8 (256 colours)</param>
-		public IndexedBitmap (int width, int height, int bitsPerPixel)
-			: this(Generator.Current, width, height, bitsPerPixel)
+		public IndexedBitmap (int width, int height, int bitsPerPixel, Generator generator = null)
+			: this(generator, width, height, bitsPerPixel)
 		{
 		}
 

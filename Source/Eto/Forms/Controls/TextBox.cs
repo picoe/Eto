@@ -17,17 +17,18 @@ namespace Eto.Forms
 	{
 		new ITextBox Handler { get { return (ITextBox)base.Handler; }}
 		
-		public TextBox () : this(Generator.Current)
+		public TextBox()
+			: this((Generator)null)
 		{
 		}
-		
-		public TextBox (Generator g) 
-			: this(g, typeof(ITextBox))
+
+		public TextBox (Generator generator)
+			: this(generator, typeof(ITextBox))
 		{
 			
 		}
-		protected TextBox (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected TextBox (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 		}
 

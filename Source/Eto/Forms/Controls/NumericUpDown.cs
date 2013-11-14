@@ -25,11 +25,12 @@ namespace Eto.Forms
 				ValueChanged(this, e);
 		}
 
-		public NumericUpDown() : this(Generator.Current)
+		public NumericUpDown()
+			: this((Generator)null)
 		{
 		}
 
-		public NumericUpDown(Generator g) : this(g, typeof(INumericUpDown))
+		public NumericUpDown(Generator generator) : this(generator, typeof(INumericUpDown))
 		{
 		}
 

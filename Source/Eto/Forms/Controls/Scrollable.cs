@@ -59,11 +59,12 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(Scrollable), "OnScroll", Scrollable.ScrollEvent);
 		}
 
-		public Scrollable() : this(Generator.Current)
+		public Scrollable()
+			: this((Generator)null)
 		{
 		}
 
-		public Scrollable(Generator g) : this(g, typeof(IScrollable))
+		public Scrollable(Generator generator) : this(generator, typeof(IScrollable))
 		{
 		}
 

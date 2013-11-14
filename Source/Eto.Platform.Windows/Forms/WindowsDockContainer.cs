@@ -16,19 +16,19 @@ namespace Eto.Platform.Windows
 		{
 			base.Initialize();
 			Padding = DockContainer.DefaultPadding;
-			SuspendLayout();
+			ContainerContentControl.SuspendLayout();
 		}
 
 		public override void OnLoadComplete(EventArgs e)
 		{
 			base.OnLoadComplete(e);
-			ResumeLayout();
+			ContainerContentControl.ResumeLayout();
 		}
 
 		public override void OnUnLoad(EventArgs e)
 		{
 			base.OnUnLoad(e);
-			SuspendLayout();
+			ContainerContentControl.SuspendLayout();
 		}
 
 		public virtual swf.Control ContainerContentControl

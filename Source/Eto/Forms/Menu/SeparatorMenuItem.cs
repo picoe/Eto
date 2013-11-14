@@ -9,12 +9,12 @@ namespace Eto.Forms
 	
 	public class SeparatorMenuItem : MenuItem
 	{
-		
-		public SeparatorMenuItem () : this (Generator.Current)
+		public SeparatorMenuItem()
+			: this((Generator)null)
 		{
 		}
 
-		public SeparatorMenuItem (Generator g) : this (g, typeof(ISeparatorMenuItem))
+		public SeparatorMenuItem (Generator generator) : this (generator, typeof(ISeparatorMenuItem))
 		{
 		}
 		

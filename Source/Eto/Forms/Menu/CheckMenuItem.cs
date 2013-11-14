@@ -12,11 +12,12 @@ namespace Eto.Forms
 	{
 		new ICheckMenuItem Handler { get { return (ICheckMenuItem)base.Handler; } }
 
-		public CheckMenuItem () : this (Generator.Current)
+		public CheckMenuItem()
+			: this((Generator)null)
 		{
 		}
-		
-		public CheckMenuItem (Generator g) : this (g, typeof(ICheckMenuItem))
+
+		public CheckMenuItem (Generator generator) : this (generator, typeof(ICheckMenuItem))
 		{
 		}
 

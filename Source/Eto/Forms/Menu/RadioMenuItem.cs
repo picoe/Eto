@@ -14,12 +14,13 @@ namespace Eto.Forms
 	{
 		new IRadioMenuItem Handler { get { return (IRadioMenuItem)base.Handler; } }
 
-		public RadioMenuItem (RadioMenuItem controller = null) : this (Generator.Current, controller)
+		public RadioMenuItem()
+			: this(null, null)
 		{
 		}
-		
-		public RadioMenuItem (Generator g, RadioMenuItem controller = null)
-			: this (g, typeof(IRadioMenuItem), controller)
+
+		public RadioMenuItem (RadioMenuItem controller = null, Generator generator = null)
+			: this (generator, typeof(IRadioMenuItem), controller)
 		{
 		}
 

@@ -15,11 +15,12 @@ namespace Eto.Forms
 
 		readonly MenuItemCollection menuItems;
 		
-		public MenuBar () : this (Generator.Current)
+		public MenuBar()
+			: this((Generator)null)
 		{
 		}
 
-		public MenuBar (Generator g) : this (g, typeof(IMenuBar))
+		public MenuBar (Generator generator) : this (generator, typeof(IMenuBar))
 		{
 		}
 		

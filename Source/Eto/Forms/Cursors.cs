@@ -20,7 +20,7 @@ namespace Eto.Forms
 			Cursor cursor;
 			lock (cache) {
 				if (!cache.TryGetValue (type, out cursor)) {
-					cursor = new Cursor (generator, type);
+					cursor = new Cursor(type, generator);
 					cache [type] = cursor;
 				}
 			}
