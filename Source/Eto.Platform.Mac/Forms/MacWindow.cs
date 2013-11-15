@@ -179,7 +179,7 @@ namespace Eto.Platform.Mac.Forms
 			{
 				if (!Maximizable)
 					return false;
-				if (!window.IsZoomed)
+				if (!window.IsZoomed && window.Screen != null)
 				{
 					RestoreBounds = Widget.Bounds;
 				}
@@ -554,15 +554,26 @@ namespace Eto.Platform.Mac.Forms
 			{
 				if (oldLocation != null)
 					return oldLocation.Value;
-				var height = Control.Screen.Frame.Height;
+				// translate location relative to the top left corner of main screen
+				var mainFrame = NSScreen.Screens[0].Frame;
 				var frame = Control.Frame;
-				return new Point((int)frame.X, (int)(height - frame.Y - frame.Height));
+				return new Point((int)frame.X, (int)(mainFrame.Height - frame.Y - frame.Height));
 			}
 			set
 			{
-				var height = Control.Screen.Frame.Height;
+				// location is relative to the main screen, translate to bottom left, inversed
+				var mainFrame = NSScreen.Screens[0].Frame;
 				var frame = Control.Frame;
-				Control.SetFrameOrigin(new SD.PointF(value.X, height - value.Y - frame.Height));
+				var point = new SD.PointF(value.X, mainFrame.Height - value.Y - frame.Height);
+				Control.SetFrameOrigin(point);
+				if (Control.Screen == null)
+				{
+					// ensure that the control lands on a screen
+					point.X = Math.Min(Math.Max(mainFrame.X, point.X), mainFrame.Right - frame.Width);
+					point.Y = Math.Min(Math.Max(mainFrame.Y, point.Y), mainFrame.Bottom - frame.Height);
+
+					Control.SetFrameOrigin(point);
+				}
 				setInitialPosition = false;
 			}
 		}

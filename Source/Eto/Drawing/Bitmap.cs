@@ -175,7 +175,7 @@ namespace Eto.Drawing
 		/// </summary>
 		[Obsolete ("use Bitmap.FromResource instead")]
 		public Bitmap (Assembly asm, string resourceName)
-			: this (null)
+			: this ((Generator)null)
 		{
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
 			using (var stream = asm.GetManifestResourceStream (resourceName)) {
