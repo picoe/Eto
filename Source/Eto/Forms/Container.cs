@@ -175,12 +175,11 @@ namespace Eto.Forms
 				if (!ReferenceEquals(child.Parent, this))
 					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
 #endif
-				var parent = child.Parent;
-				child.Parent = null;
 				if (child.Loaded)
 				{
 					child.OnUnLoad(EventArgs.Empty);
 				}
+				child.Parent = null;
 				child.OnDataContextChanged(EventArgs.Empty);
 			}
 		}
