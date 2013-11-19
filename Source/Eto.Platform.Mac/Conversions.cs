@@ -145,7 +145,7 @@ namespace Eto.Platform.Mac
 		public static MouseEventArgs GetMouseEvent(NSView view, NSEvent theEvent, bool includeWheel)
 		{
 			var pt = Conversions.GetLocation(view, theEvent);
-			Key modifiers = KeyMap.GetModifiers(theEvent);
+			Keys modifiers = KeyMap.GetModifiers(theEvent);
 			MouseButtons buttons = theEvent.GetMouseButtons();
 			SizeF? delta = null;
 			if (includeWheel)
@@ -277,13 +277,13 @@ namespace Eto.Platform.Mac
 		public static KeyEventArgs ToEtoKeyPressEventArgs(this NSEvent theEvent)
 		{
 			char keyChar = !string.IsNullOrEmpty(theEvent.Characters) ? theEvent.Characters[0] : '\0';
-			Key key = KeyMap.MapKey(theEvent.KeyCode);
+			Keys key = KeyMap.MapKey(theEvent.KeyCode);
 			KeyEventArgs kpea;
-			Key modifiers = KeyMap.GetModifiers(theEvent);
+			Keys modifiers = KeyMap.GetModifiers(theEvent);
 			key |= modifiers;
-			if (key != Key.None)
+			if (key != Keys.None)
 			{
-				if (((modifiers & ~(Key.Shift | Key.Alt)) == 0))
+				if (((modifiers & ~(Keys.Shift | Keys.Alt)) == 0))
 					kpea = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
 				else
 					kpea = new KeyEventArgs(key, KeyEventType.KeyDown);

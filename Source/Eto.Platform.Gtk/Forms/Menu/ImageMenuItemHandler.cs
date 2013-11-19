@@ -8,7 +8,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		string tooltip;
 		string text;
-		Key shortcut;
+		Keys shortcut;
 		Image image;
 		readonly Gtk.AccelLabel label;
 		
@@ -53,7 +53,7 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get { return shortcut; }
 			set

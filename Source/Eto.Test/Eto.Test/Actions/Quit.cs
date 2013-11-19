@@ -13,7 +13,7 @@ namespace Eto.Test.Actions
 			this.MenuText = "&Quit";
 			this.ToolBarText = "Quit";
 			this.TooltipText = "Close the application";
-			this.Accelerator = Key.Q | Application.Instance.CommonModifier;
+			this.Accelerator = Keys.Q | Application.Instance.CommonModifier;
 			this.Image = TestIcons.TestImage;
 		}
 		

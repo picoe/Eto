@@ -9,7 +9,7 @@ namespace Eto.Forms
 
 		string ToolTip { get; set; }
 
-		Key Shortcut { get; set; }
+		Keys Shortcut { get; set; }
 
 		bool Enabled { get; set; }
 	}
@@ -72,7 +72,7 @@ namespace Eto.Forms
 			set { Handler.Enabled = value; }
 		}
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get { return Handler.Shortcut; }
 			set { Handler.Shortcut = value; }

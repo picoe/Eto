@@ -458,11 +458,11 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		Key key;
+		Keys key;
 		bool handled;
 		char keyChar;
 		bool charPressed;
-		public Key? LastKeyDown { get; set; }
+		public Keys? LastKeyDown { get; set; }
 
 		void Control_KeyDown(object sender, System.Windows.Forms.KeyEventArgs e)
 		{
@@ -470,7 +470,7 @@ namespace Eto.Platform.Windows
 			handled = true;
 			key = e.KeyData.ToEto();
 
-			if (key != Key.None && LastKeyDown != key)
+			if (key != Keys.None && LastKeyDown != key)
 			{
 				var kpea = new KeyEventArgs(key, KeyEventType.KeyDown);
 				Widget.OnKeyDown(kpea);

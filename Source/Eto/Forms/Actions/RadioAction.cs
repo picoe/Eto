@@ -11,7 +11,7 @@ namespace Eto.Forms
 			return AddRadio(actions, controller, id, text, string.Empty, null, null);
 		}
 		
-		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource(Assembly.GetCallingAssembly(), iconResource);

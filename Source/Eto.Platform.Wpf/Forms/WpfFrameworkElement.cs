@@ -305,7 +305,7 @@ namespace Eto.Platform.Wpf.Forms
 					{
 						foreach (var keyChar in e.Text)
 						{
-							var key = Key.None;
+							var key = Keys.None;
 							var args = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
 							Widget.OnKeyDown(args);
 							e.Handled |= args.Handled;

@@ -15,7 +15,7 @@ namespace Eto.Forms
 			return action;
 		}
 		
-		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
@@ -42,7 +42,7 @@ namespace Eto.Forms
 		}
 
 		
-		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static ButtonAction AddButton(this ActionCollection actions, string id, string text, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
 			var action = new ButtonAction(id, text, activated);
 			action.Accelerators = accelerators;

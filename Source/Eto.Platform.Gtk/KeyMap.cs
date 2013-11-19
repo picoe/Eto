@@ -24,20 +24,20 @@ namespace Eto.Platform.GtkSharp
 			return result;
 		}
 
-		public static Gdk.Key ToGdkKey (this Key key)
+		public static Gdk.Key ToGdkKey (this Keys key)
 		{
 			Gdk.Key result;
-			if (inversekeymap.TryGetValue(key & Key.KeyMask, out result)) return result;
+			if (inversekeymap.TryGetValue(key & Keys.KeyMask, out result)) return result;
 			return (Gdk.Key)0;
 		}
 
-		public static Gdk.ModifierType ToGdkModifier (this Key key)
+		public static Gdk.ModifierType ToGdkModifier (this Keys key)
 		{
 			Gdk.ModifierType result = Gdk.ModifierType.None;
-			if ((key & Key.Alt) > 0) result |= Gdk.ModifierType.Mod1Mask;
-			if ((key & Key.Control) > 0) result |= Gdk.ModifierType.ControlMask;
-			if ((key & Key.Application) > 0) result |= Gdk.ModifierType.SuperMask;
-			if ((key & Key.Shift) > 0) result |= Gdk.ModifierType.ShiftMask;
+			if (key.HasFlag(Keys.Alt)) result |= Gdk.ModifierType.Mod1Mask;
+			if (key.HasFlag(Keys.Control)) result |= Gdk.ModifierType.ControlMask;
+			if (key.HasFlag(Keys.Application)) result |= Gdk.ModifierType.SuperMask;
+			if (key.HasFlag(Keys.Shift)) result |= Gdk.ModifierType.ShiftMask;
 			return result;
 		}
 		

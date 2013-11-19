@@ -121,8 +121,6 @@ namespace Eto.Forms
 		public virtual void OnKeyDown(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyDownEvent, this, e);
-			if (!e.Handled && Parent != null)
-				Parent.OnKeyDown(e);
 		}
 
 		public const string KeyUpEvent = "Control.KeyUp";
@@ -136,8 +134,6 @@ namespace Eto.Forms
 		public virtual void OnKeyUp(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyUpEvent, this, e);
-			if (!e.Handled && Parent != null)
-				Parent.OnKeyUp(e);
 		}
 
 		public const string TextInputEvent = "Control.TextInput";

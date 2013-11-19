@@ -57,7 +57,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get { return Control.ShortcutKeys.ToEto (); }
 			set 

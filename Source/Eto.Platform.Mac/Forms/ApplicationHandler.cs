@@ -154,31 +154,31 @@ namespace Eto.Platform.Mac.Forms
 			args.Actions.AddButton("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
 			{
 				NSApplication.SharedApplication.Hide(NSApplication.SharedApplication);
-			}, Key.H | Key.Application);
+			}, Keys.H | Keys.Application);
 			args.Actions.AddButton("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate
 			{
 				NSApplication.SharedApplication.HideOtherApplications(NSApplication.SharedApplication);
-			}, Key.H | Key.Application | Key.Alt);
+			}, Keys.H | Keys.Application | Keys.Alt);
 			args.Actions.AddButton("mac_showall", "Show All|Show All|Show All Windows", delegate
 			{
 				NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication);
 			});
 			
-			args.Actions.Add(new MacButtonAction("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Accelerator = Key.Application | Key.M });
+			args.Actions.Add(new MacButtonAction("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Accelerator = Keys.Application | Keys.M });
 			args.Actions.Add(new MacButtonAction("mac_performZoom", "Zoom", "performZoom:"));
-			args.Actions.Add(new MacButtonAction("mac_performClose", "Close", "performClose:") { Accelerator = Key.Application | Key.W });
+			args.Actions.Add(new MacButtonAction("mac_performClose", "Close", "performClose:") { Accelerator = Keys.Application | Keys.W });
 			args.Actions.Add(new MacButtonAction("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:"));
-			args.Actions.Add(new MacButtonAction("mac_cut", "Cut", "cut:") { Accelerator = Key.Application | Key.X });
-			args.Actions.Add(new MacButtonAction("mac_copy", "Copy", "copy:") { Accelerator = Key.Application | Key.C });
-			args.Actions.Add(new MacButtonAction("mac_paste", "Paste", "paste:") { Accelerator = Key.Application | Key.V });
-			args.Actions.Add(new MacButtonAction("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Accelerator = Key.Application | Key.Alt | Key.Shift | Key.V });
+			args.Actions.Add(new MacButtonAction("mac_cut", "Cut", "cut:") { Accelerator = Keys.Application | Keys.X });
+			args.Actions.Add(new MacButtonAction("mac_copy", "Copy", "copy:") { Accelerator = Keys.Application | Keys.C });
+			args.Actions.Add(new MacButtonAction("mac_paste", "Paste", "paste:") { Accelerator = Keys.Application | Keys.V });
+			args.Actions.Add(new MacButtonAction("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Accelerator = Keys.Application | Keys.Alt | Keys.Shift | Keys.V });
 			args.Actions.Add(new MacButtonAction("mac_delete", "Delete", "delete:"));
-			args.Actions.Add(new MacButtonAction("mac_selectAll", "Select All", "selectAll:") { Accelerator = Key.Application | Key.A });
-			args.Actions.Add(new MacButtonAction("mac_undo", "Undo", "undo:") { Accelerator = Key.Application | Key.Z });
-			args.Actions.Add(new MacButtonAction("mac_redo", "Redo", "redo:") { Accelerator = Key.Application | Key.Shift | Key.Z });
-			args.Actions.Add(new MacButtonAction("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Key.Application | Key.Control | Key.F });
-			args.Actions.Add(new MacButtonAction("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Accelerator = Key.Application | Key.Shift | Key.P });
-			args.Actions.Add(new MacButtonAction("mac_print", "Print...", "print:") { Accelerator = Key.Application | Key.P });
+			args.Actions.Add(new MacButtonAction("mac_selectAll", "Select All", "selectAll:") { Accelerator = Keys.Application | Keys.A });
+			args.Actions.Add(new MacButtonAction("mac_undo", "Undo", "undo:") { Accelerator = Keys.Application | Keys.Z });
+			args.Actions.Add(new MacButtonAction("mac_redo", "Redo", "redo:") { Accelerator = Keys.Application | Keys.Shift | Keys.Z });
+			args.Actions.Add(new MacButtonAction("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Keys.Application | Keys.Control | Keys.F });
+			args.Actions.Add(new MacButtonAction("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Accelerator = Keys.Application | Keys.Shift | Keys.P });
+			args.Actions.Add(new MacButtonAction("mac_print", "Print...", "print:") { Accelerator = Keys.Application | Keys.P });
 
 			if (addStandardItems)
 			{
@@ -239,19 +239,19 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
 			get
 			{
-				return Key.Application;
+				return Keys.Application;
 			}
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
 			get
 			{
-				return Key.Alt;
+				return Keys.Alt;
 			}
 		}
 	}

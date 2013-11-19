@@ -193,19 +193,19 @@ namespace Eto.Platform.Windows
 				context.Post(state => action(), null);
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
 			get
 			{
-				return Key.Control;
+				return Keys.Control;
 			}
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
 			get
 			{
-				return Key.Alt;
+				return Keys.Alt;
 			}
 		}
 	}

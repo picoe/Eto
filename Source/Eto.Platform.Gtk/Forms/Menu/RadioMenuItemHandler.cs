@@ -10,7 +10,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		string tooltip;
 		string text = string.Empty;
-		Key shortcut = Key.None;
+		Keys shortcut;
 		Gtk.AccelLabel label;
 		Gtk.Label accelLabel;
 		bool isActivating;
@@ -60,7 +60,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public Key Shortcut {
+		public Keys Shortcut {
 			get { return shortcut; }
 			set {
 				shortcut = value;

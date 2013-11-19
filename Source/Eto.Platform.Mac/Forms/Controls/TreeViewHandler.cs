@@ -299,7 +299,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 					break;
 				case TreeView.ActivatedEvent:
 					Widget.KeyDown += (sender, e) => {
-						if (!column.Editable && e.KeyData == Key.Enter)
+						if (!column.Editable && e.KeyData == Keys.Enter)
 						{
 							Widget.OnActivated(new TreeViewItemEventArgs(SelectedItem));
 						}

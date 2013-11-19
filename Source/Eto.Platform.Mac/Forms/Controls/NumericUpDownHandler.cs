@@ -98,13 +98,13 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void PostKeyDown(KeyEventArgs e)
 		{
 			base.PostKeyDown(e);
-			if (e.KeyData == Key.Down)
+			if (e.KeyData == Keys.Down)
 			{
 				Value = Math.Max(Value - 1, MinValue);
 				Widget.OnValueChanged(EventArgs.Empty);
 				e.Handled = true;
 			}
-			else if (e.KeyData == Key.Up)
+			else if (e.KeyData == Keys.Up)
 			{
 				Value = Math.Min(Value + 1, MaxValue);
 				Widget.OnValueChanged(EventArgs.Empty);
