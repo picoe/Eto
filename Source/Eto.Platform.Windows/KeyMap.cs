@@ -26,8 +26,7 @@ namespace Eto.Platform.Windows
             if ((keyData & swf.Keys.Alt) == swf.Keys.Alt)
                 modifiers |= Keys.Alt;
 
-            var keyCode =
-                Find(keyData & ~(swf.Keys.Shift | swf.Keys.Control | swf.Keys.Alt));
+            var keyCode = Find(keyData & swf.Keys.KeyCode);
 
             return keyCode | modifiers;
         }
@@ -128,6 +127,8 @@ namespace Eto.Platform.Windows
 			keymap.Add(swf.Keys.Control, Keys.Control);
 			keymap.Add(swf.Keys.Shift, Keys.Shift);
 			keymap.Add(swf.Keys.Menu, Keys.Menu);
+			keymap.Add(swf.Keys.LWin, Keys.Application);
+			keymap.Add(swf.Keys.RWin, Keys.Application);
 			keymap.Add(swf.Keys.Escape, Keys.Escape);
 			keymap.Add(swf.Keys.Delete, Keys.Delete);
 			keymap.Add(swf.Keys.Back, Keys.Backspace);
@@ -140,7 +141,7 @@ namespace Eto.Platform.Windows
 			
 			foreach (var entry in keymap)
 			{
-				inverse.Add(entry.Value, entry.Key);
+				inverse[entry.Value] = entry.Key;
 			}
 		}
 	}

@@ -65,7 +65,7 @@ namespace Eto.Platform.Windows
 
 		protected override void Initialize()
 		{
-			Control.KeyPreview = true;
+			Control.KeyPreview = !ApplicationHandler.BubbleKeyEvents;
 			Control.FormBorderStyle = DefaultWindowStyle;
 			resizable = Control.FormBorderStyle.IsResizable();
 			content = new swf.Panel

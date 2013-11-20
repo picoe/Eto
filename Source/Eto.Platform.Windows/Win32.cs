@@ -85,6 +85,17 @@ namespace Eto.Platform
 		public enum WM
 		{
 			SETREDRAW = 0xB,
+
+			GETDLGCODE = 0x0087,
+
+			KEYDOWN = 0x0100,
+			KEYUP = 0x0101,
+			CHAR = 0x0102,
+			SYSKEYDOWN = 0x0104,
+			SYSKEYUP = 0x0105,
+			SYSCHAR = 0x0106,
+			IME_CHAR = 0x0286,
+
 			MOUSEMOVE = 0x0200,
 			LBUTTONDOWN = 0x0201,
 			LBUTTONUP = 0x0202,
@@ -95,7 +106,7 @@ namespace Eto.Platform
 			MBUTTONDOWN = 0x0207,
 			MBUTTONUP = 0x0208,
 			MBUTTONDBLCLK = 0x0209,
-			MOUSEWHEEL = 0x20A
+			MOUSEWHEEL = 0x20A,
 		}
 
 		public static ushort LOWORD (IntPtr word) { return (ushort)(((long)word) & 0xffff); }
@@ -162,5 +173,27 @@ namespace Eto.Platform
 
 		[DllImport("user32.dll")]
 		public static extern IntPtr SendMessage(IntPtr hWnd, WM wMsg, IntPtr wParam, IntPtr lParam);
+
+		[DllImport("user32.dll", CharSet = CharSet.Auto)]
+		public static extern bool PeekMessage(ref Message wMsg, IntPtr hwnd, int msgMin, int msgMax, int remove);
+
+
+		public static Message? GetNextMessage(Control ctl, params WM[] wMsg)
+		{
+			Message? msg = null;
+			Message pmsg = default(Message);
+			var ret = false;
+			do
+			{
+				ret = false;
+				foreach (var wm in wMsg)
+				{
+					ret |= PeekMessage(ref pmsg, ctl.Handle, (int)wm, (int)wm, 0);
+					if (ret)
+						msg = pmsg;
+				}
+			} while (ret);
+			return msg;
+		}
 	}
 }
