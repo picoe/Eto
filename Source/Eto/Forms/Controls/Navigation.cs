@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface INavigation : IControl
+	public interface INavigation : IContainer
 	{
 		void Push (INavigationItem item);
 

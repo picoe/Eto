@@ -100,12 +100,12 @@ namespace Eto.Platform.iOS.Forms
 			
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
 			get { return Key.Application; }
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
 			get { return Key.Alt; }
 		}

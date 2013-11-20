@@ -1,4 +1,4 @@
-#if !IOS
+#if !MOBILE
 using System;
 using SharpCompress.Reader;
 using SharpCompress.Archive;
