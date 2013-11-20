@@ -276,6 +276,7 @@
     <Compile Include="EtoWebView.cs" />
     <Compile Include="Forms\GtkDockContainer.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

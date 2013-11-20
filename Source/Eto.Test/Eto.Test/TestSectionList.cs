@@ -40,6 +40,7 @@ namespace Eto.Test
 			yield return new Section<ComboBoxSection> { Text = "Combo Box" };
 			yield return new Section<GroupBoxSection> { Text = "Group Box" };
 			yield return new Section<SliderSection> { Text = "Slider" };
+			yield return new Section<SpinnerSection> { Text = "Spinner" };
 			yield return new Section<GridViewSection> { Text = "Grid View" };
 			yield return new Section<GridCellFormattingSection> { Text = "Grid Cell Formatting" };
 			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
