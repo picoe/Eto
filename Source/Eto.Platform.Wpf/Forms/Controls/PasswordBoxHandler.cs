@@ -22,6 +22,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public override bool UseMousePreview { get { return true; } }
 
+		public override bool UseKeyPreview { get { return true; } }
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)

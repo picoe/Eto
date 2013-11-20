@@ -92,6 +92,8 @@ namespace Eto.Platform.Wpf.Forms
 
 		public virtual bool UseMousePreview { get { return false; } }
 
+		public virtual bool UseKeyPreview { get { return false; } }
+
 		public sw.Size ParentMinimumSize
 		{
 			get { return parentMinimumSize; }
@@ -301,22 +303,16 @@ namespace Eto.Platform.Wpf.Forms
 					};
 					break;
 				case Eto.Forms.Control.KeyDownEvent:
-					Control.TextInput += (sender, e) =>
+					if (UseKeyPreview)
 					{
-						foreach (var keyChar in e.Text)
-						{
-							var key = Keys.None;
-							var args = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
-							Widget.OnKeyDown(args);
-							e.Handled |= args.Handled;
-						}
-					};
-					Control.KeyDown += (sender, e) =>
+						Control.PreviewKeyDown += HandleKeyDown;
+						Control.PreviewTextInput += HandleTextInput;
+					}
+					else
 					{
-						var args = e.ToEto(KeyEventType.KeyDown);
-						Widget.OnKeyDown(args);
-						e.Handled = args.Handled;
-					};
+						Control.KeyDown += HandleKeyDown;
+						Control.TextInput += HandleTextInput;
+					}
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					Control.KeyUp += (sender, e) =>
@@ -345,6 +341,24 @@ namespace Eto.Platform.Wpf.Forms
 					base.AttachEvent(id);
 					break;
 			}
+		}
+
+		void HandleTextInput(object sender, swi.TextCompositionEventArgs e)
+		{
+			foreach (var keyChar in e.Text)
+			{
+				var key = Keys.None;
+				var args = new KeyEventArgs(key, KeyEventType.KeyDown, keyChar);
+				Widget.OnKeyDown(args);
+				e.Handled |= args.Handled;
+			}
+		}
+
+		void HandleKeyDown(object sender, swi.KeyEventArgs e)
+		{
+			var args = e.ToEto(KeyEventType.KeyDown);
+			Widget.OnKeyDown(args);
+			e.Handled = args.Handled;
 		}
 
 		void HandleMouseMove(object sender, swi.MouseEventArgs e)
