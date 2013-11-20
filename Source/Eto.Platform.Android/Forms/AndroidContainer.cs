@@ -19,6 +19,8 @@ namespace Eto.Platform.Android.Forms
 		{
 		}
 
+		public virtual bool RecurseToChildren { get { return true; } }
+
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }
 	}
 }

@@ -98,6 +98,7 @@
     <Compile Include="Forms\Controls\AndroidCommonControl.cs" />
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

@@ -104,7 +104,7 @@ namespace Eto.Platform.Android.Forms
 			}
 		}
 
-		public bool Enabled
+		public virtual bool Enabled
 		{
 			get
 			{
