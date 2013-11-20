@@ -72,7 +72,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var handler = GetHandler(((NSView)sender).Superview) as NumericUpDownHandler;
 			if (handler != null)
 			{
-				handler.text.DoubleValue = handler.stepper.DoubleValue;
+				var val = handler.stepper.DoubleValue;
+				if (Math.Abs(val) < 1E-10)
+				{
+					handler.text.IntValue = 0;
+				}
+				else
+				{
+					handler.text.DoubleValue = handler.stepper.DoubleValue;
+				}
 				handler.Widget.OnValueChanged(EventArgs.Empty);
 			}
 		}
@@ -100,14 +108,24 @@ namespace Eto.Platform.Mac.Forms.Controls
 			base.PostKeyDown(e);
 			if (e.KeyData == Keys.Down)
 			{
-				Value = Math.Max(Value - 1, MinValue);
-				Widget.OnValueChanged(EventArgs.Empty);
+				var val = Value;
+				var newval = Math.Max(val - 1, MinValue);
+				if (newval < val)
+				{
+					Value = newval;
+					Widget.OnValueChanged(EventArgs.Empty);
+				}
 				e.Handled = true;
 			}
 			else if (e.KeyData == Keys.Up)
 			{
-				Value = Math.Min(Value + 1, MaxValue);
-				Widget.OnValueChanged(EventArgs.Empty);
+				var val = Value;
+				var newval = Math.Min(val + 1, MaxValue);
+				if (newval > val)
+				{
+					Value = newval;
+					Widget.OnValueChanged(EventArgs.Empty);
+				}
 				e.Handled = true;
 			}
 		}
@@ -138,9 +156,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			get { return text.DoubleValue; }
 			set
-			{ 
-				text.DoubleValue = value;
-				stepper.DoubleValue = value;
+			{
+				if (Math.Abs(value) < 1E-10)
+				{
+					stepper.IntValue = text.IntValue = 0;
+				}
+				else
+				{
+					stepper.DoubleValue = text.DoubleValue = value;
+				}
 			}
 		}
 
