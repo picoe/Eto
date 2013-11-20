@@ -234,9 +234,6 @@ namespace Eto.Platform.Mac.Forms
 						Widget.OnLostFocus(EventArgs.Empty);
 					};
 					break;
-				case Eto.Forms.Control.KeyDownEvent:
-				// TODO
-					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					{
 						Size? oldSize = null;

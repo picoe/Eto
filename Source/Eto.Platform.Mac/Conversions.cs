@@ -274,7 +274,7 @@ namespace Eto.Platform.Mac
 			}
 		}
 
-		public static KeyEventArgs ToEtoKeyPressEventArgs(this NSEvent theEvent)
+		public static KeyEventArgs ToEtoKeyEventArgs(this NSEvent theEvent)
 		{
 			char keyChar = !string.IsNullOrEmpty(theEvent.Characters) ? theEvent.Characters[0] : '\0';
 			Keys key = KeyMap.MapKey(theEvent.KeyCode);
