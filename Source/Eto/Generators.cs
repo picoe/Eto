@@ -14,7 +14,7 @@ namespace Eto
 		/// <summary>
 		/// Assembly name of the Direct2D platform
 		/// </summary>
-		public const string Direct2DAssembly = "Eto2.Platform.Direct2D.Generator, Eto2.Platform.Direct2D";
+		public const string Direct2DAssembly = "Eto.Platform.Direct2D.Generator, Eto.Platform.Direct2D";
 
 		/// <summary>
 		/// ID of the iOS platform

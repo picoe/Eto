@@ -27,13 +27,13 @@ namespace Eto.Platform.Direct2D
 		public static new void AddTo(Eto.Generator g)
 		{
 			// Drawing
-			g.Add<IBitmap>(() => new BitmapHandler());
+			//g.Add<IBitmap>(() => new BitmapHandler());
 			//g.Add<IFontFamily>(() => new FontFamilyHandler());
 			g.Add<IFont>(() => new FontHandler());
 			g.Add<IFonts>(() => new FontsHandler());
 			g.Add<IGraphics>(() => new GraphicsHandler());
 			g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
-			g.Add<IIcon>(() => new IconHandler());
+			//g.Add<IIcon>(() => new IconHandler());
 			//g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());
