@@ -11,6 +11,11 @@ namespace Eto.Platform.Direct2D.Drawing
 	{
 		#region Constructors
 
+		public GraphicsHandler(sd.RenderTarget target)
+		{
+			this.Control = target;
+		}
+
 		public GraphicsHandler()
 		{
 		}
