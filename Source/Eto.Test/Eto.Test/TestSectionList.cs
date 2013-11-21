@@ -67,6 +67,9 @@ namespace Eto.Test
 			yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
+#if Windows
+			yield return new Section<Direct2DSection> { Text = "Direct2D Drawing on a Winforms Control" };
+#endif
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
