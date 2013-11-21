@@ -10,10 +10,7 @@ using sw = SharpDX.DirectWrite;
 namespace Eto.Platform.Direct2D.Drawing
 {
     public class FontHandler : WidgetHandler<sw.Font, Font>, IFont
-    {
-        // Static factory
-        static sw.Factory Factory = new sw.Factory();
-        
+    {        
         private float sizeInPoints = 0f;
         string familyName;
         FontStyle style;
@@ -59,7 +56,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
             this.textFormat =
                 new sw.TextFormat(
-                    Factory,
+					SDFactory.DirectWriteFactory,
                     familyName,
                     null, // font collection
                     w,
@@ -102,7 +99,7 @@ namespace Eto.Platform.Direct2D.Drawing
         {
             if (fontCollection == null)
                 fontCollection =
-                Factory.GetSystemFontCollection(
+                SDFactory.DirectWriteFactory.GetSystemFontCollection(
                     checkForUpdates: false);
 
             return fontCollection;

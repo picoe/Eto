@@ -11,12 +11,10 @@ namespace Eto.Platform.Direct2D.Drawing
 {
     public class BitmapHandler : WidgetHandler<sd.Bitmap, Bitmap>, IBitmap
     {
-        static s.WIC.ImagingFactory Factory = new s.WIC.ImagingFactory();
-
         public void Create(string filename)
         {
             using (var decoder = new s.WIC.BitmapDecoder(
-                Factory,
+                SDFactory.WicImagingFactory,
                 filename,
                 s.WIC.DecodeOptions.CacheOnDemand))
                 Initialize(decoder);
@@ -26,7 +24,7 @@ namespace Eto.Platform.Direct2D.Drawing
         {
             using (var frame = decoder.GetFrame(0))
             {
-                using (var f = new s.WIC.FormatConverter(Factory))
+				using (var f = new s.WIC.FormatConverter(SDFactory.WicImagingFactory))
                 {
                     f.Initialize(
                         frame,
@@ -49,7 +47,7 @@ namespace Eto.Platform.Direct2D.Drawing
         public void Create(System.IO.Stream stream)
         {
             using (var decoder = new s.WIC.BitmapDecoder(
-                Factory,
+				SDFactory.WicImagingFactory,
                 stream,
                 s.WIC.DecodeOptions.CacheOnDemand))
                 Initialize(decoder);

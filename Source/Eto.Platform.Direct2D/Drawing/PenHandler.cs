@@ -23,7 +23,7 @@ namespace Eto.Platform.Direct2D.Drawing
                 if (strokeStyle == null)
                 {
                     strokeStyle = new sd.StrokeStyle(
-                        SDFactory.Instance,
+                        SDFactory.D2D1Factory,
                         new sd.StrokeStyleProperties
                         {
                             DashStyle = sd.DashStyle.Solid,

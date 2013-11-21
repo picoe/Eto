@@ -18,7 +18,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public GraphicsPathHandler()
         {
-            this.Control = new sd.PathGeometry(SDFactory.Instance);
+            this.Control = new sd.PathGeometry(SDFactory.D2D1Factory);
             this.sink = this.Control.Open();
         }
 

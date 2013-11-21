@@ -8,19 +8,15 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    static class SDFactory
+    public static class SDFactory
     {
-        static sd.Factory instance;
-        
-        public static sd.Factory Instance
-        {
-            get
-            {
-                if (instance == null)
-                    instance = new sd.Factory();
+        static sd.Factory d2D1Factory;        
+        public static sd.Factory D2D1Factory { get { return d2D1Factory = d2D1Factory ?? new sd.Factory(); } }
 
-                return instance;
-            }
-        }
+		static s.WIC.ImagingFactory wicImagingFactory;
+		public static s.WIC.ImagingFactory WicImagingFactory { get { return wicImagingFactory = wicImagingFactory ?? new s.WIC.ImagingFactory(); } }
+
+		static sw.Factory directWriteFactory;
+		public static sw.Factory DirectWriteFactory { get { return directWriteFactory = directWriteFactory ?? new sw.Factory(); } }
     }
 }
