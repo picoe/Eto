@@ -11,9 +11,8 @@ namespace Eto.Test.Sections.Drawing
 	public class Direct2DSection : Drawable
 	{
 		public Direct2DSection()
-		{
-			const string Eto2D2DAssembly = "Eto2.Platform.Direct2D.Generator, Eto2.Platform.Direct2D";
-			var d2d = Generator.GetGenerator(Eto2D2DAssembly);
+		{			
+			var d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
 
 			using (var context = new GeneratorContext(d2d))
 			{

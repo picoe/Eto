@@ -13,7 +13,7 @@ namespace Eto.Platform.Direct2D
     {
         public override string ID
         {
-            get { return "Direct2D"; }
+            get { return Generators.Direct2D; }
         }
 
         public Generator()
