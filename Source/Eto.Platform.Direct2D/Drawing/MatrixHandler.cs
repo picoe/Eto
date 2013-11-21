@@ -1,3 +1,4 @@
+using System;
 using Eto.Drawing;
 using s = SharpDX;
 
@@ -53,7 +54,11 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void RotateAt(float angle, float centerX, float centerY)
 		{
-			throw new System.NotImplementedException();
+			angle = Conversions.DegreesToRadians(angle);
+			var sina = (float)Math.Sin(angle);
+			var cosa = (float)Math.Cos(angle);
+			var matrix = new s.Matrix3x2(cosa, sina, -sina, cosa, centerX - centerX * cosa + centerY * sina, centerY - centerX * sina - centerY * cosa);
+			Control = s.Matrix3x2.Multiply(matrix, Control);
 		}
 
         public void Translate(float x, float y)
@@ -68,12 +73,14 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Skew(float skewX, float skewY)
 		{
-			throw new System.NotImplementedException();
+			var matrix = new s.Matrix3x2(1, (float)Math.Tan(Conversions.DegreesToRadians(skewX)), (float)Math.Tan(Conversions.DegreesToRadians(skewY)), 1, 0, 0);
+			Control = s.Matrix3x2.Multiply(matrix, Control);
 		}
 
 		public void ScaleAt(float scaleX, float scaleY, float centerX, float centerY)
 		{
-			throw new System.NotImplementedException();
+			var matrix = new s.Matrix3x2(scaleX, 0f, 0f, scaleY, centerX - centerX * scaleX, centerY - centerY * scaleY);
+			Control = s.Matrix3x2.Multiply(matrix, Control);
 		}
 
 		public void Prepend(IMatrix matrix)
@@ -90,6 +97,11 @@ namespace Eto.Platform.Direct2D.Drawing
         {
             this.Control = new s.Matrix3x2(m11, m12, m21, m22, dx, dy);
         }
+
+		public void Create()
+		{
+			this.Control = s.Matrix3x2.Identity;
+		}
 
         public void Invert()
         {
@@ -113,11 +125,6 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			s.DrawingPointF v = s.Matrix3x2.TransformPoint(this.Control, p.ToWpf()); // implicit conversion from Vector2 to DrawingPointF
 			return v.ToEto();
-		}
-
-		public void Create()
-		{
-			throw new System.NotImplementedException();
 		}
 
 		public float Xx
@@ -158,7 +165,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public object ControlObject
 		{
-			get { throw new System.NotImplementedException(); }
+			get { return Control; }
 		}
 
 		public IMatrix Clone()
