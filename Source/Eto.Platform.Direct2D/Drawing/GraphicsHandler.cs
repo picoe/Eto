@@ -297,6 +297,8 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void BeginDrawing()
 		{
 			Control.BeginDraw();
+			// BUGBUG: Remove this once Clear() works.
+			Control.Clear(Colors.Black.ToSD());
 		}
 
 		public void EndDrawing()

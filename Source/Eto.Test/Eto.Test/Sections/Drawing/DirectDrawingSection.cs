@@ -14,7 +14,7 @@ namespace Eto.Test.Sections.Drawing
 		public DirectDrawingSection ()
 		{
 			timer = new UITimer {
-				Interval = 0.01
+				Interval = 0.001
 			};
 			drawable = new Drawable ();
 			drawable.BackgroundColor = Colors.Black;
