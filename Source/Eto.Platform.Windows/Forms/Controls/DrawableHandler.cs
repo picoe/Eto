@@ -27,6 +27,11 @@ namespace Eto.Platform.Windows
 				this.SetStyle (swf.ControlStyles.SupportsTransparentBackColor, true);
 			}
 
+			public new void SetStyle(swf.ControlStyles flag, bool value)
+			{
+				base.SetStyle(flag, value);
+			}
+
 			public bool CanFocusMe
 			{
 				get { return canFocus; }

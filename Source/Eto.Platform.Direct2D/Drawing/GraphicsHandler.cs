@@ -124,7 +124,10 @@ namespace Eto.Platform.Direct2D.Drawing
 
 			var etoDrawable = o as Eto.Platform.Windows.DrawableHandler.EtoDrawable;
 			if (etoDrawable != null)
+			{
+				etoDrawable.SetStyle(swf.ControlStyles.SupportsTransparentBackColor | swf.ControlStyles.DoubleBuffer, false);
 				etoDrawable.SetStyle(swf.ControlStyles.AllPaintingInWmPaint | swf.ControlStyles.Opaque, true);
+			}
 
 			var renderProp = new sd.RenderTargetProperties
 			{
