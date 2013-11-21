@@ -7,7 +7,7 @@ using sd = SharpDX.Direct2D1;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
+	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics2
 	{
 		#region Constructors
 
@@ -24,7 +24,8 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		private sd.Brush GetBrush(Pen pen)
 		{
-			throw new NotImplementedException();
+			var color = pen.Color;
+			return new sd.SolidColorBrush(this.Control, color.ToSD());
 		}
 
 		private sd.Brush GetBrush(Color color)
@@ -249,7 +250,17 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Clear(SolidBrush brush)
 		{
-			throw new NotImplementedException();
+			Control.Clear(brush.Color.ToSD());
+		}
+
+		public void BeginDrawing()
+		{
+			Control.BeginDraw();
+		}
+
+		public void EndDrawing()
+		{
+			Control.EndDraw();
 		}
 	}
 }

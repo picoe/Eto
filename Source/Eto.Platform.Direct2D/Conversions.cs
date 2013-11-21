@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
+using Eto.Platform.Direct2D.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
@@ -11,10 +12,9 @@ namespace Eto.Platform.Direct2D
 {
     public static class Conversions
     {
-        public static s.Color ToWpf(this Color value)
+        public static s.Color4 ToSD(this Color color)
         {
-            throw new NotImplementedException();
-            //return s.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
+			return new s.Color4(color.R, color.G, color.B, color.A);
         }
 
         public static Color ToEto(this s.Color value)
@@ -341,6 +341,11 @@ namespace Eto.Platform.Direct2D
 		public static float DegreesToRadians(float angle)
 		{
 			return (float)Math.PI * angle / 180.0f;
+		}
+
+		public static PenData ToSD(this Pen pen)
+		{
+			return (PenData)pen.ControlObject;
 		}
     }
 }

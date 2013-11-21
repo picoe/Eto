@@ -98,27 +98,27 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public object Create(Color color, float thickness)
 		{
-			throw new NotImplementedException();
+			return new PenData { Color = color, Width = thickness };
 		}
 
 		public Color GetColor(Pen widget)
 		{
-			throw new NotImplementedException();
+			return widget.ToSD().Color;
 		}
 
 		public void SetColor(Pen widget, Color color)
 		{
-			throw new NotImplementedException();
+			widget.ToSD().Color = color;
 		}
 
 		public float GetThickness(Pen widget)
 		{
-			throw new NotImplementedException();
+			return widget.ToSD().Width;
 		}
 
 		public void SetThickness(Pen widget, float thickness)
 		{
-			throw new NotImplementedException();
+			widget.ToSD().Width = thickness;
 		}
 
 		public PenLineJoin GetLineJoin(Pen widget)

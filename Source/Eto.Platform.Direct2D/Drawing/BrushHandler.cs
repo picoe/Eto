@@ -23,7 +23,7 @@ namespace Eto.Platform.Direct2D.Drawing
             Control =
                 new sd.SolidColorBrush(
                     renderTarget: null, // BUGBUG: TODO
-                    color: color.ToWpf());
+                    color: color.ToSD());
         }
 
         public void Create(Bitmap b)
