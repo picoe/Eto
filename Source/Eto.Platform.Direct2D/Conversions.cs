@@ -17,9 +17,9 @@ namespace Eto.Platform.Direct2D
 			return new s.Color4(color.R, color.G, color.B, color.A);
         }
 
-        public static Color ToEto(this s.Color value)
+        public static Color ToEto(this s.Color4 value)
         {
-            return new Color { A = value.A / 255f, R = value.R / 255f, G = value.G / 255f, B = value.B / 255f };
+			return new Color { A = value.Alpha, R = value.Red, G = value.Green, B = value.Blue };
         }
 
 #if TODO

@@ -20,11 +20,15 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public void Create(Color color)
         {
-            Control =
-                new sd.SolidColorBrush(
-                    renderTarget: null, // BUGBUG: TODO
-                    color: color.ToSD());
+			Control = CreateBrush(ref color);
         }
+
+		public static sd.SolidColorBrush CreateBrush(ref Color color)
+		{
+			return new sd.SolidColorBrush(
+				renderTarget: null, // BUGBUG: TODO
+				color: color.ToSD());
+		}
 
         public void Create(Bitmap b)
         {

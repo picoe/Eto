@@ -37,7 +37,7 @@ namespace Eto.Platform.Direct2D
 			//g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());
-			//g.Add<ISolidBrush>(() => new SolidBrushHandler());
+			g.Add<ISolidBrush>(() => new SolidBrushHandler());
 			//g.Add<ITextureBrush>(() => new TextureBrushHandler());
 			//g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 
