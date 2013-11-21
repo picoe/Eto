@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Eto.Forms;
 
 namespace Eto.Drawing
 {
@@ -21,6 +22,12 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="image">Image to perform drawing operations on</param>
 		void CreateFromImage (Bitmap image);
+
+		/// <summary>
+		/// Creates the graphics object for drawing on the specified <paramref name="drawable"/>
+		/// </summary>
+		/// <param name="drawable">Drawable to perform drawing operations on</param>
+		void CreateFromDrawable(Drawable drawable);
 
 		/// <summary>
 		/// Draws a line with the specified <paramref name="pen"/>
@@ -314,7 +321,20 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the Generator class to draw on the given <paramref name="image"/>
+		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="drawable"/>
+		/// Use this method to connect a drawing toolkit to a windowing toolkit, 
+		/// e.g Direct2D over WinForms.
+		/// </summary>
+		/// <param name="drawable"></param>
+		public Graphics(Drawable drawable, Generator generator = null)
+			: base(generator, typeof(IGraphics), false)
+		{
+			Handler.CreateFromDrawable(drawable);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
 		/// </summary>
 		/// <param name="generator">Generator to create this graphics context for</param>
 		/// <param name="image">Image to draw on using this graphics context</param>

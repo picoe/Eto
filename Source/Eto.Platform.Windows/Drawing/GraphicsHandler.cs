@@ -88,6 +88,11 @@ namespace Eto.Platform.Windows.Drawing
 			Control = sd.Graphics.FromImage ((sd.Image)image.ControlObject);
 		}
 
+		public void CreateFromDrawable(Eto.Forms.Drawable drawable)
+		{
+			throw new NotImplementedException();
+		}
+
 		protected override void Initialize ()
 		{
 			base.Initialize ();

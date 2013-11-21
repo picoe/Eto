@@ -218,6 +218,11 @@ namespace Eto.Platform.iOS.Drawing
 				FlipDrawing();
 		}
 
+		public void CreateFromDrawable(Eto.Forms.Drawable drawable)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Reset()
 		{
 			// unwind all SaveState's

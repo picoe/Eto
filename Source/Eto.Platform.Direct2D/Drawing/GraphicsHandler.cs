@@ -3,7 +3,8 @@ using System.Collections.Generic;
 using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
-
+using swf = System.Windows.Forms;
+using Size2 = SharpDX.DrawingSize; // This has been changed to Size2 in more recent versions of SharpDx
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -115,6 +116,43 @@ namespace Eto.Platform.Direct2D.Drawing
 		void IGraphics.CreateFromImage(Bitmap image)
 		{
 			throw new NotImplementedException();
+		}
+
+		void IGraphics.CreateFromDrawable(Eto.Forms.Drawable drawable)
+		{
+			var o = drawable.ControlObject as swf.Control;
+
+			var etoDrawable = o as Eto.Platform.Windows.DrawableHandler.EtoDrawable;
+			if (etoDrawable != null)
+				etoDrawable.SetStyle(swf.ControlStyles.AllPaintingInWmPaint | swf.ControlStyles.Opaque, true);
+
+			var renderProp = new sd.RenderTargetProperties
+			{
+				DpiX = 0,
+				DpiY = 0,
+				MinLevel = sd.FeatureLevel.Level_10,
+				PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied),
+				Type = sd.RenderTargetType.Hardware,
+				Usage = sd.RenderTargetUsage.None
+			};
+
+			//set hwnd target properties (permit to attach Direct2D to window)
+			var winProp = new sd.HwndRenderTargetProperties
+			{
+				Hwnd = o.Handle,
+				PixelSize = new Size2(o.ClientSize.Width, o.ClientSize.Height),
+				PresentOptions = sd.PresentOptions.Immediately
+			};
+
+			//target creation
+			var target = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+
+			o.SizeChanged += (s, e) => {
+				target.Resize(new Size2(o.ClientSize.Width, o.ClientSize.Height));
+				drawable.Invalidate();
+			};
+
+			this.Control = target;
 		}
 
 		sd.Geometry GetGeometry(IGraphicsPath path)
