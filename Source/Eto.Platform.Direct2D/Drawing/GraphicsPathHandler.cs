@@ -9,6 +9,11 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IGraphicsPath"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
     public class GraphicsPathHandler : IGraphicsPathHandler
     {
 		sd.PathGeometry Control { get; set; }

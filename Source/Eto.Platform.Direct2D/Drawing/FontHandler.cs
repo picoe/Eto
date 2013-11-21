@@ -9,6 +9,11 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IFont"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
     public class FontHandler : WidgetHandler<sw.Font, Font>, IFont
     {        
         private float sizeInPoints = 0f;
@@ -21,6 +26,21 @@ namespace Eto.Platform.Direct2D.Drawing
         sw.FontFace fontFace = null;
         sw.TextFormat textFormat = null;
 
+
+		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
+		{
+			Create(family, size, style); // TODO: decoration
+		}
+
+		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
+		{
+			throw new NotImplementedException();
+		}
 
         public void Create(FontTypeface typeface, float sizeInPoints)
         {
@@ -232,21 +252,6 @@ namespace Eto.Platform.Direct2D.Drawing
 		public object ControlObject
 		{
 			get { throw new NotImplementedException(); }
-		}
-
-		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
-		{
-			throw new NotImplementedException();
 		}
 
 		public FontDecoration FontDecoration

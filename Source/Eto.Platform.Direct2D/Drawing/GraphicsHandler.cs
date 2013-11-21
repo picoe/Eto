@@ -8,6 +8,11 @@ using Size2 = SharpDX.DrawingSize; // This has been changed to Size2 in more rec
 
 namespace Eto.Platform.Direct2D.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IGraphics"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics2
 	{
 		#region Constructors

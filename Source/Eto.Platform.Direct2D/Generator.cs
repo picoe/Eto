@@ -28,7 +28,7 @@ namespace Eto.Platform.Direct2D
 		{
 			// Drawing
 			//g.Add<IBitmap>(() => new BitmapHandler());
-			//g.Add<IFontFamily>(() => new FontFamilyHandler());
+			g.Add<IFontFamily>(() => new FontFamilyHandler());
 			g.Add<IFont>(() => new FontHandler());
 			g.Add<IFonts>(() => new FontsHandler());
 			g.Add<IGraphics>(() => new GraphicsHandler());
