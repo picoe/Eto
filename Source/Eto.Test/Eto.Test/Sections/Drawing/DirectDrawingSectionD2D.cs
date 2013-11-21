@@ -4,9 +4,9 @@ using Eto.Forms;
 namespace Eto.Test.Sections.Drawing
 {
 #if Windows
-	public class Direct2DSection : Drawable
+	public class DirectDrawingSectionD2D : Drawable
 	{
-		public Direct2DSection()
+		public DirectDrawingSectionD2D()
 		{
 			var renderer = new DirectDrawingRenderer();
 		

@@ -53,7 +53,8 @@
     <Compile Include="Sections\Controls\TreeViewSection.cs" />
     <Compile Include="Sections\Dialogs\ColorDialogSection.cs" />
     <Compile Include="Sections\Dialogs\SelectFolderSection.cs" />
-    <Compile Include="Sections\Drawing\Direct2DSection.cs" />
+    <Compile Include="Sections\Drawing\DrawTextSectionD2D.cs" />
+    <Compile Include="Sections\Drawing\DirectDrawingSectionD2D.cs" />
     <Compile Include="Sections\Drawing\TextureBrushesSection2.cs" />
     <Compile Include="Sections\Drawing\TextureBrushesSection.cs" />
     <Compile Include="Sections\Drawing\BitmapSection.cs" />

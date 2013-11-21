@@ -56,7 +56,6 @@ namespace Eto.Test
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
 			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
-			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 			yield return new Section<PenSection> { Text = "Pens" };
@@ -67,10 +66,12 @@ namespace Eto.Test
 			yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
-#if Windows
-			yield return new Section<Direct2DSection> { Text = "Direct2D Drawing on a Winforms Control" };
-#endif
+			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };
+#if Windows
+			yield return new Section<DirectDrawingSectionD2D> { Text = "Direct Drawing using Direct2D on a Winforms Control" };
+			yield return new Section<DrawTextSectionD2D> { Text = "Draw Text using Direct2D on a Winforms Control" };
+#endif
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 		
