@@ -158,6 +158,11 @@ namespace Eto.Test
 		{
 			render(graphics);
 		}
+
+		public virtual DrawingToolkit Clone()
+		{
+			return new DrawingToolkit();
+		}
 	}
 
 #if Windows
@@ -185,6 +190,11 @@ namespace Eto.Test
 			}
 			catch (Exception) { }
 			this.graphics.EndDrawing();
+		}
+
+		public override DrawingToolkit Clone()
+		{
+			return new D2DToolkit();
 		}
 	}
 #endif

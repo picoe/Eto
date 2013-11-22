@@ -69,8 +69,11 @@ namespace Eto.Test
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };
 #if Windows
-			yield return new Section<DrawTextSection> { Text = "Draw Text using Direct2D on a Winforms Control", Creator = () => new DrawTextSection(new D2DToolkit()) };
-			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing using Direct2D on a Winforms Control", Creator = () => new DirectDrawingSection(new D2DToolkit()) };
+			var usingd2d = " using Direct2D on a Winforms Control";
+
+			yield return new Section<DrawTextSection> { Text = "Draw Text" + usingd2d, Creator = () => new DrawTextSection(new D2DToolkit()) };
+			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" + usingd2d, Creator = () => new DirectDrawingSection(new D2DToolkit()) };
+			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" + usingd2d, Creator = () => new GraphicsPathSection(new D2DToolkit()) };
 #endif
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}

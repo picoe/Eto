@@ -25,8 +25,13 @@ namespace Eto.Test.Sections.Drawing
 		GraphicsPathRenderer renderer;
 		GraphicsPathRendererConfig config;
 
-		public GraphicsPathSection()
+		public GraphicsPathSection() : this(null)
 		{
+		}
+
+		public GraphicsPathSection(DrawingToolkit toolkit)
+		{
+			toolkit = toolkit ?? new DrawingToolkit();
 			config = new GraphicsPathRendererConfig();
 			renderer = new GraphicsPathRenderer(config); // a shared configuration
 
@@ -39,8 +44,8 @@ namespace Eto.Test.Sections.Drawing
 			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
 			layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
 			layout.BeginVertical();
-			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath());
-			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath());
+			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath(toolkit.Clone()));
+			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath(toolkit.Clone()));
 			layout.EndVertical();
 
 			layout.Add(null);
@@ -122,17 +127,19 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		Control DrawLinePath()
+		Control DrawLinePath(DrawingToolkit toolkit)
 		{
 			var control = new Drawable { Size = new Size (550, 200) };
-			control.Paint += (sender, e) => renderer.Render(e.Graphics, fill: false);
+			toolkit.Initialize(control);
+			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => renderer.Render(g, fill: false));
 			return control;
 		}
 
-		Control FillLinePath()
+		Control FillLinePath(DrawingToolkit toolkit)
 		{
 			var control = new Drawable { Size = new Size (550, 200) };
-			control.Paint += (sender, e) => renderer.Render(e.Graphics, fill: true);
+			toolkit.Initialize(control);
+			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => renderer.Render(g, fill: true));
 			return control;
 		}
 	}
