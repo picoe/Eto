@@ -105,10 +105,6 @@
       <Project>{16289D2F-044C-49EF-83E9-9391AFF8FD2B}</Project>
       <Name>Eto</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\MyLibrary\MyLibrary.csproj">
-      <Project>{F9611917-B656-4128-A53A-2A5F8ABB544F}</Project>
-      <Name>MyLibrary</Name>
-    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

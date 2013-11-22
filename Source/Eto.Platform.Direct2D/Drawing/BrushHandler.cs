@@ -25,6 +25,8 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public static sd.SolidColorBrush CreateBrush(ref Color color)
 		{
+			return null;
+
 			return new sd.SolidColorBrush(
 				renderTarget: null, // BUGBUG: TODO
 				color: color.ToSD());

@@ -171,16 +171,23 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		void IGraphics.DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
-			throw new NotImplementedException();
+			var textLayout = GetTextLayout(font, text);
+			this.Control.DrawTextLayout(new s.DrawingPointF(x, y), textLayout, defaultForegroundBrush: null);
 		}
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			var fontHandler = (FontHandler)font.Handler;
-			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
+			var textLayout = GetTextLayout(font, text);
 			var width = textLayout.DetermineMinWidth();
 			var height = font.LineHeight; // is this correct?
 			return new SizeF(width, height);
+		}
+
+		private static sw.TextLayout GetTextLayout(Font font, string text)
+		{
+			var fontHandler = (FontHandler)font.Handler;
+			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
+			return textLayout;
 		}
 
 		void IGraphics.Flush()
@@ -194,22 +201,13 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			if (transformStack == null)
 				transformStack = new Stack<s.Matrix3x2>();
-
 			transformStack.Push(Control.Transform);
 		}
 
 		void IGraphics.RestoreTransform()
 		{
-			Control.Transform =
-				transformStack.Pop();
+			Control.Transform = transformStack.Pop();
 		}
-
-#if TODO
-		void IGraphics.Clear(Color color)
-		{
-			Control.Clear(color.ToWpf());
-		}
-#endif
 
 		public PixelOffsetMode PixelOffsetMode { get; set; } // TODO
 

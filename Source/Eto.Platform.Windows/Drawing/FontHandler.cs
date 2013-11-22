@@ -99,7 +99,6 @@ namespace Eto.Platform.Windows.Drawing
 			get { return Control.FontFamily.Name; }
 		}
 
-
 		public FontStyle FontStyle
 		{
 			get { return Control.Style.ToEtoStyle(); }
@@ -112,26 +111,12 @@ namespace Eto.Platform.Windows.Drawing
 
 		public FontFamily Family
 		{
-			get
-			{
-				if (family == null)
-				{
-					family = new FontFamily(Widget.Generator, new FontFamilyHandler(Control.FontFamily));
-				}
-				return family;
-			}
+			get { return family = family ?? new FontFamily(Widget.Generator, new FontFamilyHandler(Control.FontFamily)); }
 		}
 
 		public FontTypeface Typeface
 		{
-			get
-			{
-				if (typeface == null)
-				{
-					typeface = new FontTypeface(Family, new FontTypefaceHandler(Control.Style));
-				}
-				return typeface;
-			}
+			get { return typeface = typeface ?? new FontTypeface(Family, new FontTypefaceHandler(Control.Style)); }
 		}
 
 		public SD.FontFamily WindowsFamily
@@ -139,13 +124,9 @@ namespace Eto.Platform.Windows.Drawing
 			get { return Control.FontFamily; }
 		}
 
-
 		public float XHeight
 		{
-			get
-			{
-				return Size * 0.5f;
-			}
+			get { return Size * 0.5f; }
 		}
 
 		public float Baseline

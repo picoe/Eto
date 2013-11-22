@@ -158,32 +158,32 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public float XHeight
 		{
-			get { return this.Control.Metrics.XHeight; }
+			get { return Size * this.Control.Metrics.XHeight; }
 		}
 
 		public float Ascent
 		{
-			get { return this.Control.Metrics.Ascent; }
+			get { return Size * this.Control.Metrics.Ascent; }
 		}
 
 		public float Descent
 		{
-			get { return this.Control.Metrics.Descent; }
+			get { return Size * this.Control.Metrics.Descent; }
 		}
 
 		public float LineHeight
 		{
-			get { return Ascent + Descent + this.Control.Metrics.LineGap; }
+			get { return Ascent + Descent + Size * this.Control.Metrics.LineGap; }
 		}
 
 		public float Leading
 		{
-			get { return 0f; } // TODO
+			get { return LineHeight - (Ascent + Descent);} 
 		}
 
 		public float Baseline
 		{
-			get { throw new NotImplementedException(); }
+			get { return Ascent; }
 		}
 
 		public object ControlObject
