@@ -14,80 +14,83 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-    public class GraphicsPathHandler : IGraphicsPathHandler
-    {
+	public class GraphicsPathHandler : IGraphicsPathHandler
+	{
 		sd.PathGeometry Control { get; set; }
-        private sd.GeometrySink sink;
+		private sd.GeometrySink sink;
+		public PointF CurrentPoint { get; private set; }
+		public object ControlObject { get { return this.Control; } }
+		public RectangleF Bounds { get { return Control.GetBounds().ToEto(); } }
 
-        #region Constructors
+		#region Constructors
 
-        public GraphicsPathHandler()
-        {
-            this.Control = new sd.PathGeometry(SDFactory.D2D1Factory);
-            this.sink = this.Control.Open();
-        }
+		public GraphicsPathHandler()
+		{
+			this.Control = new sd.PathGeometry(SDFactory.D2D1Factory);
+			this.sink = this.Control.Open();
+		}
 
-        #endregion
+		#endregion
 
-        public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
-        {
-            sink.AddLine(pt1.ToWpf());
+		public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
+		{
+			sink.AddLine(pt1.ToWpf());
 
-            sink.AddBezier(new sd.BezierSegment
-            {
-                Point1 = pt2.ToWpf(),
-                Point2 = pt3.ToWpf(),
-                Point3 = pt4.ToWpf()
-            });
-        }
+			sink.AddBezier(new sd.BezierSegment
+			{
+				Point1 = pt2.ToWpf(),
+				Point2 = pt3.ToWpf(),
+				Point3 = pt4.ToWpf()
+			});
+		}
 
-        public void AddBeziers(Point[] p)
-        {
-            if (p != null &&
-                p.Length > 3)
-            {
-                sink.AddLine(p[0].ToWpf());
+		public void AddBeziers(Point[] p)
+		{
+			if (p != null &&
+				p.Length > 3)
+			{
+				sink.AddLine(p[0].ToWpf());
 
-                var i = 1;
-                while (p.Length > i + 2)
-                {
-                    sink.AddBezier(new sd.BezierSegment
-                    {
-                        Point1 = p[i].ToWpf(),
-                        Point2 = p[i + 1].ToWpf(),
-                        Point3 = p[i + 2].ToWpf()
-                    });
+				var i = 1;
+				while (p.Length > i + 2)
+				{
+					sink.AddBezier(new sd.BezierSegment
+					{
+						Point1 = p[i].ToWpf(),
+						Point2 = p[i + 1].ToWpf(),
+						Point3 = p[i + 2].ToWpf()
+					});
 
-                    i = i + 3;
-                }
-            }
-        }
+					i = i + 3;
+				}
+			}
+		}
 
 		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			throw new NotImplementedException();
 		}
-      
+
 		public void AddPath(IGraphicsPath path, bool connect)
 		{
 			throw new NotImplementedException();
 		}
 
-        public IGraphicsPath Clone()
-        {
-            throw new NotImplementedException();
-        }
+		public IGraphicsPath Clone()
+		{
+			throw new NotImplementedException();
+		}
 
-        public FillMode FillMode
-        {
+		public FillMode FillMode
+		{
 			get { throw new NotImplementedException(); }
-            set { throw new NotImplementedException(); }
-        }
+			set { throw new NotImplementedException(); }
+		}
 
-        public bool IsEmpty
-        {
-            get { throw new NotImplementedException(); }
-        }
+		public bool IsEmpty
+		{
+			get { throw new NotImplementedException(); }
+		}
 
 		public void StartFigure()
 		{
@@ -95,29 +98,19 @@ namespace Eto.Platform.Direct2D.Drawing
 			//sink.BeginFigure(
 		}
 
-        public void CloseFigure()
-        {
-            sink.EndFigure(sd.FigureEnd.Closed);
-        }
-
-        public void Translate(PointF point)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Transform(IMatrix matrix)
-        {
-            throw new NotImplementedException();
-        }
-
-        public object ControlObject
-        {
-			get { return this.Control; }
-        }
-
-		public PointF CurrentPoint
+		public void CloseFigure()
 		{
-			get { throw new NotImplementedException(); }
+			sink.EndFigure(sd.FigureEnd.Closed);
+		}
+
+		public void Translate(PointF point)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Transform(IMatrix matrix)
+		{
+			throw new NotImplementedException();
 		}
 
 		public void AddLine(float startX, float startY, float endX, float endY)
@@ -168,11 +161,6 @@ namespace Eto.Platform.Direct2D.Drawing
                    new s.DrawingPointF(left, bottom),
                    new s.DrawingPointF(left, top),
                 });
-		}
-
-		public RectangleF Bounds
-		{
-			get { return Control.GetBounds().ToEto(); }
 		}
 
 		public void AddLines(IEnumerable<PointF> points)
