@@ -18,7 +18,6 @@ namespace Eto.Platform.Direct2D.Drawing
     {
 		public sw.TextFormat TextFormat { get; private set; }
 
-		private float sizeInPoints;
         string familyName;
         FontStyle style;
 		FontDecoration decoration;
@@ -67,7 +66,7 @@ namespace Eto.Platform.Direct2D.Drawing
         private void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)
         {
             this.familyName = familyName;
-			this.sizeInPoints = sizeInPoints;
+			this.Size = sizeInPoints;
             this.style = style;
 			this.decoration = decoration;
 
@@ -148,10 +147,10 @@ namespace Eto.Platform.Direct2D.Drawing
 			get { return this.decoration; }
 		}
 
-        public float Size
-        {
-            get { return sizeInPoints; }
-        }
+		/// <summary>
+		/// The size in points.
+		/// </summary>
+		public float Size { get; private set; }
 
         public FontTypeface Typeface
         {

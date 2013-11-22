@@ -139,18 +139,17 @@ namespace Eto.Platform.Windows.Drawing
 			get { return LineHeight - (Ascent + Descent); }
 		}
 
-		float? ascentInPixels;
+		float? ascent;
 		public float Ascent
 		{
 			get
 			{
-				if (ascentInPixels == null)
-					ascentInPixels = Size * Control.FontFamily.GetCellAscent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
-				return ascentInPixels ?? 0f;
+				ascent = ascent ?? Size * Control.FontFamily.GetCellAscent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
+				return ascent ?? 0f;
 			}
 		}
 
-		float? descentInPixels;
+		float? descent;
 		/// <summary>
 		/// Gets the descent of the font
 		/// </summary>
@@ -161,10 +160,8 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get
 			{
-				if (descentInPixels == null)
-					descentInPixels = Size * Control.FontFamily.GetCellDescent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
-
-				return descentInPixels ?? 0f;
+				descent = descent ?? Size * Control.FontFamily.GetCellDescent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
+				return descent ?? 0f;
 			}
 		}
 

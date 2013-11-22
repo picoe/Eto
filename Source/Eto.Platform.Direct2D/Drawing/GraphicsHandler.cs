@@ -203,7 +203,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			var textLayout = GetTextLayout(font, text);
 			var width = textLayout.DetermineMinWidth();
-			var height = font.LineHeight; // is this correct?
+			var height = font.LineHeight * 96/72.0f; // is this correct?
 			return new SizeF(width, height);
 		}
 
