@@ -24,6 +24,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		GraphicsPathRenderer renderer;
 		GraphicsPathRendererConfig config;
+		event Action<GraphicsPath> PathChanged;
 
 		public GraphicsPathSection() : this(null)
 		{
@@ -34,13 +35,12 @@ namespace Eto.Test.Sections.Drawing
 			config = new GraphicsPathRendererConfig();
 			config.StartFigures = true;
 			config.PenThickness = 1;
-			
+
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
 			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
-			renderer = new GraphicsPathRenderer(config); // A shared config. Create the renderer after the bindings have been created.
-			if (toolkit == null) // we don't support these two for Direct2d yet because they create the path immediately (with the wrong Generator).
+			if (toolkit == null) // there's currently a bug preventing this from working with Direct2D
 				layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
 			layout.BeginVertical();
 			toolkit = toolkit ?? new DrawingToolkit();
@@ -50,6 +50,12 @@ namespace Eto.Test.Sections.Drawing
 			layout.Add(null);
 
 			Content = layout;
+
+			renderer = new GraphicsPathRenderer(config); // A shared config. Create the renderer after the bindings have been created.
+			renderer.PathChanged += path => {
+				if (this.PathChanged != null)
+					this.PathChanged(path);
+			};
 		}
 
 		Control StartFiguresControl()
@@ -105,15 +111,15 @@ namespace Eto.Test.Sections.Drawing
 
 		Control Bounds()
 		{
-			var control = new Label();
-			control.Text = string.Format("Bounds: {0}", renderer.Path.Bounds);
+			var control = new Label();			
+			PathChanged += path => control.Text = string.Format("Bounds: {0}", path.Bounds);
 			return control;
 		}
 
 		Control CurrentPoint()
 		{
 			var control = new Label();
-			control.Text = string.Format("CurrentPoint: {0}", renderer.Path.CurrentPoint);
+			PathChanged += path => control.Text = string.Format("CurrentPoint: {0}", path.CurrentPoint);
 			return control;
 		}
 
@@ -147,8 +153,22 @@ namespace Eto.Test.Sections.Drawing
 	{
 		GraphicsPathRendererConfig config;
 
+		public Action<GraphicsPath> PathChanged;
+
 		GraphicsPath path;
-		public GraphicsPath Path { get { return path = path ?? CreateMainPath(); } }
+		private GraphicsPath Path
+		{
+			get
+			{
+				if (path == null)
+				{
+					path = CreateMainPath();
+					if (PathChanged != null)
+						PathChanged(path);
+				}
+				return path;
+			}
+		}
 
 		public GraphicsPathRenderer(GraphicsPathRendererConfig config)
 		{

@@ -157,8 +157,14 @@ namespace Eto.Platform.Direct2D.Drawing
 			var target = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
 
 			o.SizeChanged += (s, e) => {
-				target.Resize(new Size2(o.ClientSize.Width, o.ClientSize.Height));
-				drawable.Invalidate();
+				try
+				{
+					target.Resize(new Size2(o.ClientSize.Width, o.ClientSize.Height));
+					drawable.Invalidate();
+				}
+				catch (Exception)
+				{
+				}
 			};
 
 			this.Control = target;

@@ -20,7 +20,14 @@ namespace Eto.Platform.Direct2D.Drawing
 		bool isInFigure = false;
 		public PointF CurrentPoint { get; private set; }
 		public object ControlObject { get { return this.Control; } }
-		public RectangleF Bounds { get { return Control.GetBounds().ToEto(); } }
+		public RectangleF Bounds
+		{
+			get
+			{
+				return new RectangleF(); // TODO: Fix
+				return Control.GetBounds().ToEto();
+			}
+		} 
 		sd.GeometrySink sink;
 		private sd.GeometrySink Sink
 		{
