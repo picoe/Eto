@@ -165,7 +165,6 @@ namespace Eto.Test
 		}
 	}
 
-#if Windows
 	public class D2DToolkit : DrawingToolkit
 	{
 		Graphics graphics;
@@ -197,6 +196,5 @@ namespace Eto.Test
 			return new D2DToolkit();
 		}
 	}
-#endif
 }
 
