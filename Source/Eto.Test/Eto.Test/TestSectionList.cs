@@ -72,6 +72,7 @@ namespace Eto.Test
 #if Windows
 			var usingd2d = " using Direct2D on a Winforms Control";
 
+			yield return new Section<BitmapSection> { Text = "Bitmap" + usingd2d, Creator = () => new BitmapSection(new D2DToolkit()) };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" + usingd2d, Creator = () => new DrawTextSection(new D2DToolkit()) };
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" + usingd2d, Creator = () => new DirectDrawingSection(new D2DToolkit()) };
 			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" + usingd2d, Creator = () => new GraphicsPathSection(new D2DToolkit()) };

@@ -28,10 +28,13 @@ namespace Eto.Test.Sections.Drawing
 		{
 			this.toolkit = toolkit.Clone();
 			this.Image = image;
+			toolkit.Initialize(this);
 
 			this.Paint += (s, e) => {
-				if (this.Image != null)
-					e.Graphics.DrawImage(this.Image, PointF.Empty);
+				toolkit.Render(e.Graphics, g => {
+					if (this.Image != null)
+						g.DrawImage(this.Image, PointF.Empty);
+				});
 			};
 		}
 	}
