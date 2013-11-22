@@ -18,7 +18,7 @@ namespace Eto.Platform.Direct2D.Drawing
     {
 		public sw.TextFormat TextFormat { get; private set; }
 
-		private float sizeInPoints = 0f;
+		private float sizeInPoints;
         string familyName;
         FontStyle style;
 		FontDecoration decoration;
@@ -51,25 +51,23 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public void Create(FontTypeface typeface, float sizeInPoints)
         {
-            this.sizeInPoints = sizeInPoints;
             Create(typeface.Name, sizeInPoints, typeface.FontStyle, FontDecoration.None);
         }
 
         public void Create(SystemFont systemFont, float? sizeInPoints)
         {
-            this.sizeInPoints = sizeInPoints ?? 0f;
             throw new NotImplementedException();            
         }
 
         public void Create(FontFamily family, float sizeInPoints, FontStyle style)
         {
-            this.sizeInPoints = sizeInPoints;
             Create(GetTranslatedName(family), sizeInPoints, style, FontDecoration.None);
         }
 
         private void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)
         {
             this.familyName = familyName;
+			this.sizeInPoints = sizeInPoints;
             this.style = style;
 			this.decoration = decoration;
 
@@ -162,22 +160,22 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public float XHeight
 		{
-			get { return Size * this.Control.Metrics.XHeight; }
+			get { return Size * this.Control.Metrics.XHeight / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Ascent
 		{
-			get { return Size * this.Control.Metrics.Ascent; }
+			get { return Size * this.Control.Metrics.Ascent / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Descent
 		{
-			get { return Size * this.Control.Metrics.Descent; }
+			get { return Size * this.Control.Metrics.Descent / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float LineHeight
 		{
-			get { return Ascent + Descent + Size * this.Control.Metrics.LineGap; }
+			get { return Ascent + Descent + Size * this.Control.Metrics.LineGap / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Leading

@@ -179,7 +179,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			get
 			{
 				if (defaultBrush == null)
-					defaultBrush = new sd.SolidColorBrush(this.Control, Colors.Yellow.ToSD(), null);
+					defaultBrush = new sd.SolidColorBrush(this.Control, Colors.White.ToSD(), null);
 				return defaultBrush;
 			}
 		}
