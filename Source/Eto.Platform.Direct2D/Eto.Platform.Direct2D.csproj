@@ -93,6 +93,7 @@
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SDFactory.cs" />
     <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Drawing\SplineHelper.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

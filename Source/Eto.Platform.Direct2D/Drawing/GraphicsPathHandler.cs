@@ -63,7 +63,11 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
 		{
 			ConnectTo(pt1);
+			AddBezier(pt2, pt3, pt4);
+		}
 
+		private void AddBezier(PointF pt2, PointF pt3, PointF pt4)
+		{
 			Sink.AddBezier(new sd.BezierSegment
 			{
 				Point1 = pt2.ToDx(),
@@ -148,7 +152,8 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
 		{
-			//throw new NotImplementedException();
+			var temp = SplineHelper.SplineCurve(points, tension);
+			SplineHelper.Draw(temp, ConnectTo, AddBezier);
 		}
 
 		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
