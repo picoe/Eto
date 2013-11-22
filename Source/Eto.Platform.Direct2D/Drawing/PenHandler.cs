@@ -123,22 +123,22 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public PenLineJoin GetLineJoin(Pen widget)
 		{
-			throw new NotImplementedException();
+			return PenLineJoin.Bevel;
 		}
 
 		public void SetLineJoin(Pen widget, PenLineJoin lineJoin)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public PenLineCap GetLineCap(Pen widget)
 		{
-			throw new NotImplementedException();
+			return PenLineCap.Round;
 		}
 
 		public void SetLineCap(Pen widget, PenLineCap lineCap)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public float GetMiterLimit(Pen widget)
@@ -148,12 +148,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void SetMiterLimit(Pen widget, float miterLimit)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public void SetDashStyle(Pen widget, DashStyle dashStyle)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 	}
 }

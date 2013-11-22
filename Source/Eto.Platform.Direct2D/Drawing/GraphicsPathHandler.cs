@@ -18,6 +18,7 @@ namespace Eto.Platform.Direct2D.Drawing
 	{
 		sd.PathGeometry Control { get; set; }
 		private sd.GeometrySink sink;
+		bool isInFigure = false;
 		public PointF CurrentPoint { get; private set; }
 		public object ControlObject { get { return this.Control; } }
 		public RectangleF Bounds { get { return Control.GetBounds().ToEto(); } }
@@ -34,36 +35,14 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
 		{
-			sink.AddLine(pt1.ToWpf());
+			ConnectTo(pt1.ToDx());
 
 			sink.AddBezier(new sd.BezierSegment
 			{
-				Point1 = pt2.ToWpf(),
-				Point2 = pt3.ToWpf(),
-				Point3 = pt4.ToWpf()
+				Point1 = pt2.ToDx(),
+				Point2 = pt3.ToDx(),
+				Point3 = pt4.ToDx()
 			});
-		}
-
-		public void AddBeziers(Point[] p)
-		{
-			if (p != null &&
-				p.Length > 3)
-			{
-				sink.AddLine(p[0].ToWpf());
-
-				var i = 1;
-				while (p.Length > i + 2)
-				{
-					sink.AddBezier(new sd.BezierSegment
-					{
-						Point1 = p[i].ToWpf(),
-						Point2 = p[i + 1].ToWpf(),
-						Point3 = p[i + 2].ToWpf()
-					});
-
-					i = i + 3;
-				}
-			}
 		}
 
 		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
@@ -92,20 +71,26 @@ namespace Eto.Platform.Direct2D.Drawing
 			get { throw new NotImplementedException(); }
 		}
 
+		void ConnectTo(s.DrawingPointF p)
+		{
+			if (isInFigure)
+				sink.AddLine(p);
+			else
+				sink.BeginFigure(p, sd.FigureBegin.Hollow); // what is hollow vs. filled?
+		}
+
 		public void StartFigure()
 		{
-			throw new NotImplementedException();
-			//sink.BeginFigure(
+			CloseFigure();
 		}
 
 		public void CloseFigure()
 		{
-			sink.EndFigure(sd.FigureEnd.Closed);
-		}
-
-		public void Translate(PointF point)
-		{
-			throw new NotImplementedException();
+			if (isInFigure)
+			{
+				sink.EndFigure(sd.FigureEnd.Closed);
+				isInFigure = false;
+			}
 		}
 
 		public void Transform(IMatrix matrix)
@@ -115,12 +100,14 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddLine(float startX, float startY, float endX, float endY)
 		{
-			sink.AddLines(
-				new s.DrawingPointF[]
-                {
-					new s.DrawingPointF(startX, startY),
-					new s.DrawingPointF(endX, endY)  
-                });
+			ConnectTo(new s.DrawingPointF(startX, startY));
+			ConnectTo(new s.DrawingPointF(endX, endY));
+		}
+
+		public void AddLines(IEnumerable<PointF> points)
+		{
+			foreach (var p in points)
+				ConnectTo(p.ToDx());
 		}
 
 		public void LineTo(float x, float y)
@@ -163,14 +150,9 @@ namespace Eto.Platform.Direct2D.Drawing
                 });
 		}
 
-		public void AddLines(IEnumerable<PointF> points)
-		{
-			sink.AddLines(points.ToArray().ToDx());
-		}
-
 		public void Dispose()
 		{
-			throw new NotImplementedException();
+			Control.Dispose();
 		}
 	}
 }

@@ -79,12 +79,7 @@ namespace Eto.Platform.Direct2D
             return new Point((int)value.X, (int)value.Y);
         }
 
-        public static s.DrawingPointF ToWpf(this Point value)
-        {
-            return new s.DrawingPointF(value.X, value.Y);
-        }
-
-        public static s.DrawingPointF ToWpf(this PointF value)
+        public static s.DrawingPointF ToDx(this PointF value)
         {
             return new s.DrawingPointF(value.X, value.Y);
         }
@@ -313,7 +308,7 @@ namespace Eto.Platform.Direct2D
         {
             var p = new s.DrawingPointF[points.Length];
             for (var i = 0; i < points.Length; ++i)
-                p[i] = points[i].ToWpf();
+                p[i] = points[i].ToDx();
 			return p;
         }
 

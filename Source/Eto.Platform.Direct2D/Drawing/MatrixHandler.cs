@@ -117,13 +117,13 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public PointF TransformPoint(Point p)
 		{
-			s.DrawingPointF v = s.Matrix3x2.TransformPoint(this.Control, p.ToWpf()); // implicit conversion from Vector2 to DrawingPointF
+			s.DrawingPointF v = s.Matrix3x2.TransformPoint(this.Control, new s.Vector2(p.X, p.Y)); // implicit conversion from Vector2 to DrawingPointF
 			return v.ToEto();
 		}
 
 		public PointF TransformPoint(PointF p)
 		{
-			s.DrawingPointF v = s.Matrix3x2.TransformPoint(this.Control, p.ToWpf()); // implicit conversion from Vector2 to DrawingPointF
+			s.DrawingPointF v = s.Matrix3x2.TransformPoint(this.Control, p.ToDx()); // implicit conversion from Vector2 to DrawingPointF
 			return v.ToEto();
 		}
 
