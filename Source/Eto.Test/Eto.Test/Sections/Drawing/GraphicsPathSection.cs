@@ -31,7 +31,6 @@ namespace Eto.Test.Sections.Drawing
 
 		public GraphicsPathSection(DrawingToolkit toolkit)
 		{
-			toolkit = toolkit ?? new DrawingToolkit();
 			config = new GraphicsPathRendererConfig();
 			config.StartFigures = true;
 			config.PenThickness = 1;
@@ -41,8 +40,10 @@ namespace Eto.Test.Sections.Drawing
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
 			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
 			renderer = new GraphicsPathRenderer(config); // A shared config. Create the renderer after the bindings have been created.
-			layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
+			if (toolkit == null) // we don't support these two for Direct2d yet because they create the path immediately (with the wrong Generator).
+				layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
 			layout.BeginVertical();
+			toolkit = toolkit ?? new DrawingToolkit();
 			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath(toolkit.Clone()));
 			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath(toolkit.Clone()));
 			layout.EndVertical();
@@ -195,7 +196,7 @@ namespace Eto.Test.Sections.Drawing
 			return mainPath;
 		}
 
-		static GraphicsPath CreatePath()
+		GraphicsPath CreatePath()
 		{
 			var newPath = new GraphicsPath();
 			var start = config.StartFigures;
