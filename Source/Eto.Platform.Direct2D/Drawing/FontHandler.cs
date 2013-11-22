@@ -41,7 +41,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			Create("Consolas", size ?? 12, FontStyle.None, FontDecoration.None); // BUGBUG: Fix
+			Create("Microsoft Sans Serif", size ?? 8.25f, FontStyle.None, FontDecoration.None); // BUGBUG: Fix
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
