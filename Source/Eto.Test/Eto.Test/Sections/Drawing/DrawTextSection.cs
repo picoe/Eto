@@ -1,13 +1,22 @@
 using System.Collections.Generic;
 using Eto.Forms;
 using Eto.Drawing;
+using System;
 
 namespace Eto.Test.Sections.Drawing
 {
 	public class DrawTextSection : Scrollable
 	{
-		public DrawTextSection()
+		DrawingToolkit toolkit;
+
+		public DrawTextSection(): this(null)
 		{
+		}
+
+		public DrawTextSection(DrawingToolkit toolkit)
+		{
+			this.toolkit = toolkit ?? new DrawingToolkit();
+
 			var layout = new DynamicLayout();
 
 			layout.AddRow(
@@ -23,8 +32,9 @@ namespace Eto.Test.Sections.Drawing
 		Control Default()
 		{
 			var control = new Drawable { Size = new Size (400, 500), BackgroundColor = Colors.Black };
+			toolkit.Initialize(control);
 			var renderer = new DrawTextRenderer();
-			control.Paint += (sender, e) => renderer.DrawFrame(e.Graphics);
+			control.Paint += (sender, e) => toolkit.Render(e.Graphics, renderer.DrawFrame);
 			return control;
 		}
 	}

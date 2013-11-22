@@ -7,35 +7,69 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class DirectDrawingSection : Scrollable
 	{
+		DrawingToolkit toolkit;
 		readonly Drawable drawable;
 		readonly UITimer timer;
 		DirectDrawingRenderer renderer = new DirectDrawingRenderer();
 
-		public DirectDrawingSection ()
+		public DirectDrawingSection() : this(null)
 		{
-			timer = new UITimer {
-				Interval = 0.001
-			};
-			drawable = new Drawable ();
+		}
+
+		public DirectDrawingSection (DrawingToolkit toolkit)
+		{
+			var hasToolkit = toolkit != null;
+			this.toolkit = toolkit;
+
+			drawable = new Drawable();
+			if (this.toolkit != null)
+				this.toolkit.Initialize(drawable);
 			drawable.BackgroundColor = Colors.Black;
-			timer.Elapsed += (sender, e) => {
-				if (this.ParentWindow == null) {
-					timer.Stop ();
+			Action render = () => {
+				if (this.ParentWindow == null)
+				{
+					timer.Stop();
 					return;
 				}
 
-				try
+				// A UI timer is slow, but we need it for testing CreateGraphics (as
+				// opposed to an Invalidate/Paint loop), because creating a Graphics within
+				// a Paint callback produces flicker.
+				// 
+				// When a toolkit is specified, however, we can use the Invalidate/Paint loop
+				// to get the maximum frame rate.
+				//
+				// If we weren't interested in getting the maximum frame rate, we could have
+				// used a single code path (the UI timer code path), using a default toolkit
+				// if none was specified.
+				if (hasToolkit)
 				{
-					using (var graphics = drawable.CreateGraphics())
-						renderer.DrawFrame(graphics, drawable.Size);
+					toolkit.Render(null, g => renderer.DrawFrame(g, drawable.Size));
+					drawable.Invalidate();
 				}
-				catch (NotSupportedException)
+				else
 				{
-					timer.Stop();
-					this.BackgroundColor = Colors.Red;
-					this.Content = new Label { Text = "This platform does not support direct drawing", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
+					try
+					{
+						using (var graphics = drawable.CreateGraphics())
+							renderer.DrawFrame(graphics, drawable.Size);
+					}
+					catch (NotSupportedException)
+					{
+						timer.Stop();
+						this.BackgroundColor = Colors.Red;
+						this.Content = new Label { Text = "This platform does not support direct drawing", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
+					}
 				}
 			};
+
+			if (!hasToolkit)
+			{
+				timer = new UITimer { Interval = 0.001 };
+				timer.Elapsed += (sender, e) => render();
+			}
+			else
+				drawable.Paint += (s, e) => render();
 
 			var layout = new DynamicLayout (new Padding(10));
 			layout.AddSeparateRow (null, UseTexturesAndGradients (), null);
@@ -51,9 +85,11 @@ namespace Eto.Test.Sections.Drawing
 			};
 			control.CheckedChanged += (sender, e) => {
 				renderer.UseTexturesAndGradients = control.Checked ?? false;
-				using (var graphics = drawable.CreateGraphics ()) {
-					graphics.Clear ();
-				}
+				if (toolkit != null)
+					toolkit.Render(null, g => g.Clear());
+				else
+					using (var graphics = drawable.CreateGraphics())
+						graphics.Clear();
 				lock (renderer.Boxes)
 					renderer.Boxes.Clear ();
 			};
@@ -63,13 +99,14 @@ namespace Eto.Test.Sections.Drawing
 		public override void OnLoadComplete (EventArgs e)
 		{
 			base.OnLoadComplete (e);
-			timer.Start ();
+			if (timer != null)
+				timer.Start();
 		}
 
 		protected override void Dispose (bool disposing)
 		{
 			base.Dispose (disposing);
-			if (disposing)
+			if (disposing && timer != null)
 				timer.Stop ();
 		}
 	}

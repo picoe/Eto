@@ -2,6 +2,7 @@ using System;
 using Eto.Forms;
 using System.Collections.Generic;
 using System.Linq;
+using Eto.Drawing;
 
 namespace Eto.Test
 {
@@ -48,9 +49,11 @@ namespace Eto.Test
 	public class Section<T> : SectionBase
 		where T: Control, new()
 	{
+		public Func<T> Creator { get; set; }
+
 		public override Control CreateContent()
 		{
-			return new T();
+			return Creator != null ? Creator() : new T();
 		}
 	}
 
@@ -140,5 +143,50 @@ namespace Eto.Test
 			}
 		}
 	}
+
+	/// <summary>
+	/// Allows a test case to use a different generator for drawing
+	/// graphics than for windowing.
+	/// </summary>
+	public class DrawingToolkit
+	{
+		public virtual void Initialize(Drawable drawable)
+		{
+		}
+
+		public virtual void Render(Graphics graphics, Action<Graphics> render)
+		{
+			render(graphics);
+		}
+	}
+
+#if Windows
+	public class D2DToolkit : DrawingToolkit
+	{
+		Graphics graphics;
+		Generator d2d;
+
+		public override void Initialize(Drawable drawable)
+		{
+			base.Initialize(drawable);
+
+			this.d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
+			this.graphics = new Graphics(drawable, d2d);
+		}
+
+		public override void Render(Graphics g, Action<Graphics> render)
+		{
+			this.graphics.BeginDrawing();
+			//this.graphics.Clear(Brushes.Black() as SolidBrush); // DirectDrawingSection's Drawable seems to automatically clear the background, but that doesn't happen in Direct2d, so we clear it explicitly.
+			try
+			{
+				using (var context = new GeneratorContext(d2d))
+					render(this.graphics);
+			}
+			catch (Exception) { }
+			this.graphics.EndDrawing();
+		}
+	}
+#endif
 }
 
