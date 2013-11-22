@@ -24,12 +24,20 @@ namespace Eto.Platform.Direct2D.Drawing
 		sd.GeometrySink sink;
 		private sd.GeometrySink Sink
 		{
-			get { return sink = sink ?? this.Control.Open(); }
+			get
+			{
+				if (sink == null)
+				{
+					sink = this.Control.Open();
+					sink.SetFillMode(sd.FillMode.Winding);
+				}
+				return sink;
+			}
 		}
 
 		public GraphicsPathHandler()
 		{
-			this.Control = new sd.PathGeometry(SDFactory.D2D1Factory);
+			this.Control = new sd.PathGeometry(SDFactory.D2D1Factory);			
 		}
 
 		public void CloseSink()
@@ -37,8 +45,11 @@ namespace Eto.Platform.Direct2D.Drawing
 			// This must be called before rendering the path.
 			if (this.sink != null)
 			{
+				if (isInFigure)
+					sink.EndFigure(sd.FigureEnd.Open);
+				isInFigure = false;
 				this.sink.Close();
-				this.sink.Dispose();
+				//this.sink.Dispose();
 			}
 		}
 
@@ -78,7 +89,10 @@ namespace Eto.Platform.Direct2D.Drawing
 			if (isInFigure)
 				Sink.AddLine(pt);
 			else
+			{
+				isInFigure = true;
 				Sink.BeginFigure(pt, sd.FigureBegin.Hollow); // what is hollow vs. filled?
+			}
 
 			CurrentPoint = p;
 		}
