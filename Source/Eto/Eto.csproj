@@ -383,6 +383,8 @@
     <Compile Include="EventLookup.cs" />
     <Compile Include="Forms\Layout\DynamicItemConverter.cs" />
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
+    <Compile Include="Forms\Controls\Spinner.cs" />
+    <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

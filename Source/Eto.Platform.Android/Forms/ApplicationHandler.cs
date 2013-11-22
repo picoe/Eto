@@ -69,12 +69,12 @@ namespace Eto.Platform.Android.Forms
 			throw new NotImplementedException();
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
 			get { return Key.Control; }
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
 			get { return Key.Alt; }
 		}

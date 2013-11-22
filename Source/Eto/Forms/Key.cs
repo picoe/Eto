@@ -8,7 +8,7 @@ namespace Eto.Forms
 	/// Enumeration of values that correspond to physical keys on a keyboard
 	/// </summary>
 	[Flags]
-	public enum Key
+	public enum Keys
 	{
 		/// <summary>No key</summary>
 		None = 0x0000,
@@ -205,10 +205,177 @@ namespace Eto.Forms
 
 	}
 
+	[Obsolete("Use Keys instead")]
+	public struct Key
+	{
+		Keys keys;
+		public Key(Keys keys)
+		{
+			this.keys = keys;
+		}
+
+		public static readonly Key None = new Key(Keys.None);
+		public static readonly Key A = new Key(Keys.A);
+		public static readonly Key B = new Key(Keys.B);
+		public static readonly Key C = new Key(Keys.C);
+		public static readonly Key D = new Key(Keys.D);
+		public static readonly Key E = new Key(Keys.E);
+		public static readonly Key F = new Key(Keys.F);
+		public static readonly Key G = new Key(Keys.G);
+		public static readonly Key H = new Key(Keys.H);
+		public static readonly Key I = new Key(Keys.I);
+		public static readonly Key J = new Key(Keys.J);
+		public static readonly Key K = new Key(Keys.K);
+		public static readonly Key L = new Key(Keys.L);
+		public static readonly Key M = new Key(Keys.M);
+		public static readonly Key N = new Key(Keys.N);
+		public static readonly Key O = new Key(Keys.O);
+		public static readonly Key P = new Key(Keys.P);
+		public static readonly Key Q = new Key(Keys.Q);
+		public static readonly Key R = new Key(Keys.R);
+		public static readonly Key S = new Key(Keys.S);
+		public static readonly Key T = new Key(Keys.T);
+		public static readonly Key U = new Key(Keys.U);
+		public static readonly Key V = new Key(Keys.V);
+		public static readonly Key W = new Key(Keys.W);
+		public static readonly Key X = new Key(Keys.X);
+		public static readonly Key Y = new Key(Keys.Y);
+		public static readonly Key Z = new Key(Keys.Z);
+		public static readonly Key F1 = new Key(Keys.F1);
+		public static readonly Key F2 = new Key(Keys.F2);
+		public static readonly Key F3 = new Key(Keys.F3);
+		public static readonly Key F4 = new Key(Keys.F4);
+		public static readonly Key F5 = new Key(Keys.F5);
+		public static readonly Key F6 = new Key(Keys.F6);
+		public static readonly Key F7 = new Key(Keys.F7);
+		public static readonly Key F8 = new Key(Keys.F8);
+		public static readonly Key F9 = new Key(Keys.F9);
+		public static readonly Key F10 = new Key(Keys.F10);
+		public static readonly Key F11 = new Key(Keys.F11);
+		public static readonly Key F12 = new Key(Keys.F12);
+		public static readonly Key D0 = new Key(Keys.D0);
+		public static readonly Key D1 = new Key(Keys.D1);
+		public static readonly Key D2 = new Key(Keys.D2);
+		public static readonly Key D3 = new Key(Keys.D3);
+		public static readonly Key D4 = new Key(Keys.D4);
+		public static readonly Key D5 = new Key(Keys.D5);
+		public static readonly Key D6 = new Key(Keys.D6);
+		public static readonly Key D7 = new Key(Keys.D7);
+		public static readonly Key D8 = new Key(Keys.D8);
+		public static readonly Key D9 = new Key(Keys.D9);
+
+		public static readonly Key Minus = new Key(Keys.Minus);
+		public static readonly Key Plus = new Key(Keys.Plus);
+		public static readonly Key Grave = new Key(Keys.Grave);
+		public static readonly Key Insert = new Key(Keys.Insert);
+		public static readonly Key Home = new Key(Keys.Home);
+		public static readonly Key PageUp = new Key(Keys.PageUp);
+		public static readonly Key PageDown = new Key(Keys.PageDown);
+		public static readonly Key Delete = new Key(Keys.Delete);
+		public static readonly Key End = new Key(Keys.End);
+		public static readonly Key Divide = new Key(Keys.Divide);
+		public static readonly Key Decimal = new Key(Keys.Decimal);
+		public static readonly Key Backspace = new Key(Keys.Backspace);
+		public static readonly Key Up = new Key(Keys.Up);
+		public static readonly Key Down = new Key(Keys.Down);
+		public static readonly Key Left = new Key(Keys.Left);
+		public static readonly Key Right = new Key(Keys.Right);
+		public static readonly Key Tab = new Key(Keys.Tab);
+		public static readonly Key Space = new Key(Keys.Space);
+		public static readonly Key CapsLock = new Key(Keys.CapsLock);
+		public static readonly Key ScrollLock = new Key(Keys.ScrollLock);
+		public static readonly Key PrintScreen = new Key(Keys.PrintScreen);
+		public static readonly Key NumberLock = new Key(Keys.NumberLock);
+		public static readonly Key Enter = new Key(Keys.Enter);
+		public static readonly Key Escape = new Key(Keys.Escape);
+		public static readonly Key Menu = new Key(Keys.Menu);
+		public static readonly Key Backslash = new Key(Keys.Backslash);
+		public static readonly Key Equal = new Key(Keys.Equal);
+
+		[Obsolete("Use Semicolon instead"), CLSCompliant(false)]
+		public static readonly Key SemiColon = new Key(Keys.SemiColon);
+
+		public static readonly Key Semicolon = new Key(Keys.Semicolon);
+		public static readonly Key Quote = new Key(Keys.Quote);
+
+		public static readonly Key Comma = new Key(Keys.Comma);
+		public static readonly Key Period = new Key(Keys.Period);
+		public static readonly Key ForwardSlash = new Key(Keys.ForwardSlash);
+
+		public static readonly Key RightBracket = new Key(Keys.RightBracket);
+		public static readonly Key LeftBracket = new Key(Keys.LeftBracket);
+
+		public static readonly Key ContextMenu = new Key(Keys.ContextMenu);
+
+		public static readonly Key Shift = new Key(Keys.Shift);
+		public static readonly Key Alt = new Key(Keys.Alt);
+		public static readonly Key Control = new Key(Keys.Control);
+		public static readonly Key Application = new Key(Keys.Application);  // windows/command key
+
+		public static readonly Key ModifierMask = new Key(Keys.ModifierMask);
+		public static readonly Key KeyMask = new Key(Keys.KeyMask);
+
+		public bool HasFlag(Key key)
+		{
+			return keys.HasFlag(key.keys);
+		}
+
+		public static Key operator &(Key key1, Key key2)
+		{
+			return new Key(key1.keys & key2.keys);
+		}
+
+		public static Key operator ~(Key key1)
+		{
+			return new Key(~key1.keys);
+		}
+
+		public static bool operator ==(Key key1, Key key2)
+		{
+			return key1.keys == key2.keys;
+		}
+
+		public static bool operator !=(Key key1, Key key2)
+		{
+			return key1.keys != key2.keys;
+		}
+
+		public static implicit operator Keys(Key key)
+		{
+			return key.keys;
+		}
+
+		public static implicit operator Key(Keys key)
+		{
+			return new Key(key);
+		}
+
+		public static implicit operator int(Key key)
+		{
+			return (int)key.keys;
+		}
+
+		public static Key operator |(Key key1, Key key2)
+		{
+			return new Key(key1.keys | key2.keys);
+		}
+
+		public override bool Equals(object obj)
+		{
+			return obj is Key && (Key)obj == this;
+		}
+
+		public override int GetHashCode()
+		{
+			return keys.GetHashCode();
+		}
+	}
+
+
 	/// <summary>
 	/// Extensions for the <see cref="Key"/> enumeration
 	/// </summary>
-	public static class KeyExtensions
+	public static class KeysExtensions
 	{
 		static void AppendSeparator (StringBuilder sb, string separator, string value)
 		{
@@ -217,35 +384,35 @@ namespace Eto.Forms
 			sb.Append (value);
 		}
 
-		static readonly Dictionary<Key, string> keymap = new Dictionary<Key, string> {
-			{ Key.D0, "0" },
-			{ Key.D1, "1" },
-			{ Key.D2, "2" },
-			{ Key.D3, "3" },
-			{ Key.D4, "4" },
-			{ Key.D5, "5" },
-			{ Key.D6, "6" },
-			{ Key.D7, "7" },
-			{ Key.D8, "8" },
-			{ Key.D9, "9" },
+		static readonly Dictionary<Keys, string> keymap = new Dictionary<Keys,string> {
+			{ Keys.D0, "0" },
+			{ Keys.D1, "1" },
+			{ Keys.D2, "2" },
+			{ Keys.D3, "3" },
+			{ Keys.D4, "4" },
+			{ Keys.D5, "5" },
+			{ Keys.D6, "6" },
+			{ Keys.D7, "7" },
+			{ Keys.D8, "8" },
+			{ Keys.D9, "9" },
 
-			{ Key.Minus, "-" },
-			{ Key.Plus, "+" },
-			{ Key.Grave, "`" },
-			{ Key.Divide, "/" },
-			{ Key.Decimal, "." },
-			{ Key.Backslash, "\\" },
-			{ Key.Equal, "=" },
+			{ Keys.Minus, "-" },
+			{ Keys.Plus, "+" },
+			{ Keys.Grave, "`" },
+			{ Keys.Divide, "/" },
+			{ Keys.Decimal, "." },
+			{ Keys.Backslash, "\\" },
+			{ Keys.Equal, "=" },
 		
-			{ Key.Semicolon, ";" },
-			{ Key.Quote, "'" },
+			{ Keys.Semicolon, ";" },
+			{ Keys.Quote, "'" },
 		
-			{ Key.Comma, "," },
-			{ Key.Period, "." },
-			{ Key.ForwardSlash, "/" },
+			{ Keys.Comma, "," },
+			{ Keys.Period, "." },
+			{ Keys.ForwardSlash, "/" },
 		
-			{ Key.RightBracket, "(" },
-			{ Key.LeftBracket, ")" }
+			{ Keys.RightBracket, "(" },
+			{ Keys.LeftBracket, ")" }
 		};
 
 		/// <summary>
@@ -254,17 +421,17 @@ namespace Eto.Forms
 		/// <param name="key">Key to convert</param>
 		/// <param name="separator">Separator between each modifier and key</param>
 		/// <returns>A human-readable string representing the key combination including modifiers</returns>
-		public static string ToShortcutString(this Key key, string separator = "+")
+		public static string ToShortcutString(this Keys key, string separator = "+")
 		{
 			var sb = new StringBuilder();
-			if (key.HasFlag(Key.Control))
+			if (key.HasFlag(Keys.Control))
 				AppendSeparator(sb, separator, "Ctrl");
-			if (key.HasFlag(Key.Shift))
+			if (key.HasFlag(Keys.Shift))
 				AppendSeparator(sb, separator, "Shift");
-			if (key.HasFlag(Key.Alt))
+			if (key.HasFlag(Keys.Alt))
 				AppendSeparator(sb, separator, "Alt");
 
-			var mainKey = key & Key.KeyMask;
+			var mainKey = key & Keys.KeyMask;
 			string val;
 			if (keymap.TryGetValue(mainKey, out val))
 				AppendSeparator(sb, separator, val);

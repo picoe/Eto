@@ -60,6 +60,7 @@ namespace Eto.Platform.Android
 			g.Add<IScrollable>(() => new ScrollableHandler());
 			//g.Add<ISearchBox>(() => new SearchBoxHandler());
 			//g.Add<ISlider>(() => new SliderHandler());
+			g.Add<ISpinner>(() => new SpinnerHandler());
 			//g.Add<ISplitter>(() => new SplitterHandler());
 			//g.Add <ITabControl> (() => new TabControlHandler ());
 			//g.Add <ITabPage> (() => new TabPageHandler ());

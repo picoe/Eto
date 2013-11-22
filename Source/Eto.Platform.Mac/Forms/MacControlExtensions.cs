@@ -1,6 +1,7 @@
 using Eto.Drawing;
 using Eto.Forms;
 using MonoMac.AppKit;
+using sd = System.Drawing;
 
 #if IOS
 using NSView = MonoTouch.UIKit.UIView;
@@ -64,6 +65,17 @@ namespace Eto.Platform.Mac.Forms
 			if (childControl != null)
 				return childControl.GetContainerView();
 			return control.ControlObject as NSView;
+		}
+
+		public static void CenterInParent(this NSView view)
+		{
+			var super = view.Superview;
+			if (super != null)
+			{
+				var superFrame = super.Frame;
+				var size = view.Frame.Size;
+				view.SetFrameOrigin(new sd.PointF((superFrame.Width - size.Width) / 2, (superFrame.Height - size.Height) / 2));
+			}
 		}
 	}
 }

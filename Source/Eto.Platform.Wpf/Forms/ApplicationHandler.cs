@@ -140,14 +140,14 @@ namespace Eto.Platform.Wpf.Forms
 		{
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
-			get { return Key.Control; }
+			get { return Keys.Control; }
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
-			get { return Key.Alt; }
+			get { return Keys.Alt; }
 		}
 
 		public void Open(string url)

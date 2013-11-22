@@ -59,7 +59,7 @@ namespace Eto.Platform.Windows
 			set { Control.ToolTipText = value; }
 		}
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get { return Control.ShortcutKeys.ToEto (); }
 			set 

@@ -83,26 +83,26 @@ namespace Eto.Forms
 			set { Image = value; }
 		}
 
-		public Key Accelerator
+		public Keys Accelerator
 		{
-			get { return (Accelerators != null && Accelerators.Length > 0) ? Accelerators[0] : Key.None; }
-			set { Accelerators = new Key[] { value }; }
+			get { return (Accelerators != null && Accelerators.Length > 0) ? Accelerators[0] : Keys.None; }
+			set { Accelerators = new Keys[] { value }; }
 		}
 		
-		public Key[] Accelerators { get; set; }
+		public Keys[] Accelerators { get; set; }
 		
 		public string AcceleratorText
 		{
 			get
 			{
 				if (Accelerators == null) return string.Empty;
-				if (Accelerator != Key.None)
+				if (Accelerator != Keys.None)
 				{
 					string val = string.Empty;
-					Key modifier = (Accelerator & Key.ModifierMask);
-					if (modifier != Key.None) val += modifier.ToString();
-					Key mainKey = (Accelerator & Key.KeyMask);
-					if (mainKey != Key.None)
+					Keys modifier = (Accelerator & Keys.ModifierMask);
+					if (modifier != Keys.None) val += modifier.ToString();
+					Keys mainKey = (Accelerator & Keys.KeyMask);
+					if (mainKey != Keys.None)
 					{
 						if (val.Length > 0) val += "+";
 						val += mainKey.ToString();

@@ -7,7 +7,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		string text;
 		string tooltip;
-		Key shortcut;
+		Keys shortcut;
 		readonly Gtk.AccelLabel label;
 
 		public CheckMenuItemHandler()
@@ -43,7 +43,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get { return shortcut; }
 			set { shortcut = value; }

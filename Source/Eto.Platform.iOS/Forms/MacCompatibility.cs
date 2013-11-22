@@ -12,6 +12,13 @@ namespace Eto.Platform.Mac.Forms
 			frame.Size = size;
 			view.Frame = frame;
 		}
+
+		public static void SetFrameOrigin(this UIView view, sd.PointF location)
+		{
+			var frame = view.Frame;
+			frame.Location = location;
+			view.Frame = frame;
+		}
 	}
 }
 

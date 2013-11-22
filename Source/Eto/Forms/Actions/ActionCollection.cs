@@ -71,7 +71,7 @@ namespace Eto.Forms
 					continue;
 				if (action.Accelerators == null)
 					continue;
-				foreach (Key key in action.Accelerators) {
+				foreach (Keys key in action.Accelerators) {
 					if (e.KeyData == key) {
 						//Console.WriteLine("action: {0}, key: {1}, sender: {2}", action.Text, e.KeyData.ToString(), sender.GetType().ToString());
 						e.Handled = true;

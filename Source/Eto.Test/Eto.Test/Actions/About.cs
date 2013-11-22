@@ -13,7 +13,7 @@ namespace Eto.Test.Actions
 			this.MenuText = "About Test Application";
 			this.ToolBarText = "About";
 			this.Image = TestIcons.TestIcon;
-			this.Accelerator = Key.F11;
+			this.Accelerator = Keys.F11;
 		}
 		
 		protected override void OnActivated (EventArgs e)

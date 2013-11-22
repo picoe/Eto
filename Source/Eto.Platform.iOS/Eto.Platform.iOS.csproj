@@ -181,6 +181,7 @@
     <Compile Include="..\Eto.Platform.Mac\Drawing\FontExtensions.cs">
       <Link>Drawing\FontExtensions.cs</Link>
     </Compile>
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - iOS.csproj">

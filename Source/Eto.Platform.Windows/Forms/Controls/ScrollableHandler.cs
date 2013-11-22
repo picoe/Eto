@@ -40,21 +40,40 @@ namespace Eto.Platform.Windows
 				return AutoScrollPosition;
 			}
 
+			System.Drawing.Size lastClientSize;
 			protected override void OnLayout(swf.LayoutEventArgs levent)
 			{
 				var contentControl = Handler.Content.GetWindowsHandler();
 				if (contentControl != null)
 				{
 					var minSize = new Size();
+
+					var clientSize = lastClientSize = ClientSize;
+					if (!Handler.finalLayoutPass)
+					{
+						var preferred = contentControl.GetPreferredSize(Eto.Drawing.Size.Empty);
+						if (Handler.ExpandContentWidth && preferred.Height > ClientSize.Height)
+							clientSize.Width -= swf.SystemInformation.VerticalScrollBarWidth;
+						if (Handler.ExpandContentHeight && preferred.Width > ClientSize.Width)
+							clientSize.Height -= swf.SystemInformation.HorizontalScrollBarHeight;
+					}
 					if (Handler.ExpandContentWidth)
-						minSize.Width = Math.Max(0, ClientSize.Width - (Handler.finalLayoutPass ? 0 : swf.SystemInformation.VerticalScrollBarWidth));
+						minSize.Width = Math.Max(0, clientSize.Width);
 					if (Handler.ExpandContentHeight)
-						minSize.Height = Math.Max(0, ClientSize.Height - (Handler.finalLayoutPass ? 0 : swf.SystemInformation.HorizontalScrollBarHeight));
+						minSize.Height = Math.Max(0, clientSize.Height);
 
 					// set minimum size for the content if we want to extend to the size of the scrollable width/height
 					contentControl.ParentMinimumSize = minSize;
 				}
 				base.OnLayout(levent);
+			}
+
+			protected override void OnClientSizeChanged(EventArgs e)
+			{
+				base.OnClientSizeChanged(e);
+				// when scrollbar is shown/hidden, need to perform layout
+				if (ClientSize != lastClientSize)
+					PerformLayout();
 			}
 		}
 
@@ -64,9 +83,7 @@ namespace Eto.Platform.Windows
 			// ensure we don't show scrollbars unnecessarily:
 			// perform layout excluding both scrollbars so we don't show them unless necessary 
 			Control.ResumeLayout();
-			// final layout pass will extend to full size excluding only visible scrollbars
 			finalLayoutPass = true;
-			Control.PerformLayout();
 		}
 
 		public override void OnUnLoad(EventArgs e)

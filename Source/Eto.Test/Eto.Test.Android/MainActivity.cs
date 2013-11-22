@@ -25,15 +25,17 @@ namespace Eto.Test.Android
 				var layout = new DynamicLayout();
 				layout.Add(new Label { Text = "Hello world", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
 				layout.Add(new Label { Text = "Hello world2", VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center });
+				layout.Add(new Eto.Forms.Spinner { Enabled = true });
+				layout.Add(null);
 
 				MainForm = new Form { Content = layout };
 				MainForm.Show();
 			}
 		}
 
-		protected override void OnCreate(Bundle bundle)
+		protected override void OnCreate(Bundle savedInstanceState)
 		{
-			base.OnCreate(bundle);
+			base.OnCreate(savedInstanceState);
 
 			var generator = new Eto.Platform.Android.Generator();
 			//new TestApplication(generator).Attach(this);

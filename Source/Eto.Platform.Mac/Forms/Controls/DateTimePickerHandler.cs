@@ -63,7 +63,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			var handler = (DateTimePickerHandler)((Control)sender).Handler;
 			if (!e.Handled)
 			{
-				if (e.KeyData == (Key.Application | Key.Backspace))
+				if (e.KeyData == (Keys.Application | Keys.Backspace))
 				{
 					handler.curValue = null;
 					handler.Widget.OnValueChanged(EventArgs.Empty);
