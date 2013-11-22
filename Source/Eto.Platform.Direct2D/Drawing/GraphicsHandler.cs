@@ -166,7 +166,9 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		sd.Geometry GetGeometry(IGraphicsPath path)
 		{
-			return path.ControlObject as sd.Geometry;
+			var p = path as GraphicsPathHandler;
+			p.CloseSink();
+			return p.Control;
 		}
 
 		/// <summary>
