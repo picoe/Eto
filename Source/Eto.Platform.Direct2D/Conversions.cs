@@ -347,5 +347,6 @@ namespace Eto.Platform.Direct2D
 		{
 			return (PenData)pen.ControlObject;
 		}
+
     }
 }

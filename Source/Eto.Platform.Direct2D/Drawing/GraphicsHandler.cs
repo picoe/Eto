@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
+using sw = SharpDX.DirectWrite;
 using swf = System.Windows.Forms;
 using Size2 = SharpDX.DrawingSize; // This has been changed to Size2 in more recent versions of SharpDx
 
@@ -175,7 +176,11 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			throw new NotImplementedException();
+			var fontHandler = (FontHandler)font.Handler;
+			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
+			var width = textLayout.DetermineMinWidth();
+			var height = font.LineHeight; // is this correct?
+			return new SizeF(width, height);
 		}
 
 		void IGraphics.Flush()
@@ -206,17 +211,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		}
 #endif
 
-		public PixelOffsetMode PixelOffsetMode
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public PixelOffsetMode PixelOffsetMode { get; set; } // TODO
 
 		void IGraphics.DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{

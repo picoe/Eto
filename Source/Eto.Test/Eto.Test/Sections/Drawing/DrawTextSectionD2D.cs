@@ -1,4 +1,5 @@
-﻿using Eto.Drawing;
+﻿using System;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Drawing
@@ -13,13 +14,13 @@ namespace Eto.Test.Sections.Drawing
 			var d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
 			var graphics = new Graphics(this, d2d);
 			this.Paint += (s, e) => {
-				using (var context = new GeneratorContext(d2d))
-				{
-					graphics.BeginDrawing();
-					//graphics.Clear(Brushes.Black() as SolidBrush); // DirectDrawingSection's Drawable seems to automatically clear the background, but that doesn't happen in Direct2d, so we clear it explicitly.
-					renderer.DrawFrame(graphics);
-					graphics.EndDrawing();					
-				}
+				graphics.BeginDrawing();
+				//graphics.Clear(Brushes.Black() as SolidBrush); // DirectDrawingSection's Drawable seems to automatically clear the background, but that doesn't happen in Direct2d, so we clear it explicitly.
+				try {
+					using (var context = new GeneratorContext(d2d))
+						renderer.DrawFrame(graphics);
+				} catch (Exception) { }
+				graphics.EndDrawing();
 			};
 		}
 	}

@@ -15,8 +15,10 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
     public class FontHandler : WidgetHandler<sw.Font, Font>, IFont
-    {        
-        private float sizeInPoints = 0f;
+    {
+		public sw.TextFormat TextFormat { get; private set; }
+
+		private float sizeInPoints = 0f;
         string familyName;
         FontStyle style;
         sw.FontStyle fontStyle;
@@ -24,8 +26,6 @@ namespace Eto.Platform.Direct2D.Drawing
 
         // These need to be disposed
         sw.FontFace fontFace = null;
-        sw.TextFormat textFormat = null;
-
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
@@ -34,7 +34,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			throw new NotImplementedException();
+			Create("Consolas", size ?? 12, FontStyle.None); // TODO: Incomplete
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
@@ -64,65 +64,42 @@ namespace Eto.Platform.Direct2D.Drawing
 
         private void Create(string familyName, float sizeInPoints, FontStyle style)
         {
-            // family name
             this.familyName = familyName;
-
-            // font style
             this.style = style;
 
             sw.FontStyle s;
             sw.FontWeight w;
             Conversions.Convert(style, out s, out w);
 
-            this.textFormat =
-                new sw.TextFormat(
-					SDFactory.DirectWriteFactory,
-                    familyName,
-                    null, // font collection
-                    w,
-                    s,
-                    sw.FontStretch.Normal,
-                    sizeInPoints, // TODO: should this be in pixels? The documentation says device-independent pixels.
-                    "en-us");
+            this.TextFormat = new sw.TextFormat(
+				SDFactory.DirectWriteFactory,
+                familyName,
+                null, // font collection
+                w,
+                s,
+                sw.FontStretch.Normal,
+                sizeInPoints, // TODO: should this be in pixels? The documentation says device-independent pixels.
+                "en-us");
             
-            // Create a font collection
-            var collection = FontCollection();
-
             int index = 0;
-            if (collection.FindFamilyName(
+            if (FontCollection.FindFamilyName(
                 familyName: familyName,
                 index: out index))
             {
-                // font family
-                var fontFamily =
-                    collection.GetFontFamily(index);
-
-                Conversions.Convert(
-                    style,
-                    out fontStyle,
-                    out fontWeight);
-
-                // font
-                this.Control = 
-                    fontFamily.GetFirstMatchingFont(
-                        fontWeight,
-                        sw.FontStretch.Normal,
-                        fontStyle);
-
-                // finally, the font face
-                this.fontFace = new sw.FontFace(Control);
+                var fontFamily = FontCollection.GetFontFamily(index);
+				Conversions.Convert(style, out fontStyle, out fontWeight);
+				this.Control = fontFamily.GetFirstMatchingFont(fontWeight, sw.FontStretch.Normal, fontStyle);
             }
         }
 
         private static sw.FontCollection fontCollection;
-        private static sw.FontCollection FontCollection()
+        private static sw.FontCollection FontCollection
         {
-            if (fontCollection == null)
-                fontCollection =
-                SDFactory.DirectWriteFactory.GetSystemFontCollection(
-                    checkForUpdates: false);
-
-            return fontCollection;
+			get
+			{
+				return fontCollection = fontCollection ??
+					SDFactory.DirectWriteFactory.GetSystemFontCollection(checkForUpdates: false);
+			}
         }
 
         public void Create()
@@ -132,10 +109,10 @@ namespace Eto.Platform.Direct2D.Drawing
 
         protected override void Dispose(bool disposing)
         {
-            if (this.textFormat != null)
+            if (this.TextFormat != null)
             {
-                this.textFormat.Dispose();
-                this.textFormat = null;
+                this.TextFormat.Dispose();
+                this.TextFormat = null;
             }
 
             if (this.fontFace != null)
@@ -145,40 +122,6 @@ namespace Eto.Platform.Direct2D.Drawing
             }
 
             base.Dispose(disposing);
-        }
-
-        private sw.FontMetrics? gdiCompatibleMetrics;
-        private sw.FontMetrics GdiCompatibleMetrics
-        {
-            get
-            {
-                if(gdiCompatibleMetrics == null)
-                    gdiCompatibleMetrics =
-                        this.fontFace.GetGdiCompatibleMetrics(
-                            emSize: this.Widget.Size, // TODO: should this be in pixels?
-                            pixelsPerDip: 1,
-                            transform: null);
-
-                return gdiCompatibleMetrics.Value;
-            }
-        }
-
-        public float AscentInPixels
-        {
-            get
-            {
-                return this.GdiCompatibleMetrics.Ascent;
-            }
-        }
-
-        public float DescentInPixels
-        {
-            get { return this.GdiCompatibleMetrics.Descent; }
-        }
-
-        public float XHeightInPixels
-        {
-            get { return this.GdiCompatibleMetrics.XHeight; }
         }
 
         public FontFamily Family
@@ -196,17 +139,6 @@ namespace Eto.Platform.Direct2D.Drawing
             get { return style; }
         }
 
-        private float? lineHeightInPixels = null;
-        public float LineHeightInPixels
-        {
-            get 
-            {
-                return AscentInPixels +
-                    DescentInPixels +
-                    GdiCompatibleMetrics.LineGap;
-            }
-        }
-
         public float Size
         {
             get { return sizeInPoints; }
@@ -217,37 +149,35 @@ namespace Eto.Platform.Direct2D.Drawing
             get { return null; }
         }
 
-
 		public float XHeight
 		{
-			get { throw new NotImplementedException(); }
+			get { return this.Control.Metrics.XHeight; }
 		}
 
 		public float Ascent
 		{
-			get { throw new NotImplementedException(); }
+			get { return this.Control.Metrics.Ascent; }
 		}
 
 		public float Descent
 		{
-			get { throw new NotImplementedException(); }
+			get { return this.Control.Metrics.Descent; }
 		}
 
 		public float LineHeight
 		{
-			get { throw new NotImplementedException(); }
+			get { return Ascent + Descent + this.Control.Metrics.LineGap; }
 		}
 
 		public float Leading
 		{
-			get { throw new NotImplementedException(); }
+			get { return 0f; } // TODO
 		}
 
 		public float Baseline
 		{
 			get { throw new NotImplementedException(); }
 		}
-
 
 		public object ControlObject
 		{
