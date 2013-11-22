@@ -11,6 +11,8 @@ namespace Eto.Test.Sections.Drawing
 	/// </summary>
 	public class DrawableImageView : Drawable
 	{
+		DrawingToolkit toolkit;
+
 		private Image image;
 		public Image Image
 		{
@@ -22,8 +24,11 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		public DrawableImageView()
+		public DrawableImageView(DrawingToolkit toolkit, Image image)
 		{
+			this.toolkit = toolkit.Clone();
+			this.Image = image;
+
 			this.Paint += (s, e) => {
 				if (this.Image != null)
 					e.Graphics.DrawImage(this.Image, PointF.Empty);
@@ -33,8 +38,17 @@ namespace Eto.Test.Sections.Drawing
 
 	public class BitmapSection : Scrollable
 	{
+		DrawingToolkit toolkit;
+
 		public BitmapSection()
+			: this(null)
 		{
+		}
+
+		public BitmapSection(DrawingToolkit toolkit)
+		{
+			this.toolkit = toolkit ?? new DrawingToolkit();
+
 			var layout = new DynamicLayout();
 
 			layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
@@ -61,7 +75,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var image = new Bitmap(resourceStream);
 
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView(this.toolkit, image);
 		}
 
 		Control CreateCustom32()
@@ -75,7 +89,7 @@ namespace Eto.Test.Sections.Drawing
 				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
 			}
 
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView(this.toolkit, image);
 		}
 
 		Control CreateCustom32Alpha()
@@ -89,21 +103,21 @@ namespace Eto.Test.Sections.Drawing
 				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
 			}
 
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView(this.toolkit, image);
 		}
 
 		Control Cloning()
 		{
 			var image = TestIcons.TestImage;
 			image = image.Clone();
-			return new DrawableImageView { Image = image };
+			return new DrawableImageView(this.toolkit, image);
 		}
 
 		Control CloningRectangle()
 		{
 			var image = TestIcons.TestImage;
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
-			return new ImageView { Image = image };
+			return new DrawableImageView(this.toolkit, image);
 		}
 	}
 }
