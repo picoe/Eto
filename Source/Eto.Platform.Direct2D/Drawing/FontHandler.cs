@@ -21,20 +21,21 @@ namespace Eto.Platform.Direct2D.Drawing
 		private float sizeInPoints = 0f;
         string familyName;
         FontStyle style;
+		FontDecoration decoration;
         sw.FontStyle fontStyle;
         sw.FontWeight fontWeight;
-
+		
         // These need to be disposed
         sw.FontFace fontFace = null;
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
-			Create(family, size, style); // TODO: decoration
+			Create(family, size, style, decoration);
 		}
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			Create("Consolas", size ?? 12, FontStyle.None); // TODO: Incomplete
+			Create("Consolas", size ?? 12, FontStyle.None, FontDecoration.None); // BUGBUG: Fix
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
@@ -45,7 +46,7 @@ namespace Eto.Platform.Direct2D.Drawing
         public void Create(FontTypeface typeface, float sizeInPoints)
         {
             this.sizeInPoints = sizeInPoints;
-            Create(typeface.Name, sizeInPoints, typeface.FontStyle);            
+            Create(typeface.Name, sizeInPoints, typeface.FontStyle, FontDecoration.None);
         }
 
         public void Create(SystemFont systemFont, float? sizeInPoints)
@@ -59,13 +60,14 @@ namespace Eto.Platform.Direct2D.Drawing
             this.sizeInPoints = sizeInPoints;
             var familyName = family.Name;
 
-            Create(familyName, sizeInPoints, style);
+            Create(familyName, sizeInPoints, style, FontDecoration.None);
         }
 
-        private void Create(string familyName, float sizeInPoints, FontStyle style)
+        private void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)
         {
             this.familyName = familyName;
             this.style = style;
+			this.decoration = decoration;
 
             sw.FontStyle s;
             sw.FontWeight w;
@@ -139,6 +141,11 @@ namespace Eto.Platform.Direct2D.Drawing
             get { return style; }
         }
 
+		public FontDecoration FontDecoration
+		{
+			get { return this.decoration; }
+		}
+
         public float Size
         {
             get { return sizeInPoints; }
@@ -181,12 +188,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public object ControlObject
 		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public FontDecoration FontDecoration
-		{
-			get { throw new NotImplementedException(); }
+			get { return this.Control; }
 		}
 	}
 }
