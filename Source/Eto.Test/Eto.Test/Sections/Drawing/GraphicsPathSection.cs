@@ -128,7 +128,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DrawLinePath(DrawingToolkit toolkit)
 		{
-			var control = new Drawable { Size = new Size (550, 200) };
+			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
 			toolkit.Initialize(control);
 			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => renderer.Render(g, fill: false));
 			return control;
@@ -136,7 +136,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control FillLinePath(DrawingToolkit toolkit)
 		{
-			var control = new Drawable { Size = new Size (550, 200) };
+			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
 			toolkit.Initialize(control);
 			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => renderer.Render(g, fill: true));
 			return control;
@@ -165,11 +165,11 @@ namespace Eto.Test.Sections.Drawing
 		{
 			if (fill)
 			{
-				g.FillPath(Brushes.Black(), Path);
+				g.FillPath(Brushes.White(), Path);
 			}
 			else
 			{
-				var pen = new Pen(Colors.Black, config.PenThickness);
+				var pen = new Pen(Colors.White, config.PenThickness);
 				pen.LineJoin = config.LineJoin;
 				pen.LineCap = config.LineCap;
 				g.DrawPath(pen, Path);
