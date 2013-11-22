@@ -49,7 +49,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					sink.EndFigure(sd.FigureEnd.Open);
 				isInFigure = false;
 				this.sink.Close();
-				//this.sink.Dispose();
+				this.sink.Dispose();
 			}
 		}
 
