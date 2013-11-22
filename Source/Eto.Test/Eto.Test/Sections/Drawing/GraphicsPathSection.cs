@@ -105,14 +105,14 @@ namespace Eto.Test.Sections.Drawing
 		Control Bounds()
 		{
 			var control = new Label();
-			control.Text = string.Format("Bounds: {0}", renderer.path.Bounds);
+			control.Text = string.Format("Bounds: {0}", renderer.Path.Bounds);
 			return control;
 		}
 
 		Control CurrentPoint()
 		{
 			var control = new Label();
-			control.Text = string.Format("CurrentPoint: {0}", renderer.path.CurrentPoint);
+			control.Text = string.Format("CurrentPoint: {0}", renderer.Path.CurrentPoint);
 			return control;
 		}
 
@@ -145,7 +145,9 @@ namespace Eto.Test.Sections.Drawing
 	class GraphicsPathRenderer
 	{
 		GraphicsPathRendererConfig config;
-		public GraphicsPath path;
+
+		GraphicsPath path;
+		public GraphicsPath Path { get { return path = path ?? CreateMainPath(); } }
 
 		public GraphicsPathRenderer(GraphicsPathRendererConfig config)
 		{
@@ -155,21 +157,21 @@ namespace Eto.Test.Sections.Drawing
 
 		internal void Refresh()
 		{
-			path = CreateMainPath();
+			path = null;
 		}
 
 		public void Render(Graphics g, bool fill)
 		{
 			if (fill)
 			{
-				g.FillPath(Brushes.Black(), path);
+				g.FillPath(Brushes.Black(), Path);
 			}
 			else
 			{
 				var pen = new Pen(Colors.Black, config.PenThickness);
 				pen.LineJoin = config.LineJoin;
 				pen.LineCap = config.LineCap;
-				g.DrawPath(pen, path);
+				g.DrawPath(pen, Path);
 			}
 		}
 
@@ -193,7 +195,7 @@ namespace Eto.Test.Sections.Drawing
 			return mainPath;
 		}
 
-		GraphicsPath CreatePath()
+		static GraphicsPath CreatePath()
 		{
 			var newPath = new GraphicsPath();
 			var start = config.StartFigures;
