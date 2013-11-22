@@ -157,8 +157,16 @@ namespace Eto.Platform.Direct2D.Drawing
 		}
 
 		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
-		{			
-			//throw new NotImplementedException();
+		{
+			/*
+			Sink.AddArc(new sd.ArcSegment
+			{
+				Point = new s.DrawingPointF(x, y),
+				Size = new s.DrawingSizeF(width/2, height/2),
+				ArcSize = sd.ArcSize.Large, // fix
+			});*/
+
+			// TODO: Fix
 		}
 
 		public void AddEllipse(float x, float y, float width, float height)
