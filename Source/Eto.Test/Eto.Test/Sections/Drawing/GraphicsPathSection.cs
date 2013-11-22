@@ -33,8 +33,6 @@ namespace Eto.Test.Sections.Drawing
 		{
 			toolkit = toolkit ?? new DrawingToolkit();
 			config = new GraphicsPathRendererConfig();
-			renderer = new GraphicsPathRenderer(config); // a shared configuration
-
 			config.StartFigures = true;
 			config.PenThickness = 1;
 			
@@ -42,12 +40,12 @@ namespace Eto.Test.Sections.Drawing
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
 			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
+			renderer = new GraphicsPathRenderer(config); // A shared config. Create the renderer after the bindings have been created.
 			layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
 			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath(toolkit.Clone()));
 			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath(toolkit.Clone()));
 			layout.EndVertical();
-
 			layout.Add(null);
 
 			Content = layout;
