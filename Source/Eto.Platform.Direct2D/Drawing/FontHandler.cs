@@ -82,7 +82,7 @@ namespace Eto.Platform.Direct2D.Drawing
                 w,
                 s,
                 sw.FontStretch.Normal,
-                sizeInPoints, // TODO: should this be in pixels? The documentation says device-independent pixels.
+                sizeInPoints * 96.0f / 72.0f, // convert from points to pixels. (The documentation says device-independent pixels.)
                 "en-us");
             
             int index = 0;
