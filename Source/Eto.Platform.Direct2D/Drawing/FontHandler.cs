@@ -28,9 +28,15 @@ namespace Eto.Platform.Direct2D.Drawing
         // These need to be disposed
         sw.FontFace fontFace = null;
 
+		private string GetTranslatedName(FontFamily family)
+		{
+			var f = (FontFamilyHandler)family.Handler;
+			return f.TranslatedName;
+		}
+
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
-			Create(family, size, style, decoration);
+			Create(GetTranslatedName(family), size, style, decoration);
 		}
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
@@ -58,9 +64,7 @@ namespace Eto.Platform.Direct2D.Drawing
         public void Create(FontFamily family, float sizeInPoints, FontStyle style)
         {
             this.sizeInPoints = sizeInPoints;
-            var familyName = family.Name;
-
-            Create(familyName, sizeInPoints, style, FontDecoration.None);
+            Create(GetTranslatedName(family), sizeInPoints, style, FontDecoration.None);
         }
 
         private void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)

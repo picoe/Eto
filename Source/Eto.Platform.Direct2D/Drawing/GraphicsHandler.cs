@@ -169,10 +169,25 @@ namespace Eto.Platform.Direct2D.Drawing
 			throw new NotImplementedException(); // TODO
 		}
 
+		/// <summary>
+		/// BUGBUG: This is a temporary workaround for brushes not working.
+		/// Remove when fixed.
+		/// </summary>
+		sd.Brush defaultBrush;
+		sd.Brush DefaultBrush
+		{
+			get
+			{
+				if (defaultBrush == null)
+					defaultBrush = new sd.SolidColorBrush(this.Control, Colors.Yellow.ToSD(), null);
+				return defaultBrush;
+			}
+		}
+
 		void IGraphics.DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
 			var textLayout = GetTextLayout(font, text);
-			this.Control.DrawTextLayout(new s.DrawingPointF(x, y), textLayout, defaultForegroundBrush: null);
+			this.Control.DrawTextLayout(new s.DrawingPointF(x, y), textLayout, defaultForegroundBrush: DefaultBrush);
 		}
 
 		public SizeF MeasureString(Font font, string text)

@@ -17,6 +17,7 @@ namespace Eto.Platform.Direct2D.Drawing
 	public class FontFamilyHandler : WidgetHandler<FontFamily>, IFontFamily
     {
 		public string Name { get; private set; }
+		public string TranslatedName { get; private set; }
 
 		public IEnumerable<FontTypeface> Typefaces
 		{
@@ -26,6 +27,28 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void Create(string familyName)
 		{
 			this.Name = familyName;
+
+			switch (familyName.ToUpperInvariant())
+			{
+				case FontFamilies.MonospaceFamilyName:
+					TranslatedName = "Courier New";
+					break;
+				case FontFamilies.SansFamilyName:
+					TranslatedName = "Microsoft Sans Serif";
+					break;
+				case FontFamilies.SerifFamilyName:
+					TranslatedName = "Times New Roman";
+					break;
+				case FontFamilies.CursiveFamilyName:
+					TranslatedName = "Comic Sans MS";
+					break;
+				case FontFamilies.FantasyFamilyName:
+					TranslatedName = "Gabriola";
+					break;
+				default:
+					TranslatedName = familyName;
+					break;
+			}
 		}
 
 		public string ID { get; set; }
