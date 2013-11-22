@@ -17,16 +17,19 @@ namespace Eto.Platform.Direct2D.Drawing
 	public class GraphicsPathHandler : IGraphicsPathHandler
 	{
 		public sd.PathGeometry Control { get; private set; }
-		private sd.GeometrySink sink;
 		bool isInFigure = false;
 		public PointF CurrentPoint { get; private set; }
 		public object ControlObject { get { return this.Control; } }
 		public RectangleF Bounds { get { return Control.GetBounds().ToEto(); } }
+		sd.GeometrySink sink;
+		private sd.GeometrySink Sink
+		{
+			get { return sink = sink ?? this.Control.Open(); }
+		}
 
 		public GraphicsPathHandler()
 		{
 			this.Control = new sd.PathGeometry(SDFactory.D2D1Factory);
-			this.sink = this.Control.Open();
 		}
 
 		public void CloseSink()
@@ -43,7 +46,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			ConnectTo(pt1);
 
-			sink.AddBezier(new sd.BezierSegment
+			Sink.AddBezier(new sd.BezierSegment
 			{
 				Point1 = pt2.ToDx(),
 				Point2 = pt3.ToDx(),
@@ -51,11 +54,6 @@ namespace Eto.Platform.Direct2D.Drawing
 			});
 
 			CurrentPoint = pt4;
-		}
-
-		public void AddPath(IGraphicsPath path, bool connect)
-		{
-			throw new NotImplementedException();
 		}
 
 		public IGraphicsPath Clone()
@@ -78,9 +76,9 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			var pt = p.ToDx();
 			if (isInFigure)
-				sink.AddLine(pt);
+				Sink.AddLine(pt);
 			else
-				sink.BeginFigure(pt, sd.FigureBegin.Hollow); // what is hollow vs. filled?
+				Sink.BeginFigure(pt, sd.FigureBegin.Hollow); // what is hollow vs. filled?
 
 			CurrentPoint = p;
 		}
@@ -94,14 +92,14 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			if (isInFigure)
 			{
-				sink.EndFigure(sd.FigureEnd.Closed);
+				Sink.EndFigure(sd.FigureEnd.Closed);
 				isInFigure = false;
 			}
 		}
 
 		public void Transform(IMatrix matrix)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public void AddLine(float startX, float startY, float endX, float endY)
@@ -123,9 +121,8 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void MoveTo(float x, float y)
 		{
-			sink.BeginFigure(
-				new s.DrawingPointF(x, y),
-				sd.FigureBegin.Filled); // is this correct?
+			CloseFigure();
+			ConnectTo(new PointF(x, y));
 		}
 
 		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
@@ -141,6 +138,11 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void AddEllipse(float x, float y, float width, float height)
 		{			
 			//throw new NotImplementedException();
+		}
+
+		public void AddPath(IGraphicsPath path, bool connect)
+		{
+			// throw new NotImplementedException();
 		}
 
 		public void AddRectangle(float x, float y, float width, float height)
