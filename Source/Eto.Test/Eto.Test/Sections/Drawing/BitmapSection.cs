@@ -1,8 +1,36 @@
 using Eto.Forms;
 using Eto.Drawing;
+using ImageView = Eto.Test.Sections.Drawing.DrawableImageView;
 
 namespace Eto.Test.Sections.Drawing
 {
+	/// <summary>
+	/// We use this class instead of ImageView to
+	/// hook into the rendering and supply a different
+	/// drawing toolkit.
+	/// </summary>
+	public class DrawableImageView : Drawable
+	{
+		private Image image;
+		public Image Image
+		{
+			get { return image; }
+			set
+			{
+				image = value;
+				this.MinimumSize = image.Size;
+			}
+		}
+
+		public DrawableImageView()
+		{
+			this.Paint += (s, e) => {
+				if (this.Image != null)
+					e.Graphics.DrawImage(this.Image, PointF.Empty);
+			};
+		}
+	}
+
 	public class BitmapSection : Scrollable
 	{
 		public BitmapSection()
@@ -33,7 +61,7 @@ namespace Eto.Test.Sections.Drawing
 
 			var image = new Bitmap(resourceStream);
 
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CreateCustom32()
@@ -47,7 +75,7 @@ namespace Eto.Test.Sections.Drawing
 				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
 			}
 
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CreateCustom32Alpha()
@@ -61,14 +89,14 @@ namespace Eto.Test.Sections.Drawing
 				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
 			}
 
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control Cloning()
 		{
 			var image = TestIcons.TestImage;
 			image = image.Clone();
-			return new ImageView { Image = image };
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CloningRectangle()
