@@ -166,7 +166,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		sd.Geometry GetGeometry(IGraphicsPath path)
 		{
-			throw new NotImplementedException(); // TODO
+			return path.ControlObject as sd.Geometry;
 		}
 
 		/// <summary>

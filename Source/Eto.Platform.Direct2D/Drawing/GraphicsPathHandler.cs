@@ -29,22 +29,16 @@ namespace Eto.Platform.Direct2D.Drawing
 
         #endregion
 
-        public void AddArc(RectangleF rect, float startAngle, float sweepAngle)
-        {
-            throw new NotImplementedException();
-        }
-
         public void AddBezier(PointF pt1, PointF pt2, PointF pt3, PointF pt4)
         {
             sink.AddLine(pt1.ToWpf());
 
-            sink.AddBezier(
-                new sd.BezierSegment
-                {
-                    Point1 = pt2.ToWpf(),
-                    Point2 = pt3.ToWpf(),
-                    Point3 = pt4.ToWpf()
-                });
+            sink.AddBezier(new sd.BezierSegment
+            {
+                Point1 = pt2.ToWpf(),
+                Point2 = pt3.ToWpf(),
+                Point3 = pt4.ToWpf()
+            });
         }
 
         public void AddBeziers(Point[] p)
@@ -57,67 +51,23 @@ namespace Eto.Platform.Direct2D.Drawing
                 var i = 1;
                 while (p.Length > i + 2)
                 {
-                    sink.AddBezier(
-                        new sd.BezierSegment
-                        {
-                            Point1 = p[i].ToWpf(),
-                            Point2 = p[i + 1].ToWpf(),
-                            Point3 = p[i + 2].ToWpf()
-                        });
+                    sink.AddBezier(new sd.BezierSegment
+                    {
+                        Point1 = p[i].ToWpf(),
+                        Point2 = p[i + 1].ToWpf(),
+                        Point3 = p[i + 2].ToWpf()
+                    });
 
                     i = i + 3;
                 }
             }
         }
 
-        public void AddCurve(PointF[] points)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddEllipse(RectangleF rect)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void AddLine(PointF point1, PointF point2)
-        {
-            sink.AddLines(
-                new s.DrawingPointF[]
-                {
-                    point1.ToWpf(),
-                    point2.ToWpf()                   
-                });
-        }
-
-        public void AddLine(Point point1, Point point2)
-        {
-            sink.AddLines(
-                new s.DrawingPointF[]
-                {
-                    point1.ToWpf(),
-                    point2.ToWpf()                   
-                });
-        }
-
-        public void AddLines(PointF[] points)
-        {
-            sink.AddLines(points.ToDx());
-        }
-
-        public void AddRectangle(RectangleF r)
-        {
-            sink.AddLines(
-                new s.DrawingPointF[]
-                {
-                   new s.DrawingPointF(r.Left, r.Top),
-                   new s.DrawingPointF(r.Right, r.Top),
-                   new s.DrawingPointF(r.Right, r.Bottom),
-                   new s.DrawingPointF(r.Left, r.Bottom),
-                   new s.DrawingPointF(r.Left, r.Top),
-                });
-        }
-
+		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
+		{
+			throw new NotImplementedException();
+		}
+      
 		public void AddPath(IGraphicsPath path, bool connect)
 		{
 			throw new NotImplementedException();
@@ -139,17 +89,11 @@ namespace Eto.Platform.Direct2D.Drawing
             get { throw new NotImplementedException(); }
         }
 
-        public void LineTo(PointF point)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void MoveTo(PointF point)
-        {
-            sink.BeginFigure(
-                point.ToWpf(),
-                sd.FigureBegin.Filled); // is this correct?
-        }
+		public void StartFigure()
+		{
+			throw new NotImplementedException();
+			//sink.BeginFigure(
+		}
 
         public void CloseFigure()
         {
@@ -168,7 +112,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public object ControlObject
         {
-            get { throw new NotImplementedException(); }
+			get { return this.Control; }
         }
 
 		public PointF CurrentPoint
@@ -178,7 +122,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddLine(float startX, float startY, float endX, float endY)
 		{
-			throw new NotImplementedException();
+			sink.AddLines(
+				new s.DrawingPointF[]
+                {
+					new s.DrawingPointF(startX, startY),
+					new s.DrawingPointF(endX, endY)  
+                });
 		}
 
 		public void LineTo(float x, float y)
@@ -188,15 +137,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void MoveTo(float x, float y)
 		{
-			throw new NotImplementedException();
+			sink.BeginFigure(
+				new s.DrawingPointF(x, y),
+				sd.FigureBegin.Filled); // is this correct?
 		}
 
 		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void AddCurve(IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			throw new NotImplementedException();
 		}
@@ -208,12 +154,20 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddRectangle(float x, float y, float width, float height)
 		{
-			throw new NotImplementedException();
-		}
+			var left = x;
+			var top = y;
+			var right = x + width - 1;
+			var bottom = y + height - 1;
 
-		public void StartFigure()
-		{
-			throw new NotImplementedException();
+			sink.AddLines(
+				new s.DrawingPointF[]
+                {
+                   new s.DrawingPointF(left, top),
+                   new s.DrawingPointF(right, top),
+                   new s.DrawingPointF(right, bottom),
+                   new s.DrawingPointF(left, bottom),
+                   new s.DrawingPointF(left, top),
+                });
 		}
 
 		public RectangleF Bounds
@@ -223,7 +177,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddLines(IEnumerable<PointF> points)
 		{
-			throw new NotImplementedException();
+			sink.AddLines(points.ToArray().ToDx());
 		}
 
 		public void Dispose()

@@ -309,28 +309,12 @@ namespace Eto.Platform.Direct2D
                 : sd.FillMode.Winding;
         }
 
-        public static s.DrawingPointF[] ToDx(this Point[] points)
-        {
-            var p = new s.DrawingPointF[points.Length];
-
-            for (var i = 0;
-                i < points.Length;
-                ++i)
-                p[i] = points[i].ToWpf();
-
-            return p;
-        }
-
         public static s.DrawingPointF[] ToDx(this PointF[] points)
         {
             var p = new s.DrawingPointF[points.Length];
-
-            for (var i = 0;
-                i < points.Length;
-                ++i)
+            for (var i = 0; i < points.Length; ++i)
                 p[i] = points[i].ToWpf();
-
-            return p;
+			return p;
         }
 
 		public static s.Matrix3x2 ToDx(this IMatrix m)
