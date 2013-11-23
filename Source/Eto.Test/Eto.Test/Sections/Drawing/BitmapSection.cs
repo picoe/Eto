@@ -20,11 +20,12 @@ namespace Eto.Test.Sections.Drawing
 			set
 			{
 				image = value;
-				this.MinimumSize = image.Size;
+				if (image != null)
+					this.MinimumSize = image.Size;
 			}
 		}
 
-		public DrawableImageView(DrawingToolkit toolkit, Image image)
+		public DrawableImageView(DrawingToolkit toolkit, Image image = null)
 		{
 			this.toolkit = toolkit.Clone();
 			this.Image = image;
@@ -52,51 +53,59 @@ namespace Eto.Test.Sections.Drawing
 		{
 			this.toolkit = toolkit ?? new DrawingToolkit();
 
-			var layout = new DynamicLayout();
+			using (this.toolkit.GetGeneratorContext())
+			{
+				var layout = new DynamicLayout();
 
-			layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
+				layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
 
-			layout.AddRow(
-				new Label { Text = "Custom 32-bit" }, CreateCustom32(),
-				new Label { Text = "Custom 32-bit alpha" }, CreateCustom32Alpha(),
-				null
-			);
+				layout.AddRow(
+					new Label { Text = "Custom 32-bit" }, CreateCustom32(),
+					new Label { Text = "Custom 32-bit alpha" }, CreateCustom32Alpha(),
+					null
+				);
 
-			layout.AddRow(
-				new Label { Text = "Clone" }, Cloning(),
-				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloningRectangle(), centered: true),
-				null);
+				layout.AddRow(
+					new Label { Text = "Clone" }, Cloning(),
+					new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloningRectangle(), centered: true),
+					null);
 
-			layout.Add(null);
+				layout.Add(null);
 
-			Content = layout;
+				Content = layout;
+			}
 		}
 
 		Control LoadFromStream()
 		{
+			var result = new DrawableImageView(this.toolkit);
 			var resourceStream = GetType().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
 
 			var image = new Bitmap(resourceStream);
 
-			return new DrawableImageView(this.toolkit, image);
+			result.Image = image;
+			return result;
 		}
 
 		Control CreateCustom32()
 		{
+			var result = new DrawableImageView(this.toolkit);
 			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
-			using (var graphics = new Graphics (image))
+			using (var graphics = new Graphics(image))
 			{
 				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
 				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
 			}
 
-			return new DrawableImageView(this.toolkit, image);
+			result.Image = image;
+			return result;
 		}
 
 		Control CreateCustom32Alpha()
 		{
+			var result = new DrawableImageView(this.toolkit);
 			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
@@ -105,22 +114,26 @@ namespace Eto.Test.Sections.Drawing
 				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
 				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
 			}
-
-			return new DrawableImageView(this.toolkit, image);
+			result.Image = image;
+			return result;
 		}
 
 		Control Cloning()
 		{
+			var result = new DrawableImageView(this.toolkit);
 			var image = TestIcons.TestImage;
 			image = image.Clone();
-			return new DrawableImageView(this.toolkit, image);
+			result.Image = image;
+			return result;
 		}
 
 		Control CloningRectangle()
 		{
+			var result = new DrawableImageView(this.toolkit);
 			var image = TestIcons.TestImage;
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
-			return new DrawableImageView(this.toolkit, image);
+			result.Image = image;
+			return result;
 		}
 	}
 }

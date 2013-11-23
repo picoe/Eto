@@ -18,11 +18,6 @@ namespace Eto.Platform.Direct2D.Drawing
 	{
 		#region Constructors
 
-		public GraphicsHandler(sd.RenderTarget target)
-		{
-			this.Control = target;
-		}
-
 		public GraphicsHandler()
 		{
 		}
@@ -121,6 +116,9 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		void IGraphics.CreateFromImage(Bitmap image)
 		{
+			var b = image.ControlObject as sd.Bitmap;
+			
+
 			throw new NotImplementedException();
 		}
 
@@ -167,7 +165,7 @@ namespace Eto.Platform.Direct2D.Drawing
 				}
 			};
 
-			this.Control = target;
+			this.Control = CurrentRenderTarget = target;			
 		}
 
 		sd.Geometry GetGeometry(IGraphicsPath path)
@@ -316,8 +314,16 @@ namespace Eto.Platform.Direct2D.Drawing
 			Control.Clear(brush.Color.ToSD());
 		}
 
+		/// <summary>
+		/// This is a HACK.
+		/// Brushes, bitmaps and other resources are associated with a specific
+		/// render target in D2D. Eto does not currently support this.
+		/// </summary>
+		public static sd.RenderTarget CurrentRenderTarget = null;
+
 		public void BeginDrawing()
 		{
+			CurrentRenderTarget = this.Control;
 			Control.BeginDraw();
 			// BUGBUG: Remove this once Clear() works.
 			Control.Clear(Colors.Black.ToSD());

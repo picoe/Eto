@@ -28,21 +28,30 @@ namespace Eto.Platform.Direct2D.Drawing
                 {
                     f.Initialize(
                         frame,
-                        s.WIC.PixelFormat.Format32bppBGRA,
+						s.WIC.PixelFormat.Format32bppPBGRA,
                         s.WIC.BitmapDitherType.None,
                         null,
                         0f,
-                        s.WIC.BitmapPaletteType.MedianCut);
+                        s.WIC.BitmapPaletteType.Custom);
 
-                    sd.RenderTarget renderTarget = null; // BUGBUG: fix
+					double dpX = 96.0f;
+					double dpY = 96.0f;
+					f.GetResolution(out dpX, out dpY);
 
-                    Control =
-                        sd.Bitmap.FromWicBitmap(
-                            renderTarget: null, // TODO
-                            wicBitmapSource: frame);
+					var props = new sd.BitmapProperties(
+						this.PixelFormat,
+						(float)dpX, (float)dpY);
+
+					// Get bitmap
+					Control = sd.Bitmap.FromWicBitmap(
+						GraphicsHandler.CurrentRenderTarget, // BUGBUG: fix
+						f, 
+						props);
                 }
             }
         }
+
+		private sd.PixelFormat PixelFormat { get { return new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied); } }
 
         public void Create(System.IO.Stream stream)
         {
@@ -55,7 +64,10 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public void Create(int width, int height, PixelFormat pixelFormat)
         {
-            throw new NotImplementedException();
+			Control = new sd.Bitmap(
+				GraphicsHandler.CurrentRenderTarget, 
+				new s.DrawingSize(width, height), 
+				new sd.BitmapProperties(this.PixelFormat));
         }
 
         public void Create(int width, int height, Graphics graphics)

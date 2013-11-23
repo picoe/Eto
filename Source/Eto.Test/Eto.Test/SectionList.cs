@@ -163,6 +163,11 @@ namespace Eto.Test
 		{
 			return new DrawingToolkit();
 		}
+
+		public virtual GeneratorContext GetGeneratorContext()
+		{
+			return new GeneratorContext(Generator.Current); // don't change the context
+		}
 	}
 
 #if Windows
@@ -171,11 +176,14 @@ namespace Eto.Test
 		Graphics graphics;
 		Generator d2d;
 
+		public D2DToolkit()
+		{
+			this.d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
+		}
+
 		public override void Initialize(Drawable drawable)
 		{
 			base.Initialize(drawable);
-
-			this.d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
 			this.graphics = new Graphics(drawable, d2d);
 		}
 
@@ -185,11 +193,16 @@ namespace Eto.Test
 			//this.graphics.Clear(Brushes.Black() as SolidBrush); // DirectDrawingSection's Drawable seems to automatically clear the background, but that doesn't happen in Direct2d, so we clear it explicitly.
 			try
 			{
-				using (var context = new GeneratorContext(d2d))
+				using (var context = GetGeneratorContext())
 					render(this.graphics);
 			}
 			catch (Exception) { }
 			this.graphics.EndDrawing();
+		}
+
+		public override GeneratorContext GetGeneratorContext()
+		{
+			return new GeneratorContext(d2d);
 		}
 
 		public override DrawingToolkit Clone()
