@@ -12,9 +12,10 @@ namespace Eto.Test
 			yield return new Section("Forms", FormsSection());
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
-#if Windows
-			yield return new Section("Drawing using Direct2D on a Winforms Control", DrawingSectionDirect2D());
-#endif
+
+			if (EtoEnvironment.Platform.IsWindows)
+				yield return new Section("Drawing using Direct2D on a Winforms Control", DrawingSectionDirect2D());
+
 			yield return new Section("Controls", ControlSection());
 			yield return new Section("Layouts", LayoutsSection());
 			yield return new Section("Dialogs", DialogsSection());
@@ -75,7 +76,6 @@ namespace Eto.Test
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 
-#if Windows
 		static IEnumerable<Section> DrawingSectionDirect2D()
 		{
 			// yield return new Section<BitmapSection> { Text = "Bitmap" + usingd2d, Creator = () => new BitmapSection(new D2DToolkit()) };
@@ -96,7 +96,6 @@ namespace Eto.Test
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing", Creator = () => new DirectDrawingSection(new D2DToolkit()) };
 			// yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
-#endif
 		
 		static IEnumerable<Section> LayoutsSection()
 		{

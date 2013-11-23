@@ -42,6 +42,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9D5A60
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Direct2D", "Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj", "{3C1B77D5-6C93-4366-A487-3D307FC29FFB}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Linux Debug|Any CPU = Linux Debug|Any CPU
@@ -212,6 +214,14 @@ Global
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

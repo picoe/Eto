@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -52,6 +52,10 @@
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj">
+      <Project>{3c1b77d5-6c93-4366-a487-3d307fc29ffb}</Project>
+      <Name>Eto.Platform.Direct2D</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
       <Project>{69D38C57-AD4B-4A16-A7B1-49BCFBE71491}</Project>
       <Name>Eto.Platform.Windows</Name>
