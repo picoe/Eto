@@ -161,8 +161,8 @@ namespace Eto.Platform.Direct2D.Drawing
 			/*
 			Sink.AddArc(new sd.ArcSegment
 			{
-				Point = new s.DrawingPointF(x, y),
-				Size = new s.DrawingSizeF(width/2, height/2),
+				Point = new s.Vector2(x, y),
+				Size = new s.Size2F(width/2, height/2),
 				ArcSize = sd.ArcSize.Large, // fix
 			});*/
 

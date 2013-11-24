@@ -66,7 +66,7 @@ namespace Eto.Platform.Direct2D.Drawing
         {
 			Control = new sd.Bitmap(
 				GraphicsHandler.CurrentRenderTarget, 
-				new s.DrawingSize(width, height), 
+				new s.Size2(width, height), 
 				new sd.BitmapProperties(this.PixelFormat));
         }
 

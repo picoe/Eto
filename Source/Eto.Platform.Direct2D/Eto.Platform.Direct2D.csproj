@@ -37,17 +37,17 @@
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
-    <Reference Include="SharpDX, Version=2.4.2.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+    <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SharpDX.2.4.2\lib\net40\SharpDX.dll</HintPath>
+      <HintPath>..\packages\SharpDX.2.5.0\lib\net40\SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=2.4.2.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.Direct2D1, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SharpDX.Direct2D1.2.4.2\lib\net40\SharpDX.Direct2D1.dll</HintPath>
+      <HintPath>..\packages\SharpDX.Direct2D1.2.5.0\lib\net40\SharpDX.Direct2D1.dll</HintPath>
     </Reference>
-    <Reference Include="SharpDX.DXGI, Version=2.4.2.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
+    <Reference Include="SharpDX.DXGI, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SharpDX.DXGI.2.4.2\lib\net40\SharpDX.DXGI.dll</HintPath>
+      <HintPath>..\packages\SharpDX.DXGI.2.5.0\lib\net40\SharpDX.DXGI.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -79,7 +79,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">
       <Link>Drawing\SplineHelper.cs</Link>
-    </Compile>    
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto.Platform.Windows\Eto.Platform.Windows.csproj">

@@ -5,7 +5,6 @@ using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 using swf = System.Windows.Forms;
-using Size2 = SharpDX.DrawingSize; // This has been changed to Size2 in more recent versions of SharpDx
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -40,7 +39,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			var rx = width / 2f;
 			var ry = height / 2f;
 
-			return new sd.Ellipse(center: new s.DrawingPointF(x + rx, y + ry), radiusX: rx, radiusY: ry);
+			return new sd.Ellipse(center: new s.Vector2(x + rx, y + ry), radiusX: rx, radiusY: ry);
 		}
 
 		public bool AntiAlias { get; set; } // not used
@@ -147,7 +146,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			var winProp = new sd.HwndRenderTargetProperties
 			{
 				Hwnd = o.Handle,
-				PixelSize = new Size2(o.ClientSize.Width, o.ClientSize.Height),
+				PixelSize = new s.Size2(o.ClientSize.Width, o.ClientSize.Height),
 				PresentOptions = sd.PresentOptions.Immediately
 			};
 
@@ -157,7 +156,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			o.SizeChanged += (s, e) => {
 				try
 				{
-					target.Resize(new Size2(o.ClientSize.Width, o.ClientSize.Height));
+					target.Resize(new s.Size2(o.ClientSize.Width, o.ClientSize.Height));
 					drawable.Invalidate();
 				}
 				catch (Exception)
@@ -194,7 +193,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		void IGraphics.DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
 			var textLayout = GetTextLayout(font, text);
-			this.Control.DrawTextLayout(new s.DrawingPointF(x, y), textLayout, defaultForegroundBrush: DefaultBrush);
+			this.Control.DrawTextLayout(new s.Vector2(x, y), textLayout, defaultForegroundBrush: DefaultBrush);
 		}
 
 		public SizeF MeasureString(Font font, string text)
@@ -236,22 +235,22 @@ namespace Eto.Platform.Direct2D.Drawing
 		void IGraphics.DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			Control.DrawRectangle(
-				new s.DrawingRectangleF(x, y, width, height),
+				new s.RectangleF(x, y, width, height),
 				GetBrush(pen));
 		}
 
 		void IGraphics.FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
 			Control.FillRectangle(
-				new s.DrawingRectangleF(x, y, width, height),
+				new s.RectangleF(x, y, width, height),
 				brush.ControlObject as sd.Brush);
 		}
 
 		void IGraphics.DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
 			Control.DrawLine(
-				new s.DrawingPointF(startx, starty),
-				new s.DrawingPointF(endx, endy),
+				new s.Vector2(startx, starty),
+				new s.Vector2(endx, endy),
 				GetBrush(pen));
 		}
 
