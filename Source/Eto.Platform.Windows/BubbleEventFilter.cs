@@ -163,7 +163,8 @@ namespace Eto.Platform.Windows
 			
 			char? keyChar = null;
 			var kevt = new KeyEventArgs(keyData, keyEventType, keyChar);
-			action(be.Control, kevt);
+			if (be.Control != null)
+				action(be.Control, kevt);
 			if (!kevt.Handled && (keyEventType != KeyEventType.KeyDown || !IsInputKey(be.Message.HWnd, keyData)))
 			{
 				foreach (var control in be.Parents)
@@ -210,7 +211,8 @@ namespace Eto.Platform.Windows
 
 			char keyChar = (char)((long)be.Message.WParam);
 			var kevt = new KeyEventArgs(keyData, keyEventType, keyChar);
-			action(be.Control, kevt);
+			if (be.Control != null)
+				action(be.Control, kevt);
 			if (!kevt.Handled && !IsInputChar(be.Message.HWnd, keyChar))
 			{
 				foreach (var control in be.Parents)
