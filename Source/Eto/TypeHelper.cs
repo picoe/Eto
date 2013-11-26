@@ -4,7 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace Eto
+namespace System
 {
 	/// <summary>
 	/// Extension methods to replace methods missing in WinRT.
@@ -13,6 +13,7 @@ namespace Eto
 	/// </summary>
 	internal static class TypeHelper // internal so that unrelated assemblies can link to the same source file without errors
 	{
+		#region IsEnum
 		public static bool IsEnum(this Type type)
 		{
 #if WINRT
@@ -21,8 +22,81 @@ namespace Eto
 			return type.IsEnum;
 #endif
 		}
+		#endregion
+
+
+		#region GetAllProperties
+#if WINRT
+		public static List<PropertyInfo> GetAllProperties(this Type type)
+		{
+			var result = new List<PropertyInfo>();
+			type.GetAllProperties(result);
+			return result;
+		}
+
+		private static void GetAllProperties(this Type type, List<PropertyInfo> result)
+		{
+			var typeInfo = type.GetTypeInfo();
+
+			if (result == null)
+				result = typeInfo.DeclaredProperties.ToList();
+			else
+				result.AddRange(typeInfo.DeclaredProperties);
+
+			if (typeInfo.BaseType != null)
+				typeInfo.BaseType.GetAllProperties(result);
+		}
+#else
+
+#endif
+		#endregion
+
+		#region GetRuntimeProperty
+
+		/// <summary>
+		/// Returns a PropertyInfo for the specified property of the current type.
+		/// The property may be declared on the current type or an ancestor type.
+		/// </summary>
+		/// <returns></returns>
+		public static PropertyInfo GetRuntimePropertyInfo(this Type type, string propertyName)
+		{
+#if WINRT			
+			var typeInfo = type.GetTypeInfo();
+			var result = typeInfo.GetRuntimeProperty(propertyName);
+			if (result == null &&
+			    typeInfo.BaseType != null)
+				result = GetRuntimePropertyInfo(typeInfo.BaseType, propertyName); // recursive
+#else
+			return type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+#endif
+		}
+
+		#endregion
+
+		#region GetRuntimeMethodInfo
+
+		/// <summary>
+		/// Returns a MethodInfo for the specified method of the current type.
+		/// The Method may be declared on the current type or an ancestor type.
+		/// </summary>
+		/// <returns></returns>
+		public static MethodInfo GetRuntimeMethodInfo(this Type type, string MethodName)
+		{
+#if WINRT			
+			var typeInfo = type.GetTypeInfo();
+			var result = typeInfo.GetRuntimeMethod(MethodName);
+			if (result == null &&
+			    typeInfo.BaseType != null)
+				result = GetRuntimeMethodInfo(typeInfo.BaseType, MethodName); // recursive
+#else
+			return type.GetMethod(MethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+#endif
+		}
+
+		#endregion
 
 #if WINRT
+
 		/// <summary>
 		/// Determines whether the specified object is an instance of the current Type.
 		/// </summary>
