@@ -90,7 +90,7 @@ namespace Eto.Forms
 		protected override ListItemCollection CreateDefaultItems ()
 		{
 			var type = typeof (T);
-			if (!type.IsEnum) throw new EtoException ("T must be an enumeration");
+			if (!type.IsEnum()) throw new EtoException ("T must be an enumeration");
 
 			var items = new ListItemCollection ();
 			var values = Enum.GetValues (type);

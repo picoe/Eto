@@ -176,7 +176,9 @@ namespace Eto.Drawing
 			}
 			else
 			{
+#if !WINRT
 				Debug.Print("Caller is missing a call to BitmapData.Dispose()");
+#endif
 			}
 		}
 	}

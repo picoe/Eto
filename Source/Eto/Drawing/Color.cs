@@ -214,12 +214,14 @@ namespace Eto.Drawing
 				if (colormap == null) {
 					lock (colormaplock) {
 						if (colormap == null) {
+#if !WINRT
 							var props = typeof (Colors).GetProperties (BindingFlags.Public | BindingFlags.Static);
 							colormap = new Dictionary<string, Color> (StringComparer.OrdinalIgnoreCase);
 							foreach (var val in props.Where (r => r.PropertyType == typeof (Color))) {
 								var col = (Color)val.GetValue (null, null);
 								colormap.Add (val.Name, col);
 							}
+#endif
 						}
 					}
 				}

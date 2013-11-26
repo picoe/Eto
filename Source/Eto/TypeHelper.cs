@@ -13,6 +13,15 @@ namespace Eto
 	/// </summary>
 	public static class TypeHelper
 	{
+		public static bool IsEnum(this Type type)
+		{
+#if WINRT
+			return type.GetTypeInfo().IsEnum;
+#else
+			return type.IsEnum;
+#endif
+		}
+
 #if WINRT
 		/// <summary>
 		/// Determines whether the specified object is an instance of the current Type.

@@ -325,9 +325,13 @@ namespace Eto.Drawing
 		/// <param name="format">Format to save as</param>
 		public void Save (string fileName, ImageFormat format)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			using (var stream = new FileStream(fileName, FileMode.Create, FileAccess.Write)) {
 				Save (stream, format);
 			}
+#endif
 		}
 
 		/// <summary>

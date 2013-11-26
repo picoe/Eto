@@ -13,12 +13,16 @@ namespace Eto.Forms
 		
 		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource(Assembly.GetCallingAssembly(), iconResource);
 			var action = new RadioAction(controller, id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
+#endif
 		}
 		
 	}
