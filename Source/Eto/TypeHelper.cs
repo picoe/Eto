@@ -48,6 +48,19 @@ namespace System
 		}
 		#endregion
 
+		#region InvokeOnInstance
+		public static object InvokeOnInstance(this MethodInfo method, object instance, object[] parameters = null)
+		{
+#if WINRT
+			return method.Invoke(instance, parameters);
+#else
+			return method.Invoke(instance, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic, 
+				null, parameters, null);
+#endif
+		}
+
+		#endregion
+
 		#region GetAllProperties
 #if WINRT
 		public static List<PropertyInfo> GetAllProperties(this Type type)
