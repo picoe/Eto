@@ -102,6 +102,7 @@
     <Compile Include="ResourceNotFoundException.cs" />
     <Compile Include="Resources.cs" />
     <Compile Include="Threading\Thread.cs" />
+    <Compile Include="TypeHelper.cs" />
     <Compile Include="WeakEventHandler.cs">
       <SubType>Code</SubType>
     </Compile>
