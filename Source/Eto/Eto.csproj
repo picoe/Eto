@@ -94,7 +94,7 @@
     </Compile>
     <Compile Include="GeneratorContext.cs" />
     <Compile Include="Generators.cs" />
-    <Compile Include="In32ArrayConverter.cs" />
+    <Compile Include="Int32ArrayConverter.cs" />
     <Compile Include="InstanceWidget.cs" />
     <Compile Include="NamespaceInfo.cs" />
     <Compile Include="OperatingSystemPlatform.cs" />
