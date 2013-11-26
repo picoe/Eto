@@ -51,7 +51,7 @@ namespace System
 #endif
 		#endregion
 
-		#region GetRuntimeProperty
+		#region GetRuntimePropertyInfo
 
 		/// <summary>
 		/// Returns a PropertyInfo for the specified property of the current type.
