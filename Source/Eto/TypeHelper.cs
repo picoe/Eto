@@ -11,7 +11,7 @@ namespace Eto
 	/// 
 	/// Some of these are from https://gist.github.com/jeffwilcox/2432351 (no attribution requested.)
 	/// </summary>
-	public static class TypeHelper
+	internal static class TypeHelper // internal so that unrelated assemblies can link to the same source file without errors
 	{
 		public static bool IsEnum(this Type type)
 		{
