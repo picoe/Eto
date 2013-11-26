@@ -150,7 +150,9 @@ namespace Eto.Drawing
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
 		public static Bitmap FromResource (string resourceName, Assembly assembly = null)
 		{
+#if !WINRT
 			assembly = assembly ?? Assembly.GetCallingAssembly ();
+#endif
 			using (var stream = assembly.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (assembly, resourceName);
@@ -167,7 +169,11 @@ namespace Eto.Drawing
 		[Obsolete ("Use FromResource(string, Assembly) instead")]
 		public static Bitmap FromResource (Assembly asm, string resourceName)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			return FromResource (resourceName, asm ?? Assembly.GetCallingAssembly ());
+#endif
 		}
 
 		/// <summary>
@@ -177,12 +183,16 @@ namespace Eto.Drawing
 		public Bitmap (Assembly asm, string resourceName)
 			: this ((Generator)null)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			if (asm == null) asm = Assembly.GetCallingAssembly ();
 			using (var stream = asm.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (asm, resourceName);
 				Handler.Create (stream);
 			}
+#endif
 		}
 
 		/// <summary>

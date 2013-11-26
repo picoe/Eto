@@ -22,6 +22,11 @@ namespace Eto
 		public bool IsWindows { get; private set; }
 
 		/// <summary>
+		/// Gets a value indicating that the current OS is a Windows Runtime (WinRT) system.
+		/// </summary>
+		public bool IsWinRT { get; private set; }
+
+		/// <summary>
 		/// Gets a value indicating that the current OS is a unix-based system
 		/// </summary>
 		/// <remarks>
@@ -70,6 +75,13 @@ namespace Eto
 		/// </summary>
 		public OperatingSystemPlatform()
 		{
+#if WINRT
+			// System.Environment.OSVersion does not exist on WinRT so
+			// unfortunately we have to rely on a compiler #if directive.
+			// Will need to think about a portable way to do this.
+			IsWinRT = true;
+#else
+
 			if (Type.GetType("Mono.Runtime", false) != null || Type.GetType("Mono.Interop.IDispatch", false) != null)
 				IsMono = true;
 
@@ -102,6 +114,7 @@ namespace Eto
 					IsWindows = true;
 					break;
 			}
+#endif
 		}
 	}
 }

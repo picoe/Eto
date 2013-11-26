@@ -73,7 +73,13 @@ namespace Eto.Drawing
 		public static Icon FromResource (Assembly assembly, string resourceName, Generator generator = null)
 		{
 			if (assembly == null)
-				assembly = Assembly.GetCallingAssembly ();
+			{
+#if WINRT
+				throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
+				assembly = Assembly.GetCallingAssembly();
+#endif
+			}
 			using (var stream = assembly.GetManifestResourceStream(resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (assembly, resourceName);
@@ -92,8 +98,12 @@ namespace Eto.Drawing
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
 		public static Icon FromResource (string resourceName, Generator generator = null)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			var asm = Assembly.GetCallingAssembly ();
 			return FromResource (asm, resourceName, generator);
+#endif
 		}
 		
 		/// <summary>
@@ -102,6 +112,9 @@ namespace Eto.Drawing
 		[Obsolete("Use Icon.FromResource instead")]
 		public Icon (Assembly asm, string resourceName) : base(null, typeof(IIcon))
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			if (asm == null)
 				asm = Assembly.GetCallingAssembly ();
 			using (var stream = asm.GetManifestResourceStream (resourceName)) {
@@ -109,6 +122,7 @@ namespace Eto.Drawing
 					throw new ResourceNotFoundException (asm, resourceName);
 				Handler.Create (stream);
 			}
+#endif
 		}
 	}
 }
