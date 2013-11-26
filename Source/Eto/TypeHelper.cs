@@ -24,6 +24,29 @@ namespace System
 		}
 		#endregion
 
+		#region GetGetMethodInfo(PropertyInfo propertyInfo)
+
+		public static MethodInfo GetGetMethodInfo(this PropertyInfo propertyInfo)
+		{
+#if WINRT
+			return propertyInfo.GetMethod;
+#else
+			return propertyInfo.GetGetMethod(true);
+#endif
+		}
+		#endregion
+
+		#region GetSetMethodInfo(PropertyInfo propertyInfo)
+
+		public static MethodInfo GetSetMethodInfo(this PropertyInfo propertyInfo)
+		{
+#if WINRT
+			return propertyInfo.SetMethod;
+#else
+			return propertyInfo.GetSetMethod(true);
+#endif
+		}
+		#endregion
 
 		#region GetAllProperties
 #if WINRT
