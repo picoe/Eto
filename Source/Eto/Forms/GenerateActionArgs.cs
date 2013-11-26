@@ -1,5 +1,6 @@
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -15,7 +16,7 @@ namespace Eto.Forms
 		readonly ActionCollection actions;
 		readonly ActionItemCollection menu;
 		readonly ActionItemCollection toolBar;
-		readonly Hashtable arguments = new Hashtable();
+		readonly Dictionary<object, object> arguments = new Dictionary<object, object>();
 		
 		#endregion
 		
@@ -40,8 +41,8 @@ namespace Eto.Forms
 		{
 			get { return toolBar; }
 		}
-		
-		public Hashtable Arguments
+
+		public Dictionary<object, object> Arguments
 		{
 			get { return arguments; }
 		}
@@ -79,7 +80,7 @@ namespace Eto.Forms
 
 		public void CopyArguments(GenerateActionArgs args)
 		{
-			foreach (DictionaryEntry de in args.arguments)
+			foreach (var de in args.arguments)
 			{
 				arguments[de.Key] = de.Value;
 			}
