@@ -216,7 +216,7 @@ namespace Eto.Forms
 
 		void Recreate ()
 		{
-			buttons.ForEach(UnregisterButton);
+			foreach (var b in buttons) UnregisterButton(b);
 			buttons.Clear ();
 			controller = null;
 			Create ();

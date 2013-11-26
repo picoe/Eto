@@ -37,7 +37,7 @@ namespace Eto.Test
 		{
 			this.Text = text;
 			this.Expanded = true;
-			this.ForEach(r => r.Parent = this);
+			foreach (var r in this) r.Parent = this;
 		}
 	}
 
