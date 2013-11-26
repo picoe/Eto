@@ -98,10 +98,11 @@ namespace System
 		{
 #if WINRT			
 			var typeInfo = type.GetTypeInfo();
-			var result = typeInfo.GetRuntimeProperty(propertyName);
+			var result = typeInfo.GetDeclaredProperty(propertyName);
 			if (result == null &&
 			    typeInfo.BaseType != null)
 				result = GetRuntimePropertyInfo(typeInfo.BaseType, propertyName); // recursive
+			return result;
 #else
 			return type.GetProperty(propertyName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 #endif
@@ -120,10 +121,11 @@ namespace System
 		{
 #if WINRT			
 			var typeInfo = type.GetTypeInfo();
-			var result = typeInfo.GetRuntimeMethod(MethodName);
+			var result = typeInfo.GetDeclaredMethod(MethodName);
 			if (result == null &&
 			    typeInfo.BaseType != null)
 				result = GetRuntimeMethodInfo(typeInfo.BaseType, MethodName); // recursive
+			return result;
 #else
 			return type.GetMethod(MethodName, BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
 #endif
