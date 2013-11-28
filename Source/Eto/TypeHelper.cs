@@ -13,6 +13,19 @@ namespace System
 	/// </summary>
 	internal static class TypeHelper // internal so that unrelated assemblies can link to the same source file without errors
 	{
+		#region GetBaseType
+
+		public static Type GetBaseType(this Type type)
+		{
+#if WINRT
+			return type.GetTypeInfo().BaseType;
+#else
+			return type.BaseType;
+#endif
+		}
+
+		#endregion
+
 		#region IsEnum
 		public static bool IsEnum(this Type type)
 		{
