@@ -20,7 +20,12 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddRow(
-				new Label { Text = "Default" }, Default(),
+				new Label { Text = "Default" }, Default(Colors.White, Colors.Black),
+				null
+			);
+
+			layout.AddRow(
+				new Label { Text = "Without background" }, Default(Colors.Black),
 				null
 			);
 
@@ -79,13 +84,21 @@ namespace Eto.Test.Sections.Drawing
 
 		internal void DrawFrame(Graphics g)
 		{
-			float y = 0;
-			foreach (var info in GetDrawInfo())
-			{
-				var size = g.MeasureString(info.Font, info.Text);
-				g.DrawText(info.Font, Colors.White, 10, y, info.Text);
-				y += size.Height;
-			}
+			var control = new Drawable { Size = new Size (400, 500), BackgroundColor = Colors.Black };
+
+			control.Paint += (sender, e) => {
+				var g = e.Graphics;
+
+				float y = 0;
+				foreach (var info in GetDrawInfo ())
+				{
+					var size = g.MeasureString(info.Font, info.Text);
+					g.DrawText(info.Font, Colors.White, 10, y, info.Text);
+					y += size.Height;
+				}
+			};
+
+			return control;
 		}
 	}
 }
