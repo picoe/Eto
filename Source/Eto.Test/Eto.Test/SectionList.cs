@@ -13,20 +13,18 @@ namespace Eto.Test
 		Control CreateContent();
 	}
 
-	public class Section : List<Section>, ITreeGridItem<Section>
+	/// <summary>
+	/// Sections can nest. Each section item can also host
+	/// a control that is displayed in the details view when 
+	/// the section is selected.
+	/// 
+	/// Sections do not have any particular visual representation,
+	/// and can be wrapped within a tree item (SectionTreeItem) or
+	/// any other visual representation.
+	/// </summary>
+	public class Section : List<Section>
 	{
 		public string Text { get; set; }
-
-		public bool Expanded { get; set; }
-
-		public bool Expandable { get { return Count > 0; } }
-
-		public ITreeGridItem Parent { get; set; }
-
-		public new ITreeGridItem this [int index]
-		{
-			get { return null; }
-		}
 
 		public Section()
 		{
@@ -36,8 +34,30 @@ namespace Eto.Test
 			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
 		{
 			this.Text = text;
+		}
+	}
+
+	/// <summary>
+	/// A tree item representation of a section.
+	/// </summary>
+	public class SectionTreeItem : List<SectionTreeItem>, ITreeGridItem<SectionTreeItem>
+	{
+		public Section Section { get; private set; }
+		public string Text { get { return Section.Text; } }
+		public bool Expanded { get; set; }
+		public bool Expandable { get { return Count > 0; } }
+		public ITreeGridItem Parent { get; set; }
+
+		public SectionTreeItem(Section section)
+		{
+			this.Section = section;
 			this.Expanded = true;
-			foreach (var r in this) r.Parent = this;
+			foreach (var child in section)
+			{
+				var temp = new SectionTreeItem(child);
+				temp.Parent = this;
+				this.Add(temp); // recursive
+			}
 		}
 	}
 
@@ -120,9 +140,12 @@ namespace Eto.Test
 	{
 		public new ISection SelectedItem
 		{
-			get { return base.SelectedItem as ISection; }
+			get
+			{
+				var sectionTreeItem = base.SelectedItem as SectionTreeItem;
+				return sectionTreeItem.Section as ISection;
+			}
 		}
-
 
 		public SectionList(IEnumerable<Section> topNodes)
 		{
@@ -131,7 +154,7 @@ namespace Eto.Test
 
 			Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
 
-			this.DataStore = new Section("Top", topNodes);
+			this.DataStore = new SectionTreeItem(new Section("Top", topNodes));			
 		}
 
 		public string SectionTitle
