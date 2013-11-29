@@ -9,7 +9,8 @@ namespace Eto.Test.Sections.Drawing
 	{
 		DrawingToolkit toolkit;
 
-		public DrawTextSection(): this(null)
+		public DrawTextSection()
+			: this(null)
 		{
 		}
 
@@ -20,12 +21,7 @@ namespace Eto.Test.Sections.Drawing
 			var layout = new DynamicLayout();
 
 			layout.AddRow(
-				new Label { Text = "Default" }, Default(Colors.White, Colors.Black),
-				null
-			);
-
-			layout.AddRow(
-				new Label { Text = "Without background" }, Default(Colors.Black),
+				new Label { Text = "Default" }, Default(),
 				null
 			);
 
@@ -36,7 +32,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control Default()
 		{
-			var control = new Drawable { Size = new Size (400, 500), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(400, 500), BackgroundColor = Colors.Black };
 			toolkit.Initialize(control);
 			var renderer = new DrawTextRenderer();
 			control.Paint += (sender, e) => toolkit.Render(e.Graphics, renderer.DrawFrame);
@@ -84,21 +80,13 @@ namespace Eto.Test.Sections.Drawing
 
 		internal void DrawFrame(Graphics g)
 		{
-			var control = new Drawable { Size = new Size (400, 500), BackgroundColor = Colors.Black };
-
-			control.Paint += (sender, e) => {
-				var g = e.Graphics;
-
-				float y = 0;
-				foreach (var info in GetDrawInfo ())
-				{
-					var size = g.MeasureString(info.Font, info.Text);
-					g.DrawText(info.Font, Colors.White, 10, y, info.Text);
-					y += size.Height;
-				}
-			};
-
-			return control;
+			float y = 0;
+			foreach (var info in GetDrawInfo())
+			{
+				var size = g.MeasureString(info.Font, info.Text);
+				g.DrawText(info.Font, Colors.White, 10, y, info.Text);
+				y += size.Height;
+			}
 		}
 	}
 }
