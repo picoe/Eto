@@ -101,6 +101,11 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Control.Restore();
 		}
 
+		public void CreateFromDrawable(Eto.Forms.Drawable drawable)
+		{
+			throw new NotImplementedException();
+		}
+
 		public void Flush()
 		{
 			if (image != null)

@@ -56,10 +56,14 @@ namespace Eto
 		/// <param name="unregister">callback to unregister the event handler</param>
 		public WeakEventHandler (EventHandler<TArgs> eventHandler, UnregisterCallback<TArgs> unregister = null)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			this.reference = new WeakReference (eventHandler.Target);
 			this.openHandler = (OpenEventHandler)Delegate.CreateDelegate (typeof(OpenEventHandler), null, eventHandler.Method);
 			this.handler = Invoke;
 			this.unregister = unregister;
+#endif
 		}
 
 		/// <summary>
@@ -125,6 +129,9 @@ namespace Eto
 		public static EventHandler<TArgs> MakeWeak<TArgs> (this EventHandler<TArgs> eventHandler, UnregisterCallback<TArgs> unregister = null)
 			where TArgs: EventArgs
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			if (eventHandler == null)
 				throw new ArgumentNullException ("eventHandler");
 			if (eventHandler.Method.IsStatic || eventHandler.Target == null)
@@ -136,6 +143,7 @@ namespace Eto
 			var weh = (IWeakEventHandler<TArgs>)wehConstructor.Invoke (new object[] { eventHandler, unregister });
 
 			return weh.Handler;
+#endif
 		}
 	}
 }

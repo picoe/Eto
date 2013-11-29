@@ -6,128 +6,128 @@ namespace Eto.Platform.Wpf
 {
 	public static class KeyMap
 	{
-		static readonly Dictionary<swi.Key, Key> keymap = new Dictionary<swi.Key, Key> ();
-		static readonly Dictionary<Key, swi.Key> inverse = new Dictionary<Key, swi.Key> ();
+		static readonly Dictionary<swi.Key, Keys> keymap = new Dictionary<swi.Key, Keys> ();
+		static readonly Dictionary<Keys, swi.Key> inverse = new Dictionary<Keys, swi.Key> ();
 
-		public static Key Find (swi.Key key)
+		public static Keys Find (swi.Key key)
 		{
-			Key mapped;
-			return keymap.TryGetValue(key, out mapped) ? mapped : Key.None;
+			Keys mapped;
+			return keymap.TryGetValue(key, out mapped) ? mapped : Keys.None;
 		}
 
-		public static Key Convert (swi.Key key, swi.ModifierKeys modifier)
+		public static Keys Convert (swi.Key key, swi.ModifierKeys modifier)
 		{
-			Key ret = Find(key);
+			Keys ret = Find(key);
 
-			if (modifier.HasFlag (swi.ModifierKeys.Alt)) ret |= Key.Alt;
-			if (modifier.HasFlag (swi.ModifierKeys.Control)) ret |= Key.Control;
-			if (modifier.HasFlag (swi.ModifierKeys.Shift)) ret |= Key.Shift;
-			if (modifier.HasFlag (swi.ModifierKeys.Windows)) ret |= Key.Application;
+			if (modifier.HasFlag (swi.ModifierKeys.Alt)) ret |= Keys.Alt;
+			if (modifier.HasFlag (swi.ModifierKeys.Control)) ret |= Keys.Control;
+			if (modifier.HasFlag (swi.ModifierKeys.Shift)) ret |= Keys.Shift;
+			if (modifier.HasFlag (swi.ModifierKeys.Windows)) ret |= Keys.Application;
 
 			return ret;
 		}
 
 
-		public static swi.Key Find (Key key)
+		public static swi.Key Find (Keys key)
 		{
 			swi.Key mapped;
 			return inverse.TryGetValue(key, out mapped) ? mapped : swi.Key.None;
 		}
 
-		public static swi.Key ConvertKey (Key key)
+		public static swi.Key ConvertKey (Keys key)
 		{
-			return Find(key & Key.KeyMask);
+			return Find(key & Keys.KeyMask);
 		}
 
-		public static swi.ModifierKeys ConvertModifier (Key key)
+		public static swi.ModifierKeys ConvertModifier (Keys key)
 		{
-			key &= Key.ModifierMask;
+			key &= Keys.ModifierMask;
 			swi.ModifierKeys val = swi.ModifierKeys.None;
 
-			if (key.HasFlag (Key.Alt)) val |= swi.ModifierKeys.Alt;
-			if (key.HasFlag (Key.Control)) val |= swi.ModifierKeys.Control;
-			if (key.HasFlag (Key.Shift)) val |= swi.ModifierKeys.Shift;
-			if (key.HasFlag (Key.Application)) val |= swi.ModifierKeys.Windows;
+			if (key.HasFlag (Keys.Alt)) val |= swi.ModifierKeys.Alt;
+			if (key.HasFlag (Keys.Control)) val |= swi.ModifierKeys.Control;
+			if (key.HasFlag (Keys.Shift)) val |= swi.ModifierKeys.Shift;
+			if (key.HasFlag (Keys.Application)) val |= swi.ModifierKeys.Windows;
 			return val;
 		}
 
 		static KeyMap ()
 		{
-			keymap.Add (swi.Key.A, Key.A);
-			keymap.Add (swi.Key.B, Key.B);
-			keymap.Add (swi.Key.C, Key.C);
-			keymap.Add (swi.Key.D, Key.D);
-			keymap.Add (swi.Key.E, Key.E);
-			keymap.Add (swi.Key.F, Key.F);
-			keymap.Add (swi.Key.G, Key.G);
-			keymap.Add (swi.Key.H, Key.H);
-			keymap.Add (swi.Key.I, Key.I);
-			keymap.Add (swi.Key.J, Key.J);
-			keymap.Add (swi.Key.K, Key.K);
-			keymap.Add (swi.Key.L, Key.L);
-			keymap.Add (swi.Key.M, Key.M);
-			keymap.Add (swi.Key.N, Key.N);
-			keymap.Add (swi.Key.O, Key.O);
-			keymap.Add (swi.Key.P, Key.P);
-			keymap.Add (swi.Key.Q, Key.Q);
-			keymap.Add (swi.Key.R, Key.R);
-			keymap.Add (swi.Key.S, Key.S);
-			keymap.Add (swi.Key.T, Key.T);
-			keymap.Add (swi.Key.U, Key.U);
-			keymap.Add (swi.Key.V, Key.V);
-			keymap.Add (swi.Key.W, Key.W);
-			keymap.Add (swi.Key.X, Key.X);
-			keymap.Add (swi.Key.Y, Key.Y);
-			keymap.Add (swi.Key.Z, Key.Z);
-			keymap.Add (swi.Key.F1, Key.F1);
-			keymap.Add (swi.Key.F2, Key.F2);
-			keymap.Add (swi.Key.F3, Key.F3);
-			keymap.Add (swi.Key.F4, Key.F4);
-			keymap.Add (swi.Key.F5, Key.F5);
-			keymap.Add (swi.Key.F6, Key.F6);
-			keymap.Add (swi.Key.F7, Key.F7);
-			keymap.Add (swi.Key.F8, Key.F8);
-			keymap.Add (swi.Key.F9, Key.F9);
-			keymap.Add (swi.Key.F10, Key.F10);
-			keymap.Add (swi.Key.F11, Key.F11);
-			keymap.Add (swi.Key.F12, Key.F12);
-			keymap.Add (swi.Key.D0, Key.D0);
-			keymap.Add (swi.Key.D1, Key.D1);
-			keymap.Add (swi.Key.D2, Key.D2);
-			keymap.Add (swi.Key.D3, Key.D3);
-			keymap.Add (swi.Key.D4, Key.D4);
-			keymap.Add (swi.Key.D5, Key.D5);
-			keymap.Add (swi.Key.D6, Key.D6);
-			keymap.Add (swi.Key.D7, Key.D7);
-			keymap.Add (swi.Key.D8, Key.D8);
-			keymap.Add (swi.Key.D9, Key.D9);
-			keymap.Add (swi.Key.Space, Key.Space);
-			keymap.Add (swi.Key.Up, Key.Up);
-			keymap.Add (swi.Key.Down, Key.Down);
-			keymap.Add (swi.Key.Left, Key.Left);
-			keymap.Add (swi.Key.Right, Key.Right);
-			keymap.Add (swi.Key.PageDown, Key.PageDown);
-			keymap.Add (swi.Key.PageUp, Key.PageUp);
-			keymap.Add (swi.Key.Home, Key.Home);
-			keymap.Add (swi.Key.End, Key.End);
+			keymap.Add (swi.Key.A, Keys.A);
+			keymap.Add (swi.Key.B, Keys.B);
+			keymap.Add (swi.Key.C, Keys.C);
+			keymap.Add (swi.Key.D, Keys.D);
+			keymap.Add (swi.Key.E, Keys.E);
+			keymap.Add (swi.Key.F, Keys.F);
+			keymap.Add (swi.Key.G, Keys.G);
+			keymap.Add (swi.Key.H, Keys.H);
+			keymap.Add (swi.Key.I, Keys.I);
+			keymap.Add (swi.Key.J, Keys.J);
+			keymap.Add (swi.Key.K, Keys.K);
+			keymap.Add (swi.Key.L, Keys.L);
+			keymap.Add (swi.Key.M, Keys.M);
+			keymap.Add (swi.Key.N, Keys.N);
+			keymap.Add (swi.Key.O, Keys.O);
+			keymap.Add (swi.Key.P, Keys.P);
+			keymap.Add (swi.Key.Q, Keys.Q);
+			keymap.Add (swi.Key.R, Keys.R);
+			keymap.Add (swi.Key.S, Keys.S);
+			keymap.Add (swi.Key.T, Keys.T);
+			keymap.Add (swi.Key.U, Keys.U);
+			keymap.Add (swi.Key.V, Keys.V);
+			keymap.Add (swi.Key.W, Keys.W);
+			keymap.Add (swi.Key.X, Keys.X);
+			keymap.Add (swi.Key.Y, Keys.Y);
+			keymap.Add (swi.Key.Z, Keys.Z);
+			keymap.Add (swi.Key.F1, Keys.F1);
+			keymap.Add (swi.Key.F2, Keys.F2);
+			keymap.Add (swi.Key.F3, Keys.F3);
+			keymap.Add (swi.Key.F4, Keys.F4);
+			keymap.Add (swi.Key.F5, Keys.F5);
+			keymap.Add (swi.Key.F6, Keys.F6);
+			keymap.Add (swi.Key.F7, Keys.F7);
+			keymap.Add (swi.Key.F8, Keys.F8);
+			keymap.Add (swi.Key.F9, Keys.F9);
+			keymap.Add (swi.Key.F10, Keys.F10);
+			keymap.Add (swi.Key.F11, Keys.F11);
+			keymap.Add (swi.Key.F12, Keys.F12);
+			keymap.Add (swi.Key.D0, Keys.D0);
+			keymap.Add (swi.Key.D1, Keys.D1);
+			keymap.Add (swi.Key.D2, Keys.D2);
+			keymap.Add (swi.Key.D3, Keys.D3);
+			keymap.Add (swi.Key.D4, Keys.D4);
+			keymap.Add (swi.Key.D5, Keys.D5);
+			keymap.Add (swi.Key.D6, Keys.D6);
+			keymap.Add (swi.Key.D7, Keys.D7);
+			keymap.Add (swi.Key.D8, Keys.D8);
+			keymap.Add (swi.Key.D9, Keys.D9);
+			keymap.Add (swi.Key.Space, Keys.Space);
+			keymap.Add (swi.Key.Up, Keys.Up);
+			keymap.Add (swi.Key.Down, Keys.Down);
+			keymap.Add (swi.Key.Left, Keys.Left);
+			keymap.Add (swi.Key.Right, Keys.Right);
+			keymap.Add (swi.Key.PageDown, Keys.PageDown);
+			keymap.Add (swi.Key.PageUp, Keys.PageUp);
+			keymap.Add (swi.Key.Home, Keys.Home);
+			keymap.Add (swi.Key.End, Keys.End);
 			/*
-			keymap.Add (swi.Key.LeftAlt, Key.Alt);
-			keymap.Add (swi.Key.RightAlt, Key.Alt);
-			keymap.Add (swi.Key.LeftCtrl, Key.Control);
-			keymap.Add (swi.Key.LeftCtrl, Key.Control);
-			keymap.Add (swi.Key.LeftShift, Key.Shift);
-			keymap.Add (swi.Key.RightShift, Key.Shift);
-			keymap.Add (swi.Key.LWin, Key.Menu);
-			keymap.Add (swi.Key.RWin, Key.Menu);
+			keymap.Add (swi.Key.LeftAlt, Keys.Alt);
+			keymap.Add (swi.Key.RightAlt, Keys.Alt);
+			keymap.Add (swi.Key.LeftCtrl, Keys.Control);
+			keymap.Add (swi.Key.LeftCtrl, Keys.Control);
+			keymap.Add (swi.Key.LeftShift, Keys.Shift);
+			keymap.Add (swi.Key.RightShift, Keys.Shift);
+			keymap.Add (swi.Key.LWin, Keys.Menu);
+			keymap.Add (swi.Key.RWin, Keys.Menu);
 			 */
-			keymap.Add (swi.Key.Escape, Key.Escape);
-			keymap.Add (swi.Key.Delete, Key.Delete);
-			keymap.Add (swi.Key.Back, Key.Backspace);
-			keymap.Add (swi.Key.Divide, Key.Divide);
-			keymap.Add (swi.Key.Enter, Key.Enter);
-			keymap.Add (swi.Key.Insert, Key.Insert);
-			keymap.Add (swi.Key.Tab, Key.Tab);
-			keymap.Add (swi.Key.Apps, Key.ContextMenu);
+			keymap.Add (swi.Key.Escape, Keys.Escape);
+			keymap.Add (swi.Key.Delete, Keys.Delete);
+			keymap.Add (swi.Key.Back, Keys.Backspace);
+			keymap.Add (swi.Key.Divide, Keys.Divide);
+			keymap.Add (swi.Key.Enter, Keys.Enter);
+			keymap.Add (swi.Key.Insert, Keys.Insert);
+			keymap.Add (swi.Key.Tab, Keys.Tab);
+			keymap.Add (swi.Key.Apps, Keys.ContextMenu);
 
 			foreach (var entry in keymap) {
 				inverse.Add (entry.Value, entry.Key);

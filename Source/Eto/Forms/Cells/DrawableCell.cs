@@ -45,13 +45,13 @@ namespace Eto.Forms
 	{
 		public Action<DrawableCellPaintArgs> PaintHandler { get; set; }
 
-		public DrawableCell ()
-			: this(Generator.Current)
+		public DrawableCell()
+			: this((Generator)null)
 		{
 		}
 
-		public DrawableCell(Generator g)
-			: base(g, typeof(IDrawableCell), true)
+		public DrawableCell(Generator generator)
+			: base(generator, typeof(IDrawableCell), true)
 		{
 		}
 	}

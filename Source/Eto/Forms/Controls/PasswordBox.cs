@@ -15,12 +15,13 @@ namespace Eto.Forms
 	{
 		new IPasswordBox Handler { get { return (IPasswordBox)base.Handler; } }
 
-		public PasswordBox () : this (Generator.Current)
+		public PasswordBox()
+			: this((Generator)null)
 		{
 		}
 
-		public PasswordBox (Generator g)
-			: this (g, typeof(IPasswordBox))
+		public PasswordBox (Generator generator)
+			: this (generator, typeof(IPasswordBox))
 		{
 		}
 		

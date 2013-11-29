@@ -18,14 +18,18 @@ namespace Eto.Forms
 			return AddCheck(actions, id, text, string.Empty, activated, null);
 		}
 
-		public static CheckAction AddCheck(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Key[] accelerators)
+		public static CheckAction AddCheck(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated, params Keys[] accelerators)
 		{
+#if WINRT
+			throw new NotImplementedException("WinRT does not support Assembly.GetCallingAssembly");
+#else
 			Icon icon = null;
 			if (!string.IsNullOrEmpty(iconResource)) icon = Icon.FromResource (Assembly.GetCallingAssembly (), iconResource);
 			var action = new CheckAction(id, text, icon, activated);
 			action.Accelerators = accelerators;
 			actions.Add(action);
 			return action;
+#endif
 		}
 		
 		public static bool RemoveCheckHandler(this ActionCollection actions, string actionID, EventHandler<EventArgs> checkChangedHandler)

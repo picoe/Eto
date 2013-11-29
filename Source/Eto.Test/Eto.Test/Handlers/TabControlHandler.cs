@@ -135,7 +135,7 @@ namespace Eto.Test.Handlers
 
 		internal void RemoveAllTabs()
 		{
-			Items.ForEach(r => r.Click -= HandleClick);
+			foreach (var r in Items) r.Click -= HandleClick;
 			Items.Clear();
 			LayoutItems();
 		}

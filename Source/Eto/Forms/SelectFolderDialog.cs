@@ -15,16 +15,17 @@ namespace Eto.Forms
 	{
 		new ISelectFolderDialog Handler { get { return (ISelectFolderDialog)base.Handler; } }
 		
-		public SelectFolderDialog () : this (Generator.Current)
+		public SelectFolderDialog()
+			: this((Generator)null)
+		{
+		}
+
+		public SelectFolderDialog (Generator generator) : this (generator, typeof(ISelectFolderDialog))
 		{
 		}
 		
-		public SelectFolderDialog (Generator g) : this (g, typeof(ISelectFolderDialog))
-		{
-		}
-		
-		protected SelectFolderDialog (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected SelectFolderDialog (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 		}
 		

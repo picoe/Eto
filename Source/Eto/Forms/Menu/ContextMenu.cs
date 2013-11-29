@@ -14,11 +14,12 @@ namespace Eto.Forms
 		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
 		readonly MenuItemCollection menuItems;
 		
-		public ContextMenu () : this (Generator.Current)
+		public ContextMenu()
+			: this((Generator)null)
 		{
 		}
 
-		public ContextMenu (Generator g) : this (g, typeof(IContextMenu))
+		public ContextMenu (Generator generator) : this (generator, typeof(IContextMenu))
 		{
 		}
 

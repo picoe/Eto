@@ -12,13 +12,13 @@ namespace Eto.Forms
 	{
 		new IImageView Handler { get { return (IImageView)base.Handler; } }
 		
-		public ImageView ()
-			: this(Generator.Current)
+		public ImageView()
+			: this((Generator)null)
 		{
 		}
-		
-		public ImageView (Generator g)
-			: this (g, typeof(IImageView))
+
+		public ImageView (Generator generator)
+			: this (generator, typeof(IImageView))
 		{
 		}
 		

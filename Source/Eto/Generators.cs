@@ -7,6 +7,16 @@ namespace Eto
 	public static class Generators
 	{
 		/// <summary>
+		/// ID of the Direct2D platform
+		/// </summary>
+		public const string Direct2D = "Direct2D";
+
+		/// <summary>
+		/// Assembly name of the Direct2D platform
+		/// </summary>
+		public const string Direct2DAssembly = "Eto.Platform.Direct2D.Generator, Eto.Platform.Direct2D";
+
+		/// <summary>
 		/// ID of the iOS platform
 		/// </summary>
 		public const string Ios = "ios";

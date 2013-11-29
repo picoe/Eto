@@ -67,12 +67,7 @@ namespace Eto.Forms
 	{
 		new ICursor Handler { get { return (ICursor)base.Handler; } }
 		
-		public Cursor (CursorType cursor)
-			: this (Generator.Current, cursor)
-		{
-		}
-		
-		public Cursor (Generator generator, CursorType cursor)
+		public Cursor (CursorType cursor, Generator generator = null)
 			: base (generator, typeof(ICursor), false)
 		{
 			Handler.Create (cursor);

@@ -9,103 +9,100 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IFont"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
     public class FontHandler : WidgetHandler<sw.Font, Font>, IFont
     {
-        // Static factory
-        static sw.Factory Factory = new sw.Factory();
-        
-        private float sizeInPoints = 0f;
+		public sw.TextFormat TextFormat { get; private set; }
+
         string familyName;
         FontStyle style;
+		FontDecoration decoration;
         sw.FontStyle fontStyle;
         sw.FontWeight fontWeight;
-
+		
         // These need to be disposed
         sw.FontFace fontFace = null;
-        sw.TextFormat textFormat = null;
 
+		private string GetTranslatedName(FontFamily family)
+		{
+			var f = (FontFamilyHandler)family.Handler;
+			return f.TranslatedName;
+		}
+
+		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
+		{
+			Create(GetTranslatedName(family), size, style, decoration);
+		}
+
+		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
+		{
+			Create("Microsoft Sans Serif", size ?? 8.25f, FontStyle.None, FontDecoration.None); // BUGBUG: Fix
+		}
+
+		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
+		{
+			throw new NotImplementedException();
+		}
 
         public void Create(FontTypeface typeface, float sizeInPoints)
         {
-            this.sizeInPoints = sizeInPoints;
-            Create(typeface.Name, sizeInPoints, typeface.FontStyle);            
+            Create(typeface.Name, sizeInPoints, typeface.FontStyle, FontDecoration.None);
         }
 
         public void Create(SystemFont systemFont, float? sizeInPoints)
         {
-            this.sizeInPoints = sizeInPoints ?? 0f;
             throw new NotImplementedException();            
         }
 
         public void Create(FontFamily family, float sizeInPoints, FontStyle style)
         {
-            this.sizeInPoints = sizeInPoints;
-            var familyName = family.Name;
-
-            Create(familyName, sizeInPoints, style);
+            Create(GetTranslatedName(family), sizeInPoints, style, FontDecoration.None);
         }
 
-        private void Create(string familyName, float sizeInPoints, FontStyle style)
+        private void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)
         {
-            // family name
             this.familyName = familyName;
-
-            // font style
+			this.Size = sizeInPoints;
             this.style = style;
+			this.decoration = decoration;
 
             sw.FontStyle s;
             sw.FontWeight w;
             Conversions.Convert(style, out s, out w);
 
-            this.textFormat =
-                new sw.TextFormat(
-                    Factory,
-                    familyName,
-                    null, // font collection
-                    w,
-                    s,
-                    sw.FontStretch.Normal,
-                    sizeInPoints, // TODO: should this be in pixels? The documentation says device-independent pixels.
-                    "en-us");
+            this.TextFormat = new sw.TextFormat(
+				SDFactory.DirectWriteFactory,
+                familyName,
+                null, // font collection
+                w,
+                s,
+                sw.FontStretch.Normal,
+                sizeInPoints * 96.0f / 72.0f, // convert from points to pixels. (The documentation says device-independent pixels.)
+                "en-us");
             
-            // Create a font collection
-            var collection = FontCollection();
-
             int index = 0;
-            if (collection.FindFamilyName(
+            if (FontCollection.FindFamilyName(
                 familyName: familyName,
                 index: out index))
             {
-                // font family
-                var fontFamily =
-                    collection.GetFontFamily(index);
-
-                Conversions.Convert(
-                    style,
-                    out fontStyle,
-                    out fontWeight);
-
-                // font
-                this.Control = 
-                    fontFamily.GetFirstMatchingFont(
-                        fontWeight,
-                        sw.FontStretch.Normal,
-                        fontStyle);
-
-                // finally, the font face
-                this.fontFace = new sw.FontFace(Control);
+                var fontFamily = FontCollection.GetFontFamily(index);
+				Conversions.Convert(style, out fontStyle, out fontWeight);
+				this.Control = fontFamily.GetFirstMatchingFont(fontWeight, sw.FontStretch.Normal, fontStyle);
             }
         }
 
         private static sw.FontCollection fontCollection;
-        private static sw.FontCollection FontCollection()
+        private static sw.FontCollection FontCollection
         {
-            if (fontCollection == null)
-                fontCollection =
-                Factory.GetSystemFontCollection(
-                    checkForUpdates: false);
-
-            return fontCollection;
+			get
+			{
+				return fontCollection = fontCollection ??
+					SDFactory.DirectWriteFactory.GetSystemFontCollection(checkForUpdates: false);
+			}
         }
 
         public void Create()
@@ -115,10 +112,10 @@ namespace Eto.Platform.Direct2D.Drawing
 
         protected override void Dispose(bool disposing)
         {
-            if (this.textFormat != null)
+            if (this.TextFormat != null)
             {
-                this.textFormat.Dispose();
-                this.textFormat = null;
+                this.TextFormat.Dispose();
+                this.TextFormat = null;
             }
 
             if (this.fontFace != null)
@@ -128,40 +125,6 @@ namespace Eto.Platform.Direct2D.Drawing
             }
 
             base.Dispose(disposing);
-        }
-
-        private sw.FontMetrics? gdiCompatibleMetrics;
-        private sw.FontMetrics GdiCompatibleMetrics
-        {
-            get
-            {
-                if(gdiCompatibleMetrics == null)
-                    gdiCompatibleMetrics =
-                        this.fontFace.GetGdiCompatibleMetrics(
-                            emSize: this.Widget.Size, // TODO: should this be in pixels?
-                            pixelsPerDip: 1,
-                            transform: null);
-
-                return gdiCompatibleMetrics.Value;
-            }
-        }
-
-        public float AscentInPixels
-        {
-            get
-            {
-                return this.GdiCompatibleMetrics.Ascent;
-            }
-        }
-
-        public float DescentInPixels
-        {
-            get { return this.GdiCompatibleMetrics.Descent; }
-        }
-
-        public float XHeightInPixels
-        {
-            get { return this.GdiCompatibleMetrics.XHeight; }
         }
 
         public FontFamily Family
@@ -179,82 +142,54 @@ namespace Eto.Platform.Direct2D.Drawing
             get { return style; }
         }
 
-        private float? lineHeightInPixels = null;
-        public float LineHeightInPixels
-        {
-            get 
-            {
-                return AscentInPixels +
-                    DescentInPixels +
-                    GdiCompatibleMetrics.LineGap;
-            }
-        }
+		public FontDecoration FontDecoration
+		{
+			get { return this.decoration; }
+		}
 
-        public float Size
-        {
-            get { return sizeInPoints; }
-        }
+		/// <summary>
+		/// The size in points.
+		/// </summary>
+		public float Size { get; private set; }
 
         public FontTypeface Typeface
         {
             get { return null; }
         }
 
-
 		public float XHeight
 		{
-			get { throw new NotImplementedException(); }
+			get { return Size * this.Control.Metrics.XHeight / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Ascent
 		{
-			get { throw new NotImplementedException(); }
+			get { return Size * this.Control.Metrics.Ascent / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Descent
 		{
-			get { throw new NotImplementedException(); }
+			get { return Size * this.Control.Metrics.Descent / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float LineHeight
 		{
-			get { throw new NotImplementedException(); }
+			get { return Ascent + Descent + Size * this.Control.Metrics.LineGap / this.Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Leading
 		{
-			get { throw new NotImplementedException(); }
+			get { return LineHeight - (Ascent + Descent);} 
 		}
 
 		public float Baseline
 		{
-			get { throw new NotImplementedException(); }
+			get { return Ascent; }
 		}
-
 
 		public object ControlObject
 		{
-			get { throw new NotImplementedException(); }
-		}
-
-		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
-		{
-			throw new NotImplementedException();
-		}
-
-		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
-		{
-			throw new NotImplementedException();
-		}
-
-		public FontDecoration FontDecoration
-		{
-			get { throw new NotImplementedException(); }
+			get { return this.Control; }
 		}
 	}
 }

@@ -40,11 +40,6 @@ namespace Eto.Platform.Wpf.Drawing
 			private set;
 		}
 
-		void ConnectTo (double startX, double startY, bool startNewFigure = false)
-		{
-			ConnectTo (new sw.Point (startX, startY), startNewFigure);
-		}
-
 		void ConnectTo (sw.Point startPoint, bool startNewFigure = false)
 		{
 			if (startNewFigure || figure == null) {
@@ -82,7 +77,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void AddLine (float startX, float startY, float endX, float endY)
 		{
-			ConnectTo (startX, startY);
+			ConnectTo(new sw.Point(startX, startY));
 			figure.Segments.Add (new swm.LineSegment (new sw.Point (endX, endY), true));
 			CurrentPoint = new PointF (endX, endY);
 		}
@@ -95,7 +90,7 @@ namespace Eto.Platform.Wpf.Drawing
 
 		public void LineTo (float x, float y)
 		{
-			ConnectTo (x, y);
+			ConnectTo (new sw.Point (x, y));
 			CurrentPoint = new PointF (x, y);
 		}
 

@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test", "Eto.Test\Eto.Te
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.WinForms", "Eto.Test\Eto.Test.WinForms\Eto.Test.WinForms.csproj", "{01118427-C412-4BC3-BD0C-E1DBC43FB479}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Direct2D", "Eto.Test\Eto.Test.Direct2D\Eto.Test.Direct2D.csproj", "{74328428-C412-4BC3-BD0C-E1DBC43FB479}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Gtk", "Eto.Test\Eto.Test.Gtk\Eto.Test.Gtk.csproj", "{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Json", "Eto.Json\Eto.Json.csproj", "{2F2C45E0-4142-44D0-8A0C-7264C0F925B2}"
@@ -39,6 +41,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = ".nuget", ".nuget", "{9D5A60
 		.nuget\NuGet.exe = .nuget\NuGet.exe
 		.nuget\NuGet.targets = .nuget\NuGet.targets
 	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Platform.Direct2D", "Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj", "{3C1B77D5-6C93-4366-A487-3D307FC29FFB}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -122,6 +126,14 @@ Global
 		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
 		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
 		{01118427-C412-4BC3-BD0C-E1DBC43FB479}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{74328428-C412-4BC3-BD0C-E1DBC43FB479}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Linux Debug|Any CPU.ActiveCfg = Debug|x86
 		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Linux Debug|Any CPU.Build.0 = Debug|x86
 		{DD350D2E-149A-4EF1-8AAE-CBA9740B5735}.Linux Release|Any CPU.ActiveCfg = Release|x86
@@ -202,6 +214,14 @@ Global
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B2148BDC-7D98-419B-B329-FF580FB481DE}.Windows Release|Any CPU.Build.0 = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Linux Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Linux Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Mac Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Mac Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3C1B77D5-6C93-4366-A487-3D307FC29FFB}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

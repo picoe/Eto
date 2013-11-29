@@ -195,6 +195,7 @@
     <Compile Include="Forms\iosCompatibility.cs" />
     <Compile Include="Drawing\FontExtensions.cs" />
     <Compile Include="MacExtensions.cs" />
+    <Compile Include="Forms\Controls\SpinnerHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

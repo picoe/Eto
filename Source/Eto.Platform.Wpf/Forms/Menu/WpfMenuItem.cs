@@ -46,17 +46,17 @@ namespace Eto.Platform.Wpf.Forms.Menu
 			set { Control.ToolTip = value; }
 		}
 
-		public Key Shortcut
+		public Keys Shortcut
 		{
 			get
 			{
 				var keyBinding = Control.InputBindings.OfType<swi.KeyBinding> ().FirstOrDefault ();
-				return keyBinding == null ? Key.None : KeyMap.Convert(keyBinding.Key, keyBinding.Modifiers);
+				return keyBinding == null ? Keys.None : KeyMap.Convert(keyBinding.Key, keyBinding.Modifiers);
 			}
 			set
 			{
 				Control.InputBindings.Clear ();
-				if (value != Key.None) {
+				if (value != Keys.None) {
 					var key = KeyMap.ConvertKey (value);
 					var modifier = KeyMap.ConvertModifier (value);
 					Control.InputBindings.Add (new swi.KeyBinding { Key = key, Modifiers = modifier, Command = this });

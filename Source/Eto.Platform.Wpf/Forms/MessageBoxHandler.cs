@@ -21,16 +21,19 @@ namespace Eto.Platform.Wpf.Forms
 
 		public DialogResult ShowDialog(Control parent)
 		{
-			var element = parent == null ? null : parent.GetContainerControl();
-			var window = element == null ? null : element.GetParent<sw.Window>();
-			sw.MessageBoxResult result;
-			var buttons = Convert(Buttons);
-			var defaultButton = Convert(DefaultButton, Buttons);
-			var icon = Convert(Type);
-			var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
-			if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
-			else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
-			return Convert(result);
+			using (var visualStyles = new EnableThemingInScope(ApplicationHandler.EnableVisualStyles))
+			{
+				var element = parent == null ? null : parent.GetContainerControl();
+				var window = element == null ? null : element.GetParent<sw.Window>();
+				sw.MessageBoxResult result;
+				var buttons = Convert(Buttons);
+				var defaultButton = Convert(DefaultButton, Buttons);
+				var icon = Convert(Type);
+				var caption = Caption ?? ((parent != null && parent.ParentWindow != null) ? parent.ParentWindow.Title : null);
+				if (window != null) result = WpfMessageBox.Show(window, Text, caption, buttons, icon, defaultButton);
+				else result = WpfMessageBox.Show(Text, caption, buttons, icon, defaultButton);
+				return Convert(result);
+			}
 		}
 
 		public static sw.MessageBoxResult Convert(MessageBoxDefaultButton defaultButton, MessageBoxButtons buttons)

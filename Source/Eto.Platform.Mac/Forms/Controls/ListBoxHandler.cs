@@ -81,15 +81,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 					return Handler.ContextMenu.ControlObject as NSMenu;
 				return base.MenuForEvent(theEvent);
 			}
+		}
 
-			public override void KeyDown(NSEvent theEvent)
+		public override void PostKeyDown(KeyEventArgs e)
+		{
+			if (e.Key == Keys.Enter)
 			{
-				if (theEvent.KeyCode == (ushort)NSKey.Return)
-				{
-					Handler.Widget.OnActivated(EventArgs.Empty);
-				}
-				else
-					base.KeyDown(theEvent);
+				Widget.OnActivated(EventArgs.Empty);
+				e.Handled = true;
 			}
 		}
 
@@ -130,6 +129,12 @@ namespace Eto.Platform.Mac.Forms.Controls
 			scroll.HasHorizontalScroller = true;
 			scroll.AutohidesScrollers = true;
 			scroll.BorderType = NSBorderType.BezelBorder;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			HandleEvent(Eto.Forms.Control.KeyDownEvent);
 		}
 
 		static void HandleDoubleClick (object sender, EventArgs e)

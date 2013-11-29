@@ -18,13 +18,15 @@ namespace Eto.Platform.Windows
 			EnableRedrawDuringSuspend = false;
 		}
 
+		public bool RecurseToChildren { get { return true; } }
+
 		public override Size? DefaultSize
 		{
 			get
 			{
 				var min = ContainerControl.MinimumSize;
 				ContainerControl.MinimumSize = sd.Size.Empty;
-				var size = ContainerControl.GetPreferredSize(sd.Size.Empty).ToEto();
+				var size = ContainerControl.GetPreferredSize(Size.MaxValue.ToSD()).ToEto();
 				ContainerControl.MinimumSize = min;
 				return size;
 			}

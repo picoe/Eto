@@ -69,7 +69,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			if (control != null)
 			{
-				var kpea = theEvent.ToEtoKeyPressEventArgs();
+				var kpea = theEvent.ToEtoKeyEventArgs();
 				control.OnKeyDown(kpea);
 				if (!kpea.Handled)
 				{
@@ -87,7 +87,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		{
 			if (control != null)
 			{
-				var kpea = theEvent.ToEtoKeyPressEventArgs();
+				var kpea = theEvent.ToEtoKeyEventArgs();
 				control.OnKeyUp(kpea);
 				return kpea.Handled;
 			}

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Eto.Drawing;
+using Eto.Platform.Direct2D.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
@@ -11,15 +12,14 @@ namespace Eto.Platform.Direct2D
 {
     public static class Conversions
     {
-        public static s.Color ToWpf(this Color value)
+        public static s.Color4 ToSD(this Color color)
         {
-            throw new NotImplementedException();
-            //return s.Color.FromArgb((byte)(value.A * byte.MaxValue), (byte)(value.R * byte.MaxValue), (byte)(value.G * byte.MaxValue), (byte)(value.B * byte.MaxValue));
+			return new s.Color4(color.R, color.G, color.B, color.A);
         }
 
-        public static Color ToEto(this s.Color value)
+        public static Color ToEto(this s.Color4 value)
         {
-            return new Color { A = value.A / 255f, R = value.R / 255f, G = value.G / 255f, B = value.B / 255f };
+			return new Color { A = value.Alpha, R = value.Red, G = value.Green, B = value.Blue };
         }
 
 #if TODO
@@ -33,60 +33,49 @@ namespace Eto.Platform.Direct2D
             return new s.Thickness(value.Left, value.Top, value.Right, value.Bottom);
         }
 #endif
-        public static Rectangle ToEto(this s.DrawingRectangleF value)
+        public static Rectangle ToEto(this s.RectangleF value)
         {
             return new Rectangle((int)value.X, (int)value.Y, (int)value.Width, (int)value.Height);
         }
 
-        public static RectangleF ToEtoF(this s.DrawingRectangleF value)
+        public static RectangleF ToEtoF(this s.RectangleF value)
         {
             return new RectangleF((float)value.X, (float)value.Y, (float)value.Width, (float)value.Height);
         }
 
-        public static RectangleF ToEto(this s.RectangleF value)
+        public static s.RectangleF ToWpf(this Rectangle value)
         {
-            s.DrawingRectangleF d = value; // implicit convertion
-            return d.ToEtoF();
+            return new s.RectangleF(value.X, value.Y, value.Width, value.Height);
         }
 
-        public static s.DrawingRectangleF ToWpf(this Rectangle value)
+        public static s.RectangleF ToWpf(this RectangleF value)
         {
-            return new s.DrawingRectangleF(value.X, value.Y, value.Width, value.Height);
+            return new s.RectangleF(value.X, value.Y, value.Width, value.Height);
         }
 
-        public static s.DrawingRectangleF ToWpf(this RectangleF value)
-        {
-            return new s.DrawingRectangleF(value.X, value.Y, value.Width, value.Height);
-        }
-
-        public static Size ToEto(this s.DrawingSizeF value)
+        public static Size ToEto(this s.Size2F value)
         {
             return new Size((int)value.Width, (int)value.Height);
         }
 
-        public static s.DrawingSizeF ToWpf(this Size value)
+        public static s.Size2F ToWpf(this Size value)
         {
-            return new s.DrawingSizeF(value.Width, value.Height);
+            return new s.Size2F(value.Width, value.Height);
         }
 
-        public static s.DrawingSizeF ToWpf(this SizeF value)
+        public static s.Size2F ToWpf(this SizeF value)
         {
-            return new s.DrawingSizeF(value.Width, value.Height);
+            return new s.Size2F(value.Width, value.Height);
         }
 
-        public static Point ToEto(this s.DrawingPointF value)
+        public static Point ToEto(this s.Vector2 value)
         {
             return new Point((int)value.X, (int)value.Y);
         }
 
-        public static s.DrawingPointF ToWpf(this Point value)
+        public static s.Vector2 ToDx(this PointF value)
         {
-            return new s.DrawingPointF(value.X, value.Y);
-        }
-
-        public static s.DrawingPointF ToWpf(this PointF value)
-        {
-            return new s.DrawingPointF(value.X, value.Y);
+            return new s.Vector2(value.X, value.Y);
         }
 
         public static string ToWpfMneumonic(this string value)
@@ -309,28 +298,12 @@ namespace Eto.Platform.Direct2D
                 : sd.FillMode.Winding;
         }
 
-        public static s.DrawingPointF[] ToDx(this Point[] points)
+        public static s.Vector2[] ToDx(this PointF[] points)
         {
-            var p = new s.DrawingPointF[points.Length];
-
-            for (var i = 0;
-                i < points.Length;
-                ++i)
-                p[i] = points[i].ToWpf();
-
-            return p;
-        }
-
-        public static s.DrawingPointF[] ToDx(this PointF[] points)
-        {
-            var p = new s.DrawingPointF[points.Length];
-
-            for (var i = 0;
-                i < points.Length;
-                ++i)
-                p[i] = points[i].ToWpf();
-
-            return p;
+            var p = new s.Vector2[points.Length];
+            for (var i = 0; i < points.Length; ++i)
+                p[i] = points[i].ToDx();
+			return p;
         }
 
 		public static s.Matrix3x2 ToDx(this IMatrix m)
@@ -342,5 +315,11 @@ namespace Eto.Platform.Direct2D
 		{
 			return (float)Math.PI * angle / 180.0f;
 		}
+
+		public static PenData ToSD(this Pen pen)
+		{
+			return (PenData)pen.ControlObject;
+		}
+
     }
 }

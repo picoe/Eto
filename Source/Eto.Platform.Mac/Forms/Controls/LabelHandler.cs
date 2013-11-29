@@ -29,13 +29,15 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public override NSView ContainerControl { get { return Control; } }
 
+		static readonly Selector selAlignmentRectInsets = new Selector("alignmentRectInsets");
+
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			if (string.IsNullOrEmpty(Text))
 				return Size.Empty;
 			if (NaturalSize == null || availableSizeCached != availableSize)
 			{
-				var insets = Control.AlignmentRectInsets.ToEtoSize();
+				var insets = Control.RespondsToSelector(selAlignmentRectInsets) ? Control.AlignmentRectInsets.ToEtoSize() : new Size(4, 2);
 				var size = Control.Cell.CellSizeForBounds(new RectangleF(availableSize).ToSD()).ToEto();
 
 				NaturalSize = Size.Round(size + insets);

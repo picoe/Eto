@@ -23,7 +23,7 @@ namespace Eto.Platform.Direct2D.Drawing
                 if (strokeStyle == null)
                 {
                     strokeStyle = new sd.StrokeStyle(
-                        SDFactory.Instance,
+                        SDFactory.D2D1Factory,
                         new sd.StrokeStyleProperties
                         {
                             DashStyle = sd.DashStyle.Solid,
@@ -98,47 +98,47 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public object Create(Color color, float thickness)
 		{
-			throw new NotImplementedException();
+			return new PenData { Color = color, Width = thickness };
 		}
 
 		public Color GetColor(Pen widget)
 		{
-			throw new NotImplementedException();
+			return widget.ToSD().Color;
 		}
 
 		public void SetColor(Pen widget, Color color)
 		{
-			throw new NotImplementedException();
+			widget.ToSD().Color = color;
 		}
 
 		public float GetThickness(Pen widget)
 		{
-			throw new NotImplementedException();
+			return widget.ToSD().Width;
 		}
 
 		public void SetThickness(Pen widget, float thickness)
 		{
-			throw new NotImplementedException();
+			widget.ToSD().Width = thickness;
 		}
 
 		public PenLineJoin GetLineJoin(Pen widget)
 		{
-			throw new NotImplementedException();
+			return PenLineJoin.Bevel;
 		}
 
 		public void SetLineJoin(Pen widget, PenLineJoin lineJoin)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public PenLineCap GetLineCap(Pen widget)
 		{
-			throw new NotImplementedException();
+			return PenLineCap.Round;
 		}
 
 		public void SetLineCap(Pen widget, PenLineCap lineCap)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public float GetMiterLimit(Pen widget)
@@ -148,12 +148,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void SetMiterLimit(Pen widget, float miterLimit)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public void SetDashStyle(Pen widget, DashStyle dashStyle)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 	}
 }

@@ -46,7 +46,7 @@ namespace Eto.Forms
 		public event EventHandler<PaintEventArgs> Paint;
 
 		public Drawable()
-			: this(Generator.Current)
+			: this((Generator)null)
 		{
 		}
 

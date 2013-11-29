@@ -99,7 +99,6 @@ namespace Eto.Platform.Windows.Drawing
 			get { return Control.FontFamily.Name; }
 		}
 
-
 		public FontStyle FontStyle
 		{
 			get { return Control.Style.ToEtoStyle(); }
@@ -112,26 +111,12 @@ namespace Eto.Platform.Windows.Drawing
 
 		public FontFamily Family
 		{
-			get
-			{
-				if (family == null)
-				{
-					family = new FontFamily(Widget.Generator, new FontFamilyHandler(Control.FontFamily));
-				}
-				return family;
-			}
+			get { return family = family ?? new FontFamily(Widget.Generator, new FontFamilyHandler(Control.FontFamily)); }
 		}
 
 		public FontTypeface Typeface
 		{
-			get
-			{
-				if (typeface == null)
-				{
-					typeface = new FontTypeface(Family, new FontTypefaceHandler(Control.Style));
-				}
-				return typeface;
-			}
+			get { return typeface = typeface ?? new FontTypeface(Family, new FontTypefaceHandler(Control.Style)); }
 		}
 
 		public SD.FontFamily WindowsFamily
@@ -139,13 +124,9 @@ namespace Eto.Platform.Windows.Drawing
 			get { return Control.FontFamily; }
 		}
 
-
 		public float XHeight
 		{
-			get
-			{
-				return Size * 0.5f;
-			}
+			get { return Size * 0.5f; }
 		}
 
 		public float Baseline
@@ -158,18 +139,17 @@ namespace Eto.Platform.Windows.Drawing
 			get { return LineHeight - (Ascent + Descent); }
 		}
 
-		float? ascentInPixels;
+		float? ascent;
 		public float Ascent
 		{
 			get
 			{
-				if (ascentInPixels == null)
-					ascentInPixels = Size * Control.FontFamily.GetCellAscent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
-				return ascentInPixels ?? 0f;
+				ascent = ascent ?? Size * Control.FontFamily.GetCellAscent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
+				return ascent ?? 0f;
 			}
 		}
 
-		float? descentInPixels;
+		float? descent;
 		/// <summary>
 		/// Gets the descent of the font
 		/// </summary>
@@ -180,10 +160,8 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			get
 			{
-				if (descentInPixels == null)
-					descentInPixels = Size * Control.FontFamily.GetCellDescent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
-
-				return descentInPixels ?? 0f;
+				descent = descent ?? Size * Control.FontFamily.GetCellDescent(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style);
+				return descent ?? 0f;
 			}
 		}
 

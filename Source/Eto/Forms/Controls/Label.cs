@@ -36,9 +36,12 @@ namespace Eto.Forms
 	{
 		new ILabel Handler { get { return (ILabel)base.Handler; } }
 		
-		public Label() : this(Generator.Current) { }
-		
-		public Label(Generator g) : this (g, typeof(ILabel))
+		public Label()
+			: this((Generator)null)
+		{
+		}
+
+		public Label(Generator generator) : this (generator, typeof(ILabel))
 		{
 		}
 		

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using Eto.Forms;
 
 namespace Eto.Drawing
 {
@@ -21,6 +22,12 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="image">Image to perform drawing operations on</param>
 		void CreateFromImage (Bitmap image);
+
+		/// <summary>
+		/// Creates the graphics object for drawing on the specified <paramref name="drawable"/>
+		/// </summary>
+		/// <param name="drawable">Drawable to perform drawing operations on</param>
+		void CreateFromDrawable(Drawable drawable);
 
 		/// <summary>
 		/// Draws a line with the specified <paramref name="pen"/>
@@ -267,6 +274,21 @@ namespace Eto.Drawing
 		void Clear(SolidBrush brush);
 	}
 
+	public interface IGraphics2 : IGraphics
+	{
+		/// <summary>
+		/// If the graphics handler implements IGraphics2,
+		/// BeginDrawing should be called before rendering a frame.
+		/// </summary>
+		void BeginDrawing();
+
+		/// <summary>
+		/// If the graphics handler implements IGraphics2,
+		/// EndDrawing should be called after rendering a frame.
+		/// </summary>
+		void EndDrawing();
+	}
+
 	/// <summary>
 	/// Graphics context object for drawing operations
 	/// </summary>
@@ -278,6 +300,7 @@ namespace Eto.Drawing
 	public class Graphics : InstanceWidget
 	{
 		new IGraphics Handler { get { return (IGraphics)base.Handler; } }
+		IGraphics2 Handler2 { get { return base.Handler as IGraphics2; } }
 
 		/// <summary>
 		/// Initializes a new instance of the Graphics class with the specified platform <paramref name="handler"/>
@@ -298,7 +321,20 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Initializes a new instance of the Generator class to draw on the given <paramref name="image"/>
+		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="drawable"/>
+		/// Use this method to connect a drawing toolkit to a windowing toolkit, 
+		/// e.g Direct2D over WinForms.
+		/// </summary>
+		/// <param name="drawable"></param>
+		public Graphics(Drawable drawable, Generator generator = null)
+			: base(generator, typeof(IGraphics), false)
+		{
+			Handler.CreateFromDrawable(drawable);
+			Initialize();
+		}
+
+		/// <summary>
+		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
 		/// </summary>
 		/// <param name="generator">Generator to create this graphics context for</param>
 		/// <param name="image">Image to draw on using this graphics context</param>
@@ -1143,6 +1179,24 @@ namespace Eto.Drawing
 		public void Clear (SolidBrush brush = null)
 		{
 			Handler.Clear (brush);
+		}
+
+		/// <summary>
+		/// BeginDrawing should be called before rendering a frame.
+		/// </summary>
+		public void BeginDrawing()
+		{
+			if (Handler2 != null)
+				Handler2.BeginDrawing();
+		}
+
+		/// <summary>
+		/// EndDrawing should be called after rendering a frame.
+		/// </summary>
+		public void EndDrawing()
+		{
+			if (Handler2 != null)
+				Handler2.EndDrawing();
 		}
 
 		#region Obsolete

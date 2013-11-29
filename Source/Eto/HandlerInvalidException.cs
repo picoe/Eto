@@ -31,7 +31,8 @@ namespace Eto
 		public HandlerInvalidException (string message, Exception inner) : base (message, inner)
 		{
 		}
-		
+
+#if !WINRT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:HandlerInvalidException"/> class
 		/// </summary>
@@ -40,6 +41,7 @@ namespace Eto
 		protected HandlerInvalidException (System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base (info, context)
 		{
 		}
+#endif
 	}
 }
 

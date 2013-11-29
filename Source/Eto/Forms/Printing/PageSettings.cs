@@ -9,8 +9,8 @@ namespace Eto.Forms
 
 	public class PageSettings : InstanceWidget
 	{
-		public PageSettings ()
-			: this (Generator.Current)
+		public PageSettings()
+			: this((Generator)null)
 		{
 		}
 

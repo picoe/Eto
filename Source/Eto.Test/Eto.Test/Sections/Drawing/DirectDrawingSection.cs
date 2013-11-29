@@ -1,21 +1,125 @@
 using System;
-using Eto.Forms;
-using Eto.Drawing;
 using System.Collections.Generic;
+using Eto.Drawing;
+using Eto.Forms;
 
 namespace Eto.Test.Sections.Drawing
 {
 	public class DirectDrawingSection : Scrollable
 	{
-		readonly List<Box> boxes = new List<Box> ();
-		readonly UITimer timer;
-		bool useTexturesAndGradients;
+		DrawingToolkit toolkit;
 		readonly Drawable drawable;
+		readonly UITimer timer;
+		DirectDrawingRenderer renderer = new DirectDrawingRenderer();
+
+		public DirectDrawingSection() : this(null)
+		{
+		}
+
+		public DirectDrawingSection (DrawingToolkit toolkit)
+		{
+			var hasToolkit = toolkit != null;
+			this.toolkit = toolkit;
+
+			drawable = new Drawable();
+			if (this.toolkit != null)
+				this.toolkit.Initialize(drawable);
+			drawable.BackgroundColor = Colors.Black;
+			Action render = () => {
+				if (this.ParentWindow == null)
+				{
+					timer.Stop();
+					return;
+				}
+
+				// A UI timer is slow, but we need it for testing CreateGraphics (as
+				// opposed to an Invalidate/Paint loop), because creating a Graphics within
+				// a Paint callback produces flicker.
+				// 
+				// When a toolkit is specified, however, we can use the Invalidate/Paint loop
+				// to get the maximum frame rate.
+				//
+				// If we weren't interested in getting the maximum frame rate, we could have
+				// used a single code path (the UI timer code path), using a default toolkit
+				// if none was specified.
+				if (hasToolkit)
+				{
+					toolkit.Render(null, g => renderer.DrawFrame(g, drawable.Size));
+					drawable.Invalidate();
+				}
+				else
+				{
+					try
+					{
+						using (var graphics = drawable.CreateGraphics())
+							renderer.DrawFrame(graphics, drawable.Size);
+					}
+					catch (NotSupportedException)
+					{
+						timer.Stop();
+						this.BackgroundColor = Colors.Red;
+						this.Content = new Label { Text = "This platform does not support direct drawing", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
+					}
+				}
+			};
+
+			if (!hasToolkit)
+			{
+				timer = new UITimer { Interval = 0.001 };
+				timer.Elapsed += (sender, e) => render();
+			}
+			else
+				drawable.Paint += (s, e) => render();
+
+			var layout = new DynamicLayout (new Padding(10));
+			layout.AddSeparateRow (null, UseTexturesAndGradients (), null);
+			layout.Add (drawable);
+			this.Content = layout;
+		}
+
+		Control UseTexturesAndGradients ()
+		{
+			var control = new CheckBox {
+				Text = "Use Textures && Gradients",
+				Checked = renderer.UseTexturesAndGradients
+			};
+			control.CheckedChanged += (sender, e) => {
+				renderer.UseTexturesAndGradients = control.Checked ?? false;
+				if (toolkit != null)
+					toolkit.Render(null, g => g.Clear());
+				else
+					using (var graphics = drawable.CreateGraphics())
+						graphics.Clear();
+				lock (renderer.Boxes)
+					renderer.Boxes.Clear ();
+			};
+			return control;
+		}
+
+		public override void OnLoadComplete (EventArgs e)
+		{
+			base.OnLoadComplete (e);
+			if (timer != null)
+				timer.Start();
+		}
+
+		protected override void Dispose (bool disposing)
+		{
+			base.Dispose (disposing);
+			if (disposing && timer != null)
+				timer.Stop ();
+		}
+	}
+
+	public class DirectDrawingRenderer
+	{
+		public readonly List<Box> Boxes = new List<Box>();
+		public bool UseTexturesAndGradients { get; set; }
 		static readonly Image texture = TestIcons.Textures;
 
-		class Box
+		public class Box
 		{
-			static readonly Random random = new Random ();
+			static readonly Random random = new Random();
 			SizeF increment;
 			readonly Color color;
 			readonly float rotation;
@@ -28,183 +132,133 @@ namespace Eto.Test.Sections.Drawing
 
 			public SizeF Increment { get { return increment; } set { increment = value; } }
 
-			static Color GetRandomColor (Random random)
+			static Color GetRandomColor(Random random)
 			{
-				return Color.FromArgb (random.Next (byte.MaxValue), random.Next (byte.MaxValue), random.Next (byte.MaxValue));
+				return Color.FromArgb(random.Next(byte.MaxValue), random.Next(byte.MaxValue), random.Next(byte.MaxValue));
 			}
 
-			public Box (Size canvasSize, bool useTexturesAndGradients)
+			public Box(Size canvasSize, bool useTexturesAndGradients)
 			{
-				var size = new SizeF(random.Next (50) + 50, random.Next (50) + 50);
-				var location = new PointF(random.Next (canvasSize.Width - (int)size.Width), random.Next (canvasSize.Height - (int)size.Height));
+				var size = new SizeF(random.Next(50) + 50, random.Next(50) + 50);
+				var location = new PointF(random.Next(canvasSize.Width - (int)size.Width), random.Next(canvasSize.Height - (int)size.Height));
 				position = new RectangleF(location, size);
-				increment = new SizeF (random.Next (3) + 1, random.Next (3) + 1);
-				if (random.Next (2) == 1)
+				increment = new SizeF(random.Next(3) + 1, random.Next(3) + 1);
+				if (random.Next(2) == 1)
 					increment.Width = -increment.Width;
-				if (random.Next (2) == 1)
+				if (random.Next(2) == 1)
 					increment.Height = -increment.Height;
 
-				angle = random.Next (360);
-				rotation = (random.Next (20) - 10f) / 4f;
+				angle = random.Next(360);
+				rotation = (random.Next(20) - 10f) / 4f;
 
-				var rect = new RectangleF (size);
-				color = GetRandomColor (random);
-				switch (random.Next (useTexturesAndGradients ? 4 : 2)) {
-				case 0:
-					draw = g => g.DrawRectangle (color, rect);
-					erase = g => g.DrawRectangle (Colors.Black, rect);
-					break;
-				case 1:
-					draw = g => g.DrawEllipse (color, rect);
-					erase = g => g.DrawEllipse (Colors.Black, rect);
-					break;
-				case 2:
-					switch (random.Next (2)) {
+				var rect = new RectangleF(size);
+				color = GetRandomColor(random);
+				switch (random.Next(useTexturesAndGradients ? 4 : 2))
+				{
 					case 0:
-						fillBrush = new LinearGradientBrush (GetRandomColor (random), GetRandomColor (random), PointF.Empty, new PointF(size.Width, size.Height));
+						draw = g => g.DrawRectangle(color, rect);
+						erase = g => g.DrawRectangle(Colors.Black, rect);
 						break;
 					case 1:
-						fillBrush = new TextureBrush(texture) {
-							Transform = Matrix.FromScale (size / 80)
-						};
+						draw = g => g.DrawEllipse(color, rect);
+						erase = g => g.DrawEllipse(Colors.Black, rect);
 						break;
-					}
-					draw = g => g.FillEllipse(fillBrush, rect);
-					erase = g => g.FillEllipse(Colors.Black, rect);
-					break;
-				case 3:
-					switch (random.Next (2)) {
-					case 0:
-						fillBrush = new LinearGradientBrush (GetRandomColor (random), GetRandomColor (random), PointF.Empty, new PointF(size.Width, size.Height));
+					case 2:
+						switch (random.Next(2))
+						{
+							case 0:
+								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
+								break;
+							case 1:
+								fillBrush = new TextureBrush(texture)
+								{
+									Transform = Matrix.FromScale(size / 80)
+								};
+								break;
+						}
+						draw = g => g.FillEllipse(fillBrush, rect);
+						erase = g => g.FillEllipse(Colors.Black, rect);
 						break;
-					case 1:
-						fillBrush = new TextureBrush(texture) {
-							Transform = Matrix.FromScale (size / 80)
-						};
+					case 3:
+						switch (random.Next(2))
+						{
+							case 0:
+								fillBrush = new LinearGradientBrush(GetRandomColor(random), GetRandomColor(random), PointF.Empty, new PointF(size.Width, size.Height));
+								break;
+							case 1:
+								fillBrush = new TextureBrush(texture)
+								{
+									Transform = Matrix.FromScale(size / 80)
+								};
+								break;
+						}
+						draw = g => g.FillRectangle(fillBrush, rect);
+						erase = g => g.FillRectangle(Colors.Black, rect);
 						break;
-					}
-					draw = g => g.FillRectangle(fillBrush, rect);
-					erase = g => g.FillRectangle(Colors.Black, rect);
-					break;
 				}
 			}
 
-			public void Move (Size bounds)
+			public void Move(Size bounds)
 			{
-				position.Offset (increment);
+				position.Offset(increment);
 				var center = position.Center;
 				if (increment.Width > 0 && center.X >= bounds.Width)
 					increment.Width = -increment.Width;
 				else if (increment.Width < 0 && center.X < 0)
 					increment.Width = -increment.Width;
-				
+
 				if (increment.Height > 0 && center.Y >= bounds.Height)
 					increment.Height = -increment.Height;
 				else if (increment.Height < 0 && center.Y < 0)
 					increment.Height = -increment.Height;
 				angle += rotation;
 
-				transform = Matrix.FromTranslation (position.Location);
-				transform.RotateAt (angle, position.Width / 2, position.Height / 2);
+				transform = Matrix.FromTranslation(position.Location);
+				transform.RotateAt(angle, position.Width / 2, position.Height / 2);
 			}
 
-			public void Erase (Graphics graphics)
+			public void Erase(Graphics graphics)
 			{
-				if (transform != null) {
-					graphics.SaveTransform ();
-					graphics.MultiplyTransform (transform);
-					erase (graphics);
-					graphics.RestoreTransform ();
+				if (transform != null)
+				{
+					graphics.SaveTransform();
+					graphics.MultiplyTransform(transform);
+					erase(graphics);
+					graphics.RestoreTransform();
 				}
 			}
 
-			public void Draw (Graphics graphics)
+			public void Draw(Graphics graphics)
 			{
-				graphics.SaveTransform ();
-				graphics.MultiplyTransform (transform);
-				draw (graphics);
-				graphics.RestoreTransform ();
-			}
-
-		}
-
-		void InitializeBoxes ()
-		{
-			var size = Size;
-			for (int i = 0; i < 20; i++) {
-				boxes.Add (new Box (size, useTexturesAndGradients));
+				graphics.SaveTransform();
+				graphics.MultiplyTransform(transform);
+				draw(graphics);
+				graphics.RestoreTransform();
 			}
 		}
 
-		public DirectDrawingSection ()
+		void InitializeBoxes(Size canvasSize)
 		{
-			timer = new UITimer {
-				Interval = 0.01
-			};
-			drawable = new Drawable ();
-			drawable.BackgroundColor = Colors.Black;
-			timer.Elapsed += (sender, e) => {
-				if (this.ParentWindow == null) {
-					timer.Stop ();
-					return;
-				}
-
-				lock (boxes) {
-					if (boxes.Count == 0)
-						InitializeBoxes ();
-
-					var bounds = drawable.Size;
-					try {
-						using (var graphics = drawable.CreateGraphics ()) {
-							graphics.AntiAlias = false;
-							foreach (var box in boxes) {
-								box.Erase (graphics);
-								box.Move (bounds);
-								box.Draw (graphics);
-							} 
-						}
-					} catch (NotSupportedException) {
-						timer.Stop ();
-						this.BackgroundColor = Colors.Red;
-						this.Content = new Label { Text = "This platform does not support direct drawing", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
-					}
-				}
-			};
-
-			var layout = new DynamicLayout (new Padding(10));
-			layout.AddSeparateRow (null, UseTexturesAndGradients (), null);
-			layout.Add (drawable);
-			this.Content = layout;
+			for (int i = 0; i < 20; i++)
+				Boxes.Add(new Box(canvasSize, UseTexturesAndGradients));
 		}
 
-		Control UseTexturesAndGradients ()
+		public void DrawFrame(Graphics graphics, Size canvasSize)
 		{
-			var control = new CheckBox {
-				Text = "Use Textures && Gradients",
-				Checked = useTexturesAndGradients
-			};
-			control.CheckedChanged += (sender, e) => {
-				useTexturesAndGradients = control.Checked ?? false;
-				using (var graphics = drawable.CreateGraphics ()) {
-					graphics.Clear ();
+			lock (Boxes)
+			{
+				if (Boxes.Count == 0)
+					InitializeBoxes(canvasSize);
+
+				var bounds = canvasSize;
+				graphics.AntiAlias = false;
+				foreach (var box in Boxes)
+				{
+					box.Erase(graphics);
+					box.Move(bounds);
+					box.Draw(graphics);
 				}
-				lock (boxes)
-					boxes.Clear ();
-			};
-			return control;
-		}
-
-		public override void OnLoadComplete (EventArgs e)
-		{
-			base.OnLoadComplete (e);
-			timer.Start ();
-		}
-
-		protected override void Dispose (bool disposing)
-		{
-			base.Dispose (disposing);
-			if (disposing)
-				timer.Stop ();
+			}
 		}
 	}
 }

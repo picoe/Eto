@@ -55,18 +55,12 @@ namespace Eto.Forms
 				if (old != value)
 				{
 					if (old != null)
-						RemoveParent(old, true);
+						RemoveParent(old);
 					if (value != null)
 					{
-						RemoveParent(value, false);
-						if (Loaded)
-						{
-							value.OnPreLoad(EventArgs.Empty);
-							value.OnLoad(EventArgs.Empty);
-						}
-						SetParent(value);
+						var load = SetParent(value);
 						Handler.Content = value;
-						if (Loaded)
+						if (load)
 							value.OnLoadComplete(EventArgs.Empty);
 					}
 					else
@@ -96,10 +90,9 @@ namespace Eto.Forms
 
 		public override void Remove(Control child)
 		{
-			if (object.ReferenceEquals(Content, child))
+			if (ReferenceEquals(Content, child))
 			{
 				Content = null;
-				RemoveParent(child, true);
 			}
 		}
 	}

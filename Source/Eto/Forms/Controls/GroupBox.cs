@@ -14,11 +14,12 @@ namespace Eto.Forms
 	{
 		new IGroupBox Handler { get { return (IGroupBox)base.Handler; } }
 		
-		public GroupBox () : this(Generator.Current)
+		public GroupBox()
+			: this((Generator)null)
 		{
 		}
-		
-		public GroupBox (Generator g) : this (g, typeof(IGroupBox))
+
+		public GroupBox (Generator generator) : this (generator, typeof(IGroupBox))
 		{
 		}
 		

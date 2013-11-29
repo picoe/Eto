@@ -12,6 +12,10 @@ namespace Eto.Test
 			yield return new Section("Forms", FormsSection());
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
+
+			if (EtoEnvironment.Platform.IsWindows)
+				yield return new Section("Drawing using Direct2D on a Winforms Control", DrawingSectionDirect2D());
+
 			yield return new Section("Controls", ControlSection());
 			yield return new Section("Layouts", LayoutsSection());
 			yield return new Section("Dialogs", DialogsSection());
@@ -40,6 +44,7 @@ namespace Eto.Test
 			yield return new Section<ComboBoxSection> { Text = "Combo Box" };
 			yield return new Section<GroupBoxSection> { Text = "Group Box" };
 			yield return new Section<SliderSection> { Text = "Slider" };
+			yield return new Section<SpinnerSection> { Text = "Spinner" };
 			yield return new Section<GridViewSection> { Text = "Grid View" };
 			yield return new Section<GridCellFormattingSection> { Text = "Grid Cell Formatting" };
 			yield return new Section<PasswordBoxSection> { Text = "Password Box" };
@@ -56,7 +61,6 @@ namespace Eto.Test
 			yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
 			yield return new Section<GraphicsPathSection> { Text = "Graphics Path" };
 			yield return new Section<AntialiasSection> { Text = "Antialias" };
-			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<FontsSection> { Text = "Control Fonts" };
 			yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 			yield return new Section<PenSection> { Text = "Pens" };
@@ -67,8 +71,30 @@ namespace Eto.Test
 			yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
+			yield return new Section<DrawTextSection> { Text = "Draw Text" };
 			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
+		}
+
+		static IEnumerable<Section> DrawingSectionDirect2D()
+		{
+			// yield return new Section<BitmapSection> { Text = "Bitmap" + usingd2d, Creator = () => new BitmapSection(new D2DToolkit()) };
+			// yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
+			yield return new Section<GraphicsPathSection> { Text = "Graphics Path", Creator = () => new GraphicsPathSection(new D2DToolkit()) };
+			// yield return new Section<AntialiasSection> { Text = "Antialias" };
+			// yield return new Section<FontsSection> { Text = "Control Fonts" };
+			// yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
+			// yield return new Section<PenSection> { Text = "Pens" };
+			// yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
+			// yield return new Section<TransformSection> { Text = "Transform" };
+			// yield return new Section<BrushSection> { Text = "Brushes" };
+			// yield return new Section<TextureBrushesSection> { Text = "Texture Brushes" };
+			// yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
+			// yield return new Section<ClipSection> { Text = "Clip" };
+			// yield return new Section<ClearSection> { Text = "Clear" };
+			yield return new Section<DrawTextSection> { Text = "Draw Text", Creator = () => new DrawTextSection(new D2DToolkit()) };
+			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing", Creator = () => new DirectDrawingSection(new D2DToolkit()) };
+			// yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 		
 		static IEnumerable<Section> LayoutsSection()

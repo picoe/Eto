@@ -73,8 +73,8 @@ namespace Eto.Forms
 		/// <summary>
 		/// Initializes a new instance of the EnumComboBox
 		/// </summary>
-		public EnumComboBox ()
-			: this (Generator.Current)
+		public EnumComboBox()
+			: this((Generator)null)
 		{
 		}
 
@@ -82,7 +82,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the EnumComboBox with the specified generator
 		/// </summary>
 		/// <param name="generator">platform generator</param>
-		protected EnumComboBox (Generator generator)
+		public EnumComboBox (Generator generator)
 			: base (generator)
 		{
 		}
@@ -90,7 +90,7 @@ namespace Eto.Forms
 		protected override ListItemCollection CreateDefaultItems ()
 		{
 			var type = typeof (T);
-			if (!type.IsEnum) throw new EtoException ("T must be an enumeration");
+			if (!type.IsEnum()) throw new EtoException ("T must be an enumeration");
 
 			var items = new ListItemCollection ();
 			var values = Enum.GetValues (type);

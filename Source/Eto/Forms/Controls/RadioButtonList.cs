@@ -216,7 +216,7 @@ namespace Eto.Forms
 
 		void Recreate ()
 		{
-			buttons.ForEach(UnregisterButton);
+			foreach (var b in buttons) UnregisterButton(b);
 			buttons.Clear ();
 			controller = null;
 			Create ();
@@ -245,7 +245,7 @@ namespace Eto.Forms
 			if (force || changed) {
 				selectedButton = button;
 				settingChecked = true;
-				buttons.ForEach (r => r.Checked = object.ReferenceEquals (r, button));
+				foreach(var r in buttons) r.Checked = object.ReferenceEquals (r, button);
 				settingChecked = false;
 				if (sendEvent && changed && Loaded)
 					OnSelectedIndexChanged (EventArgs.Empty);

@@ -119,9 +119,9 @@ namespace Eto.Test.Sections.Controls
 
 		Control EnumCombo()
 		{
-			var control = new EnumComboBox<Key>();
+			var control = new EnumComboBox<Keys>();
 			LogEvents(control);
-			control.SelectedKey = ((int)Key.E).ToString();
+			control.SelectedKey = ((int)Keys.E).ToString();
 			return control;
 		}
 

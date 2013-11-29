@@ -53,17 +53,18 @@ namespace Eto.Forms
 	{
 		new IDialog Handler { get { return (IDialog)base.Handler; } }
 
-		protected Dialog(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
+		protected Dialog(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 			this.DialogResult = DialogResult.None;
 		}
 
-		public Dialog() : this(Generator.Current)
+		public Dialog()
+			: this((Generator)null)
 		{
 		}
 
-		public Dialog(Generator g) : this(g, typeof(IDialog))
+		public Dialog(Generator generator) : this(generator, typeof(IDialog))
 		{
 		}
 

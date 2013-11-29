@@ -1,6 +1,7 @@
 using System.IO;
 using System.Collections;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.IO
 {
@@ -25,29 +26,29 @@ namespace Eto.IO
 	public class SystemIcons : Widget
 	{
 		new ISystemIcons Handler { get { return (ISystemIcons)base.Handler; } }
-		readonly Hashtable htSizes = new Hashtable();
+		readonly Dictionary<IconSize, Dictionary<object, Icon>> htSizes = new Dictionary<IconSize, Dictionary<object, Icon>>();
 
 		public SystemIcons(Generator g) : base(g, typeof(ISystemIcons))
 		{
 		}
 
-		Hashtable GetLookupTable(IconSize size)
+		Dictionary<object, Icon> GetLookupTable(IconSize size)
 		{
-			var htIcons = (Hashtable)htSizes[size];
-			if (htIcons == null)
+			Dictionary<object, Icon> htIcons;
+			if (!htSizes.TryGetValue(size, out htIcons))
 			{
-				htIcons = new Hashtable();
-				htSizes[size] = htIcons;
+				htIcons = new Dictionary<object, Icon>();
+				htSizes.Add(size, htIcons);
 			}
 			return htIcons;
 		}
 
 		public Icon GetFileIcon(string fileName, IconSize size)
 		{
-			Hashtable htIcons = GetLookupTable(size);
+			var htIcons = GetLookupTable(size);
 			string ext = Path.GetExtension(fileName).ToUpperInvariant();
-			var icon = (Icon)htIcons[ext];
-			if (icon == null) 
+			Icon icon;
+			if (!htIcons.TryGetValue(ext, out icon))
 			{
 				icon = Handler.GetFileIcon(fileName, size);
 				htIcons.Add(ext, icon);
@@ -57,9 +58,9 @@ namespace Eto.IO
 
 		public Icon GetStaticIcon(StaticIconType type, IconSize size)
 		{
-			Hashtable htIcons = GetLookupTable(size);
-			var icon = (Icon)htIcons[type];
-			if (icon == null) 
+			var htIcons = GetLookupTable(size);
+			Icon icon;
+			if (!htIcons.TryGetValue(type, out icon))
 			{
 				icon = Handler.GetStaticIcon(type, size);
 				htIcons.Add(type, icon);

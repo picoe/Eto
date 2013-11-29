@@ -36,94 +36,94 @@ namespace Eto.Forms
 			set { Control.Size = value; }
 		}
 
-		public bool Enabled { 
+		public virtual bool Enabled
+		{ 
 			get { return Control.Enabled; } 
 			set { Control.Enabled = value; }
 		}
 
-		public void Invalidate()
+		public virtual void Invalidate()
 		{
 			Control.Invalidate();
 		}
 
-		public void Invalidate(Rectangle rect)
+		public virtual void Invalidate(Rectangle rect)
 		{
 			Control.Invalidate(rect);
 		}
 
-		public void SuspendLayout()
+		public virtual void SuspendLayout()
 		{
 			Control.SuspendLayout();
 		}
 
-		public void ResumeLayout()
+		public virtual void ResumeLayout()
 		{
 			Control.ResumeLayout();
 		}
 
-		public void Focus()
+		public virtual void Focus()
 		{
 			Control.Focus();
 		}
 
-		public bool HasFocus
+		public virtual bool HasFocus
 		{
 			get { return Control.HasFocus; }
 		}
 
-		public bool Visible
+		public virtual bool Visible
 		{
 			get { return Control.Visible; }
 			set { Control.Visible = value; }
 		}
 
-		public void OnPreLoad(EventArgs e)
+		public virtual void OnPreLoad(EventArgs e)
 		{
 			Control.OnPreLoad(e);
 		}
 
-		public void OnLoad(EventArgs e)
+		public virtual void OnLoad(EventArgs e)
 		{
 			Control.OnLoad(e);
 		}
 
-		public void OnLoadComplete(EventArgs e)
+		public virtual void OnLoadComplete(EventArgs e)
 		{
 			Control.OnLoadComplete(e);
 		}
 
-		public void OnUnLoad(EventArgs e)
+		public virtual void OnUnLoad(EventArgs e)
 		{
 			Control.OnUnLoad(e);
 		}
-		
-		public void SetParent(Container parent)
+
+		public virtual void SetParent(Container parent)
 		{
-			Control.SetParent(parent);
+			Control.Parent = parent;
 		}
 
-		public PointF PointFromScreen (PointF point)
+		public virtual PointF PointFromScreen(PointF point)
 		{
-			return Control.PointFromScreen (point);
+			return Control.PointFromScreen(point);
 		}
 
-		public PointF PointToScreen (PointF point)
+		public virtual PointF PointToScreen(PointF point)
 		{
-			return Control.PointToScreen (point);
+			return Control.PointToScreen(point);
 		}
 
-		public void MapPlatformAction(string systemAction, BaseAction action)
+		public virtual void MapPlatformAction(string systemAction, BaseAction action)
 		{
 			Control.MapPlatformAction(systemAction, action);
 		}
 
-		public Point Location
+		public virtual Point Location
 		{
 			get { return Control.Location; }
 		}
-
-#if DESKTOP
-		public string ToolTip
+		#if DESKTOP
+		public virtual string ToolTip
 		{
 			get { return Control.ToolTip; }
 			set { Control.ToolTip = value; }
@@ -134,9 +134,8 @@ namespace Eto.Forms
 			get { return Control.Cursor; }
 			set { Control.Cursor = value; }
 		}
-#endif
-
-		public object ControlObject
+		#endif
+		public virtual object ControlObject
 		{
 			get { return Control; }
 		}
@@ -240,6 +239,6 @@ namespace Eto.Forms
 		}
 
 		#endregion
-	}
 
+	}
 }

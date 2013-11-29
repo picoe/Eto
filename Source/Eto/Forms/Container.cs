@@ -8,6 +8,8 @@ namespace Eto.Forms
 	public interface IContainer : IControl
 	{
 		Size ClientSize { get; set; }
+
+		bool RecurseToChildren { get; }
 	}
 
 	public abstract class Container : Control
@@ -45,28 +47,37 @@ namespace Eto.Forms
 		protected internal override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
-			
-			foreach (var control in Controls)
+
+			if (Handler.RecurseToChildren)
 			{
-				control.OnDataContextChanged(e);
+				foreach (var control in Controls)
+				{
+					control.OnDataContextChanged(e);
+				}
 			}
 		}
 
 		public override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
-			
-			foreach (Control control in Controls)
+
+			if (Handler.RecurseToChildren)
 			{
-				control.OnPreLoad(e);
+				foreach (Control control in Controls)
+				{
+					control.OnPreLoad(e);
+				}
 			}
 		}
 
 		public override void OnLoad(EventArgs e)
 		{
-			foreach (Control control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.OnLoad(e);
+				foreach (Control control in Controls)
+				{
+					control.OnLoad(e);
+				}
 			}
 			
 			base.OnLoad(e);
@@ -74,9 +85,12 @@ namespace Eto.Forms
 
 		public override void OnLoadComplete(EventArgs e)
 		{
-			foreach (Control control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.OnLoadComplete(e);
+				foreach (Control control in Controls)
+				{
+					control.OnLoadComplete(e);
+				}
 			}
 			
 			base.OnLoadComplete(e);
@@ -84,9 +98,12 @@ namespace Eto.Forms
 
 		public override void OnUnLoad(EventArgs e)
 		{
-			foreach (Control control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.OnUnLoad(e);
+				foreach (Control control in Controls)
+				{
+					control.OnUnLoad(e);
+				}
 			}
 			
 			base.OnUnLoad(e);
@@ -111,18 +128,24 @@ namespace Eto.Forms
 		public override void Unbind()
 		{
 			base.Unbind();
-			foreach (var control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.Unbind();
+				foreach (var control in Controls)
+				{
+					control.Unbind();
+				}
 			}
 		}
 
 		public override void UpdateBindings()
 		{
 			base.UpdateBindings();
-			foreach (var control in Controls)
+			if (Handler.RecurseToChildren)
 			{
-				control.UpdateBindings();
+				foreach (var control in Controls)
+				{
+					control.UpdateBindings();
+				}
 			}
 		}
 
@@ -139,14 +162,47 @@ namespace Eto.Forms
 
 		public abstract void Remove(Control child);
 
-		protected static void RemoveParent(Control child, bool changeContext)
+		/// <summary>
+		/// Removes the specified control from the container.
+		/// This should only be called on controls that the container owns. Otherwise, call <see cref="Control.Detach"/>
+		/// </summary>
+		/// <param name="child">Child to remove from this container</param>
+		protected void RemoveParent(Control child)
 		{
-			child.SetParent(null, changeContext);
+			if (!ReferenceEquals(child.Parent, null))
+			{
+#if DEBUG
+				if (!ReferenceEquals(child.Parent, this))
+					throw new EtoException("The child control is not a child of this container. Ensure you only remove children that you own.");
+#endif
+				if (child.Loaded)
+				{
+					child.OnUnLoad(EventArgs.Empty);
+				}
+				child.Parent = null;
+				child.OnDataContextChanged(EventArgs.Empty);
+			}
 		}
 
-		protected void SetParent(Control child)
+		protected bool SetParent(Control child)
 		{
-			child.SetParent(this);
+			if (!ReferenceEquals(child.Parent, this))
+			{
+				// Detach so parent can remove from controls collection if necessary.
+				// prevents UnLoad from being called more than once when containers think a control is still a child
+				// no-op if there is no parent (handled in detach)
+				child.Detach();
+
+				child.Parent = this;
+				if (Loaded && !child.Loaded)
+				{
+					child.OnPreLoad(EventArgs.Empty);
+					child.OnLoad(EventArgs.Empty);
+					child.OnDataContextChanged(EventArgs.Empty);
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }

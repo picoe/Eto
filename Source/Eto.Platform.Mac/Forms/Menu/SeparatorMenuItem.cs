@@ -21,8 +21,8 @@ namespace Eto.Platform.Mac
 			set { throw new NotSupportedException (); }
 		}
 		
-		public Key Shortcut {
-			get { return Key.None; }
+		public Keys Shortcut {
+			get { return Keys.None; }
 			set { throw new NotSupportedException (); }
 		}
 	}

@@ -35,11 +35,11 @@ namespace Eto.Forms
 				ValueChanged (this, e);
 		}
 		
-		public DateTimePicker ()
-			: this (Generator.Current)
+		public DateTimePicker()
+			: this((Generator)null)
 		{
 		}
-		
+
 		public DateTimePicker (Generator generator)
 			: this (generator, typeof(IDateTimePicker))
 		{

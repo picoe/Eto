@@ -36,9 +36,13 @@ namespace Eto
 
 		protected virtual TValue ChangeType(object value)
 		{
+#if WINRT
+			throw new NotImplementedException();
+#else
 			return (value == null || DBNull.Value.Equals(value)) 
 				? default(TValue)
 				: (TValue)Convert.ChangeType(value, underlyingType);
+#endif
 		}
 
 		protected override void InternalSetValue(object dataItem, object value)

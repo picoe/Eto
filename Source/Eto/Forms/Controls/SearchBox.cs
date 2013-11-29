@@ -8,17 +8,18 @@ namespace Eto.Forms
 
 	public class SearchBox: TextBox
 	{
-		public SearchBox () : this(Generator.Current)
+		public SearchBox()
+			: this((Generator)null)
 		{
 		}
-		
-		public SearchBox (Generator g) 
-			: this(g, typeof(ISearchBox))
+
+		public SearchBox (Generator generator) 
+			: this(generator, typeof(ISearchBox))
 		{
 			
 		}
-		protected SearchBox (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected SearchBox (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 		}
 	}

@@ -17,5 +17,7 @@ namespace Eto.Forms
 			get { return Control.ClientSize; }
 			set { Control.ClientSize = value; }
 		}
+
+		public virtual bool RecurseToChildren { get { return false; } }
 	}
 }

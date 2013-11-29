@@ -30,18 +30,18 @@ namespace Eto.Forms
 	{
 		new IGridColumn Handler { get { return (IGridColumn)base.Handler; } }
 
-		public GridColumn ()
-			: this (Generator.Current)
+		public GridColumn()
+			: this((Generator)null)
 		{
 		}
 
-		public GridColumn (Generator g)
-			: this (g, typeof(IGridColumn), true)
+		public GridColumn (Generator generator)
+			: this (generator, typeof(IGridColumn), true)
 		{
 		}
 
-		protected GridColumn (Generator g, Type type, bool initialize = true)
-			: base (g, type, initialize)
+		protected GridColumn (Generator generator, Type type, bool initialize = true)
+			: base (generator, type, initialize)
 		{
 		}
 		

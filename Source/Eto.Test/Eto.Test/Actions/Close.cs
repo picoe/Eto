@@ -12,7 +12,7 @@ namespace Eto.Test.Actions
 			this.ID = ActionID;	
 			this.MenuText = "Close";
 			this.ToolBarText = "Close";
-			this.Accelerator = Application.Instance.CommonModifier | Key.W;
+			this.Accelerator = Application.Instance.CommonModifier | Keys.W;
 		}
 		
 		protected override void OnActivated (EventArgs e)

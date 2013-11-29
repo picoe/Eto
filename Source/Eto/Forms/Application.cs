@@ -13,9 +13,9 @@ namespace Eto.Forms
 
 		void GetSystemActions(GenerateActionArgs args, bool addStandardItems);
 
-		Key CommonModifier { get; }
+		Keys CommonModifier { get; }
 
-		Key AlternateModifier { get; }
+		Keys AlternateModifier { get; }
 
 		void Open(string url);
 
@@ -130,12 +130,12 @@ namespace Eto.Forms
 			Handler.Open(url);
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
 			get { return Handler.CommonModifier; }
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
 			get { return Handler.AlternateModifier; }
 		}

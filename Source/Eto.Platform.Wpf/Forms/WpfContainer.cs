@@ -17,6 +17,9 @@ namespace Eto.Platform.Wpf.Forms
 		where TWidget : Container
 	{
 		Size minimumSize;
+
+		public bool RecurseToChildren { get { return true; } }
+
 		protected override Size DefaultSize { get { return minimumSize; } }
 
 		public abstract void Remove(sw.FrameworkElement child);

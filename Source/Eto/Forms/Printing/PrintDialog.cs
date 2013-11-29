@@ -18,7 +18,7 @@ namespace Eto.Forms
 		new IPrintDialog Handler { get { return (IPrintDialog)base.Handler; } }
 
 		public PrintDialog()
-			: this (Generator.Current)
+			: this((Generator)null)
 		{
 		}
 

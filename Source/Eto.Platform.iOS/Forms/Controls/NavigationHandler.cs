@@ -2,6 +2,7 @@ using System;
 using MonoTouch.UIKit;
 using Eto.Forms;
 using MonoTouch.ObjCRuntime;
+using Eto.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -79,6 +80,14 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			Navigation.PopViewControllerAnimated(true);
 		}
+
+		public virtual Size ClientSize
+		{
+			get { return Size; }
+			set { Size = value; }
+		}
+
+		public bool RecurseToChildren { get { return true; } }
 	}
 }
 

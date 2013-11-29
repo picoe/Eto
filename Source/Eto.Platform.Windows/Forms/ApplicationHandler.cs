@@ -16,6 +16,7 @@ namespace Eto.Platform.Windows
 		SynchronizationContext context;
 		public static bool EnableScrollingUnderMouse = true;
 		public static bool BubbleMouseEvents = true;
+		public static bool BubbleKeyEvents = true;
 
 		public ApplicationHandler()
 		{
@@ -105,17 +106,28 @@ namespace Eto.Platform.Windows
 			if (BubbleMouseEvents)
 			{
 				var bubble = new BubbleEventFilter();
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseWheel(e), null, (int)Win32.WM.MOUSEWHEEL);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseMove(e), null, (int)Win32.WM.MOUSEMOVE);
-				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDown(e), true, (int)Win32.WM.LBUTTONDOWN, (int)Win32.WM.RBUTTONDOWN, (int)Win32.WM.MBUTTONDOWN);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseWheel(e), null, Win32.WM.MOUSEWHEEL);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseMove(e), null, Win32.WM.MOUSEMOVE);
+				bubble.AddBubbleMouseEvents((c, e) => c.OnMouseDown(e), true, Win32.WM.LBUTTONDOWN, Win32.WM.RBUTTONDOWN, Win32.WM.MBUTTONDOWN);
 				bubble.AddBubbleMouseEvents((c, e) => {
 					c.OnMouseDoubleClick(e);
 					if (!e.Handled)
 						c.OnMouseDown(e);
-				}, null, (int)Win32.WM.LBUTTONDBLCLK, (int)Win32.WM.RBUTTONDBLCLK, (int)Win32.WM.MBUTTONDBLCLK);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
-				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, (int)Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
+				}, null, Win32.WM.LBUTTONDBLCLK, Win32.WM.RBUTTONDBLCLK, Win32.WM.MBUTTONDBLCLK);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, Win32.WM.LBUTTONUP, b => MouseButtons.Primary);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, Win32.WM.RBUTTONUP, b => MouseButtons.Alternate);
+				bubble.AddBubbleMouseEvent((c, e) => c.OnMouseUp(e), false, Win32.WM.MBUTTONUP, b => MouseButtons.Middle);
+				swf.Application.AddMessageFilter(bubble);
+			}
+			if (BubbleKeyEvents)
+			{
+				var bubble = new BubbleEventFilter();
+				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyDown(e), Win32.WM.KEYDOWN, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyDown(e), Win32.WM.SYSKEYDOWN, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyCharEvent((c, e) => c.OnKeyDown(e), Win32.WM.CHAR, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyCharEvent((c, e) => c.OnKeyDown(e), Win32.WM.SYSCHAR, KeyEventType.KeyDown);
+				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyUp(e), Win32.WM.KEYUP, KeyEventType.KeyUp);
+				bubble.AddBubbleKeyEvent((c, e) => c.OnKeyUp(e), Win32.WM.SYSKEYUP, KeyEventType.KeyUp);
 				swf.Application.AddMessageFilter(bubble);
 			}
 		}
@@ -193,19 +205,19 @@ namespace Eto.Platform.Windows
 				context.Post(state => action(), null);
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
 			get
 			{
-				return Key.Control;
+				return Keys.Control;
 			}
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
 			get
 			{
-				return Key.Alt;
+				return Keys.Alt;
 			}
 		}
 	}

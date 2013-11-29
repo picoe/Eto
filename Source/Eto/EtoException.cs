@@ -32,6 +32,7 @@ namespace Eto
 		{
 		}
 		
+#if !WINRT
 		/// <summary>
 		/// Initializes a new instance of the <see cref="T:EtoException"/> class
 		/// </summary>
@@ -40,5 +41,6 @@ namespace Eto
 		protected EtoException (System.Runtime.Serialization.SerializationInfo info, System.Runtime.Serialization.StreamingContext context) : base (info, context)
 		{
 		}
+#endif
 	}
 }

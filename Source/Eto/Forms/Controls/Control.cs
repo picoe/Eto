@@ -121,8 +121,6 @@ namespace Eto.Forms
 		public virtual void OnKeyDown(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyDownEvent, this, e);
-			if (!e.Handled && Parent != null)
-				Parent.OnKeyDown(e);
 		}
 
 		public const string KeyUpEvent = "Control.KeyUp";
@@ -136,8 +134,6 @@ namespace Eto.Forms
 		public virtual void OnKeyUp(KeyEventArgs e)
 		{
 			Properties.TriggerEvent(KeyUpEvent, this, e);
-			if (!e.Handled && Parent != null)
-				Parent.OnKeyUp(e);
 		}
 
 		public const string TextInputEvent = "Control.TextInput";
@@ -307,6 +303,10 @@ namespace Eto.Forms
 
 		public virtual void OnLoad(EventArgs e)
 		{
+#if DEBUG
+			if (Loaded)
+				throw new EtoException("Control was loaded more than once");
+#endif
 			Properties.TriggerEvent(LoadKey, this, e);
 			Handler.OnLoad(e);
 			Loaded = true;
@@ -336,6 +336,10 @@ namespace Eto.Forms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+#if DEBUG
+			if (!Loaded)
+				throw new EtoException("Control was unloaded more than once");
+#endif
 			Loaded = false;
 			Properties.TriggerEvent(UnLoadKey, this, e);
 			Handler.OnUnLoad(e);
@@ -457,7 +461,16 @@ namespace Eto.Forms
 		[Obsolete("Use Parent instead")]
 		public Container ParentLayout { get { return Parent; } }
 
-		public Container Parent { get; private set; }
+		Container parent;
+		public Container Parent
+		{
+			get { return parent; }
+			internal set
+			{
+				parent = value;
+				Handler.SetParent(value);
+			}
+		}
 
 		public T FindParent<T>(string id)
 			where T : Container
@@ -487,22 +500,6 @@ namespace Eto.Forms
 				control = control.Parent;
 			}
 			return default(T);
-		}
-
-		internal void SetParent(Container parent, bool changeContext = true)
-		{
-			if (Parent != parent)
-			{
-				var loaded = Loaded;
-				Handler.SetParent(parent);
-				Parent = parent;
-				if (changeContext)
-					OnDataContextChanged(EventArgs.Empty);
-				if (parent == null && loaded)
-				{
-					OnUnLoad(EventArgs.Empty);
-				}
-			}
 		}
 
 		/// <summary>

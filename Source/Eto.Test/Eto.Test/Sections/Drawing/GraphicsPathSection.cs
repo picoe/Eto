@@ -5,10 +5,8 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	public class GraphicsPathSection : Scrollable
+	class GraphicsPathRendererConfig
 	{
-		GraphicsPath path;
-
 		public bool StartFigures { get; set; }
 
 		public bool CloseFigures { get; set; }
@@ -20,31 +18,50 @@ namespace Eto.Test.Sections.Drawing
 		public PenLineJoin LineJoin { get; set; }
 
 		public PenLineCap LineCap { get; set; }
+	}
 
-		public GraphicsPathSection()
+	public class GraphicsPathSection : Scrollable
+	{
+		GraphicsPathRenderer renderer;
+		GraphicsPathRendererConfig config;
+		event Action<GraphicsPath> PathChanged;
+
+		public GraphicsPathSection() : this(null)
 		{
-			StartFigures = true;
-			PenThickness = 1;
-			path = CreateMainPath();
+		}
+
+		public GraphicsPathSection(DrawingToolkit toolkit)
+		{
+			config = new GraphicsPathRendererConfig();
+			config.StartFigures = true;
+			config.PenThickness = 1;
+
 			var layout = new DynamicLayout();
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
 			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
-			layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
+			if (toolkit == null) // there's currently a bug preventing this from working with Direct2D
+				layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
 			layout.BeginVertical();
-			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath());
-			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath());
+			toolkit = toolkit ?? new DrawingToolkit();
+			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath(toolkit.Clone()));
+			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath(toolkit.Clone()));
 			layout.EndVertical();
-
 			layout.Add(null);
 
 			Content = layout;
+
+			renderer = new GraphicsPathRenderer(config); // A shared config. Create the renderer after the bindings have been created.
+			renderer.PathChanged += path => {
+				if (this.PathChanged != null)
+					this.PathChanged(path);
+			};
 		}
 
 		Control StartFiguresControl()
 		{
 			var control = new CheckBox { Text = "Start Figures" };
-			control.Bind(cb => cb.Checked, this, r => r.StartFigures);
+			control.Bind(cb => cb.Checked, this.config, r => r.StartFigures);
 			control.CheckedChanged += Refresh;
 			return control;
 		}
@@ -52,7 +69,7 @@ namespace Eto.Test.Sections.Drawing
 		Control CloseFiguresControl()
 		{
 			var control = new CheckBox { Text = "Close Figures" };
-			control.Bind(cb => cb.Checked, this, r => r.CloseFigures);
+			control.Bind(cb => cb.Checked, this.config, r => r.CloseFigures);
 			control.CheckedChanged += Refresh;
 			return control;
 		}
@@ -60,7 +77,7 @@ namespace Eto.Test.Sections.Drawing
 		Control ConnectPathControl()
 		{
 			var control = new CheckBox { Text = "Connect Paths" };
-			control.Bind(cb => cb.Checked, this, r => r.ConnectPath);
+			control.Bind(cb => cb.Checked, this.config, r => r.ConnectPath);
 			control.CheckedChanged += Refresh;
 			return control;
 		}
@@ -68,7 +85,7 @@ namespace Eto.Test.Sections.Drawing
 		Control PenThicknessControl()
 		{
 			var control = new NumericUpDown { MinValue = 1, MaxValue = 100 };
-			control.Bind(c => c.Value, this, r => r.PenThickness);
+			control.Bind(c => c.Value, this.config, r => r.PenThickness);
 			control.ValueChanged += Refresh;
 
 			var layout = new DynamicLayout(Padding.Empty);
@@ -79,7 +96,7 @@ namespace Eto.Test.Sections.Drawing
 		Control PenJoinControl()
 		{
 			var control = new EnumComboBox<PenLineJoin>();
-			control.Bind(c => c.SelectedValue, this, r => r.LineJoin);
+			control.Bind(c => c.SelectedValue, this.config, r => r.LineJoin);
 			control.SelectedValueChanged += Refresh;
 			return control;
 		}
@@ -87,55 +104,96 @@ namespace Eto.Test.Sections.Drawing
 		Control PenCapControl()
 		{
 			var control = new EnumComboBox<PenLineCap>();
-			control.Bind(c => c.SelectedValue, this, r => r.LineCap);
+			control.Bind(c => c.SelectedValue, this.config, r => r.LineCap);
 			control.SelectedValueChanged += Refresh;
 			return control;
 		}
 
 		Control Bounds()
 		{
-			var control = new Label();
-			control.Text = string.Format("Bounds: {0}", path.Bounds);
+			var control = new Label();			
+			PathChanged += path => control.Text = string.Format("Bounds: {0}", path.Bounds);
 			return control;
 		}
 
 		Control CurrentPoint()
 		{
 			var control = new Label();
-			control.Text = string.Format("CurrentPoint: {0}", path.CurrentPoint);
+			PathChanged += path => control.Text = string.Format("CurrentPoint: {0}", path.CurrentPoint);
 			return control;
 		}
 
 		void Refresh(object sender, EventArgs e)
 		{
-			path = CreateMainPath();
+			renderer.Refresh();
 			foreach (var d in Children.OfType<Drawable> ())
 			{
 				d.Invalidate();
 			}
 		}
 
-		Control DrawLinePath()
+		Control DrawLinePath(DrawingToolkit toolkit)
 		{
-			var control = new Drawable { Size = new Size (550, 200) };
-
-			control.Paint += (sender, e) => {
-				var pen = new Pen(Colors.Black, PenThickness);
-				pen.LineJoin = LineJoin;
-				pen.LineCap = LineCap;
-				e.Graphics.DrawPath(pen, path);
-			};
-
+			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
+			toolkit.Initialize(control);
+			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => renderer.Render(g, fill: false));
 			return control;
 		}
 
-		Control FillLinePath()
+		Control FillLinePath(DrawingToolkit toolkit)
 		{
-			var control = new Drawable { Size = new Size (550, 200) };
-
-			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.Black(), path);
-
+			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
+			toolkit.Initialize(control);
+			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => renderer.Render(g, fill: true));
 			return control;
+		}
+	}
+
+	class GraphicsPathRenderer
+	{
+		GraphicsPathRendererConfig config;
+
+		public Action<GraphicsPath> PathChanged;
+
+		GraphicsPath path;
+		private GraphicsPath Path
+		{
+			get
+			{
+				if (path == null)
+				{
+					path = CreateMainPath();
+					if (PathChanged != null)
+						PathChanged(path);
+				}
+				return path;
+			}
+		}
+
+		public GraphicsPathRenderer(GraphicsPathRendererConfig config)
+		{
+			this.config = config;
+			Refresh();
+		}
+
+		internal void Refresh()
+		{
+			path = null;
+		}
+
+		public void Render(Graphics g, bool fill)
+		{
+			if (fill)
+			{
+				g.FillPath(Brushes.White(), Path);
+			}
+			else
+			{
+				var pen = new Pen(Colors.White, config.PenThickness);
+				pen.LineJoin = config.LineJoin;
+				pen.LineCap = config.LineCap;
+				g.DrawPath(pen, Path);
+			}
 		}
 
 		GraphicsPath CreateMainPath()
@@ -151,7 +209,7 @@ namespace Eto.Test.Sections.Drawing
 			matrix.Translate(240, 120);
 			matrix.Scale(0.25f);
 			childPath.Transform(matrix);
-			mainPath.AddPath(childPath, ConnectPath);
+			mainPath.AddPath(childPath, config.ConnectPath);
 
 			mainPath.AddLine(370, 120, 370, 170);
 
@@ -161,8 +219,8 @@ namespace Eto.Test.Sections.Drawing
 		GraphicsPath CreatePath()
 		{
 			var newPath = new GraphicsPath();
-			var start = StartFigures;
-			var close = CloseFigures;
+			var start = config.StartFigures;
+			var close = config.CloseFigures;
 
 			// connected segments
 

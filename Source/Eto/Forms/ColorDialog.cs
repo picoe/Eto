@@ -20,13 +20,13 @@ namespace Eto.Forms
 				ColorChanged (this, e);
 		}
 		
-		public ColorDialog ()
-			: this (Generator.Current)
+		public ColorDialog()
+			: this((Generator)null)
 		{
 		}
-		
-		public ColorDialog (Generator g)
-			: this (g, typeof(IColorDialog))
+
+		public ColorDialog (Generator generator)
+			: this (generator, typeof(IColorDialog))
 		{
 		}
 		

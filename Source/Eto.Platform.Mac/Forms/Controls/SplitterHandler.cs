@@ -13,6 +13,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		int? position;
 		SplitterFixedPanel fixedPanel;
 
+		public bool RecurseToChildren { get { return true; } }
+
 		public override NSView ContainerControl { get { return Control; } }
 
 		public virtual Size ClientSize { get { return Size; } set { Size = value; } }

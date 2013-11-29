@@ -21,6 +21,8 @@ namespace Eto.Platform.Wpf.Forms
 			get { return instance; }
 		}
 
+		public static bool EnableVisualStyles = true;
+
 		public static void InvokeIfNecessary(Action action)
 		{
 			if (sw.Application.Current == null || Thread.CurrentThread == sw.Application.Current.Dispatcher.Thread)
@@ -138,14 +140,14 @@ namespace Eto.Platform.Wpf.Forms
 		{
 		}
 
-		public Key CommonModifier
+		public Keys CommonModifier
 		{
-			get { return Key.Control; }
+			get { return Keys.Control; }
 		}
 
-		public Key AlternateModifier
+		public Keys AlternateModifier
 		{
-			get { return Key.Alt; }
+			get { return Keys.Alt; }
 		}
 
 		public void Open(string url)

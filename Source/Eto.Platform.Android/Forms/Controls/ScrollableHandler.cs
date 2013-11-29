@@ -42,6 +42,12 @@ namespace Eto.Platform.Android.Forms.Controls
 			set { Control.ScrollTo(value.X, value.Y); }
 		}
 
+		public float MinimumZoom { get; set; }
+
+		public float MaximumZoom { get; set; }
+
+		public float Zoom { get; set; }
+
 		public Size ScrollSize
 		{
 			get
@@ -97,5 +103,7 @@ namespace Eto.Platform.Android.Forms.Controls
 				throw new NotImplementedException();
 			}
 		}
+
+		public bool RecurseToChildren { get { return true; } }
 	}
 }

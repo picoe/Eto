@@ -13,7 +13,7 @@ namespace Eto.Platform.Direct2D
     {
         public override string ID
         {
-            get { return "Direct2D"; }
+            get { return Generators.Direct2D; }
         }
 
         public Generator()
@@ -28,16 +28,16 @@ namespace Eto.Platform.Direct2D
 		{
 			// Drawing
 			g.Add<IBitmap>(() => new BitmapHandler());
-			//g.Add<IFontFamily>(() => new FontFamilyHandler());
+			g.Add<IFontFamily>(() => new FontFamilyHandler());
 			g.Add<IFont>(() => new FontHandler());
 			g.Add<IFonts>(() => new FontsHandler());
 			g.Add<IGraphics>(() => new GraphicsHandler());
 			g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
-			g.Add<IIcon>(() => new IconHandler());
+			//g.Add<IIcon>(() => new IconHandler());
 			//g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());
-			//g.Add<ISolidBrush>(() => new SolidBrushHandler());
+			g.Add<ISolidBrush>(() => new SolidBrushHandler());
 			//g.Add<ITextureBrush>(() => new TextureBrushHandler());
 			//g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 

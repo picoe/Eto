@@ -9,6 +9,11 @@ using sw = SharpDX.DirectWrite;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
+	/// <summary>
+	/// Handler for <see cref="IFonts"/>
+	/// </summary>
+	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
     public class FontsHandler : WidgetHandler<Widget>, IFonts
     {
         private List<FontFamily> availableFontFamilies;

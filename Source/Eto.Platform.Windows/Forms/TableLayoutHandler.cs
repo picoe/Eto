@@ -16,7 +16,7 @@ namespace Eto.Platform.Windows
 		bool[] rowScale;
 		int lastRowScale;
 
-		protected override void SetMinimumSize(Size size)
+		protected override bool SetMinimumSize(Size size)
 		{
 			// ensure that our width doesn't get smaller than the non-scaled child controls
 			// to make it so the child controls are left-justified when the container
@@ -35,7 +35,7 @@ namespace Eto.Platform.Windows
 					curSize.Height += heights[i];
 			}
 			size = Size.Max(size, curSize);
-			base.SetMinimumSize(size);
+			return base.SetMinimumSize(size);
 		}
 
 		public TableLayoutHandler()

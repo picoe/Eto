@@ -14,17 +14,17 @@ namespace Eto.Forms
 	{
 		new IOpenFileDialog Handler { get { return (IOpenFileDialog)base.Handler; } }
 		
-		public OpenFileDialog ()
-			: this(Generator.Current)
+		public OpenFileDialog()
+			: this((Generator)null)
 		{
 		}
 
-		public OpenFileDialog (Generator g) : this(g, typeof(IOpenFileDialog))
+		public OpenFileDialog (Generator generator) : this(generator, typeof(IOpenFileDialog))
 		{
 		}
 		
-		protected OpenFileDialog (Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
+		protected OpenFileDialog (Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
 
