@@ -62,6 +62,8 @@ namespace Eto.Test
 		{
 			contentContainer = new Panel();
 
+			Splitter splitter = null;
+
 			// set focus when the form is shown
 			Shown += delegate
 			{
@@ -81,7 +83,12 @@ namespace Eto.Test
 					}
 					else
 					{
+#if MOBILE
+						// For now, avoid nested controls in mobile.
+						splitter.Panel2 = content;
+#else
 						contentContainer.Content = content;
+#endif
 					}
 				}
 				catch (Exception ex)
@@ -98,7 +105,7 @@ namespace Eto.Test
 
 			if (Splitter.IsSupported())
 			{
-				var splitter = new Splitter
+				splitter = new Splitter
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
