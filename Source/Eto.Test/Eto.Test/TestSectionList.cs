@@ -72,7 +72,8 @@ namespace Eto.Test
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
-			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing" };
+			yield return new Section<DirectDrawingSection> { Text = "Drawing directly onto a Graphics" };
+			yield return new Section<DirectDrawingSection> { Text = "Drawing using a Paint/Invalidate loop", Creator = () => new DirectDrawingSection(directDrawing: false) };
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 
