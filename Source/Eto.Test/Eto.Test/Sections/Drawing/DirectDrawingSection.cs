@@ -12,43 +12,57 @@ namespace Eto.Test.Sections.Drawing
 		readonly UITimer timer;
 		DirectDrawingRenderer renderer = new DirectDrawingRenderer();
 
-		public DirectDrawingSection() : this(null)
+		public DirectDrawingSection()
+			: this(null, directDrawing: true)
 		{
 		}
 
-		public DirectDrawingSection (DrawingToolkit toolkit)
+		public DirectDrawingSection(bool directDrawing = true) : this(null, directDrawing: directDrawing)
 		{
-			var hasToolkit = toolkit != null;
+		}
+
+		/// <summary>
+		/// There are three modes of drawing:
+		/// a) By specifying a drawing toolkit, e.g. Direct2D. In this case directDrawing is ignored.
+		/// b) Drawing directly by creating a Graphics from the drawable.
+		/// c) Drawing in the paint callback, and invalidating immediately to create a Paint/Invalidate loop.
+		/// </summary>
+		public DirectDrawingSection(DrawingToolkit toolkit, bool directDrawing = true)
+		{
 			this.toolkit = toolkit;
-
 			drawable = new Drawable();
-			if (this.toolkit != null)
-				this.toolkit.Initialize(drawable);
 			drawable.BackgroundColor = Colors.Black;
-			Action render = () => {
-				if (this.ParentWindow == null)
-				{
-					timer.Stop();
-					return;
-				}
 
+			if (this.toolkit != null)
+			{
+				this.toolkit.Initialize(drawable);
+
+				// When a toolkit is specified, however, we can use Invalidate
+				// to get the maximum frame rate.
+				drawable.Paint += (s, e) => {
+					if (this.ParentWindow == null)
+						return;
+					toolkit.Render(null, g2 => renderer.DrawFrame(g2, drawable.Size));
+					drawable.Invalidate();
+				};
+			}
+			else if (directDrawing)
+			{
 				// A UI timer is slow, but we need it for testing CreateGraphics (as
 				// opposed to an Invalidate/Paint loop), because creating a Graphics within
 				// a Paint callback produces flicker.
-				// 
-				// When a toolkit is specified, however, we can use the Invalidate/Paint loop
-				// to get the maximum frame rate.
 				//
 				// If we weren't interested in getting the maximum frame rate, we could have
 				// used a single code path (the UI timer code path), using a default toolkit
 				// if none was specified.
-				if (hasToolkit)
-				{
-					toolkit.Render(null, g => renderer.DrawFrame(g, drawable.Size));
-					drawable.Invalidate();
-				}
-				else
-				{
+				timer = new UITimer { Interval = 0.001 };
+				timer.Elapsed += (s, e) => {
+					if (this.ParentWindow == null)
+					{
+						timer.Stop();
+						return;
+					}
+
 					try
 					{
 						using (var graphics = drawable.CreateGraphics())
@@ -60,20 +74,22 @@ namespace Eto.Test.Sections.Drawing
 						this.BackgroundColor = Colors.Red;
 						this.Content = new Label { Text = "This platform does not support direct drawing", TextColor = Colors.White, VerticalAlign = VerticalAlign.Middle, HorizontalAlign = HorizontalAlign.Center };
 					}
-				}
-			};
-
-			if (!hasToolkit)
-			{
-				timer = new UITimer { Interval = 0.001 };
-				timer.Elapsed += (sender, e) => render();
+				};
 			}
-			else
-				drawable.Paint += (s, e) => render();
+			else // paint/invalidate loop
+			{
+				// The Invalidate/Paint loop also gets the maximum frame rate.
+				drawable.Paint += (s, e) => {
+					if (this.ParentWindow == null)
+						return;
+					renderer.DrawFrame(e.Graphics, drawable.Size);
+					drawable.Invalidate();
+				};
+			}
 
-			var layout = new DynamicLayout (new Padding(10));
-			layout.AddSeparateRow (null, UseTexturesAndGradients (), null);
-			layout.Add (drawable);
+			var layout = new DynamicLayout(new Padding(10));
+			layout.AddSeparateRow(null, UseTexturesAndGradients(), null);
+			layout.Add(drawable);
 			this.Content = layout;
 		}
 
