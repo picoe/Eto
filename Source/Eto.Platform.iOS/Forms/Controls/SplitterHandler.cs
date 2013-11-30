@@ -34,8 +34,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 				return MGSplitController.View;
 			} else {
 				SplitController = new UISplitViewController ();
+				SplitController.Delegate = new SplitControllerDelegate();
 				return SplitController.View;
 			}
+		}
+
+		class SplitControllerDelegate : UISplitViewControllerDelegate
+		{
+			public override bool ShouldHideViewController(UISplitViewController svc, UIViewController viewController, UIInterfaceOrientation inOrientation)
+			{
+				return false;
+			}			
 		}
 		
 		public SplitterHandler ()
