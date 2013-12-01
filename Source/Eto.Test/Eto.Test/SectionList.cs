@@ -136,34 +136,14 @@ namespace Eto.Test
 		}
 	}
 
-	public class SectionList
+	/// <summary>
+	/// The base class for views that display the set of tests.
+	/// </summary>
+	public abstract class SectionList
 	{
-		TreeGridView treeView;
+		public abstract Control Control { get; }
+		public abstract ISection SelectedItem { get; }
 		public event EventHandler SelectedItemChanged;
-
-		public Control Control { get { return this.treeView; } }
-
-		public new ISection SelectedItem
-		{
-			get
-			{
-				var sectionTreeItem = treeView.SelectedItem as SectionTreeItem;
-				return sectionTreeItem.Section as ISection;
-			}
-		}
-
-		public SectionList(IEnumerable<Section> topNodes)
-		{
-			this.treeView = new TreeGridView();
-			treeView.Style = "sectionList";
-			treeView.ShowHeader = false;
-			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding("Text") } });
-			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
-			treeView.SelectedItemChanged += (s, e) => {
-				if (this.SelectedItemChanged != null)
-					this.SelectedItemChanged(s, e);
-				};
-		}
 
 		public string SectionTitle
 		{
@@ -172,6 +152,38 @@ namespace Eto.Test
 				var section = SelectedItem as Section;
 				return section != null ? section.Text : null;
 			}
+		}
+
+		protected void OnSelectedItemChanged(object sender, EventArgs e)
+		{
+			if (this.SelectedItemChanged != null)
+				this.SelectedItemChanged(sender, e);
+		}
+	}
+
+	public class SectionListTreeView : SectionList
+	{
+		TreeGridView treeView;
+
+		public override Control Control { get { return this.treeView; } }
+
+		public override ISection SelectedItem
+		{
+			get
+			{
+				var sectionTreeItem = treeView.SelectedItem as SectionTreeItem;
+				return sectionTreeItem.Section as ISection;
+			}
+		}
+
+		public SectionListTreeView(IEnumerable<Section> topNodes)
+		{
+			this.treeView = new TreeGridView();
+			treeView.Style = "sectionList";
+			treeView.ShowHeader = false;
+			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding("Text") } });
+			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
+			treeView.SelectedItemChanged += OnSelectedItemChanged;
 		}
 	}
 
