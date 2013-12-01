@@ -6,10 +6,13 @@ using Eto.Drawing;
 
 namespace Eto.Test
 {
-	public interface ISection
+	public interface ISectionName
 	{
 		string Text { get; }
+	}
 
+	public interface ISection : ISectionName
+	{
 		Control CreateContent();
 	}
 
@@ -22,14 +25,14 @@ namespace Eto.Test
 	/// and can be wrapped within a tree item (SectionTreeItem) or
 	/// any other visual representation.
 	/// </summary>
-	public class Section : List<Section>
+	public class Section : List<Section>, ISectionName
 	{
 		public string Text { get; set; }
 
 		public Section()
 		{
 		}
-
+	
 		public Section(string text, IEnumerable<Section> sections)
 			: base (sections.OrderBy (r => r.Text, StringComparer.CurrentCultureIgnoreCase).ToArray())
 		{
@@ -184,6 +187,48 @@ namespace Eto.Test
 			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding("Text") } });
 			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
 			treeView.SelectedItemChanged += OnSelectedItemChanged;
+		}
+	}
+
+	public class SectionListGridView : SectionList
+	{
+		class MyItem
+		{
+			public string Name { get; set; }
+			public string SectionName { get; set; }
+			public Section Section { get; set; }
+		}
+
+		GridView gridView;
+		public override Control Control { get { return this.gridView; } }
+		public override ISection SelectedItem
+		{
+			get
+			{
+				var item = gridView.SelectedItem as MyItem;
+				return item != null ? item.Section as ISection: null;
+			}
+		}
+
+		public SectionListGridView(IEnumerable<Section> topNodes)
+		{
+			gridView = new GridView { ShowCellBorders = false };
+			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell("Name"), Sortable = true });
+			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell("SectionName"), Sortable = true });
+			var items = new GridItemCollection();
+			foreach (var section in topNodes)
+			{				
+				foreach (var test in section)
+				{
+					items.Add(new MyItem { 
+						Name = (test as ISectionName).Text,
+						SectionName = (section as ISectionName).Text, 
+						Section = test,
+					});
+				}
+			}
+			gridView.DataStore = items;
+			gridView.SelectionChanged += OnSelectedItemChanged;
 		}
 	}
 
