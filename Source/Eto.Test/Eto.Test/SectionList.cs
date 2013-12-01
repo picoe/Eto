@@ -136,25 +136,33 @@ namespace Eto.Test
 		}
 	}
 
-	public class SectionList : TreeGridView
+	public class SectionList
 	{
+		TreeGridView treeView;
+		public event EventHandler SelectedItemChanged;
+
+		public Control Control { get { return this.treeView; } }
+
 		public new ISection SelectedItem
 		{
 			get
 			{
-				var sectionTreeItem = base.SelectedItem as SectionTreeItem;
+				var sectionTreeItem = treeView.SelectedItem as SectionTreeItem;
 				return sectionTreeItem.Section as ISection;
 			}
 		}
 
 		public SectionList(IEnumerable<Section> topNodes)
 		{
-			this.Style = "sectionList";
-			this.ShowHeader = false;
-
-			Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding ("Text") } });
-
-			this.DataStore = new SectionTreeItem(new Section("Top", topNodes));			
+			this.treeView = new TreeGridView();
+			treeView.Style = "sectionList";
+			treeView.ShowHeader = false;
+			treeView.Columns.Add(new GridColumn { DataCell = new TextBoxCell { Binding = new PropertyBinding("Text") } });
+			treeView.DataStore = new SectionTreeItem(new Section("Top", topNodes));
+			treeView.SelectedItemChanged += (s, e) => {
+				if (this.SelectedItemChanged != null)
+					this.SelectedItemChanged(s, e);
+				};
 		}
 
 		public string SectionTitle

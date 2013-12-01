@@ -67,7 +67,7 @@ namespace Eto.Test
 			// set focus when the form is shown
 			Shown += delegate
 			{
-				SectionList.Focus();
+				SectionList.Control.Focus();
 			};
 			SectionList.SelectedItemChanged += (sender, e) =>
 			{
@@ -109,7 +109,7 @@ namespace Eto.Test
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
-					Panel1 = SectionList,
+					Panel1 = SectionList.Control,
 #if MOBILE
 					// for now, don't show log in mobile
 					Panel2 = contentContainer
@@ -121,7 +121,7 @@ namespace Eto.Test
 			}
 			if (Navigation.IsSupported())
 			{
-				navigation = new Navigation(SectionList, "Eto.Test");
+				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
 			}
 			throw new EtoException("Platform must support splitter or navigation");
