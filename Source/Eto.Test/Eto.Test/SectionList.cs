@@ -162,6 +162,8 @@ namespace Eto.Test
 			if (this.SelectedItemChanged != null)
 				this.SelectedItemChanged(sender, e);
 		}
+
+		public abstract void Focus();
 	}
 
 	public class SectionListTreeView : SectionList
@@ -169,6 +171,8 @@ namespace Eto.Test
 		TreeGridView treeView;
 
 		public override Control Control { get { return this.treeView; } }
+
+		public override void Focus() { Control.Focus(); }
 
 		public override ISection SelectedItem
 		{
@@ -199,8 +203,11 @@ namespace Eto.Test
 			public Section Section { get; set; }
 		}
 
+		DynamicLayout layout;
 		GridView gridView;
-		public override Control Control { get { return this.gridView; } }
+		SearchBox filterText;
+
+		public override Control Control { get { return this.layout; } }
 		public override ISection SelectedItem
 		{
 			get
@@ -209,6 +216,8 @@ namespace Eto.Test
 				return item != null ? item.Section as ISection: null;
 			}
 		}
+
+		public override void Focus() { filterText.Focus(); }
 
 		public SectionListGridView(IEnumerable<Section> topNodes)
 		{
@@ -229,6 +238,32 @@ namespace Eto.Test
 			}
 			gridView.DataStore = items;
 			gridView.SelectionChanged += OnSelectedItemChanged;
+
+			layout = new DynamicLayout();
+			layout.Add(filterText = new SearchBox { PlaceholderText = "Filter" });
+			layout.Add(gridView);
+
+			// Filter
+			filterText.TextChanged += (s, e) => {
+				var filterItems = (filterText.Text ?? "").Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+
+				// Set the filter delegate on the GridView
+				gridView.Filter = (filterItems.Length == 0) ? (Func<object, bool>)null : o => {
+					var i = o as MyItem;
+					var matches = true;
+
+					// Every item in the split filter string should be within the Text property
+					foreach (var filterItem in filterItems)
+						if (i.Name.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1 &&
+							i.SectionName.IndexOf(filterItem, StringComparison.CurrentCultureIgnoreCase) == -1)
+						{
+							matches = false;
+							break;
+						}
+
+					return matches;
+				};
+			};			
 		}
 	}
 

@@ -32,7 +32,7 @@ namespace Eto.Test
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-			this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
+			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
@@ -67,7 +67,7 @@ namespace Eto.Test
 			// set focus when the form is shown
 			Shown += delegate
 			{
-				SectionList.Control.Focus();
+				SectionList.Focus();
 			};
 			SectionList.SelectedItemChanged += (sender, e) =>
 			{
