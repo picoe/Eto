@@ -32,7 +32,11 @@ namespace Eto.Test
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
+#if DESKTOP
 			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
+#else
+			this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
+#endif
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
