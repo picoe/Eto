@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Eto.Platform.Direct2D\Eto.Platform.Direct2D.csproj">
-      <Project>{3c1b77d5-6c93-4366-a487-3d307fc29ffb}</Project>
+      <Project>{3C1B77D5-6C93-4366-A487-3D307FC29FFB}</Project>
       <Name>Eto.Platform.Direct2D</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Eto.Platform.Windows\Eto.Platform.Windows.csproj">
