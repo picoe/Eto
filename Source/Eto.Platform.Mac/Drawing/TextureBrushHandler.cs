@@ -30,7 +30,7 @@ namespace Eto.Platform.iOS.Drawing
 			public void Apply (GraphicsHandler graphics, float x, float y)
 			{
 				graphics.Control.SetFillColorSpace (patternColorSpace);
-				graphics.Control.SetPatternPhase(new sd.SizeF(-x, -y));
+				graphics.Control.SetPatternPhase(new sd.SizeF(x, y));
 				if (pattern == null)
 				{
 					ClearPattern();
