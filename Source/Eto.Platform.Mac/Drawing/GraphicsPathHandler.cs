@@ -118,7 +118,33 @@ namespace Eto.Platform.iOS.Drawing
 		public void AddBezier (PointF start, PointF control1, PointF control2, PointF end)
 		{
 			ConnectTo (start);
-			Control.AddCurveToPoint (control1.X, control1.Y, control2.X, control2.Y, end.X, end.Y);
+			this.AddCurveToPoint (control1, control2, end);
+		}
+
+		/// <summary>
+		/// Check points early. If an invalid point is passed to AddCurveToPoint,
+		/// iOS crashes with a SIGABRT leading to a long debugging experience.
+		/// This provides early diagnostics.
+		/// </summary>
+		/// <param name="f"></param>
+		private void Check(float f)
+		{
+			if (float.IsInfinity(f) || float.IsNaN(f))
+				throw new InvalidOperationException("Invalid point specified to AddCurveToPoint");
+		}
+
+		private void Check(PointF p)
+		{
+			Check(p.X);
+			Check(p.Y);
+		}
+
+		private void AddCurveToPoint(PointF point1, PointF point2, PointF point3)
+		{
+			Check(point1);
+			Check(point2);
+			Check(point3);
+			Control.AddCurveToPoint(point1.ToSD(), point2.ToSD(), point3.ToSD());
 		}
 
 		public void AddPath (IGraphicsPath path, bool connect = false)
@@ -134,7 +160,7 @@ namespace Eto.Platform.iOS.Drawing
 					case CGPathElementType.AddCurveToPoint:
 						if (first)
 							ConnectTo (element.Point3.ToEto());
-						Control.AddCurveToPoint (element.Point1, element.Point2, element.Point3);
+						this.AddCurveToPoint(element.Point1.ToEto(), element.Point2.ToEto(), element.Point3.ToEto());
 						break;
 					case CGPathElementType.AddLineToPoint:
 						if (first)
@@ -200,7 +226,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void AddCurve (IEnumerable<PointF> points, float tension = 0.5f)
 		{
 			points = SplineHelper.SplineCurve (points, tension);
-			SplineHelper.Draw (points, ConnectTo, (c1, c2, end) => Control.AddCurveToPoint(c1.X, c1.Y, c2.X, c2.Y, end.X, end.Y));
+			SplineHelper.Draw (points, ConnectTo, (c1, c2, end) => this.AddCurveToPoint(c1, c2, end));
 		}
 
 		public RectangleF Bounds
