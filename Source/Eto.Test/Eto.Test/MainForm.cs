@@ -32,7 +32,11 @@ namespace Eto.Test
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-			this.SectionList = new SectionList(topNodes ?? TestSectionList.TopNodes());
+#if DESKTOP
+			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
+#else
+			this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
+#endif
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
@@ -109,7 +113,7 @@ namespace Eto.Test
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
-					Panel1 = SectionList,
+					Panel1 = SectionList.Control,
 #if MOBILE
 					// for now, don't show log in mobile
 					Panel2 = contentContainer
@@ -121,7 +125,7 @@ namespace Eto.Test
 			}
 			if (Navigation.IsSupported())
 			{
-				navigation = new Navigation(SectionList, "Eto.Test");
+				navigation = new Navigation(SectionList.Control, "Eto.Test");
 				return navigation;
 			}
 			throw new EtoException("Platform must support splitter or navigation");
