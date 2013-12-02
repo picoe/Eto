@@ -15,7 +15,7 @@ namespace Eto.Platform.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class BrushHandler : IBrush
 	{
-		public abstract void Apply (object control, GraphicsHandler graphics);
+		public abstract void Apply(object control, GraphicsHandler graphics, float x, float y);
 	}
 }
 

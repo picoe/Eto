@@ -347,7 +347,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
 			StartDrawing();
-			brush.Apply(this);
+			brush.Apply(this, x, y);
 			Control.FillRect(TranslateView(new SD.RectangleF(x, y, width, height), width > 1 || height > 1, true));
 			EndDrawing();
 		}
@@ -370,7 +370,7 @@ namespace Eto.Platform.iOS.Drawing
 				return;
 			}*/
 
-			brush.Apply(this);
+			brush.Apply(this, x, y);
 			Control.FillEllipseInRect(TranslateView(new SD.RectangleF(x, y, width, height), true, true));
 			EndDrawing();
 		}
@@ -395,7 +395,7 @@ namespace Eto.Platform.iOS.Drawing
 			StartDrawing();
 
 			var rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true, true);
-			brush.Apply(this);
+			brush.Apply(this, x, y);
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
@@ -416,7 +416,8 @@ namespace Eto.Platform.iOS.Drawing
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
 			Control.ClosePath();
-			brush.Apply(this);
+			var bounds = path.Bounds;
+			brush.Apply(this, bounds.X, bounds.Y);
 			switch (path.FillMode)
 			{
 				case FillMode.Alternate:

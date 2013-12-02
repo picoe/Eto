@@ -22,38 +22,20 @@ namespace Eto.Platform.iOS.Drawing
 		class BrushObject
 		{
 			CGImage image;
-
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
-			CGAffineTransform? viewTransform;
 			readonly float [] alpha = { 1f };
 			CGPattern pattern;
 			static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern (null);
 
-			public void Apply (GraphicsHandler graphics)
+			public void Apply (GraphicsHandler graphics, float x, float y)
 			{
 				graphics.Control.SetFillColorSpace (patternColorSpace);
-
-				// make current transform apply to the pattern
-				var currentTransform = graphics.Control.GetCTM();
-
-				if (graphics.DisplayView != null)
+				graphics.Control.SetPatternPhase(new sd.SizeF(-x, -y));
+				if (pattern == null)
 				{
-					var pos = graphics.DisplayView.ConvertPointToView (sd.PointF.Empty, null);
-					currentTransform.Translate(pos.X, pos.Y);
-					graphics.Control.SetPatternPhase(new sd.SizeF(-pos.X, -pos.Y));
-				}
-				if (pattern == null || viewTransform != currentTransform) {
-					viewTransform = currentTransform;
-					// Create a new pattern.
-					var t = transform;
-#if DESKTOP // the below lines case the image to be magnified on iOS Retina displays (and possibly also desktop retina displays - need to test.)
-					if (viewTransform != null)
-						t.Multiply(viewTransform.Value);
-#endif
 					ClearPattern();
-					pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
+					pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), transform, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);					
 				}
-
 				graphics.Control.SetFillPattern (pattern, alpha);
 			}
 			
@@ -115,9 +97,9 @@ namespace Eto.Platform.iOS.Drawing
 			((BrushObject)widget.ControlObject).Transform = transform.ToCG ();
 		}
 
-		public override void Apply (object control, GraphicsHandler graphics)
+		public override void Apply(object control, GraphicsHandler graphics, float x, float y)
 		{
-			((BrushObject)control).Apply (graphics);
+			((BrushObject)control).Apply (graphics, x, y);
 		}
 
 		public float GetOpacity (TextureBrush widget)
