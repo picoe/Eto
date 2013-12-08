@@ -1,3 +1,4 @@
+#if MENU_TOOLBAR_REFACTORING
 using System;
 using Eto.Drawing;
 using Eto;
@@ -136,3 +137,4 @@ namespace Eto.Forms
 
 	}
 }
+#endif

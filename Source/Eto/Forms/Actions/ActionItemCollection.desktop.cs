@@ -1,3 +1,4 @@
+#if MENU_TOOLBAR_REFACTORING
 #if DESKTOP
 using System;
 using System.Collections.Generic;
@@ -34,4 +35,5 @@ namespace Eto.Forms
 		}
 	}
 }
+#endif
 #endif

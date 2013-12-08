@@ -1,3 +1,4 @@
+#if MENU_TOOLBAR_REFACTORING
 #if DESKTOP
 using System;
 
@@ -44,4 +45,5 @@ namespace Eto.Forms
 		}
 	}
 }
+#endif
 #endif

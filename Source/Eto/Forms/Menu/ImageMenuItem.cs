@@ -59,12 +59,10 @@ namespace Eto.Forms
 			set { Image = value; }
 		}
 
-		public void GenerateActions (IEnumerable<IActionItem> actionItems)
+		public void GenerateActions (IEnumerable<MenuItem> actionItems)
 		{
-			foreach (IActionItem ai in actionItems) {
-				var mi = ai.Generate (Generator);
-				if (mi != null)
-					MenuItems.Add(mi);
+			foreach (var mi in actionItems) {
+				MenuItems.Add(mi);
 			}
 		}
 	}

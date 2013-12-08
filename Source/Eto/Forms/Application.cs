@@ -11,7 +11,9 @@ namespace Eto.Forms
 
 		void Quit();
 
+#if MENU_TOOLBAR_REFACTORING
 		void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems);
+#endif
 
 		Keys CommonModifier { get; }
 
@@ -140,6 +142,7 @@ namespace Eto.Forms
 			get { return Handler.AlternateModifier; }
 		}
 
+#if MENU_TOOLBAR_REFACTORING
 		[Obsolete("Call GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems = false) instead.")]
 		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
 		{
@@ -150,6 +153,7 @@ namespace Eto.Forms
 		{
 			Handler.GetSystemActions(actions, menu, toolBar, addStandardItems);
 		}
+#endif
 
 		public string BadgeLabel
 		{

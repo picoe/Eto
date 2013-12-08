@@ -1,3 +1,4 @@
+#if MENU_TOOLBAR_REFACTORING
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -164,3 +165,4 @@ namespace Eto.Forms
 		}
 	}
 }
+#endif

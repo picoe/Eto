@@ -166,10 +166,13 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+#if MENU_TOOLBAR_REFACTORING
 		public void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
 		{
 
 		}
+#endif
+
 
 		public void Invoke(Action action)
 		{

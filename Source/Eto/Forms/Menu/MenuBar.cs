@@ -30,17 +30,15 @@ namespace Eto.Forms
 			menuItems = new MenuItemCollection (this, Handler);
 		}
 
-		public MenuBar (Generator g, IEnumerable<IActionItem> actionItems) : this(g)
+		public MenuBar (Generator g, IEnumerable<MenuItem> actionItems) : this(g)
 		{
 			GenerateActions (actionItems);
 		}
-		
-		public void GenerateActions (IEnumerable<IActionItem> actionItems)
+
+		public void GenerateActions(IEnumerable<MenuItem> actionItems)
 		{
-			foreach (IActionItem ai in actionItems) {
-				var mi = ai.Generate (Generator);
-				if (mi != null)
-					MenuItems.Add(mi);
+			foreach (var mi in actionItems) {
+				MenuItems.Add(mi);
 			}
 		}
 
