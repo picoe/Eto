@@ -4,11 +4,6 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	public interface IActionGenerator
-	{
-		void Generate(GenerateActionArgs args);
-	}
-
 	[Obsolete("Use separate collections for actions, menu and toolbar.")]
 	public class GenerateActionArgs : EventArgs
 	{
