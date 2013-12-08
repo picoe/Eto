@@ -559,7 +559,7 @@ namespace Eto.Platform.Windows
 
 		public virtual PointF PointToScreen(PointF point)
 		{
-			return Control.PointToScreen(point.ToSDPoint()).ToEto();
+			return !Control.IsDisposed ? Control.PointToScreen(point.ToSDPoint()).ToEto() : PointF.Empty; // safety check added because this is hit in certain situations.
 		}
 
 		public Point Location
