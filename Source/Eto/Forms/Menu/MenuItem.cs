@@ -8,7 +8,7 @@ namespace Eto.Forms
 	{
 	}
 	
-	public abstract class MenuItem : Menu
+	public abstract class MenuItem : InstanceWidget
 	{
 		protected MenuItem (Generator g, Type type, bool initialize = true) 
 			: base(g, type, initialize)
