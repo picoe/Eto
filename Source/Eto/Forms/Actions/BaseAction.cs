@@ -73,6 +73,7 @@ namespace Eto.Forms
 		public abstract string Text { get; set; }
 #endif
 		
+#if MENU_TOOLBAR_REFACTORING
 		public string MenuText { get; set; }
 
 		public string MenuItemStyle { get; set; }
@@ -80,9 +81,9 @@ namespace Eto.Forms
 		public string ToolBarText { get; set; }
 		
 		public string ToolBarItemStyle { get; set; }
-		
+#endif
+
 		public string TooltipText { get; set; }
-		
 		public string Description { get; set; }
 		
 		public bool ShowLabel { get; set; }

@@ -32,14 +32,14 @@ namespace Eto.Forms
 
 			foreach (var item in menu.MenuItems)
 			{
-				if (convert(item.MenuText) == convert(subMenuText))
+				if (convert(item.Text) == convert(subMenuText))
 				{
 					return item as ImageMenuItem;
 				}
 			}
 			if (create)
 			{
-				var subMenu = new ImageMenuItem() { MenuText = subMenuText };
+				var subMenu = new ImageMenuItem() { Text = subMenuText };
 				subMenu.Order = order;
 				menu.MenuItems.Add(subMenu);
 				return subMenu;
