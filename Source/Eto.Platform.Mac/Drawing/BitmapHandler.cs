@@ -236,21 +236,27 @@ namespace Eto.Platform.Mac.Drawing
 				return new Bitmap(Generator, new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
-				var rect = rectangle.Value;
-				PixelFormat format;
-				if (bmprep != null && bmprep.BitsPerPixel == 24)
-					format = PixelFormat.Format24bppRgb;
-				else if (alpha || (bmprep != null && bmprep.HasAlpha))
-					format = PixelFormat.Format32bppRgba;
-				else
-					format = PixelFormat.Format32bppRgb;
+				if (true) { // both code paths (true and false) seem to do the same thing. However the first is arguably cleaner.
+					var rect = new sd.RectangleF (sd.PointF.Empty, this.Control.Size);
+					var temp = this.Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
+					var image = new NSImage (temp, new sd.SizeF (temp.Width, temp.Height));
+					return new Bitmap(Generator, new BitmapHandler(image));
+				} else {
+					var rect = rectangle.Value;
+					PixelFormat format;
+					if (bmprep != null && bmprep.BitsPerPixel == 24)
+						format = PixelFormat.Format24bppRgb;
+					else if (alpha || (bmprep != null && bmprep.HasAlpha))
+						format = PixelFormat.Format32bppRgba;
+					else
+						format = PixelFormat.Format32bppRgb;
 
-				var bmp = new Bitmap(rect.Width, rect.Height, format, Generator);
-				using (var graphics = new Graphics (Generator, bmp))
-				{
-					graphics.DrawImage(Widget, rect, new Rectangle(rect.Size));
+					var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
+					using (var graphics = new Graphics (Generator, bmp)) {
+						graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
+					}
+					return bmp;
 				}
-				return bmp;
 			}
 		}
 
