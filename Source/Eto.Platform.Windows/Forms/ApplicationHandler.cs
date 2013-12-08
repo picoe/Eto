@@ -166,7 +166,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void GetSystemActions(IActionCollections args, bool addStandardItems)
+		public void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
 		{
 
 		}

@@ -149,47 +149,47 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public void GetSystemActions(IActionCollections args, bool addStandardItems)
+		public void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
 		{
-			args.Actions.AddButton("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
+			actions.AddButton("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
 			{
 				NSApplication.SharedApplication.Hide(NSApplication.SharedApplication);
 			}, Keys.H | Keys.Application);
-			args.Actions.AddButton("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate
+			actions.AddButton("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate
 			{
 				NSApplication.SharedApplication.HideOtherApplications(NSApplication.SharedApplication);
 			}, Keys.H | Keys.Application | Keys.Alt);
-			args.Actions.AddButton("mac_showall", "Show All|Show All|Show All Windows", delegate
+			actions.AddButton("mac_showall", "Show All|Show All|Show All Windows", delegate
 			{
 				NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication);
 			});
 			
-			args.Actions.Add(new MacButtonAction("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Accelerator = Keys.Application | Keys.M });
-			args.Actions.Add(new MacButtonAction("mac_performZoom", "Zoom", "performZoom:"));
-			args.Actions.Add(new MacButtonAction("mac_performClose", "Close", "performClose:") { Accelerator = Keys.Application | Keys.W });
-			args.Actions.Add(new MacButtonAction("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:"));
-			args.Actions.Add(new MacButtonAction("mac_cut", "Cut", "cut:") { Accelerator = Keys.Application | Keys.X });
-			args.Actions.Add(new MacButtonAction("mac_copy", "Copy", "copy:") { Accelerator = Keys.Application | Keys.C });
-			args.Actions.Add(new MacButtonAction("mac_paste", "Paste", "paste:") { Accelerator = Keys.Application | Keys.V });
-			args.Actions.Add(new MacButtonAction("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Accelerator = Keys.Application | Keys.Alt | Keys.Shift | Keys.V });
-			args.Actions.Add(new MacButtonAction("mac_delete", "Delete", "delete:"));
-			args.Actions.Add(new MacButtonAction("mac_selectAll", "Select All", "selectAll:") { Accelerator = Keys.Application | Keys.A });
-			args.Actions.Add(new MacButtonAction("mac_undo", "Undo", "undo:") { Accelerator = Keys.Application | Keys.Z });
-			args.Actions.Add(new MacButtonAction("mac_redo", "Redo", "redo:") { Accelerator = Keys.Application | Keys.Shift | Keys.Z });
-			args.Actions.Add(new MacButtonAction("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Keys.Application | Keys.Control | Keys.F });
-			args.Actions.Add(new MacButtonAction("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Accelerator = Keys.Application | Keys.Shift | Keys.P });
-			args.Actions.Add(new MacButtonAction("mac_print", "Print...", "print:") { Accelerator = Keys.Application | Keys.P });
+			actions.Add(new MacButtonAction("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Accelerator = Keys.Application | Keys.M });
+			actions.Add(new MacButtonAction("mac_performZoom", "Zoom", "performZoom:"));
+			actions.Add(new MacButtonAction("mac_performClose", "Close", "performClose:") { Accelerator = Keys.Application | Keys.W });
+			actions.Add(new MacButtonAction("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:"));
+			actions.Add(new MacButtonAction("mac_cut", "Cut", "cut:") { Accelerator = Keys.Application | Keys.X });
+			actions.Add(new MacButtonAction("mac_copy", "Copy", "copy:") { Accelerator = Keys.Application | Keys.C });
+			actions.Add(new MacButtonAction("mac_paste", "Paste", "paste:") { Accelerator = Keys.Application | Keys.V });
+			actions.Add(new MacButtonAction("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Accelerator = Keys.Application | Keys.Alt | Keys.Shift | Keys.V });
+			actions.Add(new MacButtonAction("mac_delete", "Delete", "delete:"));
+			actions.Add(new MacButtonAction("mac_selectAll", "Select All", "selectAll:") { Accelerator = Keys.Application | Keys.A });
+			actions.Add(new MacButtonAction("mac_undo", "Undo", "undo:") { Accelerator = Keys.Application | Keys.Z });
+			actions.Add(new MacButtonAction("mac_redo", "Redo", "redo:") { Accelerator = Keys.Application | Keys.Shift | Keys.Z });
+			actions.Add(new MacButtonAction("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Keys.Application | Keys.Control | Keys.F });
+			actions.Add(new MacButtonAction("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Accelerator = Keys.Application | Keys.Shift | Keys.P });
+			actions.Add(new MacButtonAction("mac_print", "Print...", "print:") { Accelerator = Keys.Application | Keys.P });
 
 			if (addStandardItems)
 			{
-				var application = args.Menu.GetSubmenu(Widget.Name ?? "Application", 100);
+				var application = menu.GetSubmenu(Widget.Name ?? "Application", 100);
 				application.Actions.AddSeparator(800);
 				application.Actions.Add("mac_hide", 800);
 				application.Actions.Add("mac_hideothers", 800);
 				application.Actions.Add("mac_showall", 800);
 				application.Actions.AddSeparator(801);
 
-				var file = args.Menu.GetSubmenu("&File", 100);
+				var file = menu.GetSubmenu("&File", 100);
 				file.Actions.AddSeparator(900);
 				file.Actions.Add("mac_performClose", 900);
 
@@ -200,7 +200,7 @@ namespace Eto.Platform.Mac.Forms
 					file.Actions.Add("mac_print", 1000);
 				}
 
-				var edit = args.Menu.GetSubmenu("&Edit", 200);
+				var edit = menu.GetSubmenu("&Edit", 200);
 				edit.Actions.AddSeparator(100);
 				edit.Actions.Add("mac_undo", 100);
 				edit.Actions.Add("mac_redo", 100);
@@ -214,7 +214,7 @@ namespace Eto.Platform.Mac.Forms
 				edit.Actions.Add("mac_selectAll", 200);
 				edit.Actions.AddSeparator(201);
 				
-				var window = args.Menu.GetSubmenu("&Window", 900);
+				var window = menu.GetSubmenu("&Window", 900);
 				window.Actions.AddSeparator(100);
 				window.Actions.Add("mac_performMiniaturize", 100);
 				window.Actions.Add("mac_performZoom", 100);
@@ -226,13 +226,13 @@ namespace Eto.Platform.Mac.Forms
 
 				if (AddFullScreenMenuItem)
 				{
-					var view = args.Menu.GetSubmenu("&View", 300);
+					var view = menu.GetSubmenu("&View", 300);
 					view.Actions.AddSeparator(900);
 					view.Actions.Add("mac_toggleFullScreen", 900);
 					view.Actions.AddSeparator(901);
 				}
 				
-				var help = args.Menu.GetSubmenu("&Help", 900);
+				var help = menu.GetSubmenu("&Help", 900);
 
 				// add separator so help menu is always shown even when empty
 				help.Actions.AddSeparator(0);

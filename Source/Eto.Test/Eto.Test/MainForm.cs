@@ -174,7 +174,7 @@ namespace Eto.Test
 			var args = new GenerateActionArgs();
 
 			// generate actions to use in menus and toolbars
-			Application.Instance.GetSystemActions(args, true);
+			Application.Instance.GetSystemActions(args.Actions, args.Menu, args.ToolBar, true);
 
 			args.Actions.Add(new Actions.About());
 			args.Actions.Add(new Actions.Quit());

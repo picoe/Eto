@@ -157,7 +157,7 @@ namespace Eto.Platform.GtkSharp
 			Process.Start (info);
 		}
 		
-		public void GetSystemActions (IActionCollections args, bool addStandardItems)
+		public void GetSystemActions (ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
 		{
 		}
 		
