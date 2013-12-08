@@ -166,7 +166,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems)
+		public void GetSystemActions(IActionCollections args, bool addStandardItems)
 		{
 
 		}

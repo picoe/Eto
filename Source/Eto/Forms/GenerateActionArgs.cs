@@ -8,8 +8,20 @@ namespace Eto.Forms
 	{
 		void Generate(GenerateActionArgs args);
 	}
-			
-	public class GenerateActionArgs : EventArgs
+
+	/// <summary>
+	/// A class that implements this interface can add system actions to
+	/// the app-defined actions by calling Application.GetSystemActions
+	/// and passing an instance of IActionCollections.
+	/// </summary>
+	public interface IActionCollections
+	{
+		ActionCollection Actions { get; }
+		ActionItemCollection Menu { get; }
+		ActionItemCollection ToolBar { get; }
+	}
+
+	public class GenerateActionArgs : EventArgs, IActionCollections
 	{
 		#region Members
 		

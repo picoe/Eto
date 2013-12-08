@@ -11,7 +11,7 @@ namespace Eto.Forms
 
 		void Quit();
 
-		void GetSystemActions(GenerateActionArgs args, bool addStandardItems);
+		void GetSystemActions(IActionCollections args, bool addStandardItems);
 
 		Keys CommonModifier { get; }
 
@@ -140,7 +140,7 @@ namespace Eto.Forms
 			get { return Handler.AlternateModifier; }
 		}
 
-		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
+		public virtual void GetSystemActions(IActionCollections args, bool addStandardItems = false)
 		{
 			Handler.GetSystemActions(args, addStandardItems);
 		}

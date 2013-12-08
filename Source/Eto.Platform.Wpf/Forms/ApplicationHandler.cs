@@ -136,7 +136,7 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Dispatcher.BeginInvoke(action);
 		}
 
-		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems)
+		public void GetSystemActions(IActionCollections args, bool addStandardItems)
 		{
 		}
 

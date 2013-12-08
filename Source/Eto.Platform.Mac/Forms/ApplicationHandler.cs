@@ -149,7 +149,7 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems)
+		public void GetSystemActions(IActionCollections args, bool addStandardItems)
 		{
 			args.Actions.AddButton("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
 			{
