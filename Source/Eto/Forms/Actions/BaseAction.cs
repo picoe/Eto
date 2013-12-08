@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Eto.Forms
 {
-	public abstract partial class BaseAction
+	public abstract partial class BaseAction : InstanceWidget
 	{
 		#region Members
 		
@@ -24,9 +24,18 @@ namespace Eto.Forms
 		}
 		
 		#endregion
-		
+
+		#region Constructors
+
+		protected BaseAction (Generator g, Type type, bool initialize = true) 
+			: base(g, type, initialize)
+		{
+		}
+
+		#endregion
+
 		#region Properties
-		
+
 		public virtual bool Enabled
 		{
 			get { return enabled; }
@@ -39,7 +48,9 @@ namespace Eto.Forms
 				}
 			}
 		}
-		
+
+		public int Order { get; set; }
+
 		public string ID { get; set; }
 		
 		public object Tag { get; set; }
@@ -128,13 +139,13 @@ namespace Eto.Forms
 			Activated += activated;
 		}
 		
-		protected BaseAction(string id, string text)
+		protected BaseAction(string id, string text) : base(null, null as IWidget)
 		{
 			this.ID = id;
 			this.Text = text;
 		}
 		
-		protected BaseAction()
+		protected BaseAction() : base(null, null as IWidget)
 		{
 		}
 		
@@ -159,7 +170,10 @@ namespace Eto.Forms
 			OnActivated(EventArgs.Empty);
 		}
 
-		public abstract ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign);
+		public virtual ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		{
+			throw new NotImplementedException();
+		}
 	}
 
 }

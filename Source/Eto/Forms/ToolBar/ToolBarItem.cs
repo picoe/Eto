@@ -6,7 +6,7 @@ namespace Eto.Forms
 	{
 	}
 	
-	public class ToolBarItem : InstanceWidget
+	public class ToolBarItem : BaseAction
 	{
 		public ToolBarItem (Generator g, Type type) : base(g, type)
 		{

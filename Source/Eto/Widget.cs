@@ -118,8 +118,11 @@ namespace Eto
 			if (generator == null)
 				generator = Generator.Current;
 			this.Handler = handler;
-			handler.Generator = generator;
-			handler.Widget = this; // tell the handler who we are
+			if (handler != null)
+			{
+				handler.Generator = generator;
+				handler.Widget = this; // tell the handler who we are
+			}
 			if (initialize)
 				Initialize();
 		}
@@ -158,7 +161,8 @@ namespace Eto
 		/// </remarks>
 		protected void Initialize()
 		{
-			((IWidget)Handler).Initialize();
+			if (Handler != null)
+				((IWidget)Handler).Initialize();
 		}
 
 		/// <summary>
