@@ -157,9 +157,11 @@ namespace Eto.Platform.GtkSharp
 			Process.Start (info);
 		}
 		
+#if MENU_TOOLBAR_REFACTORING
 		public void GetSystemActions (ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
 		{
 		}
+#endif
 		
 		public Keys CommonModifier {
 			get {

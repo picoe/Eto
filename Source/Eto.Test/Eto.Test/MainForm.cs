@@ -171,26 +171,18 @@ namespace Eto.Test
 		void GenerateMenuToolBarActions()
 		{
 			// use actions to generate menu & toolbar to share logic
-			var actions = new ActionCollection(null, null);
-			var menu = new ActionItemCollection(actions);
-			var toolBar = new ActionItemCollection(actions);
+			var menu = new MenuBar();
+			var toolBar = new ToolBar();
 
 			// generate actions to use in menus and toolbars
+#if MENU_TOOLBAR_REFACTORING
 			Application.Instance.GetSystemActions(actions, menu, toolBar, true);
-
-			actions.Add(new Actions.About());
-			actions.Add(new Actions.Quit());
-			actions.Add(new Actions.Close());
+#endif
+			var about = new Actions.About();
+			var quit = new Actions.Quit();
+			var close = new Actions.Close();
 
 			// generate and set the menu
-			GenerateMenu(menu);
-
-			// generate and set the toolbar
-			GenerateToolBar(toolBar);
-		}
-
-		void GenerateMenu(ActionItemCollection menu)
-		{
 			var file = menu.GetSubmenu("&File", 100);
 			menu.GetSubmenu("&Edit", 200);
 			menu.GetSubmenu("&Window", 900);
@@ -201,31 +193,26 @@ namespace Eto.Test
 				// have a nice OS X style menu
 
 				var main = menu.GetSubmenu(Application.Instance.Name, 0);
-				main.Actions.Add(Actions.About.ActionID, 0);
-				main.Actions.Add(Actions.Quit.ActionID, 1000);
+				main.MenuItems.Add(about.CreateMenuItem()); // TODO: Order = , 0;
+				main.MenuItems.Add(quit.CreateMenuItem()); // TODO: Order = , 1000);
 			}
 			else
 			{
 				// windows/gtk style window
-				file.Actions.Add(Actions.Quit.ActionID);
-
-				help.Actions.Add(Actions.About.ActionID);
+				file.MenuItems.Add(quit.CreateMenuItem());
+				help.MenuItems.Add(about.CreateMenuItem());
 			}
 
-#if DESKTOP
-			Menu = menu.GenerateMenuBar();
-#endif
+			this.Menu = menu;
+
+			// generate and set the toolbar
+			toolBar.Items.Add(quit.CreateToolbarItem());
+			toolBar.Items.Add(about.CreateToolbarItem());
+
+			// TODO for mobile
+			this.ToolBar = toolBar;
 		}
 
-		void GenerateToolBar(ActionItemCollection toolBar)
-		{
-			toolBar.Add(Actions.Quit.ActionID);
-			toolBar.Add(Actions.About.ActionID);
-#if DESKTOP
-			// TODO for mobile
-			ToolBar = toolBar.GenerateToolBar();
-#endif
-		}
 		#region Generate Menu & Toolbar Manually
 		/*
 		void GenerateMenu ()

@@ -1,26 +1,40 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Actions
 {
-	public class Quit : ButtonAction
+	public class Quit
 	{
 		public const string ActionID = "quit";
-		
-		public Quit ()
+		string TooltipText { get { return "Close the application"; } }
+		Keys Accelerator { get { return Keys.Q | Application.Instance.CommonModifier; } }
+		Image Image { get { return TestIcons.TestImage; } }
+
+		public MenuItem CreateMenuItem()
 		{
-			this.ID = ActionID;
-			this.MenuText = "&Quit";
-			this.ToolBarText = "Quit";
-			this.TooltipText = "Close the application";
-			this.Accelerator = Keys.Q | Application.Instance.CommonModifier;
-			this.Image = TestIcons.TestImage;
+			return new ImageMenuItem
+			{
+				ID = ActionID,
+				Text = "&Quit",
+				Image = this.Image,
+				Accelerator = this.Accelerator,
+			};
 		}
-		
-		protected override void OnActivated (EventArgs e)
+
+		public ToolBarItem CreateToolbarItem()
 		{
-			base.OnActivated (e);
-			
+			return new ToolBarActionItem
+			{
+				ID = ActionID,
+				Text = "Quit",
+				Image = this.Image,
+				Accelerator = this.Accelerator,				
+			};			
+		}
+	
+		public void Handle()
+		{
 			Application.Instance.Quit();
 		}
 	}

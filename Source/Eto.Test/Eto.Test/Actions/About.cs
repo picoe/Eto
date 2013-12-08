@@ -1,25 +1,39 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Actions
 {
-	public class About : ButtonAction
+	public class About
 	{
 		public const string ActionID = "about";
-		
-		public About ()
+		private Image Image { get { return TestIcons.TestIcon; } }
+		private Keys Accelerator { get { return Keys.F11; } }
+
+		public MenuItem CreateMenuItem()
 		{
-			this.ID = ActionID;
-			this.MenuText = "About Test Application";
-			this.ToolBarText = "About";
-			this.Image = TestIcons.TestIcon;
-			this.Accelerator = Keys.F11;
+			return new ImageMenuItem
+			{
+				ID = ActionID,
+				Text = "About Test Application",
+				Image = this.Image,
+				Accelerator = this.Accelerator,			
+			};
 		}
-		
-		protected override void OnActivated (EventArgs e)
+
+		public ToolBarItem CreateToolbarItem()
 		{
-			base.OnActivated (e);
-			
+			return new ToolBarActionItem
+			{
+				ID = ActionID,
+				Text = "About",
+				Image = this.Image,
+				Accelerator = this.Accelerator,
+			};
+		}
+				
+		public void Handle()
+		{
 			// show the about dialog
 			var about = new Dialogs.About();
 			about.ShowDialog (Application.Instance.MainForm);

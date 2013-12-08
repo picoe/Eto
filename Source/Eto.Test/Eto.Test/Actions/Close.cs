@@ -3,22 +3,34 @@ using Eto.Forms;
 
 namespace Eto.Test.Actions
 {
-	public class Close : ButtonAction
+	public class Close
 	{
 		public static string ActionID = "close";
+		private Keys Accelerator { get { return Application.Instance.CommonModifier | Keys.W; } }
 		
-		public Close ()
+		public MenuItem CreateMenuItem()
 		{
-			this.ID = ActionID;	
-			this.MenuText = "Close";
-			this.ToolBarText = "Close";
-			this.Accelerator = Application.Instance.CommonModifier | Keys.W;
+			return new ImageMenuItem
+			{
+				ID = ActionID,
+				Text = "Close",
+				Accelerator = this.Accelerator,
+			};
 		}
-		
-		protected override void OnActivated (EventArgs e)
+
+		public ToolBarItem CreateToolbarItem()
 		{
-			base.OnActivated (e);
-			
+			return new ToolBarActionItem
+			{
+				ID = ActionID,
+				Text = "Close",
+				Accelerator = this.Accelerator,
+			};
+		}
+
+
+		public void Handle()
+		{
 			Application.Instance.MainForm.Close ();
 		}
 	}

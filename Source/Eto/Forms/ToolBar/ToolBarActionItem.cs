@@ -15,7 +15,17 @@ namespace Eto.Forms
 	public class ToolBarActionItem : ToolBarItem
 	{
 		new IToolBarActionItem Handler { get { return (IToolBarActionItem)base.Handler; } }
-		
+
+		public ToolBarActionItem()
+			: this((Generator)null)
+		{
+		}
+
+		public ToolBarActionItem(Generator generator)
+			: this(generator, typeof(IToolBarActionItem))
+		{
+		}
+
 		public ToolBarActionItem(Generator g, Type type)
 			: base(g, type)
 		{
