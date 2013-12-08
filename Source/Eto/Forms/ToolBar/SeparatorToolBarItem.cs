@@ -49,6 +49,8 @@ namespace Eto.Forms
 			get { return Handler.Type; }
 			set { Handler.Type = value; }
 		}
+
+		public override string Text { get; set; } // does nothing
 	}
 }
 

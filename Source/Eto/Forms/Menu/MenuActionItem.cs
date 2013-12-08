@@ -54,7 +54,7 @@ namespace Eto.Forms
 			EventLookup.Register(typeof(MenuActionItem), "OnValidate", MenuActionItem.ValidateEvent);
 		}
 
-		public string Text
+		public override string Text
 		{
 			get { return Handler.Text; }
 			set { Handler.Text = value; }

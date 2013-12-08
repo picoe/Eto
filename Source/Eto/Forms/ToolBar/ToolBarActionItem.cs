@@ -31,7 +31,7 @@ namespace Eto.Forms
 		{
 		}
 		
-		public string Text
+		public override string Text
 		{
 			get { return Handler.Text; }
 			set { Handler.Text = value; }

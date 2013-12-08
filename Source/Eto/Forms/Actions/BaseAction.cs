@@ -51,10 +51,9 @@ namespace Eto.Forms
 
 		public int Order { get; set; }
 
-		public string ID { get; set; }
-		
 		public object Tag { get; set; }
 		
+#if MENU_TOOLBAR_REFACTORING
 		public string Text
 		{
 			get
@@ -70,6 +69,9 @@ namespace Eto.Forms
 				if (vals.Length > 3) Description = vals[3];
 			}
 		}
+#else
+		public abstract string Text { get; set; }
+#endif
 		
 		public string MenuText { get; set; }
 
