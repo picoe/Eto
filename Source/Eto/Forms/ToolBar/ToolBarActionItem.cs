@@ -43,17 +43,10 @@ namespace Eto.Forms
 			set { Handler.ToolTip = value; }
 		}
 		
-		public Image Image
+		public override Image Image
 		{
 			get { return Handler.Image; }
 			set { Handler.Image = value; }
-		}
-
-		[Obsolete ("Use Image instead")]
-		public Icon Icon
-		{
-			get { return Image as Icon; }
-			set { Image = value; }
 		}
 
 		public bool Enabled

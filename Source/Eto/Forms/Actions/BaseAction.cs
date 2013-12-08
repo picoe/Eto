@@ -88,14 +88,7 @@ namespace Eto.Forms
 		
 		public bool ShowLabel { get; set; }
 		
-		public Image Image { get; set; }
-
-		[Obsolete ("Use Image")]
-		public Icon Icon
-		{
-			get { return Image as Icon; }
-			set { Image = value; }
-		}
+		public virtual Image Image { get; set; }
 
 		public Keys Accelerator
 		{
