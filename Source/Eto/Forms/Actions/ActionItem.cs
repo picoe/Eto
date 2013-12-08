@@ -48,8 +48,6 @@ namespace Eto.Forms
 			this.SubMenuText = subMenuText;
 		}
 
-		public string Icon { get; set; }
-
 		public string ID { get; set; }
 
 		public string SubMenuText { get; set; }
