@@ -9,6 +9,7 @@ namespace Eto.Forms
 		void Generate(GenerateActionArgs args);
 	}
 
+	[Obsolete("Use separate collections for actions, menu and toolbar.")]
 	public class GenerateActionArgs : EventArgs
 	{
 		#region Members
