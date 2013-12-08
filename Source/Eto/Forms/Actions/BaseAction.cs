@@ -4,7 +4,7 @@ using System.Globalization;
 
 namespace Eto.Forms
 {
-	public abstract partial class BaseAction : InstanceWidget
+	public class BaseAction : InstanceWidget
 	{
 		#region Members
 		
@@ -32,6 +32,15 @@ namespace Eto.Forms
 		{
 		}
 
+		public BaseAction(string id, string text, EventHandler<EventArgs> activated, params Keys[] accelerators)
+			: base(null, null as IWidget, initialize: false)
+		{
+			this.ID = id;
+			this.text = text;
+			this.Activated = activated;
+			this.Accelerators = accelerators;
+		}
+
 		#endregion
 
 		#region Properties
@@ -52,38 +61,29 @@ namespace Eto.Forms
 		public int Order { get; set; }
 
 		public object Tag { get; set; }
-		
-#if MENU_TOOLBAR_REFACTORING
-		public string Text
+
+		string text;
+		public virtual string Text
 		{
 			get
 			{
-				return string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}|{3}", MenuText, ToolBarText, TooltipText, Description);
+				return string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}|{3}", MenuText, ToolBarText, ToolTip, Description);
 			}
 			set
 			{
+				MenuText = ToolBarText = value;				
 				string[] vals = value.Split('|');
 				if (vals.Length > 0) MenuText = vals[0];
 				if (vals.Length > 1) ToolBarText = vals[1];
-				if (vals.Length > 2) TooltipText = vals[2];
+				if (vals.Length > 2) ToolTip = vals[2];
 				if (vals.Length > 3) Description = vals[3];
 			}
 		}
-#else
-		public abstract string Text { get; set; }
-#endif
-		
-#if MENU_TOOLBAR_REFACTORING
-		public string MenuText { get; set; }
 
-		public string MenuItemStyle { get; set; }
-		
+		public string MenuText { get; set; }
 		public string ToolBarText { get; set; }
 		
-		public string ToolBarItemStyle { get; set; }
-#endif
-
-		public string TooltipText { get; set; }
+		public virtual string ToolTip { get; set; }
 		public string Description { get; set; }
 		
 		public bool ShowLabel { get; set; }

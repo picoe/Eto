@@ -3,14 +3,14 @@
 using System;
 namespace Eto.Forms
 {
+#if MENU_TOOLBAR_REFACTORING
 	public abstract partial class BaseAction
 	{
-#if MENU_TOOLBAR_REFACTORING
 		public virtual MenuItem GenerateMenuItem(Generator generator)
 		{
 			throw new NotImplementedException();
 		}
-#endif
 	}
+#endif
 }
 #endif

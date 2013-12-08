@@ -57,19 +57,27 @@ namespace Eto.Forms
 		public override string Text
 		{
 			get { return Handler.Text; }
-			set { Handler.Text = value; }
+			set
+			{
+				base.Text = value;  // Call the base setter. This parses the fields, if any.
+				Handler.Text = MenuText; // retrieve the value from the parsed MenuText.
+			}
 		}
 
-		public string ToolTip
+		public override string ToolTip
 		{
 			get { return Handler.ToolTip; }
 			set { Handler.ToolTip = value; }
 		}
 
-		public bool Enabled
+		public override bool Enabled
 		{
 			get { return Handler.Enabled; }
-			set { Handler.Enabled = value; }
+			set
+			{
+				base.Enabled = value;
+				Handler.Enabled = value;
+			}
 		}
 
 		public Keys Shortcut

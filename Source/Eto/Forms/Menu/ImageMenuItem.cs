@@ -58,6 +58,16 @@ namespace Eto.Forms
 				MenuItems.Add(mi);
 			}
 		}
+
+		public void AddSeparator(int order)
+		{
+			throw new NotImplementedException();
+		}
+
+		public void Add(string actionId, int order)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
 #endif

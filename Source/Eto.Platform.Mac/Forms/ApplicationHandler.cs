@@ -4,6 +4,7 @@ using MonoMac.AppKit;
 using MonoMac.Foundation;
 using Eto.Platform.Mac.Forms.Actions;
 using MonoMac.ObjCRuntime;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Mac.Forms
 {
@@ -149,20 +150,22 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
+		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
-			actions.AddButton("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
+			actions.Add(new BaseAction("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
 			{
 				NSApplication.SharedApplication.Hide(NSApplication.SharedApplication);
-			}, Keys.H | Keys.Application);
-			actions.AddButton("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate
+			}, Keys.H | Keys.Application));
+
+			actions.Add(new BaseAction("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate
 			{
 				NSApplication.SharedApplication.HideOtherApplications(NSApplication.SharedApplication);
-			}, Keys.H | Keys.Application | Keys.Alt);
-			actions.AddButton("mac_showall", "Show All|Show All|Show All Windows", delegate
+			}, Keys.H | Keys.Application | Keys.Alt));
+
+			actions.Add(new BaseAction("mac_showall", "Show All|Show All|Show All Windows", delegate
 			{
 				NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication);
-			});
+			}));
 			
 			actions.Add(new MacButtonAction("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Accelerator = Keys.Application | Keys.M });
 			actions.Add(new MacButtonAction("mac_performZoom", "Zoom", "performZoom:"));
@@ -183,59 +186,59 @@ namespace Eto.Platform.Mac.Forms
 			if (addStandardItems)
 			{
 				var application = menu.GetSubmenu(Widget.Name ?? "Application", 100);
-				application.Actions.AddSeparator(800);
-				application.Actions.Add("mac_hide", 800);
-				application.Actions.Add("mac_hideothers", 800);
-				application.Actions.Add("mac_showall", 800);
-				application.Actions.AddSeparator(801);
+				application.AddSeparator(800);
+				application.Add("mac_hide", 800);
+				application.Add("mac_hideothers", 800);
+				application.Add("mac_showall", 800);
+				application.AddSeparator(801);
 
 				var file = menu.GetSubmenu("&File", 100);
-				file.Actions.AddSeparator(900);
-				file.Actions.Add("mac_performClose", 900);
+				file.AddSeparator(900);
+				file.Add("mac_performClose", 900);
 
 				if (AddPrintingMenuItems)
 				{
-					file.Actions.AddSeparator(1000);
-					file.Actions.Add("mac_runPageLayout", 1000);
-					file.Actions.Add("mac_print", 1000);
+					file.AddSeparator(1000);
+					file.Add("mac_runPageLayout", 1000);
+					file.Add("mac_print", 1000);
 				}
 
 				var edit = menu.GetSubmenu("&Edit", 200);
-				edit.Actions.AddSeparator(100);
-				edit.Actions.Add("mac_undo", 100);
-				edit.Actions.Add("mac_redo", 100);
-				edit.Actions.AddSeparator(101);
+				edit.AddSeparator(100);
+				edit.Add("mac_undo", 100);
+				edit.Add("mac_redo", 100);
+				edit.AddSeparator(101);
 				
-				edit.Actions.AddSeparator(200);
-				edit.Actions.Add("mac_cut", 200);
-				edit.Actions.Add("mac_copy", 200);
-				edit.Actions.Add("mac_paste", 200);
-				edit.Actions.Add("mac_delete", 200);
-				edit.Actions.Add("mac_selectAll", 200);
-				edit.Actions.AddSeparator(201);
+				edit.AddSeparator(200);
+				edit.Add("mac_cut", 200);
+				edit.Add("mac_copy", 200);
+				edit.Add("mac_paste", 200);
+				edit.Add("mac_delete", 200);
+				edit.Add("mac_selectAll", 200);
+				edit.AddSeparator(201);
 				
 				var window = menu.GetSubmenu("&Window", 900);
-				window.Actions.AddSeparator(100);
-				window.Actions.Add("mac_performMiniaturize", 100);
-				window.Actions.Add("mac_performZoom", 100);
-				window.Actions.AddSeparator(101);
+				window.AddSeparator(100);
+				window.Add("mac_performMiniaturize", 100);
+				window.Add("mac_performZoom", 100);
+				window.AddSeparator(101);
 
-				window.Actions.AddSeparator(200);
-				window.Actions.Add("mac_arrangeInFront", 200);
-				window.Actions.AddSeparator(201);
+				window.AddSeparator(200);
+				window.Add("mac_arrangeInFront", 200);
+				window.AddSeparator(201);
 
 				if (AddFullScreenMenuItem)
 				{
 					var view = menu.GetSubmenu("&View", 300);
-					view.Actions.AddSeparator(900);
-					view.Actions.Add("mac_toggleFullScreen", 900);
-					view.Actions.AddSeparator(901);
+					view.AddSeparator(900);
+					view.Add("mac_toggleFullScreen", 900);
+					view.AddSeparator(901);
 				}
 				
 				var help = menu.GetSubmenu("&Help", 900);
 
 				// add separator so help menu is always shown even when empty
-				help.Actions.AddSeparator(0);
+				help.AddSeparator(0);
 			}
 		}
 

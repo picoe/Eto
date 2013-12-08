@@ -4,7 +4,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Actions
 {
-	public class MacButtonAction : ButtonAction
+	public class MacButtonAction : BaseAction
 	{
 		public Selector Selector { get; set; }
 		
@@ -13,6 +13,8 @@ namespace Eto.Platform.Mac.Forms.Actions
 		{
 			this.Selector = new Selector(selector);
 		}
+
+#if MENU_TOOLBAR_REFACTORING
 		public override MenuItem GenerateMenuItem(Eto.Generator generator)
 		{
 			var item = base.GenerateMenuItem(generator);
@@ -31,6 +33,7 @@ namespace Eto.Platform.Mac.Forms.Actions
 			tb.Action = Selector;
 			return item;
 		}
+#endif
 	}
 }
 
