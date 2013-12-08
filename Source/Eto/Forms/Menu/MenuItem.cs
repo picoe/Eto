@@ -8,14 +8,6 @@ namespace Eto.Forms
 	{
 	}
 
-	public enum MenuItemType
-	{
-		Check,
-		Image,
-		Radio,
-		Separator,
-	}
-
 	public abstract class MenuItem : BaseAction
 	{
 		protected MenuItem (Generator g, Type type, bool initialize = true) 
