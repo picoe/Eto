@@ -225,7 +225,7 @@ namespace Eto.Test.Sections.Controls
 			// Context menu
 			var menu = new ContextMenu();
 			var item = new ImageMenuItem { Text = "Click Me!" };
-			item.Click += delegate
+			item.Clicked += delegate
 			{
 				if (control.SelectedRows.Any())
 					Log.Write(item, "Click, Rows: {0}", SelectedRowsString(control));
@@ -236,7 +236,7 @@ namespace Eto.Test.Sections.Controls
 
 			// Delete menu item: deletes the item from the store, the UI updates via the binding.
 			var deleteItem = new ImageMenuItem { Text = "Delete Item" };
-			deleteItem.Click += (s, e) =>
+			deleteItem.Clicked += (s, e) =>
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
@@ -246,7 +246,7 @@ namespace Eto.Test.Sections.Controls
 
 			// Insert item: inserts an item into the store, the UI updates via the binding.
 			var insertItem = new ImageMenuItem { Text = "Insert Item at the start of the list" };
-			insertItem.Click += (s, e) =>
+			insertItem.Clicked += (s, e) =>
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)

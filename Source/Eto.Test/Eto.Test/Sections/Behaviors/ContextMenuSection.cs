@@ -60,7 +60,7 @@ namespace Eto.Test.Sections.Behaviors
 
 		void LogEvents(ImageMenuItem item)
 		{
-			item.Click += delegate
+			item.Clicked += delegate
 			{
 				Log.Write(item, "Click, Item: {0}", item.Text);
 			};

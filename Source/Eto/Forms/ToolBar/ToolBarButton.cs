@@ -8,9 +8,6 @@ namespace Eto.Forms
 	
 	public class ToolBarButton : ToolBarActionItem
 	{
-
-		public event EventHandler<EventArgs> Click;
-		
 		public ToolBarButton()
 			: this((Generator)null)
 		{
@@ -19,13 +16,5 @@ namespace Eto.Forms
 		public ToolBarButton(Generator generator) : base(generator, typeof(IToolBarButton))
 		{
 		}
-
-		public void OnClick(EventArgs e)
-		{
-			if (Click != null) Click(this, e);
-		}
-
 	}
-
-
 }

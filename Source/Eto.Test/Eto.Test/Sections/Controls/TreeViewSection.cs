@@ -221,7 +221,7 @@ namespace Eto.Test.Sections.Controls
 #if DESKTOP
 			var menu = new ContextMenu();
 			var item = new ImageMenuItem { Text = "Click Me!" };
-			item.Click += delegate
+			item.Clicked += delegate
 			{
 				if (control.SelectedItem != null)
 					Log.Write(item, "Click, Rows: {0}", control.SelectedItem.Text);

@@ -31,19 +31,6 @@ namespace Eto.Forms
 			Properties.TriggerEvent(ValidateEvent, this, e);
 		}
 
-		public event EventHandler<EventArgs> Click
-		{
-			add { Properties.AddEvent(ClickKey, value); }
-			remove { Properties.RemoveEvent(ClickKey, value); }
-		}
-
-		static readonly object ClickKey = new object();
-
-		public virtual void OnClick(EventArgs e)
-		{
-			Properties.TriggerEvent(ClickKey, this, e);
-		}
-
 		protected MenuActionItem(Generator g, Type type, bool initialize = true)
 			: base(g, type, initialize)
 		{

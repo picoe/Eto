@@ -18,8 +18,8 @@ namespace Eto.Forms
 		#endregion
 		
 		#region Events
-		
-		public event EventHandler<EventArgs> Activated;
+
+		public event EventHandler<EventArgs> Clicked;
 		public event EventHandler<EventArgs> EnabledChanged;
 		public event EventHandler<EventArgs> Removed;
 		
@@ -42,7 +42,7 @@ namespace Eto.Forms
 		{
 			this.ID = id;
 			this.text = text;
-			this.Activated = activated;
+			this.Clicked = activated;
 			this.Accelerators = accelerators;
 		}
 
@@ -137,7 +137,7 @@ namespace Eto.Forms
 		protected BaseAction(string id, string text, EventHandler<EventArgs> activated)
 			: this(id, text)
 		{
-			Activated += activated;
+			Clicked += activated;
 		}
 		
 		protected BaseAction(string id, string text) : base(null, null as IWidget)
@@ -183,15 +183,14 @@ namespace Eto.Forms
 			if (EnabledChanged != null) EnabledChanged(this, e);
 		}
 		
-
-		protected virtual void OnActivated(EventArgs e)
+		public void OnClick(EventArgs e)
 		{
-			if (Activated != null) Activated(this, e);
+			if (Clicked != null) Clicked(this, e);
 		}
 
 		public void Activate()
 		{
-			OnActivated(EventArgs.Empty);
+			OnClick(EventArgs.Empty);
 		}
 
 #if MENU_TOOLBAR_REFACTORING
