@@ -1,4 +1,3 @@
-#if DESKTOP
 using System;
 
 namespace Eto.Forms
@@ -19,4 +18,3 @@ namespace Eto.Forms
 
 	}
 }
-#endif

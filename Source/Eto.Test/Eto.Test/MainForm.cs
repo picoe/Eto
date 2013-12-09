@@ -202,7 +202,9 @@ namespace Eto.Test
 				help.MenuItems.Add(about.CreateMenuItem());
 			}
 
+#if DESKTOP
 			this.Menu = menu;
+#endif
 
 			// generate and set the toolbar
 			toolBar.Items.Add(quit.CreateToolBarItem());

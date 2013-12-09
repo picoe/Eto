@@ -1,4 +1,3 @@
-#if DESKTOP
 using System;
 
 namespace Eto.Forms
@@ -27,4 +26,3 @@ namespace Eto.Forms
 		public override string Text { get; set; } // does nothing
 	}
 }
-#endif
