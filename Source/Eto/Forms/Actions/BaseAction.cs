@@ -9,6 +9,24 @@ namespace Eto.Forms
 		void CopyFrom(BaseAction action);
 	}
 
+	/// <summary>
+	/// The base class for menu and toolbar items.
+	/// Holds the model properties of these items,
+	/// and exposes events such as Clicked.
+	/// 
+	/// This is not an abstract class. When instantiated
+	/// directly, the use case is to set model properties
+	/// and call CreateMenuItem or CreateToolbarItem. One
+	/// scenario that uses this is Application.GetSystemActions(),
+	/// which returns a list of system actions. The desired
+	/// system actions can be turned into menu or toolbar items
+	/// as needed.
+	/// 
+	/// CreateMenuItem and CreateToolbarItem call CopyFrom, which
+	/// derived types can extend to copy properties defined
+	/// by them. If a handler implements ICopyFromAction, it
+	/// can also copy its extended properties.
+	/// </summary>
 	public class BaseAction : InstanceWidget
 	{
 		#region Members
