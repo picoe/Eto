@@ -23,10 +23,10 @@ namespace Eto.Test.Sections.Behaviors
 		ContextMenu CreateMenu()
 		{
 			var menu = new ContextMenu();
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 1" });
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 2" });
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 3" });
-			menu.MenuItems.Add(new ImageMenuItem { Text = "Item 4" });
+			menu.Add(new ImageMenuItem { Text = "Item 1" });
+			menu.Add(new ImageMenuItem { Text = "Item 2" });
+			menu.Add(new ImageMenuItem { Text = "Item 3" });
+			menu.Add(new ImageMenuItem { Text = "Item 4" });
 			LogEvents(menu);
 			return menu;
 		}

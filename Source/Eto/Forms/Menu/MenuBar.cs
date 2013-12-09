@@ -37,12 +37,31 @@ namespace Eto.Forms
 		public void GenerateActions(IEnumerable<MenuItem> actionItems)
 		{
 			foreach (var mi in actionItems) {
-				MenuItems.Add(mi);
+				this.Add(mi);
 			}
 		}
 
-		public MenuItemCollection MenuItems {
-			get { return menuItems; }
+		/// <summary>
+		/// Adds a menu item based on its Order.
+		/// </summary>
+		/// <param name="menuItem"></param>
+		public void Add(MenuItem menuItem)
+		{
+			ImageMenuItem.AddMenuItem(this.menuItems, menuItem);
+		}
+
+		public void Remove(MenuItem menuItem)
+		{
+			this.menuItems.Remove(menuItem);
+		}
+
+		public IEnumerable<MenuItem> MenuItems
+		{
+			get
+			{
+				foreach (var m in this.menuItems)
+					yield return m;
+			}
 		}
 	}
 }

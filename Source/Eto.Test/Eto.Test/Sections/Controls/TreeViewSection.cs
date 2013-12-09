@@ -228,7 +228,7 @@ namespace Eto.Test.Sections.Controls
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.MenuItems.Add(item);
+			menu.Add(item);
 			
 			control.ContextMenu = menu;
 #endif

@@ -192,14 +192,14 @@ namespace Eto.Test
 				// have a nice OS X style menu
 
 				var main = menu.GetSubmenu(Application.Instance.Name, 0);
-				main.MenuItems.Add(about.CreateMenuItem()); // TODO: Order = , 0;
-				main.MenuItems.Add(quit.CreateMenuItem()); // TODO: Order = , 1000);
+				main.Add(about.CreateMenuItem()); // TODO: Order = , 0;
+				main.Add(quit.CreateMenuItem()); // TODO: Order = , 1000);
 			}
 			else
 			{
 				// windows/gtk style window
-				file.MenuItems.Add(quit.CreateMenuItem());
-				help.MenuItems.Add(about.CreateMenuItem());
+				file.Add(quit.CreateMenuItem());
+				help.Add(about.CreateMenuItem());
 			}
 
 #if DESKTOP

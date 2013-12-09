@@ -14,11 +14,9 @@ namespace Eto.Forms
 	
 	public interface ISubMenuWidget : IControlObjectSource, IHandlerSource, IGeneratorSource
 	{
-		MenuItemCollection MenuItems { get; }
-		
-#if MENU_TOOLBAR_REFACTORING
-		void GenerateActions (IEnumerable<IActionItem> actionItems);
-#endif
+		void Add(MenuItem menuItem);
+		void Remove(MenuItem menuItem);
+		IEnumerable<MenuItem> MenuItems { get; }		
 	}
 
 	public static class SubMenuWidgetExtensions
@@ -40,7 +38,7 @@ namespace Eto.Forms
 			{
 				var subMenu = new ImageMenuItem() { Text = subMenuText };
 				subMenu.Order = order;
-				menu.MenuItems.Add(subMenu);
+				menu.Add(subMenu);
 				return subMenu;
 			}
 			return null;

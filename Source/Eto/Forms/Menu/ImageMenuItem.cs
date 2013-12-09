@@ -41,10 +41,6 @@ namespace Eto.Forms
 			menuItems = new MenuItemCollection (this, Handler);
 		}
 
-		public MenuItemCollection MenuItems {
-			get { return menuItems; }
-		}
-
 		public override Image Image
 		{
 			get { return Handler.Image; }
@@ -54,13 +50,13 @@ namespace Eto.Forms
 		public void GenerateActions (IEnumerable<MenuItem> actionItems)
 		{
 			foreach (var mi in actionItems) {
-				MenuItems.Add(mi);
+				this.Add(mi);
 			}
 		}
 
 		public void AddSeparator(int order)
 		{
-			this.MenuItems.Add(new SeparatorMenuItem
+			this.Add(new SeparatorMenuItem
 			{
 				Order = order
 			});
@@ -74,10 +70,52 @@ namespace Eto.Forms
 				{
 					var mi = a.CreateMenuItem();
 					mi.Order = order;
-					this.MenuItems.Add(mi); // TODO: handle mi.Order
+					this.Add(mi);
 					break;
 				}
 			}
+		}
+
+		/// <summary>
+		/// Adds a menu item based on its Order.
+		/// </summary>
+		/// <param name="menuItem"></param>
+		public void Add(MenuItem menuItem)
+		{
+			AddMenuItem(this.menuItems, menuItem);
+		}
+
+		public void Remove(MenuItem menuItem)
+		{
+			this.menuItems.Remove(menuItem);
+		}
+
+		public IEnumerable<MenuItem> MenuItems
+		{
+			get
+			{
+				foreach (var m in this.menuItems)
+					yield return m;
+			}
+		}
+
+		/// <summary>
+		/// Adds a menu item to the specified collection based on its Order.
+		/// </summary>
+		/// <param name="menuItems"></param>
+		/// <param name="menuItem"></param>
+		public static void AddMenuItem(MenuItemCollection menuItems, MenuItem menuItem)
+		{
+			int previousIndex = -1;
+			if (menuItem.Order != 0)
+				for (var i = 0; i < menuItems.Count; ++i)
+				{
+					if (menuItems[i].Order <= menuItem.Order)
+						previousIndex = i;
+					else
+						break;
+				}
+			menuItems.Insert(Math.Max(0, previousIndex), menuItem);
 		}
 	}
 }

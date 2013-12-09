@@ -232,7 +232,7 @@ namespace Eto.Test.Sections.Controls
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.MenuItems.Add(item);
+			menu.Add(item);
 
 			// Delete menu item: deletes the item from the store, the UI updates via the binding.
 			var deleteItem = new ImageMenuItem { Text = "Delete Item" };
@@ -242,7 +242,7 @@ namespace Eto.Test.Sections.Controls
 				if (i != null)
 					items.Remove(i);
 			};
-			menu.MenuItems.Add(deleteItem);
+			menu.Add(deleteItem);
 
 			// Insert item: inserts an item into the store, the UI updates via the binding.
 			var insertItem = new ImageMenuItem { Text = "Insert Item at the start of the list" };
@@ -252,7 +252,7 @@ namespace Eto.Test.Sections.Controls
 				if (i != null)
 					items.Insert(0, new MyGridItem(new Random(), 0, null));
 			};
-			menu.MenuItems.Add(insertItem);
+			menu.Add(insertItem);
 
 			control.ContextMenu = menu;
 			return control;
