@@ -115,7 +115,7 @@ namespace Eto.Forms
 					else
 						break;
 				}
-			menuItems.Insert(Math.Max(0, previousIndex), menuItem);
+			menuItems.Insert(previousIndex + 1, menuItem);
 		}
 	}
 }
