@@ -46,8 +46,9 @@ namespace Eto.Test
 
 			/* Option 1: use actions to generate menu and toolbar (recommended)
 			 */
+#if DESKTOP
 			GenerateMenuToolBarActions();
-
+#endif
 
 			/* Option 2: generate menu and toolbar directly
 			 *
