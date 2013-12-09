@@ -152,7 +152,12 @@ namespace Eto.Platform.Mac
 		public string ToolTip
 		{
 			get { return Control.ToolTip; }
-			set { menuItem.ToolTip = button.ToolTip = value ?? string.Empty; }
+			set { 
+				if (menuItem != null)
+					menuItem.ToolTip = value ?? "";
+				if (button != null)
+					button.ToolTip = value ?? "";
+			}
 		}
 
 		public Image Image
