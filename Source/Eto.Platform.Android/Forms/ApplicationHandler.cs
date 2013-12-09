@@ -1,6 +1,7 @@
 using System;
 using a = Android;
 using Eto.Forms;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Android.Forms
 {
@@ -49,7 +50,7 @@ namespace Eto.Platform.Android.Forms
 			throw new NotImplementedException();
 		}
 
-		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems)
+		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
 			throw new NotImplementedException();
 		}

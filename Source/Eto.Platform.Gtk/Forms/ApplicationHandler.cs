@@ -5,6 +5,7 @@ using System.Threading;
 using System.ComponentModel;
 using Eto.Platform.GtkSharp.Drawing;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -156,12 +157,10 @@ namespace Eto.Platform.GtkSharp
 			var info = new ProcessStartInfo (url);
 			Process.Start (info);
 		}
-		
-#if MENU_TOOLBAR_REFACTORING
-		public void GetSystemActions (ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
+
+		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
 		}
-#endif
 		
 		public Keys CommonModifier {
 			get {

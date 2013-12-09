@@ -4,6 +4,7 @@ using MonoTouch.UIKit;
 using MonoTouch.Foundation;
 using SD = System.Drawing;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -81,7 +82,7 @@ namespace Eto.Platform.iOS.Forms
 				});
 		}
 
-		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems)
+		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
 		}
 
@@ -93,11 +94,6 @@ namespace Eto.Platform.iOS.Forms
 		public void Open(string url)
 		{
 			UIApplication.SharedApplication.OpenUrl(new NSUrl(url));
-		}
-
-		public void GetSystemActions(GenerateActionArgs args)
-		{
-			
 		}
 
 		public Keys CommonModifier

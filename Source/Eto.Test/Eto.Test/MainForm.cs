@@ -171,13 +171,12 @@ namespace Eto.Test
 		void GenerateMenuToolBarActions()
 		{
 			// use actions to generate menu & toolbar to share logic
+			var actions = new List<BaseAction>();
 			var menu = new MenuBar();
 			var toolBar = new ToolBar();
 
 			// generate actions to use in menus and toolbars
-#if MENU_TOOLBAR_REFACTORING
 			Application.Instance.GetSystemActions(actions, menu, toolBar, true);
-#endif
 			var about = new Actions.About();
 			var quit = new Actions.Quit();
 			var close = new Actions.Close();

@@ -1,4 +1,3 @@
-#if DESKTOP
 using System;
 using System.Collections.ObjectModel;
 
@@ -51,4 +50,3 @@ namespace Eto.Forms
 		}
 	}
 }
-#endif

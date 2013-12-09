@@ -136,11 +136,10 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Dispatcher.BeginInvoke(action);
 		}
 
-#if MENU_TOOLBAR_REFACTORING
-		public void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
+		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
 		}
-#endif
+
 		public Keys CommonModifier
 		{
 			get { return Keys.Control; }

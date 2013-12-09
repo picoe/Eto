@@ -5,6 +5,7 @@ using Eto.Forms;
 using System.Diagnostics;
 using System.Threading;
 using Microsoft.WindowsAPICodePack.Taskbar;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Windows
 {
@@ -166,13 +167,9 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-#if MENU_TOOLBAR_REFACTORING
-		public void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems)
+		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
-
 		}
-#endif
-
 
 		public void Invoke(Action action)
 		{

@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Eto.Forms
@@ -11,9 +12,7 @@ namespace Eto.Forms
 
 		void Quit();
 
-#if MENU_TOOLBAR_REFACTORING
-		void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems);
-#endif
+		void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems);
 
 		Keys CommonModifier { get; }
 
@@ -142,18 +141,10 @@ namespace Eto.Forms
 			get { return Handler.AlternateModifier; }
 		}
 
-#if MENU_TOOLBAR_REFACTORING
-		[Obsolete("Call GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems = false) instead.")]
-		public virtual void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
-		{
-			Handler.GetSystemActions(args.Actions, args.Menu, args.ToolBar, addStandardItems);
-		}
-
-		public virtual void GetSystemActions(ActionCollection actions, ActionItemCollection menu, ActionItemCollection toolBar, bool addStandardItems = false)
+		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems = false)
 		{
 			Handler.GetSystemActions(actions, menu, toolBar, addStandardItems);
 		}
-#endif
 
 		public string BadgeLabel
 		{
