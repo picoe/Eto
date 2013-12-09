@@ -5,6 +5,7 @@ using MonoMac.AppKit;
 using Eto.Drawing;
 using MonoMac.ObjCRuntime;
 using sd = System.Drawing;
+using Eto.Platform.Mac.Forms.Actions;
 
 namespace Eto.Platform.Mac
 {
@@ -46,7 +47,7 @@ namespace Eto.Platform.Mac
 		}
 	}
 
-	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler
+	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler, ICopyFromAction
 		where TControl: NSToolbarItem
 		where TWidget: ToolBarItem
 	{
@@ -188,6 +189,16 @@ namespace Eto.Platform.Mac
 		NSToolbarItem IToolBarBaseItemHandler.Control
 		{
 			get { return Control; }
+		}
+
+		public void CopyFrom(BaseAction action)
+		{
+			var m = action as MacButtonAction;
+			if (m != null)
+			{
+				Control.Target = null;
+				Control.Action = m.Selector;
+			}
 		}
 	}
 }

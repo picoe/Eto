@@ -61,12 +61,24 @@ namespace Eto.Forms
 
 		public void AddSeparator(int order)
 		{
-			throw new NotImplementedException();
+			this.MenuItems.Add(new SeparatorMenuItem
+			{
+				Order = order
+			});
 		}
 
-		public void Add(string actionId, int order)
+		public void Add(List<BaseAction> actions, string actionId, int order)
 		{
-			throw new NotImplementedException();
+			foreach (var a in actions)
+			{
+				if (a.ID == actionId)
+				{
+					var mi = a.CreateMenuItem();
+					mi.Order = order;
+					this.MenuItems.Add(mi); // TODO: handle mi.Order
+					break;
+				}
+			}
 		}
 	}
 }

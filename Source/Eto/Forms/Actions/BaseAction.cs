@@ -4,6 +4,11 @@ using System.Globalization;
 
 namespace Eto.Forms
 {
+	public interface ICopyFromAction
+	{
+		void CopyFrom(BaseAction action);
+	}
+
 	public class BaseAction : InstanceWidget
 	{
 		#region Members
@@ -144,7 +149,30 @@ namespace Eto.Forms
 		protected BaseAction() : base(null, null as IWidget)
 		{
 		}
-		
+
+		public virtual void CopyFrom(BaseAction a)
+		{
+			this.Accelerator = a.Accelerator;
+			this.Accelerators = a.Accelerators;
+			this.enabled = a.Enabled;
+			this.ID = a.ID;
+			this.Image = a.Image;
+			this.Order = a.Order;
+			this.ShowLabel = a.ShowLabel;
+			this.Style = a.Style;
+			this.Tag = a.Tag;			
+			this.Text = a.Text;
+			// set Text-derived properties after Text is set for consistency, although this order should not matter.
+			this.Description = a.Description;
+			this.MenuText = a.MenuText;
+			this.ToolBarText = a.ToolBarText;
+			this.ToolTip = a.ToolTip;
+
+			var c = this.Handler as ICopyFromAction;
+			if (c != null)
+				c.CopyFrom(a);
+		}
+
 		internal void Remove()
 		{
 			OnRemoved(EventArgs.Empty);
@@ -172,6 +200,19 @@ namespace Eto.Forms
 			throw new NotImplementedException();
 		}
 #endif
-	}
 
+		public MenuItem CreateMenuItem()
+		{
+			var result = new ImageMenuItem();
+			result.CopyFrom(this);
+			return result;
+		}
+
+		public ToolBarItem CreateToolbarItem()
+		{
+			var result = new ToolBarActionItem();
+			result.CopyFrom(this);
+			return result;
+		}
+	}
 }

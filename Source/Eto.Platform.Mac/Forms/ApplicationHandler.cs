@@ -187,51 +187,51 @@ namespace Eto.Platform.Mac.Forms
 			{
 				var application = menu.GetSubmenu(Widget.Name ?? "Application", 100);
 				application.AddSeparator(800);
-				application.Add("mac_hide", 800);
-				application.Add("mac_hideothers", 800);
-				application.Add("mac_showall", 800);
+				application.Add(actions, "mac_hide", 800);
+				application.Add(actions, "mac_hideothers", 800);
+				application.Add(actions, "mac_showall", 800);
 				application.AddSeparator(801);
 
 				var file = menu.GetSubmenu("&File", 100);
 				file.AddSeparator(900);
-				file.Add("mac_performClose", 900);
+				file.Add(actions, "mac_performClose", 900);
 
 				if (AddPrintingMenuItems)
 				{
 					file.AddSeparator(1000);
-					file.Add("mac_runPageLayout", 1000);
-					file.Add("mac_print", 1000);
+					file.Add(actions, "mac_runPageLayout", 1000);
+					file.Add(actions, "mac_print", 1000);
 				}
 
 				var edit = menu.GetSubmenu("&Edit", 200);
 				edit.AddSeparator(100);
-				edit.Add("mac_undo", 100);
-				edit.Add("mac_redo", 100);
+				edit.Add(actions, "mac_undo", 100);
+				edit.Add(actions, "mac_redo", 100);
 				edit.AddSeparator(101);
 				
 				edit.AddSeparator(200);
-				edit.Add("mac_cut", 200);
-				edit.Add("mac_copy", 200);
-				edit.Add("mac_paste", 200);
-				edit.Add("mac_delete", 200);
-				edit.Add("mac_selectAll", 200);
+				edit.Add(actions, "mac_cut", 200);
+				edit.Add(actions, "mac_copy", 200);
+				edit.Add(actions, "mac_paste", 200);
+				edit.Add(actions, "mac_delete", 200);
+				edit.Add(actions, "mac_selectAll", 200);
 				edit.AddSeparator(201);
 				
 				var window = menu.GetSubmenu("&Window", 900);
 				window.AddSeparator(100);
-				window.Add("mac_performMiniaturize", 100);
-				window.Add("mac_performZoom", 100);
+				window.Add(actions, "mac_performMiniaturize", 100);
+				window.Add(actions, "mac_performZoom", 100);
 				window.AddSeparator(101);
 
 				window.AddSeparator(200);
-				window.Add("mac_arrangeInFront", 200);
+				window.Add(actions, "mac_arrangeInFront", 200);
 				window.AddSeparator(201);
 
 				if (AddFullScreenMenuItem)
 				{
 					var view = menu.GetSubmenu("&View", 300);
 					view.AddSeparator(900);
-					view.Add("mac_toggleFullScreen", 900);
+					view.Add(actions, "mac_toggleFullScreen", 900);
 					view.AddSeparator(901);
 				}
 				

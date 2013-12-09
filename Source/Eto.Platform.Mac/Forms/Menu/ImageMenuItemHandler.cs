@@ -1,13 +1,14 @@
 using System;
 using Eto.Drawing;
 using Eto.Forms;
+using Eto.Platform.Mac.Forms.Actions;
 using MonoMac.AppKit;
 using sd = System.Drawing;
 
 namespace Eto.Platform.Mac
 {
 
-	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem, IMenuActionHandler
+	public class ImageMenuItemHandler : MenuHandler<NSMenuItem, ImageMenuItem>, IImageMenuItem, IMenuActionHandler, ICopyFromAction
 	{
 		Image image;
 		bool showImage = ShowImageDefault;
@@ -96,5 +97,15 @@ namespace Eto.Platform.Mac
 			get { return Widget; }
 		}
 
+
+		public void CopyFrom(BaseAction action)
+		{
+			var m = action as MacButtonAction;
+			if (m != null)
+			{
+				Control.Target = null;
+				Control.Action = m.Selector;
+			}
+		}
 	}
 }
