@@ -68,7 +68,7 @@ namespace Eto
 		/// <summary>
 		/// Gets or sets the ID of this widget
 		/// </summary>
-		public string ID
+		public virtual string ID
 		{
 			get { return Handler.ID; }
 			set { Handler.ID = value; }

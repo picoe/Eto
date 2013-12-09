@@ -6,7 +6,7 @@ namespace Eto.Forms
 	{
 	}
 
-	public abstract class Menu : InstanceWidget
+	public abstract class Menu : BaseAction
 	{
 		//IMenu inner;
 

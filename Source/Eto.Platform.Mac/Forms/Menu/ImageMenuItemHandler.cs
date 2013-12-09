@@ -68,7 +68,7 @@ namespace Eto.Platform.Mac
 				return Control.ToolTip;
 			}
 			set {
-				Control.ToolTip = value;
+				Control.ToolTip = value ?? "";
 			}
 		}
 

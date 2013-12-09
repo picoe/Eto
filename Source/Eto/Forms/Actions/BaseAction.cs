@@ -50,6 +50,13 @@ namespace Eto.Forms
 
 		#region Properties
 
+		string id;
+		public override string ID 
+		{
+			get { return id; }
+			set { this.id = value; }
+		}
+
 		public virtual bool Enabled
 		{
 			get { return enabled; }
