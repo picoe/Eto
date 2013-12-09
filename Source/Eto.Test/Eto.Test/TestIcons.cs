@@ -6,7 +6,7 @@ namespace Eto.Test
 	public static class TestIcons
 	{
 		static string prefix;
-		static string Prefix { get { return prefix = prefix ?? Assembly.GetExecutingAssembly().GetName().Name + "."; } }
+		public static string Prefix { get { return prefix = prefix ?? Assembly.GetExecutingAssembly().GetName().Name + "."; } }
 
 #if IOS
 		// Resources on iOS are stored without the extension
