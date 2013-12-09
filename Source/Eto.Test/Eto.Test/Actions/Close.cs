@@ -18,9 +18,9 @@ namespace Eto.Test.Actions
 			};
 		}
 
-		public ToolBarItem CreateToolbarItem()
+		public ToolBarItem CreateToolBarItem()
 		{
-			return new ToolBarActionItem
+			return new ToolBarButton
 			{
 				ID = ActionID,
 				Text = "Close",

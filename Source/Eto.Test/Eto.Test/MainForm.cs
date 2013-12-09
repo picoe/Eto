@@ -206,8 +206,8 @@ namespace Eto.Test
 			this.Menu = menu;
 
 			// generate and set the toolbar
-			toolBar.Items.Add(quit.CreateToolbarItem());
-			toolBar.Items.Add(about.CreateToolbarItem());
+			toolBar.Items.Add(quit.CreateToolBarItem());
+			toolBar.Items.Add(about.CreateToolBarItem());
 
 			// TODO for mobile
 			this.ToolBar = toolBar;

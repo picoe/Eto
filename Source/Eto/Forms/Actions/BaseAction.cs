@@ -208,9 +208,9 @@ namespace Eto.Forms
 			return result;
 		}
 
-		public ToolBarItem CreateToolbarItem()
+		public ToolBarItem CreateToolBarItem()
 		{
-			var result = new ToolBarActionItem();
+			var result = new ToolBarButton();
 			result.CopyFrom(this);
 			return result;
 		}
