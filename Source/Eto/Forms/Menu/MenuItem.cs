@@ -7,7 +7,7 @@ namespace Eto.Forms
 	{
 	}
 
-	public abstract class MenuItem : BaseAction
+	public abstract class MenuItem : Menu
 	{
 		protected MenuItem (Generator g, Type type, bool initialize = true) 
 			: base(g, type, initialize)
