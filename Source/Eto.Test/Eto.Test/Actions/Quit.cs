@@ -13,24 +13,28 @@ namespace Eto.Test.Actions
 
 		public MenuItem CreateMenuItem()
 		{
-			return new ImageMenuItem
+			var result = new ImageMenuItem
 			{
 				ID = ActionID,
 				Text = "&Quit",
 				Image = this.Image,
 				Accelerator = this.Accelerator,
 			};
+			result.Clicked += (s, e) => Handle();
+			return result;
 		}
 
 		public ToolBarItem CreateToolBarItem()
 		{
-			return new ToolBarButton
+			var result = new ToolBarButton
 			{
 				ID = ActionID,
 				Text = "Quit",
 				Image = this.Image,
 				Accelerator = this.Accelerator,				
-			};			
+			};
+			result.Clicked += (s, e) => Handle();
+			return result;
 		}
 	
 		public void Handle()
