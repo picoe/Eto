@@ -25,6 +25,10 @@ namespace Eto.Platform.Mac
 		void OnClick();
 
 		bool Enabled { get; }
+
+		NSButton Button { get; }
+
+		MacToolBarItemStyle ToolBarItemStyle {get; set;}
 	}
 
 	class ToolBarItemHandlerTarget : NSObject
@@ -47,6 +51,29 @@ namespace Eto.Platform.Mac
 		}
 	}
 
+	/// <summary>
+	/// A toolbar item can be displayed in three ways.
+	/// To set a non-default style, create a custom style handler
+	/// for the Mac platform that sets the style to one of these types.
+	/// </summary>
+	public enum MacToolBarItemStyle
+	{
+		/// <summary>
+		/// The default appearance, with 32x32 icons.
+		/// Does not have a View.
+		/// </summary>
+		Default,
+		/// <summary>
+		/// A small button with a rounded bezel.
+		/// </summary>
+		StandardButton,
+		/// <summary>
+		/// A large button. Similar in appearance to Default,
+		/// but uses a Button as the View.
+		/// </summary>
+		LargeButton
+	}
+
 	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler, ICopyFromAction
 		where TControl: NSToolbarItem
 		where TWidget: ToolBarItem
@@ -54,38 +81,45 @@ namespace Eto.Platform.Mac
 		Image image;
 		NSButton button;
 		NSMenuItem menuItem;
-		sd.SizeF buttonSize = new sd.SizeF(42, 24);
 		Color? tint;
 
-		public sd.SizeF ButtonSize
+		private sd.SizeF ButtonSize
 		{
-			get { return buttonSize; }
-			set
-			{
-				buttonSize = value;
-				button.Frame = new sd.RectangleF(sd.PointF.Empty, buttonSize);
+			get { 
+				if (toolBarItemStyle == MacToolBarItemStyle.Default)
+					return new sd.SizeF (42, 32);
+				else if (toolBarItemStyle == MacToolBarItemStyle.StandardButton)
+					return new sd.SizeF (42, 24);
+				else // large button
+					return new sd.SizeF (42, 32); 
 			}
 		}
 
-		public bool UseButton
+		public int ImageSize { get { return (toolBarItemStyle == MacToolBarItemStyle.StandardButton) ? 20 : 32; } }
+
+		MacToolBarItemStyle toolBarItemStyle;
+		public MacToolBarItemStyle ToolBarItemStyle
 		{
-			get { return Control.View != null; }
-			set
-			{
-				if (button == null && value)
-				{
-					button = new NSButton
-					{
+			get { return toolBarItemStyle; }
+			set {
+				toolBarItemStyle = value; // set the value first because ButtonSize and ImageSize depend on it.
+				button = null;
+				if (value == MacToolBarItemStyle.StandardButton || value == MacToolBarItemStyle.LargeButton) {
+					button = new NSButton {
 						BezelStyle = NSBezelStyle.TexturedRounded,
-						Frame = new sd.RectangleF(sd.PointF.Empty, buttonSize),
+						Bordered = toolBarItemStyle == MacToolBarItemStyle.StandardButton, // no border or bezel in the large button style
+						Frame = new sd.RectangleF(sd.PointF.Empty, ButtonSize),
 						Target = Control.Target,
-						Action = Control.Action
+						Action = Control.Action,
 					};
+					if (value == MacToolBarItemStyle.LargeButton)
+						button.SetButtonType (NSButtonType.MomentaryChange); // prevents a flash in the large button view. See the comment at the bottom of http://yellowfieldtechnologies.wordpress.com/2011/11/18/nspopover-from-nstoolbaritem/#comments
+					Control.View = button;
 				}
-				Control.View = value ? button : null;
+				SetImage ();
 			}
 		}
-
+			
 		public NSButton Button
 		{
 			get { return button; }
@@ -109,7 +143,7 @@ namespace Eto.Platform.Mac
 
 		public void UseStandardButton(bool grayscale)
 		{
-			UseButton = true;
+			this.ToolBarItemStyle = MacToolBarItemStyle.StandardButton;
 			if (grayscale)
 				Tint = Colors.Gray;
 		}
@@ -133,6 +167,8 @@ namespace Eto.Platform.Mac
 			menuItem.Target = Control.Target;
 			Control.MenuFormRepresentation = menuItem;
 			Control.Enabled = true;
+
+			this.ToolBarItemStyle = MacToolBarItemStyle.Default;
 		}
 
 		public virtual void ControlAdded(ToolBarHandler toolbar)
@@ -172,7 +208,7 @@ namespace Eto.Platform.Mac
 
 		void SetImage()
 		{
-			var nsimage = image.ToNS(UseButton ? (int?)20 : null);
+			var nsimage = image.ToNS(ImageSize);
 			if (tint != null && nsimage != null)
 				nsimage = nsimage.Tint(tint.Value.ToNS());
 			Control.Image = nsimage;
