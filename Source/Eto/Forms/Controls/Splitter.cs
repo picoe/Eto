@@ -74,7 +74,7 @@ namespace Eto.Forms
 
 		static Splitter()
 		{
-			EventLookup.Register(typeof(Splitter), "OnPositionChanged", Splitter.PositionChangedEvent);
+			EventLookup.Register<Splitter>(c => c.OnPositionChanged(null), Splitter.PositionChangedEvent);
 		}
 
 		public Splitter()

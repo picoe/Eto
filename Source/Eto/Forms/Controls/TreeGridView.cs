@@ -124,11 +124,11 @@ namespace Eto.Forms
 
 		static TreeGridView()
 		{
-			EventLookup.Register(typeof(TreeGridView), "OnExpanding", TreeGridView.ExpandingEvent);
-			EventLookup.Register(typeof(TreeGridView), "OnExpanded", TreeGridView.ExpandedEvent);
-			EventLookup.Register(typeof(TreeGridView), "OnCollapsing", TreeGridView.CollapsingEvent);
-			EventLookup.Register(typeof(TreeGridView), "OnCollapsed", TreeGridView.CollapsedEvent);
-			EventLookup.Register(typeof(TreeGridView), "OnSelectedItemChanged", TreeGridView.SelectedItemChangedEvent);
+			EventLookup.Register<TreeGridView>(c => c.OnExpanding(null), TreeGridView.ExpandingEvent);
+			EventLookup.Register<TreeGridView>(c => c.OnExpanded(null), TreeGridView.ExpandedEvent);
+			EventLookup.Register<TreeGridView>(c => c.OnCollapsing(null), TreeGridView.CollapsingEvent);
+			EventLookup.Register<TreeGridView>(c => c.OnCollapsed(null), TreeGridView.CollapsedEvent);
+			EventLookup.Register<TreeGridView>(c => c.OnSelectedItemChanged(null), TreeGridView.SelectedItemChangedEvent);
 		}
 
 		public TreeGridView()

@@ -59,7 +59,7 @@ namespace Eto.Forms
 
 		static GridView()
 		{
-			EventLookup.Register(typeof(GridView), "OnCellClick", GridView.CellClickEvent);
+			EventLookup.Register<GridView>(c => c.OnCellClick(null), GridView.CellClickEvent);
 		}
 
 		public GridView()

@@ -75,7 +75,7 @@ namespace Eto.Forms
 
 		static Application()
 		{
-			EventLookup.Register(typeof(Application), "OnTerminating", Application.TerminatingEvent);
+			EventLookup.Register<Application>(c => c.OnTerminating(null), Application.TerminatingEvent);
 		}
 
 		public Application() : this(Generator.Detect)

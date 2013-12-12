@@ -51,7 +51,7 @@ namespace Eto.Forms
 
 		static MenuActionItem()
 		{
-			EventLookup.Register(typeof(MenuActionItem), "OnValidate", MenuActionItem.ValidateEvent);
+			EventLookup.Register<MenuActionItem>(c => c.OnValidate(null), MenuActionItem.ValidateEvent);
 		}
 
 		public string Text

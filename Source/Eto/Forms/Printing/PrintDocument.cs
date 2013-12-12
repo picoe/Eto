@@ -62,9 +62,9 @@ namespace Eto.Forms
 
 		static PrintDocument()
 		{
-			EventLookup.Register(typeof(PrintDocument), "OnPrinting", PrintDocument.PrintingEvent);
-			EventLookup.Register(typeof(PrintDocument), "OnPrinted", PrintDocument.PrintedEvent);
-			EventLookup.Register(typeof(PrintDocument), "OnPrintPage", PrintDocument.PrintPageEvent);
+			EventLookup.Register<PrintDocument>(c => c.OnPrinting(null), PrintDocument.PrintingEvent);
+			EventLookup.Register<PrintDocument>(c => c.OnPrinted(null), PrintDocument.PrintedEvent);
+			EventLookup.Register<PrintDocument>(c => c.OnPrintPage(null), PrintDocument.PrintPageEvent);
 		}
 
 		public PrintDocument()

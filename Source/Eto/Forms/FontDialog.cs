@@ -27,7 +27,7 @@ namespace Eto.Forms
 
 		static FontDialog()
 		{
-			EventLookup.Register(typeof(FontDialog), "OnFontChanged", FontDialog.FontChangedEvent);
+			EventLookup.Register<FontDialog>(c => c.OnFontChanged(null), FontDialog.FontChangedEvent);
 		}
 
 		public FontDialog()

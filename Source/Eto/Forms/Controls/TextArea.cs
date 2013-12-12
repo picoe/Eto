@@ -58,8 +58,8 @@ namespace Eto.Forms
 
 		static TextArea()
 		{
-			EventLookup.Register(typeof(TextArea), "OnSelectionChanged", TextArea.SelectionChangedEvent);
-			EventLookup.Register(typeof(TextArea), "OnCaretIndexChanged", TextArea.CaretIndexChangedEvent);
+			EventLookup.Register<TextArea>(c => c.OnSelectionChanged(null), TextArea.SelectionChangedEvent);
+			EventLookup.Register<TextArea>(c => c.OnCaretIndexChanged(null), TextArea.CaretIndexChangedEvent);
 		}
 
 		public TextArea()

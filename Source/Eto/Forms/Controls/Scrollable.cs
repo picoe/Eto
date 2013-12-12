@@ -56,7 +56,7 @@ namespace Eto.Forms
 
 		static Scrollable()
 		{
-			EventLookup.Register(typeof(Scrollable), "OnScroll", Scrollable.ScrollEvent);
+			EventLookup.Register<Scrollable>(c => c.OnScroll(null), Scrollable.ScrollEvent);
 		}
 
 		public Scrollable()
