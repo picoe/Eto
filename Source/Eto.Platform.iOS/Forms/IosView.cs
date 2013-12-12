@@ -9,7 +9,7 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public interface IIosView
+	public interface IIosView : IMacControlHandler
 	{
 		Size PositionOffset { get; }
 		UIViewController Controller { get; }
