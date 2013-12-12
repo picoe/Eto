@@ -15,7 +15,7 @@ namespace Eto.Platform.iOS.Forms
 		UIViewController Controller { get; }
 	}
 
-	public abstract class IosView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IIosView, IMacAutoSizing
+	public abstract class IosView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IIosView
 		where TControl: UIResponder
 		where TWidget: Control
 	{

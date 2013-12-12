@@ -12,7 +12,7 @@ using Eto.Platform.iOS.Forms;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public interface IMacContainer : IMacViewHandler
+	public interface IMacContainer : IMacControlHandler
 	{
 		void SetContentSize(SD.SizeF contentSize);
 
@@ -56,11 +56,13 @@ namespace Eto.Platform.Mac.Forms
 
 		public bool NeedsQueue(Action update = null)
 		{
+			#if DESKTOP
 			if (ApplicationHandler.QueueResizing)
 			{
 				ApplicationHandler.Instance.AsyncInvoke(update ?? Update);
 				return true;
 			}
+			#endif
 			return false;
 		}
 

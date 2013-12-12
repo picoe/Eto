@@ -52,33 +52,17 @@ namespace Eto.Platform.Mac.Forms
 		}
 	}
 
-	public interface IMacViewHandler
+	public interface IMacViewHandler : IMacControlHandler
 	{
-		NSView ContainerControl { get; }
-
-		Size PositionOffset { get; }
-
 		Size? PreferredSize { get; }
-
-		Size MinimumSize { get; set; }
 
 		Control Widget { get; }
 
 		Cursor Cursor { get; set; }
 
-		bool IsEventHandled(string eventName);
-
 		void PostKeyDown(KeyEventArgs e);
 
 		void OnSizeChanged(EventArgs e);
-
-		NSView ContentControl { get; }
-
-		NSView EventControl { get; }
-
-		bool AutoSize { get; }
-
-		SizeF GetPreferredSize(SizeF availableSize);
 	}
 
 	public abstract class MacView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IMacViewHandler

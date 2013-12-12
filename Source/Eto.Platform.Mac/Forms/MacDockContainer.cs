@@ -69,7 +69,7 @@ namespace Eto.Platform.Mac.Forms
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var contentControl = content.GetMacViewHandler();
+			var contentControl = content.GetMacControl();
 			if (contentControl != null)
 				return contentControl.GetPreferredSize(availableSize) + Padding.Size;
 			return base.GetNaturalSize(availableSize);
