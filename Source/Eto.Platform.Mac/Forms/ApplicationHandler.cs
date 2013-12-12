@@ -167,21 +167,21 @@ namespace Eto.Platform.Mac.Forms
 				NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication);
 			}));
 			
-			actions.Add(new MacButtonAction("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Accelerator = Keys.Application | Keys.M });
+			actions.Add(new MacButtonAction("mac_performMiniaturize", "Minimize", "performMiniaturize:") { Shortcut = Keys.Application | Keys.M });
 			actions.Add(new MacButtonAction("mac_performZoom", "Zoom", "performZoom:"));
-			actions.Add(new MacButtonAction("mac_performClose", "Close", "performClose:") { Accelerator = Keys.Application | Keys.W });
+			actions.Add(new MacButtonAction("mac_performClose", "Close", "performClose:") { Shortcut = Keys.Application | Keys.W });
 			actions.Add(new MacButtonAction("mac_arrangeInFront", "Bring All To Front", "arrangeInFront:"));
-			actions.Add(new MacButtonAction("mac_cut", "Cut", "cut:") { Accelerator = Keys.Application | Keys.X });
-			actions.Add(new MacButtonAction("mac_copy", "Copy", "copy:") { Accelerator = Keys.Application | Keys.C });
-			actions.Add(new MacButtonAction("mac_paste", "Paste", "paste:") { Accelerator = Keys.Application | Keys.V });
-			actions.Add(new MacButtonAction("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Accelerator = Keys.Application | Keys.Alt | Keys.Shift | Keys.V });
+			actions.Add(new MacButtonAction("mac_cut", "Cut", "cut:") { Shortcut = Keys.Application | Keys.X });
+			actions.Add(new MacButtonAction("mac_copy", "Copy", "copy:") { Shortcut = Keys.Application | Keys.C });
+			actions.Add(new MacButtonAction("mac_paste", "Paste", "paste:") { Shortcut = Keys.Application | Keys.V });
+			actions.Add(new MacButtonAction("mac_pasteAsPlainText", "Paste and Match Style", "pasteAsPlainText:") { Shortcut = Keys.Application | Keys.Alt | Keys.Shift | Keys.V });
 			actions.Add(new MacButtonAction("mac_delete", "Delete", "delete:"));
-			actions.Add(new MacButtonAction("mac_selectAll", "Select All", "selectAll:") { Accelerator = Keys.Application | Keys.A });
-			actions.Add(new MacButtonAction("mac_undo", "Undo", "undo:") { Accelerator = Keys.Application | Keys.Z });
-			actions.Add(new MacButtonAction("mac_redo", "Redo", "redo:") { Accelerator = Keys.Application | Keys.Shift | Keys.Z });
-			actions.Add(new MacButtonAction("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Accelerator = Keys.Application | Keys.Control | Keys.F });
-			actions.Add(new MacButtonAction("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Accelerator = Keys.Application | Keys.Shift | Keys.P });
-			actions.Add(new MacButtonAction("mac_print", "Print...", "print:") { Accelerator = Keys.Application | Keys.P });
+			actions.Add(new MacButtonAction("mac_selectAll", "Select All", "selectAll:") { Shortcut = Keys.Application | Keys.A });
+			actions.Add(new MacButtonAction("mac_undo", "Undo", "undo:") { Shortcut = Keys.Application | Keys.Z });
+			actions.Add(new MacButtonAction("mac_redo", "Redo", "redo:") { Shortcut = Keys.Application | Keys.Shift | Keys.Z });
+			actions.Add(new MacButtonAction("mac_toggleFullScreen", "Enter Full Screen", "toggleFullScreen:") { Shortcut = Keys.Application | Keys.Control | Keys.F });
+			actions.Add(new MacButtonAction("mac_runPageLayout", "Page Setup...", "runPageLayout:") { Shortcut = Keys.Application | Keys.Shift | Keys.P });
+			actions.Add(new MacButtonAction("mac_print", "Print...", "print:") { Shortcut = Keys.Application | Keys.P });
 
 			if (addStandardItems)
 			{
