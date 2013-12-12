@@ -3,6 +3,8 @@ using MonoTouch.UIKit;
 using Eto.Forms;
 using MonoTouch.ObjCRuntime;
 using Eto.Drawing;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -22,6 +24,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 	public class NavigationHandler : IosControl<UIView, Navigation>, INavigation
 	{
+		readonly List<INavigationItem> items = new List<INavigationItem>();
+
 		public UINavigationController Navigation
 		{ 
 			get { return (UINavigationController)base.Controller; }
@@ -37,6 +41,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				// this is due to how xamarin.ios keeps the controllers in an array
 				// and this resets that array
 				var controllers = Handler.Navigation.ViewControllers;
+				Handler.items.RemoveAll(r => !controllers.Contains(r.Content.GetViewController()));
 				/* for testing garbage collection after a view is popped
 				#if DEBUG
 				GC.Collect();
@@ -65,6 +70,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public void Push(INavigationItem item)
 		{
+			items.Add(item);
 			var view = item.Content.GetViewController();
 			view.NavigationItem.Title = item.Text;
 			view.View.SetFrameOrigin(new System.Drawing.PointF(0, 100));
