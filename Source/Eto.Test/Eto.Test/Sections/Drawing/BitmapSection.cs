@@ -52,27 +52,24 @@ namespace Eto.Test.Sections.Drawing
 		{
 			this.createToolkit = createToolkit;
 
-			using (this.toolkit.GetGeneratorContext())
-			{
-				var layout = new DynamicLayout();
+			var layout = new DynamicLayout();
 
-				layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
+			layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
 
-				layout.AddRow(
-					new Label { Text = "Custom 32-bit" }, CreateCustom32(),
-					new Label { Text = "Custom 32-bit alpha" }, CreateCustom32Alpha(),
-					null
-				);
+			layout.AddRow(
+				new Label { Text = "Custom 32-bit" }, CreateCustom32(),
+				new Label { Text = "Custom 32-bit alpha" }, CreateCustom32Alpha(),
+				null
+			);
 
-				layout.AddRow(
-					new Label { Text = "Clone" }, Cloning(),
-					new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloningRectangle(), centered: true),
-					null);
+			layout.AddRow(
+				new Label { Text = "Clone" }, Cloning(),
+				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloningRectangle(), centered: true),
+				null);
 
-				layout.Add(null);
+			layout.Add(null);
 
-				Content = layout;
-			}
+			Content = layout;
 		}
 
 		Control LoadFromStream()
@@ -86,7 +83,6 @@ namespace Eto.Test.Sections.Drawing
 
 		Control CreateCustom32()
 		{
-			var result = new DrawableImageView(this.toolkit);
 			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object

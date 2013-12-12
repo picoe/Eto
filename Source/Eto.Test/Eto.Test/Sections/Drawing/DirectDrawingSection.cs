@@ -12,11 +12,13 @@ namespace Eto.Test.Sections.Drawing
 		readonly UITimer timer;
 		DirectDrawingRenderer renderer = new DirectDrawingRenderer();
 
-		public DirectDrawingSection() : this(DrawingToolkit.Create)
+		public DirectDrawingSection()
+			: this(directDrawing: true)
 		{
 		}
 
-		public DirectDrawingSection (Func<Drawable, DrawingToolkit> createToolkit)
+		public DirectDrawingSection(bool directDrawing)
+			: this(DrawingToolkit.Create, directDrawing)
 		{
 		}
 
@@ -26,20 +28,20 @@ namespace Eto.Test.Sections.Drawing
 		/// b) Drawing directly by creating a Graphics from the drawable.
 		/// c) Drawing in the paint callback, and invalidating immediately to create a Paint/Invalidate loop.
 		/// </summary>
-		public DirectDrawingSection(DrawingToolkit toolkit, bool directDrawing = true)
+		public DirectDrawingSection(Func<Drawable, DrawingToolkit> createToolkit, bool directDrawing = true)
 		{
-			this.toolkit = toolkit;
 			drawable = new Drawable();
+			toolkit = createToolkit(drawable);
 			drawable.BackgroundColor = Colors.Black;
 
+			if (toolkit != null)
 			{
-
 				// When a toolkit is specified, however, we can use Invalidate
 				// to get the maximum frame rate.
 				drawable.Paint += (s, e) => {
 					if (this.ParentWindow == null)
 						return;
-					toolkit.Render(null, g2 => renderer.DrawFrame(g2, drawable.Size));
+					toolkit.Render(e.Graphics, g2 => renderer.DrawFrame(g2, drawable.Size));
 					drawable.Invalidate();
 				};
 			}

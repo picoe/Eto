@@ -294,14 +294,12 @@ namespace Eto.Test
 		readonly Graphics graphics;
 		readonly Generator d2d;
 
-		public D2DToolkit()
-		{
-			this.d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
-		}
-
+		public static DrawingToolkit Create(Drawable drawable)
 		{
 			return new D2DToolkit(drawable);
 		}
+
+		public D2DToolkit(Drawable drawable)
 		{
 			d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
 			graphics = new Graphics(drawable, d2d);
