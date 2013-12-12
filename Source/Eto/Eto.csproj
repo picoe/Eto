@@ -22,7 +22,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;DESKTOP;XAML;XML</DefineConstants>
-    <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
@@ -30,7 +29,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Release</OutputPath>
     <DefineConstants>TRACE;DESKTOP;XAML;XML</DefineConstants>
-    <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
