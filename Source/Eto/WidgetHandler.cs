@@ -218,8 +218,6 @@ namespace Eto
 			return Widget.Properties.ContainsKey(id) || EventLookup.IsDefault(Widget, id) || Widget.Properties.ContainsKey(id + InstanceEventSuffix);
 		}
 
-		static readonly object CustomEventsKey = new object();
-
 		public void HandleEvent(string id, bool defaultEvent = false)
 		{
 			if (defaultEvent)
