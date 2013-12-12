@@ -134,6 +134,8 @@ namespace Eto.Platform.Mac.Forms
 		{
 			if (!Widget.Loaded)
 				return;
+			if (NeedsQueue())
+				return;
 			var heights = new float[views.GetLength(0)];
 			var widths = new float[views.GetLength(1)];
 			var controlFrame = ContentControl.Frame;

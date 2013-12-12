@@ -125,7 +125,7 @@ namespace Eto.Platform.Mac.Forms
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var content = Widget.Content.GetMacAutoSizing();
+			var content = Widget.Content.GetMacViewHandler();
 			if (content != null)
 			{
 				return content.GetPreferredSize(availableSize);

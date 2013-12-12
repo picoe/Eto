@@ -12,7 +12,7 @@ using Eto.Platform.iOS.Forms;
 
 namespace Eto.Platform.Mac.Forms
 {
-	public interface IMacContainer : IMacAutoSizing
+	public interface IMacContainer : IMacViewHandler
 	{
 		void SetContentSize(SD.SizeF contentSize);
 
@@ -54,6 +54,16 @@ namespace Eto.Platform.Mac.Forms
 			LayoutChildren();	
 		}
 
+		public bool NeedsQueue(Action update = null)
+		{
+			if (ApplicationHandler.QueueResizing)
+			{
+				ApplicationHandler.Instance.AsyncInvoke(update ?? Update);
+				return true;
+			}
+			return false;
+		}
+
 		public virtual void SetContentSize(SD.SizeF contentSize)
 		{
 		}
@@ -85,6 +95,8 @@ namespace Eto.Platform.Mac.Forms
 
 		public void LayoutParent(bool updateSize = true)
 		{
+			if (NeedsQueue(() => LayoutParent(updateSize)))
+				return;
 			var container = Widget.Parent.GetMacContainer();
 			if (container != null)
 			{

@@ -11,6 +11,8 @@ namespace Eto.Platform.Mac.Forms
 	{
 		bool attached;
 
+		internal static bool QueueResizing { get; set; }
+
 		public NSApplicationDelegate AppDelegate { get; set; }
 
 		public bool AddFullScreenMenuItem { get; set; }

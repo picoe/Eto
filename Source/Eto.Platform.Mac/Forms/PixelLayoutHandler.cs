@@ -88,6 +88,8 @@ namespace Eto.Platform.Mac.Forms
 
 		public override void LayoutChildren()
 		{
+			if (NeedsQueue())
+				return;
 			var controlPoints = points.ToArray();
 			var frameHeight = Control.Frame.Height;
 			var flipped = Control.IsFlipped;
