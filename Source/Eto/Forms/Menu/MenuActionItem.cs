@@ -66,10 +66,14 @@ namespace Eto.Forms
 			}
 		}
 
-		public Keys Shortcut
+		public override Keys Shortcut
 		{
 			get { return Handler.Shortcut; }
-			set { Handler.Shortcut = value; }
+			set
+			{
+				base.Shortcut = value;
+				Handler.Shortcut = value;
+			}
 		}
 	}
 }

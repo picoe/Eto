@@ -120,7 +120,7 @@ namespace Eto.Forms
 		
 		public virtual Image Image { get; set; }
 
-		public Keys Accelerator
+		public virtual Keys Shortcut
 		{
 			get { return (Accelerators != null && Accelerators.Length > 0) ? Accelerators[0] : Keys.None; }
 			set { Accelerators = new Keys[] { value }; }
@@ -133,12 +133,12 @@ namespace Eto.Forms
 			get
 			{
 				if (Accelerators == null) return string.Empty;
-				if (Accelerator != Keys.None)
+				if (Shortcut != Keys.None)
 				{
 					string val = string.Empty;
-					Keys modifier = (Accelerator & Keys.ModifierMask);
+					Keys modifier = (Shortcut & Keys.ModifierMask);
 					if (modifier != Keys.None) val += modifier.ToString();
-					Keys mainKey = (Accelerator & Keys.KeyMask);
+					Keys mainKey = (Shortcut & Keys.KeyMask);
 					if (mainKey != Keys.None)
 					{
 						if (val.Length > 0) val += "+";
@@ -177,7 +177,7 @@ namespace Eto.Forms
 
 		public virtual void CopyFrom(BaseAction a)
 		{
-			this.Accelerator = a.Accelerator;
+			this.Shortcut = a.Shortcut;
 			this.Accelerators = a.Accelerators;
 			this.enabled = a.Enabled;
 			this.ID = a.ID;
