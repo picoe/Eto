@@ -7,15 +7,15 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class DrawTextSection : Scrollable
 	{
-		DrawingToolkit toolkit;
+		Func<Drawable, DrawingToolkit> createToolkit;
 
-		public DrawTextSection(): this(null)
+		public DrawTextSection(): this(DrawingToolkit.Create)
 		{
 		}
 
-		public DrawTextSection(DrawingToolkit toolkit)
+		public DrawTextSection(Func<Drawable, DrawingToolkit> createToolkit)
 		{
-			this.toolkit = toolkit ?? new DrawingToolkit();
+			this.createToolkit = createToolkit;
 
 			var layout = new DynamicLayout();
 
@@ -32,7 +32,7 @@ namespace Eto.Test.Sections.Drawing
 		Control Default()
 		{
 			var control = new Drawable { Size = new Size (400, 500), BackgroundColor = Colors.Black };
-			toolkit.Initialize(control);
+			var toolkit = createToolkit(control);
 			var renderer = new DrawTextRenderer();
 			control.Paint += (sender, e) => toolkit.Render(e.Graphics, renderer.DrawFrame);
 			return control;

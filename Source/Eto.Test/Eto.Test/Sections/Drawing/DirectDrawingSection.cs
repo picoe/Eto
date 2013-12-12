@@ -12,18 +12,17 @@ namespace Eto.Test.Sections.Drawing
 		readonly UITimer timer;
 		DirectDrawingRenderer renderer = new DirectDrawingRenderer();
 
-		public DirectDrawingSection() : this(null)
+		public DirectDrawingSection() : this(DrawingToolkit.Create)
 		{
 		}
 
-		public DirectDrawingSection (DrawingToolkit toolkit)
+		public DirectDrawingSection (Func<Drawable, DrawingToolkit> createToolkit)
 		{
 			var hasToolkit = toolkit != null;
 			this.toolkit = toolkit;
 
 			drawable = new Drawable();
-			if (this.toolkit != null)
-				this.toolkit.Initialize(drawable);
+			toolkit = createToolkit(drawable);
 			drawable.BackgroundColor = Colors.Black;
 			Action render = () => {
 				if (this.ParentWindow == null)
