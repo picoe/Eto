@@ -101,7 +101,7 @@ namespace Eto.Platform.iOS
 			//g.Add<ICheckToolBarButton> (() => new CheckToolBarButtonHandler ());
 			//g.Add<ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
 			//g.Add<IToolBarButton> (() => new ToolBarButtonHandler ());
-			//g.Add<IToolBar> (() => new ToolBarHandler ());
+			g.Add<IToolBar> (() => new ToolBarHandler ());
 
 			// Forms
 			g.Add<IApplication>(() => new ApplicationHandler());
