@@ -218,6 +218,13 @@ namespace Eto.Forms
 			OnClick(EventArgs.Empty);
 		}
 
+#if MENU_TOOLBAR_REFACTORING
+		public virtual ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		{
+			throw new NotImplementedException();
+		}
+#endif
+
 		public MenuItem CreateMenuItem()
 		{
 			var result = new ImageMenuItem();

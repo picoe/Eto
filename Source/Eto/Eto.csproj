@@ -129,7 +129,43 @@
     <Compile Include="Forms\UITimer.cs" />
     <Compile Include="Forms\Window.cs" />
     <Compile Include="Forms\Window.desktop.cs" />
+    <Compile Include="Forms\Actions\ActionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItem.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItemCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Forms\Actions\BaseAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\BaseAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ButtonAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ButtonAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\CheckAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\CheckAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\RadioAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\RadioAction.desktop.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Button.cs" />
