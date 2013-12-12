@@ -17,13 +17,18 @@ namespace Eto.Platform.iOS.Forms
 			get { return Application.Instance.Handler as ApplicationHandler; }
 		}
 
+		public override UIApplication Control
+		{
+			get { return UIApplication.SharedApplication; }
+			protected set { }
+		}
+
 		public string DelegateClassName { get; set; }
 
 		public UIApplicationDelegate AppDelegate { get; private set; }
 
 		public ApplicationHandler()
 		{
-			Control = UIApplication.SharedApplication;
 			DelegateClassName = "EtoAppDelegate";
 			UIApplication.CheckForIllegalCrossThreadCalls = false;
 		}
