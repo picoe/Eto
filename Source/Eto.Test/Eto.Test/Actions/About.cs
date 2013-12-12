@@ -8,7 +8,7 @@ namespace Eto.Test.Actions
 	{
 		public const string ActionID = "about";
 		private Image Image { get { return TestIcons.TestIcon; } }
-		private Keys Accelerator { get { return Keys.F11; } }
+		private Keys Shortcut { get { return Keys.F11; } }
 
 		public MenuItem CreateMenuItem()
 		{
@@ -17,7 +17,7 @@ namespace Eto.Test.Actions
 				ID = ActionID,
 				Text = "About Test Application",
 				Image = this.Image,
-				Accelerator = this.Accelerator,			
+				Shortcut = this.Shortcut,			
 			};
 			result.Clicked += (s, e) => Handle();
 			return result;
@@ -30,7 +30,7 @@ namespace Eto.Test.Actions
 				ID = ActionID,
 				Text = "About",
 				Image = this.Image,
-				Accelerator = this.Accelerator,
+				Shortcut = this.Shortcut,
 			};
 			result.Clicked += (s, e) => Handle();
 			return result;

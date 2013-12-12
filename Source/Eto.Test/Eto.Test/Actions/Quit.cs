@@ -8,7 +8,7 @@ namespace Eto.Test.Actions
 	{
 		public const string ActionID = "quit";
 		string TooltipText { get { return "Close the application"; } }
-		Keys Accelerator { get { return Keys.Q | Application.Instance.CommonModifier; } }
+		Keys Shortcut { get { return Keys.Q | Application.Instance.CommonModifier; } }
 		Image Image { get { return TestIcons.TestImage; } }
 
 		public MenuItem CreateMenuItem()
@@ -18,7 +18,7 @@ namespace Eto.Test.Actions
 				ID = ActionID,
 				Text = "&Quit",
 				Image = this.Image,
-				Accelerator = this.Accelerator,
+				Shortcut = this.Shortcut,
 			};
 			result.Clicked += (s, e) => Handle();
 			return result;
@@ -31,7 +31,7 @@ namespace Eto.Test.Actions
 				ID = ActionID,
 				Text = "Quit",
 				Image = this.Image,
-				Accelerator = this.Accelerator,				
+				Shortcut = this.Shortcut,				
 			};
 			result.Clicked += (s, e) => Handle();
 			return result;

@@ -6,7 +6,7 @@ namespace Eto.Test.Actions
 	public class Close
 	{
 		public static string ActionID = "close";
-		private Keys Accelerator { get { return Application.Instance.CommonModifier | Keys.W; } }
+		private Keys Shortcut { get { return Application.Instance.CommonModifier | Keys.W; } }
 		
 		public MenuItem CreateMenuItem()
 		{
@@ -14,7 +14,7 @@ namespace Eto.Test.Actions
 			{
 				ID = ActionID,
 				Text = "Close",
-				Accelerator = this.Accelerator,
+				Shortcut = this.Shortcut,
 			};
 			result.Clicked += (s, e) => Handle();
 			return result;
@@ -26,7 +26,7 @@ namespace Eto.Test.Actions
 			{
 				ID = ActionID,
 				Text = "Close",
-				Accelerator = this.Accelerator,
+				Shortcut = this.Shortcut,
 			};
 			result.Clicked += (s, e) => Handle();
 			return result;
