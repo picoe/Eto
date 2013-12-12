@@ -208,112 +208,112 @@ namespace Eto.Forms
 	[Obsolete("Use Keys instead")]
 	public struct Key
 	{
-		Keys keys;
+		readonly Keys keys;
 		public Key(Keys keys)
 		{
 			this.keys = keys;
 		}
 
-		public static readonly Key None = new Key(Keys.None);
-		public static readonly Key A = new Key(Keys.A);
-		public static readonly Key B = new Key(Keys.B);
-		public static readonly Key C = new Key(Keys.C);
-		public static readonly Key D = new Key(Keys.D);
-		public static readonly Key E = new Key(Keys.E);
-		public static readonly Key F = new Key(Keys.F);
-		public static readonly Key G = new Key(Keys.G);
-		public static readonly Key H = new Key(Keys.H);
-		public static readonly Key I = new Key(Keys.I);
-		public static readonly Key J = new Key(Keys.J);
-		public static readonly Key K = new Key(Keys.K);
-		public static readonly Key L = new Key(Keys.L);
-		public static readonly Key M = new Key(Keys.M);
-		public static readonly Key N = new Key(Keys.N);
-		public static readonly Key O = new Key(Keys.O);
-		public static readonly Key P = new Key(Keys.P);
-		public static readonly Key Q = new Key(Keys.Q);
-		public static readonly Key R = new Key(Keys.R);
-		public static readonly Key S = new Key(Keys.S);
-		public static readonly Key T = new Key(Keys.T);
-		public static readonly Key U = new Key(Keys.U);
-		public static readonly Key V = new Key(Keys.V);
-		public static readonly Key W = new Key(Keys.W);
-		public static readonly Key X = new Key(Keys.X);
-		public static readonly Key Y = new Key(Keys.Y);
-		public static readonly Key Z = new Key(Keys.Z);
-		public static readonly Key F1 = new Key(Keys.F1);
-		public static readonly Key F2 = new Key(Keys.F2);
-		public static readonly Key F3 = new Key(Keys.F3);
-		public static readonly Key F4 = new Key(Keys.F4);
-		public static readonly Key F5 = new Key(Keys.F5);
-		public static readonly Key F6 = new Key(Keys.F6);
-		public static readonly Key F7 = new Key(Keys.F7);
-		public static readonly Key F8 = new Key(Keys.F8);
-		public static readonly Key F9 = new Key(Keys.F9);
-		public static readonly Key F10 = new Key(Keys.F10);
-		public static readonly Key F11 = new Key(Keys.F11);
-		public static readonly Key F12 = new Key(Keys.F12);
-		public static readonly Key D0 = new Key(Keys.D0);
-		public static readonly Key D1 = new Key(Keys.D1);
-		public static readonly Key D2 = new Key(Keys.D2);
-		public static readonly Key D3 = new Key(Keys.D3);
-		public static readonly Key D4 = new Key(Keys.D4);
-		public static readonly Key D5 = new Key(Keys.D5);
-		public static readonly Key D6 = new Key(Keys.D6);
-		public static readonly Key D7 = new Key(Keys.D7);
-		public static readonly Key D8 = new Key(Keys.D8);
-		public static readonly Key D9 = new Key(Keys.D9);
+		public const Keys None = Keys.None;
+		public const Keys A = Keys.A;
+		public const Keys B = Keys.B;
+		public const Keys C = Keys.C;
+		public const Keys D = Keys.D;
+		public const Keys E = Keys.E;
+		public const Keys F = Keys.F;
+		public const Keys G = Keys.G;
+		public const Keys H = Keys.H;
+		public const Keys I = Keys.I;
+		public const Keys J = Keys.J;
+		public const Keys K = Keys.K;
+		public const Keys L = Keys.L;
+		public const Keys M = Keys.M;
+		public const Keys N = Keys.N;
+		public const Keys O = Keys.O;
+		public const Keys P = Keys.P;
+		public const Keys Q = Keys.Q;
+		public const Keys R = Keys.R;
+		public const Keys S = Keys.S;
+		public const Keys T = Keys.T;
+		public const Keys U = Keys.U;
+		public const Keys V = Keys.V;
+		public const Keys W = Keys.W;
+		public const Keys X = Keys.X;
+		public const Keys Y = Keys.Y;
+		public const Keys Z = Keys.Z;
+		public const Keys F1 = Keys.F1;
+		public const Keys F2 = Keys.F2;
+		public const Keys F3 = Keys.F3;
+		public const Keys F4 = Keys.F4;
+		public const Keys F5 = Keys.F5;
+		public const Keys F6 = Keys.F6;
+		public const Keys F7 = Keys.F7;
+		public const Keys F8 = Keys.F8;
+		public const Keys F9 = Keys.F9;
+		public const Keys F10 = Keys.F10;
+		public const Keys F11 = Keys.F11;
+		public const Keys F12 = Keys.F12;
+		public const Keys D0 = Keys.D0;
+		public const Keys D1 = Keys.D1;
+		public const Keys D2 = Keys.D2;
+		public const Keys D3 = Keys.D3;
+		public const Keys D4 = Keys.D4;
+		public const Keys D5 = Keys.D5;
+		public const Keys D6 = Keys.D6;
+		public const Keys D7 = Keys.D7;
+		public const Keys D8 = Keys.D8;
+		public const Keys D9 = Keys.D9;
 
-		public static readonly Key Minus = new Key(Keys.Minus);
-		public static readonly Key Plus = new Key(Keys.Plus);
-		public static readonly Key Grave = new Key(Keys.Grave);
-		public static readonly Key Insert = new Key(Keys.Insert);
-		public static readonly Key Home = new Key(Keys.Home);
-		public static readonly Key PageUp = new Key(Keys.PageUp);
-		public static readonly Key PageDown = new Key(Keys.PageDown);
-		public static readonly Key Delete = new Key(Keys.Delete);
-		public static readonly Key End = new Key(Keys.End);
-		public static readonly Key Divide = new Key(Keys.Divide);
-		public static readonly Key Decimal = new Key(Keys.Decimal);
-		public static readonly Key Backspace = new Key(Keys.Backspace);
-		public static readonly Key Up = new Key(Keys.Up);
-		public static readonly Key Down = new Key(Keys.Down);
-		public static readonly Key Left = new Key(Keys.Left);
-		public static readonly Key Right = new Key(Keys.Right);
-		public static readonly Key Tab = new Key(Keys.Tab);
-		public static readonly Key Space = new Key(Keys.Space);
-		public static readonly Key CapsLock = new Key(Keys.CapsLock);
-		public static readonly Key ScrollLock = new Key(Keys.ScrollLock);
-		public static readonly Key PrintScreen = new Key(Keys.PrintScreen);
-		public static readonly Key NumberLock = new Key(Keys.NumberLock);
-		public static readonly Key Enter = new Key(Keys.Enter);
-		public static readonly Key Escape = new Key(Keys.Escape);
-		public static readonly Key Menu = new Key(Keys.Menu);
-		public static readonly Key Backslash = new Key(Keys.Backslash);
-		public static readonly Key Equal = new Key(Keys.Equal);
+		public const Keys Minus = Keys.Minus;
+		public const Keys Plus = Keys.Plus;
+		public const Keys Grave = Keys.Grave;
+		public const Keys Insert = Keys.Insert;
+		public const Keys Home = Keys.Home;
+		public const Keys PageUp = Keys.PageUp;
+		public const Keys PageDown = Keys.PageDown;
+		public const Keys Delete = Keys.Delete;
+		public const Keys End = Keys.End;
+		public const Keys Divide = Keys.Divide;
+		public const Keys Decimal = Keys.Decimal;
+		public const Keys Backspace = Keys.Backspace;
+		public const Keys Up = Keys.Up;
+		public const Keys Down = Keys.Down;
+		public const Keys Left = Keys.Left;
+		public const Keys Right = Keys.Right;
+		public const Keys Tab = Keys.Tab;
+		public const Keys Space = Keys.Space;
+		public const Keys CapsLock = Keys.CapsLock;
+		public const Keys ScrollLock = Keys.ScrollLock;
+		public const Keys PrintScreen = Keys.PrintScreen;
+		public const Keys NumberLock = Keys.NumberLock;
+		public const Keys Enter = Keys.Enter;
+		public const Keys Escape = Keys.Escape;
+		public const Keys Menu = Keys.Menu;
+		public const Keys Backslash = Keys.Backslash;
+		public const Keys Equal = Keys.Equal;
 
 		[Obsolete("Use Semicolon instead"), CLSCompliant(false)]
-		public static readonly Key SemiColon = new Key(Keys.SemiColon);
+		public const Keys SemiColon = Keys.SemiColon;
 
-		public static readonly Key Semicolon = new Key(Keys.Semicolon);
-		public static readonly Key Quote = new Key(Keys.Quote);
+		public const Keys Semicolon = Keys.Semicolon;
+		public const Keys Quote = Keys.Quote;
 
-		public static readonly Key Comma = new Key(Keys.Comma);
-		public static readonly Key Period = new Key(Keys.Period);
-		public static readonly Key ForwardSlash = new Key(Keys.ForwardSlash);
+		public const Keys Comma = Keys.Comma;
+		public const Keys Period = Keys.Period;
+		public const Keys ForwardSlash = Keys.ForwardSlash;
 
-		public static readonly Key RightBracket = new Key(Keys.RightBracket);
-		public static readonly Key LeftBracket = new Key(Keys.LeftBracket);
+		public const Keys RightBracket = Keys.RightBracket;
+		public const Keys LeftBracket = Keys.LeftBracket;
 
-		public static readonly Key ContextMenu = new Key(Keys.ContextMenu);
+		public const Keys ContextMenu = Keys.ContextMenu;
 
-		public static readonly Key Shift = new Key(Keys.Shift);
-		public static readonly Key Alt = new Key(Keys.Alt);
-		public static readonly Key Control = new Key(Keys.Control);
-		public static readonly Key Application = new Key(Keys.Application);  // windows/command key
+		public const Keys Shift = Keys.Shift;
+		public const Keys Alt = Keys.Alt;
+		public const Keys Control = Keys.Control;
+		public const Keys Application = Keys.Application;  // windows/command key
 
-		public static readonly Key ModifierMask = new Key(Keys.ModifierMask);
-		public static readonly Key KeyMask = new Key(Keys.KeyMask);
+		public const Keys ModifierMask = Keys.ModifierMask;
+		public const Keys KeyMask = Keys.KeyMask;
 
 		public bool HasFlag(Key key)
 		{
