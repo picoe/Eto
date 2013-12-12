@@ -149,11 +149,11 @@ namespace Eto.Forms
 
 		static WebView()
 		{
-			EventLookup.Register(typeof(WebView), "OnNavigated", WebView.NavigatedEvent);
-			EventLookup.Register(typeof(WebView), "OnDocumentLoaded", WebView.DocumentLoadedEvent);
-			EventLookup.Register(typeof(WebView), "OnDocumentLoading", WebView.DocumentLoadingEvent);
-			EventLookup.Register(typeof(WebView), "OnDocumentTitleChanged", WebView.DocumentTitleChangedEvent);
-			EventLookup.Register(typeof(WebView), "OnOpenNewWindow", WebView.OpenNewWindowEvent);
+			EventLookup.Register<WebView>(c => c.OnNavigated(null), WebView.NavigatedEvent);
+			EventLookup.Register<WebView>(c => c.OnDocumentLoaded(null), WebView.DocumentLoadedEvent);
+			EventLookup.Register<WebView>(c => c.OnDocumentLoading(null), WebView.DocumentLoadingEvent);
+			EventLookup.Register<WebView>(c => c.OnDocumentTitleChanged(null), WebView.DocumentTitleChangedEvent);
+			EventLookup.Register<WebView>(c => c.OnOpenNewWindow(null), WebView.OpenNewWindowEvent);
 		}
 
 		public WebView()

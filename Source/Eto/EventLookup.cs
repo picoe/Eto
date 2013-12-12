@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Reflection;
 using System.Linq;
+using System.Linq.Expressions;
 
 namespace Eto
 {
@@ -16,21 +17,20 @@ namespace Eto
 		struct EventDeclaration
 		{
 			public readonly string Identifier;
-			public readonly string MethodName;
-			public readonly Type Type;
+			public readonly MethodInfo Method;
 
-			public EventDeclaration(Type type, string methodName, string identifier)
+			public EventDeclaration(MethodInfo method, string identifier)
 			{
-				Type = type;
-				MethodName = methodName;
+				Method = method;
 				Identifier = identifier;
 			}
 		}
 
-		public static void Register(Type type, string methodName, string identifier)
+		public static void Register<T>(Expression<Action<T>> expression, string identifier)
 		{
-			var declarations = GetDeclarations(type);
-			declarations.Add(new EventDeclaration(type, methodName, identifier));
+			var method = ((MethodCallExpression)expression.Body).Method;
+			var declarations = GetDeclarations(typeof(T));
+			declarations.Add(new EventDeclaration(method, identifier));
 		}
 
 		public static void HookupEvents(InstanceWidget widget)
@@ -83,17 +83,14 @@ namespace Eto
 					List<EventDeclaration> declarations;
 					if (registeredEvents.TryGetValue(current, out declarations))
 					{
-						foreach (var item in declarations)
+						foreach (var externalType in externalTypes)
 						{
-							foreach (var externalType in externalTypes)
+							var methods = externalType.GetMethods(BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
+							foreach (var item in declarations)
 							{
-								var method = externalType.GetMethod(item.MethodName, BindingFlags.DeclaredOnly | BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-								if (method != null)
-								{
-									var baseMethod = method.GetBaseDefinition();
-									if (baseMethod != null && baseMethod.DeclaringType == item.Type)
-										yield return item.Identifier;
-								}
+								var currentItem = item;
+								if (methods.Any(r => r.GetBaseDefinition() == currentItem.Method))
+									yield return item.Identifier;
 							}
 						}
 					}

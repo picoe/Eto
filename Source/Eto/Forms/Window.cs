@@ -72,11 +72,11 @@ namespace Eto.Forms
 
 		static Window()
 		{
-			EventLookup.Register(typeof(Window), "OnClosed", Window.ClosedEvent);
-			EventLookup.Register(typeof(Window), "OnClosing", Window.ClosingEvent);
-			EventLookup.Register(typeof(Window), "OnLocationChanged", Window.LocationChangedEvent);
+			EventLookup.Register<Window>(c => c.OnClosed(null), ClosedEvent);
+			EventLookup.Register<Window>(c => c.OnClosing(null), ClosingEvent);
+			EventLookup.Register<Window>(c => c.OnLocationChanged(null), LocationChangedEvent);
 			#if DESKTOP
-			EventLookup.Register(typeof(Window), "OnWindowStateChanged", Window.WindowStateChangedEvent);
+			EventLookup.Register<Window>(c => c.OnWindowStateChanged(null), WindowStateChangedEvent);
 			#endif
 		}
 

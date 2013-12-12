@@ -22,6 +22,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 			public override void DrawRect(sd.RectangleF dirtyRect)
 			{
+				ApplicationHandler.QueueResizing = true;
 				var drawable = Drawable;
 				if (drawable == null)
 					return;
@@ -32,6 +33,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				if (dirtyRect.Y % 1.0f > 0f)
 					dirtyRect.Height += 1;
 				drawable.Update(Rectangle.Ceiling(dirtyRect.ToEto()));
+				ApplicationHandler.QueueResizing = false;
 			}
 
 			public bool CanFocus { get; set; }

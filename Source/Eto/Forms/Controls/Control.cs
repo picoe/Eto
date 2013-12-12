@@ -378,20 +378,20 @@ namespace Eto.Forms
 
 		static Control()
 		{
-			EventLookup.Register(typeof(Control), "OnGotFocus", Control.GotFocusEvent);
-			EventLookup.Register(typeof(Control), "OnKeyDown", Control.KeyDownEvent);
-			EventLookup.Register(typeof(Control), "OnKeyUp", Control.KeyUpEvent);
-			EventLookup.Register(typeof(Control), "OnLostFocus", Control.LostFocusEvent);
-			EventLookup.Register(typeof(Control), "OnMouseDoubleClick", Control.MouseDoubleClickEvent);
-			EventLookup.Register(typeof(Control), "OnMouseDown", Control.MouseDownEvent);
-			EventLookup.Register(typeof(Control), "OnMouseEnter", Control.MouseEnterEvent);
-			EventLookup.Register(typeof(Control), "OnMouseLeave", Control.MouseLeaveEvent);
-			EventLookup.Register(typeof(Control), "OnMouseMove", Control.MouseMoveEvent);
-			EventLookup.Register(typeof(Control), "OnMouseUp", Control.MouseUpEvent);
-			EventLookup.Register(typeof(Control), "OnMouseWheel", Control.MouseWheelEvent);
-			EventLookup.Register(typeof(Control), "OnShown", Control.ShownEvent);
-			EventLookup.Register(typeof(Control), "OnSizeChanged", Control.SizeChangedEvent);
-			EventLookup.Register(typeof(Control), "OnTextInput", Control.TextInputEvent);
+			EventLookup.Register<Control>(c => c.OnGotFocus(null), Control.GotFocusEvent);
+			EventLookup.Register<Control>(c => c.OnKeyDown(null), Control.KeyDownEvent);
+			EventLookup.Register<Control>(c => c.OnKeyUp(null), Control.KeyUpEvent);
+			EventLookup.Register<Control>(c => c.OnLostFocus(null), Control.LostFocusEvent);
+			EventLookup.Register<Control>(c => c.OnMouseDoubleClick(null), Control.MouseDoubleClickEvent);
+			EventLookup.Register<Control>(c => c.OnMouseDown(null), Control.MouseDownEvent);
+			EventLookup.Register<Control>(c => c.OnMouseEnter(null), Control.MouseEnterEvent);
+			EventLookup.Register<Control>(c => c.OnMouseLeave(null), Control.MouseLeaveEvent);
+			EventLookup.Register<Control>(c => c.OnMouseMove(null), Control.MouseMoveEvent);
+			EventLookup.Register<Control>(c => c.OnMouseUp(null), Control.MouseUpEvent);
+			EventLookup.Register<Control>(c => c.OnMouseWheel(null), Control.MouseWheelEvent);
+			EventLookup.Register<Control>(c => c.OnShown(null), Control.ShownEvent);
+			EventLookup.Register<Control>(c => c.OnSizeChanged(null), Control.SizeChangedEvent);
+			EventLookup.Register<Control>(c => c.OnTextInput(null), Control.TextInputEvent);
 		}
 
 		protected Control(Generator generator, Type type, bool initialize = true)

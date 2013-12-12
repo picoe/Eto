@@ -17,7 +17,7 @@ namespace Eto.Forms
 
 		static TextControl()
 		{
-			EventLookup.Register(typeof(TextControl), "OnTextChanged", TextControl.TextChangedEvent);
+			EventLookup.Register<TextControl>(c => c.OnTextChanged(null), TextControl.TextChangedEvent);
 		}
 
 		protected TextControl(Generator g, Type type, bool initialize = true) : base(g, type, initialize)

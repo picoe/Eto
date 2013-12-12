@@ -183,15 +183,15 @@ namespace Eto.Forms
 
 		static TreeView()
 		{
-			EventLookup.Register(typeof(TreeView), "OnActivated", TreeView.ActivatedEvent);
-			EventLookup.Register(typeof(TreeView), "OnSelectionChanged", TreeView.SelectionChangedEvent);
-			EventLookup.Register(typeof(TreeView), "OnExpanding", TreeView.ExpandingEvent);
-			EventLookup.Register(typeof(TreeView), "OnExpanded", TreeView.ExpandedEvent);
-			EventLookup.Register(typeof(TreeView), "OnCollapsing", TreeView.CollapsingEvent);
-			EventLookup.Register(typeof(TreeView), "OnCollapsed", TreeView.CollapsedEvent);
-			EventLookup.Register(typeof(TreeView), "OnLabelEdited", TreeView.LabelEditedEvent);
-			EventLookup.Register(typeof(TreeView), "OnLabelEditing", TreeView.LabelEditingEvent);
-			EventLookup.Register(typeof(TreeView), "OnNodeMouseClick", TreeView.NodeMouseClickEvent);
+			EventLookup.Register<TreeView>(c => c.OnActivated(null), TreeView.ActivatedEvent);
+			EventLookup.Register<TreeView>(c => c.OnSelectionChanged(null), TreeView.SelectionChangedEvent);
+			EventLookup.Register<TreeView>(c => c.OnExpanding(null), TreeView.ExpandingEvent);
+			EventLookup.Register<TreeView>(c => c.OnExpanded(null), TreeView.ExpandedEvent);
+			EventLookup.Register<TreeView>(c => c.OnCollapsing(null), TreeView.CollapsingEvent);
+			EventLookup.Register<TreeView>(c => c.OnCollapsed(null), TreeView.CollapsedEvent);
+			EventLookup.Register<TreeView>(c => c.OnLabelEdited(null), TreeView.LabelEditedEvent);
+			EventLookup.Register<TreeView>(c => c.OnLabelEditing(null), TreeView.LabelEditingEvent);
+			EventLookup.Register<TreeView>(c => c.OnNodeMouseClick(null), TreeView.NodeMouseClickEvent);
 		}
 
 		public TreeView()

@@ -1,6 +1,7 @@
 using Eto.Forms;
 using Eto.Drawing;
 using ImageView = Eto.Test.Sections.Drawing.DrawableImageView;
+using System;
 
 namespace Eto.Test.Sections.Drawing
 {
@@ -13,7 +14,7 @@ namespace Eto.Test.Sections.Drawing
 	{
 		DrawingToolkit toolkit;
 
-		private Image image;
+		Image image;
 		public Image Image
 		{
 			get { return image; }
@@ -25,33 +26,31 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		public DrawableImageView(DrawingToolkit toolkit, Image image = null)
+		public DrawableImageView(Func<Drawable, DrawingToolkit> createToolkit, Image image)
 		{
-			this.toolkit = toolkit.Clone();
-			this.Image = image;
-			toolkit.Initialize(this);
+			toolkit = createToolkit(this);
+			Image = image;
 
-			this.Paint += (s, e) => {
-				toolkit.Render(e.Graphics, g => {
-					if (this.Image != null)
-						g.DrawImage(this.Image, PointF.Empty);
-				});
-			};
+			Paint += (s, e) => toolkit.Render(e.Graphics, g =>
+			{
+				if (Image != null)
+					g.DrawImage(Image, PointF.Empty);
+			});
 		}
 	}
 
 	public class BitmapSection : Scrollable
 	{
-		DrawingToolkit toolkit;
+		readonly Func<Drawable, DrawingToolkit> createToolkit;
 
 		public BitmapSection()
-			: this(null)
+			: this(DrawingToolkit.Create)
 		{
 		}
 
-		public BitmapSection(DrawingToolkit toolkit)
+		public BitmapSection(Func<Drawable, DrawingToolkit> createToolkit)
 		{
-			this.toolkit = toolkit ?? new DrawingToolkit();
+			this.createToolkit = createToolkit;
 
 			using (this.toolkit.GetGeneratorContext())
 			{
@@ -78,13 +77,11 @@ namespace Eto.Test.Sections.Drawing
 
 		Control LoadFromStream()
 		{
-			var result = new DrawableImageView(this.toolkit);
 			var resourceStream = GetType().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
 
 			var image = new Bitmap(resourceStream);
 
-			result.Image = image;
-			return result;
+			return new DrawableImageView(createToolkit, image);
 		}
 
 		Control CreateCustom32()
@@ -99,13 +96,11 @@ namespace Eto.Test.Sections.Drawing
 				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
 			}
 
-			result.Image = image;
-			return result;
+			return new DrawableImageView(createToolkit, image);
 		}
 
 		Control CreateCustom32Alpha()
 		{
-			var result = new DrawableImageView(this.toolkit);
 			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
@@ -114,26 +109,21 @@ namespace Eto.Test.Sections.Drawing
 				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
 				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
 			}
-			result.Image = image;
-			return result;
+			return new DrawableImageView(createToolkit, image);
 		}
 
 		Control Cloning()
 		{
-			var result = new DrawableImageView(this.toolkit);
 			var image = TestIcons.TestImage;
 			image = image.Clone();
-			result.Image = image;
-			return result;
+			return new DrawableImageView(createToolkit, image);
 		}
 
 		Control CloningRectangle()
 		{
-			var result = new DrawableImageView(this.toolkit);
 			var image = TestIcons.TestImage;
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
-			result.Image = image;
-			return result;
+			return new DrawableImageView(createToolkit, image);
 		}
 	}
 }

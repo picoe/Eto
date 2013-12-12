@@ -12,12 +12,11 @@ namespace Eto.Test.Sections.Drawing
 		readonly UITimer timer;
 		DirectDrawingRenderer renderer = new DirectDrawingRenderer();
 
-		public DirectDrawingSection()
-			: this(null, directDrawing: true)
+		public DirectDrawingSection() : this(DrawingToolkit.Create)
 		{
 		}
 
-		public DirectDrawingSection(bool directDrawing = true) : this(null, directDrawing: directDrawing)
+		public DirectDrawingSection (Func<Drawable, DrawingToolkit> createToolkit)
 		{
 		}
 
@@ -33,9 +32,7 @@ namespace Eto.Test.Sections.Drawing
 			drawable = new Drawable();
 			drawable.BackgroundColor = Colors.Black;
 
-			if (this.toolkit != null)
 			{
-				this.toolkit.Initialize(drawable);
 
 				// When a toolkit is specified, however, we can use Invalidate
 				// to get the maximum frame rate.

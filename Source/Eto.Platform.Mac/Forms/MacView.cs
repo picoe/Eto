@@ -52,7 +52,7 @@ namespace Eto.Platform.Mac.Forms
 		}
 	}
 
-	public interface IMacViewHandler : IMacAutoSizing
+	public interface IMacViewHandler
 	{
 		NSView ContainerControl { get; }
 
@@ -71,9 +71,17 @@ namespace Eto.Platform.Mac.Forms
 		void PostKeyDown(KeyEventArgs e);
 
 		void OnSizeChanged(EventArgs e);
+
+		NSView ContentControl { get; }
+
+		NSView EventControl { get; }
+
+		bool AutoSize { get; }
+
+		SizeF GetPreferredSize(SizeF availableSize);
 	}
 
-	public abstract class MacView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IMacViewHandler, IMacContainerControl
+	public abstract class MacView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IMacViewHandler
 		where TControl: NSResponder
 		where TWidget: Control
 	{
