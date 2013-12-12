@@ -104,6 +104,7 @@
     <Compile Include="Forms\Controls\LabelHandler.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\TextBoxHandler.cs" />
+    <Compile Include="Forms\Controls\ToolbarHandler.cs" />
     <Compile Include="Forms\Controls\ImageViewHandler.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="Forms\Controls\PasswordBoxHandler.cs" />
