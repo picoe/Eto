@@ -114,6 +114,9 @@
     <Compile Include="Forms\Layout\DockLayout.cs" />
     <Compile Include="Forms\FileDialog.cs" />
     <Compile Include="Forms\Form.cs" />
+    <Compile Include="Forms\GenerateActionArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Forms\Key.cs">
       <SubType>Code</SubType>
     </Compile>
