@@ -32,11 +32,8 @@ namespace Eto.Test
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-#if DESKTOP
-			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
-#else
+			//this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
 			this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
-#endif
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
@@ -67,8 +64,6 @@ namespace Eto.Test
 		{
 			contentContainer = new Panel();
 
-			Splitter splitter = null;
-
 			// set focus when the form is shown
 			Shown += delegate
 			{
@@ -88,12 +83,7 @@ namespace Eto.Test
 					}
 					else
 					{
-#if MOBILE
-						// For now, avoid nested controls in mobile.
-						splitter.Panel2 = content;
-#else
 						contentContainer.Content = content;
-#endif
 					}
 				}
 				catch (Exception ex)
@@ -110,7 +100,7 @@ namespace Eto.Test
 
 			if (Splitter.IsSupported())
 			{
-				splitter = new Splitter
+				var splitter = new Splitter
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
@@ -172,7 +162,7 @@ namespace Eto.Test
 		void GenerateMenuToolBarActions()
 		{
 			// use actions to generate menu & toolbar to share logic
-			var actions = new List<BaseAction>();
+			var actions = new List<CommandBase>();
 			var menu = new MenuBar();
 			var toolBar = new ToolBar();
 
