@@ -6,7 +6,7 @@ namespace Eto.Forms
 	{
 	}
 	
-	public abstract class ToolBarItem : BaseAction
+	public abstract class ToolBarItem : CommandBase
 	{
 		public ToolBarItem (Generator g, Type type) : base(g, type)
 		{

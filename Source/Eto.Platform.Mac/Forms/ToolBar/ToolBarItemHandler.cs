@@ -232,7 +232,7 @@ namespace Eto.Platform.Mac
 			get { return Control; }
 		}
 
-		public void CopyFrom(BaseAction action)
+		public void CopyFrom(CommandBase action)
 		{
 			var m = action as MacButtonAction;
 			if (m != null)

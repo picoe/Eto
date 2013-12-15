@@ -4,7 +4,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Actions
 {
-	public class MacButtonAction : BaseAction
+	public class MacButtonAction : CommandBase
 	{
 		public Selector Selector { get; set; }
 		

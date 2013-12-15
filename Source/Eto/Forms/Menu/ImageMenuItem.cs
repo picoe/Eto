@@ -62,7 +62,7 @@ namespace Eto.Forms
 			});
 		}
 
-		public void Add(List<BaseAction> actions, string actionId, int order)
+		public void Add(List<CommandBase> actions, string actionId, int order)
 		{
 			foreach (var a in actions)
 			{

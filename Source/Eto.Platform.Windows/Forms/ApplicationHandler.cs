@@ -167,7 +167,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public void GetSystemActions(List<CommandItem> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
 		}
 

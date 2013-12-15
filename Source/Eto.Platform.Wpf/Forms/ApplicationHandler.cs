@@ -136,7 +136,7 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Dispatcher.BeginInvoke(action);
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public void GetSystemActions(List<CommandItem> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
 		}
 

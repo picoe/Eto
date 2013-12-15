@@ -36,7 +36,7 @@ namespace Eto.Forms
 
 		void SetParent(Container parent);
 
-		void MapPlatformAction(string systemAction, BaseAction action);
+		void MapPlatformAction(string systemAction, CommandBase action);
 
 		PointF PointFromScreen(PointF point);
 
@@ -556,7 +556,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public void MapPlatformAction(string systemAction, BaseAction action)
+		public void MapPlatformAction(string systemAction, CommandBase action)
 		{
 			Handler.MapPlatformAction(systemAction, action);
 		}

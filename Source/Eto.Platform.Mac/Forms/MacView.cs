@@ -573,7 +573,7 @@ namespace Eto.Platform.Mac.Forms
 			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
-				BaseAction action;
+				CommandBase action;
 				if (handler.systemActions != null && handler.systemActions.TryGetValue(sel, out action))
 				{
 					action.Activate();
@@ -589,7 +589,7 @@ namespace Eto.Platform.Mac.Forms
 			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
-				BaseAction action;
+				CommandBase action;
 				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue(sel, out action))
 				{
 					if (action != null)
@@ -607,7 +607,7 @@ namespace Eto.Platform.Mac.Forms
 			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
-				BaseAction action;
+				CommandBase action;
 				if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue(sel, out action))
 				{
 					if (action != null)
@@ -617,7 +617,7 @@ namespace Eto.Platform.Mac.Forms
 			return false;
 		}
 
-		Dictionary<IntPtr, BaseAction> systemActions;
+		Dictionary<IntPtr, CommandBase> systemActions;
 		static readonly IntPtr selValidateMenuItem = Selector.GetHandle("validateMenuItem:");
 		static readonly IntPtr selValidateToolbarItem = Selector.GetHandle("validateToolbarItem:");
 		static readonly IntPtr selCut = Selector.GetHandle("cut:");
@@ -648,14 +648,14 @@ namespace Eto.Platform.Mac.Forms
 			{ "performMiniaturize", selPerformMiniaturize }
 		};
 
-		public virtual void MapPlatformAction(string systemAction, BaseAction action)
+		public virtual void MapPlatformAction(string systemAction, CommandBase action)
 		{
 			IntPtr sel;
 			if (systemActionSelectors.TryGetValue(systemAction, out sel))
 			{
 				if (systemActions == null)
 				{
-					systemActions = new Dictionary<IntPtr, BaseAction>();
+					systemActions = new Dictionary<IntPtr, CommandBase>();
 					AddMethod(selValidateMenuItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemMenuAction), "B@:@");
 					AddMethod(selValidateToolbarItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemToolbarAction), "B@:@");
 				}

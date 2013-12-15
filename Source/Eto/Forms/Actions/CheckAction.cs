@@ -1,4 +1,3 @@
-#if MENU_TOOLBAR_REFACTORING
 using System;
 using Eto.Drawing;
 using Eto;
@@ -111,7 +110,7 @@ namespace Eto.Forms
 			public ToolBarConnector(CheckAction action, CheckToolBarButton toolBarButton)
 			{
 				this.toolBarButton = toolBarButton;
-				this.toolBarButton.Click += toolBarButton_Click;
+				this.toolBarButton.Clicked += toolBarButton_Click;
 				this.action = action;
 				this.action.EnabledChanged += new EventHandler<EventArgs>(action_EnabledChanged).MakeWeak(e => this.action.EnabledChanged -= e);
 				this.action.CheckedChanged += new EventHandler<EventArgs>(action_CheckedChanged).MakeWeak(e => this.action.CheckedChanged -= e);
@@ -137,4 +136,3 @@ namespace Eto.Forms
 
 	}
 }
-#endif

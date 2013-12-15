@@ -1,4 +1,3 @@
-#if MENU_TOOLBAR_REFACTORING
 #if DESKTOP
 using System;
 using System.Collections.Generic;
@@ -29,11 +28,10 @@ namespace Eto.Forms
 					continue;
 				var mi = ai.Generate(menu.Generator);
 				if (mi != null)
-					menu.MenuItems.Add(mi);
+					menu.Add(mi);
 				lastSeparator = isSeparator;	
 			}
 		}
 	}
 }
-#endif
 #endif

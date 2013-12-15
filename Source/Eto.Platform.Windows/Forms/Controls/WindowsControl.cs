@@ -548,7 +548,7 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public virtual void MapPlatformAction(string systemAction, BaseAction action)
+		public virtual void MapPlatformAction(string systemAction, CommandItem action)
 		{
 		}
 

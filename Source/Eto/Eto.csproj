@@ -114,9 +114,6 @@
     <Compile Include="Forms\Layout\DockLayout.cs" />
     <Compile Include="Forms\FileDialog.cs" />
     <Compile Include="Forms\Form.cs" />
-    <Compile Include="Forms\GenerateActionArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Key.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -145,12 +142,6 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\BaseAction.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Forms\Actions\BaseAction.desktop.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Actions\ButtonAction.cs">
@@ -384,6 +375,14 @@
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
     <Compile Include="Forms\Controls\Spinner.cs" />
     <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
+    <Compile Include="Forms\Actions\GenerateActionArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\CommandBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\BaseAction.desktop.cs" />
+    <Compile Include="Forms\Actions\BaseAction.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

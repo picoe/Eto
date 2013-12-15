@@ -4,12 +4,7 @@ using System.Globalization;
 
 namespace Eto.Forms
 {
-	public interface ICopyFromAction
-	{
-		void CopyFrom(BaseAction action);
-	}
-
-	public class BaseAction : InstanceWidget
+	public abstract partial class BaseAction
 	{
 		#region Members
 		
@@ -18,8 +13,8 @@ namespace Eto.Forms
 		#endregion
 		
 		#region Events
-
-		public event EventHandler<EventArgs> Clicked;
+		
+		public event EventHandler<EventArgs> Activated;
 		public event EventHandler<EventArgs> EnabledChanged;
 		public event EventHandler<EventArgs> Removed;
 		
@@ -29,34 +24,9 @@ namespace Eto.Forms
 		}
 		
 		#endregion
-
-		#region Constructors
-
-		protected BaseAction (Generator g, Type type, bool initialize = true) 
-			: base(g, type, initialize)
-		{
-		}
-
-		public BaseAction(string id, string text, EventHandler<EventArgs> activated, params Keys[] accelerators)
-			: base(null, null as IWidget, initialize: false)
-		{
-			this.ID = id;
-			this.text = text;
-			this.Clicked = activated;
-			this.Accelerators = accelerators;
-		}
-
-		#endregion
-
+		
 		#region Properties
-
-		string id;
-		public override string ID 
-		{
-			get { return id; }
-			set { this.id = value; }
-		}
-
+		
 		public virtual bool Enabled
 		{
 			get { return enabled; }
@@ -69,40 +39,51 @@ namespace Eto.Forms
 				}
 			}
 		}
-
-		public int Order { get; set; }
-
+		
+		public string ID { get; set; }
+		
 		public object Tag { get; set; }
-
-		string text;
-		public virtual string Text
+		
+		public string Text
 		{
 			get
 			{
-				return string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}|{3}", MenuText, ToolBarText, ToolTip, Description);
+				return string.Format(CultureInfo.InvariantCulture, "{0}|{1}|{2}|{3}", MenuText, ToolBarText, TooltipText, Description);
 			}
 			set
 			{
-				MenuText = ToolBarText = value;				
 				string[] vals = value.Split('|');
 				if (vals.Length > 0) MenuText = vals[0];
 				if (vals.Length > 1) ToolBarText = vals[1];
-				if (vals.Length > 2) ToolTip = vals[2];
+				if (vals.Length > 2) TooltipText = vals[2];
 				if (vals.Length > 3) Description = vals[3];
 			}
 		}
-
+		
 		public string MenuText { get; set; }
+
+		public string MenuItemStyle { get; set; }
+		
 		public string ToolBarText { get; set; }
 		
-		public virtual string ToolTip { get; set; }
+		public string ToolBarItemStyle { get; set; }
+		
+		public string TooltipText { get; set; }
+		
 		public string Description { get; set; }
 		
 		public bool ShowLabel { get; set; }
 		
-		public virtual Image Image { get; set; }
+		public Image Image { get; set; }
 
-		public virtual Keys Shortcut
+		[Obsolete ("Use Image")]
+		public Icon Icon
+		{
+			get { return Image as Icon; }
+			set { Image = value; }
+		}
+
+		public Keys Accelerator
 		{
 			get { return (Accelerators != null && Accelerators.Length > 0) ? Accelerators[0] : Keys.None; }
 			set { Accelerators = new Keys[] { value }; }
@@ -115,12 +96,12 @@ namespace Eto.Forms
 			get
 			{
 				if (Accelerators == null) return string.Empty;
-				if (Shortcut != Keys.None)
+				if (Accelerator != Keys.None)
 				{
 					string val = string.Empty;
-					Keys modifier = (Shortcut & Keys.ModifierMask);
+					Keys modifier = (Accelerator & Keys.ModifierMask);
 					if (modifier != Keys.None) val += modifier.ToString();
-					Keys mainKey = (Shortcut & Keys.KeyMask);
+					Keys mainKey = (Accelerator & Keys.KeyMask);
 					if (mainKey != Keys.None)
 					{
 						if (val.Length > 0) val += "+";
@@ -144,42 +125,19 @@ namespace Eto.Forms
 		protected BaseAction(string id, string text, EventHandler<EventArgs> activated)
 			: this(id, text)
 		{
-			Clicked += activated;
+			Activated += activated;
 		}
 		
-		protected BaseAction(string id, string text) : base(null, null as IWidget)
+		protected BaseAction(string id, string text)
 		{
 			this.ID = id;
 			this.Text = text;
 		}
 		
-		protected BaseAction() : base(null, null as IWidget)
+		protected BaseAction()
 		{
 		}
-
-		public virtual void CopyFrom(BaseAction a)
-		{
-			this.Shortcut = a.Shortcut;
-			this.Accelerators = a.Accelerators;
-			this.enabled = a.Enabled;
-			this.ID = a.ID;
-			this.Image = a.Image;
-			this.Order = a.Order;
-			this.ShowLabel = a.ShowLabel;
-			this.Style = a.Style;
-			this.Tag = a.Tag;			
-			this.Text = a.Text;
-			// set Text-derived properties after Text is set for consistency, although this order should not matter.
-			this.Description = a.Description;
-			this.MenuText = a.MenuText;
-			this.ToolBarText = a.ToolBarText;
-			this.ToolTip = a.ToolTip;
-
-			var c = this.Handler as ICopyFromAction;
-			if (c != null)
-				c.CopyFrom(a);
-		}
-
+		
 		internal void Remove()
 		{
 			OnRemoved(EventArgs.Empty);
@@ -190,35 +148,18 @@ namespace Eto.Forms
 			if (EnabledChanged != null) EnabledChanged(this, e);
 		}
 		
-		public void OnClick(EventArgs e)
+
+		protected virtual void OnActivated(EventArgs e)
 		{
-			if (Clicked != null) Clicked(this, e);
+			if (Activated != null) Activated(this, e);
 		}
 
 		public void Activate()
 		{
-			OnClick(EventArgs.Empty);
+			OnActivated(EventArgs.Empty);
 		}
 
-#if MENU_TOOLBAR_REFACTORING
-		public virtual ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
-		{
-			throw new NotImplementedException();
-		}
-#endif
-
-		public MenuItem CreateMenuItem()
-		{
-			var result = new ImageMenuItem();
-			result.CopyFrom(this);
-			return result;
-		}
-
-		public ToolBarItem CreateToolBarItem()
-		{
-			var result = new ToolBarButton();
-			result.CopyFrom(this);
-			return result;
-		}
+		public abstract ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign);
 	}
+
 }

@@ -12,7 +12,7 @@ namespace Eto.Forms
 
 		void Quit();
 
-		void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems);
+		void GetSystemActions(List<CommandBase> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems);
 
 		Keys CommonModifier { get; }
 
@@ -141,7 +141,7 @@ namespace Eto.Forms
 			get { return Handler.AlternateModifier; }
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems = false)
+		public void GetSystemActions(List<CommandBase> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems = false)
 		{
 			Handler.GetSystemActions(actions, menu, toolBar, addStandardItems);
 		}

@@ -6,7 +6,7 @@ namespace Eto.Forms
 	{
 	}
 
-	public abstract class Menu : BaseAction
+	public abstract class Menu : CommandBase
 	{
 		//IMenu inner;
 

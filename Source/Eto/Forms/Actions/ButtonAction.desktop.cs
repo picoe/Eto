@@ -1,4 +1,3 @@
-#if MENU_TOOLBAR_REFACTORING
 #if DESKTOP
 using System;
 
@@ -29,7 +28,7 @@ namespace Eto.Forms
 			{
 				this.action = action;
 				this.menuItem = menuItem;
-				this.menuItem.Click += HandleClick;
+				this.menuItem.Clicked += HandleClick;
 				this.menuItem.Validate += HandleValidate;
 			}
 
@@ -45,5 +44,4 @@ namespace Eto.Forms
 		}
 	}
 }
-#endif
 #endif

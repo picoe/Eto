@@ -152,19 +152,19 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public void GetSystemActions(List<CommandBase> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
-			actions.Add(new BaseAction("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
+			actions.Add(new CommandBase("mac_hide", string.Format("Hide {0}|Hide {0}|Hides the main {0} window", Widget.Name), delegate
 			{
 				NSApplication.SharedApplication.Hide(NSApplication.SharedApplication);
 			}, Keys.H | Keys.Application));
 
-			actions.Add(new BaseAction("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate
+			actions.Add(new CommandBase("mac_hideothers", "Hide Others|Hide Others|Hides all other application windows", delegate
 			{
 				NSApplication.SharedApplication.HideOtherApplications(NSApplication.SharedApplication);
 			}, Keys.H | Keys.Application | Keys.Alt));
 
-			actions.Add(new BaseAction("mac_showall", "Show All|Show All|Show All Windows", delegate
+			actions.Add(new CommandBase("mac_showall", "Show All|Show All|Show All Windows", delegate
 			{
 				NSApplication.SharedApplication.UnhideAllApplications(NSApplication.SharedApplication);
 			}));

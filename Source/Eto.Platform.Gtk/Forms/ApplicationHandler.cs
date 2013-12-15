@@ -158,7 +158,7 @@ namespace Eto.Platform.GtkSharp
 			Process.Start (info);
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public void GetSystemActions(List<CommandBase> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
 		{
 		}
 		

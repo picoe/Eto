@@ -113,7 +113,7 @@ namespace Eto.Forms
 			return Control.PointToScreen(point);
 		}
 
-		public virtual void MapPlatformAction(string systemAction, BaseAction action)
+		public virtual void MapPlatformAction(string systemAction, CommandBase action)
 		{
 			Control.MapPlatformAction(systemAction, action);
 		}
