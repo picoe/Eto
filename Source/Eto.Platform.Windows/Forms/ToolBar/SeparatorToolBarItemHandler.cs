@@ -1,38 +1,68 @@
 using SD = System.Drawing;
 using SWF = System.Windows.Forms;
 using Eto.Forms;
+using System;
 
 namespace Eto.Platform.Windows
 {
-	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolBarItem>, ISeparatorToolBarItem, IToolBarItemHandler
+	public class SeparatorToolBarItemHandler : WidgetHandler<SWF.ToolStripSeparator, SeparatorToolItem>, ISeparatorToolItem, IToolBarItemHandler
 	{
 		public SeparatorToolBarItemHandler()
 		{
 			Control = new SWF.ToolStripSeparator();
 		}
-	
-		public SeparatorToolBarItemType Type {
+
+		public SeparatorToolItemType Type
+		{
 			get
 			{
-				return Control.AutoSize ? SeparatorToolBarItemType.Divider : SeparatorToolBarItemType.FlexibleSpace;
+				return Control.AutoSize ? SeparatorToolItemType.Divider : SeparatorToolItemType.FlexibleSpace;
 			}
-			set {
+			set
+			{
 				switch (value)
 				{
-					case SeparatorToolBarItemType.Divider:
+					case SeparatorToolItemType.Divider:
 						Control.AutoSize = true;
 						break;
-				default:
-					Control.AutoSize = false;
-					break;
+					default:
+						Control.AutoSize = false;
+						break;
 				}
 			}
 		}
-		
-		public void CreateControl (ToolBarHandler handler)
+
+		public void CreateControl(ToolBarHandler handler)
 		{
 			handler.Control.Items.Add(Control);
 		}
 
+		public string Text
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public string ToolTip
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public Eto.Drawing.Image Image
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public bool Enabled
+		{
+			get { return false; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public void CreateFromCommand(Command command)
+		{
+		}
 	}
 }

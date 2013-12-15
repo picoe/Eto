@@ -12,7 +12,7 @@ namespace Eto.Platform.Mac
 
 		bool Enabled { get; }
 
-		MenuActionItem Widget { get; }
+		MenuItem Widget { get; }
 	}
 
 	[Register("EtoMenuActionHandler")]

@@ -73,7 +73,7 @@ namespace Eto.Platform.Mac
 			set { dock = value; }
 		}
 
-		public void AddButton(ToolBarItem item)
+		public void AddButton(ToolItem item)
 		{
 			var handler = (IToolBarBaseItemHandler)item.Handler;
 			items.Add(handler);
@@ -83,7 +83,7 @@ namespace Eto.Platform.Mac
 			//Control.ValidateVisibleItems();
 		}
 
-		public void RemoveButton(ToolBarItem item)
+		public void RemoveButton(ToolItem item)
 		{
 			var handler = item.Handler as IToolBarBaseItemHandler;
 			var index = items.IndexOf(handler);

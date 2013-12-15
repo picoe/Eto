@@ -5,9 +5,9 @@ using swi = System.Windows.Input;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
-	public class ImageMenuItemHandler : WpfMenuItem<swc.MenuItem, ImageMenuItem>, IImageMenuItem
+	public class ButtonMenuItemHandler : MenuItemHandler<swc.MenuItem, ButtonMenuItem>, IButtonMenuItem
 	{
-		public ImageMenuItemHandler ()
+		public ButtonMenuItemHandler ()
 		{
 			Control = new swc.MenuItem();
 			Setup ();

@@ -13,8 +13,13 @@ namespace Eto.Forms
 			Generate (menu);
 			return menu;
 		}
-		
-		public void Generate(ISubMenuWidget menu)
+
+		public void Generate(IMenuItemsSource menu)
+		{
+			Generate(menu.Items);
+		}
+
+		public void Generate(MenuItemCollection menu)
 		{
 			var list = new List<IActionItem>(this);
 			list.Sort(Compare);
@@ -26,7 +31,7 @@ namespace Eto.Forms
 				
 				if ((lastSeparator && isSeparator) || (isSeparator && (i == 0 || i == list.Count - 1)))
 					continue;
-				var mi = ai.Generate(menu.Generator);
+				var mi = ai.Generate(menu.parent.Generator);
 				if (mi != null)
 					menu.Add(mi);
 				lastSeparator = isSeparator;	

@@ -2,9 +2,9 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class SeparatorToolBarItemHandler : ToolBarItemHandler<Gtk.SeparatorToolItem, SeparatorToolBarItem>, ISeparatorToolBarItem
+	public class SeparatorToolItemHandler : ToolItemHandler<Gtk.SeparatorToolItem, SeparatorToolItem>, ISeparatorToolItem
 	{
-		SeparatorToolBarItemType type;
+		SeparatorToolItemType type;
 		bool expand;
 		
 		public override void CreateControl (ToolBarHandler handler)
@@ -17,13 +17,13 @@ namespace Eto.Platform.GtkSharp
 		}
 		
 		
-		public SeparatorToolBarItemType Type {
+		public SeparatorToolItemType Type {
 			get {
 				return type;
 			}
 			set {
 				type = value;
-				expand = type == SeparatorToolBarItemType.FlexibleSpace;
+				expand = type == SeparatorToolItemType.FlexibleSpace;
 				if (Control != null) Control.Expand = expand;
 			}
 		}

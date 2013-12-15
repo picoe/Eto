@@ -86,7 +86,7 @@ namespace Eto.Platform.Wpf
 			// Forms.Menu
 			g.Add<ICheckMenuItem>(() => new CheckMenuItemHandler());
 			g.Add<IContextMenu>(() => new ContextMenuHandler());
-			g.Add<IImageMenuItem>(() => new ImageMenuItemHandler());
+			g.Add<IButtonMenuItem>(() => new ButtonMenuItemHandler());
 			g.Add<IMenuBar>(() => new MenuBarHandler());
 			g.Add<IRadioMenuItem>(() => new RadioMenuItemHandler());
 			g.Add<ISeparatorMenuItem>(() => new SeparatorMenuItemHandler());
@@ -97,9 +97,9 @@ namespace Eto.Platform.Wpf
 			g.Add<IPrintSettings>(() => new PrintSettingsHandler());
 			
 			// Forms.ToolBar
-			g.Add<ICheckToolBarButton>(() => new CheckToolBarButtonHandler());
-			g.Add<ISeparatorToolBarItem>(() => new SeparatorToolBarItemHandler());
-			g.Add<IToolBarButton>(() => new ToolBarButtonHandler());
+			g.Add<ICheckToolItem>(() => new CheckToolItemHandler());
+			g.Add<ISeparatorToolItem>(() => new SeparatorToolItemHandler());
+			g.Add<IButtonToolItem>(() => new ButtonToolItemHandler());
 			g.Add<IToolBar>(() => new ToolBarHandler());
 			
 			// Forms

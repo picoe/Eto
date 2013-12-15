@@ -40,12 +40,12 @@ namespace Eto.Forms
 
 		public void AddSpace(int order = 500)
 		{
-			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolBarItemType.Space });
+			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolItemType.Space });
 		}
 
 		public void AddFlexibleSpace(int order = 500)
 		{
-			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolBarItemType.FlexibleSpace });
+			Add(new ActionItemSeparator { Order = order, ToolBarType = SeparatorToolItemType.FlexibleSpace });
 		}
 
 		public ActionItem Add(string actionID, int order = 500)

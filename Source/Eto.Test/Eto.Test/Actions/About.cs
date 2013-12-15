@@ -4,40 +4,20 @@ using Eto.Forms;
 
 namespace Eto.Test.Actions
 {
-	public class About
+	public class About : Command
 	{
-		public const string ActionID = "about";
-		private Image Image { get { return TestIcons.TestIcon; } }
-		private Keys Shortcut { get { return Keys.F11; } }
-
-		public MenuItem CreateMenuItem()
+		public About()
 		{
-			var result = new ImageMenuItem
-			{
-				ID = ActionID,
-				Text = "About Test Application",
-				Image = this.Image,
-				Shortcut = this.Shortcut,			
-			};
-			result.Clicked += (s, e) => Handle();
-			return result;
+			ID = "about";
+			Image = TestIcons.TestIcon;
+			MenuText = "About Test Application";
+			ToolBarText = "About";
+			Shortcut = Keys.F11;
 		}
 
-		public ToolBarItem CreateToolBarItem()
+		public override void OnExecuted(EventArgs e)
 		{
-			var result = new ToolBarButton
-			{
-				ID = ActionID,
-				Text = "About",
-				Image = this.Image,
-				Shortcut = this.Shortcut,
-			};
-			result.Clicked += (s, e) => Handle();
-			return result;
-		}
-				
-		public void Handle()
-		{
+			base.OnExecuted(e);
 			// show the about dialog
 			var about = new Dialogs.About();
 			about.ShowDialog (Application.Instance.MainForm);

@@ -62,7 +62,15 @@ namespace Eto.Forms
 		public virtual MenuBar Menu
 		{
 			get { return Handler.Menu; }
-			set { Handler.Menu = value; }
+			set
+			{
+				var menu = Handler.Menu;
+				if (menu != null)
+					menu.OnUnLoad(EventArgs.Empty);
+				Handler.Menu = value;
+				if (value != null)
+					value.OnLoad(EventArgs.Empty);
+			}
 		}
 
 		public Icon Icon

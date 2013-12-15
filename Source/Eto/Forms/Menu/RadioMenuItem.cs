@@ -3,14 +3,14 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface IRadioMenuItem : IMenuActionItem
+	public interface IRadioMenuItem : IMenuItem
 	{
 		void Create (RadioMenuItem controller);
 
 		bool Checked { get; set; }
 	}
 	
-	public class RadioMenuItem : MenuActionItem
+	public class RadioMenuItem : MenuItem
 	{
 		new IRadioMenuItem Handler { get { return (IRadioMenuItem)base.Handler; } }
 

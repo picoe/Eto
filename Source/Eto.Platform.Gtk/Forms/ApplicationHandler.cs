@@ -158,10 +158,15 @@ namespace Eto.Platform.GtkSharp
 			Process.Start (info);
 		}
 
-		public void GetSystemActions(List<CommandBase> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public IEnumerable<Command> GetSystemCommands()
+		{
+			yield break;
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menu, IEnumerable<Command> commands)
 		{
 		}
-		
+
 		public Keys CommonModifier {
 			get {
 				return Keys.Control;

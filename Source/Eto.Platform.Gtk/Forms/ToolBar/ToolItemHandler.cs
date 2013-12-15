@@ -9,9 +9,9 @@ namespace Eto.Platform.GtkSharp
 		
 	}
 
-	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
 		where TControl: Gtk.Widget
-		where TWidget: ToolBarItem
+		where TWidget: ToolItem
 	{
 		bool enabled = true;
 		Image image;
@@ -42,6 +42,10 @@ namespace Eto.Platform.GtkSharp
 				if (Control != null)
 					Control.Sensitive = value;
 			}
+		}
+
+		public void CreateFromCommand(Command command)
+		{
 		}
 	}
 }

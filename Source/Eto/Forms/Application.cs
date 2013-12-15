@@ -12,7 +12,7 @@ namespace Eto.Forms
 
 		void Quit();
 
-		void GetSystemActions(List<CommandBase> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems);
+		IEnumerable<Command> GetSystemCommands();
 
 		Keys CommonModifier { get; }
 
@@ -141,9 +141,9 @@ namespace Eto.Forms
 			get { return Handler.AlternateModifier; }
 		}
 
-		public void GetSystemActions(List<CommandBase> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems = false)
+		public IEnumerable<Command> GetSystemCommands()
 		{
-			Handler.GetSystemActions(actions, menu, toolBar, addStandardItems);
+			return Handler.GetSystemCommands();
 		}
 
 		public string BadgeLabel

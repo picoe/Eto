@@ -159,7 +159,7 @@ namespace Eto.Forms
 			OnActivated(EventArgs.Empty);
 		}
 
-		public abstract ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign);
+		public abstract ToolItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign);
 	}
 
 }

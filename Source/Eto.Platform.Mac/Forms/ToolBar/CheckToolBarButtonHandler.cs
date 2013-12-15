@@ -5,7 +5,7 @@ using MonoMac.AppKit;
 namespace Eto.Platform.Mac
 {
 
-	public class CheckToolBarButtonHandler : ToolBarItemHandler<NSToolbarItem, CheckToolBarButton>, ICheckToolBarButton
+	public class CheckToolBarButtonHandler : ToolBarItemHandler<NSToolbarItem, CheckToolItem>, ICheckToolItem
 	{
 		bool isChecked;
 		ToolBarHandler toolbarHandler;

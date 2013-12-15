@@ -1,13 +1,14 @@
 using Eto.Forms;
 using MonoMac.AppKit;
+using System;
 
 namespace Eto.Platform.Mac
 {
-	public class SeparatorToolBarItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolBarItem>, ISeparatorToolBarItem, IToolBarBaseItemHandler
+	public class SeparatorToolBarItemHandler : WidgetHandler<NSToolbarItem, SeparatorToolItem>, ISeparatorToolItem, IToolBarBaseItemHandler
 	{
 		public SeparatorToolBarItemHandler()
 		{
-			Type = SeparatorToolBarItemType.Divider;
+			Type = SeparatorToolItemType.Divider;
 		}
 
 		public virtual string Identifier
@@ -18,9 +19,9 @@ namespace Eto.Platform.Mac
 				{
 					default:
 						return NSToolbar.NSToolbarSeparatorItemIdentifier;
-					case SeparatorToolBarItemType.Space:
+					case SeparatorToolItemType.Space:
 						return NSToolbar.NSToolbarSpaceItemIdentifier;
-					case SeparatorToolBarItemType.FlexibleSpace:
+					case SeparatorToolItemType.FlexibleSpace:
 						return NSToolbar.NSToolbarFlexibleSpaceItemIdentifier;
 				}
 				
@@ -32,10 +33,38 @@ namespace Eto.Platform.Mac
 			get { return false; }
 		}
 
-		public SeparatorToolBarItemType Type { get; set; }
+		public SeparatorToolItemType Type { get; set; }
 
 		public void ControlAdded(ToolBarHandler toolbar)
 		{
+		}
+
+		public void CreateFromCommand(Command command)
+		{
+		}
+
+		public string Text
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public string ToolTip
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public Eto.Drawing.Image Image
+		{
+			get { return null; }
+			set { throw new NotSupportedException(); }
+		}
+
+		public bool Enabled
+		{
+			get { return false; }
+			set { throw new NotSupportedException(); }
 		}
 	}
 }

@@ -187,19 +187,12 @@
     <Compile Include="Forms\Controls\TextControl.cs" />
     <Compile Include="Forms\Controls\TreeGridView.cs" />
     <Compile Include="Forms\Menu\CheckMenuItem.cs" />
-    <Compile Include="Forms\Menu\ImageMenuItem.cs" />
     <Compile Include="Forms\Menu\Menu.cs" />
-    <Compile Include="Forms\Menu\MenuActionItem.cs" />
     <Compile Include="Forms\Menu\MenuBar.cs" />
     <Compile Include="Forms\Menu\MenuItem.cs" />
     <Compile Include="Forms\Menu\RadioMenuItem.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolBarButton.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButton.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarActionItem.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarItem.cs" />
     <Compile Include="IO\DiskDirectoryInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -248,7 +241,6 @@
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
-    <Compile Include="Forms\Menu\SubMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
     <Compile Include="Forms\Controls\ListBox.desktop.cs" />
@@ -378,11 +370,19 @@
     <Compile Include="Forms\Actions\GenerateActionArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\CommandBase.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Forms\Actions\BaseAction.desktop.cs" />
     <Compile Include="Forms\Actions\BaseAction.cs" />
+    <Compile Include="Forms\Command.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\SubMenu.cs" />
+    <Compile Include="Forms\Menu\MenuItemCollection.cs" />
+    <Compile Include="Forms\ToolBar\ToolItem.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItem.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

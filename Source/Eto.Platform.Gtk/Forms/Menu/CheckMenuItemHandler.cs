@@ -68,17 +68,6 @@ namespace Eto.Platform.GtkSharp
 			set { Control.Sensitive = value; }
 		}
 
-		public override void AddMenu(int index, MenuItem item)
-		{
-		}
-
-		public override void RemoveMenu(MenuItem item)
-		{
-		}
-
-		public override void Clear()
-		{
-		}
 		void control_Activated(object sender, EventArgs e)
 		{
 			if (!isBeingChecked)

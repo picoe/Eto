@@ -2,12 +2,12 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICheckMenuItem : IMenuActionItem
+	public interface ICheckMenuItem : IMenuItem
 	{
 		bool Checked { get; set; }
 	}
 	
-	public class CheckMenuItem : MenuActionItem
+	public class CheckMenuItem : MenuItem
 	{
 		new ICheckMenuItem Handler { get { return (ICheckMenuItem)base.Handler; } }
 

@@ -90,9 +90,9 @@ namespace Eto.Forms
 		{
 		}
 
-		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			var tbb = new ToolBarButton(generator);
+			var tbb = new ButtonToolItem(generator);
 			tbb.ID = ID;
 			tbb.Enabled = Enabled;
 			if (ShowLabel || actionItem.ShowLabel || textAlign != ToolBarTextAlign.Right) tbb.Text = ToolBarText;
@@ -106,12 +106,12 @@ namespace Eto.Forms
 		
 		protected class ToolBarConnector
 		{
-			readonly ToolBarButton toolBarButton;
+			readonly ButtonToolItem toolBarButton;
 			readonly ButtonAction action;
-			public ToolBarConnector(ButtonAction action, ToolBarButton toolBarButton)
+			public ToolBarConnector(ButtonAction action, ButtonToolItem toolBarButton)
 			{
 				this.toolBarButton = toolBarButton;
-				this.toolBarButton.Clicked += toolBarButton_Click;
+				this.toolBarButton.Click += toolBarButton_Click;
 				this.action = action;
 				this.action.EnabledChanged += new EventHandler<EventArgs>(action_EnabledChanged).MakeWeak(e => this.action.EnabledChanged -= e);
 			}

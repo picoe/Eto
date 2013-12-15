@@ -1,58 +1,44 @@
 using System;
+using Eto.Forms;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
-using Eto.Forms;
 using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms
 {
-	public class CheckToolBarButtonHandler : ToolBarItemHandler<swc.Primitives.ToggleButton, CheckToolBarButton>, ICheckToolBarButton
+	public class ButtonToolItemHandler : ToolItemHandler<swc.Button, ButtonToolItem>, IButtonToolItem
 	{
-        Image image;
+		Image image;
 		readonly swc.Image swcImage;
 		readonly swc.TextBlock label;
-		public CheckToolBarButtonHandler ()
+
+		public ButtonToolItemHandler ()
 		{
-			Control = new swc.Primitives.ToggleButton {
-				IsThreeState = false
-			};
+			Control = new swc.Button ();
 			swcImage = new swc.Image { MaxHeight = 16, MaxWidth = 16 };
 			label = new swc.TextBlock ();
 			var panel = new swc.StackPanel { Orientation = swc.Orientation.Horizontal };
 			panel.Children.Add (swcImage);
 			panel.Children.Add (label);
 			Control.Content = panel;
-
-			Control.Checked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
-			Control.Unchecked += delegate {
-				Widget.OnCheckedChanged (EventArgs.Empty);
-			};
 			Control.Click += delegate {
 				Widget.OnClick (EventArgs.Empty);
 			};
 		}
 
-		public bool Checked
-		{
-			get { return Control.IsChecked ?? false; }
-			set { Control.IsChecked = value; }
-		}
-
-		public string Text
+		public override string Text
 		{
 			get { return label.Text.ToEtoMneumonic(); }
 			set { label.Text = value.ToWpfMneumonic(); }
 		}
 
-		public string ToolTip
+		public override string ToolTip
 		{
 			get { return Control.ToolTip as string; }
 			set { Control.ToolTip = value; }
 		}
 
-		public Image Image
+		public override Image Image
 		{
 			get { return image; }
 			set
@@ -62,7 +48,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public bool Enabled
+		public override bool Enabled
 		{
 			get { return Control.IsEnabled; }
 			set { Control.IsEnabled = value; }

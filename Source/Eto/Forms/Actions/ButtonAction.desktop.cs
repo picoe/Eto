@@ -8,7 +8,7 @@ namespace Eto.Forms
 	{
 		public override MenuItem GenerateMenuItem(Generator generator)
 		{
-			var mi = new ImageMenuItem(generator);
+			var mi = new ButtonMenuItem(generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
 			mi.Enabled = Enabled;
@@ -21,14 +21,14 @@ namespace Eto.Forms
 		
 		protected class MenuConnector
 		{
-			readonly ImageMenuItem menuItem;
+			readonly ButtonMenuItem menuItem;
 			readonly ButtonAction action;
 			
-			public MenuConnector(ButtonAction action, ImageMenuItem menuItem)
+			public MenuConnector(ButtonAction action, ButtonMenuItem menuItem)
 			{
 				this.action = action;
 				this.menuItem = menuItem;
-				this.menuItem.Clicked += HandleClick;
+				this.menuItem.Click += HandleClick;
 				this.menuItem.Validate += HandleValidate;
 			}
 

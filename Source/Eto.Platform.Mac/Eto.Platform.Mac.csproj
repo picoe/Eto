@@ -131,7 +131,6 @@
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\MacButton.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\Actions\MacButtonAction.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -191,6 +190,7 @@
     <Compile Include="Drawing\FontExtensions.cs" />
     <Compile Include="MacExtensions.cs" />
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\Actions\MacCommand.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

@@ -9,12 +9,12 @@ namespace Eto.Platform.GtkSharp
 	}
 	public abstract class MenuActionItemHandler<TControl, TWidget> : MenuHandler<TControl, TWidget>, IMenuActionItemHandler
 		where TControl: Gtk.MenuItem
-		where TWidget: MenuActionItem
+		where TWidget: MenuItem
 	{
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case MenuActionItem.ValidateEvent:
+				case MenuItem.ValidateEvent:
 				// handled by the contextmenu/menubar
 				break;
 			default:
@@ -28,6 +28,10 @@ namespace Eto.Platform.GtkSharp
 			if (Control.Submenu != null) {
 				Widget.OnValidate (EventArgs.Empty);
 			}
+		}
+
+		public void CreateFromCommand(Command command)
+		{
 		}
 	}
 }

@@ -7,13 +7,13 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class ImageMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ImageMenuItem>, IImageMenuItem
+	public class ButtonMenuItemHandler : MenuHandler<SWF.ToolStripMenuItem, ButtonMenuItem>, IButtonMenuItem
 	{
         Image image;
 		int imageSize = 16;
 		bool openedHandled;
 
-		public ImageMenuItemHandler()
+		public ButtonMenuItemHandler()
 		{
 			Control = new SWF.ToolStripMenuItem();
 			Control.Click += (sender, e) => Widget.OnClick(EventArgs.Empty);
@@ -21,7 +21,7 @@ namespace Eto.Platform.Windows
 
 		void HandleDropDownOpened (object sender, EventArgs e)
 		{
-			foreach (var item in Widget.MenuItems.OfType<MenuActionItem>()) {
+			foreach (var item in Widget.Items) {
 				item.OnValidate (EventArgs.Empty);
 			}
 		}

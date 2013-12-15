@@ -68,7 +68,7 @@ namespace Eto.Forms
 			}
 		}
 
-		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
 			throw new NotImplementedException("cannot put radio buttons on the toolbar just yet");
 		}		

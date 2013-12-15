@@ -4,7 +4,7 @@ namespace Eto.Forms
 {
 	public partial interface IActionItem
 	{
-		ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
+		ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
 
 		int Order { get; }
 	}
@@ -13,7 +13,7 @@ namespace Eto.Forms
 	{
 		int order = 500;
 		
-		public abstract ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
+		public abstract ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
 		
 		public int Order
 		{
@@ -28,11 +28,11 @@ namespace Eto.Forms
 	
 	public partial class ActionItemSeparator : ActionItemBase
 	{
-		public SeparatorToolBarItemType ToolBarType { get; set; }
+		public SeparatorToolItemType ToolBarType { get; set; }
 
-		public override ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
 		{
-			var tbb = new SeparatorToolBarItem(generator) { Type = ToolBarType };
+			var tbb = new SeparatorToolItem(generator) { Type = ToolBarType };
 			if (!string.IsNullOrEmpty (ToolBarItemStyle))
 				tbb.Style = ToolBarItemStyle;
 			return tbb;
@@ -54,7 +54,7 @@ namespace Eto.Forms
 		
 		public ActionItemCollection Actions { get; private set; }
 
-		public override ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
 		{
 			return null;
 		}
@@ -80,7 +80,7 @@ namespace Eto.Forms
 
 		public bool ShowLabel { get; set; }
 
-		public override ToolBarItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign)
 		{
 			var item = Action.GenerateToolBarItem(this, generator, textAlign);
 			if (item != null) {

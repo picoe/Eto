@@ -22,7 +22,5 @@ namespace Eto.Forms
 		{
 			
 		}
-
-		public override string Text { get; set; } // does nothing
 	}
 }

@@ -13,12 +13,12 @@ namespace Eto.Platform.Wpf.Forms
 			return control;
 		}
 
-		public void AddButton (ToolBarItem button)
+		public void AddButton (ToolItem button)
 		{
 			Control.Items.Add (button.ControlObject);
 		}
 
-		public void RemoveButton (ToolBarItem button)
+		public void RemoveButton (ToolItem button)
 		{
 			Control.Items.Remove (button.ControlObject);
 		}

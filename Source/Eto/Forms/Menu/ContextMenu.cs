@@ -5,67 +5,52 @@ namespace Eto.Forms
 {
 	public interface IContextMenu : ISubMenu
 	{
-		void Show (Control relativeTo);	
+		void Show(Control relativeTo);
 	}
-	
-	public class ContextMenu : Menu, ISubMenuWidget
+
+	public class ContextMenu : Menu, IMenuItemsSource
 	{
 		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
-		readonly MenuItemCollection menuItems;
-		
+
+		public MenuItemCollection Items { get; private set; }
+
 		public ContextMenu()
 			: this((Generator)null)
 		{
 		}
 
-		public ContextMenu (Generator generator) : this (generator, typeof(IContextMenu))
+		public ContextMenu(Generator generator) : this(generator, typeof(IContextMenu))
 		{
 		}
 
-		protected ContextMenu (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+		protected ContextMenu(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
-			menuItems = new MenuItemCollection (this, Handler);
+			Items = new MenuItemCollection(Handler);
 		}
 
-		public ContextMenu (Generator g, IEnumerable<MenuItem> actionItems) : this (g)
+		public ContextMenu(Generator g, IEnumerable<MenuItem> items) : this(g)
 		{
-			GenerateActions (actionItems);
-		}
-		
-		public void GenerateActions (IEnumerable<MenuItem> actionItems)
-		{
-			foreach (var mi in actionItems) {
-				this.Add(mi);
-			}
-		}
-		
-		public void Show (Control relativeTo)
-		{
-			Handler.Show (relativeTo);
+			Items.AddRange(items);
 		}
 
-		/// <summary>
-		/// Adds a menu item based on its Order.
-		/// </summary>
-		/// <param name="menuItem"></param>
-		public void Add(MenuItem menuItem)
+		public void Show(Control relativeTo)
 		{
-			ImageMenuItem.AddMenuItem(this.menuItems, menuItem);
+			Handler.Show(relativeTo);
 		}
 
-		public void Remove(MenuItem menuItem)
+		internal protected override void OnLoad(EventArgs e)
 		{
-			this.menuItems.Remove(menuItem);
+			base.OnLoad(e);
+			foreach (var item in Items)
+				item.OnLoad(e);
 		}
 
-		public IEnumerable<MenuItem> MenuItems
+		internal protected override void OnUnLoad(EventArgs e)
 		{
-			get
-			{
-				foreach (var m in this.menuItems)
-					yield return m;
-			}
+			base.OnUnLoad(e);
+			foreach (var item in Items)
+				item.OnLoad(e);
 		}
 	}
 }

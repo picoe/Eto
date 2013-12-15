@@ -21,8 +21,6 @@ namespace Eto.Platform.Windows
 			Widget.OnClick(e);
 		}
 
-		#region IMenuItem Members
-
 		public bool Enabled
 		{
 			get { return Control.Enabled; }
@@ -30,25 +28,28 @@ namespace Eto.Platform.Windows
 		}
 		public string Text
 		{
-			get	{ return Control.Text; }
+			get { return Control.Text; }
 			set { Control.Text = value; }
 		}
-		
-		public string ToolTip {
-			get {
+
+		public string ToolTip
+		{
+			get
+			{
 				return Control.ToolTipText;
 			}
-			set {
+			set
+			{
 				Control.ToolTipText = value;
 			}
 		}
 
 		public Keys Shortcut
 		{
-			get { return Control.ShortcutKeys.ToEto (); }
-			set 
+			get { return Control.ShortcutKeys.ToEto(); }
+			set
 			{
-				var key = value.ToSWF ();
+				var key = value.ToSWF();
 				if (SWF.ToolStripManager.IsValidShortcut(key)) Control.ShortcutKeys = key;
 			}
 		}
@@ -58,27 +59,5 @@ namespace Eto.Platform.Windows
 			get { return Control.Checked; }
 			set { Control.Checked = value; }
 		}
-
-		#endregion
-
-		#region IMenu Members
-
-		public void AddMenu(int index, MenuItem item)
-		{
-			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void RemoveMenu(MenuItem item)
-		{
-			Control.DropDownItems.Remove((SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void Clear()
-		{
-			Control.DropDownItems.Clear();
-		}
-
-		#endregion
-
 	}
 }

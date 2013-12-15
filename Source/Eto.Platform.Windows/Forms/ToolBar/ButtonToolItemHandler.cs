@@ -5,12 +5,11 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-
-	public class CheckToolBarButtonHandler : ToolBarItemHandler<SWF.ToolStripButton, CheckToolBarButton>, ICheckToolBarButton
+	public class ButtonToolItemHandler : ToolItemHandler<SWF.ToolStripButton, ButtonToolItem>, IButtonToolItem
 	{
 		readonly SWF.ToolStripButton control;
 
-		public CheckToolBarButtonHandler()
+		public ButtonToolItemHandler()
 		{
 			control = new SWF.ToolStripButton();
 			control.Tag = this;
@@ -23,35 +22,20 @@ namespace Eto.Platform.Windows
 			Widget.OnClick(EventArgs.Empty);
 		}
 
-		#region ICheckToolBarButton Members
-
-		public bool Checked
+		public override bool Enabled
 		{
-			get { return control.Checked; }
-			set { control.Checked = value; }
+			get { return control.Enabled; }
+			set { control.Enabled = value; }
 		}
-
-		#endregion
 
 		public override void CreateControl(ToolBarHandler handler)
 		{
 			handler.Control.Items.Add(control);
 		}
 
-
 		public override void InvokeButton()
 		{
 			Widget.OnClick(EventArgs.Empty);
 		}
-		
-		public override bool Enabled
-		{
-			get { return control.Enabled; }
-			set { control.Enabled = value; }
-		}
-		
-
 	}
-
-
 }

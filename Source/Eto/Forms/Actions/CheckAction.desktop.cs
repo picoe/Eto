@@ -30,7 +30,7 @@ namespace Eto.Forms
 			{
 				this.action = action;
 				this.menuItem = menuItem;
-				this.menuItem.Clicked += menuItem_Clicked;
+				this.menuItem.Click += menuItem_Clicked;
 				this.action.EnabledChanged += new EventHandler<EventArgs>(action_EnabledChanged).MakeWeak(e => this.action.EnabledChanged -= e);
 				this.action.CheckedChanged += new EventHandler<EventArgs>(action_CheckedChanged).MakeWeak(e => this.action.CheckedChanged -= e);
 			}

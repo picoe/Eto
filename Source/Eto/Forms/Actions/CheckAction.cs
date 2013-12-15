@@ -87,9 +87,9 @@ namespace Eto.Forms
 			}
 		}
 
-		public override ToolBarItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
+		public override ToolItem GenerateToolBarItem(ActionItem actionItem, Generator generator, ToolBarTextAlign textAlign)
 		{
-			var tbb = new CheckToolBarButton(generator);
+			var tbb = new CheckToolItem(generator);
 			tbb.ID = ID;
 			tbb.Checked = Checked;
 			tbb.Enabled = Enabled;
@@ -103,14 +103,14 @@ namespace Eto.Forms
 
 		class ToolBarConnector
 		{
-			readonly CheckToolBarButton toolBarButton;
+			readonly CheckToolItem toolBarButton;
 			readonly CheckAction action;
 			bool changing;
 			
-			public ToolBarConnector(CheckAction action, CheckToolBarButton toolBarButton)
+			public ToolBarConnector(CheckAction action, CheckToolItem toolBarButton)
 			{
 				this.toolBarButton = toolBarButton;
-				this.toolBarButton.Clicked += toolBarButton_Click;
+				this.toolBarButton.Click += toolBarButton_Click;
 				this.action = action;
 				this.action.EnabledChanged += new EventHandler<EventArgs>(action_EnabledChanged).MakeWeak(e => this.action.EnabledChanged -= e);
 				this.action.CheckedChanged += new EventHandler<EventArgs>(action_CheckedChanged).MakeWeak(e => this.action.CheckedChanged -= e);

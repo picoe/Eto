@@ -83,14 +83,14 @@ namespace Eto.Platform.GtkSharp
 			set { Control.Sensitive = value; }
 		}
 
-		public override void AddMenu (int index, MenuItem item)
+		public void AddMenu (int index, MenuItem item)
 		{
 			if (Control.Submenu == null)
 				Control.Submenu = new Gtk.Menu ();
 			((Gtk.Menu)Control.Submenu).Insert ((Gtk.Widget)item.ControlObject, index);
 		}
 
-		public override void RemoveMenu (MenuItem item)
+		public void RemoveMenu (MenuItem item)
 		{
 			if (Control.Submenu == null)
 				return;
@@ -101,7 +101,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		public override void Clear ()
+		public void Clear ()
 		{
 			foreach (Gtk.Widget w in Control.Children) {
 				Control.Remove (w);

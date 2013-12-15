@@ -74,9 +74,9 @@ namespace Eto.Platform.Mac
 		LargeButton
 	}
 
-	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler, ICopyFromAction
+	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
 		where TControl: NSToolbarItem
-		where TWidget: ToolBarItem
+		where TWidget: ToolItem
 	{
 		Image image;
 		NSButton button;
@@ -232,9 +232,9 @@ namespace Eto.Platform.Mac
 			get { return Control; }
 		}
 
-		public void CopyFrom(CommandBase action)
+		public void CreateFromCommand(Command command)
 		{
-			var m = action as MacButtonAction;
+			var m = command as MacCommand;
 			if (m != null)
 			{
 				Control.Target = null;

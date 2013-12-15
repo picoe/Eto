@@ -8,14 +8,13 @@ namespace Eto.Platform.Windows
 	public interface IToolBarItemHandler
 	{
 		void CreateControl(ToolBarHandler handler);
-		
 	}
-	
-	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolBarItem, IToolBarItemHandler
-		where TControl: SWF.ToolStripItem
-		where TWidget: ToolBarItem
+
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
+		where TControl : SWF.ToolStripItem
+		where TWidget : ToolItem
 	{
-        Image image;
+		Image image;
 		int imageSize = 16;
 
 		public abstract void CreateControl(ToolBarHandler handler);
@@ -30,32 +29,36 @@ namespace Eto.Platform.Windows
 			set
 			{
 				imageSize = value;
-				Control.Image = image.ToSD (imageSize);
+				Control.Image = image.ToSD(imageSize);
 			}
 		}
-		
+
 		public string Text
 		{
 			get { return Control.Text; }
 			set { Control.Text = value; }
 		}
-		
+
 		public string ToolTip
 		{
 			get { return Control.ToolTipText; }
 			set { Control.ToolTipText = value; }
 		}
-		
+
 		public Image Image
 		{
 			get { return image; }
 			set
 			{
 				image = value;
-				Control.Image = image.ToSD (imageSize);
+				Control.Image = image.ToSD(imageSize);
 			}
 		}
 
 		public abstract bool Enabled { get; set; }
+
+		public void CreateFromCommand(Command command)
+		{
+		}
 	}
 }

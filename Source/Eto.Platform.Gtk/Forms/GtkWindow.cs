@@ -304,19 +304,19 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		void SetAccelerators(ISubMenuWidget item)
+		void SetAccelerators(IMenuItemsSource item)
 		{
-			if (item != null && item.MenuItems != null)
-				foreach (var child in item.MenuItems)
+			if (item != null && item.Items != null)
+				foreach (var child in item.Items)
 				{
-					var actionItem = child as MenuActionItem;
+					var actionItem = child;
 					if (actionItem != null && actionItem.Shortcut != Key.None)
 					{
 						var widget = (Gtk.Widget)actionItem.ControlObject;
 						var key = new Gtk.AccelKey(actionItem.Shortcut.ToGdkKey(), actionItem.Shortcut.ToGdkModifier(), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator("activate", accelGroup, key);
 					}
-					SetAccelerators(child as ISubMenuWidget);
+					SetAccelerators(child as IMenuItemsSource);
 				}
 			
 		}

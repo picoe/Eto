@@ -27,10 +27,10 @@ namespace Eto.Forms
 	{
 		public override MenuItem Generate(Generator generator)
 		{
-			ImageMenuItem item = null;
+			ButtonMenuItem item = null;
 			if (Actions.Count > 0)
 			{
-				item = new ImageMenuItem(generator);
+				item = new ButtonMenuItem(generator);
 				item.Text = SubMenuText;
 				item.ID = ID;
 				if (!string.IsNullOrEmpty(MenuItemStyle))

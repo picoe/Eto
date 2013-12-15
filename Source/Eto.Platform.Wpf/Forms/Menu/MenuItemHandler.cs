@@ -9,9 +9,9 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Menu
 {
-	public class WpfMenuItem<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IMenuActionItem, swi.ICommand
+	public class MenuItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IMenuItem, swi.ICommand
 		where TControl : swc.MenuItem
-		where TWidget : MenuActionItem
+		where TWidget : MenuItem
 	{
         Image image;
 		readonly swi.RoutedCommand command = new swi.RoutedCommand ();
@@ -80,7 +80,7 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case MenuActionItem.ValidateEvent:
+			case MenuItem.ValidateEvent:
 				// handled by parent
 				break;
 			default:
@@ -115,9 +115,9 @@ namespace Eto.Platform.Wpf.Forms.Menu
 
 		void HandleContextMenuOpening (object sender, sw.RoutedEventArgs e)
 		{
-			var submenu = Widget as ISubMenuWidget;
+			var submenu = Widget as IMenuItemsSource;
 			if (submenu != null) {
-				foreach (var item in submenu.MenuItems.OfType<MenuActionItem>()) {
+				foreach (var item in submenu.Items) {
 					item.OnValidate (EventArgs.Empty);
 				}
 			}
@@ -135,6 +135,10 @@ namespace Eto.Platform.Wpf.Forms.Menu
 		void swi.ICommand.Execute (object parameter)
 		{
 			Widget.OnClick (EventArgs.Empty);
+		}
+
+		public void CreateFromCommand(Command command)
+		{
 		}
 	}
 }

@@ -2,18 +2,18 @@ using System;
 
 namespace Eto.Forms
 {
-	public interface ICheckToolBarButton : IToolBarActionItem
+	public interface ICheckToolItem : IToolItem
 	{
 		bool Checked { get; set; }
 	}
 	
-	public class CheckToolBarButton : ToolBarActionItem
+	public class CheckToolItem : ToolItem
 	{
-		new ICheckToolBarButton Handler { get { return (ICheckToolBarButton)base.Handler; } }
+		new ICheckToolItem Handler { get { return (ICheckToolItem)base.Handler; } }
 		
 		public event EventHandler<EventArgs> CheckedChanged;
 		
-		public CheckToolBarButton(Generator g) : base(g, typeof(ICheckToolBarButton))
+		public CheckToolItem(Generator g) : base(g, typeof(ICheckToolItem))
 		{
 		}
 		

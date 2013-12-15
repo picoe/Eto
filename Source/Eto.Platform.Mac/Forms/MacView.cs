@@ -573,10 +573,10 @@ namespace Eto.Platform.Mac.Forms
 			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
-				CommandBase action;
-				if (handler.systemActions != null && handler.systemActions.TryGetValue(sel, out action))
+				Command command;
+				if (handler.systemActions != null && handler.systemActions.TryGetValue(sel, out command))
 				{
-					action.Activate();
+					command.Execute();
 				}
 			}
 		}
@@ -589,11 +589,11 @@ namespace Eto.Platform.Mac.Forms
 			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
-				CommandBase action;
-				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue(sel, out action))
+				Command command;
+				if (handler.systemActions != null && menuItem.Action != null && handler.systemActions.TryGetValue(sel, out command))
 				{
-					if (action != null)
-						return action.Enabled;
+					if (command != null)
+						return command.Enabled;
 				}
 			}
 			return false;
@@ -607,17 +607,17 @@ namespace Eto.Platform.Mac.Forms
 			var handler = GetHandler(control) as MacView<TControl,TWidget>;
 			if (handler != null)
 			{
-				CommandBase action;
-				if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue(sel, out action))
+				Command command;
+				if (handler.systemActions != null && toolbarItem.Action != null && handler.systemActions.TryGetValue(sel, out command))
 				{
-					if (action != null)
-						return action.Enabled;
+					if (command != null)
+						return command.Enabled;
 				}
 			}
 			return false;
 		}
 
-		Dictionary<IntPtr, CommandBase> systemActions;
+		Dictionary<IntPtr, Command> systemActions;
 		static readonly IntPtr selValidateMenuItem = Selector.GetHandle("validateMenuItem:");
 		static readonly IntPtr selValidateToolbarItem = Selector.GetHandle("validateToolbarItem:");
 		static readonly IntPtr selCut = Selector.GetHandle("cut:");
@@ -648,19 +648,19 @@ namespace Eto.Platform.Mac.Forms
 			{ "performMiniaturize", selPerformMiniaturize }
 		};
 
-		public virtual void MapPlatformAction(string systemAction, CommandBase action)
+		public virtual void MapPlatformAction(string systemAction, Command command)
 		{
 			IntPtr sel;
 			if (systemActionSelectors.TryGetValue(systemAction, out sel))
 			{
 				if (systemActions == null)
 				{
-					systemActions = new Dictionary<IntPtr, CommandBase>();
+					systemActions = new Dictionary<IntPtr, Command>();
 					AddMethod(selValidateMenuItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemMenuAction), "B@:@");
 					AddMethod(selValidateToolbarItem, new Func<IntPtr, IntPtr, IntPtr, bool>(ValidateSystemToolbarAction), "B@:@");
 				}
 				AddMethod(sel, new Action<IntPtr, IntPtr, IntPtr>(TriggerSystemAction), "v@:@");
-				systemActions[sel] = action;
+				systemActions[sel] = command;
 			}
 		}
 	}

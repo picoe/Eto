@@ -6,7 +6,7 @@ namespace Eto.Forms
 	{
 	}
 
-	public abstract class Menu : CommandBase
+	public abstract class Menu : InstanceWidget
 	{
 		//IMenu inner;
 
@@ -14,6 +14,14 @@ namespace Eto.Forms
 			: base (g, type, initialize)
 		{
 			//inner = (IMenu)base.Handler;
+		}
+
+		protected internal virtual void OnLoad(EventArgs e)
+		{
+		}
+
+		protected internal virtual void OnUnLoad(EventArgs e)
+		{
 		}
 
 	}
