@@ -1,4 +1,5 @@
 using System;
+using Eto.Drawing;
 using Eto.Forms;
 
 namespace Eto.Test.Sections.Controls
@@ -13,7 +14,7 @@ namespace Eto.Test.Sections.Controls
 			Content = Create();			
 		}
 
-		protected virtual Control Create()
+		public virtual Control Create()
 		{
 			var layout = new DynamicLayout();
 			layout.AddSeparateRow(null, AddTab(), RemoveTab(), null);
@@ -110,7 +111,7 @@ namespace Eto.Test.Sections.Controls
 
 	public class ThemedTabControlSection : TabControlSection
 	{
-		protected override Control Create()
+		public override Control Create()
 		{
 			// Clone the current generator and add handlers
 			// for TabControl and TabPage. Create a TabControlSection
@@ -130,6 +131,20 @@ namespace Eto.Test.Sections.Controls
 			{			
 				Generator.Initialize(currentGenerator); // restore
 			}
+		}
+	}
+
+	class ThemedTabControlFormSection : WindowSectionMethod
+	{
+		protected override Window GetWindow()
+		{
+			var t = new ThemedTabControlSection();
+
+			return new Form
+			{
+				Content = t.Create(),
+				Size = new Size(640, 400),
+			};
 		}
 	}
 }
