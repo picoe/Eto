@@ -14,6 +14,12 @@ namespace Eto.Platform.GtkSharp
 		bool attached;
 		Gtk.StatusIcon statusIcon;
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Helper.Init();
+		}
+
 		public static int MainThreadID { get; set; }
 		
 		public void RunIteration ()
