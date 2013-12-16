@@ -263,7 +263,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
-		public void MapPlatformAction(string systemAction, BaseAction action)
+		public void MapPlatformCommand(string systemAction, Command command)
 		{
 		}
 

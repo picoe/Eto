@@ -9,7 +9,7 @@ namespace Eto.Platform.GtkSharp
 	{
 		protected void ValidateItems()
 		{
-			var subMenu = Widget as IMenuItemsSource;
+			var subMenu = Widget as ISubMenuWidget;
 			if (subMenu != null) {
 				foreach (var item in subMenu.Items) {
 					item.OnValidate(EventArgs.Empty);

@@ -20,6 +20,7 @@ namespace Eto.Forms
 			return mi;
 		}
 
+		#pragma warning disable 0618
 		class MenuConnector
 		{
 			readonly CheckMenuItem menuItem;
@@ -52,6 +53,7 @@ namespace Eto.Forms
 				menuItem.Enabled = action.Enabled;
 			}
 		}
+		#pragma warning restore 0618
 		
 	}
 }

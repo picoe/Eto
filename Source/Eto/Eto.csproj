@@ -383,6 +383,7 @@
     <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
     <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
     <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolItem.obsolete.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

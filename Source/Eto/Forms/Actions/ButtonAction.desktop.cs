@@ -8,6 +8,9 @@ namespace Eto.Forms
 	{
 		public override MenuItem GenerateMenuItem(Generator generator)
 		{
+			if (command != null)
+				return command.CreateMenuItem(generator);
+
 			var mi = new ButtonMenuItem(generator);
 			mi.Text = MenuText;
 			mi.Shortcut = Accelerator;
@@ -18,7 +21,8 @@ namespace Eto.Forms
 			new MenuConnector(this, mi);
 			return mi;
 		}
-		
+
+		#pragma warning disable 0618
 		protected class MenuConnector
 		{
 			readonly ButtonMenuItem menuItem;
@@ -42,6 +46,7 @@ namespace Eto.Forms
 				menuItem.Enabled = action.Enabled;
 			}
 		}
+		#pragma warning restore 0618
 	}
 }
 #endif

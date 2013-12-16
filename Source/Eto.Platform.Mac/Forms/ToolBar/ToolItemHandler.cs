@@ -74,7 +74,7 @@ namespace Eto.Platform.Mac
 		LargeButton
 	}
 
-	public abstract class ToolBarItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
+	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
 		where TControl: NSToolbarItem
 		where TWidget: ToolItem
 	{
@@ -136,7 +136,7 @@ namespace Eto.Platform.Mac
 
 		public virtual string Identifier { get; set; }
 
-		protected ToolBarItemHandler()
+		protected ToolItemHandler()
 		{
 			this.Identifier = Guid.NewGuid().ToString();
 		}

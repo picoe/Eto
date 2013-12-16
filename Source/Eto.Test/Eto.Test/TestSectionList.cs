@@ -13,7 +13,7 @@ namespace Eto.Test
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
 
-			if (EtoEnvironment.Platform.IsWindows)
+			if (Generator.Current.IsWinForms)
 				yield return new Section("Drawing using Direct2D on a Winforms Control", DrawingSectionDirect2D());
 
 			yield return new Section("Controls", ControlSection());

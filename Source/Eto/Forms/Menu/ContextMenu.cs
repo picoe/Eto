@@ -8,11 +8,14 @@ namespace Eto.Forms
 		void Show(Control relativeTo);
 	}
 
-	public class ContextMenu : Menu, IMenuItemsSource
+	public class ContextMenu : Menu, ISubMenuWidget
 	{
 		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }
 
 		public MenuItemCollection Items { get; private set; }
+
+		[Obsolete("Use Items instead")]
+		public MenuItemCollection MenuItems { get { return Items; } } 
 
 		public ContextMenu()
 			: this((Generator)null)

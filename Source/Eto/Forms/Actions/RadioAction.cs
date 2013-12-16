@@ -4,6 +4,7 @@ using System.Reflection;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public static class RadioActionExtensions
 	{
 		public static RadioAction AddRadio(this ActionCollection actions, RadioAction controller, string id, string text)
@@ -27,6 +28,7 @@ namespace Eto.Forms
 		
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class RadioAction : BaseAction
 	{
 		bool isChecked;

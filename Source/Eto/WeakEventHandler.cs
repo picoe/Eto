@@ -8,6 +8,7 @@ namespace Eto
 	/// </summary>
 	/// <typeparam name="TArgs">Type of <see cref="EventArgs"/> used in the event handler</typeparam>
 	/// <param name="eventHandler">The event handler that was registered that should be unregistered</param>
+	[Obsolete("No longer provided by this library")]
 	public delegate void UnregisterCallback<TArgs> (EventHandler<TArgs> eventHandler)
   		where TArgs: EventArgs;
 
@@ -18,6 +19,7 @@ namespace Eto
 	/// This is used by the <see cref="WeakEventExtensions"/>
 	/// </remarks>
 	/// <typeparam name="TArgs"></typeparam>
+	[Obsolete("No longer provided by this library")]
 	public interface IWeakEventHandler<TArgs>
   		where TArgs: EventArgs
 	{
@@ -38,6 +40,7 @@ namespace Eto
 	/// </remarks>
 	/// <typeparam name="T">Type of the class the event handler is on</typeparam>
 	/// <typeparam name="TArgs">Type of arguments for the event handler</typeparam>
+	[Obsolete("No longer provided by this library")]
 	public class WeakEventHandler<T, TArgs>: IWeakEventHandler<TArgs>
   		where T: class
   		where TArgs: EventArgs
@@ -103,6 +106,7 @@ namespace Eto
 	/// <summary>
 	/// Extensions for weak events
 	/// </summary>
+	[Obsolete("No longer provided by this library")]
 	public static class WeakEventExtensions
 	{
 		/// <summary>

@@ -47,12 +47,14 @@ namespace Eto.Forms
 		protected MenuItem(Command command, Generator generator, Type type, bool initialize = true)
 			: base(generator, type, initialize)
 		{
+			ID = command.ID;
 			Text = command.MenuText;
 			ToolTip = command.ToolTip;
 			Shortcut = command.Shortcut;
 			Click += (sender, e) => command.OnExecuted(e);
-			// CWEN: Need to unregister when removed from menu?
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
+			if (initialize)
+				Handler.CreateFromCommand(command);
 		}
 
 		protected MenuItem(Generator g, Type type, bool initialize = true)

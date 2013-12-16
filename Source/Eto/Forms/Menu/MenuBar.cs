@@ -7,11 +7,14 @@ namespace Eto.Forms
 	{
 	}
 
-	public class MenuBar : Menu, IMenuItemsSource
+	public class MenuBar : Menu, ISubMenuWidget
 	{
 		new IMenuBar Handler { get { return (IMenuBar)base.Handler; } }
 
 		public MenuItemCollection Items { get; private set; }
+
+		[Obsolete("Use Items instead")]
+		public MenuItemCollection MenuItems { get { return Items; } } 
 
 		public MenuBar()
 			: this((Generator)null)

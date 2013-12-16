@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command apis instead")]
 	public class ActionCollection : KeyedCollection<string, BaseAction>
 	{
 		readonly Generator generator;

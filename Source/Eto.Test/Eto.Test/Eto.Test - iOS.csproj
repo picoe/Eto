@@ -78,7 +78,6 @@
     <Compile Include="Dialogs\About.cs" />
     <Compile Include="Actions\About.cs" />
     <Compile Include="Actions\Quit.cs" />
-    <Compile Include="Actions\Close.cs" />
     <Compile Include="Sections\Controls\ButtonSection.cs" />
     <Compile Include="Sections\Controls\CheckBoxSection.cs" />
     <Compile Include="Sections\Controls\ComboBoxSection.cs" />

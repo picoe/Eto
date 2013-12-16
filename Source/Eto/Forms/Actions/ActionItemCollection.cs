@@ -4,6 +4,7 @@ using System.Linq;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItemCollection : List<IActionItem>
 	{
 		readonly ActionCollection actions;
@@ -160,6 +161,27 @@ namespace Eto.Forms
 				if (tbb != null)
 					toolBar.Items.Add(tbb);
 				lastSeparator = isSeparator;	
+			}
+		}
+
+		internal void ExtractMenu(ISubMenuWidget menu)
+		{
+			foreach (var item in menu.Items)
+			{
+				var button = item as ButtonMenuItem;
+				if (button != null && button.Items.Count > 0)
+				{
+					// submenu
+					var subMenu = this.GetSubmenu(button.Text, button.Order, true);
+					subMenu.Actions.ExtractMenu(button);
+					continue;
+				}
+				var separator = item as SeparatorMenuItem;
+				if (separator != null)
+					AddSeparator(separator.Order);
+
+				if (item.ID != null)
+					Add(item.ID, item.Order);
 			}
 		}
 	}

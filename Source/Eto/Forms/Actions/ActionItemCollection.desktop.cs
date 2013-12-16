@@ -14,7 +14,7 @@ namespace Eto.Forms
 			return menu;
 		}
 
-		public void Generate(IMenuItemsSource menu)
+		public void Generate(ISubMenuWidget menu)
 		{
 			Generate(menu.Items);
 		}

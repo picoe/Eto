@@ -31,7 +31,6 @@ namespace Eto.Forms
 			ToolTip = command.ToolTip;
 			Image = command.Image;
 			Click += (sender, e) => command.OnExecuted(e);
-			// CWEN: Need to unregister when removed from toolbar
 			command.EnabledChanged += (sender, e) => Enabled = command.Enabled;
 			Order = -1;
 		}

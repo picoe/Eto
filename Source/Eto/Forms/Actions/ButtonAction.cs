@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public static class ButtonActionExtensions
 	{
 		
@@ -67,9 +67,11 @@ namespace Eto.Forms
 		
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ButtonAction : BaseAction
 	{
-		
+		internal Command command;
+
 		public ButtonAction(string id, string text, Icon icon, EventHandler<EventArgs> activated)
 			: base(id, text, icon, activated)
 		{

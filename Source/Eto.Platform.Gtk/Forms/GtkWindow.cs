@@ -304,7 +304,7 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		void SetAccelerators(IMenuItemsSource item)
+		void SetAccelerators(ISubMenuWidget item)
 		{
 			if (item != null && item.Items != null)
 				foreach (var child in item.Items)
@@ -316,7 +316,7 @@ namespace Eto.Platform.GtkSharp
 						var key = new Gtk.AccelKey(actionItem.Shortcut.ToGdkKey(), actionItem.Shortcut.ToGdkModifier(), Gtk.AccelFlags.Visible | Gtk.AccelFlags.Locked);
 						widget.AddAccelerator("activate", accelGroup, key);
 					}
-					SetAccelerators(child as IMenuItemsSource);
+					SetAccelerators(child as ISubMenuWidget);
 				}
 			
 		}

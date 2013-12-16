@@ -2,6 +2,7 @@ using System;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial interface IActionItem
 	{
 		ToolItem GenerateToolBarItem(Generator generator, ToolBarTextAlign textAlign);
@@ -9,6 +10,7 @@ namespace Eto.Forms
 		int Order { get; }
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public abstract partial class ActionItemBase : IActionItem
 	{
 		int order = 500;
@@ -26,6 +28,7 @@ namespace Eto.Forms
 		public string MenuItemStyle { get; set; }
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItemSeparator : ActionItemBase
 	{
 		public SeparatorToolItemType ToolBarType { get; set; }
@@ -40,6 +43,7 @@ namespace Eto.Forms
 
 	}
 
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItemSubMenu : ActionItemBase
 	{
 		public ActionItemSubMenu(ActionCollection actions, string subMenuText)
@@ -60,6 +64,7 @@ namespace Eto.Forms
 		}
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class ActionItem : ActionItemBase
 	{
 		

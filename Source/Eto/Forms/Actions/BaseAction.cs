@@ -4,6 +4,7 @@ using System.Globalization;
 
 namespace Eto.Forms
 {
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public abstract partial class BaseAction
 	{
 		#region Members

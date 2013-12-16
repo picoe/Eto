@@ -13,7 +13,7 @@ namespace Eto.Forms
 		void Clear ();
 	}
 	
-	public interface IMenuItemsSource
+	public interface ISubMenuWidget
 	{
 		MenuItemCollection Items { get; }
 	}

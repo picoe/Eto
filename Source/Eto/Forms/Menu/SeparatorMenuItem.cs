@@ -5,7 +5,7 @@ namespace Eto.Forms
 	public interface ISeparatorMenuItem : IMenuItem
 	{
 	}
-	
+
 	public class SeparatorMenuItem : MenuItem
 	{
 		public SeparatorMenuItem()
@@ -13,14 +13,13 @@ namespace Eto.Forms
 		{
 		}
 
-		public SeparatorMenuItem (Generator generator) : this (generator, typeof(ISeparatorMenuItem))
+		public SeparatorMenuItem(Generator generator) : this(generator, typeof(ISeparatorMenuItem))
 		{
 		}
-		
-		protected SeparatorMenuItem (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
+
+		protected SeparatorMenuItem(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
-			
 		}
 	}
 }

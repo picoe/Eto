@@ -4,7 +4,7 @@ using System.Collections.Generic;
 
 namespace Eto.Forms
 {
-	[Obsolete("Use separate collections for actions, menu and toolbar.")]
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public class GenerateActionArgs : EventArgs
 	{
 		#region Members

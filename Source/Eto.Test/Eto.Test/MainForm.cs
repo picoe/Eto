@@ -182,15 +182,15 @@ namespace Eto.Test
 			menu.Items.Trim();
 
 			Menu = menu;
-#endif
 
 			// generate and set the toolbar
 			var toolBar = new ToolBar();
 			toolBar.Items.Add(quit);
 			toolBar.Items.Add(new ButtonToolItem(about));
 
-			// TODO for mobile
 			ToolBar = toolBar;
+#endif
+
 		}
 
 		#if DESKTOP

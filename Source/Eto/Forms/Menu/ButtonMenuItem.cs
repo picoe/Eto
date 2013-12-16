@@ -10,11 +10,28 @@ namespace Eto.Forms
 		Image Image { get; set; }
 	}
 
-	public class ButtonMenuItem : MenuItem, IMenuItemsSource
+	[Obsolete("Use ButtonMenuItem instead")]
+	public class ImageMenuItem : ButtonMenuItem
+	{
+		public ImageMenuItem()
+			: this((Generator)null)
+		{
+		}
+
+		public ImageMenuItem(Generator generator)
+			: base(generator)
+		{
+		}
+	}
+
+	public class ButtonMenuItem : MenuItem, ISubMenuWidget
 	{
 		new IButtonMenuItem Handler { get { return (IButtonMenuItem)base.Handler; } }
 
 		public MenuItemCollection Items { get; private set; }
+
+		[Obsolete("Use Items instead")]
+		public MenuItemCollection MenuItems { get { return Items; } } 
 
 		public bool Trim { get; set; }
 
@@ -23,16 +40,16 @@ namespace Eto.Forms
 		{
 		}
 
+		public ButtonMenuItem(Generator generator)
+			: this(generator, typeof(IButtonMenuItem))
+		{
+		}
+
 		public ButtonMenuItem(Command command, Generator generator = null)
 			: base(command, generator, typeof(IButtonMenuItem))
 		{
 			Items = new MenuItemCollection(Handler);
 			Image = command.Image;
-			Handler.CreateFromCommand(command);
-		}
-
-		public ButtonMenuItem(Generator generator) : this(generator, typeof(IButtonMenuItem))
-		{
 		}
 
 		protected ButtonMenuItem(Generator generator, Type type, bool initialize = true)

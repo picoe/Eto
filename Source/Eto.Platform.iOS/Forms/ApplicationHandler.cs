@@ -87,8 +87,9 @@ namespace Eto.Platform.iOS.Forms
 				});
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public IEnumerable<Command> GetSystemCommands()
 		{
+			yield break;
 		}
 
 		public void Quit()

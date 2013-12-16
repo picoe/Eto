@@ -5,7 +5,7 @@ using MonoMac.AppKit;
 namespace Eto.Platform.Mac
 {
 
-	public class ToolBarButtonHandler : ToolBarItemHandler<NSToolbarItem, ButtonToolItem>, IButtonToolItem
+	public class ButtonToolItemHandler : ToolItemHandler<NSToolbarItem, ButtonToolItem>, IButtonToolItem
 	{
 		public override void InvokeButton()
 		{

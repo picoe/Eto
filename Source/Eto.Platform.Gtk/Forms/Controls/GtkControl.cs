@@ -538,7 +538,7 @@ namespace Eto.Platform.GtkSharp
 			set { Control.TooltipText = value; }
 		}
 
-		public virtual void MapPlatformAction(string systemAction, Command action)
+		public virtual void MapPlatformCommand(string systemAction, Command action)
 		{
 		}
 

@@ -5,7 +5,7 @@ using System.Reflection;
 
 namespace Eto.Forms
 {
-
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public static class CheckActionExtensions
 	{
 		public static CheckAction AddCheck(this ActionCollection actions, string id, string text, string iconResource, EventHandler<EventArgs> activated)
@@ -46,6 +46,7 @@ namespace Eto.Forms
 		
 	}
 	
+	[Obsolete("Use Command and menu/toolbar apis directly instead")]
 	public partial class CheckAction : BaseAction
 	{
 		bool isChecked;

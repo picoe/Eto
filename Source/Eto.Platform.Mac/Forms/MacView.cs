@@ -648,7 +648,7 @@ namespace Eto.Platform.Mac.Forms
 			{ "performMiniaturize", selPerformMiniaturize }
 		};
 
-		public virtual void MapPlatformAction(string systemAction, Command command)
+		public virtual void MapPlatformCommand(string systemAction, Command command)
 		{
 			IntPtr sel;
 			if (systemActionSelectors.TryGetValue(systemAction, out sel))

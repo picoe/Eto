@@ -110,9 +110,9 @@ namespace Eto.Platform.Mac
 			g.Add<IPrintSettings>(() => new PrintSettingsHandler());
 			
 			// Forms.ToolBar
-			g.Add<ICheckToolItem>(() => new CheckToolBarButtonHandler());
-			g.Add<ISeparatorToolItem>(() => new SeparatorToolBarItemHandler());
-			g.Add<IButtonToolItem>(() => new ToolBarButtonHandler());
+			g.Add<ICheckToolItem>(() => new CheckToolItemHandler());
+			g.Add<ISeparatorToolItem>(() => new SeparatorToolItemHandler());
+			g.Add<IButtonToolItem>(() => new ButtonToolItemHandler());
 			g.Add<IToolBar>(() => new ToolBarHandler());
 			
 			// Forms
