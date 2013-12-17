@@ -7,7 +7,6 @@ namespace Eto.Test.Sections.Drawing
 	class TextureBrushesSection2 : Scrollable
 	{
 		Bitmap image = TestIcons.Textures;
-
 		PointF location = new PointF(100, 100);
 
 		public TextureBrushesSection2()
@@ -21,10 +20,10 @@ namespace Eto.Test.Sections.Drawing
 			var font = new Font(SystemFont.Default);
 			this.Content = drawable;
 			drawable.BackgroundColor = Colors.Green;
-			drawable.MouseMove += (s, e) => {
-				location = e.Location;
-				drawable.Invalidate(); };
-			drawable.Paint += (s, e) => {
+			drawable.MouseMove += HandleMouseMove;
+			drawable.MouseDown += HandleMouseMove;
+			drawable.Paint += (s, e) =>
+			{
 				var g = e.Graphics;
 				g.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
 
@@ -42,35 +41,41 @@ namespace Eto.Test.Sections.Drawing
 			};
 		}
 
+		void HandleMouseMove(object sender, MouseEventArgs e)
+		{
+			location = e.Location;
+			((Control)sender).Invalidate();
+			e.Handled = true;
+		}
+
 		void DrawShapes(Brush brush, Size size, Graphics g)
 		{
 			g.SaveTransform();
-			g.MultiplyTransform(Matrix.FromRotationAt(20, location));
+			g.TranslateTransform(location);
+			g.RotateTransform(20);
 
 			// rectangle
-			g.FillRectangle(brush, new RectangleF(location, size));
+			g.FillRectangle(brush, new RectangleF(size));
 
 			// ellipse
-			location += new PointF(0, size.Height + 20);
-			g.FillEllipse(brush, new RectangleF(location, size));
+			g.TranslateTransform(0, size.Height + 20);
+			g.FillEllipse(brush, new RectangleF(size));
 
 			// pie
-			location += new PointF(0, size.Height + 20);
-			g.FillPie(brush, new RectangleF(location, new SizeF(size.Width * 2, size.Height)), 0, 360);
+			g.TranslateTransform(0, size.Height + 20);
+			g.FillPie(brush, new RectangleF(new SizeF(size.Width * 2, size.Height)), 0, 360);
 
 			// polygon
-			location += new PointF(0, size.Height + 20);
-			var polygon = GetPolygon(location);
+			g.TranslateTransform(0, size.Height + 20);
+			var polygon = GetPolygon();
 			g.FillPolygon(brush, polygon);
 
 			g.RestoreTransform();
 		}
 
-		static PointF[] GetPolygon(PointF location)
+		static PointF[] GetPolygon()
 		{
 			var polygon = new PointF[] { new PointF(0, 50), new PointF(50, 100), new PointF(100, 50), new PointF(50, 0) };
-			for (var i = 0; i < polygon.Length; ++i)
-				polygon[i] += location;
 			return polygon;
 		}
 	}

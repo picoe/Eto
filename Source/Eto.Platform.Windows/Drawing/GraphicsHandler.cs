@@ -116,57 +116,19 @@ namespace Eto.Platform.Windows.Drawing
 			Control.DrawRectangle (pen.ToSD (), x, y, width, height);
 		}
 
+		public void FillRectangle (Brush brush, float x, float y, float width, float height)
+		{
+			Control.FillRectangle (brush.ToSD (), x - 0.5f, y - 0.5f, width, height);
+		}
+
 		public void DrawEllipse (Pen pen, float x, float y, float width, float height)
 		{
 			Control.DrawEllipse (pen.ToSD (), x, y, width, height);
 		}
 
-		public void FillRectangle(Brush brush, float x, float y, float width, float height)
+		public void FillEllipse (Brush brush, float x, float y, float width, float height)
 		{
-			Control.TranslateTransform(x, y);
-			Control.FillRectangle(brush.ToSD(), -0.5f, -0.5f, width, height);
-			Control.TranslateTransform(-x, -y);
-		}
-
-		public void FillEllipse(Brush brush, float x, float y, float width, float height)
-		{
-			Control.TranslateTransform(x, y);
-			Control.FillEllipse (brush.ToSD (), - 0.5f, - 0.5f, width, height);
-			Control.TranslateTransform(-x, -y);
-		}
-
-		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
-		{
-			if (width != height)
-			{
-				var endAngle = startAngle + sweepAngle;
-				startAngle = GetConvertedAngle(startAngle, width / 2, height / 2, false);
-				endAngle = GetConvertedAngle(endAngle, width / 2, height / 2, false);
-				sweepAngle = endAngle - startAngle;
-			}
-
-			Control.TranslateTransform(x, y);
-			Control.FillPie(brush.ToSD(), - 0.5f, - 0.5f, width, height, startAngle, sweepAngle);
-			Control.TranslateTransform(-x, -y);
-		}
-
-		public void FillPath(Brush brush, IGraphicsPath path)
-		{
-			var p = path.ControlObject as sdd.GraphicsPath;
-			var r = p.GetBounds();
-
-			Control.TranslateTransform(r.X, r.Y);
-			var old = Control.PixelOffsetMode;
-			Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
-			// TODO: the path transforms below can lead to a round-off accumulation
-			// Another way is to clone the brush, but that is slow.
-			// But perhaps that can be cached within the graphics path
-			// (say as a property named NormalizedPath, whose points are normalized to their own bounds?)
-			p.Transform(new sdd.Matrix(1, 0, 0, 1, -r.X, -r.Y));
-			Control.FillPath(brush.ToSD(), path.ToSD());
-			p.Transform(new sdd.Matrix(1, 0, 0, 1, r.X, r.Y));
-			Control.PixelOffsetMode = old;
-			Control.TranslateTransform(-r.X, -r.Y);
+			Control.FillEllipse (brush.ToSD (), x - 0.5f, y - 0.5f, width, height);
 		}
 
 		public float GetConvertedAngle (float initialAngle, float majorRadius, float minorRadius, bool circularToElliptical)
@@ -243,6 +205,25 @@ namespace Eto.Platform.Windows.Drawing
 				sweepAngle = endAngle - startAngle;
 			}
 			Control.DrawArc (pen.ToSD (), x, y, width, height, startAngle, sweepAngle);
+		}
+
+		public void FillPie (Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		{
+			if (width != height) {
+				var endAngle = startAngle + sweepAngle;
+				startAngle = GetConvertedAngle (startAngle, width / 2, height / 2, false);
+				endAngle = GetConvertedAngle (endAngle, width / 2, height / 2, false);
+				sweepAngle = endAngle - startAngle;
+			}
+			Control.FillPie (brush.ToSD (), x - 0.5f, y - 0.5f, width, height, startAngle, sweepAngle);
+		}
+
+		public void FillPath (Brush brush, IGraphicsPath path)
+		{
+			var old = Control.PixelOffsetMode;
+			Control.PixelOffsetMode = old == sdd.PixelOffsetMode.Half ? sdd.PixelOffsetMode.None : sdd.PixelOffsetMode.Half;
+			Control.FillPath (brush.ToSD (), path.ToSD ());
+			Control.PixelOffsetMode = old;
 		}
 
 		public void DrawPath (Pen pen, IGraphicsPath path)

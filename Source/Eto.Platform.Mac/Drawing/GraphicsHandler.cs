@@ -254,7 +254,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			var m = new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight);
 			Control.ConcatCTM(m);
-			currentTransform.Multiply(m);
+			currentTransform = CGAffineTransform.Multiply(m, currentTransform);
 		}
 
 		public SD.PointF TranslateView(SD.PointF point, bool halfers = false, bool inverse = false)
@@ -520,26 +520,27 @@ namespace Eto.Platform.iOS.Drawing
 		public void TranslateTransform(float offsetX, float offsetY)
 		{
 			Control.TranslateCTM(offsetX, offsetY);
-			currentTransform.Translate(offsetX, offsetY);
+			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeTranslation(offsetX, offsetY), currentTransform);
 		}
 
 		public void RotateTransform(float angle)
 		{
 			angle = Conversions.DegreesToRadians(angle);
 			Control.RotateCTM(angle);
-			currentTransform.Rotate(angle);
+			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeRotation(angle), currentTransform);
 		}
 
 		public void ScaleTransform(float scaleX, float scaleY)
 		{
 			Control.ScaleCTM(scaleX, scaleY);
-			currentTransform.Scale(scaleX, scaleY);
+			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeScale(scaleX, scaleY), currentTransform);
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
 			var m = matrix.ToCG();
 			Control.ConcatCTM(m);
+			currentTransform = CGAffineTransform.Multiply(m, currentTransform);
 		}
 
 		public void SaveTransform()
