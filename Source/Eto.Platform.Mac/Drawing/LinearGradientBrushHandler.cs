@@ -52,15 +52,17 @@ namespace Eto.Platform.iOS.Drawing
 			{
 				graphics.Control.SetFillColorSpace(patternColorSpace);
 
-				// make current transform apply to the pattern
-				var currentTransform = graphics.CurrentTransform;
-
+				#if OSX
 				if (graphics.DisplayView != null)
 				{
 					// adjust for position of the current view relative to the window
 					var pos = graphics.DisplayView.ConvertPointToView(sd.PointF.Empty, null);
 					graphics.Control.SetPatternPhase(new sd.SizeF(pos.X, pos.Y));
 				}
+				#endif
+
+				// make current transform apply to the pattern
+				var currentTransform = graphics.CurrentTransform;
 				if (pattern == null || viewTransform != currentTransform)
 				{
 					viewTransform = currentTransform;
