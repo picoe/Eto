@@ -150,9 +150,9 @@ namespace Eto.Platform.iOS
 			((PenHandler)pen.Handler).Apply (pen, graphics);
 		}
 		
-		public static void Apply (this Brush brush, GraphicsHandler graphics, float x, float y)
+		public static void Apply (this Brush brush, GraphicsHandler graphics)
 		{
-			((BrushHandler)brush.Handler).Apply (brush.ControlObject, graphics, x, y);
+			((BrushHandler)brush.Handler).Apply (brush.ControlObject, graphics);
 		}
 
 		public static GraphicsPathHandler ToHandler (this IGraphicsPath path)

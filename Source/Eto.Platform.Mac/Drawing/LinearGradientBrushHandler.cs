@@ -160,7 +160,7 @@ namespace Eto.Platform.iOS.Drawing
 			((BrushObject)widget.ControlObject).Wrap = gradientWrap;
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics, float x, float y)
+		public override void Apply (object control, GraphicsHandler graphics)
 		{
 			((BrushObject)control).Apply (graphics);
 		}
