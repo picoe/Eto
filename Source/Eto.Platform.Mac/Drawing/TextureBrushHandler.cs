@@ -44,12 +44,7 @@ namespace Eto.Platform.iOS.Drawing
 				}
 				if (pattern == null || viewTransform != currentTransform) {
 					viewTransform = currentTransform;
-					// Create a new pattern.
-					var t = transform;
-					if (viewTransform != null)
-						t.Multiply(viewTransform.Value);
-					ClearPattern();
-					pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
+					SetPattern ();
 				}
 
 				graphics.Control.SetFillPattern (pattern, alpha);
@@ -92,6 +87,15 @@ namespace Eto.Platform.iOS.Drawing
 				var destRect = new sd.RectangleF(0, 0, image.Width, image.Height);
 				context.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, image.Height));
 				context.DrawImage (destRect, image);
+			}
+
+			void SetPattern ()
+			{
+				var t = transform;
+				if (viewTransform != null)
+					t.Multiply (viewTransform.Value);
+				ClearPattern();
+				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 			}
 		}
 
