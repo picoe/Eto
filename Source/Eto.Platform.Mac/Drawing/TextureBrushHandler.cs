@@ -46,10 +46,8 @@ namespace Eto.Platform.iOS.Drawing
 					viewTransform = currentTransform;
 					// Create a new pattern.
 					var t = transform;
-#if DESKTOP // the below lines case the image to be magnified on iOS Retina displays (and possibly also desktop retina displays - need to test.)
 					if (viewTransform != null)
 						t.Multiply(viewTransform.Value);
-#endif
 					ClearPattern();
 					pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 				}
