@@ -25,24 +25,28 @@ namespace Eto.Test.Sections.Drawing
 				location = e.Location;
 				drawable.Invalidate(); };
 			drawable.Paint += (s, e) => {
-				e.Graphics.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
+				var g = e.Graphics;
+				g.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
 
 				// texture brushes
 				var temp = location;
-				DrawShapes(textureBrush, img.Size, e.Graphics);
+				DrawShapes(textureBrush, img.Size, g);
 
 				// solid brushes
 				location = temp + new PointF(200, 0);
-				DrawShapes(solidBrush, img.Size, e.Graphics);
+				DrawShapes(solidBrush, img.Size, g);
 
 				// linear gradient brushes
 				location = temp + new PointF(400, 0);
-				DrawShapes(linearGradientBrush, img.Size, e.Graphics);
+				DrawShapes(linearGradientBrush, img.Size, g);
 			};
 		}
 
-		private void DrawShapes(Brush brush, Size size, Graphics g)
+		void DrawShapes(Brush brush, Size size, Graphics g)
 		{
+			g.SaveTransform();
+			g.MultiplyTransform(Matrix.FromRotationAt(20, location));
+
 			// rectangle
 			g.FillRectangle(brush, new RectangleF(location, size));
 
@@ -58,9 +62,11 @@ namespace Eto.Test.Sections.Drawing
 			location += new PointF(0, size.Height + 20);
 			var polygon = GetPolygon(location);
 			g.FillPolygon(brush, polygon);
+
+			g.RestoreTransform();
 		}
 
-		private static PointF[] GetPolygon(PointF location)
+		static PointF[] GetPolygon(PointF location)
 		{
 			var polygon = new PointF[] { new PointF(0, 50), new PointF(50, 100), new PointF(100, 50), new PointF(50, 0) };
 			for (var i = 0; i < polygon.Length; ++i)
