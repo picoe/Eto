@@ -29,15 +29,15 @@ namespace Eto.Test.Sections.Drawing
 
 				// texture brushes
 				var temp = location;
-				DrawShapes(textureBrush, img.Size, g);
+				DrawShapes(textureBrush, temp, img.Size, g);
 
 				// solid brushes
-				location = temp + new PointF(200, 0);
-				DrawShapes(solidBrush, img.Size, g);
+				temp = temp + new PointF(200, 0);
+				DrawShapes(solidBrush, temp, img.Size, g);
 
 				// linear gradient brushes
-				location = temp + new PointF(400, 0);
-				DrawShapes(linearGradientBrush, img.Size, g);
+				temp = temp + new PointF(200, 0);
+				DrawShapes(linearGradientBrush, temp, img.Size, g);
 			};
 		}
 
@@ -48,7 +48,7 @@ namespace Eto.Test.Sections.Drawing
 			e.Handled = true;
 		}
 
-		void DrawShapes(Brush brush, Size size, Graphics g)
+		void DrawShapes(Brush brush, PointF location, Size size, Graphics g)
 		{
 			g.SaveTransform();
 			g.TranslateTransform(location);
