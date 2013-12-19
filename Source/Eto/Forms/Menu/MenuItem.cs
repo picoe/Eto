@@ -5,20 +5,28 @@ using System.Linq;
 
 namespace Eto.Forms
 {
-	public interface IMenuItem : IMenu
+	public interface ICommandItem
 	{
 		string Text { get; set; }
 
 		string ToolTip { get; set; }
 
-		Keys Shortcut { get; set; }
-
 		bool Enabled { get; set; }
+	}
+
+	public interface ICommandItemWidget : ICommandItem
+	{
+		event EventHandler<EventArgs> Click;
+	}
+
+	public interface IMenuItem : IMenu, ICommandItem
+	{
+		Keys Shortcut { get; set; }
 
 		void CreateFromCommand(Command command);
 	}
 
-	public abstract class MenuItem : Menu
+	public abstract class MenuItem : Menu, ICommandItemWidget
 	{
 		public int Order { get; set; }
 

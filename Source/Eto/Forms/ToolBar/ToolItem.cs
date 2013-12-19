@@ -3,17 +3,14 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public interface IToolItem : IInstanceWidget
+	public interface IToolItem : IInstanceWidget, ICommandItem
 	{
-		string Text { get; set; }
-		string ToolTip { get; set; }
 		Image Image { get; set; }
-		bool Enabled { get; set; }
 
 		void CreateFromCommand(Command command);
 	}
 
-	public abstract class ToolItem : InstanceWidget
+	public abstract class ToolItem : InstanceWidget, ICommandItemWidget
 	{
 		new IToolItem Handler { get { return (IToolItem)base.Handler; } }
 
@@ -65,6 +62,8 @@ namespace Eto.Forms
 			get { return Handler.Enabled; }
 			set { Handler.Enabled = value; }
 		}
+
+		public object Tag { get; set; }
 
 		internal protected virtual void OnLoad(EventArgs e)
 		{
