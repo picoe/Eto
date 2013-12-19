@@ -23,22 +23,35 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			CGImage image;
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
-			readonly float [] alpha = { 1f };
+			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
+			readonly float[] alpha = { 1f };
 			CGPattern pattern;
-			static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern (null);
+			static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern(null);
 
-			public void Apply (GraphicsHandler graphics, float x, float y)
+			public void Apply(GraphicsHandler graphics)
 			{
-				graphics.Control.SetFillColorSpace (patternColorSpace);
-				graphics.Control.SetPatternPhase(new sd.SizeF(x, y));
-				if (pattern == null)
+				graphics.Control.SetFillColorSpace(patternColorSpace);
+
+				#if OSX
+				if (graphics.DisplayView != null)
 				{
-					ClearPattern();
-					pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), transform, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);					
+					// adjust for position of the current view relative to the window
+					var pos = graphics.DisplayView.ConvertPointToView(sd.PointF.Empty, null);
+					graphics.Control.SetPatternPhase(new sd.SizeF(pos.X, pos.Y));
 				}
-				graphics.Control.SetFillPattern (pattern, alpha);
+				#endif
+
+				// make current transform apply to the pattern
+				var currentTransform = graphics.CurrentTransform;
+				if (pattern == null || viewTransform != currentTransform)
+				{
+					viewTransform = currentTransform;
+					SetPattern();
+				}
+
+				graphics.Control.SetFillPattern(pattern, alpha);
 			}
-			
+
 			public CGImage Image
 			{
 				get { return image; }
@@ -54,11 +67,12 @@ namespace Eto.Platform.iOS.Drawing
 				get { return alpha[0]; }
 				set { alpha[0] = value; }
 			}
-			
+
 			public CGAffineTransform Transform
 			{
 				get { return transform; }
-				set {
+				set
+				{
 					transform = value;					
 					ClearPattern();
 				}
@@ -68,46 +82,54 @@ namespace Eto.Platform.iOS.Drawing
 			{
 				if (pattern != null)
 					pattern.Dispose();
-					pattern = null;
-				}
+				pattern = null;
+			}
 
-			void DrawPattern (CGContext context)
+			void DrawPattern(CGContext context)
 			{
 				var destRect = new sd.RectangleF(0, 0, image.Width, image.Height);
-				context.ConcatCTM (new CGAffineTransform (1, 0, 0, -1, 0, image.Height));
-				context.DrawImage (destRect, image);
+				context.ConcatCTM(new CGAffineTransform(1, 0, 0, -1, 0, image.Height));
+				context.DrawImage(destRect, image);
+			}
+
+			void SetPattern()
+			{
+				var t = CGAffineTransform.Multiply(transform, viewTransform);
+				ClearPattern();
+				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
 			}
 		}
 
-		public object Create (Image image, float opacity)
+		public object Create(Image image, float opacity)
 		{
-			return new BrushObject {
-				Image = image.ToCG (),
+			return new BrushObject
+			{
+				Image = image.ToCG(),
 				Opacity = opacity
 			};
 		}
 
-		public IMatrix GetTransform (TextureBrush widget)
+		public IMatrix GetTransform(TextureBrush widget)
 		{
-			return ((BrushObject)widget.ControlObject).Transform.ToEto ();
+			return ((BrushObject)widget.ControlObject).Transform.ToEto();
 		}
 
-		public void SetTransform (TextureBrush widget, IMatrix transform)
+		public void SetTransform(TextureBrush widget, IMatrix transform)
 		{
-			((BrushObject)widget.ControlObject).Transform = transform.ToCG ();
+			((BrushObject)widget.ControlObject).Transform = transform.ToCG();
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics, float x, float y)
+		public override void Apply(object control, GraphicsHandler graphics)
 		{
-			((BrushObject)control).Apply (graphics, x, y);
+			((BrushObject)control).Apply(graphics);
 		}
 
-		public float GetOpacity (TextureBrush widget)
+		public float GetOpacity(TextureBrush widget)
 		{
 			return ((BrushObject)widget.ControlObject).Opacity;
 		}
 
-		public void SetOpacity (TextureBrush widget, float opacity)
+		public void SetOpacity(TextureBrush widget, float opacity)
 		{
 			((BrushObject)widget.ControlObject).Opacity = opacity;
 		}

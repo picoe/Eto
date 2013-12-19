@@ -6,12 +6,32 @@ using MonoMac.Foundation;
 using MonoMac.AppKit;
 using MonoTouch.ObjCRuntime;
 using MonoTouch.Foundation;
+using Eto.Forms;
 
 #if IOS
 using NSView = MonoTouch.UIKit.UIView;
 #endif
 namespace Eto.Platform.Mac.Forms
 {
+	public interface IMacControlHandler
+	{
+		NSView ContainerControl { get; }
+
+		Size PositionOffset { get; }
+
+		Size MinimumSize { get; set; }
+
+		bool IsEventHandled(string eventName);
+
+		NSView ContentControl { get; }
+
+		NSView EventControl { get; }
+
+		bool AutoSize { get; }
+
+		SizeF GetPreferredSize(SizeF availableSize);
+	}
+
 	[Register("ObserverHelper")]
 	public class ObserverHelper : NSObject
 	{

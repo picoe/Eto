@@ -5,63 +5,49 @@ namespace Eto.Forms
 {
 	public interface IMenuBar : IMenu, ISubMenu
 	{
-
 	}
-	
+
 	public class MenuBar : Menu, ISubMenuWidget
 	{
 		new IMenuBar Handler { get { return (IMenuBar)base.Handler; } }
 
-		readonly MenuItemCollection menuItems;
-		
+		public MenuItemCollection Items { get; private set; }
+
+		[Obsolete("Use Items instead")]
+		public MenuItemCollection MenuItems { get { return Items; } } 
+
 		public MenuBar()
 			: this((Generator)null)
 		{
 		}
 
-		public MenuBar (Generator generator) : this (generator, typeof(IMenuBar))
+		public MenuBar(Generator generator) : this(generator, typeof(IMenuBar))
 		{
-		}
-		
-		protected MenuBar (Generator generator, Type type, bool initialize = true)
-			: base (generator, type, initialize)
-		{
-			menuItems = new MenuItemCollection (this, Handler);
 		}
 
-		public MenuBar (Generator g, IEnumerable<MenuItem> actionItems) : this(g)
+		protected MenuBar(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
-			GenerateActions (actionItems);
+			Items = new MenuItemCollection(Handler);
 		}
 
-		public void GenerateActions(IEnumerable<MenuItem> actionItems)
+		public MenuBar(Generator g, IEnumerable<MenuItem> items) : this(g)
 		{
-			foreach (var mi in actionItems) {
-				this.Add(mi);
-			}
+			Items.AddRange(items);
 		}
 
-		/// <summary>
-		/// Adds a menu item based on its Order.
-		/// </summary>
-		/// <param name="menuItem"></param>
-		public void Add(MenuItem menuItem)
+		internal protected override void OnLoad(EventArgs e)
 		{
-			ImageMenuItem.AddMenuItem(this.menuItems, menuItem);
+			base.OnLoad(e);
+			foreach (var item in Items)
+				item.OnLoad(e);
 		}
 
-		public void Remove(MenuItem menuItem)
+		internal protected override void OnUnLoad(EventArgs e)
 		{
-			this.menuItems.Remove(menuItem);
-		}
-
-		public IEnumerable<MenuItem> MenuItems
-		{
-			get
-			{
-				foreach (var m in this.menuItems)
-					yield return m;
-			}
+			base.OnUnLoad(e);
+			foreach (var item in Items)
+				item.OnLoad(e);
 		}
 	}
 }

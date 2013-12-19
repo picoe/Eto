@@ -12,6 +12,8 @@
     <RootNamespace>Eto.Platform.Windows</RootNamespace>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
+    <ReleaseVersion>
+    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -242,7 +244,7 @@
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Menu\ImageMenuItemHandler.cs">
+    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Menu\MenuBarHandler.cs">
@@ -257,19 +259,19 @@
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs">
+    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs">
+    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs">
+    <Compile Include="Forms\ToolBar\ToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="IO\ShellIcon.cs">

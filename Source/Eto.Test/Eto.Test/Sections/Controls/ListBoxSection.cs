@@ -120,15 +120,15 @@ namespace Eto.Test.Sections.Controls
 			}
 			
 			var menu = new ContextMenu();
-			var item = new ImageMenuItem { Text = "Click Me!" };
-			item.Clicked += delegate
+			var item = new ButtonMenuItem { Text = "Click Me!" };
+			item.Click += delegate
 			{
 				if (control.SelectedValue != null)
 					Log.Write(item, "Click, Item: {0}", control.SelectedValue.Text);
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.Add(item);
+			menu.Items.Add(item);
 			
 			control.ContextMenu = menu;
 			return control;

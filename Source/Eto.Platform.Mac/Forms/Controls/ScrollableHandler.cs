@@ -177,7 +177,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			return SizeF.Min(availableSize, base.GetNaturalSize(availableSize) + GetBorderSize());
 		}
 
-		protected override SD.RectangleF GetContentFrame()
+		protected override SD.RectangleF GetContentBounds()
 		{
 			var contentSize = Content.GetPreferredSize(SizeF.MaxValue);
 
@@ -214,7 +214,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 
 		public void UpdateScrollSizes()
 		{
-			InternalSetFrameSize(GetContentFrame().Size);
+			InternalSetFrameSize(GetContentBounds().Size);
 		}
 
 		public override Color BackgroundColor

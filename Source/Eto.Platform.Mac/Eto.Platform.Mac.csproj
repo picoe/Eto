@@ -121,17 +121,12 @@
     <Compile Include="Forms\Menu\MenuHandler.cs" />
     <Compile Include="Forms\Menu\RadioMenuItemHandler.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs" />
     <Compile Include="Forms\Controls\MacControl.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs" />
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs" />
     <Compile Include="Forms\Controls\MacText.cs" />
     <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Forms\Controls\MacButton.cs" />
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />
-    <Compile Include="Forms\Actions\MacButtonAction.cs" />
     <Compile Include="Forms\UITimerHandler.cs" />
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
@@ -191,6 +186,11 @@
     <Compile Include="Drawing\FontExtensions.cs" />
     <Compile Include="MacExtensions.cs" />
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\Actions\MacCommand.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <ItemGroup />

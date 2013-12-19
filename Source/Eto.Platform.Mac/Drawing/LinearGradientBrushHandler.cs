@@ -22,11 +22,10 @@ namespace Eto.Platform.iOS.Drawing
 		class BrushObject
 		{
 			CGAffineTransform transform = CGAffineTransform.MakeIdentity();
-			CGAffineTransform? viewTransform;
-			readonly float [] alpha = { 1f };
+			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
+			readonly float[] alpha = { 1f };
 			CGPattern pattern;
-			static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern (null);
-
+			static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern(null);
 			GradientWrapMode wrap;
 			sd.SizeF tileSize;
 			sd.SizeF sectionSize;
@@ -42,75 +41,82 @@ namespace Eto.Platform.iOS.Drawing
 			public GradientWrapMode Wrap
 			{
 				get { return wrap; }
-				set {
+				set
+				{
 					wrap = value;
 					pattern = null;
 				}
 			}
 
-			public void Apply (GraphicsHandler graphics)
+			public void Apply(GraphicsHandler graphics)
 			{
-				graphics.Control.SetFillColorSpace (patternColorSpace);
+				graphics.Control.SetFillColorSpace(patternColorSpace);
+
+				#if OSX
+				if (graphics.DisplayView != null)
+				{
+					// adjust for position of the current view relative to the window
+					var pos = graphics.DisplayView.ConvertPointToView(sd.PointF.Empty, null);
+					graphics.Control.SetPatternPhase(new sd.SizeF(pos.X, pos.Y));
+				}
+				#endif
 
 				// make current transform apply to the pattern
-#if OSX
-				var currentTransform = graphics.Control.GetCTM ();
-#elif IOS
 				var currentTransform = graphics.CurrentTransform;
-#endif
-				if (graphics.DisplayView != null) {
-					var pos = graphics.DisplayView.ConvertPointToView (sd.PointF.Empty, null);
-					currentTransform.Translate(pos.X, pos.Y);
-					graphics.Control.SetPatternPhase(new sd.SizeF(-pos.X, -pos.Y));
-				}
-				if (pattern == null || viewTransform != currentTransform) {
+				if (pattern == null || viewTransform != currentTransform)
+				{
 					viewTransform = currentTransform;
-					SetPattern ();
+					SetPattern();
 				}
 
-				graphics.Control.SetFillPattern (pattern, alpha);
+				graphics.Control.SetFillPattern(pattern, alpha);
 			}
-			
+
 			public float Opacity
 			{
 				get { return alpha[0]; }
 				set { alpha[0] = value; }
 			}
-			
+
 			public CGAffineTransform Transform
 			{
 				get { return transform; }
-				set {
+				set
+				{
 					transform = value;
 					pattern = null;
 				}
 			}
-			
-			void DrawPattern (CGContext context)
+
+			void DrawPattern(CGContext context)
 			{
 				var start = new sd.PointF(0, 0);
 				var end = start + sectionSize;
 
-				context.ClipToRect(sd.RectangleF.Inflate (new sd.RectangleF(start, tileSize), 4, 4));
+				context.ClipToRect(sd.RectangleF.Inflate(new sd.RectangleF(start, tileSize), 4, 4));
 
-				if (Wrap == GradientWrapMode.Reflect) {
-					for (int i = 0; i < 2; i ++) {
-						context.DrawLinearGradient (Gradient, start, end, 0);
-						context.DrawLinearGradient (InverseGradient, end, end + sectionSize, 0);
+				if (Wrap == GradientWrapMode.Reflect)
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						context.DrawLinearGradient(Gradient, start, end, 0);
+						context.DrawLinearGradient(InverseGradient, end, end + sectionSize, 0);
 						start = start + sectionSize + sectionSize;
 						end = end + sectionSize + sectionSize;
 					}
 				}
-				else {
-					for (int i = 0; i < 2; i ++) {
-						context.DrawLinearGradient (Gradient, start, end, 0);
+				else
+				{
+					for (int i = 0; i < 2; i++)
+					{
+						context.DrawLinearGradient(Gradient, start, end, 0);
 						start = start + sectionSize;
 						end = end + sectionSize;
 					}
 				}
 			}
-			
-			void SetPattern ()
+
+			void SetPattern()
 			{
 				sectionSize = new sd.SizeF((EndPoint.X - StartPoint.X) + 1, (EndPoint.Y - StartPoint.Y) + 1);
 				if (Wrap == GradientWrapMode.Reflect)
@@ -118,51 +124,58 @@ namespace Eto.Platform.iOS.Drawing
 				else
 					tileSize = new sd.SizeF(sectionSize.Width * 2, sectionSize.Height * 2);
 				var rect = new sd.RectangleF(StartPoint, tileSize);
-				var t = transform;
-				if (viewTransform != null)
-					t.Multiply (viewTransform.Value);
+				var t = CGAffineTransform.Multiply(transform, viewTransform);
 				pattern = new CGPattern(rect, t, rect.Width, rect.Height, CGPatternTiling.ConstantSpacingMinimalDistortion, true, DrawPattern);
 			}
 		}
 
-		public object Create (Color startColor, Color endColor, PointF startPoint, PointF endPoint)
+		public object Create(Color startColor, Color endColor, PointF startPoint, PointF endPoint)
 		{
-			return new BrushObject {
-				Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new CGColor [] { startColor.ToCGColor (), endColor.ToCGColor () } ),
-				InverseGradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new CGColor [] { endColor.ToCGColor (), startColor.ToCGColor () } ),
-				StartPoint = startPoint.ToSD (),
-				EndPoint = endPoint.ToSD ()
+			return new BrushObject
+			{
+				Gradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new CGColor []
+				{
+					startColor.ToCGColor(),
+					endColor.ToCGColor()
+				}),
+				InverseGradient = new CGGradient(CGColorSpace.CreateDeviceRGB(), new CGColor []
+				{
+					endColor.ToCGColor(),
+					startColor.ToCGColor()
+				}),
+				StartPoint = startPoint.ToSD(),
+				EndPoint = endPoint.ToSD()
 			};
 		}
 
-		public object Create (RectangleF rectangle, Color startColor, Color endColor, float angle)
+		public object Create(RectangleF rectangle, Color startColor, Color endColor, float angle)
 		{
 			return null;
 		}
 
-		public IMatrix GetTransform (LinearGradientBrush widget)
+		public IMatrix GetTransform(LinearGradientBrush widget)
 		{
-			return ((BrushObject)widget.ControlObject).Transform.ToEto ();
+			return ((BrushObject)widget.ControlObject).Transform.ToEto();
 		}
 
-		public void SetTransform (LinearGradientBrush widget, IMatrix transform)
+		public void SetTransform(LinearGradientBrush widget, IMatrix transform)
 		{
-			((BrushObject)widget.ControlObject).Transform = transform.ToCG ();
+			((BrushObject)widget.ControlObject).Transform = transform.ToCG();
 		}
 
-		public GradientWrapMode GetGradientWrap (LinearGradientBrush widget)
+		public GradientWrapMode GetGradientWrap(LinearGradientBrush widget)
 		{
 			return ((BrushObject)widget.ControlObject).Wrap;
 		}
 
-		public void SetGradientWrap (LinearGradientBrush widget, GradientWrapMode gradientWrap)
+		public void SetGradientWrap(LinearGradientBrush widget, GradientWrapMode gradientWrap)
 		{
 			((BrushObject)widget.ControlObject).Wrap = gradientWrap;
 		}
 
-		public override void Apply(object control, GraphicsHandler graphics, float x, float y)
+		public override void Apply(object control, GraphicsHandler graphics)
 		{
-			((BrushObject)control).Apply (graphics);
+			((BrushObject)control).Apply(graphics);
 		}
 	}
 }

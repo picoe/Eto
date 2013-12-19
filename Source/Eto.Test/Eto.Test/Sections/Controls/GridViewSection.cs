@@ -224,35 +224,35 @@ namespace Eto.Test.Sections.Controls
 
 			// Context menu
 			var menu = new ContextMenu();
-			var item = new ImageMenuItem { Text = "Click Me!" };
-			item.Clicked += delegate
+			var item = new ButtonMenuItem { Text = "Click Me!" };
+			item.Click += delegate
 			{
 				if (control.SelectedRows.Any())
 					Log.Write(item, "Click, Rows: {0}", SelectedRowsString(control));
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.Add(item);
+			menu.Items.Add(item);
 
 			// Delete menu item: deletes the item from the store, the UI updates via the binding.
-			var deleteItem = new ImageMenuItem { Text = "Delete Item" };
-			deleteItem.Clicked += (s, e) =>
+			var deleteItem = new ButtonMenuItem { Text = "Delete Item" };
+			deleteItem.Click += (s, e) =>
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
 					items.Remove(i);
 			};
-			menu.Add(deleteItem);
+			menu.Items.Add(deleteItem);
 
 			// Insert item: inserts an item into the store, the UI updates via the binding.
-			var insertItem = new ImageMenuItem { Text = "Insert Item at the start of the list" };
-			insertItem.Clicked += (s, e) =>
+			var insertItem = new ButtonMenuItem { Text = "Insert Item at the start of the list" };
+			insertItem.Click += (s, e) =>
 			{
 				var i = control.SelectedItems.First() as MyGridItem;
 				if (i != null)
 					items.Insert(0, new MyGridItem(new Random(), 0, null));
 			};
-			menu.Add(insertItem);
+			menu.Items.Add(insertItem);
 
 			control.ContextMenu = menu;
 			return control;

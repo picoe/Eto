@@ -25,5 +25,11 @@ namespace Eto.Platform.Mac
 			get { return Keys.None; }
 			set { throw new NotSupportedException (); }
 		}
+
+		public string ToolTip {
+			get { return string.Empty; }
+			set { throw new NotSupportedException (); }
+		}
+
 	}
 }

@@ -87,24 +87,5 @@ namespace Eto.Platform.Windows
 				}
 			}
 		}
-
-		#region IMenu Members
-
-		public void AddMenu(int index, MenuItem item)
-		{
-			Control.DropDownItems.Insert(index, (SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void RemoveMenu(MenuItem item)
-		{
-			Control.DropDownItems.Remove((SWF.ToolStripItem)item.ControlObject);
-		}
-
-		public void Clear()
-		{
-			Control.DropDownItems.Clear();
-		}
-
-		#endregion
 	}
 }

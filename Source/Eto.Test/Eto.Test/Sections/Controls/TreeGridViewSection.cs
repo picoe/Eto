@@ -97,15 +97,15 @@ namespace Eto.Test.Sections.Controls
 		
 #if DESKTOP
 			var menu = new ContextMenu();
-			var item = new ImageMenuItem{ Text = "Click Me!" };
-			item.Clicked += delegate
+			var item = new ButtonMenuItem{ Text = "Click Me!" };
+			item.Click += delegate
 			{
 				if (control.SelectedItem != null)
 					Log.Write(item, "Click, Rows: {0}", control.SelectedItem);
 				else
 					Log.Write(item, "Click, no item selected");
 			};
-			menu.Add(item);
+			menu.Items.Add(item);
 			
 			control.ContextMenu = menu;
 #endif

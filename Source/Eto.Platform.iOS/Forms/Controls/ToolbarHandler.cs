@@ -8,12 +8,12 @@ namespace Eto.Platform.iOS.Forms.Controls
 {
 	public class ToolBarHandler : WidgetHandler<UIToolbar, ToolBar>, IToolBar
 	{
-		public void AddButton(ToolBarItem button)
+		public void AddButton(ToolItem button)
 		{
 			throw new NotImplementedException();
 		}
 
-		public void RemoveButton(ToolBarItem button)
+		public void RemoveButton(ToolItem button)
 		{
 			throw new NotImplementedException();
 		}

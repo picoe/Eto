@@ -38,6 +38,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			}
 		}
 
+		class EtoStepper : NSStepper
+		{
+			public override bool AcceptsFirstResponder()
+			{
+				return false;
+			}
+		}
+
 		public override object EventObject
 		{
 			get { return text; }
@@ -58,7 +66,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			};
 			text.Changed += HandleTextChanged;
 			
-			stepper = new NSStepper();
+			stepper = new EtoStepper();
 			stepper.Activated += HandleStepperActivated;
 			MinValue = 0;
 			MaxValue = 100;

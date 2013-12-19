@@ -136,7 +136,12 @@ namespace Eto.Platform.Wpf.Forms
 			Control.Dispatcher.BeginInvoke(action);
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public IEnumerable<Command> GetSystemCommands()
+		{
+			yield break;
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
 		{
 		}
 

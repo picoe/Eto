@@ -22,7 +22,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Debug</OutputPath>
     <DefineConstants>TRACE;DEBUG;DESKTOP;XAML;XML</DefineConstants>
-    <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>..\..\BuildOutput\Debug\Eto.xml</DocumentationFile>
     <Optimize>false</Optimize>
     <DebugType>full</DebugType>
@@ -30,7 +29,6 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <OutputPath>..\..\BuildOutput\Release</OutputPath>
     <DefineConstants>TRACE;DESKTOP;XAML;XML</DefineConstants>
-    <GenerateDocumentation>True</GenerateDocumentation>
     <DocumentationFile>..\..\BuildOutput\Release\Eto.xml</DocumentationFile>
     <Optimize>true</Optimize>
     <DebugType>pdbonly</DebugType>
@@ -131,7 +129,37 @@
     <Compile Include="Forms\UITimer.cs" />
     <Compile Include="Forms\Window.cs" />
     <Compile Include="Forms\Window.desktop.cs" />
-    <Compile Include="Forms\Actions\BaseAction.cs">
+    <Compile Include="Forms\Actions\ActionCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItem.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItem.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItemCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ActionItemCollection.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ButtonAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\ButtonAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\CheckAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\CheckAction.desktop.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\RadioAction.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\RadioAction.desktop.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Controls\Button.cs" />
@@ -159,19 +187,12 @@
     <Compile Include="Forms\Controls\TextControl.cs" />
     <Compile Include="Forms\Controls\TreeGridView.cs" />
     <Compile Include="Forms\Menu\CheckMenuItem.cs" />
-    <Compile Include="Forms\Menu\ImageMenuItem.cs" />
     <Compile Include="Forms\Menu\Menu.cs" />
-    <Compile Include="Forms\Menu\MenuActionItem.cs" />
     <Compile Include="Forms\Menu\MenuBar.cs" />
     <Compile Include="Forms\Menu\MenuItem.cs" />
     <Compile Include="Forms\Menu\RadioMenuItem.cs" />
     <Compile Include="Forms\Menu\SeparatorMenuItem.cs" />
-    <Compile Include="Forms\ToolBar\CheckToolBarButton.cs" />
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItem.cs" />
     <Compile Include="Forms\ToolBar\ToolBar.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButton.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarActionItem.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarItem.cs" />
     <Compile Include="IO\DiskDirectoryInfo.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -220,7 +241,6 @@
     <Compile Include="Forms\Controls\DateTimePicker.cs" />
     <Compile Include="Style.cs" />
     <Compile Include="Forms\Menu\ContextMenu.cs" />
-    <Compile Include="Forms\Menu\SubMenu.cs" />
     <Compile Include="Forms\Layout\DynamicLayout.cs" />
     <Compile Include="Forms\ListItem.cs" />
     <Compile Include="Forms\Controls\ListBox.desktop.cs" />
@@ -347,6 +367,23 @@
     <Compile Include="Forms\Layout\DynamicRowConverter.cs" />
     <Compile Include="Forms\Controls\Spinner.cs" />
     <Compile Include="Forms\ThemedControls\ThemedSpinnerHandler.cs" />
+    <Compile Include="Forms\Actions\GenerateActionArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Actions\BaseAction.desktop.cs" />
+    <Compile Include="Forms\Actions\BaseAction.cs" />
+    <Compile Include="Forms\Command.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Forms\Menu\SubMenu.cs" />
+    <Compile Include="Forms\Menu\MenuItemCollection.cs" />
+    <Compile Include="Forms\ToolBar\ToolItem.cs" />
+    <Compile Include="Forms\ToolBar\SeparatorToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItem.cs" />
+    <Compile Include="Forms\ToolBar\CheckToolItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolItemCollection.cs" />
+    <Compile Include="Forms\Menu\ButtonMenuItem.cs" />
+    <Compile Include="Forms\ToolBar\ToolItem.obsolete.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>

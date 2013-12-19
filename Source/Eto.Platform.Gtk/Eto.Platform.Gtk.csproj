@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -10,6 +10,8 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Eto.Platform.GtkSharp</RootNamespace>
     <AssemblyName>Eto.Platform.Gtk</AssemblyName>
+    <ReleaseVersion>
+    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -165,7 +167,7 @@
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\Menu\ImageMenuItemHandler.cs">
+    <Compile Include="Forms\Menu\ButtonMenuItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\Menu\SeparatorMenuItemHandler.cs">
@@ -180,17 +182,17 @@
     <Compile Include="Forms\Menu\MenuBarHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\CheckToolBarButtonHandler.cs">
+    <Compile Include="Forms\ToolBar\CheckToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\SeparatorToolBarItemHandler.cs" />
-    <Compile Include="Forms\ToolBar\ToolBarButtonHandler.cs">
+    <Compile Include="Forms\ToolBar\SeparatorToolItemHandler.cs" />
+    <Compile Include="Forms\ToolBar\ButtonToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Forms\ToolBar\ToolBarItemHandler.cs">
+    <Compile Include="Forms\ToolBar\ToolItemHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\SelectFolderDialogHandler.cs" />

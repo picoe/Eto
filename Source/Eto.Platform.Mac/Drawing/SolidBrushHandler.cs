@@ -17,7 +17,7 @@ namespace Eto.Platform.iOS.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class SolidBrushHandler : BrushHandler, ISolidBrush
 	{
-		public override void Apply(object control, GraphicsHandler graphics, float x, float y)
+		public override void Apply (object control, GraphicsHandler graphics)
 		{
 			graphics.Control.SetFillColor ((CGColor)control);
 		}

@@ -205,7 +205,7 @@ namespace Eto.Test.Sections.Printing
 		static Control Copies()
 		{
 			var control = new NumericUpDown { MinValue = 1 };
-			control.ValueBinding.Bind<PrintSettings>(r => r.Copies, (r, v) => r.Copies = (int)v);
+			control.ValueBinding.Bind<PrintSettings>(r => r.Copies, (r, v) => r.Copies = (int)v, defaultGetValue: 1);
 			return control;
 		}
 

@@ -35,7 +35,6 @@ namespace Eto.Platform.GtkSharp
 		{
 			if (EtoEnvironment.Platform.IsWindows && Environment.Is64BitProcess)
 				throw new NotSupportedException("Please compile/run GTK in x86 mode (32-bit) on windows");
-			Helper.Init();
 
 			AddTo(this);
 		}
@@ -102,7 +101,7 @@ namespace Eto.Platform.GtkSharp
 			// Forms.Menu
 			g.Add<ICheckMenuItem>(() => new CheckMenuItemHandler());
 			g.Add<IContextMenu>(() => new ContextMenuHandler());
-			g.Add<IImageMenuItem>(() => new ImageMenuItemHandler());
+			g.Add<IButtonMenuItem>(() => new ButtonMenuItemHandler());
 			g.Add<IMenuBar>(() => new MenuBarHandler());
 			g.Add<IRadioMenuItem>(() => new RadioMenuItemHandler());
 			g.Add<ISeparatorMenuItem>(() => new SeparatorMenuItemHandler());
@@ -113,9 +112,9 @@ namespace Eto.Platform.GtkSharp
 			g.Add<IPrintSettings>(() => new PrintSettingsHandler());
 			
 			// Forms.ToolBar
-			g.Add<ICheckToolBarButton>(() => new CheckToolBarButtonHandler());
-			g.Add<ISeparatorToolBarItem>(() => new SeparatorToolBarItemHandler());
-			g.Add<IToolBarButton>(() => new ToolBarButtonHandler());
+			g.Add<ICheckToolItem>(() => new CheckToolItemHandler());
+			g.Add<ISeparatorToolItem>(() => new SeparatorToolItemHandler());
+			g.Add<IButtonToolItem>(() => new ButtonToolItemHandler());
 			g.Add<IToolBar>(() => new ToolBarHandler());
 
 			// Forms

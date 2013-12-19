@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Linq;
 
 namespace Eto.Forms
 {
@@ -12,7 +13,7 @@ namespace Eto.Forms
 
 		void Quit();
 
-		void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems);
+		IEnumerable<Command> GetSystemCommands();
 
 		Keys CommonModifier { get; }
 
@@ -141,9 +142,40 @@ namespace Eto.Forms
 			get { return Handler.AlternateModifier; }
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems = false)
+		public IEnumerable<Command> GetSystemCommands()
 		{
-			Handler.GetSystemActions(actions, menu, toolBar, addStandardItems);
+			return Handler.GetSystemCommands();
+		}
+
+		[Obsolete("Use CreateStandardMenu and/or GetSystemCommands instead")]
+		public void GetSystemActions(GenerateActionArgs args, bool addStandardItems = false)
+		{
+			// map new commands/menus back to actions for backwards compatibility
+			var commands = GetSystemCommands().ToArray();
+			foreach (var command in commands)
+			{
+				var currentCommand = command;
+				var action = new ButtonAction
+				{
+					ID = currentCommand.ID,
+					MenuText = currentCommand.MenuText,
+					ToolBarText = currentCommand.ToolBarText,
+					TooltipText = currentCommand.ToolTip,
+					Accelerator = currentCommand.Shortcut,
+					command = currentCommand
+				};
+				currentCommand.Executed += (sender, e) => action.Activate();
+				action.EnabledChanged += (sender, e) => currentCommand.Enabled = action.Enabled;
+				args.Actions.Add(action);
+			}
+			#if DESKTOP
+			if (addStandardItems)
+			{
+				var menu = new MenuBar(Generator);
+				CreateStandardMenu(menu.Items, commands);
+				args.Menu.ExtractMenu(menu);
+			}
+			#endif
 		}
 
 		public string BadgeLabel

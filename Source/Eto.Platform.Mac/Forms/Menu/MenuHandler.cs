@@ -1,5 +1,6 @@
 using Eto.Forms;
 using MonoMac.AppKit;
+using Eto.Platform.Mac.Forms.Actions;
 
 namespace Eto.Platform.Mac
 {
@@ -34,6 +35,16 @@ namespace Eto.Platform.Mac
 		public virtual void Clear()
 		{
 			Control.Submenu = null;
+		}
+
+		public void CreateFromCommand(Command command)
+		{
+			var m = command as MacCommand;
+			if (m != null)
+			{
+				Control.Target = null;
+				Control.Action = m.Selector;
+			}
 		}
 	}
 }

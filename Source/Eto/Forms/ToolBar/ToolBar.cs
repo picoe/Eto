@@ -1,4 +1,6 @@
 using System.Collections.ObjectModel;
+using System.Collections.Generic;
+using System;
 
 namespace Eto.Forms
 {
@@ -7,59 +9,32 @@ namespace Eto.Forms
 		Right,
 		Underneath
 	}
-	
+
 	public enum ToolBarDock
 	{
 		Top,
 		Bottom
 	}
-	
+
 	public interface IToolBar : IInstanceWidget
 	{
-		void AddButton(ToolBarItem button);
-		void RemoveButton(ToolBarItem button);
+		void AddButton(ToolItem button);
+
+		void RemoveButton(ToolItem button);
+
 		void Clear();
+
 		ToolBarTextAlign TextAlign { get; set; }
+
 		ToolBarDock Dock { get; set; }
 	}
-	
-	/// <summary>
-	/// Summary description for ToolBar.
-	/// </summary>
+
 	public class ToolBar : InstanceWidget
 	{
-		new IToolBar Handler { get { return (IToolBar)base.Handler; } }
-		readonly ToolbarItemCollection items;
-	
-		public class ToolbarItemCollection : Collection<ToolBarItem>
-		{
-			readonly ToolBar toolBar;
-			
-			protected internal ToolbarItemCollection(ToolBar toolBar)
-			{
-				this.toolBar = toolBar;
-			}
-			
-			protected override void InsertItem (int index, ToolBarItem item)
-			{
-				base.InsertItem (index, item);
-				toolBar.Handler.AddButton (item);
-			}
-			
-			protected override void RemoveItem (int index)
-			{
-				var item = this[index];
-				base.RemoveItem (index);
-				toolBar.Handler.RemoveButton (item);
-			}
-			
-			protected override void ClearItems ()
-			{
-				base.ClearItems ();
-				toolBar.Handler.Clear ();
-			}
-		}
-		
+		internal new IToolBar Handler { get { return (IToolBar)base.Handler; } }
+
+		readonly ToolItemCollection items;
+
 		public ToolBar()
 			: this((Generator)null)
 		{
@@ -67,16 +42,16 @@ namespace Eto.Forms
 
 		public ToolBar(Generator generator) : base(generator, typeof(IToolBar))
 		{
-			items = new ToolbarItemCollection(this);
+			items = new ToolItemCollection(this);
 		}
-		
+
 		public ToolBarDock Dock
 		{
 			get { return Handler.Dock; }
 			set { Handler.Dock = value; }
 		}
 
-		public ToolbarItemCollection Items
+		public ToolItemCollection Items
 		{
 			get { return items; }
 		}
@@ -87,5 +62,16 @@ namespace Eto.Forms
 			set { Handler.TextAlign = value; }
 		}
 
+		internal protected virtual void OnLoad(EventArgs e)
+		{
+			foreach (var item in Items)
+				item.OnLoad(e);
+		}
+
+		internal protected virtual void OnUnLoad(EventArgs e)
+		{
+			foreach (var item in Items)
+				item.OnLoad(e);
+		}
 	}
 }

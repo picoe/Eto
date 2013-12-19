@@ -67,8 +67,14 @@ namespace Eto.Platform.Windows.Drawing
 			// We create a temp image from the file
 			// because SD.Bitmap(filename) locks the file
 			// until the image is disposed.
-			using (var temp = new SD.Bitmap(fileName))
-				Control = new SD.Bitmap(temp);
+			// this is not the case in mono
+			if (EtoEnvironment.Platform.IsWindows)
+			{
+				using (var temp = new SD.Bitmap(fileName))
+					Control = new SD.Bitmap(temp);
+			}
+			else
+				Control = new SD.Bitmap(fileName);
 		}
 
 		public void Create(Stream stream)
@@ -107,7 +113,15 @@ namespace Eto.Platform.Windows.Drawing
 		public void Create (Image image, int width, int height, ImageInterpolation interpolation)
 		{
 			var source = image.ToSD ();
-			Control = new SD.Bitmap (width, height, source.PixelFormat);
+			var pixelFormat = source.PixelFormat;
+			if (EtoEnvironment.Platform.IsMono && (
+				pixelFormat == SD.Imaging.PixelFormat.Indexed
+				|| pixelFormat == SD.Imaging.PixelFormat.Format1bppIndexed
+				|| pixelFormat == SD.Imaging.PixelFormat.Format4bppIndexed
+				|| pixelFormat == SD.Imaging.PixelFormat.Format8bppIndexed
+			))
+				pixelFormat = SD.Imaging.PixelFormat.Format32bppRgb;
+			Control = new SD.Bitmap (width, height, pixelFormat);
 			using (var graphics = SD.Graphics.FromImage(Control)) {
 				graphics.InterpolationMode = interpolation.ToSD ();
 				var rect = new SD.Rectangle (0, 0, width, height);

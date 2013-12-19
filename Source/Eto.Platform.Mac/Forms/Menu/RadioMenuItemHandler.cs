@@ -80,7 +80,7 @@ namespace Eto.Platform.Mac
 			set { Control.State = value ? NSCellStateValue.On : NSCellStateValue.Off; }
 		}
 
-		MenuActionItem IMenuActionHandler.Widget
+		MenuItem IMenuActionHandler.Widget
 		{
 			get { return Widget; }
 		}

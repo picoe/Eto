@@ -443,7 +443,7 @@ namespace Eto.Platform.Wpf.Forms
 			}
 		}
 
-		public void MapPlatformAction(string systemAction, BaseAction action)
+		public void MapPlatformCommand(string systemAction, Command command)
 		{
 		}
 

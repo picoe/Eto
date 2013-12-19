@@ -167,10 +167,6 @@ namespace Eto.Platform.Windows
 			}
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
-		{
-		}
-
 		public void Invoke(Action action)
 		{
 			if (Widget.MainForm != null)
@@ -203,6 +199,15 @@ namespace Eto.Platform.Windows
 			}
 			if (context != null)
 				context.Post(state => action(), null);
+		}
+
+		public IEnumerable<Command> GetSystemCommands()
+		{
+			yield break;
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands)
+		{
 		}
 
 		public Keys CommonModifier

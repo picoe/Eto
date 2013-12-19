@@ -120,7 +120,15 @@ namespace Eto.Forms
 		public ToolBar ToolBar
 		{
 			get { return Handler.ToolBar; }
-			set { Handler.ToolBar = value; }
+			set
+			{ 
+				var toolbar = Handler.ToolBar;
+				if (toolbar != null)
+					toolbar.OnUnLoad(EventArgs.Empty);
+				Handler.ToolBar = value;
+				if (value != null)
+					value.OnLoad(EventArgs.Empty);
+			}
 		}
 
 		public double Opacity

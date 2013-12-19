@@ -82,6 +82,18 @@ namespace Eto.Platform.Mac.Forms.Controls
 			set { Control.CanFocus = value; }
 		}
 
+		public override void Invalidate()
+		{
+			if (!NeedsQueue(Invalidate))
+				base.Invalidate();
+		}
+
+		public override void Invalidate(Rectangle rect)
+		{
+			if (!NeedsQueue(() => Invalidate(rect)))
+				base.Invalidate(rect);
+		}
+
 		public void Update(Rectangle rect)
 		{
 			var context = NSGraphicsContext.CurrentContext;

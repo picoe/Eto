@@ -32,11 +32,8 @@ namespace Eto.Test
 		{
 			this.Title = "Test Application";
 			this.Style = "main";
-#if DESKTOP
-			this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
-#else
+			//this.SectionList = new SectionListGridView(topNodes ?? TestSectionList.TopNodes());
 			this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
-#endif
 
 #if DESKTOP
 			this.Icon = TestIcons.TestIcon;
@@ -44,19 +41,7 @@ namespace Eto.Test
 #endif
 			//this.Opacity = 0.5;
 
-			/* Option 1: use actions to generate menu and toolbar (recommended)
-			 */
-#if DESKTOP
-			GenerateMenuToolBarActions();
-#endif
-
-			/* Option 2: generate menu and toolbar directly
-			 *
-			GenerateMenu();
-			
-			GenerateToolBar();
-			/*
-			 */
+			GenerateMenuToolBar();
 
 			Content = MainContent();
 		}
@@ -66,8 +51,6 @@ namespace Eto.Test
 		Control MainContent()
 		{
 			contentContainer = new Panel();
-
-			Splitter splitter = null;
 
 			// set focus when the form is shown
 			Shown += delegate
@@ -88,12 +71,7 @@ namespace Eto.Test
 					}
 					else
 					{
-#if MOBILE
-						// For now, avoid nested controls in mobile.
-						splitter.Panel2 = content;
-#else
 						contentContainer.Content = content;
-#endif
 					}
 				}
 				catch (Exception ex)
@@ -110,7 +88,7 @@ namespace Eto.Test
 
 			if (Splitter.IsSupported())
 			{
-				splitter = new Splitter
+				var splitter = new Splitter
 				{
 					Position = 200,
 					FixedPanel = SplitterFixedPanel.Panel1,
@@ -169,85 +147,52 @@ namespace Eto.Test
 			return control;
 		}
 
-		void GenerateMenuToolBarActions()
+		void GenerateMenuToolBar()
 		{
-			// use actions to generate menu & toolbar to share logic
-			var actions = new List<BaseAction>();
-			var menu = new MenuBar();
-			var toolBar = new ToolBar();
-
-			// generate actions to use in menus and toolbars
-			Application.Instance.GetSystemActions(actions, menu, toolBar, true);
 			var about = new Actions.About();
 			var quit = new Actions.Quit();
-			var close = new Actions.Close();
 
-			// generate and set the menu
-			var file = menu.GetSubmenu("&File", 100);
-			menu.GetSubmenu("&Edit", 200);
-			menu.GetSubmenu("&Window", 900);
-			var help = menu.GetSubmenu("&Help", 1000);
+#if DESKTOP
+			var menu = new MenuBar();
+			// create standard system menu (e.g. for OS X)
+			Application.Instance.CreateStandardMenu(menu.Items);
+
+			// add our own items to the menu
+
+			var file = menu.Items.GetSubmenu("&File", 100);
+			menu.Items.GetSubmenu("&Edit", 200);
+			menu.Items.GetSubmenu("&Window", 900);
+			var help = menu.Items.GetSubmenu("&Help", 1000);
 
 			if (Generator.IsMac)
 			{
 				// have a nice OS X style menu
-
-				var main = menu.GetSubmenu(Application.Instance.Name, 0);
-				main.Add(about.CreateMenuItem()); // TODO: Order = , 0;
-				main.Add(quit.CreateMenuItem()); // TODO: Order = , 1000);
+				var main = menu.Items.GetSubmenu(Application.Instance.Name, 0);
+				main.Items.Add(about, 0);
+				main.Items.Add(quit, 1000);
 			}
 			else
 			{
 				// windows/gtk style window
-				file.Add(quit.CreateMenuItem());
-				help.Add(about.CreateMenuItem());
+				file.Items.Add(quit);
+				help.Items.Add(about);
 			}
 
-#if DESKTOP
-			this.Menu = menu;
-#endif
+			// optional, removes empty submenus and duplicate separators
+			menu.Items.Trim();
+
+			Menu = menu;
 
 			// generate and set the toolbar
-			toolBar.Items.Add(quit.CreateToolBarItem());
-			toolBar.Items.Add(about.CreateToolBarItem());
+			var toolBar = new ToolBar();
+			toolBar.Items.Add(quit);
+			toolBar.Items.Add(new ButtonToolItem(about));
 
-			// TODO for mobile
-			this.ToolBar = toolBar;
+			ToolBar = toolBar;
+#endif
+
 		}
 
-		#region Generate Menu & Toolbar Manually
-		/*
-		void GenerateMenu ()
-		{
-			var menuBar = new MenuBar ();
-			
-			var file = new ImageMenuItem{ Text = "&File" };
-			menuBar.MenuItems.Add (file);
-			
-			// close
-			var close = new ImageMenuItem { Text = "&Close" };
-			close.Click += delegate {
-				this.Close ();
-			};
-			file.MenuItems.Add (close);
-			
-			
-			this.Menu = menuBar;
-		}
-		
-		void GenerateToolBar ()
-		{
-			var toolBar = new ToolBar ();
-			
-			// close
-			var close = new ToolBarButton{ Text = "Close" };
-			close.Click += delegate {
-				this.Close ();
-			};
-			toolBar.Items.Add (close);
-		}
-		*/
-		#endregion
 		#if DESKTOP
 		public override void OnWindowStateChanged(EventArgs e)
 		{

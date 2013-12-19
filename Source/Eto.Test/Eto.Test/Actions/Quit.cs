@@ -4,41 +4,21 @@ using Eto.Forms;
 
 namespace Eto.Test.Actions
 {
-	public class Quit
+	public class Quit : Command
 	{
-		public const string ActionID = "quit";
-		string TooltipText { get { return "Close the application"; } }
-		Keys Shortcut { get { return Keys.Q | Application.Instance.CommonModifier; } }
-		Image Image { get { return TestIcons.TestImage; } }
-
-		public MenuItem CreateMenuItem()
+		public Quit()
 		{
-			var result = new ImageMenuItem
-			{
-				ID = ActionID,
-				Text = "&Quit",
-				Image = this.Image,
-				Shortcut = this.Shortcut,
-			};
-			result.Clicked += (s, e) => Handle();
-			return result;
+			ID = "quit";
+			MenuText = "&Quit";
+			ToolBarText = "Quit";
+			ToolTip = "Close the application";
+			Shortcut = Keys.Q | Application.Instance.CommonModifier;
+			Image = TestIcons.TestImage;
 		}
 
-		public ToolBarItem CreateToolBarItem()
+		public override void OnExecuted(EventArgs e)
 		{
-			var result = new ToolBarButton
-			{
-				ID = ActionID,
-				Text = "Quit",
-				Image = this.Image,
-				Shortcut = this.Shortcut,				
-			};
-			result.Clicked += (s, e) => Handle();
-			return result;
-		}
-	
-		public void Handle()
-		{
+			base.OnExecuted(e);
 			Application.Instance.Quit();
 		}
 	}

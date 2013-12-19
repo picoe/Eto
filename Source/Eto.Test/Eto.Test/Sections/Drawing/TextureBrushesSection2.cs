@@ -7,7 +7,6 @@ namespace Eto.Test.Sections.Drawing
 	class TextureBrushesSection2 : Scrollable
 	{
 		Bitmap image = TestIcons.Textures;
-
 		PointF location = new PointF(100, 100);
 
 		public TextureBrushesSection2()
@@ -21,50 +20,62 @@ namespace Eto.Test.Sections.Drawing
 			var font = new Font(SystemFont.Default);
 			this.Content = drawable;
 			drawable.BackgroundColor = Colors.Green;
-			drawable.MouseMove += (s, e) => {
-				location = e.Location;
-				drawable.Invalidate(); };
-			drawable.Paint += (s, e) => {
-				e.Graphics.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
+			drawable.MouseMove += HandleMouseMove;
+			drawable.MouseDown += HandleMouseMove;
+			drawable.Paint += (s, e) =>
+			{
+				var g = e.Graphics;
+				g.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
 
 				// texture brushes
 				var temp = location;
-				DrawShapes(textureBrush, img.Size, e.Graphics);
+				DrawShapes(textureBrush, temp, img.Size, g);
 
 				// solid brushes
-				location = temp + new PointF(200, 0);
-				DrawShapes(solidBrush, img.Size, e.Graphics);
+				temp = temp + new PointF(200, 0);
+				DrawShapes(solidBrush, temp, img.Size, g);
 
 				// linear gradient brushes
-				location = temp + new PointF(400, 0);
-				DrawShapes(linearGradientBrush, img.Size, e.Graphics);
+				temp = temp + new PointF(200, 0);
+				DrawShapes(linearGradientBrush, temp, img.Size, g);
 			};
 		}
 
-		private void DrawShapes(Brush brush, Size size, Graphics g)
+		void HandleMouseMove(object sender, MouseEventArgs e)
 		{
-			// rectangle
-			g.FillRectangle(brush, new RectangleF(location, size));
-
-			// ellipse
-			location += new PointF(0, size.Height + 20);
-			g.FillEllipse(brush, new RectangleF(location, size));
-
-			// pie
-			location += new PointF(0, size.Height + 20);
-			g.FillPie(brush, new RectangleF(location, new SizeF(size.Width * 2, size.Height)), 0, 360);
-
-			// polygon
-			location += new PointF(0, size.Height + 20);
-			var polygon = GetPolygon(location);
-			g.FillPolygon(brush, polygon);
+			location = e.Location;
+			((Control)sender).Invalidate();
+			e.Handled = true;
 		}
 
-		private static PointF[] GetPolygon(PointF location)
+		void DrawShapes(Brush brush, PointF location, Size size, Graphics g)
+		{
+			g.SaveTransform();
+			g.TranslateTransform(location);
+			g.RotateTransform(20);
+
+			// rectangle
+			g.FillRectangle(brush, new RectangleF(size));
+
+			// ellipse
+			g.TranslateTransform(0, size.Height + 20);
+			g.FillEllipse(brush, new RectangleF(size));
+
+			// pie
+			g.TranslateTransform(0, size.Height + 20);
+			g.FillPie(brush, new RectangleF(new SizeF(size.Width * 2, size.Height)), 0, 360);
+
+			// polygon
+			g.TranslateTransform(0, size.Height + 20);
+			var polygon = GetPolygon();
+			g.FillPolygon(brush, polygon);
+
+			g.RestoreTransform();
+		}
+
+		static PointF[] GetPolygon()
 		{
 			var polygon = new PointF[] { new PointF(0, 50), new PointF(50, 100), new PointF(100, 50), new PointF(50, 0) };
-			for (var i = 0; i < polygon.Length; ++i)
-				polygon[i] += location;
 			return polygon;
 		}
 	}

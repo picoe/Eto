@@ -36,7 +36,7 @@ namespace Eto.Forms
 
 		void SetParent(Container parent);
 
-		void MapPlatformAction(string systemAction, BaseAction action);
+		void MapPlatformCommand(string systemAction, Command action);
 
 		PointF PointFromScreen(PointF point);
 
@@ -462,6 +462,7 @@ namespace Eto.Forms
 		public Container ParentLayout { get { return Parent; } }
 
 		Container parent;
+
 		public Container Parent
 		{
 			get { return parent; }
@@ -556,9 +557,29 @@ namespace Eto.Forms
 			}
 		}
 
+		[Obsolete("Use MapPlatformCommand instead")]
 		public void MapPlatformAction(string systemAction, BaseAction action)
 		{
-			Handler.MapPlatformAction(systemAction, action);
+			Command command = null;
+			if (action != null)
+			{
+				command = new Command
+				{
+					ID = action.ID,
+					MenuText = action.MenuText,
+					ToolBarText = action.ToolBarText,
+					ToolTip = action.TooltipText
+				};
+				action.EnabledChanged += (sender, e) => command.Enabled = action.Enabled;
+				command.Executed += (sender, e) => action.Activate();
+			}
+
+			Handler.MapPlatformCommand(systemAction, command);
+		}
+
+		public void MapPlatformCommand(string systemAction, Command command)
+		{
+			Handler.MapPlatformCommand(systemAction, command);
 		}
 
 		public PointF PointFromScreen(PointF point)

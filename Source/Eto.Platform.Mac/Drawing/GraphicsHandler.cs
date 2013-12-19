@@ -254,7 +254,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			var m = new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight);
 			Control.ConcatCTM(m);
-			currentTransform.Multiply(m);
+			currentTransform = CGAffineTransform.Multiply(m, currentTransform);
 		}
 
 		public SD.PointF TranslateView(SD.PointF point, bool halfers = false, bool inverse = false)
@@ -347,7 +347,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
 			StartDrawing();
-			brush.Apply(this, x, y);
+			brush.Apply(this);
 			Control.FillRect(TranslateView(new SD.RectangleF(x, y, width, height), width > 1 || height > 1, true));
 			EndDrawing();
 		}
@@ -370,7 +370,7 @@ namespace Eto.Platform.iOS.Drawing
 				return;
 			}*/
 
-			brush.Apply(this, x, y);
+			brush.Apply(this);
 			Control.FillEllipseInRect(TranslateView(new SD.RectangleF(x, y, width, height), true, true));
 			EndDrawing();
 		}
@@ -395,7 +395,7 @@ namespace Eto.Platform.iOS.Drawing
 			StartDrawing();
 
 			var rect = TranslateView(new System.Drawing.RectangleF(x, y, width, height), true, true);
-			brush.Apply(this, x, y);
+			brush.Apply(this);
 			var yscale = rect.Height / rect.Width;
 			var centerY = rect.GetMidY();
 			var centerX = rect.GetMidX();
@@ -416,8 +416,7 @@ namespace Eto.Platform.iOS.Drawing
 			Control.BeginPath();
 			Control.AddPath(path.ToCG());
 			Control.ClosePath();
-			var bounds = path.Bounds;
-			brush.Apply(this, bounds.X, bounds.Y);
+			brush.Apply(this);
 			switch (path.FillMode)
 			{
 				case FillMode.Alternate:
@@ -521,26 +520,27 @@ namespace Eto.Platform.iOS.Drawing
 		public void TranslateTransform(float offsetX, float offsetY)
 		{
 			Control.TranslateCTM(offsetX, offsetY);
-			currentTransform.Translate(offsetX, offsetY);
+			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeTranslation(offsetX, offsetY), currentTransform);
 		}
 
 		public void RotateTransform(float angle)
 		{
 			angle = Conversions.DegreesToRadians(angle);
 			Control.RotateCTM(angle);
-			currentTransform.Rotate(angle);
+			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeRotation(angle), currentTransform);
 		}
 
 		public void ScaleTransform(float scaleX, float scaleY)
 		{
 			Control.ScaleCTM(scaleX, scaleY);
-			currentTransform.Scale(scaleX, scaleY);
+			currentTransform = CGAffineTransform.Multiply(CGAffineTransform.MakeScale(scaleX, scaleY), currentTransform);
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
 			var m = matrix.ToCG();
 			Control.ConcatCTM(m);
+			currentTransform = CGAffineTransform.Multiply(m, currentTransform);
 		}
 
 		public void SaveTransform()

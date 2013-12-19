@@ -52,7 +52,7 @@ namespace Eto.Forms
 				
 				var e = new AddValueEventArgs<T> ((T)values.GetValue (i), true);
 				if (e.ShouldAdd) {
-					items.Add (new EnumValue {
+					items.Add(new EnumValue {
 						Text = names[i],
 						Key = Convert.ToString (Convert.ToInt32 (e.Value, CultureInfo.InvariantCulture), CultureInfo.InvariantCulture)
 					});

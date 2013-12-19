@@ -16,7 +16,7 @@ namespace Eto.Platform.Windows
 
 		void HandleOpened(object sender, EventArgs e)
 		{
-			foreach (var item in Widget.MenuItems.OfType<MenuActionItem>())
+			foreach (var item in Widget.Items)
 			{
 				item.OnValidate(EventArgs.Empty);
 			}

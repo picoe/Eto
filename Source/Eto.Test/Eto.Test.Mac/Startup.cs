@@ -42,7 +42,7 @@ namespace Eto.Test.Mac
 				handler.Control.SelectionHighlightStyle = NSTableViewSelectionHighlightStyle.SourceList;
 			});
 
-			Style.Add<ToolBarButtonHandler> (null, handler => {
+			Style.Add<ButtonToolItemHandler> (null, handler => {
 				// use standard textured/round buttons, and make the image grayscale
 				handler.UseStandardButton (grayscale: true);
 			});

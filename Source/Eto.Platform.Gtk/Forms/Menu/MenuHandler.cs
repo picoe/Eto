@@ -11,21 +11,10 @@ namespace Eto.Platform.GtkSharp
 		{
 			var subMenu = Widget as ISubMenuWidget;
 			if (subMenu != null) {
-				foreach (var item in subMenu.MenuItems.OfType<MenuActionItem>()) {
+				foreach (var item in subMenu.Items) {
 					item.OnValidate(EventArgs.Empty);
 				}
 			}
 		}
-		
-
-		#region IMenu Members
-
-		public abstract void AddMenu(int index, MenuItem item);
-
-		public abstract void RemoveMenu(MenuItem item);
-
-		public abstract void Clear();
-		
-		#endregion
 	}
 }

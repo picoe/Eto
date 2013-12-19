@@ -14,10 +14,16 @@ namespace Eto
 
 		public Action<T, EventHandler<EventArgs>> RemoveChangeEvent { get; set; }
 
-		public DelegateBinding(Func<T, TValue> getValue, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null)
+		public TValue DefaultGetValue { get; set; }
+
+		public TValue DefaultSetValue { get; set; }
+
+		public DelegateBinding(Func<T, TValue> getValue, Action<T, TValue> setValue = null, Action<T, EventHandler<EventArgs>> addChangeEvent = null, Action<T, EventHandler<EventArgs>> removeChangeEvent = null, TValue defaultGetValue = default(TValue), TValue defaultSetValue = default(TValue))
 		{
 			GetValue = getValue;
+			DefaultGetValue = defaultGetValue;
 			SetValue = setValue;
+			DefaultSetValue = defaultSetValue;
 			if (addChangeEvent != null && removeChangeEvent != null)
 			{
 				AddChangeEvent = addChangeEvent;
@@ -31,7 +37,7 @@ namespace Eto
 		{
 			if (GetValue != null && dataItem != null)
 				return GetValue((T)dataItem);
-			return null;
+			return DefaultGetValue;
 		}
 
 		protected virtual TValue ChangeType(object value)
@@ -40,7 +46,7 @@ namespace Eto
 			throw new NotImplementedException();
 #else
 			return (value == null || DBNull.Value.Equals(value)) 
-				? default(TValue)
+				? DefaultSetValue
 				: (TValue)Convert.ChangeType(value, underlyingType);
 #endif
 		}

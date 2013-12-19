@@ -16,20 +16,18 @@ namespace Eto.Platform.Windows
 			Control.AutoSize = true;
 		}
 
-		#region IToolBar Members
-
 		public ToolBarDock Dock
 		{
 			get { return dock; }
 			set { dock = value; }
 		}
-		
-		public void AddButton(ToolBarItem item)
+
+		public void AddButton(ToolItem item)
 		{
 			((IToolBarItemHandler)item.Handler).CreateControl(this);
 		}
 
-		public void RemoveButton(ToolBarItem item)
+		public void RemoveButton(ToolItem item)
 		{
 			Control.Items.Remove((SWF.ToolStripItem)item.ControlObject);
 		}
@@ -69,7 +67,5 @@ namespace Eto.Platform.Windows
 		{
 			Control.Items.Clear();
 		}
-		#endregion
-
 	}
 }

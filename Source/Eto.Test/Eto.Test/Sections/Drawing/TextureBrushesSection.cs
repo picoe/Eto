@@ -25,7 +25,8 @@ namespace Eto.Test.Sections.Drawing
 					var destRect = new RectangleF(new PointF(100, 100), image.Size);
 					var temp = brush.Transform; // save state
 					brush.Transform = Matrix.FromRotation(90);
-					e.Graphics.FillRectangle(brush, destRect);
+					e.Graphics.TranslateTransform(destRect.Location);
+					e.Graphics.FillRectangle(brush, new RectangleF(destRect.Size));
 					brush.Transform = temp;
 				};
 				layout.AddRow(drawable);

@@ -11,7 +11,7 @@ namespace Eto.Platform.Windows
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
-			case MenuActionItem.ValidateEvent:
+			case MenuItem.ValidateEvent:
 				// handled by parents
 				break;
 			default:
@@ -20,5 +20,8 @@ namespace Eto.Platform.Windows
 			}
 		}
 
+		public void CreateFromCommand(Command command)
+		{
+		}
 	}
 }

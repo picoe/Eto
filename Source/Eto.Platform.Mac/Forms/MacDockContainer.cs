@@ -69,15 +69,15 @@ namespace Eto.Platform.Mac.Forms
 
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
-			var contentControl = content.GetMacViewHandler();
+			var contentControl = content.GetMacControl();
 			if (contentControl != null)
 				return contentControl.GetPreferredSize(availableSize) + Padding.Size;
 			return base.GetNaturalSize(availableSize);
 		}
 
-		protected virtual SD.RectangleF GetContentFrame()
+		protected virtual SD.RectangleF GetContentBounds()
 		{
-			return ContentControl.Frame;
+			return ContentControl.Bounds;
 		}
 
 		public override void LayoutChildren()
@@ -88,7 +88,7 @@ namespace Eto.Platform.Mac.Forms
 				return;
 
 			NSView childControl = content.GetContainerView();
-			var frame = GetContentFrame();
+			var frame = GetContentBounds();
 
 			if (frame.Width > padding.Horizontal && frame.Height > padding.Vertical)
 			{

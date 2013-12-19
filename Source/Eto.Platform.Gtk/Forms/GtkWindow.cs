@@ -306,10 +306,10 @@ namespace Eto.Platform.GtkSharp
 
 		void SetAccelerators(ISubMenuWidget item)
 		{
-			if (item != null && item.MenuItems != null)
-				foreach (var child in item.MenuItems)
+			if (item != null && item.Items != null)
+				foreach (var child in item.Items)
 				{
-					var actionItem = child as MenuActionItem;
+					var actionItem = child;
 					if (actionItem != null && actionItem.Shortcut != Key.None)
 					{
 						var widget = (Gtk.Widget)actionItem.ControlObject;

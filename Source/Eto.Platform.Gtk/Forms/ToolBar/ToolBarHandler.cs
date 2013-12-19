@@ -12,21 +12,18 @@ namespace Eto.Platform.GtkSharp
 			//control.ToolbarStyle = Gtk.ToolbarStyle.Both;
 		}
 
-
-		#region IToolBar Members
-
 		public ToolBarDock Dock
 		{
 			get { return dock; }
 			set { dock = value; }
 		}
 		
-		public void AddButton(ToolBarItem item)
+		public void AddButton(ToolItem item)
 		{
 			((IToolBarItemHandler)item.Handler).CreateControl(this);
 		}
 
-		public void RemoveButton(ToolBarItem item)
+		public void RemoveButton(ToolItem item)
 		{
 			if (item.ControlObject != null) Control.Remove((Gtk.Widget)item.ControlObject);
 		}
@@ -64,7 +61,5 @@ namespace Eto.Platform.GtkSharp
 				}
 			}
 		}
-		#endregion
-
 	}
 }

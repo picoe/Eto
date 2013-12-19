@@ -9,13 +9,13 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public interface IIosView
+	public interface IIosView : IMacControlHandler
 	{
 		Size PositionOffset { get; }
 		UIViewController Controller { get; }
 	}
 
-	public abstract class IosView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IIosView, IMacAutoSizing
+	public abstract class IosView<TControl, TWidget> : MacObject<TControl, TWidget>, IControl, IIosView
 		where TControl: UIResponder
 		where TWidget: Control
 	{
@@ -263,7 +263,7 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
-		public void MapPlatformAction(string systemAction, BaseAction action)
+		public void MapPlatformCommand(string systemAction, Command command)
 		{
 		}
 

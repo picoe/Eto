@@ -1,23 +1,32 @@
 #if DESKTOP
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
 	public partial interface IApplication
 	{
-		void Restart ();
-		void RunIteration ();
+		void Restart();
+
+		void RunIteration();
+
+		void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands);
 	}
-	
+
 	public partial class Application
 	{
-		public void RunIteration ()
+		public void RunIteration()
 		{
-			Handler.RunIteration ();
+			Handler.RunIteration();
 		}
 
-		public void Restart ()
+		public void Restart()
 		{
-			Handler.Restart ();
+			Handler.Restart();
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menuItems, IEnumerable<Command> commands = null)
+		{
+			Handler.CreateStandardMenu(menuItems, commands ?? GetSystemCommands());
 		}
 	}
 }

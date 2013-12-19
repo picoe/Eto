@@ -13,18 +13,18 @@ namespace Eto.Platform.GtkSharp
 			Control = new Gtk.MenuBar();
 		}
 
-		public override void AddMenu(int index, MenuItem item)
+		public void AddMenu(int index, MenuItem item)
 		{
 			Control.Insert((Gtk.Widget)item.ControlObject, index);
 			
 		}
 
-		public override void RemoveMenu(MenuItem item)
+		public void RemoveMenu(MenuItem item)
 		{
 			Control.Remove((Gtk.Widget)item.ControlObject);
 		}
 
-		public override void Clear()
+		public void Clear()
 		{
 			foreach (Gtk.Widget w in Control.Children)
 			{

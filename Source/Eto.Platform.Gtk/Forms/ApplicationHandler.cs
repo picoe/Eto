@@ -14,6 +14,12 @@ namespace Eto.Platform.GtkSharp
 		bool attached;
 		Gtk.StatusIcon statusIcon;
 
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Helper.Init();
+		}
+
 		public static int MainThreadID { get; set; }
 		
 		public void RunIteration ()
@@ -158,10 +164,15 @@ namespace Eto.Platform.GtkSharp
 			Process.Start (info);
 		}
 
-		public void GetSystemActions(List<BaseAction> actions, ISubMenuWidget menu, ToolBar toolBar, bool addStandardItems)
+		public IEnumerable<Command> GetSystemCommands()
+		{
+			yield break;
+		}
+
+		public void CreateStandardMenu(MenuItemCollection menu, IEnumerable<Command> commands)
 		{
 		}
-		
+
 		public Keys CommonModifier {
 			get {
 				return Keys.Control;
