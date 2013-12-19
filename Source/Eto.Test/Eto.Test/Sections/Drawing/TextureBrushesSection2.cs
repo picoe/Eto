@@ -59,20 +59,31 @@ namespace Eto.Test.Sections.Drawing
 				g.DrawImage (offscreenBitmap, PointF.Empty);
 			}
 		}
+
+		public Control Checkbox()
+		{
+			var control = new CheckBox {
+				Text = "Use Offscreen Bitmap",
+				Checked = this.UseOffScreenBitmap,
+			};
+			control.CheckedChanged += (sender, e) => {
+				this.UseOffScreenBitmap = control.Checked ?? false;
+			};
+			return control;
+		}	
 	}
 
 	class TextureBrushesSection2 : Scrollable
 	{
 		Bitmap image = TestIcons.Textures;
 		PointF location = new PointF(100, 100);
-		DrawableTarget drawableTarget;
 
 		public TextureBrushesSection2()
 		{
 			var drawable = new Drawable();
-			drawableTarget = new DrawableTarget (drawable);
+			var drawableTarget = new DrawableTarget (drawable);
 			var layout = new DynamicLayout(new Padding(10));
-			layout.AddSeparateRow(null, UseOffScreenBitmap(), null);
+			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
 			layout.Add(drawable);
 			this.Content = layout;
 
@@ -104,18 +115,6 @@ namespace Eto.Test.Sections.Drawing
 				render(drawableTarget.BeginDraw(e.Graphics));
 				drawableTarget.EndDraw(e.Graphics);
 			};
-		}
-
-		public Control UseOffScreenBitmap()
-		{
-			var control = new CheckBox {
-				Text = "Use Offscreen Bitmap",
-				Checked = drawableTarget.UseOffScreenBitmap,
-			};
-			control.CheckedChanged += (sender, e) => {
-				drawableTarget.UseOffScreenBitmap = control.Checked ?? false;
-			};
-			return control;
 		}
 
 		void HandleMouseMove(object sender, MouseEventArgs e)
