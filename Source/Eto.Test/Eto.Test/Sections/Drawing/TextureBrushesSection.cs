@@ -7,15 +7,15 @@ namespace Eto.Test.Sections.Drawing
 {
 	class TextureBrushesSection : Panel
 	{
-		Bitmap image = TestIcons.Textures();
+		readonly Bitmap image = TestIcons.Textures();
 
 		public TextureBrushesSection()
 		{
-			var drawable = new Drawable { Size = image.Size * 2 };
+			var drawable = new Drawable { Size = new Size(image.Size.Width, image.Size.Height * 10) };
 			var drawableTarget = new DrawableTarget (drawable);
 			var layout = new DynamicLayout(new Padding(10));
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
-			layout.Add(new Scrollable { Content = drawable, ScrollSize =  new Size(image.Size.Width, image.Size.Height * 11) }); // Setting ScrollSize does not seem to work
+			layout.Add(new Scrollable { Content = drawable });
 			this.Content = layout;
 
 			var renderers = new List<Action<Graphics>> ();

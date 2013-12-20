@@ -10,78 +10,79 @@ namespace Eto.Test.Sections.Drawing
 	/// </summary>
 	class DrawableTarget
 	{
-		Drawable drawable;
+		readonly Drawable drawable;
 		Graphics bitmapGraphics;
-		Bitmap offscreenBitmap = null;
-
+		Bitmap offscreenBitmap;
 		bool useOffScreenBitmap;
-		public bool UseOffScreenBitmap {
+
+		public bool UseOffScreenBitmap
+		{
 			get { return useOffScreenBitmap; } 
-			set { 
+			set
+			{ 
 				useOffScreenBitmap = value;
-				drawable.Invalidate ();
+				drawable.Invalidate();
 			}
 		}
 
 		public DrawableTarget(Drawable drawable)
 		{
 			this.drawable = drawable;
-			UseOffScreenBitmap = true;
+			UseOffScreenBitmap = false;
 		}
 
 		public Graphics BeginDraw(Graphics g)
 		{
-			if(UseOffScreenBitmap)
+			if (UseOffScreenBitmap)
 			{
-				if(offscreenBitmap == null ||
-					offscreenBitmap.Size.Width < drawable.Size.Width ||
-					offscreenBitmap.Size.Height < drawable.Size.Height)
+				if (offscreenBitmap == null ||
+				    offscreenBitmap.Size.Width < drawable.Size.Width ||
+				    offscreenBitmap.Size.Height < drawable.Size.Height)
 				{
-					if(offscreenBitmap != null)
+					if (offscreenBitmap != null)
 						offscreenBitmap.Dispose();
 
 					offscreenBitmap = new Bitmap(drawable.Size, PixelFormat.Format32bppRgba);
 				}
 
-				bitmapGraphics = new Graphics (offscreenBitmap);
+				bitmapGraphics = new Graphics(offscreenBitmap);
 				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor) as SolidBrush);
 				return bitmapGraphics;
 			}
-			else
-				return g;
+			return g;
 		}
 
-		public void EndDraw (Graphics g)
+		public void EndDraw(Graphics g)
 		{
-			if (UseOffScreenBitmap) {
-				bitmapGraphics.Dispose ();
+			if (UseOffScreenBitmap)
+			{
+				bitmapGraphics.Dispose();
 				bitmapGraphics = null;
-				g.DrawImage (offscreenBitmap, PointF.Empty);
+				g.DrawImage(offscreenBitmap, PointF.Empty);
 			}
 		}
 
 		public Control Checkbox()
 		{
-			var control = new CheckBox {
+			var control = new CheckBox
+			{
 				Text = "Use Offscreen Bitmap",
-				Checked = this.UseOffScreenBitmap,
+				Checked = UseOffScreenBitmap,
 			};
-			control.CheckedChanged += (sender, e) => {
-				this.UseOffScreenBitmap = control.Checked ?? false;
-			};
+			control.CheckedChanged += (sender, e) => UseOffScreenBitmap = control.Checked ?? false;
 			return control;
-		}	
+		}
 	}
 
 	class TextureBrushesSection2 : Scrollable
 	{
-		Bitmap image = TestIcons.Textures();
+		readonly Bitmap image = TestIcons.Textures();
 		PointF location = new PointF(100, 100);
 
 		public TextureBrushesSection2()
 		{
 			var drawable = new Drawable();
-			var drawableTarget = new DrawableTarget (drawable);
+			var drawableTarget = new DrawableTarget(drawable);
 			var layout = new DynamicLayout(new Padding(10));
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
 			layout.Add(drawable);
@@ -97,17 +98,18 @@ namespace Eto.Test.Sections.Drawing
 			drawable.MouseMove += HandleMouseMove;
 			drawable.MouseDown += HandleMouseMove;
 
-			Action<Graphics> render = g => {
-				g.DrawText (font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
+			Action<Graphics> render = g =>
+			{
+				g.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
 				// texture brushes
 				var temp = location;
-				DrawShapes (textureBrush, temp, img.Size, g);
+				DrawShapes(textureBrush, temp, img.Size, g);
 				// solid brushes
-				temp = temp + new PointF (200, 0);
-				DrawShapes (solidBrush, temp, img.Size, g);
+				temp = temp + new PointF(200, 0);
+				DrawShapes(solidBrush, temp, img.Size, g);
 				// linear gradient brushes
-				temp = temp + new PointF (200, 0);
-				DrawShapes (linearGradientBrush, temp, img.Size, g);
+				temp = temp + new PointF(200, 0);
+				DrawShapes(linearGradientBrush, temp, img.Size, g);
 			};
 		
 			drawable.Paint += (s, e) =>
@@ -151,7 +153,7 @@ namespace Eto.Test.Sections.Drawing
 
 		static PointF[] GetPolygon()
 		{
-			var polygon = new PointF[] { new PointF(0, 50), new PointF(50, 100), new PointF(100, 50), new PointF(50, 0) };
+			var polygon = new [] { new PointF(0, 50), new PointF(50, 100), new PointF(100, 50), new PointF(50, 0) };
 			return polygon;
 		}
 	}
