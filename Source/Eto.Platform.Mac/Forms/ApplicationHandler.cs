@@ -21,6 +21,8 @@ namespace Eto.Platform.Mac.Forms
 
 		public bool AddPrintingMenuItems { get; set; }
 
+		public bool AllowClosingMainForm { get; set; }
+
 		public static ApplicationHandler Instance
 		{
 			get { return Application.Instance == null ? null : Application.Instance.Handler as ApplicationHandler; }
@@ -37,6 +39,18 @@ namespace Eto.Platform.Mac.Forms
 			{
 				Control.DockTile.BadgeLabel = value ?? string.Empty;
 			}
+		}
+
+		public bool ShouldCloseForm(Window window, bool wasClosed)
+		{
+			if (ReferenceEquals(window, Widget.MainForm))
+			{
+				if (AllowClosingMainForm && wasClosed)
+					Widget.MainForm = null;
+				return AllowClosingMainForm;
+			}
+
+			return true;
 		}
 
 		public ApplicationHandler()
@@ -64,19 +78,13 @@ namespace Eto.Platform.Mac.Forms
 				action();
 			else
 			{
-				Control.InvokeOnMainThread(delegate
-				{
-					action();
-				});
+				Control.InvokeOnMainThread(() => action());
 			}
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-			Control.BeginInvokeOnMainThread(delegate
-			{
-				action();
-			});
+			Control.BeginInvokeOnMainThread(() => action());
 		}
 
 		public void Restart()

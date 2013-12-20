@@ -39,15 +39,10 @@ namespace Eto.Platform.Mac
 			var args = new CancelEventArgs();
 			var form = Application.Instance.MainForm == null ? null : Application.Instance.MainForm.Handler as IMacWindow;
 			if (form != null)
-			{
-				if (!form.CloseWindow())
-					return NSApplicationTerminateReply.Cancel;
-			}
-			
-			Application.Instance.OnTerminating(args);
-			if (args.Cancel)
-				return NSApplicationTerminateReply.Cancel;
-			return NSApplicationTerminateReply.Now;
+				args.Cancel = !form.CloseWindow(Application.Instance.OnTerminating);
+			else
+				Application.Instance.OnTerminating(args);
+			return args.Cancel ? NSApplicationTerminateReply.Cancel : NSApplicationTerminateReply.Now;
 		}
 	}
 }

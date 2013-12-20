@@ -39,6 +39,7 @@ namespace Eto.Forms
 
 		public virtual void OnClosed(EventArgs e)
 		{
+			OnUnLoad(EventArgs.Empty);
 			Properties.TriggerEvent(ClosedEvent, this, e);
 		}
 
@@ -85,7 +86,8 @@ namespace Eto.Forms
 		{
 			//toolBars = new ToolBarCollection(this);
 			if (initialize)
-				Initialize(); 
+				Initialize();
+			HandleEvent(ClosedEvent);
 		}
 
 		public string Title

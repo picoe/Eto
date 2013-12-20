@@ -69,7 +69,7 @@ namespace Eto.Platform.Mac.Forms
 
 		Size MinimumSize { get; }
 
-		bool CloseWindow();
+		bool CloseWindow(Action<CancelEventArgs> closing = null);
 
 		NSWindow Control { get; }
 	}
@@ -198,14 +198,16 @@ namespace Eto.Platform.Mac.Forms
 				case Window.ClosedEvent:
 					Control.WillClose += delegate
 					{
-						Widget.OnClosed(EventArgs.Empty);
+						if (ApplicationHandler.Instance.ShouldCloseForm(Widget, true))
+							Widget.OnClosed(EventArgs.Empty);
 					};
 					break;
 				case Window.ClosingEvent:
 					Control.WindowShouldClose = sender =>
 					{
 						var args = new CancelEventArgs();
-						Widget.OnClosing(args);
+						if (ApplicationHandler.Instance.ShouldCloseForm(Widget, false))
+							Widget.OnClosing(args);
 						return !args.Cancel;
 					};
 					break;
@@ -458,10 +460,12 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
-		public bool CloseWindow()
+		public bool CloseWindow(Action<CancelEventArgs> closing = null)
 		{
 			var args = new CancelEventArgs();
 			Widget.OnClosing(args);
+			if (!args.Cancel && closing != null)
+				closing(args);
 			if (!args.Cancel)
 			{
 				Widget.OnClosed(EventArgs.Empty);
