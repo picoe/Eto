@@ -169,34 +169,14 @@ namespace Eto.Platform.Windows
 
 		public void Invoke(Action action)
 		{
-			if (Widget.MainForm != null)
-			{
-				var window = Widget.MainForm.GetContainerControl() ?? swf.Form.ActiveForm;
-
-				if (window != null && window.InvokeRequired)
-				{
-					window.Invoke(action);
-					return;
-				}
-			}
 			if (Thread.CurrentThread == mainThread)
 				action();
 			else if (context != null)
-				context.Post(state => action(), null);
+				context.Send(state => action(), null);
 		}
 
 		public void AsyncInvoke(Action action)
 		{
-			if (Widget.MainForm != null)
-			{
-				var window = Widget.MainForm.GetContainerControl() ?? swf.Form.ActiveForm;
-
-				if (window != null && window.InvokeRequired)
-				{
-					window.BeginInvoke(action);
-					return;
-				}
-			}
 			if (context != null)
 				context.Post(state => action(), null);
 		}
