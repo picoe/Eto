@@ -5,7 +5,7 @@ using Eto.Drawing;
 
 namespace Eto.Test.Sections.Drawing
 {
-	class TextureBrushesSection : Scrollable
+	class TextureBrushesSection : Panel
 	{
 		Bitmap image = TestIcons.Textures;
 
@@ -15,7 +15,7 @@ namespace Eto.Test.Sections.Drawing
 			var drawableTarget = new DrawableTarget (drawable);
 			var layout = new DynamicLayout(new Padding(10));
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
-			layout.Add(drawable);
+			layout.Add(new Scrollable { Content = drawable, ScrollSize =  new Size(image.Size.Width, image.Size.Height * 11) }); // Setting ScrollSize does not seem to work
 			this.Content = layout;
 
 			var renderers = new List<Action<Graphics>> ();
@@ -28,8 +28,6 @@ namespace Eto.Test.Sections.Drawing
 					img = img.Clone(new Rectangle((i - 1) % 3 * w, (i - 1) / 3 * w, w, w));
 
 				var brush = new TextureBrush(img);
-
-				var index = i; // copy for closure
 
 				renderers.Add(g => {
 					var temp = brush.Transform; // save state
