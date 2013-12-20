@@ -5,6 +5,8 @@ namespace Eto.Forms
 {
 	public partial interface IDrawable : IDockContainer
 	{
+		bool SupportsCreateGraphics { get; }
+
 		void Create();
 
 		void Update(Rectangle rect);
@@ -72,6 +74,11 @@ namespace Eto.Forms
 		{
 			if (Paint != null)
 				Paint(this, e);
+		}
+
+		public bool SupportsCreateGraphics
+		{
+			get { return Handler.SupportsCreateGraphics; }
 		}
 
 		public Graphics CreateGraphics()

@@ -9,6 +9,8 @@ namespace Eto.Platform.Windows
 {
 	public class DrawableHandler : WindowsDockContainer<DrawableHandler.EtoDrawable, Drawable>, IDrawable
 	{
+		public virtual bool SupportsCreateGraphics { get { return true; } }
+
 		public class EtoDrawable : swf.Control
 		{
 			bool canFocus;
