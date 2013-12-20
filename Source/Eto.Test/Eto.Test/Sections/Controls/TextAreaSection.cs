@@ -16,6 +16,7 @@ namespace Eto.Test.Sections.Controls
 			layout.AddRow(new Label { Text = "Disabled" }, Disabled());
 			layout.AddRow(new Label { Text = "No Wrap" }, NoWrap());
 			layout.AddRow(new Label { Text = "Wrap" }, Wrap());
+			layout.AddRow(new Label { Text = "Pixel Layout" }, PixelLayout());
 			
 			// growing space at end is blank!
 			layout.Add(null);
@@ -126,6 +127,16 @@ namespace Eto.Test.Sections.Controls
 				Wrap = false
 			};
 			LogEvents(control);
+			return control;
+		}
+
+		Control PixelLayout()
+		{
+			var control = new PixelLayout();
+			control.Add(new TextArea
+			{
+				Text = "Some text that is contained in a pixel layout."
+			}, Point.Empty);
 			return control;
 		}
 

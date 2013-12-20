@@ -9,7 +9,7 @@ using Eto.Platform.Mac.Forms.Actions;
 
 namespace Eto.Platform.Mac
 {
-	interface IToolBarBaseItemHandler
+	public interface IToolBarBaseItemHandler
 	{
 		string Identifier { get; }
 
@@ -20,7 +20,7 @@ namespace Eto.Platform.Mac
 		void ControlAdded(ToolBarHandler toolbar);
 	}
 
-	interface IToolBarItemHandler : IToolBarBaseItemHandler
+	public interface IToolBarItemHandler : IToolBarBaseItemHandler
 	{
 		void OnClick();
 
