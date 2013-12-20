@@ -8,23 +8,23 @@ namespace Eto.Test
 		static string prefix;
 		public static string Prefix { get { return prefix = prefix ?? Assembly.GetExecutingAssembly().GetName().Name + "."; } }
 
-#if IOS
-		// Resources on iOS are stored without the extension
-		public static string TestIconName = "TestIcon"; 
-		public static string TestImageName = "TestImage";
-		public static string TexturesName = "Textures";
-#else
-		public static string TestIconName = "TestIcon.ico"; 
+		public static string TestIconName = "TestIcon.ico";
 		public static string TestImageName = "TestImage.png";
 		public static string TexturesName = "Textures.png";
-#endif
-		static Icon testIcon;
-		public static Icon TestIcon { get { return testIcon = testIcon ?? Icon.FromResource(Prefix + TestIconName); } }
 
-		static Bitmap testImage;
-		public static Bitmap TestImage { get { return testImage = testImage ?? Bitmap.FromResource(Prefix + TestImageName); } }
+		public static Icon TestIcon(Generator generator = null)
+		{
+			return Icon.FromResource(Prefix + TestIconName, generator);
+		}
 
-		static Bitmap textures;
-		public static Bitmap Textures { get { return textures = textures ?? Bitmap.FromResource(Prefix + TexturesName); } }
+		public static Bitmap TestImage(Generator generator = null)
+		{
+			return Bitmap.FromResource(Prefix + TestImageName, generator: generator);
+		}
+
+		public static Bitmap Textures(Generator generator = null)
+		{
+			return Bitmap.FromResource(Prefix + TexturesName, generator: generator);
+		}
 	}
 }

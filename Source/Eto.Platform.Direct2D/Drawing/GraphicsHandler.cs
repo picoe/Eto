@@ -5,6 +5,8 @@ using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
 using swf = System.Windows.Forms;
+using Eto.Forms;
+using Eto.Platform.Windows;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -13,28 +15,25 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics2
+	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
 	{
-		#region Constructors
+		bool hasBegan;
+		bool disposeControl;
+		s.Color4? backColor;
+
+		protected override bool DisposeControl { get { return disposeControl; } }
 
 		public GraphicsHandler()
 		{
 		}
 
-		#endregion
-
-		private sd.Brush GetBrush(Pen pen)
+		public GraphicsHandler(GraphicsHandler other)
 		{
-			var color = pen.Color;
-			return new sd.SolidColorBrush(this.Control, color.ToSD());
+			Control = other.Control;
+			disposeControl = false;
 		}
 
-		private sd.Brush GetBrush(Color color)
-		{
-			return (sd.Brush)Brushes.Cached(color, this.Generator).ControlObject;
-		}
-
-		private sd.Ellipse GetEllipse(float x, float y, float width, float height)
+		sd.Ellipse GetEllipse(float x, float y, float width, float height)
 		{
 			var rx = width / 2f;
 			var ry = height / 2f;
@@ -44,7 +43,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public bool AntiAlias { get; set; } // not used
 
-		public ImageInterpolation ImageInterpolation { get; set; } // TODO
+		public ImageInterpolation ImageInterpolation { get; set; }
 
 		public bool IsRetained
 		{
@@ -66,22 +65,22 @@ namespace Eto.Platform.Direct2D.Drawing
 			get { throw new NotImplementedException(); }
 		}
 
-		void IGraphics.SetClip(RectangleF rect)
+		public void SetClip(RectangleF rect)
 		{
 			throw new NotImplementedException();
 		}
 
-		void IGraphics.SetClip(IGraphicsPath path)
+		public void SetClip(IGraphicsPath path)
 		{
 			throw new NotImplementedException();
 		}
 
-		void IGraphics.ResetClip()
+		public void ResetClip()
 		{
 			throw new NotImplementedException();
 		}
 
-		void IGraphics.TranslateTransform(float dx, float dy)
+		public void TranslateTransform(float dx, float dy)
 		{
 			Control.Transform =
 				s.Matrix3x2.Multiply(
@@ -89,7 +88,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					Control.Transform);
 		}
 
-		void IGraphics.RotateTransform(float angle)
+		public void RotateTransform(float angle)
 		{
 			Control.Transform =
 				s.Matrix3x2.Multiply(
@@ -97,7 +96,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					Control.Transform);
 		}
 
-		void IGraphics.ScaleTransform(float sx, float sy)
+		public void ScaleTransform(float sx, float sy)
 		{
 			Control.Transform =
 				s.Matrix3x2.Multiply(
@@ -105,7 +104,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					Control.Transform);
 		}
 
-		void IGraphics.MultiplyTransform(IMatrix matrix)
+		public void MultiplyTransform(IMatrix matrix)
 		{
 			Control.Transform =
 				s.Matrix3x2.Multiply(
@@ -113,24 +112,21 @@ namespace Eto.Platform.Direct2D.Drawing
 					Control.Transform);
 		}
 
-		void IGraphics.CreateFromImage(Bitmap image)
+		public void CreateFromImage(Bitmap image)
 		{
 			var b = image.ControlObject as sd.Bitmap;
-			
 
-			throw new NotImplementedException();
+			Control = new sd.BitmapRenderTarget(CurrentRenderTarget,
+				sd.CompatibleRenderTargetOptions.None,
+				new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied));
+			BeginDrawing();
 		}
 
-		void IGraphics.CreateFromDrawable(Eto.Forms.Drawable drawable)
+		public void CreateFromDrawable(Eto.Forms.Drawable drawable)
 		{
-			var o = drawable.ControlObject as swf.Control;
+			var drawableControl = drawable.ControlObject as swf.Control;
 
-			var etoDrawable = o as Eto.Platform.Windows.DrawableHandler.EtoDrawable;
-			if (etoDrawable != null)
-			{
-				etoDrawable.SetStyle(swf.ControlStyles.SupportsTransparentBackColor | swf.ControlStyles.DoubleBuffer, false);
-				etoDrawable.SetStyle(swf.ControlStyles.AllPaintingInWmPaint | swf.ControlStyles.Opaque, true);
-			}
+			backColor = drawable.BackgroundColor.ToDx();
 
 			var renderProp = new sd.RenderTargetProperties
 			{
@@ -145,18 +141,18 @@ namespace Eto.Platform.Direct2D.Drawing
 			//set hwnd target properties (permit to attach Direct2D to window)
 			var winProp = new sd.HwndRenderTargetProperties
 			{
-				Hwnd = o.Handle,
-				PixelSize = new s.Size2(o.ClientSize.Width, o.ClientSize.Height),
+				Hwnd = drawableControl.Handle,
+				PixelSize = new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height),
 				PresentOptions = sd.PresentOptions.Immediately
 			};
 
 			//target creation
 			var target = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
 
-			o.SizeChanged += (s, e) => {
+			drawableControl.SizeChanged += (s, e) => {
 				try
 				{
-					target.Resize(new s.Size2(o.ClientSize.Width, o.ClientSize.Height));
+					target.Resize(new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height));
 					drawable.Invalidate();
 				}
 				catch (Exception)
@@ -164,143 +160,127 @@ namespace Eto.Platform.Direct2D.Drawing
 				}
 			};
 
-			this.Control = CurrentRenderTarget = target;			
+			Control = CurrentRenderTarget = target;
 		}
 
-		sd.Geometry GetGeometry(IGraphicsPath path)
+		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
 		{
-			var g = path as IHandlerSource;
-			var p = g.Handler as GraphicsPathHandler;
-			p.CloseSink();
-			return p.Control;
-		}
-
-		/// <summary>
-		/// BUGBUG: This is a temporary workaround for brushes not working.
-		/// Remove when fixed.
-		/// </summary>
-		sd.Brush defaultBrush;
-		sd.Brush DefaultBrush
-		{
-			get
+			using (var textLayout = GetTextLayout(font, text))
 			{
-				if (defaultBrush == null)
-					defaultBrush = new sd.SolidColorBrush(this.Control, Colors.White.ToSD(), null);
-				return defaultBrush;
+				Control.DrawTextLayout(new s.Vector2(x, y), textLayout, brush.ToDx(Control));
 			}
-		}
-
-		void IGraphics.DrawText(Font font, SolidBrush brush, float x, float y, string text)
-		{
-			var textLayout = GetTextLayout(font, text);
-			this.Control.DrawTextLayout(new s.Vector2(x, y), textLayout, defaultForegroundBrush: DefaultBrush);
 		}
 
 		public SizeF MeasureString(Font font, string text)
 		{
-			var textLayout = GetTextLayout(font, text);
-			var width = textLayout.DetermineMinWidth();
-			var height = font.LineHeight * 96/72.0f; // is this correct?
-			return new SizeF(width, height);
+			using (var textLayout = GetTextLayout(font, text))
+			{
+				var width = textLayout.DetermineMinWidth();
+				var height = font.LineHeight * 96 / 72.0f; // is this correct?
+				return new SizeF(width, height);
+			}
 		}
 
-		private static sw.TextLayout GetTextLayout(Font font, string text)
+		static sw.TextLayout GetTextLayout(Font font, string text)
 		{
 			var fontHandler = (FontHandler)font.Handler;
 			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
 			return textLayout;
 		}
 
-		void IGraphics.Flush()
+		public void Flush()
 		{
 			Control.Flush();
 		}
 
-		private Stack<s.Matrix3x2> transformStack = null;
+		Stack<s.Matrix3x2> transformStack;
 
-		void IGraphics.SaveTransform()
+		public void SaveTransform()
 		{
 			if (transformStack == null)
 				transformStack = new Stack<s.Matrix3x2>();
 			transformStack.Push(Control.Transform);
 		}
 
-		void IGraphics.RestoreTransform()
+		public void RestoreTransform()
 		{
 			Control.Transform = transformStack.Pop();
 		}
 
 		public PixelOffsetMode PixelOffsetMode { get; set; } // TODO
 
-		void IGraphics.DrawRectangle(Pen pen, float x, float y, float width, float height)
+		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
-			Control.DrawRectangle(
-				new s.RectangleF(x, y, width, height),
-				GetBrush(pen));
+			var pd = pen.ToPenData();
+			Control.DrawRectangle(new s.RectangleF(x, y, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
 		}
 
-		void IGraphics.FillRectangle(Brush brush, float x, float y, float width, float height)
+		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillRectangle(
-				new s.RectangleF(x, y, width, height),
-				brush.ControlObject as sd.Brush);
+			Control.FillRectangle(new s.RectangleF(x, y, width, height), brush.ToDx(Control));
 		}
 
-		void IGraphics.DrawLine(Pen pen, float startx, float starty, float endx, float endy)
+		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
+			var pd = pen.ToPenData();
 			Control.DrawLine(
 				new s.Vector2(startx, starty),
 				new s.Vector2(endx, endy),
-				GetBrush(pen));
+				pd.GetBrush(Control),
+				pd.Width,
+				pd.StrokeStyle);
 		}
 
-		void IGraphics.FillEllipse(Brush brush, float x, float y, float width, float height)
+		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillEllipse(
-				GetEllipse(x, y, width, height),
-				brush.ControlObject as sd.Brush);
+			Control.FillEllipse(GetEllipse(x, y, width, height), brush.ToDx(Control));
 		}
 
-		void IGraphics.DrawEllipse(Pen pen, float x, float y, float width, float height)
+		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
-			Control.DrawEllipse(
-				GetEllipse(x, y, width, height),
-				GetBrush(pen));
+			var pd = pen.ToPenData();
+			Control.DrawEllipse(GetEllipse(x, y, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
 		}
 
-		void IGraphics.DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
-		{
-			throw new NotImplementedException();
-		}
-
-		void IGraphics.FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
+		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			throw new NotImplementedException();
 		}
 
-		void IGraphics.FillPath(Brush brush, IGraphicsPath path)
-		{
-			Control.FillGeometry(GetGeometry(path), (sd.Brush)brush.ControlObject);
-		}
-
-		void IGraphics.DrawPath(Pen pen, IGraphicsPath path)
-		{
-			Control.DrawGeometry(GetGeometry(path), GetBrush(pen));
-		}
-
-		void IGraphics.DrawImage(Image image, RectangleF source, RectangleF destination)
+		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
 			throw new NotImplementedException();
 		}
 
-		void IGraphics.DrawImage(Image image, float x, float y)
+		public void FillPath(Brush brush, IGraphicsPath path)
 		{
-			throw new NotImplementedException();
+			Control.FillGeometry(path.ToGeometry(), brush.ToDx(Control));
 		}
 
-		void IGraphics.DrawImage(Image image, float x, float y, float width, float height)
+		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
-			throw new NotImplementedException();
+			var pd = pen.ToPenData();
+			Control.DrawGeometry(path.ToGeometry(), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
+		}
+
+		public void DrawImage(Image image, RectangleF source, RectangleF destination)
+		{
+			var bmp = (sd.Bitmap)image.ControlObject;
+			Control.DrawBitmap(bmp, destination.ToDx(), 1f, sd.BitmapInterpolationMode.Linear, source.ToDx());
+		}
+
+		public void DrawImage(Image image, float x, float y)
+		{
+			var bmp = (sd.Bitmap)image.ControlObject;
+			var destination = new RectangleF(x, y, bmp.Size.Width, bmp.Size.Height);
+			Control.DrawBitmap(bmp, destination.ToDx(), 1f, ImageInterpolation.ToDx());
+		}
+
+		public void DrawImage(Image image, float x, float y, float width, float height)
+		{
+			var bmp = (sd.Bitmap)image.ControlObject;
+			var destination = new RectangleF(x, y, width, height);
+			Control.DrawBitmap(bmp, destination.ToDx(), 1f, ImageInterpolation.ToDx());
 		}
 
 		public object ControlObject
@@ -310,7 +290,10 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Clear(SolidBrush brush)
 		{
-			Control.Clear(brush.Color.ToSD());
+			if (brush != null)
+				Control.Clear(brush.Color.ToDx());
+			else
+				Control.Clear(backColor);
 		}
 
 		/// <summary>
@@ -318,19 +301,65 @@ namespace Eto.Platform.Direct2D.Drawing
 		/// Brushes, bitmaps and other resources are associated with a specific
 		/// render target in D2D. Eto does not currently support this.
 		/// </summary>
-		public static sd.RenderTarget CurrentRenderTarget = null;
+		public static sd.RenderTarget CurrentRenderTarget
+		{
+			get
+			{
+				if (currentRenderTarget == null)
+				{
+					// hack for now, use a temporary control to get the current target
+					// ideally, each brush/etc will create itself when needed, not right away.
+					// though, this may be difficult for things like a bitmap
+					var ctl = new System.Windows.Forms.Control();
+					var winProp = new sd.HwndRenderTargetProperties
+					{
+						Hwnd = ctl.Handle,
+						PixelSize = new s.Size2(1000, 1000),
+						PresentOptions = sd.PresentOptions.Immediately
+					};
+					var renderProp = new sd.RenderTargetProperties
+					{
+						DpiX = 0,
+						DpiY = 0,
+						MinLevel = sd.FeatureLevel.Level_10,
+						PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied),
+						Type = sd.RenderTargetType.Hardware,
+						Usage = sd.RenderTargetUsage.None
+					};
+					currentRenderTarget = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+				}
+				return currentRenderTarget;
+			}
+			set
+			{
+				currentRenderTarget = value;
+			}
+		}
+
+		static sd.RenderTarget currentRenderTarget;
 
 		public void BeginDrawing()
 		{
-			CurrentRenderTarget = this.Control;
+			CurrentRenderTarget = Control;
 			Control.BeginDraw();
-			// BUGBUG: Remove this once Clear() works.
-			Control.Clear(Colors.Black.ToSD());
+			Control.Clear(backColor);
+			hasBegan = true;
 		}
 
 		public void EndDrawing()
 		{
-			Control.EndDraw();
+			if (hasBegan)
+			{
+				Control.EndDraw();
+				hasBegan = false;
+			}
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing && hasBegan)
+				EndDrawing();
+			base.Dispose(disposing);
 		}
 	}
 }

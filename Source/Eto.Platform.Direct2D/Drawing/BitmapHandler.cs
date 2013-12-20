@@ -6,6 +6,7 @@ using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
+using System.IO;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -20,7 +21,7 @@ namespace Eto.Platform.Direct2D.Drawing
                 Initialize(decoder);
         }
 
-        private void Initialize(s.WIC.BitmapDecoder decoder)
+        void Initialize(s.WIC.BitmapDecoder decoder)
         {
             using (var frame = decoder.GetFrame(0))
             {
@@ -51,7 +52,7 @@ namespace Eto.Platform.Direct2D.Drawing
             }
         }
 
-		private sd.PixelFormat PixelFormat { get { return new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied); } }
+		sd.PixelFormat PixelFormat { get { return new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied); } }
 
         public void Create(System.IO.Stream stream)
         {
@@ -97,7 +98,16 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public Bitmap Clone(Rectangle? rectangle = null)
         {
-            throw new NotImplementedException();
+			var size = rectangle != null ? rectangle.Value.Size : Size;
+			var bmp = new sd.Bitmap(GraphicsHandler.CurrentRenderTarget, new s.Size2(size.Width, size.Height), new sd.BitmapProperties(PixelFormat));
+			if (rectangle != null)
+			{
+				bmp.CopyFromBitmap(Control, new s.Point(), rectangle.Value.ToDx());
+			}
+			else
+				bmp.CopyFromBitmap(Control);
+
+			return new Bitmap(Generator, new BitmapHandler { Control = bmp });
         }
 
         public Color GetPixel(int x, int y)

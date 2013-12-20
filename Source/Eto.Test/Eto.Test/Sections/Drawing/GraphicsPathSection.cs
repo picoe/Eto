@@ -7,8 +7,6 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class GraphicsPathSection : Scrollable
 	{
-		Func<Drawable, DrawingToolkit> createToolkit;
-
 		public bool StartFigures { get; set; }
 
 		public bool CloseFigures { get; set; }
@@ -39,13 +37,13 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		public GraphicsPathSection() : this(drawable => new DrawingToolkit())
+		public GraphicsPathSection() : this(null)
 		{
 		}
 
-		public GraphicsPathSection(Func<Drawable, DrawingToolkit> createToolkit)
+		public GraphicsPathSection(Generator generator)
+			: base(generator)
 		{
-			this.createToolkit = createToolkit;
 			StartFigures = true;
 			PenThickness = 1;
 
@@ -56,7 +54,7 @@ namespace Eto.Test.Sections.Drawing
 			layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
 			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath());
-			//layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath());
+			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath());
 			layout.EndVertical();
 			layout.Add(null);
 
@@ -90,7 +88,7 @@ namespace Eto.Test.Sections.Drawing
 			control.ValueBinding.Bind(this, r => r.PenThickness, (r,val) => { r.PenThickness = (float)val; Refresh(); });
 
 			var layout = new DynamicLayout(Padding.Empty);
-			layout.AddRow(new Label { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
+			layout.AddRow(new Label(Generator) { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
 			return layout;
 		}
 
@@ -133,22 +131,21 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DrawLinePath()
 		{
-			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
-			var toolkit = createToolkit(control);
-			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => {
-				var pen = new Pen(Colors.White, PenThickness);
+			var control = new Drawable(Generator) { Size = new Size(550, 200), BackgroundColor = Colors.Black };
+			control.Paint += (sender, e) => 
+			{
+				var pen = new Pen(Colors.White, PenThickness, Generator);
 				pen.LineJoin = LineJoin;
 				pen.LineCap = LineCap;
-				g.DrawPath(pen, Path);
-			});
+				e.Graphics.DrawPath(pen, Path);
+			};
 			return control;
 		}
 
 		Control FillLinePath()
 		{
-			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
-			var toolkit = createToolkit(control);
-			control.Paint += (sender, e) => toolkit.Render(e.Graphics, g => g.FillPath(Brushes.White(), Path));
+			var control = new Drawable(Generator) { Size = new Size(550, 200), BackgroundColor = Colors.Black };
+			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.White(Generator), Path);
 			return control;
 		}
 
@@ -161,7 +158,7 @@ namespace Eto.Test.Sections.Drawing
 
 			// test adding child paths and transforms
 			var childPath = CreatePath();
-			var matrix = Matrix.Create();
+			var matrix = Matrix.Create(Generator);
 			matrix.Translate(240, 120);
 			matrix.Scale(0.25f);
 			childPath.Transform(matrix);
@@ -174,7 +171,7 @@ namespace Eto.Test.Sections.Drawing
 
 		GraphicsPath CreatePath()
 		{
-			var newPath = new GraphicsPath();
+			var newPath = new GraphicsPath(Generator);
 			var start = StartFigures;
 			var close = CloseFigures;
 

@@ -6,14 +6,10 @@ using System;
 namespace Eto.Test.Sections.Drawing
 {
 	/// <summary>
-	/// We use this class instead of ImageView to
-	/// hook into the rendering and supply a different
-	/// drawing toolkit.
+	/// We use this class instead of ImageView to test showing the image using the graphics context only
 	/// </summary>
 	public class DrawableImageView : Drawable
 	{
-		DrawingToolkit toolkit;
-
 		Image image;
 		public Image Image
 		{
@@ -26,32 +22,30 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		public DrawableImageView(Func<Drawable, DrawingToolkit> createToolkit, Image image)
+		public override void OnPaint(PaintEventArgs e)
 		{
-			toolkit = createToolkit(this);
-			Image = image;
+			base.OnPaint(e);
+			if (Image != null)
+				e.Graphics.DrawImage(Image, PointF.Empty);
+		}
 
-			Paint += (s, e) => toolkit.Render(e.Graphics, g =>
-			{
-				if (Image != null)
-					g.DrawImage(Image, PointF.Empty);
-			});
+		public DrawableImageView(Generator generator, Image image)
+			: base(generator)
+		{
+			Image = image;
 		}
 	}
 
 	public class BitmapSection : Scrollable
 	{
-		readonly Func<Drawable, DrawingToolkit> createToolkit;
-
 		public BitmapSection()
-			: this(DrawingToolkit.Create)
+			: this(null)
 		{
 		}
 
-		public BitmapSection(Func<Drawable, DrawingToolkit> createToolkit)
+		public BitmapSection(Generator generator)
+			: base(generator)
 		{
-			this.createToolkit = createToolkit;
-
 			var layout = new DynamicLayout();
 
 			layout.AddRow(new Label { Text = "Load from Stream" }, LoadFromStream());
@@ -74,52 +68,50 @@ namespace Eto.Test.Sections.Drawing
 
 		Control LoadFromStream()
 		{
-			var resourceStream = GetType().Assembly.GetManifestResourceStream("Eto.Test.TestImage.png");
+			var image = TestIcons.TestImage(Generator);
 
-			var image = new Bitmap(resourceStream);
-
-			return new DrawableImageView(createToolkit, image);
+			return new DrawableImageView(Generator, image);
 		}
 
 		Control CreateCustom32()
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
+			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb, Generator);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics(image))
 			{
-				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
-				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
+				graphics.DrawLine(Pens.Blue(Generator), Point.Empty, new Point(image.Size));
+				graphics.DrawRectangle(Pens.Blue(Generator), new Rectangle(image.Size - 1));
 			}
 
-			return new DrawableImageView(createToolkit, image);
+			return new DrawableImageView(Generator, image);
 		}
 
 		Control CreateCustom32Alpha()
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
+			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba, Generator);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
-			using (var graphics = new Graphics (image))
+			using (var graphics = new Graphics(image))
 			{
-				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
-				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
+				graphics.DrawLine(Pens.Blue(Generator), Point.Empty, new Point(image.Size));
+				graphics.DrawRectangle(Pens.Black(Generator), new Rectangle(image.Size - 1));
 			}
-			return new DrawableImageView(createToolkit, image);
+			return new DrawableImageView(Generator, image);
 		}
 
 		Control Cloning()
 		{
-			var image = TestIcons.TestImage;
+			var image = TestIcons.TestImage(Generator);
 			image = image.Clone();
-			return new DrawableImageView(createToolkit, image);
+			return new DrawableImageView(Generator, image);
 		}
 
 		Control CloningRectangle()
 		{
-			var image = TestIcons.TestImage;
+			var image = TestIcons.TestImage(Generator);
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
-			return new DrawableImageView(createToolkit, image);
+			return new DrawableImageView(Generator, image);
 		}
 	}
 }

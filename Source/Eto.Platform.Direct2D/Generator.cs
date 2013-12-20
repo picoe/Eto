@@ -6,6 +6,7 @@ using Eto.Drawing;
 using Eto.Forms;
 using Eto.IO;
 using Eto.Platform.Direct2D.Drawing;
+using Eto.Platform.Direct2D.Forms.Controls;
 
 namespace Eto.Platform.Direct2D
 {
@@ -38,8 +39,8 @@ namespace Eto.Platform.Direct2D
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());
 			g.Add<ISolidBrush>(() => new SolidBrushHandler());
-			//g.Add<ITextureBrush>(() => new TextureBrushHandler());
-			//g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
+			g.Add<ITextureBrush>(() => new TextureBrushHandler());
+			g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 
 			// Forms.Cells
 			//g.Add<ICheckBoxCell>(() => new CheckBoxCellHandler());
@@ -53,7 +54,7 @@ namespace Eto.Platform.Direct2D
 			//g.Add<ICheckBox>(() => new CheckBoxHandler());
 			//g.Add<IComboBox>(() => new ComboBoxHandler());
 			//g.Add<IDateTimePicker>(() => new DateTimePickerHandler());
-			//g.Add<IDrawable>(() => new DrawableHandler());
+			g.Add<IDrawable>(() => new DrawableHandler());
 			//g.Add<IGridColumn>(() => new GridColumnHandler());
 			//g.Add<IGridView>(() => new GridViewHandler());
 			//g.Add<IGroupBox>(() => new GroupBoxHandler());

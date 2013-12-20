@@ -12,7 +12,7 @@ namespace Eto.Test.Sections.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class BrushSection : Scrollable
 	{
-		readonly Image image = TestIcons.TestImage;
+		readonly Image image = TestIcons.TestImage();
 		readonly Drawable drawable;
 		Brush brush;
 		readonly LinearGradientBrush gradientBrush;

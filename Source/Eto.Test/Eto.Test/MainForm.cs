@@ -36,7 +36,7 @@ namespace Eto.Test
 			this.SectionList = new SectionListTreeView(topNodes ?? TestSectionList.TopNodes());
 
 #if DESKTOP
-			this.Icon = TestIcons.TestIcon;
+			this.Icon = TestIcons.TestIcon();
 			this.ClientSize = new Size(900, 650);
 #endif
 			//this.Opacity = 0.5;

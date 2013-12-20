@@ -1,8 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Express 2013 for Windows Desktop
-VisualStudioVersion = 12.0.21005.1
-MinimumVisualStudioVersion = 10.0.40219.1
+# Visual Studio 2012
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto.Test.Mac", "Eto.Test\Eto.Test.Mac\Eto.Test.Mac.csproj", "{57BCCF63-1D05-4AD6-9BBB-E2CE4E2451AB}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Eto", "Eto\Eto.csproj", "{16289D2F-044C-49EF-83E9-9391AFF8FD2B}"
@@ -225,24 +223,21 @@ Global
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Windows Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F8F400B8-A2F6-4342-82F6-D6D8B544A7E5}.Windows Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
+	GlobalSection(NestedProjects) = preSolution
 	EndGlobalSection
 	GlobalSection(MonoDevelopProperties) = preSolution
-		StartupItem = Eto.Test\Eto.Test.Mac\Eto.Test.Mac.csproj
+		StartupItem = Eto.Test\Eto.Test.Gtk\Eto.Test.Gtk.csproj
 		Policies = $0
 		$0.DotNetNamingPolicy = $1
 		$1.DirectoryNamespaceAssociation = PrefixedHierarchical
 		$1.ResourceNamePolicy = MSBuild
-		$0.TextStylePolicy = $5
+		$0.TextStylePolicy = $2
 		$2.FileWidth = 120
 		$2.TabsToSpaces = False
 		$2.inheritsSet = VisualStudio
 		$2.inheritsScope = text/plain
-		$3.FileWidth = 120
-		$3.TabsToSpaces = False
-		$3.inheritsSet = VisualStudio
-		$3.inheritsScope = text/plain
+		$0.TextStylePolicy = $3
+		$3.inheritsSet = null
 		$3.scope = text/x-csharp
 		$0.CSharpFormattingPolicy = $4
 		$4.IndentSwitchBody = True
@@ -269,13 +264,36 @@ Global
 		$4.inheritsSet = Mono
 		$4.inheritsScope = text/x-csharp
 		$4.scope = text/x-csharp
+		$0.TextStylePolicy = $5
 		$5.FileWidth = 120
 		$5.TabsToSpaces = False
 		$5.inheritsSet = VisualStudio
 		$5.inheritsScope = text/plain
 		$5.scope = text/plain
-		$0.StandardHeader = $6
-		$6.Text = 
-		$6.IncludeInNewFiles = False
+		$0.TextStylePolicy = $6
+		$6.inheritsSet = null
+		$6.scope = application/config+xml
+		$0.XmlFormattingPolicy = $7
+		$7.inheritsSet = null
+		$7.scope = application/config+xml
+		$0.TextStylePolicy = $8
+		$8.inheritsSet = null
+		$8.scope = application/xml
+		$0.XmlFormattingPolicy = $9
+		$9.inheritsSet = Mono
+		$9.inheritsScope = application/xml
+		$9.scope = application/xml
+		$0.TextStylePolicy = $10
+		$10.inheritsSet = null
+		$10.scope = application/xaml+xml
+		$0.XmlFormattingPolicy = $11
+		$11.inheritsSet = null
+		$11.scope = application/xaml+xml
+		$0.TextStylePolicy = $12
+		$12.inheritsSet = null
+		$12.scope = application/json
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

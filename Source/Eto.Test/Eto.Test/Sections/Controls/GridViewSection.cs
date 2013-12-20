@@ -23,8 +23,8 @@ namespace Eto.Test.Sections.Controls
 
 	public class GridViewSection : Panel
 	{
-		static readonly Image image1 = TestIcons.TestImage;
-		static readonly Image image2 = TestIcons.TestIcon;
+		static readonly Image image1 = TestIcons.TestImage();
+		static readonly Image image2 = TestIcons.TestIcon();
 		readonly SearchBox filterText;
 
 		public GridViewSection()

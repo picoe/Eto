@@ -148,7 +148,7 @@ namespace Eto.Drawing
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
-		public static Bitmap FromResource (string resourceName, Assembly assembly = null)
+		public static Bitmap FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
 		{
 #if !WINRT
 			assembly = assembly ?? Assembly.GetCallingAssembly ();
@@ -156,7 +156,7 @@ namespace Eto.Drawing
 			using (var stream = assembly.GetManifestResourceStream (resourceName)) {
 				if (stream == null)
 					throw new ResourceNotFoundException (assembly, resourceName);
-				return new Bitmap (stream);
+				return new Bitmap (stream, generator);
 			}
 		}
 

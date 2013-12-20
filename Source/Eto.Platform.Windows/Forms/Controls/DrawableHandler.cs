@@ -81,7 +81,7 @@ namespace Eto.Platform.Windows
 			{
 				base.OnPaint (e);
 
-				Handler.Widget.OnPaint (e.ToEto (Handler.Generator));
+				Handler.OnPaint(e);
 			}
 
 			protected override void OnClick (EventArgs e)
@@ -112,7 +112,7 @@ namespace Eto.Platform.Windows
 			Control.TabStop = true;
 		}
 
-		public Graphics CreateGraphics()
+		public virtual Graphics CreateGraphics()
 		{
 			return new Graphics(Widget.Generator, new GraphicsHandler(Control.CreateGraphics()));
 		}
@@ -122,13 +122,18 @@ namespace Eto.Platform.Windows
 			set { Control.CanFocusMe = value; }
 		}
 
-		public void Update(Rectangle rect)
+		public virtual void Update(Rectangle rect)
 		{
 			using (var g = Control.CreateGraphics ()) {
 				var graphics = new Graphics (Widget.Generator, new GraphicsHandler (g));
 
 				Widget.OnPaint (new PaintEventArgs (graphics, rect));
 			}
+		}
+
+		protected virtual void OnPaint(swf.PaintEventArgs e)
+		{
+			Widget.OnPaint(e.ToEto(Widget.Generator));
 		}
 	}
 }
