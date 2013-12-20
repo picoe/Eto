@@ -11,6 +11,8 @@ namespace Eto.Platform.Mac.Forms.Controls
 		Brush backgroundBrush;
 		Color backgroundColor;
 
+		public bool SupportsCreateGraphics { get { return true; } }
+
 		public override NSView ContainerControl { get { return Control; } }
 
 		public class EtoDrawableView : MacEventView

@@ -78,7 +78,7 @@ namespace Eto.Test.Sections.Controls
 
 		class VirtualList : IListStore
 		{
-			Icon image = TestIcons.TestIcon;
+			Icon image = TestIcons.TestIcon();
 
 			public int Count
 			{

@@ -13,7 +13,7 @@ namespace Eto.Test.Actions
 			ToolBarText = "Quit";
 			ToolTip = "Close the application";
 			Shortcut = Keys.Q | Application.Instance.CommonModifier;
-			Image = TestIcons.TestImage;
+			Image = TestIcons.TestImage();
 		}
 
 		public override void OnExecuted(EventArgs e)

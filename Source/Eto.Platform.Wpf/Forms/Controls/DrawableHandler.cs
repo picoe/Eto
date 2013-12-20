@@ -22,6 +22,8 @@ namespace Eto.Platform.Wpf.Forms.Controls
 
 		public bool AllowTiling { get; set; }
 
+		public bool SupportsCreateGraphics { get { return false; } }
+
 		public Size TileSize
 		{
 			get { return tileSize; }

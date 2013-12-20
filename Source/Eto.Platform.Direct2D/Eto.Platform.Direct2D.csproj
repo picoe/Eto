@@ -37,18 +37,6 @@
   </PropertyGroup>
   <Import Condition="Exists('../../../Eto.Common.targets')" Project="../../../Eto.Common.targets" />
   <ItemGroup>
-    <Reference Include="SharpDX, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SharpDX.2.5.0\lib\net40\SharpDX.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.Direct2D1, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SharpDX.Direct2D1.2.5.0\lib\net40\SharpDX.Direct2D1.dll</HintPath>
-    </Reference>
-    <Reference Include="SharpDX.DXGI, Version=2.5.0.0, Culture=neutral, PublicKeyToken=627a3d6d1956f55a, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\SharpDX.DXGI.2.5.0\lib\net40\SharpDX.DXGI.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -58,11 +46,20 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
+    <Reference Include="SharpDX">
+      <HintPath>..\packages\SharpDX.2.5.0\lib\net40\SharpDX.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.Direct2D1">
+      <HintPath>..\packages\SharpDX.Direct2D1.2.5.0\lib\net40\SharpDX.Direct2D1.dll</HintPath>
+    </Reference>
+    <Reference Include="SharpDX.DXGI">
+      <HintPath>..\packages\SharpDX.DXGI.2.5.0\lib\net40\SharpDX.DXGI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversions.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
-    <Compile Include="Drawing\BrushHandler.cs" />
+    <Compile Include="Drawing\BrushData.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
     <Compile Include="Drawing\FontFamilyHandler.cs" />
     <Compile Include="Drawing\FontHandler.cs" />
@@ -74,7 +71,10 @@
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SDFactory.cs" />
+    <Compile Include="Drawing\LinearGradientBrushHandler.cs" />
+    <Compile Include="Drawing\TextureBrushHandler.cs" />
     <Compile Include="Drawing\SolidBrushHandler.cs" />
+    <Compile Include="Forms\Controls\DrawableHandler.cs" />
     <Compile Include="Generator.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="..\Eto.Platform.Mac\Drawing\SplineHelper.cs">

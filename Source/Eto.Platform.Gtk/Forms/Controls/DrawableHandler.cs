@@ -8,6 +8,8 @@ namespace Eto.Platform.GtkSharp
 	{
 		Gtk.VBox content;
 
+		public bool SupportsCreateGraphics { get { return true; } }
+
 		public void Create()
 		{
 			Control = new Gtk.EventBox();

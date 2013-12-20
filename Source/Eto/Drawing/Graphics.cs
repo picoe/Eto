@@ -274,21 +274,6 @@ namespace Eto.Drawing
 		void Clear(SolidBrush brush);
 	}
 
-	public interface IGraphics2 : IGraphics
-	{
-		/// <summary>
-		/// If the graphics handler implements IGraphics2,
-		/// BeginDrawing should be called before rendering a frame.
-		/// </summary>
-		void BeginDrawing();
-
-		/// <summary>
-		/// If the graphics handler implements IGraphics2,
-		/// EndDrawing should be called after rendering a frame.
-		/// </summary>
-		void EndDrawing();
-	}
-
 	/// <summary>
 	/// Graphics context object for drawing operations
 	/// </summary>
@@ -300,7 +285,6 @@ namespace Eto.Drawing
 	public class Graphics : InstanceWidget
 	{
 		new IGraphics Handler { get { return (IGraphics)base.Handler; } }
-		IGraphics2 Handler2 { get { return base.Handler as IGraphics2; } }
 
 		/// <summary>
 		/// Initializes a new instance of the Graphics class with the specified platform <paramref name="handler"/>
@@ -926,7 +910,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, float x, float y, string text)
 		{
-			using (var brush = new SolidBrush(color))
+			using (var brush = new SolidBrush(color, Generator))
 				Handler.DrawText(font, brush, x, y, text);			
 		}
 
@@ -951,7 +935,7 @@ namespace Eto.Drawing
 		/// <param name="text">Text string to draw</param>
 		public void DrawText(Font font, Color color, PointF location, string text)
 		{
-			using (var brush = new SolidBrush(color))
+			using (var brush = new SolidBrush(color, Generator))
 				Handler.DrawText(font, brush, location.X, location.Y, text);
 		}
 
@@ -1179,24 +1163,6 @@ namespace Eto.Drawing
 		public void Clear (SolidBrush brush = null)
 		{
 			Handler.Clear (brush);
-		}
-
-		/// <summary>
-		/// BeginDrawing should be called before rendering a frame.
-		/// </summary>
-		public void BeginDrawing()
-		{
-			if (Handler2 != null)
-				Handler2.BeginDrawing();
-		}
-
-		/// <summary>
-		/// EndDrawing should be called after rendering a frame.
-		/// </summary>
-		public void EndDrawing()
-		{
-			if (Handler2 != null)
-				Handler2.EndDrawing();
 		}
 
 		#region Obsolete

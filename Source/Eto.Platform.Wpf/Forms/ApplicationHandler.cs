@@ -128,7 +128,7 @@ namespace Eto.Platform.Wpf.Forms
 
 		public void Invoke(Action action)
 		{
-			Control.Dispatcher.Invoke(action);
+			Control.Dispatcher.Invoke(action, sw.Threading.DispatcherPriority.Background);
 		}
 
 		public void AsyncInvoke(Action action)

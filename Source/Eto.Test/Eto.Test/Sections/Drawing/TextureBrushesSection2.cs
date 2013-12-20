@@ -75,7 +75,7 @@ namespace Eto.Test.Sections.Drawing
 
 	class TextureBrushesSection2 : Scrollable
 	{
-		Bitmap image = TestIcons.Textures;
+		Bitmap image = TestIcons.Textures();
 		PointF location = new PointF(100, 100);
 
 		public TextureBrushesSection2()

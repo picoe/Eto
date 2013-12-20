@@ -16,27 +16,50 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GraphicsPathHandler : IGraphicsPathHandler
 	{
-		public sd.PathGeometry Control { get; private set; }
+		List<sd.Geometry> geometries = new List<sd.Geometry>();
+		IMatrix transform;
+		sd.PathGeometry path;
 		bool isInFigure = false;
+		sd.FillMode fillMode;
+		sd.Geometry control;
+
 		public PointF CurrentPoint { get; private set; }
 		public object ControlObject { get { return this.Control; } }
+	
+		public sd.Geometry Control
+		{
+			get
+			{
+				if (control == null)
+				{
+					if (geometries.Count > 0)
+					{
+						control = new sd.GeometryGroup(SDFactory.D2D1Factory, fillMode, geometries.ToArray());
+					}
+					if (transform != null && control != null)
+						control = new sd.TransformedGeometry(SDFactory.D2D1Factory, control, transform.ToDx());
+				}
+				return control;
+			}
+		}
 		public RectangleF Bounds
 		{
 			get
 			{
-				return new RectangleF(); // TODO: Fix
 				return Control.GetBounds().ToEto();
 			}
-		} 
+		}
+
 		sd.GeometrySink sink;
-		private sd.GeometrySink Sink
+		sd.GeometrySink Sink
 		{
 			get
 			{
 				if (sink == null)
 				{
-					sink = this.Control.Open();
-					sink.SetFillMode(sd.FillMode.Winding);
+					geometries.Add(path = new sd.PathGeometry(SDFactory.D2D1Factory));
+					control = null;
+					sink = path.Open();
 				}
 				return sink;
 			}
@@ -44,19 +67,19 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public GraphicsPathHandler()
 		{
-			this.Control = new sd.PathGeometry(SDFactory.D2D1Factory);			
 		}
 
 		public void CloseSink()
 		{
 			// This must be called before rendering the path.
-			if (this.sink != null)
+			if (sink != null)
 			{
 				if (isInFigure)
 					sink.EndFigure(sd.FigureEnd.Open);
 				isInFigure = false;
-				this.sink.Close();
-				this.sink.Dispose();
+				sink.Close();
+				sink.Dispose();
+				sink = null;
 			}
 		}
 
@@ -66,7 +89,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			AddBezier(pt2, pt3, pt4);
 		}
 
-		private void AddBezier(PointF pt2, PointF pt3, PointF pt4)
+		void AddBezier(PointF pt2, PointF pt3, PointF pt4)
 		{
 			Sink.AddBezier(new sd.BezierSegment
 			{
@@ -85,13 +108,13 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public FillMode FillMode
 		{
-			get { throw new NotImplementedException(); }
-			set { throw new NotImplementedException(); }
+			get { return fillMode.ToEto(); ; }
+			set { fillMode = value.ToDx(); }
 		}
 
 		public bool IsEmpty
 		{
-			get { throw new NotImplementedException(); }
+			get { return geometries.Count == 0; }
 		}
 
 		void ConnectTo(PointF p)
@@ -102,7 +125,8 @@ namespace Eto.Platform.Direct2D.Drawing
 			else
 			{
 				isInFigure = true;
-				Sink.BeginFigure(pt, sd.FigureBegin.Hollow); // what is hollow vs. filled?
+				// create filled for when we fill with a brush
+				Sink.BeginFigure(pt, sd.FigureBegin.Filled);
 			}
 
 			CurrentPoint = p;
@@ -110,7 +134,11 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void StartFigure()
 		{
-			CloseFigure();
+			if (isInFigure)
+			{
+				Sink.EndFigure(sd.FigureEnd.Open);
+				isInFigure = false;
+			}
 		}
 
 		public void CloseFigure()
@@ -124,7 +152,8 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Transform(IMatrix matrix)
 		{
-			//throw new NotImplementedException();
+			transform = matrix != null ? matrix.Clone() : null;
+			control = null;
 		}
 
 		public void AddLine(float startX, float startY, float endX, float endY)
@@ -146,7 +175,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void MoveTo(float x, float y)
 		{
-			CloseFigure();
+			StartFigure();
 			ConnectTo(new PointF(x, y));
 		}
 
@@ -158,39 +187,64 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			/*
+			// degrees to radians conversion
+			float startRadians = startAngle * (float)Math.PI / 180.0f;
+			float sweepRadians = sweepAngle * (float)Math.PI / 180.0f;
+
+			// x and y radius
+			float dx = width / 2;
+			float dy = height / 2;
+
+			// determine the start point 
+			float xs = x + dx + ((float)Math.Cos(startRadians) * dx);
+			float ys = y + dy + ((float)Math.Sin(startRadians) * dy);
+
+			// determine the end point 
+			float xe = x + dx + ((float)Math.Cos(startRadians + sweepRadians) * dx);
+			float ye = y + dy + ((float)Math.Sin(startRadians + sweepRadians) * dy);
+
+			bool isLargeArc = Math.Abs(sweepAngle) > 180;
+			bool isClockwise = sweepAngle >= 0 && Math.Abs(sweepAngle) < 360;
+			ConnectTo(new PointF(xs, ys));
 			Sink.AddArc(new sd.ArcSegment
 			{
-				Point = new s.Vector2(x, y),
-				Size = new s.Size2F(width/2, height/2),
-				ArcSize = sd.ArcSize.Large, // fix
-			});*/
-
-			// TODO: Fix
+				Point = new s.Vector2(xe, ye),
+				Size = new s.Size2F(dx, dy),
+				SweepDirection = isClockwise ? sd.SweepDirection.Clockwise : sd.SweepDirection.CounterClockwise,
+				ArcSize = isLargeArc ? sd.ArcSize.Large : sd.ArcSize.Small
+			});
 		}
 
 		public void AddEllipse(float x, float y, float width, float height)
-		{			
-			//throw new NotImplementedException();
+		{
+			CloseSink();
+			var ellipse = new sd.Ellipse(new s.Vector2(x + width / 2, y + height / 2), width / 2, height / 2);
+			geometries.Add(new sd.EllipseGeometry(SDFactory.D2D1Factory, ellipse));
+			control = null;
 		}
 
 		public void AddPath(IGraphicsPath path, bool connect)
 		{
-			// throw new NotImplementedException();
+			var inputGeometry = path.ToHandler();
+			if (connect)
+			{
+				// TODO: how do we attach to the existing sink?  throws an exception otherwise
+				StartFigure();
+				inputGeometry.Control.Simplify(sd.GeometrySimplificationOption.CubicsAndLines, Sink);
+			}
+			else
+			{
+				CloseSink();
+				geometries.Add(inputGeometry.Control);
+			}
+			control = null;
 		}
 
 		public void AddRectangle(float x, float y, float width, float height)
 		{
-			var left = x;
-			var top = y;
-			var right = x + width - 1;
-			var bottom = y + height - 1;
-
-            ConnectTo(new PointF(left, top));
-            ConnectTo(new PointF(right, top));
-            ConnectTo(new PointF(right, bottom));
-            ConnectTo(new PointF(left, bottom));
-			ConnectTo(new PointF(left, top));
+			CloseSink();
+			geometries.Add(new sd.RectangleGeometry(SDFactory.D2D1Factory, new s.RectangleF(x, y, width, height)));
+			control = null;
 		}
 
 		public void Dispose()

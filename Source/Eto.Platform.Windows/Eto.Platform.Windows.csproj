@@ -12,8 +12,6 @@
     <RootNamespace>Eto.Platform.Windows</RootNamespace>
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
-    <ReleaseVersion>
-    </ReleaseVersion>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>

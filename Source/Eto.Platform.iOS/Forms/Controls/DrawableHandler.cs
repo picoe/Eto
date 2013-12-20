@@ -24,6 +24,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}*/
 
+		public bool SupportsCreateGraphics { get { return false; } }
+
 		public override UIView ContainerControl { get { return Control; } }
 
 		public class EtoTiledView : EtoView

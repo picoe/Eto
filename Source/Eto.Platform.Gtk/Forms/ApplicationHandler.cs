@@ -86,8 +86,14 @@ namespace Eto.Platform.GtkSharp
 				var resetEvent = new ManualResetEvent (false);
 
 				Gtk.Application.Invoke (delegate {
-					action ();
-					resetEvent.Set ();
+					try
+					{
+						action();
+					}
+					finally
+					{
+						resetEvent.Set();
+					}
 				});
 
 				resetEvent.WaitOne ();
@@ -116,9 +122,6 @@ namespace Eto.Platform.GtkSharp
 			MainThreadID = Thread.CurrentThread.ManagedThreadId;
 			
 			Widget.OnInitialized (EventArgs.Empty);
-			if (Widget.MainForm != null) {
-				((Gtk.Widget)Widget.MainForm.ControlObject).DeleteEvent += HandleDeleteEvent;
-			}
 			if (!attached)
 			{
 				Gtk.Application.Run();
@@ -126,14 +129,6 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		void HandleDeleteEvent (object o, Gtk.DeleteEventArgs args)
-		{
-			if (CanQuit () && !object.Equals (args.RetVal, true)) {
-				Gtk.Application.Quit ();
-			} else
-				args.RetVal = true; // cancel!
-		}
-		
 		public override void AttachEvent (string id)
 		{
 			switch (id) {
@@ -148,14 +143,15 @@ namespace Eto.Platform.GtkSharp
 
 		public void Quit ()
 		{
-			bool shouldClose = true;
+			var args = new CancelEventArgs();
 			var mainForm = Widget.MainForm != null ? Widget.MainForm.Handler as IGtkWindow : null;
-			if (mainForm != null) {
-				shouldClose &= mainForm.CloseWindow ();
-			}
-			if (shouldClose && CanQuit ()) {
-				Gtk.Application.Quit ();
-			}
+			if (mainForm != null)
+				args.Cancel = !mainForm.CloseWindow(Widget.OnTerminating);
+			else
+				Widget.OnTerminating(args);
+
+			if (!args.Cancel)
+				Gtk.Application.Quit();
 		}
 		
 		public void Open (string url)
@@ -183,13 +179,6 @@ namespace Eto.Platform.GtkSharp
 			get {
 				return Keys.Alt;
 			}
-		}
-		
-		bool CanQuit ()
-		{
-			var args = new CancelEventArgs ();
-			Widget.OnTerminating (args);
-			return !args.Cancel;
 		}
 	}
 }

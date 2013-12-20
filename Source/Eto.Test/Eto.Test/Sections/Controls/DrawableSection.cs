@@ -65,7 +65,7 @@ namespace Eto.Test.Sections.Controls
 				Size = new Size (1000, 1000),
 				BackgroundColor = Colors.Blue
 			};
-			var image = TestIcons.TestImage;
+			var image = TestIcons.TestImage();
 			control.Paint += delegate(object sender, PaintEventArgs pe)
 			{
 				pe.Graphics.FillRectangle(Brushes.Black(), new Rectangle(150, 150, 100, 100));

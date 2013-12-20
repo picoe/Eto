@@ -12,7 +12,7 @@ namespace Eto.Test.Sections.Controls
 		readonly CheckBox allowExpanding;
 		readonly TreeView treeView;
 		int newItemCount;
-		static readonly Image Image = TestIcons.TestIcon;
+		static readonly Image Image = TestIcons.TestIcon();
 		Label hoverNodeLabel;
 		bool cancelLabelEdit;
 

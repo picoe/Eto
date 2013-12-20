@@ -9,7 +9,7 @@ namespace Eto.Platform.GtkSharp
 {
 	public interface IGtkWindow
 	{
-		bool CloseWindow();
+		bool CloseWindow(Action<CancelEventArgs> closing = null);
 
 		Gtk.Window Control { get; }
 	}
@@ -196,7 +196,7 @@ namespace Eto.Platform.GtkSharp
 					}
 				}
 			};
-			
+			HandleEvent(Window.ClosingEvent); // to chain application termination events
 		}
 
 		public override void AttachEvent(string id)
@@ -332,15 +332,33 @@ namespace Eto.Platform.GtkSharp
 			set { Control.Title = value; }
 		}
 
-		public bool CloseWindow()
+		public bool CloseWindow(Action<CancelEventArgs> closing = null)
 		{
-			var cancelArgs = new CancelEventArgs();
-			Widget.OnClosing(cancelArgs);
-			if (!cancelArgs.Cancel)
+			var args = new CancelEventArgs();
+			Widget.OnClosing(args);
+			var shouldQuit = false;
+			if (!args.Cancel)
+			{
+				if (closing != null)
+					closing(args);
+				else
+				{
+					var windows = Gdk.Screen.Default.ToplevelWindows;
+					if (windows.Length == 1 && ReferenceEquals(windows[0], Control.GdkWindow))
+					{
+						Application.Instance.OnTerminating(args);
+						shouldQuit = !args.Cancel;
+					}
+				}
+			}
+			if (!args.Cancel)
 			{
 				Widget.OnClosed(EventArgs.Empty);
+				if (shouldQuit)
+					Gtk.Application.Quit();
+
 			}
-			return !cancelArgs.Cancel;
+			return !args.Cancel;
 		}
 
 		public void Close()

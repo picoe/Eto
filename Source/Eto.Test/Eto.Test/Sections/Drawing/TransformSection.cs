@@ -6,7 +6,7 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class TransformSection : Scrollable
 	{
-		Image image = TestIcons.TestIcon;
+		Image image = TestIcons.TestIcon();
 		Size canvasSize = new Size(500, 221);
 		PointF rotatedLineCenter = new PointF(60, 60);
 		PointF rotatedTextCenter = new PointF(100, 100);

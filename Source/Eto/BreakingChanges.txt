@@ -2,6 +2,7 @@
 
 1.2.2
 -----
+- Mac: Window.Closed/Closing events no longer gets called when hiding the main form, only when the form cannot be re-opened
 - PrintDocument.BeforePrint/EndPrint now named Printing/Printed
 - Grid.BeforeCellEdit/AfterCellEdit now named CellEditing/CellEdited
 - TreeView.BeforeLabelEdit/AfterLabelEdit now named LabelEditing/LabelEdited

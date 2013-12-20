@@ -6,8 +6,8 @@ namespace Eto.Test.Sections.Controls
 {
 	public class ButtonSection : Scrollable, INotifyPropertyChanged
 	{
-		Bitmap smallImage = new Bitmap(TestIcons.TestImage, 16, 16);
-		Bitmap largeImage = TestIcons.TestImage;
+		Bitmap smallImage = new Bitmap(TestIcons.TestImage(), 16, 16);
+		Bitmap largeImage = TestIcons.TestImage();
 		ButtonImagePosition imagePosition;
 
 		public ButtonImagePosition ImagePosition

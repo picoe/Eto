@@ -14,7 +14,7 @@ namespace Eto.Test
 			yield return new Section("Drawing", DrawingSection());
 
 			if (Generator.Current.IsWinForms)
-				yield return new Section("Drawing using Direct2D on a Winforms Control", DrawingSectionDirect2D());
+				yield return new Section("Drawing using Direct2D", DrawingSectionDirect2D());
 
 			yield return new Section("Controls", ControlSection());
 			yield return new Section("Layouts", LayoutsSection());
@@ -73,16 +73,16 @@ namespace Eto.Test
 			yield return new Section<ClipSection> { Text = "Clip" };
 			yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text" };
-			yield return new Section<DirectDrawingSection> { Text = "Drawing directly onto a Graphics" };
-			yield return new Section<DirectDrawingSection> { Text = "Drawing using a Paint/Invalidate loop", Creator = () => new DirectDrawingSection(directDrawing: false) };
+			yield return new Section<DrawLoopSection> { Text = "Draw Loop" };
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 
 		static IEnumerable<Section> DrawingSectionDirect2D()
 		{
-			// yield return new Section<BitmapSection> { Text = "Bitmap" + usingd2d, Creator = () => new BitmapSection(D2DToolkit.Create) };
+			var d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
+			yield return new Section<BitmapSection> { Text = "Bitmap", Creator = () => new BitmapSection(d2d) };
 			// yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
-			yield return new Section<GraphicsPathSection> { Text = "Graphics Path", Creator = () => new GraphicsPathSection(D2DToolkit.Create) };
+			yield return new Section<GraphicsPathSection> { Text = "Graphics Path", Creator = () => new GraphicsPathSection(d2d) };
 			// yield return new Section<AntialiasSection> { Text = "Antialias" };
 			// yield return new Section<FontsSection> { Text = "Control Fonts" };
 			// yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
@@ -94,8 +94,8 @@ namespace Eto.Test
 			// yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
 			// yield return new Section<ClipSection> { Text = "Clip" };
 			// yield return new Section<ClearSection> { Text = "Clear" };
-			yield return new Section<DrawTextSection> { Text = "Draw Text", Creator = () => new DrawTextSection(D2DToolkit.Create) };
-			yield return new Section<DirectDrawingSection> { Text = "Direct Drawing", Creator = () => new DirectDrawingSection(D2DToolkit.Create) };
+			yield return new Section<DrawTextSection> { Text = "Draw Text", Creator = () => new DrawTextSection(d2d) };
+			yield return new Section<DrawLoopSection> { Text = "Draw Loop", Creator = () => new DrawLoopSection(d2d) };
 			// yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 		

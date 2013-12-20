@@ -12,7 +12,7 @@ namespace Eto.Platform.Direct2D
 {
     public static class Conversions
     {
-        public static s.Color4 ToSD(this Color color)
+		public static s.Color4 ToDx(this Color color)
         {
 			return new s.Color4(color.R, color.G, color.B, color.A);
         }
@@ -43,12 +43,17 @@ namespace Eto.Platform.Direct2D
             return new RectangleF((float)value.X, (float)value.Y, (float)value.Width, (float)value.Height);
         }
 
-        public static s.RectangleF ToWpf(this Rectangle value)
+		public static s.RectangleF ToDxF(this Rectangle value)
         {
             return new s.RectangleF(value.X, value.Y, value.Width, value.Height);
         }
 
-        public static s.RectangleF ToWpf(this RectangleF value)
+		public static s.Rectangle ToDx(this Rectangle value)
+		{
+			return new s.Rectangle(value.X, value.Y, value.Width, value.Height);
+		}
+
+		public static s.RectangleF ToDx(this RectangleF value)
         {
             return new s.RectangleF(value.X, value.Y, value.Width, value.Height);
         }
@@ -58,12 +63,12 @@ namespace Eto.Platform.Direct2D
             return new Size((int)value.Width, (int)value.Height);
         }
 
-        public static s.Size2F ToWpf(this Size value)
+        public static s.Size2F ToDx(this Size value)
         {
             return new s.Size2F(value.Width, value.Height);
         }
 
-        public static s.Size2F ToWpf(this SizeF value)
+		public static s.Size2F ToDx(this SizeF value)
         {
             return new s.Size2F(value.Width, value.Height);
         }
@@ -83,6 +88,38 @@ namespace Eto.Platform.Direct2D
             if (value == null) return null;
             return value.Replace("_", "__").Replace("&", "_");
         }
+
+		public static sd.BitmapInterpolationMode ToDx(this ImageInterpolation value)
+		{
+			switch (value)
+			{
+				case ImageInterpolation.Default:
+					return sd.BitmapInterpolationMode.Linear;
+				case ImageInterpolation.None:
+					return sd.BitmapInterpolationMode.NearestNeighbor;
+				case ImageInterpolation.Low:
+					return sd.BitmapInterpolationMode.Linear;
+				case ImageInterpolation.Medium:
+					return sd.BitmapInterpolationMode.Linear;
+				case ImageInterpolation.High:
+					return sd.BitmapInterpolationMode.Linear;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static ImageInterpolation ToEto(this sd.BitmapInterpolationMode value)
+		{
+			switch (value)
+			{
+				case sd.BitmapInterpolationMode.Linear:
+					return ImageInterpolation.High;
+				case sd.BitmapInterpolationMode.NearestNeighbor:
+					return ImageInterpolation.None;
+				default:
+					throw new NotSupportedException();
+			}
+		}
 
 #if TODO
         public static string ConvertMneumonicFromWPF(object obj)
@@ -113,41 +150,6 @@ namespace Eto.Platform.Direct2D
             return new MouseEventArgs(buttons, modifiers, location);
         }
 
-        public static s.BitmapScalingMode ToWpf(this ImageInterpolation value)
-        {
-            switch (value)
-            {
-                case ImageInterpolation.Default:
-                    return s.BitmapScalingMode.Unspecified;
-                case ImageInterpolation.None:
-                    return s.BitmapScalingMode.NearestNeighbor;
-                case ImageInterpolation.Low:
-                    return s.BitmapScalingMode.LowQuality;
-                case ImageInterpolation.Medium:
-                    return s.BitmapScalingMode.HighQuality;
-                case ImageInterpolation.High:
-                    return s.BitmapScalingMode.HighQuality;
-                default:
-                    throw new NotSupportedException();
-            }
-        }
-
-        public static ImageInterpolation ToEto(this s.BitmapScalingMode value)
-        {
-            switch (value)
-            {
-                case s.BitmapScalingMode.HighQuality:
-                    return ImageInterpolation.High;
-                case s.BitmapScalingMode.LowQuality:
-                    return ImageInterpolation.Low;
-                case s.BitmapScalingMode.NearestNeighbor:
-                    return ImageInterpolation.None;
-                case s.BitmapScalingMode.Unspecified:
-                    return ImageInterpolation.Default;
-                default:
-                    throw new NotSupportedException();
-            }
-        }
 
         public static sp.PageOrientation ToSP(this PageOrientation value)
         {
@@ -228,7 +230,7 @@ namespace Eto.Platform.Direct2D
 #endif
         public static FontStyle Convert(sw.FontStyle fontStyle, sw.FontWeight fontWeight)
         {
-            var style = FontStyle.Normal;
+            var style = FontStyle.None;
             if (fontStyle == sw.FontStyle.Italic)
                 style |= FontStyle.Italic;
             if (fontStyle == sw.FontStyle.Oblique)
@@ -254,7 +256,7 @@ namespace Eto.Platform.Direct2D
                 fontWeight = sw.FontWeight.Bold;           
         }
 
-        public static sd.DashStyle ToWpf(this DashStyle d)
+		public static sd.DashStyle ToDx(this DashStyle d)
         {
             if (d == DashStyles.Dash)
                 return sd.DashStyle.Dash;
@@ -290,7 +292,7 @@ namespace Eto.Platform.Direct2D
                 : FillMode.Winding;
         }
 
-        public static sd.FillMode ToWpf(this FillMode f)
+		public static sd.FillMode ToDx(this FillMode f)
         {
             return
                 f == FillMode.Alternate
@@ -316,10 +318,28 @@ namespace Eto.Platform.Direct2D
 			return (float)Math.PI * angle / 180.0f;
 		}
 
-		public static PenData ToSD(this Pen pen)
+		public static PenData ToPenData(this Pen pen)
 		{
 			return (PenData)pen.ControlObject;
 		}
 
-    }
+		public static sd.Brush ToDx(this Brush brush, sd.RenderTarget target)
+		{
+			var obj = (BrushData)brush.ControlObject;
+			return obj.Get(target);
+		}
+
+		public static GraphicsPathHandler ToHandler(this IGraphicsPath path)
+		{
+			return path as GraphicsPathHandler ?? ((IHandlerSource)path).Handler as GraphicsPathHandler;
+		}
+
+		public static sd.Geometry ToGeometry(this IGraphicsPath path)
+		{
+			var handler = path.ToHandler();
+			handler.CloseSink();
+			return handler.Control;
+		}
+
+	}
 }

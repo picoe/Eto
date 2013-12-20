@@ -9,7 +9,7 @@ namespace Eto.Test.Sections.FormsSection
 		{
 			return new Form
 			{
-				Content = new ImageView { Image = TestIcons.TestIcon },
+				Content = new ImageView { Image = TestIcons.TestIcon() },
 				Size = new Size(640, 400),
 			};
 		}

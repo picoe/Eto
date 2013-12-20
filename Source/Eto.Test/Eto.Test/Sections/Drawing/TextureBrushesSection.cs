@@ -7,7 +7,7 @@ namespace Eto.Test.Sections.Drawing
 {
 	class TextureBrushesSection : Panel
 	{
-		Bitmap image = TestIcons.Textures;
+		Bitmap image = TestIcons.Textures();
 
 		public TextureBrushesSection()
 		{
