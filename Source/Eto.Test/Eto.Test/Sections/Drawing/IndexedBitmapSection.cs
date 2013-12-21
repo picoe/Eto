@@ -30,7 +30,7 @@ namespace Eto.Test.Sections.Drawing
 			while (pal.Count < 256)
 				pal.Add(Colors.Black);
 			image.Palette = pal;
-			using (var bd = image.Lock ())
+			using (var bd = image.Lock())
 			{
 				unsafe
 				{
@@ -58,17 +58,14 @@ namespace Eto.Test.Sections.Drawing
 
 		static Control CreateIndexedImageView()
 		{
-			return new ImageView { Image = CreateImage () };
+			return new ImageView { Image = CreateImage() };
 		}
 
 		static Control CreateIndexedDrawable()
 		{
 			var control = new Drawable { Size = new Size(100, 100) };
 			var image = CreateImage();
-			control.Paint += delegate(object sender, PaintEventArgs pe)
-			{
-				pe.Graphics.DrawImage(image, 0, 0);
-			};
+			control.Paint += (sender, pe) => pe.Graphics.DrawImage(image, 0, 0);
 			return control;
 		}
 	}

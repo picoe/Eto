@@ -10,7 +10,7 @@ namespace Eto.Test.Handlers
 		/// <summary>
 		/// Contains the tabs
 		/// </summary>
-		Tabs Tabs { get; set; }
+		readonly Tabs tabs;
 
 		/// <summary>
 		/// The content for the currently selected tab
@@ -23,29 +23,29 @@ namespace Eto.Test.Handlers
 
 		public TabControlHandler()
 		{
-			this.Tabs = new Tabs
+			tabs = new Tabs
 			{
 				SelectionChanged = tab => {
 					Panel tabContentPanel;
 					TabPageHandler h;
 					if (tab != null &&
 					    (h = tab.Tag as TabPageHandler) != null &&
-					    this.ContentPanel != null)
+					    ContentPanel != null)
 					{
 						tabContentPanel = h.Control;
 						if (SetContentPanelDelegate != null)
 							SetContentPanelDelegate(tabContentPanel);
 						else
-							this.ContentPanel.Content = tabContentPanel; // can be null
+							ContentPanel.Content = tabContentPanel; // can be null
 					}
 				},
 			};
 			ClearTabs();
 
-			this.ContentPanel = new Panel { BackgroundColor = Colors.White };
+			ContentPanel = new Panel { BackgroundColor = Colors.White };
 			var layout = new DynamicLayout { Padding = Padding.Empty, Spacing = Size.Empty };
 			layout.BeginHorizontal();
-			layout.Add(Tabs);
+			layout.Add(tabs);
 			layout.Add(ContentPanel, xscale: true);
 			layout.EndHorizontal();
 			Control = layout;
@@ -53,35 +53,29 @@ namespace Eto.Test.Handlers
 
 		public int SelectedIndex
 		{
-			get
-			{
-				return Tabs != null ? Tabs.SelectedIndex : -1;
-			}
-			set
-			{
-				if (Tabs != null)
-					Tabs.SelectedIndex = value;
-			}
+			get { return tabs.SelectedIndex; }
+			set { tabs.SelectedIndex = value; }
 		}
 
 		public void InsertTab(int index, TabPage page)
 		{
 			var p = page != null ? page.Handler as TabPageHandler : null;
 
-			if (Tabs != null && p != null)
-				Tabs.Insert(p.Tab, index); 
+			if (p != null)
+				tabs.Insert(p.Tab, index); 
 		}
 
 		public void ClearTabs()
 		{
-			if (Tabs != null)
-				Tabs.RemoveAllTabs();
+			tabs.RemoveAllTabs();
 		}
 
 		public void RemoveTab(int index, TabPage page)
 		{
-			if (Tabs != null)
-				Tabs.Remove(index);
+			var isSelected = SelectedIndex == index;
+			tabs.Remove(index);
+			if (isSelected)
+				Widget.OnSelectedIndexChanged(EventArgs.Empty);
 		}
 	}
 
@@ -119,30 +113,30 @@ namespace Eto.Test.Handlers
 			}
 		}
 
-		List<Tab> Items { get; set; }
+		readonly List<Tab> items;
 
 		public Tabs()
 		{
-			this.Items = new List<Tab>();
+			items = new List<Tab>();
 		}
 
 		internal void Remove(int index)
 		{
-			Items[index].Click -= HandleClick;
-			Items.RemoveAt(index);
+			items[index].Click -= HandleClick;
+			items.RemoveAt(index);
 			LayoutItems();
 		}
 
 		internal void RemoveAllTabs()
 		{
-			foreach (var r in Items) r.Click -= HandleClick;
-			Items.Clear();
+			foreach (var r in items) r.Click -= HandleClick;
+			items.Clear();
 			LayoutItems();
 		}
 
 		internal void Insert(Tab tab, int index)
 		{
-			Items.Insert(index, tab);
+			items.Insert(index, tab);
 			tab.Click += HandleClick;
 			LayoutItems();
 			if (SelectedTab == null)
@@ -153,7 +147,7 @@ namespace Eto.Test.Handlers
 		{
 			var layout = new DynamicLayout(padding: Padding.Empty, spacing: Size.Empty);
 			layout.BeginVertical();
-			foreach (var tab in Items)
+			foreach (var tab in items)
 				layout.Add(tab);
 			layout.Add(null);
 			layout.EndVertical();
@@ -169,15 +163,15 @@ namespace Eto.Test.Handlers
 		{
 			get
 			{
-				for (var i = 0; i < Items.Count; ++i)
-					if (object.ReferenceEquals(Items[i], SelectedTab))
+				for (var i = 0; i < items.Count; ++i)
+					if (object.ReferenceEquals(items[i], SelectedTab))
 						return i;
 				return -1;
 			}
 			set
 			{
-				if (value > 0 && value < Items.Count)
-					SelectedTab = Items[value];
+				if (value > 0 && value < items.Count)
+					SelectedTab = items[value];
 			}
 		}
 	}
