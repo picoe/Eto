@@ -33,6 +33,47 @@ namespace Eto.Platform.Direct2D.Drawing
 			disposeControl = false;
 		}
 
+		public GraphicsHandler(DrawableHandler drawable)
+		{
+			var drawableControl = drawable.Control;
+
+			backColor = drawable.BackgroundColor.ToDx();
+
+			var renderProp = new sd.RenderTargetProperties
+			{
+				DpiX = 0,
+				DpiY = 0,
+				MinLevel = sd.FeatureLevel.Level_10,
+				PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied),
+				Type = sd.RenderTargetType.Hardware,
+				Usage = sd.RenderTargetUsage.None
+			};
+
+			//set hwnd target properties (permit to attach Direct2D to window)
+			var winProp = new sd.HwndRenderTargetProperties
+			{
+				Hwnd = drawableControl.Handle,
+				PixelSize = new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height),
+				PresentOptions = sd.PresentOptions.Immediately
+			};
+
+			//target creation
+			var target = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+
+			drawableControl.SizeChanged += (s, e) => {
+				try
+				{
+					target.Resize(new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height));
+					drawable.Invalidate();
+				}
+				catch (Exception)
+				{
+				}
+			};
+
+			Control = CurrentRenderTarget = target;
+		}
+
 		sd.Ellipse GetEllipse(float x, float y, float width, float height)
 		{
 			var rx = width / 2f;
@@ -120,47 +161,6 @@ namespace Eto.Platform.Direct2D.Drawing
 				sd.CompatibleRenderTargetOptions.None,
 				new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied));
 			BeginDrawing();
-		}
-
-		public void CreateFromDrawable(Eto.Forms.Drawable drawable)
-		{
-			var drawableControl = drawable.ControlObject as swf.Control;
-
-			backColor = drawable.BackgroundColor.ToDx();
-
-			var renderProp = new sd.RenderTargetProperties
-			{
-				DpiX = 0,
-				DpiY = 0,
-				MinLevel = sd.FeatureLevel.Level_10,
-				PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied),
-				Type = sd.RenderTargetType.Hardware,
-				Usage = sd.RenderTargetUsage.None
-			};
-
-			//set hwnd target properties (permit to attach Direct2D to window)
-			var winProp = new sd.HwndRenderTargetProperties
-			{
-				Hwnd = drawableControl.Handle,
-				PixelSize = new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height),
-				PresentOptions = sd.PresentOptions.Immediately
-			};
-
-			//target creation
-			var target = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
-
-			drawableControl.SizeChanged += (s, e) => {
-				try
-				{
-					target.Resize(new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height));
-					drawable.Invalidate();
-				}
-				catch (Exception)
-				{
-				}
-			};
-
-			Control = CurrentRenderTarget = target;
 		}
 
 		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
