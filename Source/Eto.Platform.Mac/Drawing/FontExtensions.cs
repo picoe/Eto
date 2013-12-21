@@ -1,12 +1,13 @@
 using Eto.Drawing;
 using MonoMac.Foundation;
-using MonoTouch.UIKit;
 using MonoMac.AppKit;
 
 #if OSX
 namespace Eto.Platform.Mac.Drawing
 #elif IOS
 
+using MonoTouch.UIKit;
+using MonoTouch.Foundation;
 using NSFont = MonoTouch.UIKit.UIFont;
 
 namespace Eto.Platform.iOS.Drawing
@@ -15,6 +16,11 @@ namespace Eto.Platform.iOS.Drawing
 	public static class FontExtensions
 	{
 		#if OSX
+		static readonly NSString ForegroundColorAttribute = NSAttributedString.ForegroundColorAttributeName;
+		#elif IOS
+		static readonly NSString ForegroundColorAttribute = UIStringAttributeKey.ForegroundColor;
+		#endif
+
 		public static NSFont ToNSFont(this Font font)
 		{
 			return font == null ? null : ((FontHandler)font.Handler).Control;
@@ -71,7 +77,11 @@ namespace Eto.Platform.iOS.Drawing
 
 		public static float LineHeight(this NSFont font)
 		{
+			#if OSX
 			return layout.DefaultLineHeightForFont(font);
+			#elif IOS
+			return font.LineHeight;
+			#endif
 			/**
 			var leading = Math.Floor (Math.Max (0, font.Leading) + 0.5f);
 			var lineHeight = (float)(Math.Floor(font.Ascender + 0.5f) - Math.Floor (font.Descender + 0.5f) + leading);
@@ -96,14 +106,14 @@ namespace Eto.Platform.iOS.Drawing
 
 		public static SizeF MeasureString(NSAttributedString str, SizeF? availableSize = null)
 		{
-			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
+			SetContainerSize(availableSize);
 			storage.SetString(str);
 			return layout.BoundingRectForGlyphRange(new NSRange(0, str.Length), container).Size.ToEto();
 		}
 
 		public static void DrawString(NSAttributedString str, PointF point, SizeF? availableSize = null)
 		{
-			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
+			SetContainerSize(availableSize);
 			storage.SetString(str);
 			layout.DrawGlyphs(new NSRange(0, str.Length), point.ToSD());
 		}
@@ -111,24 +121,30 @@ namespace Eto.Platform.iOS.Drawing
 		public static void DrawString(string text, PointF point, Color color, Font font = null, SizeF? availableSize = null)
 		{
 			var str = font.AttributedString(text);
-			str.AddAttribute(NSAttributedString.ForegroundColorAttributeName, color.ToNS(), new NSRange(0, text.Length));
+			str.AddAttribute(ForegroundColorAttribute, color.ToNSUI(), new NSRange(0, text.Length));
 			DrawString(str, point, availableSize);
+		}
+
+		static void SetContainerSize(SizeF? availableSize)
+		{
+			#if OSX
+			container.ContainerSize = (availableSize ?? SizeF.MaxValue).ToSD();
+			#elif IOS
+			container.Size = (availableSize ?? SizeF.MaxValue).ToSD();
+			#endif
 		}
 
 		static FontExtensions()
 		{
 			storage = new NSTextStorage();
-			layout = new NSLayoutManager { BackgroundLayoutEnabled = false, UsesFontLeading = true };
+			layout = new NSLayoutManager { UsesFontLeading = true };
+			#if OSX
+			layout.BackgroundLayoutEnabled = false;
+			#endif
 			container = new NSTextContainer { LineFragmentPadding = 0f };
 			layout.UsesFontLeading = true;
 			layout.AddTextContainer(container);
 			storage.AddLayoutManager(layout);
 		}
-		#elif IOS
-		public static float LineHeight(this NSFont font)
-		{
-			return font.LineHeight;
-		}
-		#endif
 	}
 }

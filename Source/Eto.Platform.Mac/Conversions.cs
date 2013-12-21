@@ -13,7 +13,7 @@ namespace Eto.Platform.Mac
 {
 	public static partial class Conversions
 	{
-		public static NSColor ToNS(this Color color)
+		public static NSColor ToNSUI(this Color color)
 		{
 			return NSColor.FromDeviceRgba(color.R, color.G, color.B, color.A);
 		}

@@ -12,7 +12,7 @@ namespace Eto.Platform.iOS
 {
 	public static partial class Conversions
 	{
-		public static UIColor ToUI (this Color color)
+		public static UIColor ToNSUI (this Color color)
 		{
 			return UIColor.FromRGBA (color.R, color.G, color.B, color.A);
 		}

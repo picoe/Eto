@@ -22,7 +22,7 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 			Control.SetStyle(swf.ControlStyles.AllPaintingInWmPaint | swf.ControlStyles.Opaque, true);
 			Control.HandleCreated += (sender, e) =>
 			{
-				graphics = new Graphics(Widget, Generator);
+				graphics = new Graphics(Generator, new GraphicsHandler(this));
 				graphicsHandler = (GraphicsHandler)graphics.Handler;
 			};
 		}

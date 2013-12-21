@@ -10,57 +10,60 @@ namespace Eto.Platform.iOS.Drawing
 	{
 		public string MacName { get; set; }
 
-		public FontFamilyHandler ()
+		public FontFamilyHandler()
 		{
 		}
 
-		public FontFamilyHandler (string familyName)
+		public FontFamilyHandler(string familyName)
 		{
-			Create (familyName);
+			Create(familyName);
 		}
 
-		public void Create (string familyName)
+		public void Create(string familyName)
 		{
-			this.Name = this.MacName = familyName;
-			switch (familyName.ToLowerInvariant ()) {
-			case FontFamilies.MonospaceFamilyName:
-				MacName = "Courier New";
-				break;
-			case FontFamilies.SansFamilyName:
-				MacName = "Helvetica";
-				break;
-			case FontFamilies.SerifFamilyName:
-				MacName = "Times";
-				break;
-			case FontFamilies.CursiveFamilyName:
-				MacName = "Papyrus";
-				break;
-			case FontFamilies.FantasyFamilyName:
-				MacName = "Futura";
-				break;
+			Name = MacName = familyName;
+			switch (familyName.ToUpperInvariant())
+			{
+				case FontFamilies.MonospaceFamilyName:
+					MacName = "Courier New";
+					break;
+				case FontFamilies.SansFamilyName:
+					MacName = "Helvetica";
+					break;
+				case FontFamilies.SerifFamilyName:
+					MacName = "Times";
+					break;
+				case FontFamilies.CursiveFamilyName:
+					MacName = "Papyrus";
+					break;
+				case FontFamilies.FantasyFamilyName:
+					MacName = "Futura";
+					break;
 			}
 
 		}
 
 		public string Name { get; private set; }
 
-		public IEnumerable<FontTypeface> Typefaces {
-			get { return UIFont.FontNamesForFamilyName(this.MacName).Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }
+		public IEnumerable<FontTypeface> Typefaces
+		{
+			get { return UIFont.FontNamesForFamilyName(MacName).Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r))); }
 		}
 
-		public UIFont CreateFont (float size, FontStyle style)
+		public UIFont CreateFont(float size, FontStyle style)
 		{
-			var matched = Typefaces.FirstOrDefault (r => r.FontStyle == style);
-			if (matched == null) matched = Typefaces.FirstOrDefault ();
+			var matched = Typefaces.FirstOrDefault(r => r.FontStyle == style);
 			if (matched == null)
-				return UIFont.SystemFontOfSize (size);
-			var handler = matched.Handler as FontTypefaceHandler;
+				matched = Typefaces.FirstOrDefault();
+			if (matched == null)
+				return UIFont.SystemFontOfSize(size);
+			var handler = (FontTypefaceHandler)matched.Handler;
 			return handler.CreateFont(size);
 		}
 
 		public FontTypeface GetFace(UIFont font)
 		{
-			return Typefaces.FirstOrDefault (r => string.Equals (((FontTypefaceHandler)r.Handler).FontName, font.Name, StringComparison.InvariantCultureIgnoreCase));
+			return Typefaces.FirstOrDefault(r => string.Equals(((FontTypefaceHandler)r.Handler).FontName, font.Name, StringComparison.InvariantCultureIgnoreCase));
 		}
 	}
 }

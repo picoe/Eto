@@ -111,7 +111,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			get { return textColor.ToEto(); }
 			set
 			{
-				textColor = value.ToNS();
+				textColor = value.ToNSUI();
 				SetAttributes();
 			}
 		}

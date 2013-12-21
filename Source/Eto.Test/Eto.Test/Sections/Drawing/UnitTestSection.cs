@@ -58,7 +58,7 @@ namespace Eto.Test.Sections.Drawing
 		[UnitTest]
 		public void ClipTest()
 		{
-			Assert.AreEqual("Verifying clipbounds size", Graphics.ClipBounds.Size, Drawable.ClientSize);
+			Assert.AreEqual("Verifying clipbounds size", Size.Round(Graphics.ClipBounds.Size), Size.Round(Drawable.ClientSize));
 			
 			// Clip to the upper-left quadrant
 			var clipTo = Drawable.ClientSize / 2;
@@ -70,7 +70,7 @@ namespace Eto.Test.Sections.Drawing
 			// Check that the clip region was correctly translated
 			var clip = Graphics.ClipBounds;
 			var expectedClip = new RectangleF(-new Point(clipTo), clipTo);
-			Assert.AreEqual("Verifying clip after translation ", expectedClip, clip);
+			Assert.AreEqual("Verifying clip after translation ", Rectangle.Round(expectedClip), Rectangle.Round(clip));
 		}
 	}
 }

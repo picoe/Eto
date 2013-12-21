@@ -4,7 +4,6 @@ using Eto.Drawing;
 using SD = System.Drawing;
 using System.Collections.Generic;
 
-
 #if OSX
 using Eto.Platform.Mac.Forms;
 using MonoMac.CoreGraphics;
@@ -44,6 +43,7 @@ namespace Eto.Platform.iOS.Drawing
 		int transformSaveCount;
 		Stack<CGAffineTransform> transforms;
 		CGAffineTransform currentTransform = CGAffineTransform.MakeIdentity();
+		static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern(null);
 
 		public float Offset { get { return offset; } }
 
@@ -52,12 +52,6 @@ namespace Eto.Platform.iOS.Drawing
 		public NSView DisplayView { get; private set; }
 
 		public CGAffineTransform CurrentTransform { get { return currentTransform; } }
-
-		public bool Flipped
-		{
-			get;
-			set;
-		}
 
 		public PixelOffsetMode PixelOffsetMode
 		{
@@ -74,25 +68,15 @@ namespace Eto.Platform.iOS.Drawing
 		{
 		}
 
+		#if OSX
+
 		public GraphicsHandler(NSView view)
 		{
 			this.view = view;
-#if OSX
 			graphicsContext = NSGraphicsContext.FromWindow(view.Window);
-			graphicsContext = view.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
+			graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
 			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
-			Flipped = view.IsFlipped;
-
-#elif IOS
-			this.Control = UIGraphics.GetCurrentContext ();
-			this.Flipped = view != null && view.Layer != null &&!view.Layer.GeometryFlipped;
-#endif
-			Control.InterpolationQuality = CGInterpolationQuality.High;
-			Control.SetAllowsSubpixelPositioning(false);
-			Control.SaveState();
-
-#if OSX
 
 			view.PostsFrameChangedNotifications = true;
 			AddObserver(NSView.FrameChangedNotification, FrameDidChange, view);
@@ -110,13 +94,12 @@ namespace Eto.Platform.iOS.Drawing
 				parent = parent.Superview;
 			}
 
-			SetViewClip();
-#endif
+			SetDefaults();
+			InitializeContext(view.IsFlipped);
 		}
-		#if OSX
+
 		static void FrameDidChange(ObserverActionEventArgs e)
 		{
-			//Console.WriteLine ("Woooo!");
 			var h = e.Handler as GraphicsHandler;
 			if (h != null && h.Control != null)
 			{
@@ -124,53 +107,35 @@ namespace Eto.Platform.iOS.Drawing
 				
 				h.Control.RestoreState();
 				h.Control.SaveState();
-				h.SetViewClip();
+				h.InitializeContext(h.view.IsFlipped);
 				
 				h.ReplayAll();
 			}
 		}
 
-		void SetViewClip()
-		{
-			Control.ClipToRect(view.ConvertRectToView(view.VisibleRect(), null));
-			var pos = view.ConvertPointToView(SD.PointF.Empty, null);
-			if (!Flipped)
-				pos.Y += view.Frame.Height;
-			currentTransform = new CGAffineTransform(1, 0, 0, -1, pos.X, pos.Y);
-			Control.ConcatCTM(currentTransform);
-		}
-
 		public GraphicsHandler(NSView view, NSGraphicsContext graphicsContext, float height, bool flipped)
 		{
-			this.DisplayView = view;
+			DisplayView = view;
 			this.height = height;
-			this.graphicsContext = flipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
-			this.Control = this.graphicsContext.GraphicsPort;
-			//this.Flipped = flipped;
-			Flipped = flipped;
-			Control.InterpolationQuality = CGInterpolationQuality.High;
-			Control.SetAllowsSubpixelPositioning(false);
-			Control.SaveState();
-			if (!Flipped)
-				FlipDrawing();
+			this.graphicsContext = flipped != graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
+			Control = this.graphicsContext.GraphicsPort;
+			SetDefaults();
+			InitializeContext(!flipped);
 		}
+
 		#elif IOS
-		public GraphicsHandler (NSView view, CGContext context, float height, bool flipped)
+
+		public GraphicsHandler(NSView view, CGContext context, float height)
 		{
 			this.DisplayView = view;
 			this.height = height;
-			if (height > 0) {
-				this.Flipped = flipped;
-			}
 			this.Control = context;
-			Control.InterpolationQuality = CGInterpolationQuality.High;
-			Control.SaveState ();
-			Control.SetAllowsSubpixelPositioning (false);
-			if (!Flipped)
-				FlipDrawing ();
+
+			SetDefaults();
+			InitializeContext(false);
 		}
 
-#endif
+		#endif
 		protected override bool DisposeControl { get { return false; } }
 
 		public bool IsRetained { get { return false; } }
@@ -179,10 +144,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public bool AntiAlias
 		{
-			get
-			{
-				return antialias;
-			}
+			get { return antialias; }
 			set
 			{
 				antialias = value;
@@ -202,25 +164,17 @@ namespace Eto.Platform.iOS.Drawing
 #if OSX
 			var rep = handler.Control.Representations().OfType<NSBitmapImageRep>().FirstOrDefault();
 			graphicsContext = NSGraphicsContext.FromBitmap(rep);
+			this.graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
 			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
 #elif IOS
 			var cgimage = handler.Control.CGImage;
-			Control = new CGBitmapContext (handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
+			Control = new CGBitmapContext(handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
 #endif
 
-			Flipped = false;
 			height = image.Size.Height;
-			Control.InterpolationQuality = CGInterpolationQuality.High;
-			Control.SetAllowsSubpixelPositioning(false);
-			Control.SaveState();
-			if (!Flipped)
-				FlipDrawing();
-		}
-
-		public void CreateFromDrawable(Eto.Forms.Drawable drawable)
-		{
-			throw new NotImplementedException();
+			SetDefaults();
+			InitializeContext(true);
 		}
 
 		public void Reset()
@@ -244,17 +198,46 @@ namespace Eto.Platform.iOS.Drawing
 
 		public float ViewHeight
 		{
-			get
-			{
-				return view != null ? view.Bounds.Height : height;
-			}
+			get { return view != null ? view.Bounds.Height : height; }
 		}
 
-		public void FlipDrawing()
+		void SetDefaults()
 		{
-			var m = new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight);
-			Control.ConcatCTM(m);
-			currentTransform = CGAffineTransform.Multiply(m, currentTransform);
+			Control.InterpolationQuality = CGInterpolationQuality.High;
+			Control.SetAllowsSubpixelPositioning(false);
+		}
+
+		void InitializeContext(bool viewFlipped)
+		{
+			Control.SaveState();
+
+			#if OSX
+			// os x has different flipped states (depending on layers, etc), so compensate to make 0,0 at the top-left
+			if (view != null)
+			{
+				// we have a view (drawing directly to the screen), so adjust to where it is
+				Control.ClipToRect(view.ConvertRectToView(view.VisibleRect(), null));
+				var pos = view.ConvertPointToView(SD.PointF.Empty, null);
+				if (!viewFlipped)
+					pos.Y += view.Frame.Height;
+				currentTransform = new CGAffineTransform(1, 0, 0, -1, pos.X, pos.Y);
+				Control.ConcatCTM(currentTransform);
+			}
+			else
+			{
+				// drawing to a bitmap or during a drawRect operation
+				currentTransform = new CGAffineTransform(1, 0, 0, -1, 0, viewFlipped ? ViewHeight : 0);
+				if (viewFlipped)
+					Control.ConcatCTM(currentTransform);
+			}
+			#elif IOS
+			if (viewFlipped)
+			{
+				// on ios, we flip the context if we're drawing on a bitmap otherwise we don't need to
+				currentTransform = new CGAffineTransform(1, 0, 0, -1, 0, ViewHeight);
+				Control.ConcatCTM(currentTransform);
+			}
+			#endif
 		}
 
 		public SD.PointF TranslateView(SD.PointF point, bool halfers = false, bool inverse = false)
@@ -293,33 +276,24 @@ namespace Eto.Platform.iOS.Drawing
 			return rect;
 		}
 
-		public SD.RectangleF Translate(SD.RectangleF rect, float height)
-		{
-			if (!Flipped)
-				rect.Y = height - rect.Y - rect.Height;
-			return rect;
-		}
-
 		void StartDrawing()
 		{
 #if OSX
 			NSGraphicsContext.GlobalSaveGraphicsState();
 			NSGraphicsContext.CurrentContext = graphicsContext;
-			Control.SaveState();
 #elif IOS
-			UIGraphics.PushContext (this.Control);
-			this.Control.SaveState ();
+			UIGraphics.PushContext(Control);
 #endif
+			Control.SaveState();
 		}
 
 		void EndDrawing()
 		{
-#if OSX
 			Control.RestoreState();
+#if OSX
 			NSGraphicsContext.GlobalRestoreGraphicsState();
 #elif IOS
-			this.Control.RestoreState ();
-			UIGraphics.PopContext ();
+			UIGraphics.PopContext();
 #endif
 		}
 
@@ -327,7 +301,7 @@ namespace Eto.Platform.iOS.Drawing
 		{
 			StartDrawing();
 			pen.Apply(this);
-			Control.StrokeLineSegments(new SD.PointF[]
+			Control.StrokeLineSegments(new []
 			{
 				TranslateView(new SD.PointF(startx, starty), true),
 				TranslateView(new SD.PointF(endx, endy), true)
@@ -477,29 +451,14 @@ namespace Eto.Platform.iOS.Drawing
 				return;
 
 			StartDrawing();
-#if OSX
 			FontExtensions.DrawString(text, new PointF(x, y), brush.Color, font);
-#elif IOS
-			var uifont = font.ToUI ();
-			var str = new NSString (text);
-			var size = str.StringSize (uifont);
-			//context.SetShouldAntialias(true);
-			Control.SetFillColor(brush.Color.ToCGColor());
-			str.DrawString (TranslateView (new SD.PointF(x, y)), uifont);
-#endif
-
 			EndDrawing();
 		}
 
 		public SizeF MeasureString(Font font, string text)
 		{
 			StartDrawing();
-#if OSX
 			var size = FontExtensions.MeasureString(text, font);
-#elif IOS
-			var str = new NSString (text);
-			var size = str.StringSize (font.ToUI ()).ToEto();
-#endif
 			EndDrawing();
 			return size;
 		}
@@ -662,6 +621,11 @@ namespace Eto.Platform.iOS.Drawing
 			Control.ClearRect(rect);
 			if (brush != null)
 				FillRectangle(brush, rect.X, rect.Y, rect.Width, rect.Height);
+		}
+
+		public void SetFillColorSpace()
+		{
+			Control.SetFillColorSpace(patternColorSpace);
 		}
 	}
 }

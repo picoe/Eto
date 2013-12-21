@@ -18,7 +18,7 @@ namespace Eto.Test.Sections.Drawing
 			{
 				image = value;
 				if (image != null)
-					this.MinimumSize = image.Size;
+					MinimumSize = image.Size;
 			}
 		}
 

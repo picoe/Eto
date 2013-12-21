@@ -25,7 +25,6 @@ namespace Eto.Platform.iOS.Drawing
 			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
 			readonly float[] alpha = { 1f };
 			CGPattern pattern;
-			static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern(null);
 			GradientWrapMode wrap;
 			sd.SizeF tileSize;
 			sd.SizeF sectionSize;
@@ -50,7 +49,7 @@ namespace Eto.Platform.iOS.Drawing
 
 			public void Apply(GraphicsHandler graphics)
 			{
-				graphics.Control.SetFillColorSpace(patternColorSpace);
+				graphics.SetFillColorSpace();
 
 				#if OSX
 				if (graphics.DisplayView != null)
@@ -125,7 +124,7 @@ namespace Eto.Platform.iOS.Drawing
 					tileSize = new sd.SizeF(sectionSize.Width * 2, sectionSize.Height * 2);
 				var rect = new sd.RectangleF(StartPoint, tileSize);
 				var t = CGAffineTransform.Multiply(transform, viewTransform);
-				pattern = new CGPattern(rect, t, rect.Width, rect.Height, CGPatternTiling.ConstantSpacingMinimalDistortion, true, DrawPattern);
+				pattern = new CGPattern(rect, t, rect.Width, rect.Height, CGPatternTiling.NoDistortion, true, DrawPattern);
 			}
 		}
 

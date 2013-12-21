@@ -78,11 +78,6 @@ namespace Eto.Platform.Wpf.Drawing
 			ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
-		public void CreateFromDrawable(Eto.Forms.Drawable drawable)
-		{
-			throw new NotImplementedException();
-		}
-
 		public sw.Size DPI
 		{
 			get

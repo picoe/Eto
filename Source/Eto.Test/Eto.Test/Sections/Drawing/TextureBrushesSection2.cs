@@ -74,7 +74,7 @@ namespace Eto.Test.Sections.Drawing
 		}
 	}
 
-	class TextureBrushesSection2 : Scrollable
+	class TextureBrushesSection2 : Panel
 	{
 		readonly Bitmap image = TestIcons.Textures();
 		PointF location = new PointF(100, 100);

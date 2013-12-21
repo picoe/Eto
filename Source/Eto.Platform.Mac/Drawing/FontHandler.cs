@@ -115,7 +115,7 @@ namespace Eto.Platform.Mac.Drawing
 				throw new ArgumentOutOfRangeException(string.Empty, string.Format("Could not allocate font with family {0}, traits {1}, size {2}", family.Name, traits, size));
 #elif IOS
 			string suffix = string.Empty;
-			var familyHandler = family.Handler as FontFamilyHandler;
+			var familyHandler = (FontFamilyHandler)family.Handler;
 			var font = familyHandler.CreateFont (size, style);
 			/*
 			var familyString = new StringBuilder();

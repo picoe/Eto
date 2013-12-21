@@ -221,7 +221,7 @@ namespace Eto.Platform.iOS.Forms
 		public virtual Color BackgroundColor
 		{
 			get { return ContainerControl.BackgroundColor.ToEto(); }
-			set { ContainerControl.BackgroundColor = value.ToUI(); }
+			set { ContainerControl.BackgroundColor = value.ToNSUI(); }
 		}
 
 		public virtual bool Enabled

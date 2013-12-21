@@ -71,7 +71,7 @@ namespace Eto.Platform.Mac.Forms
 			Control.Delegate = ColorHandler.Instance;
 			Control.SetTarget (null);
 			Control.SetAction (null);
-			Control.Color = Color.ToNS ();
+			Control.Color = Color.ToNSUI ();
 			
 			Control.SetTarget (ColorHandler.Instance);
 			Control.SetAction (new Selector("changeColor:"));

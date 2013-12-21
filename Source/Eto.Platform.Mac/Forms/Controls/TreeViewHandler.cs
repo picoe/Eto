@@ -93,7 +93,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 				var c = cell as NSTextFieldCell;
 				if (c != null &&
 					Handler.textColor != null)
-					c.TextColor = Handler.textColor.Value.ToNS();				
+					c.TextColor = Handler.textColor.Value.ToNSUI();				
 			}
 
 			public override void SelectionDidChange(NSNotification notification)
@@ -237,7 +237,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 			{
 				var backgroundColor = Handler.BackgroundColor;
 				if (backgroundColor != Colors.Transparent) {
-					backgroundColor.ToNS ().Set ();
+					backgroundColor.ToNSUI ().Set ();
 					NSGraphics.RectFill (clipRect);
 				} else
 					base.DrawBackground (clipRect);

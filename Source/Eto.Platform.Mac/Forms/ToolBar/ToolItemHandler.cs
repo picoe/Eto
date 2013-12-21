@@ -210,7 +210,7 @@ namespace Eto.Platform.Mac
 		{
 			var nsimage = image.ToNS(ImageSize);
 			if (tint != null && nsimage != null)
-				nsimage = nsimage.Tint(tint.Value.ToNS());
+				nsimage = nsimage.Tint(tint.Value.ToNSUI());
 			Control.Image = nsimage;
 		}
 

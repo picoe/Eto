@@ -48,7 +48,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void SetBackgroundColor (NSCell cell, Color color)
 		{
 			var c = (EtoCell)cell;
-			c.BackgroundColor = color.ToNS ();
+			c.BackgroundColor = color.ToNSUI ();
 			c.DrawsBackground = color != Colors.Transparent;
 		}
 
@@ -61,7 +61,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override void SetForegroundColor (NSCell cell, Color color)
 		{
 			var c = (EtoCell)cell;
-			c.TextColor = color.ToNS ();
+			c.TextColor = color.ToNSUI ();
 		}
 
 		public override Color GetForegroundColor (NSCell cell)

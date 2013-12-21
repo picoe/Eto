@@ -220,14 +220,12 @@ namespace Eto.Platform.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = graphics.Translate(source.ToSD(), Control.Size.Height);
+			var sourceRect = source.ToSD();
 			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
-			graphics.FlipDrawing();
-			destRect.Y = graphics.ViewHeight - destRect.Y - destRect.Height;
 			if (alpha)
-				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
+				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 			else
-				Control.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1);
+				Control.Draw(destRect, sourceRect, NSCompositingOperation.Copy, 1, true, null);
 		}
 
 		public Bitmap Clone(Rectangle? rectangle = null)
@@ -236,27 +234,10 @@ namespace Eto.Platform.Mac.Drawing
 				return new Bitmap(Generator, new BitmapHandler((NSImage)Control.Copy()));
 			else
 			{
-				if (true) { // both code paths (true and false) seem to do the same thing. However the first is arguably cleaner.
-					var rect = new sd.RectangleF (sd.PointF.Empty, this.Control.Size);
-					var temp = this.Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
-					var image = new NSImage (temp, new sd.SizeF (temp.Width, temp.Height));
-					return new Bitmap(Generator, new BitmapHandler(image));
-				} else {
-					var rect = rectangle.Value;
-					PixelFormat format;
-					if (bmprep != null && bmprep.BitsPerPixel == 24)
-						format = PixelFormat.Format24bppRgb;
-					else if (alpha || (bmprep != null && bmprep.HasAlpha))
-						format = PixelFormat.Format32bppRgba;
-					else
-						format = PixelFormat.Format32bppRgb;
-
-					var bmp = new Bitmap (rect.Width, rect.Height, format, Generator);
-					using (var graphics = new Graphics (Generator, bmp)) {
-						graphics.DrawImage (Widget, rect, new Rectangle (rect.Size));
-					}
-					return bmp;
-				}
+				var rect = new sd.RectangleF (sd.PointF.Empty, this.Control.Size);
+				var temp = Control.AsCGImage (ref rect, null, null).WithImageInRect (rectangle.Value.ToSDRectangleF());
+				var image = new NSImage (temp, new sd.SizeF (temp.Width, temp.Height));
+				return new Bitmap(Generator, new BitmapHandler(image));
 			}
 		}
 

@@ -22,7 +22,7 @@ namespace Eto.Platform.Wpf.Drawing
 		public void Create (string familyName)
 		{
 			Name = familyName;
-			switch (familyName.ToLowerInvariant ()) {
+			switch (familyName.ToUpperInvariant ()) {
 			case FontFamilies.MonospaceFamilyName:
 				familyName = "Courier New";
 				break;
