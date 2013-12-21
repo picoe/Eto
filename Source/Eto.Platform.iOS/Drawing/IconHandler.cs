@@ -43,42 +43,18 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = source.ToSD (); //graphics.Translate(source.ToSD (), nsimage.Size.Height);
-			SD.RectangleF destRect = graphics.TranslateView (destination.ToSD (), false);
-			if (source.TopLeft != Point.Empty || sourceRect.Size != Control.Size) {
-				graphics.Control.SaveState ();
-				//graphics.Context.ClipToRect(destRect);
-				if (graphics.Flipped) {
-					graphics.Control.TranslateCTM (0, Control.Size.Height);
-					graphics.Control.ScaleCTM (Control.Size.Width / destRect.Width, -(Control.Size.Height / destRect.Height));
-				} else {
-					graphics.Control.ScaleCTM (Control.Size.Width / destRect.Width, Control.Size.Height / destRect.Height);
-				}
-				graphics.Control.DrawImage (new SD.RectangleF (SD.PointF.Empty, destRect.Size), Control.CGImage);
-				//nsimage.CGImage(destRect, CGBlendMode.Normal, 1);
-				
-				graphics.Control.RestoreState ();
-				
-				//var imgportion = nsimage..CGImage.WithImageInRect(sourceRect);
-				/*graphics.Context.SaveState();
-				if (graphics.Flipped) {
-					graphics.Context.TranslateCTM(0, destRect.Bottom);
-					graphics.Context.ScaleCTM(1.0F, -1.0F);
-				}*/
-				//var context = graphics.ControlObject as CGContext;
-				//Console.WriteLine("drawing source:{0} dest:{1}", source, destRect);
-				//graphics.Context.DrawImage(destRect, imgportion);
-				
-				//nsimage = UIImage.FromImage(imgportion);
-				//nsimage.Draw(destRect, CGBlendMode.Normal, 1);
-				
-				//imgportion.Dispose();
-				//nsimage.Dispose();
-				//graphics.Context.RestoreState();
-			} else {
-				//graphics.Context.DrawImage(destRect, nsimage.CGImage);
-				//Console.WriteLine("drawing full image");	
-				Control.Draw (destRect, CGBlendMode.Normal, 1);
+			var sourceRect = source.ToSD();
+			var imgsize = Control.Size;
+			SD.RectangleF destRect = graphics.TranslateView(destination.ToSD(), false);
+			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
+			{
+				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y + sourceRect.Y));
+				graphics.Control.ScaleCTM(imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
+				graphics.Control.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), Control.CGImage);
+			}
+			else
+			{
+				Control.Draw(destRect, CGBlendMode.Normal, 1);
 			}
 		}
 	}

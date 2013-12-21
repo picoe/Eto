@@ -26,11 +26,10 @@ namespace Eto.Platform.iOS.Drawing
 			CGAffineTransform viewTransform = CGAffineTransform.MakeIdentity();
 			readonly float[] alpha = { 1f };
 			CGPattern pattern;
-			static readonly CGColorSpace patternColorSpace = CGColorSpace.CreatePattern(null);
 
 			public void Apply(GraphicsHandler graphics)
 			{
-				graphics.Control.SetFillColorSpace(patternColorSpace);
+				graphics.SetFillColorSpace();
 
 				#if OSX
 				if (graphics.DisplayView != null)
@@ -96,7 +95,7 @@ namespace Eto.Platform.iOS.Drawing
 			{
 				var t = CGAffineTransform.Multiply(transform, viewTransform);
 				ClearPattern();
-				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.ConstantSpacing, true, DrawPattern);
+				pattern = new CGPattern(new sd.RectangleF(0, 0, image.Width, image.Height), t, image.Width, image.Height, CGPatternTiling.NoDistortion, true, DrawPattern);
 			}
 		}
 

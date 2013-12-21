@@ -12,7 +12,7 @@ namespace Eto.Platform.Mac.Forms.Controls
 		public override Color BackgroundColor
 		{
 			get { return Control.BackgroundColor.ToEto(); }
-			set { Control.BackgroundColor = value.ToNS(); }
+			set { Control.BackgroundColor = value.ToNSUI(); }
 		}
 
 		public virtual string Text

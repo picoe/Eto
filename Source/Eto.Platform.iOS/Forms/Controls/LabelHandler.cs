@@ -93,7 +93,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public Eto.Drawing.Color TextColor {
 			get { return Control.TextColor.ToEto (); }
-			set { Control.TextColor = value.ToUI (); }
+			set { Control.TextColor = value.ToNSUI (); }
 		}
 	}
 }

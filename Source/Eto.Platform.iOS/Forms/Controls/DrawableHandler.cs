@@ -544,7 +544,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				//var oldCheck = UIApplication.CheckForIllegalCrossThreadCalls;
 				//UIApplication.CheckForIllegalCrossThreadCalls = false;
 				
-				using (var graphics = new Graphics(Widget.Generator, new GraphicsHandler(Control, context, Control.BaseFrame.Height, true)))
+				using (var graphics = new Graphics(Widget.Generator, new GraphicsHandler(Control, context, Control.BaseFrame.Height)))
 				{
 					Widget.OnPaint(new PaintEventArgs(graphics, rect));
 				}

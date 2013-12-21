@@ -58,10 +58,10 @@ namespace Eto.Platform.iOS.Drawing
 			{
 				case PixelFormat.Format32bppRgba:
 					{
-						int numComponents = 4;
-						int bitsPerComponent = 8;
-						int bitsPerPixel = numComponents * bitsPerComponent;
-						int bytesPerPixel = bitsPerPixel / 8;
+						const int numComponents = 4;
+						const int bitsPerComponent = 8;
+						const int bitsPerPixel = numComponents * bitsPerComponent;
+						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
 
 						Data = NSMutableData.FromLength(bytesPerRow * height);
@@ -74,10 +74,10 @@ namespace Eto.Platform.iOS.Drawing
 					}
 				case PixelFormat.Format32bppRgb:
 					{
-						int numComponents = 4;
-						int bitsPerComponent = 8;
-						int bitsPerPixel = numComponents * bitsPerComponent;
-						int bytesPerPixel = bitsPerPixel / 8;
+						const int numComponents = 4;
+						const int bitsPerComponent = 8;
+						const int bitsPerPixel = numComponents * bitsPerComponent;
+						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
 						Data = NSMutableData.FromLength(bytesPerRow * height);
 						//Data = new NSMutableData ((uint)(bytesPerRow * height));
@@ -90,10 +90,10 @@ namespace Eto.Platform.iOS.Drawing
 					}
 				case PixelFormat.Format24bppRgb:
 					{
-						int numComponents = 3;
-						int bitsPerComponent = 8;
-						int bitsPerPixel = numComponents * bitsPerComponent;
-						int bytesPerPixel = bitsPerPixel / 8;
+						const int numComponents = 3;
+						const int bitsPerComponent = 8;
+						const int bitsPerPixel = numComponents * bitsPerComponent;
+						const int bytesPerPixel = bitsPerPixel / 8;
 						int bytesPerRow = bytesPerPixel * width;
 						Data = new NSMutableData((uint)(bytesPerRow * height));
 				
@@ -132,7 +132,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public void Save(Stream stream, ImageFormat format)
 		{
-			NSData data = null;
+			NSData data;
 			switch (format)
 			{
 				case ImageFormat.Jpeg:
@@ -158,7 +158,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, float x, float y)
 		{
-			var nsimage = this.Control;
+			var nsimage = Control;
 			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height), false);
 			nsimage.Draw(destRect, CGBlendMode.Normal, 1);
 		}
@@ -178,16 +178,9 @@ namespace Eto.Platform.iOS.Drawing
 			SD.RectangleF destRect = graphics.TranslateView(destination.ToSD(), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
 			{
-				graphics.Control.SaveState();
-#if OSX
-				graphics.Control.TranslateCTM (destRect.X - sourceRect.X, destRect.Y + sourceRect.Y + destRect.Height);
-				graphics.Control.ScaleCTM (imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
-#elif IOS
 				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y + sourceRect.Y));
 				graphics.Control.ScaleCTM(imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
-#endif
 				graphics.Control.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), Control.CGImage);
-				graphics.Control.RestoreState();
 			}
 			else
 			{
@@ -210,13 +203,13 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override UIImage GetUIImage()
 		{
-			return this.Control;
+			return Control;
 		}
 
-		public Bitmap Clone(Rectangle? rectangle)
+		public Bitmap Clone(Rectangle? rectangle = null)
 		{
 			if (rectangle == null)
-				return new Bitmap(Generator, new BitmapHandler { Control = (UIImage)this.Control.Copy() });
+				return new Bitmap(Generator, new BitmapHandler { Control = (UIImage)Control.Copy() });
 			else
 			{
 				var rect = rectangle.Value;
@@ -244,7 +237,7 @@ namespace Eto.Platform.iOS.Drawing
 			{
 				unsafe
 				{
-					byte* srcrow = (byte*)data.Data;
+					var srcrow = (byte*)data.Data;
 					srcrow += y * data.ScanWidth;
 					srcrow += x * data.BytesPerPixel;
 					if (data.BytesPerPixel == 4)
