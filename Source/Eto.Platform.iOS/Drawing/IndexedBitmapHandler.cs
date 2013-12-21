@@ -105,6 +105,15 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
+		void UpdateBitmap()
+		{
+			if (!updated)
+			{
+				UpdateBitmap(new Rectangle(Size));
+				updated = true;
+			}
+		}
+
 		void UpdateBitmap(Rectangle source, bool flipped = false)
 		{
 			var bd = bmp.Lock();
@@ -150,11 +159,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			if (!updated)
-			{
-				UpdateBitmap(new Rectangle(Size));
-				updated = true;
-			}
+			UpdateBitmap();
 			bmp.DrawImage(graphics, source, destination);
 		}
 
@@ -170,6 +175,7 @@ namespace Eto.Platform.iOS.Drawing
 
 		public override UIImage GetUIImage()
 		{
+			UpdateBitmap();
 			return bmp.GetUIImage();
 		}
 	}
