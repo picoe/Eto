@@ -162,15 +162,7 @@ namespace Eto.Platform.iOS.Drawing
 			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, (int)nsimage.Size.Width, (int)nsimage.Size.Height), false);
 			nsimage.Draw(destRect, CGBlendMode.Normal, 1);
 		}
-		/*
-		public override void DrawImage (GraphicsHandler graphics, int x, int y, int width, int height)
-		{
-			var nsimage = this.Control;
-			var sourceRect = graphics.Translate(new SD.RectangleF(0, 0, nsimage.Size.Width, nsimage.Size.Height), nsimage.Size.Height);
-			var destRect = graphics.TranslateView(new SD.RectangleF(x, y, width, height), false);
-			nsimage.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1);
-		}
-		*/
+
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var sourceRect = source.ToSD();
@@ -178,7 +170,7 @@ namespace Eto.Platform.iOS.Drawing
 			SD.RectangleF destRect = graphics.TranslateView(destination.ToSD(), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
 			{
-				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y + sourceRect.Y));
+				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y - sourceRect.Y));
 				graphics.Control.ScaleCTM(imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
 				graphics.Control.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), Control.CGImage);
 			}

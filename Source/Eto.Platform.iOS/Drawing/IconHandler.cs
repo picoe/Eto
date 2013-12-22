@@ -13,42 +13,41 @@ namespace Eto.Platform.iOS.Drawing
 		public IconHandler()
 		{
 		}
-		
+
 		public IconHandler(UIImage image)
 		{
 			Control = image;
 		}
-		
-		public void Create (Stream stream)
+
+		public void Create(Stream stream)
 		{
 			var data = NSData.FromStream(stream);
-			Control = new UIImage (data);
+			Control = new UIImage(data);
 		}
 
-		public void Create (string fileName)
+		public void Create(string fileName)
 		{
-			Control = new UIImage (fileName);
+			Control = new UIImage(fileName);
 		}
 
-		public override Size Size {
-			get {
-				return Control.Size.ToEtoSize ();
-			}
-		}
-
-		public override UIImage GetUIImage ()
+		public override Size Size
 		{
-			return this.Control;
+			get { return Control.Size.ToEtoSize(); }
 		}
 
-		public override void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination)
+		public override UIImage GetUIImage()
+		{
+			return Control;
+		}
+
+		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
 			var sourceRect = source.ToSD();
 			var imgsize = Control.Size;
 			SD.RectangleF destRect = graphics.TranslateView(destination.ToSD(), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
 			{
-				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y + sourceRect.Y));
+				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y - sourceRect.Y));
 				graphics.Control.ScaleCTM(imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
 				graphics.Control.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), Control.CGImage);
 			}
