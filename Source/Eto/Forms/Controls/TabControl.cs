@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 #if XAML
 using System.Windows.Markup;
@@ -17,7 +18,17 @@ namespace Eto.Forms
 
 		void RemoveTab(int index, TabPage page);
 	}
-	
+
+	public class TabRemovingEventArgs : EventArgs
+	{
+		public TabPage Page { get; private set; }
+
+		public TabRemovingEventArgs(TabPage page)
+		{
+			this.Page = page;
+		}
+	}
+
 	[ContentProperty("TabPages")]
 	public class TabControl : Container
 	{
@@ -35,6 +46,14 @@ namespace Eto.Forms
 		{
 			if (SelectedIndexChanged != null)
 				SelectedIndexChanged(this, e);
+		}
+
+		public event EventHandler<TabRemovingEventArgs> TabRemoving;
+
+		public virtual void OnTabRemoving(TabRemovingEventArgs e)
+		{
+			if (TabRemoving != null)
+				TabRemoving(this, e);
 		}
 		
 		public TabControl()
@@ -85,6 +104,7 @@ namespace Eto.Forms
 
 		internal void RemoveTab(int index, TabPage page)
 		{
+			OnTabRemoving(new TabRemovingEventArgs(page));
 			Handler.RemoveTab(index, page);
 			RemoveParent(page);
 		}
@@ -92,19 +112,22 @@ namespace Eto.Forms
 		internal void ClearTabs()
 		{
 			Handler.ClearTabs();
+			foreach (var page in TabPages.ToArray())
+				Remove(page);
 		}
 
 		public override void Remove(Control child)
 		{
-			var childPage = child as TabPage;
-			if (childPage != null)
+			Remove(child as TabPage);
+		}
+
+		private void Remove(TabPage page)
+		{
+			if (page != null)
 			{
-				var index = pages.IndexOf(childPage);
+				var index = pages.IndexOf(page);
 				if (index >= 0)
-				{
-					RemoveTab(index, childPage);
-					RemoveParent(childPage);
-				}
+					RemoveTab(index, page);
 			}
 		}
 
