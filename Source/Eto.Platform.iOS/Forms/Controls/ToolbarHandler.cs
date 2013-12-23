@@ -156,7 +156,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public void CreateFromCommand(Command command)
 		{
-			Control.Clicked += (s, e) => command.Execute();
 		}
 		
 		static readonly Selector selAction = new Selector("action");
@@ -181,7 +180,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public string Text
 		{
 			get { return Control.Title; }
-			set { Control.Title = value; }
+			set { Control.Title = value; button.SetTitle(value, UIControlState.Normal); }
 		}
 
 		public string ToolTip { get; set; } // iOS does not support ToolTip
