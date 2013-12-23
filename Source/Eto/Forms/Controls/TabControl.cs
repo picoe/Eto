@@ -111,7 +111,6 @@ namespace Eto.Forms
 		
 		internal void ClearTabs()
 		{
-			Handler.ClearTabs();
 			foreach (var page in TabPages.ToArray())
 				Remove(page);
 		}
