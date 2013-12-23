@@ -219,7 +219,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public override void WillDisplay(UITableView tableView, UITableViewCell cell, NSIndexPath indexPath)
 		{
 			var item = Handler.GetItem(indexPath);
-			Handler.OnCellFormatting(null, item, -1 /*row*/, cell as NSCell);
+			var column = Handler.Widget.Columns[0]; // can there be more than one column?
+			Handler.OnCellFormatting(column, item, -1 /*row*/, cell as NSCell);
 		}
 	}
 }
