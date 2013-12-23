@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using System.Linq;
 using MonoTouch.Foundation;
 using MonoTouch.ObjCRuntime;
+using sd = System.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -29,29 +30,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		bool Enabled { get; }
 
-		//NSButton Button { get; }
+		UIBarButtonItem Button { get; }
 
 		MacToolBarItemStyle ToolBarItemStyle { get; set; }
-	}
-
-	class ToolBarItemHandlerTarget : NSObject
-	{
-		WeakReference handler;
-
-		public IToolBarItemHandler Handler { get { return (IToolBarItemHandler)handler.Target; } set { handler = new WeakReference(value); } }
-
-		[Export("validateToolbarItem:")]
-		public bool ValidateToolbarItem(NSToolbarItem item)
-		{
-			return Handler.Enabled;
-		}
-
-		[Export("action")]
-		public bool Action()
-		{
-			Handler.OnClick();
-			return true;
-		}
 	}
 
 	/// <summary>
@@ -75,18 +56,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		/// but uses a Button as the View.
 		/// </summary>
 		LargeButton
-	}
-
-	public class MacCommand : Command
-	{
-		public Selector Selector { get; private set; }
-
-		public MacCommand(string id, string text, string selector)
-		{
-			ID = id;
-			MenuText = ToolBarText = text;
-			Selector = new Selector(selector);
-		}
 	}
 
 	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
@@ -163,7 +132,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			if (tint != null && nsimage != null)
 				nsimage = nsimage.Tint(tint.Value.ToNSUI());
 #endif
-			Control.Image = nsimage;
+			button.SetImage(nsimage, UIControlState.Normal);
 		}
 
 		Color? tint;
@@ -176,19 +145,18 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
+		UIButton button;
 		public override TControl CreateControl()
 		{
-			return (TControl)new NSToolbarItem();
+			button = new UIButton(new sd.RectangleF(0, 0, 61, 30));
+			button.TouchUpInside += (s, e) => OnClick();
+			var result = new NSToolbarItem(button);
+			return (TControl)result;
 		}
 
 		public void CreateFromCommand(Command command)
 		{
-			var m = command as MacCommand;
-			if (m != null)
-			{
-				Control.Target = null;
-				Control.Action = m.Selector;
-			}
+			Control.Clicked += (s, e) => command.Execute();
 		}
 		
 		static readonly Selector selAction = new Selector("action");
@@ -196,9 +164,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
-			Control.Action = selAction;
-
+		
 #if TODO
 			Control.Autovalidates = false;
 
@@ -249,6 +215,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 		}
 
 		NSToolbarItem IToolBarBaseItemHandler.Control
+		{
+			get { return Control; }
+		}
+
+		public NSToolbarItem Button
 		{
 			get { return Control; }
 		}
