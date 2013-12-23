@@ -1,16 +1,17 @@
 using System;
 using Eto.Forms;
 using MonoTouch.UIKit;
+using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.Platform.iOS.Forms.Cells
 {
-	public class ImageTextCellHandler : CellHandler<object, ImageTextCell>, IImageTextCell
+	public class ImageTextCellHandler : CellHandler<NSCell, ImageTextCell>, IImageTextCell
 	{
 		public ImageTextCellHandler ()
 		{
 		}
 
-		public override void Configure (object dataItem, UITableViewCell cell)
+		public override void Configure(object dataItem, NSCell cell)
 		{
 			if (Widget.TextBinding != null) {
 				var val = Widget.TextBinding.GetValue (dataItem);
