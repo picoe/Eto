@@ -93,11 +93,22 @@ namespace Eto.Platform.iOS.Forms.Controls
 	{
 		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
 
+		public ToolBarHandler()
+		{
+			Control = new NSToolbar();
+			//Control.SizeMode = NSToolbarSizeMode.Default;
+			//Control.Visible = true;
+			//Control.ShowsBaselineSeparator = true;
+			//Control.AllowsUserCustomization = true;
+			//Control.DisplayMode = NSToolbarDisplayMode.IconAndLabel;
+			//Control.Delegate = new TBDelegate { Handler = this };
+		}
+
 		public void AddButton(ToolItem item)
 		{
 			var handler = (IToolBarBaseItemHandler)item.Handler;
 			items.Add(handler);
-			var list = Control.Items.ToList();
+			var list = GetItems();
 			list.Add((NSToolbarItem)item.ControlObject);
 			Control.Items = list.ToArray();
 			if (handler != null)
@@ -105,12 +116,18 @@ namespace Eto.Platform.iOS.Forms.Controls
 			//Control.ValidateVisibleItems();
 		}
 
+		private List<NSToolbarItem> GetItems()
+		{
+			var list = Control.Items;
+			return list != null ? list.ToList() : new List<NSToolbarItem>();
+		}
+
 		public void RemoveButton(ToolItem item)
 		{
 			var handler = item.Handler as IToolBarBaseItemHandler;
 			var index = items.IndexOf(handler);
 			items.Remove(handler);
-			var list = Control.Items.ToList();
+			var list = GetItems();
 			list.RemoveAt(index);
 			Control.Items = list.ToArray();
 		}
