@@ -5,6 +5,8 @@ using MonoTouch.UIKit;
 using Eto.Platform.iOS.Drawing;
 using NSToolbar = MonoTouch.UIKit.UIToolbar;
 using NSToolbarItem = MonoTouch.UIKit.UIBarButtonItem;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -56,44 +58,37 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
 	{
-		public void AddButton(ToolItem button)
+		readonly List<IToolBarBaseItemHandler> items = new List<IToolBarBaseItemHandler>();
+
+		public void AddButton(ToolItem item)
 		{
-			throw new NotImplementedException();
+			var handler = (IToolBarBaseItemHandler)item.Handler;
+			items.Add(handler);
+			var list = Control.Items.ToList();
+			list.Add((NSToolbarItem)item.ControlObject);
+			Control.Items = list.ToArray();
+			if (handler != null)
+				handler.ControlAdded(this);
+			//Control.ValidateVisibleItems();
 		}
 
-		public void RemoveButton(ToolItem button)
+		public void RemoveButton(ToolItem item)
 		{
-			throw new NotImplementedException();
+			var handler = item.Handler as IToolBarBaseItemHandler;
+			var index = items.IndexOf(handler);
+			items.Remove(handler);
+			var list = Control.Items.ToList();
+			list.RemoveAt(index);
+			Control.Items = list.ToArray();
 		}
 
 		public void Clear()
 		{
-			throw new NotImplementedException();
+			Control.Items = null;
 		}
 
-		public ToolBarTextAlign TextAlign
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
-
-		public ToolBarDock Dock
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public ToolBarTextAlign TextAlign { get; set; } // TODO
+		public ToolBarDock Dock { get; set; } // TODO
 	}
 
 	public abstract class ToolItemHandler<TControl, TWidget> : WidgetHandler<TControl, TWidget>, IToolItem, IToolBarItemHandler
