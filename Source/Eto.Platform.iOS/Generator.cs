@@ -47,10 +47,10 @@ namespace Eto.Platform.iOS
 			g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 
 			// Forms.Cells
-			//g.Add<ICheckBoxCell> (() => new CheckBoxCellHandler ());
-			//g.Add<IComboBoxCell> (() => new ComboBoxCellHandler ());
+			g.Add<ICheckBoxCell> (() => new CheckBoxCellHandler ());
+			g.Add<IComboBoxCell> (() => new ComboBoxCellHandler ());
 			g.Add<IImageTextCell>(() => new ImageTextCellHandler());
-			//g.Add<IImageViewCell> (() => new ImageViewCellHandler ());
+			g.Add<IImageViewCell> (() => new ImageViewCellHandler ());
 			g.Add<ITextBoxCell>(() => new TextBoxCellHandler());
 			
 			// Forms.Controls
