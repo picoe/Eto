@@ -12,6 +12,7 @@ namespace Eto.Platform.iOS.Forms
 	public interface IIosView : IMacControlHandler
 	{
 		Size PositionOffset { get; }
+
 		UIViewController Controller { get; }
 	}
 
@@ -21,6 +22,8 @@ namespace Eto.Platform.iOS.Forms
 	{
 		SizeF? naturalSize;
 		UIViewController controller;
+
+		public bool IsResizing { get; set; }
 
 		public UIViewController Controller
 		{ 
@@ -53,7 +56,7 @@ namespace Eto.Platform.iOS.Forms
 			set
 			{ 
 				var oldSize = GetPreferredSize(SizeF.MaxValue);
-				this.PreferredSize = value;
+				PreferredSize = value;
 
 				var newSize = ContainerControl.Frame.Size;
 				if (value.Width >= 0)
@@ -94,10 +97,12 @@ namespace Eto.Platform.iOS.Forms
 			if (control != null)
 			{
 				SD.SizeF? size = (Widget.Loaded) ? (SD.SizeF?)control.Frame.Size : null;
+				IsResizing = true;
 				control.SizeToFit();
 				naturalSize = control.Frame.Size.ToEto();
 				if (size != null)
 					control.SetFrameSize(size.Value);
+				IsResizing = false;
 				return naturalSize.Value;
 			}
 			return Size.Empty;
@@ -170,10 +175,11 @@ namespace Eto.Platform.iOS.Forms
 					CreateTracking();
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					this.AddControlObserver(frameKey, e =>
+					AddControlObserver(frameKey, e =>
 					{
 						var h = e.Handler as IosView<TControl,TWidget>;
-						h.Widget.OnSizeChanged(EventArgs.Empty);
+						if (!h.IsResizing)
+							h.Widget.OnSizeChanged(EventArgs.Empty);
 					});
 				/*UIDevice.CurrentDevice.BeginGeneratingDeviceOrientationNotifications();
 				this.AddObserver(null, UIDevice.OrientationDidChangeNotification, delegate {
