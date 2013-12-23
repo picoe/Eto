@@ -52,12 +52,12 @@ namespace Eto.Platform.iOS.Forms.Cells
 
 		public void SetForegroundColor(NSCell cell, Color color)
 		{
-			// TODO
+			cell.TextLabel.TextColor = color.ToNSUI();
 		}
 
 		public Color GetForegroundColor(NSCell cell)
 		{
-			throw new NotImplementedException();
+			return cell.TextLabel.TextColor.ToEto();
 		}
 	}
 }

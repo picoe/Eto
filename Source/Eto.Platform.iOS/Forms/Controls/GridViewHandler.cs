@@ -118,6 +118,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			base.Initialize ();
 			Control.DataSource = new DataSource { Handler = this };
+			Control.SeparatorStyle = UITableViewCellSeparatorStyle.None;
 		}
 
 		public IDataStore DataStore {
