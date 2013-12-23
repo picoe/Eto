@@ -183,6 +183,7 @@ namespace Eto.Test
 			menu.Items.Trim();
 
 			Menu = menu;
+#endif
 
 			// generate and set the toolbar
 			var toolBar = new ToolBar();
@@ -190,7 +191,6 @@ namespace Eto.Test
 			toolBar.Items.Add(new ButtonToolItem(about));
 
 			ToolBar = toolBar;
-#endif
 
 		}
 

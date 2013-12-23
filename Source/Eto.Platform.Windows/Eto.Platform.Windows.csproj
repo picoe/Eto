@@ -267,7 +267,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolBarHandler.cs">
-      <SubType>Code</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs">
       <SubType>Code</SubType>

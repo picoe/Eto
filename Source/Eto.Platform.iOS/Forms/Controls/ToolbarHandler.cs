@@ -77,6 +77,17 @@ namespace Eto.Platform.iOS.Forms.Controls
 		LargeButton
 	}
 
+	public class MacCommand : Command
+	{
+		public Selector Selector { get; private set; }
+
+		public MacCommand(string id, string text, string selector)
+		{
+			ID = id;
+			MenuText = ToolBarText = text;
+			Selector = new Selector(selector);
+		}
+	}
 
 	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
 	{
@@ -148,9 +159,19 @@ namespace Eto.Platform.iOS.Forms.Controls
 			}
 		}
 
+		public override TControl CreateControl()
+		{
+			return (TControl)new NSToolbarItem();
+		}
+
 		public void CreateFromCommand(Command command)
 		{
-			throw new NotImplementedException();
+			var m = command as MacCommand;
+			if (m != null)
+			{
+				Control.Target = null;
+				Control.Action = m.Selector;
+			}
 		}
 		
 		static readonly Selector selAction = new Selector("action");

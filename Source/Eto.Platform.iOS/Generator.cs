@@ -98,10 +98,10 @@ namespace Eto.Platform.iOS
 			//g.Add<IPrintSettings> (() => new PrintSettingsHandler ());
 			
 			// Forms.ToolBar
-			//g.Add<ICheckToolBarButton> (() => new CheckToolBarButtonHandler ());
-			//g.Add<ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
-			//g.Add<IToolBarButton> (() => new ToolBarButtonHandler ());
-			g.Add<IToolBar> (() => new ToolBarHandler ());
+			g.Add<ICheckToolItem>(() => new CheckToolItemHandler());
+			g.Add<ISeparatorToolItem>(() => new SeparatorToolItemHandler());
+			g.Add<IButtonToolItem>(() => new ButtonToolItemHandler());
+			g.Add<IToolBar>(() => new ToolBarHandler());
 
 			// Forms
 			g.Add<IApplication>(() => new ApplicationHandler());
