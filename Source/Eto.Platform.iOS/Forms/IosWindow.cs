@@ -4,6 +4,9 @@ using Eto.Forms;
 using Eto.Platform.iOS.Forms.Controls;
 using Eto.Drawing;
 using Eto.Platform.Mac.Forms;
+using NSToolbar = MonoTouch.UIKit.UIToolbar;
+using NSToolbarItem = MonoTouch.UIKit.UIBarButtonItem;
+using sd = System.Drawing;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -51,15 +54,18 @@ namespace Eto.Platform.iOS.Forms
 		{
 		}
 
+		ToolBar toolBar;
 		public ToolBar ToolBar
 		{
-			get
-			{
-				throw new NotImplementedException();
-			}
+			get { return toolBar; }
 			set
 			{
-				throw new NotImplementedException();
+				toolBar = value;
+				var t = value.ControlObject as NSToolbar;
+				var screenSize = UIScreen.MainScreen.Bounds.Size;
+				var height = 44;
+				t.Frame = new sd.RectangleF(0, screenSize.Height - height, screenSize.Width, height);
+				this.Control.AddSubview(t);
 			}
 		}
 

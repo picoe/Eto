@@ -60,7 +60,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			{
 				var coll = Handler.store.Collection;
 				var dataItem = coll[section];
-				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<IiOSCellHandler>())
+				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<ICellHandler>())
 				{
 					return column.TitleForSection (dataItem);
 				}
@@ -76,7 +76,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 					cell = new UITableViewCell(UITableViewCellStyle.Default, CELL_ID);
 
 				var item = Handler.GetItem (indexPath);
-				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<IiOSCellHandler>())
+				foreach (var column in Handler.Widget.Columns.Where (r=> r.DataCell != null).Select(r => r.DataCell.Handler).OfType<ICellHandler>())
 				{
 					column.Configure (item, cell);
 				}

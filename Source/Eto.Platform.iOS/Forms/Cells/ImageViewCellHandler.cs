@@ -5,9 +5,9 @@ using NSCell = MonoTouch.UIKit.UITableViewCell;
 
 namespace Eto.Platform.iOS.Forms.Cells
 {
-	public class TextBoxCellHandler : CellHandler<NSCell, TextBoxCell>, ITextBoxCell
+	public class ImageViewCellHandler : CellHandler<NSCell, ImageViewCell>, IImageViewCell
 	{
-		public TextBoxCellHandler ()
+		public ImageViewCellHandler ()
 		{
 		}
 

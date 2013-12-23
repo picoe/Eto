@@ -47,10 +47,10 @@ namespace Eto.Platform.iOS
 			g.Add<ILinearGradientBrush>(() => new LinearGradientBrushHandler());
 
 			// Forms.Cells
-			//g.Add<ICheckBoxCell> (() => new CheckBoxCellHandler ());
-			//g.Add<IComboBoxCell> (() => new ComboBoxCellHandler ());
+			g.Add<ICheckBoxCell> (() => new CheckBoxCellHandler ());
+			g.Add<IComboBoxCell> (() => new ComboBoxCellHandler ());
 			g.Add<IImageTextCell>(() => new ImageTextCellHandler());
-			//g.Add<IImageViewCell> (() => new ImageViewCellHandler ());
+			g.Add<IImageViewCell> (() => new ImageViewCellHandler ());
 			g.Add<ITextBoxCell>(() => new TextBoxCellHandler());
 			
 			// Forms.Controls
@@ -98,10 +98,10 @@ namespace Eto.Platform.iOS
 			//g.Add<IPrintSettings> (() => new PrintSettingsHandler ());
 			
 			// Forms.ToolBar
-			//g.Add<ICheckToolBarButton> (() => new CheckToolBarButtonHandler ());
-			//g.Add<ISeparatorToolBarItem> (() => new SeparatorToolBarItemHandler ());
-			//g.Add<IToolBarButton> (() => new ToolBarButtonHandler ());
-			g.Add<IToolBar> (() => new ToolBarHandler ());
+			g.Add<ICheckToolItem>(() => new CheckToolItemHandler());
+			g.Add<ISeparatorToolItem>(() => new SeparatorToolItemHandler());
+			g.Add<IButtonToolItem>(() => new ButtonToolItemHandler());
+			g.Add<IToolBar>(() => new ToolBarHandler());
 
 			// Forms
 			g.Add<IApplication>(() => new ApplicationHandler());

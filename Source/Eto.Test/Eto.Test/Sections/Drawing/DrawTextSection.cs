@@ -36,7 +36,25 @@ namespace Eto.Test.Sections.Drawing
 		class DrawInfo
 		{
 			public Font Font { get; set; }
-			public string Text { get; set; }
+			string text;
+			public string Text
+			{
+				get
+				{
+					if (string.IsNullOrEmpty(text) &&
+						Font != null)
+					{
+						var styles = new List<string>();
+						if (Font.Bold) styles.Add("Bold");
+						if (Font.Italic) styles.Add("Italic");
+						if (Font.Underline) styles.Add("Underline");
+						var style = string.Join(" & ", styles.ToArray());
+						text = string.Format("{0} {1} {2}pt", Font.Family.Name, style, Font.Size);
+					}
+					return text;
+				}
+				set { text = value; }
+			}
 		}
 
 		IEnumerable<DrawInfo> GetDrawInfo()
@@ -44,29 +62,29 @@ namespace Eto.Test.Sections.Drawing
 			yield return new DrawInfo { Font = new Font(SystemFont.Default, generator: Generator), Text = "System Font & Size" };
 			yield return new DrawInfo { Font = new Font(SystemFont.Default, 20, generator: Generator), Text = "System Font, 20pt" };
 
-			yield return new DrawInfo { Font = Fonts.Sans(12, generator: Generator), Text = "Sans, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Serif(12, generator: Generator), Text = "Serif, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Monospace(12, generator: Generator), Text = "Monospace, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Cursive(12, generator: Generator), Text = "Cursive, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Fantasy(12, generator: Generator), Text = "Fantasy, 12pt" };
+			yield return new DrawInfo { Font = Fonts.Sans(12, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Serif(12, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Monospace(12, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Cursive(12, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Fantasy(12, generator: Generator)};
 
-			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold, generator: Generator), Text = "Sans Bold, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold, generator: Generator), Text = "Serif Bold, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold, generator: Generator), Text = "Monospace Bold, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold, generator: Generator), Text = "Cursive Bold, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold, generator: Generator), Text = "Fantasy Bold, 12pt" };
+			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold, generator: Generator)};
 
-			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Italic, generator: Generator), Text = "Sans Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Italic, generator: Generator), Text = "Serif Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Italic, generator: Generator), Text = "Monospace Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Italic, generator: Generator), Text = "Cursive Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Italic, generator: Generator), Text = "Fantasy Italic, 12pt" };
+			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Italic, generator: Generator)};
 
-			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold | FontStyle.Italic, generator: Generator), Text = "Sans Bold & Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold | FontStyle.Italic, generator: Generator), Text = "Serif Bold & Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold | FontStyle.Italic, generator: Generator), Text = "Monospace Bold & Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold | FontStyle.Italic, generator: Generator), Text = "Cursive Bold & Italic, 12pt" };
-			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold | FontStyle.Italic, generator: Generator), Text = "Fantasy Bold & Italic, 12pt" };
+			yield return new DrawInfo { Font = Fonts.Sans(12, FontStyle.Bold | FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Serif(12, FontStyle.Bold | FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Monospace(12, FontStyle.Bold | FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Cursive(12, FontStyle.Bold | FontStyle.Italic, generator: Generator)};
+			yield return new DrawInfo { Font = Fonts.Fantasy(12, FontStyle.Bold | FontStyle.Italic, generator: Generator)};
 		}
 
 		internal void DrawFrame(Graphics g)
