@@ -149,8 +149,10 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public override TControl CreateControl()
 		{
 			button = new UIButton(new sd.RectangleF(0, 0, 61, 30));
-			button.TouchUpInside += (s, e) => OnClick();
 			var result = new NSToolbarItem(button);
+			// TODO: Neither of these seem to work. What is the correct event trigger?
+			button.TouchUpInside += (s, e) => OnClick();
+			result.Clicked += (s, e) => OnClick();
 			return (TControl)result;
 		}
 
