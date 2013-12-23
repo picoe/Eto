@@ -7,6 +7,8 @@ using NSToolbar = MonoTouch.UIKit.UIToolbar;
 using NSToolbarItem = MonoTouch.UIKit.UIBarButtonItem;
 using System.Collections.Generic;
 using System.Linq;
+using MonoTouch.Foundation;
+using MonoTouch.ObjCRuntime;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
@@ -30,6 +32,26 @@ namespace Eto.Platform.iOS.Forms.Controls
 		//NSButton Button { get; }
 
 		MacToolBarItemStyle ToolBarItemStyle { get; set; }
+	}
+
+	class ToolBarItemHandlerTarget : NSObject
+	{
+		WeakReference handler;
+
+		public IToolBarItemHandler Handler { get { return (IToolBarItemHandler)handler.Target; } set { handler = new WeakReference(value); } }
+
+		[Export("validateToolbarItem:")]
+		public bool ValidateToolbarItem(NSToolbarItem item)
+		{
+			return Handler.Enabled;
+		}
+
+		[Export("action")]
+		public bool Action()
+		{
+			Handler.OnClick();
+			return true;
+		}
 	}
 
 	/// <summary>
@@ -130,6 +152,27 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			throw new NotImplementedException();
 		}
+		
+		static readonly Selector selAction = new Selector("action");
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Target = new ToolBarItemHandlerTarget { Handler = this };
+			Control.Action = selAction;
+
+#if TODO
+			Control.Autovalidates = false;
+
+			menuItem = new NSMenuItem(string.Empty);
+			menuItem.Action = Control.Action;
+			menuItem.Target = Control.Target;
+			Control.MenuFormRepresentation = menuItem;
+#endif
+			Control.Enabled = true;
+
+			this.ToolBarItemStyle = MacToolBarItemStyle.Default;
+		}
 
 		public string Text
 		{
@@ -160,17 +203,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			InvokeButton();
 		}
 
-		public MacToolBarItemStyle ToolBarItemStyle
-		{
-			get
-			{
-				throw new NotImplementedException();
-			}
-			set
-			{
-				throw new NotImplementedException();
-			}
-		}
+		public MacToolBarItemStyle ToolBarItemStyle { get; set; }
 
 		public string Identifier
 		{
