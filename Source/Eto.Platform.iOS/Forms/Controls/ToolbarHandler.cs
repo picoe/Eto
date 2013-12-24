@@ -1,61 +1,28 @@
 using System;
-using Eto.Forms;
-using Eto.Drawing;
-using MonoTouch.UIKit;
-using Eto.Platform.iOS.Drawing;
-using NSToolbar = MonoTouch.UIKit.UIToolbar;
-using NSToolbarItem = MonoTouch.UIKit.UIBarButtonItem;
 using System.Collections.Generic;
 using System.Linq;
-using MonoTouch.Foundation;
+using Eto.Drawing;
+using Eto.Forms;
 using MonoTouch.ObjCRuntime;
+using MonoTouch.UIKit;
+using NSToolbar = MonoTouch.UIKit.UIToolbar;
+using NSToolbarItem = MonoTouch.UIKit.UIBarButtonItem;
 using sd = System.Drawing;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
 	public interface IToolBarBaseItemHandler
 	{
-		string Identifier { get; }
-
 		NSToolbarItem Control { get; }
-
 		bool Selectable { get; }
-
 		void ControlAdded(ToolBarHandler toolbar);
 	}
 
 	public interface IToolBarItemHandler : IToolBarBaseItemHandler
 	{
 		void OnClick();
-
 		bool Enabled { get; }
-
 		UIBarButtonItem Button { get; }
-
-		MacToolBarItemStyle ToolBarItemStyle { get; set; }
-	}
-
-	/// <summary>
-	/// A toolbar item can be displayed in three ways.
-	/// To set a non-default style, create a custom style handler
-	/// for the Mac platform that sets the style to one of these types.
-	/// </summary>
-	public enum MacToolBarItemStyle
-	{
-		/// <summary>
-		/// The default appearance, with 32x32 icons.
-		/// Does not have a View.
-		/// </summary>
-		Default,
-		/// <summary>
-		/// A small button with a rounded bezel.
-		/// </summary>
-		StandardButton,
-		/// <summary>
-		/// A large button. Similar in appearance to Default,
-		/// but uses a Button as the View.
-		/// </summary>
-		LargeButton
 	}
 
 	public class ToolBarHandler : WidgetHandler<NSToolbar, ToolBar>, IToolBar
@@ -65,12 +32,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public ToolBarHandler()
 		{
 			Control = new NSToolbar();
-			//Control.SizeMode = NSToolbarSizeMode.Default;
-			//Control.Visible = true;
-			//Control.ShowsBaselineSeparator = true;
-			//Control.AllowsUserCustomization = true;
-			//Control.DisplayMode = NSToolbarDisplayMode.IconAndLabel;
-			//Control.Delegate = new TBDelegate { Handler = this };
+			Control.AutoresizingMask = UIViewAutoresizing.FlexibleWidth;
+			Control.BarStyle = UIBarStyle.Default;
 		}
 
 		public void AddButton(ToolItem item)
@@ -82,7 +45,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Control.Items = list.ToArray();
 			if (handler != null)
 				handler.ControlAdded(this);
-			//Control.ValidateVisibleItems();
 		}
 
 		private List<NSToolbarItem> GetItems()
@@ -148,7 +110,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		UIButton button;
 		public override TControl CreateControl()
 		{
-			button = new UIButton(new sd.RectangleF(0, 0, 61, 30));
+			button = new UIButton(new sd.RectangleF(0, 0, 40, 40));
 			var result = new NSToolbarItem(button);
 			// TODO: Neither of these seem to work. What is the correct event trigger?
 			button.TouchUpInside += (s, e) => OnClick();
@@ -165,18 +127,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 		protected override void Initialize()
 		{
 			base.Initialize();
-		
-#if TODO
-			Control.Autovalidates = false;
-
-			menuItem = new NSMenuItem(string.Empty);
-			menuItem.Action = Control.Action;
-			menuItem.Target = Control.Target;
-			Control.MenuFormRepresentation = menuItem;
-#endif
 			Control.Enabled = true;
-
-			this.ToolBarItemStyle = MacToolBarItemStyle.Default;
 		}
 
 		public string Text
@@ -206,13 +157,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 		public void OnClick()
 		{
 			InvokeButton();
-		}
-
-		public MacToolBarItemStyle ToolBarItemStyle { get; set; }
-
-		public string Identifier
-		{
-			get { throw new NotImplementedException(); }
 		}
 
 		NSToolbarItem IToolBarBaseItemHandler.Control
@@ -281,31 +225,19 @@ namespace Eto.Platform.iOS.Forms.Controls
 			Type = SeparatorToolItemType.Divider;
 		}
 
-		public virtual string Identifier
-		{
-			get
-			{
-				switch (Type)
-				{
-#if TODO
-					default:
-						return NSToolbar.NSToolbarSeparatorItemIdentifier;
-					case SeparatorToolItemType.Space:
-						return NSToolbar.NSToolbarSpaceItemIdentifier;
-					case SeparatorToolItemType.FlexibleSpace:
-						return NSToolbar.NSToolbarFlexibleSpaceItemIdentifier;
-#endif					
-				}
-				throw new NotImplementedException();
-			}
-		}
-
 		public bool Selectable
 		{
 			get { return false; }
 		}
 
 		public SeparatorToolItemType Type { get; set; }
+
+		public override NSToolbarItem CreateControl()
+		{
+			var result = new NSToolbarItem(UIBarButtonSystemItem.FixedSpace);
+			result.Width = 10;
+			return result;
+		}
 
 		public void ControlAdded(ToolBarHandler toolbar)
 		{
