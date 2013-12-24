@@ -48,14 +48,6 @@ namespace Eto.Forms
 				SelectedIndexChanged(this, e);
 		}
 
-		public event EventHandler<TabRemovingEventArgs> TabRemoving;
-
-		public virtual void OnTabRemoving(TabRemovingEventArgs e)
-		{
-			if (TabRemoving != null)
-				TabRemoving(this, e);
-		}
-		
 		public TabControl()
 			: this((Generator)null)
 		{
@@ -104,7 +96,6 @@ namespace Eto.Forms
 
 		internal void RemoveTab(int index, TabPage page)
 		{
-			OnTabRemoving(new TabRemovingEventArgs(page));
 			Handler.RemoveTab(index, page);
 			RemoveParent(page);
 		}

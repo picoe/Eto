@@ -110,11 +110,11 @@ namespace Eto.Platform.iOS.Forms.Controls
 		UIButton button;
 		public override TControl CreateControl()
 		{
+			// Create a button so that any image can be used.
+			// (A standard toolbar item uses only the alpha channel of the image.)
 			button = new UIButton(new sd.RectangleF(0, 0, 40, 40));
-			var result = new NSToolbarItem(button);
-			// TODO: Neither of these seem to work. What is the correct event trigger?
 			button.TouchUpInside += (s, e) => OnClick();
-			result.Clicked += (s, e) => OnClick();
+			var result = new NSToolbarItem(button);
 			return (TControl)result;
 		}
 
