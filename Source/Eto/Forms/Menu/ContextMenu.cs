@@ -8,6 +8,11 @@ namespace Eto.Forms
 		void Show(Control relativeTo);
 	}
 
+	public interface IHasContextMenu
+	{
+		ContextMenu ContextMenu { get; set; }
+	}
+
 	public class ContextMenu : Menu, ISubMenuWidget
 	{
 		new IContextMenu Handler { get { return (IContextMenu)base.Handler; } }

@@ -2,9 +2,8 @@
 
 namespace Eto.Forms
 {
-	public partial interface ITreeView
+	public partial interface ITreeView : IHasContextMenu
 	{
-		ContextMenu ContextMenu { get; set; }
 	}
 	
 	public partial class TreeView
