@@ -184,6 +184,17 @@ namespace Eto.Platform.Windows
 			SetScale(XScale, YScale);
 		}
 
+		ContextMenu contextMenu;
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				Control.ContextMenuStrip = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+			}
+		}
+
 		public override void AttachEvent(string id)
 		{
 			switch (id)

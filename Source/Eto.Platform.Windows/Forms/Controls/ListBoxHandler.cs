@@ -10,7 +10,6 @@ namespace Eto.Platform.Windows
 {
 	public class ListBoxHandler : WindowsControl<swf.ListBox, ListBox>, IListBox
 	{
-		ContextMenu contextMenu;
 		CollectionHandler collection;
 
 		class MyListBox : swf.ListBox
@@ -89,16 +88,6 @@ namespace Eto.Platform.Windows
 			Control.IntegralHeight = false;
 			Control.DoubleClick += control_DoubleClick;
 			Control.KeyDown += control_KeyDown;
-		}
-
-		public ContextMenu ContextMenu
-		{
-			get { return contextMenu; }
-			set
-			{
-				contextMenu = value;
-				Control.ContextMenuStrip = contextMenu != null ? contextMenu.ControlObject as swf.ContextMenuStrip : null;
-			}
 		}
 
 		public int SelectedIndex
