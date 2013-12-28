@@ -91,5 +91,11 @@ namespace Eto.Platform.Android.Forms
 				throw new NotImplementedException();
 			}
 		}
+
+
+		public IEnumerable<Command> GetSystemCommands()
+		{
+			throw new NotImplementedException();
+		}
 	}
 }
