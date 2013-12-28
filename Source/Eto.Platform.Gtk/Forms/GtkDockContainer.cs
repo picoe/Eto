@@ -53,6 +53,13 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
+		ContextMenu contextMenu;
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set { contextMenu = value; } // TODO
+		}
+
 		public Size MinimumSize { get; set; }
 
 		public Padding Padding

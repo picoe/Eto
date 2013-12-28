@@ -4,6 +4,7 @@ using Eto.Drawing;
 using MonoMac.AppKit;
 using SD = System.Drawing;
 using MonoTouch.UIKit;
+using Eto.Platform.Mac.Forms.Menu;
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
@@ -64,6 +65,17 @@ namespace Eto.Platform.Mac.Forms
 				{
 					LayoutParent();
 				}
+			}
+		}
+
+		ContextMenu contextMenu;
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
 
