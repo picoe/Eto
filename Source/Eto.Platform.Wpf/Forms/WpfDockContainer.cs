@@ -3,6 +3,7 @@ using swc = System.Windows.Controls;
 using sw = System.Windows;
 using Eto.Forms;
 using Eto.Drawing;
+using Eto.Platform.Wpf.Forms.Menu;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -70,6 +71,16 @@ namespace Eto.Platform.Wpf.Forms
 			return new sw.Size(Math.Max(0, size.Width), Math.Max(0, size.Height));
 		}
 
+		ContextMenu contextMenu;
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				Control.ContextMenu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+			}
+		}
 
 		protected WpfDockContainer()
 		{
