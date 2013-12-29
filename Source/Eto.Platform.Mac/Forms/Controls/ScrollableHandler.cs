@@ -298,6 +298,14 @@ namespace Eto.Platform.Mac.Forms.Controls
 			InternalSetFrameSize(contentSize);
 		}
 
+		#if !USE_FLIPPED
+		public override void OnSizeChanged(EventArgs e)
+		{
+			base.OnSizeChanged(e);
+			SetPosition(scrollPosition, true);
+		}
+		#endif
+
 		public Rectangle VisibleRect
 		{
 			get { return new Rectangle(ScrollPosition, Size.Min(ScrollSize, ClientSize)); }

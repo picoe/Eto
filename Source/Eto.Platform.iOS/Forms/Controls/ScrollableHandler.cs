@@ -66,12 +66,16 @@ namespace Eto.Platform.iOS.Forms.Controls
 		{
 			var scrollBounds = Control.Bounds;
 			var contentSize = Control.ContentSize;
+			var insets = Control.ContentInset;
+			scrollBounds.Width -= insets.Left + insets.Right;
+			scrollBounds.Height -= insets.Top + insets.Bottom;
 
-			contentSize.Width += (scrollBounds.Width > contentSize.Width) ? (scrollBounds.Width - contentSize.Width) : 0.0f;
-			contentSize.Height += (scrollBounds.Height > contentSize.Height) ? (scrollBounds.Height - contentSize.Height) : 0.0f;
+			// keep content in the center of the scroll area, if smaller
+			var location = new sd.PointF(Math.Max(0, (scrollBounds.Width - contentSize.Width) / 2f), Math.Max(0, (scrollBounds.Height - contentSize.Height) / 2f));
 
-			// keep content in the center of the scroll area
-			Child.Center = new sd.PointF(contentSize.Width * 0.5f, contentSize.Height * 0.5f);
+			IsResizing = true;
+			Child.SetFrameOrigin(location);
+			IsResizing = false;
 		}
 
 		public override UIView ContentControl

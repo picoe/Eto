@@ -532,7 +532,7 @@ namespace Eto.Platform.iOS.Drawing
 		public void SetClip(RectangleF rectangle)
 		{
 			ResetClip();
-			clipBounds = TranslateView(rectangle.ToSD());
+			clipBounds = rectangle.ToSD();
 			ReplayClip();
 		}
 

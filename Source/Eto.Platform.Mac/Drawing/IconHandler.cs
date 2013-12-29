@@ -3,6 +3,7 @@ using Eto.Drawing;
 using MonoMac.AppKit;
 using MonoMac.Foundation;
 using MonoMac.CoreGraphics;
+using sd = System.Drawing;
 
 namespace Eto.Platform.Mac.Drawing
 {
@@ -42,7 +43,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = source.ToSD();
+			var sourceRect = new sd.RectangleF(source.X, Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
 			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
 			Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
 		}

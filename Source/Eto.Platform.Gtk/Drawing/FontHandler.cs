@@ -118,7 +118,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Size = size;
 			FontDecoration = decoration;
 
-			Control.Family = family.Name;
+			var familyHandler = (FontFamilyHandler)family.Handler;
+			Control.Family = familyHandler.Control.Name;
 		}
 
 		public void Create(FontTypeface face, float size, FontDecoration decoration)

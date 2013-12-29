@@ -220,7 +220,7 @@ namespace Eto.Platform.Mac.Drawing
 
 		public override void DrawImage(GraphicsHandler graphics, RectangleF source, RectangleF destination)
 		{
-			var sourceRect = source.ToSD();
+			var sourceRect = new sd.RectangleF(source.X, Control.Size.Height - source.Y - source.Height, source.Width, source.Height);
 			var destRect = graphics.TranslateView(destination.ToSD(), true, true);
 			if (alpha)
 				Control.Draw(destRect, sourceRect, NSCompositingOperation.SourceOver, 1, true, null);
