@@ -1,14 +1,15 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using MonoMac.AppKit;
 using SD = System.Drawing;
 using MonoTouch.UIKit;
-using Eto.Platform.Mac.Forms.Menu;
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
 using NSView = MonoTouch.UIKit.UIView;
+#elif OSX
+using MonoMac.AppKit;
+using Eto.Platform.Mac.Forms.Menu;
 #endif
 
 namespace Eto.Platform.Mac.Forms
@@ -68,6 +69,7 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
+#if OSX
 		ContextMenu contextMenu;
 		public ContextMenu ContextMenu
 		{
@@ -78,7 +80,7 @@ namespace Eto.Platform.Mac.Forms
 				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
 			}
 		}
-
+#endif
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var contentControl = content.GetMacControl();
