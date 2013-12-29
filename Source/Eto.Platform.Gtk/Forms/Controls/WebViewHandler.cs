@@ -41,6 +41,11 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 				}
 			};
 			scroll.Add (Control);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
 			HandleEvent (WebView.DocumentLoadingEvent);
 		}
 		
