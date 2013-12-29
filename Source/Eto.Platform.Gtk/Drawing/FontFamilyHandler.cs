@@ -29,13 +29,13 @@ namespace Eto.Platform.GtkSharp.Drawing
 			Name = familyName;
 			switch (familyName.ToUpperInvariant()) {
 			case FontFamilies.MonospaceFamilyName:
-				Control = GetFontFamily("monospace");
+				Control = GetFontFamily("monospace", "FreeMono", "Courier");
 				break;
 			case FontFamilies.SansFamilyName:
-				Control = GetFontFamily("sans");
+				Control = GetFontFamily("sans", "FreeSans");
 				break;
 			case FontFamilies.SerifFamilyName:
-				Control = GetFontFamily("serif");
+				Control = GetFontFamily("serif", "FreeSerif");
 				break;
 			case FontFamilies.CursiveFamilyName:
 				// from http://www.codestyle.org/css/font-family/sampler-Cursive.shtml#cursive-linux
