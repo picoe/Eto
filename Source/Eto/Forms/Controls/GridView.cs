@@ -60,7 +60,7 @@ namespace Eto.Forms
 		/// 
 		/// Currently supported on iOS only.
 		/// </summary>
-		public string DeleteConfirmationTitle { get; set; }
+		public Func<object, string> DeleteConfirmationTitle { get; set; }
 
 		static GridView()
 		{

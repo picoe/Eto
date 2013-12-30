@@ -203,7 +203,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
 		{
-			var result = Handler.Widget.DeleteConfirmationTitle;
+			var result = Handler.Widget.DeleteConfirmationTitle != null
+				? Handler.Widget.DeleteConfirmationTitle(Handler.GetItem(indexPath)) : "";
 			if (string.IsNullOrEmpty(result))
 				result = base.TitleForDeleteConfirmation(tableView, indexPath);
 			return result;
