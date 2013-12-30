@@ -104,12 +104,12 @@ namespace Eto.Platform.iOS.Forms
 
 		public Keys CommonModifier
 		{
-			get { return Key.Application; }
+			get { return Keys.Application; }
 		}
 
 		public Keys AlternateModifier
 		{
-			get { return Key.Alt; }
+			get { return Keys.Alt; }
 		}
 
 		public string BadgeLabel
