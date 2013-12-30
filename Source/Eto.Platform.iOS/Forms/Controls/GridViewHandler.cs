@@ -86,13 +86,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 				switch (editingStyle)
 				{
 					case UITableViewCellEditingStyle.Delete:
-						// remove the item from the underlying data source
-						if (Handler.Widget.DeleteItemHandler != null &&
-							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath)))
-						{
-							// That succeeded, so delete the row from the table
-							tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
-						}
+						// Invoke the handler
+						if (Handler.Widget.DeleteItemHandler != null)
+							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath));
 						break;
 					case UITableViewCellEditingStyle.None:
 					case UITableViewCellEditingStyle.Insert: // TODO
