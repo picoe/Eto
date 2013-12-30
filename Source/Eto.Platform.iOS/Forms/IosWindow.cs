@@ -64,8 +64,8 @@ namespace Eto.Platform.iOS.Forms
 				var t = value.ControlObject as NSToolbar;
 				var screenSize = UIScreen.MainScreen.Bounds.Size;
 				var height = 44;
-				var top = toolBar.Dock == ToolBarDock.Bottom ? screenSize.Height - height : 0;
-				t.Frame = new sd.RectangleF(0, top, screenSize.Width, height);
+				var top = toolBar.Dock == ToolBarDock.Bottom ? screenSize.Height - height : 20; // 20px to avoid overlapping the status bar on iOS7. TODO: what about iOS6?
+				t.Frame = new sd.RectangleF(0, top, screenSize.Width, height);				
 				this.Control.AddSubview(t);
 			}
 		}
