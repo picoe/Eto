@@ -10,7 +10,7 @@ namespace Eto.Forms
 {
 	public interface IDockContainer : IContainer
 #if DESKTOP
-		, IHasContextMenu
+		, IContextMenuHost
 #endif
 	{
 		Control Content { get; set; }

@@ -8,7 +8,7 @@ namespace Eto.Forms
 		void Show(Control relativeTo);
 	}
 
-	public interface IHasContextMenu
+	public interface IContextMenuHost
 	{
 		ContextMenu ContextMenu { get; set; }
 	}

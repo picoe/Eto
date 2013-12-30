@@ -2,7 +2,7 @@
 
 namespace Eto.Forms
 {
-	public partial interface IListBox : IHasContextMenu
+	public partial interface IListBox : IContextMenuHost
 	{
 	}
 
