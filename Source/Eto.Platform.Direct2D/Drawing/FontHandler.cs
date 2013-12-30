@@ -25,9 +25,9 @@ namespace Eto.Platform.Direct2D.Drawing
         sw.FontWeight fontWeight;
 		
         // These need to be disposed
-        sw.FontFace fontFace = null;
+		sw.FontFace fontFace;
 
-		private string GetTranslatedName(FontFamily family)
+		string GetTranslatedName(FontFamily family)
 		{
 			var f = (FontFamilyHandler)family.Handler;
 			return f.TranslatedName;
@@ -35,6 +35,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
+			this.family = family;
 			Create(GetTranslatedName(family), size, style, decoration);
 		}
 
@@ -45,25 +46,11 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
 		{
-			throw new NotImplementedException();
-		}
-
-        public void Create(FontTypeface typeface, float sizeInPoints)
-        {
-            Create(typeface.Name, sizeInPoints, typeface.FontStyle, FontDecoration.None);
+			this.family = typeface.Family;
+            Create(typeface.Name, size, typeface.FontStyle, FontDecoration.None);
         }
 
-        public void Create(SystemFont systemFont, float? sizeInPoints)
-        {
-            throw new NotImplementedException();            
-        }
-
-        public void Create(FontFamily family, float sizeInPoints, FontStyle style)
-        {
-            Create(GetTranslatedName(family), sizeInPoints, style, FontDecoration.None);
-        }
-
-        private void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)
+        void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)
         {
             this.familyName = familyName;
 			this.Size = sizeInPoints;
@@ -95,19 +82,13 @@ namespace Eto.Platform.Direct2D.Drawing
             }
         }
 
-        private static sw.FontCollection fontCollection;
-        private static sw.FontCollection FontCollection
+        static sw.FontCollection fontCollection;
+        static sw.FontCollection FontCollection
         {
 			get
 			{
-				return fontCollection = fontCollection ??
-					SDFactory.DirectWriteFactory.GetSystemFontCollection(checkForUpdates: false);
+				return fontCollection = fontCollection ?? SDFactory.DirectWriteFactory.GetSystemFontCollection(checkForUpdates: false);
 			}
-        }
-
-        public void Create()
-        {
-            throw new NotImplementedException();
         }
 
         protected override void Dispose(bool disposing)
@@ -127,14 +108,15 @@ namespace Eto.Platform.Direct2D.Drawing
             base.Dispose(disposing);
         }
 
+		FontFamily family;
         public FontFamily Family
         {
-            get { throw new NotImplementedException(); }
+            get { return family ?? (family = new FontFamily(Generator, new FontFamilyHandler(familyName))); }
         }
 
         public string FamilyName
         {
-            get { return familyName; }
+            get { return family != null ? family.Name : familyName; }
         }
 
         public FontStyle FontStyle
