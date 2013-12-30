@@ -24,6 +24,15 @@ namespace Eto.Platform.Direct2D.Drawing
 			get { return new List<FontTypeface>(); } // TODO
 		}
 
+		public FontFamilyHandler()
+		{
+		}
+
+		public FontFamilyHandler(string name)
+		{
+			Name = TranslatedName = name;
+		}
+
 		public void Create(string familyName)
 		{
 			this.Name = familyName;
