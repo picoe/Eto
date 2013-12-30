@@ -79,7 +79,11 @@ namespace Eto.Test.Sections.Drawing
 		readonly Bitmap image = TestIcons.Textures();
 		PointF location = new PointF(100, 100);
 
-		public TextureBrushesSection2()
+		public TextureBrushesSection2() : this(null)
+		{
+		}
+
+		public TextureBrushesSection2(Generator generator)
 		{
 			var drawable = new Drawable();
 			var drawableTarget = new DrawableTarget(drawable);
