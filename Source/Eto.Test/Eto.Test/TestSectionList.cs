@@ -86,7 +86,7 @@ namespace Eto.Test
 			// yield return new Section<AntialiasSection> { Text = "Antialias" };
 			// yield return new Section<FontsSection> { Text = "Control Fonts" };
 			// yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
-			// yield return new Section<PenSection> { Text = "Pens" };
+			yield return new Section<PenSection> { Text = "Pens", Creator = () => new PenSection(d2d) };
 			// yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
 			// yield return new Section<TransformSection> { Text = "Transform" };
 			// yield return new Section<BrushSection> { Text = "Brushes" };

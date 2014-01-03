@@ -21,7 +21,12 @@ namespace Eto.Test.Sections.Drawing
 
 		public float PenThickness { get; set; }
 
-		public PenSection()
+		public PenSection() : this(null)
+		{
+		}
+
+		public PenSection(Generator generator)
+			: base(generator)
 		{
 			PenThickness = 4;
 
@@ -89,7 +94,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Drawable GetDrawable()
 		{
-			drawable = new Drawable
+			drawable = new Drawable(Generator)
 			{
 				Size = new Size (560, 300)
 			};
@@ -99,13 +104,13 @@ namespace Eto.Test.Sections.Drawing
 
 		void Draw(Graphics g, Action<Pen> action)
 		{
-			var path = new GraphicsPath();
+			var path = new GraphicsPath(Generator);
 			path.AddLines(new PointF(0, 0), new PointF(100, 40), new PointF(0, 30), new PointF(50, 70));
 
 			for (int i = 0; i < 4; i++)
 			{
 				float thickness = 1f + i * PenThickness;
-				var pen = new Pen(Colors.Black, thickness);
+				var pen = new Pen(Colors.Black, thickness, Generator);
 				pen.LineCap = LineCap;
 				pen.LineJoin = LineJoin;
 				pen.DashStyle = DashStyle;
