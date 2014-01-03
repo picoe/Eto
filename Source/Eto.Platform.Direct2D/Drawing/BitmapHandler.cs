@@ -10,57 +10,71 @@ using System.IO;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    public class BitmapHandler : WidgetHandler<sd.Bitmap, Bitmap>, IBitmap
-    {
-        public void Create(string filename)
-        {
-            using (var decoder = new s.WIC.BitmapDecoder(
-                SDFactory.WicImagingFactory,
-                filename,
-                s.WIC.DecodeOptions.CacheOnDemand))
-                Initialize(decoder);
-        }
+	static class BitmapHelper
+	{
+		public static sd.Bitmap Create(string filename)
+		{
+			using (var decoder = new s.WIC.BitmapDecoder(
+				SDFactory.WicImagingFactory,
+				filename,
+				s.WIC.DecodeOptions.CacheOnDemand))
+				return Initialize(decoder);
+		}
 
-        void Initialize(s.WIC.BitmapDecoder decoder)
-        {
-            using (var frame = decoder.GetFrame(0))
-            {
+		public static sd.PixelFormat PixelFormat { get { return new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied); } }
+
+
+		static sd.Bitmap Initialize(s.WIC.BitmapDecoder decoder)
+		{
+			using (var frame = decoder.GetFrame(0))
+			{
 				using (var f = new s.WIC.FormatConverter(SDFactory.WicImagingFactory))
-                {
-                    f.Initialize(
-                        frame,
+				{
+					f.Initialize(
+						frame,
 						s.WIC.PixelFormat.Format32bppPBGRA,
-                        s.WIC.BitmapDitherType.None,
-                        null,
-                        0f,
-                        s.WIC.BitmapPaletteType.Custom);
+						s.WIC.BitmapDitherType.None,
+						null,
+						0f,
+						s.WIC.BitmapPaletteType.Custom);
 
 					double dpX = 96.0f;
 					double dpY = 96.0f;
 					f.GetResolution(out dpX, out dpY);
 
 					var props = new sd.BitmapProperties(
-						this.PixelFormat,
+						PixelFormat,
 						(float)dpX, (float)dpY);
 
 					// Get bitmap
-					Control = sd.Bitmap.FromWicBitmap(
+					return sd.Bitmap.FromWicBitmap(
 						GraphicsHandler.CurrentRenderTarget, // BUGBUG: fix
-						f, 
+						f,
 						props);
-                }
-            }
-        }
+				}
+			}
+		}
 
-		sd.PixelFormat PixelFormat { get { return new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied); } }
+		public static sd.Bitmap Create(System.IO.Stream stream)
+		{
+			using (var decoder = new s.WIC.BitmapDecoder(
+				SDFactory.WicImagingFactory,
+				stream,
+				s.WIC.DecodeOptions.CacheOnDemand))
+				return Initialize(decoder);
+		}
+	}
+
+    public class BitmapHandler : WidgetHandler<sd.Bitmap, Bitmap>, IBitmap
+    {
+        public void Create(string filename)
+        {
+			Control = BitmapHelper.Create(filename);
+        }
 
         public void Create(System.IO.Stream stream)
         {
-            using (var decoder = new s.WIC.BitmapDecoder(
-				SDFactory.WicImagingFactory,
-                stream,
-                s.WIC.DecodeOptions.CacheOnDemand))
-                Initialize(decoder);
+			Control = BitmapHelper.Create(stream);
         }
 
         public void Create(int width, int height, PixelFormat pixelFormat)
@@ -68,7 +82,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			Control = new sd.Bitmap(
 				GraphicsHandler.CurrentRenderTarget, 
 				new s.Size2(width, height), 
-				new sd.BitmapProperties(this.PixelFormat));
+				new sd.BitmapProperties(BitmapHelper.PixelFormat));
         }
 
         public void Create(int width, int height, Graphics graphics)
@@ -99,7 +113,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		public Bitmap Clone(Rectangle? rectangle = null)
         {
 			var size = rectangle != null ? rectangle.Value.Size : Size;
-			var bmp = new sd.Bitmap(GraphicsHandler.CurrentRenderTarget, new s.Size2(size.Width, size.Height), new sd.BitmapProperties(PixelFormat));
+			var bmp = new sd.Bitmap(GraphicsHandler.CurrentRenderTarget, new s.Size2(size.Width, size.Height), new sd.BitmapProperties(BitmapHelper.PixelFormat));
 			if (rectangle != null)
 			{
 				bmp.CopyFromBitmap(Control, new s.Point(), rectangle.Value.ToDx());

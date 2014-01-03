@@ -88,7 +88,7 @@ namespace Eto.Test
 			// yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
 			yield return new Section<PenSection> { Text = "Pens", Creator = () => new PenSection(d2d) };
 			// yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
-			// yield return new Section<TransformSection> { Text = "Transform" };
+			yield return new Section<TransformSection> { Text = "Transform", Creator = () => new TransformSection(d2d) };
 			// yield return new Section<BrushSection> { Text = "Brushes" };
 			//yield return new Section<TextureBrushesSection> { Text = "Texture Brushes", Creator = () => new TextureBrushesSection(d2d) };
 			//yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2", Creator = () => new TextureBrushesSection2(d2d) };
