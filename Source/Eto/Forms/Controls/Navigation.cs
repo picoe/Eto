@@ -81,7 +81,7 @@ namespace Eto.Forms
 
 		public override void Remove(Control child)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 	}
 }
