@@ -10,8 +10,13 @@ namespace Eto.Test.Sections.Drawing
 		readonly Bitmap image = TestIcons.Textures();
 
 		public TextureBrushesSection()
+			: this(null)
+		{ 
+		}
+
+		public TextureBrushesSection(Generator generator)
 		{
-			var drawable = new Drawable { Size = new Size(image.Size.Width, image.Size.Height * 10) };
+			var drawable = new Drawable(generator) { Size = new Size(image.Size.Width, image.Size.Height * 10) };
 			var drawableTarget = new DrawableTarget (drawable);
 			var layout = new DynamicLayout(new Padding(10));
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);

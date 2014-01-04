@@ -25,6 +25,14 @@ namespace Eto.Test.Handlers
 			set { Tab.Text = value; }
 		}
 
+#if DESKTOP
+		public ContextMenu ContextMenu
+		{
+			get { return Control.ContextMenu; }
+			set { Control.ContextMenu = value; } // TODO
+		}
+#endif
+
 		public Image Image
 		{
 			get;

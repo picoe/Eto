@@ -1,17 +1,59 @@
 using System;
 using Eto.Forms;
 using Eto.Drawing;
-using MonoMac.AppKit;
 using SD = System.Drawing;
 using MonoTouch.UIKit;
 
 #if IOS
 using NSResponder = MonoTouch.UIKit.UIResponder;
 using NSView = MonoTouch.UIKit.UIView;
+#elif OSX
+using MonoMac.AppKit;
+using Eto.Platform.Mac.Forms.Menu;
 #endif
 
 namespace Eto.Platform.Mac.Forms
 {
+#if iOS
+	public static class UIViewExtensions
+	{
+		/// <summary>
+		/// See http://stackoverflow.com/a/2596519/90291
+		/// </summary>
+		/// <param name="view"></param>
+		/// <returns></returns>
+		public static UIViewController GetViewController(this UIView view)
+		{
+			return view.NextResponder as UIViewController;
+		}
+
+		/// <summary>
+		/// An extension method that adds a subview to a parent view.
+		/// Also adds the subview's view controller to the parent's view
+		/// controller, creating it if needed, provided the parent view controller
+		/// exists.
+		/// </summary>
+		/// <param name="parent"></param>
+		/// <param name="child"></param>
+		public static void ContainerAddSubView(this UIView parent, UIView child)
+		{
+			var parentViewController = parent.GetViewController();
+			var childViewController = child.GetViewController();
+
+			if (parentViewController != null)
+			{
+				if (childViewController == null)
+					childViewController = new Eto.Platform.iOS.Forms.RotatableViewController { View = child };
+				parentViewController.AddChildViewController(childViewController);
+			}
+			// Note: pass through to AddSubView below.
+			// Adding a child view controller still requires adding the subview.
+			// see http://stackoverflow.com/questions/10143903/do-i-have-to-call-addsubview-after-calling-addchildviewcontroller
+			parent.AddSubview(child);
+		}
+	}
+#endif
+
 	public abstract class MacDockContainer<TControl, TWidget> : MacContainer<TControl, TWidget>, IDockContainer
 		where TControl: NSResponder
 		where TWidget: DockContainer
@@ -54,10 +96,11 @@ namespace Eto.Platform.Mac.Forms
 					var container = ContentControl;
 #if OSX
 					control.AutoresizingMask = ContentResizingMask();
+					container.AddSubview(control); // default
 #elif IOS
 					control.AutoresizingMask = UIViewAutoresizing.FlexibleDimensions;
+					container.ContainerAddSubView(control);
 #endif
-					container.AddSubview(control);
 				}
 
 				if (Widget.Loaded)
@@ -67,6 +110,18 @@ namespace Eto.Platform.Mac.Forms
 			}
 		}
 
+#if OSX
+		ContextMenu contextMenu;
+		public ContextMenu ContextMenu
+		{
+			get { return contextMenu; }
+			set
+			{
+				contextMenu = value;
+				Control.Menu = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
+			}
+		}
+#endif
 		protected override SizeF GetNaturalSize(SizeF availableSize)
 		{
 			var contentControl = content.GetMacControl();

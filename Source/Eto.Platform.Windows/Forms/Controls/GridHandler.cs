@@ -19,7 +19,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 	public abstract class GridHandler<TWidget> : WindowsControl<swf.DataGridView, TWidget>, IGrid, IGridHandler
 		where TWidget: Grid
 	{
-		ContextMenu contextMenu;
 		ColumnCollection columns;
 
 		protected abstract object GetItemAtRow (int row);
@@ -237,14 +236,6 @@ namespace Eto.Platform.Windows.Forms.Controls
 		public bool AllowColumnReordering {
 			get { return Control.AllowUserToOrderColumns; }
 			set { Control.AllowUserToOrderColumns = value; }
-		}
-		
-		public ContextMenu ContextMenu {
-			get { return contextMenu; }
-			set {
-				contextMenu = value;
-				Control.ContextMenuStrip = contextMenu != null ? ((ContextMenuHandler)contextMenu.Handler).Control : null;
-			}
 		}
 
 		public bool AllowMultipleSelection {

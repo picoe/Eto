@@ -244,12 +244,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			throw new NotImplementedException();
+			//throw new NotImplementedException();
 		}
 
 		public void FillPath(Brush brush, IGraphicsPath path)

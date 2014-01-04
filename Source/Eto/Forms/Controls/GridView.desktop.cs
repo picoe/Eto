@@ -2,9 +2,8 @@
 
 namespace Eto.Forms
 {
-	public partial interface IGridView
+	public partial interface IGridView : IContextMenuHost
 	{
-		ContextMenu ContextMenu { get; set; }
 	}
 	
 	public partial class GridView

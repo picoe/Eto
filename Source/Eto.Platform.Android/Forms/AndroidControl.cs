@@ -145,5 +145,9 @@ namespace Eto.Platform.Android.Forms
 			set { }
 		}
 
+		public void MapPlatformCommand(string systemAction, Command action)
+		{
+			throw new NotImplementedException();
+		}
 	}
 }

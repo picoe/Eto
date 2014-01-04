@@ -26,5 +26,14 @@ namespace Eto.Forms
 			return Handler (generator).Buttons;
 		}
 
+		/// <summary>
+		/// Returns true if any of the specified mouse buttons is pressed.
+		/// </summary>
+		/// <param name="buttons"></param>
+		/// <returns></returns>
+		public static bool IsAnyButtonPressed(MouseButtons buttons)
+		{
+			return (GetButtons() & buttons) != MouseButtons.None;
+		}
 	}
 }

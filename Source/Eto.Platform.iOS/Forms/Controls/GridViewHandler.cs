@@ -86,13 +86,9 @@ namespace Eto.Platform.iOS.Forms.Controls
 				switch (editingStyle)
 				{
 					case UITableViewCellEditingStyle.Delete:
-						// remove the item from the underlying data source
-						if (Handler.Widget.DeleteItemHandler != null &&
-							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath)))
-						{
-							// That succeeded, so delete the row from the table
-							tableView.DeleteRows(new NSIndexPath[] { indexPath }, UITableViewRowAnimation.Fade);
-						}
+						// Invoke the handler
+						if (Handler.Widget.DeleteItemHandler != null)
+							Handler.Widget.DeleteItemHandler(Handler.GetItem(indexPath));
 						break;
 					case UITableViewCellEditingStyle.None:
 					case UITableViewCellEditingStyle.Insert: // TODO
@@ -203,7 +199,8 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 		public override string TitleForDeleteConfirmation(UITableView tableView, NSIndexPath indexPath)
 		{
-			var result = Handler.Widget.DeleteConfirmationTitle;
+			var result = Handler.Widget.DeleteConfirmationTitle != null
+				? Handler.Widget.DeleteConfirmationTitle(Handler.GetItem(indexPath)) : "";
 			if (string.IsNullOrEmpty(result))
 				result = base.TitleForDeleteConfirmation(tableView, indexPath);
 			return result;

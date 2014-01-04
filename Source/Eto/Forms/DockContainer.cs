@@ -9,6 +9,9 @@ using System.Windows.Markup;
 namespace Eto.Forms
 {
 	public interface IDockContainer : IContainer
+#if DESKTOP
+		, IContextMenuHost
+#endif
 	{
 		Control Content { get; set; }
 
@@ -45,6 +48,14 @@ namespace Eto.Forms
 			get { return Handler.MinimumSize; }
 			set { Handler.MinimumSize = value; }
 		}
+
+#if DESKTOP
+		public ContextMenu ContextMenu
+		{
+			get { return Handler.ContextMenu; }
+			set { Handler.ContextMenu = value; }
+		}
+#endif
 
 		public Control Content
 		{

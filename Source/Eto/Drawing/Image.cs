@@ -89,5 +89,9 @@ namespace Eto.Drawing
 		{
 			get { return Handler.Size; }
 		}
+
+		public int Width { get { return Size.Width; } }
+
+		public int Height { get { return Size.Height; } }
 	}
 }

@@ -34,28 +34,33 @@ namespace Eto.Forms
 	{
 		public new IGridView Handler { get { return base.Handler as IGridView; } }
 
-		internal IDataStoreView DataStoreView { get; private set; }
 		// provides sorting and filtering on the model.
-		GridViewSelection selection;
+		internal IDataStoreView DataStoreView { get; private set; }
 		// manages the selection
-		#if MOBILE
+		GridViewSelection selection;
+		
 		/// <summary>
 		/// A delegate method to delete an item in response to a user's
 		/// request. The method should return true after deleting the
 		/// item, or false to indicate the item could not be deleted.
+		/// 
+		/// Currently supported on iOS only.
 		/// </summary>
 		public Func<object, bool> DeleteItemHandler { get; set; }
 
 		/// <summary>
-		/// A delegate that returns true if an item can be edited
+		/// A delegate that returns true if an item can be deleted
+		/// 
+		/// Currently supported on iOS only.
 		/// </summary>
 		public Func<object, bool> CanDeleteItem { get; set; }
 
 		/// <summary>
 		/// The text to display in a Delete item button.
+		/// 
+		/// Currently supported on iOS only.
 		/// </summary>
-		public string DeleteConfirmationTitle { get; set; }
-		#endif
+		public Func<object, string> DeleteConfirmationTitle { get; set; }
 
 		static GridView()
 		{

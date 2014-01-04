@@ -86,12 +86,12 @@ namespace Eto.Test
 			// yield return new Section<AntialiasSection> { Text = "Antialias" };
 			// yield return new Section<FontsSection> { Text = "Control Fonts" };
 			// yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
-			// yield return new Section<PenSection> { Text = "Pens" };
+			yield return new Section<PenSection> { Text = "Pens", Creator = () => new PenSection(d2d) };
 			// yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
-			// yield return new Section<TransformSection> { Text = "Transform" };
+			yield return new Section<TransformSection> { Text = "Transform", Creator = () => new TransformSection(d2d) };
 			// yield return new Section<BrushSection> { Text = "Brushes" };
-			// yield return new Section<TextureBrushesSection> { Text = "Texture Brushes" };
-			// yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2" };
+			//yield return new Section<TextureBrushesSection> { Text = "Texture Brushes", Creator = () => new TextureBrushesSection(d2d) };
+			//yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2", Creator = () => new TextureBrushesSection2(d2d) };
 			// yield return new Section<ClipSection> { Text = "Clip" };
 			// yield return new Section<ClearSection> { Text = "Clear" };
 			yield return new Section<DrawTextSection> { Text = "Draw Text", Creator = () => new DrawTextSection(d2d) };
