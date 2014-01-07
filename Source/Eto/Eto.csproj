@@ -399,7 +399,6 @@
       <Link>LICENSE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Action.cd" />
     <None Include="BreakingChanges.txt" />
   </ItemGroup>
   <ProjectExtensions>
