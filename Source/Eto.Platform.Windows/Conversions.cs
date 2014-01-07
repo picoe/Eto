@@ -323,8 +323,43 @@ namespace Eto.Platform.Windows
 
 		public static sd.Font ToSD(this Font font)
 		{
-			var h = (FontHandler)font.Handler;
-			return h.Control;
+			if (font == null)
+				return null;
+			return ((IWindowsFontSource)font.Handler).GetFont();
+		}
+
+		public static sd.Font ToSD(this SystemFont systemFont)
+		{
+			switch (systemFont)
+			{
+				case SystemFont.Default:
+					return sd.SystemFonts.DefaultFont;
+				case SystemFont.Bold:
+					return new sd.Font(sd.SystemFonts.DefaultFont, sd.FontStyle.Bold);
+				case SystemFont.TitleBar:
+					return sd.SystemFonts.CaptionFont;
+				case SystemFont.ToolTip:
+					return sd.SystemFonts.DefaultFont;
+				case SystemFont.Label:
+					return sd.SystemFonts.DialogFont;
+				case SystemFont.MenuBar:
+					return sd.SystemFonts.MenuFont;
+				case SystemFont.Menu:
+					return sd.SystemFonts.MenuFont;
+				case SystemFont.Message:
+					return sd.SystemFonts.MessageBoxFont;
+				case SystemFont.Palette:
+					return sd.SystemFonts.DialogFont;
+				case SystemFont.StatusBar:
+					return sd.SystemFonts.StatusFont;
+				default:
+					throw new NotSupportedException();
+			}
+		}
+
+		public static Font ToEto(this sd.Font font, Eto.Generator generator)
+		{
+			return font == null ? null : new Font(generator, new FontHandler(font));
 		}
 
 		public static MouseEventArgs ToEto(this swf.MouseEventArgs e, swf.Control control)

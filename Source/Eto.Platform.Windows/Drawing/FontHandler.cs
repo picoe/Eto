@@ -1,27 +1,16 @@
 using System;
 using Eto.Drawing;
-using SD = System.Drawing;
-using SWF = System.Windows.Forms;
+using sd = System.Drawing;
+using swf = System.Windows.Forms;
 
 namespace Eto.Platform.Windows.Drawing
 {
-	public static class FontExtensions
+	public interface IWindowsFontSource
 	{
-		public static SD.Font ToSD(this Font font)
-		{
-			if (font == null)
-				return null;
-			var handler = (FontHandler)font.Handler;
-			return handler.Control;
-		}
-
-		public static Font ToEto(this SD.Font font, Eto.Generator generator)
-		{
-			return font == null ? null : new Font(generator, new FontHandler(font));
-		}
+		sd.Font GetFont();
 	}
 
-	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, IFont
+	public class FontHandler : WidgetHandler<System.Drawing.Font, Font>, IFont, IWindowsFontSource
 	{
 		FontTypeface typeface;
 		FontFamily family;
@@ -30,7 +19,7 @@ namespace Eto.Platform.Windows.Drawing
 		{
 		}
 
-		public FontHandler(SD.Font font)
+		public FontHandler(sd.Font font)
 		{
 			Control = font;
 		}
@@ -39,7 +28,7 @@ namespace Eto.Platform.Windows.Drawing
 		{
 			this.family = family;
 			var familyHandler = (FontFamilyHandler)family.Handler;
-			Control = new SD.Font(familyHandler.Control, size, style.ToSD() | decoration.ToSD());
+			Control = new sd.Font(familyHandler.Control, size, style.ToSD() | decoration.ToSD());
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
@@ -47,50 +36,16 @@ namespace Eto.Platform.Windows.Drawing
 			this.typeface = typeface;
 
 			var familyHandler = (FontFamilyHandler)typeface.Family.Handler;
-			Control = new SD.Font(familyHandler.Control, size, typeface.FontStyle.ToSD() | decoration.ToSD());
+			Control = new sd.Font(familyHandler.Control, size, typeface.FontStyle.ToSD() | decoration.ToSD());
 		}
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			switch (systemFont)
-			{
-				case SystemFont.Default:
-					Control = SD.SystemFonts.DefaultFont;
-					break;
-				case SystemFont.Bold:
-					Control = new SD.Font(SD.SystemFonts.DefaultFont, SD.FontStyle.Bold);
-					break;
-				case SystemFont.TitleBar:
-					Control = SD.SystemFonts.CaptionFont;
-					break;
-				case SystemFont.ToolTip:
-					Control = SD.SystemFonts.DefaultFont;
-					break;
-				case SystemFont.Label:
-					Control = SD.SystemFonts.DialogFont;
-					break;
-				case SystemFont.MenuBar:
-					Control = SD.SystemFonts.MenuFont;
-					break;
-				case SystemFont.Menu:
-					Control = SD.SystemFonts.MenuFont;
-					break;
-				case SystemFont.Message:
-					Control = SD.SystemFonts.MessageBoxFont;
-					break;
-				case SystemFont.Palette:
-					Control = SD.SystemFonts.DialogFont;
-					break;
-				case SystemFont.StatusBar:
-					Control = SD.SystemFonts.StatusFont;
-					break;
-				default:
-					throw new NotSupportedException();
-			}
+			Control = systemFont.ToSD();
 			if (size != null || decoration != FontDecoration.None)
 			{
 				var newsize = size ?? Control.SizeInPoints;
-				Control = new SD.Font(Control.FontFamily, newsize, Control.Style | decoration.ToSD(), SD.GraphicsUnit.Point);
+				Control = new sd.Font(Control.FontFamily, newsize, Control.Style | decoration.ToSD(), sd.GraphicsUnit.Point);
 			}
 		}
 
@@ -119,7 +74,7 @@ namespace Eto.Platform.Windows.Drawing
 			get { return typeface = typeface ?? new FontTypeface(Family, new FontTypefaceHandler(Control.Style)); }
 		}
 
-		public SD.FontFamily WindowsFamily
+		public sd.FontFamily WindowsFamily
 		{
 			get { return Control.FontFamily; }
 		}
@@ -168,5 +123,10 @@ namespace Eto.Platform.Windows.Drawing
 		public float LineHeight { get { return Size * Control.FontFamily.GetLineSpacing(Control.Style) / Control.FontFamily.GetEmHeight(Control.Style); } }
 
 		public float Size { get { return Control.SizeInPoints; } }
+
+		public sd.Font GetFont()
+		{
+			return Control;
+		}
 	}
 }
