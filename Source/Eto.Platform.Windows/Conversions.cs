@@ -317,7 +317,7 @@ namespace Eto.Platform.Windows
 		{
 			if (image == null)
 				return null;
-			var h = (IWindowsImage)image.Handler;
+			var h = (IWindowsImageSource)image.Handler;
 			return h.GetImageWithSize(size);
 		}
 

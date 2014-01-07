@@ -294,7 +294,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				icon = value;
-				Control.Icon = (sd.Icon)icon.ControlObject;
+				Control.Icon = ((IWindowsIconSource)icon.Handler).GetIcon();
 			}
 		}
 
