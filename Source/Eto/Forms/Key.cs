@@ -293,7 +293,7 @@ namespace Eto.Forms
 		public const Keys Equal = Keys.Equal;
 
 		[Obsolete("Use Semicolon instead"), CLSCompliant(false)]
-		public const Keys SemiColon = Keys.SemiColon;
+		public const Keys SemiColon = Keys.Semicolon;
 
 		public const Keys Semicolon = Keys.Semicolon;
 		public const Keys Quote = Keys.Quote;

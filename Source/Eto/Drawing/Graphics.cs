@@ -299,17 +299,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="image">Image to draw on using this graphics context</param>
 		public Graphics (Bitmap image)
-			: this(image.Generator, image)
-		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
-		/// </summary>
-		/// <param name="generator">Generator to create this graphics context for</param>
-		/// <param name="image">Image to draw on using this graphics context</param>
-		public Graphics (Generator generator, Bitmap image)
-			: base (generator, typeof (IGraphics), false)
+			: base(image.Generator, typeof(IGraphics), false)
 		{
 			Handler.CreateFromImage(image);
 			Initialize();
@@ -398,6 +388,20 @@ namespace Eto.Drawing
 		{
 			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawRectangle (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide outline of a rectangle with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color for the outline</param>
+		/// <param name="x">X co-ordinate</param>
+		/// <param name="y">Y co-ordinate</param>
+		/// <param name="width">Width of the rectangle</param>
+		/// <param name="height">Height of the rectangle</param>
+		public void DrawRectangle(Color color, float x, float y, float width, float height)
+		{
+			using (var pen = new Pen(color, 1f, Generator))
+				Handler.DrawRectangle(pen, x, y, width, height);
 		}
 
 		/// <summary>
@@ -1184,6 +1188,19 @@ namespace Eto.Drawing
 		}
 
 		#region Obsolete
+
+		/// <summary>
+		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
+		/// </summary>
+		/// <param name="generator">Generator to create this graphics context for</param>
+		/// <param name="image">Image to draw on using this graphics context</param>
+		[Obsolete("Use Graphics(Bitmap) instead")]
+		public Graphics(Generator generator, Bitmap image)
+			: base(generator, typeof(IGraphics), false)
+		{
+			Handler.CreateFromImage(image);
+			Initialize();
+		}
 
 		/// <summary>
 		/// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, RectangleF)"/> instead.
