@@ -26,7 +26,7 @@ namespace Eto.Platform.Wpf.Drawing
 		readonly bool disposeControl;
 
 		Bitmap image;
-		sw.Size? dpi;
+		double? dpiScale;
 
 		public GraphicsHandler()
 		{
@@ -41,6 +41,11 @@ namespace Eto.Platform.Wpf.Drawing
 				offset = pixelOffsetMode == PixelOffsetMode.None ? 0.5 : 0;
 				inverseoffset = pixelOffsetMode == PixelOffsetMode.None ? 0 : 0.5;
 			}
+		}
+
+		public float PointsPerPixel
+		{
+			get { return (float)DPI * 72f / 96f; }
 		}
 
 		protected override bool DisposeControl { get { return disposeControl; } }
@@ -78,22 +83,22 @@ namespace Eto.Platform.Wpf.Drawing
 			ImageInterpolation = Eto.Drawing.ImageInterpolation.Default;
 		}
 
-		public sw.Size DPI
+		public double DPI
 		{
 			get
 			{
-				if (dpi == null)
+				if (dpiScale == null)
 				{
 					var presentationSource = sw.PresentationSource.FromVisual(visual);
 					if (presentationSource != null)
 					{
 						swm.Matrix m = presentationSource.CompositionTarget.TransformToDevice;
-						dpi = new sw.Size(m.M11, m.M11);
+						dpiScale = m.M11;
 					}
 					else
-						dpi = new sw.Size(1.0, 1.0);
+						dpiScale = 1.0;
 				}
-				return dpi.Value;
+				return dpiScale.Value;
 			}
 		}
 

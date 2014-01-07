@@ -83,6 +83,11 @@ namespace Eto.Platform.Windows.Drawing
 			set { Control.PixelOffsetMode = value.ToSD (); }
 		}
 
+		public float PointsPerPixel
+		{
+			get { return 72f / Control.DpiX; }
+		}
+
 		public void CreateFromImage (Bitmap image)
 		{
 			Control = sd.Graphics.FromImage ((sd.Image)image.ControlObject);

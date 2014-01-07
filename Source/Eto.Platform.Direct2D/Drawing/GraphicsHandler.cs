@@ -21,6 +21,8 @@ namespace Eto.Platform.Direct2D.Drawing
 		bool disposeControl;
 		s.Color4? backColor;
 
+		public float PointsPerPixel { get { return 72f / Control.DotsPerInch.Width; } }
+
 		protected override bool DisposeControl { get { return disposeControl; } }
 
 		public GraphicsHandler()

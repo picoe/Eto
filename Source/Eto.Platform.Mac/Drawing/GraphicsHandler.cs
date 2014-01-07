@@ -152,6 +152,9 @@ namespace Eto.Platform.iOS.Drawing
 			}
 		}
 
+		float scale = 1f;
+		public float PointsPerPixel { get { return scale; } }
+
 		public ImageInterpolation ImageInterpolation
 		{
 			get { return Control.InterpolationQuality.ToEto(); }
@@ -167,9 +170,11 @@ namespace Eto.Platform.iOS.Drawing
 			this.graphicsContext = graphicsContext.IsFlipped ? graphicsContext : NSGraphicsContext.FromGraphicsPort(graphicsContext.GraphicsPortHandle, true);
 			disposeContext = true;
 			Control = graphicsContext.GraphicsPort;
+			scale = rep.PixelsWide / handler.Control.Size.Width;
 #elif IOS
 			var cgimage = handler.Control.CGImage;
 			Control = new CGBitmapContext(handler.Data.MutableBytes, cgimage.Width, cgimage.Height, cgimage.BitsPerComponent, cgimage.BytesPerRow, cgimage.ColorSpace, cgimage.BitmapInfo);
+			scale = cgimage.Width / handler.Control.Size.Width;
 #endif
 
 			height = image.Size.Height;

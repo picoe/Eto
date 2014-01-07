@@ -12,6 +12,11 @@ namespace Eto.Drawing
 	public interface IGraphics : IInstanceWidget
 	{
 		/// <summary>
+		/// Gets the scale of points to pixels. Multiply by desired pixel size to get point value (e.g. for font sizes)
+		/// </summary>
+		float PointsPerPixel { get; }
+
+		/// <summary>
 		/// Gets or sets the pixel offset mode for draw operations
 		/// </summary>
 		/// <value>The pixel offset mode.</value>
@@ -306,8 +311,8 @@ namespace Eto.Drawing
 		public Graphics (Generator generator, Bitmap image)
 			: base (generator, typeof (IGraphics), false)
 		{
-			Handler.CreateFromImage (image);
-			Initialize ();
+			Handler.CreateFromImage(image);
+			Initialize();
 		}
 
 		/// <summary>
@@ -385,7 +390,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Draws a 1 pixel wide  outline of a rectangle with the specified <paramref name="color"/>
+		/// Draws a 1 pixel wide outline of a rectangle with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color for the outline</param>
 		/// <param name="rectangle">Where to draw the rectangle</param>
@@ -958,6 +963,38 @@ namespace Eto.Drawing
 		{
 			get { return Handler.ImageInterpolation; }
 			set { Handler.ImageInterpolation = value; }
+		}
+
+		/// <summary>
+		/// Gets the dots per inch of the current graphics context. Usually 96 for windows and 72 for other systems
+		/// </summary>
+		public float DPI
+		{
+			get { return 72f / Handler.PointsPerPixel; }
+		}
+
+		/// <summary>
+		/// Gets the scale of points per pixel. Multiply by pixel size to get point value (e.g. to set font size in pixels).
+		/// </summary>
+		/// <remarks>
+		/// A value of 1.0 indicates that one point equals one pixel.
+		/// Windows is usually 0.75 (96 dpi) while other systems are usually 1.0 (e.g. linux, os x)
+		/// </remarks>
+		public float PointsPerPixel
+		{
+			get { return Handler.PointsPerPixel; }
+		}
+
+		/// <summary>
+		/// Gets the scale of points to pixels. Multiply by point value to get pixel size
+		/// </summary>
+		/// <remarks>
+		/// A value of 1.0 indicates that one pixel equals one point.
+		/// Windows is usually 1 1/3 (96 dpi) while other systems are usually 1.0 (e.g. linux, os x)
+		/// </remarks>
+		public float PixelsPerPoint
+		{
+			get { return 1f / Handler.PointsPerPixel; }
 		}
 
 		/// <summary>
