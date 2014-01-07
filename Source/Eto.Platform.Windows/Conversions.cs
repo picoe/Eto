@@ -434,7 +434,7 @@ namespace Eto.Platform.Windows
 			switch (value)
 			{
 				case PenLineJoin.Miter:
-					return sd2.LineJoin.Miter;
+					return sd2.LineJoin.MiterClipped;
 				case PenLineJoin.Bevel:
 					return sd2.LineJoin.Bevel;
 				case PenLineJoin.Round:
