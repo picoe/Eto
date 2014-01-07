@@ -6,7 +6,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class ScrollableHandler : WindowsDockContainer<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
+	public class ScrollableHandler : WindowsPanel<ScrollableHandler.CustomScrollable, Scrollable>, IScrollable
 	{
 		readonly swf.Panel content;
 		bool expandWidth = true;

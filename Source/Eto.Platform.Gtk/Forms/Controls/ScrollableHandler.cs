@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class ScrollableHandler : GtkDockContainer<Gtk.ScrolledWindow, Scrollable>, IScrollable
+	public class ScrollableHandler : GtkPanel<Gtk.ScrolledWindow, Scrollable>, IScrollable
 	{
 		readonly Gtk.Viewport vp;
 		readonly Gtk.HBox hbox;

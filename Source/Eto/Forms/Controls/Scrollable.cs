@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public partial interface IScrollable : IDockContainer
+	public partial interface IScrollable : IPanel
 	{
 		void UpdateScrollSizes();
 
@@ -37,7 +37,7 @@ namespace Eto.Forms
 		None
 	}
 
-	public partial class Scrollable : DockContainer
+	public partial class Scrollable : Panel
 	{
 		new IScrollable Handler { get { return (IScrollable)base.Handler; } }
 

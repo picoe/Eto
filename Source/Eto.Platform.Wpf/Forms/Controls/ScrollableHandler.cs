@@ -7,7 +7,7 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class ScrollableHandler : WpfDockContainer<swc.Border, Scrollable>, IScrollable
+	public class ScrollableHandler : WpfPanel<swc.Border, Scrollable>, IScrollable
 	{
 		BorderType borderType;
 		bool expandContentWidth = true;

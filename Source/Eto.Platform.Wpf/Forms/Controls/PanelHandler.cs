@@ -6,7 +6,7 @@ using swm = System.Windows.Media;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class PanelHandler : WpfDockContainer<swc.Border, Panel>, IPanel
+	public class PanelHandler : WpfPanel<swc.Border, Panel>, IPanel
 	{
 		public PanelHandler ()
 		{

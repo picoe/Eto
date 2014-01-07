@@ -3,7 +3,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class PanelHandler : MacDockContainer<NSView, Panel>, IPanel
+	public class PanelHandler : MacPanel<NSView, Panel>, IPanel
 	{
 		public PanelHandler()
 		{

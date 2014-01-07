@@ -54,9 +54,9 @@ namespace Eto.Platform.Mac.Forms
 	}
 #endif
 
-	public abstract class MacDockContainer<TControl, TWidget> : MacContainer<TControl, TWidget>, IDockContainer
+	public abstract class MacPanel<TControl, TWidget> : MacContainer<TControl, TWidget>, IPanel
 		where TControl: NSResponder
-		where TWidget: DockContainer
+		where TWidget: Panel
 	{
 		Control content;
 		Padding padding;

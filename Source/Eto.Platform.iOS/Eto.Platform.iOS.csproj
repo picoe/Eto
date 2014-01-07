@@ -163,9 +163,6 @@
       <Link>Forms\MacBase.cs</Link>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="..\Eto.Platform.Mac\Forms\MacDockContainer.cs">
-      <Link>Forms\MacDockContainer.cs</Link>
-    </Compile>
     <Compile Include="..\Eto.Platform.Mac\Forms\MacContainer.cs">
       <Link>Forms\MacContainer.cs</Link>
     </Compile>
@@ -186,6 +183,9 @@
       <Link>Drawing\FontExtensions.cs</Link>
     </Compile>
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="..\Eto.Platform.Mac\Forms\MacPanel.cs">
+      <Link>Forms\MacPanel.cs</Link>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Eto\Eto - iOS.csproj">

@@ -18,7 +18,7 @@ namespace Eto.Platform.Android.Forms
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidWindow<TWidget> : AndroidDockContainer<aw.FrameLayout, TWidget>, IWindow, IAndroidWindow
+	public abstract class AndroidWindow<TWidget> : AndroidPanel<aw.FrameLayout, TWidget>, IWindow, IAndroidWindow
 		where TWidget: Window
 	{
 		a.App.Activity activity;

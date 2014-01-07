@@ -28,8 +28,8 @@ namespace Eto.Forms
 		/// <param name="control">Control to add to the container</param>
 		/// <param name="padding">Amount of padding around the control, inside the container</param>
 		/// <returns></returns>
-		[Obsolete("use the DockContainer.Content property instead")]
-		public static Container AddDockedControl (this DockContainer container, Control control, Padding? padding = null)
+		[Obsolete("use the Panel.Content property instead")]
+		public static Container AddDockedControl (this Panel container, Control control, Padding? padding = null)
 		{
 			container.Content = control;
 			if (padding != null)
@@ -45,7 +45,7 @@ namespace Eto.Forms
 	/// This layout is used to fill an entire container with a single content control.
 	/// </remarks>
 	[ContentProperty("Content")]
-	[Obsolete("Use the DockContainer.Content property instead, or use a Panel")]
+	[Obsolete("Use the Panel.Content property instead, or use a Panel")]
 	public class DockLayout : Panel
 	{
 		[Obsolete("Use Panel directly instead")]
@@ -77,7 +77,7 @@ namespace Eto.Forms
 		/// Initializes a new instance of the DockLayout with an unspecified container
 		/// </summary>
 		/// <remarks>
-		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(DockContainer)"/> when
+		/// Used typically when creating for json or xaml.  Use <see cref="DockLayout(Panel)"/> when
 		/// calling through code.
 		/// </remarks>
 		public DockLayout ()
@@ -89,14 +89,14 @@ namespace Eto.Forms
 		/// Initializes a new instance of the DockLayout for the specified container
 		/// </summary>
 		/// <param name="container">Container for the dock layout to manage</param>
-		public DockLayout (DockContainer container)
+		public DockLayout (Panel container)
 		{
 			if (container != null)
 				container.Content = this;
 		}
 
 		/// <summary>
-		/// Obsolete. Use <see cref="DockContainer.Content"/> instead
+		/// Obsolete. Use <see cref="Panel.Content"/> instead
 		/// </summary>
 		[Obsolete ("Use Content property instead")]
 		public void Add (Control control)

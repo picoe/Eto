@@ -10,7 +10,7 @@ using sd = System.Drawing;
 
 namespace Eto.Platform.iOS.Forms
 {
-	public abstract class IosWindow<TControl, TWidget> : MacDockContainer<TControl, TWidget>, IWindow
+	public abstract class IosWindow<TControl, TWidget> : MacPanel<TControl, TWidget>, IWindow
 		where TControl: UIView
 		where TWidget: Window
 	{

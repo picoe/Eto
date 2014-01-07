@@ -14,7 +14,7 @@ namespace Eto.Platform.GtkSharp
 		Gtk.Window Control { get; }
 	}
 
-	public abstract class GtkWindow<TControl, TWidget> : GtkDockContainer<TControl, TWidget>, IWindow, IGtkWindow
+	public abstract class GtkWindow<TControl, TWidget> : GtkPanel<TControl, TWidget>, IWindow, IGtkWindow
 		where TControl: Gtk.Window
 		where TWidget: Window
 	{

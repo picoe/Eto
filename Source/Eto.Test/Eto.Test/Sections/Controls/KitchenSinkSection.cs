@@ -28,7 +28,7 @@ namespace Eto.Test.Sections.Controls
 		}
 
 		T MainContent<T>(T container)
-			where T: DockContainer
+			where T: Panel
 		{
 			var layout = new DynamicLayout();
 			layout.AddRow(LeftPane(), RightPane());

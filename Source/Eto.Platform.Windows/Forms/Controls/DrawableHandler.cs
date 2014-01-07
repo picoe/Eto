@@ -7,7 +7,7 @@ using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public class DrawableHandler : WindowsDockContainer<DrawableHandler.EtoDrawable, Drawable>, IDrawable
+	public class DrawableHandler : WindowsPanel<DrawableHandler.EtoDrawable, Drawable>, IDrawable
 	{
 		public virtual bool SupportsCreateGraphics { get { return true; } }
 

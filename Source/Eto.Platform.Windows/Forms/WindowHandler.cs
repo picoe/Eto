@@ -5,6 +5,7 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Windows.Forms;
+using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Windows
 {
@@ -15,7 +16,7 @@ namespace Eto.Platform.Windows
 		swf.IWin32Window Win32Window { get; }
 	}
 
-	public abstract class WindowHandler<TControl, TWidget> : WindowsDockContainer<TControl, TWidget>, IWindow, IWindowHandler
+	public abstract class WindowHandler<TControl, TWidget> : WindowsPanel<TControl, TWidget>, IWindow, IWindowHandler
 		where TControl : swf.Form
 		where TWidget : Window
 	{

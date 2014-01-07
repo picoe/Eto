@@ -357,7 +357,6 @@
     <Compile Include="Binding\DelegateBinding.cs" />
     <Compile Include="Forms\IKeyboardInputSource.cs" />
     <Compile Include="Forms\IMouseInputSource.cs" />
-    <Compile Include="Forms\DockContainer.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Drawing\XmlExtensions.cs" />
     <Compile Include="Drawing\SystemFonts.cs" />

@@ -8,7 +8,7 @@ using MonoMac.ObjCRuntime;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class TabPageHandler : MacDockContainer<NSView, TabPage>, ITabPage
+	public class TabPageHandler : MacPanel<NSView, TabPage>, ITabPage
 	{
 		const int ICON_PADDING = 2;
 		Image image;

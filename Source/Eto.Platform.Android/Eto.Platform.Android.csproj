@@ -90,7 +90,6 @@
     <Compile Include="Forms\AndroidWindow.cs" />
     <Compile Include="Conversions.cs" />
     <Compile Include="Forms\AndroidContainer.cs" />
-    <Compile Include="Forms\AndroidDockContainer.cs" />
     <Compile Include="Forms\AndroidControl.cs" />
     <Compile Include="Forms\AndroidExtensions.cs" />
     <Compile Include="Forms\FormHandler.cs" />
@@ -99,6 +98,7 @@
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\AndroidPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />
