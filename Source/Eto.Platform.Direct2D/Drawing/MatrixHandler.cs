@@ -49,7 +49,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public void Rotate(float angle)
         {
-			Control = s.Matrix3x2.Multiply(s.Matrix3x2.Rotation(angle), Control); // premultiply
+			Control = s.Matrix3x2.Multiply(s.Matrix3x2.Rotation(Conversions.DegreesToRadians(angle)), Control); // premultiply
         }
 
 		public void RotateAt(float angle, float centerX, float centerY)

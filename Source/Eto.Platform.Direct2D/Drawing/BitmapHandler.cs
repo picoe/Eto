@@ -5,153 +5,48 @@ using System.Text;
 using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
-using sw = SharpDX.DirectWrite;
+using sw = SharpDX.WIC;
 using System.IO;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-	static class BitmapHelper
+	public class WicBitmapData : BitmapData
 	{
-		public static sd.Bitmap Create(string filename)
+		public WicBitmapData(Image image, sw.BitmapLock bitmapLock, int bitsPerPixel)
+			: base(image, bitmapLock.Data.DataPointer, bitmapLock.Data.Pitch, bitsPerPixel, bitmapLock)
 		{
-			using (var decoder = new s.WIC.BitmapDecoder(
-				SDFactory.WicImagingFactory,
-				filename,
-				s.WIC.DecodeOptions.CacheOnDemand))
-				return Initialize(decoder);
 		}
 
-		public static sd.PixelFormat PixelFormat { get { return new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied); } }
-
-
-		static sd.Bitmap Initialize(s.WIC.BitmapDecoder decoder)
+		public override uint TranslateArgbToData(uint argb)
 		{
-			using (var frame = decoder.GetFrame(0))
+			return (argb & 0xFFFF) << 8 | (argb & 0xFF000000) >> 16 | (argb & 0xFF000000);
+		}
+
+		public override uint TranslateDataToArgb(uint bitmapData)
+		{
+			return (bitmapData & 0xFFFF00) >> 8 | (bitmapData & 0xFF) << 16 | (bitmapData & 0xFF000000);
+		}
+
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing)
 			{
-				using (var f = new s.WIC.FormatConverter(SDFactory.WicImagingFactory))
-				{
-					f.Initialize(
-						frame,
-						s.WIC.PixelFormat.Format32bppPBGRA,
-						s.WIC.BitmapDitherType.None,
-						null,
-						0f,
-						s.WIC.BitmapPaletteType.Custom);
-
-					double dpX = 96.0f;
-					double dpY = 96.0f;
-					f.GetResolution(out dpX, out dpY);
-
-					var props = new sd.BitmapProperties(
-						PixelFormat,
-						(float)dpX, (float)dpY);
-
-					// Get bitmap
-					return sd.Bitmap.FromWicBitmap(
-						GraphicsHandler.CurrentRenderTarget, // BUGBUG: fix
-						f,
-						props);
-				}
+				((sw.BitmapLock)ControlObject).Dispose();
 			}
-		}
-
-		public static sd.Bitmap Create(System.IO.Stream stream)
-		{
-			using (var decoder = new s.WIC.BitmapDecoder(
-				SDFactory.WicImagingFactory,
-				stream,
-				s.WIC.DecodeOptions.CacheOnDemand))
-				return Initialize(decoder);
+			base.Dispose(disposing);
 		}
 	}
 
-    public class BitmapHandler : WidgetHandler<sd.Bitmap, Bitmap>, IBitmap
+	public class BitmapHandler : ImageHandler<Bitmap>, IBitmap
     {
-        public void Create(string filename)
-        {
-			Control = BitmapHelper.Create(filename);
-        }
-
-        public void Create(System.IO.Stream stream)
-        {
-			Control = BitmapHelper.Create(stream);
-        }
-
-        public void Create(int width, int height, PixelFormat pixelFormat)
-        {
-			Control = new sd.Bitmap(
-				GraphicsHandler.CurrentRenderTarget, 
-				new s.Size2(width, height), 
-				new sd.BitmapProperties(BitmapHelper.PixelFormat));
-        }
-
-        public void Create(int width, int height, Graphics graphics)
-        {
-            throw new NotImplementedException();
-        }
-
-        public void Resize(int width, int height)
-        {
-            throw new NotImplementedException();
-        }
-
         public BitmapData Lock()
         {
-            throw new NotImplementedException();
+			var data = Control.Lock(sw.BitmapLockFlags.Write);
+			return new WicBitmapData(Widget, data, 32);
         }
 
         public void Unlock(BitmapData bitmapData)
         {
-            throw new NotImplementedException();
         }
-
-        public void Save(System.IO.Stream stream, ImageFormat format)
-        {
-            throw new NotImplementedException();
-        }
-
-		public Bitmap Clone(Rectangle? rectangle = null)
-        {
-			var size = rectangle != null ? rectangle.Value.Size : Size;
-			var bmp = new sd.Bitmap(GraphicsHandler.CurrentRenderTarget, new s.Size2(size.Width, size.Height), new sd.BitmapProperties(BitmapHelper.PixelFormat));
-			if (rectangle != null)
-			{
-				bmp.CopyFromBitmap(Control, new s.Point(), rectangle.Value.ToDx());
-			}
-			else
-				bmp.CopyFromBitmap(Control);
-
-			return new Bitmap(Generator, new BitmapHandler { Control = bmp });
-        }
-
-        public Color GetPixel(int x, int y)
-        {
-            throw new NotImplementedException();
-        }
-
-        public byte[] ToPNGByteArray()
-        {
-            throw new NotImplementedException();
-        }
-
-        public Size Size
-        {
-            get { return Control.Size.ToEto(); }
-        }
-
-        public int Width
-        {
-            get { return (int) Control.Size.Width; }
-        }
-
-        public int Height
-        {
-            get { return (int)Control.Size.Height; }
-        }
-
-		public void Create(Image image, int width, int height, ImageInterpolation interpolation)
-		{
-			throw new NotImplementedException();
-		}
 	}
 }

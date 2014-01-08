@@ -8,11 +8,11 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
-    /// <summary>
-    /// Combines a brush and a stroke style
-    /// </summary>
-    public class PenData : IDisposable
-    {
+	/// <summary>
+	/// Combines a brush and a stroke style
+	/// </summary>
+	public class PenData : IDisposable
+	{
 		sd.Brush brush;
 		public sd.Brush GetBrush(sd.RenderTarget target)
 		{
@@ -25,58 +25,107 @@ namespace Eto.Platform.Direct2D.Drawing
 			return brush;
 		}
 
-        sd.StrokeStyle strokeStyle;
-        public sd.StrokeStyle StrokeStyle
-        {
-            get
-            {
-                if (strokeStyle == null)
-                {
-                    strokeStyle = new sd.StrokeStyle(
-                        SDFactory.D2D1Factory,
-                        new sd.StrokeStyleProperties
-                        {
-                            DashStyle = sd.DashStyle.Solid,
-                        });
-                }
+		sd.StrokeStyle strokeStyle;
+		public sd.StrokeStyle StrokeStyle
+		{
+			get
+			{
+				if (strokeStyle == null)
+				{
+					var properties = new sd.StrokeStyleProperties
+					{
+						DashStyle = dashStyle.ToDx(),
+						LineJoin = lineJoin.ToDx(),
+						MiterLimit = miterLimit,
+						DashCap = lineCap == PenLineCap.Round ? sd.CapStyle.Round : sd.CapStyle.Square,
+						DashOffset = lineCap == PenLineCap.Butt ? -.5f + dashStyle.Offset : dashStyle.Offset
+					};
+					properties.StartCap = properties.EndCap = lineCap.ToDx();
+					if (properties.DashStyle == sd.DashStyle.Custom)
+						strokeStyle = new sd.StrokeStyle(SDFactory.D2D1Factory, properties, dashStyle.Dashes);
+					else
+						strokeStyle = new sd.StrokeStyle(SDFactory.D2D1Factory, properties);
+				}
 
-                return strokeStyle;
-            }
-        }
+				return strokeStyle;
+			}
+		}
 
-        public Color Color { get; set; }
+		void Reset()
+		{
+			if (strokeStyle != null)
+			{
+				strokeStyle.Dispose();
+				strokeStyle = null;
+			}
+		}
 
-        public float Width { get; set; }
+		float miterLimit = 10f;
+		public float MiterLimit
+		{
+			get { return miterLimit; }
+			set
+			{
+				miterLimit = value;
+				Reset();
+			}
+		}
 
-        sd.DashStyle dashStyle = sd.DashStyle.Solid;
-        public DashStyle DashStyle
-        {
-            get { return dashStyle.ToEto(); }
-            set
-            {
-				dashStyle = value.ToDx();
-                strokeStyle = null; // invalidate
-            }
-        }
+		public Color Color { get; set; }
 
-        public void Dispose()
-        {
+		public float Width { get; set; }
+
+		DashStyle dashStyle = DashStyles.Solid;
+		public DashStyle DashStyle
+		{
+			get { return dashStyle; }
+			set
+			{
+				dashStyle = value ?? DashStyles.Solid;
+				Reset();
+			}
+		}
+
+		PenLineCap lineCap;
+		public PenLineCap LineCap
+		{
+			get { return lineCap; }
+			set
+			{
+				lineCap = value;
+				Reset();
+			}
+		}
+
+		PenLineJoin lineJoin;
+		public PenLineJoin LineJoin
+		{
+			get { return lineJoin; }
+			set
+			{
+				lineJoin = value;
+				Reset();
+			}
+		}
+
+		public void Dispose()
+		{
 			if (brush != null)
-            {
+			{
 				brush.Dispose();
-                brush = null;
-            }
+				brush = null;
+			}
 
-            if (strokeStyle != null)
-            {
-                strokeStyle.Dispose();
-                strokeStyle = null;
-            }
-        }
-    }
+			if (strokeStyle != null)
+			{
+				strokeStyle.Dispose();
+				strokeStyle = null;
+			}
+		}
+	}
 
-    public class PenHandler : IPen
-    {
+	public class PenHandler : IPen
+	{
 		public object Create(Color color, float thickness)
 		{
 			return new PenData { Color = color, Width = thickness };
@@ -104,37 +153,37 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public PenLineJoin GetLineJoin(Pen widget)
 		{
-			return PenLineJoin.Bevel;
+			return widget.ToPenData().LineJoin;
 		}
 
 		public void SetLineJoin(Pen widget, PenLineJoin lineJoin)
 		{
-			//throw new NotImplementedException();
+			widget.ToPenData().LineJoin = lineJoin;
 		}
 
 		public PenLineCap GetLineCap(Pen widget)
 		{
-			return PenLineCap.Round;
+			return widget.ToPenData().LineCap;
 		}
 
 		public void SetLineCap(Pen widget, PenLineCap lineCap)
 		{
-			//throw new NotImplementedException();
+			widget.ToPenData().LineCap = lineCap;
 		}
 
 		public float GetMiterLimit(Pen widget)
 		{
-			throw new NotImplementedException();
+			return widget.ToPenData().MiterLimit;
 		}
 
 		public void SetMiterLimit(Pen widget, float miterLimit)
 		{
-			//throw new NotImplementedException();
+			widget.ToPenData().MiterLimit = miterLimit;
 		}
 
 		public void SetDashStyle(Pen widget, DashStyle dashStyle)
 		{
-			//throw new NotImplementedException();
+			widget.ToPenData().DashStyle = dashStyle;
 		}
 	}
 }

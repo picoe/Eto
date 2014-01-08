@@ -7,6 +7,7 @@ using sw = SharpDX.DirectWrite;
 using swf = System.Windows.Forms;
 using Eto.Forms;
 using Eto.Platform.Windows;
+using System.Diagnostics;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -19,7 +20,12 @@ namespace Eto.Platform.Direct2D.Drawing
 	{
 		bool hasBegan;
 		bool disposeControl;
-		s.Color4? backColor;
+		Bitmap image;
+		float offset = 0.5f;
+		float fillOffset;
+		sd.Layer clipLayer;
+		RectangleF clipBounds;
+		DrawableHandler drawable;
 
 		public float PointsPerPixel { get { return 72f / Control.DotsPerInch.Width; } }
 
@@ -37,9 +43,8 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public GraphicsHandler(DrawableHandler drawable)
 		{
+			this.drawable = drawable;
 			var drawableControl = drawable.Control;
-
-			backColor = drawable.BackgroundColor.ToDx();
 
 			var renderProp = new sd.RenderTargetProperties
 			{
@@ -47,7 +52,7 @@ namespace Eto.Platform.Direct2D.Drawing
 				DpiY = 0,
 				MinLevel = sd.FeatureLevel.Level_10,
 				PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied),
-				Type = sd.RenderTargetType.Hardware,
+				Type = sd.RenderTargetType.Default,
 				Usage = sd.RenderTargetUsage.None
 			};
 
@@ -62,14 +67,16 @@ namespace Eto.Platform.Direct2D.Drawing
 			//target creation
 			var target = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
 
-			drawableControl.SizeChanged += (s, e) => {
+			drawableControl.SizeChanged += (s, e) =>
+			{
 				try
 				{
 					target.Resize(new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height));
 					drawable.Invalidate();
 				}
-				catch (Exception)
+				catch (Exception ex)
 				{
+					Debug.Print(string.Format("Could not resize: {0}", ex));
 				}
 			};
 
@@ -84,7 +91,11 @@ namespace Eto.Platform.Direct2D.Drawing
 			return new sd.Ellipse(center: new s.Vector2(x + rx, y + ry), radiusX: rx, radiusY: ry);
 		}
 
-		public bool AntiAlias { get; set; } // not used
+		public bool AntiAlias
+		{
+			get { return Control.AntialiasMode == sd.AntialiasMode.PerPrimitive; }
+			set { Control.AntialiasMode = value ? sd.AntialiasMode.PerPrimitive : sd.AntialiasMode.Aliased; }
+		}
 
 		public ImageInterpolation ImageInterpolation { get; set; }
 
@@ -105,94 +116,78 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public RectangleF ClipBounds
 		{
-			get { throw new NotImplementedException(); }
+			get
+			{
+				// not very efficient, but works
+				var transform = Control.Transform;
+				transform.Invert();
+				var start = s.Matrix3x2.TransformPoint(transform, clipBounds.Location.ToDx()).ToEto();
+				var end = s.Matrix3x2.TransformPoint(transform, clipBounds.EndLocation.ToDx()).ToEto();
+				return new RectangleF(start, end);
+			}
 		}
 
 		public void SetClip(RectangleF rect)
 		{
-			throw new NotImplementedException();
+			ResetClip();
+			clipBounds = rect;
+			var parameters = new sd.LayerParameters
+			{
+				ContentBounds = clipBounds.ToDx(),
+				GeometricMask = new sd.RectangleGeometry(SDFactory.D2D1Factory, rect.ToDx()),
+				MaskAntialiasMode = Control.AntialiasMode,
+				MaskTransform = s.Matrix3x2.Identity,
+				Opacity = 1f
+			};
+			clipLayer = new sd.Layer(Control);
+			Control.PushLayer(ref parameters, clipLayer);
 		}
 
 		public void SetClip(IGraphicsPath path)
 		{
-			throw new NotImplementedException();
+			ResetClip();
+			clipBounds = path.Bounds;
+			var parameters = new sd.LayerParameters
+			{
+				ContentBounds = clipBounds.ToDx(),
+				GeometricMask = path.ToGeometry(),
+				MaskAntialiasMode = Control.AntialiasMode,
+				MaskTransform = s.Matrix3x2.Identity,
+				Opacity = 1f
+			};
+			clipLayer = new sd.Layer(Control);
+			Control.PushLayer(ref parameters, clipLayer);
 		}
 
 		public void ResetClip()
 		{
-			throw new NotImplementedException();
+			if (clipLayer != null)
+			{
+				Control.PopLayer();
+				clipLayer.Dispose();
+				clipLayer = null;
+				clipBounds = new RectangleF(Control.Size.ToEto());
+			}
 		}
 
 		public void TranslateTransform(float dx, float dy)
 		{
-			Control.Transform =
-				s.Matrix3x2.Multiply(
-					s.Matrix3x2.Translation(dx, dy),
-					Control.Transform);
+			Control.Transform = s.Matrix3x2.Multiply(s.Matrix3x2.Translation(dx, dy), Control.Transform);
 		}
 
 		public void RotateTransform(float angle)
 		{
-			Control.Transform =
-				s.Matrix3x2.Multiply(
-					s.Matrix3x2.Rotation((float)(Conversions.DegreesToRadians(angle))),
-					Control.Transform);
+			Control.Transform = s.Matrix3x2.Multiply(s.Matrix3x2.Rotation((float)(Conversions.DegreesToRadians(angle))), Control.Transform);
 		}
 
 		public void ScaleTransform(float sx, float sy)
 		{
-			Control.Transform =
-				s.Matrix3x2.Multiply(
-					s.Matrix3x2.Scaling(sx, sy),
-					Control.Transform);
+			Control.Transform = s.Matrix3x2.Multiply(s.Matrix3x2.Scaling(sx, sy), Control.Transform);
 		}
 
 		public void MultiplyTransform(IMatrix matrix)
 		{
-			Control.Transform =
-				s.Matrix3x2.Multiply(
-					(s.Matrix3x2)matrix.ControlObject,
-					Control.Transform);
-		}
-
-		public void CreateFromImage(Bitmap image)
-		{
-			var b = image.ControlObject as sd.Bitmap;
-
-			Control = new sd.BitmapRenderTarget(CurrentRenderTarget,
-				sd.CompatibleRenderTargetOptions.None,
-				new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied));
-			BeginDrawing();
-		}
-
-		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
-		{
-			using (var textLayout = GetTextLayout(font, text))
-			{
-				Control.DrawTextLayout(new s.Vector2(x, y), textLayout, brush.ToDx(Control));
-			}
-		}
-
-		public SizeF MeasureString(Font font, string text)
-		{
-			using (var textLayout = GetTextLayout(font, text))
-			{
-				var width = textLayout.DetermineMinWidth();
-				var height = font.LineHeight * 96 / 72.0f; // is this correct?
-				return new SizeF(width, height);
-			}
-		}
-
-		static sw.TextLayout GetTextLayout(Font font, string text)
-		{
-			var fontHandler = (FontHandler)font.Handler;
-			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
-			return textLayout;
-		}
-
-		public void Flush()
-		{
-			Control.Flush();
+			Control.Transform = s.Matrix3x2.Multiply((s.Matrix3x2)matrix.ControlObject, Control.Transform);
 		}
 
 		Stack<s.Matrix3x2> transformStack;
@@ -209,25 +204,88 @@ namespace Eto.Platform.Direct2D.Drawing
 			Control.Transform = transformStack.Pop();
 		}
 
-		public PixelOffsetMode PixelOffsetMode { get; set; } // TODO
+		public void CreateFromImage(Bitmap image)
+		{
+			this.image = image;
+			var imageHandler = image.Handler as BitmapHandler;
+			var renderProp = new sd.RenderTargetProperties
+			{
+				DpiX = 0,
+				DpiY = 0,
+				MinLevel = sd.FeatureLevel.Level_DEFAULT,
+				PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown),
+				Type = sd.RenderTargetType.Default,
+				Usage = sd.RenderTargetUsage.None
+			};
+
+			Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
+			BeginDrawing();
+		}
+
+		public void DrawText(Font font, SolidBrush brush, float x, float y, string text)
+		{
+			using (var textLayout = GetTextLayout(font, text))
+			{
+				Control.DrawTextLayout(new s.Vector2(x, y), textLayout, brush.ToDx(Control));
+			}
+		}
+
+		public SizeF MeasureString(Font font, string text)
+		{
+			using (var textLayout = GetTextLayout(font, text))
+			{
+				var metrics = textLayout.Metrics;
+				return new SizeF(metrics.Width, metrics.Height);
+			}
+		}
+
+		static sw.TextLayout GetTextLayout(Font font, string text)
+		{
+			var fontHandler = (FontHandler)font.Handler;
+			var textLayout = new sw.TextLayout(SDFactory.DirectWriteFactory, text, fontHandler.TextFormat, float.MaxValue, float.MaxValue);
+			return textLayout;
+		}
+
+		public void Flush()
+		{
+			Control.Flush();
+		}
+
+		public PixelOffsetMode PixelOffsetMode
+		{
+			get { return offset == 0f ? PixelOffsetMode.None : PixelOffsetMode.Half; }
+			set
+			{
+				if (value == PixelOffsetMode.None)
+				{
+					offset = .5f;
+					fillOffset = 0f;
+				}
+				else
+				{
+					offset = 0f;
+					fillOffset = -.5f;
+				}
+			}
+		}
 
 		public void DrawRectangle(Pen pen, float x, float y, float width, float height)
 		{
 			var pd = pen.ToPenData();
-			Control.DrawRectangle(new s.RectangleF(x, y, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
+			Control.DrawRectangle(new s.RectangleF(x + offset, y + offset, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
 		}
 
 		public void FillRectangle(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillRectangle(new s.RectangleF(x, y, width, height), brush.ToDx(Control));
+			Control.FillRectangle(new s.RectangleF(x + fillOffset, y + fillOffset, width, height), brush.ToDx(Control));
 		}
 
 		public void DrawLine(Pen pen, float startx, float starty, float endx, float endy)
 		{
 			var pd = pen.ToPenData();
 			Control.DrawLine(
-				new s.Vector2(startx, starty),
-				new s.Vector2(endx, endy),
+				new s.Vector2(startx + offset, starty + offset),
+				new s.Vector2(endx + offset, endy + offset),
 				pd.GetBrush(Control),
 				pd.Width,
 				pd.StrokeStyle);
@@ -235,54 +293,113 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void FillEllipse(Brush brush, float x, float y, float width, float height)
 		{
-			Control.FillEllipse(GetEllipse(x, y, width, height), brush.ToDx(Control));
+			Control.FillEllipse(GetEllipse(x + fillOffset, y + fillOffset, width, height), brush.ToDx(Control));
 		}
 
 		public void DrawEllipse(Pen pen, float x, float y, float width, float height)
 		{
 			var pd = pen.ToPenData();
-			Control.DrawEllipse(GetEllipse(x, y, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
+			Control.DrawEllipse(GetEllipse(x + offset, y + offset, width, height), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
 		}
 
 		public void DrawArc(Pen pen, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			//throw new NotImplementedException();
+			PointF start;
+			var arc = CreateArc(x + offset, y + offset, width, height, startAngle, sweepAngle, out start);
+			var path = new sd.PathGeometry(SDFactory.D2D1Factory);
+			var sink = path.Open();
+			sink.BeginFigure(start.ToDx(), sd.FigureBegin.Hollow);
+			sink.AddArc(arc);
+			sink.EndFigure(sd.FigureEnd.Open);
+			sink.Close();
+			sink.Dispose();
+			var pd = pen.ToPenData();
+			Control.DrawGeometry(path, pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
 		}
+
+		internal static sd.ArcSegment CreateArc(float x, float y, float width, float height, float startAngle, float sweepAngle, out PointF start)
+		{
+			// degrees to radians conversion
+			float startRadians = startAngle * (float)Math.PI / 180.0f;
+			float sweepRadians = sweepAngle * (float)Math.PI / 180.0f;
+
+			// x and y radius
+			float dx = width / 2;
+			float dy = height / 2;
+
+			// determine the start point 
+			float xs = x + dx + ((float)Math.Cos(startRadians) * dx);
+			float ys = y + dy + ((float)Math.Sin(startRadians) * dy);
+
+			// determine the end point 
+			float xe = x + dx + ((float)Math.Cos(startRadians + sweepRadians) * dx);
+			float ye = y + dy + ((float)Math.Sin(startRadians + sweepRadians) * dy);
+
+			bool isLargeArc = Math.Abs(sweepAngle) > 180;
+			bool isClockwise = sweepAngle >= 0 && Math.Abs(sweepAngle) < 360;
+			start = new PointF(xs, ys);
+			return new sd.ArcSegment
+			{
+				Point = new s.Vector2(xe, ye),
+				Size = new s.Size2F(dx, dy),
+				SweepDirection = isClockwise ? sd.SweepDirection.Clockwise : sd.SweepDirection.CounterClockwise,
+				ArcSize = isLargeArc ? sd.ArcSize.Large : sd.ArcSize.Small
+			};
+		}
+
 
 		public void FillPie(Brush brush, float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			//throw new NotImplementedException();
+			PointF start;
+			x += fillOffset;
+			y += fillOffset;
+			var arc = CreateArc(x, y, width, height, startAngle, sweepAngle, out start);
+			var path = new sd.PathGeometry(SDFactory.D2D1Factory);
+			var sink = path.Open();
+			var center = new s.Vector2(x + width / 2, y + height / 2);
+			sink.BeginFigure(center, sd.FigureBegin.Filled);
+			sink.AddLine(start.ToDx());
+			sink.AddArc(arc);
+			sink.AddLine(center);
+			sink.EndFigure(sd.FigureEnd.Open);
+			sink.Close();
+			sink.Dispose();
+			Control.FillGeometry(path, brush.ToDx(Control));
 		}
 
 		public void FillPath(Brush brush, IGraphicsPath path)
 		{
+			SaveTransform();
+			TranslateTransform(-fillOffset, -fillOffset);
 			Control.FillGeometry(path.ToGeometry(), brush.ToDx(Control));
+			RestoreTransform();
 		}
 
 		public void DrawPath(Pen pen, IGraphicsPath path)
 		{
 			var pd = pen.ToPenData();
+			SaveTransform();
+			TranslateTransform(offset, offset);
 			Control.DrawGeometry(path.ToGeometry(), pd.GetBrush(Control), pd.Width, pd.StrokeStyle);
+			RestoreTransform();
 		}
 
 		public void DrawImage(Image image, RectangleF source, RectangleF destination)
 		{
-			var bmp = (sd.Bitmap)image.ControlObject;
+			var bmp = image.ToDx(Control);
 			Control.DrawBitmap(bmp, destination.ToDx(), 1f, sd.BitmapInterpolationMode.Linear, source.ToDx());
 		}
 
 		public void DrawImage(Image image, float x, float y)
 		{
-			var bmp = (sd.Bitmap)image.ControlObject;
-			var destination = new RectangleF(x, y, bmp.Size.Width, bmp.Size.Height);
-			Control.DrawBitmap(bmp, destination.ToDx(), 1f, ImageInterpolation.ToDx());
+			var bmp = image.ToDx(Control);
+			Control.DrawBitmap(bmp, new s.RectangleF(x, y, bmp.Size.Width, bmp.Size.Height), 1f, ImageInterpolation.ToDx());
 		}
 
 		public void DrawImage(Image image, float x, float y, float width, float height)
 		{
-			var bmp = (sd.Bitmap)image.ControlObject;
-			var destination = new RectangleF(x, y, width, height);
-			Control.DrawBitmap(bmp, destination.ToDx(), 1f, ImageInterpolation.ToDx());
+			var bmp = image.ToDx(Control);
+			Control.DrawBitmap(bmp, new s.RectangleF(x, y, width, height), 1f, ImageInterpolation.ToDx());
 		}
 
 		public object ControlObject
@@ -292,12 +409,15 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Clear(SolidBrush brush)
 		{
+			// TODO: doesn't actually clear to transparent (e.g. on a bitmap)
+			var rect = new s.RectangleF(0, 0, Control.PixelSize.Width, Control.PixelSize.Height);
 			if (brush != null)
 				Control.Clear(brush.Color.ToDx());
 			else
-				Control.Clear(backColor);
+				Control.Clear(s.Color4.Black);
 		}
 
+		static sd.RenderTarget globalRenderTarget;
 		/// <summary>
 		/// This is a HACK.
 		/// Brushes, bitmaps and other resources are associated with a specific
@@ -307,7 +427,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		{
 			get
 			{
-				if (currentRenderTarget == null)
+				if (globalRenderTarget == null)
 				{
 					// hack for now, use a temporary control to get the current target
 					// ideally, each brush/etc will create itself when needed, not right away.
@@ -316,7 +436,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					var winProp = new sd.HwndRenderTargetProperties
 					{
 						Hwnd = ctl.Handle,
-						PixelSize = new s.Size2(1000, 1000),
+						PixelSize = new s.Size2(2000, 2000),
 						PresentOptions = sd.PresentOptions.Immediately
 					};
 					var renderProp = new sd.RenderTargetProperties
@@ -328,9 +448,9 @@ namespace Eto.Platform.Direct2D.Drawing
 						Type = sd.RenderTargetType.Hardware,
 						Usage = sd.RenderTargetUsage.None
 					};
-					currentRenderTarget = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+					globalRenderTarget = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
 				}
-				return currentRenderTarget;
+				return currentRenderTarget ?? globalRenderTarget;
 			}
 			set
 			{
@@ -340,26 +460,43 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		static sd.RenderTarget currentRenderTarget;
 
-		public void BeginDrawing()
+		public void BeginDrawing(RectangleF? clipRect = null)
 		{
 			CurrentRenderTarget = Control;
 			Control.BeginDraw();
-			Control.Clear(backColor);
+			Control.Transform = s.Matrix3x2.Identity;
+			if (transformStack != null)
+				transformStack.Clear();
+			ResetClip();
+			clipBounds = new RectangleF(Control.Size.ToEto());
+			if (clipRect != null)
+				Control.PushAxisAlignedClip(clipRect.Value.ToDx(), SharpDX.Direct2D1.AntialiasMode.PerPrimitive);
 			hasBegan = true;
 		}
 
-		public void EndDrawing()
+		public void EndDrawing(bool popClip = false)
 		{
 			if (hasBegan)
 			{
+				ResetClip();
+				CurrentRenderTarget = null;
+
+				if (popClip)
+					Control.PopAxisAlignedClip();
 				Control.EndDraw();
 				hasBegan = false;
+
+				if (image != null)
+				{
+					var imageHandler = image.Handler as BitmapHandler;
+					imageHandler.Reset();
+				}
 			}
 		}
 
 		protected override void Dispose(bool disposing)
 		{
-			if (disposing && hasBegan)
+			if (disposing)
 				EndDrawing();
 			base.Dispose(disposing);
 		}

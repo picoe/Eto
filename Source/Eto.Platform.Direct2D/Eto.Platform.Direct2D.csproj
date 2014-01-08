@@ -58,6 +58,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Conversions.cs" />
+    <Compile Include="Drawing\IndexedBitmapHandler.cs" />
+    <Compile Include="Drawing\ImageHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
     <Compile Include="Drawing\BrushData.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
@@ -67,7 +69,6 @@
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
-    <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SDFactory.cs" />

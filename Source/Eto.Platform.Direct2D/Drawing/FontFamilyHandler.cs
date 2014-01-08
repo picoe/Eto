@@ -14,61 +14,58 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class FontFamilyHandler : WidgetHandler<FontFamily>, IFontFamily
+	public class FontFamilyHandler : WidgetHandler<sw.FontFamily, FontFamily>, IFontFamily
     {
 		public string Name { get; private set; }
-		public string TranslatedName { get; private set; }
 
+		FontTypeface[] typefaces;
 		public IEnumerable<FontTypeface> Typefaces
 		{
-			get { return new List<FontTypeface>(); } // TODO
+			get {
+				return typefaces ?? (typefaces = Enumerable.Range(0, Control.FontCount)
+					.Select(r => Control.GetFont(r))
+					.Select(r => new FontTypeface(Widget, new FontTypefaceHandler(r)))
+					.ToArray());
+			} 
 		}
 
 		public FontFamilyHandler()
 		{
 		}
 
-		public FontFamilyHandler(string name)
+		public FontFamilyHandler(sw.FontFamily family)
 		{
-			Name = TranslatedName = name;
+			Control = family;
 		}
 
 		public void Create(string familyName)
 		{
-			this.Name = familyName;
+			string translatedName = Name = familyName;
 
 			switch (familyName.ToUpperInvariant())
 			{
 				case FontFamilies.MonospaceFamilyName:
-					TranslatedName = "Courier New";
+					translatedName = "Courier New";
 					break;
 				case FontFamilies.SansFamilyName:
-					TranslatedName = "Microsoft Sans Serif";
+					translatedName = "Microsoft Sans Serif";
 					break;
 				case FontFamilies.SerifFamilyName:
-					TranslatedName = "Times New Roman";
+					translatedName = "Times New Roman";
 					break;
 				case FontFamilies.CursiveFamilyName:
-					TranslatedName = "Comic Sans MS";
+					translatedName = "Comic Sans MS";
 					break;
 				case FontFamilies.FantasyFamilyName:
-					TranslatedName = "Gabriola";
-					break;
-				default:
-					TranslatedName = familyName;
+					translatedName = "Gabriola";
 					break;
 			}
-		}
 
-		public string ID { get; set; }
-
-		public object ControlObject
-		{
-			get { return Name; }
-		}
-
-		public void HandleEvent(string id, bool defaultEvent = false)
-		{
+			int index;
+			if (FontHandler.FontCollection.FindFamilyName(translatedName, out index))
+			{
+				Control = FontHandler.FontCollection.GetFontFamily(index);
+			}
 		}
 	}
 }
