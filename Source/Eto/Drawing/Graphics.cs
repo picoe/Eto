@@ -953,7 +953,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Obsolete, use <see cref="AntiAlias"/> instead
 		/// </summary>
-		[Obsolete("Use AntiAlias instead")]
+		[Obsolete("Use AntiAlias instead"), CLSCompliant(false)]
 		public bool Antialias
 		{
 			get { return Handler.AntiAlias; }

@@ -12,6 +12,8 @@ namespace Eto
 	/// <remarks>
 	/// This is useful when you want to create a single assembly/executable without having to ship referenced dll's 
 	/// alongside your application.
+	/// 
+	/// If you wish to embed Eto.dll as well, you will have to copy this class to your executable.
 	/// </remarks>
 	/// <copyright>(c) 2012 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>

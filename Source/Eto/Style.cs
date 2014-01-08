@@ -157,7 +157,7 @@ namespace Eto
 		/// Typically, you'd use Style.Add&lt;H&gt;(string, StyleHandler&lt;H&gt;) instead, which will add a style based on the widget handler, which
 		/// will give you direct and type safe access to platform-specifics of the widget.
 		/// </remarks>
-		/// <typeparam name="T">Type of the widget to style</typeparam>
+		/// <typeparam name="TWidget">Type of the widget to style</typeparam>
 		/// <param name="style">Identifier of the style</param>
 		/// <param name="handler">Delegate with your logic to style the widget</param>
 		public static void Add<TWidget>(string style, StyleWidgetHandler<TWidget> handler)
