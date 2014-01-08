@@ -14,7 +14,7 @@ using Eto.Platform.Mac.Forms.Menu;
 
 namespace Eto.Platform.Mac.Forms
 {
-#if iOS
+#if IOS
 	public static class UIViewExtensions
 	{
 		/// <summary>
