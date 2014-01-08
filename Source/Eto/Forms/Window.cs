@@ -109,7 +109,7 @@ namespace Eto.Forms
 			set { Handler.Location = value; }
 		}
 
-		public Rectangle Bounds
+		public new Rectangle Bounds
 		{
 			get { return new Rectangle(Handler.Location, Handler.Size); }
 			set

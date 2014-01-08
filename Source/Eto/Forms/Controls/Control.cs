@@ -592,6 +592,21 @@ namespace Eto.Forms
 			return Handler.PointToScreen(point);
 		}
 
+		public RectangleF RectangleToScreen(RectangleF rect)
+		{
+			return new RectangleF(PointToScreen(rect.Location), PointToScreen(rect.EndLocation));
+		}
+
+		public RectangleF RectangleFromScreen(RectangleF rect)
+		{
+			return new RectangleF(PointFromScreen(rect.Location), PointFromScreen(rect.EndLocation));
+		}
+
+		public Rectangle Bounds
+		{
+			get { return new Rectangle(Location, Size); }
+		}
+
 		public Point Location
 		{
 			get { return Handler.Location; }
