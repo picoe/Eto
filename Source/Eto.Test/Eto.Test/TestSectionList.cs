@@ -12,10 +12,6 @@ namespace Eto.Test
 			yield return new Section("Forms", FormsSection());
 			yield return new Section("Behaviors", BehaviorsSection());
 			yield return new Section("Drawing", DrawingSection());
-
-			if (Generator.Current.IsWinForms)
-				yield return new Section("Drawing using Direct2D", DrawingSectionDirect2D());
-
 			yield return new Section("Controls", ControlSection());
 			yield return new Section("Layouts", LayoutsSection());
 			yield return new Section("Dialogs", DialogsSection());
@@ -77,28 +73,6 @@ namespace Eto.Test
 			yield return new Section<UnitTestSection> { Text = "Unit Tests" };
 		}
 
-		static IEnumerable<Section> DrawingSectionDirect2D()
-		{
-			var d2d = Generator.GetGenerator(Generators.Direct2DAssembly);
-			yield return new Section<BitmapSection> { Text = "Bitmap", Creator = () => new BitmapSection(d2d) };
-			// yield return new Section<IndexedBitmapSection> { Text = "Indexed Bitmap" };
-			yield return new Section<GraphicsPathSection> { Text = "Graphics Path", Creator = () => new GraphicsPathSection(d2d) };
-			// yield return new Section<AntialiasSection> { Text = "Antialias" };
-			// yield return new Section<FontsSection> { Text = "Control Fonts" };
-			// yield return new Section<InterpolationSection> { Text = "Image Interpolation" };
-			yield return new Section<PenSection> { Text = "Pens", Creator = () => new PenSection(d2d) };
-			// yield return new Section<PixelOffsetSection> { Text = "Pixel Offset" };
-			yield return new Section<TransformSection> { Text = "Transform", Creator = () => new TransformSection(d2d) };
-			// yield return new Section<BrushSection> { Text = "Brushes" };
-			//yield return new Section<TextureBrushesSection> { Text = "Texture Brushes", Creator = () => new TextureBrushesSection(d2d) };
-			//yield return new Section<TextureBrushesSection2> { Text = "Texture Brushes 2", Creator = () => new TextureBrushesSection2(d2d) };
-			// yield return new Section<ClipSection> { Text = "Clip" };
-			// yield return new Section<ClearSection> { Text = "Clear" };
-			yield return new Section<DrawTextSection> { Text = "Draw Text", Creator = () => new DrawTextSection(d2d) };
-			yield return new Section<DrawLoopSection> { Text = "Draw Loop", Creator = () => new DrawLoopSection(d2d) };
-			// yield return new Section<UnitTestSection> { Text = "Unit Tests" };
-		}
-		
 		static IEnumerable<Section> LayoutsSection()
 		{
 			yield return new Section("Table Layout", TableLayoutsSection());

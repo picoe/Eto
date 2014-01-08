@@ -7,23 +7,17 @@ namespace Eto.Test.Sections.Drawing
 {
 	class TextureBrushesSection : Panel
 	{
-		readonly Bitmap image = TestIcons.Textures();
-
 		public TextureBrushesSection()
-			: this(null)
-		{ 
-		}
-
-		public TextureBrushesSection(Generator generator)
 		{
-			var drawable = new Drawable(generator) { Size = new Size(image.Size.Width, image.Size.Height * 10) };
-			var drawableTarget = new DrawableTarget (drawable);
+			var image = TestIcons.Textures();
+			var drawable = new Drawable { Size = new Size(image.Size.Width, image.Size.Height * 10) };
+			var drawableTarget = new DrawableTarget(drawable);
 			var layout = new DynamicLayout(new Padding(10));
 			layout.AddSeparateRow(null, drawableTarget.Checkbox(), null);
 			layout.Add(new Scrollable { Content = drawable });
-			this.Content = layout;
+			Content = layout;
 
-			var renderers = new List<Action<Graphics>> ();
+			var renderers = new List<Action<Graphics>>();
 
 			for (var i = 0; i < 10; ++i)
 			{
@@ -34,20 +28,21 @@ namespace Eto.Test.Sections.Drawing
 
 				var brush = new TextureBrush(img);
 
-				renderers.Add(g => {
+				renderers.Add(graphics =>
+				{
 					var temp = brush.Transform; // save state
-					brush.Transform = Matrix.FromRotation(90);
-					g.FillRectangle(brush, new RectangleF(image.Size));
-					g.TranslateTransform(0, image.Size.Height);
+					brush.Transform = Matrix.FromRotation(90, Generator);
+					graphics.FillRectangle(brush, new RectangleF(image.Size));
+					graphics.TranslateTransform(0, image.Size.Height);
 					brush.Transform = temp;
 				});
 			}
 
 			drawable.Paint += (s, e) =>
 			{
-				var g = drawableTarget.BeginDraw(e.Graphics);
-				foreach(var r in renderers)
-					r(g);
+				var graphics = drawableTarget.BeginDraw(e.Graphics);
+				foreach (var renderer in renderers)
+					renderer(graphics);
 				drawableTarget.EndDraw(e.Graphics);
 			};
 		}

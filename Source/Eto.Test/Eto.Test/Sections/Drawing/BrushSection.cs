@@ -166,7 +166,7 @@ namespace Eto.Test.Sections.Drawing
 
 		void Draw (Graphics g)
 		{
-			var matrix = Matrix.Create ();
+			var matrix = Matrix.Create(g.Generator);
 			matrix.Translate (OffsetX, OffsetY);
 			matrix.Scale (Math.Max (ScaleX / 100f, 0.1f), Math.Max (ScaleY / 100f, 0.1f));
 			matrix.Rotate (Rotation);

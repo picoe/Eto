@@ -31,7 +31,7 @@ namespace Eto.Test.Sections.Drawing
 			UseOffScreenBitmap = false;
 		}
 
-		public Graphics BeginDraw(Graphics g)
+		public Graphics BeginDraw(Graphics graphics)
 		{
 			if (UseOffScreenBitmap)
 			{
@@ -42,23 +42,23 @@ namespace Eto.Test.Sections.Drawing
 					if (offscreenBitmap != null)
 						offscreenBitmap.Dispose();
 
-					offscreenBitmap = new Bitmap(drawable.Size, PixelFormat.Format32bppRgba);
+					offscreenBitmap = new Bitmap(drawable.Size, PixelFormat.Format32bppRgba, drawable.Generator);
 				}
 
 				bitmapGraphics = new Graphics(offscreenBitmap);
-				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor) as SolidBrush);
+				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor, drawable.Generator));
 				return bitmapGraphics;
 			}
-			return g;
+			return graphics;
 		}
 
-		public void EndDraw(Graphics g)
+		public void EndDraw(Graphics graphics)
 		{
 			if (UseOffScreenBitmap)
 			{
 				bitmapGraphics.Dispose();
 				bitmapGraphics = null;
-				g.DrawImage(offscreenBitmap, PointF.Empty);
+				graphics.DrawImage(offscreenBitmap, PointF.Empty);
 			}
 		}
 
@@ -76,15 +76,12 @@ namespace Eto.Test.Sections.Drawing
 
 	class TextureBrushesSection2 : Panel
 	{
-		readonly Bitmap image = TestIcons.Textures();
+		readonly Bitmap image;
 		PointF location = new PointF(100, 100);
 
-		public TextureBrushesSection2() : this(null)
+		public TextureBrushesSection2()
 		{
-		}
-
-		public TextureBrushesSection2(Generator generator)
-		{
+			image = TestIcons.Textures();
 			var drawable = new Drawable();
 			var drawableTarget = new DrawableTarget(drawable);
 			var layout = new DynamicLayout(new Padding(10));
@@ -96,29 +93,27 @@ namespace Eto.Test.Sections.Drawing
 			var img = image.Clone(new Rectangle(w, w, w, w));
 			var textureBrush = new TextureBrush(img);
 			var solidBrush = new SolidBrush(Colors.Blue);
-			var linearGradientBrush = new LinearGradientBrush(Colors.White, Colors.Black, PointF.Empty, new PointF(0, 100));
-			var font = new Font(SystemFont.Default);
+			var linearGradientBrush = new LinearGradientBrush(Colors.White, Colors.Black, PointF.Empty, new PointF(0, 100), Generator);
+			var font = SystemFonts.Default();
 			drawable.BackgroundColor = Colors.Green;
 			drawable.MouseMove += HandleMouseMove;
 			drawable.MouseDown += HandleMouseMove;
 
-			Action<Graphics> render = g =>
-			{
-				g.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
-				// texture brushes
-				var temp = location;
-				DrawShapes(textureBrush, temp, img.Size, g);
-				// solid brushes
-				temp = temp + new PointF(200, 0);
-				DrawShapes(solidBrush, temp, img.Size, g);
-				// linear gradient brushes
-				temp = temp + new PointF(200, 0);
-				DrawShapes(linearGradientBrush, temp, img.Size, g);
-			};
-		
 			drawable.Paint += (s, e) =>
 			{
-				render(drawableTarget.BeginDraw(e.Graphics));
+				var graphics = drawableTarget.BeginDraw(e.Graphics);
+
+				graphics.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
+				// texture brushes
+				var temp = location;
+				DrawShapes(textureBrush, temp, img.Size, graphics);
+				// solid brushes
+				temp = temp + new PointF(200, 0);
+				DrawShapes(solidBrush, temp, img.Size, graphics);
+				// linear gradient brushes
+				temp = temp + new PointF(200, 0);
+				DrawShapes(linearGradientBrush, temp, img.Size, graphics);
+
 				drawableTarget.EndDraw(e.Graphics);
 			};
 		}

@@ -17,16 +17,18 @@ namespace Eto.Test.Sections.Drawing
 			layout.EndVertical();
 
 			Content = layout;
-			
+
 			// Run the tests in a Paint callback
 			var startTests = false;
-			
-			button.Click += (s, e) => {
+
+			button.Click += (s, e) =>
+			{
 				startTests = true;
 				drawable.Invalidate();
 			};
 
-			drawable.Paint += (s, e) => {
+			drawable.Paint += (s, e) =>
+			{
 				if (startTests)
 				{
 					startTests = false;
@@ -35,7 +37,7 @@ namespace Eto.Test.Sections.Drawing
 					try
 					{
 						new TestRunner().RunTests<DrawingTests>(() => new DrawingTests
-						{ 
+						{
 							Drawable = drawable,
 							Graphics = e.Graphics
 						});
@@ -58,7 +60,7 @@ namespace Eto.Test.Sections.Drawing
 		[UnitTest]
 		public void ClipTest()
 		{
-			Assert.AreEqual("Verifying clipbounds size", Size.Round(Graphics.ClipBounds.Size), Size.Round(Drawable.ClientSize));
+			Assert.AreEqual("Verifying clipbounds size", Size.Round(Drawable.ClientSize), Size.Round(Graphics.ClipBounds.Size));
 			
 			// Clip to the upper-left quadrant
 			var clipTo = Drawable.ClientSize / 2;

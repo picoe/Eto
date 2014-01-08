@@ -70,26 +70,29 @@ namespace Eto.Test.Sections.Drawing
 
 		void DrawSample(Graphics graphics)
 		{
-			graphics.FillRectangle(Brushes.Green(), 0, 0, 200, 200);
-			if (UseGraphicsPathClip)
+			using (graphics.Generator.Context)
 			{
-				var path = GraphicsPath.GetRoundRect(new RectangleF(10, 10, 180, 180), 20);
-				graphics.SetClip(path);
-			}
-			else
-				graphics.SetClip(new RectangleF(10, 10, 180, 180));
+				graphics.FillRectangle(Brushes.Green(), 0, 0, 200, 200);
+				if (UseGraphicsPathClip)
+				{
+					var path = GraphicsPath.GetRoundRect(new RectangleF(10, 10, 180, 180), 20);
+					graphics.SetClip(path);
+				}
+				else
+					graphics.SetClip(new RectangleF(10, 10, 180, 180));
 
-			if (UseClearColor)
-				graphics.Clear(new SolidBrush(new Color(Colors.Red, 0.5f)));
-			else
-				graphics.Clear();
-			graphics.FillEllipse(Brushes.Blue(), 25, 25, 150, 150);
+				if (UseClearColor)
+					graphics.Clear(new SolidBrush(new Color(Colors.Red, 0.5f)));
+				else
+					graphics.Clear();
+				graphics.FillEllipse(Brushes.Blue(), 25, 25, 150, 150);
+			}
 		}
 
 		Image GenerateImage()
 		{
-			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba);
-			using (var graphics = new Graphics (image))
+			var image = new Bitmap(200, 200, PixelFormat.Format32bppRgba, generator: Generator);
+			using (var graphics = new Graphics(image))
 			{
 				DrawSample(graphics);
 			}
@@ -98,7 +101,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control ClearBitmapTest()
 		{
-			var control = new ImageView
+			var control = new DrawableImageView
 			{
 				Image = GenerateImage (),
 				Size = new Size (200, 200),
