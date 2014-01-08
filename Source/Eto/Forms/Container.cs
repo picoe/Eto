@@ -169,7 +169,7 @@ namespace Eto.Forms
 		/// <param name="child">Child to remove from this container</param>
 		protected void RemoveParent(Control child)
 		{
-			if (!ReferenceEquals(child.Parent, null))
+			if (child != null && !ReferenceEquals(child.Parent, null))
 			{
 #if DEBUG
 				if (!ReferenceEquals(child.Parent, this))
@@ -186,7 +186,7 @@ namespace Eto.Forms
 
 		protected bool SetParent(Control child)
 		{
-			if (!ReferenceEquals(child.Parent, this))
+			if (child != null && !ReferenceEquals(child.Parent, this))
 			{
 				// Detach so parent can remove from controls collection if necessary.
 				// prevents UnLoad from being called more than once when containers think a control is still a child
