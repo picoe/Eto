@@ -113,7 +113,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 
 			Control = new UIScrollView();
 			Control.BackgroundColor = UIColor.White;
-			Control.ContentMode = UIViewContentMode.Center;
+			Control.ContentMode = UIViewContentMode.TopLeft;
 			Control.ScrollEnabled = true;
 			Control.Delegate = new Delegate { Handler = this };
 			Control.AddSubview(Child);
@@ -188,7 +188,6 @@ namespace Eto.Platform.iOS.Forms.Controls
 			if (ExpandContentHeight)
 				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
 			Child.SetFrameSize(contentSize);
-			Control.ContentSize = contentSize;
 			Adjust();
 		}
 
