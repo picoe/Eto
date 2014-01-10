@@ -17,6 +17,8 @@ namespace Eto.Forms
 			this.PageSize = pageSize;
 			this.CurrentPage = currentPage;
 		}
+
+		public Generator Generator { get { return Graphics.Generator; } }
 	}
 }
 

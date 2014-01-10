@@ -59,9 +59,10 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 		{
 			if (graphics == null)
 				return;
-			graphicsHandler.BeginDrawing();
-			Widget.OnPaint(new PaintEventArgs(graphics, rect));
-			graphicsHandler.EndDrawing();
+			graphicsHandler.PerformDrawing(null, () =>
+			{
+				Widget.OnPaint(new PaintEventArgs(graphics, rect));
+			});
 		}
 
 		protected override void OnPaint(System.Windows.Forms.PaintEventArgs e)
@@ -69,17 +70,16 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 			if (graphics == null)
 				return;
 			var clipRect = e.ClipRectangle.ToEto();
-			graphicsHandler.BeginDrawing(clipRect);
+			graphicsHandler.PerformDrawing(clipRect, () =>
+			{
+				// clear to control's background color
+				if (backgroundColor == null)
+					backgroundColor = new SolidBrush(base.BackgroundColor, Generator);
+				graphics.Clear(backgroundColor);
 
-			// clear to control's background color
-			if (backgroundColor == null)
-				backgroundColor = new SolidBrush(base.BackgroundColor, Generator);
-			graphics.Clear(backgroundColor);
-
-			// perform user painting
-			Widget.OnPaint(new PaintEventArgs(graphics, clipRect));
-
-			graphicsHandler.EndDrawing(true);
+				// perform user painting
+				Widget.OnPaint(new PaintEventArgs(graphics, clipRect));
+			});
 		}
 	}
 }

@@ -7,22 +7,23 @@ namespace Eto.Platform.Wpf.Forms.Printing
 	public class PrintDialogHandler : WidgetHandler<swc.PrintDialog, PrintDialog>, IPrintDialog
 	{
 		PrintSettings settings;
-		public PrintDialogHandler ()
+		public PrintDialogHandler()
 		{
-			Control = new swc.PrintDialog {
+			Control = new swc.PrintDialog
+			{
 				UserPageRangeEnabled = true
 			};
 		}
 
 		public PrintDocument Document { get; set; }
 
-		public DialogResult ShowDialog (Window parent)
+		public DialogResult ShowDialog(Window parent)
 		{
 			Control.SetEtoSettings(settings);
 			var result = Control.ShowDialog();
 			if (result == true)
 			{
-				settings = null;
+				settings.SetFromDialog(Control);
 				return DialogResult.Ok;
 			}
 			return DialogResult.Cancel;
@@ -39,7 +40,7 @@ namespace Eto.Platform.Wpf.Forms.Printing
 			set
 			{
 				settings = value;
-				Control.SetEtoSettings (settings);
+				Control.SetEtoSettings(settings);
 			}
 		}
 
@@ -52,7 +53,8 @@ namespace Eto.Platform.Wpf.Forms.Printing
 		// not supported in wpf
 		public bool AllowSelection
 		{
-			get; set;
+			get;
+			set;
 		}
 	}
 }

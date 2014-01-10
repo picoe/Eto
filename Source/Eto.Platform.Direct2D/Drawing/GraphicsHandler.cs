@@ -44,43 +44,58 @@ namespace Eto.Platform.Direct2D.Drawing
 		public GraphicsHandler(DrawableHandler drawable)
 		{
 			this.drawable = drawable;
-			var drawableControl = drawable.Control;
+			CreateRenderTarget();
 
+			//set hwnd target properties (permit to attach Direct2D to window)
+			//target creation
+			drawable.Control.SizeChanged += HandleSizeChanged;
+		}
+
+		void CreateRenderTarget()
+		{
 			var renderProp = new sd.RenderTargetProperties
 			{
 				DpiX = 0,
 				DpiY = 0,
-				MinLevel = sd.FeatureLevel.Level_10,
-				PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied),
+				MinLevel = sd.FeatureLevel.Level_DEFAULT,
 				Type = sd.RenderTargetType.Default,
 				Usage = sd.RenderTargetUsage.None
 			};
 
-			//set hwnd target properties (permit to attach Direct2D to window)
-			var winProp = new sd.HwndRenderTargetProperties
+			if (drawable != null)
 			{
-				Hwnd = drawableControl.Handle,
-				PixelSize = new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height),
-				PresentOptions = sd.PresentOptions.Immediately
-			};
+				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.B8G8R8A8_UNorm, sd.AlphaMode.Premultiplied);
+				var winProp = new sd.HwndRenderTargetProperties
+				{
+					Hwnd = drawable.Control.Handle,
+					PixelSize = drawable.ClientSize.ToDx(),
+					PresentOptions = sd.PresentOptions.Immediately
+				};
 
-			//target creation
-			var target = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
-
-			drawableControl.SizeChanged += (s, e) =>
+				Control = new sd.WindowRenderTarget(SDFactory.D2D1Factory, renderProp, winProp);
+			}
+			else if (image != null)
 			{
-				try
-				{
-					target.Resize(new s.Size2(drawableControl.ClientSize.Width, drawableControl.ClientSize.Height));
-					drawable.Invalidate();
-				}
-				catch (Exception ex)
-				{
-					Debug.Print(string.Format("Could not resize: {0}", ex));
-				}
-			};
+				var imageHandler = image.Handler as BitmapHandler;
+				renderProp.PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown);
+				Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
+			}
+		}
 
-			Control = CurrentRenderTarget = target;
+		void HandleSizeChanged(object sender, EventArgs e)
+		{
+			var target = Control as sd.WindowRenderTarget;
+			if (target == null)
+				return;
+			try
+			{
+				target.Resize(drawable.ClientSize.ToDx());
+				drawable.Invalidate();
+			}
+			catch (Exception ex)
+			{
+				Debug.Print(string.Format("Could not resize: {0}", ex));
+			}
 		}
 
 		sd.Ellipse GetEllipse(float x, float y, float width, float height)
@@ -207,18 +222,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void CreateFromImage(Bitmap image)
 		{
 			this.image = image;
-			var imageHandler = image.Handler as BitmapHandler;
-			var renderProp = new sd.RenderTargetProperties
-			{
-				DpiX = 0,
-				DpiY = 0,
-				MinLevel = sd.FeatureLevel.Level_DEFAULT,
-				PixelFormat = new sd.PixelFormat(SharpDX.DXGI.Format.Unknown, sd.AlphaMode.Unknown),
-				Type = sd.RenderTargetType.Default,
-				Usage = sd.RenderTargetUsage.None
-			};
-
-			Control = new sd.WicRenderTarget(SDFactory.D2D1Factory, imageHandler.Control, renderProp);
+			CreateRenderTarget();
 			BeginDrawing();
 		}
 
@@ -483,6 +487,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
 				if (popClip)
 					Control.PopAxisAlignedClip();
+
 				Control.EndDraw();
 				hasBegan = false;
 
@@ -492,6 +497,34 @@ namespace Eto.Platform.Direct2D.Drawing
 					imageHandler.Reset();
 				}
 			}
+		}
+
+		public void PerformDrawing(RectangleF? clipRect, Action draw)
+		{
+			bool recreated = false;
+			do
+			{
+				try
+				{
+					recreated = false;
+					BeginDrawing(clipRect);
+					draw();
+					EndDrawing(clipRect != null);
+				}
+				catch (s.SharpDXException ex)
+				{
+					if (ex.ResultCode == 0x8899000C) // D2DERR_RECREATE_TARGET
+					{
+						Debug.Print("Recreating targets");
+						// need to recreate render target
+						CreateRenderTarget();
+						CurrentRenderTarget = Control;
+						globalRenderTarget = null;
+						recreated = true;
+					}
+				}
+			}
+			while (recreated);
 		}
 
 		protected override void Dispose(bool disposing)
