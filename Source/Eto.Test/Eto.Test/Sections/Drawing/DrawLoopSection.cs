@@ -153,6 +153,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public readonly Stopwatch Watch = new Stopwatch();
 		public int TotalFrames { get; set; }
+		public long PreviousFrameStartTicks { get; set; }
 		public readonly List<Box> Boxes = new List<Box>();
 		public bool UseTexturesAndGradients { get; set; }
 		public Generator Generator { get; private set; }
@@ -313,7 +314,12 @@ namespace Eto.Test.Sections.Drawing
 					InitializeBoxes(canvasSize);
 
 				var fps = TotalFrames / Watch.Elapsed.TotalSeconds;
-				var fpsText = string.Format("Frames per second: {0:0.00}", fps);
+				// The frames per second as determined by the last frame. Measuring a single frame
+				// must include EndDraw, since that is when the pipeline is flushed to the device.
+				var lastFrameFps = Stopwatch.Frequency / (Watch.ElapsedTicks - PreviousFrameStartTicks);
+				PreviousFrameStartTicks = Watch.ElapsedTicks;
+				var fpsText = string.Format("Frames per second since start: {0:0.00}, last: {1:0.00}", fps, lastFrameFps);
+				var start = Watch.ElapsedTicks;
 				if (EraseBoxes)
 					graphics.FillRectangle(Colors.Black, new RectangleF(graphics.MeasureString(font, fpsText)));
 				graphics.DrawText(font, textBrush, 0, 0, fpsText);
