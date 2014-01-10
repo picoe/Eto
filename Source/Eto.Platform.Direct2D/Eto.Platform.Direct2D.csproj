@@ -60,7 +60,7 @@
     <Compile Include="..\GlobalAssemblyInfo.cs">
       <Link>Properties\GlobalAssemblyInfo.cs</Link>
     </Compile>
-    <Compile Include="Drawing\Conversions.cs" />
+    <Compile Include="Conversions.cs" />
     <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\ImageHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
