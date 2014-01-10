@@ -19,7 +19,7 @@ namespace Eto.Platform.Direct2D.Drawing
 	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
 	{
 		bool hasBegan;
-		bool disposeControl;
+		bool disposeControl = true;
 		Bitmap image;
 		float offset = 0.5f;
 		float fillOffset;
