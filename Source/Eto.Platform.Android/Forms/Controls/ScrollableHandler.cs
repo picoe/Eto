@@ -19,7 +19,7 @@ namespace Eto.Platform.Android.Forms.Controls
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class ScrollableHandler : AndroidDockContainer<aw.ScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : AndroidPanel<aw.ScrollView, Scrollable>, IScrollable
 	{
 		public void UpdateScrollSizes()
 		{

@@ -6,6 +6,7 @@ using Eto.Drawing;
 using s = SharpDX;
 using sd = SharpDX.Direct2D1;
 using sw = SharpDX.DirectWrite;
+using Eto.Platform.Windows.Drawing;
 
 namespace Eto.Platform.Direct2D.Drawing
 {
@@ -14,76 +15,79 @@ namespace Eto.Platform.Direct2D.Drawing
 	/// </summary>
 	/// <copyright>(c) 2013 by Vivek Jhaveri</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-    public class FontHandler : WidgetHandler<sw.Font, Font>, IFont
+    public class FontHandler : WidgetHandler<sw.Font, Font>, IFont, IWindowsFontSource
     {
-		public sw.TextFormat TextFormat { get; private set; }
-
-        string familyName;
-        FontStyle style;
-		FontDecoration decoration;
-        sw.FontStyle fontStyle;
-        sw.FontWeight fontWeight;
-		
-        // These need to be disposed
-		sw.FontFace fontFace;
-
-		string GetTranslatedName(FontFamily family)
+		sw.TextFormat textFormat;
+		public sw.TextFormat TextFormat
 		{
-			var f = (FontFamilyHandler)family.Handler;
-			return f.TranslatedName;
+			get
+			{
+				if (textFormat == null)
+				{
+					textFormat = new sw.TextFormat(
+						SDFactory.DirectWriteFactory,
+						Control.FontFamily.FamilyNames.GetString(0),
+						FontCollection,
+						Control.Weight,
+						Control.Style,
+						Control.Stretch,
+						Size * 96.0f / 72.0f // convert from points to pixels. (The documentation says device-independent pixels.)
+						);
+				}
+				return textFormat;
+			}
 		}
 
 		public void Create(FontFamily family, float size, FontStyle style, FontDecoration decoration)
 		{
 			this.family = family;
-			Create(GetTranslatedName(family), size, style, decoration);
+			Size = size;
+			FontStyle = style;
+			FontDecoration = decoration;
+
+			sw.FontStyle fontStyle;
+			sw.FontWeight fontWeight;
+			Conversions.Convert(style, out fontStyle, out fontWeight);
+
+			var familyHandler = (FontFamilyHandler)family.Handler;
+			Control = familyHandler.Control.GetFirstMatchingFont(fontWeight, sw.FontStretch.Normal, fontStyle);
 		}
 
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
-			Create("Microsoft Sans Serif", size ?? 8.25f, FontStyle.None, FontDecoration.None); // BUGBUG: Fix
+			var sdfont = Eto.Platform.Windows.Conversions.ToSD(systemFont);
+			Create(sdfont.Name, size ?? 8.25f, FontStyle.None, FontDecoration.None); // BUGBUG: Fix
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)
 		{
-			this.family = typeface.Family;
-            Create(typeface.Name, size, typeface.FontStyle, FontDecoration.None);
+			family = typeface.Family;
+			this.typeface = typeface;
+			var typefaceHandler = (FontTypefaceHandler)typeface.Handler;
+
+			Control = typefaceHandler.Font;
+			FontStyle = Control.ToEtoStyle();
+			FontDecoration = decoration;
+			Size = size;
         }
 
         void Create(string familyName, float sizeInPoints, FontStyle style, FontDecoration decoration)
         {
-            this.familyName = familyName;
-			this.Size = sizeInPoints;
-            this.style = style;
-			this.decoration = decoration;
-
-            sw.FontStyle s;
-            sw.FontWeight w;
-            Conversions.Convert(style, out s, out w);
-
-            this.TextFormat = new sw.TextFormat(
-				SDFactory.DirectWriteFactory,
-                familyName,
-                null, // font collection
-                w,
-                s,
-                sw.FontStretch.Normal,
-                sizeInPoints * 96.0f / 72.0f, // convert from points to pixels. (The documentation says device-independent pixels.)
-                "en-us");
-            
-            int index = 0;
-            if (FontCollection.FindFamilyName(
-                familyName: familyName,
-                index: out index))
-            {
-                var fontFamily = FontCollection.GetFontFamily(index);
+			Size = sizeInPoints;
+			FontStyle = style;
+			FontDecoration = decoration;
+			int index;
+			if (FontCollection.FindFamilyName(familyName, out index))
+			{
+				sw.FontStyle fontStyle;
+				sw.FontWeight fontWeight;
 				Conversions.Convert(style, out fontStyle, out fontWeight);
-				this.Control = fontFamily.GetFirstMatchingFont(fontWeight, sw.FontStretch.Normal, fontStyle);
-            }
+				Control = FontCollection.GetFontFamily(index).GetFirstMatchingFont(fontWeight, sw.FontStretch.Normal, fontStyle);
+			}
         }
 
         static sw.FontCollection fontCollection;
-        static sw.FontCollection FontCollection
+        public static sw.FontCollection FontCollection
         {
 			get
 			{
@@ -93,16 +97,10 @@ namespace Eto.Platform.Direct2D.Drawing
 
         protected override void Dispose(bool disposing)
         {
-            if (this.TextFormat != null)
+            if (textFormat != null)
             {
-                this.TextFormat.Dispose();
-                this.TextFormat = null;
-            }
-
-            if (this.fontFace != null)
-            {
-                this.fontFace.Dispose();
-                this.fontFace = null;
+                textFormat.Dispose();
+                textFormat = null;
             }
 
             base.Dispose(disposing);
@@ -111,52 +109,47 @@ namespace Eto.Platform.Direct2D.Drawing
 		FontFamily family;
         public FontFamily Family
         {
-            get { return family ?? (family = new FontFamily(Generator, new FontFamilyHandler(familyName))); }
+            get { return family ?? (family = new FontFamily(Generator, new FontFamilyHandler(Control.FontFamily))); }
         }
 
         public string FamilyName
         {
-            get { return family != null ? family.Name : familyName; }
+            get { return Family.Name; }
         }
 
-        public FontStyle FontStyle
-        {
-            get { return style; }
-        }
+        public FontStyle FontStyle { get; private set; }
 
-		public FontDecoration FontDecoration
-		{
-			get { return this.decoration; }
-		}
+		public FontDecoration FontDecoration { get; private set; }
 
 		/// <summary>
 		/// The size in points.
 		/// </summary>
 		public float Size { get; private set; }
 
+		FontTypeface typeface;
         public FontTypeface Typeface
         {
-            get { return null; }
+            get { return typeface ?? (typeface = new FontTypeface(Family, new FontTypefaceHandler(Control))); }
         }
 
 		public float XHeight
 		{
-			get { return Size * this.Control.Metrics.XHeight / this.Control.Metrics.DesignUnitsPerEm; }
+			get { return Size * Control.Metrics.XHeight / Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Ascent
 		{
-			get { return Size * this.Control.Metrics.Ascent / this.Control.Metrics.DesignUnitsPerEm; }
+			get { return Size * Control.Metrics.Ascent / Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Descent
 		{
-			get { return Size * this.Control.Metrics.Descent / this.Control.Metrics.DesignUnitsPerEm; }
+			get { return Size * Control.Metrics.Descent / Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float LineHeight
 		{
-			get { return Ascent + Descent + Size * this.Control.Metrics.LineGap / this.Control.Metrics.DesignUnitsPerEm; }
+			get { return Ascent + Descent + Size * Control.Metrics.LineGap / Control.Metrics.DesignUnitsPerEm; }
 		}
 
 		public float Leading
@@ -169,9 +162,11 @@ namespace Eto.Platform.Direct2D.Drawing
 			get { return Ascent; }
 		}
 
-		public object ControlObject
+		public System.Drawing.Font GetFont()
 		{
-			get { return this.Control; }
+			var familyName = Control.FontFamily.FamilyNames.GetString(0);
+			var style = Eto.Platform.Windows.Conversions.ToSD(FontStyle) | Eto.Platform.Windows.Conversions.ToSD(FontDecoration);
+			return new System.Drawing.Font(familyName, Size, style);
 		}
 	}
 }

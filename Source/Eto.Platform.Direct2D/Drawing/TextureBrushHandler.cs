@@ -12,7 +12,8 @@ namespace Eto.Platform.Direct2D.Drawing
 
 			protected override sd.Brush Create(sd.RenderTarget target)
 			{
-				var brush = new sd.BitmapBrush(target, (sd.Bitmap)Image.ControlObject);
+				var brush = new sd.BitmapBrush(target, Image.ToDx(target));
+				brush.ExtendModeX = brush.ExtendModeY = sd.ExtendMode.Wrap;
 				if (Transform != null)
 					brush.Transform = Transform.ToDx();
 				return brush;

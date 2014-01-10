@@ -8,12 +8,12 @@ using aw = Android.Widget;
 namespace Eto.Platform.Android.Forms
 {
 	/// <summary>
-	/// Base handler for <see cref="IDockContainer"/>
+	/// Base handler for <see cref="IPanel"/>
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public abstract class AndroidDockContainer<T, TWidget> : AndroidContainer<T, TWidget>, IDockContainer
-		where TWidget: DockContainer
+	public abstract class AndroidPanel<T, TWidget> : AndroidContainer<T, TWidget>, IPanel
+		where TWidget: Panel
 	{
 		readonly aw.FrameLayout frame;
 		Control content;
@@ -21,7 +21,7 @@ namespace Eto.Platform.Android.Forms
 
 		protected aw.FrameLayout InnerFrame { get { return frame; } }
 
-		protected AndroidDockContainer()
+		protected AndroidPanel()
 		{
 			frame = new aw.FrameLayout(a.App.Application.Context);
 		}

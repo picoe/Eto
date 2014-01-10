@@ -4,7 +4,7 @@ using Eto.Forms;
 
 namespace Eto.Platform.Windows
 {
-	public class PanelHandler : WindowsDockContainer<PanelHandler.EtoPanel, Panel>, IPanel
+	public class PanelHandler : WindowsPanel<PanelHandler.EtoPanel, Panel>, IPanel
 	{
 		public class EtoPanel : swf.Panel
 		{

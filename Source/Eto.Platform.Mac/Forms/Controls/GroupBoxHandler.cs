@@ -7,7 +7,7 @@ using Eto.Platform.Mac.Drawing;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class GroupBoxHandler : MacDockContainer<NSBox, GroupBox>, IGroupBox
+	public class GroupBoxHandler : MacPanel<NSBox, GroupBox>, IGroupBox
 	{
 		Font font;
 

@@ -55,6 +55,12 @@ namespace Eto.Drawing
 				cache.Clear ();
 			}
 		}
+
+		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #00000000</summary>
+		public static Pen Transparent(Generator generator = null)
+		{
+			return GetPen(generator, Colors.Transparent);
+		}
 		
 		// Red colors
 		/// <summary>Gets a pen with a thickness of 1 and ARGB color value of #FFCD5C5C</summary>

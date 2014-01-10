@@ -21,12 +21,7 @@ namespace Eto.Test.Sections.Drawing
 
 		public float PenThickness { get; set; }
 
-		public PenSection() : this(null)
-		{
-		}
-
-		public PenSection(Generator generator)
-			: base(generator)
+		public PenSection()
 		{
 			PenThickness = 4;
 
@@ -94,7 +89,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Drawable GetDrawable()
 		{
-			drawable = new Drawable(Generator)
+			drawable = new Drawable
 			{
 				Size = new Size (560, 300)
 			};

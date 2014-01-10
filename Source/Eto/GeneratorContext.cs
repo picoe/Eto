@@ -8,9 +8,9 @@ namespace Eto
 	/// <summary>
 	/// Sets the current generator for a block of code,
 	/// and verifies that all objects created in that 
-	/// block were greated using that generator.
+	/// block were created using that generator.
 	/// </summary>
-	public class GeneratorContext : IDisposable
+	internal class GeneratorContext : IDisposable
 	{
 		Generator previous;
 		Generator previousValidate;

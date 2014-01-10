@@ -20,9 +20,9 @@ namespace Eto.Test.Sections.Drawing
 			Content = layout;
 		}
 
-		static IndexedBitmap CreateImage()
+		IndexedBitmap CreateImage()
 		{
-			var image = new IndexedBitmap(100, 100, 8);
+			var image = new IndexedBitmap(100, 100, 8, Generator);
 			var ega = Palette.GetEgaPalette();
 			var pal = new Palette(ega);
 			
@@ -56,12 +56,12 @@ namespace Eto.Test.Sections.Drawing
 			
 		}
 
-		static Control CreateIndexedImageView()
+		Control CreateIndexedImageView()
 		{
-			return new ImageView { Image = CreateImage() };
+			return new DrawableImageView { Image = CreateImage() };
 		}
 
-		static Control CreateIndexedDrawable()
+		Control CreateIndexedDrawable()
 		{
 			var control = new Drawable { Size = new Size(100, 100) };
 			var image = CreateImage();

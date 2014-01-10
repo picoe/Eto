@@ -19,7 +19,7 @@ namespace Eto.Platform.Android.Forms.Controls
 	/// </summary>
 	/// <copyright>(c) 2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public class PanelHandler : AndroidDockContainer<aw.FrameLayout, Panel>, IPanel
+	public class PanelHandler : AndroidPanel<aw.FrameLayout, Panel>, IPanel
 	{
 		public override av.View ContainerControl { get { return InnerFrame; } }
 

@@ -19,7 +19,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\..\BuildOutput\Debug\</OutputPath>
+    <OutputPath>..\..\BuildOutput\Debug\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -27,7 +27,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\..\BuildOutput\Release\</OutputPath>
+    <OutputPath>..\..\BuildOutput\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -57,7 +57,12 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="..\GlobalAssemblyInfo.cs">
+      <Link>Properties\GlobalAssemblyInfo.cs</Link>
+    </Compile>
     <Compile Include="Conversions.cs" />
+    <Compile Include="Drawing\IndexedBitmapHandler.cs" />
+    <Compile Include="Drawing\ImageHandler.cs" />
     <Compile Include="Drawing\BitmapHandler.cs" />
     <Compile Include="Drawing\BrushData.cs" />
     <Compile Include="Drawing\GraphicsHandler.cs" />
@@ -67,7 +72,6 @@
     <Compile Include="Drawing\FontTypefaceHandler.cs" />
     <Compile Include="Drawing\GraphicsPathHandler.cs" />
     <Compile Include="Drawing\IconHandler.cs" />
-    <Compile Include="Drawing\IndexedBitmapHandler.cs" />
     <Compile Include="Drawing\MatrixHandler.cs" />
     <Compile Include="Drawing\PenHandler.cs" />
     <Compile Include="Drawing\SDFactory.cs" />

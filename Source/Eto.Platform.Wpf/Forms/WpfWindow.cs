@@ -16,7 +16,7 @@ namespace Eto.Platform.Wpf.Forms
 		sw.Window Control { get; }
 	}
 
-	public abstract class WpfWindow<TControl, TWidget> : WpfDockContainer<TControl, TWidget>, IWindow, IWpfWindow
+	public abstract class WpfWindow<TControl, TWidget> : WpfPanel<TControl, TWidget>, IWindow, IWpfWindow
 		where TControl : sw.Window
 		where TWidget : Window
 	{

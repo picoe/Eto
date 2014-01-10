@@ -4,7 +4,7 @@ using Eto.Platform.GtkSharp.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public class DrawableHandler : GtkDockContainer<Gtk.EventBox, Drawable>, IDrawable
+	public class DrawableHandler : GtkPanel<Gtk.EventBox, Drawable>, IDrawable
 	{
 		Gtk.VBox content;
 

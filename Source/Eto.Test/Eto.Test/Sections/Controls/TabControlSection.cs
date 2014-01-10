@@ -116,20 +116,14 @@ namespace Eto.Test.Sections.Controls
 			// Clone the current generator and add handlers
 			// for TabControl and TabPage. Create a TabControlSection
 			// using the new generator and then restore the previous generator.
-			var currentGenerator = Generator.Current;
-			try
+			var generator = (Generator)Activator.CreateInstance(Generator.Current.GetType());
+
+			generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
+			generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());
+
+			using (generator.Context)
 			{
-				var generator = (Generator)Activator.CreateInstance(currentGenerator.GetType());
-				Generator.Initialize(generator);
-
-				generator.Add<ITabControl>(() => new Eto.Test.Handlers.TabControlHandler());
-				generator.Add<ITabPage>(() => new Eto.Test.Handlers.TabPageHandler());
-
 				return base.Create();
-			}
-			finally
-			{			
-				Generator.Initialize(currentGenerator); // restore
 			}
 		}
 	}

@@ -438,5 +438,32 @@ namespace Eto
 		{
 			return null;
 		}
+
+		/// <summary>
+		/// Gets an object to wrap in the generator's context, when using multiple generators.
+		/// </summary>
+		/// <remarks>
+		/// This sets this generator as current, and reverts back to the previous generator when disposed.
+		/// 
+		/// This value may be null.
+		/// </remarks>
+		/// <example>
+		/// <code>
+		///		using (generator.Context)
+		///		{
+		///			// do some stuff with the specified generator
+		///		}
+		/// </code>
+		/// </example>
+		public IDisposable Context
+		{
+			get
+			{
+				if (current != this)
+					return new GeneratorContext(this);
+				else
+					return null;
+			}
+		}
 	}
 }

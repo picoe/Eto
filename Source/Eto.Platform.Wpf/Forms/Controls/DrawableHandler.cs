@@ -11,7 +11,7 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class DrawableHandler : WpfDockContainer<swc.Canvas, Drawable>, IDrawable
+	public class DrawableHandler : WpfPanel<swc.Canvas, Drawable>, IDrawable
 	{
 		bool tiled;
 		Scrollable scrollable;

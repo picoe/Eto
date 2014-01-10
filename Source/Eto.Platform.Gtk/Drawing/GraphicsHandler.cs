@@ -51,6 +51,8 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
+		public float PointsPerPixel { get { return 1f; } }
+
 		public double Offset { get { return offset; } }
 
 		public double InverseOffset { get { return inverseoffset; } }

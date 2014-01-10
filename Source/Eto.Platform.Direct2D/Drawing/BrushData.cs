@@ -29,11 +29,16 @@ namespace Eto.Platform.Direct2D.Drawing
 				Brush = Create(target);
 				Brush.Opacity = Alpha;
 				Brush.Tag = target;
+				OnCreated();
 			}
 			return Brush;
 		}
 
 		protected abstract sd.Brush Create(sd.RenderTarget target);
+
+		protected virtual void OnCreated()
+		{
+		}
 
 		public void Dispose()
 		{
@@ -58,8 +63,14 @@ namespace Eto.Platform.Direct2D.Drawing
 			{
 				transform = value;
 				if (Brush != null)
-					((sd.BitmapBrush)Brush).Transform = transform.ToDx();
+					Brush.Transform = transform.ToDx();
 			}
+		}
+
+		protected override void OnCreated()
+		{
+			base.OnCreated();
+			Brush.Transform = transform.ToDx();
 		}
 	}
 }

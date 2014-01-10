@@ -35,7 +35,7 @@ namespace Eto.Platform.Direct2D
 			g.Add<IGraphics>(() => new GraphicsHandler());
 			g.Add<IGraphicsPathHandler>(() => new GraphicsPathHandler());
 			g.Add<IIcon>(() => new IconHandler());
-			//g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
+			g.Add<IIndexedBitmap>(() => new IndexedBitmapHandler());
 			g.Add<IMatrixHandler>(() => new MatrixHandler());
 			g.Add<IPen>(() => new PenHandler());
 			g.Add<ISolidBrush>(() => new SolidBrushHandler());

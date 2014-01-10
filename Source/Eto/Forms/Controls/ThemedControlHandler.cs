@@ -30,6 +30,8 @@ namespace Eto.Forms
 			set { Control.BackgroundColor = value; }
 		}
 
+		public virtual bool PropegateLoadEvents { get { return true; } }
+
 		public Size Size
 		{
 			get { return Control.Size; }
@@ -80,22 +82,26 @@ namespace Eto.Forms
 
 		public virtual void OnPreLoad(EventArgs e)
 		{
-			Control.OnPreLoad(e);
+			if (PropegateLoadEvents)
+				Control.OnPreLoad(e);
 		}
 
 		public virtual void OnLoad(EventArgs e)
 		{
-			Control.OnLoad(e);
+			if (PropegateLoadEvents)
+				Control.OnLoad(e);
 		}
 
 		public virtual void OnLoadComplete(EventArgs e)
 		{
-			Control.OnLoadComplete(e);
+			if (PropegateLoadEvents)
+				Control.OnLoadComplete(e);
 		}
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
-			Control.OnUnLoad(e);
+			if (PropegateLoadEvents)
+				Control.OnUnLoad(e);
 		}
 
 		public virtual void SetParent(Container parent)

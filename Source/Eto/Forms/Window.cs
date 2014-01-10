@@ -4,7 +4,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public partial interface IWindow : IDockContainer
+	public partial interface IWindow : IPanel
 	{
 		ToolBar ToolBar { get; set; }
 
@@ -22,7 +22,7 @@ namespace Eto.Forms
 		//void ClearToolbars();
 	}
 
-	public abstract partial class Window : DockContainer
+	public abstract partial class Window : Panel
 	{
 		new IWindow Handler { get { return (IWindow)base.Handler; } }
 		//ToolBarCollection toolBars;
@@ -109,7 +109,7 @@ namespace Eto.Forms
 			set { Handler.Location = value; }
 		}
 
-		public Rectangle Bounds
+		public new Rectangle Bounds
 		{
 			get { return new Rectangle(Handler.Location, Handler.Size); }
 			set

@@ -357,7 +357,6 @@
     <Compile Include="Binding\DelegateBinding.cs" />
     <Compile Include="Forms\IKeyboardInputSource.cs" />
     <Compile Include="Forms\IMouseInputSource.cs" />
-    <Compile Include="Forms\DockContainer.cs" />
     <Compile Include="XmlExtensions.cs" />
     <Compile Include="Drawing\XmlExtensions.cs" />
     <Compile Include="Drawing\SystemFonts.cs" />
@@ -400,7 +399,6 @@
       <Link>LICENSE</Link>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Action.cd" />
     <None Include="BreakingChanges.txt" />
   </ItemGroup>
   <ProjectExtensions>

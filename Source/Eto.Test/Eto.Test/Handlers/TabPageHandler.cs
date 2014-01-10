@@ -13,6 +13,9 @@ namespace Eto.Test.Handlers
 
 		public Size MinimumSize { get { return Control.MinimumSize; } set { Control.MinimumSize = value; } }
 
+		// handled by tab control
+		public override bool PropegateLoadEvents { get { return false; } }
+
         public TabPageHandler()
         {
 			this.Tab = new Tab { Tag = this };

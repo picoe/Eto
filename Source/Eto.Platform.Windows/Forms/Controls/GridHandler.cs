@@ -139,7 +139,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 				}
 				set {
 					font = value;
-					Args.CellStyle.Font = font != null ? ((FontHandler)font.Handler).Control : null;
+					Args.CellStyle.Font = font.ToSD();
 				}
 			}
 

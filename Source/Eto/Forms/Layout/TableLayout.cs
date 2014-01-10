@@ -197,14 +197,14 @@ namespace Eto.Forms
 			this.CellSize = size;
 		}
 
-		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
-		public TableLayout(DockContainer container, int width, int height)
+		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
+		public TableLayout(Panel container, int width, int height)
 			: this(container, new Size(width, height))
 		{
 		}
 
-		[Obsolete("Add a TableLayout to a DockContainer using the DockContainer.Content property")]
-		public TableLayout(DockContainer container, Size size)
+		[Obsolete("Add a TableLayout to a Panel using the Panel.Content property")]
+		public TableLayout(Panel container, Size size)
 			: this(size, container != null ? container.Generator : null)
 		{
 			if (container != null)

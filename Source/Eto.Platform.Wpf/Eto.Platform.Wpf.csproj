@@ -156,7 +156,7 @@
     <Compile Include="Forms\Controls\WpfListItemHelper.cs" />
     <Compile Include="Forms\Controls\WpfTreeItemHelper.cs" />
     <Compile Include="Forms\EnableThemingInScope.cs" />
-    <Compile Include="Forms\WpfDockContainer.cs" />
+    <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\CursorHandler.cs" />
     <Compile Include="Forms\FontDialogHandler.cs" />
     <Compile Include="Forms\Menu\CheckMenuItemHandler.cs" />
@@ -189,7 +189,6 @@
     <Compile Include="Forms\ToolBar\ToolItemHandler.cs" />
     <Compile Include="Forms\WpfFrameworkElement.cs" />
     <Compile Include="Forms\WpfLayout.cs" />
-    <Compile Include="Forms\WpfPanel.cs" />
     <Compile Include="Forms\FormHandler.cs" />
     <Compile Include="Forms\Menu\MenuBarHandler.cs" />
     <Compile Include="Forms\WpfControl.cs" />

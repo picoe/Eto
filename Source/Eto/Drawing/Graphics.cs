@@ -12,6 +12,11 @@ namespace Eto.Drawing
 	public interface IGraphics : IInstanceWidget
 	{
 		/// <summary>
+		/// Gets the scale of points to pixels. Multiply by desired pixel size to get point value (e.g. for font sizes)
+		/// </summary>
+		float PointsPerPixel { get; }
+
+		/// <summary>
 		/// Gets or sets the pixel offset mode for draw operations
 		/// </summary>
 		/// <value>The pixel offset mode.</value>
@@ -294,20 +299,10 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="image">Image to draw on using this graphics context</param>
 		public Graphics (Bitmap image)
-			: this(image.Generator, image)
+			: base(image.Generator, typeof(IGraphics), false)
 		{
-		}
-
-		/// <summary>
-		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
-		/// </summary>
-		/// <param name="generator">Generator to create this graphics context for</param>
-		/// <param name="image">Image to draw on using this graphics context</param>
-		public Graphics (Generator generator, Bitmap image)
-			: base (generator, typeof (IGraphics), false)
-		{
-			Handler.CreateFromImage (image);
-			Initialize ();
+			Handler.CreateFromImage(image);
+			Initialize();
 		}
 
 		/// <summary>
@@ -385,7 +380,7 @@ namespace Eto.Drawing
 		}
 
 		/// <summary>
-		/// Draws a 1 pixel wide  outline of a rectangle with the specified <paramref name="color"/>
+		/// Draws a 1 pixel wide outline of a rectangle with the specified <paramref name="color"/>
 		/// </summary>
 		/// <param name="color">Color for the outline</param>
 		/// <param name="rectangle">Where to draw the rectangle</param>
@@ -393,6 +388,20 @@ namespace Eto.Drawing
 		{
 			using (var pen = new Pen(color, 1f, Generator))
 				Handler.DrawRectangle (pen, rectangle.X, rectangle.Y, rectangle.Width, rectangle.Height);
+		}
+
+		/// <summary>
+		/// Draws a 1 pixel wide outline of a rectangle with the specified <paramref name="color"/>
+		/// </summary>
+		/// <param name="color">Color for the outline</param>
+		/// <param name="x">X co-ordinate</param>
+		/// <param name="y">Y co-ordinate</param>
+		/// <param name="width">Width of the rectangle</param>
+		/// <param name="height">Height of the rectangle</param>
+		public void DrawRectangle(Color color, float x, float y, float width, float height)
+		{
+			using (var pen = new Pen(color, 1f, Generator))
+				Handler.DrawRectangle(pen, x, y, width, height);
 		}
 
 		/// <summary>
@@ -944,7 +953,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Obsolete, use <see cref="AntiAlias"/> instead
 		/// </summary>
-		[Obsolete("Use AntiAlias instead")]
+		[Obsolete("Use AntiAlias instead"), CLSCompliant(false)]
 		public bool Antialias
 		{
 			get { return Handler.AntiAlias; }
@@ -958,6 +967,38 @@ namespace Eto.Drawing
 		{
 			get { return Handler.ImageInterpolation; }
 			set { Handler.ImageInterpolation = value; }
+		}
+
+		/// <summary>
+		/// Gets the dots per inch of the current graphics context. Usually 96 for windows and 72 for other systems
+		/// </summary>
+		public float DPI
+		{
+			get { return 72f / Handler.PointsPerPixel; }
+		}
+
+		/// <summary>
+		/// Gets the scale of points per pixel. Multiply by pixel size to get point value (e.g. to set font size in pixels).
+		/// </summary>
+		/// <remarks>
+		/// A value of 1.0 indicates that one point equals one pixel.
+		/// Windows is usually 0.75 (96 dpi) while other systems are usually 1.0 (e.g. linux, os x)
+		/// </remarks>
+		public float PointsPerPixel
+		{
+			get { return Handler.PointsPerPixel; }
+		}
+
+		/// <summary>
+		/// Gets the scale of points to pixels. Multiply by point value to get pixel size
+		/// </summary>
+		/// <remarks>
+		/// A value of 1.0 indicates that one pixel equals one point.
+		/// Windows is usually 1 1/3 (96 dpi) while other systems are usually 1.0 (e.g. linux, os x)
+		/// </remarks>
+		public float PixelsPerPoint
+		{
+			get { return 1f / Handler.PointsPerPixel; }
 		}
 
 		/// <summary>
@@ -1147,6 +1188,19 @@ namespace Eto.Drawing
 		}
 
 		#region Obsolete
+
+		/// <summary>
+		/// Initializes a new instance of the Graphics class to draw on the given <paramref name="image"/>
+		/// </summary>
+		/// <param name="generator">Generator to create this graphics context for</param>
+		/// <param name="image">Image to draw on using this graphics context</param>
+		[Obsolete("Use Graphics(Bitmap) instead")]
+		public Graphics(Generator generator, Bitmap image)
+			: base(generator, typeof(IGraphics), false)
+		{
+			Handler.CreateFromImage(image);
+			Initialize();
+		}
 
 		/// <summary>
 		/// Draws the <paramref name="icon"/> at the specified location and size. Obsolete. Use <see cref="DrawImage(Image, RectangleF)"/> instead.

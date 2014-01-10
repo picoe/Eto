@@ -49,6 +49,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Initializes a new instance of the Icon class with the contents of the specified <paramref name="stream"/>
 		/// </summary>
+		/// <param name="generator">Generator for this widget</param>
 		/// <param name="stream">Stream to load the content from</param>
 		public Icon (Stream stream, Generator generator = null) : base(generator, typeof(IIcon))
 		{
@@ -58,6 +59,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Intitializes a new instanc of the Icon class with the contents of the specified <paramref name="fileName"/>
 		/// </summary>
+		/// <param name="generator">Generator for this widget</param>
 		/// <param name="fileName">Name of the file to loat the content from</param>
 		public Icon (string fileName, Generator generator = null) : base(generator, typeof(IIcon))
 		{
@@ -69,6 +71,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="assembly">Assembly to load the resource from</param>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
+		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
 		public static Icon FromResource (Assembly assembly, string resourceName, Generator generator = null)
 		{
@@ -95,6 +98,7 @@ namespace Eto.Drawing
 		/// use the caller's assembly to load the resource from
 		/// </remarks>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>
+		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of an Icon loaded with the contents of the specified resource</returns>
 		public static Icon FromResource (string resourceName, Generator generator = null)
 		{

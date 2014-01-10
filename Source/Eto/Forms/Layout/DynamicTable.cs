@@ -14,31 +14,25 @@ namespace Eto.Forms
 	[ContentProperty("Items"), TypeConverter(typeof(DynamicRowConverter))]
 	public class DynamicRow
 	{
-
 		readonly List<DynamicItem> list;
 
 		readonly Collection<DynamicItem> items;
 		public DynamicTable Table { get; internal set; }
 
-
-
 		public Collection<DynamicItem> Items { get { return items; } }
 
 		public DynamicRow()
 		{
-
 			items = new Collection<DynamicItem>(list = new List<DynamicItem>());
 		}
 
 		public DynamicRow(IEnumerable<DynamicItem> items)
 		{
-
 			this.items = new Collection<DynamicItem>(list = new List<DynamicItem>(items));
 		}
 
 		public DynamicRow(IEnumerable<Control> controls, bool? xscale = null, bool? yscale = null)
 		{
-
 			items = new Collection<DynamicItem>(list = new List<DynamicItem>());
 			Add(controls, xscale, yscale);
 		}
@@ -70,8 +64,6 @@ namespace Eto.Forms
 
 		readonly Collection<DynamicRow> rows;
 		bool visible = true;
-
-
 
 		public Collection<DynamicRow> Rows { get { return rows; } }
 

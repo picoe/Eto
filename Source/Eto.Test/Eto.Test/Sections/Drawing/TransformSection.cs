@@ -6,32 +6,28 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class TransformSection : Scrollable
 	{
-		Image image = null;
+		Image image;
 		Size canvasSize = new Size(500, 221);
 		PointF rotatedLineCenter = new PointF(60, 60);
 		PointF rotatedTextCenter = new PointF(100, 100);
 		PointF imageScaleLocation = new PointF(240, 0);
-		Font font = null;
+		Font font;
 
-		public TransformSection() : this(null)
+		public TransformSection()
 		{
-		}
-
-		public TransformSection(Generator generator) : base(generator)
-		{
-			image = TestIcons.TestIcon(Generator);
-			font = Fonts.Sans(10, generator: Generator);
+			image = TestIcons.TestIcon();
+			font = Fonts.Sans(10);
 
 			var layout = new DynamicLayout();
 
-			var drawable = new Drawable(Generator) { Size = canvasSize };
+			var drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
 				pe.Graphics.FillRectangle(Brushes.Black(Generator), pe.ClipRectangle);
 				MatrixTests(pe.Graphics);
 			};
 			layout.AddRow(new Label { Text = "Matrix" }, drawable);
 
-			drawable = new Drawable(Generator) { Size = canvasSize };
+			drawable = new Drawable { Size = canvasSize };
 			drawable.Paint += (sender, pe) => {
 				pe.Graphics.FillRectangle(Brushes.Black(Generator), pe.ClipRectangle);
 				DirectTests(pe.Graphics);
@@ -118,7 +114,7 @@ namespace Eto.Test.Sections.Drawing
 				m.Scale(0.4f);
 				m.Rotate(90);
 				g.MultiplyTransform(m);
-				PixelOffsetSection.Draw(g, Generator, drawImages: false); // TODO: fix drawImages
+				PixelOffsetSection.Draw(g);
 				g.RestoreTransform();
 			}
 		}
@@ -182,7 +178,7 @@ namespace Eto.Test.Sections.Drawing
 			g.TranslateTransform(480, 20);
 			g.ScaleTransform(0.4f);
 			g.RotateTransform(90);
-			PixelOffsetSection.Draw(g, Generator, drawImages: false); // TODO: fix drawImages
+			PixelOffsetSection.Draw(g);
 			g.RestoreTransform();
 		}
 

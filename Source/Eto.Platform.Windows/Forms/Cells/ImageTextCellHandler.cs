@@ -88,7 +88,7 @@ namespace Eto.Platform.Windows.Forms.Controls
 			if (Widget.ImageBinding != null) {
 				var image = Widget.ImageBinding.GetValue (dataItem) as Image;
 				if (image != null) {
-					var imageHandler = image.Handler as IWindowsImage;
+					var imageHandler = image.Handler as IWindowsImageSource;
 					if (imageHandler != null) {
 						obj[0] = imageHandler.GetImageWithSize (Math.Max (32, Control.PreferredSize.Height));
 					}

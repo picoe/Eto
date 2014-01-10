@@ -23,20 +23,14 @@ namespace Eto.Test.Sections.Drawing
 		}
 
 		public DrawLoopSection()
-			: this(null)
 		{
-		}
-
-		public DrawLoopSection(Generator generator)
-			: base(generator)
-		{
-			drawable = new Drawable(Generator)
+			drawable = new Drawable
 			{
 				Style = "direct",
 				BackgroundColor = Colors.Black
 			};
 			drawable.Paint += (sender, e) => renderer.DrawFrame(e.Graphics, drawable.Size);
-			renderer = new DirectDrawingRenderer(Generator);
+			renderer = new DirectDrawingRenderer();
 
 			var layout = new DynamicLayout(new Padding(10));
 			layout.AddSeparateRow(null, UseTexturesAndGradients(), UseCreateGraphics(), null);
@@ -164,9 +158,9 @@ namespace Eto.Test.Sections.Drawing
 		public Generator Generator { get; private set; }
 		public bool EraseBoxes { get; set; }
 
-		public DirectDrawingRenderer(Generator generator)
+		public DirectDrawingRenderer(Generator generator = null)
 		{
-			Generator = generator;
+			Generator = generator ?? Generator.Current;
 			texture = TestIcons.Textures(generator);
 			font = SystemFonts.Default(generator: generator);
 			textBrush = new SolidBrush(Colors.White, generator);

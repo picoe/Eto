@@ -7,7 +7,7 @@ using Eto.Platform.Wpf.Drawing;
 
 namespace Eto.Platform.Wpf.Forms.Controls
 {
-	public class TabPageHandler : WpfDockContainer<swc.TabItem, TabPage>, ITabPage
+	public class TabPageHandler : WpfPanel<swc.TabItem, TabPage>, ITabPage
 	{
 		Image image;
 		readonly swc.DockPanel content;

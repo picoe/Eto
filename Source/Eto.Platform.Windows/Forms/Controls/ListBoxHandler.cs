@@ -69,7 +69,7 @@ namespace Eto.Platform.Windows
 					var imageitem = item as IImageListItem;
 					if (imageitem != null && imageitem.Image != null)
 					{
-						var img = imageitem.Image.Handler as IWindowsImage;
+						var img = imageitem.Image.Handler as IWindowsImageSource;
 						if (img != null)
 							e.Graphics.DrawImage(img.GetImageWithSize(bounds.Height), bounds.Left, bounds.Top, bounds.Height, bounds.Height);
 						bounds.X += bounds.Height + 2;

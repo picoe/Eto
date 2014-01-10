@@ -19,6 +19,8 @@ namespace Eto.Test.Sections.Drawing
 				image = value;
 				if (image != null)
 					MinimumSize = image.Size;
+				if (Loaded)
+					Invalidate();
 			}
 		}
 
@@ -29,22 +31,19 @@ namespace Eto.Test.Sections.Drawing
 				e.Graphics.DrawImage(Image, PointF.Empty);
 		}
 
-		public DrawableImageView(Generator generator, Image image)
+		public DrawableImageView()
+		{
+		}
+
+		public DrawableImageView(Generator generator)
 			: base(generator)
 		{
-			Image = image;
 		}
 	}
 
 	public class BitmapSection : Scrollable
 	{
 		public BitmapSection()
-			: this(null)
-		{
-		}
-
-		public BitmapSection(Generator generator)
-			: base(generator)
 		{
 			var layout = new DynamicLayout();
 
@@ -68,50 +67,50 @@ namespace Eto.Test.Sections.Drawing
 
 		Control LoadFromStream()
 		{
-			var image = TestIcons.TestImage(Generator);
+			var image = TestIcons.TestImage();
 
-			return new DrawableImageView(Generator, image);
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CreateCustom32()
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb, Generator);
+			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgb);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics(image))
 			{
-				graphics.DrawLine(Pens.Blue(Generator), Point.Empty, new Point(image.Size));
-				graphics.DrawRectangle(Pens.Blue(Generator), new Rectangle(image.Size - 1));
+				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
+				graphics.DrawRectangle(Pens.Blue(), new Rectangle(image.Size - 1));
 			}
 
-			return new DrawableImageView(Generator, image);
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CreateCustom32Alpha()
 		{
-			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba, Generator);
+			var image = new Bitmap(100, 100, PixelFormat.Format32bppRgba);
 
 			// should always ensure .Dispose() is called when you are done with a Graphics object
 			using (var graphics = new Graphics(image))
 			{
-				graphics.DrawLine(Pens.Blue(Generator), Point.Empty, new Point(image.Size));
-				graphics.DrawRectangle(Pens.Black(Generator), new Rectangle(image.Size - 1));
+				graphics.DrawLine(Pens.Blue(), Point.Empty, new Point(image.Size));
+				graphics.DrawRectangle(Pens.Black(), new Rectangle(image.Size - 1));
 			}
-			return new DrawableImageView(Generator, image);
+			return new DrawableImageView { Image = image };
 		}
 
 		Control Cloning()
 		{
-			var image = TestIcons.TestImage(Generator);
+			var image = TestIcons.TestImage();
 			image = image.Clone();
-			return new DrawableImageView(Generator, image);
+			return new DrawableImageView { Image = image };
 		}
 
 		Control CloningRectangle()
 		{
-			var image = TestIcons.TestImage(Generator);
+			var image = TestIcons.TestImage();
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
-			return new DrawableImageView(Generator, image);
+			return new DrawableImageView { Image = image };
 		}
 	}
 }

@@ -4,9 +4,9 @@ using Eto.Drawing;
 
 namespace Eto.Platform.GtkSharp
 {
-	public abstract class GtkDockContainer<TControl, TWidget> : GtkContainer<TControl, TWidget>
+	public abstract class GtkPanel<TControl, TWidget> : GtkContainer<TControl, TWidget>
 		where TControl: Gtk.Widget
-		where TWidget: Container
+		where TWidget: Panel
 	{
 		readonly Gtk.Alignment alignment;
 		Control content;
@@ -16,10 +16,10 @@ namespace Eto.Platform.GtkSharp
 			get { return Control; }
 		}
 
-		protected GtkDockContainer()
+		protected GtkPanel()
 		{
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
-			this.Padding = DockContainer.DefaultPadding;
+			this.Padding = Panel.DefaultPadding;
 		}
 
 		protected override void Initialize()

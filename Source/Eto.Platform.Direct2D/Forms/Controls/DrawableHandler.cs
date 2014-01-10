@@ -14,6 +14,19 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 	{
 		Graphics graphics;
 		GraphicsHandler graphicsHandler;
+		SolidBrush backgroundColor;
+		Scrollable scrollable;
+
+		public override Color BackgroundColor
+		{
+			get { return backgroundColor != null ? backgroundColor.Color : base.BackgroundColor; }
+			set
+			{
+				backgroundColor = value.A > 0 ? new SolidBrush(value, Generator) : null;
+				if (Widget.Loaded)
+					Invalidate();
+			}
+		}
 
 		protected override void Initialize()
 		{
@@ -25,6 +38,12 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 				graphics = new Graphics(Generator, new GraphicsHandler(this));
 				graphicsHandler = (GraphicsHandler)graphics.Handler;
 			};
+		}
+
+		public override void OnLoadComplete(EventArgs e)
+		{
+			base.OnLoadComplete(e);
+			scrollable = Widget.FindParent<Scrollable>();
 		}
 
 		public override Graphics CreateGraphics()
@@ -49,9 +68,18 @@ namespace Eto.Platform.Direct2D.Forms.Controls
 		{
 			if (graphics == null)
 				return;
-			graphicsHandler.BeginDrawing();
-			Widget.OnPaint(new PaintEventArgs(graphics, e.ClipRectangle.ToEto()));
-			graphicsHandler.EndDrawing();
+			var clipRect = e.ClipRectangle.ToEto();
+			graphicsHandler.BeginDrawing(clipRect);
+
+			// clear to control's background color
+			if (backgroundColor == null)
+				backgroundColor = new SolidBrush(base.BackgroundColor, Generator);
+			graphics.Clear(backgroundColor);
+
+			// perform user painting
+			Widget.OnPaint(new PaintEventArgs(graphics, clipRect));
+
+			graphicsHandler.EndDrawing(true);
 		}
 	}
 }

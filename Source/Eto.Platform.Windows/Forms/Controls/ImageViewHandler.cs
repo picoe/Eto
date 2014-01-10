@@ -35,7 +35,7 @@ namespace Eto.Platform.Windows.Forms
 		void SetImage ()
 		{
 			if (image != null) {
-				var handler = image.Handler as IWindowsImage;
+				var handler = image.Handler as IWindowsImageSource;
 				Control.Image = handler != null ? handler.GetImageWithSize(null) : null;
 			}
 			else

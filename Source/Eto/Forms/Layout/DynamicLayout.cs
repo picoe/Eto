@@ -91,14 +91,14 @@ namespace Eto.Forms
 			currentItem = topTable;
 		}
 
-		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
-		public DynamicLayout(DockContainer container, Size? spacing)
+		[Obsolete("Add the DynamicLayout to the container using its Panel.Content property")]
+		public DynamicLayout(Panel container, Size? spacing)
 			: this(container, null, spacing)
 		{
 		}
 
-		[Obsolete("Add the DynamicLayout to the container using its DockContainer.Content property")]
-		public DynamicLayout(DockContainer container, Padding? padding = null, Size? spacing = null)
+		[Obsolete("Add the DynamicLayout to the container using its Panel.Content property")]
+		public DynamicLayout(Panel container, Padding? padding = null, Size? spacing = null)
 			: this(padding, spacing, container == null ? null : container.Generator)
 		{
 			if (container != null)

@@ -37,12 +37,7 @@ namespace Eto.Test.Sections.Drawing
 			}
 		}
 
-		public GraphicsPathSection() : this(null)
-		{
-		}
-
-		public GraphicsPathSection(Generator generator)
-			: base(generator)
+		public GraphicsPathSection()
 		{
 			StartFigures = true;
 			PenThickness = 1;
@@ -51,7 +46,7 @@ namespace Eto.Test.Sections.Drawing
 
 			layout.AddSeparateRow(null, StartFiguresControl(), CloseFiguresControl(), ConnectPathControl(), null);
 			layout.AddSeparateRow(null, PenThicknessControl(), PenJoinControl(), PenCapControl(), null);
-			layout.AddSeparateRow(null, Bounds(), CurrentPoint(), null);
+			layout.AddSeparateRow(null, ShowBounds(), CurrentPoint(), null);
 			layout.BeginVertical();
 			layout.AddRow(new Label { Text = "Draw Line Path" }, DrawLinePath());
 			layout.AddRow(new Label { Text = "Fill Line Path" }, FillLinePath());
@@ -88,7 +83,7 @@ namespace Eto.Test.Sections.Drawing
 			control.ValueBinding.Bind(this, r => r.PenThickness, (r,val) => { r.PenThickness = (float)val; Refresh(); });
 
 			var layout = new DynamicLayout(Padding.Empty);
-			layout.AddRow(new Label(Generator) { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
+			layout.AddRow(new Label { Text = "Thickness:", VerticalAlign = VerticalAlign.Middle }, control);
 			return layout;
 		}
 
@@ -106,7 +101,7 @@ namespace Eto.Test.Sections.Drawing
 			return control;
 		}
 
-		Control Bounds()
+		Control ShowBounds()
 		{
 			var control = new Label();			
 			PathChanged += path => control.Text = string.Format("Bounds: {0}", path.Bounds);
@@ -131,7 +126,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control DrawLinePath()
 		{
-			var control = new Drawable(Generator) { Size = new Size(550, 200), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
 			control.Paint += (sender, e) => 
 			{
 				var pen = new Pen(Colors.White, PenThickness, Generator);
@@ -144,7 +139,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control FillLinePath()
 		{
-			var control = new Drawable(Generator) { Size = new Size(550, 200), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(550, 200), BackgroundColor = Colors.Black };
 			control.Paint += (sender, e) => e.Graphics.FillPath(Brushes.White(Generator), Path);
 			return control;
 		}

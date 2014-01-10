@@ -61,9 +61,9 @@ Namespaces
 Currently supported targets
 ---------------------------
 
-* OS X: MonoMac and Xamarin.Mac
-* Linux: GTK# 2 and 3
-* Windows: Windows Forms and WPF
+* OS X: MonoMac or Xamarin.Mac
+* Linux: GTK# 2 or 3
+* Windows: Windows Forms (using GDI or Direct2D) or WPF
 	
 Under development
 -----------------

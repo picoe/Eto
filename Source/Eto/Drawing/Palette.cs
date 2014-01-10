@@ -32,7 +32,7 @@ namespace Eto.Drawing
 		/// <summary>
 		/// Obsolete. Do not use.
 		/// </summary>
-		[Obsolete("Use Color.ToArgb() instead")]
+		[Obsolete("Use Color.ToArgb() instead"), CLSCompliant(false)]
 		public static UInt32 GenerateRGBColor(Color c)
 		{
 			return (((uint)(c.A * 255) << 24) + ((uint)(c.R * 255) << 16) + ((uint)(c.G * 255) << 8) + (uint)(c.B * 255));

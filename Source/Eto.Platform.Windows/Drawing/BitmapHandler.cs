@@ -8,14 +8,20 @@ using ImageManipulation;
 namespace Eto.Platform.Windows.Drawing
 {
 	/// <summary>
+	/// Interface to get an image representation with the specified size
+	/// </summary>
+	public interface IWindowsImageSource
+	{
+		SD.Image GetImageWithSize(int? size);
+	}
+
+	/// <summary>
 	/// Interface for all windows images
 	/// </summary>
 	/// <copyright>(c) 2012-2013 by Curtis Wensley</copyright>
 	/// <license type="BSD-3">See LICENSE for full terms</license>
-	public interface IWindowsImage
+	public interface IWindowsImage : IWindowsImageSource
 	{
-		SD.Image GetImageWithSize (int? size);
-
 		void DrawImage (GraphicsHandler graphics, RectangleF source, RectangleF destination);
 
 		void DrawImage (GraphicsHandler graphics, float x, float y);

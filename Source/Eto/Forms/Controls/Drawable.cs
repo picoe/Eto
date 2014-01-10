@@ -3,7 +3,7 @@ using Eto.Drawing;
 
 namespace Eto.Forms
 {
-	public partial interface IDrawable : IDockContainer
+	public partial interface IDrawable : IPanel
 	{
 		bool SupportsCreateGraphics { get; }
 
@@ -32,6 +32,11 @@ namespace Eto.Forms
 			get { return graphics; }
 		}
 
+		public Generator Generator
+		{
+			get { return graphics.Generator; }
+		}
+
 		public Rectangle ClipRectangle
 		{
 			get { return clipRectangle; }
@@ -41,7 +46,7 @@ namespace Eto.Forms
 	[Obsolete("Use EventHandler<PaintEventArgs> instead")]
 	public delegate void PaintEventHandler(object sender, PaintEventArgs e);
 
-	public partial class Drawable : DockContainer
+	public partial class Drawable : Panel
 	{
 		new IDrawable Handler { get { return (IDrawable)base.Handler; } }
 

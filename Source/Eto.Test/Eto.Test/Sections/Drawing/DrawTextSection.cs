@@ -7,12 +7,7 @@ namespace Eto.Test.Sections.Drawing
 {
 	public class DrawTextSection : Scrollable
 	{
-		public DrawTextSection(): this(null)
-		{
-		}
-
-		public DrawTextSection(Generator generator)
-			: base(generator)
+		public DrawTextSection()
 		{
 			var layout = new DynamicLayout();
 
@@ -28,7 +23,7 @@ namespace Eto.Test.Sections.Drawing
 
 		Control Default()
 		{
-			var control = new Drawable(Generator) { Size = new Size(400, 500), BackgroundColor = Colors.Black };
+			var control = new Drawable { Size = new Size(400, 500), BackgroundColor = Colors.Black };
 			control.Paint += (sender, e) => DrawFrame(e.Graphics);
 			return control;
 		}

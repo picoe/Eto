@@ -99,7 +99,7 @@ namespace Eto.Platform.Mac.Forms
 		}
 	}
 
-	public abstract class MacWindow<TControl, TWidget> : MacDockContainer<TControl, TWidget>, IWindow, IMacContainer, IMacWindow
+	public abstract class MacWindow<TControl, TWidget> : MacPanel<TControl, TWidget>, IWindow, IMacContainer, IMacWindow
 		where TControl: MyWindow
 		where TWidget: Window
 	{

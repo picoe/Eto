@@ -103,7 +103,7 @@ namespace Eto.Forms
 			set { Handler.ShowInTaskbar = value; }
 		}
 
-		[Obsolete("Use Topmost")]
+		[Obsolete("Use Topmost"), CLSCompliant(false)]
 		public bool TopMost { get { return Topmost; } set { Topmost = value; } }
 
 		public bool Topmost

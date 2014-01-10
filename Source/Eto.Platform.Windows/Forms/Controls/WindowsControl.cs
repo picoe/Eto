@@ -555,7 +555,7 @@ namespace Eto.Platform.Windows
 			set
 			{
 				font = value;
-				Control.Font = font != null ? font.ControlObject as sd.Font : null;
+				Control.Font = font.ToSD();
 			}
 		}
 

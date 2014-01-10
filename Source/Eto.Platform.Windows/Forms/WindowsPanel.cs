@@ -6,16 +6,16 @@ using Eto.Drawing;
 
 namespace Eto.Platform.Windows
 {
-	public abstract class WindowsDockContainer<TControl, TWidget> : WindowsContainer<TControl, TWidget>, IDockContainer
+	public abstract class WindowsPanel<TControl, TWidget> : WindowsContainer<TControl, TWidget>, IPanel
 		where TControl : swf.Control
-		where TWidget : DockContainer
+		where TWidget : Panel
 	{
 		Control content;
 
 		protected override void Initialize()
 		{
 			base.Initialize();
-			Padding = DockContainer.DefaultPadding;
+			Padding = Panel.DefaultPadding;
 			ContainerContentControl.SuspendLayout();
 		}
 

@@ -4,14 +4,14 @@ using System.Collections.ObjectModel;
 
 namespace Eto.Forms
 {
-	public interface ITabPage : IDockContainer
+	public interface ITabPage : IPanel
 	{
 		string Text { get; set; }
 
 		Image Image { get; set; }
 	}
 
-	public class TabPage : DockContainer, IImageListItem
+	public class TabPage : Panel, IImageListItem
 	{
 		new ITabPage Handler { get { return (ITabPage)base.Handler; } }
 		

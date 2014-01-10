@@ -126,7 +126,7 @@ namespace Eto
 		/// }
 		/// ]]></code>
 		/// </example>
-		/// <typeparam name="E">Type of <see cref="EventArgs"/> for the event</typeparam>
+		/// <typeparam name="TArgs">Type of <see cref="EventArgs"/> for the event</typeparam>
 		/// <param name="eventHandler">Event handler to wire up</param>
 		/// <param name="unregister">Delegate to unregister the event handler</param>
 		/// <returns>Event handler to attach to the long lived object</returns>

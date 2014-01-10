@@ -12,7 +12,7 @@ using Eto.Platform.Mac.Forms;
 
 namespace Eto.Platform.iOS.Forms.Controls
 {
-	public class DrawableHandler : MacDockContainer<DrawableHandler.EtoView, Drawable>, IDrawable
+	public class DrawableHandler : MacPanel<DrawableHandler.EtoView, Drawable>, IDrawable
 	{
 		/*
 		[Register("FastLayer")]

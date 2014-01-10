@@ -152,7 +152,15 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void Transform(IMatrix matrix)
 		{
-			transform = matrix != null ? matrix.Clone() : null;
+			if (matrix != null)
+			{
+				if (transform != null)
+					transform.Prepend(matrix);
+				else
+					transform = matrix.Clone();
+			}
+			else
+				transform = null;
 			control = null;
 		}
 
@@ -187,32 +195,10 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public void AddArc(float x, float y, float width, float height, float startAngle, float sweepAngle)
 		{
-			// degrees to radians conversion
-			float startRadians = startAngle * (float)Math.PI / 180.0f;
-			float sweepRadians = sweepAngle * (float)Math.PI / 180.0f;
-
-			// x and y radius
-			float dx = width / 2;
-			float dy = height / 2;
-
-			// determine the start point 
-			float xs = x + dx + ((float)Math.Cos(startRadians) * dx);
-			float ys = y + dy + ((float)Math.Sin(startRadians) * dy);
-
-			// determine the end point 
-			float xe = x + dx + ((float)Math.Cos(startRadians + sweepRadians) * dx);
-			float ye = y + dy + ((float)Math.Sin(startRadians + sweepRadians) * dy);
-
-			bool isLargeArc = Math.Abs(sweepAngle) > 180;
-			bool isClockwise = sweepAngle >= 0 && Math.Abs(sweepAngle) < 360;
-			ConnectTo(new PointF(xs, ys));
-			Sink.AddArc(new sd.ArcSegment
-			{
-				Point = new s.Vector2(xe, ye),
-				Size = new s.Size2F(dx, dy),
-				SweepDirection = isClockwise ? sd.SweepDirection.Clockwise : sd.SweepDirection.CounterClockwise,
-				ArcSize = isLargeArc ? sd.ArcSize.Large : sd.ArcSize.Small
-			});
+			PointF start;
+			var arc = GraphicsHandler.CreateArc(x, y, width, height, startAngle, sweepAngle, out start);
+			ConnectTo(start);
+			Sink.AddArc(arc);
 		}
 
 		public void AddEllipse(float x, float y, float width, float height)

@@ -20,7 +20,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>bin\Debug</OutputPath>
+    <OutputPath>..\..\BuildOutput\Android\Debug</OutputPath>
     <DefineConstants>DEBUG;</DefineConstants>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
@@ -29,7 +29,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>full</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>bin\Release</OutputPath>
+    <OutputPath>..\..\BuildOutput\Android\Release</OutputPath>
     <WarningLevel>4</WarningLevel>
     <ConsolePause>false</ConsolePause>
     <AndroidUseSharedRuntime>false</AndroidUseSharedRuntime>
@@ -90,7 +90,6 @@
     <Compile Include="Forms\AndroidWindow.cs" />
     <Compile Include="Conversions.cs" />
     <Compile Include="Forms\AndroidContainer.cs" />
-    <Compile Include="Forms\AndroidDockContainer.cs" />
     <Compile Include="Forms\AndroidControl.cs" />
     <Compile Include="Forms\AndroidExtensions.cs" />
     <Compile Include="Forms\FormHandler.cs" />
@@ -99,6 +98,7 @@
     <Compile Include="Forms\ApplicationHandler.cs" />
     <Compile Include="Forms\TableLayoutHandler.cs" />
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\AndroidPanel.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\AboutResources.txt" />

@@ -25,6 +25,8 @@ namespace Eto.Platform.Android.Drawing
 		{
 		}
 
+		public float PointsPerPixel { get { return 1f; } } // TODO
+
 		public PixelOffsetMode PixelOffsetMode { get; set; } // TODO
 
 		public void CreateFromImage(Bitmap image)

@@ -10,7 +10,7 @@ using MonoMac.AppKit;
 
 namespace Eto.Platform.Mac.Forms.Controls
 {
-	public class ScrollableHandler : MacDockContainer<NSScrollView, Scrollable>, IScrollable
+	public class ScrollableHandler : MacPanel<NSScrollView, Scrollable>, IScrollable
 	{
 		bool expandContentWidth = true;
 		bool expandContentHeight = true;

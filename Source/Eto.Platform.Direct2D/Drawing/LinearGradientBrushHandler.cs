@@ -12,6 +12,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			public PointF EndPoint { get; set; }
 			public Color StartColor { get; set; }
 			public Color EndColor { get; set; }
+			public GradientWrapMode WrapMode { get; set; }
 
 			protected override sd.Brush Create(sd.RenderTarget target)
 			{
@@ -25,7 +26,7 @@ namespace Eto.Platform.Direct2D.Drawing
 					new sd.GradientStopCollection(GraphicsHandler.CurrentRenderTarget, new[] {
 					new sd.GradientStop { Color = StartColor.ToDx(), Position = 0f }, 
 					new sd.GradientStop { Color = EndColor.ToDx(), Position = 1f }
-				})
+				}, WrapMode == GradientWrapMode.Reflect ? sd.ExtendMode.Mirror : sd.ExtendMode.Wrap)
 				);
 			}
 		}
@@ -70,11 +71,15 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public GradientWrapMode GetGradientWrap(LinearGradientBrush widget)
 		{
-			return GradientWrapMode.Reflect;
+			var brush = (LinearBrushData)widget.ControlObject;
+			return brush.WrapMode;
 		}
 
 		public void SetGradientWrap(LinearGradientBrush widget, GradientWrapMode gradientWrap)
 		{
+			var brush = (LinearBrushData)widget.ControlObject;
+			brush.WrapMode = gradientWrap;
+			brush.Reset();
 		}
 	}
 }

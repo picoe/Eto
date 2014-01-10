@@ -147,6 +147,7 @@ namespace Eto.Drawing
 		/// </summary>
 		/// <param name="resourceName">Name of the resource in the caller's assembly to load</param>
 		/// <param name="assembly">Assembly to load the resource from, or null to use the caller's assembly</param>
+		/// <param name="generator">Generator for this widget</param>
 		/// <returns>A new instance of a Bitmap loaded from the specified resource</returns>
 		public static Bitmap FromResource (string resourceName, Assembly assembly = null, Generator generator = null)
 		{

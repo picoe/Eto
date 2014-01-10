@@ -266,9 +266,9 @@
     <Compile Include="DllMap.cs" />
     <Compile Include="Forms\Controls\WebViewHandler.cs" />
     <Compile Include="EtoWebView.cs" />
-    <Compile Include="Forms\GtkDockContainer.cs" />
     <Compile Include="Forms\Controls\SearchBoxHandler.cs" />
     <Compile Include="Forms\Controls\SpinnerHandler.cs" />
+    <Compile Include="Forms\GtkPanel.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
   <PropertyGroup>
