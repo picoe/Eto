@@ -19,12 +19,12 @@ namespace Eto.Platform.Direct2D.Drawing
 
 		public override uint TranslateArgbToData(uint argb)
 		{
-			return (argb & 0xFFFF) << 8 | (argb & 0xFF000000) >> 16 | (argb & 0xFF000000);
+			return argb;
 		}
 
 		public override uint TranslateDataToArgb(uint bitmapData)
 		{
-			return (bitmapData & 0xFFFF00) >> 8 | (bitmapData & 0xFF) << 16 | (bitmapData & 0xFF000000);
+			return bitmapData;
 		}
 
 		protected override void Dispose(bool disposing)
