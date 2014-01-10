@@ -10,7 +10,7 @@ namespace Eto
 	/// and verifies that all objects created in that 
 	/// block were created using that generator.
 	/// </summary>
-	internal class GeneratorContext : IDisposable
+	public class GeneratorContext : IDisposable
 	{
 		Generator previous;
 		Generator previousValidate;
