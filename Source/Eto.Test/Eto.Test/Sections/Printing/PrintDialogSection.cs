@@ -89,7 +89,7 @@ namespace Eto.Test.Sections.Printing
 		{
 			var document = new PrintDocument();
 			document.PrintSettings = settings;
-			var font = Fonts.Serif(16);
+			var font = Fonts.Serif(16, generator: document.Generator);
 			var printTime = DateTime.Now;
 			document.PrintPage += (sender, e) => {
 				Size pageSize = Size.Round(e.PageSize);
@@ -97,7 +97,7 @@ namespace Eto.Test.Sections.Printing
 				// draw a border around the printable area
 				var rect = new Rectangle(pageSize);
 				rect.Inflate(-1, -1);
-				e.Graphics.DrawRectangle(Pens.Silver(), rect);
+				e.Graphics.DrawRectangle(Pens.Silver(e.Generator), rect);
 
 				// draw title
 				e.Graphics.DrawText(font, Colors.Black, new Point(50, 20), document.Name);
@@ -116,12 +116,12 @@ namespace Eto.Test.Sections.Printing
 				switch (e.CurrentPage)
 				{
 					case 0:
-						e.Graphics.DrawRectangle(Pens.Blue(), new Rectangle(50, 50, 100, 100));
-						e.Graphics.DrawRectangle(Pens.Green(), new Rectangle(new Point(pageSize) - new Size(150, 150), new Size(100, 100)));
+						e.Graphics.DrawRectangle(Pens.Blue(e.Generator), new Rectangle(50, 50, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Green(e.Generator), new Rectangle(new Point(pageSize) - new Size(150, 150), new Size(100, 100)));
 						break;
 					case 1:
-						e.Graphics.DrawRectangle(Pens.Blue(), new Rectangle(pageSize.Width - 150, 50, 100, 100));
-						e.Graphics.DrawRectangle(Pens.Green(), new Rectangle(50, pageSize.Height - 150, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Blue(e.Generator), new Rectangle(pageSize.Width - 150, 50, 100, 100));
+						e.Graphics.DrawRectangle(Pens.Green(e.Generator), new Rectangle(50, pageSize.Height - 150, 100, 100));
 						break;
 				}
 			};
