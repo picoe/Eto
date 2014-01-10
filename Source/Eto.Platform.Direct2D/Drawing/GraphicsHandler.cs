@@ -239,7 +239,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			using (var textLayout = GetTextLayout(font, text))
 			{
 				var metrics = textLayout.Metrics;
-				return new SizeF(metrics.Width, metrics.Height);
+				return new SizeF(metrics.WidthIncludingTrailingWhitespace, metrics.Height);
 			}
 		}
 
