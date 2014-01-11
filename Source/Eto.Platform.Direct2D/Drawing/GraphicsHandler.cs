@@ -19,7 +19,7 @@ namespace Eto.Platform.Direct2D.Drawing
 	public class GraphicsHandler : WidgetHandler<sd.RenderTarget, Graphics>, IGraphics
 	{
 		bool hasBegan;
-		bool disposeControl;
+		bool disposeControl = true;
 		Bitmap image;
 		float offset = 0.5f;
 		float fillOffset;
@@ -239,7 +239,7 @@ namespace Eto.Platform.Direct2D.Drawing
 			using (var textLayout = GetTextLayout(font, text))
 			{
 				var metrics = textLayout.Metrics;
-				return new SizeF(metrics.Width, metrics.Height);
+				return new SizeF(metrics.WidthIncludingTrailingWhitespace, metrics.Height);
 			}
 		}
 

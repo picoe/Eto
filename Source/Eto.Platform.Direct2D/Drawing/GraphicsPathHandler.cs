@@ -51,7 +51,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		}
 
 		sd.GeometrySink sink;
-		sd.GeometrySink Sink
+		public sd.GeometrySink Sink
 		{
 			get
 			{

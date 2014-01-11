@@ -105,14 +105,7 @@ namespace Eto.Platform.Direct2D.Drawing
 
         public void Invert()
         {
-            var m1 = s.Matrix3x2.Identity;
-            var m2 = this.Control;
-            s.Matrix3x2 result;
-            s.Matrix3x2.Divide(
-                ref m1, 
-                ref m2,
-                out result);
-            this.Control = result;
+			this.Control = s.Matrix3x2.Invert(this.Control);
         }
 
 		public PointF TransformPoint(Point p)
