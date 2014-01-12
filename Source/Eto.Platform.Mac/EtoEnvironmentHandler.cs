@@ -41,15 +41,6 @@ namespace Eto.Platform.Mac
 				return NSSearchPath.GetDirectories (dir, domain).FirstOrDefault ();
 			}
 		}
-
-		public OperatingSystemPlatform GetPlatform()
-		{
-			return new OperatingSystemPlatform
-			{
-				IsMac = true,
-				IsUnix = true,				
-			};
-		}
 	}
 }
 

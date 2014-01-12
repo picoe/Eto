@@ -45,8 +45,6 @@ namespace Eto
 		/// <param name="folder">Special folder to retrieve the path for</param>
 		/// <returns>Path of the specified folder</returns>
 		string GetFolderPath(EtoSpecialFolder folder);
-
-		OperatingSystemPlatform GetPlatform();
 	}
 	
 	/// <summary>
@@ -63,10 +61,7 @@ namespace Eto
 			get
 			{
 				if (platform == null)
-				{
-					var handler = Generator.Current.CreateShared<IEtoEnvironment>();
-					platform = handler.GetPlatform();
-				}					
+					platform = new OperatingSystemPlatform ();
 				return platform;
 			}
 		}
