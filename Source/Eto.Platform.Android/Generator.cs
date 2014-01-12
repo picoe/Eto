@@ -9,7 +9,7 @@ namespace Eto.Platform.Android
 {
 	public class Generator : Eto.Generator
 	{
-		public override string ID { get { return "android"; } }
+		public override string ID { get { return Generators.Android; } }
 
 		public Generator()
 		{

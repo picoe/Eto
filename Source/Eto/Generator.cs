@@ -174,6 +174,11 @@ namespace Eto
 			get { return ID == Generators.Ios; }
 		}
 
+		public virtual bool IsAndroid
+		{
+			get { return ID == Generators.Android; }
+		}
+
 		/// <summary>
 		/// Initializes a new instance of the Generator class
 		/// </summary>

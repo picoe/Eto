@@ -85,5 +85,15 @@ namespace Eto
 		/// Assembly name of the WPF platform
 		/// </summary>
 		public const string WpfAssembly = "Eto.Platform.Wpf.Generator, Eto.Platform.Wpf";
+		
+		/// <summary>
+		/// ID of the Android platform
+		/// </summary>
+		public const string Android = "android";
+
+		/// <summary>
+		/// Assembly name of the Android platform
+		/// </summary>
+		public const string AndroidAssembly = "Eto.Platform.Android.Generator, Eto.Platform.Android";
 	}
 }
