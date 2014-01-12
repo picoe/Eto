@@ -110,7 +110,7 @@ namespace Eto.Platform.Android
 			//g.Add <ISystemIcons> (() => new SystemIconsHandler ());
 
 			// General
-			//g.Add<IEtoEnvironment>(() => new EtoEnvironmentHandler());
+			g.Add<IEtoEnvironment>(() => new EtoEnvironmentHandler());
 		}
 	}
 }

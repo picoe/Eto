@@ -52,6 +52,11 @@ namespace Eto.Platform.iOS.Drawing
 			Control = new UIImage(NSData.FromStream(stream));
 		}
 
+		internal void Create(UIImage image)
+		{
+			Control = image;
+		}
+
 		public void Create(int width, int height, PixelFormat pixelFormat)
 		{			
 			switch (pixelFormat)
