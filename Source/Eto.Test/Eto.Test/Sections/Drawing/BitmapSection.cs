@@ -60,6 +60,10 @@ namespace Eto.Test.Sections.Drawing
 				new Label { Text = "Clone rectangle" }, TableLayout.AutoSized(CloningRectangle(), centered: true),
 				null);
 
+			layout.AddRow(
+				new Label { Text = "Clone using tiles" }, TableLayout.AutoSized(CloneTiles(), centered: true),
+				null);
+
 			layout.Add(null);
 
 			Content = layout;
@@ -111,6 +115,25 @@ namespace Eto.Test.Sections.Drawing
 			var image = TestIcons.TestImage();
 			image = image.Clone(new Rectangle(32, 32, 64, 64));
 			return new DrawableImageView { Image = image };
+		}
+
+		Control CloneTiles()
+		{
+			// Creates a duplicate of the bitmap by cloning tiles of it
+			// and drawing them in the same location in the duplicate.
+			var image = TestIcons.TestImage();
+			var bitmap = new Bitmap(new Size(image.Size), PixelFormat.Format32bppRgba);
+			var tile = 64; // the test image is 128x128 so this produces 4 tiles.
+			using (var g = new Graphics(bitmap))
+			{
+				for (var x = 0; x < image.Width; x += tile)
+					for (var y = 0; y < image.Height; y += tile)
+					{
+						var clone = image.Clone(new Rectangle(x, y, tile, tile));
+						g.DrawImage(clone, x, y);
+					}
+			}
+			return new DrawableImageView { Image = bitmap };
 		}
 	}
 }
