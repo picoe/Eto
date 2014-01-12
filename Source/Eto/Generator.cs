@@ -239,20 +239,19 @@ namespace Eto
 #if MOBILE
 				detected = Generator.GetGenerator(Generators.IosAssembly, true);
 #elif DESKTOP
-				var platform = System.Environment.OSVersion.Platform;
-
-				if (platform == PlatformID.MacOSX) {
+			
+				if (EtoEnvironment.Platform.IsMac) {
 					detected = Generator.GetGenerator (Generators.XamMacAssembly, true);
 					if (detected == null)
 						detected = Generator.GetGenerator (Generators.MacAssembly, true);
 				}
-				else if (platform == PlatformID.Win32NT) {
+				else if (EtoEnvironment.Platform.IsWindows) {
 					detected = Generator.GetGenerator (Generators.WpfAssembly, true);
 					if (detected == null)
 						detected = Generator.GetGenerator (Generators.WinAssembly, true);
 				}
 
-				if (detected == null && platform == PlatformID.Unix)
+				if (detected == null && EtoEnvironment.Platform.IsUnix)
 					detected = Generator.GetGenerator (Generators.GtkAssembly, true);
 #endif
 				
