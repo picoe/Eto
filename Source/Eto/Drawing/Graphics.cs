@@ -274,6 +274,18 @@ namespace Eto.Drawing
 	}
 
 	/// <summary>
+	/// Currently supported by the iOS Graphics handler. Implements the 
+	/// UIKit pattern of creating a graphics that is automatically backed by a bitmap 
+	/// whose scale can be retina-aware. After drawing into the Graphics,
+	/// the image can be retrieved.
+	/// </summary>
+	public interface IGraphicsCreate
+	{
+		void Create(Size size, bool useMainScreenScale);
+		Bitmap GetImage();
+	}
+
+	/// <summary>
 	/// Graphics context object for drawing operations
 	/// </summary>
 	/// <remarks>
@@ -303,6 +315,23 @@ namespace Eto.Drawing
 		{
 			Handler.CreateFromImage(image);
 			Initialize();
+		}
+
+		/// <summary>
+		/// Constructs a Graphics with an underlying bitmap of the specified size 
+		/// (in device-independent pixels or "points" on iOS).
+		/// 
+		/// Currently supported on iOS only.
+		/// </summary>
+		/// <param name="size"></param>
+		/// <param name="useMainScreenScale">If true, uses the scale factor of the main screen. 
+		/// On iOS, this takes into account high-resolution retina displays.</param>
+		public Graphics(Size size, bool useMainScreenScale) : base(null, typeof(IGraphics), false)
+		{
+			if (Handler is IGraphicsCreate)
+				((IGraphicsCreate)Handler).Create(size, useMainScreenScale);
+			else
+				throw new InvalidOperationException("This constructor is not supported on this platform.");
 		}
 
 		/// <summary>
