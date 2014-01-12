@@ -34,6 +34,16 @@ namespace Eto.Platform.iOS
 			var path = manager.GetUrl(dir, domain, null, false, out error);
 			return path.Path;
 		}
+
+		public OperatingSystemPlatform GetPlatform()
+		{
+			return new OperatingSystemPlatform
+			{
+				IsUnix = true,
+				IsMono = true,
+				IsIos = true,
+			};
+		}
 	}
 }
 

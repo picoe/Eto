@@ -30,6 +30,14 @@ namespace Eto.Platform.Wpf
 				return Environment.GetFolderPath (Convert (folder));
 			}
 		}
+
+		public OperatingSystemPlatform GetPlatform()
+		{
+			return new OperatingSystemPlatform
+			{
+				IsWindows = true,
+			};
+		}
 	}
 }
 
