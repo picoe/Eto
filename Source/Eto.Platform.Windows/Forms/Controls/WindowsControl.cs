@@ -4,6 +4,8 @@ using swf = System.Windows.Forms;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.Windows.Drawing;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.Windows
 {
@@ -557,6 +559,11 @@ namespace Eto.Platform.Windows
 				font = value;
 				Control.Font = font.ToSD();
 			}
+		}
+
+		public IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
 		}
 
 		public virtual void MapPlatformCommand(string systemAction, Command command)

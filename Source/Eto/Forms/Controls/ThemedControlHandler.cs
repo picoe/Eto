@@ -1,5 +1,6 @@
 using System;
 using Eto.Drawing;
+using System.Collections.Generic;
 
 namespace Eto.Forms
 {
@@ -117,6 +118,11 @@ namespace Eto.Forms
 		public virtual PointF PointToScreen(PointF point)
 		{
 			return Control.PointToScreen(point);
+		}
+
+		public virtual IEnumerable<string> SupportedPlatformCommands
+		{
+			get { yield break; }
 		}
 
 		public virtual void MapPlatformCommand(string systemAction, Command action)

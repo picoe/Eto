@@ -6,6 +6,8 @@ using SD = System.Drawing;
 using MonoTouch.Foundation;
 using MonoTouch.UIKit;
 using Eto.Platform.Mac.Forms;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.iOS.Forms
 {
@@ -267,6 +269,11 @@ namespace Eto.Platform.iOS.Forms
 
 		public virtual void OnUnLoad(EventArgs e)
 		{
+		}
+
+		public IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
 		}
 
 		public void MapPlatformCommand(string systemAction, Command command)
