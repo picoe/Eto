@@ -1,5 +1,6 @@
 using System;
 using System.ComponentModel;
+using System.Linq;
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.GtkSharp.Drawing;
@@ -344,7 +345,7 @@ namespace Eto.Platform.GtkSharp
 				else
 				{
 					var windows = Gdk.Screen.Default.ToplevelWindows;
-					if (windows.Length == 1 && ReferenceEquals(windows[0], Control.GdkWindow))
+					if (windows.Count(r => r.IsViewable) == 1 && ReferenceEquals(windows.First(r => r.IsViewable), Control.GdkWindow))
 					{
 						Application.Instance.OnTerminating(args);
 						shouldQuit = !args.Cancel;
