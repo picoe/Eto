@@ -6,8 +6,10 @@ using Eto.Drawing;
 namespace Eto.Forms
 {
 	/// <summary>
-	/// Handler interface for <see cref="Grid"/>
+	/// Handler interface for the <see cref="Grid"/> control
 	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public interface IGrid : IControl
 	{
 		/// <summary>
@@ -63,30 +65,78 @@ namespace Eto.Forms
 		void UnselectAll();
 	}
 
+	/// <summary>
+	/// Event arguments for <see cref="Grid"/> events relating to a specific column
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public class GridColumnEventArgs : EventArgs
 	{
+		/// <summary>
+		/// Gets the column that originated the event
+		/// </summary>
+		/// <value>The column.</value>
 		public GridColumn Column { get; private set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridColumnEventArgs"/> class.
+		/// </summary>
+		/// <param name="column">Column that originated the event</param>
 		public GridColumnEventArgs(GridColumn column)
 		{
 			this.Column = column;
 		}
 	}
 
+	/// <summary>
+	/// Event arguments to format a cell in a <see cref="Grid"/>
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class GridCellFormatEventArgs : EventArgs
 	{
+		/// <summary>
+		/// Gets the column to format
+		/// </summary>
+		/// <value>The column to format</value>
 		public GridColumn Column { get; private set; }
 
+		/// <summary>
+		/// Gets the item that is associated with the row being formatted
+		/// </summary>
+		/// <value>The item.</value>
 		public object Item { get; private set; }
 
+		/// <summary>
+		/// Gets the row number in the data source
+		/// </summary>
+		/// <value>The row.</value>
 		public int Row { get; private set; }
 
+		/// <summary>
+		/// Gets or sets the font to use for the cell, or null to use the default font
+		/// </summary>
+		/// <value>The font.</value>
 		public abstract Font Font { get; set; }
 
+		/// <summary>
+		/// Gets or sets the background color for the cell
+		/// </summary>
+		/// <value>The color of the background.</value>
 		public abstract Color BackgroundColor { get; set; }
 
+		/// <summary>
+		/// Gets or sets the foreground color for the cell contents
+		/// </summary>
+		/// <value>The color of the foreground.</value>
 		public abstract Color ForegroundColor { get; set; }
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridCellFormatEventArgs"/> class.
+		/// </summary>
+		/// <param name="column">Column to format</param>
+		/// <param name="item">Item for the row being formatted</param>
+		/// <param name="row">Row number being formatted</param>
 		protected GridCellFormatEventArgs(GridColumn column, object item, int row)
 		{
 			this.Column = column;
@@ -95,82 +145,136 @@ namespace Eto.Forms
 		}
 	}
 
+	/// <summary>
+	/// Base grid control to display items in columns and rows
+	/// </summary>
+	/// <copyright>(c) 2014 by Curtis Wensley</copyright>
+	/// <license type="BSD-3">See LICENSE for full terms</license>
 	public abstract class Grid : Control
 	{
 		new IGrid Handler { get { return (IGrid)base.Handler; } }
 
+		/// <summary>
+		/// Gets the collection of columns to display in the grid
+		/// </summary>
+		/// <value>The column collection</value>
 		public GridColumnCollection Columns { get; private set; }
 
 		#region Events
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.CellEditing"/> event
+		/// </summary>
 		public const string CellEditingEvent = "Grid.CellEditingEvent";
 
+		/// <summary>
+		/// Occurs before a cell is being edited to allow canceling based on application logic
+		/// </summary>
 		public event EventHandler<GridViewCellArgs> CellEditing
 		{
 			add { Properties.AddHandlerEvent(CellEditingEvent, value); }
 			remove { Properties.RemoveEvent(CellEditingEvent, value); }
 		}
 
+		/// <summary>
+		/// Raises the <see cref="CellEditing"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public virtual void OnCellEditing(GridViewCellArgs e)
 		{
 			Properties.TriggerEvent(CellEditingEvent, this, e);
 		}
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.CellEdited"/> event
+		/// </summary>
 		public const string CellEditedEvent = "Grid.CellEditedEvent";
 
+		/// <summary>
+		/// Occurs after a cell has been edited
+		/// </summary>
 		public event EventHandler<GridViewCellArgs> CellEdited
 		{
 			add { Properties.AddHandlerEvent(CellEditedEvent, value); }
 			remove { Properties.RemoveEvent(CellEditedEvent, value); }
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Grid.CellEdited"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public virtual void OnCellEdited(GridViewCellArgs e)
 		{
 			Properties.TriggerEvent(CellEditedEvent, this, e);
 		}
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.SelectionChanged"/> event
+		/// </summary>
 		public const string SelectionChangedEvent = "Grid.SelectionChanged";
 
+		/// <summary>
+		/// Occurs when the user has changed the selection in the grid
+		/// </summary>
 		public event EventHandler<EventArgs> SelectionChanged
 		{
 			add { Properties.AddHandlerEvent(SelectionChangedEvent, value); }
 			remove { Properties.RemoveEvent(SelectionChangedEvent, value); }
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Grid.SelectionChanged"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public virtual void OnSelectionChanged(EventArgs e)
 		{
 			Properties.TriggerEvent(SelectionChangedEvent, this, e);
 		}
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.ColumnHeaderClick"/> event
+		/// </summary>
 		public const string ColumnHeaderClickEvent = "Grid.ColumnHeaderClickEvent";
 
+		/// <summary>
+		/// Occurs when the column header has been clicked by the user
+		/// </summary>
 		public event EventHandler<GridColumnEventArgs> ColumnHeaderClick
 		{
 			add { Properties.AddHandlerEvent(ColumnHeaderClickEvent, value); }
 			remove { Properties.RemoveEvent(ColumnHeaderClickEvent, value); }
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Grid.ColumnHeaderClick"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public virtual void OnColumnHeaderClick(GridColumnEventArgs e)
 		{
 			Properties.TriggerEvent(ColumnHeaderClickEvent, this, e);
 		}
 
+		/// <summary>
+		/// Event identifier for handlers when attaching the <see cref="Grid.CellFormatting"/> event
+		/// </summary>
 		public const string CellFormattingEvent = "Grid.CellFormattingEvent";
 
+		/// <summary>
+		/// Occurs when each cell is being formatted for font and color
+		/// </summary>
 		public event EventHandler<GridCellFormatEventArgs> CellFormatting
 		{
 			add { Properties.AddHandlerEvent(CellFormattingEvent, value); }
 			remove { Properties.RemoveEvent(CellFormattingEvent, value); }
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Grid.CellFormatting"/> event
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public virtual void OnCellFormatting(GridCellFormatEventArgs e)
 		{
 			Properties.TriggerEvent(CellFormattingEvent, this, e);
-		}
-
-		protected virtual GridViewCellArgs ViewToModel(GridViewCellArgs e)
-		{
-			return e;
 		}
 
 		#endregion
@@ -184,6 +288,12 @@ namespace Eto.Forms
 			EventLookup.Register<Grid>(c => c.OnColumnHeaderClick(null), Grid.ColumnHeaderClickEvent);
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Grid"/> class.
+		/// </summary>
+		/// <param name="generator">Generator to instantiate the handler with</param>
+		/// <param name="type">Type of handler to create</param>
+		/// <param name="initialize">If set to <c>true</c> initialize.</param>
 		protected Grid(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
@@ -222,6 +332,10 @@ namespace Eto.Forms
 			set { Handler.AllowMultipleSelection = value; }
 		}
 
+		/// <summary>
+		/// Gets an enumeration of the currently selected items
+		/// </summary>
+		/// <value>The selected items.</value>
 		public abstract IEnumerable<object> SelectedItems { get; }
 
 		/// <summary>

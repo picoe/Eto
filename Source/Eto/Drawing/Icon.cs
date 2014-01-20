@@ -94,7 +94,7 @@ namespace Eto.Drawing
 		/// Loads an icon from an embedded resource of the caller's assembly
 		/// </summary>
 		/// <remarks>
-		/// This is a shortcut for <see cref="FromResource(Assembly,string)"/> where it will
+		/// This is a shortcut for <see cref="FromResource(Assembly,string,Generator)"/> where it will
 		/// use the caller's assembly to load the resource from
 		/// </remarks>
 		/// <param name="resourceName">Fully qualified name of the resource to load</param>

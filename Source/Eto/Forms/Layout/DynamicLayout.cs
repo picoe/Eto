@@ -41,7 +41,7 @@ namespace Eto.Forms
 			set { topTable.Spacing = value; }
 		}
 
-		public Padding? DefaultPadding { get; set; }
+		public new Padding? DefaultPadding { get; set; }
 
 		public Size? DefaultSpacing { get; set; }
 

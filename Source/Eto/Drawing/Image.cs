@@ -90,8 +90,24 @@ namespace Eto.Drawing
 			get { return Handler.Size; }
 		}
 
+		/// <summary>
+		/// Gets the width of the image, in pixels.
+		/// </summary>
+		/// <remarks>
+		/// Use <see cref="Size"/> if you wish to get the width and height at the same time.
+		/// </remarks>
+		/// <value>The width of the image, in pixels</value>
+		/// <seealso cref="Size"/>
 		public int Width { get { return Size.Width; } }
 
+		/// <summary>
+		/// Gets the height of the image, in pixels.
+		/// </summary>
+		/// <remarks>
+		/// Use <see cref="Size"/> if you wish to get the width and height at the same time.
+		/// </remarks>
+		/// <value>The height of the image, in pixels</value>
+		/// <seealso cref="Size"/>
 		public int Height { get { return Size.Height; } }
 	}
 }

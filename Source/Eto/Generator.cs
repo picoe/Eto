@@ -149,31 +149,55 @@ namespace Eto
 		/// </remarks>
 		public abstract string ID { get; }
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is a mac based platform (MonoMac/XamMac)
+		/// </summary>
+		/// <value><c>true</c> if this generator is mac; otherwise, <c>false</c>.</value>
 		public virtual bool IsMac
 		{
 			get { return ID == Generators.Mac || ID == Generators.XamMac; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on Windows Forms
+		/// </summary>
+		/// <value><c>true</c> if this generator is window forms; otherwise, <c>false</c>.</value>
 		public virtual bool IsWinForms
 		{
 			get { return ID == Generators.Windows; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on WPF
+		/// </summary>
+		/// <value><c>true</c> if this generator is wpf; otherwise, <c>false</c>.</value>
 		public virtual bool IsWpf
 		{
 			get { return ID == Generators.Wpf; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on GTK# (2 or 3)
+		/// </summary>
+		/// <value><c>true</c> if this generator is gtk; otherwise, <c>false</c>.</value>
 		public virtual bool IsGtk
 		{
-			get { return ID == Generators.Gtk; }
+			get { return ID == Generators.Gtk || ID == Generators.Gtk3; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on Xamarin.iOS
+		/// </summary>
+		/// <value><c>true</c> if this generator is ios; otherwise, <c>false</c>.</value>
 		public virtual bool IsIos
 		{
 			get { return ID == Generators.Ios; }
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether this generator is based on Xamarin.Android.
+		/// </summary>
+		/// <value><c>true</c> if this generator is android; otherwise, <c>false</c>.</value>
 		public virtual bool IsAndroid
 		{
 			get { return ID == Generators.Android; }

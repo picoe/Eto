@@ -116,6 +116,9 @@ namespace Eto
 
 		static readonly object StyleChangedKey = new object();
 
+		/// <summary>
+		/// Occurs when the <see cref="InstanceWidget.Style"/> property has changed
+		/// </summary>
 		public event EventHandler<EventArgs> StyleChanged
 		{
 			add { Properties.AddEvent(StyleChangedKey, value); }

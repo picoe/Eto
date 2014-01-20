@@ -3,11 +3,31 @@ using System;
 
 namespace Eto
 {
+	/// <summary>
+	/// A storage for properties and events of a class
+	/// </summary>
+	/// <remarks>
+	/// This is used by <see cref="InstanceWidget"/> object to minimize the footprint of each instance.
+	/// For example, the <see cref="Forms.Control"/> class has around 20 events, each would take up to 4 bytes on a 32 bit 
+	/// system for a total overhead of 80 bytes per instance.
+	/// Most of the events won't be handled on most controls, so using a dictionary can dramatically reduce the size.
+	/// </remarks>
 	public class PropertyStore : Dictionary<object, object>
 	{
+		/// <summary>
+		/// Gets the parent widget that this property store is attached to
+		/// </summary>
+		/// <remarks>
+		/// This is used to attach/remove events
+		/// </remarks>
+		/// <value>The parent widget</value>
 		public InstanceWidget Parent { get; private set; }
 
-		public PropertyStore(InstanceWidget parent)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.PropertyStore"/> class.
+		/// </summary>
+		/// <param name="parent">Parent to attach the properties to</param>
+		internal PropertyStore(InstanceWidget parent)
 		{
 			this.Parent = parent;
 		}

@@ -20,6 +20,7 @@ namespace Eto.Forms
 		Size MinimumSize { get; set; }
 	}
 
+	#pragma warning disable 612, 618
 	[ContentProperty("Content")]
 	public class Panel : DockContainer
 	{
@@ -58,6 +59,7 @@ namespace Eto.Forms
 			}
 		}
 	}
+	#pragma warning restore 612, 618
 
 	[Obsolete("Use Panel instead")]
 	public abstract class DockContainer : Container
