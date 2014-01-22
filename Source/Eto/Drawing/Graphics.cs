@@ -967,7 +967,7 @@ namespace Eto.Drawing
 		/// <param name="font">Font to measure with</param>
 		/// <param name="text">Text string to measure</param>
 		/// <returns>Size representing the dimensions of the entire text would take to draw given the specified <paramref name="font"/></returns>
-		public SizeF MeasureString (Font font, string text)
+		public virtual SizeF MeasureString (Font font, string text)
 		{
 			if (string.IsNullOrEmpty(text)) return SizeF.Empty; // handle null explicitly
 			return Handler.MeasureString (font, text);
