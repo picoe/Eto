@@ -5,28 +5,64 @@ using System.Linq;
 
 namespace Eto.Forms
 {
+	/// <summary>
+	/// Handler interface for the <see cref="Container"/> control
+	/// </summary>
 	public interface IContainer : IControl
 	{
+		/// <summary>
+		/// Gets or sets the size for the client area of the control
+		/// </summary>
+		/// <remarks>
+		/// The client size differs from the <see cref="IControl.Size"/> in that it excludes the decorations of
+		/// the container, such as the title bar and border around a <see cref="Window"/>, or the title and line 
+		/// around a <see cref="GroupBox"/>.
+		/// </remarks>
+		/// <value>The size of the client area</value>
 		Size ClientSize { get; set; }
 
+		/// <summary>
+		/// Gets a value indicating whether PreLoad/Load/LoadComplete/Unload events are propegated to the children controls
+		/// </summary>
+		/// <remarks>
+		/// This is mainly used when you want to use Eto controls in your handler, such as with the <see cref="ThemedContainerHandler{TContainer,TWidget}"/>
+		/// </remarks>
+		/// <value><c>true</c> to recurse events to children; otherwise, <c>false</c>.</value>
 		bool RecurseToChildren { get; }
 	}
 
+	/// <summary>
+	/// Base class for controls that contain children controls
+	/// </summary>
 	public abstract class Container : Control
 	{
 		new IContainer Handler { get { return (IContainer)base.Handler; } }
 
+		/// <summary>
+		/// Gets or sets the size for the client area of the control
+		/// </summary>
+		/// <remarks>
+		/// The client size differs from the <see cref="Control.Size"/> in that it excludes the decorations of
+		/// the container, such as the title bar and border around a <see cref="Window"/>, or the title and line 
+		/// around a <see cref="GroupBox"/>.
+		/// </remarks>
+		/// <value>The size of the client area</value>
 		public Size ClientSize
 		{
 			get { return Handler.ClientSize; }
 			set { Handler.ClientSize = value; }
 		}
 
-		public abstract IEnumerable<Control> Controls
-		{
-			get;
-		}
+		/// <summary>
+		/// Gets an enumeration of controls that are directly contained by this container
+		/// </summary>
+		/// <value>The contained controls.</value>
+		public abstract IEnumerable<Control> Controls { get; }
 
+		/// <summary>
+		/// Gets an enumeration of all contained child controls, including controls within child containers
+		/// </summary>
+		/// <value>The children.</value>
 		public IEnumerable<Control> Children
 		{
 			get
@@ -44,6 +80,15 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.DataContextChanged"/> event
+		/// </summary>
+		/// <remarks>
+		/// Implementors may override this to fire this event on child widgets in a heirarchy. 
+		/// This allows a control to be bound to its own <see cref="Control.DataContext"/>, which would be set
+		/// on one of the parent control(s).
+		/// </remarks>
+		/// <param name="e">Event arguments</param>
 		protected internal override void OnDataContextChanged(EventArgs e)
 		{
 			base.OnDataContextChanged(e);
@@ -57,6 +102,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.PreLoad"/> event, and recurses to this container's children
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnPreLoad(EventArgs e)
 		{
 			base.OnPreLoad(e);
@@ -70,6 +119,10 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.Load"/> event, and recurses to this container's children
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnLoad(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
@@ -83,6 +136,10 @@ namespace Eto.Forms
 			base.OnLoad(e);
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.LoadComplete"/> event, and recurses to this container's children
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnLoadComplete(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
@@ -96,6 +153,10 @@ namespace Eto.Forms
 			base.OnLoadComplete(e);
 		}
 
+		/// <summary>
+		/// Raises the <see cref="Control.UnLoad"/> event, and recurses to this container's children
+		/// </summary>
+		/// <param name="e">Event arguments</param>
 		public override void OnUnLoad(EventArgs e)
 		{
 			if (Handler.RecurseToChildren)
@@ -109,8 +170,14 @@ namespace Eto.Forms
 			base.OnUnLoad(e);
 		}
 
-		protected Container(Generator g, Type type, bool initialize = true)
-			: base(g, type, initialize)
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Container"/> class.
+		/// </summary>
+		/// <param name="generator">Generator to create the handler</param>
+		/// <param name="type">Type of the handler to create (must implement <see cref="IContainer"/>)</param>
+		/// <param name="initialize"><c>true</c> to initialize the handler, false if the caller will initialize</param>
+		protected Container(Generator generator, Type type, bool initialize = true)
+			: base(generator, type, initialize)
 		{
 		}
 
@@ -125,6 +192,9 @@ namespace Eto.Forms
 		{
 		}
 
+		/// <summary>
+		/// Unbinds any bindings in the <see cref="Control.Bindings"/> collection and removes the bindings, and recurses to this container's children
+		/// </summary>
 		public override void Unbind()
 		{
 			base.Unbind();
@@ -137,6 +207,9 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Updates all bindings in this widget, and recurses to this container's children
+		/// </summary>
 		public override void UpdateBindings()
 		{
 			base.UpdateBindings();
@@ -149,23 +222,36 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Remove the specified <paramref name="controls"/> from this container
+		/// </summary>
+		/// <param name="controls">Controls to remove</param>
 		public virtual void Remove(IEnumerable<Control> controls)
 		{
 			foreach (var control in controls)
 				Remove(control);
 		}
 
+		/// <summary>
+		/// Removes all controls from this container
+		/// </summary>
 		public virtual void RemoveAll()
 		{
 			Remove(Controls.ToArray());
 		}
 
+		/// <summary>
+		/// Removes the specified <paramref name="child"/> control
+		/// </summary>
+		/// <param name="child">Child to remove</param>
 		public abstract void Remove(Control child);
 
 		/// <summary>
 		/// Removes the specified control from the container.
-		/// This should only be called on controls that the container owns. Otherwise, call <see cref="Control.Detach"/>
 		/// </summary>
+		/// <remarks>
+		/// This should only be called on controls that the container owns. Otherwise, call <see cref="Control.Detach"/>
+		/// </remarks>
 		/// <param name="child">Child to remove from this container</param>
 		protected void RemoveParent(Control child)
 		{
@@ -184,6 +270,17 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Sets the parent of the specified <paramref name="child"/> to this container
+		/// </summary>
+		/// <remarks>
+		/// This is used by container authors to set the parent of a child before it is added to the underlying platform control.
+		/// 
+		/// If this returns <c>true</c>, you should call <see cref="Control.OnLoadComplete"/> after the control has been added
+		/// to the underlying platform control.
+		/// </remarks>
+		/// <returns><c>true</c>, if parent was set, <c>false</c> otherwise.</returns>
+		/// <param name="child">Child to set the parent</param>
 		protected bool SetParent(Control child)
 		{
 			if (child != null && !ReferenceEquals(child.Parent, this))

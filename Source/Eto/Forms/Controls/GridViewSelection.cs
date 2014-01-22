@@ -81,12 +81,11 @@ namespace Eto.Forms
 			}
 		}
 
-		/// <summary>
-		/// The indexes of the selected objects in the model 
-		/// (not the view).
-		/// </summary>
 		readonly SortedSet<int> selectedRows;
 
+		/// <summary>
+		/// The indexes of the selected objects in the model
+		/// </summary>
 		public IEnumerable<int> SelectedRows
 		{
 			get
@@ -110,6 +109,7 @@ namespace Eto.Forms
 		/// <summary>
 		/// Programmatically selects a row.
 		/// </summary>
+		/// <param name="row">Index of the row to select in the model</param>
 		public void SelectRow(int row)
 		{
 			ChangeSelection(() => {
@@ -127,6 +127,10 @@ namespace Eto.Forms
 			});
 		}
 
+		/// <summary>
+		/// Unselects the specified row
+		/// </summary>
+		/// <param name="row">Index of the row to unselect in the model</param>
 		public void UnselectRow(int row)
 		{
 			ChangeSelection(() => {
@@ -158,6 +162,11 @@ namespace Eto.Forms
 			});
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.GridViewSelection"/> class.
+		/// </summary>
+		/// <param name="gridView">Grid view associated with the selection object</param>
+		/// <param name="dataStore">Data store to iterate</param>
 		public GridViewSelection(GridView gridView, IDataStore dataStore)
 		{
 			this.gridView = gridView;

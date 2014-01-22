@@ -51,7 +51,7 @@ namespace Eto.Platform.GtkSharp.Drawing
 			}
 		}
 
-		public float PointsPerPixel { get { return 1f; } }
+		public float PointsPerPixel { get { return PangoContext != null ? 72f / (float)Pango.CairoHelper.ContextGetResolution(PangoContext) : 72f / 96f; } }
 
 		public double Offset { get { return offset; } }
 

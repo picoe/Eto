@@ -31,34 +31,36 @@ namespace Eto.Test.Sections.Drawing
 			UseOffScreenBitmap = false;
 		}
 
-		public Graphics BeginDraw(Graphics graphics)
+		public Graphics BeginDraw(PaintEventArgs e)
 		{
 			if (UseOffScreenBitmap)
 			{
 				if (offscreenBitmap == null ||
-				    offscreenBitmap.Size.Width < drawable.Size.Width ||
-				    offscreenBitmap.Size.Height < drawable.Size.Height)
+					offscreenBitmap.Size.Width < e.ClipRectangle.Width ||
+					offscreenBitmap.Size.Height < e.ClipRectangle.Height)
 				{
 					if (offscreenBitmap != null)
 						offscreenBitmap.Dispose();
 
-					offscreenBitmap = new Bitmap(drawable.Size, PixelFormat.Format32bppRgba, drawable.Generator);
+					offscreenBitmap = new Bitmap(e.ClipRectangle.Size, PixelFormat.Format32bppRgba, drawable.Generator);
 				}
-
 				bitmapGraphics = new Graphics(offscreenBitmap);
+				bitmapGraphics.TranslateTransform(-e.ClipRectangle.Location);
+				bitmapGraphics.SetClip(e.ClipRectangle);
 				bitmapGraphics.Clear(Brushes.Cached(drawable.BackgroundColor, drawable.Generator));
 				return bitmapGraphics;
 			}
-			return graphics;
+			return e.Graphics;
 		}
 
-		public void EndDraw(Graphics graphics)
+		public void EndDraw(PaintEventArgs e)
 		{
-			if (UseOffScreenBitmap)
+			if (bitmapGraphics != null)
 			{
 				bitmapGraphics.Dispose();
 				bitmapGraphics = null;
-				graphics.DrawImage(offscreenBitmap, PointF.Empty);
+
+				e.Graphics.DrawImage(offscreenBitmap, new RectangleF(e.ClipRectangle.Size), e.ClipRectangle);
 			}
 		}
 
@@ -101,7 +103,7 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable.Paint += (s, e) =>
 			{
-				var graphics = drawableTarget.BeginDraw(e.Graphics);
+				var graphics = drawableTarget.BeginDraw(e);
 
 				graphics.DrawText(font, Colors.White, 3, 3, "Move the mouse in this area to move the shapes.");
 				// texture brushes
@@ -114,7 +116,7 @@ namespace Eto.Test.Sections.Drawing
 				temp = temp + new PointF(200, 0);
 				DrawShapes(linearGradientBrush, temp, img.Size, graphics);
 
-				drawableTarget.EndDraw(e.Graphics);
+				drawableTarget.EndDraw(e);
 			};
 		}
 

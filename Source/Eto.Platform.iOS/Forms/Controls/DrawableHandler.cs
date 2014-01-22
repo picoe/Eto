@@ -490,7 +490,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			[Export("insertText:")]
 			void InsertText(string text)
 			{
-				var args = new TextInputEventArgs { Text = text };
+				var args = new TextInputEventArgs(text, false);
 				Handler.Widget.OnTextInput(args);
 			}
 			// UIKeyInput required method - Delete a character from the displayed text.
@@ -499,7 +499,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 			[Export("deleteBackward")]
 			void DeleteBackward()
 			{
-				var args = new TextInputEventArgs { DeleteBackwards = true };
+				var args = new TextInputEventArgs(null, true);
 				Handler.Widget.OnTextInput(args);
 			}
 

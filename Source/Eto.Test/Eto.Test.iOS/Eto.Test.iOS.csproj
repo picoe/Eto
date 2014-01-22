@@ -10,6 +10,7 @@
     <OutputType>Exe</OutputType>
     <RootNamespace>Eto.Test.iOS</RootNamespace>
     <IPhoneResourcePrefix>Resources</IPhoneResourcePrefix>
+    <AssemblyName>EtoTestiOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup>
     <FileAlignment>512</FileAlignment>
@@ -30,7 +31,6 @@
     <MtouchI18n>
     </MtouchI18n>
     <MtouchUseSGen>True</MtouchUseSGen>
-    <AssemblyName>Eto.Test.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhoneSimulator' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Release\iPhoneSimulator</OutputPath>
@@ -41,7 +41,6 @@
     <MtouchI18n>
     </MtouchI18n>
     <MtouchArch>ARMv7</MtouchArch>
-    <AssemblyName>Eto.Test.iOS</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Debug\iPhone</OutputPath>
@@ -60,7 +59,6 @@
     <CrashReportingApiKey>
     </CrashReportingApiKey>
     <MtouchUseSGen>True</MtouchUseSGen>
-    <AssemblyName>EtoTest</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Release\iPhone</OutputPath>
@@ -71,7 +69,6 @@
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
-    <AssemblyName>EtoTest</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Ad-Hoc|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\Ad-Hoc\iPhone</OutputPath>
@@ -83,7 +80,6 @@
     <MtouchArch>ARMv7</MtouchArch>
     <MtouchI18n>
     </MtouchI18n>
-    <AssemblyName>EtoTest</AssemblyName>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'AppStore|iPhone' ">
     <OutputPath>..\..\..\BuildOutput\iOS\AppStore\iPhone</OutputPath>
@@ -96,7 +92,6 @@
     </MtouchI18n>
     <IpaPackageName>
     </IpaPackageName>
-    <AssemblyName>EtoTest</AssemblyName>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

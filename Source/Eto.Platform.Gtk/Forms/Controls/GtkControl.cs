@@ -5,6 +5,8 @@ using Eto.Drawing;
 using Eto.Platform.GtkSharp.Drawing;
 using GLib;
 using System.Text;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -536,6 +538,11 @@ namespace Eto.Platform.GtkSharp
 		{
 			get { return Control.TooltipText; }
 			set { Control.TooltipText = value; }
+		}
+
+		public virtual IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
 		}
 
 		public virtual void MapPlatformCommand(string systemAction, Command action)

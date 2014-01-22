@@ -137,15 +137,6 @@ namespace Eto.Forms
 
 		#endregion
 
-		protected override GridViewCellArgs ViewToModel(GridViewCellArgs e)
-		{
-			return new GridViewCellArgs(
-				e.GridColumn,
-				DataStoreView.ViewToModel(e.Row),
-				e.Column,
-				e.Item);
-		}
-
 		public override void OnSelectionChanged(EventArgs e)
 		{
 			if (selection != null && !selection.SuppressSelectionChanged)

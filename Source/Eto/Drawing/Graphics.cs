@@ -276,6 +276,8 @@ namespace Eto.Drawing
 		void Clear(SolidBrush brush);
 	}
 
+	#if MOBILE
+
 	/// <summary>
 	/// Currently supported by the iOS Graphics handler. Implements the 
 	/// UIKit pattern of creating a graphics that is automatically backed by a bitmap 
@@ -287,6 +289,8 @@ namespace Eto.Drawing
 		void Create(Size size, bool useMainScreenScale);
 		Bitmap GetImage();
 	}
+
+	#endif
 
 	/// <summary>
 	/// Graphics context object for drawing operations
@@ -320,6 +324,8 @@ namespace Eto.Drawing
 			Initialize();
 		}
 
+		#if MOBILE
+
 		/// <summary>
 		/// Constructs a Graphics with an underlying bitmap of the specified size 
 		/// (in device-independent pixels or "points" on iOS).
@@ -336,6 +342,8 @@ namespace Eto.Drawing
 			else
 				throw new InvalidOperationException("This constructor is not supported on this platform.");
 		}
+
+		#endif
 
 		/// <summary>
 		/// Initializes a new instance of the Graphics with the specified handler type.

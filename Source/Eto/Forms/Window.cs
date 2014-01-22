@@ -17,15 +17,11 @@ namespace Eto.Forms
 		string Title { get; set; }
 
 		Screen Screen { get; }
-		//void AddToolbar(ToolBar toolBar);
-		//void RemoveToolbar(ToolBar toolBar);
-		//void ClearToolbars();
 	}
 
 	public abstract partial class Window : Panel
 	{
 		new IWindow Handler { get { return (IWindow)base.Handler; } }
-		//ToolBarCollection toolBars;
 
 		#region Events
 
@@ -81,21 +77,37 @@ namespace Eto.Forms
 			#endif
 		}
 
+		/// <summary>
+		/// Initializes a new instance of the <see cref="Eto.Forms.Window"/> class.
+		/// </summary>
+		/// <param name="generator">Generator to create the handler instance</param>
+		/// <param name="type">Type of interface to create for the handler, must implement <see cref="IWindow"/></param>
+		/// <param name="initialize"><c>true</c> to initialize the handler, false if the subclass will initialize</param>
 		protected Window(Generator generator, Type type, bool initialize = true)
 			: base(generator, type, false)
 		{
-			//toolBars = new ToolBarCollection(this);
 			if (initialize)
 				Initialize();
 			HandleEvent(ClosedEvent);
 		}
 
+		/// <summary>
+		/// Gets or sets the title of the window
+		/// </summary>
+		/// <remarks>
+		/// The title of the window is displayed to the user usually at the top of the window, but in cases where
+		/// you show a window in a mobile environment, this may be the title shown in a navigation controller.
+		/// </remarks>
+		/// <value>The title of the window</value>
 		public string Title
 		{
 			get { return Handler.Title; }
 			set { Handler.Title = value; }
 		}
 
+		/// <summary>
+		/// Obsolete. Use <see cref="Title"/> instead
+		/// </summary>
 		[Obsolete("Use Title instead")]
 		public string Text
 		{
@@ -103,12 +115,22 @@ namespace Eto.Forms
 			set { Title = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the location of the window
+		/// </summary>
+		/// <remarks>
+		/// Note that in multi-monitor setups, the origin of the location is at the upper-left of <see cref="Screen.PrimaryScreen"/>
+		/// </remarks>
 		public new Point Location
 		{
 			get { return Handler.Location; }
 			set { Handler.Location = value; }
 		}
 
+		/// <summary>
+		/// Gets or sets the size and location of the window
+		/// </summary>
+		/// <value>The bounding rectangle of the window</value>
 		public new Rectangle Bounds
 		{
 			get { return new Rectangle(Handler.Location, Handler.Size); }
@@ -119,6 +141,13 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the tool bar for the window.
+		/// </summary>
+		/// <remarks>
+		/// Note that each window can only have a single tool bar
+		/// </remarks>
+		/// <value>The tool bar for the window</value>
 		public ToolBar ToolBar
 		{
 			get { return Handler.ToolBar; }
@@ -133,17 +162,31 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// Gets or sets the opacity of the window
+		/// </summary>
+		/// <value>The window opacity.</value>
 		public double Opacity
 		{
 			get { return Handler.Opacity; }
 			set { Handler.Opacity = value; }
 		}
 
+		/// <summary>
+		/// Closes the window
+		/// </summary>
+		/// <remarks>
+		/// Note that once a window is closed, it cannot be shown again in most platforms.
+		/// </remarks>
 		public virtual void Close()
 		{
 			Handler.Close();
 		}
 
+		/// <summary>
+		/// Gets the screen this window is mostly contained in. Typically defined by the screen center of the window is visible.
+		/// </summary>
+		/// <value>The window's current screen.</value>
 		public Screen Screen
 		{
 			get { return Handler.Screen; }

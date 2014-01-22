@@ -5,6 +5,8 @@ using sw = System.Windows;
 using swi = System.Windows.Input;
 using swc = System.Windows.Controls;
 using swm = System.Windows.Media;
+using System.Linq;
+using System.Collections.Generic;
 
 namespace Eto.Platform.Wpf.Forms
 {
@@ -441,6 +443,11 @@ namespace Eto.Platform.Wpf.Forms
 				if (currentParent != null)
 					currentParent.Remove(ContainerControl);
 			}
+		}
+
+		public IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
 		}
 
 		public void MapPlatformCommand(string systemAction, Command command)

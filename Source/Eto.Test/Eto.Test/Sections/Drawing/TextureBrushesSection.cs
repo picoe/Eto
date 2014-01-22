@@ -40,10 +40,10 @@ namespace Eto.Test.Sections.Drawing
 
 			drawable.Paint += (s, e) =>
 			{
-				var graphics = drawableTarget.BeginDraw(e.Graphics);
+				var graphics = drawableTarget.BeginDraw(e);
 				foreach (var renderer in renderers)
 					renderer(graphics);
-				drawableTarget.EndDraw(e.Graphics);
+				drawableTarget.EndDraw(e);
 			};
 		}
 	}

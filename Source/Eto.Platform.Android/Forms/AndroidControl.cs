@@ -4,6 +4,8 @@ using Eto.Drawing;
 using a = Android;
 using av = Android.Views;
 using aw = Android.Widget;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace Eto.Platform.Android.Forms
 {
@@ -64,10 +66,6 @@ namespace Eto.Platform.Android.Forms
 		}
 
 		public virtual void SetParent(Container parent)
-		{
-		}
-
-		public virtual void MapPlatformAction(string systemAction, BaseAction action)
 		{
 		}
 
@@ -143,6 +141,11 @@ namespace Eto.Platform.Android.Forms
 				throw new NotImplementedException();
 			}
 			set { }
+		}
+
+		public IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return Enumerable.Empty<string>(); }
 		}
 
 		public void MapPlatformCommand(string systemAction, Command action)

@@ -175,7 +175,7 @@ namespace Eto.Platform.iOS.Drawing
 			SD.RectangleF destRect = graphics.TranslateView(destination.ToSD(), false);
 			if (source.TopLeft != Point.Empty || sourceRect.Size != imgsize)
 			{
-				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height - (destRect.Y - sourceRect.Y));
+				graphics.Control.TranslateCTM(destRect.X - sourceRect.X, imgsize.Height + (destRect.Y - sourceRect.Y));
 				graphics.Control.ScaleCTM(imgsize.Width / sourceRect.Width, -(imgsize.Height / sourceRect.Height));
 				graphics.Control.DrawImage(new SD.RectangleF(SD.PointF.Empty, destRect.Size), Control.CGImage);
 			}

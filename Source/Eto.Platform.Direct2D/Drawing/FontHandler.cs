@@ -56,7 +56,7 @@ namespace Eto.Platform.Direct2D.Drawing
 		public void Create(SystemFont systemFont, float? size, FontDecoration decoration)
 		{
 			var sdfont = Eto.Platform.Windows.Conversions.ToSD(systemFont);
-			Create(sdfont.Name, size ?? 8.25f, FontStyle.None, FontDecoration.None); // BUGBUG: Fix
+			Create(sdfont.Name, size ?? sdfont.SizeInPoints, FontStyle.None, decoration);
 		}
 
 		public void Create(FontTypeface typeface, float size, FontDecoration decoration)

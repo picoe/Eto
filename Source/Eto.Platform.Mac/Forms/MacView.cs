@@ -649,6 +649,11 @@ namespace Eto.Platform.Mac.Forms
 			{ "performMiniaturize", selPerformMiniaturize }
 		};
 
+		public virtual IEnumerable<string> SupportedPlatformCommands
+		{
+			get { return systemActionSelectors.Keys; }
+		}
+
 		public virtual void MapPlatformCommand(string systemAction, Command command)
 		{
 			IntPtr sel;
