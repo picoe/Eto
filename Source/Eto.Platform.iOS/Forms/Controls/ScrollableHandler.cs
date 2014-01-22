@@ -187,6 +187,7 @@ namespace Eto.Platform.iOS.Forms.Controls
 				contentSize.Width = Math.Max(ClientSize.Width, contentSize.Width);
 			if (ExpandContentHeight)
 				contentSize.Height = Math.Max(ClientSize.Height, contentSize.Height);
+			Control.ContentSize = contentSize;
 			Child.SetFrameSize(contentSize);
 			Adjust();
 		}
