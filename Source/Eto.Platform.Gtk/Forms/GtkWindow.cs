@@ -30,6 +30,7 @@ namespace Eto.Platform.GtkSharp
 		ToolBar toolBar;
 		Gtk.AccelGroup accelGroup;
 		Rectangle? restoreBounds;
+		Point? currentLocation;
 		WindowState state;
 		WindowStyle style;
 		bool topmost;
@@ -179,24 +180,7 @@ namespace Eto.Platform.GtkSharp
 			vbox.PackStart(containerBox, true, true, 0);
 			vbox.PackStart(bottomToolbarBox, false, false, 0);
 			
-			Control.WindowStateEvent += delegate(object o, Gtk.WindowStateEventArgs args)
-			{
-				if (WindowState == WindowState.Normal)
-				{
-					if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Maximized) != 0)
-					{
-						restoreBounds = Widget.Bounds;
-					}
-					else if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0)
-					{
-						restoreBounds = Widget.Bounds;
-					}
-					else if ((args.Event.ChangedMask & Gdk.WindowState.Fullscreen) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Fullscreen) != 0)
-					{
-						restoreBounds = Widget.Bounds;
-					}
-				}
-			};
+			HandleEvent(Window.WindowStateChangedEvent); // to set restore bounds properly
 			HandleEvent(Window.ClosingEvent); // to chain application termination events
 		}
 
@@ -206,50 +190,26 @@ namespace Eto.Platform.GtkSharp
 			{
 				case Eto.Forms.Control.KeyDownEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
-					EventControl.KeyPressEvent += HandleKeyPressEvent;
+					EventControl.KeyPressEvent += Connector.HandleWindowKeyPressEvent;
 					break;
 				case Window.ClosedEvent:
 					HandleEvent(Window.ClosingEvent);
 					break;
 				case Window.ClosingEvent:
-					Control.DeleteEvent += (o, args) => args.RetVal = !CloseWindow();
+					Control.DeleteEvent += Connector.HandleDeleteEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
-					Control.Shown += delegate
-					{
-						Widget.OnShown(EventArgs.Empty);
-					};
+					Control.Shown += Connector.HandleShown;
 					break;
 				case Window.WindowStateChangedEvent:
-					{
-						var oldState = WindowState;
-						Control.WindowStateEvent += delegate
-						{
-							var newState = WindowState;
-							if (newState != oldState)
-							{
-								oldState = newState;
-								Widget.OnWindowStateChanged(EventArgs.Empty);
-							}
-						};
-					}
+					Connector.OldState = WindowState;
+					Control.WindowStateEvent += Connector.HandleWindowStateEvent;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
-					{
-						Size? oldSize = null;
-						Control.SizeAllocated += (o, args) =>
-						{
-							var newSize = Size;
-							if (Control.IsRealized && oldSize != newSize)
-							{
-								Widget.OnSizeChanged(EventArgs.Empty);
-								oldSize = newSize;
-							}
-						};
-					}
+					Control.SizeAllocated += Connector.HandleWindowSizeAllocated;
 					break;
 				case Window.LocationChangedEvent:
-					Control.ConfigureEvent += HandleConfigureEvent;
+					Control.ConfigureEvent += Connector.HandleConfigureEvent;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -257,38 +217,98 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		// do not connect before, otherwise it is sent before sending to child
-		void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
+		protected new GtkWindowConnector Connector { get { return (GtkWindowConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
 		{
-			var e = args.Event.ToEto();
-			if (e != null)
-			{
-				Widget.OnKeyDown(e);
-				args.RetVal = e.Handled;
-			}
+			return new GtkWindowConnector();
 		}
 
-		Point? oldLocation;
-		Point? currentLocation;
-
-		[GLib.ConnectBefore]
-		void HandleConfigureEvent(object o, Gtk.ConfigureEventArgs args)
+		protected class GtkWindowConnector : GtkPanelEventConnector
 		{
-			currentLocation = new Point(args.Event.X, args.Event.Y);
-			if (Control.IsRealized && Widget.Loaded && oldLocation != currentLocation)
+			Size? oldSize;
+			public WindowState OldState { get; set; }
+
+			public new GtkWindow<TControl, TWidget> Handler { get { return (GtkWindow<TControl, TWidget>)base.Handler; } }
+
+			public void HandleDeleteEvent(object o, Gtk.DeleteEventArgs args)
 			{
-				Widget.OnLocationChanged(EventArgs.Empty);
-				oldLocation = currentLocation;
+				args.RetVal = !Handler.CloseWindow();
 			}
-			currentLocation = null;
+
+			public void HandleShown(object sender, EventArgs e)
+			{
+				Handler.Widget.OnShown(EventArgs.Empty);
+			}
+
+			public void HandleWindowStateEvent(object o, Gtk.WindowStateEventArgs args)
+			{
+				var handler = Handler;
+				var windowState = handler.WindowState;
+				if (windowState == WindowState.Normal)
+				{
+					if ((args.Event.ChangedMask & Gdk.WindowState.Maximized) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Maximized) != 0)
+					{
+						handler.restoreBounds = handler.Widget.Bounds;
+					}
+					else if ((args.Event.ChangedMask & Gdk.WindowState.Iconified) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Iconified) != 0)
+					{
+						handler.restoreBounds = handler.Widget.Bounds;
+					}
+					else if ((args.Event.ChangedMask & Gdk.WindowState.Fullscreen) != 0 && (args.Event.NewWindowState & Gdk.WindowState.Fullscreen) != 0)
+					{
+						handler.restoreBounds = handler.Widget.Bounds;
+					}
+				}
+
+				if (windowState != OldState)
+				{
+					OldState = windowState;
+					Handler.Widget.OnWindowStateChanged(EventArgs.Empty);
+				}
+			}
+
+			// do not connect before, otherwise it is sent before sending to child
+			public void HandleWindowKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
+			{
+				var e = args.Event.ToEto();
+				if (e != null)
+				{
+					Handler.Widget.OnKeyDown(e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			public void HandleWindowSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
+			{
+				var handler = Handler;
+				var newSize = handler.Size;
+				if (handler.Control.IsRealized && oldSize != newSize)
+				{
+					handler.Widget.OnSizeChanged(EventArgs.Empty);
+					oldSize = newSize;
+				}
+			}
+
+			Point? oldLocation;
+
+			[GLib.ConnectBefore]
+			public void HandleConfigureEvent(object o, Gtk.ConfigureEventArgs args)
+			{
+				var handler = Handler;
+				handler.currentLocation = new Point(args.Event.X, args.Event.Y);
+				if (handler.Control.IsRealized && handler.Widget.Loaded && oldLocation != handler.currentLocation)
+				{
+					handler.Widget.OnLocationChanged(EventArgs.Empty);
+					oldLocation = handler.currentLocation;
+				}
+				handler.currentLocation = null;
+			}
 		}
 
 		public MenuBar Menu
 		{
-			get
-			{
-				return menuBar;
-			}
+			get { return menuBar; }
 			set
 			{
 				if (menuBar != null)

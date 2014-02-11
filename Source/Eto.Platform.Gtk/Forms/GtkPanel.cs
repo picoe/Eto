@@ -19,41 +19,51 @@ namespace Eto.Platform.GtkSharp
 		protected GtkPanel()
 		{
 			alignment = new Gtk.Alignment(0, 0, 1, 1);
-			this.Padding = Panel.DefaultPadding;
+			Padding = DockContainer.DefaultPadding;
 		}
 
 		protected override void Initialize()
 		{
 			base.Initialize();
 			SetContainerContent(alignment);
+			#if GTK2
+			ContainerContentControl.SizeRequested += Connector.HandleContentSizeRequested;
+			#else
+			if (MinimumSize != Size.Empty)
+				ContainerContentControl.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
+			#endif
 		}
 
-		bool loaded;
+		protected new GtkPanelEventConnector Connector { get { return (GtkPanelEventConnector)base.Connector; } }
 
-		public override void OnLoad(EventArgs e)
+		protected override WeakConnector CreateConnector()
 		{
-			base.OnLoad(e);
-			if (!loaded)
+			return new GtkPanelEventConnector();
+		}
+
+		protected class GtkPanelEventConnector : GtkControlConnector
+		{
+			public new GtkPanel<TControl, TWidget> Handler { get { return (GtkPanel<TControl, TWidget>)base.Handler; } }
+			#if GTK2
+			public void HandleContentSizeRequested(object o, Gtk.SizeRequestedArgs args)
 			{
-#if GTK2
-				ContainerContentControl.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args)
+				var handler = Handler;
+				if (handler != null)
 				{
 					var alloc = args.Requisition;
-					if (MinimumSize.Width > 0)
-						alloc.Width = Math.Max(alloc.Width, MinimumSize.Width);
-					if (MinimumSize.Height > 0)
-						alloc.Height = Math.Max(alloc.Height, MinimumSize.Height);
+					var minimumSize = handler.MinimumSize;
+					if (minimumSize.Width > 0)
+						alloc.Width = Math.Max(alloc.Width, minimumSize.Width);
+					if (minimumSize.Height > 0)
+						alloc.Height = Math.Max(alloc.Height, minimumSize.Height);
 					args.Requisition = alloc;
-				};
-#else
-				if (MinimumSize != Size.Empty)
-					ContainerContentControl.SetSizeRequest(MinimumSize.Width, MinimumSize.Height);
-#endif
-				loaded = true;
+				}
 			}
+			#endif
 		}
 
 		ContextMenu contextMenu;
+
 		public ContextMenu ContextMenu
 		{
 			get { return contextMenu; }
@@ -83,8 +93,8 @@ namespace Eto.Platform.GtkSharp
 			{
 				if (content != value)
 				{
-					foreach (var child in alignment.Children)
-						alignment.Remove(child);
+					if (content != null)
+						alignment.Remove(content.GetContainerWidget());
 					content = value;
 					var widget = content.GetContainerWidget();
 					if (widget != null)

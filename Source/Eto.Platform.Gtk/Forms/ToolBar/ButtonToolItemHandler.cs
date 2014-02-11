@@ -17,18 +17,30 @@ namespace Eto.Platform.GtkSharp
 			Gtk.Toolbar tb = handler.Control;
 
 			Control = new Gtk.ToolButton(GtkImage, Text);
-			Control.Clicked += button_Clicked;
 			Control.IsImportant = true;
 			Control.Sensitive = Enabled;
 			//Control.TooltipText = this.ToolTip;
 			//control.CanFocus = false;
 			tb.Insert(Control, -1);
 			if (tb.Visible) Control.ShowAll();
+			Control.Clicked += Connector.HandleClicked;
 		}
 
-		void button_Clicked(object sender, EventArgs e)
+		protected new ButtonToolItemConnector Connector { get { return (ButtonToolItemConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
 		{
-			Widget.OnClick(e);
+			return new ButtonToolItemConnector();
+		}
+
+		protected class ButtonToolItemConnector : WeakConnector
+		{
+			public new ButtonToolItemHandler Handler { get { return (ButtonToolItemHandler)base.Handler; } }
+
+			public void HandleClicked(object sender, EventArgs e)
+			{
+				Handler.Widget.OnClick(e);
+			}
 		}
 	}
 }

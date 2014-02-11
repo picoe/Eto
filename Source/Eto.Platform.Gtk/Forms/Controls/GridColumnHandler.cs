@@ -1,21 +1,23 @@
 using Eto.Forms;
 using Eto.Platform.GtkSharp.Forms.Cells;
+using System;
 
 namespace Eto.Platform.GtkSharp.Forms.Controls
 {
 	public interface IGridHandler
 	{
 		bool IsEventHandled(string handler);
-		
+
 		void ColumnClicked(GridColumnHandler column);
 	}
-	
+
 	public interface IGridColumnHandler
 	{
 		GLib.Value GetValue(object dataItem, int dataColumn, int row);
-		void BindCell (IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
+
+		void BindCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex);
 	}
-	
+
 	public class GridColumnHandler : WidgetHandler<Gtk.TreeViewColumn, GridColumn>, IGridColumn, IGridColumnHandler
 	{
 		Cell dataCell;
@@ -23,132 +25,153 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 		bool editable;
 		bool cellsAdded;
 		IGridHandler grid;
-		
-		public GridColumnHandler ()
+
+		public GridColumnHandler()
 		{
-			Control = new Gtk.TreeViewColumn ();
+			Control = new Gtk.TreeViewColumn();
 			AutoSize = true;
 			Resizable = true;
 		}
-		
-		protected override void Initialize ()
+
+		protected override void Initialize()
 		{
-			base.Initialize ();
+			base.Initialize();
 			DataCell = new TextBoxCell(Widget.Generator);
 		}
 
-		public string HeaderText {
+		public string HeaderText
+		{
 			get { return Control.Title; }
 			set { Control.Title = value; }
 		}
 
-		public bool Resizable {
+		public bool Resizable
+		{
 			get { return Control.Resizable; }
 			set { Control.Resizable = value; }
 		}
 
-		public bool Sortable {
+		public bool Sortable
+		{
 			get { return Control.Clickable; }
 			set { Control.Clickable = value; }
 		}
-		
-		public bool AutoSize {
-			get {
+
+		public bool AutoSize
+		{
+			get
+			{
 				return autoSize;
 			}
-			set {
+			set
+			{
 				autoSize = value;
 				Control.Sizing = value ? Gtk.TreeViewColumnSizing.GrowOnly : Gtk.TreeViewColumnSizing.Fixed;
 			}
 		}
-		
+
 		void SetCellAttributes()
 		{
-			if (dataCell != null) {
-				((ICellHandler)dataCell.Handler).SetEditable (Control, editable);
-				SetupEvents ();
+			if (dataCell != null)
+			{
+				((ICellHandler)dataCell.Handler).SetEditable(Control, editable);
+				SetupEvents();
 			}
 		}
-		
-		public bool Editable {
-			get {
+
+		public bool Editable
+		{
+			get
+			{
 				return editable;
 			}
-			set {
+			set
+			{
 				editable = value;
-				SetCellAttributes ();
+				SetCellAttributes();
 			}
 		}
-		
-		public int Width {
+
+		public int Width
+		{
 			get { return Control.Width; }
 			set { Control.FixedWidth = value; }
 		}
-		
-		public Cell DataCell {
-			get {
+
+		public Cell DataCell
+		{
+			get
+			{
 				return dataCell;
 			}
-			set {
+			set
+			{
 				dataCell = value;
 			}
 		}
-		
-		public bool Visible {
+
+		public bool Visible
+		{
 			get { return Control.Visible; }
 			set { Control.Visible = value; }
 		}
-		
-		public void BindCell (IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex)
+
+		public void BindCell(IGridHandler grid, ICellDataSource source, int columnIndex, ref int dataIndex)
 		{
 			this.grid = grid;
-			if (dataCell != null) {
+			if (dataCell != null)
+			{
 				var cellhandler = (ICellHandler)dataCell.Handler;
-				if (!cellsAdded) {
-					cellhandler.AddCells (Control);
+				if (!cellsAdded)
+				{
+					cellhandler.AddCells(Control);
 					cellsAdded = true;
 				}
-				SetCellAttributes ();
-				cellhandler.BindCell (source, this, columnIndex, ref dataIndex);
+				SetCellAttributes();
+				cellhandler.BindCell(source, this, columnIndex, ref dataIndex);
 			}
-			SetupEvents ();
+			SetupEvents();
 		}
 
-		public void SetupEvents ()
+		public void SetupEvents()
 		{
-			if (grid == null) return;
-			if (grid.IsEventHandled (Grid.CellEditingEvent))
-				HandleEvent (Grid.CellEditingEvent);
-			if (grid.IsEventHandled (Grid.CellEditedEvent))
-				HandleEvent (Grid.CellEditedEvent);
-			if (grid.IsEventHandled (Grid.ColumnHeaderClickEvent))
-				HandleEvent (Grid.ColumnHeaderClickEvent);
-			if (grid.IsEventHandled (Grid.CellFormattingEvent))
-				HandleEvent (Grid.CellFormattingEvent);
+			if (grid == null)
+				return;
+			if (grid.IsEventHandled(Grid.CellEditingEvent))
+				HandleEvent(Grid.CellEditingEvent);
+			if (grid.IsEventHandled(Grid.CellEditedEvent))
+				HandleEvent(Grid.CellEditedEvent);
+			if (grid.IsEventHandled(Grid.ColumnHeaderClickEvent))
+				HandleEvent(Grid.ColumnHeaderClickEvent);
+			if (grid.IsEventHandled(Grid.CellFormattingEvent))
+				HandleEvent(Grid.CellFormattingEvent);
 		}
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
-			case Grid.ColumnHeaderClickEvent:
-				Control.Clicked += (sender, e) => {
-					if (grid != null)
-						grid.ColumnClicked (this);
-				};
-				break;
-			default:
-				((ICellHandler)dataCell.Handler).HandleEvent(id);
-				break;
+			switch (id)
+			{
+				case Grid.ColumnHeaderClickEvent:
+					var handler = new WeakReference(this);
+					Control.Clicked += (sender, e) =>
+					{
+						var h = ((GridColumnHandler)handler.Target);
+						if (h.grid != null)
+							h.grid.ColumnClicked(h);
+					};
+					break;
+				default:
+					((ICellHandler)dataCell.Handler).HandleEvent(id);
+					break;
 			}
 		}
-		
-		public GLib.Value GetValue (object dataItem, int dataColumn, int row)
+
+		public GLib.Value GetValue(object dataItem, int dataColumn, int row)
 		{
 			if (dataCell != null)
 				return ((ICellHandler)dataCell.Handler).GetValue(dataItem, dataColumn, row);
 			return new GLib.Value((string)null);
 		}
-		
 	}
 }
 

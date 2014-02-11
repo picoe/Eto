@@ -49,34 +49,70 @@ namespace Eto.Platform.GtkSharp
 			vp = new Gtk.Viewport();
 			hbox = new Gtk.HBox();
 			vbox = new Gtk.VBox();
-			vp.Add(vbox);
 			vbox.PackStart(hbox, true, true, 0);
-			
-			// autosize the scrolled window to the size of the content
-#if GTK2
-			Control.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args)
-			{
-				if (autoSize)
-				{
-					args.Requisition = vp.SizeRequest();
-				}
-			};
-			vp.SizeRequested += delegate(object o, Gtk.SizeRequestedArgs args)
-			{
-				if (autoSize)
-				{
-					var size = vp.SizeRequest();
-					//Console.WriteLine ("Autosizing to {0}x{1}", size.Width, size.Height);
-					args.Requisition = size;
-				}
-			};
-#endif
+			vp.Add(vbox);
 
-			Control.VScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
-			Control.HScrollbar.VisibilityNotifyEvent += scrollBar_VisibilityChanged;
+			// autosize the scrolled window to the size of the content
 			Control.Add(vp);
 			vp.ShadowType = Gtk.ShadowType.None;
 			this.Border = BorderType.Bezel;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			#if GTK2
+			Control.SizeRequested += Connector.HandleControlSizeRequested;
+			vp.SizeRequested += Connector.HandleViewportSizeRequested;
+			#endif
+			Control.VScrollbar.VisibilityNotifyEvent += Connector.HandleScrollbarVisibilityChanged;
+			Control.HScrollbar.VisibilityNotifyEvent += Connector.HandleScrollbarVisibilityChanged;
+		}
+
+		protected new ScrollableConnector Connector { get { return (ScrollableConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new ScrollableConnector();
+		}
+
+		protected class ScrollableConnector : GtkPanelEventConnector
+		{
+			public new ScrollableHandler Handler { get { return (ScrollableHandler)base.Handler; } }
+#if GTK2
+			public void HandleControlSizeRequested(object o, Gtk.SizeRequestedArgs args)
+			{
+				if (Handler.autoSize)
+				{
+					args.Requisition = Handler.vp.SizeRequest();
+				}
+			}
+
+			public void HandleViewportSizeRequested(object o, Gtk.SizeRequestedArgs args)
+			{
+				var handler = Handler;
+				if (handler != null)
+				{
+					var viewport = (Gtk.Viewport)o;
+					if (handler.autoSize)
+					{
+						var size = viewport.SizeRequest();
+						//Console.WriteLine ("Autosizing to {0}x{1}", size.Width, size.Height);
+						args.Requisition = size;
+					}
+				}
+			}
+#endif
+			public void HandleScrollbarVisibilityChanged(object sender, EventArgs e)
+			{
+				Handler.Widget.OnSizeChanged(EventArgs.Empty);
+			}
+
+			public void HandleScrollableScrollEvent(object o, Gtk.ScrollEventArgs args)
+			{
+				var pos = new Point((int)args.Event.X, (int)args.Event.Y);
+				Handler.Widget.OnScroll(new ScrollEventArgs(pos));
+			}
 		}
 
 		public override void AttachEvent(string id)
@@ -85,11 +121,7 @@ namespace Eto.Platform.GtkSharp
 			{
 				case Scrollable.ScrollEvent:
 					Control.Events |= Gdk.EventMask.ScrollMask;
-					Control.ScrollEvent += delegate(object o, Gtk.ScrollEventArgs args)
-					{
-						var pos = new Point((int)args.Event.X, (int)args.Event.Y);
-						Widget.OnScroll(new ScrollEventArgs(pos));
-					};
+					Control.ScrollEvent += Connector.HandleScrollableScrollEvent;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -108,11 +140,6 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 		#endif
-
-		void scrollBar_VisibilityChanged(object sender, EventArgs e)
-		{
-			Widget.OnSizeChanged(EventArgs.Empty);
-		}
 
 		protected override void SetContainerContent(Gtk.Widget content)
 		{

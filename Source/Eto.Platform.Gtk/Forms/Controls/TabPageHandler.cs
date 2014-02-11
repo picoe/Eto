@@ -10,7 +10,6 @@ namespace Eto.Platform.GtkSharp
 		readonly Gtk.HBox tab;
 		Gtk.Image gtkimage;
 		Image image;
-		
 		public static Size MaxImageSize = new Size(16, 16);
 
 		public TabPageHandler()
@@ -18,11 +17,12 @@ namespace Eto.Platform.GtkSharp
 			Control = new Gtk.VBox();
 			tab = new Gtk.HBox();
 			label = new Gtk.Label();
-			tab.PackEnd (label, true, true, 0);
-			tab.ShowAll ();
+			tab.PackEnd(label, true, true, 0);
+			tab.ShowAll();
 		}
-		
-		public Gtk.Widget LabelControl {
+
+		public Gtk.Widget LabelControl
+		{
 			get { return tab; }
 		}
 
@@ -30,21 +30,26 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control.PackStart(content, true, true, 0);
 		}
-		
-		public Image Image {
+
+		public Image Image
+		{
 			get { return image; }
-			set {
-				if (gtkimage == null) {
+			set
+			{
+				if (gtkimage == null)
+				{
 					gtkimage = new Gtk.Image();
-					tab.PackStart (gtkimage, true, true, 0);
+					tab.PackStart(gtkimage, true, true, 0);
 				}
 				image = value;
-				if (image != null) {
+				if (image != null)
+				{
 					var imagehandler = (IGtkPixbuf)image.Handler;
-					gtkimage.Pixbuf = imagehandler.GetPixbuf (MaxImageSize);
-					gtkimage.ShowAll ();
+					gtkimage.Pixbuf = imagehandler.GetPixbuf(MaxImageSize);
+					gtkimage.ShowAll();
 				}
-				else {
+				else
+				{
 					gtkimage.Visible = false;
 					gtkimage.Pixbuf = null;
 				}
@@ -54,15 +59,20 @@ namespace Eto.Platform.GtkSharp
 
 		public override string Text
 		{
-			get { return MnuemonicToString (label.Text); }
-			set { label.TextWithMnemonic = StringToMnuemonic (value); }
+			get { return MnuemonicToString(label.Text); }
+			set { label.TextWithMnemonic = StringToMnuemonic(value); }
 		}
 
-		protected override void Dispose (bool disposing)
+		protected override void Dispose(bool disposing)
 		{
-			base.Dispose (disposing);
-			if (disposing) {
-				if (label != null) { label.Dispose(); label = null; }
+			base.Dispose(disposing);
+			if (disposing)
+			{
+				if (label != null)
+				{
+					label.Dispose();
+					label = null;
+				}
 			}
 		}
 	}

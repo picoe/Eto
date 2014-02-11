@@ -15,12 +15,37 @@ namespace Eto.Platform.GtkSharp
 		public ButtonMenuItemHandler()
 		{
 			Control = new Gtk.ImageMenuItem();
-			Control.Activated += control_Activated;
 			label = new Gtk.AccelLabel(string.Empty);
 			label.Xalign = 0;
 			label.UseUnderline = true;
 			label.AccelWidget = Control;
 			Control.Add(label);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Activated += Connector.HandleActivated;
+		}
+
+		protected new ButtonMenuItemConnector Connector { get { return (ButtonMenuItemConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new ButtonMenuItemConnector();
+		}
+
+		protected class ButtonMenuItemConnector : WeakConnector
+		{
+			public new ButtonMenuItemHandler Handler { get { return (ButtonMenuItemHandler)base.Handler; } }
+
+			public void HandleActivated(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				if (handler.Control.Submenu != null)
+					handler.ValidateItems ();
+				handler.Widget.OnClick(e);
+			}
 		}
 		
 		public bool Enabled
@@ -95,12 +120,6 @@ namespace Eto.Platform.GtkSharp
 			{
 				Control.Remove(w);
 			}
-		}
-		void control_Activated(object sender, EventArgs e)
-		{
-			if (Control.Submenu != null)
-				ValidateItems ();
-			Widget.OnClick(e);
 		}
 	}
 }

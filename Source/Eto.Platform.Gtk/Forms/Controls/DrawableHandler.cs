@@ -1,6 +1,7 @@
 using Eto.Drawing;
 using Eto.Forms;
 using Eto.Platform.GtkSharp.Drawing;
+using System;
 
 namespace Eto.Platform.GtkSharp
 {
@@ -14,9 +15,9 @@ namespace Eto.Platform.GtkSharp
 		{
 			Control = new Gtk.EventBox();
 #if GTK2
-			Control.ExposeEvent += control_ExposeEvent;
+			Control.ExposeEvent += Connector.HandleExpose;
 #else
-			Control.Drawn += HandleDrawn;
+			Control.Drawn += Connector.HandleDrawn;
 #endif
 			Control.Events |= Gdk.EventMask.ExposureMask;
 			//Control.ModifyBg(Gtk.StateType.Normal, new Gdk.Color(0, 0, 0));
@@ -24,14 +25,16 @@ namespace Eto.Platform.GtkSharp
 			Control.CanFocus = false;
 			Control.CanDefault = true;
 			Control.Events |= Gdk.EventMask.ButtonPressMask;
-			Control.ButtonPressEvent += (o, args) => {
-				if (CanFocus)
-					Control.GrabFocus();
-			};
 
 			content = new Gtk.VBox();
 
 			Control.Add(content);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.ButtonPressEvent += Connector.HandleDrawableButtonPressEvent;
 		}
 
 		public bool CanFocus
@@ -40,30 +43,49 @@ namespace Eto.Platform.GtkSharp
 			set { Control.CanFocus = value; }
 		}
 
-#if GTK2
-		void control_ExposeEvent(object o, Gtk.ExposeEventArgs args)
-		{
-			Gdk.EventExpose ev = args.Event;
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, ev.Window)))
-			{
-				Rectangle rect = ev.Region.Clipbox.ToEto();
-				Widget.OnPaint(new PaintEventArgs(graphics, rect));
-			}
-		}
-#else
-		void HandleDrawn (object o, Gtk.DrawnArgs args)
-		{
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (args.Cr, Control.CreatePangoContext (), false))) {
-				Rectangle rect = new Rectangle(this.Size); //ev.Region.Clipbox.ToEto ();
-				Widget.OnPaint (new PaintEventArgs (graphics, rect));
-			}
-		}
-#endif
+		protected new DrawableConnector Connector { get { return (DrawableConnector)base.Connector; } }
 
+		protected override WeakConnector CreateConnector()
+		{
+			return new DrawableConnector();
+		}
+
+		protected class DrawableConnector : GtkPanelEventConnector
+		{
+			public new DrawableHandler Handler { get { return (DrawableHandler)base.Handler; } }
+
+			public void HandleDrawableButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
+			{
+				if (Handler.CanFocus)
+					Handler.Control.GrabFocus();
+			}
+
+#if GTK2
+			public void HandleExpose(object o, Gtk.ExposeEventArgs args)
+			{
+				var h = Handler;
+				Gdk.EventExpose ev = args.Event;
+				using (var graphics = new Graphics(h.Widget.Generator, new GraphicsHandler(h.Control, ev.Window)))
+				{
+					Rectangle rect = ev.Region.Clipbox.ToEto();
+					h.Widget.OnPaint(new PaintEventArgs(graphics, rect));
+				}
+			}
+#else
+			public void HandleDrawn(object o, Gtk.DrawnArgs args)
+			{
+				var h = Handler;
+				using (var graphics = new Graphics(h.Widget.Generator, new GraphicsHandler(args.Cr, h.Control.CreatePangoContext(), false)))
+				{
+					h.Widget.OnPaint (new PaintEventArgs (graphics, new Rectangle(h.Size)));
+				}
+			}
+#endif
+		}
 
 		public void Update(Rectangle rect)
 		{
-			using (var graphics = new Graphics (Widget.Generator, new GraphicsHandler (Control, Control.GdkWindow)))
+			using (var graphics = new Graphics(Widget.Generator, new GraphicsHandler(Control, Control.GdkWindow)))
 			{
 				Widget.OnPaint(new PaintEventArgs(graphics, rect));
 			}

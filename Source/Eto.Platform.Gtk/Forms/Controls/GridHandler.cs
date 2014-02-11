@@ -44,20 +44,39 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 			Control.Add(Tree);
 
 			Tree.Events |= Gdk.EventMask.ButtonPressMask;
-			Tree.ButtonPressEvent += HandleTreeButtonPressEvent;
+			Tree.ButtonPressEvent += Connector.HandleTreeButtonPressEvent;
 
 			columns = new ColumnCollection { Handler = this };
 			columns.Register(Widget.Columns);
 		}
 
-		[GLib.ConnectBefore]
-		void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
+		protected new GridConnector Connector { get { return (GridConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
 		{
-			if (contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
+			return new GridConnector();
+		}
+
+		protected class GridConnector : GtkControlConnector
+		{
+			public new GridHandler<TWidget> Handler { get { return (GridHandler<TWidget>)base.Handler; } }
+
+			[GLib.ConnectBefore]
+			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
 			{
-				var menu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				menu.Popup();
-				menu.ShowAll();
+				var handler = Handler;
+				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
+				{
+					var menu = ((ContextMenuHandler)handler.contextMenu.Handler).Control;
+					menu.Popup();
+					menu.ShowAll();
+				}
+			}
+
+			public void HandleGridSelectionChanged(object sender, EventArgs e)
+			{
+				if (!Handler.SkipSelectedChange)
+					Handler.Widget.OnSelectionChanged(EventArgs.Empty);
 			}
 		}
 
@@ -72,11 +91,7 @@ namespace Eto.Platform.GtkSharp.Forms.Controls
 					SetupColumnEvents();
 					break;
 				case Grid.SelectionChangedEvent:
-					Tree.Selection.Changed += delegate
-					{
-						if (!SkipSelectedChange)
-							Widget.OnSelectionChanged(EventArgs.Empty);
-					};
+					Tree.Selection.Changed += Connector.HandleGridSelectionChanged;
 					break;
 				default:
 					base.AttachEvent(id);
