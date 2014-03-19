@@ -260,7 +260,7 @@ namespace Eto.Test
 			gridView = new GridView { ShowCellBorders = false };
 			gridView.Columns.Add(new GridColumn { HeaderText = "Name", Width = 100, AutoSize = false, DataCell = new TextBoxCell("Name"), Sortable = true });
 			gridView.Columns.Add(new GridColumn { HeaderText = "Section", DataCell = new TextBoxCell("SectionName"), Sortable = true });
-			var items = new GridItemCollection();
+			var items = new DataStoreCollection();
 			foreach (var section in topNodes)
 			{				
 				foreach (var test in section)

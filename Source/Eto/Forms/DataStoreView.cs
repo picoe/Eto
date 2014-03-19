@@ -74,7 +74,7 @@ namespace Eto.Forms
 		/// This object reference is kept throughout the life of the
 		/// DataStoreView.
 		/// </summary>
-		readonly GridItemCollection view = new GridItemCollection();
+		readonly DataStoreCollection view = new DataStoreCollection();
 		readonly MyComparer comparer = new MyComparer();
 		List<int> viewToModel;
 		Dictionary<int, int> modelToView;

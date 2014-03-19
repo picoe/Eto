@@ -113,4 +113,19 @@ namespace Eto.Forms
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemList, oldIndex));
 		}
 	}
+
+	/// <summary>
+	/// A data store of plain objects, that can be bound to a grid view.
+	/// </summary>
+	public class DataStoreCollection : DataStoreCollection<object>, IDataStore
+	{
+		public DataStoreCollection()
+		{
+		}
+
+		public DataStoreCollection(IEnumerable<object> items)
+			: base(items)
+		{
+		}
+	}
 }
