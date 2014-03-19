@@ -85,6 +85,14 @@ namespace Eto.Forms
 			HandleEvent(Grid.SelectionChangedEvent);
 		}
 
+		public GridView(Generator generator, IControl handler, bool initialize = true)
+			: base(generator, handler, initialize)
+		{
+			// Always attach the SelectionChangedEvent
+			// since it is always handled in the GridView.
+			HandleEvent(Grid.SelectionChangedEvent);
+		}
+
 		/// <summary>
 		/// The model data store.
 		/// Setting this creates a DataStoreView, and the handler's
