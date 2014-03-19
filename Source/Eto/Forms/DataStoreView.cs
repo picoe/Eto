@@ -175,7 +175,9 @@ namespace Eto.Forms
 			public Comparison<object> SortComparer { get; set; }
 			public int Compare(object x, object y)
 			{
-				return SortComparer == null ? 0 : SortComparer(x, y);
+				if (SortComparer == null)
+					throw new InvalidOperationException("SortComparer must not be null");
+				return SortComparer(x, y);
 			}
 		}
 
@@ -197,9 +199,9 @@ namespace Eto.Forms
 				var viewItems = (Filter != null) ? temp.Where(Filter).ToList() : temp.ToList();
 
 				// sort if needed
-				if (comparer != null)
+				if (comparer != null &&
+					comparer.SortComparer != null)
 					viewItems.Sort(comparer);
-
 
 				// If a sort or filter is specified, create a dictionary
 				// of the item indices. This materializes a list of all the
