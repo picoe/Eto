@@ -158,9 +158,12 @@ namespace Eto.Forms
 			get { return sortComparer; }
 			set
 			{
-				sortComparer = value;
-				if (DataStoreView != null)
-					DataStoreView.SortComparer = value;
+				using (selection.PreserveSelection())
+				{
+					sortComparer = value;
+					if (DataStoreView != null)
+						DataStoreView.SortComparer = value;
+				}
 			}
 		}
 
@@ -171,9 +174,12 @@ namespace Eto.Forms
 			get { return filter; }
 			set
 			{
-				filter = value;
-				if (DataStoreView != null)
-					DataStoreView.Filter = value;
+				using (selection.PreserveSelection())
+				{
+					filter = value;
+					if (DataStoreView != null)
+						DataStoreView.Filter = value;
+				}
 			}
 		}
 

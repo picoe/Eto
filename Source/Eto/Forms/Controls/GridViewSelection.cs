@@ -97,6 +97,82 @@ namespace Eto.Forms
 			}
 		}
 
+		/// <summary>
+		/// A GridView's GridViewSelection maintains the set of 
+		/// selected items.
+		/// 
+		/// When the model is change or sorting or filtering is applied, 
+		/// it is necessary to recompute the view selection, since the view
+		/// only tracks items by index.
+		/// 
+		/// This class contains the logic to map selected items to their
+		/// view indexes.
+		/// </summary>
+		class SelectionPreserver : IDisposable
+		{
+			GridViewSelection s;
+			HashSet<object> selectedItems;
+			IDataStore Model { get { return s.DataStoreView.Model; } }
+			IDataStore View { get { return s.DataStoreView.View; } }
+
+			public SelectionPreserver(GridViewSelection s)
+			{
+				s.state = GridViewSelectionState.SelectionChanging; // causes selection events to be suppressed.
+				this.s = s;
+				selectedItems = new HashSet<object>();
+
+				foreach (var i in s.SelectedRows)
+					selectedItems.Add(s.DataStoreView.Model[i]);
+			}
+
+			public void Dispose()
+			{
+				// Determine which of the originally selected objects still
+				// exist and which have been removed.
+				var finalSelectedRows = new HashSet<object>();
+				var removedSelectedRows = new HashSet<object>();
+
+				for (var i = 0; i < Model.Count; ++i)
+				{
+					var item = Model[i];
+					if (selectedItems.Contains(item))
+						finalSelectedRows.Add(item);
+				}
+
+				foreach (var item in selectedItems)
+					if (!finalSelectedRows.Contains(item))
+						removedSelectedRows.Add(item);
+
+				// Restore the selected state in the view
+				var selectedRowViewIndexes = new SortedSet<int>();				
+				for(var i = 0; i< View.Count; ++i)
+					if(selectedItems.Contains(View[i]))
+						selectedRowViewIndexes.Add(i);
+
+				// Reselect the row in the handler.
+				s.Handler.UnselectAll();
+				foreach(var i in selectedRowViewIndexes)
+					s.Handler.SelectRow(i);
+
+				s.state = GridViewSelectionState.Normal; // start firing selection changed events again.
+
+				// TODO: should we fire SelectionChanged events if
+				// selected items were removed? This is an edge case;
+				// implement only if needed.
+			}
+		}
+
+		/// <summary>
+		/// Wrap code that should preserve the selection with 
+		/// using(PreserveSelection()).
+		/// This takes a snapshot of the selection and restores
+		/// it during dispose.
+		/// </summary>
+		public IDisposable PreserveSelection()
+		{
+			return new SelectionPreserver(this);
+		}
+
 		void ChangeSelection(Action a)
 		{
 			state = GridViewSelectionState.SelectionChanging;
