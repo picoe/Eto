@@ -126,24 +126,4 @@ namespace Eto.Test.UnitTests
 			Assert.AreEqual(0, selectionChangedCount); // verify that no selection changed events are fired.
 		}
 	}
-
-	[TestClass]
-	public class GridViewInitializationTests
-	{
-		[TestMethod]
-		public void GridView_SetFilterBeforeDataStore_NoException()
-		{
-			var g = new GridView(null, new TestGridViewHandler());
-			g.Filter = GridViewUtils.KeepOddItemsFilter; 
-			g.DataStore = GridViewUtils.CreateModel();
-		}
-
-		[TestMethod]
-		public void GridView_SetSortBeforeDataStore_NoException()
-		{
-			var g = new GridView(null, new TestGridViewHandler());
-			g.SortComparer = GridViewUtils.SortItemsAscending;
-			g.DataStore = GridViewUtils.CreateModel();
-		}
-	}
 }

@@ -123,6 +123,7 @@
     <Compile Include="Sections\Drawing\TransformSection.cs" />
     <Compile Include="Sections\Drawing\BrushSection.cs" />
     <Compile Include="TestIcons.cs" />
+    <Compile Include="UnitTests\GridViewTests.cs" />
     <Compile Include="UnitTests\DataStoreViewTests.cs" />
     <Compile Include="UnitTests\TestRunner.cs" />
     <Compile Include="UnitTests\GridViewSelectionTests.cs" />
