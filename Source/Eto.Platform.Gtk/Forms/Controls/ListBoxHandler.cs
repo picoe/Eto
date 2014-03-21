@@ -31,23 +31,50 @@ namespace Eto.Platform.GtkSharp
 			scroll.Add(Control);
 
 			Control.Events |= Gdk.EventMask.ButtonPressMask;
-			Control.ButtonPressEvent += HandleTreeButtonPressEvent;
 
 			Control.AppendColumn("Img", new Gtk.CellRendererPixbuf(), "pixbuf", 1);
 			Control.AppendColumn("Data", new Gtk.CellRendererText(), "text", 0);
 			Control.HeadersVisible = false;
-			Control.Selection.Changed += selection_Changed;
-			Control.RowActivated += tree_RowActivated;
 		}
 
-		[GLib.ConnectBefore]
-		void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
+		protected override void Initialize()
 		{
-			if (contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
+			base.Initialize();
+			Control.ButtonPressEvent += Connector.HandleTreeButtonPressEvent;
+			Control.Selection.Changed += Connector.HandleSelectionChanged;
+			Control.RowActivated += Connector.HandleTreeRowActivated;
+		}
+
+		protected new ListBoxEventConnector Connector { get { return (ListBoxEventConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new ListBoxEventConnector();
+		}
+
+		protected class ListBoxEventConnector : GtkControlConnector
+		{
+			public new ListBoxHandler Handler { get { return (ListBoxHandler)base.Handler; } }
+
+			[GLib.ConnectBefore]
+			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
 			{
-				var menu = (Gtk.Menu)contextMenu.ControlObject;
-				menu.Popup();
-				menu.ShowAll();
+				if (Handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
+				{
+					var menu = (Gtk.Menu)Handler.contextMenu.ControlObject;
+					menu.Popup();
+					menu.ShowAll();
+				}
+			}
+
+			public void HandleSelectionChanged(object sender, EventArgs e)
+			{
+				Handler.Widget.OnSelectedIndexChanged(EventArgs.Empty);
+			}
+
+			public void HandleTreeRowActivated(object o, Gtk.RowActivatedArgs args)
+			{
+				Handler.Widget.OnActivated(EventArgs.Empty);
 			}
 		}
 
@@ -89,24 +116,8 @@ namespace Eto.Platform.GtkSharp
 
 		public ContextMenu ContextMenu
 		{
-			get
-			{
-				return contextMenu;
-			}
-			set
-			{
-				contextMenu = value;
-			}
-		}
-
-		void selection_Changed(object sender, EventArgs e)
-		{
-			Widget.OnSelectedIndexChanged(EventArgs.Empty);
-		}
-
-		void tree_RowActivated(object o, Gtk.RowActivatedArgs args)
-		{
-			Widget.OnActivated(EventArgs.Empty);
+			get { return contextMenu; }
+			set { contextMenu = value; }
 		}
 
 		public GLib.Value GetColumnValue(IListItem item, int column, int row)

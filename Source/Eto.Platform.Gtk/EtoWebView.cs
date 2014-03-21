@@ -5,6 +5,7 @@ using System.Runtime.InteropServices;
 
 namespace Eto.Platform.GtkSharp
 {
+	#if GTK2
 	public class NewWindowPolicyDecisionRequestedArgs : SignalArgs
 	{
 		public WebFrame Frame { get { return Args[0] as WebFrame; } }
@@ -15,6 +16,7 @@ namespace Eto.Platform.GtkSharp
 
 		public WebPolicyDecision Decision { get { return Args[0] as WebPolicyDecision; } }
 	}
+	#endif
 
 	public delegate void NewWindowPolicyDecisionRequestedHandler (object sender,NewWindowPolicyDecisionRequestedArgs e);
 

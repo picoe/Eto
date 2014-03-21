@@ -21,30 +21,10 @@ namespace Eto.Platform.GtkSharp.Forms
 			get { return tree; }
 		}
 
-		class CellRendererTextImage : Gtk.CellRendererText
-		{
-#if GTK2
-			public override void GetSize(Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				base.GetSize(widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-				width += 16;
-			}
-#else
-			protected override void OnRender (Cairo.Context cr, Gtk.Widget widget, Gdk.Rectangle background_area, Gdk.Rectangle cell_area, Gtk.CellRendererState flags)
-			{
-				base.OnRender (cr, widget, background_area, cell_area, flags);
-			}
-
-			protected override void OnGetSize (Gtk.Widget widget, ref Gdk.Rectangle cell_area, out int x_offset, out int y_offset, out int width, out int height)
-			{
-				base.OnGetSize (widget, ref cell_area, out x_offset, out y_offset, out width, out height);
-			}
-#endif
-		}
-
 		public class CollectionHandler : DataStoreChangedHandler<ITreeItem, ITreeStore>
 		{
-			public TreeViewHandler Handler { get; set; }
+			WeakReference handler;
+			public TreeViewHandler Handler { get { return (TreeViewHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			public void ExpandItems(ITreeStore store, Gtk.TreePath path)
 			{
@@ -138,7 +118,6 @@ namespace Eto.Platform.GtkSharp.Forms
 			col.SetAttributes(textCell, "text", 0);
 			tree.AppendColumn(col);
 
-			
 			tree.ShowExpanders = true;
 			
 			Control = new Gtk.ScrolledWindow();
@@ -146,7 +125,12 @@ namespace Eto.Platform.GtkSharp.Forms
 			Control.Add(tree);
 			
 			tree.Events |= Gdk.EventMask.ButtonPressMask;
-			tree.ButtonPressEvent += HandleTreeButtonPressEvent;
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			tree.ButtonPressEvent += Connector.HandleTreeButtonPressEvent;
 		}
 
 		public override void AttachEvent(string id)
@@ -154,85 +138,28 @@ namespace Eto.Platform.GtkSharp.Forms
 			switch (id)
 			{
 				case TreeView.ExpandingEvent:
-					tree.TestExpandRow += delegate(object o, Gtk.TestExpandRowArgs args)
-					{
-						if (cancelExpandCollapseEvents)
-							return;
-						var e = new TreeViewItemCancelEventArgs(GetItem(args.Path) as ITreeItem);
-						Widget.OnExpanding(e);
-						args.RetVal = e.Cancel;
-					};
+					tree.TestExpandRow += Connector.HandleTestExpandRow;
 					break;
 				case TreeView.ExpandedEvent:
-					tree.RowExpanded += delegate(object o, Gtk.RowExpandedArgs args)
-					{
-						if (cancelExpandCollapseEvents)
-							return;
-						var item = GetItem(args.Path) as ITreeItem;
-						if (item != null && !item.Expanded)
-						{
-							item.Expanded = true;
-							collection.ExpandItems(item, args.Path);
-							Widget.OnExpanded(new TreeViewItemEventArgs(item));
-						}
-					};
+					tree.RowExpanded += Connector.HandleRowExpanded;
 					break;
 				case TreeView.CollapsingEvent:
-					tree.TestCollapseRow += delegate(object o, Gtk.TestCollapseRowArgs args)
-					{
-						if (cancelExpandCollapseEvents)
-							return;
-						var e = new TreeViewItemCancelEventArgs(GetItem(args.Path) as ITreeItem);
-						Widget.OnCollapsing(e);
-						args.RetVal = e.Cancel;
-					};
+					tree.TestCollapseRow += Connector.HandleTestCollapseRow;
 					break;
 				case TreeView.CollapsedEvent:
-					tree.RowCollapsed += delegate(object o, Gtk.RowCollapsedArgs args)
-					{
-						if (cancelExpandCollapseEvents)
-							return;
-						var item = GetItem(args.Path) as ITreeItem;
-						if (item != null && item.Expanded)
-						{
-							item.Expanded = false;
-							Widget.OnCollapsed(new TreeViewItemEventArgs(item));
-						}
-					};
+					tree.RowCollapsed += Connector.HandleRowCollapsed;
 					break;
 				case TreeView.ActivatedEvent:
-					tree.RowActivated += delegate(object o, Gtk.RowActivatedArgs args)
-					{
-						Widget.OnActivated(new TreeViewItemEventArgs(model.GetItemAtPath(args.Path)));
-					};
+					tree.RowActivated += Connector.HandleRowActivated;
 					break;
 				case TreeView.SelectionChangedEvent:
-					tree.Selection.Changed += delegate
-					{
-						Widget.OnSelectionChanged(EventArgs.Empty);
-					};
-
+					tree.Selection.Changed += Connector.HandleSelectionChanged;
 					break;
 				case TreeView.LabelEditingEvent:
-					textCell.EditingStarted += (o, args) => {
-						var item = model.GetItemAtPath(args.Path);
-						if (item != null)
-						{
-							var itemArgs = new TreeViewItemCancelEventArgs(item);
-							Widget.OnLabelEditing(itemArgs);
-							args.RetVal = itemArgs.Cancel;
-						}
-					};
+					textCell.EditingStarted += Connector.HandleEditingStarted;
 					break;
 				case TreeView.LabelEditedEvent:
-					textCell.Edited += (o, args) => {
-						var item = model.GetItemAtPath(args.Path);
-						if (item != null)
-						{
-							Widget.OnLabelEdited(new TreeViewItemEditEventArgs(item, args.NewText));
-							item.Text = args.NewText;
-						}
-					};
+					textCell.Edited += Connector.HandleEdited;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -245,14 +172,107 @@ namespace Eto.Platform.GtkSharp.Forms
 			return model.GetItemAtPath(path);
 		}
 
-		[GLib.ConnectBefore]
-		void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
+		protected new TreeViewConnector Connector { get { return (TreeViewConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
 		{
-			if (contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
+			return new TreeViewConnector();
+		}
+
+		protected class TreeViewConnector : GtkControlConnector
+		{
+			public new TreeViewHandler Handler { get { return (TreeViewHandler)base.Handler; } }
+
+			public void HandleTestExpandRow(object o, Gtk.TestExpandRowArgs args)
 			{
-				var menu = ((ContextMenuHandler)contextMenu.Handler).Control;
-				menu.Popup();
-				menu.ShowAll();
+				var handler = Handler;
+				if (handler.cancelExpandCollapseEvents)
+					return;
+				var e = new TreeViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeItem);
+				handler.Widget.OnExpanding(e);
+				args.RetVal = e.Cancel;
+			}
+
+			public void HandleTestCollapseRow(object o, Gtk.TestCollapseRowArgs args)
+			{
+				var handler = Handler;
+				if (handler.cancelExpandCollapseEvents)
+					return;
+				var e = new TreeViewItemCancelEventArgs(handler.GetItem(args.Path) as ITreeItem);
+				handler.Widget.OnCollapsing(e);
+				args.RetVal = e.Cancel;
+			}
+
+			public void HandleRowExpanded(object o, Gtk.RowExpandedArgs args)
+			{
+				var handler = Handler;
+				if (handler.cancelExpandCollapseEvents)
+					return;
+				var item = handler.GetItem(args.Path) as ITreeItem;
+				if (item != null && !item.Expanded)
+				{
+					item.Expanded = true;
+					handler.collection.ExpandItems(item, args.Path);
+					handler.Widget.OnExpanded(new TreeViewItemEventArgs(item));
+				}
+			}
+
+			public void HandleRowCollapsed(object o, Gtk.RowCollapsedArgs args)
+			{
+				var handler = Handler;
+				if (handler.cancelExpandCollapseEvents)
+					return;
+				var item = handler.GetItem(args.Path) as ITreeItem;
+				if (item != null && item.Expanded)
+				{
+					item.Expanded = false;
+					handler.Widget.OnCollapsed(new TreeViewItemEventArgs(item));
+				}
+			}
+
+			public void HandleRowActivated(object o, Gtk.RowActivatedArgs args)
+			{
+				Handler.Widget.OnActivated(new TreeViewItemEventArgs(Handler.model.GetItemAtPath(args.Path)));
+			}
+
+			public void HandleSelectionChanged(object sender, EventArgs e)
+			{
+				Handler.Widget.OnSelectionChanged(EventArgs.Empty);
+			}
+
+			public void HandleEditingStarted(object o, Gtk.EditingStartedArgs args)
+			{
+				var handler = Handler;
+				var item = handler.model.GetItemAtPath(args.Path);
+				if (item != null)
+				{
+					var itemArgs = new TreeViewItemCancelEventArgs(item);
+					handler.Widget.OnLabelEditing(itemArgs);
+					args.RetVal = itemArgs.Cancel;
+				}
+			}
+
+			public void HandleEdited(object o, Gtk.EditedArgs args)
+			{
+				var handler = Handler;
+				var item = handler.model.GetItemAtPath(args.Path);
+				if (item != null)
+				{
+					handler.Widget.OnLabelEdited(new TreeViewItemEditEventArgs(item, args.NewText));
+					item.Text = args.NewText;
+				}
+			}
+
+			[GLib.ConnectBefore]
+			public void HandleTreeButtonPressEvent(object o, Gtk.ButtonPressEventArgs args)
+			{
+				var handler = Handler;
+				if (handler.contextMenu != null && args.Event.Button == 3 && args.Event.Type == Gdk.EventType.ButtonPress)
+				{
+					var menu = ((ContextMenuHandler)handler.contextMenu.Handler).Control;
+					menu.Popup();
+					menu.ShowAll();
+				}
 			}
 		}
 

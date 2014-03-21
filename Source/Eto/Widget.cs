@@ -1,3 +1,7 @@
+
+// uncomment to track garbage collection of widgets
+//#define TRACK_GC
+
 using System;
 
 namespace Eto
@@ -107,6 +111,13 @@ namespace Eto
 		/// </summary>
 		public object Handler { get; internal set; }
 
+		#if TRACK_GC
+		~Widget()
+		{
+			Dispose(false);
+		}
+		#endif
+
 		/// <summary>
 		/// Initializes a new instance of the Widget class
 		/// </summary>
@@ -187,7 +198,9 @@ namespace Eto
 					handler.Dispose();
 				Handler = null;
 			}
-			//Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
+			#if TRACK_GC
+			Console.WriteLine ("{0}: {1}", disposing ? "Dispose" : "GC", GetType().Name);
+			#endif
 		}
 	}
 }

@@ -9,7 +9,8 @@ namespace Eto.Platform.GtkSharp.Forms.Cells
 	{
 		class Renderer : Gtk.CellRendererPixbuf
 		{
-			public ImageViewCellHandler Handler { get; set; }
+			WeakReference handler;
+			public ImageViewCellHandler Handler { get { return (ImageViewCellHandler)handler.Target; } set { handler = new WeakReference(value); } }
 
 			[GLib.Property("item")]
 			public object Item { get; set; }

@@ -213,7 +213,6 @@ namespace Eto.Platform.GtkSharp
 				ContainerContentControl.ModifyBg(Gtk.StateType.Normal);
 		}
 
-
 		public virtual Color BackgroundColor
 		{
 			get
@@ -264,11 +263,11 @@ namespace Eto.Platform.GtkSharp
 
 		public virtual void SetParent(Container parent)
 		{
-			if (parent == null)
+			/*if (parent == null)
 			{
 				if (ContainerControl.Parent != null)
 					((Gtk.Container)ContainerControl.Parent).Remove(ContainerControl);
-			}
+			}*/
 		}
 
 		public virtual void OnPreLoad(EventArgs e)
@@ -282,7 +281,7 @@ namespace Eto.Platform.GtkSharp
 		public virtual void OnLoadComplete(EventArgs e)
 		{
 			if (!Control.IsRealized)
-				Control.Realized += HandleControlRealized;
+				Control.Realized += Connector.HandleControlRealized;
 			else
 				RealizedSetup();
 		}
@@ -298,27 +297,21 @@ namespace Eto.Platform.GtkSharp
 			SetBackgroundColor();
 		}
 
-		void HandleControlRealized(object sender, EventArgs e)
-		{
-			RealizedSetup();
-			Control.Realized -= HandleControlRealized;
-		}
-
 		public override void AttachEvent(string id)
 		{
 			switch (id)
 			{
 				case Eto.Forms.Control.KeyDownEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyPressMask);
-					EventControl.KeyPressEvent += HandleKeyPressEvent;
+					EventControl.KeyPressEvent += Connector.HandleKeyPressEvent;
 					break;
 				case Eto.Forms.Control.KeyUpEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.KeyReleaseMask);
-					EventControl.KeyReleaseEvent += HandleKeyReleaseEvent;
+					EventControl.KeyReleaseEvent += Connector.HandleKeyReleaseEvent;
 					break;
 				case Eto.Forms.Control.SizeChangedEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.StructureMask);
-					EventControl.SizeAllocated += GtkControlObject_SizeAllocated;
+					EventControl.SizeAllocated += Connector.HandleSizeAllocated;
 					break;
 				case Eto.Forms.Control.MouseDoubleClickEvent:
 				case Eto.Forms.Control.MouseDownEvent:
@@ -326,52 +319,43 @@ namespace Eto.Platform.GtkSharp
 					{
 						EventControl.AddEvents((int)Gdk.EventMask.ButtonPressMask);
 						EventControl.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
-						EventControl.ButtonPressEvent += GtkControlObject_ButtonPressEvent;
+						EventControl.ButtonPressEvent += Connector.HandleButtonPressEvent;
 						mouseDownHandled = true;
 					}
 					break;
 				case Eto.Forms.Control.MouseUpEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.ButtonReleaseMask);
-					EventControl.ButtonReleaseEvent += GtkControlObject_ButtonReleaseEvent;
+					EventControl.ButtonReleaseEvent += Connector.HandleButtonReleaseEvent;
 					break;
 				case Eto.Forms.Control.MouseEnterEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.EnterNotifyMask);
-					EventControl.EnterNotifyEvent += HandleControlEnterNotifyEvent;
+					EventControl.EnterNotifyEvent += Connector.HandleControlEnterNotifyEvent;
 					break;
 				case Eto.Forms.Control.MouseLeaveEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.LeaveNotifyMask);
-					EventControl.LeaveNotifyEvent += HandleControlLeaveNotifyEvent;
+					EventControl.LeaveNotifyEvent += Connector.HandleControlLeaveNotifyEvent;
 					break;
 				case Eto.Forms.Control.MouseMoveEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.ButtonMotionMask);
 					EventControl.AddEvents((int)Gdk.EventMask.PointerMotionMask);
 					//GtkControlObject.Events |= Gdk.EventMask.PointerMotionHintMask;
-					EventControl.MotionNotifyEvent += GtkControlObject_MotionNotifyEvent;
+					EventControl.MotionNotifyEvent += Connector.HandleMotionNotifyEvent;
 					break;
 				case Eto.Forms.Control.MouseWheelEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.ScrollMask);
-					EventControl.ScrollEvent += HandleScrollEvent;
+					EventControl.ScrollEvent += Connector.HandleScrollEvent;
 					break;
 				case Eto.Forms.Control.GotFocusEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.FocusChangeMask);
-					EventControl.FocusInEvent += delegate
-					{
-						Widget.OnGotFocus(EventArgs.Empty);
-					};
+					EventControl.FocusInEvent += Connector.FocusInEvent;
 					break;
 				case Eto.Forms.Control.LostFocusEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.FocusChangeMask);
-					EventControl.FocusOutEvent += delegate
-					{
-						Widget.OnLostFocus(EventArgs.Empty);
-					};
+					EventControl.FocusOutEvent += Connector.FocusOutEvent;
 					break;
 				case Eto.Forms.Control.ShownEvent:
 					EventControl.AddEvents((int)Gdk.EventMask.VisibilityNotifyMask);
-					EventControl.VisibilityNotifyEvent += (o, args) => {
-						if (args.Event.State == Gdk.VisibilityState.FullyObscured)
-							Widget.OnShown(EventArgs.Empty);
-					};
+					EventControl.VisibilityNotifyEvent += Connector.VisibilityNotifyEvent;
 					break;
 				default:
 					base.AttachEvent(id);
@@ -379,119 +363,152 @@ namespace Eto.Platform.GtkSharp
 			}
 		}
 
-		void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
-		{
-			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-			Key modifiers = args.Event.State.ToEtoKey();
-			MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
-			SizeF delta;
+		protected GtkControlConnector Connector { get { return (GtkControlConnector)base.Connector; } }
 
-			switch (args.Event.Direction)
+		protected override WeakConnector CreateConnector()
+		{
+			return new GtkControlConnector();
+		}
+
+		/// <summary>
+		/// Connector for events to keep a weak reference to allow gtk controls to be garbage collected when no longer referenced
+		/// </summary>
+		protected class GtkControlConnector : WeakConnector
+		{
+			public GtkControl<TControl, TWidget> Handler { get { return (GtkControl<TControl, TWidget>)base.Handler; } }
+
+			public void HandleScrollEvent(object o, Gtk.ScrollEventArgs args)
 			{
-				case Gdk.ScrollDirection.Down:
-					delta = new SizeF(0f, -ScrollAmount);
-					break;
-				case Gdk.ScrollDirection.Left:
-					delta = new SizeF(ScrollAmount, 0f);
-					break;
-				case Gdk.ScrollDirection.Right:
-					delta = new SizeF(-ScrollAmount, 0f);
-					break;
-				case Gdk.ScrollDirection.Up:
-					delta = new SizeF(0f, ScrollAmount);
-					break;
-				default:
-					throw new NotSupportedException();
+				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				Key modifiers = args.Event.State.ToEtoKey();
+				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
+				SizeF delta;
+
+				switch (args.Event.Direction)
+				{
+					case Gdk.ScrollDirection.Down:
+						delta = new SizeF(0f, -ScrollAmount);
+						break;
+					case Gdk.ScrollDirection.Left:
+						delta = new SizeF(ScrollAmount, 0f);
+						break;
+					case Gdk.ScrollDirection.Right:
+						delta = new SizeF(-ScrollAmount, 0f);
+						break;
+					case Gdk.ScrollDirection.Up:
+						delta = new SizeF(0f, ScrollAmount);
+						break;
+					default:
+						throw new NotSupportedException();
+				}
+
+				Handler.Widget.OnMouseWheel(new MouseEventArgs(buttons, modifiers, p, delta));
 			}
 
-			Widget.OnMouseWheel(new MouseEventArgs(buttons, modifiers, p, delta));
-		}
-
-		void HandleControlLeaveNotifyEvent(object o, Gtk.LeaveNotifyEventArgs args)
-		{
-			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-			Key modifiers = args.Event.State.ToEtoKey();
-			MouseButtons buttons = MouseButtons.None;
-			
-			Widget.OnMouseLeave(new MouseEventArgs(buttons, modifiers, p));
-		}
-
-		void HandleControlEnterNotifyEvent(object o, Gtk.EnterNotifyEventArgs args)
-		{
-			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-			Key modifiers = args.Event.State.ToEtoKey();
-			MouseButtons buttons = MouseButtons.None;
-			
-			Widget.OnMouseEnter(new MouseEventArgs(buttons, modifiers, p));
-		}
-
-		void GtkControlObject_MotionNotifyEvent(System.Object o, Gtk.MotionNotifyEventArgs args)
-		{
-			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-			Key modifiers = args.Event.State.ToEtoKey();
-			MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
-			
-			Widget.OnMouseMove(new MouseEventArgs(buttons, modifiers, p));
-			
-			/*int x,y;
-			GtkControlObject.GetPointer(out x, out y);
-			p = new Point(x, y);*/
-		}
-
-		void GtkControlObject_ButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
-		{
-			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-			Key modifiers = args.Event.State.ToEtoKey();
-			MouseButtons buttons = args.Event.ToEtoMouseButtons();
-			
-			Widget.OnMouseUp(new MouseEventArgs(buttons, modifiers, p));
-		}
-
-		void GtkControlObject_ButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
-		{
-			var p = new PointF((float)args.Event.X, (float)args.Event.Y);
-			Key modifiers = args.Event.State.ToEtoKey();
-			MouseButtons buttons = args.Event.ToEtoMouseButtons();
-			if (Control.CanFocus && !Control.HasFocus)
-				Control.GrabFocus();
-			if (args.Event.Type == Gdk.EventType.ButtonPress)
+			public void HandleControlLeaveNotifyEvent(object o, Gtk.LeaveNotifyEventArgs args)
 			{
-				Widget.OnMouseDown(new MouseEventArgs(buttons, modifiers, p));
+				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				Key modifiers = args.Event.State.ToEtoKey();
+				MouseButtons buttons = MouseButtons.None;
+
+				Handler.Widget.OnMouseLeave(new MouseEventArgs(buttons, modifiers, p));
 			}
-			else if (args.Event.Type == Gdk.EventType.TwoButtonPress)
-			{
-				Widget.OnMouseDoubleClick(new MouseEventArgs(buttons, modifiers, p));
-			}
-		}
 
-		void GtkControlObject_SizeAllocated(object o, Gtk.SizeAllocatedArgs args)
-		{
-			if (asize != args.Allocation.Size.ToEto())
+			public void HandleControlEnterNotifyEvent(object o, Gtk.EnterNotifyEventArgs args)
 			{
-				// only call when the size has actually changed, gtk likes to call anyway!!  grr.
-				asize = args.Allocation.Size.ToEto();
-				Widget.OnSizeChanged(EventArgs.Empty);
-			}
-		}
+				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				Key modifiers = args.Event.State.ToEtoKey();
+				MouseButtons buttons = MouseButtons.None;
 
-		[ConnectBefore]
-		void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
-		{
-			var e = args.Event.ToEto();
-			if (e != null)
-			{
-				Widget.OnKeyDown(e);
-				args.RetVal = e.Handled;
+				Handler.Widget.OnMouseEnter(new MouseEventArgs(buttons, modifiers, p));
 			}
-		}
 
-		void HandleKeyReleaseEvent(object o, Gtk.KeyReleaseEventArgs args)
-		{
-			var e = args.Event.ToEto();
-			if (e != null)
+			public void HandleMotionNotifyEvent(System.Object o, Gtk.MotionNotifyEventArgs args)
 			{
-				Widget.OnKeyUp(e);
-				args.RetVal = e.Handled;
+				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				Key modifiers = args.Event.State.ToEtoKey();
+				MouseButtons buttons = args.Event.State.ToEtoMouseButtons();
+
+				Handler.Widget.OnMouseMove(new MouseEventArgs(buttons, modifiers, p));
+			}
+
+			public void HandleButtonReleaseEvent(object o, Gtk.ButtonReleaseEventArgs args)
+			{
+				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				Key modifiers = args.Event.State.ToEtoKey();
+				MouseButtons buttons = args.Event.ToEtoMouseButtons();
+
+				Handler.Widget.OnMouseUp(new MouseEventArgs(buttons, modifiers, p));
+			}
+
+			public void HandleButtonPressEvent(object sender, Gtk.ButtonPressEventArgs args)
+			{
+				var p = new PointF((float)args.Event.X, (float)args.Event.Y);
+				Key modifiers = args.Event.State.ToEtoKey();
+				MouseButtons buttons = args.Event.ToEtoMouseButtons();
+				if (Handler.Control.CanFocus && !Handler.Control.HasFocus)
+					Handler.Control.GrabFocus();
+				if (args.Event.Type == Gdk.EventType.ButtonPress)
+				{
+					Handler.Widget.OnMouseDown(new MouseEventArgs(buttons, modifiers, p));
+				}
+				else if (args.Event.Type == Gdk.EventType.TwoButtonPress)
+				{
+					Handler.Widget.OnMouseDoubleClick(new MouseEventArgs(buttons, modifiers, p));
+				}
+			}
+
+			public void HandleSizeAllocated(object o, Gtk.SizeAllocatedArgs args)
+			{
+				if (Handler.asize != args.Allocation.Size.ToEto())
+				{
+					// only call when the size has actually changed, gtk likes to call anyway!!  grr.
+					Handler.asize = args.Allocation.Size.ToEto();
+					Handler.Widget.OnSizeChanged(EventArgs.Empty);
+				}
+			}
+
+			[ConnectBefore]
+			public void HandleKeyPressEvent(object o, Gtk.KeyPressEventArgs args)
+			{
+				var e = args.Event.ToEto();
+				if (e != null)
+				{
+					Handler.Widget.OnKeyDown(e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			public void HandleKeyReleaseEvent(object o, Gtk.KeyReleaseEventArgs args)
+			{
+				var e = args.Event.ToEto();
+				if (e != null)
+				{
+					Handler.Widget.OnKeyUp(e);
+					args.RetVal = e.Handled;
+				}
+			}
+
+			public void FocusInEvent(object o, Gtk.FocusInEventArgs args)
+			{
+				Handler.Widget.OnGotFocus(EventArgs.Empty);
+			}
+
+			public void FocusOutEvent(object o, Gtk.FocusOutEventArgs args)
+			{
+				Handler.Widget.OnLostFocus(EventArgs.Empty);
+			}
+
+			public void VisibilityNotifyEvent(object o, Gtk.VisibilityNotifyEventArgs args)
+			{
+				if (args.Event.State == Gdk.VisibilityState.FullyObscured)
+					Handler.Widget.OnShown(EventArgs.Empty);
+			}
+
+			public void HandleControlRealized(object sender, EventArgs e)
+			{
+				Handler.RealizedSetup();
+				Handler.Control.Realized -= HandleControlRealized;
 			}
 		}
 

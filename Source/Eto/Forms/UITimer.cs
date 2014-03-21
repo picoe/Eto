@@ -46,14 +46,22 @@ namespace Eto.Forms
 			get { return Handler.Interval; }
 			set { Handler.Interval = value; }
 		}
-		
+
+		/// <summary>
+		/// Gets a value indicating whether this <see cref="Eto.Forms.UITimer"/> is started.
+		/// </summary>
+		/// <value><c>true</c> if started; otherwise, <c>false</c>.</value>
+		public bool Started { get; private set; }
+
 		public void Start ()
 		{
+			Started = true;
 			Handler.Start ();
 		}
 
 		public void Stop ()
 		{
+			Started = false;
 			Handler.Stop ();
 		}
 	}

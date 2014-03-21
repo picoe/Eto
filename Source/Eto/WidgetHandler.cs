@@ -292,5 +292,57 @@ namespace Eto
 			var handler = (WidgetHandler<T, TWidget>)widget.Handler;
 			return handler.Control;
 		}
+
+		static readonly object connector_key = new object();
+
+		/// <summary>
+		/// Gets a weak connector class to hook up events to the underlying control
+		/// </summary>
+		/// <remarks>
+		/// Some frameworks (e.g. gtk, monomac, ios, android) keep track of references in a way that leak objects when
+		/// there is a circular reference between the control and the handler.  This is the case when registering events
+		/// from the control to a method implemented in the handler.
+		/// This instance can be used to connect the objects together using a weak reference to the handler, allowing
+		/// controls to be garbage collected.
+		/// </remarks>
+		/// <value>The connector instance</value>
+		protected WeakConnector Connector
+		{ 
+			get
+			{
+				object connectorObject;
+				if (Widget.Properties.TryGetValue(connector_key, out connectorObject))
+					return (WeakConnector)connectorObject;
+
+				var connector = CreateConnector();
+				connector.Handler = this;
+				Widget.Properties[connector_key] = connector;
+				return connector;
+			} 
+		}
+
+		/// <summary>
+		/// Creates the event connector for this control
+		/// </summary>
+		/// <remarks>
+		/// This creates the weak connector to use for event registration and other purposes.
+		/// </remarks>
+		/// <seealso cref="Connector"/>
+		protected virtual WeakConnector CreateConnector()
+		{
+			return new WeakConnector();
+		}
+
+		/// <summary>
+		/// Connector for events to keep a weak reference to allow gtk controls to be garbage collected when no longer referenced
+		/// </summary>
+		/// <seealso cref="Connector"/>
+		protected class WeakConnector
+		{
+			WeakReference handler;
+
+			public WidgetHandler<T, TWidget> Handler { get { return (WidgetHandler<T, TWidget>)handler.Target; } internal set { handler = new WeakReference(value); } }
+		}
+
 	}
 }

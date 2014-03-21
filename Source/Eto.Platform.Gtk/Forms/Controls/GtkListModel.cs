@@ -20,8 +20,8 @@ namespace Eto.Platform.GtkSharp
 		where TStore: class, IDataStore<TItem>
 		where TItem: class
 	{
-
-		public IGtkListModelHandler<TItem, TStore> Handler { get; set; }
+		WeakReference handler;
+		public IGtkListModelHandler<TItem, TStore> Handler { get { return (IGtkListModelHandler<TItem, TStore>)handler.Target; } set { handler = new WeakReference(value); } }
 
 		public Gtk.TreeIter GetIterAtRow (int row)
 		{
@@ -54,7 +54,8 @@ namespace Eto.Platform.GtkSharp
 
 		int GetRow (Gtk.TreePath path)
 		{
-			if (path.Indices.Length > 0 && Handler.DataStore != null && Handler.DataStore.Count > 0)
+			var h = Handler;
+			if (h != null && path.Indices.Length > 0 && h.DataStore != null && h.DataStore.Count > 0)
 				return path.Indices[0];
 			return -1;
 		}
@@ -152,15 +153,17 @@ namespace Eto.Platform.GtkSharp
 
 		public int IterNChildren (Gtk.TreeIter iter)
 		{
-			if (iter.UserData == IntPtr.Zero && Handler.DataStore != null)
-				return Handler.DataStore.Count;
+			var h = Handler;
+			if (iter.UserData == IntPtr.Zero && h.DataStore != null)
+				return h.DataStore.Count;
 			return 0;
 		}
 
 		public bool IterNthChild (out Gtk.TreeIter child, Gtk.TreeIter parent, int n)
 		{
-			if (parent.UserData == IntPtr.Zero && Handler.DataStore != null) {
-				if (n < Handler.DataStore.Count) {
+			var h = Handler;
+			if (parent.UserData == IntPtr.Zero && h != null && h.DataStore != null) {
+				if (n < h.DataStore.Count) {
 					child = new Gtk.TreeIter { UserData = (IntPtr)(n+1) };
 					return true;
 				}

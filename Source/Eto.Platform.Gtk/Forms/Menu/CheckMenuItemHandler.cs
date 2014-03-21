@@ -13,12 +13,41 @@ namespace Eto.Platform.GtkSharp
 		public CheckMenuItemHandler()
 		{
 			Control = new Gtk.CheckMenuItem();
-			Control.Toggled += control_Activated;
 			label = new Gtk.AccelLabel(string.Empty);
 			label.Xalign = 0;
 			label.UseUnderline = true;
 			label.AccelWidget = Control;
 			Control.Add(label);
+		}
+
+		protected override void Initialize()
+		{
+			base.Initialize();
+			Control.Toggled += Connector.HandleToggled;
+		}
+
+		protected new CheckMenuItemConnector Connector { get { return (CheckMenuItemConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new CheckMenuItemConnector();
+		}
+
+		protected class CheckMenuItemConnector : WeakConnector
+		{
+			public new CheckMenuItemHandler Handler { get { return (CheckMenuItemHandler)base.Handler; } }
+
+			public void HandleToggled(object sender, EventArgs e)
+			{
+				var handler = Handler;
+				if (!handler.isBeingChecked)
+				{
+					handler.isBeingChecked = true;
+					handler.Control.Active = !handler.Control.Active; // don't let Gtk turn it on/off
+					handler.isBeingChecked = false;
+					handler.Widget.OnClick(e);
+				}
+			}
 		}
 
 		public string Text
@@ -66,17 +95,6 @@ namespace Eto.Platform.GtkSharp
 		{
 			get { return Control.Sensitive; }
 			set { Control.Sensitive = value; }
-		}
-
-		void control_Activated(object sender, EventArgs e)
-		{
-			if (!isBeingChecked)
-			{
-				isBeingChecked = true;
-				Control.Active = !Control.Active; // don't let Gtk turn it on/off
-				isBeingChecked = false;
-				Widget.OnClick(e);
-			}
 		}
 	}
 }

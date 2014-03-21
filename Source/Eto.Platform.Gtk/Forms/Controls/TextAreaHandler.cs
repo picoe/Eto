@@ -8,8 +8,6 @@ namespace Eto.Platform.GtkSharp
 	public class TextAreaHandler : GtkControl<Gtk.TextView, TextArea>, ITextArea
 	{
 		bool sendSelectionChanged = true;
-		Range? lastSelection;
-		int? lastCaretIndex;
 		readonly Gtk.ScrolledWindow scroll;
 		Gtk.TextTag tag;
 
@@ -34,36 +32,65 @@ namespace Eto.Platform.GtkSharp
 			switch (id)
 			{
 				case TextControl.TextChangedEvent:
-					Control.Buffer.Changed += delegate
-					{
-						Widget.OnTextChanged(EventArgs.Empty);
-					};
+					Control.Buffer.Changed += Connector.HandleBufferChanged;
 					break;
 				case TextArea.SelectionChangedEvent:
-					Control.Buffer.MarkSet += (o, args) =>
-					{
-						var selection = Selection;
-						if (sendSelectionChanged && selection != lastSelection)
-						{
-							Widget.OnSelectionChanged(EventArgs.Empty);
-							lastSelection = selection;
-						}
-					};
+					Control.Buffer.MarkSet += Connector.HandleSelectionChanged;
 					break;
 				case TextArea.CaretIndexChangedEvent:
-					Control.Buffer.MarkSet += (o, args) =>
-					{
-						var caretIndex = CaretIndex;
-						if (sendSelectionChanged && caretIndex != lastCaretIndex)
-						{
-							Widget.OnCaretIndexChanged(EventArgs.Empty);
-							lastCaretIndex = caretIndex;
-						}
-					};
+					Control.Buffer.MarkSet += Connector.HandleCaretIndexChanged;
 					break;
 				default:
 					base.AttachEvent(id);
 					break;
+			}
+		}
+
+		protected new TextAreaConnector Connector { get { return (TextAreaConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new TextAreaConnector();
+		}
+
+		protected class TextAreaConnector : GtkControlConnector
+		{
+			Range? lastSelection;
+			int? lastCaretIndex;
+			public new TextAreaHandler Handler { get { return (TextAreaHandler)base.Handler; } }
+
+			public void HandleBufferChanged(object sender, EventArgs e)
+			{
+				Handler.Widget.OnTextChanged(EventArgs.Empty);
+			}
+
+			public void HandleSelectionChanged(object o, Gtk.MarkSetArgs args)
+			{
+				var handler = Handler;
+				var selection = handler.Selection;
+				if (handler.sendSelectionChanged && selection != lastSelection)
+				{
+					handler.Widget.OnSelectionChanged(EventArgs.Empty);
+					lastSelection = selection;
+				}
+			}
+
+			public void HandleCaretIndexChanged(object o, Gtk.MarkSetArgs args)
+			{
+				var handler = Handler;
+				var caretIndex = handler.CaretIndex;
+				if (handler.sendSelectionChanged && caretIndex != lastCaretIndex)
+				{
+					handler.Widget.OnCaretIndexChanged(EventArgs.Empty);
+					lastCaretIndex = caretIndex;
+				}
+			}
+
+			public void HandleApplyTag(object sender, EventArgs e)
+			{
+				var buffer = Handler.Control.Buffer;
+				var tag = Handler.tag;
+				buffer.ApplyTag(tag, buffer.StartIter, buffer.EndIter);
 			}
 		}
 
@@ -184,7 +211,7 @@ namespace Eto.Platform.GtkSharp
 					{
 						tag = new Gtk.TextTag("font");
 						Control.Buffer.TagTable.Add(tag);
-						Control.Buffer.Changed += (o, args) => Control.Buffer.ApplyTag(tag, Control.Buffer.StartIter, Control.Buffer.EndIter);
+						Control.Buffer.Changed += Connector.HandleApplyTag;
 						Control.Buffer.ApplyTag(tag, Control.Buffer.StartIter, Control.Buffer.EndIter);
 					}
 					value.Apply(tag);

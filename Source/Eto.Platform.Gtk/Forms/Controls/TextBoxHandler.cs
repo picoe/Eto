@@ -7,59 +7,80 @@ namespace Eto.Platform.GtkSharp
 	{
 		string placeholderText;
 
-		public TextBoxHandler ()
+		public TextBoxHandler()
 		{
-			Control = new Gtk.Entry ();
-			Control.SetSizeRequest (100, -1);
+			Control = new Gtk.Entry();
+			Control.SetSizeRequest(100, -1);
 			Control.ActivatesDefault = true;
 		}
 
-		public override void AttachEvent (string id)
+		public override void AttachEvent(string id)
 		{
-			switch (id) {
+			switch (id)
+			{
 				case TextControl.TextChangedEvent:
-					Control.Changed += delegate {
-						Widget.OnTextChanged (EventArgs.Empty);
-					};
+					Control.Changed += Connector.HandleTextChanged;
 					break;
 				default:
-					base.AttachEvent (id);
+					base.AttachEvent(id);
 					break;
 			}
 		}
 
-#if GTK2
-		Pango.Layout placeholderLayout;
-		void HandleExposeEvent (object o, Gtk.ExposeEventArgs args)
+		protected new TextBoxConnector Connector { get { return (TextBoxConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
 		{
-			if (!string.IsNullOrEmpty(Control.Text) || args.Event.Window == Control.GdkWindow)
-				return;
-
-			if (placeholderLayout == null) {
-				placeholderLayout = new Pango.Layout (Control.PangoContext);
-				placeholderLayout.FontDescription = Control.PangoContext.FontDescription.Copy ();
-			}
-			placeholderLayout.SetText (placeholderText);
-
-			int currentHeight, currentWidth;
-			args.Event.Window.GetSize (out currentWidth, out currentHeight);
-
-			int width, height;
-			placeholderLayout.GetPixelSize (out width, out height);
-
-			var style = Control.Style;
-			var bc = style.Base (Gtk.StateType.Normal);
-			var tc = style.Text (Gtk.StateType.Normal);
-
-			using (var gc = new Gdk.GC (args.Event.Window)) {
-				gc.Copy (style.TextGC (Gtk.StateType.Normal));
-
-				gc.RgbFgColor = new Gdk.Color ((byte)(((int)bc.Red + tc.Red) / 2 / 256), (byte)(((int)bc.Green + (int)tc.Green) / 2 / 256), (byte)((bc.Blue + tc.Blue) / 2 / 256));
-
-				args.Event.Window.DrawLayout (gc, 2, (currentHeight - height) / 2 + 1, placeholderLayout);
-			}
+			return new TextBoxConnector();
 		}
 
+		protected class TextBoxConnector : GtkControlConnector
+		{
+			public new TextBoxHandler Handler { get { return (TextBoxHandler)base.Handler; } }
+
+			public void HandleTextChanged(object sender, EventArgs e)
+			{
+				Handler.Widget.OnTextChanged(EventArgs.Empty);
+			}
+
+			#if GTK2
+
+			public void HandleExposeEvent(object o, Gtk.ExposeEventArgs args)
+			{
+				var control = Handler.Control;
+				if (!string.IsNullOrEmpty(control.Text) || args.Event.Window == control.GdkWindow)
+					return;
+
+				if (Handler.placeholderLayout == null)
+				{
+					Handler.placeholderLayout = new Pango.Layout(control.PangoContext);
+					Handler.placeholderLayout.FontDescription = control.PangoContext.FontDescription.Copy();
+				}
+				Handler.placeholderLayout.SetText(Handler.placeholderText);
+
+				int currentHeight, currentWidth;
+				args.Event.Window.GetSize(out currentWidth, out currentHeight);
+
+				int width, height;
+				Handler.placeholderLayout.GetPixelSize(out width, out height);
+
+				var style = control.Style;
+				var bc = style.Base(Gtk.StateType.Normal);
+				var tc = style.Text(Gtk.StateType.Normal);
+
+				using (var gc = new Gdk.GC(args.Event.Window))
+				{
+					gc.Copy(style.TextGC(Gtk.StateType.Normal));
+
+					gc.RgbFgColor = new Gdk.Color((byte)(((int)bc.Red + tc.Red) / 2 / 256), (byte)(((int)bc.Green + (int)tc.Green) / 2 / 256), (byte)((bc.Blue + tc.Blue) / 2 / 256));
+
+					args.Event.Window.DrawLayout(gc, 2, (currentHeight - height) / 2 + 1, Handler.placeholderLayout);
+				}
+			}
+			#endif
+		}
+		#if GTK2
+		Pango.Layout placeholderLayout;
 		public override Eto.Drawing.Font Font
 		{
 			get { return base.Font; }
@@ -69,36 +90,41 @@ namespace Eto.Platform.GtkSharp
 				placeholderLayout = null;
 			}
 		}
-#else
+		#else
 		protected override void SetBackgroundColor(Eto.Drawing.Color? color)
 		{
 		}
-#endif
+		#endif
 
-		public override string Text {
+		public override string Text
+		{
 			get { return Control.Text; }
 			set { Control.Text = value ?? string.Empty; }
 		}
 
-		public bool ReadOnly {
+		public bool ReadOnly
+		{
 			get { return !Control.IsEditable; }
 			set { Control.IsEditable = !value; }
 		}
-		
-		public int MaxLength {
+
+		public int MaxLength
+		{
 			get { return Control.MaxLength; }
 			set { Control.MaxLength = value; }
 		}
 
-		public string PlaceholderText {
+		public string PlaceholderText
+		{
 			get { return placeholderText; }
-			set	{
+			set
+			{
 #if GTK2
 				if (!string.IsNullOrEmpty(placeholderText))
-					Control.ExposeEvent -= HandleExposeEvent;
+					Control.ExposeEvent -= Connector.HandleExposeEvent;
 				placeholderText = value;
-				if (!string.IsNullOrEmpty (placeholderText))
-					Control.ExposeEvent += HandleExposeEvent;
+				if (!string.IsNullOrEmpty(placeholderText))
+					Control.ExposeEvent += Connector.HandleExposeEvent;
 #else
 				placeholderText = value;
 #endif
@@ -107,7 +133,7 @@ namespace Eto.Platform.GtkSharp
 
 		public void SelectAll()
 		{
-			Control.GrabFocus ();
+			Control.GrabFocus();
 			if (!string.IsNullOrEmpty(Control.Text))
 				Control.SelectRegion(0, Control.Text.Length);
 		}

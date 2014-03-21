@@ -3,15 +3,11 @@ using Eto.Forms;
 
 namespace Eto.Platform.GtkSharp
 {
-	
 	public class CheckToolItemHandler : ToolItemHandler<Gtk.ToggleToolButton, CheckToolItem>, ICheckToolItem
 	{
 		bool ischecked;
 		bool isBeingChecked;
-		
-		#region ICheckToolBarButton Members
-		
-		
+
 		public bool Checked
 		{
 			get { return (Control != null) ? Control.Active : ischecked; }
@@ -20,15 +16,14 @@ namespace Eto.Platform.GtkSharp
 				if (value != ischecked)
 				{
 					isBeingChecked = true;
-					if (Control != null) Control.Active = value;
+					if (Control != null)
+						Control.Active = value;
 					isBeingChecked = false;
 					ischecked = value;
 				}
 			}
 		}
-		
-		#endregion
-		
+
 		public override void CreateControl(ToolBarHandler handler)
 		{
 			Gtk.Toolbar tb = handler.Control;
@@ -38,24 +33,42 @@ namespace Eto.Platform.GtkSharp
 			Control.Label = Text;
 			//Control.TooltipText = this.ToolTip;
 			Control.IconWidget = GtkImage;
-			Control.Toggled += button_Toggled;
 			Control.Sensitive = Enabled;
 			Control.CanFocus = false;
 			Control.IsImportant = true;
 			tb.Insert(Control, -1);
-			if (tb.Visible) Control.ShowAll();
+			if (tb.Visible)
+				Control.ShowAll();
 		}
-		
-		void button_Toggled(Object sender, EventArgs e)
+
+		protected override void Initialize()
 		{
-			if (!isBeingChecked)
+			base.Initialize();
+			Control.Toggled += Connector.HandleToggled;
+		}
+
+		protected new CheckToolItemConnector Connector { get { return (CheckToolItemConnector)base.Connector; } }
+
+		protected override WeakConnector CreateConnector()
+		{
+			return new CheckToolItemConnector();
+		}
+
+		protected class CheckToolItemConnector : WeakConnector
+		{
+			public new CheckToolItemHandler Handler { get { return (CheckToolItemHandler)base.Handler; } }
+
+			public void HandleToggled(object sender, EventArgs e)
 			{
-				isBeingChecked = true;
-				Control.Active = ischecked;
-				isBeingChecked = false;
-				Widget.OnClick(EventArgs.Empty);
+				var handler = Handler;
+				if (!handler.isBeingChecked)
+				{
+					handler.isBeingChecked = true;
+					handler.Control.Active = handler.ischecked;
+					handler.isBeingChecked = false;
+					handler.Widget.OnClick(EventArgs.Empty);
+				}
 			}
 		}
-		
 	}
 }
