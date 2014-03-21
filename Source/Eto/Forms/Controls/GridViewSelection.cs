@@ -157,6 +157,9 @@ namespace Eto.Forms
 
 		/// <summary>
 		/// Resets the selection to the specified model indexes.
+		/// Called by
+		/// a) SelectionPreserver.Dispose() during sort and filter operations
+		/// b) OnCollectionChanged when the model collection is changed.
 		/// </summary>
 		private void ResetSelection(SortedSet<int> newSelectedRows, 
 			HashSet<object> selectedItems = null, 
@@ -198,11 +201,27 @@ namespace Eto.Forms
 
 		void OnCollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
 		{
+			var model = DataStoreView.Model;
+
 			if (e.Action == NotifyCollectionChangedAction.Add)
 			{
 				// The set of selected items does not change, 
 				// but the row indexes of affected items are incremented.
-				throw new NotImplementedException();
+				var selectedItems = new HashSet<object>();
+				var newSelectedRows = new SortedSet<int>();
+				foreach (var i in selectedRows)
+				{
+					// The tricky part - if the index is greater than or equal to the location
+					// where the insertions were done, add the count of objects inserted.
+					var temp = i;
+					if (i >= e.NewStartingIndex)
+						temp += e.NewItems.Count;
+
+					newSelectedRows.Add(temp);
+					selectedItems.Add(model[temp]);
+				}
+
+				ResetSelection(newSelectedRows, selectedItems);
 			}
 			else if (e.Action == NotifyCollectionChangedAction.Remove)
 			{
