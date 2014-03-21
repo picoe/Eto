@@ -107,7 +107,8 @@ namespace Eto.Forms
 				Items.Add(item);
 
 			// range is not supported by WPF, so send a reset
-			if (Generator.Current.IsWpf)
+			if (Generator.Current != null &&
+				Generator.Current.IsWpf)
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Reset));
 			else
 				OnCollectionChanged(new NotifyCollectionChangedEventArgs(NotifyCollectionChangedAction.Add, itemList, oldIndex));

@@ -236,8 +236,8 @@ namespace Eto
 		{
 			get
 			{
-				if (current == null)
-					throw new EtoException("Generator has not been initialized");
+				//if (current == null)
+				//	throw new EtoException("Generator has not been initialized");
 				return current;
 			}
 		}
