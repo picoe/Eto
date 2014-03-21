@@ -51,13 +51,13 @@ namespace Eto.Test.Sections.Drawing
 		}
 	}
 
-	public class DrawingTests : TestFixture
+	public class DrawingTests : EtoTestFixture
 	{
 		public Drawable Drawable { get; set; }
 
 		public Graphics Graphics { get; set; }
 
-		[UnitTest]
+		[EtoUnitTest]
 		public void ClipTest()
 		{
 			Assert.AreEqual("Verifying clipbounds size", Size.Round(Drawable.ClientSize), Size.Round(Graphics.ClipBounds.Size));

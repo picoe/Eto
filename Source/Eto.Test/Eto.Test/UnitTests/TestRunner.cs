@@ -3,15 +3,15 @@ using System.Reflection;
 
 namespace Eto.Test.UnitTests
 {
-	public class UnitTestAttribute : Attribute
+	public class EtoUnitTestAttribute : Attribute
 	{
 	}
 
-	public class Assert
+	public class EtoAssert
 	{
 		public bool Succeeded { get; set; }
 
-		public Assert()
+		public EtoAssert()
 		{
 			Succeeded = true;
 		}
@@ -37,17 +37,17 @@ namespace Eto.Test.UnitTests
 
 	public class TestRunner
 	{
-		public void RunTests<T>(Func<T> factory) where T : TestFixture
+		public void RunTests<T>(Func<T> factory) where T : EtoTestFixture
 		{
 			foreach (var method in typeof(T).GetMethods(BindingFlags.Instance | BindingFlags.Public))
 			{
 				// if the [UnitTest] attribute is defined, run the test
-				var attrs = method.GetCustomAttributes(typeof(UnitTestAttribute), inherit: false);
+				var attrs = method.GetCustomAttributes(typeof(EtoUnitTestAttribute), inherit: false);
 				if (attrs != null && attrs.Length > 0)
 				{
 					var fixture = factory(); // create a new instance of the fixture
 					fixture.TestContext = new TestContext();
-					fixture.Assert = new Assert();
+					fixture.Assert = new EtoAssert();
 					// run the test method
 					method.Invoke(fixture, null);
 					Log.Write(this, "{0}: {1}.{2}", fixture.Assert.Succeeded ? "PASSED" : "FAILED", typeof(T), method.Name);
@@ -56,9 +56,9 @@ namespace Eto.Test.UnitTests
 		}
 	}
 
-	public class TestFixture
+	public class EtoTestFixture
 	{
 		public TestContext TestContext { get; set; }
-		public Assert Assert { get; set; }
+		public EtoAssert Assert { get; set; }
 	}
 }
