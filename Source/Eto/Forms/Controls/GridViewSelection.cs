@@ -107,6 +107,10 @@ namespace Eto.Forms
 		/// 
 		/// This class contains the logic to map selected items to their
 		/// view indexes.
+		/// 
+		/// Preserving the selection currently takes O(nlogn) if there
+		/// is a non-empty selection. This is very slow in the case
+		/// when multiple insertions and deletions occur together.
 		/// </summary>
 		class SelectionPreserver : IDisposable
 		{
@@ -127,32 +131,45 @@ namespace Eto.Forms
 
 			public void Dispose()
 			{
-				// Determine which of the originally selected objects still
-				// exist and which have been removed.
-				var finalSelectedRows = new HashSet<object>();
-				var removedSelectedRows = new HashSet<object>();
-
-				for (var i = 0; i < Model.Count; ++i)
+				if (selectedItems.Count > 0) // optimization
 				{
-					var item = Model[i];
-					if (selectedItems.Contains(item))
-						finalSelectedRows.Add(item);
+					// Determine which of the originally selected objects still
+					// exist and which have been removed.
+					var finalSelectedItems = new HashSet<object>();
+					var removedSelectedItems = new HashSet<object>();
+					var finalSelectedRows = new SortedSet<int>();
+
+					// O(nlogn)
+					for (var i = 0; i < Model.Count; ++i)
+					{
+						var item = Model[i];
+						if (selectedItems.Contains(item))
+						{
+							finalSelectedItems.Add(item);
+							finalSelectedRows.Add(i);
+						}
+					}
+
+					foreach (var item in selectedItems)
+						if (!finalSelectedItems.Contains(item))
+							removedSelectedItems.Add(item);
+
+					// Set the selection model indexes
+					s.selectedRows.Clear();
+					foreach (var i in finalSelectedRows)
+						s.selectedRows.Add(i);
+
+					// Calculate the view indexes
+					var finalSelectedRowViewIndexes = new SortedSet<int>();
+					for (var i = 0; i < View.Count; ++i) // O(nlogn)
+						if (selectedItems.Contains(View[i]))
+							finalSelectedRowViewIndexes.Add(i);
+
+					// Reselect the rows in the handler.
+					s.Handler.UnselectAll();
+					foreach (var i in finalSelectedRowViewIndexes)
+						s.Handler.SelectRow(i);
 				}
-
-				foreach (var item in selectedItems)
-					if (!finalSelectedRows.Contains(item))
-						removedSelectedRows.Add(item);
-
-				// Restore the selected state in the view
-				var selectedRowViewIndexes = new SortedSet<int>();				
-				for(var i = 0; i< View.Count; ++i)
-					if(selectedItems.Contains(View[i]))
-						selectedRowViewIndexes.Add(i);
-
-				// Reselect the row in the handler.
-				s.Handler.UnselectAll();
-				foreach(var i in selectedRowViewIndexes)
-					s.Handler.SelectRow(i);
 
 				s.state = GridViewSelectionState.Normal; // start firing selection changed events again.
 
